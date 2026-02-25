@@ -1,5 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useInView } from "../hooks/use-in-view";
+
+/* ------------------------------------------------------------------ */
+/*  Types                                                              */
+/* ------------------------------------------------------------------ */
 
 interface AlgoNode {
   id: number;
@@ -7,73 +11,90 @@ interface AlgoNode {
   y: number;
   label: string;
   type: "center" | "candidate" | "selected" | "rejected";
-  mbti: string;
   interest: string;
+  angle: number;
 }
 
-const CANDIDATE_DATA = [
+type Phase = "idle" | "scanning" | "evaluating" | "selecting" | "formed";
+
+/* ------------------------------------------------------------------ */
+/*  Data                                                               */
+/* ------------------------------------------------------------------ */
+
+const CANDIDATES = [
   { mbti: "INFP", interest: "Art" },
   { mbti: "ENTP", interest: "Tech" },
   { mbti: "ESTJ", interest: "Sport" },
-  { mbti: "INTJ", interest: "Tech" },
+  { mbti: "INTJ", interest: "Code" },
   { mbti: "ENFJ", interest: "Music" },
   { mbti: "ISTP", interest: "Sport" },
   { mbti: "ENTJ", interest: "Tech" },
   { mbti: "INFJ", interest: "Art" },
   { mbti: "ESFP", interest: "Music" },
   { mbti: "INTP", interest: "Tech" },
+  { mbti: "ISFJ", interest: "Cook" },
+  { mbti: "ENFP", interest: "Travel" },
 ];
 
-const RADIUS = 130;
+const SELECTED_IDS = new Set([2, 4, 7, 10]);
 
-function buildNodes(cx: number, cy: number): AlgoNode[] {
+const FACTORS = [
+  { label: "Personality distance", weight: 30, color: "#0D9488" },
+  { label: "Interest similarity", weight: 30, color: "#14B8A6" },
+  { label: "Social graph proximity", weight: 20, color: "#F59E0B" },
+  { label: "Trust score", weight: 10, color: "#0D9488" },
+  { label: "Age alignment", weight: 10, color: "#14B8A6" },
+];
+
+const PHASE_LABELS: Record<Phase, string> = {
+  idle: "",
+  scanning: "Step 1: Building candidate pool (k-NN)...",
+  evaluating: "Step 2: Computing MarginalGroupScore...",
+  selecting: "Selecting optimal group composition...",
+  formed: "Group forged.",
+};
+
+/* ------------------------------------------------------------------ */
+/*  Helpers                                                            */
+/* ------------------------------------------------------------------ */
+
+function buildNodes(cx: number, cy: number, radius: number): AlgoNode[] {
   const nodes: AlgoNode[] = [
-    {
-      id: 0,
-      x: cx,
-      y: cy,
-      label: "You",
-      type: "center",
-      mbti: "ENTJ",
-      interest: "Tech",
-    },
+    { id: 0, x: cx, y: cy, label: "You", type: "center", interest: "", angle: 0 },
   ];
-
-  CANDIDATE_DATA.forEach((d, i) => {
-    const angle = (i / CANDIDATE_DATA.length) * Math.PI * 2 - Math.PI / 2;
+  CANDIDATES.forEach((d, i) => {
+    const angle = (i / CANDIDATES.length) * Math.PI * 2 - Math.PI / 2;
     nodes.push({
       id: i + 1,
-      x: cx + Math.cos(angle) * RADIUS,
-      y: cy + Math.sin(angle) * RADIUS,
+      x: cx + Math.cos(angle) * radius,
+      y: cy + Math.sin(angle) * radius,
       label: d.mbti,
       type: "candidate",
-      mbti: d.mbti,
       interest: d.interest,
+      angle,
     });
   });
-
   return nodes;
 }
 
-type Phase = "idle" | "evaluating" | "filtering" | "formed";
-
-const SELECTED_IDS = [2, 4, 7, 10]; // ENTP, ENFJ, ENTJ, INTP — all tech-compatible
+/* ------------------------------------------------------------------ */
+/*  Component                                                          */
+/* ------------------------------------------------------------------ */
 
 export function AlgorithmSection() {
-  const { ref, inView } = useInView(0.2);
+  const { ref, inView } = useInView(0.15);
   const [phase, setPhase] = useState<Phase>("idle");
   const [nodes, setNodes] = useState<AlgoNode[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [dims, setDims] = useState({ cx: 180, cy: 180 });
+  const [size, setSize] = useState(380);
   const hasRun = useRef(false);
 
+  /* Responsive sizing */
   useEffect(() => {
     const update = () => {
       if (containerRef.current) {
-        const w = Math.min(containerRef.current.offsetWidth, 400);
-        const size = w;
-        setDims({ cx: size / 2, cy: size / 2 });
-        setNodes(buildNodes(size / 2, size / 2));
+        const w = containerRef.current.offsetWidth;
+        setSize(Math.min(w, 420));
       }
     };
     update();
@@ -81,253 +102,282 @@ export function AlgorithmSection() {
     return () => window.removeEventListener("resize", update);
   }, []);
 
+  /* Rebuild nodes when size changes */
+  useEffect(() => {
+    const cx = size / 2;
+    const cy = size / 2;
+    const r = size * 0.36;
+    setNodes(buildNodes(cx, cy, r));
+  }, [size]);
+
+  /* Phased animation sequence */
   useEffect(() => {
     if (!inView || hasRun.current || nodes.length === 0) return;
     hasRun.current = true;
 
-    setPhase("evaluating");
+    setPhase("scanning");
 
-    const t1 = setTimeout(() => setPhase("filtering"), 1400);
-    const t2 = setTimeout(() => {
+    const t1 = setTimeout(() => setPhase("evaluating"), 1200);
+    const t2 = setTimeout(() => setPhase("selecting"), 2400);
+    const t3 = setTimeout(() => {
       setNodes((prev) =>
         prev.map((n) =>
           n.type === "candidate"
-            ? {
-                ...n,
-                type: SELECTED_IDS.includes(n.id) ? "selected" : "rejected",
-              }
+            ? { ...n, type: SELECTED_IDS.has(n.id) ? "selected" : "rejected" }
             : n,
         ),
       );
-    }, 2200);
-    const t3 = setTimeout(() => setPhase("formed"), 3000);
+    }, 2600);
+    const t4 = setTimeout(() => setPhase("formed"), 3400);
 
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-    };
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
   }, [inView, nodes.length]);
 
-  const svgSize = Math.min(dims.cx * 2, 400);
-
-  const getNodeStyle = (node: AlgoNode) => {
-    if (node.type === "center")
+  /* Node visual style resolver */
+  const getNodeStyle = useCallback(
+    (node: AlgoNode) => {
+      if (node.type === "center")
+        return { fill: "#0D9488", r: size * 0.055, textFill: "#fff", opacity: 1, glow: true, glowColor: "#0D9488" };
+      if (node.type === "selected")
+        return { fill: "#F59E0B", r: size * 0.038, textFill: "#1C1C1A", opacity: 1, glow: true, glowColor: "#F59E0B" };
+      if (node.type === "rejected")
+        return { fill: "#1f2937", r: size * 0.025, textFill: "#4b5563", opacity: 0.25, glow: false, glowColor: "" };
       return {
         fill: "#0D9488",
-        r: 20,
-        textFill: "white",
-        opacity: 1,
-        glow: true,
-      };
-    if (node.type === "selected")
-      return {
-        fill: "#F59E0B",
-        r: 14,
-        textFill: "#1C1C1A",
-        opacity: 1,
-        glow: true,
-      };
-    if (node.type === "rejected")
-      return {
-        fill: "#374151",
-        r: 10,
-        textFill: "#6B7280",
-        opacity: 0.3,
+        r: size * 0.032,
+        textFill: "#fff",
+        opacity: phase === "idle" ? 0 : 0.7,
         glow: false,
+        glowColor: "",
       };
-    return {
-      fill: "#0D9488",
-      r: 12,
-      textFill: "white",
-      opacity: phase === "idle" ? 0 : 0.75,
-      glow: false,
-    };
-  };
+    },
+    [phase, size],
+  );
 
-  const getLineOpacity = (node: AlgoNode) => {
-    if (phase === "idle") return 0;
-    if (node.type === "rejected") return 0.04;
-    if (node.type === "selected") return 0.7;
-    return 0.2;
-  };
+  const getLineProps = useCallback(
+    (node: AlgoNode) => {
+      if (phase === "idle") return { opacity: 0, stroke: "#0D9488", width: 0.8 };
+      if (node.type === "rejected") return { opacity: 0.03, stroke: "#374151", width: 0.5 };
+      if (node.type === "selected") return { opacity: 0.75, stroke: "#F59E0B", width: 1.8 };
+      if (phase === "scanning") return { opacity: 0.15, stroke: "#0D9488", width: 0.8 };
+      return { opacity: 0.12, stroke: "#0D9488", width: 0.8 };
+    },
+    [phase],
+  );
 
-  const getLineStroke = (node: AlgoNode) => {
-    if (node.type === "selected") return "#F59E0B";
-    return "#0D9488";
-  };
+  const cx = size / 2;
+  const cy = size / 2;
+
+  /* Cross-links between selected nodes */
+  const selectedNodes = nodes.filter((n) => n.type === "selected");
 
   return (
     <section
       id="algorithm"
       ref={ref}
-      className="relative bg-[#090909] py-24 md:py-32 overflow-hidden"
+      className="relative bg-[#060606] py-24 md:py-36 overflow-hidden"
       aria-label="How The Algorithm Works"
     >
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-          {/* Left: copy */}
-          <div
-            className={`flex-1 transition-all duration-700 ${inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"}`}
+      {/* Subtle radial glow behind the section */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        style={{
+          background: "radial-gradient(ellipse 60% 50% at 50% 40%, rgba(13,148,136,0.07) 0%, transparent 70%)",
+        }}
+      />
+
+      <div className="relative max-w-6xl mx-auto px-6">
+        {/* ---- HEADER ---- */}
+        <div
+          className="text-center mb-16 md:mb-20"
+          style={{
+            opacity: inView ? 1 : 0,
+            transform: inView ? "translateY(0)" : "translateY(24px)",
+            transition: "opacity 0.7s ease, transform 0.7s ease",
+          }}
+        >
+          <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-[#0D9488] mb-4">
+            Under The Hood
+          </p>
+          <h2
+            className="font-sans font-extrabold text-white text-balance mx-auto max-w-2xl"
+            style={{ fontSize: "clamp(1.85rem, 4.5vw, 2.75rem)", lineHeight: 1.15 }}
           >
-            <p className="font-sans text-xs font-semibold uppercase tracking-widest text-[#0D9488] mb-3">
-              Under The Hood
-            </p>
-            <h2
-              className="font-sans font-bold text-white text-balance mb-5"
-              style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
-            >
-              A live look at your group forming.
-            </h2>
-            <p className="font-sans text-base text-white/55 leading-relaxed mb-8 max-w-md text-pretty">
-              When you press Forge, the algorithm evaluates every candidate in
-              your city across five weighted dimensions simultaneously. Watch it
-              identify your best group in real time.
-            </p>
+            Watch the algorithm{" "}
+            <span className="bg-gradient-to-r from-[#0D9488] to-[#F59E0B] bg-clip-text text-transparent">
+              forge your group
+            </span>{" "}
+            in real time.
+          </h2>
+          <p className="font-sans text-base md:text-lg text-white/50 mt-5 max-w-xl mx-auto leading-relaxed text-pretty">
+            k-NN candidate selection, then Greedy Matching with a Social Bonus.
+            Five factors. Under two seconds.
+          </p>
+        </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mb-8">
-              {[
-                { value: "< 2s", label: "Formation time" },
-                { value: "5", label: "Scoring factors" },
-                { value: "50+", label: "Candidates evaluated" },
-              ].map(({ value, label }) => (
-                <div
-                  key={label}
-                  className="rounded-2xl p-4 text-center"
-                  style={{
-                    background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.07)",
-                  }}
-                >
-                  <p className="font-sans font-bold text-[#0D9488] text-xl mb-1">
-                    {value}
-                  </p>
-                  <p className="font-sans text-white/40 text-xs">{label}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Factor breakdown */}
-            <div className="space-y-2.5">
-              {[
-                { label: "Personality distance", weight: 30 },
-                { label: "Interest similarity", weight: 30 },
-                { label: "Age alignment", weight: 10 },
-                { label: "Trust score", weight: 10 },
-                { label: "Social graph proximity", weight: 20 },
-              ].map(({ label, weight }) => (
-                <div key={label} className="flex items-center gap-3">
-                  <span className="font-sans text-xs text-white/45 w-40 flex-shrink-0">
-                    {label}
-                  </span>
-                  <div className="flex-1 h-1.5 rounded-full bg-white/8">
-                    <div
-                      className="h-full rounded-full bg-[#0D9488] transition-all duration-1000"
-                      style={{
-                        width: inView ? `${weight * 3}%` : "0%",
-                        transitionDelay: "600ms",
-                      }}
-                    />
-                  </div>
-                  <span className="font-sans text-xs font-semibold text-[#0D9488] w-8 text-right">
-                    {weight}%
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right: SVG visualization */}
+        {/* ---- MAIN CONTENT: viz left, factors right ---- */}
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+          {/* --- Visualization --- */}
           <div
             ref={containerRef}
-            className={`flex-shrink-0 w-full max-w-sm transition-all duration-700 delay-200 ${inView ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"}`}
+            className={`relative flex-1 w-full max-w-md lg:max-w-none transition-all duration-700 delay-200 ${inView ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
           >
+            {/* Orbital ring decoration behind the SVG */}
+            <div
+              className="absolute inset-0 m-auto rounded-full pointer-events-none"
+              aria-hidden="true"
+              style={{
+                width: size * 0.78,
+                height: size * 0.78,
+                border: "1px solid rgba(13,148,136,0.12)",
+              }}
+            />
+            <div
+              className="absolute inset-0 m-auto rounded-full pointer-events-none"
+              aria-hidden="true"
+              style={{
+                width: size * 0.56,
+                height: size * 0.56,
+                border: "1px dashed rgba(13,148,136,0.07)",
+              }}
+            />
+
             <svg
-              width={svgSize}
-              height={svgSize}
-              viewBox={`0 0 ${svgSize} ${svgSize}`}
-              className="w-full"
-              aria-label="Algorithm visualization diagram"
+              width={size}
+              height={size}
+              viewBox={`0 0 ${size} ${size}`}
+              className="w-full mx-auto block"
+              aria-label="Interactive algorithm visualization showing group formation"
+              role="img"
             >
-              {/* Connection lines */}
+              <defs>
+                <radialGradient id="centerGlow">
+                  <stop offset="0%" stopColor="#0D9488" stopOpacity="0.35" />
+                  <stop offset="100%" stopColor="#0D9488" stopOpacity="0" />
+                </radialGradient>
+                <radialGradient id="amberGlow">
+                  <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="#F59E0B" stopOpacity="0" />
+                </radialGradient>
+                <filter id="softBlur">
+                  <feGaussianBlur stdDeviation="3" />
+                </filter>
+              </defs>
+
+              {/* Center ambient glow */}
+              <circle cx={cx} cy={cy} r={size * 0.18} fill="url(#centerGlow)" />
+
+              {/* Scanning ring animation */}
+              {(phase === "scanning" || phase === "evaluating") && (
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={size * 0.36}
+                  fill="none"
+                  stroke="#0D9488"
+                  strokeWidth="1"
+                  opacity="0.2"
+                  strokeDasharray="6 8"
+                  style={{ animation: "orb-rotate 6s linear infinite" }}
+                />
+              )}
+
+              {/* Connection lines from center to each candidate */}
               {nodes
                 .filter((n) => n.type !== "center")
                 .map((node) => {
-                  const center = nodes[0];
-                  if (!center) return null;
+                  const lp = getLineProps(node);
                   return (
                     <line
                       key={`line-${node.id}`}
-                      x1={center.x}
-                      y1={center.y}
+                      x1={cx}
+                      y1={cy}
                       x2={node.x}
                       y2={node.y}
-                      stroke={getLineStroke(node)}
-                      strokeWidth={node.type === "selected" ? 1.5 : 1}
-                      opacity={getLineOpacity(node)}
-                      style={{ transition: "opacity 0.5s ease, stroke 0.5s ease" }}
+                      stroke={lp.stroke}
+                      strokeWidth={lp.width}
+                      opacity={lp.opacity}
+                      style={{ transition: "all 0.6s ease" }}
                     />
                   );
                 })}
 
+              {/* Cross-links between selected nodes */}
+              {selectedNodes.length > 1 &&
+                selectedNodes.map((a, i) =>
+                  selectedNodes.slice(i + 1).map((b) => (
+                    <line
+                      key={`cross-${a.id}-${b.id}`}
+                      x1={a.x}
+                      y1={a.y}
+                      x2={b.x}
+                      y2={b.y}
+                      stroke="#F59E0B"
+                      strokeWidth="1"
+                      opacity={phase === "formed" ? 0.35 : 0}
+                      strokeDasharray="3 4"
+                      style={{ transition: "opacity 0.8s ease 0.2s" }}
+                    />
+                  )),
+                )}
+
               {/* Nodes */}
               {nodes.map((node) => {
-                const style = getNodeStyle(node);
+                const ns = getNodeStyle(node);
                 return (
                   <g
                     key={node.id}
-                    style={{
-                      transition: "opacity 0.6s ease",
-                      opacity: style.opacity,
-                    }}
+                    style={{ transition: "opacity 0.5s ease", opacity: ns.opacity }}
                   >
-                    {/* Outer glow ring */}
-                    {style.glow && (
-                      <circle
-                        cx={node.x}
-                        cy={node.y}
-                        r={style.r + 10}
-                        fill={style.fill}
-                        opacity={0.12}
-                      />
+                    {/* Multi-layer glow */}
+                    {ns.glow && (
+                      <>
+                        <circle
+                          cx={node.x}
+                          cy={node.y}
+                          r={ns.r * 2.8}
+                          fill={node.type === "selected" ? "url(#amberGlow)" : "url(#centerGlow)"}
+                        />
+                        <circle
+                          cx={node.x}
+                          cy={node.y}
+                          r={ns.r * 1.6}
+                          fill={ns.glowColor}
+                          opacity={0.15}
+                          filter="url(#softBlur)"
+                        />
+                      </>
                     )}
-                    {/* Mid glow ring */}
-                    {style.glow && (
-                      <circle
-                        cx={node.x}
-                        cy={node.y}
-                        r={style.r + 5}
-                        fill={style.fill}
-                        opacity={0.18}
-                      />
-                    )}
-                    <circle
-                      cx={node.x}
-                      cy={node.y}
-                      r={style.r}
-                      fill={style.fill}
-                    />
+                    <circle cx={node.x} cy={node.y} r={ns.r} fill={ns.fill} />
                     <text
                       x={node.x}
-                      y={node.y}
+                      y={node.y + 0.5}
                       textAnchor="middle"
                       dominantBaseline="central"
-                      fill={style.textFill}
-                      fontSize={node.type === "center" ? 10 : 8}
+                      fill={ns.textFill}
+                      fontSize={node.type === "center" ? size * 0.028 : size * 0.02}
                       fontWeight="700"
                       fontFamily="Inter, sans-serif"
                     >
                       {node.label}
                     </text>
+                    {/* Interest label below non-center nodes */}
                     {node.type !== "center" && (
                       <text
                         x={node.x}
-                        y={node.y + style.r + 10}
+                        y={node.y + ns.r + size * 0.025}
                         textAnchor="middle"
-                        fill={node.type === "selected" ? "rgba(245,158,11,0.6)" : "rgba(255,255,255,0.2)"}
-                        fontSize="7"
+                        fill={
+                          node.type === "selected"
+                            ? "rgba(245,158,11,0.65)"
+                            : node.type === "rejected"
+                              ? "rgba(255,255,255,0.08)"
+                              : "rgba(255,255,255,0.22)"
+                        }
+                        fontSize={size * 0.018}
                         fontFamily="Inter, sans-serif"
+                        style={{ transition: "fill 0.6s ease" }}
                       >
                         {node.interest}
                       </text>
@@ -338,15 +388,144 @@ export function AlgorithmSection() {
             </svg>
 
             {/* Phase label */}
-            <p className="text-center font-sans text-sm text-white/40 mt-4 h-5">
-              {phase === "idle" && ""}
-              {phase === "evaluating" && "Evaluating candidates..."}
-              {phase === "filtering" && "Ranking by compatibility..."}
-              {phase === "formed" && (
-                <span className="text-[#F59E0B]">Group forged.</span>
-              )}
-            </p>
+            <div className="text-center mt-6 h-7">
+              <p
+                className="font-sans text-sm transition-all duration-500"
+                style={{
+                  color: phase === "formed" ? "#F59E0B" : "rgba(255,255,255,0.4)",
+                  fontWeight: phase === "formed" ? 600 : 400,
+                }}
+              >
+                {PHASE_LABELS[phase]}
+              </p>
+            </div>
           </div>
+
+          {/* --- Right: Factor breakdown + stats --- */}
+          <div
+            className={`flex-1 max-w-md w-full transition-all duration-700 delay-300 ${inView ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"}`}
+          >
+            {/* Pipeline description */}
+            <div className="mb-10">
+              <h3 className="font-sans font-bold text-white text-xl mb-3">
+                Two-step pipeline
+              </h3>
+              <div className="space-y-4">
+                {[
+                  {
+                    step: "01",
+                    title: "k-NN Candidate Pool",
+                    desc: "Filters all active users by location, then scores them against you across personality, interests, age, and trust. Top 50 candidates advance.",
+                  },
+                  {
+                    step: "02",
+                    title: "Greedy Matching + Social Bonus",
+                    desc: "Iteratively picks the member who maximizes MarginalGroupScore for the existing group. Friends get a 20% weight bonus.",
+                  },
+                ].map(({ step, title, desc }) => (
+                  <div key={step} className="flex gap-4">
+                    <span className="flex-shrink-0 font-sans font-extrabold text-[#0D9488]/25 text-2xl leading-none mt-0.5 select-none">
+                      {step}
+                    </span>
+                    <div>
+                      <p className="font-sans font-semibold text-white text-sm mb-1">{title}</p>
+                      <p className="font-sans text-sm text-white/40 leading-relaxed">{desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Factor weight bars */}
+            <div className="mb-10">
+              <h3 className="font-sans font-bold text-white text-sm mb-4 uppercase tracking-widest">
+                Scoring Factors
+              </h3>
+              <div className="space-y-3">
+                {FACTORS.map(({ label, weight, color }) => (
+                  <div key={label} className="flex items-center gap-3">
+                    <span className="font-sans text-xs text-white/40 w-36 flex-shrink-0 truncate">
+                      {label}
+                    </span>
+                    <div className="flex-1 h-2 rounded-full bg-white/[0.06] overflow-hidden">
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          width: inView ? `${weight * 3.3}%` : "0%",
+                          background: `linear-gradient(90deg, ${color}, ${color}88)`,
+                          transition: "width 1.2s cubic-bezier(0.22, 1, 0.36, 1) 800ms",
+                        }}
+                      />
+                    </div>
+                    <span className="font-sans text-xs font-bold text-white/60 w-8 text-right tabular-nums">
+                      {weight}%
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Stats row */}
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { value: "< 2s", label: "Formation time" },
+                { value: "5", label: "Scoring factors" },
+                { value: "50+", label: "Candidates evaluated" },
+              ].map(({ value, label }, i) => (
+                <div
+                  key={label}
+                  className="rounded-2xl p-4 text-center backdrop-blur-sm"
+                  style={{
+                    background: "rgba(255,255,255,0.03)",
+                    border: "1px solid rgba(255,255,255,0.06)",
+                    opacity: inView ? 1 : 0,
+                    transform: inView ? "translateY(0)" : "translateY(12px)",
+                    transition: `opacity 0.5s ease ${1000 + i * 100}ms, transform 0.5s ease ${1000 + i * 100}ms`,
+                  }}
+                >
+                  <p className="font-sans font-extrabold text-[#0D9488] text-xl mb-1">{value}</p>
+                  <p className="font-sans text-white/35 text-[11px] leading-tight">{label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ---- FORMULA STRIP ---- */}
+        <div
+          className="mt-16 md:mt-20 rounded-2xl p-6 md:p-8 text-center overflow-x-auto"
+          style={{
+            background: "rgba(255,255,255,0.02)",
+            border: "1px solid rgba(255,255,255,0.06)",
+            opacity: inView ? 1 : 0,
+            transition: "opacity 0.7s ease 1.2s",
+          }}
+        >
+          <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.15em] text-[#0D9488]/60 mb-3">
+            Marginal Group Score Formula
+          </p>
+          <p
+            className="font-mono text-sm md:text-base text-white/70 whitespace-nowrap"
+            aria-label="MGS formula: alpha times BaseScore plus beta times AvgPairSim plus gamma times SocialBonus"
+          >
+            <span className="text-[#0D9488]">MGS</span>
+            <span className="text-white/30">(c | S)</span>
+            <span className="text-white/40">{" = "}</span>
+            <span className="text-white/60">{"α"}</span>
+            <span className="text-white/30">{" · "}</span>
+            <span className="text-[#14B8A6]">BaseScore</span>
+            <span className="text-white/30">(c)</span>
+            <span className="text-white/40">{" + "}</span>
+            <span className="text-white/60">{"β"}</span>
+            <span className="text-white/30">{" · "}</span>
+            <span className="text-[#14B8A6]">AvgPairSim</span>
+            <span className="text-white/30">(c, S)</span>
+            <span className="text-white/40">{" + "}</span>
+            <span className="text-white/60">{"γ"}</span>
+            <span className="text-white/30">{" · "}</span>
+            <span className="text-[#F59E0B]">SocialBonus</span>
+            <span className="text-white/30">(c, S)</span>
+          </p>
         </div>
       </div>
     </section>
