@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { TeamForgeLogo } from "./logo";
+import { useEffect, useRef, useState } from "react";
+import { TeamForgeLogo } from "../../../assets/logo";
 
 const NAV_LINKS = [
   { label: "How It Works", href: "#how-it-works" },
@@ -45,7 +45,7 @@ export function Navbar() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "bg-[#090909]/95 backdrop-blur-md border-b border-white/8"
+            ? "bg-hero-bg/95 backdrop-blur-md border-b border-white/8"
             : "bg-transparent"
         }`}
       >
@@ -63,7 +63,7 @@ export function Navbar() {
             <TeamForgeLogo className="w-8 h-8" showBackground={false} />
             <span className="font-sans text-lg font-semibold tracking-tight">
               <span className="text-white">Team</span>
-              <span className="text-[#0D9488]">Forge</span>
+              <span className="text-forge-teal">Forge</span>
             </span>
           </a>
 
@@ -80,7 +80,7 @@ export function Navbar() {
                 className="font-sans text-sm font-medium text-white/60 hover:text-white transition-colors duration-200 relative group"
               >
                 {link.label}
-                <span className="absolute -bottom-0.5 left-0 right-0 h-px bg-[#0D9488] scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
+                <span className="absolute -bottom-0.5 left-0 right-0 h-px bg-forge-teal scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
               </a>
             ))}
           </nav>
@@ -95,7 +95,7 @@ export function Navbar() {
             </a>
             <a
               href="/register"
-              className="font-sans text-sm font-semibold text-white bg-[#0D9488] hover:bg-[#0f9e92] rounded-lg px-5 py-2 transition-all duration-200 shadow-[0_0_16px_rgba(13,148,136,0.3)] hover:shadow-[0_0_24px_rgba(13,148,136,0.5)]"
+              className="font-sans text-sm font-semibold text-white bg-forge-teal hover:bg-[#0f9e92] rounded-lg px-5 py-2 transition-all duration-200 shadow-[0_0_16px_rgba(13,148,136,0.3)] hover:shadow-[0_0_24px_rgba(13,148,136,0.5)]"
             >
               Get Started
             </a>
@@ -116,7 +116,7 @@ export function Navbar() {
       {/* Mobile full-screen menu */}
       <div
         ref={menuRef}
-        className={`fixed inset-0 z-40 bg-[#090909]/98 backdrop-blur-lg flex flex-col items-center justify-center gap-8 transition-all duration-300 ${
+        className={`fixed inset-0 z-40 bg-hero-bg/98 backdrop-blur-lg flex flex-col items-center justify-center gap-8 transition-all duration-300 ${
           menuOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
@@ -149,7 +149,7 @@ export function Navbar() {
           <a
             href="/register"
             onClick={() => setMenuOpen(false)}
-            className="w-full text-center font-sans text-base font-semibold text-white bg-[#0D9488] rounded-lg px-4 py-3 transition-all shadow-[0_0_20px_rgba(13,148,136,0.35)]"
+            className="w-full text-center font-sans text-base font-semibold text-white bg-forge-teal rounded-lg px-4 py-3 transition-all shadow-[0_0_20px_rgba(13,148,136,0.35)]"
           >
             Get Started
           </a>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useInView } from "../hooks/use-in-view";
 
 /* ------------------------------------------------------------------ */
@@ -60,7 +60,15 @@ const PHASE_LABELS: Record<Phase, string> = {
 
 function buildNodes(cx: number, cy: number, radius: number): AlgoNode[] {
   const nodes: AlgoNode[] = [
-    { id: 0, x: cx, y: cy, label: "You", type: "center", interest: "", angle: 0 },
+    {
+      id: 0,
+      x: cx,
+      y: cy,
+      label: "You",
+      type: "center",
+      interest: "",
+      angle: 0,
+    },
   ];
   CANDIDATES.forEach((d, i) => {
     const angle = (i / CANDIDATES.length) * Math.PI * 2 - Math.PI / 2;
@@ -107,18 +115,20 @@ export function AlgorithmSection() {
     const cx = size / 2;
     const cy = size / 2;
     const r = size * 0.36;
-    setNodes(buildNodes(cx, cy, r));
+    const nodes = buildNodes(cx, cy, r);
+    const set = (nodes: AlgoNode[]) => setNodes(nodes);
+    set(nodes);
   }, [size]);
 
   /* Phased animation sequence */
   useEffect(() => {
     if (!inView || hasRun.current || nodes.length === 0) return;
     hasRun.current = true;
+    const set = (phase: Phase) => setPhase(phase);
+    set("scanning");
 
-    setPhase("scanning");
-
-    const t1 = setTimeout(() => setPhase("evaluating"), 1200);
-    const t2 = setTimeout(() => setPhase("selecting"), 2400);
+    const t1 = setTimeout(() => set("evaluating"), 1200);
+    const t2 = setTimeout(() => set("selecting"), 2400);
     const t3 = setTimeout(() => {
       setNodes((prev) =>
         prev.map((n) =>
@@ -130,18 +140,44 @@ export function AlgorithmSection() {
     }, 2600);
     const t4 = setTimeout(() => setPhase("formed"), 3400);
 
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+    };
   }, [inView, nodes.length]);
 
   /* Node visual style resolver */
   const getNodeStyle = useCallback(
     (node: AlgoNode) => {
       if (node.type === "center")
-        return { fill: "#0D9488", r: size * 0.055, textFill: "#fff", opacity: 1, glow: true, glowColor: "#0D9488" };
+        return {
+          fill: "#0D9488",
+          r: size * 0.055,
+          textFill: "#fff",
+          opacity: 1,
+          glow: true,
+          glowColor: "#0D9488",
+        };
       if (node.type === "selected")
-        return { fill: "#F59E0B", r: size * 0.038, textFill: "#1C1C1A", opacity: 1, glow: true, glowColor: "#F59E0B" };
+        return {
+          fill: "#F59E0B",
+          r: size * 0.038,
+          textFill: "#1C1C1A",
+          opacity: 1,
+          glow: true,
+          glowColor: "#F59E0B",
+        };
       if (node.type === "rejected")
-        return { fill: "#1f2937", r: size * 0.025, textFill: "#4b5563", opacity: 0.25, glow: false, glowColor: "" };
+        return {
+          fill: "#1f2937",
+          r: size * 0.025,
+          textFill: "#4b5563",
+          opacity: 0.25,
+          glow: false,
+          glowColor: "",
+        };
       return {
         fill: "#0D9488",
         r: size * 0.032,
@@ -156,10 +192,14 @@ export function AlgorithmSection() {
 
   const getLineProps = useCallback(
     (node: AlgoNode) => {
-      if (phase === "idle") return { opacity: 0, stroke: "#0D9488", width: 0.8 };
-      if (node.type === "rejected") return { opacity: 0.03, stroke: "#374151", width: 0.5 };
-      if (node.type === "selected") return { opacity: 0.75, stroke: "#F59E0B", width: 1.8 };
-      if (phase === "scanning") return { opacity: 0.15, stroke: "#0D9488", width: 0.8 };
+      if (phase === "idle")
+        return { opacity: 0, stroke: "#0D9488", width: 0.8 };
+      if (node.type === "rejected")
+        return { opacity: 0.03, stroke: "#374151", width: 0.5 };
+      if (node.type === "selected")
+        return { opacity: 0.75, stroke: "#F59E0B", width: 1.8 };
+      if (phase === "scanning")
+        return { opacity: 0.15, stroke: "#0D9488", width: 0.8 };
       return { opacity: 0.12, stroke: "#0D9488", width: 0.8 };
     },
     [phase],
@@ -183,7 +223,8 @@ export function AlgorithmSection() {
         className="absolute inset-0 pointer-events-none"
         aria-hidden="true"
         style={{
-          background: "radial-gradient(ellipse 60% 50% at 50% 40%, rgba(13,148,136,0.07) 0%, transparent 70%)",
+          background:
+            "radial-gradient(ellipse 60% 50% at 50% 40%, rgba(13,148,136,0.07) 0%, transparent 70%)",
         }}
       />
 
@@ -197,22 +238,25 @@ export function AlgorithmSection() {
             transition: "opacity 0.7s ease, transform 0.7s ease",
           }}
         >
-          <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-[#0D9488] mb-4">
+          <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-forge-teal mb-4">
             Under The Hood
           </p>
           <h2
             className="font-sans font-extrabold text-white text-balance mx-auto max-w-2xl"
-            style={{ fontSize: "clamp(1.85rem, 4.5vw, 2.75rem)", lineHeight: 1.15 }}
+            style={{
+              fontSize: "clamp(1.85rem, 4.5vw, 2.75rem)",
+              lineHeight: 1.15,
+            }}
           >
             Watch the algorithm{" "}
-            <span className="bg-gradient-to-r from-[#0D9488] to-[#F59E0B] bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-forge-teal to-spark-amber bg-clip-text text-transparent">
               forge your group
             </span>{" "}
             in real time.
           </h2>
           <p className="font-sans text-base md:text-lg text-white/50 mt-5 max-w-xl mx-auto leading-relaxed text-pretty">
-            Personality, interests, trust, age, and your social circle --
-            five factors, weighed and balanced in under two seconds.
+            Personality, interests, trust, age, and your social circle – five
+            factors, weighed and balanced in under two seconds.
           </p>
         </div>
 
@@ -306,20 +350,22 @@ export function AlgorithmSection() {
               {/* Cross-links between selected nodes */}
               {selectedNodes.length > 1 &&
                 selectedNodes.map((a, i) =>
-                  selectedNodes.slice(i + 1).map((b) => (
-                    <line
-                      key={`cross-${a.id}-${b.id}`}
-                      x1={a.x}
-                      y1={a.y}
-                      x2={b.x}
-                      y2={b.y}
-                      stroke="#F59E0B"
-                      strokeWidth="1"
-                      opacity={phase === "formed" ? 0.35 : 0}
-                      strokeDasharray="3 4"
-                      style={{ transition: "opacity 0.8s ease 0.2s" }}
-                    />
-                  )),
+                  selectedNodes
+                    .slice(i + 1)
+                    .map((b) => (
+                      <line
+                        key={`cross-${a.id}-${b.id}`}
+                        x1={a.x}
+                        y1={a.y}
+                        x2={b.x}
+                        y2={b.y}
+                        stroke="#F59E0B"
+                        strokeWidth="1"
+                        opacity={phase === "formed" ? 0.35 : 0}
+                        strokeDasharray="3 4"
+                        style={{ transition: "opacity 0.8s ease 0.2s" }}
+                      />
+                    )),
                 )}
 
               {/* Nodes */}
@@ -328,7 +374,10 @@ export function AlgorithmSection() {
                 return (
                   <g
                     key={node.id}
-                    style={{ transition: "opacity 0.5s ease", opacity: ns.opacity }}
+                    style={{
+                      transition: "opacity 0.5s ease",
+                      opacity: ns.opacity,
+                    }}
                   >
                     {/* Multi-layer glow */}
                     {ns.glow && (
@@ -337,7 +386,11 @@ export function AlgorithmSection() {
                           cx={node.x}
                           cy={node.y}
                           r={ns.r * 2.8}
-                          fill={node.type === "selected" ? "url(#amberGlow)" : "url(#centerGlow)"}
+                          fill={
+                            node.type === "selected"
+                              ? "url(#amberGlow)"
+                              : "url(#centerGlow)"
+                          }
                         />
                         <circle
                           cx={node.x}
@@ -356,7 +409,9 @@ export function AlgorithmSection() {
                       textAnchor="middle"
                       dominantBaseline="central"
                       fill={ns.textFill}
-                      fontSize={node.type === "center" ? size * 0.028 : size * 0.02}
+                      fontSize={
+                        node.type === "center" ? size * 0.028 : size * 0.02
+                      }
                       fontWeight="700"
                       fontFamily="Inter, sans-serif"
                     >
@@ -392,7 +447,8 @@ export function AlgorithmSection() {
               <p
                 className="font-sans text-sm transition-all duration-500"
                 style={{
-                  color: phase === "formed" ? "#F59E0B" : "rgba(255,255,255,0.4)",
+                  color:
+                    phase === "formed" ? "#F59E0B" : "rgba(255,255,255,0.4)",
                   fontWeight: phase === "formed" ? 600 : 400,
                 }}
               >
@@ -424,12 +480,16 @@ export function AlgorithmSection() {
                   },
                 ].map(({ step, title, desc }) => (
                   <div key={step} className="flex gap-4">
-                    <span className="flex-shrink-0 font-sans font-extrabold text-[#0D9488]/25 text-2xl leading-none mt-0.5 select-none">
+                    <span className="shrink-0 font-sans font-extrabold text-forge-teal/25 text-2xl leading-none mt-0.5 select-none">
                       {step}
                     </span>
                     <div>
-                      <p className="font-sans font-semibold text-white text-sm mb-1">{title}</p>
-                      <p className="font-sans text-sm text-white/40 leading-relaxed">{desc}</p>
+                      <p className="font-sans font-semibold text-white text-sm mb-1">
+                        {title}
+                      </p>
+                      <p className="font-sans text-sm text-white/40 leading-relaxed">
+                        {desc}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -444,16 +504,17 @@ export function AlgorithmSection() {
               <div className="space-y-3">
                 {FACTORS.map(({ label, weight, color }) => (
                   <div key={label} className="flex items-center gap-3">
-                    <span className="font-sans text-xs text-white/40 w-36 flex-shrink-0 truncate">
+                    <span className="font-sans text-xs text-white/40 w-36 shrink-0 truncate">
                       {label}
                     </span>
-                    <div className="flex-1 h-2 rounded-full bg-white/[0.06] overflow-hidden">
+                    <div className="flex-1 h-2 rounded-full bg-white/6 overflow-hidden">
                       <div
                         className="h-full rounded-full"
                         style={{
                           width: inView ? `${weight * 3.3}%` : "0%",
                           background: `linear-gradient(90deg, ${color}, ${color}88)`,
-                          transition: "width 1.2s cubic-bezier(0.22, 1, 0.36, 1) 800ms",
+                          transition:
+                            "width 1.2s cubic-bezier(0.22, 1, 0.36, 1) 800ms",
                         }}
                       />
                     </div>
@@ -483,15 +544,17 @@ export function AlgorithmSection() {
                     transition: `opacity 0.5s ease ${1000 + i * 100}ms, transform 0.5s ease ${1000 + i * 100}ms`,
                   }}
                 >
-                  <p className="font-sans font-extrabold text-[#0D9488] text-xl mb-1">{value}</p>
-                  <p className="font-sans text-white/35 text-[11px] leading-tight">{label}</p>
+                  <p className="font-sans font-extrabold text-forge-teal text-xl mb-1">
+                    {value}
+                  </p>
+                  <p className="font-sans text-white/35 text-[11px] leading-tight">
+                    {label}
+                  </p>
                 </div>
               ))}
             </div>
           </div>
         </div>
-
-
       </div>
     </section>
   );

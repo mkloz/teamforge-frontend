@@ -1,14 +1,14 @@
-import { useRef } from "react";
 import { ArrowRight, ChevronDown } from "lucide-react";
+import { useRef } from "react";
+import { TeamForgeLogo } from "../../../assets/logo";
 import { useNodeCanvas } from "../hooks/use-node-canvas";
-import { TeamForgeLogo } from "./logo";
 
 /* ─── Glass cards ─── */
 
 function MbtiCard() {
   return (
     <div
-      className="rounded-2xl px-4 py-3.5 w-[180px]"
+      className="rounded-2xl px-4 py-3.5 w-45"
       style={{
         background: "rgba(10,18,18,0.8)",
         backdropFilter: "blur(20px)",
@@ -16,14 +16,15 @@ function MbtiCard() {
         border: "1px solid rgba(13,148,136,0.2)",
         boxShadow:
           "0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
-        animation: "card-reveal 0.6s ease-out 0.9s both, float-card 4s ease-in-out 1.5s infinite alternate",
+        animation:
+          "card-reveal 0.6s ease-out 0.9s both, float-card 4s ease-in-out 1.5s infinite alternate",
       }}
       aria-hidden="true"
     >
-      <p className="text-[#0D9488]/60 text-[9px] font-semibold font-sans mb-1.5 uppercase tracking-[0.15em]">
+      <p className="text-forge-teal/60 text-[9px] font-semibold font-sans mb-1.5 uppercase tracking-[0.15em]">
         Personality
       </p>
-      <p className="text-[#14B8A6] text-2xl font-extrabold font-sans tracking-tight mb-2.5">
+      <p className="text-forge-teal-light text-2xl font-extrabold font-sans tracking-tight mb-2.5">
         ENTJ
       </p>
       <div className="space-y-1.5">
@@ -34,10 +35,10 @@ function MbtiCard() {
           { label: "J", fill: 65, peer: "P" },
         ].map(({ label, fill, peer }) => (
           <div key={label} className="flex items-center gap-1.5">
-            <span className="text-[#14B8A6] text-[8px] font-bold font-sans w-2.5">
+            <span className="text-forge-teal-light text-[8px] font-bold font-sans w-2.5">
               {label}
             </span>
-            <div className="flex-1 h-[3px] rounded-full bg-white/[0.06] overflow-hidden">
+            <div className="flex-1 h-0.75 rounded-full bg-white/6 overflow-hidden">
               <div
                 className="h-full rounded-full"
                 style={{
@@ -66,7 +67,7 @@ function GroupCard() {
 
   return (
     <div
-      className="rounded-2xl px-4 py-3.5 w-[200px]"
+      className="rounded-2xl px-4 py-3.5 w-45"
       style={{
         background: "rgba(10,18,18,0.8)",
         backdropFilter: "blur(20px)",
@@ -74,15 +75,16 @@ function GroupCard() {
         border: "1px solid rgba(13,148,136,0.2)",
         boxShadow:
           "0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
-        animation: "card-reveal 0.6s ease-out 1.1s both, float-card-b 5s ease-in-out 1.7s infinite alternate",
+        animation:
+          "card-reveal 0.6s ease-out 1.1s both, float-card-b 5s ease-in-out 1.7s infinite alternate",
       }}
       aria-hidden="true"
     >
       <div className="flex items-center justify-between mb-2.5">
-        <p className="text-[#0D9488]/60 text-[9px] font-semibold font-sans uppercase tracking-[0.15em]">
+        <p className="text-forge-teal/60 text-[9px] font-semibold font-sans uppercase tracking-[0.15em]">
           Your Group
         </p>
-        <span className="text-[#F59E0B] text-[9px] font-bold font-sans bg-[#F59E0B]/10 px-2 py-0.5 rounded-full border border-[#F59E0B]/20">
+        <span className="text-spark-amber text-[9px] font-bold font-sans bg-spark-amber/10 px-2 py-0.5 rounded-full border border-spark-amber/20">
           94% match
         </span>
       </div>
@@ -90,7 +92,7 @@ function GroupCard() {
         {members.map((m, i) => (
           <div
             key={i}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[10px] font-bold font-sans ring-2 ring-[#090909]"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[10px] font-bold font-sans ring-2 ring-hero-bg"
             style={{ background: m.color, zIndex: members.length - i }}
           >
             {m.initials}
@@ -101,7 +103,7 @@ function GroupCard() {
         {["Hiking", "Tech", "Coffee"].map((tag) => (
           <span
             key={tag}
-            className="text-[8px] font-medium font-sans text-white/30 bg-white/[0.05] px-1.5 py-0.5 rounded"
+            className="text-[8px] font-medium font-sans text-white/30 bg-white/5 px-1.5 py-0.5 rounded"
           >
             {tag}
           </span>
@@ -117,7 +119,7 @@ function TrustCard() {
 
   return (
     <div
-      className="rounded-2xl px-4 py-3.5 w-[150px]"
+      className="rounded-2xl px-4 py-3.5 w-37.5"
       style={{
         background: "rgba(10,18,18,0.8)",
         backdropFilter: "blur(20px)",
@@ -125,21 +127,28 @@ function TrustCard() {
         border: "1px solid rgba(13,148,136,0.2)",
         boxShadow:
           "0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
-        animation: "card-reveal 0.6s ease-out 1.3s both, float-card-c 3.5s ease-in-out 1.9s infinite alternate",
+        animation:
+          "card-reveal 0.6s ease-out 1.3s both, float-card-c 3.5s ease-in-out 1.9s infinite alternate",
       }}
       aria-hidden="true"
     >
-      <p className="text-[#0D9488]/60 text-[9px] font-semibold font-sans mb-2.5 uppercase tracking-[0.15em]">
+      <p className="text-forge-teal/60 text-[9px] font-semibold font-sans mb-2.5 uppercase tracking-[0.15em]">
         Trust Score
       </p>
       <div className="flex items-center gap-2.5">
         <svg width="40" height="40" viewBox="0 0 40 40">
           <circle
-            cx="20" cy="20" r="16"
-            fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3"
+            cx="20"
+            cy="20"
+            r="16"
+            fill="none"
+            stroke="rgba(255,255,255,0.05)"
+            strokeWidth="3"
           />
           <circle
-            cx="20" cy="20" r="16"
+            cx="20"
+            cy="20"
+            r="16"
             fill="none"
             stroke="url(#heroTrustGrad)"
             strokeWidth="3"
@@ -149,21 +158,35 @@ function TrustCard() {
             transform="rotate(-90 20 20)"
           />
           <defs>
-            <linearGradient id="heroTrustGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <linearGradient
+              id="heroTrustGrad"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="0%"
+            >
               <stop offset="0%" stopColor="#0D9488" />
               <stop offset="100%" stopColor="#14B8A6" />
             </linearGradient>
           </defs>
           <text
-            x="20" y="20" textAnchor="middle" dominantBaseline="central"
-            fill="white" fontSize="9" fontWeight="700" fontFamily="Inter, sans-serif"
+            x="20"
+            y="20"
+            textAnchor="middle"
+            dominantBaseline="central"
+            fill="white"
+            fontSize="9"
+            fontWeight="700"
+            fontFamily="Inter, sans-serif"
           >
             {score}
           </text>
         </svg>
         <div>
-          <p className="text-white/40 text-[9px] font-sans leading-snug">Verified</p>
-          <p className="text-[#14B8A6] text-[9px] font-semibold font-sans leading-snug">
+          <p className="text-white/40 text-[9px] font-sans leading-snug">
+            Verified
+          </p>
+          <p className="text-forge-teal-light text-[9px] font-semibold font-sans leading-snug">
             Reliable
           </p>
         </div>
@@ -177,7 +200,7 @@ function TrustCard() {
 function ForgeOrb() {
   return (
     <div
-      className="relative w-[320px] h-[320px] md:w-[420px] md:h-[420px]"
+      className="relative w-[320px] h-80 md:w-105 md:h-105"
       style={{ animation: "hero-fade-in-right 1s ease-out 0.3s both" }}
     >
       {/* Outer rotating ring */}
@@ -205,7 +228,7 @@ function ForgeOrb() {
 
       {/* Core dark circle */}
       <div
-        className="absolute inset-4 rounded-full bg-[#090909] border border-white/[0.04]"
+        className="absolute inset-4 rounded-full bg-hero-bg border border-white/4"
         aria-hidden="true"
       />
 
@@ -237,7 +260,10 @@ function ForgeOrb() {
 
       {/* Center logo */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <TeamForgeLogo className="w-20 h-20 md:w-24 md:h-24" showBackground={false} />
+        <TeamForgeLogo
+          className="w-20 h-20 md:w-24 md:h-24"
+          showBackground={false}
+        />
       </div>
 
       {/* Glass cards positioned around the orb */}
@@ -268,7 +294,7 @@ export function HeroSection() {
 
   return (
     <section
-      className="relative min-h-screen flex items-center overflow-hidden bg-[#090909]"
+      className="relative min-h-screen flex items-center overflow-hidden bg-hero-bg"
       aria-label="Hero"
     >
       {/* Animated canvas background */}
@@ -312,23 +338,22 @@ export function HeroSection() {
       {/* ─── Content ─── */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pt-28 pb-20">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
-
           {/* Left: copy + CTAs */}
           <div
             className="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left max-w-xl"
             style={{ animation: "hero-fade-in 0.8s ease-out both" }}
           >
             {/* Eyebrow */}
-            <div className="flex items-center gap-2 mb-6 px-3.5 py-1.5 rounded-full border border-[#0D9488]/25 bg-[#0D9488]/[0.06]">
+            <div className="flex items-center gap-2 mb-6 px-3.5 py-1.5 rounded-full border border-forge-teal/25 bg-forge-teal/6">
               <span
-                className="w-1.5 h-1.5 rounded-full bg-[#0D9488]"
+                className="w-1.5 h-1.5 rounded-full bg-forge-teal"
                 style={{
                   boxShadow: "0 0 6px rgba(13,148,136,0.8)",
                   animation: "pulse-glow 2.5s ease-in-out infinite",
                 }}
                 aria-hidden="true"
               />
-              <span className="text-[#14B8A6] text-[11px] font-semibold font-sans uppercase tracking-[0.14em]">
+              <span className="text-forge-teal-light text-[11px] font-semibold font-sans uppercase tracking-[0.14em]">
                 Smart Group Formation
               </span>
             </div>
@@ -365,7 +390,7 @@ export function HeroSection() {
             <div className="flex flex-col sm:flex-row items-center gap-3 mb-10 w-full sm:w-auto">
               <a
                 href="/register"
-                className="group w-full sm:w-auto flex items-center justify-center gap-2.5 font-sans text-sm font-semibold text-white bg-[#0D9488] hover:bg-[#0f9e92] rounded-xl px-7 py-3.5 transition-all duration-200"
+                className="group w-full sm:w-auto flex items-center justify-center gap-2.5 font-sans text-sm font-semibold text-white bg-forge-teal hover:bg-[#0f9e92] rounded-xl px-7 py-3.5 transition-all duration-200"
                 style={{
                   boxShadow:
                     "0 0 24px rgba(13,148,136,0.35), 0 2px 8px rgba(0,0,0,0.4)",
@@ -407,7 +432,7 @@ export function HeroSection() {
                     />
                   )}
                   <div className="text-center lg:text-left">
-                    <p className="font-sans font-bold text-[#14B8A6] text-base leading-none mb-0.5">
+                    <p className="font-sans font-bold text-forge-teal-light text-base leading-none mb-0.5">
                       {value}
                     </p>
                     <p className="font-sans text-[10px] text-white/30 leading-none">

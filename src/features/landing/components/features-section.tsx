@@ -1,9 +1,9 @@
 import {
-  Network,
   Flame,
-  ShieldCheck,
-  RefreshCw,
   MessageCircle,
+  Network,
+  RefreshCw,
+  ShieldCheck,
   SlidersHorizontal,
   Users,
 } from "lucide-react";
@@ -86,7 +86,16 @@ interface CardProps {
   hero?: boolean;
 }
 
-function FeatureCard({ icon: Icon, title, description, pill, pillColor, delay, inView, hero }: CardProps) {
+function FeatureCard({
+  icon: Icon,
+  title,
+  description,
+  pill,
+  pillColor,
+  delay,
+  inView,
+  hero,
+}: CardProps) {
   const pillStyle =
     pillColor === "teal"
       ? { background: "rgba(13,148,136,0.10)", color: "#0D9488" }
@@ -95,7 +104,7 @@ function FeatureCard({ icon: Icon, title, description, pill, pillColor, delay, i
   if (hero) {
     return (
       <div
-        className="col-span-full group relative flex flex-col md:flex-row gap-8 bg-white rounded-3xl p-8 md:p-10 border border-[#E5E5E3] hover:border-[#0D9488]/50 overflow-hidden transition-all duration-300 hover:shadow-[0_12px_48px_rgba(13,148,136,0.10)]"
+        className="col-span-full group relative flex flex-col md:flex-row gap-8 bg-white rounded-3xl p-8 md:p-10 border border-[#E5E5E3] hover:border-forge-teal/50 overflow-hidden transition-all duration-300 hover:shadow-[0_12px_48px_rgba(13,148,136,0.10)]"
         style={{
           opacity: inView ? 1 : 0,
           transform: inView ? "translateY(0)" : "translateY(20px)",
@@ -107,7 +116,8 @@ function FeatureCard({ icon: Icon, title, description, pill, pillColor, delay, i
           className="absolute top-0 right-0 w-64 h-64 pointer-events-none"
           aria-hidden="true"
           style={{
-            background: "radial-gradient(circle at top right, rgba(13,148,136,0.06) 0%, transparent 70%)",
+            background:
+              "radial-gradient(circle at top right, rgba(13,148,136,0.06) 0%, transparent 70%)",
           }}
         />
 
@@ -117,19 +127,26 @@ function FeatureCard({ icon: Icon, title, description, pill, pillColor, delay, i
               className="w-12 h-12 rounded-2xl flex items-center justify-center"
               style={{ background: "rgba(13,148,136,0.10)" }}
             >
-              <Icon size={24} className="text-[#0D9488]" aria-hidden="true" />
+              <Icon size={24} className="text-forge-teal" aria-hidden="true" />
             </div>
-            <span className="text-xs font-semibold font-sans px-3 py-1 rounded-full" style={pillStyle}>
+            <span
+              className="text-xs font-semibold font-sans px-3 py-1 rounded-full"
+              style={pillStyle}
+            >
               {pill}
             </span>
           </div>
-          <h3 className="font-sans font-bold text-[#1C1C1A] text-2xl mb-3">{title}</h3>
-          <p className="font-sans text-base text-[#6B7280] leading-relaxed max-w-xl">{description}</p>
+          <h3 className="font-sans font-bold text-ink text-2xl mb-3">
+            {title}
+          </h3>
+          <p className="font-sans text-base text-slate-muted leading-relaxed max-w-xl">
+            {description}
+          </p>
         </div>
 
         {/* Visual: 4 spectrum bars */}
-        <div className="flex-shrink-0 w-full md:w-56 self-center" aria-hidden="true">
-          <p className="font-sans text-[10px] font-semibold uppercase tracking-widest text-[#0D9488]/60 mb-3">
+        <div className="shrink-0 w-full md:w-56 self-center" aria-hidden="true">
+          <p className="font-sans text-[10px] font-semibold uppercase tracking-widest text-forge-teal/60 mb-3">
             Example vector
           </p>
           <div className="space-y-2.5">
@@ -140,8 +157,10 @@ function FeatureCard({ icon: Icon, title, description, pill, pillColor, delay, i
               { a: "J", b: "P", fill: 55 },
             ].map(({ a, b, fill }) => (
               <div key={a} className="flex items-center gap-2">
-                <span className="font-sans text-[10px] font-bold text-[#0D9488] w-3">{a}</span>
-                <div className="flex-1 h-2 rounded-full bg-[#0D9488]/10 overflow-hidden">
+                <span className="font-sans text-[10px] font-bold text-forge-teal w-3">
+                  {a}
+                </span>
+                <div className="flex-1 h-2 rounded-full bg-forge-teal/10 overflow-hidden">
                   <div
                     className="h-full rounded-full"
                     style={{
@@ -150,7 +169,9 @@ function FeatureCard({ icon: Icon, title, description, pill, pillColor, delay, i
                     }}
                   />
                 </div>
-                <span className="font-sans text-[10px] text-[#6B7280] w-3 text-right">{b}</span>
+                <span className="font-sans text-[10px] text-slate-muted w-3 text-right">
+                  {b}
+                </span>
               </div>
             ))}
           </div>
@@ -161,7 +182,7 @@ function FeatureCard({ icon: Icon, title, description, pill, pillColor, delay, i
 
   return (
     <div
-      className="group flex flex-col bg-white rounded-2xl p-6 border border-[#E5E5E3] hover:border-[#0D9488]/50 transition-all duration-300 hover:shadow-[0_8px_32px_rgba(13,148,136,0.08)]"
+      className="group flex flex-col bg-white rounded-2xl p-6 border border-[#E5E5E3] hover:border-forge-teal/50 transition-all duration-300 hover:shadow-[0_8px_32px_rgba(13,148,136,0.08)]"
       style={{
         opacity: inView ? 1 : 0,
         transform: inView ? "translateY(0)" : "translateY(24px)",
@@ -173,14 +194,21 @@ function FeatureCard({ icon: Icon, title, description, pill, pillColor, delay, i
           className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors duration-300"
           style={{ background: "rgba(13,148,136,0.10)" }}
         >
-          <Icon size={20} className="text-[#0D9488]" aria-hidden="true" />
+          <Icon size={20} className="text-forge-teal" aria-hidden="true" />
         </div>
-        <span className="text-xs font-semibold font-sans px-2.5 py-1 rounded-full" style={pillStyle}>
+        <span
+          className="text-xs font-semibold font-sans px-2.5 py-1 rounded-full"
+          style={pillStyle}
+        >
           {pill}
         </span>
       </div>
-      <h3 className="font-sans font-semibold text-[#1C1C1A] text-base mb-2">{title}</h3>
-      <p className="font-sans text-sm text-[#6B7280] leading-relaxed flex-1">{description}</p>
+      <h3 className="font-sans font-semibold text-ink text-base mb-2">
+        {title}
+      </h3>
+      <p className="font-sans text-sm text-slate-muted leading-relaxed flex-1">
+        {description}
+      </p>
     </div>
   );
 }
@@ -208,18 +236,18 @@ export function FeaturesSection() {
             transition: "opacity 0.7s ease, transform 0.7s ease",
           }}
         >
-          <p className="font-sans text-xs font-semibold uppercase tracking-widest text-[#0D9488] mb-3">
+          <p className="font-sans text-xs font-semibold uppercase tracking-widest text-forge-teal mb-3">
             What Powers The Forge
           </p>
           <h2
-            className="font-sans font-bold text-[#1C1C1A] text-balance"
+            className="font-sans font-bold text-ink text-balance"
             style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
           >
             Intelligence you can feel.
           </h2>
-          <p className="font-sans text-base text-[#6B7280] mt-3 max-w-lg mx-auto text-pretty">
-            Every feature is an algorithm made human — transparent, purposeful, and built
-            to make real-world connection effortless.
+          <p className="font-sans text-base text-slate-muted mt-3 max-w-lg mx-auto text-pretty">
+            Every feature is an algorithm made human — transparent, purposeful,
+            and built to make real-world connection effortless.
           </p>
         </div>
 
@@ -227,7 +255,13 @@ export function FeaturesSection() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
           {/* Hero card spans full width */}
           {heroFeature && (
-            <FeatureCard key={heroFeature.title} {...heroFeature} delay={0} inView={inView} hero />
+            <FeatureCard
+              key={heroFeature.title}
+              {...heroFeature}
+              delay={0}
+              inView={inView}
+              hero
+            />
           )}
 
           {/* Regular 3-col cards */}

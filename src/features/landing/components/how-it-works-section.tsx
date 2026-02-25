@@ -17,8 +17,10 @@ const STEPS = [
           { label: "Judging", short: "J", fill: 65 },
         ].map(({ short, fill, label }) => (
           <div key={short} className="flex items-center gap-2">
-            <span className="text-[#0D9488] text-[10px] font-bold font-sans w-3">{short}</span>
-            <div className="flex-1 h-1.5 rounded-full bg-[#0D9488]/10 overflow-hidden">
+            <span className="text-forge-teal text-[10px] font-bold font-sans w-3">
+              {short}
+            </span>
+            <div className="flex-1 h-1.5 rounded-full bg-forge-teal/10 overflow-hidden">
               <div
                 className="h-full rounded-full"
                 style={{
@@ -27,7 +29,9 @@ const STEPS = [
                 }}
               />
             </div>
-            <span className="text-[#6B7280] text-[10px] font-sans w-16 text-right truncate">{label}</span>
+            <span className="text-slate-muted text-[10px] font-sans w-16 text-right truncate">
+              {label}
+            </span>
           </div>
         ))}
       </div>
@@ -45,29 +49,20 @@ const STEPS = [
           { label: "Personality distance", w: 30 },
           { label: "Interest overlap", w: 30 },
           { label: "Social proximity", w: 20 },
-          { label: "Trust score", w: 10 },
           { label: "Age alignment", w: 10 },
         ].map(({ label, w }) => (
           <div key={label} className="flex items-center gap-2">
-            <div className="flex-1 h-1 rounded-full bg-[#F59E0B]/10 overflow-hidden">
+            <div className="flex-1 h-1 rounded-full bg-spark-amber/10 overflow-hidden">
               <div
-                className="h-full rounded-full bg-[#F59E0B]"
+                className="h-full rounded-full bg-spark-amber"
                 style={{ width: `${w * 3.3}%`, opacity: 0.7 }}
               />
             </div>
-            <span className="text-[#6B7280] text-[10px] font-sans w-8 text-right shrink-0">{w}%</span>
+            <span className="text-slate-muted text-[10px] font-sans w-8 text-right shrink-0">
+              {w}%
+            </span>
           </div>
         ))}
-        <div className="flex items-center justify-end gap-1.5 pt-1">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="w-1.5 h-1.5 rounded-full bg-[#F59E0B]"
-              style={{ animation: `pulse 1.2s ease-in-out ${i * 0.25}s infinite` }}
-            />
-          ))}
-          <span className="text-[#F59E0B] text-[10px] font-bold font-sans ml-1">{"< 2s"}</span>
-        </div>
       </div>
     ),
   },
@@ -107,7 +102,7 @@ const STEPS = [
           {["Hiking", "Tech", "Coffee", "+ 2 more"].map((tag) => (
             <span
               key={tag}
-              className="text-[10px] font-medium font-sans text-[#0D9488] px-2 py-0.5 rounded"
+              className="text-[10px] font-medium font-sans text-forge-teal px-2 py-0.5 rounded"
               style={{ background: "rgba(13,148,136,0.1)" }}
             >
               {tag}
@@ -126,7 +121,7 @@ export function HowItWorksSection() {
     <section
       id="how-it-works"
       ref={ref}
-      className="relative bg-[#FAFAF8] py-24 md:py-32"
+      className="relative bg-canvas py-24 md:py-32"
       aria-label="How It Works"
     >
       {/* Dark-to-cream fade from hero */}
@@ -146,29 +141,30 @@ export function HowItWorksSection() {
             transition: "opacity 0.7s ease, transform 0.7s ease",
           }}
         >
-          <p className="font-sans text-xs font-semibold uppercase tracking-widest text-[#0D9488] mb-3">
+          <p className="font-sans text-xs font-semibold uppercase tracking-widest text-forge-teal mb-3">
             How It Works
           </p>
           <h2
-            className="font-sans font-bold text-[#1C1C1A] text-balance"
+            className="font-sans font-bold text-ink text-balance"
             style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
           >
             Three steps to your group.
           </h2>
-          <p className="font-sans text-base text-[#6B7280] mt-3 max-w-md mx-auto text-pretty">
-            From personality to group in under a minute. No browsing. No messaging strangers. One button.
+          <p className="font-sans text-base text-slate-muted mt-3 max-w-md mx-auto text-pretty">
+            From personality to group in under a minute. No browsing. No
+            messaging strangers. One button.
           </p>
         </div>
 
         {/* Steps */}
         <div className="relative grid md:grid-cols-3 gap-5 md:gap-6">
-
           {/* Dashed connector line desktop */}
           <div
             className="hidden md:block absolute top-[2.6rem] left-[calc(16.67%+1.5rem)] right-[calc(16.67%+1.5rem)] h-px pointer-events-none"
             aria-hidden="true"
             style={{
-              backgroundImage: "linear-gradient(90deg, transparent 0%, #0D9488 20%, #0D9488 80%, transparent 100%)",
+              backgroundImage:
+                "linear-gradient(90deg, transparent 0%, #0D9488 20%, #0D9488 80%, transparent 100%)",
               opacity: inView ? 0.25 : 0,
               transition: "opacity 1s ease 0.5s",
             }}
@@ -179,7 +175,7 @@ export function HowItWorksSection() {
             return (
               <div
                 key={step.number}
-                className="relative flex flex-col bg-white rounded-2xl p-6 border border-[#E5E5E3] hover:border-[#0D9488]/50 hover:shadow-[0_8px_32px_rgba(13,148,136,0.08)] transition-all duration-300"
+                className="relative flex flex-col bg-white rounded-2xl p-6 border border-[#E5E5E3] hover:border-forge-teal/50 hover:shadow-[0_8px_32px_rgba(13,148,136,0.08)] transition-all duration-300"
                 style={{
                   opacity: inView ? 1 : 0,
                   transform: inView ? "translateY(0)" : "translateY(28px)",
@@ -200,13 +196,17 @@ export function HowItWorksSection() {
                   className="w-12 h-12 rounded-2xl flex items-center justify-center mb-5"
                   style={{ background: "rgba(13,148,136,0.1)" }}
                 >
-                  <Icon size={22} className="text-[#0D9488]" aria-hidden="true" />
+                  <Icon
+                    size={22}
+                    className="text-forge-teal"
+                    aria-hidden="true"
+                  />
                 </div>
 
-                <h3 className="font-sans font-semibold text-[#1C1C1A] text-lg mb-2">
+                <h3 className="font-sans font-semibold text-ink text-lg mb-2">
                   {step.title}
                 </h3>
-                <p className="font-sans text-sm text-[#6B7280] leading-relaxed flex-1">
+                <p className="font-sans text-sm text-slate-muted leading-relaxed flex-1">
                   {step.description}
                 </p>
                 {step.accent}
