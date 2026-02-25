@@ -1,4 +1,10 @@
-import { createRootRoute, createRouter } from "@tanstack/react-router";
+import {
+  createRootRoute,
+  createRoute,
+  createRouter,
+  Outlet,
+} from "@tanstack/react-router";
+import { LandingPage } from "./features/landing/landing-page";
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
@@ -7,11 +13,17 @@ declare module "@tanstack/react-router" {
   }
 }
 
-export const rootRoute = createRootRoute({
-  component: () => <div>Root</div>,
+const rootRoute = createRootRoute({
+  component: () => <Outlet />,
 });
 
-const routeTree = rootRoute.addChildren([]);
+const landingRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/",
+  component: LandingPage,
+});
+
+const routeTree = rootRoute.addChildren([landingRoute]);
 
 export const router = createRouter({
   routeTree,

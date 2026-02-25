@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
 @plugin "tailwindcss-animate";
 @plugin "tailwind-scrollbar";
@@ -54,7 +55,21 @@
 @theme inline {
   --spacing-header: var(--header-height);
   --spacing-screen-no-header: calc(100vh - var(--spacing-header));
-  --default-font-family: "Signika Negative", "Roboto", sans-serif, system-ui;
+  --default-font-family: "Inter", "Signika Negative", "Roboto", sans-serif, system-ui;
+  --font-sans: "Inter", "Signika Negative", "Roboto", sans-serif, system-ui;
+
+  /* TeamForge brand tokens */
+  --color-forge-teal: #0D9488;
+  --color-forge-teal-light: #14B8A6;
+  --color-forge-teal-glow: rgba(13, 148, 136, 0.25);
+  --color-spark-amber: #F59E0B;
+  --color-spark-amber-light: #FCD34D;
+  --color-hero-bg: #090909;
+  --color-hero-surface: rgba(255, 255, 255, 0.06);
+  --color-hero-border: rgba(255, 255, 255, 0.08);
+  --color-ink: #1C1C1A;
+  --color-canvas: #FAFAF8;
+  --color-slate-muted: #6B7280;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-canvas-background: var(--canvas-background);
@@ -88,24 +103,63 @@
   --color-gradient-end: var(--gradient-end);
   --animate-float: float 3s ease-in-out infinite alternate;
   --animate-float-reverse: float-reverse 3s ease-in-out infinite alternate;
+  --animate-float-card: float-card 4s ease-in-out infinite alternate;
+  --animate-float-card-b: float-card-b 5s ease-in-out infinite alternate;
+  --animate-float-card-c: float-card-c 3.5s ease-in-out infinite alternate;
+  --animate-pulse-glow: pulse-glow 2.5s ease-in-out infinite;
+  --animate-draw-line: draw-line 1.2s ease-out forwards;
+  --animate-fade-up: fade-up 0.6s ease-out forwards;
+  --animate-spin-slow: spin-slow 8s linear infinite;
 }
 
 @keyframes float {
-  0% {
-    transform: translate(0, 0) rotate(0deg) scale(1);
-  }
-  100% {
-    transform: translate(3rem, 3rem) rotate(10deg) scale(1.1);
-  }
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  100% { transform: translate(3rem, 3rem) rotate(10deg) scale(1.1); }
 }
 
 @keyframes float-reverse {
-  0% {
-    transform: translate(0, 0) rotate(0deg) scale(1);
-  }
-  100% {
-    transform: translate(3rem, -3rem) rotate(-10deg) scale(1.1);
-  }
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  100% { transform: translate(3rem, -3rem) rotate(-10deg) scale(1.1); }
+}
+
+@keyframes float-card {
+  0% { transform: translateY(0px) rotate(-2deg); }
+  100% { transform: translateY(-12px) rotate(-1deg); }
+}
+
+@keyframes float-card-b {
+  0% { transform: translateY(0px) rotate(2deg); }
+  100% { transform: translateY(-10px) rotate(3deg); }
+}
+
+@keyframes float-card-c {
+  0% { transform: translateY(0px) rotate(-1deg); }
+  100% { transform: translateY(-8px) rotate(1deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 16px rgba(13, 148, 136, 0.3); }
+  50% { box-shadow: 0 0 32px rgba(13, 148, 136, 0.55); }
+}
+
+@keyframes draw-line {
+  from { stroke-dashoffset: 1000; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes node-pulse {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(1.08); }
 }
 
 @layer base {
