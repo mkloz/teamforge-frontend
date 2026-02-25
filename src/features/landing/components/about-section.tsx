@@ -34,7 +34,7 @@ export function AboutSection() {
   return (
     <section
       id="about"
-      ref={ref as React.RefObject<HTMLElement>}
+      ref={ref}
       className="bg-[#FAFAF8] py-24 md:py-32"
       aria-label="About TeamForge"
     >

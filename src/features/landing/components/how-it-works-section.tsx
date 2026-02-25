@@ -107,7 +107,7 @@ export function HowItWorksSection() {
   return (
     <section
       id="how-it-works"
-      ref={ref as React.RefObject<HTMLElement>}
+      ref={ref}
       className="relative bg-[#FAFAF8] py-24 md:py-32"
       aria-label="How It Works"
     >

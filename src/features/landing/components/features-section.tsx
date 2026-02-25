@@ -142,7 +142,7 @@ export function FeaturesSection() {
   return (
     <section
       id="features"
-      ref={ref as React.RefObject<HTMLElement>}
+      ref={ref}
       className="bg-white py-24 md:py-32"
       aria-label="Features"
     >

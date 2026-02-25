@@ -6,7 +6,7 @@ export function CtaSection() {
 
   return (
     <section
-      ref={ref as React.RefObject<HTMLElement>}
+      ref={ref}
       className="relative overflow-hidden py-24 md:py-32"
       style={{ background: "#0D9488" }}
       aria-label="Get started with TeamForge"

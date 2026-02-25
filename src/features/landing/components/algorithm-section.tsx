@@ -160,7 +160,7 @@ export function AlgorithmSection() {
   return (
     <section
       id="algorithm"
-      ref={ref as React.RefObject<HTMLElement>}
+      ref={ref}
       className="relative bg-[#090909] py-24 md:py-32 overflow-hidden"
       aria-label="How The Algorithm Works"
     >
