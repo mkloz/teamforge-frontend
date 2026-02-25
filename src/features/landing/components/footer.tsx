@@ -1,3 +1,5 @@
+import { TeamForgeLogo } from "./logo";
+
 export function Footer() {
   return (
     <footer
@@ -6,7 +8,8 @@ export function Footer() {
     >
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
-          <span className="font-sans text-sm text-[#6B7280]">
+          <span className="flex items-center gap-1.5 font-sans text-sm">
+            <TeamForgeLogo className="w-5 h-5" showBackground={false} />
             <span className="text-white/50">Team</span>
             <span className="text-[#0D9488]">Forge</span>
           </span>

@@ -278,17 +278,28 @@ export function AlgorithmSection() {
                   <g
                     key={node.id}
                     style={{
-                      transition: "opacity 0.6s ease, transform 0.6s ease",
+                      transition: "opacity 0.6s ease",
                       opacity: style.opacity,
                     }}
                   >
+                    {/* Outer glow ring */}
                     {style.glow && (
                       <circle
                         cx={node.x}
                         cy={node.y}
-                        r={style.r + 8}
+                        r={style.r + 10}
                         fill={style.fill}
-                        opacity={0.15}
+                        opacity={0.12}
+                      />
+                    )}
+                    {/* Mid glow ring */}
+                    {style.glow && (
+                      <circle
+                        cx={node.x}
+                        cy={node.y}
+                        r={style.r + 5}
+                        fill={style.fill}
+                        opacity={0.18}
                       />
                     )}
                     <circle
@@ -314,7 +325,7 @@ export function AlgorithmSection() {
                         x={node.x}
                         y={node.y + style.r + 10}
                         textAnchor="middle"
-                        fill="rgba(255,255,255,0.25)"
+                        fill={node.type === "selected" ? "rgba(245,158,11,0.6)" : "rgba(255,255,255,0.2)"}
                         fontSize="7"
                         fontFamily="Inter, sans-serif"
                       >

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
+import { TeamForgeLogo } from "./logo";
 
 const NAV_LINKS = [
   { label: "How It Works", href: "#how-it-works" },
@@ -59,48 +60,7 @@ export function Navbar() {
             className="flex items-center gap-2 select-none"
             aria-label="TeamForge home"
           >
-            {/* Symbol */}
-            <div className="relative w-8 h-8 flex items-center justify-center">
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 32 32"
-                fill="none"
-                aria-hidden="true"
-              >
-                <circle cx="16" cy="8" r="4" fill="#0D9488" opacity="0.9" />
-                <circle cx="8" cy="22" r="4" fill="#0D9488" opacity="0.75" />
-                <circle cx="24" cy="22" r="4" fill="#0D9488" opacity="0.75" />
-                <line
-                  x1="16"
-                  y1="12"
-                  x2="8"
-                  y2="18"
-                  stroke="#0D9488"
-                  strokeWidth="1.5"
-                  opacity="0.5"
-                />
-                <line
-                  x1="16"
-                  y1="12"
-                  x2="24"
-                  y2="18"
-                  stroke="#0D9488"
-                  strokeWidth="1.5"
-                  opacity="0.5"
-                />
-                <line
-                  x1="8"
-                  y1="22"
-                  x2="24"
-                  y2="22"
-                  stroke="#0D9488"
-                  strokeWidth="1.5"
-                  opacity="0.5"
-                />
-                <circle cx="16" cy="8" r="2" fill="#F59E0B" opacity="0.9" />
-              </svg>
-            </div>
+            <TeamForgeLogo className="w-8 h-8" showBackground={false} />
             <span className="font-sans text-lg font-semibold tracking-tight">
               <span className="text-white">Team</span>
               <span className="text-[#0D9488]">Forge</span>

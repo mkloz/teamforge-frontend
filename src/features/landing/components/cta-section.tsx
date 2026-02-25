@@ -42,8 +42,8 @@ export function CtaSection() {
             Ready to forge your first group?
           </h2>
           <p className="font-sans text-lg text-white/70 leading-relaxed mb-10 text-pretty">
-            Join thousands of students and young professionals who stopped
-            scrolling and started meeting.
+            Stop scrolling. Stop waiting for the right group to appear.
+            One button is all it takes.
           </p>
 
           <a
