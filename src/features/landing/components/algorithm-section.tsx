@@ -39,18 +39,18 @@ const CANDIDATES = [
 const SELECTED_IDS = new Set([2, 4, 7, 10]);
 
 const FACTORS = [
-  { label: "Personality distance", weight: 30, color: "#0D9488" },
-  { label: "Interest similarity", weight: 30, color: "#14B8A6" },
-  { label: "Social graph proximity", weight: 20, color: "#F59E0B" },
-  { label: "Trust score", weight: 10, color: "#0D9488" },
-  { label: "Age alignment", weight: 10, color: "#14B8A6" },
+  { label: "Personality match", weight: 30, color: "#0D9488" },
+  { label: "Shared interests", weight: 30, color: "#14B8A6" },
+  { label: "Friend connections", weight: 20, color: "#F59E0B" },
+  { label: "Reliability", weight: 10, color: "#0D9488" },
+  { label: "Age range", weight: 10, color: "#14B8A6" },
 ];
 
 const PHASE_LABELS: Record<Phase, string> = {
   idle: "",
-  scanning: "Step 1: Building candidate pool (k-NN)...",
-  evaluating: "Step 2: Computing MarginalGroupScore...",
-  selecting: "Selecting optimal group composition...",
+  scanning: "Scanning for compatible people nearby...",
+  evaluating: "Evaluating personality and interests...",
+  selecting: "Picking your perfect group...",
   formed: "Group forged.",
 };
 
@@ -211,8 +211,8 @@ export function AlgorithmSection() {
             in real time.
           </h2>
           <p className="font-sans text-base md:text-lg text-white/50 mt-5 max-w-xl mx-auto leading-relaxed text-pretty">
-            k-NN candidate selection, then Greedy Matching with a Social Bonus.
-            Five factors. Under two seconds.
+            Personality, interests, trust, age, and your social circle --
+            five factors, weighed and balanced in under two seconds.
           </p>
         </div>
 
@@ -408,19 +408,19 @@ export function AlgorithmSection() {
             {/* Pipeline description */}
             <div className="mb-10">
               <h3 className="font-sans font-bold text-white text-xl mb-3">
-                Two-step pipeline
+                How it finds your people
               </h3>
               <div className="space-y-4">
                 {[
                   {
                     step: "01",
-                    title: "k-NN Candidate Pool",
-                    desc: "Filters all active users by location, then scores them against you across personality, interests, age, and trust. Top 50 candidates advance.",
+                    title: "Find compatible candidates",
+                    desc: "The system scans nearby users and scores them against your personality, interests, age, and trust. The top 50 most compatible advance.",
                   },
                   {
                     step: "02",
-                    title: "Greedy Matching + Social Bonus",
-                    desc: "Iteratively picks the member who maximizes MarginalGroupScore for the existing group. Friends get a 20% weight bonus.",
+                    title: "Build the best group",
+                    desc: "Members are picked one by one, each chosen to maximize the group's overall compatibility. Friends and friends-of-friends get a boost.",
                   },
                 ].map(({ step, title, desc }) => (
                   <div key={step} className="flex gap-4">
@@ -491,42 +491,7 @@ export function AlgorithmSection() {
           </div>
         </div>
 
-        {/* ---- FORMULA STRIP ---- */}
-        <div
-          className="mt-16 md:mt-20 rounded-2xl p-6 md:p-8 text-center overflow-x-auto"
-          style={{
-            background: "rgba(255,255,255,0.02)",
-            border: "1px solid rgba(255,255,255,0.06)",
-            opacity: inView ? 1 : 0,
-            transition: "opacity 0.7s ease 1.2s",
-          }}
-        >
-          <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.15em] text-[#0D9488]/60 mb-3">
-            Marginal Group Score Formula
-          </p>
-          <p
-            className="font-mono text-sm md:text-base text-white/70 whitespace-nowrap"
-            aria-label="MGS formula: alpha times BaseScore plus beta times AvgPairSim plus gamma times SocialBonus"
-          >
-            <span className="text-[#0D9488]">MGS</span>
-            <span className="text-white/30">(c | S)</span>
-            <span className="text-white/40">{" = "}</span>
-            <span className="text-white/60">{"α"}</span>
-            <span className="text-white/30">{" · "}</span>
-            <span className="text-[#14B8A6]">BaseScore</span>
-            <span className="text-white/30">(c)</span>
-            <span className="text-white/40">{" + "}</span>
-            <span className="text-white/60">{"β"}</span>
-            <span className="text-white/30">{" · "}</span>
-            <span className="text-[#14B8A6]">AvgPairSim</span>
-            <span className="text-white/30">(c, S)</span>
-            <span className="text-white/40">{" + "}</span>
-            <span className="text-white/60">{"γ"}</span>
-            <span className="text-white/30">{" · "}</span>
-            <span className="text-[#F59E0B]">SocialBonus</span>
-            <span className="text-white/30">(c, S)</span>
-          </p>
-        </div>
+
       </div>
     </section>
   );
