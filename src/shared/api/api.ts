@@ -2,11 +2,23 @@ import ky, { type HTTPError } from "ky";
 
 import { config } from "@/config/config";
 
-import {
-  type Tokens,
-  tokensStore,
-} from "../../modules/auth/stores/tokens.store";
-import { useSelectedProjectId } from "../../modules/project/hooks/use-current-project";
+// TODO: Replace with actual imports once modules are implemented
+export interface Tokens {
+  accessToken: string;
+  refreshToken: string;
+}
+export const tokensStore = {
+  getState: () => ({
+    tokens: { accessToken: "", refreshToken: "" } as Tokens | null,
+    deleteTokens: () => {},
+    setTokens: (t: Tokens) => {
+      void t;
+    },
+  }),
+};
+export const useSelectedProjectId = {
+  getState: () => ({ clearId: () => {} }),
+};
 
 export const apiClient = ky.create({
   prefixUrl: config.apiUrl,

@@ -22,7 +22,6 @@ export interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   showNoImage?: boolean;
 }
 
-// Default loading component
 const DefaultLoader = () => (
   <div className="bg-background/80 rounded-full p-1 shadow-sm aspect-square max-w-1/6 max-h-1/6">
     <Loader2 className="size-full animate-spin text-primary aspect-square" />
@@ -52,10 +51,8 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
     const imageRef = React.useRef<HTMLImageElement>(null);
     const [fallbackFailed, setFallbackFailed] = React.useState(false);
 
-    // Check if src is provided
     const isSrcProvided = Boolean(src && src !== "");
 
-    // Determine the actual source to use
     const actualSrc = error && fallbackSrc ? fallbackSrc : src;
 
     React.useEffect(() => {
@@ -109,7 +106,6 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
           />
         )}
 
-        {/* Show fallback component when both original and fallback src fail */}
         {fallbackFailed && (
           <div
             className={cn(
@@ -121,7 +117,6 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
           </div>
         )}
 
-        {/* Show no image component when no src is provided */}
         {!isSrcProvided && showNoImage && (
           <div
             className={cn(
@@ -133,7 +128,6 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
           </div>
         )}
 
-        {/* Show loading component when image is loading */}
         {isLoading && isSrcProvided && !fallbackFailed && (
           <div
             className={cn(

@@ -1,0 +1,43 @@
+<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="TeamForge Logo: The Voronoi Nexus (Scaled Large)">
+  <defs>
+    <clipPath id="group-boundary-scaled">
+      <rect x="8" y="8" width="104" height="104" rx="28" />
+    </clipPath>
+  </defs>
+
+  <rect width="120" height="120" rx="28" fill="#FAFAF8" />
+
+  <g clip-path="url(#group-boundary-scaled)">
+    <g stroke="#FAFAF8" stroke-width="6" stroke-linejoin="round">
+      <polygon
+        points="51,69 36.4,-22.6 142.6,-22.6 142.6,48.2"
+        fill="#0D9488"
+        fill-opacity="1.0"
+      />
+      <polygon
+        points="51,69 142.6,48.2 142.6,142.6 72.2,142.6"
+        fill="#0D9488"
+        fill-opacity="0.66"
+      />
+      <polygon
+        points="51,69 72.2,142.6 -22.6,142.6 -22.6,83.4"
+        fill="#0D9488"
+        fill-opacity="0.83"
+      />
+      <polygon
+        points="51,69 -22.6,83.4 -22.6,-22.6 36.4,-22.6"
+        fill="#0D9488"
+        fill-opacity="0.50"
+      />
+    </g>
+  </g>
+
+  <circle
+    cx="51"
+    cy="69"
+    r="12"
+    fill="#F59E0B"
+    stroke="#FAFAF8"
+    stroke-width="3.5"
+  />
+</svg>

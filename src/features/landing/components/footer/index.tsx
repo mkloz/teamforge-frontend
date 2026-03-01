@@ -1,4 +1,4 @@
-import { TeamForgeLogo } from "../../../assets/logo";
+import { TeamForgeLogo } from "../../../../assets/logo";
 
 export function Footer() {
   return (

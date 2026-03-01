@@ -18,13 +18,11 @@ export const TeamForgeLogo: React.FC<TeamForgeVoronoiProps> = ({
       aria-label="TeamForge Logo: The Voronoi Nexus"
     >
       <defs>
-        {/* The System Boundary: Represents the Group capacity limit */}
         <clipPath id="group-boundary">
           <rect x="16" y="16" width="88" height="88" rx="24" />
         </clipPath>
       </defs>
 
-      {/* Canvas Background */}
       {showBackground && (
         <rect width="120" height="120" rx="24" fill="#FAFAF8" />
       )}
@@ -36,25 +34,24 @@ export const TeamForgeLogo: React.FC<TeamForgeVoronoiProps> = ({
             Stroke: Canvas (#FAFAF8) creates the physical boundaries.
         */}
         <g stroke="#FAFAF8" strokeWidth="5" strokeLinejoin="round">
-          {/* Member 1 (High Similarity) */}
           <polygon
             points="52,68 40,-10 130,-10 130,50"
             fill="#0D9488"
             fillOpacity="1.0"
           />
-          {/* Member 2 */}
+
           <polygon
             points="52,68 130,50 130,130 70,130"
             fill="#0D9488"
             fillOpacity="0.66"
           />
-          {/* Member 3 */}
+
           <polygon
             points="52,68 70,130 -10,130 -10,80"
             fill="#0D9488"
             fillOpacity="0.83"
           />
-          {/* Member 4 (The Initiator / U0) */}
+
           <polygon
             points="52,68 -10,80 -10,-10 40,-10"
             fill="#0D9488"

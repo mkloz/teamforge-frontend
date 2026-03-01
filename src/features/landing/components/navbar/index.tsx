@@ -1,6 +1,8 @@
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { TeamForgeLogo } from "../../../assets/logo";
+import { TeamForgeLogo } from "../../../../assets/logo";
 
 const NAV_LINKS = [
   { label: "How It Works", href: "#how-it-works" },
@@ -15,10 +17,18 @@ export function Navbar() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 60);
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 60;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+
+    handleScroll();
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [scrolled]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -43,14 +53,14 @@ export function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={cn(
+          "fixed top-0 left-0 right-0 z-50 transition-all duration-150",
           scrolled
-            ? "bg-hero-bg/95 backdrop-blur-md border-b border-white/8"
-            : "bg-transparent"
-        }`}
+            ? "bg-hero-bg/95 backdrop-blur-md border-b border-white/5"
+            : "bg-transparent",
+        )}
       >
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          {/* Wordmark */}
           <a
             href="#"
             onClick={(e) => {
@@ -67,7 +77,6 @@ export function Navbar() {
             </span>
           </a>
 
-          {/* Desktop nav links */}
           <nav
             className="hidden md:flex items-center gap-8"
             aria-label="Main navigation"
@@ -85,23 +94,19 @@ export function Navbar() {
             ))}
           </nav>
 
-          {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-3">
-            <a
-              href="/login"
-              className="font-sans text-sm font-medium text-white/70 hover:text-white border border-white/20 hover:border-white/40 rounded-lg px-4 py-2 transition-all duration-200"
+            <Button
+              variant="outline"
+              asChild
+              className="border-white/20 text-white/70 hover:bg-white/10 hover:text-white hover:border-white/40 bg-transparent px-4 py-2"
             >
-              Log In
-            </a>
-            <a
-              href="/register"
-              className="font-sans text-sm font-semibold text-white bg-forge-teal hover:bg-[#0f9e92] rounded-lg px-5 py-2 transition-all duration-200 shadow-[0_0_16px_rgba(13,148,136,0.3)] hover:shadow-[0_0_24px_rgba(13,148,136,0.5)]"
-            >
-              Get Started
-            </a>
+              <a href="/login">Log In</a>
+            </Button>
+            <Button variant="default" asChild className="px-5 py-2">
+              <a href="/register">Get Started</a>
+            </Button>
           </div>
 
-          {/* Mobile menu toggle */}
           <button
             className="md:hidden text-white/70 hover:text-white p-2 rounded-lg transition-colors"
             onClick={() => setMenuOpen((v) => !v)}
@@ -113,14 +118,14 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* Mobile full-screen menu */}
       <div
         ref={menuRef}
-        className={`fixed inset-0 z-40 bg-hero-bg/98 backdrop-blur-lg flex flex-col items-center justify-center gap-8 transition-all duration-300 ${
+        className={cn(
+          "fixed inset-0 z-40 bg-hero-bg/98 backdrop-blur-lg flex flex-col items-center justify-center gap-8 transition-all duration-150",
           menuOpen
             ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        }`}
+            : "opacity-0 pointer-events-none",
+        )}
         aria-hidden={!menuOpen}
       >
         <nav
@@ -138,21 +143,21 @@ export function Navbar() {
             </a>
           ))}
         </nav>
-        <div className="flex flex-col items-center gap-3 w-48">
-          <a
-            href="/login"
-            onClick={() => setMenuOpen(false)}
-            className="w-full text-center font-sans text-base font-medium text-white/70 hover:text-white border border-white/20 rounded-lg px-4 py-3 transition-all"
+        <div className="flex flex-col items-center gap-4 w-48">
+          <Button
+            variant="outline"
+            asChild
+            className="w-full border-white/20 text-white hover:bg-white/10 hover:border-white/40 bg-transparent text-base"
           >
-            Log In
-          </a>
-          <a
-            href="/register"
-            onClick={() => setMenuOpen(false)}
-            className="w-full text-center font-sans text-base font-semibold text-white bg-forge-teal rounded-lg px-4 py-3 transition-all shadow-[0_0_20px_rgba(13,148,136,0.35)]"
-          >
-            Get Started
-          </a>
+            <a href="/login" onClick={() => setMenuOpen(false)}>
+              Log In
+            </a>
+          </Button>
+          <Button variant="default" asChild className="w-full text-base py-6">
+            <a href="/register" onClick={() => setMenuOpen(false)}>
+              Get Started
+            </a>
+          </Button>
         </div>
       </div>
     </>

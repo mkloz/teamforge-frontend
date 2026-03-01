@@ -13,7 +13,6 @@ export const ImagePlaceholder: FC<ImagePlaceholderProps> = ({
   patternDensity = "medium",
   ...props
 }) => {
-  // Map density to actual values
   const densityMap = {
     low: 30,
     medium: 20,
@@ -35,22 +34,16 @@ export const ImagePlaceholder: FC<ImagePlaceholderProps> = ({
       }}
       {...props}
     >
-      {/* Corner brackets */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Top-left corner */}
         <div className="absolute top-0 left-0 m-3 w-[15%] h-[15%] border-t-3 border-l-3" />
 
-        {/* Top-right corner */}
         <div className="absolute top-0 right-0 m-3 w-[15%] h-[15%] border-t-3 border-r-3" />
 
-        {/* Bottom-left corner */}
         <div className="absolute bottom-0 left-0 m-3 w-[15%] h-[15%] border-b-3 border-l-3" />
 
-        {/* Bottom-right corner */}
         <div className="absolute bottom-0 right-0 m-3 w-[15%] h-[15%] border-b-3 border-r-3" />
       </div>
 
-      {/* Center icon with backdrop */}
       <div className="relative flex items-center justify-center size-1/4 min-w-8 min-h-8 max-w-16 max-h-16 bg-background/50 rounded-full backdrop-blur-[2px]">
         <Image className="text-border" />
       </div>
