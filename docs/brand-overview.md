@@ -30,12 +30,21 @@ The product uses personality profiling (MBTI as a 4-dimensional vector), interes
 
 TeamForge is not the hero of the user's story — it is the force that makes the story possible. Like the friend who always introduces the right people at the right moment.
 
+<<<<<<< HEAD
 | Trait                            | What it means                          | What it does NOT mean                  |
 | -------------------------------- | -------------------------------------- | -------------------------------------- |
 | Intelligent but not intellectual | The system is smart. It just works.    | No jargon, no formulas facing the user |
 | Warm but not sentimental         | It cares about your outcome            | Not cutesy, not needy                  |
 | Confident but not arrogant       | Bold recommendations, no hedging       | Always gives users the final decision  |
 | Modern but not trendy            | Contemporary design, lasting aesthetic | No ephemeral micro-trends              |
+=======
+| Trait | What it means | What it does NOT mean |
+|---|---|---|
+| Intelligent but not intellectual | The system is smart. It just works. | No jargon, no formulas facing the user |
+| Warm but not sentimental | It cares about your outcome | Not cutesy, not needy |
+| Confident but not arrogant | Bold recommendations, no hedging | Always gives users the final decision |
+| Modern but not trendy | Contemporary design, lasting aesthetic | No ephemeral micro-trends |
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 
 ---
 
@@ -44,6 +53,7 @@ TeamForge is not the hero of the user's story — it is the force that makes the
 These values map directly to product features — they are not decoration.
 
 ### Intentionality
+<<<<<<< HEAD
 
 Every connection is purposeful. The algorithm selects each group member for a mathematically computed reason. Nothing is random.
 
@@ -61,6 +71,20 @@ Cold-start templates, 3-tap group formation, and automatic replacement make the 
 
 ### Growth
 
+=======
+Every connection is purposeful. The algorithm selects each group member for a mathematically computed reason. Nothing is random.
+
+### Trust
+The exponential-smoothing trust score is the system's moral spine. It rewards reliability and forgives past mistakes with grace. Trust is visible, earned, and real.
+
+### Belonging
+The social graph bonus in the matching algorithm deliberately prioritizes existing friendships. TeamForge strengthens your existing social fabric while carefully introducing compatible new people.
+
+### Accessibility
+Cold-start templates, 3-tap group formation, and automatic replacement make the experience effortless. The interface fights friction at every step.
+
+### Growth
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 MBTI is a discovery tool, not a label. Trust scores evolve. The system grows with the user.
 
 ---
@@ -69,6 +93,7 @@ MBTI is a discovery tool, not a label. Trust scores evolve. The system grows wit
 
 The voice never uses corporate jargon, dating-app language, or game mechanics. It speaks like a knowledgeable peer.
 
+<<<<<<< HEAD
 | Context        | Tone                 | Example                                                     |
 | -------------- | -------------------- | ----------------------------------------------------------- |
 | Headline / CTA | Confident, direct    | "Find your people, intelligently."                          |
@@ -77,6 +102,16 @@ The voice never uses corporate jargon, dating-app language, or game mechanics. I
 | Group formed   | Celebratory          | "Your group is ready. Here's why they're perfect for you."  |
 | Empty state    | Gentle, activating   | "No groups yet. Let's forge your first one."                |
 | Error / limit  | Honest, constructive | "You've used your 3 searches today. Fresh starts tomorrow." |
+=======
+| Context | Tone | Example |
+|---|---|---|
+| Headline / CTA | Confident, direct | "Find your people, intelligently." |
+| Onboarding | Encouraging, curious | "Let's find out how you tick." |
+| MBTI result | Affirming, warm | "You're an ENTJ — a natural organiser with bold ideas." |
+| Group formed | Celebratory | "Your group is ready. Here's why they're perfect for you." |
+| Empty state | Gentle, activating | "No groups yet. Let's forge your first one." |
+| Error / limit | Honest, constructive | "You've used your 3 searches today. Fresh starts tomorrow." |
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 
 ---
 
@@ -86,12 +121,21 @@ The voice never uses corporate jargon, dating-app language, or game mechanics. I
 
 ### Supporting Slogans by Context
 
+<<<<<<< HEAD
 | Surface                  | Copy                                             |
 | ------------------------ | ------------------------------------------------ |
 | App Store listing        | "Find your people, intelligently."               |
 | Onboarding welcome       | "Let's forge something real."                    |
 | Primary action button    | "Forge my group"                                 |
 | Marketing / social media | "Stop scrolling. Start meeting."                 |
+=======
+| Surface | Copy |
+|---|---|
+| App Store listing | "Find your people, intelligently." |
+| Onboarding welcome | "Let's forge something real." |
+| Primary action button | "Forge my group" |
+| Marketing / social media | "Stop scrolling. Start meeting." |
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 | About page / long format | "Every great story starts with the right group." |
 
 ---
@@ -108,6 +152,7 @@ The `#FAFAF8` strokes between regions are the group's shared boundaries — indi
 
 ### Usage Rules
 
+<<<<<<< HEAD
 | Context                | Variant                               | Background        |
 | ---------------------- | ------------------------------------- | ----------------- |
 | App icon (iOS/Android) | Full badge with `#FAFAF8` background  | Teal or white     |
@@ -115,6 +160,15 @@ The `#FAFAF8` strokes between regions are the group's shared boundaries — indi
 | Footer                 | Symbol only, `showBackground={false}` | Dark preferred    |
 | Pitch deck / print     | Full badge with white background      | White             |
 | On teal surfaces       | Full badge with `#FAFAF8` background  | Teal              |
+=======
+| Context | Variant | Background |
+|---|---|---|
+| App icon (iOS/Android) | Full badge with `#FAFAF8` background | Teal or white |
+| Navbar / header | Symbol only, `showBackground={false}` | Any dark or light |
+| Footer | Symbol only, `showBackground={false}` | Dark preferred |
+| Pitch deck / print | Full badge with white background | White |
+| On teal surfaces | Full badge with `#FAFAF8` background | Teal |
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 
 ### Minimum Size
 
@@ -154,4 +208,8 @@ TeamForge is **The Catalyst** — not the Magician (too mystical), not the Sage 
 
 ---
 
+<<<<<<< HEAD
 _For visual specifications — colors, typography, spacing, components — see `visual-style-guide.md`._
+=======
+*For visual specifications — colors, typography, spacing, components — see `visual-style-guide.md`.*
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829

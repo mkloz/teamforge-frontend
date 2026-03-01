@@ -10,6 +10,7 @@ The palette uses exactly **5 roles**. No additional colors may be introduced wit
 
 ### Primary Palette
 
+<<<<<<< HEAD
 | Role            | Name        | Hex       | CSS Token             | Usage                                                                                  |
 | --------------- | ----------- | --------- | --------------------- | -------------------------------------------------------------------------------------- |
 | Brand primary   | Forge Teal  | `#0D9488` | `--color-forge-teal`  | Primary buttons, active nav, borders, icons, progress rings, selected states           |
@@ -23,6 +24,21 @@ The palette uses exactly **5 roles**. No additional colors may be introduced wit
 | Role                                | Name       | Hex       | Usage                                                                                                          |
 | ----------------------------------- | ---------- | --------- | -------------------------------------------------------------------------------------------------------------- |
 | Hero / dark section background      | Void       | `#090909` | Hero, algorithm, CTA sections — dark-mode canvas                                                               |
+=======
+| Role | Name | Hex | CSS Token | Usage |
+|---|---|---|---|---|
+| Brand primary | Forge Teal | `#0D9488` | `--color-forge-teal` | Primary buttons, active nav, borders, icons, progress rings, selected states |
+| Accent | Spark Amber | `#F59E0B` | `--color-spark-amber` | Notification badges, trust score value, group-formed flash, highlights — use sparingly |
+| Page background | Canvas | `#FAFAF8` | `--color-canvas` | Light-section page background, onboarding screens |
+| Primary text | Ink | `#1C1C1A` | `--color-ink` | All headings and body text on light surfaces |
+| Secondary text | Slate | `#6B7280` | `--color-slate-muted` | Captions, timestamps, secondary labels, placeholder text, borders |
+
+### Contextual Tokens (Dark Surfaces Only)
+
+| Role | Name | Hex | Usage |
+|---|---|---|---|
+| Hero / dark section background | Void | `#090909` | Hero, algorithm, CTA sections — dark-mode canvas |
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 | Teal light (single allowed variant) | Teal Light | `#14B8A6` | One lighter teal variant; allowed only for gradients and secondary spectrum bars. **Not a sixth brand color.** |
 
 ### Palette Rules
@@ -34,6 +50,7 @@ The palette uses exactly **5 roles**. No additional colors may be introduced wit
 
 ### Color Emotion Reference
 
+<<<<<<< HEAD
 | Color       | Association                    | Why it works for TeamForge                                                            |
 | ----------- | ------------------------------ | ------------------------------------------------------------------------------------- |
 | Forge Teal  | Trust, growth, intelligence    | Bridges blue (credibility) and green (vitality); unclaimed in the social app category |
@@ -51,6 +68,25 @@ The palette uses exactly **5 roles**. No additional colors may be introduced wit
 | Ink `#1C1C1A`         | Off-white `#EDEDED`                                 |
 | Forge Teal `#0D9488`  | Teal Light `#14B8A6` (for contrast against dark bg) |
 | Spark Amber `#F59E0B` | `#FBBF24` (one step lighter)                        |
+=======
+| Color | Association | Why it works for TeamForge |
+|---|---|---|
+| Forge Teal | Trust, growth, intelligence | Bridges blue (credibility) and green (vitality); unclaimed in the social app category |
+| Spark Amber | Energy, warmth, transformation | Marks the forge moment — when the algorithm fires and a group is born |
+| Canvas | Paper, approachability, calm | Warmer than pure white; reduces screen fatigue for a Gen Z audience |
+| Ink | Authority, readability | Warm charcoal reads more naturally than pure black on Canvas |
+| Slate | Neutrality, hierarchy | Recedes behind Teal and Amber; creates text hierarchy without a new color |
+
+### Dark Mode Mapping
+
+| Light token | Dark equivalent |
+|---|---|
+| Canvas `#FAFAF8` | Void `#090909` or `#141413` |
+| White card `#FFFFFF` | `#1C1C1A` |
+| Ink `#1C1C1A` | Off-white `#EDEDED` |
+| Forge Teal `#0D9488` | Teal Light `#14B8A6` (for contrast against dark bg) |
+| Spark Amber `#F59E0B` | `#FBBF24` (one step lighter) |
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 
 ---
 
@@ -70,6 +106,7 @@ CSS token: `--font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;`
 
 ### Type Scale
 
+<<<<<<< HEAD
 | Role              | Size                       | Weight          | Color         | Line Height | Class Pattern                                     |
 | ----------------- | -------------------------- | --------------- | ------------- | ----------- | ------------------------------------------------- |
 | Page / hero title | `clamp(2rem, 5vw, 3.5rem)` | 800 (ExtraBold) | Ink or White  | 1.1         | `font-extrabold leading-tight`                    |
@@ -80,6 +117,18 @@ CSS token: `--font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;`
 | Overline / label  | 11px / 0.6875rem           | 600 (SemiBold)  | Teal or Slate | 1.0         | `text-xs font-semibold uppercase tracking-widest` |
 | Caption           | 12px / 0.75rem             | 500 (Medium)    | Slate         | 1.4         | `text-xs font-medium`                             |
 | Button            | 14–16px                    | 600 (SemiBold)  | White or Teal | 1.0         | `text-sm font-semibold`                           |
+=======
+| Role | Size | Weight | Color | Line Height | Class Pattern |
+|---|---|---|---|---|---|
+| Page / hero title | `clamp(2rem, 5vw, 3.5rem)` | 800 (ExtraBold) | Ink or White | 1.1 | `font-extrabold leading-tight` |
+| Section heading | 32px / 2rem | 700 (Bold) | Ink | 1.2 | `text-3xl font-bold` |
+| Card title | 20px / 1.25rem | 600 (SemiBold) | Ink | 1.3 | `text-xl font-semibold` |
+| Body text | 16px / 1rem | 400 (Regular) | Ink or Slate | 1.6 | `text-base font-normal leading-relaxed` |
+| Secondary body | 14px / 0.875rem | 400 (Regular) | Slate | 1.5 | `text-sm leading-relaxed` |
+| Overline / label | 11px / 0.6875rem | 600 (SemiBold) | Teal or Slate | 1.0 | `text-xs font-semibold uppercase tracking-widest` |
+| Caption | 12px / 0.75rem | 500 (Medium) | Slate | 1.4 | `text-xs font-medium` |
+| Button | 14–16px | 600 (SemiBold) | White or Teal | 1.0 | `text-sm font-semibold` |
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 
 ### Typography Rules
 
@@ -97,6 +146,7 @@ CSS token: `--font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;`
 
 All spacing uses a **4px base unit**. Prefer Tailwind's built-in scale; avoid arbitrary values.
 
+<<<<<<< HEAD
 | Token   | Value | Usage                                 |
 | ------- | ----- | ------------------------------------- |
 | `p-4`   | 16px  | Standard card internal padding        |
@@ -105,6 +155,16 @@ All spacing uses a **4px base unit**. Prefer Tailwind's built-in scale; avoid ar
 | `gap-6` | 24px  | Between sections within a page        |
 | `py-24` | 96px  | Section vertical padding (desktop)    |
 | `py-16` | 64px  | Section vertical padding (mobile)     |
+=======
+| Token | Value | Usage |
+|---|---|---|
+| `p-4` | 16px | Standard card internal padding |
+| `p-6` | 24px | Large card / section internal padding |
+| `gap-3` | 12px | Between cards in a row |
+| `gap-6` | 24px | Between sections within a page |
+| `py-24` | 96px | Section vertical padding (desktop) |
+| `py-16` | 64px | Section vertical padding (mobile) |
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 
 ### Container Width
 
@@ -122,12 +182,21 @@ This applies to all section content. Never break this to `max-w-none` for text c
 
 ### Responsive Breakpoints
 
+<<<<<<< HEAD
 | Breakpoint       | Prefix | Width    |
 | ---------------- | ------ | -------- |
 | Mobile (default) | —      | < 768px  |
 | Tablet           | `md:`  | ≥ 768px  |
 | Desktop          | `lg:`  | ≥ 1024px |
 | Wide             | `xl:`  | ≥ 1280px |
+=======
+| Breakpoint | Prefix | Width |
+|---|---|---|
+| Mobile (default) | — | < 768px |
+| Tablet | `md:` | ≥ 768px |
+| Desktop | `lg:` | ≥ 1024px |
+| Wide | `xl:` | ≥ 1280px |
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 
 ---
 
@@ -135,6 +204,7 @@ This applies to all section content. Never break this to `max-w-none` for text c
 
 Consistent rounding is one of the primary signals of the brand's "Structured Warmth" aesthetic.
 
+<<<<<<< HEAD
 | Context                    | Radius  | Tailwind class |
 | -------------------------- | ------- | -------------- |
 | Page cards / section cards | 16px    | `rounded-2xl`  |
@@ -143,6 +213,16 @@ Consistent rounding is one of the primary signals of the brand's "Structured War
 | Tag pills / badges         | Full    | `rounded-full` |
 | Avatar images              | Full    | `rounded-full` |
 | Modal / large overlay      | 20px    | `rounded-3xl`  |
+=======
+| Context | Radius | Tailwind class |
+|---|---|---|
+| Page cards / section cards | 16px | `rounded-2xl` |
+| Buttons | 10–12px | `rounded-xl` |
+| Input fields | 10px | `rounded-xl` |
+| Tag pills / badges | Full | `rounded-full` |
+| Avatar images | Full | `rounded-full` |
+| Modal / large overlay | 20px | `rounded-3xl` |
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 
 **Never use sharp corners** (i.e., `rounded-none`) on user-facing cards, buttons, or inputs. Sharp corners communicate coldness. Fully circular containers (`rounded-full`) are reserved for avatars and pill badges only.
 
@@ -150,6 +230,7 @@ Consistent rounding is one of the primary signals of the brand's "Structured War
 
 ## 5. Shadows & Elevation
 
+<<<<<<< HEAD
 | Level                   | CSS Value                          | Usage                           |
 | ----------------------- | ---------------------------------- | ------------------------------- |
 | Resting card            | `0 1px 3px rgba(0,0,0,0.06)`       | Default card on white           |
@@ -157,6 +238,15 @@ Consistent rounding is one of the primary signals of the brand's "Structured War
 | Floating element        | `0 20px 40px rgba(0,0,0,0.12)`     | Glass cards, modals, dropdowns  |
 | Teal glow (CTA buttons) | `0 0 20px rgba(13,148,136,0.30)`   | Primary button on dark surfaces |
 | Teal glow pulse         | `0 0 32px rgba(13,148,136,0.55)`   | Animated max state              |
+=======
+| Level | CSS Value | Usage |
+|---|---|---|
+| Resting card | `0 1px 3px rgba(0,0,0,0.06)` | Default card on white |
+| Hover card | `0 4px 12px rgba(13,148,136,0.10)` | Card on hover (teal-tinted) |
+| Floating element | `0 20px 40px rgba(0,0,0,0.12)` | Glass cards, modals, dropdowns |
+| Teal glow (CTA buttons) | `0 0 20px rgba(13,148,136,0.30)` | Primary button on dark surfaces |
+| Teal glow pulse | `0 0 32px rgba(13,148,136,0.55)` | Animated max state |
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 
 ---
 
@@ -166,7 +256,11 @@ Used exclusively on dark backgrounds (hero, algorithm, CTA sections).
 
 ```css
 background: rgba(255, 255, 255, 0.06);
+<<<<<<< HEAD
 border: 1px solid rgba(255, 255, 255, 0.1);
+=======
+border: 1px solid rgba(255, 255, 255, 0.10);
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 backdrop-filter: blur(12px);
 border-radius: 16px;
 ```
@@ -189,6 +283,7 @@ border-radius: 16px;
 
 The landing page follows a deliberate dark-light alternation that creates scroll momentum:
 
+<<<<<<< HEAD
 | Section      | Background                     | Purpose               |
 | ------------ | ------------------------------ | --------------------- |
 | Navbar       | Transparent → `#090909`        | Seamless              |
@@ -199,6 +294,18 @@ The landing page follows a deliberate dark-light alternation that creates scroll
 | About        | Canvas `#FAFAF8` + White cards | Warm, human           |
 | CTA          | `#090909` + spotlight          | Dramatic, urgent      |
 | Footer       | `#090909`                      | Minimal, complete     |
+=======
+| Section | Background | Purpose |
+|---|---|---|
+| Navbar | Transparent → `#090909` | Seamless |
+| Hero | `#090909` + animated nodes | Immersive — the "wow" |
+| How It Works | Canvas `#FAFAF8` | Clear, instructional |
+| Features | White `#FFFFFF` | Scannable, energetic |
+| Algorithm | `#090909` + interactive viz | Proof of intelligence |
+| About | Canvas `#FAFAF8` + White cards | Warm, human |
+| CTA | `#090909` + spotlight | Dramatic, urgent |
+| Footer | `#090909` | Minimal, complete |
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 
 This pattern must be maintained when new sections are added. A light section should never immediately follow another light section without a dark break.
 
@@ -216,6 +323,7 @@ All scroll-triggered entrances use **fade-up** (`opacity: 0 → 1`, `translateY:
 
 ```css
 @keyframes fade-up {
+<<<<<<< HEAD
     from {
         opacity: 0;
         transform: translateY(24px);
@@ -224,6 +332,10 @@ All scroll-triggered entrances use **fade-up** (`opacity: 0 → 1`, `translateY:
         opacity: 1;
         transform: translateY(0);
     }
+=======
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 }
 ```
 
@@ -233,6 +345,7 @@ All scroll-triggered entrances use **fade-up** (`opacity: 0 → 1`, `translateY:
 
 ### Interaction Animations
 
+<<<<<<< HEAD
 | Interaction      | Animation                                             |
 | ---------------- | ----------------------------------------------------- |
 | Button hover     | Scale 1.02, shadow intensify, 150ms ease              |
@@ -248,6 +361,23 @@ All scroll-triggered entrances use **fade-up** (`opacity: 0 → 1`, `translateY:
 | Orb ring             | `rotate 20s linear infinite`                    | CSS only              |
 | Orb glow pulse       | `scale + opacity, 4s ease-in-out infinite`      | CSS only              |
 | Floating glass cards | Independent sine-wave float, 3.5–5s cycles      | CSS only              |
+=======
+| Interaction | Animation |
+|---|---|
+| Button hover | Scale 1.02, shadow intensify, 150ms ease |
+| Card hover | Border color → Teal, shadow → teal-tinted, 200ms ease |
+| Tag/pill select | Scale 0.95 then 1.0, background → Teal, 150ms ease |
+| Navigation hover | Underline slide-in from left, Teal, 200ms ease |
+
+### Background Animations
+
+| Element | Animation | Notes |
+|---|---|---|
+| Hero node canvas | 64 nodes, sinusoidal drift, pulsing connections | canvas-based, low CPU |
+| Orb ring | `rotate 20s linear infinite` | CSS only |
+| Orb glow pulse | `scale + opacity, 4s ease-in-out infinite` | CSS only |
+| Floating glass cards | Independent sine-wave float, 3.5–5s cycles | CSS only |
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 
 ### Accessibility
 
@@ -255,12 +385,19 @@ All animations must respect the `prefers-reduced-motion` media query:
 
 ```css
 @media (prefers-reduced-motion: reduce) {
+<<<<<<< HEAD
     *,
     *::before,
     *::after {
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
     }
+=======
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 }
 ```
 
@@ -340,4 +477,8 @@ SVG stroke-linecap: round
 
 ---
 
+<<<<<<< HEAD
 _For brand concept, mission, values, and logo usage rules — see `brand-overview.md`._
+=======
+*For brand concept, mission, values, and logo usage rules — see `brand-overview.md`.*
+>>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
