@@ -3,21 +3,19 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { TeamForgeLogo } from "@/assets/logo";
 
 interface LoginFormProps {
-  onFocusChange: (focused: boolean) => void;
-  onSubmitStart: () => void;
   onSwitchToRegister: () => void;
 }
 
-export function LoginForm({
-  onFocusChange,
-  onSubmitStart,
-  onSwitchToRegister,
-}: LoginFormProps) {
+export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string; form?: string }>({});
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+    form?: string;
+  }>({});
 
   function validate() {
     const next: typeof errors = {};
@@ -25,26 +23,30 @@ export function LoginForm({
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       next.email = "Enter a valid email address.";
     if (!password) next.password = "Password is required.";
-    else if (password.length < 6) next.password = "Password must be at least 6 characters.";
+    else if (password.length < 6)
+      next.password = "Password must be at least 6 characters.";
     return next;
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const v = validate();
-    if (Object.keys(v).length > 0) { setErrors(v); return; }
+    if (Object.keys(v).length > 0) {
+      setErrors(v);
+      return;
+    }
     setErrors({});
     setLoading(true);
-    onSubmitStart();
-    // Placeholder — replace with real auth call
     await new Promise((r) => setTimeout(r, 1800));
     setLoading(false);
   }
 
   const inputBase =
     "w-full h-11 px-3.5 rounded-xl border font-sans text-sm text-ink placeholder:text-slate-muted bg-white outline-none transition-all duration-200";
-  const inputNormal = "border-[#E5E7EB] focus:border-forge-teal focus:ring-2 focus:ring-[rgba(13,148,136,0.12)]";
-  const inputError = "border-red-400 focus:border-red-400 focus:ring-2 focus:ring-red-100";
+  const inputNormal =
+    "border-[#E5E7EB] focus:border-forge-teal focus:ring-2 focus:ring-[rgba(13,148,136,0.12)]";
+  const inputError =
+    "border-red-400 focus:border-red-400 focus:ring-2 focus:ring-red-100";
 
   return (
     <div
@@ -53,11 +55,11 @@ export function LoginForm({
     >
       {/* Logo + title */}
       <div className="flex flex-col items-center mb-8">
-        <TeamForgeLogo className="w-9 h-9 mb-3" showBackground={true} />
+        <TeamForgeLogo className="w-10 h-10 mb-4" showBackground={true} />
         <h1 className="font-sans text-2xl font-extrabold text-ink leading-tight text-balance text-center">
           Welcome back.
         </h1>
-        <p className="font-sans text-sm text-slate-muted mt-1 text-center">
+        <p className="font-sans text-sm text-slate-muted mt-1.5 text-center">
           Sign in to your TeamForge account.
         </p>
       </div>
@@ -72,7 +74,10 @@ export function LoginForm({
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
         {/* Email */}
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="login-email" className="font-sans text-xs font-semibold text-ink">
+          <label
+            htmlFor="login-email"
+            className="font-sans text-xs font-semibold text-ink"
+          >
             Email
           </label>
           <input
@@ -82,11 +87,12 @@ export function LoginForm({
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            onFocus={() => onFocusChange(true)}
             onBlur={() => {
-              onFocusChange(false);
               if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-                setErrors((p) => ({ ...p, email: "Enter a valid email address." }));
+                setErrors((p) => ({
+                  ...p,
+                  email: "Enter a valid email address.",
+                }));
               else setErrors((p) => ({ ...p, email: undefined }));
             }}
             aria-describedby={errors.email ? "login-email-error" : undefined}
@@ -94,7 +100,10 @@ export function LoginForm({
             className={`${inputBase} ${errors.email ? inputError : inputNormal}`}
           />
           {errors.email && (
-            <p id="login-email-error" className="text-xs font-medium text-red-500 mt-0.5">
+            <p
+              id="login-email-error"
+              className="text-xs font-medium text-red-500"
+            >
               {errors.email}
             </p>
           )}
@@ -102,7 +111,10 @@ export function LoginForm({
 
         {/* Password */}
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="login-password" className="font-sans text-xs font-semibold text-ink">
+          <label
+            htmlFor="login-password"
+            className="font-sans text-xs font-semibold text-ink"
+          >
             Password
           </label>
           <div className="relative">
@@ -113,14 +125,17 @@ export function LoginForm({
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              onFocus={() => onFocusChange(true)}
               onBlur={() => {
-                onFocusChange(false);
                 if (password && password.length < 6)
-                  setErrors((p) => ({ ...p, password: "Password must be at least 6 characters." }));
+                  setErrors((p) => ({
+                    ...p,
+                    password: "Password must be at least 6 characters.",
+                  }));
                 else setErrors((p) => ({ ...p, password: undefined }));
               }}
-              aria-describedby={errors.password ? "login-password-error" : undefined}
+              aria-describedby={
+                errors.password ? "login-password-error" : undefined
+              }
               aria-invalid={!!errors.password}
               className={`${inputBase} pr-10 ${errors.password ? inputError : inputNormal}`}
             />
@@ -134,7 +149,10 @@ export function LoginForm({
             </button>
           </div>
           {errors.password && (
-            <p id="login-password-error" className="text-xs font-medium text-red-500 mt-0.5">
+            <p
+              id="login-password-error"
+              className="text-xs font-medium text-red-500"
+            >
               {errors.password}
             </p>
           )}
@@ -173,14 +191,16 @@ export function LoginForm({
         {/* Divider */}
         <div className="flex items-center gap-3 my-1">
           <div className="flex-1 h-px bg-[#E5E7EB]" />
-          <span className="font-sans text-xs text-slate-muted">or continue with</span>
+          <span className="font-sans text-xs text-slate-muted">
+            or continue with
+          </span>
           <div className="flex-1 h-px bg-[#E5E7EB]" />
         </div>
 
         {/* Google OAuth */}
         <button
           type="button"
-          className="w-full h-11 rounded-xl border border-[#E5E7EB] bg-white font-sans text-sm font-semibold text-ink flex items-center justify-center gap-2.5 hover:border-slate-muted transition-colors"
+          className="w-full h-11 rounded-xl border border-[#E5E7EB] bg-white font-sans text-sm font-semibold text-ink flex items-center justify-center gap-2.5 hover:border-[#9CA3AF] transition-colors"
         >
           <GoogleIcon />
           Continue with Google
@@ -193,7 +213,7 @@ export function LoginForm({
         <button
           type="button"
           onClick={onSwitchToRegister}
-          className="font-medium text-forge-teal hover:underline"
+          className="font-semibold text-forge-teal hover:underline"
         >
           Sign up
         </button>

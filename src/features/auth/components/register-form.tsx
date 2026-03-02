@@ -1,10 +1,8 @@
 import { useState } from "react";
-import { Eye, EyeOff, Loader2, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, Loader2, ArrowLeft, ChevronDown } from "lucide-react";
 import { TeamForgeLogo } from "@/assets/logo";
 
 interface RegisterFormProps {
-  onFocusChange: (focused: boolean) => void;
-  onSubmitStart: () => void;
   onSwitchToLogin: () => void;
 }
 
@@ -29,15 +27,19 @@ function getPasswordStrength(password: string): {
   return levels[score];
 }
 
-export function RegisterForm({
-  onFocusChange,
-  onSubmitStart,
-  onSwitchToLogin,
-}: RegisterFormProps) {
+const GENDER_OPTIONS = [
+  { value: "", label: "Select gender" },
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
+  { value: "non_binary", label: "Non-binary" },
+  { value: "prefer_not_to_say", label: "Prefer not to say" },
+];
+
+export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const [step, setStep] = useState<Step>(1);
   const [transitioning, setTransitioning] = useState(false);
 
-  // Step 1 fields
+  // Step 1
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,12 +50,14 @@ export function RegisterForm({
     password?: string;
   }>({});
 
-  // Step 2 fields
+  // Step 2
   const [age, setAge] = useState("");
   const [city, setCity] = useState("");
+  const [gender, setGender] = useState("");
   const [step2Errors, setStep2Errors] = useState<{
     age?: string;
     city?: string;
+    gender?: string;
   }>({});
 
   const [loading, setLoading] = useState(false);
@@ -66,21 +70,27 @@ export function RegisterForm({
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       e.email = "Enter a valid email address.";
     if (!password) e.password = "Password is required.";
-    else if (password.length < 6) e.password = "Password must be at least 6 characters.";
+    else if (password.length < 6)
+      e.password = "Password must be at least 6 characters.";
     return e;
   }
 
   function validateStep2() {
     const e: typeof step2Errors = {};
     if (!age) e.age = "Age is required.";
-    else if (Number(age) < 16 || Number(age) > 99) e.age = "Enter a valid age (16–99).";
+    else if (Number(age) < 16 || Number(age) > 99)
+      e.age = "Enter a valid age (16–99).";
     if (!city.trim()) e.city = "City is required.";
+    if (!gender) e.gender = "Please select a gender.";
     return e;
   }
 
   function goToStep2() {
     const v = validateStep1();
-    if (Object.keys(v).length > 0) { setStep1Errors(v); return; }
+    if (Object.keys(v).length > 0) {
+      setStep1Errors(v);
+      return;
+    }
     setStep1Errors({});
     setTransitioning(true);
     setTimeout(() => {
@@ -100,11 +110,12 @@ export function RegisterForm({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const v = validateStep2();
-    if (Object.keys(v).length > 0) { setStep2Errors(v); return; }
+    if (Object.keys(v).length > 0) {
+      setStep2Errors(v);
+      return;
+    }
     setStep2Errors({});
     setLoading(true);
-    onSubmitStart();
-    // Placeholder — replace with real registration call
     await new Promise((r) => setTimeout(r, 1800));
     setLoading(false);
   }
@@ -127,19 +138,26 @@ export function RegisterForm({
     >
       {/* Logo + title */}
       <div className="flex flex-col items-center mb-6">
-        <TeamForgeLogo className="w-9 h-9 mb-3" showBackground={true} />
+        <TeamForgeLogo className="w-10 h-10 mb-4" showBackground={true} />
         <h1 className="font-sans text-2xl font-extrabold text-ink leading-tight text-balance text-center">
           {step === 1 ? "Create your account." : "Almost there."}
         </h1>
-        <p className="font-sans text-sm text-slate-muted mt-1 text-center">
+        <p className="font-sans text-sm text-slate-muted mt-1.5 text-center">
           {step === 1
             ? "Start with your credentials."
-            : "A few more details to build your profile."}
+            : "A few details to build your profile."}
         </p>
       </div>
 
       {/* Step indicator */}
-      <div className="flex items-center justify-center gap-2 mb-6" aria-label={`Step ${step} of 2`}>
+      <div
+        className="flex items-center justify-center gap-2 mb-6"
+        aria-label={`Step ${step} of 2`}
+        role="progressbar"
+        aria-valuenow={step}
+        aria-valuemin={1}
+        aria-valuemax={2}
+      >
         {[1, 2].map((s) => (
           <div
             key={s}
@@ -147,7 +165,8 @@ export function RegisterForm({
             style={{
               width: s === step ? 20 : 8,
               height: 8,
-              background: s === step ? "#0D9488" : s < step ? "#0D9488" : "#E5E7EB",
+              background:
+                s === step ? "#0D9488" : s < step ? "#0D9488" : "#E5E7EB",
               opacity: s < step ? 0.5 : 1,
             }}
           />
@@ -156,13 +175,19 @@ export function RegisterForm({
 
       {step === 1 ? (
         <form
-          onSubmit={(e) => { e.preventDefault(); goToStep2(); }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            goToStep2();
+          }}
           noValidate
           className="flex flex-col gap-4"
         >
           {/* Full name */}
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="reg-name" className="font-sans text-xs font-semibold text-ink">
+            <label
+              htmlFor="reg-name"
+              className="font-sans text-xs font-semibold text-ink"
+            >
               Full Name
             </label>
             <input
@@ -172,23 +197,30 @@ export function RegisterForm({
               placeholder="Alex Johnson"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              onFocus={() => onFocusChange(true)}
               onBlur={() => {
-                onFocusChange(false);
-                if (!name.trim()) setStep1Errors((p) => ({ ...p, name: "Full name is required." }));
+                if (!name.trim())
+                  setStep1Errors((p) => ({
+                    ...p,
+                    name: "Full name is required.",
+                  }));
                 else setStep1Errors((p) => ({ ...p, name: undefined }));
               }}
               aria-invalid={!!step1Errors.name}
               className={`${inputBase} ${step1Errors.name ? inputError : inputNormal}`}
             />
             {step1Errors.name && (
-              <p className="text-xs font-medium text-red-500">{step1Errors.name}</p>
+              <p className="text-xs font-medium text-red-500">
+                {step1Errors.name}
+              </p>
             )}
           </div>
 
           {/* Email */}
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="reg-email" className="font-sans text-xs font-semibold text-ink">
+            <label
+              htmlFor="reg-email"
+              className="font-sans text-xs font-semibold text-ink"
+            >
               Email
             </label>
             <input
@@ -198,24 +230,30 @@ export function RegisterForm({
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              onFocus={() => onFocusChange(true)}
               onBlur={() => {
-                onFocusChange(false);
                 if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-                  setStep1Errors((p) => ({ ...p, email: "Enter a valid email address." }));
+                  setStep1Errors((p) => ({
+                    ...p,
+                    email: "Enter a valid email address.",
+                  }));
                 else setStep1Errors((p) => ({ ...p, email: undefined }));
               }}
               aria-invalid={!!step1Errors.email}
               className={`${inputBase} ${step1Errors.email ? inputError : inputNormal}`}
             />
             {step1Errors.email && (
-              <p className="text-xs font-medium text-red-500">{step1Errors.email}</p>
+              <p className="text-xs font-medium text-red-500">
+                {step1Errors.email}
+              </p>
             )}
           </div>
 
           {/* Password + strength */}
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="reg-password" className="font-sans text-xs font-semibold text-ink">
+            <label
+              htmlFor="reg-password"
+              className="font-sans text-xs font-semibold text-ink"
+            >
               Password
             </label>
             <div className="relative">
@@ -226,11 +264,12 @@ export function RegisterForm({
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                onFocus={() => onFocusChange(true)}
                 onBlur={() => {
-                  onFocusChange(false);
                   if (password && password.length < 6)
-                    setStep1Errors((p) => ({ ...p, password: "Password must be at least 6 characters." }));
+                    setStep1Errors((p) => ({
+                      ...p,
+                      password: "Password must be at least 6 characters.",
+                    }));
                   else setStep1Errors((p) => ({ ...p, password: undefined }));
                 }}
                 aria-invalid={!!step1Errors.password}
@@ -245,8 +284,6 @@ export function RegisterForm({
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
-
-            {/* Strength meter */}
             {password.length > 0 && (
               <div className="mt-1">
                 <div className="flex gap-1 h-1">
@@ -272,7 +309,9 @@ export function RegisterForm({
               </div>
             )}
             {step1Errors.password && (
-              <p className="text-xs font-medium text-red-500">{step1Errors.password}</p>
+              <p className="text-xs font-medium text-red-500">
+                {step1Errors.password}
+              </p>
             )}
           </div>
 
@@ -287,16 +326,17 @@ export function RegisterForm({
             Continue
           </button>
 
-          {/* Divider */}
           <div className="flex items-center gap-3 my-1">
             <div className="flex-1 h-px bg-[#E5E7EB]" />
-            <span className="font-sans text-xs text-slate-muted">or continue with</span>
+            <span className="font-sans text-xs text-slate-muted">
+              or continue with
+            </span>
             <div className="flex-1 h-px bg-[#E5E7EB]" />
           </div>
 
           <button
             type="button"
-            className="w-full h-11 rounded-xl border border-[#E5E7EB] bg-white font-sans text-sm font-semibold text-ink flex items-center justify-center gap-2.5 hover:border-slate-muted transition-colors"
+            className="w-full h-11 rounded-xl border border-[#E5E7EB] bg-white font-sans text-sm font-semibold text-ink flex items-center justify-center gap-2.5 hover:border-[#9CA3AF] transition-colors"
           >
             <GoogleIcon />
             Continue with Google
@@ -307,7 +347,10 @@ export function RegisterForm({
           {/* Age + City row */}
           <div className="flex gap-3">
             <div className="flex flex-col gap-1.5 flex-1">
-              <label htmlFor="reg-age" className="font-sans text-xs font-semibold text-ink">
+              <label
+                htmlFor="reg-age"
+                className="font-sans text-xs font-semibold text-ink"
+              >
                 Age
               </label>
               <input
@@ -318,17 +361,20 @@ export function RegisterForm({
                 placeholder="22"
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
-                onFocus={() => onFocusChange(true)}
-                onBlur={() => onFocusChange(false)}
                 aria-invalid={!!step2Errors.age}
                 className={`${inputBase} ${step2Errors.age ? inputError : inputNormal}`}
               />
               {step2Errors.age && (
-                <p className="text-xs font-medium text-red-500">{step2Errors.age}</p>
+                <p className="text-xs font-medium text-red-500">
+                  {step2Errors.age}
+                </p>
               )}
             </div>
             <div className="flex flex-col gap-1.5 flex-1">
-              <label htmlFor="reg-city" className="font-sans text-xs font-semibold text-ink">
+              <label
+                htmlFor="reg-city"
+                className="font-sans text-xs font-semibold text-ink"
+              >
                 City
               </label>
               <input
@@ -337,15 +383,64 @@ export function RegisterForm({
                 placeholder="Kyiv"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                onFocus={() => onFocusChange(true)}
-                onBlur={() => onFocusChange(false)}
                 aria-invalid={!!step2Errors.city}
                 className={`${inputBase} ${step2Errors.city ? inputError : inputNormal}`}
               />
               {step2Errors.city && (
-                <p className="text-xs font-medium text-red-500">{step2Errors.city}</p>
+                <p className="text-xs font-medium text-red-500">
+                  {step2Errors.city}
+                </p>
               )}
             </div>
+          </div>
+
+          {/* Gender */}
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="reg-gender"
+              className="font-sans text-xs font-semibold text-ink"
+            >
+              Gender
+            </label>
+            <div className="relative">
+              <select
+                id="reg-gender"
+                value={gender}
+                onChange={(e) => {
+                  setGender(e.target.value);
+                  if (e.target.value)
+                    setStep2Errors((p) => ({ ...p, gender: undefined }));
+                }}
+                aria-invalid={!!step2Errors.gender}
+                className={`${inputBase} appearance-none pr-9 cursor-pointer ${
+                  step2Errors.gender ? inputError : inputNormal
+                } ${!gender ? "text-slate-muted" : "text-ink"}`}
+              >
+                {GENDER_OPTIONS.map(({ value, label }) => (
+                  <option
+                    key={value}
+                    value={value}
+                    disabled={value === ""}
+                    className="text-ink"
+                  >
+                    {label}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                size={15}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-muted pointer-events-none"
+                aria-hidden="true"
+              />
+            </div>
+            {step2Errors.gender && (
+              <p className="text-xs font-medium text-red-500">
+                {step2Errors.gender}
+              </p>
+            )}
+            <p className="text-xs text-slate-muted mt-0.5">
+              Used for your profile only — not part of matching.
+            </p>
           </div>
 
           <button
@@ -378,13 +473,12 @@ export function RegisterForm({
         </form>
       )}
 
-      {/* Switch to login */}
       <p className="font-sans text-sm text-slate-muted text-center mt-6">
         Already have an account?{" "}
         <button
           type="button"
           onClick={onSwitchToLogin}
-          className="font-medium text-forge-teal hover:underline"
+          className="font-semibold text-forge-teal hover:underline"
         >
           Sign in
         </button>
