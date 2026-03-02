@@ -5,6 +5,7 @@ import {
   Outlet,
 } from "@tanstack/react-router";
 import { LandingPage } from "./features/landing/landing-page";
+import { AuthPage } from "./features/auth/auth-page";
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -22,7 +23,23 @@ const landingRoute = createRoute({
   component: LandingPage,
 });
 
-const routeTree = rootRoute.addChildren([landingRoute]);
+const loginRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/auth/login",
+  component: () => <AuthPage defaultView="login" />,
+});
+
+const registerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/auth/register",
+  component: () => <AuthPage defaultView="register" />,
+});
+
+const routeTree = rootRoute.addChildren([
+  landingRoute,
+  loginRoute,
+  registerRoute,
+]);
 
 export const router = createRouter({
   routeTree,

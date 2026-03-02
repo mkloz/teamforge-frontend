@@ -100,10 +100,10 @@ export function Navbar() {
               asChild
               className="border-white/20 text-white/70 hover:bg-white/10 hover:text-white hover:border-white/40 bg-transparent px-4 py-2"
             >
-              <a href="/login">Log In</a>
+              <a href="/auth/login">Log In</a>
             </Button>
             <Button variant="default" asChild className="px-5 py-2">
-              <a href="/register">Get Started</a>
+              <a href="/auth/register">Get Started</a>
             </Button>
           </div>
 
@@ -149,12 +149,12 @@ export function Navbar() {
             asChild
             className="w-full border-white/20 text-white hover:bg-white/10 hover:border-white/40 bg-transparent text-base"
           >
-            <a href="/login" onClick={() => setMenuOpen(false)}>
+            <a href="/auth/login" onClick={() => setMenuOpen(false)}>
               Log In
             </a>
           </Button>
           <Button variant="default" asChild className="w-full text-base py-6">
-            <a href="/register" onClick={() => setMenuOpen(false)}>
+            <a href="/auth/register" onClick={() => setMenuOpen(false)}>
               Get Started
             </a>
           </Button>
