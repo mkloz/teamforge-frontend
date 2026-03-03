@@ -50,17 +50,18 @@ export function PersonalityTestPage() {
       setScreen({ id: "questions", currentPage: screen.currentPage + 1 });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
+      // Compute vector eagerly so CalculatingScreen can display real bar widths
+      const vec = calculateVector(questions, answers);
+      const res = vectorToType(vec);
+      setVector(vec);
+      setResult(res);
       setScreen({ id: "calculating" });
     }
   }
 
   const handleCalculationDone = useCallback(() => {
-    const vec = calculateVector(questions, answers);
-    const res = vectorToType(vec);
-    setVector(vec);
-    setResult(res);
     setScreen({ id: "results" });
-  }, [questions, answers]);
+  }, []);
 
   function handleRetake() {
     setAnswers({});
@@ -80,7 +81,7 @@ export function PersonalityTestPage() {
   const pageQuestions = questions.slice(pageStart, pageStart + QUESTIONS_PER_PAGE);
 
   if (screen.id === "calculating") {
-    return <CalculatingScreen onDone={handleCalculationDone} />;
+    return <CalculatingScreen vector={vector!} onDone={handleCalculationDone} />;
   }
 
   return (
@@ -129,6 +130,7 @@ export function PersonalityTestPage() {
             startIndex={pageStart + 1}
             pageNumber={currentPage}
             totalPages={totalPages}
+            totalQuestions={questions.length}
             answers={answers}
             onAnswer={handleAnswer}
             onNext={handleNextPage}

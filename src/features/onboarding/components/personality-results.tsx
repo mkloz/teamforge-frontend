@@ -80,26 +80,53 @@ export function PersonalityResults({ result, vector, onContinue, onRetake }: Per
 
       {/* Type letter tiles */}
       <div className="flex justify-center gap-2 mb-5">
-        {letters.map((letter, i) => (
-          <div
-            key={i}
-            className="flex items-center justify-center rounded-2xl font-sans font-extrabold transition-all duration-500"
-            style={{
-              width: 64,
-              height: 72,
-              fontSize: 36,
-              background: "#FFFFFF",
-              border: "1.5px solid rgba(13,148,136,0.2)",
-              color: "#0D9488",
-              opacity: lettersVisible ? 1 : 0,
-              transform: lettersVisible ? "translateY(0)" : "translateY(-12px)",
-              transitionDelay: `${i * 80}ms`,
-              boxShadow: "0 2px 12px rgba(13,148,136,0.1)",
-            }}
-          >
-            {letter}
-          </div>
-        ))}
+        {letters.map((letter, i) => {
+          const axisLabel = ["Energy", "Mind", "Nature", "Tactics"][i];
+          return (
+            <div
+              key={i}
+              className="flex flex-col items-center justify-center rounded-2xl transition-all duration-500"
+              style={{
+                width: 68,
+                height: 80,
+                background: "#FFFFFF",
+                border: "1.5px solid rgba(13,148,136,0.2)",
+                opacity: lettersVisible ? 1 : 0,
+                transform: lettersVisible ? "translateY(0)" : "translateY(-14px)",
+                transitionDelay: `${i * 90}ms`,
+                boxShadow: "0 2px 14px rgba(13,148,136,0.09)",
+                gap: 0,
+              }}
+            >
+              {/* Letter */}
+              <span
+                className="font-sans font-extrabold leading-none"
+                style={{ fontSize: 34, color: "#0D9488" }}
+              >
+                {letter}
+              </span>
+              {/* Teal underline accent */}
+              <div
+                style={{
+                  width: 20,
+                  height: 2,
+                  background: "#0D9488",
+                  borderRadius: 999,
+                  opacity: 0.4,
+                  marginTop: 3,
+                  marginBottom: 4,
+                }}
+              />
+              {/* Axis label */}
+              <span
+                className="font-sans font-medium leading-none"
+                style={{ fontSize: 8, color: "rgba(107,114,128,0.7)", letterSpacing: "0.04em" }}
+              >
+                {axisLabel}
+              </span>
+            </div>
+          );
+        })}
       </div>
 
       {/* Type name */}

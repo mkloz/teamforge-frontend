@@ -194,14 +194,14 @@ export const TEST_LENGTH_CONFIG: Record<
 > = {
   30: {
     label: "Quick",
-    sublabel: "6 items per trait",
+    sublabel: "10 pages — just enough to get started",
     duration: "~2 min",
     itemsPerDimension: 6,
     questionsPerPage: 3,
   },
   50: {
     label: "Standard",
-    sublabel: "10 items per trait",
+    sublabel: "17 pages — best accuracy / time balance",
     duration: "~5 min",
     itemsPerDimension: 10,
     questionsPerPage: 3,
@@ -209,7 +209,7 @@ export const TEST_LENGTH_CONFIG: Record<
   },
   150: {
     label: "Deep",
-    sublabel: "30 items per trait",
+    sublabel: "50 pages — for a match that improves with every retake",
     duration: "~15 min",
     itemsPerDimension: 30,
     questionsPerPage: 3,
