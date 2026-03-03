@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { LandingPage } from "./features/landing/landing-page";
 import { AuthPage } from "./features/auth/auth-page";
+import { PersonalityTestPage } from "./features/onboarding/personality-test-page";
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -35,10 +36,17 @@ const registerRoute = createRoute({
   component: () => <AuthPage defaultView="register" />,
 });
 
+const personalityRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/onboarding/personality",
+  component: PersonalityTestPage,
+});
+
 const routeTree = rootRoute.addChildren([
   landingRoute,
   loginRoute,
   registerRoute,
+  personalityRoute,
 ]);
 
 export const router = createRouter({
