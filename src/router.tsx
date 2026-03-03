@@ -4,8 +4,8 @@ import {
   createRouter,
   Outlet,
 } from "@tanstack/react-router";
-import { LandingPage } from "./features/landing/landing-page";
 import { AuthPage } from "./features/auth/auth-page";
+import { LandingPage } from "./features/landing/landing-page";
 
 declare module "@tanstack/react-router" {
   interface Register {

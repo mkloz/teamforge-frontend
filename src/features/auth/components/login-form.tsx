@@ -1,211 +1,210 @@
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { TeamForgeLogo } from "@/assets/logo";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+
+import { GoogleIcon } from "@/shared/components/icons";
+import { Button } from "@/shared/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/shared/components/ui/form";
+import { Input } from "@/shared/components/ui/input";
+import { loginSchema, type LoginValues } from "../schemas/auth-schemas";
 
 interface LoginFormProps {
   onSwitchToRegister: () => void;
+  onSuccess?: () => void;
+  onProgress?: (progress: number) => void;
 }
 
-export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export function LoginForm({
+  onSwitchToRegister,
+  onSuccess,
+  onProgress,
+}: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{
-    email?: string;
-    password?: string;
-    form?: string;
-  }>({});
+  // Root error could be set here if backend returns e.g. "Invalid credentials"
+  const [rootError, setRootError] = useState<string | null>(null);
 
-  function validate() {
-    const next: typeof errors = {};
-    if (!email) next.email = "Email is required.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-      next.email = "Enter a valid email address.";
-    if (!password) next.password = "Password is required.";
-    else if (password.length < 6)
-      next.password = "Password must be at least 6 characters.";
-    return next;
-  }
+  const form = useForm<LoginValues>({
+    resolver: zodResolver(loginSchema),
+    mode: "onBlur",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const v = validate();
-    if (Object.keys(v).length > 0) {
-      setErrors(v);
-      return;
-    }
-    setErrors({});
+  const emailValue = form.watch("email");
+  const passwordValue = form.watch("password");
+
+  useEffect(() => {
+    if (!onProgress) return;
+    let p = 0;
+    if (emailValue && emailValue.length > 3) p += 0.5;
+    if (passwordValue && passwordValue.length > 3) p += 0.5;
+    onProgress(p);
+  }, [emailValue, passwordValue, onProgress]);
+
+  async function onSubmit(values: LoginValues) {
+    setRootError(null);
     setLoading(true);
+    // Simulate API call
     await new Promise((r) => setTimeout(r, 1800));
     setLoading(false);
+    console.log("Login submitted", values);
+    if (onSuccess) onSuccess();
   }
 
-  const inputBase =
-    "w-full h-11 px-3.5 rounded-xl border font-sans text-sm text-ink placeholder:text-slate-muted bg-white outline-none transition-all duration-200";
-  const inputNormal =
-    "border-[#E5E7EB] focus:border-forge-teal focus:ring-2 focus:ring-[rgba(13,148,136,0.12)]";
-  const inputError =
-    "border-red-400 focus:border-red-400 focus:ring-2 focus:ring-red-100";
-
   return (
-    <div
-      className="flex flex-col w-full"
-      style={{ animation: "auth-form-in 0.5s ease-out forwards" }}
-    >
+    <div className="flex flex-col w-full">
       {/* Logo + title */}
       <div className="flex flex-col items-center mb-8">
-        <TeamForgeLogo className="w-10 h-10 mb-4" showBackground={true} />
-        <h1 className="font-sans text-2xl font-extrabold text-ink leading-tight text-balance text-center">
-          Welcome back.
+        <h1 className="font-sans text-3xl sm:text-4xl font-extrabold text-ink leading-tight text-balance text-center tracking-tight">
+          Welcome back<span className="text-forge-teal">.</span>
         </h1>
-        <p className="font-sans text-sm text-slate-muted mt-1.5 text-center">
+        <p className="font-sans text-sm sm:text-base text-slate-muted mt-2 text-center">
           Sign in to your TeamForge account.
         </p>
       </div>
 
       {/* Form-level error */}
-      {errors.form && (
+      {rootError && (
         <div className="mb-4 flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-red-200 bg-red-50">
-          <span className="text-red-500 text-xs font-medium">{errors.form}</span>
+          <span className="text-red-500 text-xs font-medium">{rootError}</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
-        {/* Email */}
-        <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor="login-email"
-            className="font-sans text-xs font-semibold text-ink"
-          >
-            Email
-          </label>
-          <input
-            id="login-email"
-            type="email"
-            autoComplete="email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onBlur={() => {
-              if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-                setErrors((p) => ({
-                  ...p,
-                  email: "Enter a valid email address.",
-                }));
-              else setErrors((p) => ({ ...p, email: undefined }));
-            }}
-            aria-describedby={errors.email ? "login-email-error" : undefined}
-            aria-invalid={!!errors.email}
-            className={`${inputBase} ${errors.email ? inputError : inputNormal}`}
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-4"
+        >
+          {/* Email */}
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem className="space-y-0">
+                <FormLabel className="font-sans text-sm font-semibold text-ink">
+                  Email
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    className="h-11 px-3.5 rounded-xl border-[#E5E7EB] bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-all duration-200"
+                    placeholder="you@example.com"
+                    type="email"
+                    autoComplete="email"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-xs font-medium text-red-500" />
+              </FormItem>
+            )}
           />
-          {errors.email && (
-            <p
-              id="login-email-error"
-              className="text-xs font-medium text-red-500"
-            >
-              {errors.email}
-            </p>
-          )}
-        </div>
 
-        {/* Password */}
-        <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor="login-password"
-            className="font-sans text-xs font-semibold text-ink"
+          {/* Password */}
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem className="space-y-0">
+                <div className="flex items-center justify-between">
+                  <FormLabel className="font-sans text-sm font-semibold text-ink">
+                    Password
+                  </FormLabel>
+                  <a
+                    href="/auth/forgot-password"
+                    className="font-sans text-xs font-medium text-forge-teal hover:underline"
+                    tabIndex={-1}
+                  >
+                    Forgot password?
+                  </a>
+                </div>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      className="h-11 pl-3.5 pr-10 rounded-xl border-[#E5E7EB] bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-all duration-200"
+                      placeholder="••••••••"
+                      autoComplete="current-password"
+                      aria-invalid={!!form.formState.errors.password}
+                      {...field}
+                    />
+                    <button
+                      type="button"
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-muted hover:text-forge-teal transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </FormControl>
+                <FormMessage className="text-xs font-medium text-red-500" />
+              </FormItem>
+            )}
+          />
+
+          {/* Submit */}
+          <Button
+            type="submit"
+            disabled={loading}
+            className={`w-full h-12 rounded-xl mt-2 text-sm sm:text-base font-semibold group transition-all active:scale-[0.98] ${!loading ? "shadow-lg shadow-forge-teal/20 hover:shadow-forge-teal/40 hover:-translate-y-0.5 bg-forge-teal text-white hover:bg-teal-500" : ""}`}
           >
-            Password
-          </label>
-          <div className="relative">
-            <input
-              id="login-password"
-              type={showPassword ? "text" : "password"}
-              autoComplete="current-password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onBlur={() => {
-                if (password && password.length < 6)
-                  setErrors((p) => ({
-                    ...p,
-                    password: "Password must be at least 6 characters.",
-                  }));
-                else setErrors((p) => ({ ...p, password: undefined }));
-              }}
-              aria-describedby={
-                errors.password ? "login-password-error" : undefined
-              }
-              aria-invalid={!!errors.password}
-              className={`${inputBase} pr-10 ${errors.password ? inputError : inputNormal}`}
-            />
-            <button
-              type="button"
-              aria-label={showPassword ? "Hide password" : "Show password"}
-              onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-muted hover:text-forge-teal transition-colors"
-            >
-              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
+            {loading ? (
+              <>
+                <Loader2 size={16} className="animate-spin mr-2" />
+                Signing in...
+              </>
+            ) : (
+              <>
+                Sign In
+                <svg
+                  className="w-4 h-4 ml-1.5 opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  />
+                </svg>
+              </>
+            )}
+          </Button>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-[#E5E7EB]" />
+            <span className="font-sans text-xs text-slate-muted font-medium">
+              or continue with
+            </span>
+            <div className="flex-1 h-px bg-[#E5E7EB]" />
           </div>
-          {errors.password && (
-            <p
-              id="login-password-error"
-              className="text-xs font-medium text-red-500"
-            >
-              {errors.password}
-            </p>
-          )}
-        </div>
 
-        {/* Forgot password */}
-        <div className="flex justify-end -mt-2">
-          <a
-            href="/auth/forgot-password"
-            className="font-sans text-xs font-medium text-forge-teal hover:underline"
+          {/* Google OAuth */}
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-12 rounded-xl border-[#E5E7EB] bg-white font-sans text-sm font-semibold text-ink flex items-center justify-center gap-2.5 hover:border-[#9CA3AF] hover:bg-slate-50 transition-all active:scale-[0.98] shadow-sm"
           >
-            Forgot password?
-          </a>
-        </div>
-
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full h-12 rounded-xl font-sans text-sm font-semibold text-white flex items-center justify-center gap-2 transition-all duration-200 hover:scale-[1.01] disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100"
-          style={{
-            background: "#0D9488",
-            boxShadow: loading ? "none" : "0 4px 14px rgba(13,148,136,0.28)",
-          }}
-        >
-          {loading ? (
-            <>
-              <Loader2 size={16} className="animate-spin" />
-              <span>Signing in...</span>
-            </>
-          ) : (
-            "Sign In"
-          )}
-        </button>
-
-        {/* Divider */}
-        <div className="flex items-center gap-3 my-1">
-          <div className="flex-1 h-px bg-[#E5E7EB]" />
-          <span className="font-sans text-xs text-slate-muted">
-            or continue with
-          </span>
-          <div className="flex-1 h-px bg-[#E5E7EB]" />
-        </div>
-
-        {/* Google OAuth */}
-        <button
-          type="button"
-          className="w-full h-11 rounded-xl border border-[#E5E7EB] bg-white font-sans text-sm font-semibold text-ink flex items-center justify-center gap-2.5 hover:border-[#9CA3AF] transition-colors"
-        >
-          <GoogleIcon />
-          Continue with Google
-        </button>
-      </form>
+            <GoogleIcon />
+            Google
+          </Button>
+        </form>
+      </Form>
 
       {/* Switch to register */}
       <p className="font-sans text-sm text-slate-muted text-center mt-6">
@@ -219,28 +218,5 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         </button>
       </p>
     </div>
-  );
-}
-
-function GoogleIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-      <path
-        d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
-        fill="#4285F4"
-      />
-      <path
-        d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"
-        fill="#34A853"
-      />
-      <path
-        d="M3.964 10.706A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.038l3.007-2.332z"
-        fill="#FBBC05"
-      />
-      <path
-        d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z"
-        fill="#EA4335"
-      />
-    </svg>
   );
 }
