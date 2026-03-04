@@ -1,8 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useCallback, useEffect, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 
+import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { GoogleIcon } from "@/shared/components/icons";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -14,6 +15,7 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
+import { cn } from "@/shared/lib/utils";
 import { loginSchema, type LoginValues } from "../schemas/auth-schemas";
 
 interface LoginFormProps {
@@ -22,6 +24,9 @@ interface LoginFormProps {
   onProgress?: (progress: number) => void;
 }
 
+/** Minimum character threshold before a field contributes to progress. */
+const FIELD_MIN_LENGTH = 3;
+
 export function LoginForm({
   onSwitchToRegister,
   onSuccess,
@@ -29,7 +34,6 @@ export function LoginForm({
 }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  // Root error could be set here if backend returns e.g. "Invalid credentials"
   const [rootError, setRootError] = useState<string | null>(null);
 
   const form = useForm<LoginValues>({
@@ -41,26 +45,29 @@ export function LoginForm({
     },
   });
 
-  const emailValue = form.watch("email");
-  const passwordValue = form.watch("password");
+  const emailValue = useWatch({ control: form.control, name: "email" });
+  const passwordValue = useWatch({ control: form.control, name: "password" });
 
   useEffect(() => {
     if (!onProgress) return;
     let p = 0;
-    if (emailValue && emailValue.length > 3) p += 0.5;
-    if (passwordValue && passwordValue.length > 3) p += 0.5;
+    if (emailValue && emailValue.length > FIELD_MIN_LENGTH) p += 0.5;
+    if (passwordValue && passwordValue.length > FIELD_MIN_LENGTH) p += 0.5;
     onProgress(p);
   }, [emailValue, passwordValue, onProgress]);
 
-  async function onSubmit(values: LoginValues) {
-    setRootError(null);
-    setLoading(true);
-    // Simulate API call
-    await new Promise((r) => setTimeout(r, 1800));
-    setLoading(false);
-    console.log("Login submitted", values);
-    if (onSuccess) onSuccess();
-  }
+  const onSubmit = useCallback(
+    async (values: LoginValues) => {
+      setRootError(null);
+      setLoading(true);
+      // Simulate API call
+      await new Promise((r) => setTimeout(r, 1800));
+      setLoading(false);
+      console.log("Login submitted", values);
+      onSuccess?.();
+    },
+    [onSuccess],
+  );
 
   return (
     <div className="flex flex-col w-full">
@@ -97,7 +104,7 @@ export function LoginForm({
                 </FormLabel>
                 <FormControl>
                   <Input
-                    className="h-11 px-3.5 rounded-xl border-[#E5E7EB] bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-all duration-200"
+                    className="h-11 px-3.5 rounded-xl border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-colors duration-200"
                     placeholder="you@example.com"
                     type="email"
                     autoComplete="email"
@@ -131,7 +138,7 @@ export function LoginForm({
                   <div className="relative">
                     <Input
                       type={showPassword ? "text" : "password"}
-                      className="h-11 pl-3.5 pr-10 rounded-xl border-[#E5E7EB] bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-all duration-200"
+                      className="h-11 pl-3.5 pr-10 rounded-xl border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-colors duration-200"
                       placeholder="••••••••"
                       autoComplete="current-password"
                       aria-invalid={!!form.formState.errors.password}
@@ -158,7 +165,11 @@ export function LoginForm({
           <Button
             type="submit"
             disabled={loading}
-            className={`w-full h-12 rounded-xl mt-2 text-sm sm:text-base font-semibold group transition-all active:scale-[0.98] ${!loading ? "shadow-lg shadow-forge-teal/20 hover:shadow-forge-teal/40 hover:-translate-y-0.5 bg-forge-teal text-white hover:bg-teal-500" : ""}`}
+            className={cn(
+              "w-full h-12 rounded-xl mt-2 text-sm sm:text-base font-semibold group transition-[transform,box-shadow,background-color] duration-200 active:scale-[0.98]",
+              !loading &&
+                "shadow-lg shadow-forge-teal/20 hover:shadow-forge-teal/40 hover:-translate-y-0.5 bg-forge-teal text-white hover:bg-teal-500",
+            )}
           >
             {loading ? (
               <>
@@ -168,37 +179,25 @@ export function LoginForm({
             ) : (
               <>
                 Sign In
-                <svg
-                  className="w-4 h-4 ml-1.5 opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2.5}
-                    d="M14 5l7 7m0 0l-7 7m7-7H3"
-                  />
-                </svg>
+                <ArrowRightAnimated />
               </>
             )}
           </Button>
 
           {/* Divider */}
           <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-[#E5E7EB]" />
+            <div className="flex-1 h-px bg-border" />
             <span className="font-sans text-xs text-slate-muted font-medium">
               or continue with
             </span>
-            <div className="flex-1 h-px bg-[#E5E7EB]" />
+            <div className="flex-1 h-px bg-border" />
           </div>
 
           {/* Google OAuth */}
           <Button
             type="button"
             variant="outline"
-            className="w-full h-12 rounded-xl border-[#E5E7EB] bg-white font-sans text-sm font-semibold text-ink flex items-center justify-center gap-2.5 hover:border-[#9CA3AF] hover:bg-slate-50 transition-all active:scale-[0.98] shadow-sm"
+            className="w-full h-12 rounded-xl border-border bg-white font-sans text-sm font-semibold text-ink flex items-center justify-center gap-2.5 hover:border-slate-muted hover:bg-slate-50 transition-colors duration-200 active:scale-[0.98] shadow-sm"
           >
             <GoogleIcon />
             Google

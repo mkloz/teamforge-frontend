@@ -1,4 +1,5 @@
 import { Button } from "@/shared/components/ui/button";
+import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -127,7 +128,10 @@ export function CtaSection() {
             asChild
             className="group relative w-full sm:w-auto px-8 py-7 text-base overflow-hidden hover:bg-[#0f9e92] shadow-[0_0_24px_rgba(13,148,136,0.35)] hover:shadow-[0_0_40px_rgba(13,148,136,0.55)]"
           >
-            <a href="/register" aria-label="Create your free TeamForge account">
+            <Link
+              to="/auth/register"
+              aria-label="Create your free TeamForge account"
+            >
               <span
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-[linear-gradient(105deg,transparent_30%,rgba(255,255,255,0.12)_50%,transparent_70%)] bg-size-[200%_100%]"
                 aria-hidden="true"
@@ -138,7 +142,7 @@ export function CtaSection() {
                 className="relative z-10 transition-transform duration-200 group-hover:translate-x-1"
                 aria-hidden="true"
               />
-            </a>
+            </Link>
           </Button>
 
           <Button

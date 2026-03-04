@@ -9,7 +9,7 @@ export function AlgorithmStats({ inView }: AlgorithmStatsProps) {
   return (
     <div
       className={cn(
-        "flex-1 max-w-md w-full transition-all duration-700 delay-300",
+        "flex-1 max-w-md w-full transition-[opacity,transform] duration-700 delay-300",
         inView ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8",
       )}
     >
@@ -86,7 +86,7 @@ export function AlgorithmStats({ inView }: AlgorithmStatsProps) {
             key={label}
             className={cn(
               "rounded-2xl p-4 text-center backdrop-blur-sm bg-white/3 border border-white/5",
-              "transition-all duration-500",
+              "transition-[opacity,transform] duration-500",
             )}
             style={{
               opacity: inView ? 1 : 0,

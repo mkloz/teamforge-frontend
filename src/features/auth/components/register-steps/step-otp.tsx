@@ -1,7 +1,8 @@
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 
+import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { Button } from "@/shared/components/ui/button";
 import {
   FormControl,
@@ -15,14 +16,16 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/shared/components/ui/input-otp";
+import { cn } from "@/shared/lib/utils";
 import type { RegisterValues } from "../../schemas/auth-schemas";
-
-import { Loader2 } from "lucide-react";
 
 interface StepOtpProps {
   onBack: () => void;
   loading: boolean;
 }
+
+const OTP_SLOT_CLASS =
+  "h-12 flex-1 rounded-xl border border-border font-mono text-lg transition-colors focus-within:border-forge-teal focus-within:ring-2 focus-within:ring-[rgba(13,148,136,0.12)]";
 
 export function StepOtp({ onBack, loading }: StepOtpProps) {
   const { control } = useFormContext<RegisterValues>();
@@ -50,7 +53,7 @@ export function StepOtp({ onBack, loading }: StepOtpProps) {
                     <InputOTPSlot
                       key={idx}
                       index={idx}
-                      className="h-12 flex-1 rounded-xl border border-[#E5E7EB] font-mono text-lg transition-all focus-within:border-forge-teal focus-within:ring-2 focus-within:ring-[rgba(13,148,136,0.12)]"
+                      className={OTP_SLOT_CLASS}
                     />
                   ))}
                 </InputOTPGroup>
@@ -64,7 +67,7 @@ export function StepOtp({ onBack, loading }: StepOtpProps) {
                     <InputOTPSlot
                       key={idx}
                       index={idx}
-                      className="h-12 flex-1 rounded-xl border border-[#E5E7EB] font-mono text-lg transition-all focus-within:border-forge-teal focus-within:ring-2 focus-within:ring-[rgba(13,148,136,0.12)]"
+                      className={OTP_SLOT_CLASS}
                     />
                   ))}
                 </InputOTPGroup>
@@ -78,11 +81,11 @@ export function StepOtp({ onBack, loading }: StepOtpProps) {
       <Button
         type="submit"
         disabled={loading}
-        className={`w-full h-12 rounded-xl mt-4 text-sm sm:text-base font-semibold group transition-all active:scale-[0.98] ${
-          !loading
-            ? "shadow-lg shadow-forge-teal/20 hover:shadow-forge-teal/40 hover:-translate-y-0.5 bg-forge-teal text-white hover:bg-teal-500"
-            : ""
-        }`}
+        className={cn(
+          "w-full h-12 rounded-xl mt-4 text-sm sm:text-base font-semibold group transition-[transform,box-shadow,background-color] duration-200 active:scale-[0.98]",
+          !loading &&
+            "shadow-lg shadow-forge-teal/20 hover:shadow-forge-teal/40 hover:-translate-y-0.5 bg-forge-teal text-white hover:bg-teal-500",
+        )}
       >
         {loading ? (
           <>
@@ -92,19 +95,7 @@ export function StepOtp({ onBack, loading }: StepOtpProps) {
         ) : (
           <>
             Verify & Create
-            <svg
-              className="w-4 h-4 ml-1.5 opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2.5}
-                d="M14 5l7 7m0 0l-7 7m7-7H3"
-              />
-            </svg>
+            <ArrowRightAnimated />
           </>
         )}
       </Button>

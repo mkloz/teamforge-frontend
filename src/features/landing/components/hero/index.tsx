@@ -1,4 +1,5 @@
 import { Button } from "@/shared/components/ui/button";
+import { Link } from "@tanstack/react-router";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { ForgeOrb } from "./forge-orb";
 
@@ -52,14 +53,14 @@ export function HeroSection() {
                 asChild
                 className="group w-full sm:w-auto px-7 py-6 text-base outline-none hover:ring-0 shadow-[0_0_24px_rgba(13,148,136,0.35),0_2px_8px_rgba(0,0,0,0.4)] hover:shadow-[0_0_32px_rgba(13,148,136,0.5),0_2px_12px_rgba(0,0,0,0.5)]"
               >
-                <a href="/register">
+                <Link to="/auth/register">
                   Get Started – Free
                   <ArrowRight
                     size={16}
                     className="ml-2 group-hover:translate-x-0.5 transition-transform"
                     aria-hidden="true"
                   />
-                </a>
+                </Link>
               </Button>
               <Button
                 variant="outline"

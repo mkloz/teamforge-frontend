@@ -1,5 +1,6 @@
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
+import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { TeamForgeLogo } from "../../../../assets/logo";
@@ -54,7 +55,7 @@ export function Navbar() {
     <>
       <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-150",
+          "fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-150",
           scrolled
             ? "bg-hero-bg/95 backdrop-blur-md border-b border-white/5"
             : "bg-transparent",
@@ -100,10 +101,10 @@ export function Navbar() {
               asChild
               className="border-white/20 text-white/70 hover:bg-white/10 hover:text-white hover:border-white/40 bg-transparent px-4 py-2"
             >
-              <a href="/auth/login">Log In</a>
+              <Link to="/auth/login">Log In</Link>
             </Button>
             <Button variant="default" asChild className="px-5 py-2">
-              <a href="/auth/register">Get Started</a>
+              <Link to="/auth/register">Get Started</Link>
             </Button>
           </div>
 
@@ -121,7 +122,7 @@ export function Navbar() {
       <div
         ref={menuRef}
         className={cn(
-          "fixed inset-0 z-40 bg-hero-bg/98 backdrop-blur-lg flex flex-col items-center justify-center gap-8 transition-all duration-150",
+          "fixed inset-0 z-40 bg-hero-bg/98 backdrop-blur-lg flex flex-col items-center justify-center gap-8 transition-opacity duration-150",
           menuOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none",
@@ -149,14 +150,14 @@ export function Navbar() {
             asChild
             className="w-full border-white/20 text-white hover:bg-white/10 hover:border-white/40 bg-transparent text-base"
           >
-            <a href="/auth/login" onClick={() => setMenuOpen(false)}>
+            <Link to="/auth/login" onClick={() => setMenuOpen(false)}>
               Log In
-            </a>
+            </Link>
           </Button>
           <Button variant="default" asChild className="w-full text-base py-6">
-            <a href="/auth/register" onClick={() => setMenuOpen(false)}>
+            <Link to="/auth/register" onClick={() => setMenuOpen(false)}>
               Get Started
-            </a>
+            </Link>
           </Button>
         </div>
       </div>

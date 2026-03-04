@@ -1,9 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useCallback, useEffect, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 
 import { Form } from "@/shared/components/ui/form";
+import { cn } from "@/shared/lib/utils";
 import { registerSchema, type RegisterValues } from "../schemas/auth-schemas";
 import { StepCredentials } from "./register-steps/step-credentials";
 import { StepOtp } from "./register-steps/step-otp";
@@ -16,6 +17,9 @@ interface RegisterFormProps {
 }
 
 type Step = 1 | 2 | 3;
+
+/** Total required fields for progress calculation. */
+const TOTAL_REQUIRED_FIELDS = 7;
 
 const variants = {
   enter: (direction: number) => ({
@@ -57,7 +61,7 @@ export function RegisterForm({
     },
   });
 
-  const values = form.watch();
+  const values = useWatch({ control: form.control });
 
   useEffect(() => {
     if (!onProgress) return;
@@ -70,47 +74,49 @@ export function RegisterForm({
     if (values.city && values.city.length > 2) filled++;
     if (values.gender && values.gender.length > 1) filled++;
 
-    // 7 required fields roughly
-    onProgress(Math.min(filled / 7, 1));
+    onProgress(Math.min(filled / TOTAL_REQUIRED_FIELDS, 1));
   }, [values, onProgress]);
 
-  async function goToStep2() {
+  const goToStep2 = useCallback(async () => {
     const isValid = await form.trigger(["name", "email", "password"]);
     if (isValid) {
       setDirection(1);
       setStep(2);
     }
-  }
+  }, [form]);
 
-  async function goToStep3() {
+  const goToStep3 = useCallback(async () => {
     const isValid = await form.trigger(["age", "city", "gender"]);
     if (isValid) {
       setDirection(1);
       setStep(3);
     }
-  }
+  }, [form]);
 
-  function goBackToStep1() {
+  const goBackToStep1 = useCallback(() => {
     setDirection(-1);
     setStep(1);
-  }
+  }, []);
 
-  function goBackToStep2() {
+  const goBackToStep2 = useCallback(() => {
     setDirection(-1);
     setStep(2);
-  }
+  }, []);
 
-  async function onSubmit(values: RegisterValues) {
-    const isValid = await form.trigger(["otp"]);
-    if (!isValid) return;
+  const onSubmit = useCallback(
+    async (values: RegisterValues) => {
+      const isValid = await form.trigger(["otp"]);
+      if (!isValid) return;
 
-    setLoading(true);
-    // Simulate API call
-    await new Promise((r) => setTimeout(r, 1800));
-    setLoading(false);
-    console.log("Registration complete", values);
-    if (onSuccess) onSuccess();
-  }
+      setLoading(true);
+      // Simulate API call
+      await new Promise((r) => setTimeout(r, 1800));
+      setLoading(false);
+      console.log("Registration complete", values);
+      onSuccess?.();
+    },
+    [form, onSuccess],
+  );
 
   return (
     <div className="flex flex-col w-full">
@@ -125,13 +131,14 @@ export function RegisterForm({
         {[1, 2, 3].map((s) => (
           <div
             key={s}
-            className={`rounded-full transition-all duration-500 ease-out ${
+            className={cn(
+              "rounded-full transition-[width,background-color] duration-500 ease-out h-2",
               s === step
                 ? "w-8 bg-forge-teal"
                 : s < step
                   ? "w-2 bg-forge-teal"
-                  : "w-2 bg-[#E5E7EB]"
-            } h-2`}
+                  : "w-2 bg-border",
+            )}
           />
         ))}
       </div>
@@ -152,8 +159,6 @@ export function RegisterForm({
               : "Enter the 6-digit code sent to you."}
         </p>
       </div>
-
-      {/* Step indicator */}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>

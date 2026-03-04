@@ -13,7 +13,7 @@ export function MissionCard() {
     >
       <Card
         className={cn(
-          "h-full p-8 md:p-10 flex flex-col justify-between relative border-2  overflow-hidden bg-forge-teal hover:border-spark-amber hover:shadow-[0_8px_32px_rgba(245,158,11,0.08)] transition-all duration-300",
+          "h-full p-8 md:p-10 flex flex-col justify-between relative border-2  overflow-hidden bg-forge-teal hover:border-spark-amber hover:shadow-[0_8px_32px_rgba(245,158,11,0.08)] transition-[border-color,box-shadow] duration-300",
           "outline-none text-white",
         )}
       >

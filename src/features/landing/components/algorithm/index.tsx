@@ -20,7 +20,7 @@ export function AlgorithmSection() {
       <div className="relative max-w-6xl mx-auto px-6">
         <div
           className={cn(
-            "text-center mb-16 md:mb-20 transition-all duration-700",
+            "text-center mb-16 md:mb-20 transition-[opacity,transform] duration-700",
             inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
           )}
         >

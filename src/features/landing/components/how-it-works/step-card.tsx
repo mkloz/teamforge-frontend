@@ -29,7 +29,7 @@ export function StepCard({
     >
       <Card
         className={cn(
-          "relative flex flex-col bg-white border-border hover:border-forge-teal/50 hover:shadow-[0_8px_32px_rgba(13,148,136,0.08)] transition-all duration-300",
+          "relative flex flex-col bg-white border-border hover:border-forge-teal/50 hover:shadow-[0_8px_32px_rgba(13,148,136,0.08)] transition-[border-color,box-shadow] duration-300",
           "p-6 h-full",
         )}
       >

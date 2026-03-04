@@ -14,7 +14,7 @@ export function StoryCard() {
     >
       <Card
         className={cn(
-          "p-8 md:p-10 border-border bg-white hover:border-forge-teal/50 hover:shadow-[0_8px_32px_rgba(13,148,136,0.08)] transition-all duration-300 h-full",
+          "p-8 md:p-10 border-border bg-white hover:border-forge-teal/50 hover:shadow-[0_8px_32px_rgba(13,148,136,0.08)] transition-[border-color,box-shadow] duration-300 h-full",
         )}
       >
         <div className="flex items-center gap-3 mb-5">

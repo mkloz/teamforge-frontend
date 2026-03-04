@@ -282,7 +282,7 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
     <div
       ref={containerRef}
       className={cn(
-        "relative flex-1 w-full max-w-md lg:max-w-none transition-all duration-700 delay-200",
+        "relative flex-1 w-full max-w-md lg:max-w-none transition-[opacity,transform] duration-700 delay-200",
         inView ? "opacity-100 scale-100" : "opacity-0 scale-95",
       )}
     >

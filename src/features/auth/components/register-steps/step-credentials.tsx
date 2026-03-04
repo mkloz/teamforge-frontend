@@ -1,8 +1,9 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
-import { FcGoogle } from "react-icons/fc";
 
+import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
+import { GoogleIcon } from "@/shared/components/icons";
 import { Button } from "@/shared/components/ui/button";
 import {
   FormControl,
@@ -14,23 +15,24 @@ import {
 import { Input } from "@/shared/components/ui/input";
 import type { RegisterValues } from "../../schemas/auth-schemas";
 
+const STRENGTH_LEVELS = [
+  { score: 0 as const, label: "", color: "" },
+  { score: 1 as const, label: "Weak", color: "#EF4444" },
+  { score: 2 as const, label: "Good", color: "#F59E0B" },
+  { score: 3 as const, label: "Strong", color: "#0D9488" },
+] as const;
+
 function getPasswordStrength(password: string): {
   score: 0 | 1 | 2 | 3;
   label: string;
   color: string;
 } {
-  if (!password) return { score: 0, label: "", color: "" };
+  if (!password) return STRENGTH_LEVELS[0];
   let score = 0;
   if (password.length >= 8) score++;
   if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
   if (/[0-9!@#$%^&*]/.test(password)) score++;
-  const levels = [
-    { score: 0 as const, label: "", color: "" },
-    { score: 1 as const, label: "Weak", color: "#EF4444" },
-    { score: 2 as const, label: "Good", color: "#F59E0B" },
-    { score: 3 as const, label: "Strong", color: "#0D9488" },
-  ];
-  return levels[score];
+  return STRENGTH_LEVELS[score];
 }
 
 interface StepCredentialsProps {
@@ -60,7 +62,7 @@ export function StepCredentials({ onNext }: StepCredentialsProps) {
             </FormLabel>
             <FormControl>
               <Input
-                className="h-11 px-3.5 rounded-xl border-[#E5E7EB] bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-all duration-200"
+                className="h-11 px-3.5 rounded-xl border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-colors duration-200"
                 placeholder="Alex Johnson"
                 autoComplete="name"
                 {...field}
@@ -82,7 +84,7 @@ export function StepCredentials({ onNext }: StepCredentialsProps) {
             </FormLabel>
             <FormControl>
               <Input
-                className="h-11 px-3.5 rounded-xl border-[#E5E7EB] bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-all duration-200"
+                className="h-11 px-3.5 rounded-xl border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-colors duration-200"
                 placeholder="you@example.com"
                 type="email"
                 autoComplete="email"
@@ -107,7 +109,7 @@ export function StepCredentials({ onNext }: StepCredentialsProps) {
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
-                  className="h-11 pl-3.5 pr-10 rounded-xl border-[#E5E7EB] bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-all duration-200"
+                  className="h-11 pl-3.5 pr-10 rounded-xl border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-colors duration-200"
                   placeholder="••••••••"
                   autoComplete="new-password"
                   aria-invalid={!!formState.errors.password}
@@ -129,7 +131,7 @@ export function StepCredentials({ onNext }: StepCredentialsProps) {
                   {[1, 2, 3].map((seg) => (
                     <div
                       key={seg}
-                      className="flex-1 rounded-full transition-all duration-300"
+                      className="flex-1 rounded-full transition-[background-color] duration-300"
                       style={{
                         background:
                           strength.score >= seg ? strength.color : "#E5E7EB",
@@ -155,38 +157,26 @@ export function StepCredentials({ onNext }: StepCredentialsProps) {
       <Button
         type="button"
         onClick={onNext}
-        className="w-full h-12 rounded-xl mt-2 text-sm sm:text-base font-semibold group transition-all active:scale-[0.98] shadow-lg shadow-forge-teal/20 hover:shadow-forge-teal/40 hover:-translate-y-0.5 bg-forge-teal text-white hover:bg-teal-500"
+        className="w-full h-12 rounded-xl mt-2 text-sm sm:text-base font-semibold group transition-[transform,box-shadow,background-color] duration-200 active:scale-[0.98] shadow-lg shadow-forge-teal/20 hover:shadow-forge-teal/40 hover:-translate-y-0.5 bg-forge-teal text-white hover:bg-teal-500"
       >
         Continue
-        <svg
-          className="w-4 h-4 ml-1.5 opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2.5}
-            d="M14 5l7 7m0 0l-7 7m7-7H3"
-          />
-        </svg>
+        <ArrowRightAnimated />
       </Button>
 
       <div className="flex items-center gap-3">
-        <div className="flex-1 h-px bg-[#E5E7EB]" />
+        <div className="flex-1 h-px bg-border" />
         <span className="font-sans text-xs text-slate-muted font-medium">
           or continue with
         </span>
-        <div className="flex-1 h-px bg-[#E5E7EB]" />
+        <div className="flex-1 h-px bg-border" />
       </div>
 
       <Button
         type="button"
         variant="outline"
-        className="w-full h-12 rounded-xl border-[#E5E7EB] bg-white font-sans text-sm font-semibold text-ink flex items-center justify-center gap-2.5 hover:border-[#9CA3AF] hover:bg-slate-50 transition-all active:scale-[0.98] shadow-sm"
+        className="w-full h-12 rounded-xl border-border bg-white font-sans text-sm font-semibold text-ink flex items-center justify-center gap-2.5 hover:border-slate-muted hover:bg-slate-50 transition-colors duration-200 active:scale-[0.98] shadow-sm"
       >
-        <FcGoogle />
+        <GoogleIcon />
         Google
       </Button>
     </div>

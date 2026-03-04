@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 
+import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { Button } from "@/shared/components/ui/button";
 import {
   FormControl,
@@ -24,7 +25,7 @@ const GENDER_OPTIONS = [
   { value: "female", label: "Female" },
   { value: "non_binary", label: "Non-binary" },
   { value: "prefer_not_to_say", label: "Prefer not to say" },
-];
+] as const;
 
 interface StepProfileProps {
   onNext: () => void;
@@ -51,7 +52,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
                 <FormControl>
                   <Input
                     type="number"
-                    className="h-11 px-3.5 rounded-xl border-[#E5E7EB] bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-all duration-200"
+                    className="h-11 px-3.5 rounded-xl border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-colors duration-200"
                     placeholder="22"
                     {...field}
                     value={field.value ?? ""}
@@ -85,13 +86,13 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="w-full h-11 px-3.5 rounded-xl border-[#E5E7EB] bg-white font-sans text-sm outline-none focus:border-forge-teal aria-invalid:border-destructive transition-all duration-200">
+                    <SelectTrigger className="w-full h-11 px-3.5 rounded-xl border-border bg-white font-sans text-sm outline-none focus:border-forge-teal aria-invalid:border-destructive transition-colors duration-200">
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent
                     position="popper"
-                    className="w-full min-w-(--radix-select-trigger-width) rounded-xl border-[#E5E7EB] shadow-lg shadow-black/5 bg-white"
+                    className="w-full min-w-(--radix-select-trigger-width) rounded-xl border-border shadow-lg shadow-black/5 bg-white"
                   >
                     {GENDER_OPTIONS.map((option) => (
                       <SelectItem
@@ -126,7 +127,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
             </FormLabel>
             <FormControl>
               <Input
-                className="h-11 px-3.5 rounded-xl border-[#E5E7EB] bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-all duration-200"
+                className="h-11 px-3.5 rounded-xl border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-colors duration-200"
                 placeholder="Kyiv"
                 {...field}
               />
@@ -139,22 +140,10 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
       <Button
         type="button"
         onClick={onNext}
-        className="w-full h-12 rounded-xl mt-4 text-sm sm:text-base font-semibold group transition-all active:scale-[0.98] shadow-lg shadow-forge-teal/20 hover:shadow-forge-teal/40 hover:-translate-y-0.5 bg-forge-teal text-white hover:bg-teal-500"
+        className="w-full h-12 rounded-xl mt-4 text-sm sm:text-base font-semibold group transition-[transform,box-shadow,background-color] duration-200 active:scale-[0.98] shadow-lg shadow-forge-teal/20 hover:shadow-forge-teal/40 hover:-translate-y-0.5 bg-forge-teal text-white hover:bg-teal-500"
       >
         Continue
-        <svg
-          className="w-4 h-4 ml-1.5 opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2.5}
-            d="M14 5l7 7m0 0l-7 7m7-7H3"
-          />
-        </svg>
+        <ArrowRightAnimated />
       </Button>
 
       <Button

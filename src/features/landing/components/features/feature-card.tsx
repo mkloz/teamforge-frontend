@@ -38,7 +38,7 @@ export function FeatureCard({
       >
         <Card
           className={cn(
-            "group relative flex flex-col md:flex-row gap-8 bg-white border-border hover:border-forge-teal/50 hover:shadow-[0_8px_32px_rgba(13,148,136,0.08)] transition-all duration-300 overflow-hidden",
+            "group relative flex flex-col md:flex-row gap-8 bg-white border-border hover:border-forge-teal/50 hover:shadow-[0_8px_32px_rgba(13,148,136,0.08)] transition-[border-color,box-shadow] duration-300 overflow-hidden",
             "p-8 md:p-10 h-full",
           )}
         >
@@ -112,7 +112,7 @@ export function FeatureCard({
     >
       <Card
         className={cn(
-          "group flex flex-col border-border hover:border-forge-teal/50 hover:shadow-[0_8px_32px_rgba(13,148,136,0.08)] transition-all duration-300",
+          "group flex flex-col border-border hover:border-forge-teal/50 hover:shadow-[0_8px_32px_rgba(13,148,136,0.08)] transition-[border-color,box-shadow] duration-300",
           "h-full",
         )}
       >

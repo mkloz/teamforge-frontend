@@ -32,7 +32,7 @@ export function ValueCard({
     >
       <Card
         className={cn(
-          "p-6 h-full bg-white border-border group hover:border-forge-teal/50 hover:shadow-[0_8px_32px_rgba(13,148,136,0.08)] transition-all duration-300",
+          "p-6 h-full bg-white border-border group hover:border-forge-teal/50 hover:shadow-[0_8px_32px_rgba(13,148,136,0.08)] transition-[border-color,box-shadow] duration-300",
         )}
       >
         <CardHeader className="p-0 mb-4">
