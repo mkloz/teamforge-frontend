@@ -9,6 +9,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  cacheDir: "node_modules/.vite-cache",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
