@@ -1,17 +1,24 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+/**
+ * InterestCategorySection — 3-level drill-down browser
+ *
+ * L1 Category header (collapsible)
+ *   └─ L2 Subcategory tabs (horizontal pill row)
+ *        └─ L3 Leaf tag chips (selection targets, fed to vector)
+ */
+
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { useState } from "react";
+
 import { cn } from "@/shared/lib/utils";
-import { fadeUpItem } from "../constants/motion";
-import type { InterestCategory } from "../data/interests-data";
+import type { Category } from "../data/interests-data";
 import { InterestChip } from "./interest-chip";
 
-interface InterestCategorySectionProps {
-  category: InterestCategory;
+interface Props {
+  category: Category;
   selected: Set<string>;
   atMax: boolean;
   onToggle: (id: string) => void;
-  /** Pre-expand the section (e.g. for suggested section) */
   defaultExpanded?: boolean;
 }
 
@@ -20,87 +27,138 @@ export function InterestCategorySection({
   selected,
   atMax,
   onToggle,
-  defaultExpanded = true,
-}: InterestCategorySectionProps) {
+  defaultExpanded = false,
+}: Props) {
   const [expanded, setExpanded] = useState(defaultExpanded);
-  const selectedCount = category.items.filter((i) => selected.has(i.id)).length;
+  const [activeSubId, setActiveSubId] = useState<string>(
+    category.subcategories[0]?.id ?? "",
+  );
+
+  const selectedCount = category.subcategories
+    .flatMap((s) => s.tags)
+    .filter((t) => selected.has(t.id)).length;
+
+  const activeSub = category.subcategories.find((s) => s.id === activeSubId);
 
   return (
-    <motion.div variants={fadeUpItem} className="flex flex-col gap-0">
-      {/* Category header — clickable to collapse/expand */}
+    <div className="rounded-2xl border border-[rgba(0,0,0,0.06)] bg-white overflow-hidden">
+      {/* L1 — Category header */}
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        className="flex items-center gap-2.5 w-full text-left py-1 group focus-visible:outline-none"
+        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-[rgba(0,0,0,0.015)] transition-colors duration-150 focus-visible:outline-none"
         aria-expanded={expanded}
       >
-        {/* Color dot */}
-        <div
-          className={`w-2.5 h-2.5 rounded-full shrink-0 ${category.color}`}
-          aria-hidden="true"
-        />
-
-        {/* Label + description */}
-        <div className="flex items-baseline gap-2 min-w-0 flex-1">
-          <h3 className="font-sans text-sm font-semibold text-[#1C1C1A] leading-none">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className={cn("w-2.5 h-2.5 rounded-full shrink-0", category.color)} aria-hidden="true" />
+          <span className="font-sans font-semibold text-[15px] text-[#111110] leading-none">
             {category.label}
-          </h3>
-          <span className="font-sans text-xs text-slate-400 leading-none truncate hidden sm:block">
+          </span>
+          <span className="font-sans text-xs text-[#9CA3AF] leading-none truncate hidden sm:block">
             {category.description}
           </span>
         </div>
 
-        {/* Selected count badge */}
-        <AnimatePresence>
-          {selectedCount > 0 && (
-            <motion.span
-              initial={{ scale: 0.6, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.6, opacity: 0 }}
-              transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
-              className="shrink-0 inline-flex items-center justify-center rounded-full bg-forge-teal text-white font-sans text-[10px] font-bold px-1.5 py-0.5 leading-none min-w-[18px]"
-            >
-              {selectedCount}
-            </motion.span>
-          )}
-        </AnimatePresence>
-
-        {/* Chevron */}
-        <ChevronDown
-          size={14}
-          strokeWidth={2.5}
-          className={cn(
-            "shrink-0 text-slate-400 transition-transform duration-200 group-hover:text-slate-600",
-            expanded ? "rotate-0" : "-rotate-90",
-          )}
-        />
+        <div className="flex items-center gap-2 shrink-0 ml-3">
+          <AnimatePresence>
+            {selectedCount > 0 && (
+              <motion.span
+                key="badge"
+                initial={{ scale: 0.7, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.7, opacity: 0 }}
+                transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                className="inline-flex items-center justify-center rounded-full bg-[#0D9488] text-white font-sans text-[10px] font-bold px-1.5 py-0.5 leading-none min-w-[18px]"
+              >
+                {selectedCount}
+              </motion.span>
+            )}
+          </AnimatePresence>
+          <ChevronDown
+            size={15}
+            strokeWidth={2.2}
+            className={cn(
+              "text-[#9CA3AF] transition-transform duration-200",
+              expanded ? "rotate-180" : "rotate-0",
+            )}
+          />
+        </div>
       </button>
 
-      {/* Chips — animated collapse */}
+      {/* Expandable body */}
       <AnimatePresence initial={false}>
         {expanded && (
           <motion.div
-            key="chips"
+            key="body"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
           >
-            <div className="flex flex-wrap gap-2 pt-3 pb-1">
-              {category.items.map((item) => (
-                <InterestChip
-                  key={item.id}
-                  item={item}
-                  selected={selected.has(item.id)}
-                  disabled={atMax}
-                  onToggle={onToggle}
-                />
-              ))}
+            <div className="border-t border-[rgba(0,0,0,0.05)] px-5 pt-4 pb-5">
+              {/* L2 — Subcategory tabs */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                {category.subcategories.map((sub) => {
+                  const subCount = sub.tags.filter((t) => selected.has(t.id)).length;
+                  const isActive = sub.id === activeSubId;
+                  return (
+                    <button
+                      key={sub.id}
+                      type="button"
+                      onClick={() => setActiveSubId(sub.id)}
+                      className={cn(
+                        "flex items-center gap-1.5 px-3 py-1.5 rounded-full border font-sans text-[13px] font-medium transition-all duration-150 focus-visible:outline-none",
+                        isActive
+                          ? "bg-[#0D9488] border-[#0D9488] text-white shadow-sm"
+                          : "bg-white border-[rgba(0,0,0,0.1)] text-[#374151] hover:border-[#0D9488]/50 hover:text-[#0D9488]",
+                      )}
+                    >
+                      <span aria-hidden="true">{sub.emoji}</span>
+                      <span>{sub.label}</span>
+                      {subCount > 0 && (
+                        <span
+                          className={cn(
+                            "text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none shrink-0",
+                            isActive ? "bg-white/25 text-white" : "bg-[#0D9488]/12 text-[#0D9488]",
+                          )}
+                        >
+                          {subCount}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* L3 — Leaf tag chips */}
+              <AnimatePresence mode="wait">
+                {activeSub && (
+                  <motion.div
+                    key={activeSub.id}
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ duration: 0.14, ease: "easeOut" }}
+                    className="flex flex-wrap gap-2"
+                  >
+                    {activeSub.tags.map((tag) => (
+                      <InterestChip
+                        key={tag.id}
+                        id={tag.id}
+                        label={tag.label}
+                        selected={selected.has(tag.id)}
+                        disabled={atMax && !selected.has(tag.id)}
+                        onToggle={onToggle}
+                      />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }

@@ -24,7 +24,7 @@ import { staggerContainer, fadeUpItem } from "./constants/motion";
 import { InterestCategorySection } from "./components/interest-category-section";
 import { InterestChip } from "./components/interest-chip";
 import {
-  ALL_INTERESTS_BY_ID,
+  LEAF_TAG_BY_ID,
   INTEREST_CATEGORIES,
   MBTI_SUGGESTIONS,
   MIN_INTERESTS,
@@ -64,7 +64,7 @@ function SelectionTray({
 }) {
   if (selected.size === 0) return null;
   const items = [...selected]
-    .map((id) => ALL_INTERESTS_BY_ID[id])
+    .map((id) => LEAF_TAG_BY_ID[id])
     .filter(Boolean);
 
   return (
@@ -93,7 +93,6 @@ function SelectionTray({
               className="inline-flex items-center gap-1.5 rounded-full bg-forge-teal/10 text-forge-teal border border-forge-teal/20 px-2.5 py-1 font-sans text-[11px] font-medium hover:bg-forge-teal/20 transition-colors"
               aria-label={`Remove ${item.label}`}
             >
-              <span aria-hidden="true">{item.emoji}</span>
               {item.label}
               <X size={9} strokeWidth={3} className="opacity-60" />
             </motion.button>
@@ -239,7 +238,7 @@ function SuggestedSection({
   onToggle: (id: string) => void;
 }) {
   const items = suggestedIds
-    .map((id) => ALL_INTERESTS_BY_ID[id])
+    .map((id) => LEAF_TAG_BY_ID[id])
     .filter(Boolean);
 
   if (items.length === 0) return null;
@@ -264,9 +263,10 @@ function SuggestedSection({
         {items.map((item) => (
           <InterestChip
             key={item.id}
-            item={item}
+            id={item.id}
+            label={item.label}
             selected={selected.has(item.id)}
-            disabled={atMax}
+            disabled={atMax && !selected.has(item.id)}
             onToggle={onToggle}
           />
         ))}
@@ -328,20 +328,30 @@ export function InterestsPage() {
     window.location.href = "/onboarding/location";
   };
 
+  // Flattened leaf tags per category for search + counting
+  const allTagsByCategory = useMemo(
+    () =>
+      INTEREST_CATEGORIES.reduce<Record<string, { id: string; label: string }[]>>(
+        (acc, cat) => ({
+          ...acc,
+          [cat.id]: cat.subcategories.flatMap((s) => s.tags),
+        }),
+        {},
+      ),
+    [],
+  );
+
   // Filtered categories by search + active tab
   const visibleCategories = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return INTEREST_CATEGORIES.filter((cat) => {
       if (activeCategoryId && cat.id !== activeCategoryId) return false;
       if (!q) return true;
-      return cat.items.some((item) => item.label.toLowerCase().includes(q));
-    }).map((cat) => ({
-      ...cat,
-      items: q
-        ? cat.items.filter((item) => item.label.toLowerCase().includes(q))
-        : cat.items,
-    }));
-  }, [searchQuery, activeCategoryId]);
+      return allTagsByCategory[cat.id]?.some((tag) =>
+        tag.label.toLowerCase().includes(q),
+      );
+    });
+  }, [searchQuery, activeCategoryId, allTagsByCategory]);
 
   // Per-category selected counts for tab badges
   const selectedCounts = useMemo<Record<string, number>>(
@@ -349,11 +359,13 @@ export function InterestsPage() {
       INTEREST_CATEGORIES.reduce(
         (acc, cat) => ({
           ...acc,
-          [cat.id]: cat.items.filter((i) => selected.has(i.id)).length,
+          [cat.id]: (allTagsByCategory[cat.id] ?? []).filter((t) =>
+            selected.has(t.id),
+          ).length,
         }),
         {},
       ),
-    [selected],
+    [selected, allTagsByCategory],
   );
 
   const progress = Math.min(selected.size / MIN_INTERESTS, 1);
