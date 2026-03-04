@@ -19,7 +19,7 @@ import { TeamForgeLogo } from "@/assets/logo";
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
-import { VoronoiCatalyst } from "./auth/components/voronoi-catalyst";
+import { VoronoiCatalyst } from "../auth/components/voronoi-catalyst";
 import { staggerContainer, fadeUpItem } from "./constants/motion";
 import { InterestCategorySection } from "./components/interest-category-section";
 import { InterestChip } from "./components/interest-chip";
