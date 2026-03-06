@@ -8,7 +8,7 @@ import {
   ShieldCheck,
   UserCircle,
 } from "lucide-react";
-import { fadeUpItem, staggerContainer } from "../constants/motion";
+import { fadeUpItem, staggerContainer } from "../../constants/motion";
 
 interface KeepInMindProps {
   onBack: () => void;

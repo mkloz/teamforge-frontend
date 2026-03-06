@@ -1,11 +1,11 @@
 import { animate, motion, useAnimation } from "framer-motion";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { TeamForgeLogo } from "../../../assets/logo";
-import { OCEAN_LABELS } from "../data/type-descriptions";
+import { useEffect, useRef, useState } from "react";
+import { TeamForgeLogo } from "../../../../assets/logo";
+import { OCEAN_LABELS } from "../../data/type-descriptions";
 import {
   toDisplayPercent,
   type OceanVectorWithMeta,
-} from "../utils/score-calculator";
+} from "../../utils/score-calculator";
 
 const DIMS = ["O", "C", "E", "A", "N"] as const;
 
@@ -50,10 +50,7 @@ function AnimatedCounter({ value, delay }: { value: number; delay: number }) {
 
 export function CalculatingScreen({ vector, onDone }: CalculatingScreenProps) {
   const controls = useAnimation();
-  const barWidths = useMemo(
-    () => DIMS.map((dim) => toDisplayPercent(vector, dim)),
-    [vector],
-  );
+  const barWidths = DIMS.map((dim) => toDisplayPercent(vector, dim));
   const [messageIndex, setMessageIndex] = useState(0);
 
   // Cycling messages

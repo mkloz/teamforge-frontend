@@ -4,8 +4,8 @@ import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useState } from "react";
-import { fadeUpItem, staggerContainer } from "../constants/motion";
-import { TEST_LENGTH_CONFIG, type TestLength } from "../data/ipip-questions";
+import { fadeUpItem, staggerContainer } from "../../constants/motion";
+import { TEST_LENGTH_CONFIG, type TestLength } from "../../data/ipip-questions";
 
 interface LengthSelectorProps {
   onBack: () => void;
@@ -57,7 +57,7 @@ export function LengthSelector({ onBack, onBegin }: LengthSelectorProps) {
         className="font-sans text-sm leading-relaxed mb-7 text-slate-500"
       >
         More questions produce a more accurate match. Each page shows 3
-        questions — only the total number of pages changes.
+        questions – only the total number of pages changes.
       </motion.p>
 
       {/* Option cards */}

@@ -3,9 +3,9 @@ import { Progress } from "@/shared/components/ui/progress";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { fadeUpItem, staggerContainer } from "../constants/motion";
-import type { IpipQuestion } from "../data/ipip-questions";
-import type { RawAnswers } from "../utils/score-calculator";
+import { fadeUpItem, staggerContainer } from "../../constants/motion";
+import type { IpipQuestion } from "../../data/ipip-questions";
+import type { RawAnswers } from "../../utils/score-calculator";
 import { QuestionCard } from "./question-card";
 
 interface QuestionPageProps {

@@ -1,7 +1,7 @@
 import { Button } from "@/shared/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { fadeUpItem, staggerContainer } from "../constants/motion";
+import { fadeUpItem, staggerContainer } from "../../constants/motion";
 
 interface Theory101Props {
   onBack: () => void;

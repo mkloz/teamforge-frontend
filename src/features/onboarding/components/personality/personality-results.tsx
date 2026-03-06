@@ -2,11 +2,11 @@ import { Button } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
 import { motion } from "framer-motion";
 import { ArrowRight, ExternalLink, Info, RefreshCcw } from "lucide-react";
-import { popDownItem, resultsContainer } from "../constants/motion";
-import { OCEAN_LABELS } from "../data/type-descriptions";
-import type { OceanVectorWithMeta } from "../utils/score-calculator";
-import { toDisplayPercent } from "../utils/score-calculator";
-import type { PersonalityResult } from "../utils/type-translation";
+import { popDownItem, resultsContainer } from "../../constants/motion";
+import { OCEAN_LABELS } from "../../data/type-descriptions";
+import type { OceanVectorWithMeta } from "../../utils/score-calculator";
+import { toDisplayPercent } from "../../utils/score-calculator";
+import type { PersonalityResult } from "../../utils/type-translation";
 
 const DIMS = ["O", "C", "E", "A", "N"] as const;
 
@@ -157,7 +157,7 @@ export function PersonalityResults({
           className="text-slate-500 shrink-0 mt-px"
         />
         <p className="font-sans text-xs leading-relaxed text-slate-500">
-          Your type is used to find people who complement your energy — not
+          Your type is used to find people who complement your energy – not
           mirrors of yourself. The five trait scores power the matching
           algorithm, not the letter label.
         </p>

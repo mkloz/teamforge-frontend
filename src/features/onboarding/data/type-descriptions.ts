@@ -13,7 +13,7 @@ export const TYPE_DESCRIPTIONS: Record<string, PersonalityTypeInfo> = {
     tagline:
       "Independent, strategic, and driven by a vision only they can fully see.",
     about:
-      "You process the world through systems and patterns. Where others see complexity, you see structure waiting to be understood. You are deliberate, self-directed, and hold yourself to standards most people never consider. You do not need external validation — your internal compass is precise.",
+      "You process the world through systems and patterns. Where others see complexity, you see structure waiting to be understood. You are deliberate, self-directed, and hold yourself to standards most people never consider. You do not need external validation – your internal compass is precise.",
     inGroups:
       "In a group, you are the quiet strategist. You think several steps ahead, offer precision when others are still debating, and tend to take initiative when the plan is unclear. You work best when given autonomy and respect.",
   },
@@ -33,7 +33,7 @@ export const TYPE_DESCRIPTIONS: Record<string, PersonalityTypeInfo> = {
     tagline:
       "Strategic, direct, and energized by leading others toward a goal.",
     about:
-      "You enter a room and instinctively see what needs to be organized. Chaos does not frustrate you — it motivates you. You are decisive, forward-thinking, and unafraid to take charge when no one else will. You hold high standards for yourself and the people around you.",
+      "You enter a room and instinctively see what needs to be organized. Chaos does not frustrate you – it motivates you. You are decisive, forward-thinking, and unafraid to take charge when no one else will. You hold high standards for yourself and the people around you.",
     inGroups:
       "In a group, you move things forward. You push for decisions, keep energy high, and are not afraid to redirect the conversation when it drifts. Others look to you for direction, even when no formal role has been assigned.",
   },
@@ -43,7 +43,7 @@ export const TYPE_DESCRIPTIONS: Record<string, PersonalityTypeInfo> = {
     tagline:
       "Quick-witted, idea-driven, and genuinely energized by intellectual friction.",
     about:
-      "You love a good argument — not to win, but to discover. You are fast on your feet, generate ideas at an unusual rate, and have a talent for flipping problems upside down to find an unexpected angle. Boredom is your main enemy.",
+      "You love a good argument – not to win, but to discover. You are fast on your feet, generate ideas at an unusual rate, and have a talent for flipping problems upside down to find an unexpected angle. Boredom is your main enemy.",
     inGroups:
       "In a group, you are the one who challenges the plan just as everyone is ready to execute. This can frustrate, but it also prevents mistakes. You bring energy, lateral thinking, and a willingness to say the thing nobody else dared to.",
   },
@@ -63,7 +63,7 @@ export const TYPE_DESCRIPTIONS: Record<string, PersonalityTypeInfo> = {
     tagline:
       "Deeply values-driven, imaginative, and quietly fiercely passionate.",
     about:
-      "You carry a rich inner world that most people never see. You are guided by your values more than rules, and you hold a strong sense of what could be — even when the present falls short. Authenticity matters deeply to you, and you can sense inauthenticity immediately.",
+      "You carry a rich inner world that most people never see. You are guided by your values more than rules, and you hold a strong sense of what could be – even when the present falls short. Authenticity matters deeply to you, and you can sense inauthenticity immediately.",
     inGroups:
       "In a group, you bring heart and creativity. You tend to be the moral compass, gently redirecting when things feel off, and the creative wellspring when the group needs a fresh idea. You need a group that respects what matters to you.",
   },
@@ -85,7 +85,7 @@ export const TYPE_DESCRIPTIONS: Record<string, PersonalityTypeInfo> = {
     about:
       "You see almost everything as connected. You move through the world with curiosity and enthusiasm, forming fast, genuine connections with people and ideas. You are energized by novelty and have a gift for seeing potential where others see constraints.",
     inGroups:
-      "In a group, you are the spark. Your enthusiasm is contagious, your ideas come quickly, and you excel at connecting people across differences. You need a group that moves and stays alive — stagnation is your kryptonite.",
+      "In a group, you are the spark. Your enthusiasm is contagious, your ideas come quickly, and you excel at connecting people across differences. You need a group that moves and stays alive – stagnation is your kryptonite.",
   },
   ISTJ: {
     letters: "ISTJ",
@@ -93,7 +93,7 @@ export const TYPE_DESCRIPTIONS: Record<string, PersonalityTypeInfo> = {
     tagline:
       "Methodical, dependable, and committed to doing things the right way.",
     about:
-      "You bring order to the world around you. You are thorough, consistent, and deeply reliable — when you say something will be done, it will be done. You take your responsibilities seriously and believe that the details matter, because they do.",
+      "You bring order to the world around you. You are thorough, consistent, and deeply reliable – when you say something will be done, it will be done. You take your responsibilities seriously and believe that the details matter, because they do.",
     inGroups:
       "In a group, you are the one who actually makes sure things happen. You track what was agreed, hold others accountable, and ensure nothing falls through the cracks. The group may not always notice you, but they would notice immediately if you were gone.",
   },
@@ -103,7 +103,7 @@ export const TYPE_DESCRIPTIONS: Record<string, PersonalityTypeInfo> = {
     tagline:
       "Warm, attentive, and quietly devoted to the people and things they care about.",
     about:
-      "You notice things — a shift in someone's mood, a detail others overlooked, a need that was never voiced. You are quietly attentive and deeply caring, and you show it through consistent, practical acts rather than grand declarations.",
+      "You notice things – a shift in someone's mood, a detail others overlooked, a need that was never voiced. You are quietly attentive and deeply caring, and you show it through consistent, practical acts rather than grand declarations.",
     inGroups:
       "In a group, you create safety. People relax around you. You handle the logistics others forget, check in on members who seem off, and ensure the experience is positive for everyone, not just the loudest voices.",
   },
@@ -143,7 +143,7 @@ export const TYPE_DESCRIPTIONS: Record<string, PersonalityTypeInfo> = {
     tagline:
       "Gentle, present, and deeply in tune with beauty, feeling, and the moment.",
     about:
-      "You experience the world with unusual sensitivity. You notice beauty, subtlety, and emotional truth in places others rush past. You are gentle, non-judgmental, and authentic — what you say is what you mean, and you expect the same from others.",
+      "You experience the world with unusual sensitivity. You notice beauty, subtlety, and emotional truth in places others rush past. You are gentle, non-judgmental, and authentic – what you say is what you mean, and you expect the same from others.",
     inGroups:
       "In a group, you bring an authentic and grounding presence. You do not push your opinions loudly, but when you do speak, it is worth hearing. You help the group slow down and notice what they might be missing.",
   },

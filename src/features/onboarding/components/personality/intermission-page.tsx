@@ -1,7 +1,7 @@
 import { Button } from "@/shared/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, Brain, Target } from "lucide-react";
-import { fadeUpItem, staggerContainer } from "../constants/motion";
+import { fadeUpItem, staggerContainer } from "../../constants/motion";
 
 interface IntermissionPageProps {
   milestoneIndex: number;
@@ -47,7 +47,7 @@ const INTERMISSION_CONTENT: {
     description:
       "We aren't trying to put you in a box. We are plotting your unique coordinates.",
     factTitle: "The Bell Curve",
-    fact: "Most people aren't entirely extroverted or entirely introverted—they fall somewhere in the middle (ambiverts). By measuring on a continuum, we capture the nuances that binary tests miss completely.",
+    fact: "Most people aren't entirely extroverted or entirely introverted–they fall somewhere in the middle (ambiverts). By measuring on a continuum, we capture the nuances that binary tests miss completely.",
   },
   {
     icon: Brain,

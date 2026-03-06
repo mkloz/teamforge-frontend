@@ -244,7 +244,7 @@ export const IPIP_QUESTIONS: IpipQuestion[] = [
     id: 38,
     dimension: "C",
     keyed: "+",
-    text: "I am reliable — people can count on me to do what I say.",
+    text: "I am reliable – people can count on me to do what I say.",
   },
   {
     id: 39,
@@ -444,7 +444,7 @@ export const IPIP_QUESTIONS: IpipQuestion[] = [
     id: 71,
     dimension: "E",
     keyed: "+",
-    text: "I tend to think out loud — talking helps me process ideas.",
+    text: "I tend to think out loud – talking helps me process ideas.",
   },
   {
     id: 72,
@@ -552,7 +552,7 @@ export const IPIP_QUESTIONS: IpipQuestion[] = [
     id: 89,
     dimension: "E",
     keyed: "+",
-    text: "I feel alive in a crowd — energy from others fuels me.",
+    text: "I feel alive in a crowd – energy from others fuels me.",
   },
   {
     id: 90,
@@ -644,7 +644,7 @@ export const IPIP_QUESTIONS: IpipQuestion[] = [
     id: 104,
     dimension: "A",
     keyed: "+",
-    text: "I am forgiving — I do not hold onto grudges for long.",
+    text: "I am forgiving – I do not hold onto grudges for long.",
   },
   {
     id: 105,
@@ -944,14 +944,14 @@ export const TEST_LENGTH_CONFIG: Record<
 > = {
   30: {
     label: "Quick",
-    sublabel: "10 pages — just enough to get started",
+    sublabel: "10 pages – just enough to get started",
     duration: "~2 min",
     itemsPerDimension: 6,
     questionsPerPage: 3,
   },
   50: {
     label: "Standard",
-    sublabel: "17 pages — best accuracy / time balance",
+    sublabel: "17 pages – best accuracy / time balance",
     duration: "~5 min",
     itemsPerDimension: 10,
     questionsPerPage: 3,
@@ -959,7 +959,7 @@ export const TEST_LENGTH_CONFIG: Record<
   },
   150: {
     label: "Deep",
-    sublabel: "50 pages — for a match that improves with every retake",
+    sublabel: "50 pages – for a match that improves with every retake",
     duration: "~15 min",
     itemsPerDimension: 30,
     questionsPerPage: 3,

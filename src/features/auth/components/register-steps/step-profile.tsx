@@ -113,7 +113,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
       </div>
 
       <p className="text-xs text-slate-muted mt-0 text-center">
-        Gender is used for your profile only — not part of matching.
+        Gender is used for your profile only – not part of matching.
       </p>
 
       {/* City full-width */}

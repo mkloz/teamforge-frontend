@@ -11,7 +11,6 @@ export function TrustCard() {
         "bg-[#0a1212]/80 backdrop-blur-xl border border-forge-teal/20",
         "shadow-[0_12px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.04)]",
         "animate-float-card-c",
-        "delay-[1300ms] [animation-delay:1300ms,1900ms]",
       )}
       aria-hidden="true"
     >

@@ -121,7 +121,7 @@ export function ForgeOrb() {
   return (
     <div
       ref={containerRef}
-      className="relative flex items-center justify-center animate-hero-fade-in-right delay-300 cursor-default w-full h-full min-h-90 md:min-h-125 px-10 md:pl-32 xl:pl-47 md:pr-25 md:py-20 xl:pr-37 perspective-[600px]"
+      className="relative flex items-center justify-center cursor-default w-full h-full min-h-90 md:min-h-125 px-10 md:pl-32 xl:pl-47 md:pr-25 md:py-20 xl:pr-37 perspective-[600px]"
     >
       <div
         ref={orbContainerRef}

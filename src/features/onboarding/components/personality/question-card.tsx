@@ -2,8 +2,7 @@ import { Card } from "@/shared/components/ui/card";
 import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check } from "lucide-react";
-import { memo } from "react";
-import type { IpipQuestion } from "../data/ipip-questions";
+import type { IpipQuestion } from "../../data/ipip-questions";
 import { LikertScale } from "./likert-scale";
 
 interface QuestionCardProps {
@@ -15,7 +14,7 @@ interface QuestionCardProps {
   onChange: (questionId: number, val: 1 | 2 | 3 | 4 | 5) => void;
 }
 
-export const QuestionCard = memo(function QuestionCard({
+export function QuestionCard({
   question,
   index,
   totalQuestions,
@@ -66,4 +65,4 @@ export const QuestionCard = memo(function QuestionCard({
       />
     </Card>
   );
-});
+}

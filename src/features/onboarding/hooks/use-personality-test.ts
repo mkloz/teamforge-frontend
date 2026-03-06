@@ -1,28 +1,13 @@
-import { useCallback, useMemo, useState } from "react";
 import { buildQuestionList, type TestLength } from "../data/ipip-questions";
 import {
-  calculateVector,
-  type OceanVectorWithMeta,
-  type RawAnswers,
-} from "../utils/score-calculator";
-import {
-  vectorToType,
-  type PersonalityResult,
-} from "../utils/type-translation";
+  hydrateQuestions,
+  usePersonalityTestStore,
+  type ScreenState,
+} from "../store/personality-test-store";
+import { calculateVector } from "../utils/score-calculator";
+import { vectorToType } from "../utils/type-translation";
 
-export type ScreenState =
-  | { id: "intro" }
-  | { id: "theory" }
-  | { id: "guidelines" }
-  | { id: "length" }
-  | { id: "questions"; currentPage: number }
-  | {
-      id: "intermission";
-      type: number;
-      nextPageIndex: number;
-    }
-  | { id: "calculating" }
-  | { id: "results" };
+export type { ScreenState };
 
 interface UsePersonalityTestProps {
   questionsPerPage: number;
@@ -60,37 +45,41 @@ export function usePersonalityTest({
   questionsPerPage,
   onContinue,
 }: UsePersonalityTestProps) {
-  const [screen, setScreen] = useState<ScreenState>({ id: "intro" });
-  const [testLength, setTestLength] = useState<TestLength>(50);
-  const [questions, setQuestions] = useState(() => buildQuestionList(50));
-  const [answers, setAnswers] = useState<RawAnswers>({});
-  const [result, setResult] = useState<PersonalityResult | null>(null);
-  const [vector, setVector] = useState<OceanVectorWithMeta | null>(null);
+  // ── Zustand store (persisted) ──────────────────────────────────────────────
+  const store = usePersonalityTestStore();
+  const { screen, testLength, questionIds, answers, result, vector } = store;
+
+  // Reconstruct full question objects from stored IDs (or build fresh if none)
+  const questions = (() => {
+    if (questionIds.length > 0) {
+      return hydrateQuestions(questionIds);
+    }
+    return buildQuestionList(testLength);
+  })();
 
   const totalPages = Math.ceil(questions.length / questionsPerPage);
 
-  const handleAnswer = useCallback(
-    (questionId: number, val: 1 | 2 | 3 | 4 | 5) => {
-      setAnswers((prev) => ({ ...prev, [questionId]: val }));
-    },
-    [],
-  );
+  // ── Actions ────────────────────────────────────────────────────────────────
 
-  const handleBegin = useCallback((length: TestLength) => {
-    setTestLength(length);
+  function handleAnswer(questionId: number, val: 1 | 2 | 3 | 4 | 5) {
+    store.setAnswer(questionId, val);
+  }
+
+  function handleBegin(length: TestLength) {
     const qs = buildQuestionList(length);
-    setQuestions(qs);
-    setAnswers({});
-    setScreen({ id: "questions", currentPage: 1 });
-  }, []);
+    store.beginTest(
+      length,
+      qs.map((q) => q.id),
+    );
+  }
 
-  const handleNextPage = useCallback(() => {
+  function handleNextPage() {
     if (screen.id !== "questions") return;
 
     if (shouldTriggerIntermission(screen.currentPage, testLength, totalPages)) {
       const milestoneIndex =
         screen.currentPage / getIntermissionInterval(testLength);
-      setScreen({
+      store.setScreen({
         id: "intermission",
         type: milestoneIndex,
         nextPageIndex: screen.currentPage + 1,
@@ -99,52 +88,46 @@ export function usePersonalityTest({
     }
 
     if (screen.currentPage < totalPages) {
-      setScreen({ id: "questions", currentPage: screen.currentPage + 1 });
+      store.setScreen({ id: "questions", currentPage: screen.currentPage + 1 });
     } else {
       const vec = calculateVector(questions, answers);
       const res = vectorToType(vec);
-      setVector(vec);
-      setResult(res);
-      setScreen({ id: "calculating" });
+      store.setResultData(res, vec);
+      store.setScreen({ id: "calculating" });
     }
-  }, [screen, testLength, totalPages, questions, answers]);
+  }
 
-  const handleContinueFromIntermission = useCallback(() => {
+  function handleContinueFromIntermission() {
     if (screen.id !== "intermission") return;
-    setScreen({ id: "questions", currentPage: screen.nextPageIndex });
-  }, [screen]);
+    store.setScreen({ id: "questions", currentPage: screen.nextPageIndex });
+  }
 
-  const handleCalculationDone = useCallback(() => {
-    setScreen({ id: "results" });
-  }, []);
+  function handleCalculationDone() {
+    store.setScreen({ id: "results" });
+  }
 
-  const handleRetake = useCallback(() => {
-    setAnswers({});
-    setResult(null);
-    setVector(null);
-    setScreen({ id: "length" });
-  }, []);
+  function handleRetake() {
+    store.reset();
+    store.setScreen({ id: "length" });
+  }
 
-  const handleContinue = useCallback(() => {
+  function handleContinue() {
     onContinue?.();
-  }, [onContinue]);
+  }
 
-  // Derived state
+  // ── Derived ────────────────────────────────────────────────────────────────
+
   const currentPage = screen.id === "questions" ? screen.currentPage : 1;
   const pageStart = (currentPage - 1) * questionsPerPage;
-  const pageQuestions = useMemo(
-    () => questions.slice(pageStart, pageStart + questionsPerPage),
-    [questions, pageStart, questionsPerPage],
+  const pageQuestions = questions.slice(
+    pageStart,
+    pageStart + questionsPerPage,
   );
 
-  const progress = useMemo(
-    () =>
-      calculateProgress(
-        screen.id,
-        Object.keys(answers).length,
-        questions.length,
-      ),
-    [screen.id, answers, questions.length],
+  const progress = calculateProgress(
+    screen.id,
+    Object.keys(answers).length,
+    questions.length,
   );
 
   return {
@@ -160,7 +143,7 @@ export function usePersonalityTest({
     pageQuestions,
     progress,
     actions: {
-      setScreen,
+      setScreen: store.setScreen,
       handleAnswer,
       handleBegin,
       handleNextPage,

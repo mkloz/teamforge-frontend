@@ -3,14 +3,14 @@ import { usePersonalityTest } from "./hooks/use-personality-test";
 
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { VoronoiCatalyst } from "../auth/components/voronoi-catalyst";
-import { CalculatingScreen } from "./components/calculating-screen";
-import { IntermissionPage } from "./components/intermission-page";
-import { KeepInMind } from "./components/keep-in-mind";
-import { LengthSelector } from "./components/length-selector";
-import { PersonalityIntro } from "./components/personality-intro";
-import { PersonalityResults } from "./components/personality-results";
-import { QuestionPage } from "./components/question-page";
-import { Theory101 } from "./components/theory-101";
+import { CalculatingScreen } from "./components/personality/calculating-screen";
+import { IntermissionPage } from "./components/personality/intermission-page";
+import { KeepInMind } from "./components/personality/keep-in-mind";
+import { LengthSelector } from "./components/personality/length-selector";
+import { PersonalityIntro } from "./components/personality/personality-intro";
+import { PersonalityResults } from "./components/personality/personality-results";
+import { QuestionPage } from "./components/personality/question-page";
+import { Theory101 } from "./components/personality/theory-101";
 
 const QUESTIONS_PER_PAGE = 3;
 
@@ -105,9 +105,12 @@ function ScreenRenderer({
 export function PersonalityTestPage() {
   const testState = usePersonalityTest({
     questionsPerPage: QUESTIONS_PER_PAGE,
-    // TODO: Replace with router navigation once /onboarding/interests route is registered
     onContinue: () => {
-      window.location.href = "/onboarding/interests";
+      const mbtiType = testState.result?.type ?? "";
+      const destination = mbtiType
+        ? `/onboarding/interests?mbti=${encodeURIComponent(mbtiType)}`
+        : "/onboarding/interests";
+      window.location.href = destination;
     },
   });
 

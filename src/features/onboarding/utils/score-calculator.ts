@@ -11,7 +11,7 @@ export interface OceanVector {
 }
 
 export interface OceanVectorWithMeta extends OceanVector {
-  /** Dimensions within ±0.167 of zero — letter still assigned but boundary is soft */
+  /** Dimensions within ±0.167 of zero – letter still assigned but boundary is soft */
   softBoundary: Dimension[];
 }
 

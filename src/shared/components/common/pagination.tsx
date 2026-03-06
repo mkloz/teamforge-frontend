@@ -1,5 +1,4 @@
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
-import { useMemo } from "react";
 
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
@@ -29,7 +28,7 @@ export const Pagination = ({
   const isMobile = useIsMobile();
   const effectiveSiblingCount = isMobile || compact ? 0 : siblingCount;
 
-  const paginationRange = useMemo(() => {
+  const paginationRange = (() => {
     if ((isMobile && compact) || totalPages <= 1) {
       return [];
     }
@@ -77,7 +76,7 @@ export const Pagination = ({
     }
 
     return [];
-  }, [currentPage, totalPages, effectiveSiblingCount, isMobile, compact]);
+  })();
 
   if (totalPages <= 1) return null;
 
