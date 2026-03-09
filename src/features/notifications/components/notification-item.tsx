@@ -1,5 +1,7 @@
 import { cn } from "@/shared/lib/utils";
 import { Bell, Star, UserPlus, Users, Zap } from "lucide-react";
+import type { NotificationItem as NotificationItemType } from "../types/notification.types";
+import { NotificationType } from "../types/notification.types";
 
 function relativeTime(date: Date): string {
   const diff = Date.now() - date.getTime();
@@ -11,8 +13,6 @@ function relativeTime(date: Date): string {
   const days = Math.floor(hrs / 24);
   return `${days}d ago`;
 }
-import type { NotificationItem as NotificationItemType } from "../types/notification.types";
-import { NotificationType } from "../types/notification.types";
 
 const TYPE_CONFIG: Record<
   string,

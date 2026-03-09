@@ -59,8 +59,11 @@ export function UserMenu() {
         role="menu"
         aria-label="User menu"
         className={cn(
-          "absolute right-0 top-10 z-[70] w-56 origin-top-right",
-          "rounded-2xl border border-border bg-popover shadow-lg",
+          // Position: right-aligned below the avatar with a small gap
+          "absolute right-0 top-[calc(100%+6px)] z-[70] w-56 origin-top-right",
+          // Cap height so it never runs off short viewports
+          "max-h-[min(340px,calc(100vh-5rem))] overflow-y-auto",
+          "rounded-2xl border border-border bg-popover shadow-xl shadow-black/10",
           "transition-all duration-150",
           open
             ? "opacity-100 scale-100 pointer-events-auto"

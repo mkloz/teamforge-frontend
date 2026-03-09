@@ -320,3 +320,10 @@
     font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
   }
 }
+
+/* Safe-area inset for notched/home-indicator devices */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

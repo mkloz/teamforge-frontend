@@ -36,15 +36,23 @@ function TabButton({ to, icon: Icon, label, matchPrefix = false, className }: Ta
       aria-current={active ? "page" : undefined}
       aria-label={label}
       className={cn(
-        "flex flex-col items-center justify-center gap-1 flex-1 py-2 min-h-[44px]",
-        "text-xs font-medium transition-colors duration-150",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "flex flex-col items-center justify-center gap-1 flex-1 py-2",
+        "min-h-[44px] min-w-0",
+        "text-[11px] font-medium transition-colors duration-150",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
         active ? "text-primary" : "text-muted-foreground",
         className,
       )}
     >
-      <Icon size={20} aria-hidden="true" className="shrink-0" />
-      <span className="leading-none">{label}</span>
+      <Icon
+        size={20}
+        aria-hidden="true"
+        className={cn(
+          "shrink-0 transition-transform duration-150",
+          active && "scale-110",
+        )}
+      />
+      <span className="leading-none truncate">{label}</span>
     </Link>
   );
 }
@@ -59,34 +67,42 @@ export function AppBottomNav({ onForgeClick, className }: AppBottomNavProps) {
     <nav
       aria-label="Main navigation"
       className={cn(
-        "fixed bottom-0 left-0 right-0 z-50 h-20",
-        "flex lg:hidden items-center",
-        "bg-card/95 backdrop-blur-md border-t border-border",
-        // Safe area inset for notched devices
-        "pb-safe",
+        // Height accounts for the raised Forge button + safe area
+        "fixed bottom-0 left-0 right-0 z-50",
+        "flex lg:hidden items-end",
+        "bg-card/96 backdrop-blur-md border-t border-border",
+        // Proper safe area — uses the CSS class defined in index.css
+        "safe-area-inset-bottom",
         className,
       )}
     >
-      {/* Left two tabs */}
-      {LEFT_TABS.map((tab) => (
-        <TabButton key={tab.to} {...tab} />
-      ))}
+      {/* Left two tabs — vertically centred within the 64px track */}
+      <div className="flex flex-1 h-16 items-center">
+        {LEFT_TABS.map((tab) => (
+          <TabButton key={tab.to} {...tab} />
+        ))}
+      </div>
 
-      {/* Center forge button (raised) */}
-      <div className="flex flex-col items-center justify-center flex-1 relative">
-        {/* Negative margin to lift the button above the nav bar */}
-        <div className="-mt-8">
+      {/* Center Forge column — taller to accommodate the raised button */}
+      <div className="flex flex-col items-center justify-end flex-1 pb-2">
+        {/* Raised button sits above the nav baseline */}
+        <div className="-translate-y-3">
           <ForgeTriggerButton variant="tab" onClick={onForgeClick} />
         </div>
-        <span className="text-[10px] font-medium text-muted-foreground mt-1 leading-none">
+        <span
+          className="text-[11px] font-medium text-muted-foreground leading-none mt-1"
+          aria-hidden="true"
+        >
           Forge
         </span>
       </div>
 
       {/* Right two tabs */}
-      {RIGHT_TABS.map((tab) => (
-        <TabButton key={tab.to} {...tab} />
-      ))}
+      <div className="flex flex-1 h-16 items-center">
+        {RIGHT_TABS.map((tab) => (
+          <TabButton key={tab.to} {...tab} />
+        ))}
+      </div>
     </nav>
   );
 }
