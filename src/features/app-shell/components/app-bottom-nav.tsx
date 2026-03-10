@@ -65,11 +65,12 @@ interface AppBottomNavProps {
 export function AppBottomNav({ onForgeClick, className }: AppBottomNavProps) {
   return (
     <nav
-      aria-label="Main navigation"
+      aria-label="Mobile navigation"
       className={cn(
         // Height accounts for the raised Forge button + safe area
         "fixed bottom-0 left-0 right-0 z-50",
-        "flex lg:hidden items-end",
+        // Show only on mobile (<768px) — tablet has icon sidebar
+        "flex md:hidden items-end",
         "bg-card/96 backdrop-blur-md border-t border-border",
         // Proper safe area — uses the CSS class defined in index.css
         "safe-area-inset-bottom",
@@ -90,7 +91,7 @@ export function AppBottomNav({ onForgeClick, className }: AppBottomNavProps) {
           <ForgeTriggerButton variant="tab" onClick={onForgeClick} />
         </div>
         <span
-          className="text-[11px] font-medium text-muted-foreground leading-none mt-1"
+          className="text-[11px] font-semibold text-accent leading-none mt-1"
           aria-hidden="true"
         >
           Forge

@@ -26,17 +26,22 @@ export function NavItem({
     <Link
       to={to}
       aria-current={active ? "page" : undefined}
+      aria-label={label}
       className={cn(
-        "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+        "group relative flex items-center rounded-xl transition-colors duration-150",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+        // Tablet (md): icon-only centered square
+        "justify-center h-10 w-10 lg:justify-start lg:h-auto lg:w-auto lg:gap-3 lg:px-3 lg:py-2.5",
+        "text-sm font-medium",
         active
           ? "bg-secondary text-primary"
           : "text-muted-foreground hover:bg-muted hover:text-foreground",
       )}
     >
-      {/* Active left-border indicator */}
+      {/* Active left-border indicator — wider and taller for visibility */}
       {active && (
         <span
-          className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-primary"
+          className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-primary"
           aria-hidden="true"
         />
       )}
@@ -50,11 +55,12 @@ export function NavItem({
         aria-hidden="true"
       />
 
-      <span className="flex-1 truncate">{label}</span>
+      {/* Label: hidden on tablet, visible on desktop */}
+      <span className="hidden lg:inline flex-1 truncate">{label}</span>
 
       {badge != null && badge > 0 && (
         <span
-          className="flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground"
+          className="hidden lg:flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground"
           aria-label={`${badge} unread`}
         >
           {badge > 99 ? "99+" : badge}

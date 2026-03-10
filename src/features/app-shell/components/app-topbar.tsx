@@ -39,9 +39,9 @@ export function AppTopbar({
         aria-label="TeamForge home"
       >
         <TeamForgeLogo className="w-7 h-7 sm:w-8 sm:h-8" showBackground={false} />
-        <span className="font-sans text-sm sm:text-base font-semibold tracking-tight leading-none">
-          <span className="text-foreground">Team</span>
-          <span className="text-primary">Forge</span>
+        <span className="font-sans text-sm sm:text-base tracking-tight leading-none">
+          <span className="text-foreground font-medium">Team</span>
+          <span className="text-primary font-bold">Forge</span>
         </span>
       </Link>
 

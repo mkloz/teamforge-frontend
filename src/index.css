@@ -176,6 +176,16 @@
   }
 }
 
+@keyframes pulse-glow-amber {
+  0%,
+  100% {
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.35);
+  }
+  50% {
+    box-shadow: 0 6px 32px rgba(245, 158, 11, 0.6);
+  }
+}
+
 @keyframes fade-up {
   from {
     opacity: 0;

@@ -26,7 +26,8 @@ export function ForgeTriggerButton({
           "shadow-[0_4px_24px_rgba(245,158,11,0.55)]",
           "transition-transform duration-150 active:scale-95",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2",
-          // Respect reduced motion
+          // Respect reduced motion — single pulse on mount
+          "motion-safe:animate-[pulse-glow-amber_2.5s_ease-in-out_1]",
           "motion-safe:hover:scale-105",
           className,
         )}
@@ -36,6 +37,7 @@ export function ForgeTriggerButton({
     );
   }
 
+  // Sidebar variant — full width pill
   return (
     <button
       type="button"
@@ -49,6 +51,8 @@ export function ForgeTriggerButton({
         "hover:shadow-[0_6px_28px_rgba(245,158,11,0.5)] hover:brightness-105",
         "active:scale-[0.98]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2",
+        // Single pulse animation on mount
+        "motion-safe:animate-[pulse-glow-amber_2.5s_ease-in-out_1]",
         className,
       )}
     >

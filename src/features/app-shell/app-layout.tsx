@@ -58,10 +58,11 @@ export function AppLayout() {
       {/* Main content area */}
       <main
         id="main-content"
-        className="pt-16 lg:pl-60 pb-24 lg:pb-8 min-h-screen"
+        className="pt-16 md:pl-16 lg:pl-60 pb-24 md:pb-8 min-h-screen"
         tabIndex={-1}
       >
-        <div className="max-w-2xl mx-auto px-4 py-6">
+        {/* Content wrapper — pages define their own max-width as needed */}
+        <div className="px-4 py-6">
           <Suspense fallback={<PageSkeleton />}>
             <Outlet />
           </Suspense>

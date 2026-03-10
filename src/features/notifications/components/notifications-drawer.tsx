@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 import { X } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useNotifications } from "../hooks/use-notifications";
 import { NotificationItem } from "./notification-item";
 
@@ -24,13 +24,34 @@ export function NotificationsDrawer({ open, onClose }: NotificationsDrawerProps)
     return () => document.removeEventListener("keydown", handleKey);
   }, [open, onClose]);
 
-  // Focus trap — focus panel when it opens
+  // Focus trap — focus panel when it opens + trap Tab key inside
   useEffect(() => {
     if (open) {
       const t = setTimeout(() => drawerRef.current?.focus(), 60);
       return () => clearTimeout(t);
     }
   }, [open]);
+
+  // Trap keyboard focus inside the drawer when open
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key !== "Tab" || !drawerRef.current) return;
+      const focusables = drawerRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    },
+    [],
+  );
 
   // Prevent body scroll while open
   useEffect(() => {
@@ -65,6 +86,9 @@ export function NotificationsDrawer({ open, onClose }: NotificationsDrawerProps)
         aria-modal="true"
         tabIndex={-1}
         data-open={open}
+        // @ts-expect-error — inert is valid HTML but not yet in React types
+        inert={!open ? "" : undefined}
+        onKeyDown={handleKeyDown}
         className={cn(
           "fixed z-[56] flex flex-col bg-card border-border outline-none",
           // ── Desktop: right-side panel ─────────────────────────────────────
@@ -81,9 +105,9 @@ export function NotificationsDrawer({ open, onClose }: NotificationsDrawerProps)
           !open && "pointer-events-none",
         )}
       >
-        {/* Drag handle (mobile only) */}
+        {/* Drag handle (mobile only) — enhanced visibility */}
         <div
-          className="mx-auto mt-3 mb-1 h-1 w-10 rounded-full bg-border shrink-0 lg:hidden"
+          className="mx-auto mt-3 mb-1 h-1.5 w-12 rounded-full bg-muted-foreground/30 shrink-0 lg:hidden"
           aria-hidden="true"
         />
 
@@ -121,8 +145,8 @@ export function NotificationsDrawer({ open, onClose }: NotificationsDrawerProps)
             <>
               {today.length > 0 && (
                 <section aria-label="Today's notifications">
-                  <div className="px-5 py-2 sticky top-0 bg-card/95 backdrop-blur-sm border-b border-border">
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                  <div className="px-5 py-2.5 sticky top-0 bg-card/95 backdrop-blur-sm border-b border-border">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                       Today
                     </p>
                   </div>
@@ -133,8 +157,8 @@ export function NotificationsDrawer({ open, onClose }: NotificationsDrawerProps)
               )}
               {earlier.length > 0 && (
                 <section aria-label="Earlier notifications">
-                  <div className="px-5 py-2 sticky top-0 bg-card/95 backdrop-blur-sm border-b border-border">
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                  <div className="px-5 py-2.5 sticky top-0 bg-card/95 backdrop-blur-sm border-b border-border">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                       Earlier
                     </p>
                   </div>
