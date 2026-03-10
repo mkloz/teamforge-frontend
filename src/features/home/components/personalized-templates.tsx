@@ -2,7 +2,6 @@ import { cn } from "@/shared/lib/utils";
 import { ArrowRight, Sparkles, type LucideIcon } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import type { PersonalizedTemplate } from "../types/home.types";
-import { getCategoryColors } from "../utils/category-colors";
 
 interface TemplateCardProps {
   template: PersonalizedTemplate;

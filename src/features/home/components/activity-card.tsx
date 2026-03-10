@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, MapPin, Users } from "lucide-react";
+import { Calendar, Users } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import type { Activity } from "../types/home.types";
 import { getCategoryColors } from "../utils/category-colors";

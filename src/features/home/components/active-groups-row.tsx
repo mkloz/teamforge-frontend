@@ -1,5 +1,4 @@
 import { cn } from "@/shared/lib/utils";
-import { MessageCircle, Users } from "lucide-react";
 import type { GroupPreview } from "../types/home.types";
 import { getCategoryColors } from "../utils/category-colors";
 
