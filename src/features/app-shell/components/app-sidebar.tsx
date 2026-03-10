@@ -1,6 +1,4 @@
-import { TeamForgeLogo } from "@/assets/logo";
 import { cn } from "@/shared/lib/utils";
-import { Link } from "@tanstack/react-router";
 import { Compass, Home, MessageSquare, Settings, User } from "lucide-react";
 import { ForgeTriggerButton } from "./forge-trigger-button";
 import { NavItem } from "./nav-item";
@@ -28,27 +26,9 @@ export function AppSidebar({ onForgeClick, className }: AppSidebarProps) {
         className,
       )}
     >
-      {/* Wordmark — matches topbar logo baseline */}
-      <div className="px-4 py-4">
-        <Link
-          to="/home"
-          className="flex items-center gap-2 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg"
-          aria-label="TeamForge home"
-        >
-          <TeamForgeLogo className="w-7 h-7" showBackground={false} />
-          <span className="font-sans text-base font-semibold tracking-tight">
-            <span className="text-foreground">Team</span>
-            <span className="text-primary">Forge</span>
-          </span>
-        </Link>
-      </div>
-
-      {/* Divider */}
-      <div className="mx-4 h-px bg-sidebar-border" aria-hidden="true" />
-
       {/* Primary nav */}
       <nav
-        className="flex flex-col gap-1 px-3 py-4 flex-1"
+        className="flex flex-col gap-1 px-3 pt-3 pb-4 flex-1"
         aria-label="App navigation"
       >
         {NAV_ITEMS.map((item) => (
