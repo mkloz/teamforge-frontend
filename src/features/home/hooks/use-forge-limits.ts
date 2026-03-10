@@ -7,7 +7,7 @@ export interface ForgeLimits {
 }
 
 export function useForgeLimits(initial: ForgeLimits) {
-  const [limits, setLimits] = useState<ForgeLimits>(initial);
+  const [limits, _setLimits] = useState<ForgeLimits>(initial);
 
   const remaining = limits.limit - limits.used;
   const isExhausted = remaining <= 0;

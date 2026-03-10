@@ -1,5 +1,5 @@
 import { cn } from "@/shared/lib/utils";
-import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
+import { RadioGroup } from "radix-ui";
 
 interface LikertScaleProps {
   value: 1 | 2 | 3 | 4 | 5 | undefined;
@@ -19,9 +19,9 @@ const LABELS: Record<number, string> = {
 export function LikertScale({ value, onChange }: LikertScaleProps) {
   return (
     <div className="flex flex-col w-full select-none -mt-4">
-      <RadioGroupPrimitive.Root
+      <RadioGroup.Root
         value={value ? value.toString() : ""}
-        onValueChange={(val) => onChange(Number(val) as 1 | 2 | 3 | 4 | 5)}
+        onValueChange={(val: string) => onChange(Number(val) as 1 | 2 | 3 | 4 | 5)}
         className="relative grid grid-cols-5 w-full h-16 items-center focus-visible:outline-none"
         aria-label="Rate your agreement"
       >
@@ -34,7 +34,7 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
         {POINTS.map((point) => {
           const selected = value === point;
           return (
-            <RadioGroupPrimitive.Item
+            <RadioGroup.Item
               key={point}
               value={point.toString()}
               id={`point-${point}`}
@@ -50,12 +50,12 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
                 )}
                 style={{ width: 20, height: 20 }}
               >
-                <RadioGroupPrimitive.Indicator className="w-1.5 h-1.5 rounded-full bg-white" />
+                <RadioGroup.Indicator className="w-1.5 h-1.5 rounded-full bg-white" />
               </div>
-            </RadioGroupPrimitive.Item>
+            </RadioGroup.Item>
           );
         })}
-      </RadioGroupPrimitive.Root>
+      </RadioGroup.Root>
 
       {/* Per-dot labels */}
       <div className="grid grid-cols-5 w-full -mt-3">
