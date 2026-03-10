@@ -32,7 +32,7 @@ export function HomePage() {
     // TODO: Open Forge Flow overlay
   };
 
-  const handleSelectTemplate = (template: PersonalizedTemplate) => {
+  const handleSelectTemplate = (_template: PersonalizedTemplate) => {
     // TODO: Open activity creation flow
   };
 

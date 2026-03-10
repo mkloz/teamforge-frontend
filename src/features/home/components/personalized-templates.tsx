@@ -1,5 +1,5 @@
 import { cn } from "@/shared/lib/utils";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkles, type LucideIcon } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import type { PersonalizedTemplate } from "../types/home.types";
 import { getCategoryColors } from "../utils/category-colors";
@@ -9,9 +9,9 @@ interface TemplateCardProps {
   onSelect: (template: PersonalizedTemplate) => void;
 }
 
-function getIcon(iconName: string) {
-  const Icon = LucideIcons[iconName as keyof typeof LucideIcons] || LucideIcons.Sparkles;
-  return Icon;
+function getIcon(iconName: string): LucideIcon {
+  const icons = LucideIcons as unknown as Record<string, LucideIcon>;
+  return icons[iconName] || Sparkles;
 }
 
 export function TemplateCard({ template, onSelect }: TemplateCardProps) {
