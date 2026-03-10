@@ -2,6 +2,7 @@ import { cn } from "@/shared/lib/utils";
 import { Check, X, ChevronDown, Users } from "lucide-react";
 import { useState } from "react";
 import type { Invitation } from "../types/home.types";
+import { getCategoryColors } from "../utils/category-colors";
 
 interface PendingInvitationsBarProps {
   invitations: Invitation[];
@@ -54,7 +55,7 @@ export function PendingInvitationsBar({
 
       {/* Expanded list */}
       {isExpanded && (
-        <div className="space-y-2 pl-4 pr-4">
+        <div className="space-y-3 pl-4 pr-4">
           {invitations
             .filter((inv) => inv.status === "PENDING")
             .map((invitation) => (
@@ -86,55 +87,84 @@ function InvitationCard({
   const expiresIn = new Date(invitation.expiresAt).getTime() - Date.now();
   const expiresInHours = Math.ceil(expiresIn / (1000 * 60 * 60));
   const isExpiringSoon = expiresInHours <= 24;
+  const colors = getCategoryColors(invitation.activityCategory);
 
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 p-3 rounded-lg",
-        "bg-card border border-border",
-        isExpiringSoon && "border-accent/50 bg-accent/5",
+        "group overflow-hidden rounded-xl border transition-all duration-200",
+        "hover:border-primary/50 hover:shadow-lg hover:shadow-black/10",
+        "dark:hover:shadow-black/30",
+        isExpiringSoon ? "border-accent/50 bg-accent/5" : "border-border bg-card",
       )}
     >
-      <div className="space-y-1">
-        <h4 className="text-sm font-semibold text-foreground">
-          {invitation.activityTitle}
-        </h4>
-        <p className="text-xs text-muted-foreground">
-          Invited by <span className="font-medium">{invitation.inviterName}</span>
-        </p>
+      {/* Cover Image */}
+      <div className="relative h-24 w-full overflow-hidden bg-muted">
+        <img
+          src={invitation.coverImage}
+          alt={invitation.activityTitle}
+          className={cn("h-full w-full object-cover transition-transform duration-300", "group-hover:scale-105")}
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-col gap-2.5 p-3">
+        {/* Activity Title */}
+        <h4 className="line-clamp-1 text-sm font-semibold text-foreground">{invitation.activityTitle}</h4>
+
+        {/* Inviter Info */}
+        <div className="flex items-center gap-2">
+          <img
+            src={invitation.inviterAvatar}
+            alt={invitation.inviterName}
+            className="h-6 w-6 rounded-full object-cover"
+          />
+          <p className="text-xs text-muted-foreground">
+            Invited by <span className="font-medium text-foreground">{invitation.inviterName}</span>
+          </p>
+        </div>
+
+        {/* Category Badge */}
+        <div className={cn("w-fit rounded-lg px-2 py-0.5 text-xs font-semibold", colors.bg, colors.text)}>
+          {invitation.activityCategory}
+        </div>
+
+        {/* Expiration warning */}
         {isExpiringSoon && (
-          <p className="text-xs text-accent font-medium">
+          <p className="text-xs text-accent font-semibold">
             Expires in {expiresInHours} {expiresInHours === 1 ? "hour" : "hours"}
           </p>
         )}
-      </div>
 
-      {/* Actions */}
-      <div className="flex gap-2">
-        <button
-          onClick={() => onAccept(invitation.id)}
-          disabled={isUpdating}
-          className={cn(
-            "flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium",
-            "bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50",
-            "transition-colors duration-150",
-          )}
-        >
-          <Check size={14} />
-          Accept
-        </button>
-        <button
-          onClick={() => onDecline(invitation.id)}
-          disabled={isUpdating}
-          className={cn(
-            "flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium",
-            "bg-muted text-foreground hover:bg-muted/80 disabled:opacity-50",
-            "transition-colors duration-150",
-          )}
-        >
-          <X size={14} />
-          Decline
-        </button>
+        {/* Actions */}
+        <div className="flex gap-2 pt-2">
+          <button
+            onClick={() => onAccept(invitation.id)}
+            disabled={isUpdating}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold",
+              "bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50",
+              "transition-colors duration-150",
+            )}
+          >
+            <Check size={14} />
+            Accept
+          </button>
+          <button
+            onClick={() => onDecline(invitation.id)}
+            disabled={isUpdating}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold",
+              "bg-muted text-foreground hover:bg-muted/80 disabled:opacity-50",
+              "transition-colors duration-150",
+            )}
+          >
+            <X size={14} />
+            Decline
+          </button>
+        </div>
       </div>
     </div>
   );

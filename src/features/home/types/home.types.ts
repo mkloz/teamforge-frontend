@@ -6,6 +6,8 @@ export type GroupAccessType = "OPEN" | "BY_INVITATION";
 
 export type InvitationStatus = "PENDING" | "ACCEPTED" | "DECLINED" | "EXPIRED";
 
+export type ActivityCategory = "Sports" | "Tech" | "Arts" | "Social" | "Outdoors" | "Learning";
+
 export interface UserProfile {
   id: string;
   name: string;
@@ -19,7 +21,8 @@ export interface Activity {
   id: string;
   title: string;
   description?: string;
-  category: string; // e.g., "Sports", "Tech", "Arts"
+  category: ActivityCategory;
+  coverImage: string; // Image URL for card banner
   location: string; // city
   date: string; // ISO date
   memberCount: number;
@@ -27,6 +30,7 @@ export interface Activity {
   accessType: GroupAccessType;
   creatorId: string;
   creatorName: string;
+  creatorAvatar: string; // Creator's avatar URL
   tags: string[];
   similarity?: number; // cosine similarity score 0-1
 }
@@ -34,7 +38,8 @@ export interface Activity {
 export interface GroupPreview {
   id: string;
   activityTitle: string;
-  activityCategory: string;
+  activityCategory: ActivityCategory;
+  coverImage: string; // Image URL for card banner
   memberCount: number;
   memberAvatars: string[];
   status: "ACTIVE" | "PENDING" | "COMPLETED";
@@ -45,8 +50,10 @@ export interface Invitation {
   id: string;
   groupId: string;
   activityTitle: string;
-  activityCategory: string;
+  activityCategory: ActivityCategory;
+  coverImage: string; // Image URL for card banner
   inviterName: string;
+  inviterAvatar: string; // Inviter's avatar URL
   status: InvitationStatus;
   expiresAt: string; // ISO date
   createdAt: string; // ISO date
@@ -57,6 +64,7 @@ export interface PersonalizedTemplate {
   title: string;
   description: string;
   icon: string; // e.g., "Code", "Zap", "Users"
+  backgroundImage: string; // Gradient or image for template card
   interests: string[];
   suggestedTags: string[];
 }

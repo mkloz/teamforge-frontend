@@ -2,6 +2,7 @@ import { cn } from "@/shared/lib/utils";
 import { ArrowRight } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import type { PersonalizedTemplate } from "../types/home.types";
+import { getCategoryColors } from "../utils/category-colors";
 
 interface TemplateCardProps {
   template: PersonalizedTemplate;
@@ -20,43 +21,61 @@ export function TemplateCard({ template, onSelect }: TemplateCardProps) {
     <button
       onClick={() => onSelect(template)}
       className={cn(
-        "group flex flex-col gap-3 p-4 rounded-2xl text-left",
-        "bg-card border border-border hover:border-accent/50",
-        "transition-all duration-200 hover:shadow-lg hover:shadow-accent/10",
+        "group relative overflow-hidden rounded-2xl text-left",
+        "border border-border transition-all duration-200",
+        "hover:border-primary/50 hover:shadow-lg hover:shadow-black/10",
+        "dark:hover:shadow-black/30",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
       )}
     >
-      {/* Icon */}
-      <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-accent/10 group-hover:bg-accent/20 transition-colors">
-        <Icon size={20} className="text-accent" />
-      </div>
+      {/* Background gradient/image */}
+      <div
+        className="absolute inset-0 transition-transform duration-300 group-hover:scale-105"
+        style={{
+          background: template.backgroundImage,
+        }}
+      />
 
-      {/* Title */}
-      <h4 className="text-base font-semibold text-foreground group-hover:text-accent transition-colors">
-        {template.title}
-      </h4>
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-black/40" />
 
-      {/* Description */}
-      <p className="text-sm text-muted-foreground line-clamp-2">
-        {template.description}
-      </p>
+      {/* Content */}
+      <div className="relative flex flex-col gap-3 p-5 h-full">
+        {/* Icon badge */}
+        <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-white/15 backdrop-blur-sm border border-white/20 group-hover:bg-white/25 transition-colors">
+          <Icon size={24} className="text-white" />
+        </div>
 
-      {/* Tags */}
-      <div className="flex flex-wrap gap-1.5 pt-2">
-        {template.suggestedTags.slice(0, 3).map((tag) => (
-          <span
-            key={tag}
-            className="text-xs font-medium px-2 py-1 rounded-lg bg-primary/10 text-primary"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
+        {/* Spacer */}
+        <div className="flex-1" />
 
-      {/* CTA */}
-      <div className="flex items-center gap-2 text-accent font-semibold text-sm pt-2 group-hover:gap-3 transition-all">
-        <span>Create</span>
-        <ArrowRight size={14} className="shrink-0" />
+        {/* Title */}
+        <h4 className="text-lg font-bold text-white group-hover:text-accent transition-colors leading-tight">
+          {template.title}
+        </h4>
+
+        {/* Description */}
+        <p className="text-sm text-white/80 line-clamp-2">
+          {template.description}
+        </p>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-1.5 pt-2">
+          {template.suggestedTags.slice(0, 2).map((tag) => (
+            <span
+              key={tag}
+              className="text-xs font-medium px-2 py-1 rounded-full bg-white/20 text-white backdrop-blur-sm"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div className="flex items-center gap-2 text-white font-semibold text-sm pt-3 group-hover:gap-3 transition-all">
+          <span>Create</span>
+          <ArrowRight size={16} className="shrink-0 group-hover:translate-x-1 transition-transform" />
+        </div>
       </div>
     </button>
   );
@@ -83,11 +102,12 @@ export function PersonalizedTemplates({
       {/* Template grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {templates.map((template) => (
-          <TemplateCard
-            key={template.id}
-            template={template}
-            onSelect={onSelectTemplate}
-          />
+          <div key={template.id} className="min-h-64">
+            <TemplateCard
+              template={template}
+              onSelect={onSelectTemplate}
+            />
+          </div>
         ))}
       </div>
 
