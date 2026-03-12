@@ -26,12 +26,11 @@ export function OceanChart({ scores }: OceanChartProps) {
   const gridColor = "#e5e7eb"; // gray-200
 
   return (
-    <div className="w-full max-w-[300px] mx-auto aspect-square">
+    <div className="w-full max-w-[300px] mx-auto aspect-square [&_svg]:outline-none [&_svg:focus]:outline-none [&_*:focus]:outline-none">
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart
           data={chartData}
           margin={{ top: 24, right: 32, bottom: 24, left: 32 }}
-          style={{ cursor: "default" }}
         >
           {/* Grid with visible web lines */}
           <PolarGrid 
