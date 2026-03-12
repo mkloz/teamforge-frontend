@@ -24,8 +24,8 @@ const HomePage = lazy(() =>
 const ExplorePage = lazy(() =>
   import("./features/explore/explore-page").then((m) => ({ default: m.ExplorePage })),
 );
-const GroupsPage = lazy(() =>
-  import("./features/groups/groups-page").then((m) => ({ default: m.GroupsPage })),
+const ActivityPage = lazy(() =>
+  import("./features/activity/activity-page").then((m) => ({ default: m.ActivityPage })),
 );
 const ProfilePage = lazy(() =>
   import("./features/profile/profile-page").then((m) => ({ default: m.ProfilePage })),
@@ -102,10 +102,10 @@ const exploreRoute = createRoute({
   component: () => <LazyPage component={ExplorePage} />,
 });
 
-const groupsRoute = createRoute({
+const activityRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/activity",
-  component: () => <LazyPage component={GroupsPage} />,
+  component: () => <LazyPage component={ActivityPage} />,
 });
 
 const profileRoute = createRoute({
@@ -131,7 +131,7 @@ const routeTree = rootRoute.addChildren([
   appShellRoute.addChildren([
     homeRoute,
     exploreRoute,
-    groupsRoute,
+    activityRoute,
     profileRoute,
     settingsRoute,
   ]),
