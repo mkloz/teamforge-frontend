@@ -9,6 +9,8 @@ export const CURRENT_USER_ID = "user-current";
 export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
   {
     id: "group-1",
+    groupName: "Trail Blazers",
+    groupAvatar: "https://api.dicebear.com/7.x/shapes/svg?seed=trailblazers",
     planTitle: "Weekend Hiking Adventure",
     planCategory: "Outdoors",
     planCoverImage: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=60",
@@ -32,6 +34,8 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
   },
   {
     id: "group-2",
+    groupName: "Code Crafters",
+    groupAvatar: "https://api.dicebear.com/7.x/shapes/svg?seed=codecrafters",
     planTitle: "React Study Group",
     planCategory: "Tech",
     planCoverImage: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=60",
@@ -55,6 +59,8 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
   },
   {
     id: "group-3",
+    groupName: "Game Night Crew",
+    groupAvatar: "https://api.dicebear.com/7.x/shapes/svg?seed=gamenightcrew",
     planTitle: "Board Game Night",
     planCategory: "Social",
     planCoverImage: "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=800&q=60",
@@ -74,9 +80,12 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
       isSystem: false,
     },
     unreadCount: 1,
+    pendingProposals: 2,
   },
   {
     id: "group-4",
+    groupName: "Jazz Collective",
+    groupAvatar: "https://api.dicebear.com/7.x/shapes/svg?seed=jazzcollective",
     planTitle: "Jazz Jam Session",
     planCategory: "Music",
     planCoverImage: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=60",
@@ -103,7 +112,14 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
 export const MOCK_GROUPS: Record<string, Group> = {
   "group-1": {
     id: "group-1",
+    identity: {
+      name: "Trail Blazers",
+      avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=trailblazers",
+      description: "A group of outdoor enthusiasts who love exploring nature together.",
+      createdAt: hoursAgo(720), // 30 days ago
+    },
     plan: {
+      id: "plan-1",
       title: "Weekend Hiking Adventure",
       description: "A scenic hike through the local trails. All skill levels welcome! We'll take breaks and enjoy the views together.",
       category: "Outdoors",
@@ -113,6 +129,30 @@ export const MOCK_GROUPS: Record<string, Group> = {
       locationCoords: { lat: 37.9235, lng: -122.5965 },
       status: "CONFIRMED",
     },
+    planHistory: [
+      {
+        id: "plan-history-1",
+        title: "Sunset Beach Walk",
+        category: "Outdoors",
+        coverImage: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=60",
+        dateTime: hoursAgo(336), // 2 weeks ago
+        location: "Ocean Beach, SF",
+        completedAt: hoursAgo(336),
+        rating: 4.5,
+        memberCount: 3,
+      },
+      {
+        id: "plan-history-2",
+        title: "Muir Woods Morning Hike",
+        category: "Outdoors",
+        coverImage: "https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&q=60",
+        dateTime: hoursAgo(504), // 3 weeks ago
+        location: "Muir Woods National Monument",
+        completedAt: hoursAgo(504),
+        rating: 5,
+        memberCount: 4,
+      },
+    ],
     members: [
       {
         id: CURRENT_USER_ID,
@@ -162,7 +202,14 @@ export const MOCK_GROUPS: Record<string, Group> = {
   },
   "group-2": {
     id: "group-2",
+    identity: {
+      name: "Code Crafters",
+      avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=codecrafters",
+      description: "Weekly tech meetups to learn and grow together.",
+      createdAt: hoursAgo(480), // 20 days ago
+    },
     plan: {
+      id: "plan-2",
       title: "React Study Group",
       description: "Weekly meetup to learn React together. We'll work through tutorials, build projects, and help each other debug.",
       category: "Tech",
@@ -171,6 +218,19 @@ export const MOCK_GROUPS: Record<string, Group> = {
       location: "Central Library, Study Room B",
       status: "CONFIRMED",
     },
+    planHistory: [
+      {
+        id: "plan-history-3",
+        title: "TypeScript Deep Dive",
+        category: "Tech",
+        coverImage: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=60",
+        dateTime: hoursAgo(168), // 1 week ago
+        location: "Central Library, Study Room B",
+        completedAt: hoursAgo(168),
+        rating: 4,
+        memberCount: 4,
+      },
+    ],
     members: [
       {
         id: "user-5",
@@ -230,7 +290,14 @@ export const MOCK_GROUPS: Record<string, Group> = {
   },
   "group-3": {
     id: "group-3",
+    identity: {
+      name: "Game Night Crew",
+      avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=gamenightcrew",
+      description: "Regular game nights with friends, new and old.",
+      createdAt: hoursAgo(240), // 10 days ago
+    },
     plan: {
+      id: "plan-3",
       title: "Board Game Night",
       description: "Casual board game evening. Bring your favorites or try something new. Snacks welcome!",
       category: "Social",
@@ -238,6 +305,70 @@ export const MOCK_GROUPS: Record<string, Group> = {
       dateTime: daysFromNow(5),
       location: "Drew's Place",
       status: "DRAFT",
+      // Active proposals for collaboration demo
+      proposals: [
+        {
+          id: "proposal-1",
+          field: "dateTime",
+          currentValue: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }),
+          proposedValue: "Saturday, " + new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+          proposedBy: {
+            id: "user-10",
+            name: "Drew",
+            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Drew",
+          },
+          createdAt: hoursAgo(5),
+          votes: {
+            approve: ["user-9"],
+            reject: [],
+          },
+          status: "PENDING",
+        },
+        {
+          id: "proposal-2",
+          field: "location",
+          currentValue: "Drew's Place",
+          proposedValue: "Board Game Cafe downtown",
+          proposedBy: {
+            id: "user-9",
+            name: "Jamie",
+            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jamie",
+          },
+          createdAt: hoursAgo(3),
+          votes: {
+            approve: [],
+            reject: ["user-10"],
+          },
+          status: "PENDING",
+        },
+      ],
+      comments: [
+        {
+          id: "comment-1",
+          field: "general",
+          content: "I can bring Catan and Ticket to Ride. Anyone have Wingspan?",
+          author: {
+            id: "user-10",
+            name: "Drew",
+            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Drew",
+          },
+          createdAt: hoursAgo(6),
+          reactions: [
+            { emoji: "thumbsup", userIds: ["user-9", CURRENT_USER_ID] },
+          ],
+        },
+        {
+          id: "comment-2",
+          field: "location",
+          content: "The cafe has a bigger table and we can order food there",
+          author: {
+            id: "user-9",
+            name: "Jamie",
+            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jamie",
+          },
+          createdAt: hoursAgo(2),
+        },
+      ],
     },
     members: [
       {
@@ -278,7 +409,14 @@ export const MOCK_GROUPS: Record<string, Group> = {
   },
   "group-4": {
     id: "group-4",
+    identity: {
+      name: "Jazz Collective",
+      avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=jazzcollective",
+      description: "Musicians who jam together regularly.",
+      createdAt: hoursAgo(360), // 15 days ago
+    },
     plan: {
+      id: "plan-4",
       title: "Jazz Jam Session",
       description: "Bring your instrument and let's make some music together. All skill levels welcome.",
       category: "Music",
@@ -288,6 +426,19 @@ export const MOCK_GROUPS: Record<string, Group> = {
       locationCoords: { lat: 37.7749, lng: -122.4194 },
       status: "CONFIRMED",
     },
+    planHistory: [
+      {
+        id: "plan-history-4",
+        title: "Blues Night",
+        category: "Music",
+        coverImage: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&q=60",
+        dateTime: hoursAgo(168), // 1 week ago
+        location: "Rhythm Studio, Room 3",
+        completedAt: hoursAgo(168),
+        rating: 5,
+        memberCount: 4,
+      },
+    ],
     members: [
       {
         id: "user-11",

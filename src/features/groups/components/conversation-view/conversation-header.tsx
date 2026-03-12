@@ -43,26 +43,36 @@ export function ConversationHeader({
           "hover:bg-muted/50 active:bg-muted/70 transition-colors",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         )}
-        aria-label={`View details for ${group.plan.title}`}
+        aria-label={`View details for ${group.identity.name}`}
       >
-        {/* Avatar with status ring */}
+        {/* Group avatar with plan cover overlay */}
         <div className="relative flex-shrink-0">
+          <img
+            src={group.identity.avatar}
+            alt={group.identity.name}
+            className="w-10 h-10 rounded-xl object-cover bg-muted"
+          />
+          {/* Plan cover image as tiny overlay */}
           <img
             src={group.plan.coverImage}
             alt=""
-            className="w-10 h-10 rounded-full object-cover ring-2 ring-background"
+            className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded object-cover ring-2 ring-background"
           />
           {group.status === "ACTIVE" && (
-            <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-background" />
+            <span className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-background" />
           )}
         </div>
         
         <div className="min-w-0 flex-1">
+          {/* Group name (persistent identity) */}
           <h2 className="text-sm font-semibold text-foreground truncate">
-            {group.plan.title}
+            {group.identity.name}
           </h2>
-          <p className="text-xs text-muted-foreground">
-            {group.members.length} member{group.members.length !== 1 ? "s" : ""} · {statusText[group.status]}
+          {/* Current plan + status */}
+          <p className="text-xs text-muted-foreground truncate">
+            <span className="text-foreground/70">{group.plan.title}</span>
+            {" · "}
+            {statusText[group.status]}
           </p>
         </div>
 

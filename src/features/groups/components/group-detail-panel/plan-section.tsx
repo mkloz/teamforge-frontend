@@ -1,10 +1,13 @@
-import { Calendar, MapPin, Clock } from "lucide-react";
+import { Calendar, MapPin, Clock, Pencil, Image } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Badge } from "@/shared/components/ui/badge";
-import type { Plan, PlanCategory } from "../../types/groups.types";
+import { Button } from "@/shared/components/ui/button";
+import type { Plan, PlanCategory, MemberRole } from "../../types/groups.types";
 
 interface PlanSectionProps {
   plan: Plan;
+  userRole?: MemberRole;
+  showCoverImage?: boolean;
 }
 
 const categoryColors: Record<PlanCategory, string> = {
@@ -42,11 +45,54 @@ function formatTime(isoString: string): string {
   });
 }
 
-export function PlanSection({ plan }: PlanSectionProps) {
+export function PlanSection({ 
+  plan, 
+  userRole = "MEMBER",
+  showCoverImage = false,
+}: PlanSectionProps) {
+  const isAdmin = userRole === "ADMIN";
+  const canEdit = isAdmin && plan.status === "DRAFT";
+
   return (
     <section>
+      {/* Cover image (optional - for when not shown elsewhere) */}
+      {showCoverImage && (
+        <div className="relative rounded-xl overflow-hidden mb-4 group">
+          <img
+            src={plan.coverImage}
+            alt={plan.title}
+            className="w-full h-32 object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+          {canEdit && (
+            <button
+              className={cn(
+                "absolute top-2 right-2 p-1.5 rounded-lg",
+                "bg-black/40 hover:bg-black/60 transition-colors",
+                "opacity-0 group-hover:opacity-100",
+              )}
+              aria-label="Change cover image"
+            >
+              <Image size={14} className="text-white" />
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Title and badges */}
-      <h2 className="text-lg font-bold text-foreground">{plan.title}</h2>
+      <div className="flex items-start justify-between gap-2">
+        <h2 className="text-lg font-bold text-foreground">{plan.title}</h2>
+        {canEdit && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 flex-shrink-0 text-muted-foreground hover:text-foreground"
+            title="Edit plan"
+          >
+            <Pencil size={14} />
+          </Button>
+        )}
+      </div>
       <div className="flex flex-wrap gap-2 mt-2">
         <span
           className={cn(

@@ -2,8 +2,11 @@ import { useEffect, useCallback } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
-import type { Group } from "../../types/groups.types";
+import type { Group, MemberRole } from "../../types/groups.types";
+import { GroupIdentitySection } from "./group-identity-section";
 import { PlanSection } from "./plan-section";
+import { PlanCollaborationSection } from "./plan-collaboration-section";
+import { PlanHistorySection } from "./plan-history-section";
 import { MembersSection } from "./members-section";
 import { ActionsSection } from "./actions-section";
 
@@ -94,6 +97,11 @@ function DesktopPanelContent({
   group: Group;
   onClose: () => void;
 }) {
+  // Get current user's role (would come from auth context in production)
+  const currentUserRole: MemberRole = group.members.find(m => m.role === "ADMIN")?.id === group.createdBy 
+    ? "ADMIN" 
+    : "MEMBER";
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Header */}
@@ -113,7 +121,7 @@ function DesktopPanelContent({
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
         {/* Cover image */}
-        <div className="relative h-40 w-full">
+        <div className="relative h-32 w-full">
           <img
             src={group.plan.coverImage}
             alt=""
@@ -123,8 +131,37 @@ function DesktopPanelContent({
         </div>
 
         <div className="p-4 space-y-6">
-          <PlanSection plan={group.plan} />
+          {/* Group Identity - persistent across plans */}
+          <GroupIdentitySection
+            identity={group.identity}
+            memberCount={group.members.length}
+            maxMembers={group.maxMembers}
+            userRole={currentUserRole}
+          />
+
+          {/* Current Plan Details */}
+          <PlanSection plan={group.plan} userRole={currentUserRole} />
+
+          {/* Collaboration - proposals and comments */}
+          {group.plan.status === "DRAFT" && (
+            <PlanCollaborationSection
+              proposals={group.plan.proposals ?? []}
+              comments={group.plan.comments ?? []}
+              userRole={currentUserRole}
+              totalMembers={group.members.length}
+            />
+          )}
+
+          {/* Members */}
           <MembersSection members={group.members} maxMembers={group.maxMembers} />
+
+          {/* Plan History - for group reusability */}
+          <PlanHistorySection
+            history={group.planHistory ?? []}
+            userRole={currentUserRole}
+          />
+
+          {/* Actions */}
           <ActionsSection groupId={group.id} groupStatus={group.status} />
         </div>
       </div>
@@ -139,10 +176,15 @@ function MobilePanelContent({
   group: Group;
   onClose: () => void;
 }) {
+  // Get current user's role (would come from auth context in production)
+  const currentUserRole: MemberRole = group.members.find(m => m.role === "ADMIN")?.id === group.createdBy 
+    ? "ADMIN" 
+    : "MEMBER";
+
   return (
     <div className="flex-1 overflow-y-auto pb-safe">
       {/* Cover image */}
-      <div className="relative h-48 w-full">
+      <div className="relative h-40 w-full">
         <img
           src={group.plan.coverImage}
           alt=""
@@ -163,8 +205,37 @@ function MobilePanelContent({
       </div>
 
       <div className="p-4 space-y-6">
-        <PlanSection plan={group.plan} />
+        {/* Group Identity */}
+        <GroupIdentitySection
+          identity={group.identity}
+          memberCount={group.members.length}
+          maxMembers={group.maxMembers}
+          userRole={currentUserRole}
+        />
+
+        {/* Plan Details */}
+        <PlanSection plan={group.plan} userRole={currentUserRole} />
+
+        {/* Collaboration */}
+        {group.plan.status === "DRAFT" && (
+          <PlanCollaborationSection
+            proposals={group.plan.proposals ?? []}
+            comments={group.plan.comments ?? []}
+            userRole={currentUserRole}
+            totalMembers={group.members.length}
+          />
+        )}
+
+        {/* Members */}
         <MembersSection members={group.members} maxMembers={group.maxMembers} />
+
+        {/* Plan History */}
+        <PlanHistorySection
+          history={group.planHistory ?? []}
+          userRole={currentUserRole}
+        />
+
+        {/* Actions */}
         <ActionsSection groupId={group.id} groupStatus={group.status} />
       </div>
     </div>

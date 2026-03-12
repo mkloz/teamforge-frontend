@@ -1,6 +1,6 @@
 /**
  * Groups feature type definitions
- * Based on the unified Group-Plan architecture
+ * Based on the unified Group-Plan architecture with separate identity
  */
 
 export type PlanCategory =
@@ -24,10 +24,77 @@ export type MemberRole = "ADMIN" | "MEMBER";
 export type MessageType = "TEXT" | "IMAGE" | "LOCATION" | "SYSTEM" | "PLAN_UPDATE";
 
 /**
+ * The persistent Group identity (separate from the Plan)
+ * This stays constant even as plans change
+ */
+export interface GroupIdentity {
+  name: string;
+  avatar: string; // Group's chosen avatar/icon
+  description?: string;
+  createdAt: string;
+}
+
+/**
+ * A proposal to modify a plan field
+ */
+export interface PlanProposal {
+  id: string;
+  field: "title" | "description" | "dateTime" | "location";
+  currentValue: string;
+  proposedValue: string;
+  proposedBy: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
+  createdAt: string;
+  votes: {
+    approve: string[]; // User IDs
+    reject: string[];
+  };
+  status: "PENDING" | "APPROVED" | "REJECTED";
+}
+
+/**
+ * A comment on a plan element
+ */
+export interface PlanComment {
+  id: string;
+  field?: "title" | "description" | "dateTime" | "location" | "general";
+  content: string;
+  author: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
+  createdAt: string;
+  reactions?: {
+    emoji: string;
+    userIds: string[];
+  }[];
+}
+
+/**
+ * A completed plan in history
+ */
+export interface PlanHistoryItem {
+  id: string;
+  title: string;
+  category: PlanCategory;
+  coverImage: string;
+  dateTime: string;
+  location: string;
+  completedAt: string;
+  rating?: number; // 1-5
+  memberCount: number;
+}
+
+/**
  * The Plan embedded within a Group
  * Represents what the group will do together
  */
 export interface Plan {
+  id: string;
   title: string;
   description: string;
   category: PlanCategory;
@@ -39,6 +106,9 @@ export interface Plan {
     lng: number;
   };
   status: PlanStatus;
+  // Collaboration features
+  proposals?: PlanProposal[];
+  comments?: PlanComment[];
 }
 
 /**
@@ -60,7 +130,12 @@ export interface GroupMember {
  */
 export interface Group {
   id: string;
+  // Persistent group identity (separate from plan)
+  identity: GroupIdentity;
+  // Current plan
   plan: Plan;
+  // Past plans (for reusability)
+  planHistory?: PlanHistoryItem[];
   members: GroupMember[];
   status: GroupStatus;
   createdAt: string; // ISO datetime
@@ -74,12 +149,17 @@ export interface Group {
  */
 export interface GroupPreview {
   id: string;
+  // Group identity (denormalized)
+  groupName: string;
+  groupAvatar: string;
   // Plan data (denormalized)
   planTitle: string;
   planCategory: PlanCategory;
   planCoverImage: string;
   planDateTime: string;
   planStatus: PlanStatus;
+  // Proposal indicator
+  pendingProposals?: number;
   // Group data
   status: GroupStatus;
   memberCount: number;

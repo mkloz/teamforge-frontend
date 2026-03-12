@@ -1,4 +1,4 @@
-import { Clock } from "lucide-react";
+import { Clock, Edit3 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import type { GroupPreview, PlanCategory } from "../../types/groups.types";
 
@@ -88,17 +88,24 @@ export function ConversationListItem({
         isSelected ? "bg-primary/10 hover:bg-primary/15 border-l-primary" : categoryStyle.border,
       )}
     >
-      {/* Group avatar / cover image thumbnail */}
+      {/* Group avatar with cover image overlay */}
       <div className="relative flex-shrink-0">
+        {/* Group avatar (persistent identity) */}
+        <img
+          src={group.groupAvatar}
+          alt={group.groupName}
+          className="w-12 h-12 rounded-xl object-cover bg-muted"
+        />
+        {/* Plan cover image as tiny overlay */}
         <img
           src={group.planCoverImage}
           alt=""
-          className="w-12 h-12 rounded-full object-cover"
+          className="absolute -bottom-1 -right-1 w-5 h-5 rounded-md object-cover ring-2 ring-background"
         />
         {/* Status dot */}
         <span
           className={cn(
-            "absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-background",
+            "absolute top-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-background",
             statusDot[group.status] || "bg-slate-400",
           )}
         />
@@ -106,6 +113,20 @@ export function ConversationListItem({
 
       {/* Content */}
       <div className="flex-1 min-w-0">
+        {/* Group name (persistent) */}
+        <div className="flex items-center gap-1.5 mb-0.5">
+          <span className="text-[10px] text-muted-foreground truncate">
+            {group.groupName}
+          </span>
+          {group.pendingProposals && group.pendingProposals > 0 && (
+            <span className="inline-flex items-center gap-0.5 text-[10px] text-amber-600">
+              <Edit3 size={10} />
+              {group.pendingProposals}
+            </span>
+          )}
+        </div>
+        
+        {/* Plan title (current activity) */}
         <div className="flex items-center justify-between gap-2">
           <h3
             className={cn(
