@@ -3,10 +3,8 @@ import {
   RadarChart,
   PolarGrid,
   PolarAngleAxis,
-  PolarRadiusAxis,
   ResponsiveContainer,
 } from "recharts";
-import { ChartContainer } from "@/shared/components/ui/chart";
 import type { OceanScores } from "../types/profile.types";
 import { OCEAN_TRAITS } from "../lib/ocean-traits";
 
@@ -22,68 +20,57 @@ export function OceanChart({ scores }: OceanChartProps) {
     fullMark: 100,
   }));
 
-  // Compute the teal color for Recharts (CSS vars don't work directly)
-  const primaryColor = "rgb(13, 148, 136)"; // teal-600
-  const primaryColorFill = "rgba(13, 148, 136, 0.25)";
+  // Solid colors for Recharts (CSS vars don't work)
+  const primaryColor = "#0d9488"; // teal-600
+  const primaryColorFill = "rgba(13, 148, 136, 0.2)";
+  const gridColor = "#e5e7eb"; // gray-200
 
   return (
-    <ChartContainer
-      config={{
-        value: {
-          label: "Score",
-          color: primaryColor,
-        },
-      }}
-      className="aspect-square w-full max-w-[320px] mx-auto"
-    >
+    <div className="w-full max-w-[300px] mx-auto aspect-square">
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart
           data={chartData}
-          margin={{ top: 20, right: 30, bottom: 20, left: 30 }}
+          margin={{ top: 24, right: 32, bottom: 24, left: 32 }}
+          style={{ cursor: "default" }}
         >
+          {/* Grid with visible web lines */}
           <PolarGrid 
-            stroke="hsl(var(--border))"
-            strokeOpacity={0.5}
+            stroke={gridColor}
+            strokeWidth={1}
+            gridType="polygon"
           />
+          
+          {/* Trait labels around the chart */}
           <PolarAngleAxis
             dataKey="trait"
             tick={{ 
-              fill: "hsl(var(--muted-foreground))",
+              fill: "#6b7280", // gray-500
               fontSize: 11,
               fontWeight: 500,
             }}
             tickLine={false}
           />
-          <PolarRadiusAxis
-            angle={90}
-            domain={[0, 100]}
-            tick={{ 
-              fill: "hsl(var(--muted-foreground))",
-              fontSize: 9,
-            }}
-            tickCount={5}
-            axisLine={false}
-          />
+          
+          {/* Data area - no interaction */}
           <Radar
             name="Personality"
             dataKey="value"
             stroke={primaryColor}
-            strokeWidth={2}
+            strokeWidth={2.5}
             fill={primaryColorFill}
+            fillOpacity={1}
             dot={{
               r: 4,
               fill: primaryColor,
-              strokeWidth: 0,
-            }}
-            activeDot={{
-              r: 6,
-              fill: primaryColor,
-              stroke: "white",
+              stroke: "#fff",
               strokeWidth: 2,
             }}
+            // Disable hover/click effects
+            isAnimationActive={false}
+            activeDot={false}
           />
         </RadarChart>
       </ResponsiveContainer>
-    </ChartContainer>
+    </div>
   );
 }
