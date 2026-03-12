@@ -1,5 +1,6 @@
+import { Clock } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-import type { GroupPreview } from "../../types/groups.types";
+import type { GroupPreview, PlanCategory } from "../../types/groups.types";
 
 interface ConversationListItemProps {
   group: GroupPreview;
@@ -27,6 +28,22 @@ function formatTimestamp(isoString: string): string {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
+function formatCountdown(isoString: string): string | null {
+  const date = new Date(isoString);
+  const now = new Date();
+  const diffMs = date.getTime() - now.getTime();
+  
+  // Only show countdown for upcoming events within 48 hours
+  if (diffMs < 0 || diffMs > 48 * 60 * 60 * 1000) return null;
+  
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  
+  if (diffHours < 1) return `${diffMins}m`;
+  if (diffHours < 24) return `${diffHours}h`;
+  return "Tomorrow";
+}
+
 const statusDot: Record<string, string> = {
   FORMING: "bg-blue-500",
   PENDING: "bg-amber-500",
@@ -35,12 +52,27 @@ const statusDot: Record<string, string> = {
   DISSOLVED: "bg-red-500",
 };
 
+const categoryColors: Record<PlanCategory, { bg: string; text: string; border: string }> = {
+  Tech: { bg: "bg-blue-500/10", text: "text-blue-600", border: "border-l-blue-500" },
+  Sports: { bg: "bg-green-500/10", text: "text-green-600", border: "border-l-green-500" },
+  Arts: { bg: "bg-purple-500/10", text: "text-purple-600", border: "border-l-purple-500" },
+  Social: { bg: "bg-orange-500/10", text: "text-orange-600", border: "border-l-orange-500" },
+  Outdoors: { bg: "bg-emerald-500/10", text: "text-emerald-600", border: "border-l-emerald-500" },
+  Learning: { bg: "bg-indigo-500/10", text: "text-indigo-600", border: "border-l-indigo-500" },
+  Music: { bg: "bg-pink-500/10", text: "text-pink-600", border: "border-l-pink-500" },
+  Food: { bg: "bg-amber-500/10", text: "text-amber-600", border: "border-l-amber-500" },
+  Gaming: { bg: "bg-violet-500/10", text: "text-violet-600", border: "border-l-violet-500" },
+  Wellness: { bg: "bg-teal-500/10", text: "text-teal-600", border: "border-l-teal-500" },
+};
+
 export function ConversationListItem({
   group,
   isSelected,
   onSelect,
 }: ConversationListItemProps) {
   const hasUnread = group.unreadCount > 0;
+  const countdown = formatCountdown(group.planDateTime);
+  const categoryStyle = categoryColors[group.planCategory];
 
   return (
     <button
@@ -49,11 +81,11 @@ export function ConversationListItem({
       aria-selected={isSelected}
       aria-label={`${group.planTitle}, ${group.memberCount} members${hasUnread ? `, ${group.unreadCount} unread messages` : ""}`}
       className={cn(
-        "w-full flex items-start gap-3 px-4 py-3 text-left",
+        "w-full flex items-start gap-3 px-4 py-3 text-left border-l-2",
         "transition-all duration-150",
         "hover:bg-muted/50 active:bg-muted/70",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary",
-        isSelected && "bg-primary/10 hover:bg-primary/15 border-l-2 border-l-primary",
+        isSelected ? "bg-primary/10 hover:bg-primary/15 border-l-primary" : categoryStyle.border,
       )}
     >
       {/* Group avatar / cover image thumbnail */}
@@ -121,21 +153,43 @@ export function ConversationListItem({
           )}
         </div>
 
-        {/* Member avatars */}
-        <div className="flex items-center gap-1 mt-1.5">
-          <div className="flex -space-x-1.5">
-            {group.memberAvatars.slice(0, 3).map((avatar, i) => (
-              <img
-                key={i}
-                src={avatar}
-                alt=""
-                className="w-5 h-5 rounded-full border border-background object-cover"
-              />
-            ))}
-          </div>
-          <span className="text-[10px] text-muted-foreground">
-            {group.memberCount} member{group.memberCount !== 1 ? "s" : ""}
+        {/* Bottom row: Category + Members + Countdown */}
+        <div className="flex items-center gap-2 mt-1.5">
+          {/* Category badge */}
+          <span
+            className={cn(
+              "px-1.5 py-0.5 rounded text-[10px] font-medium",
+              categoryStyle.bg,
+              categoryStyle.text,
+            )}
+          >
+            {group.planCategory}
           </span>
+
+          {/* Member avatars */}
+          <div className="flex items-center gap-1">
+            <div className="flex -space-x-1.5">
+              {group.memberAvatars.slice(0, 3).map((avatar, i) => (
+                <img
+                  key={i}
+                  src={avatar}
+                  alt=""
+                  className="w-4 h-4 rounded-full border border-background object-cover"
+                />
+              ))}
+            </div>
+            <span className="text-[10px] text-muted-foreground">
+              {group.memberCount}
+            </span>
+          </div>
+
+          {/* Countdown for upcoming events */}
+          {countdown && (
+            <span className="flex items-center gap-0.5 text-[10px] font-medium text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded ml-auto">
+              <Clock size={10} />
+              {countdown}
+            </span>
+          )}
         </div>
       </div>
     </button>

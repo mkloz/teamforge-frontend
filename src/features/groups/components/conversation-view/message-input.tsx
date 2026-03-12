@@ -41,13 +41,7 @@ export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
   );
 
   if (disabled) {
-    return (
-      <div className="flex-shrink-0 px-4 py-3 border-t border-border bg-muted/30">
-        <p className="text-sm text-muted-foreground text-center">
-          This group has been completed
-        </p>
-      </div>
-    );
+    return null; // CompletedBanner is shown instead
   }
 
   return (

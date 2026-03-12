@@ -1,9 +1,12 @@
+import { Check, CheckCheck } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import type { Message } from "../../types/groups.types";
 
 interface MessageItemProps {
   message: Message;
   showSender: boolean;
+  // Read receipts - for design purposes
+  readByAvatars?: string[];
 }
 
 function formatTime(isoString: string): string {
@@ -14,8 +17,12 @@ function formatTime(isoString: string): string {
   });
 }
 
-export function MessageItem({ message, showSender }: MessageItemProps) {
+export function MessageItem({ message, showSender, readByAvatars }: MessageItemProps) {
   const isOwn = message.isOwn;
+  
+  // Mock read status for design (would come from real data)
+  const hasBeenRead = isOwn && message.readBy && message.readBy.length > 0;
+  const hasBeenDelivered = isOwn;
 
   return (
     <div
@@ -63,15 +70,42 @@ export function MessageItem({ message, showSender }: MessageItemProps) {
           <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
             {message.content}
           </p>
-          <p
-            className={cn(
-              "text-[10px] mt-1 select-none",
-              isOwn ? "text-primary-foreground/70 text-right" : "text-muted-foreground",
+          <div className={cn(
+            "flex items-center gap-1 mt-1",
+            isOwn ? "justify-end" : "",
+          )}>
+            <p
+              className={cn(
+                "text-[10px] select-none",
+                isOwn ? "text-primary-foreground/70" : "text-muted-foreground",
+              )}
+            >
+              {formatTime(message.timestamp)}
+            </p>
+            {/* Read receipt indicators for own messages */}
+            {isOwn && (
+              hasBeenRead ? (
+                <CheckCheck size={12} className="text-primary-foreground/70" />
+              ) : hasBeenDelivered ? (
+                <Check size={12} className="text-primary-foreground/50" />
+              ) : null
             )}
-          >
-            {formatTime(message.timestamp)}
-          </p>
+          </div>
         </div>
+
+        {/* Read by avatars (shown for own messages when others have read) */}
+        {isOwn && readByAvatars && readByAvatars.length > 0 && (
+          <div className="flex -space-x-1 mt-1">
+            {readByAvatars.slice(0, 4).map((avatar, i) => (
+              <img
+                key={i}
+                src={avatar}
+                alt="Read by"
+                className="w-4 h-4 rounded-full object-cover ring-1 ring-background"
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
