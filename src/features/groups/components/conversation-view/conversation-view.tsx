@@ -110,6 +110,7 @@ export function ConversationView({
           messages={messages} 
           messagesEndRef={messagesEndRef} 
           containerRef={messagesContainerRef}
+          groupMembers={group.members}
         />
 
         {/* Typing indicator */}

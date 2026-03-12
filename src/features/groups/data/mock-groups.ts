@@ -522,6 +522,7 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
       timestamp: hoursAgo(67),
       isOwn: true,
+      readBy: ["user-2", "user-3", "user-4"],
     },
     {
       id: "msg-4",

@@ -3,9 +3,9 @@ import { X } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
 import type { Group, MemberRole } from "../../types/groups.types";
+import { PlanStatusBanner } from "./plan-status-banner";
 import { GroupIdentitySection } from "./group-identity-section";
 import { PlanSection } from "./plan-section";
-import { PlanCollaborationSection } from "./plan-collaboration-section";
 import { PlanHistorySection } from "./plan-history-section";
 import { MembersSection } from "./members-section";
 import { ActionsSection } from "./actions-section";
@@ -120,8 +120,11 @@ function DesktopPanelContent({
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
+        {/* Plan Status Banner - always visible at top */}
+        <PlanStatusBanner plan={group.plan} />
+
         {/* Cover image */}
-        <div className="relative h-32 w-full">
+        <div className="relative h-28 w-full">
           <img
             src={group.plan.coverImage}
             alt=""
@@ -141,16 +144,6 @@ function DesktopPanelContent({
 
           {/* Current Plan Details */}
           <PlanSection plan={group.plan} userRole={currentUserRole} />
-
-          {/* Collaboration - proposals and comments */}
-          {group.plan.status === "DRAFT" && (
-            <PlanCollaborationSection
-              proposals={group.plan.proposals ?? []}
-              comments={group.plan.comments ?? []}
-              userRole={currentUserRole}
-              totalMembers={group.members.length}
-            />
-          )}
 
           {/* Members */}
           <MembersSection members={group.members} maxMembers={group.maxMembers} />
@@ -183,8 +176,11 @@ function MobilePanelContent({
 
   return (
     <div className="flex-1 overflow-y-auto pb-safe">
+      {/* Plan Status Banner - always visible at top */}
+      <PlanStatusBanner plan={group.plan} />
+
       {/* Cover image */}
-      <div className="relative h-40 w-full">
+      <div className="relative h-36 w-full">
         <img
           src={group.plan.coverImage}
           alt=""
@@ -215,16 +211,6 @@ function MobilePanelContent({
 
         {/* Plan Details */}
         <PlanSection plan={group.plan} userRole={currentUserRole} />
-
-        {/* Collaboration */}
-        {group.plan.status === "DRAFT" && (
-          <PlanCollaborationSection
-            proposals={group.plan.proposals ?? []}
-            comments={group.plan.comments ?? []}
-            userRole={currentUserRole}
-            totalMembers={group.members.length}
-          />
-        )}
 
         {/* Members */}
         <MembersSection members={group.members} maxMembers={group.maxMembers} />

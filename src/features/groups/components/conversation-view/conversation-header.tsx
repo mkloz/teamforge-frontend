@@ -45,34 +45,23 @@ export function ConversationHeader({
         )}
         aria-label={`View details for ${group.identity.name}`}
       >
-        {/* Group avatar with plan cover overlay */}
+        {/* Group avatar */}
         <div className="relative flex-shrink-0">
           <img
             src={group.identity.avatar}
             alt={group.identity.name}
-            className="w-10 h-10 rounded-xl object-cover bg-muted"
+            className="w-10 h-10 rounded-full object-cover bg-muted"
           />
-          {/* Plan cover image as tiny overlay */}
-          <img
-            src={group.plan.coverImage}
-            alt=""
-            className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded object-cover ring-2 ring-background"
-          />
-          {group.status === "ACTIVE" && (
-            <span className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-background" />
-          )}
         </div>
         
         <div className="min-w-0 flex-1">
-          {/* Group name (persistent identity) */}
+          {/* Group name */}
           <h2 className="text-sm font-semibold text-foreground truncate">
             {group.identity.name}
           </h2>
-          {/* Current plan + status */}
-          <p className="text-xs text-muted-foreground truncate">
-            <span className="text-foreground/70">{group.plan.title}</span>
-            {" · "}
-            {statusText[group.status]}
+          {/* Member count + status */}
+          <p className="text-xs text-muted-foreground">
+            {group.members.length} members · {statusText[group.status]}
           </p>
         </div>
 

@@ -1,12 +1,12 @@
-import { Check, CheckCheck } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-import type { Message } from "../../types/groups.types";
+import type { Message, GroupMember } from "../../types/groups.types";
 
 interface MessageItemProps {
   message: Message;
   showSender: boolean;
-  // Read receipts - for design purposes
-  readByAvatars?: string[];
+  // Read receipts - Instagram style
+  groupMembers?: GroupMember[];
+  isLastMessage?: boolean;
 }
 
 function formatTime(isoString: string): string {
@@ -17,12 +17,18 @@ function formatTime(isoString: string): string {
   });
 }
 
-export function MessageItem({ message, showSender, readByAvatars }: MessageItemProps) {
+export function MessageItem({ 
+  message, 
+  showSender, 
+  groupMembers = [],
+  isLastMessage = false,
+}: MessageItemProps) {
   const isOwn = message.isOwn;
   
-  // Mock read status for design (would come from real data)
-  const hasBeenRead = isOwn && message.readBy && message.readBy.length > 0;
-  const hasBeenDelivered = isOwn;
+  // Get members who have read this message (excluding sender)
+  const readByMembers = groupMembers.filter(
+    m => message.readBy?.includes(m.id) && m.id !== message.senderId
+  );
 
   return (
     <div
@@ -70,40 +76,36 @@ export function MessageItem({ message, showSender, readByAvatars }: MessageItemP
           <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
             {message.content}
           </p>
-          <div className={cn(
-            "flex items-center gap-1 mt-1",
-            isOwn ? "justify-end" : "",
-          )}>
-            <p
-              className={cn(
-                "text-[10px] select-none",
-                isOwn ? "text-primary-foreground/70" : "text-muted-foreground",
-              )}
-            >
-              {formatTime(message.timestamp)}
-            </p>
-            {/* Read receipt indicators for own messages */}
-            {isOwn && (
-              hasBeenRead ? (
-                <CheckCheck size={12} className="text-primary-foreground/70" />
-              ) : hasBeenDelivered ? (
-                <Check size={12} className="text-primary-foreground/50" />
-              ) : null
+          <p
+            className={cn(
+              "text-[10px] select-none mt-1",
+              isOwn ? "text-primary-foreground/70 text-right" : "text-muted-foreground",
             )}
-          </div>
+          >
+            {formatTime(message.timestamp)}
+          </p>
         </div>
 
-        {/* Read by avatars (shown for own messages when others have read) */}
-        {isOwn && readByAvatars && readByAvatars.length > 0 && (
-          <div className="flex -space-x-1 mt-1">
-            {readByAvatars.slice(0, 4).map((avatar, i) => (
-              <img
-                key={i}
-                src={avatar}
-                alt="Read by"
-                className="w-4 h-4 rounded-full object-cover ring-1 ring-background"
-              />
-            ))}
+        {/* Instagram-style read receipts - small avatars below message */}
+        {isLastMessage && readByMembers.length > 0 && (
+          <div className="flex items-center gap-0.5 mt-1.5 mr-1">
+            <span className="text-[9px] text-muted-foreground mr-1">Seen by</span>
+            <div className="flex -space-x-1.5">
+              {readByMembers.slice(0, 5).map((member) => (
+                <img
+                  key={member.id}
+                  src={member.avatar}
+                  alt={member.name}
+                  title={member.name}
+                  className="w-3.5 h-3.5 rounded-full object-cover ring-1 ring-background"
+                />
+              ))}
+            </div>
+            {readByMembers.length > 5 && (
+              <span className="text-[9px] text-muted-foreground ml-0.5">
+                +{readByMembers.length - 5}
+              </span>
+            )}
           </div>
         )}
       </div>
