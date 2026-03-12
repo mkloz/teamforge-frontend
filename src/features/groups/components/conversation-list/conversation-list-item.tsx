@@ -47,12 +47,13 @@ export function ConversationListItem({
       onClick={onSelect}
       role="option"
       aria-selected={isSelected}
+      aria-label={`${group.planTitle}, ${group.memberCount} members${hasUnread ? `, ${group.unreadCount} unread messages` : ""}`}
       className={cn(
         "w-full flex items-start gap-3 px-4 py-3 text-left",
-        "transition-colors duration-150",
-        "hover:bg-muted/50",
-        "focus-visible:outline-none focus-visible:bg-muted/50",
-        isSelected && "bg-primary/10 hover:bg-primary/15",
+        "transition-all duration-150",
+        "hover:bg-muted/50 active:bg-muted/70",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary",
+        isSelected && "bg-primary/10 hover:bg-primary/15 border-l-2 border-l-primary",
       )}
     >
       {/* Group avatar / cover image thumbnail */}

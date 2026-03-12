@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Paperclip, Send } from "lucide-react";
+import { Paperclip, Send, Smile } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
 
@@ -10,6 +10,7 @@ interface MessageInputProps {
 
 export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
   const [value, setValue] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-resize textarea
@@ -50,16 +51,22 @@ export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
   }
 
   return (
-    <div className="flex-shrink-0 px-4 py-3 border-t border-border bg-background">
-      <div className="flex items-end gap-2">
+    <div className={cn(
+      "flex-shrink-0 px-3 py-2 border-t border-border bg-background",
+      "safe-area-inset-bottom", // For mobile safe area
+    )}>
+      <div className={cn(
+        "flex items-end gap-2 p-1 rounded-2xl transition-all duration-200",
+        isFocused ? "bg-muted/70 ring-1 ring-border" : "bg-muted/40",
+      )}>
         {/* Attachment button */}
         <Button
           variant="ghost"
           size="icon"
-          className="h-10 w-10 flex-shrink-0 text-muted-foreground hover:text-foreground"
+          className="h-9 w-9 flex-shrink-0 text-muted-foreground hover:text-foreground rounded-full"
           aria-label="Add attachment"
         >
-          <Paperclip size={20} />
+          <Paperclip size={18} />
         </Button>
 
         {/* Text input */}
@@ -69,17 +76,31 @@ export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleKeyDown}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
             placeholder="Type a message..."
             rows={1}
             className={cn(
-              "w-full resize-none rounded-xl border border-input bg-muted/50 px-4 py-2.5",
+              "w-full resize-none bg-transparent px-2 py-2",
               "text-sm placeholder:text-muted-foreground",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:bg-background",
+              "focus-visible:outline-none",
               "transition-colors duration-150",
             )}
             aria-label="Type a message"
           />
         </div>
+
+        {/* Emoji button - only show when not typing */}
+        {!value.trim() && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 flex-shrink-0 text-muted-foreground hover:text-foreground rounded-full"
+            aria-label="Add emoji"
+          >
+            <Smile size={18} />
+          </Button>
+        )}
 
         {/* Send button */}
         <Button
@@ -87,12 +108,14 @@ export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
           disabled={!value.trim()}
           size="icon"
           className={cn(
-            "h-10 w-10 flex-shrink-0 rounded-full",
-            !value.trim() && "opacity-50",
+            "h-9 w-9 flex-shrink-0 rounded-full transition-all duration-200",
+            value.trim() 
+              ? "bg-primary text-primary-foreground hover:bg-primary/90 scale-100" 
+              : "bg-transparent text-muted-foreground scale-95 opacity-50",
           )}
           aria-label="Send message"
         >
-          <Send size={18} />
+          <Send size={16} />
         </Button>
       </div>
     </div>

@@ -76,14 +76,22 @@ function ActionButton({
     <button
       onClick={onClick}
       className={cn(
-        "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left",
-        "transition-colors duration-150",
-        variant === "default" && "text-foreground hover:bg-muted",
+        "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left",
+        "transition-all duration-150 active:scale-[0.98]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        variant === "default" && "text-foreground hover:bg-muted/80",
         variant === "destructive" && "text-destructive hover:bg-destructive/10",
-        variant === "muted" && "text-muted-foreground hover:bg-muted",
+        variant === "muted" && "text-muted-foreground hover:bg-muted/60",
       )}
     >
-      <span className="flex-shrink-0">{icon}</span>
+      <span className={cn(
+        "flex-shrink-0 p-1.5 rounded-lg",
+        variant === "default" && "bg-muted",
+        variant === "destructive" && "bg-destructive/10",
+        variant === "muted" && "bg-muted/50",
+      )}>
+        {icon}
+      </span>
       <span className="text-sm font-medium">{label}</span>
     </button>
   );

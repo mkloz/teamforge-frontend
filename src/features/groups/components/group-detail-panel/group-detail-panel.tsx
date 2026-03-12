@@ -1,3 +1,4 @@
+import { useEffect, useCallback } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
@@ -13,6 +14,30 @@ interface GroupDetailPanelProps {
 }
 
 export function GroupDetailPanel({ group, isOpen, onClose }: GroupDetailPanelProps) {
+  // Close on Escape key
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    },
+    [isOpen, onClose]
+  );
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
+  // Prevent body scroll when mobile sheet is open
+  useEffect(() => {
+    if (isOpen && window.innerWidth < 1024) {
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = "";
+      };
+    }
+  }, [isOpen]);
   return (
     <>
       {/* Desktop sidebar */}

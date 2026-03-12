@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useLayoutEffect } from "react";
 import type { Group, Message } from "../../types/groups.types";
 import { ConversationHeader } from "./conversation-header";
 import { MessageList } from "./message-list";
@@ -21,11 +21,27 @@ export function ConversationView({
   onSendMessage,
 }: ConversationViewProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isInitialRender = useRef(true);
 
-  // Scroll to bottom on new messages
+  // Scroll to bottom instantly on initial render (before paint)
+  useLayoutEffect(() => {
+    if (isInitialRender.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+      isInitialRender.current = false;
+    }
+  }, [group.id]);
+
+  // Scroll smoothly when new messages arrive
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (!isInitialRender.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages.length]);
+
+  // Reset initial render flag when group changes
+  useEffect(() => {
+    isInitialRender.current = true;
+  }, [group.id]);
 
   const isPlanDraft = group.plan.status === "DRAFT";
 
