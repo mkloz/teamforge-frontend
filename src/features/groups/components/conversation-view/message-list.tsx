@@ -1,5 +1,4 @@
-import { cn } from "@/shared/lib/utils";
-import type { Message, GroupMember } from "../../types/groups.types";
+import type { Message } from "../../types/groups.types";
 import { MessageItem } from "./message-item";
 import { SystemMessage } from "./system-message";
 import { ProposalMessage } from "./proposal-message";
@@ -8,7 +7,6 @@ interface MessageListProps {
   messages: Message[];
   messagesEndRef: React.RefObject<HTMLDivElement | null>;
   containerRef?: React.RefObject<HTMLDivElement | null>;
-  groupMembers?: GroupMember[];
 }
 
 function formatDateSeparator(isoString: string): string {
@@ -56,20 +54,14 @@ function shouldShowSender(
   return timeDiff > 5 * 60 * 1000;
 }
 
-export function MessageList({ messages, messagesEndRef, containerRef, groupMembers = [] }: MessageListProps) {
+export function MessageList({ messages, messagesEndRef, containerRef }: MessageListProps) {
   return (
     <div ref={containerRef} className="h-full overflow-y-auto px-4 py-3">
       <div className="flex flex-col gap-1">
         {messages.map((message, index) => {
           const prevMessage = messages[index - 1];
-          const nextMessage = messages[index + 1];
           const showDateSeparator = shouldShowDateSeparator(message, prevMessage);
           const showSender = shouldShowSender(message, prevMessage);
-          
-          // Show read receipts on the last message from current user in a sequence
-          const isLastInSequence = !nextMessage || 
-            nextMessage.senderId !== message.senderId ||
-            nextMessage.type === "SYSTEM";
 
           return (
             <div key={message.id}>
@@ -91,8 +83,6 @@ export function MessageList({ messages, messagesEndRef, containerRef, groupMembe
                 <MessageItem
                   message={message}
                   showSender={showSender}
-                  groupMembers={groupMembers}
-                  isLastMessage={isLastInSequence && message.isOwn}
                 />
               )}
             </div>

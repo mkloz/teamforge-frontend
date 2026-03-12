@@ -33,15 +33,16 @@ function formatCountdown(isoString: string): string | null {
   const now = new Date();
   const diffMs = date.getTime() - now.getTime();
   
-  // Only show countdown for upcoming events within 48 hours
-  if (diffMs < 0 || diffMs > 48 * 60 * 60 * 1000) return null;
+  // Only show countdown for upcoming events within 7 days
+  if (diffMs < 0 || diffMs > 7 * 24 * 60 * 60 * 1000) return null;
   
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
   
   if (diffHours < 1) return `${diffMins}m`;
   if (diffHours < 24) return `${diffHours}h`;
-  return "Tomorrow";
+  const days = Math.ceil(diffHours / 24);
+  return `${days}d`;
 }
 
 export function ConversationListItem({
@@ -60,19 +61,25 @@ export function ConversationListItem({
       aria-selected={isSelected}
       aria-label={`${group.groupName}, ${group.memberCount} members${hasUnread ? `, ${group.unreadCount} unread messages` : ""}`}
       className={cn(
-        "w-full flex items-center gap-3 px-4 py-3 text-left",
+        "w-full flex items-start gap-3 px-4 py-3 text-left border-l-2 border-l-teal-500",
         "transition-all duration-150",
         "hover:bg-muted/50 active:bg-muted/70",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary",
-        isSelected && "bg-primary/10 hover:bg-primary/15",
+        isSelected && "bg-primary/5 hover:bg-primary/10",
       )}
     >
-      {/* Group avatar */}
+      {/* Group avatar - squared with plan cover overlay */}
       <div className="relative flex-shrink-0">
         <img
           src={group.groupAvatar}
           alt={group.groupName}
-          className="w-12 h-12 rounded-full object-cover bg-muted"
+          className="w-12 h-12 rounded-xl object-cover bg-muted"
+        />
+        {/* Plan cover as small overlay */}
+        <img
+          src={group.planCoverImage}
+          alt=""
+          className="absolute -bottom-1 -right-1 w-5 h-5 rounded-md object-cover ring-2 ring-background"
         />
       </div>
 
@@ -80,31 +87,14 @@ export function ConversationListItem({
       <div className="flex-1 min-w-0">
         {/* Group name + timestamp row */}
         <div className="flex items-center justify-between gap-2">
-          <h3
-            className={cn(
-              "text-sm font-semibold truncate",
-              hasUnread ? "text-foreground" : "text-foreground",
-            )}
-          >
+          <h3 className="text-sm font-semibold text-foreground truncate">
             {group.groupName}
           </h3>
-          <div className="flex items-center gap-1.5 flex-shrink-0">
-            {/* Draft/Countdown indicator - aligned together */}
-            {isDraft && (
-              <FileEdit size={12} className="text-amber-500" />
-            )}
-            {countdown && (
-              <span className="flex items-center gap-0.5 text-[10px] font-medium text-amber-600">
-                <Clock size={10} />
-                {countdown}
-              </span>
-            )}
-            {group.lastMessage && (
-              <span className="text-[10px] text-muted-foreground">
-                {formatTimestamp(group.lastMessage.timestamp)}
-              </span>
-            )}
-          </div>
+          {group.lastMessage && (
+            <span className="text-[10px] text-muted-foreground flex-shrink-0">
+              {formatTimestamp(group.lastMessage.timestamp)}
+            </span>
+          )}
         </div>
 
         {/* Last message preview */}
@@ -138,21 +128,40 @@ export function ConversationListItem({
           )}
         </div>
 
-        {/* Member avatars row */}
-        <div className="flex items-center mt-1.5">
-          <div className="flex -space-x-1.5">
-            {group.memberAvatars.slice(0, 4).map((avatar, i) => (
-              <img
-                key={i}
-                src={avatar}
-                alt=""
-                className="w-4 h-4 rounded-full border border-background object-cover"
-              />
-            ))}
+        {/* Bottom row: Members + Countdown/Confirmation */}
+        <div className="flex items-center justify-between mt-1.5">
+          {/* Member avatars */}
+          <div className="flex items-center">
+            <div className="flex -space-x-1.5">
+              {group.memberAvatars.slice(0, 4).map((avatar, i) => (
+                <img
+                  key={i}
+                  src={avatar}
+                  alt=""
+                  className="w-4 h-4 rounded-full border border-background object-cover"
+                />
+              ))}
+            </div>
+            <span className="text-[10px] text-muted-foreground ml-1.5">
+              {group.memberCount}
+            </span>
           </div>
-          <span className="text-[10px] text-muted-foreground ml-1.5">
-            {group.memberCount} member{group.memberCount !== 1 ? "s" : ""}
-          </span>
+
+          {/* Countdown + Draft indicator (right side) */}
+          <div className="flex items-center gap-2">
+            {countdown && (
+              <span className="flex items-center gap-0.5 text-[10px] font-medium text-teal-600 dark:text-teal-400">
+                <Clock size={10} />
+                {countdown}
+              </span>
+            )}
+            {isDraft && (
+              <span className="flex items-center gap-0.5 text-[10px] font-medium text-amber-600 dark:text-amber-400">
+                <FileEdit size={10} />
+                <span>Pending</span>
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </button>

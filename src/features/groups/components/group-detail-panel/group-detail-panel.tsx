@@ -3,7 +3,6 @@ import { X } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
 import type { Group, MemberRole } from "../../types/groups.types";
-import { PlanStatusBanner } from "./plan-status-banner";
 import { GroupIdentitySection } from "./group-identity-section";
 import { PlanSection } from "./plan-section";
 import { PlanHistorySection } from "./plan-history-section";
@@ -120,11 +119,8 @@ function DesktopPanelContent({
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
-        {/* Plan Status Banner - always visible at top */}
-        <PlanStatusBanner plan={group.plan} />
-
         {/* Cover image */}
-        <div className="relative h-28 w-full">
+        <div className="relative h-32 w-full">
           <img
             src={group.plan.coverImage}
             alt=""
@@ -176,11 +172,8 @@ function MobilePanelContent({
 
   return (
     <div className="flex-1 overflow-y-auto pb-safe">
-      {/* Plan Status Banner - always visible at top */}
-      <PlanStatusBanner plan={group.plan} />
-
       {/* Cover image */}
-      <div className="relative h-36 w-full">
+      <div className="relative h-40 w-full">
         <img
           src={group.plan.coverImage}
           alt=""

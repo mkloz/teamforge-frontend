@@ -45,12 +45,17 @@ export function ConversationHeader({
         )}
         aria-label={`View details for ${group.identity.name}`}
       >
-        {/* Group avatar */}
+        {/* Group avatar - squared with plan cover overlay */}
         <div className="relative flex-shrink-0">
           <img
             src={group.identity.avatar}
             alt={group.identity.name}
-            className="w-10 h-10 rounded-full object-cover bg-muted"
+            className="w-10 h-10 rounded-xl object-cover bg-muted"
+          />
+          <img
+            src={group.plan.coverImage}
+            alt=""
+            className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded object-cover ring-2 ring-background"
           />
         </div>
         
@@ -59,9 +64,9 @@ export function ConversationHeader({
           <h2 className="text-sm font-semibold text-foreground truncate">
             {group.identity.name}
           </h2>
-          {/* Member count + status */}
+          {/* Member count */}
           <p className="text-xs text-muted-foreground">
-            {group.members.length} members · {statusText[group.status]}
+            {group.members.length} members
           </p>
         </div>
 

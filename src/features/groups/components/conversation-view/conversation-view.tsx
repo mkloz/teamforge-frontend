@@ -1,12 +1,12 @@
 import { useRef, useEffect, useLayoutEffect, useState } from "react";
-import { ChevronDown, Star } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
 import type { Group, Message } from "../../types/groups.types";
 import { ConversationHeader } from "./conversation-header";
+import { ChatStatusBar } from "./chat-status-bar";
 import { MessageList } from "./message-list";
 import { MessageInput } from "./message-input";
-import { PinnedBanner } from "./pinned-banner";
 import { TypingIndicator } from "./typing-indicator";
 import { CompletedBanner } from "./completed-banner";
 
@@ -69,21 +69,12 @@ export function ConversationView({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const isPlanDraft = group.plan.status === "DRAFT";
   const isCompleted = group.status === "COMPLETED";
 
   // Mock typing users for design (would come from real-time in production)
-  const typingUsers = isPlanDraft ? [
+  const typingUsers = group.plan.status === "DRAFT" ? [
     { name: "Jordan", avatar: group.members[0]?.avatar }
   ] : [];
-
-  // Mock confirmation progress for design
-  const confirmationProgress = isPlanDraft ? {
-    confirmed: 2,
-    total: group.members.length,
-    memberAvatars: group.members.map(m => m.avatar),
-    confirmedIds: group.members.slice(0, 2).map(m => m.id),
-  } : undefined;
 
   return (
     <div className="flex flex-col h-full bg-background">
@@ -94,15 +85,12 @@ export function ConversationView({
         onToggleDetail={onToggleDetail}
       />
 
-      {/* Pinned banner for draft plans */}
-      {isPlanDraft && (
-        <PinnedBanner
-          title="Plan awaiting confirmation"
-          description="You haven't confirmed yet. Review the details and confirm to lock in."
-          onViewPlan={onToggleDetail}
-          confirmationProgress={confirmationProgress}
-        />
-      )}
+      {/* Compact status bar - always visible */}
+      <ChatStatusBar
+        plan={group.plan}
+        groupStatus={group.status}
+        onViewDetails={onToggleDetail}
+      />
 
       {/* Messages area with relative positioning for FAB */}
       <div className="flex-1 relative overflow-hidden">
@@ -110,7 +98,6 @@ export function ConversationView({
           messages={messages} 
           messagesEndRef={messagesEndRef} 
           containerRef={messagesContainerRef}
-          groupMembers={group.members}
         />
 
         {/* Typing indicator */}
