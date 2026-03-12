@@ -1,4 +1,4 @@
-import type { UserProfile, DimensionScore } from "../types/profile.types";
+import type { UserProfile, DimensionScore, OceanScores } from "../types/profile.types";
 
 // Helper to determine letter from score
 function getLetterFromScore(dimension: string, score: number): string {
@@ -46,6 +46,15 @@ export const MOCK_PROFILE: UserProfile = {
   archetype: "The Spark",
   trustScore: 94,
   
+  // OCEAN scores (derived from ENFP tendencies)
+  oceanScores: {
+    openness: 85,          // High - creative, curious, imaginative
+    conscientiousness: 45, // Moderate-low - flexible, spontaneous
+    extraversion: 72,      // High - social, energetic
+    agreeableness: 78,     // High - warm, cooperative
+    neuroticism: 52,       // Moderate - emotionally aware
+  },
+  
   interests: [
     { id: "1", label: "Hiking", category: "outdoors" },
     { id: "2", label: "Live Music", category: "music" },
@@ -79,6 +88,15 @@ export const MOCK_PROFILE_INTJ: UserProfile = {
   
   archetype: "The Strategist",
   trustScore: 97,
+  
+  // OCEAN scores (derived from INTJ tendencies)
+  oceanScores: {
+    openness: 78,          // High - intellectual curiosity
+    conscientiousness: 88, // Very high - organized, goal-oriented
+    extraversion: 28,      // Low - reserved, independent
+    agreeableness: 42,     // Moderate-low - direct, objective
+    neuroticism: 35,       // Low - emotionally stable
+  },
   
   interests: [
     { id: "1", label: "Chess", category: "gaming" },
