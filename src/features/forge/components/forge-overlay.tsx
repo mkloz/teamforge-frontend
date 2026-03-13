@@ -1,7 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { X, Zap, ChevronLeft, ChevronRight, Flame, Users, Sliders } from "lucide-react";
+import {
+  X,
+  Zap,
+  ChevronLeft,
+  ChevronRight,
+  Flame,
+  CalendarDays,
+  Users,
+  ImagePlus,
+  UserPlus,
+  Check,
+  Copy,
+} from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
 interface ForgeOverlayProps {
@@ -9,7 +21,23 @@ interface ForgeOverlayProps {
   onClose: () => void;
 }
 
-type Step = 1 | 2 | 3;
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type PreForgeStep = 1 | 2 | 3;
+type PostForgeStep = 4 | 5;
+type Step = PreForgeStep | PostForgeStep;
+
+type Visibility = "public" | "friends" | "invite";
+
+// The algorithm requires exactly one of these fixed sizes.
+// They are optimised for the matching algorithm's group dynamics model.
+const ALGORITHM_GROUP_SIZES = [
+  { value: 4, label: "4 people", note: "Tight-knit" },
+  { value: 6, label: "6 people", note: "Balanced" },
+  { value: 8, label: "8 people", note: "Expansive" },
+] as const;
+
+type AlgorithmGroupSize = (typeof ALGORITHM_GROUP_SIZES)[number]["value"];
 
 const ACTIVITIES = [
   { icon: "🏃", label: "Sports" },
@@ -27,46 +55,133 @@ const RECENT = [
   { icon: "☕", label: "Coffee & Code", count: 2 },
 ];
 
-const GROUP_SIZES = [2, 3, 4, 5, 6];
+// ─── Step metadata ────────────────────────────────────────────────────────────
 
-const STEP_META: Record<Step, { label: string; icon: typeof Flame; description: string }> = {
-  1: { label: "Activity", icon: Flame, description: "What are you forging?" },
-  2: { label: "Details", icon: Users, description: "When and where?" },
-  3: { label: "Matching", icon: Sliders, description: "Who should join?" },
+interface StepMeta {
+  label: string;
+  icon: React.ElementType;
+  entity: "Activity" | "Plan" | "Group" | "Identity" | "Invite";
+  description: string;
+  entityDescription: string;
+}
+
+const STEP_META: Record<Step, StepMeta> = {
+  1: {
+    label: "Activity",
+    icon: Flame,
+    entity: "Activity",
+    description: "What are you doing?",
+    entityDescription: "Choose the type of activity to build your group around.",
+  },
+  2: {
+    label: "Plan",
+    icon: CalendarDays,
+    entity: "Plan",
+    description: "Define the Plan",
+    entityDescription: "A Plan is the specific event — when, where, and what it's called.",
+  },
+  3: {
+    label: "Group",
+    icon: Users,
+    entity: "Group",
+    description: "Configure the Group",
+    entityDescription: "A Group is the set of people the algorithm will assemble for your Plan.",
+  },
+  4: {
+    label: "Identity",
+    icon: ImagePlus,
+    entity: "Identity",
+    description: "Give your Group an identity",
+    entityDescription: "Add a cover image or logo so members recognise your Group at a glance.",
+  },
+  5: {
+    label: "Invite",
+    icon: UserPlus,
+    entity: "Invite",
+    description: "Invite members",
+    entityDescription: "Your Group is forged and confirmed. Invitations will be sent now.",
+  },
 };
+
+// Pre-forge steps (shown in progress track)
+const PRE_FORGE_STEPS: PreForgeStep[] = [1, 2, 3];
+
+// ─── Overlay root ─────────────────────────────────────────────────────────────
 
 export function ForgeOverlay({ open, onClose }: ForgeOverlayProps) {
   const [step, setStep] = useState<Step>(1);
-  const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
-  const [groupName, setGroupName] = useState("");
-  const [groupSize, setGroupSize] = useState(4);
-  const [compatibility, setCompatibility] = useState(50);
-  const [visibility, setVisibility] = useState<"public" | "friends" | "invite">("friends");
+  const [forged, setForged] = useState(false);
 
-  const canAdvance = step === 1 ? !!selectedActivity : step === 2 ? groupName.length >= 3 : true;
+  // Step 1
+  const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
+
+  // Step 2 — Plan
+  const [planName, setPlanName] = useState("");
+  const [planDate, setPlanDate] = useState("");
+  const [planTime, setPlanTime] = useState("");
+  const [planLocation, setPlanLocation] = useState("");
+
+  // Step 3 — Group
+  const [groupSize, setGroupSize] = useState<AlgorithmGroupSize>(6);
+  const [visibility, setVisibility] = useState<Visibility>("friends");
+
+  // Step 4 — Identity (post-forge)
+  const [coverImage, setCoverImage] = useState<string | null>(null);
+
+  // Step 5 — Invite (post-forge)
+  const [inviteCopied, setInviteCopied] = useState(false);
+  const [invitesSent, setInvitesSent] = useState(false);
+
+  const canAdvance =
+    step === 1
+      ? !!selectedActivity
+      : step === 2
+        ? planName.trim().length >= 3
+        : true;
 
   const handleClose = () => {
     onClose();
-    // Reset after animation
     setTimeout(() => {
       setStep(1);
+      setForged(false);
       setSelectedActivity(null);
-      setGroupName("");
+      setPlanName("");
+      setPlanDate("");
+      setPlanTime("");
+      setPlanLocation("");
+      setGroupSize(6);
+      setVisibility("friends");
+      setCoverImage(null);
+      setInviteCopied(false);
+      setInvitesSent(false);
     }, 300);
   };
 
   const handleForge = () => {
-    handleClose();
+    setForged(true);
+    setStep(4);
+  };
+
+  const handleCopyLink = () => {
+    setInviteCopied(true);
+    setTimeout(() => setInviteCopied(false), 2000);
+  };
+
+  const handleSendInvites = () => {
+    setInvitesSent(true);
   };
 
   if (!open) return null;
+
+  const meta = STEP_META[step];
+  const isPreForge = step <= 3;
 
   return (
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm animate-fade-up"
-        style={{ animationDuration: "200ms" }}
+        className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm"
+        style={{ animation: "fadeIn 200ms ease forwards" }}
         onClick={handleClose}
         aria-hidden="true"
       />
@@ -75,49 +190,74 @@ export function ForgeOverlay({ open, onClose }: ForgeOverlayProps) {
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Forge a new group"
+        aria-label={meta.description}
         className={cn(
-          "fixed z-50 bg-card shadow-2xl",
-          // Mobile: sheet from bottom, full-width
-          "bottom-0 left-0 right-0 rounded-t-3xl max-h-[92dvh] overflow-hidden",
-          // Desktop: centered modal
+          "fixed z-50 bg-card shadow-2xl flex flex-col",
+          "bottom-0 left-0 right-0 rounded-t-3xl max-h-[94dvh] overflow-hidden",
           "md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2",
-          "md:w-full md:max-w-lg md:rounded-3xl md:max-h-[88dvh]",
-          "flex flex-col",
-          "animate-fade-up",
+          "md:w-full md:max-w-lg md:rounded-3xl md:max-h-[90dvh]",
         )}
-        style={{ animationDuration: "280ms" }}
+        style={{ animation: "forge-slide-up 280ms cubic-bezier(0.34,1.1,0.64,1) forwards" }}
       >
-        {/* Drag handle (mobile only) */}
+        {/* Drag handle (mobile) */}
         <div className="flex justify-center pt-3 pb-1 md:hidden" aria-hidden="true">
-          <div className="w-9 h-1 rounded-full bg-muted-foreground/30" />
+          <div className="w-9 h-1 rounded-full bg-muted-foreground/25" />
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-3 pb-4 md:pt-5">
+        <div className="flex items-center justify-between px-5 pt-2 pb-3 md:pt-5">
           <div className="flex items-center gap-3">
-            {step > 1 ? (
+            {/* Back button — only on pre-forge steps > 1, or post-forge steps */}
+            {(step > 1 && isPreForge) ? (
               <button
                 type="button"
                 onClick={() => setStep((s) => (s - 1) as Step)}
                 aria-label="Go back"
-                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted transition-colors"
+                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted transition-colors shrink-0"
               >
                 <ChevronLeft size={18} />
               </button>
             ) : (
               <div
-                className="flex items-center justify-center w-8 h-8 rounded-full bg-accent/15"
+                className={cn(
+                  "flex items-center justify-center w-8 h-8 rounded-full shrink-0",
+                  forged ? "bg-primary/10" : "bg-accent/10",
+                )}
                 aria-hidden="true"
               >
-                <Zap size={15} className="text-accent" />
+                {forged
+                  ? <Check size={15} className="text-primary" />
+                  : <Zap size={15} className="text-accent fill-current" />
+                }
               </div>
             )}
+
             <div>
-              <h2 className="text-base font-bold text-foreground leading-none">
-                {STEP_META[step].description}
-              </h2>
-              <p className="text-xs text-muted-foreground mt-0.5">Step {step} of 3</p>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-bold text-foreground leading-none">
+                  {meta.description}
+                </h2>
+                {/* Entity pill — makes Group vs Plan distinction explicit */}
+                <span className={cn(
+                  "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide",
+                  meta.entity === "Plan"
+                    ? "bg-primary/10 text-primary"
+                    : meta.entity === "Group"
+                      ? "bg-accent/15 text-accent"
+                      : meta.entity === "Identity" || meta.entity === "Invite"
+                        ? "bg-muted text-muted-foreground"
+                        : "bg-muted text-muted-foreground",
+                )}>
+                  {meta.entity}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {isPreForge
+                  ? `Step ${step} of 3`
+                  : step === 4
+                    ? "Post-forge · Step 1 of 2"
+                    : "Post-forge · Step 2 of 2"}
+              </p>
             </div>
           </div>
 
@@ -131,67 +271,170 @@ export function ForgeOverlay({ open, onClose }: ForgeOverlayProps) {
           </button>
         </div>
 
-        {/* Step progress track */}
-        <div className="px-5 mb-4">
-          <div className="flex gap-1.5">
-            {([1, 2, 3] as Step[]).map((s) => (
-              <div
-                key={s}
-                className={cn(
-                  "h-1 flex-1 rounded-full transition-all duration-300",
-                  s <= step ? "bg-accent" : "bg-muted",
-                )}
-              />
-            ))}
+        {/* Progress tracks */}
+        {isPreForge ? (
+          /* Pre-forge: 3-step amber track */
+          <div className="px-5 mb-4">
+            <div className="flex gap-1.5">
+              {PRE_FORGE_STEPS.map((s) => (
+                <div
+                  key={s}
+                  className={cn(
+                    "h-1 flex-1 rounded-full transition-all duration-300",
+                    s <= step ? "bg-accent" : "bg-muted",
+                  )}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        ) : (
+          /* Post-forge: 2-step teal track */
+          <div className="px-5 mb-4">
+            <div className="flex gap-1.5">
+              {([4, 5] as PostForgeStep[]).map((s) => (
+                <div
+                  key={s}
+                  className={cn(
+                    "h-1 flex-1 rounded-full transition-all duration-300",
+                    s <= step ? "bg-primary" : "bg-muted",
+                  )}
+                />
+              ))}
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-2 text-center">
+              Group forged — complete setup before invitations go out
+            </p>
+          </div>
+        )}
 
-        {/* Scrollable content */}
+        {/* Entity description callout */}
+        {(step === 2 || step === 3) && (
+          <div className={cn(
+            "mx-5 mb-4 px-3 py-2 rounded-xl border text-xs text-muted-foreground",
+            step === 2 ? "border-primary/20 bg-primary/5" : "border-accent/20 bg-accent/5",
+          )}>
+            {meta.entityDescription}
+          </div>
+        )}
+
+        {/* Scrollable body */}
         <div className="flex-1 overflow-y-auto px-5 pb-4 scrollbar-hide">
           {step === 1 && (
-            <Step1
+            <Step1Activity
               selectedActivity={selectedActivity}
               onSelect={setSelectedActivity}
             />
           )}
           {step === 2 && (
-            <Step2
-              groupName={groupName}
-              onGroupNameChange={setGroupName}
-              groupSize={groupSize}
-              onGroupSizeChange={setGroupSize}
+            <Step2Plan
+              planName={planName}
+              onPlanNameChange={setPlanName}
+              planDate={planDate}
+              onPlanDateChange={setPlanDate}
+              planTime={planTime}
+              onPlanTimeChange={setPlanTime}
+              planLocation={planLocation}
+              onPlanLocationChange={setPlanLocation}
             />
           )}
           {step === 3 && (
-            <Step3
-              compatibility={compatibility}
-              onCompatibilityChange={setCompatibility}
+            <Step3Group
+              groupSize={groupSize}
+              onGroupSizeChange={setGroupSize}
               visibility={visibility}
               onVisibilityChange={setVisibility}
+            />
+          )}
+          {step === 4 && (
+            <Step4Identity
+              coverImage={coverImage}
+              onCoverImageChange={setCoverImage}
+              planName={planName || "Your Group"}
+              activity={selectedActivity || ""}
+            />
+          )}
+          {step === 5 && (
+            <Step5Invite
+              planName={planName || "Your Group"}
+              groupSize={groupSize}
+              inviteCopied={inviteCopied}
+              onCopyLink={handleCopyLink}
+              invitesSent={invitesSent}
             />
           )}
         </div>
 
         {/* Footer CTA */}
-        <div className="px-5 pt-3 pb-6 md:pb-5 border-t border-border bg-card">
-          {step < 3 ? (
+        <div className="px-5 pt-3 pb-6 md:pb-5 border-t border-border bg-card shrink-0">
+          {step === 1 && (
             <button
               type="button"
-              onClick={() => setStep((s) => (s + 1) as Step)}
+              onClick={() => setStep(2)}
               disabled={!canAdvance}
               className={cn(
-                "w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 font-semibold text-sm",
-                "transition-all duration-150",
+                "w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 font-semibold text-sm transition-all duration-150",
                 canAdvance
                   ? "bg-primary text-primary-foreground hover:brightness-110 active:scale-[0.98] shadow-[0_4px_16px_rgba(13,148,136,0.3)]"
                   : "bg-muted text-muted-foreground cursor-not-allowed opacity-60",
               )}
             >
-              Continue
+              Next: Plan Details
               <ChevronRight size={16} />
             </button>
-          ) : (
+          )}
+
+          {step === 2 && (
+            <button
+              type="button"
+              onClick={() => setStep(3)}
+              disabled={!canAdvance}
+              className={cn(
+                "w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 font-semibold text-sm transition-all duration-150",
+                canAdvance
+                  ? "bg-primary text-primary-foreground hover:brightness-110 active:scale-[0.98] shadow-[0_4px_16px_rgba(13,148,136,0.3)]"
+                  : "bg-muted text-muted-foreground cursor-not-allowed opacity-60",
+              )}
+            >
+              Next: Group Setup
+              <ChevronRight size={16} />
+            </button>
+          )}
+
+          {step === 3 && (
             <ForgeButton onClick={handleForge} />
+          )}
+
+          {step === 4 && (
+            <button
+              type="button"
+              onClick={() => setStep(5)}
+              className="w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 font-semibold text-sm bg-primary text-primary-foreground hover:brightness-110 active:scale-[0.98] shadow-[0_4px_16px_rgba(13,148,136,0.3)] transition-all duration-150"
+            >
+              {coverImage ? "Continue to Invitations" : "Skip for now"}
+              <ChevronRight size={16} />
+            </button>
+          )}
+
+          {step === 5 && !invitesSent && (
+            <button
+              type="button"
+              onClick={handleSendInvites}
+              className="w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 font-semibold text-sm bg-primary text-primary-foreground hover:brightness-110 active:scale-[0.98] shadow-[0_4px_16px_rgba(13,148,136,0.3)] transition-all duration-150"
+            >
+              <UserPlus size={16} />
+              Send Invitations
+            </button>
+          )}
+
+          {step === 5 && invitesSent && (
+            <button
+              type="button"
+              onClick={handleClose}
+              className="w-full flex items-center justify-center gap-2 rounded-2xl py-3.5 font-semibold text-sm bg-muted text-foreground hover:bg-muted/80 active:scale-[0.98] transition-all duration-150"
+            >
+              <Check size={16} className="text-primary" />
+              Done
+            </button>
           )}
         </div>
       </div>
@@ -199,9 +442,9 @@ export function ForgeOverlay({ open, onClose }: ForgeOverlayProps) {
   );
 }
 
-// ─── Step 1: Activity Selection ───────────────────────────────────────────────
+// ─── Step 1: Activity ─────────────────────────────────────────────────────────
 
-function Step1({
+function Step1Activity({
   selectedActivity,
   onSelect,
 }: {
@@ -210,7 +453,6 @@ function Step1({
 }) {
   return (
     <div className="space-y-5">
-      {/* Categories grid */}
       <div>
         <p className="text-xs font-semibold text-muted-foreground mb-3">Categories</p>
         <div className="grid grid-cols-4 gap-2">
@@ -220,8 +462,7 @@ function Step1({
               type="button"
               onClick={() => onSelect(label)}
               className={cn(
-                "flex flex-col items-center gap-1.5 py-3 rounded-2xl border text-center",
-                "transition-all duration-150 active:scale-95",
+                "flex flex-col items-center gap-1.5 py-3 rounded-2xl border text-center transition-all duration-150 active:scale-95",
                 selectedActivity === label
                   ? "border-accent bg-accent/10 shadow-[0_0_0_2px_rgba(245,158,11,0.3)]"
                   : "border-border bg-background hover:border-primary/30 hover:bg-primary/5",
@@ -234,7 +475,6 @@ function Step1({
         </div>
       </div>
 
-      {/* Recent activities */}
       <div>
         <p className="text-xs font-semibold text-muted-foreground mb-2">Recent</p>
         <div className="space-y-2">
@@ -244,8 +484,7 @@ function Step1({
               type="button"
               onClick={() => onSelect(label)}
               className={cn(
-                "w-full flex items-center gap-3 px-4 py-3 rounded-2xl border text-left",
-                "transition-all duration-150",
+                "w-full flex items-center gap-3 px-4 py-3 rounded-2xl border text-left transition-all duration-150",
                 selectedActivity === label
                   ? "border-accent bg-accent/10"
                   : "border-border bg-background hover:border-primary/30 hover:bg-primary/5",
@@ -262,31 +501,40 @@ function Step1({
   );
 }
 
-// ─── Step 2: Activity Details ─────────────────────────────────────────────────
+// ─── Step 2: Plan ─────────────────────────────────────────────────────────────
+// A Plan is the concrete event — its name, time, and place.
 
-function Step2({
-  groupName,
-  onGroupNameChange,
-  groupSize,
-  onGroupSizeChange,
+function Step2Plan({
+  planName,
+  onPlanNameChange,
+  planDate,
+  onPlanDateChange,
+  planTime,
+  onPlanTimeChange,
+  planLocation,
+  onPlanLocationChange,
 }: {
-  groupName: string;
-  onGroupNameChange: (v: string) => void;
-  groupSize: number;
-  onGroupSizeChange: (v: number) => void;
+  planName: string;
+  onPlanNameChange: (v: string) => void;
+  planDate: string;
+  onPlanDateChange: (v: string) => void;
+  planTime: string;
+  onPlanTimeChange: (v: string) => void;
+  planLocation: string;
+  onPlanLocationChange: (v: string) => void;
 }) {
   return (
     <div className="space-y-5">
-      {/* Group name */}
+      {/* Plan name */}
       <div className="space-y-1.5">
-        <label htmlFor="group-name" className="text-xs font-semibold text-muted-foreground">
-          Activity name
+        <label htmlFor="plan-name" className="text-xs font-semibold text-muted-foreground">
+          Plan name <span className="text-destructive">*</span>
         </label>
         <input
-          id="group-name"
+          id="plan-name"
           type="text"
-          value={groupName}
-          onChange={(e) => onGroupNameChange(e.target.value)}
+          value={planName}
+          onChange={(e) => onPlanNameChange(e.target.value)}
           placeholder="e.g. Board Game Night"
           className={cn(
             "w-full px-4 py-3 rounded-2xl border bg-background text-sm text-foreground",
@@ -295,32 +543,30 @@ function Step2({
             "transition-all duration-150",
           )}
         />
-        {groupName.length > 0 && groupName.length < 3 && (
+        {planName.length > 0 && planName.trim().length < 3 && (
           <p className="text-xs text-destructive pl-1">Name must be at least 3 characters</p>
         )}
       </div>
 
-      {/* Date/Time row */}
+      {/* Date & Time */}
       <div className="grid grid-cols-2 gap-2">
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-muted-foreground">Date</label>
-          <button
-            type="button"
-            className="w-full flex items-center gap-2 px-3 py-3 rounded-2xl border border-border bg-background text-sm text-foreground hover:border-primary/30 transition-colors"
-          >
-            <span className="text-base">📅</span>
-            <span className="text-muted-foreground">Pick date</span>
-          </button>
+          <input
+            type="date"
+            value={planDate}
+            onChange={(e) => onPlanDateChange(e.target.value)}
+            className="w-full px-3 py-3 rounded-2xl border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-150"
+          />
         </div>
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-muted-foreground">Time</label>
-          <button
-            type="button"
-            className="w-full flex items-center gap-2 px-3 py-3 rounded-2xl border border-border bg-background text-sm text-foreground hover:border-primary/30 transition-colors"
-          >
-            <span className="text-base">🕖</span>
-            <span className="text-muted-foreground">Pick time</span>
-          </button>
+          <input
+            type="time"
+            value={planTime}
+            onChange={(e) => onPlanTimeChange(e.target.value)}
+            className="w-full px-3 py-3 rounded-2xl border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-150"
+          />
         </div>
       </div>
 
@@ -329,7 +575,9 @@ function Step2({
         <label className="text-xs font-semibold text-muted-foreground">Location</label>
         <input
           type="text"
-          placeholder="Search location or enter address..."
+          value={planLocation}
+          onChange={(e) => onPlanLocationChange(e.target.value)}
+          placeholder="Search or enter an address..."
           className="w-full px-4 py-3 rounded-2xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-150"
         />
         <div className="flex gap-2 pt-0.5">
@@ -337,7 +585,13 @@ function Step2({
             <button
               key={q}
               type="button"
-              className="text-xs px-3 py-1.5 rounded-full border border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors"
+              onClick={() => onPlanLocationChange(q)}
+              className={cn(
+                "text-xs px-3 py-1.5 rounded-full border transition-colors",
+                planLocation === q
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-primary",
+              )}
             >
               {q}
             </button>
@@ -345,109 +599,70 @@ function Step2({
         </div>
       </div>
 
-      {/* Group size */}
-      <div className="space-y-2">
-        <label className="text-xs font-semibold text-muted-foreground">Group size</label>
-        <div className="flex gap-2">
-          {GROUP_SIZES.map((size) => (
-            <button
-              key={size}
-              type="button"
-              onClick={() => onGroupSizeChange(size)}
-              className={cn(
-                "flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-150",
-                groupSize === size
-                  ? "bg-accent text-accent-foreground border-transparent shadow-[0_2px_8px_rgba(245,158,11,0.3)]"
-                  : "bg-background text-foreground border-border hover:border-accent/50",
-              )}
-            >
-              {size}
-            </button>
-          ))}
-          <button
-            type="button"
-            onClick={() => onGroupSizeChange(7)}
-            className={cn(
-              "flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-150",
-              groupSize === 7
-                ? "bg-accent text-accent-foreground border-transparent shadow-[0_2px_8px_rgba(245,158,11,0.3)]"
-                : "bg-background text-foreground border-border hover:border-accent/50",
-            )}
-          >
-            6+
-          </button>
-        </div>
+      {/* Plan ↔ Group distinction note */}
+      <div className="rounded-xl border border-border bg-muted/40 px-4 py-3 space-y-1">
+        <p className="text-xs font-semibold text-foreground">Plan vs Group</p>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          A <span className="font-medium text-primary">Plan</span> describes the event itself — what, when, and where. In the next step you will configure the <span className="font-medium text-accent">Group</span> — the people who will be assembled to attend it.
+        </p>
       </div>
     </div>
   );
 }
 
-// ─── Step 3: Matching Preferences ────────────────────────────────────────────
+// ─── Step 3: Group ────────────────────────────────────────────────────────────
+// A Group is the set of people. Size is fixed to algorithm-approved values.
+// Trust score selector removed. Compatibility slider removed.
 
-function Step3({
-  compatibility,
-  onCompatibilityChange,
+function Step3Group({
+  groupSize,
+  onGroupSizeChange,
   visibility,
   onVisibilityChange,
 }: {
-  compatibility: number;
-  onCompatibilityChange: (v: number) => void;
-  visibility: "public" | "friends" | "invite";
-  onVisibilityChange: (v: "public" | "friends" | "invite") => void;
+  groupSize: AlgorithmGroupSize;
+  onGroupSizeChange: (v: AlgorithmGroupSize) => void;
+  visibility: Visibility;
+  onVisibilityChange: (v: Visibility) => void;
 }) {
-  const compatibilityLabel =
-    compatibility < 30 ? "Open to anyone" :
-    compatibility < 60 ? "Prefer compatible types" :
-    "Strong match required";
-
   return (
-    <div className="space-y-5">
-      {/* Personality compatibility */}
+    <div className="space-y-6">
+      {/* Fixed group size */}
       <div className="space-y-3">
         <div>
-          <p className="text-xs font-semibold text-muted-foreground">Personality compatibility</p>
-          <p className="text-xs text-muted-foreground/70 mt-0.5">How important is personality match?</p>
+          <p className="text-xs font-semibold text-muted-foreground">Group size</p>
+          <p className="text-xs text-muted-foreground/70 mt-0.5">
+            The matching algorithm requires a fixed participant count to function correctly. Choose one of the supported sizes.
+          </p>
         </div>
-        <input
-          type="range"
-          min={0}
-          max={100}
-          value={compatibility}
-          onChange={(e) => onCompatibilityChange(Number(e.target.value))}
-          className="w-full accent-accent cursor-pointer"
-          aria-label="Compatibility strictness"
-        />
-        <div className="flex justify-between text-[10px] text-muted-foreground -mt-1">
-          <span>Casual</span>
-          <span className="text-accent font-medium text-xs">{compatibilityLabel}</span>
-          <span>Strict</span>
-        </div>
-      </div>
-
-      {/* Trust score minimum */}
-      <div className="space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground">Trust score minimum</p>
-        <div className="flex gap-2">
-          {[
-            { label: "Any", value: 0 },
-            { label: "50%+", value: 50 },
-            { label: "70%+", value: 70 },
-            { label: "90%+", value: 90 },
-          ].map(({ label }) => (
+        <div className="grid grid-cols-3 gap-2">
+          {ALGORITHM_GROUP_SIZES.map(({ value, label, note }) => (
             <button
-              key={label}
+              key={value}
               type="button"
+              onClick={() => onGroupSizeChange(value)}
               className={cn(
-                "flex-1 py-2.5 rounded-xl text-xs font-semibold border transition-all duration-150",
-                label === "70%+"
-                  ? "bg-primary text-primary-foreground border-transparent shadow-[0_2px_8px_rgba(13,148,136,0.25)]"
-                  : "bg-background text-foreground border-border hover:border-primary/40",
+                "flex flex-col items-center gap-0.5 py-4 rounded-2xl border transition-all duration-150",
+                groupSize === value
+                  ? "border-transparent bg-accent text-accent-foreground shadow-[0_4px_16px_rgba(245,158,11,0.35)]"
+                  : "border-border bg-background text-foreground hover:border-accent/50",
               )}
             >
-              {label}
+              <span className={cn("text-2xl font-bold leading-none tabular-nums", groupSize === value ? "text-accent-foreground" : "text-foreground")}>
+                {value}
+              </span>
+              <span className={cn("text-[10px] font-medium mt-1", groupSize === value ? "text-accent-foreground/80" : "text-muted-foreground")}>
+                {label}
+              </span>
+              <span className={cn("text-[10px]", groupSize === value ? "text-accent-foreground/70" : "text-muted-foreground/60")}>
+                {note}
+              </span>
             </button>
           ))}
         </div>
+        <p className="text-[10px] text-muted-foreground text-center">
+          Including you — the algorithm will find {groupSize - 1} compatible members.
+        </p>
       </div>
 
       {/* Visibility */}
@@ -456,10 +671,22 @@ function Step3({
         <div className="space-y-2">
           {(
             [
-              { value: "public", label: "Public", desc: "Anyone matching criteria can request" },
-              { value: "friends", label: "Friends first", desc: "Prioritize mutual connections" },
-              { value: "invite", label: "Invite only", desc: "Only people you invite directly" },
-            ] as const
+              {
+                value: "public" as Visibility,
+                label: "Open",
+                desc: "Anyone matching criteria can request to join",
+              },
+              {
+                value: "friends" as Visibility,
+                label: "Friends first",
+                desc: "Prioritise mutual connections before strangers",
+              },
+              {
+                value: "invite" as Visibility,
+                label: "Invite only",
+                desc: "Only people you explicitly invite can join",
+              },
+            ]
           ).map(({ value, label, desc }) => (
             <button
               key={value}
@@ -490,41 +717,238 @@ function Step3({
           ))}
         </div>
       </div>
+
+      {/* What happens next callout */}
+      <div className="rounded-xl border border-accent/20 bg-accent/5 px-4 py-3 space-y-1">
+        <p className="text-xs font-semibold text-accent">After forging</p>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          You will add a cover image and send invitations <span className="font-medium text-foreground">only after</span> your Group is fully formed and confirmed — ensuring members receive a complete, polished invitation.
+        </p>
+      </div>
     </div>
   );
 }
 
-// ─── The Forge Button ────────────────────────────────────────────────────────
+// ─── Step 4: Identity (post-forge) ───────────────────────────────────────────
+// Cover image / logo — selected after the group has been forged.
+
+function Step4Identity({
+  coverImage,
+  onCoverImageChange,
+  planName,
+  activity,
+}: {
+  coverImage: string | null;
+  onCoverImageChange: (url: string | null) => void;
+  planName: string;
+  activity: string;
+}) {
+  const PRESET_COVERS = [
+    { color: "from-teal-500 to-emerald-400", label: "Ocean" },
+    { color: "from-amber-400 to-orange-500", label: "Ember" },
+    { color: "from-violet-500 to-purple-600", label: "Dusk" },
+    { color: "from-rose-400 to-pink-600", label: "Bloom" },
+    { color: "from-sky-400 to-blue-600", label: "Sky" },
+    { color: "from-slate-600 to-zinc-800", label: "Graphite" },
+  ];
+
+  return (
+    <div className="space-y-5">
+      {/* Success banner */}
+      <div className="flex items-center gap-3 p-4 rounded-2xl bg-primary/10 border border-primary/20">
+        <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center shrink-0">
+          <Check size={18} className="text-primary-foreground" />
+        </div>
+        <div>
+          <p className="text-sm font-bold text-foreground leading-none">Group forged!</p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            "{planName}" · {activity}
+          </p>
+        </div>
+      </div>
+
+      {/* Upload area */}
+      <div className="space-y-2">
+        <p className="text-xs font-semibold text-muted-foreground">Cover image</p>
+        <button
+          type="button"
+          onClick={() => onCoverImageChange("uploaded")}
+          className={cn(
+            "w-full h-32 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-2 transition-all duration-150",
+            coverImage === "uploaded"
+              ? "border-primary bg-primary/5"
+              : "border-border bg-background hover:border-primary/40 hover:bg-muted/40",
+          )}
+        >
+          {coverImage === "uploaded" ? (
+            <>
+              <Check size={22} className="text-primary" />
+              <span className="text-xs font-medium text-primary">Photo selected</span>
+            </>
+          ) : (
+            <>
+              <ImagePlus size={22} className="text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">Tap to upload a photo</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Preset gradient covers */}
+      <div className="space-y-2">
+        <p className="text-xs font-semibold text-muted-foreground">Or choose a cover colour</p>
+        <div className="grid grid-cols-6 gap-2">
+          {PRESET_COVERS.map(({ color, label }) => (
+            <button
+              key={label}
+              type="button"
+              onClick={() => onCoverImageChange(label)}
+              aria-label={`${label} cover`}
+              className={cn(
+                "h-10 rounded-xl bg-gradient-to-br transition-all duration-150",
+                color,
+                coverImage === label
+                  ? "ring-2 ring-offset-2 ring-primary scale-105"
+                  : "hover:scale-105",
+              )}
+            />
+          ))}
+        </div>
+      </div>
+
+      <p className="text-xs text-muted-foreground text-center">
+        You can change this anytime from the Group settings.
+      </p>
+    </div>
+  );
+}
+
+// ─── Step 5: Invite (post-forge) ─────────────────────────────────────────────
+// Invitations are sent ONLY after the group is confirmed and identity is set.
+
+function Step5Invite({
+  planName,
+  groupSize,
+  inviteCopied,
+  onCopyLink,
+  invitesSent,
+}: {
+  planName: string;
+  groupSize: AlgorithmGroupSize;
+  inviteCopied: boolean;
+  onCopyLink: () => void;
+  invitesSent: boolean;
+}) {
+  const slotsLeft = groupSize - 1; // excluding creator
+
+  if (invitesSent) {
+    return (
+      <div className="flex flex-col items-center justify-center py-8 gap-4 text-center">
+        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+          <Check size={28} className="text-primary" />
+        </div>
+        <div>
+          <p className="font-bold text-foreground text-lg">Invitations sent!</p>
+          <p className="text-sm text-muted-foreground mt-1 max-w-[260px]">
+            {slotsLeft} invitation{slotsLeft !== 1 ? "s" : ""} dispatched for "{planName}". Members will be notified once all spots are filled.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5">
+      {/* Group summary */}
+      <div className="p-4 rounded-2xl border border-border bg-muted/30 space-y-3">
+        <p className="text-xs font-semibold text-muted-foreground">Group summary</p>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <p className="text-[10px] text-muted-foreground">Plan</p>
+            <p className="text-sm font-semibold text-foreground truncate">{planName}</p>
+          </div>
+          <div>
+            <p className="text-[10px] text-muted-foreground">Spots to fill</p>
+            <p className="text-sm font-semibold text-foreground">{slotsLeft} of {groupSize}</p>
+          </div>
+        </div>
+
+        {/* Slots visualiser */}
+        <div className="flex gap-1.5">
+          {/* Creator slot */}
+          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+            <span className="text-[10px] font-bold text-primary-foreground">You</span>
+          </div>
+          {/* Open slots */}
+          {Array.from({ length: slotsLeft }).map((_, i) => (
+            <div
+              key={i}
+              className="w-8 h-8 rounded-full border-2 border-dashed border-muted-foreground/30 bg-muted/40 flex items-center justify-center"
+            >
+              <span className="text-[10px] text-muted-foreground/50">{i + 2}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Invite via link */}
+      <div className="space-y-2">
+        <p className="text-xs font-semibold text-muted-foreground">Share invite link</p>
+        <div className="flex items-center gap-2 px-4 py-3 rounded-2xl border border-border bg-background">
+          <span className="flex-1 text-xs text-muted-foreground truncate font-mono">
+            teamforge.app/join/grp_xk4j2m
+          </span>
+          <button
+            type="button"
+            onClick={onCopyLink}
+            aria-label="Copy invite link"
+            className={cn(
+              "flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl transition-all duration-150",
+              inviteCopied
+                ? "bg-primary/10 text-primary"
+                : "bg-muted text-foreground hover:bg-muted/80",
+            )}
+          >
+            {inviteCopied ? <Check size={12} /> : <Copy size={12} />}
+            {inviteCopied ? "Copied" : "Copy"}
+          </button>
+        </div>
+      </div>
+
+      {/* Important timing note */}
+      <div className="rounded-xl border border-border bg-muted/40 px-4 py-3 space-y-1">
+        <p className="text-xs font-semibold text-foreground">When do members get notified?</p>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Push notifications and emails are dispatched only when you tap "Send Invitations" below — ensuring every member receives a complete, confirmed invitation with all Plan details attached.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─── The Forge Button ─────────────────────────────────────────────────────────
 
 function ForgeButton({ onClick }: { onClick: () => void }) {
   return (
     <div className="space-y-2">
-      {/* Contextual hint */}
       <p className="text-center text-xs text-muted-foreground">
-        Compatible members will be notified once your group is forged.
+        Forging creates your Group. You will set the cover image and send invitations next.
       </p>
-
       <button
         type="button"
         onClick={onClick}
         aria-label="Forge this group"
         className={cn(
-          // Shape & size
           "relative w-full flex items-center justify-center gap-2.5 rounded-2xl py-4",
-          // Brand amber, full impact
           "bg-accent text-accent-foreground font-bold text-base",
-          // Layered shadow for depth
           "shadow-[0_4px_24px_rgba(245,158,11,0.5),0_1px_3px_rgba(0,0,0,0.12)]",
-          // States
-          "hover:brightness-110 hover:shadow-[0_6px_32px_rgba(245,158,11,0.65),0_1px_3px_rgba(0,0,0,0.12)]",
+          "hover:brightness-110 hover:shadow-[0_6px_32px_rgba(245,158,11,0.65)]",
           "active:scale-[0.97] active:shadow-[0_2px_12px_rgba(245,158,11,0.4)]",
           "transition-all duration-150",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2",
-          // Single attention pulse on mount
           "motion-safe:animate-[pulse-glow-amber_2.5s_ease-in-out_2]",
         )}
       >
-        {/* Subtle inner highlight */}
         <span
           className="absolute inset-0 rounded-2xl bg-gradient-to-b from-white/15 to-transparent pointer-events-none"
           aria-hidden="true"
