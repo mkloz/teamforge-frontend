@@ -156,7 +156,6 @@ const ChartTooltip = ({
       )}
       <div className="grid gap-1.5">
         {payload.map((item, index) => {
-          const key = `${nameKey || item.name || item.dataKey || "value"}`
           const itemConfig = {} as { label?: string; color?: string }
           const indicatorColor = color || item.fill || item.stroke
 
@@ -191,7 +190,7 @@ const ChartTooltip = ({
                   {itemConfig?.label || item.name}
                 </span>
                 <span className="font-mono font-medium tabular-nums text-foreground">
-                  {formatter ? formatter(item.value, item.name) : item.value}
+                  {formatter ? formatter(item.value as number, item.name) : item.value}
                 </span>
               </div>
             </div>
