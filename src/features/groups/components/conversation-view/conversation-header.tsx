@@ -9,13 +9,6 @@ interface ConversationHeaderProps {
   onToggleDetail: () => void;
 }
 
-const _statusText: Record<string, string> = {
-  FORMING: "Forming group...",
-  PENDING: "Awaiting confirmation",
-  ACTIVE: "Active",
-  COMPLETED: "Completed",
-  DISSOLVED: "Dissolved",
-};
 
 export function ConversationHeader({
   group,

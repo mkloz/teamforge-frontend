@@ -110,8 +110,6 @@ const ChartTooltip = ({
   labelClassName,
   formatter,
   color,
-  nameKey: _nameKey,
-  labelKey: _labelKey,
 }: {
   active?: boolean
   payload?: Array<{
