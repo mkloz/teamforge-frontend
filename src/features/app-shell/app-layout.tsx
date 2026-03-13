@@ -8,6 +8,7 @@ import { AppBottomNav } from "./components/app-bottom-nav";
 import { AppSidebar } from "./components/app-sidebar";
 import { AppTopbar } from "./components/app-topbar";
 import { SearchOverlay } from "./components/search-overlay";
+import { ForgeOverlay } from "../forge/components/forge-overlay";
 
 function PageSkeleton() {
   return (
@@ -28,8 +29,7 @@ export function AppLayout() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [forgeOpen, setForgeOpen] = useState(false);
 
-  // Placeholder forge handler — will wire to ForgeOverlay in a later build step
-  const handleForge = () => setForgeOpen(!forgeOpen);
+  const handleForge = () => setForgeOpen(true);
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
@@ -80,6 +80,10 @@ export function AppLayout() {
       <NotificationsDrawer
         open={notificationsOpen}
         onClose={() => setNotificationsOpen(false)}
+      />
+      <ForgeOverlay
+        open={forgeOpen}
+        onClose={() => setForgeOpen(false)}
       />
     </div>
   );

@@ -309,6 +309,17 @@
   from { width: 0%; }
 }
 
+@keyframes forge-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @theme inline {
   --animate-voronoi-a: voronoi-breathe-a 5s ease-in-out infinite;
   --animate-voronoi-b: voronoi-breathe-b 6.5s ease-in-out infinite;
@@ -319,6 +330,7 @@
   --animate-auth-form-in: auth-form-in 0.5s ease-out forwards;
   --animate-auth-slide-left: auth-slide-left 0.25s ease-in forwards;
   --animate-auth-slide-right-in: auth-slide-right-in 0.3s ease-out forwards;
+  --animate-forge-slide-up: forge-slide-up 0.28s cubic-bezier(0.34,1.1,0.64,1) forwards;
 }
 
 @layer base {
