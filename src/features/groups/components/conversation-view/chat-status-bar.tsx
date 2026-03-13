@@ -1,4 +1,4 @@
-import { Clock, FileEdit, CheckCircle2, Check, Calendar, MapPin } from "lucide-react";
+import { FileEdit, CheckCircle2, Check, Calendar, MapPin } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import type { Plan, GroupStatus } from "../../types/groups.types";
 
@@ -43,7 +43,7 @@ const statusConfig = {
   },
 };
 
-export function ChatStatusBar({ plan, groupStatus, onViewDetails }: ChatStatusBarProps) {
+export function ChatStatusBar({ plan, groupStatus: _groupStatus, onViewDetails }: ChatStatusBarProps) {
   const config = statusConfig[plan.status];
   const StatusIcon = config.icon;
 

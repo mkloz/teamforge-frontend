@@ -1,6 +1,5 @@
 import { Calendar, MapPin, Clock, Pencil, Image } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import type { Plan, PlanCategory, MemberRole } from "../../types/groups.types";
 

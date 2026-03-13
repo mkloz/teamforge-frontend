@@ -1,5 +1,4 @@
 import { ThumbsUp, ThumbsDown, Clock, MapPin, FileText } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
 import type { Message } from "../../types/groups.types";
 

@@ -8,7 +8,7 @@ import {
 } from "recharts";
 import { cn } from "@/shared/lib/utils";
 import type { OceanScores, OceanTraitKey } from "../types/profile.types";
-import { OCEAN_TRAITS, getExtendedTraitInfo, getTraitLevel } from "../lib/ocean-traits";
+import { OCEAN_TRAITS, getExtendedTraitInfo } from "../lib/ocean-traits";
 
 interface OceanChartProps {
   scores: OceanScores;
@@ -44,8 +44,11 @@ export function OceanChart({ scores, onTraitSelect, selectedTrait }: OceanChartP
   };
 
   // Custom tick renderer for clickable labels
-  const renderTick = (props: { x: number; y: number; payload: { value: string } }) => {
-    const { x, y, payload } = props;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const renderTick = (props: any) => {
+    const x = props.x as number;
+    const y = props.y as number;
+    const payload = props.payload as { value: string };
     const trait = OCEAN_TRAITS.find(t => t.label === payload.value);
     const isSelected = trait && selected === trait.key;
     const score = trait ? scores[trait.key] : 0;

@@ -1,6 +1,5 @@
 import { CalendarPlus, Share2, BellOff, LogOut, Flag } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-import { Button } from "@/shared/components/ui/button";
 import type { GroupStatus } from "../../types/groups.types";
 
 interface ActionsSectionProps {
@@ -8,7 +7,7 @@ interface ActionsSectionProps {
   groupStatus: GroupStatus;
 }
 
-export function ActionsSection({ groupId, groupStatus }: ActionsSectionProps) {
+export function ActionsSection({ groupId: _groupId, groupStatus }: ActionsSectionProps) {
   const isCompleted = groupStatus === "COMPLETED" || groupStatus === "DISSOLVED";
 
   return (

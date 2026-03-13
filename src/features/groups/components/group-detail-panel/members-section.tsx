@@ -1,5 +1,4 @@
 import { Crown, UserPlus } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import type { GroupMember } from "../../types/groups.types";

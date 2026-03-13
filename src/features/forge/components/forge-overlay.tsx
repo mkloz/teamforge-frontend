@@ -6,9 +6,6 @@ import {
   Zap,
   ChevronLeft,
   ChevronRight,
-  Flame,
-  CalendarDays,
-  Users,
   ImagePlus,
   UserPlus,
   Check,
@@ -1125,7 +1122,7 @@ function Step4Success({
 
 function Step4Failed({
   forgeMode,
-  onReforge,
+  onReforge: _onReforge,
 }: {
   forgeMode: ForgeMode;
   onReforge: () => void;
@@ -1201,8 +1198,8 @@ function Step4Failed({
 function Step5Identity({
   coverImage,
   onCoverImageChange,
-  planName,
-  activity,
+  planName: _planName,
+  activity: _activity,
 }: {
   coverImage: string | null;
   onCoverImageChange: (url: string | null) => void;

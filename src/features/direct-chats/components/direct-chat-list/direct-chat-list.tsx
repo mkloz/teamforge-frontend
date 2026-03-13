@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Search, MessageCircle, UserPlus } from "lucide-react";
+import { Search, MessageCircle } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Input } from "@/shared/components/ui/input";
-import { Button } from "@/shared/components/ui/button";
 import type { DirectChatPreview } from "../../types/direct-chats.types";
 import { DirectChatListItem } from "./direct-chat-list-item";
 

@@ -16,7 +16,7 @@ export function GroupsPage() {
   });
 
   // Check if we're on desktop
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [_isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
     const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024);
