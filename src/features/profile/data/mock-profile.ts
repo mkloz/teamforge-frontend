@@ -1,4 +1,4 @@
-import type { UserProfile, DimensionScore, OceanScores } from "../types/profile.types";
+import type { UserProfile, DimensionScore } from "../types/profile.types";
 
 // Helper to determine letter from score
 function getLetterFromScore(dimension: string, score: number): string {

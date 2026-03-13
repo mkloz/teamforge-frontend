@@ -111,7 +111,7 @@ const ChartTooltip = ({
   formatter,
   color,
   nameKey,
-  labelKey,
+  labelKey: _labelKey,
 }: {
   active?: boolean
   payload?: Array<{
@@ -228,8 +228,8 @@ const ChartLegend = ({
   return (
     <div className={cn("flex items-center justify-center gap-4", className)}>
       {payload.map((item) => {
-        const key = `${nameKey || item.dataKey || "value"}`
-        const itemConfig = config[key as keyof typeof config]
+        const _key = `${nameKey || item.dataKey || "value"}`
+        const itemConfig = config[_key as keyof typeof config]
 
         return (
           <div
