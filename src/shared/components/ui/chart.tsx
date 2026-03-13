@@ -110,7 +110,7 @@ const ChartTooltip = ({
   labelClassName,
   formatter,
   color,
-  nameKey,
+  nameKey: _nameKey,
   labelKey: _labelKey,
 }: {
   active?: boolean
@@ -129,7 +129,7 @@ const ChartTooltip = ({
   label?: string
   labelFormatter?: (value: string, payload: unknown[]) => React.ReactNode
   labelClassName?: string
-  formatter?: (value: number | string, name: string) => React.ReactNode
+  formatter?: (value: number, name: string) => React.ReactNode
   color?: string
   nameKey?: string
   labelKey?: string
