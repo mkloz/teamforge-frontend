@@ -7,8 +7,9 @@ interface ActionsSectionProps {
   groupStatus: GroupStatus;
 }
 
-export function ActionsSection({ groupId: _groupId, groupStatus }: ActionsSectionProps) {
-  const isCompleted = groupStatus === "COMPLETED" || groupStatus === "DISSOLVED";
+export function ActionsSection({ groupStatus }: ActionsSectionProps) {
+  const isCompleted =
+    groupStatus === "COMPLETED" || groupStatus === "DISSOLVED";
 
   return (
     <section className="space-y-2">
@@ -83,12 +84,14 @@ function ActionButton({
         variant === "muted" && "text-muted-foreground hover:bg-muted/60",
       )}
     >
-      <span className={cn(
-        "flex-shrink-0 p-1.5 rounded-lg",
-        variant === "default" && "bg-muted",
-        variant === "destructive" && "bg-destructive/10",
-        variant === "muted" && "bg-muted/50",
-      )}>
+      <span
+        className={cn(
+          "flex-shrink-0 p-1.5 rounded-lg",
+          variant === "default" && "bg-muted",
+          variant === "destructive" && "bg-destructive/10",
+          variant === "muted" && "bg-muted/50",
+        )}
+      >
         {icon}
       </span>
       <span className="text-sm font-medium">{label}</span>

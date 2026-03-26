@@ -11,9 +11,9 @@
   --color-forge-teal-light: #14b8a6;
   --color-spark-amber: #f59e0b;
   --color-hero-bg: #090909;
-  --color-ink: #1c1c1a;
-  --color-canvas: #fafaf8;
-  --color-slate-muted: #6b7280;
+  --color-ink: var(--ink);
+  --color-canvas: var(--canvas);
+  --color-slate-muted: var(--slate-muted);
 
   --animate-float-card: float-card 4s ease-in-out infinite alternate;
   --animate-float-card-b: float-card-b 5s ease-in-out infinite alternate;
@@ -71,6 +71,9 @@
   /* TeamForge light mode — brand palette */
   --background: #f4f4f2;
   --foreground: #1c1c1a;
+  --ink: #1c1c1a;
+  --slate-muted: #6b7280;
+  --canvas: #fafaf8;
   --card: #ffffff;
   --card-foreground: #1c1c1a;
   --popover: #ffffff;
@@ -107,6 +110,9 @@
   /* TeamForge dark mode — brand palette */
   --background: #0e0e0d;
   --foreground: #ededed;
+  --ink: #ededed;
+  --slate-muted: #9ca3af;
+  --canvas: #141413;
   --card: #1c1c1a;
   --card-foreground: #ededed;
   --popover: #1c1c1a;

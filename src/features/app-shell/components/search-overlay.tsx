@@ -35,7 +35,10 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
 
   // Clear query when closing
   useEffect(() => {
-    if (!open) setQuery("");
+    if (!open) {
+      const t = setTimeout(() => setQuery(""), 150);
+      return () => clearTimeout(t);
+    }
   }, [open]);
 
   // Close on Escape
@@ -60,12 +63,18 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
       inert={!open ? "" : undefined}
       className={cn(
         "fixed inset-0 z-[60] flex flex-col bg-background transition-opacity duration-200",
-        open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
+        open
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none",
       )}
     >
       {/* Input row */}
       <div className="flex items-center gap-3 px-4 h-16 border-b border-border">
-        <Search size={18} className="shrink-0 text-muted-foreground" aria-hidden="true" />
+        <Search
+          size={18}
+          className="shrink-0 text-muted-foreground"
+          aria-hidden="true"
+        />
         <input
           ref={inputRef}
           type="search"
@@ -96,7 +105,11 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
             {RECENT_SEARCHES.length > 0 && (
               <section>
                 <div className="flex items-center gap-2 mb-3">
-                  <Clock size={14} className="text-muted-foreground" aria-hidden="true" />
+                  <Clock
+                    size={14}
+                    className="text-muted-foreground"
+                    aria-hidden="true"
+                  />
                   <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     Recent Searches
                   </h3>
@@ -124,7 +137,11 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
             {/* Trending Activities */}
             <section>
               <div className="flex items-center gap-2 mb-3">
-                <TrendingUp size={14} className="text-muted-foreground" aria-hidden="true" />
+                <TrendingUp
+                  size={14}
+                  className="text-muted-foreground"
+                  aria-hidden="true"
+                />
                 <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Trending Activities
                 </h3>

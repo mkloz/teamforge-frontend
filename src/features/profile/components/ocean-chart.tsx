@@ -1,14 +1,14 @@
+import { cn } from "@/shared/lib/utils";
 import { useState } from "react";
 import {
+  PolarAngleAxis,
+  PolarGrid,
   Radar,
   RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
   ResponsiveContainer,
 } from "recharts";
-import { cn } from "@/shared/lib/utils";
-import type { OceanScores, OceanTraitKey } from "../types/profile.types";
 import { OCEAN_TRAITS, getExtendedTraitInfo } from "../lib/ocean-traits";
+import type { OceanScores, OceanTraitKey } from "../types/profile.types";
 
 interface OceanChartProps {
   scores: OceanScores;
@@ -16,10 +16,30 @@ interface OceanChartProps {
   selectedTrait?: OceanTraitKey | null;
 }
 
-export function OceanChart({ scores, onTraitSelect, selectedTrait }: OceanChartProps) {
-  const [internalSelected, setInternalSelected] = useState<OceanTraitKey | null>(null);
-  
-  const selected = selectedTrait !== undefined ? selectedTrait : internalSelected;
+interface ChartDotProps {
+  cx?: number | string;
+  cy?: number | string;
+  payload?: { trait?: string; value?: string | number };
+}
+
+interface ChartTickProps {
+  x?: number | string;
+  y?: number | string;
+  cx?: number | string;
+  cy?: number | string;
+  payload?: { trait?: string; value?: string };
+}
+
+export function OceanChart({
+  scores,
+  onTraitSelect,
+  selectedTrait,
+}: OceanChartProps) {
+  const [internalSelected, setInternalSelected] =
+    useState<OceanTraitKey | null>(null);
+
+  const selected =
+    selectedTrait !== undefined ? selectedTrait : internalSelected;
   const setSelected = onTraitSelect || setInternalSelected;
 
   // Transform scores to chart data format
@@ -30,45 +50,122 @@ export function OceanChart({ scores, onTraitSelect, selectedTrait }: OceanChartP
     fullMark: 100,
   }));
 
-  // Solid colors for Recharts (CSS vars don't work)
-  const primaryColor = "#0d9488"; // teal-600
-  const primaryColorFill = "rgba(13, 148, 136, 0.25)";
-  const gridColor = "#d1d5db"; // gray-300
+  // Solid colors for Recharts (CSS vars used as standard fallback)
+  const primaryColor = "var(--primary)";
+  const primaryColorFill = "var(--secondary)";
+  const gridColor = "var(--border)";
 
   // Handle trait click
   const handleTraitClick = (label: string) => {
-    const trait = OCEAN_TRAITS.find(t => t.label === label);
+    const trait = OCEAN_TRAITS.find((t) => t.label === label);
     if (trait) {
       setSelected(selected === trait.key ? null : trait.key);
     }
   };
 
+  // Custom dot renderer for clickable data points
+  const renderDot = (props: ChartDotProps) => {
+    const { cx, cy, payload } = props;
+    if (cx === undefined || cy === undefined || !payload?.trait) return null;
+
+    const trait = OCEAN_TRAITS.find((t) => t.label === payload.trait);
+    const isSelected = trait && selected === trait.key;
+
+    const numCx = Number(cx);
+    const numCy = Number(cy);
+
+    return (
+      <g
+        key={`dotgroup-${payload.trait}`}
+        className="cursor-pointer outline-none"
+        style={{ cursor: "pointer", pointerEvents: "all" }}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleTraitClick(payload.trait!);
+        }}
+      >
+        <circle
+          cx={numCx}
+          cy={numCy}
+          r={isSelected ? 7 : 5}
+          fill="var(--primary)"
+          stroke="var(--card)"
+          strokeWidth={2}
+          className="transition-all duration-200"
+        />
+        <circle
+          cx={numCx}
+          cy={numCy}
+          r={32}
+          fill="transparent"
+          stroke="transparent"
+        />
+      </g>
+    );
+  };
+
   // Custom tick renderer for clickable labels
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const renderTick = (props: any) => {
-    const x = props.x as number;
-    const y = props.y as number;
-    const payload = props.payload as { value: string };
-    const trait = OCEAN_TRAITS.find(t => t.label === payload.value);
+  const renderTick = (props: ChartTickProps) => {
+    const { x, y, cx, cy, payload } = props;
+    if (
+      x === undefined ||
+      y === undefined ||
+      cx === undefined ||
+      cy === undefined ||
+      !payload?.value
+    )
+      return null;
+
+    const numX = Number(x);
+    const numY = Number(y);
+    const numCx = Number(cx);
+    const numCy = Number(cy);
+
+    const dx = numX - numCx;
+    const dy = numY - numCy;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const pushOutOffset = 18;
+
+    const newX =
+      distance > 0
+        ? numCx + (dx / distance) * (distance + pushOutOffset)
+        : numX;
+    const newY =
+      distance > 0
+        ? numCy + (dy / distance) * (distance + pushOutOffset)
+        : numY;
+
+    const trait = OCEAN_TRAITS.find((t) => t.label === payload.value);
     const isSelected = trait && selected === trait.key;
     const score = trait ? scores[trait.key] : 0;
-    
+
     return (
-      <g 
-        className="cursor-pointer" 
-        onClick={() => handleTraitClick(payload.value)}
+      <g
+        className="cursor-pointer outline-none"
+        onClick={(e) => {
+          e.stopPropagation();
+          handleTraitClick(payload.value!);
+        }}
+        style={{ cursor: "pointer", pointerEvents: "all" }}
       >
+        <rect
+          x={newX - 45}
+          y={newY - 20}
+          width={90}
+          height={40}
+          fill="transparent"
+        />
         <text
-          x={x}
-          y={y}
+          x={newX}
+          y={newY}
           textAnchor="middle"
           dominantBaseline="middle"
           className={cn(
-            "text-[11px] font-medium transition-colors select-none",
-            isSelected ? "fill-primary" : "fill-muted-foreground"
+            "text-[11px] font-medium transition-colors select-none outline-none",
+            isSelected ? "fill-primary" : "fill-muted-foreground",
           )}
-          style={{ 
-            fill: isSelected ? primaryColor : "#6b7280",
+          style={{
+            fill: isSelected ? primaryColor : "var(--muted-foreground)",
             fontWeight: isSelected ? 600 : 500,
           }}
         >
@@ -76,11 +173,11 @@ export function OceanChart({ scores, onTraitSelect, selectedTrait }: OceanChartP
         </text>
         {isSelected && (
           <text
-            x={x}
-            y={y + 14}
+            x={newX}
+            y={newY + 14}
             textAnchor="middle"
             dominantBaseline="middle"
-            className="text-[10px] font-bold"
+            className="text-[10px] font-bold select-none outline-none"
             style={{ fill: primaryColor }}
           >
             {score}%
@@ -90,29 +187,27 @@ export function OceanChart({ scores, onTraitSelect, selectedTrait }: OceanChartP
     );
   };
 
-  const selectedInfo = selected ? getExtendedTraitInfo(selected, scores[selected]) : null;
+  const selectedInfo = selected
+    ? getExtendedTraitInfo(selected, scores[selected])
+    : null;
 
   return (
     <div className="space-y-3">
       {/* Chart */}
-      <div className="w-full max-w-[300px] mx-auto aspect-square [&_svg]:outline-none [&_svg:focus]:outline-none [&_*:focus]:outline-none">
+      <div className="w-full max-w-80 mx-auto aspect-square [&_svg]:outline-none [&_svg:focus]:outline-none [&_*:focus]:outline-none">
         <ResponsiveContainer width="100%" height="100%">
           <RadarChart
             data={chartData}
-            margin={{ top: 28, right: 36, bottom: 28, left: 36 }}
+            margin={{ top: 32, right: 40, bottom: 32, left: 40 }}
           >
-            <PolarGrid 
-              stroke={gridColor}
-              strokeWidth={1}
-              gridType="polygon"
-            />
-            
+            <PolarGrid stroke={gridColor} strokeWidth={1} gridType="polygon" />
+
             <PolarAngleAxis
               dataKey="trait"
               tick={renderTick}
               tickLine={false}
             />
-            
+
             <Radar
               name="Personality"
               dataKey="value"
@@ -120,46 +215,50 @@ export function OceanChart({ scores, onTraitSelect, selectedTrait }: OceanChartP
               strokeWidth={2.5}
               fill={primaryColorFill}
               fillOpacity={1}
-              dot={{
-                r: 5,
-                fill: primaryColor,
-                stroke: "#fff",
-                strokeWidth: 2,
-              }}
+              dot={renderDot}
               isAnimationActive={false}
             />
           </RadarChart>
         </ResponsiveContainer>
       </div>
-      
+      <div className="border-t-2 -mt-4"></div>
       {/* Tap hint or selected trait detail */}
       {!selected ? (
         <p className="text-center text-xs text-muted-foreground">
           Tap any trait to learn more
         </p>
-      ) : selectedInfo && (
-        <div className="p-4 rounded-xl bg-muted/50 space-y-3 animate-fade-up">
-          <div className="flex items-center justify-between">
-            <div>
-              <h5 className="font-semibold text-foreground">{selectedInfo.label}</h5>
-              <span className="text-xs text-muted-foreground">{selectedInfo.level} ({selectedInfo.score}%)</span>
+      ) : (
+        selectedInfo && (
+          <div className="text-popover-foreground space-y-3 animate-fade-up">
+            <div className="flex items-center justify-between">
+              <div>
+                <h5 className="font-semibold text-foreground">
+                  {selectedInfo.label}
+                </h5>
+                <span className="text-xs text-muted-foreground">
+                  {selectedInfo.level} ({selectedInfo.score}%)
+                </span>
+              </div>
+              <button
+                onClick={() => setSelected(null)}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Close
+              </button>
             </div>
-            <button 
-              onClick={() => setSelected(null)}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Close
-            </button>
-          </div>
-          <p className="text-sm text-foreground leading-relaxed">
-            {selectedInfo.description}
-          </p>
-          <div className="pt-2 border-t border-border space-y-2">
-            <p className="text-xs text-muted-foreground">
-              <span className="font-medium text-foreground">In activities:</span> {selectedInfo.inActivities}
+            <p className="text-sm text-foreground leading-relaxed">
+              {selectedInfo.description}
             </p>
+            <div className="pt-2 border-t border-border space-y-2">
+              <p className="text-xs text-muted-foreground">
+                <span className="font-medium text-foreground">
+                  In activities:
+                </span>{" "}
+                {selectedInfo.inActivities}
+              </p>
+            </div>
           </div>
-        </div>
+        )
       )}
     </div>
   );

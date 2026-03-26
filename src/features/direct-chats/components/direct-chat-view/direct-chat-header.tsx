@@ -34,7 +34,7 @@ function getStatusText(status: OnlineStatus, lastSeen?: string): string {
         const diffMins = Math.floor(diffMs / (1000 * 60));
         const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
         const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-        
+
         if (diffMins < 60) return `Last seen ${diffMins}m ago`;
         if (diffHours < 24) return `Last seen ${diffHours}h ago`;
         if (diffDays === 1) return "Last seen yesterday";
@@ -52,7 +52,7 @@ export function DirectChatHeader({
   const { participant } = chat;
 
   return (
-    <header className="flex-shrink-0 flex items-center gap-2 px-2 py-2 border-b border-border bg-background">
+    <header className="shrink-0 flex items-center gap-2 px-2 pb-2 md:pt-2 border-b border-border bg-background">
       {/* Back button - mobile only */}
       {onBack && (
         <Button
@@ -85,7 +85,7 @@ export function DirectChatHeader({
             )}
           />
         </div>
-        
+
         <div className="min-w-0 flex-1 text-left">
           <h2 className="text-sm font-semibold text-foreground truncate">
             {participant.name}

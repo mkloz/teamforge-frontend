@@ -1,19 +1,30 @@
-import { useState, useCallback, useEffect } from "react";
+import {
+  ConversationTabs,
+  type ConversationTabType,
+} from "@/shared/components/conversation-tabs";
 import { cn } from "@/shared/lib/utils";
 import { MessageSquare } from "lucide-react";
-import { ConversationTabs, type ConversationTabType } from "@/shared/components/conversation-tabs";
+import { useCallback, useEffect, useState } from "react";
 
 // Groups imports
+import { useUiStore } from "@/shared/store/ui.store";
 import { ConversationList } from "../groups/components/conversation-list/conversation-list";
 import { ConversationView } from "../groups/components/conversation-view/conversation-view";
 import { GroupDetailPanel } from "../groups/components/group-detail-panel/group-detail-panel";
-import { MOCK_GROUP_PREVIEWS, MOCK_GROUPS, MOCK_MESSAGES } from "../groups/data/mock-groups";
+import {
+  MOCK_GROUP_PREVIEWS,
+  MOCK_GROUPS,
+  MOCK_MESSAGES,
+} from "../groups/data/mock-groups";
 import type { GroupsPageState } from "../groups/types/groups.types";
 
 // Direct chats imports
 import { DirectChatList } from "../direct-chats/components/direct-chat-list";
 import { DirectChatView } from "../direct-chats/components/direct-chat-view";
-import { ProfilePanel, ProfilePanelMobile } from "../direct-chats/components/profile-panel";
+import {
+  ProfilePanel,
+  ProfilePanelMobile,
+} from "../direct-chats/components/profile-panel";
 import {
   MOCK_DIRECT_CHAT_PREVIEWS,
   MOCK_DIRECT_CHATS,
@@ -23,7 +34,7 @@ import type { DirectChatsState } from "../direct-chats/types/direct-chats.types"
 
 export function ActivityPage() {
   const [activeTab, setActiveTab] = useState<ConversationTabType>("groups");
-  
+
   // Groups state
   const [groupsState, setGroupsState] = useState<GroupsPageState>({
     selectedGroupId: null,
@@ -40,23 +51,24 @@ export function ActivityPage() {
     draftMessages: {},
   });
 
-  // Check if we're on desktop
-  const [_isDesktop, setIsDesktop] = useState(false);
-
-  useEffect(() => {
-    const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024);
-    checkDesktop();
-    window.addEventListener("resize", checkDesktop);
-    return () => window.removeEventListener("resize", checkDesktop);
-  }, []);
+  // UI Store
+  const setBottomNavHidden = useUiStore((s) => s.setBottomNavHidden);
 
   // Calculate unread counts
-  const groupsUnreadCount = MOCK_GROUP_PREVIEWS.filter((g) => g.unreadCount > 0).length;
-  const directUnreadCount = MOCK_DIRECT_CHAT_PREVIEWS.filter((c) => c.unreadCount > 0).length;
+  const groupsUnreadCount = MOCK_GROUP_PREVIEWS.filter(
+    (g) => g.unreadCount > 0,
+  ).length;
+  const directUnreadCount = MOCK_DIRECT_CHAT_PREVIEWS.filter(
+    (c) => c.unreadCount > 0,
+  ).length;
 
   // Groups handlers
-  const selectedGroup = groupsState.selectedGroupId ? MOCK_GROUPS[groupsState.selectedGroupId] : null;
-  const selectedGroupMessages = groupsState.selectedGroupId ? MOCK_MESSAGES[groupsState.selectedGroupId] ?? [] : [];
+  const selectedGroup = groupsState.selectedGroupId
+    ? MOCK_GROUPS[groupsState.selectedGroupId]
+    : null;
+  const selectedGroupMessages = groupsState.selectedGroupId
+    ? (MOCK_MESSAGES[groupsState.selectedGroupId] ?? [])
+    : [];
 
   const handleSelectGroup = useCallback((groupId: string) => {
     setGroupsState((prev) => ({
@@ -101,7 +113,7 @@ export function ActivityPage() {
     ? MOCK_DIRECT_CHATS[directState.selectedChatId]
     : null;
   const selectedDirectMessages = directState.selectedChatId
-    ? MOCK_DIRECT_MESSAGES[directState.selectedChatId] ?? []
+    ? (MOCK_DIRECT_MESSAGES[directState.selectedChatId] ?? [])
     : [];
   const selectedChatPreview = MOCK_DIRECT_CHAT_PREVIEWS.find(
     (c) => c.id === directState.selectedChatId,
@@ -144,16 +156,41 @@ export function ActivityPage() {
 
   // Filter groups
   const filteredGroups = MOCK_GROUP_PREVIEWS.filter((group) =>
-    group.planTitle.toLowerCase().includes(groupsState.searchQuery.toLowerCase()),
+    group.planTitle
+      .toLowerCase()
+      .includes(groupsState.searchQuery.toLowerCase()),
   );
 
   // Determine if we're showing a conversation (for mobile layout)
-  const hasSelection = activeTab === "groups" 
-    ? !!groupsState.selectedGroupId 
-    : !!directState.selectedChatId;
+  const hasSelection =
+    activeTab === "groups"
+      ? !!groupsState.selectedGroupId
+      : !!directState.selectedChatId;
+
+  // Hide bottom nav on mobile if conversation is selected
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth < 768;
+      setBottomNavHidden(hasSelection && isMobile);
+    };
+
+    // Initial check
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      setBottomNavHidden(false); // Cleanup on unmount
+    };
+  }, [hasSelection, setBottomNavHidden]);
 
   return (
-    <div className="fixed inset-0 top-16 md:left-16 lg:left-60 pb-24 md:pb-0 flex bg-background">
+    <div
+      className={cn(
+        "fixed inset-0 top-0 md:top-16 md:left-16 lg:left-60 flex bg-background",
+        !hasSelection ? "pb-24 md:pb-0" : "pb-0",
+      )}
+    >
       {/* Left sidebar - List with tabs */}
       <div
         className={cn(
@@ -196,10 +233,7 @@ export function ActivityPage() {
 
       {/* Main content area */}
       <div
-        className={cn(
-          "flex-1 flex min-w-0",
-          !hasSelection && "hidden md:flex",
-        )}
+        className={cn("flex-1 flex min-w-0", !hasSelection && "hidden md:flex")}
       >
         {activeTab === "groups" ? (
           // Groups view
@@ -268,7 +302,9 @@ function EmptyState({ message }: { message: string }) {
         <div className="mx-auto w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
           <MessageSquare size={28} className="text-muted-foreground/60" />
         </div>
-        <p className="text-lg font-semibold text-foreground">Select a conversation</p>
+        <p className="text-lg font-semibold text-foreground">
+          Select a conversation
+        </p>
         <p className="text-sm mt-2 text-muted-foreground leading-relaxed">
           {message}
         </p>

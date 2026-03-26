@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 import { X } from "lucide-react";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNotifications } from "../hooks/use-notifications";
 import { NotificationItem } from "./notification-item";
 
@@ -9,17 +9,27 @@ interface NotificationsDrawerProps {
   onClose: () => void;
 }
 
-export function NotificationsDrawer({ open, onClose }: NotificationsDrawerProps) {
+export function NotificationsDrawer({
+  open,
+  onClose,
+}: NotificationsDrawerProps) {
   const { items, markRead, markAllRead } = useNotifications();
   const drawerRef = useRef<HTMLDivElement>(null);
 
-  const today = items.filter((n) => Date.now() - n.timestamp.getTime() < 86_400_000);
-  const earlier = items.filter((n) => Date.now() - n.timestamp.getTime() >= 86_400_000);
+  // Freeze time during render to avoid impurity warnings
+  const [now] = useState(() => Date.now());
+
+  const today = items.filter((n) => now - n.timestamp.getTime() < 86_400_000);
+  const earlier = items.filter(
+    (n) => now - n.timestamp.getTime() >= 86_400_000,
+  );
 
   // Close on Escape
   useEffect(() => {
     if (!open) return;
-    const handleKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
   }, [open, onClose]);
@@ -33,30 +43,29 @@ export function NotificationsDrawer({ open, onClose }: NotificationsDrawerProps)
   }, [open]);
 
   // Trap keyboard focus inside the drawer when open
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key !== "Tab" || !drawerRef.current) return;
-      const focusables = drawerRef.current.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-      );
-      if (focusables.length === 0) return;
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    },
-    [],
-  );
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key !== "Tab" || !drawerRef.current) return;
+    const focusables = drawerRef.current.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+    );
+    if (focusables.length === 0) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }, []);
 
   // Prevent body scroll while open
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [open]);
 
   return (
@@ -68,7 +77,9 @@ export function NotificationsDrawer({ open, onClose }: NotificationsDrawerProps)
         className={cn(
           "fixed inset-0 z-[55] bg-black/50 backdrop-blur-[2px]",
           "transition-opacity duration-200",
-          open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
+          open
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none",
         )}
       />
 

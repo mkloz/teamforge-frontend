@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import {
   createRootRoute,
   createRoute,
@@ -5,11 +6,11 @@ import {
   Outlet,
 } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
+import { AppLayout } from "./features/app-shell/app-layout";
 import { AuthPage } from "./features/auth/auth-page";
 import { LandingPage } from "./features/landing/landing-page";
 import { InterestsPage } from "./features/onboarding/interests-page";
 import { PersonalityTestPage } from "./features/onboarding/personality-test-page";
-import { AppLayout } from "./features/app-shell/app-layout";
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -22,19 +23,36 @@ const HomePage = lazy(() =>
   import("./features/home/home-page").then((m) => ({ default: m.HomePage })),
 );
 const ExplorePage = lazy(() =>
-  import("./features/explore/explore-page").then((m) => ({ default: m.ExplorePage })),
+  import("./features/explore/explore-page").then((m) => ({
+    default: m.ExplorePage,
+  })),
 );
 const ActivityPage = lazy(() =>
-  import("./features/activity/activity-page").then((m) => ({ default: m.ActivityPage })),
+  import("./features/activity/activity-page").then((m) => ({
+    default: m.ActivityPage,
+  })),
 );
 const ProfilePage = lazy(() =>
-  import("./features/profile/profile-page").then((m) => ({ default: m.ProfilePage })),
+  import("./features/profile/profile-page").then((m) => ({
+    default: m.ProfilePage,
+  })),
 );
 const SettingsPage = lazy(() =>
-  import("./features/settings/settings-page").then((m) => ({ default: m.SettingsPage })),
+  import("./features/settings/settings-page").then((m) => ({
+    default: m.SettingsPage,
+  })),
+);
+const ForgePage = lazy(() =>
+  import("./features/forge/forge-page").then((m) => ({
+    default: m.ForgePage,
+  })),
 );
 
-function LazyPage({ component: Component }: { component: React.ComponentType }) {
+function LazyPage({
+  component: Component,
+}: {
+  component: React.ComponentType;
+}) {
   return (
     <Suspense fallback={null}>
       <Component />
@@ -120,6 +138,12 @@ const settingsRoute = createRoute({
   component: () => <LazyPage component={SettingsPage} />,
 });
 
+const forgeRoute = createRoute({
+  getParentRoute: () => appShellRoute,
+  path: "/forge",
+  component: () => <LazyPage component={ForgePage} />,
+});
+
 // ─── Route tree ───────────────────────────────────────────────────────────────
 
 const routeTree = rootRoute.addChildren([
@@ -134,6 +158,7 @@ const routeTree = rootRoute.addChildren([
     activityRoute,
     profileRoute,
     settingsRoute,
+    forgeRoute,
   ]),
 ]);
 

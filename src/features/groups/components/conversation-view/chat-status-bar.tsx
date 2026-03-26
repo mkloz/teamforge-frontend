@@ -10,9 +10,9 @@ interface ChatStatusBarProps {
 
 function formatDateTime(isoString: string): string {
   const date = new Date(isoString);
-  return date.toLocaleDateString("en-US", { 
+  return date.toLocaleDateString("en-US", {
     weekday: "short",
-    month: "short", 
+    month: "short",
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
@@ -43,7 +43,7 @@ const statusConfig = {
   },
 };
 
-export function ChatStatusBar({ plan, groupStatus: _groupStatus, onViewDetails }: ChatStatusBarProps) {
+export function ChatStatusBar({ plan, onViewDetails }: ChatStatusBarProps) {
   const config = statusConfig[plan.status];
   const StatusIcon = config.icon;
 

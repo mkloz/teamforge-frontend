@@ -1,11 +1,15 @@
-import { useState, useCallback, useEffect } from "react";
 import { cn } from "@/shared/lib/utils";
+import { MessageSquare } from "lucide-react";
+import { useCallback, useState } from "react";
 import { ConversationList } from "./components/conversation-list/conversation-list";
 import { ConversationView } from "./components/conversation-view/conversation-view";
 import { GroupDetailPanel } from "./components/group-detail-panel/group-detail-panel";
-import { MOCK_GROUP_PREVIEWS, MOCK_GROUPS, MOCK_MESSAGES } from "./data/mock-groups";
+import {
+  MOCK_GROUP_PREVIEWS,
+  MOCK_GROUPS,
+  MOCK_MESSAGES,
+} from "./data/mock-groups";
 import type { GroupsPageState } from "./types/groups.types";
-import { MessageSquare } from "lucide-react";
 
 export function GroupsPage() {
   const [state, setState] = useState<GroupsPageState>({
@@ -15,18 +19,12 @@ export function GroupsPage() {
     draftMessages: {},
   });
 
-  // Check if we're on desktop
-  const [_isDesktop, setIsDesktop] = useState(false);
-
-  useEffect(() => {
-    const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024);
-    checkDesktop();
-    window.addEventListener("resize", checkDesktop);
-    return () => window.removeEventListener("resize", checkDesktop);
-  }, []);
-
-  const selectedGroup = state.selectedGroupId ? MOCK_GROUPS[state.selectedGroupId] : null;
-  const selectedMessages = state.selectedGroupId ? MOCK_MESSAGES[state.selectedGroupId] ?? [] : [];
+  const selectedGroup = state.selectedGroupId
+    ? MOCK_GROUPS[state.selectedGroupId]
+    : null;
+  const selectedMessages = state.selectedGroupId
+    ? (MOCK_MESSAGES[state.selectedGroupId] ?? [])
+    : [];
 
   const handleSelectGroup = useCallback((groupId: string) => {
     setState((prev) => ({
@@ -122,9 +120,12 @@ export function GroupsPage() {
               <div className="mx-auto w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
                 <MessageSquare size={28} className="text-muted-foreground/60" />
               </div>
-              <p className="text-lg font-semibold text-foreground">Select a conversation</p>
+              <p className="text-lg font-semibold text-foreground">
+                Select a conversation
+              </p>
               <p className="text-sm mt-2 text-muted-foreground leading-relaxed">
-                Choose a group from the list to view messages and coordinate with your team
+                Choose a group from the list to view messages and coordinate
+                with your team
               </p>
             </div>
           </div>

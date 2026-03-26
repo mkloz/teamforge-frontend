@@ -9,14 +9,13 @@ interface ConversationHeaderProps {
   onToggleDetail: () => void;
 }
 
-
 export function ConversationHeader({
   group,
   onBack,
   onToggleDetail,
 }: ConversationHeaderProps) {
   return (
-    <header className="flex-shrink-0 flex items-center gap-2 px-2 py-2 border-b border-border bg-background/95 backdrop-blur-sm">
+    <header className="shrink-0 flex items-center gap-2 px-2 pb-2 md:pt-2 border-b border-border bg-background/95 backdrop-blur-sm">
       {/* Back button - mobile only */}
       <Button
         variant="ghost"
@@ -51,7 +50,7 @@ export function ConversationHeader({
             className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded object-cover ring-2 ring-background"
           />
         </div>
-        
+
         <div className="min-w-0 flex-1">
           {/* Group name */}
           <h2 className="text-sm font-semibold text-foreground truncate">
@@ -63,7 +62,10 @@ export function ConversationHeader({
           </p>
         </div>
 
-        <ChevronRight size={18} className="text-muted-foreground flex-shrink-0" />
+        <ChevronRight
+          size={18}
+          className="text-muted-foreground flex-shrink-0"
+        />
       </button>
     </header>
   );
