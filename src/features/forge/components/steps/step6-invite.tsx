@@ -1,9 +1,25 @@
+"use client";
+
 import { cn } from "@/shared/lib/utils";
-import { Check, Copy, Send, Users } from "lucide-react";
+import { Check, Copy, Calendar, MapPin, Users, Zap } from "lucide-react";
+
+// Mirror the preset gradient map from step5 so the cover thumbnail renders correctly
+const PRESET_GRADIENTS: Record<string, string> = {
+  teal: "from-teal-500 to-teal-700",
+  ember: "from-amber-400 to-orange-500",
+  forest: "from-emerald-500 to-green-700",
+  rose: "from-rose-400 to-rose-600",
+  midnight: "from-slate-700 to-slate-900",
+  sky: "from-sky-400 to-blue-600",
+};
 
 export interface Step6InviteProps {
   planName: string;
+  activity: string | null;
+  planDate: string;
+  planLocation: string;
   participantCount: number;
+  coverImage: string | null;
   inviteCopied: boolean;
   onCopyLink: () => void;
   invitesSent: boolean;
@@ -11,15 +27,20 @@ export interface Step6InviteProps {
 
 export function Step6Invite({
   planName,
+  activity,
+  planDate,
+  planLocation,
   participantCount,
+  coverImage,
   inviteCopied,
   onCopyLink,
   invitesSent,
 }: Step6InviteProps) {
+  const gradientClass = coverImage ? PRESET_GRADIENTS[coverImage] : null;
+
   if (invitesSent) {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-6 text-center animate-in fade-in zoom-in-95 duration-500">
-        {/* Success icon */}
         <div className="relative">
           <div className="w-20 h-20 rounded-[1.75rem] bg-emerald-500 flex items-center justify-center shadow-xl shadow-emerald-500/25">
             <Check size={36} className="text-white" strokeWidth={2.5} />
@@ -29,15 +50,11 @@ export function Step6Invite({
             <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500" />
           </span>
         </div>
-
         <div className="space-y-2 max-w-xs">
           <p className="text-xs font-semibold text-emerald-600">Invitations sent</p>
-          <h3 className="text-xl font-bold text-foreground tracking-tight">
-            Your group is live!
-          </h3>
+          <h3 className="text-xl font-bold text-foreground tracking-tight">Your group is live!</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            {participantCount - 1} invitation{participantCount - 1 !== 1 ? "s" : ""}{" "}
-            sent for{" "}
+            {participantCount - 1} invitation{participantCount - 1 !== 1 ? "s" : ""} sent for{" "}
             <span className="font-semibold text-foreground">&ldquo;{planName}&rdquo;</span>.
             You&apos;ll be notified as each member joins.
           </p>
@@ -47,67 +64,115 @@ export function Step6Invite({
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
 
-      {/* Group summary card */}
-      <div className="rounded-2xl border border-border/50 bg-card p-5 space-y-4">
-        <div className="space-y-0.5">
-          <p className="text-xs font-semibold text-muted-foreground">Group summary</p>
-          <h4 className="text-base font-bold text-foreground truncate">{planName}</h4>
-        </div>
+      {/* ── Group summary card ── */}
+      <div className="rounded-2xl border border-border/50 bg-card overflow-hidden shadow-sm">
+        {/* Cover strip */}
+        <div
+          className={cn(
+            "h-20 w-full transition-all duration-300",
+            coverImage === "uploaded"
+              ? "bg-primary/20"
+              : gradientClass
+              ? `bg-gradient-to-br ${gradientClass}`
+              : "bg-gradient-to-br from-muted/60 to-muted/20",
+          )}
+        />
 
-        {/* Stats row */}
-        <div className="grid grid-cols-2 gap-3 pt-3 border-t border-border/30">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <Users size={14} className="text-primary" />
+        {/* Body */}
+        <div className="px-4 pb-4">
+          {/* Avatar + name row */}
+          <div className="flex items-end gap-3 -mt-6 mb-3">
+            <div
+              className={cn(
+                "w-14 h-14 rounded-xl border-4 border-card shrink-0 shadow-md flex items-center justify-center",
+                coverImage === "uploaded"
+                  ? "bg-primary/15"
+                  : gradientClass
+                  ? `bg-gradient-to-br ${gradientClass}`
+                  : "bg-muted",
+              )}
+            >
+              <Zap size={20} className="text-white/80" />
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Members</p>
-              <p className="text-sm font-semibold text-foreground">{participantCount} confirmed</p>
+            <div className="min-w-0 pb-0.5">
+              <h4 className="text-base font-bold text-foreground truncate leading-tight">
+                {planName || "Untitled Group"}
+              </h4>
+              {activity && (
+                <p className="text-xs text-muted-foreground mt-0.5">{activity}</p>
+              )}
             </div>
           </div>
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
-              <Check size={14} className="text-emerald-600" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Status</p>
-              <p className="text-sm font-semibold text-emerald-600">Verified</p>
-            </div>
-          </div>
-        </div>
 
-        {/* Avatar stack */}
-        <div className="flex items-center gap-2 pt-1">
-          <div className="flex -space-x-2">
-            <div className="w-8 h-8 rounded-full bg-primary border-2 border-card flex items-center justify-center z-10 shadow-sm">
-              <span className="text-[10px] font-bold text-primary-foreground">You</span>
+          {/* Detail pills */}
+          <div className="flex flex-wrap gap-2">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-muted/60 border border-border/40">
+              <Users size={12} className="text-primary shrink-0" />
+              <span className="text-xs font-semibold text-foreground">
+                {participantCount} member{participantCount !== 1 ? "s" : ""}
+              </span>
             </div>
-            {Array.from({ length: Math.min(5, participantCount - 1) }).map((_, i) => (
-              <div
-                key={i}
-                className="w-8 h-8 rounded-full bg-emerald-500/15 border-2 border-card z-0 shadow-sm"
-                style={{ zIndex: 9 - i }}
-              />
-            ))}
-            {participantCount > 6 && (
-              <div className="w-8 h-8 rounded-full bg-muted border-2 border-card flex items-center justify-center z-0 shadow-sm">
-                <span className="text-[10px] font-bold text-muted-foreground">
-                  +{participantCount - 6}
+            {planDate && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-muted/60 border border-border/40">
+                <Calendar size={12} className="text-primary shrink-0" />
+                <span className="text-xs font-semibold text-foreground">{planDate}</span>
+              </div>
+            )}
+            {planLocation && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-muted/60 border border-border/40">
+                <MapPin size={12} className="text-primary shrink-0" />
+                <span className="text-xs font-semibold text-foreground truncate max-w-28">
+                  {planLocation}
                 </span>
               </div>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">{participantCount} members ready</p>
+        </div>
+
+        {/* Member avatar stack footer */}
+        <div className="px-4 py-3 border-t border-border/30 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex -space-x-2">
+              {/* Host */}
+              <div className="w-7 h-7 rounded-full bg-primary border-2 border-card flex items-center justify-center shadow-sm z-10">
+                <span className="text-[9px] font-bold text-primary-foreground">You</span>
+              </div>
+              {Array.from({ length: Math.min(4, participantCount - 1) }).map((_, i) => (
+                <div
+                  key={i}
+                  className="w-7 h-7 rounded-full bg-accent/20 border-2 border-card shadow-sm"
+                  style={{ zIndex: 9 - i }}
+                />
+              ))}
+              {participantCount > 5 && (
+                <div
+                  className="w-7 h-7 rounded-full bg-muted border-2 border-card flex items-center justify-center shadow-sm"
+                  style={{ zIndex: 4 }}
+                >
+                  <span className="text-[9px] font-bold text-muted-foreground">
+                    +{participantCount - 5}
+                  </span>
+                </div>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {participantCount} member{participantCount !== 1 ? "s" : ""} ready
+            </p>
+          </div>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/15">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs font-semibold text-emerald-600">Verified</span>
+          </span>
         </div>
       </div>
 
-      {/* Invite link */}
-      <div className="space-y-2.5">
+      {/* ── Invite link ── */}
+      <div className="space-y-2">
         <p className="text-xs font-semibold text-muted-foreground">Share invite link</p>
-        <div className="flex items-center gap-2 px-4 h-13 rounded-2xl border border-border/50 bg-card">
-          <span className="flex-1 text-sm text-muted-foreground truncate">
+        <div className="flex items-center gap-2 px-4 h-12 rounded-2xl border border-border/50 bg-card">
+          <span className="flex-1 text-sm text-muted-foreground truncate font-mono">
             teamforge.app/join/grp_xk4j2m
           </span>
           <button
@@ -122,33 +187,23 @@ export function Step6Invite({
             )}
           >
             {inviteCopied ? (
-              <>
-                <Check size={12} strokeWidth={2.5} />
-                Copied!
-              </>
+              <><Check size={12} strokeWidth={2.5} />Copied!</>
             ) : (
-              <>
-                <Copy size={12} strokeWidth={2} />
-                Copy
-              </>
+              <><Copy size={12} strokeWidth={2} />Copy</>
             )}
           </button>
         </div>
       </div>
 
-      {/* Send invites section */}
-      <div className="space-y-2.5">
-        <p className="text-xs font-semibold text-muted-foreground">Notify members</p>
-        <div className="flex gap-3 p-4 rounded-2xl border border-border/40 bg-card">
-          <Send size={16} className="text-primary/60 shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <p className="text-xs font-semibold text-foreground">Send invitations</p>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Tapping{" "}
-              <span className="font-semibold text-foreground">Confirm &amp; send</span>{" "}
-              below will notify all {participantCount - 1} members and create your group.
-            </p>
-          </div>
+      {/* ── Notify members note ── */}
+      <div className="flex gap-3 p-4 rounded-2xl border border-border/40 bg-card">
+        <div className="w-0.5 rounded-full bg-primary/30 shrink-0 self-stretch" />
+        <div className="space-y-1">
+          <p className="text-xs font-semibold text-primary/80">Sending invitations</p>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Tapping <span className="font-semibold text-foreground">Confirm &amp; send</span> below
+            will notify all {participantCount - 1} matched member{participantCount - 1 !== 1 ? "s" : ""} and create your group.
+          </p>
         </div>
       </div>
 

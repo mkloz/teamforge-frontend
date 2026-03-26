@@ -1,20 +1,63 @@
+"use client";
+
 import { cn } from "@/shared/lib/utils";
-import { Check, ImagePlus, Palette } from "lucide-react";
+import { Check, ImagePlus, Upload, X } from "lucide-react";
+import { useRef } from "react";
 
 export interface Step5IdentityProps {
   planName: string;
   activity: string | null;
   coverImage: string | null;
   onCoverImageChange: (url: string | null) => void;
+  avatarImage: string | null;
+  onAvatarImageChange: (url: string | null) => void;
 }
 
-const PRESET_COVERS = [
-  { color: "from-teal-500 to-emerald-400", label: "Ocean" },
-  { color: "from-amber-400 to-orange-500", label: "Ember" },
-  { color: "from-violet-500 to-purple-600", label: "Dusk" },
-  { color: "from-rose-400 to-pink-600", label: "Bloom" },
-  { color: "from-sky-400 to-blue-600", label: "Sky" },
-  { color: "from-slate-600 to-zinc-800", label: "Graphite" },
+// Refined presets — harmonious palette built on brand tokens:
+// Teal family, Amber family, Slate, Rose, Forest, and Midnight.
+// Each has a light-mode accessible label color.
+const PRESET_COVERS: {
+  id: string;
+  gradient: string;
+  label: string;
+  labelColor: string;
+}[] = [
+  {
+    id: "teal",
+    gradient: "from-teal-500 to-teal-700",
+    label: "Teal",
+    labelColor: "text-teal-700",
+  },
+  {
+    id: "ember",
+    gradient: "from-amber-400 to-orange-500",
+    label: "Ember",
+    labelColor: "text-orange-700",
+  },
+  {
+    id: "forest",
+    gradient: "from-emerald-500 to-green-700",
+    label: "Forest",
+    labelColor: "text-emerald-700",
+  },
+  {
+    id: "rose",
+    gradient: "from-rose-400 to-rose-600",
+    label: "Rose",
+    labelColor: "text-rose-700",
+  },
+  {
+    id: "midnight",
+    gradient: "from-slate-700 to-slate-900",
+    label: "Midnight",
+    labelColor: "text-slate-600",
+  },
+  {
+    id: "sky",
+    gradient: "from-sky-400 to-blue-600",
+    label: "Sky",
+    labelColor: "text-blue-700",
+  },
 ];
 
 export function Step5Identity({
@@ -22,41 +65,256 @@ export function Step5Identity({
   activity,
   coverImage,
   onCoverImageChange,
+  avatarImage,
+  onAvatarImageChange,
 }: Step5IdentityProps) {
-  const activePreset = PRESET_COVERS.find((c) => c.label === coverImage);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  const activePreset = PRESET_COVERS.find((c) => c.id === coverImage);
+  const isUploadedCover = coverImage === "uploaded";
+  const isUploadedAvatar = avatarImage === "uploaded";
+
+  const handleCoverFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.length) onCoverImageChange("uploaded");
+  };
+  const handleAvatarFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.length) onAvatarImageChange("uploaded");
+  };
+
+  // Drag-and-drop for avatar
+  const handleAvatarDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (e.dataTransfer.files?.length) onAvatarImageChange("uploaded");
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
 
-      {/* Preview card */}
-      <div className="space-y-2.5">
-        <p className="text-xs font-semibold text-muted-foreground">Identity preview</p>
-        <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm">
-          {/* Cover strip */}
-          <div
-            className={cn(
-              "h-20 w-full transition-all duration-500 bg-gradient-to-br",
-              coverImage === "uploaded"
-                ? "bg-primary/20"
-                : activePreset?.color ?? "from-muted/60 to-muted/30",
-            )}
-          >
-            {coverImage === "uploaded" && (
-              <div className="w-full h-full flex items-center justify-center">
-                <ImagePlus size={22} className="text-white/60" />
-              </div>
-            )}
-          </div>
-          {/* Info row */}
-          <div className="px-4 pb-4 pt-3 flex items-start gap-3">
-            {/* Avatar circle pulled up */}
+      {/* ── Plan photo (cover) preview ── */}
+      <div className="space-y-3">
+        <div>
+          <p className="text-xs font-semibold text-muted-foreground">Plan photo</p>
+          <p className="text-xs text-muted-foreground/60 mt-0.5">
+            This image appears on the plan card visible to all members.
+          </p>
+        </div>
+
+        {/* Cover preview tile — click to upload */}
+        <button
+          type="button"
+          onClick={() => coverInputRef.current?.click()}
+          className={cn(
+            "group relative w-full h-40 rounded-2xl overflow-hidden border-2 transition-all duration-200 flex items-center justify-center",
+            isUploadedCover
+              ? "border-primary/40"
+              : coverImage
+              ? "border-transparent"
+              : "border-dashed border-border/60 bg-muted/30 hover:border-primary/40 hover:bg-primary/3",
+          )}
+        >
+          {/* Gradient background when preset selected */}
+          {!isUploadedCover && coverImage && (
             <div
               className={cn(
-                "w-12 h-12 rounded-xl border-2 border-background shrink-0 -mt-6 flex items-center justify-center shadow-md bg-gradient-to-br",
-                activePreset?.color ?? "from-primary/30 to-primary/10",
+                "absolute inset-0 bg-gradient-to-br transition-all duration-500",
+                activePreset?.gradient,
               )}
             />
-            <div className="min-w-0 pt-1">
+          )}
+
+          {/* Uploaded state overlay */}
+          {isUploadedCover && (
+            <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+              <ImagePlus size={28} className="text-primary/50" />
+            </div>
+          )}
+
+          {/* Empty / hover state */}
+          {!coverImage && (
+            <div className="flex flex-col items-center gap-2 pointer-events-none">
+              <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+                <Upload size={18} className="text-muted-foreground group-hover:text-primary/70 transition-colors" />
+              </div>
+              <p className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+                Upload plan photo
+              </p>
+            </div>
+          )}
+
+          {/* Edit overlay on hover when something is set */}
+          {coverImage && (
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200 flex items-center justify-center">
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-foreground text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
+                Change photo
+              </span>
+            </div>
+          )}
+
+          {/* Clear button */}
+          {coverImage && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onCoverImageChange(null); }}
+              className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/40 hover:bg-black/60 flex items-center justify-center transition-colors z-10"
+              aria-label="Remove cover"
+            >
+              <X size={12} className="text-white" />
+            </button>
+          )}
+        </button>
+        <input
+          ref={coverInputRef}
+          type="file"
+          accept="image/*"
+          className="sr-only"
+          onChange={handleCoverFile}
+        />
+
+        {/* Color presets — refined palette, 3 cols on mobile → 6 on sm */}
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+          {PRESET_COVERS.map(({ id, gradient, label }) => {
+            const selected = coverImage === id;
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => onCoverImageChange(selected ? null : id)}
+                aria-pressed={selected}
+                className={cn(
+                  "group relative h-14 rounded-xl bg-gradient-to-br transition-all duration-200 overflow-hidden border-2",
+                  gradient,
+                  selected
+                    ? "border-primary shadow-md shadow-primary/20 scale-[1.04]"
+                    : "border-transparent hover:scale-[1.03] hover:shadow-sm",
+                )}
+              >
+                <span className="absolute bottom-1 left-1.5 text-[10px] font-bold text-white/85 drop-shadow-sm">
+                  {label}
+                </span>
+                {selected && (
+                  <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-white/95 flex items-center justify-center shadow-sm">
+                    <Check size={9} className="text-primary" strokeWidth={3} />
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Group avatar upload ── */}
+      <div className="space-y-3">
+        <div>
+          <p className="text-xs font-semibold text-muted-foreground">Group avatar</p>
+          <p className="text-xs text-muted-foreground/60 mt-0.5">
+            A square icon that identifies your group across the app. Drag and drop or tap to upload.
+          </p>
+        </div>
+
+        <div className="flex items-start gap-4">
+          {/* Avatar preview circle */}
+          <div
+            className={cn(
+              "relative w-20 h-20 rounded-2xl border-2 shrink-0 overflow-hidden flex items-center justify-center transition-all duration-200",
+              isUploadedAvatar
+                ? "border-primary/40 bg-primary/10"
+                : "border-dashed border-border/60 bg-muted/40",
+            )}
+          >
+            {isUploadedAvatar ? (
+              <>
+                <div className="w-8 h-8 rounded-xl bg-primary/20 flex items-center justify-center">
+                  <Check size={16} className="text-primary" strokeWidth={2.5} />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onAvatarImageChange(null)}
+                  className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/40 hover:bg-black/60 flex items-center justify-center"
+                  aria-label="Remove avatar"
+                >
+                  <X size={10} className="text-white" />
+                </button>
+              </>
+            ) : (
+              <ImagePlus size={20} className="text-muted-foreground/50" />
+            )}
+          </div>
+
+          {/* Drop zone */}
+          <button
+            type="button"
+            onClick={() => avatarInputRef.current?.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={handleAvatarDrop}
+            className={cn(
+              "group flex-1 min-h-20 rounded-2xl border-dashed border-2 flex flex-col items-center justify-center gap-1.5 transition-all duration-200 p-4",
+              isUploadedAvatar
+                ? "border-primary/30 bg-primary/5"
+                : "border-border/50 bg-card hover:border-primary/40 hover:bg-primary/3",
+            )}
+          >
+            <Upload
+              size={16}
+              className={cn(
+                "transition-colors",
+                isUploadedAvatar
+                  ? "text-primary/60"
+                  : "text-muted-foreground/50 group-hover:text-primary/60",
+              )}
+            />
+            <p
+              className={cn(
+                "text-xs font-medium text-center transition-colors",
+                isUploadedAvatar
+                  ? "text-primary"
+                  : "text-muted-foreground group-hover:text-foreground",
+              )}
+            >
+              {isUploadedAvatar ? "Avatar selected — tap to change" : "Drag & drop or tap to upload"}
+            </p>
+            <p className="text-[11px] text-muted-foreground/50">PNG, JPG, WEBP up to 5 MB</p>
+          </button>
+        </div>
+        <input
+          ref={avatarInputRef}
+          type="file"
+          accept="image/*"
+          className="sr-only"
+          onChange={handleAvatarFile}
+        />
+      </div>
+
+      {/* ── Live preview card ── */}
+      <div className="space-y-2.5">
+        <p className="text-xs font-semibold text-muted-foreground">Preview</p>
+        <div className="rounded-2xl border border-border/50 bg-card overflow-hidden shadow-sm">
+          {/* Cover */}
+          <div
+            className={cn(
+              "h-24 w-full transition-all duration-500",
+              isUploadedCover
+                ? "bg-primary/15"
+                : coverImage
+                ? `bg-gradient-to-br ${activePreset?.gradient}`
+                : "bg-muted/40",
+            )}
+          />
+          {/* Info */}
+          <div className="px-4 pb-4 pt-0 flex items-start gap-3">
+            <div
+              className={cn(
+                "w-14 h-14 rounded-xl border-4 border-card -mt-7 shrink-0 shadow-md flex items-center justify-center transition-all duration-300",
+                isUploadedAvatar
+                  ? "bg-primary/20"
+                  : coverImage
+                  ? `bg-gradient-to-br ${activePreset?.gradient}`
+                  : "bg-muted",
+              )}
+            >
+              {isUploadedAvatar && <Check size={18} className="text-primary" strokeWidth={2.5} />}
+            </div>
+            <div className="min-w-0 pt-2">
               <h3 className="text-sm font-bold text-foreground truncate">
                 {planName || "Untitled Group"}
               </h3>
@@ -65,82 +323,6 @@ export function Step5Identity({
               </p>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Context note */}
-      <div className="flex gap-3 p-4 rounded-2xl border border-border/40 bg-card">
-        <Palette size={16} className="text-primary/60 shrink-0 mt-0.5" />
-        <div className="space-y-1">
-          <p className="text-xs font-semibold text-foreground">Visual identity</p>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Give your group a distinct look with a cover photo or one of the color presets below. This is visible to all members.
-          </p>
-        </div>
-      </div>
-
-      {/* Upload area */}
-      <div className="space-y-2.5">
-        <p className="text-xs font-semibold text-muted-foreground">Custom cover photo</p>
-        <button
-          type="button"
-          onClick={() => onCoverImageChange(coverImage === "uploaded" ? null : "uploaded")}
-          className={cn(
-            "group w-full h-[72px] rounded-2xl border border-dashed flex items-center justify-center gap-3 transition-all duration-200",
-            coverImage === "uploaded"
-              ? "border-primary bg-primary/5 ring-1 ring-primary/20"
-              : "border-border/50 bg-card hover:border-primary/40 hover:bg-primary/3",
-          )}
-        >
-          {coverImage === "uploaded" ? (
-            <>
-              <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center shadow-sm shadow-primary/25">
-                <Check size={14} className="text-white" strokeWidth={2.5} />
-              </div>
-              <span className="text-sm font-semibold text-primary">Photo selected</span>
-            </>
-          ) : (
-            <>
-              <ImagePlus size={18} className="text-muted-foreground/50 group-hover:text-primary/60 transition-colors" />
-              <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
-                Upload a background image
-              </span>
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Color presets */}
-      <div className="space-y-2.5">
-        <p className="text-xs font-semibold text-muted-foreground">Color presets</p>
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
-          {PRESET_COVERS.map(({ color, label }) => {
-            const selected = coverImage === label;
-            return (
-              <button
-                key={label}
-                type="button"
-                onClick={() => onCoverImageChange(selected ? null : label)}
-                aria-pressed={selected}
-                className={cn(
-                  "group relative h-16 rounded-2xl bg-gradient-to-br border-2 transition-all duration-200 overflow-hidden",
-                  color,
-                  selected
-                    ? "border-primary shadow-md scale-[1.03]"
-                    : "border-transparent opacity-75 hover:opacity-100 hover:scale-[1.02]",
-                )}
-              >
-                <span className="absolute bottom-1.5 left-2 text-[10px] font-semibold text-white/80 drop-shadow-sm">
-                  {label}
-                </span>
-                {selected && (
-                  <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-sm">
-                    <Check size={10} className="text-primary" strokeWidth={3} />
-                  </div>
-                )}
-              </button>
-            );
-          })}
         </div>
       </div>
 

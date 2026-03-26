@@ -179,12 +179,18 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
                 activity={fw.selectedActivity}
                 coverImage={fw.coverImage}
                 onCoverImageChange={fw.setCoverImage}
+                avatarImage={fw.avatarImage}
+                onAvatarImageChange={fw.setAvatarImage}
               />
             )}
             {fw.step === 6 && (
               <Step6Invite
                 planName={fw.planName || "Your Group"}
+                activity={fw.selectedActivity}
+                planDate={fw.planDate}
+                planLocation={fw.planLocation}
                 participantCount={fw.activeParticipants.length + 1}
+                coverImage={fw.coverImage}
                 inviteCopied={fw.inviteCopied}
                 onCopyLink={fw.handleCopyLink}
                 invitesSent={fw.invitesSent}

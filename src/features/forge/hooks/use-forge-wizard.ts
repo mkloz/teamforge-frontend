@@ -45,6 +45,7 @@ export function useForgeWizard(onClose: () => void) {
 
   // Step 5: Identity
   const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [avatarImage, setAvatarImage] = useState<string | null>(null);
 
   // Step 6: Invite
   const [inviteCopied, setInviteCopied] = useState(false);
@@ -78,6 +79,7 @@ export function useForgeWizard(onClose: () => void) {
     setParticipants(MOCK_PARTICIPANTS.slice(0, 5));
     setRemovedIds(new Set());
     setCoverImage(null);
+    setAvatarImage(null);
     setInviteCopied(false);
     setInvitesSent(false);
   }, []);
@@ -156,6 +158,7 @@ export function useForgeWizard(onClose: () => void) {
     participants,
     removedIds,
     coverImage,
+    avatarImage,
     inviteCopied,
     invitesSent,
     activeParticipants,
@@ -181,6 +184,7 @@ export function useForgeWizard(onClose: () => void) {
     setDiversityWeight,
     setVisibility,
     setCoverImage,
+    setAvatarImage,
     setInvitesSent,
 
     // Actions
