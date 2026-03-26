@@ -6,7 +6,7 @@ import {
   Outlet,
 } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
-import { AppLayout } from "./shared/features/app-shell/app-layout";
+import { AppLayout } from "./features/app-shell/app-layout";
 import { AuthPage } from "./features/auth/auth-page";
 import { LandingPage } from "./features/landing/landing-page";
 import { InterestsPage } from "./features/onboarding/interests-page";
