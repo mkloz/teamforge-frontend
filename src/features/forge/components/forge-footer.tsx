@@ -56,7 +56,8 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
   return (
     <div className="mt-auto -mx-4 md:-mx-12">
       {/* ── Sticky hint strip — informational text only, no buttons ── */}
-      <div className="sticky bottom-0 z-20 px-4 md:px-12 py-2 bg-background/95 backdrop-blur-md border-t border-border/40">
+      {/* bottom-14 on mobile clears the fixed h-14 AppBottomNav; md+ has no nav so bottom-0 */}
+      <div className="sticky bottom-14 md:bottom-0 z-50 px-4 md:px-12 py-2 bg-background/95 backdrop-blur-md border-t border-border/40">
         <div className="max-w-2xl mx-auto min-h-[22px] flex items-center justify-center">
           <AnimatePresence mode="wait">
             {fw.step === 1 && !fw.selectedActivity && (

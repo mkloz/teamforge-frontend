@@ -196,67 +196,90 @@ export function Step3Group({
 
       {/* ── Privacy Settings ── */}
       <section className="space-y-3 pt-2 border-t border-muted/20">
-        <p className="text-xs font-semibold text-muted-foreground px-0.5">
-          Privacy settings
-        </p>
-        <div className="grid grid-cols-3 gap-2.5 px-0.5">
+        <div className="px-0.5">
+          <p className="text-xs font-semibold text-muted-foreground">Who can find this group?</p>
+          <p className="text-xs text-muted-foreground/60 mt-0.5">Controls who can discover and join.</p>
+        </div>
+
+        <div className="flex flex-col gap-2">
           {[
             {
               value: "public",
               label: "Public",
-              desc: "discovery",
+              description: "Anyone on TeamForge can discover and request to join.",
               Icon: Globe,
             },
             {
               value: "friends",
-              label: "Friends",
-              desc: "network",
+              label: "Friends only",
+              description: "Only people in your network can see and request to join.",
               Icon: UserCheck,
             },
             {
               value: "invite",
-              label: "Private",
-              desc: "invite only",
+              label: "Private — invite only",
+              description: "Hidden from discovery. Members join by invitation only.",
               Icon: Lock,
             },
-          ].map(({ value, label, desc, Icon }) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => onVisibilityChange(value as Visibility)}
-              className={cn(
-                // min-h-18 (72px) gives comfortable tap target
-                "group w-full min-h-18 flex flex-row items-center justify-center gap-3 p-3 rounded-xl border transition-all duration-300",
-                visibility === value
-                  ? "border-primary bg-primary/5 shadow-xs ring-1 ring-primary/20"
-                  : "border-border/30 bg-background/50 hover:border-primary/20",
-              )}
-            >
-              <div
+          ].map(({ value, label, description, Icon }) => {
+            const active = visibility === value;
+            return (
+              <button
+                key={value}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => onVisibilityChange(value as Visibility)}
                 className={cn(
-                  "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300",
-                  visibility === value
-                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                    : "bg-muted/50 text-muted-foreground group-hover:bg-primary/5",
+                  "group w-full flex items-start gap-4 p-4 rounded-2xl border text-left transition-all duration-200",
+                  active
+                    ? "border-primary bg-primary/5 ring-1 ring-primary/20 shadow-sm"
+                    : "border-border/40 bg-card hover:border-primary/30 hover:bg-primary/3",
                 )}
               >
-                <Icon size={14} />
-              </div>
-              <div className="flex flex-col items-start gap-0.5">
-                <p
+                {/* Icon badge */}
+                <div
                   className={cn(
-                    "text-[11px] font-black tracking-tight uppercase",
-                    visibility === value ? "text-primary" : "text-foreground",
+                    "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200 mt-0.5",
+                    active
+                      ? "bg-primary text-primary-foreground shadow-sm shadow-primary/25"
+                      : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary",
                   )}
                 >
-                  {label}
-                </p>
-                <p className="text-[10px] text-muted-foreground/50 font-medium tracking-wide uppercase">
-                  {desc}
-                </p>
-              </div>
-            </button>
-          ))}
+                  <Icon size={17} />
+                </div>
+
+                {/* Text */}
+                <div className="flex-1 min-w-0 space-y-0.5">
+                  <p
+                    className={cn(
+                      "text-sm font-semibold leading-tight",
+                      active ? "text-primary" : "text-foreground",
+                    )}
+                  >
+                    {label}
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-snug">
+                    {description}
+                  </p>
+                </div>
+
+                {/* Selection indicator */}
+                <div
+                  className={cn(
+                    "w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center mt-1 transition-all duration-200",
+                    active
+                      ? "border-primary bg-primary"
+                      : "border-border/50",
+                  )}
+                >
+                  {active && (
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary-foreground" />
+                  )}
+                </div>
+              </button>
+            );
+          })}
         </div>
       </section>
     </div>
