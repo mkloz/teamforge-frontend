@@ -13,6 +13,7 @@ import { Step4Success } from "./steps/step4-success";
 import { Step5Identity } from "./steps/step5-identity";
 import { Step6Invite } from "./steps/step6-invite";
 
+import { Button } from "@/shared/components/ui/button";
 import { ForgeFooter } from "./forge-footer";
 import { ForgeProgressBar } from "./forge-progress-bar";
 
