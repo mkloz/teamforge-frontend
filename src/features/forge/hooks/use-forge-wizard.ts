@@ -123,15 +123,7 @@ export function useForgeWizard(onClose: () => void) {
   }, [diversityWeight, autoMinSize, autoMaxSize]);
 
   const handleRemoveParticipant = useCallback((id: string) => {
-    setRemovedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id); // re-add
-      } else {
-        next.add(id); // remove
-      }
-      return next;
-    });
+    setRemovedIds((prev) => new Set([...prev, id]));
   }, []);
 
   const handleReforge = useCallback(() => {

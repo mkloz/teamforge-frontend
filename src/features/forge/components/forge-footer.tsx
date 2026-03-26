@@ -80,7 +80,7 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
       </div>
 
       {/* ── Non-sticky CTA area — scrolls with content ── */}
-      <div className="px-4 md:px-12 pt-3 pb-5 md:pb-8">
+      <div className="px-4 md:px-12 pt-5 pb-8 md:pb-12">
         <div className="max-w-2xl mx-auto w-full space-y-4">
           <div className="flex items-center gap-3">
             {/* Secondary Action / Back Button - moved from header to footer for mobile thumb-reach */}

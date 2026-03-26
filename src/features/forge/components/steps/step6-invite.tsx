@@ -131,27 +131,28 @@ export function Step6Invite({
           </div>
         </div>
 
-          {/* Member stack footer — overlapping avatars */}
+        {/* Member avatar stack footer */}
         <div className="px-4 py-3 border-t border-border/30 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex -space-x-2.5">
-              <div className="w-8 h-8 rounded-full border-2 border-card bg-primary flex items-center justify-center shadow-sm z-10 shrink-0">
+          <div className="flex items-center gap-2">
+            <div className="flex -space-x-2">
+              {/* Host */}
+              <div className="w-7 h-7 rounded-full bg-primary border-2 border-card flex items-center justify-center shadow-sm z-10">
                 <span className="text-[9px] font-bold text-primary-foreground">You</span>
               </div>
-              {Array.from({ length: Math.min(3, participantCount - 1) }).map((_, i) => (
+              {Array.from({ length: Math.min(4, participantCount - 1) }).map((_, i) => (
                 <div
                   key={i}
-                  className="w-8 h-8 rounded-full border-2 border-card bg-muted shadow-sm shrink-0"
+                  className="w-7 h-7 rounded-full bg-accent/20 border-2 border-card shadow-sm"
                   style={{ zIndex: 9 - i }}
                 />
               ))}
-              {participantCount > 4 && (
+              {participantCount > 5 && (
                 <div
-                  className="w-8 h-8 rounded-full border-2 border-card bg-muted flex items-center justify-center shadow-sm shrink-0"
-                  style={{ zIndex: 5 }}
+                  className="w-7 h-7 rounded-full bg-muted border-2 border-card flex items-center justify-center shadow-sm"
+                  style={{ zIndex: 4 }}
                 >
                   <span className="text-[9px] font-bold text-muted-foreground">
-                    +{participantCount - 4}
+                    +{participantCount - 5}
                   </span>
                 </div>
               )}
