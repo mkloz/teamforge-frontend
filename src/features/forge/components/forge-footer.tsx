@@ -54,13 +54,10 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
   };
 
   return (
-    <div className="sticky bottom-0 md:relative pt-4 mt-auto -mx-4 md:-mx-12 px-4 md:px-12 pb-6 md:pb-10 transition-all duration-500">
-      {/* Background decoration for the sticky footer */}
-      <div className="absolute inset-x-0 bottom-0 top-0 bg-linear-to-t from-background via-background/95 to-transparent md:hidden pointer-events-none" />
-
-      <div className="relative max-w-2xl mx-auto w-full space-y-4">
-        {/* Progress Hint Line - subtle indicator of where we are going */}
-        <div className="flex items-center justify-center gap-2 overflow-hidden py-1 min-h-[24px]">
+    <div className="mt-auto -mx-4 md:-mx-12">
+      {/* ── Sticky hint strip — informational text only, no buttons ── */}
+      <div className="sticky bottom-0 z-20 -mx-0 px-4 md:px-12 py-2 bg-background/95 backdrop-blur-md border-t border-border/40 md:hidden">
+        <div className="max-w-2xl mx-auto min-h-[22px] flex items-center justify-center">
           <AnimatePresence mode="wait">
             {fw.step === 1 && !fw.selectedActivity && (
               <HintText key="h1-empty">Select a category to continue</HintText>
@@ -79,7 +76,32 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
             )}
           </AnimatePresence>
         </div>
+      </div>
 
+      {/* ── Non-sticky CTA area — scrolls with content ── */}
+      <div className="px-4 md:px-12 pt-6 pb-8 md:pb-12">
+        {/* Hint text for md+ (not sticky on desktop — not needed) */}
+        <div className="hidden md:flex max-w-2xl mx-auto items-center justify-center min-h-[22px] mb-4">
+          <AnimatePresence mode="wait">
+            {fw.step === 1 && !fw.selectedActivity && (
+              <HintText key="h1-empty-md">Select a category to continue</HintText>
+            )}
+            {fw.step === 1 && fw.selectedActivity && (
+              <HintText key="h1-selected-md">Next: define date, time, and location</HintText>
+            )}
+            {fw.step === 2 && (
+              <HintText key="h2-md">Almost there — configure your matching algorithm next</HintText>
+            )}
+            {fw.step === 4 && fw.forgeResult === "success" && (
+              <HintText key="h4-md">Group matched — give it an identity next</HintText>
+            )}
+            {fw.step === 5 && (
+              <HintText key="h5-md">Final step — send your invitations</HintText>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <div className="max-w-2xl mx-auto w-full space-y-4">
         <div className="flex items-center gap-3">
           {/* Secondary Action / Back Button - moved from header to footer for mobile thumb-reach */}
           <AnimatePresence>
@@ -249,7 +271,8 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+        </div>{/* end max-w-2xl */}
+      </div>{/* end non-sticky CTA area */}
     </div>
   );
 }

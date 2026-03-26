@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Zap } from "lucide-react";
+import { ChevronLeft, Zap } from "lucide-react";
 import { useEffect } from "react";
 import { useForgeWizard } from "../hooks/use-forge-wizard";
 
@@ -56,10 +56,21 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
       <div className="sticky top-0 md:top-16 z-30 bg-background/95 backdrop-blur-xl -mx-4 md:-mx-12 px-4 md:px-12 pb-3 border-b border-border/50 mb-2">
         <div className="flex items-start justify-between pt-5 md:pt-6 mb-3">
           <div className="flex items-start gap-3 min-w-0">
-            {/* Brand icon — always visible, never replaced by back button (back is in footer) */}
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-accent/10 shrink-0 mt-0.5">
-              <Zap size={16} className="text-accent fill-current" />
-            </div>
+            {/* Step 1: brand icon. Step 2+: back button in header for top-of-screen navigation */}
+            {fw.canGoBack ? (
+              <button
+                type="button"
+                onClick={fw.goBack}
+                aria-label="Go back"
+                className="w-9 h-9 rounded-xl flex items-center justify-center bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-all shrink-0 mt-0.5"
+              >
+                <ChevronLeft size={18} />
+              </button>
+            ) : (
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-accent/10 shrink-0 mt-0.5">
+                <Zap size={16} className="text-accent fill-current" />
+              </div>
+            )}
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-[15px] md:text-base font-bold text-foreground leading-tight tracking-tight">
