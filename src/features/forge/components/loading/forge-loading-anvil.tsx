@@ -2,9 +2,9 @@
 
 /**
  * Concept A — "The Anvil Strike"
- * Forge-themed. A hammer swings down onto an anvil, sparks scatter outward
- * on impact, and a progress arc fills around the anvil ring.
- * Recommended: best communicates the brand credo through direct metaphor.
+ * Forge-themed infinite loading animation.
+ * A hammer swings down onto an anvil, sparks scatter outward on impact.
+ * Runs forever until the parent unmounts it — no progress prop needed.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -22,28 +22,24 @@ interface Spark {
 }
 
 interface ForgeLoadingAnvilProps {
-  progress?: number; // 0–100
   label?: string;
   className?: string;
 }
 
 export function ForgeLoadingAnvil({
-  progress = 0,
   label = "Forging your group...",
   className,
 }: ForgeLoadingAnvilProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sparksRef = useRef<Spark[]>([]);
   const frameRef = useRef<number>(0);
-  const tickRef = useRef(0);
   const [hammerPhase, setHammerPhase] = useState<"up" | "strike" | "rebound">("up");
 
-  // Hammer animation cycle
+  // Hammer animation cycle — loops forever
   useEffect(() => {
     const cycle = () => {
       setHammerPhase("strike");
       setTimeout(() => {
-        // Emit sparks on strike
         const newSparks: Spark[] = Array.from({ length: 18 }, (_, i) => ({
           id: Date.now() + i,
           x: 0,
@@ -112,33 +108,20 @@ export function ForgeLoadingAnvil({
   const hammerRotation =
     hammerPhase === "up" ? -38 : hammerPhase === "strike" ? 12 : -8;
 
-  const circumference = 2 * Math.PI * 44;
-  const dash = (progress / 100) * circumference;
-
   return (
     <div className={cn("flex flex-col items-center justify-center gap-6 select-none", className)}>
       {/* Animation stage */}
-      <div className="relative w-44 h-44 flex items-center justify-center">
-        {/* Progress ring */}
-        <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor"
-            className="text-border/30" strokeWidth="3" />
-          <circle cx="50" cy="50" r="44" fill="none" stroke="#0d9488"
-            strokeWidth="3" strokeLinecap="round"
-            strokeDasharray={`${dash} ${circumference}`}
-            style={{ transition: "stroke-dasharray 0.4s ease" }} />
-        </svg>
-
-        {/* Spark canvas */}
+      <div className="relative w-52 h-52 flex items-center justify-center">
+        {/* Spark canvas — widened for more travel room */}
         <canvas
           ref={canvasRef}
-          width={176}
-          height={176}
+          width={200}
+          height={200}
           className="absolute inset-0 pointer-events-none"
         />
 
         {/* Forge glow backdrop */}
-        <div className="absolute bottom-7 left-1/2 -translate-x-1/2 w-16 h-6 rounded-full bg-amber-500/20 blur-xl" />
+        <div className="absolute bottom-7 left-1/2 -translate-x-1/2 w-20 h-6 rounded-full bg-amber-500/20 blur-xl" />
 
         {/* Hammer SVG */}
         <div
@@ -174,9 +157,7 @@ export function ForgeLoadingAnvil({
       {/* Labels */}
       <div className="text-center space-y-1">
         <p className="text-sm font-semibold text-foreground">{label}</p>
-        <p className="text-xs text-muted-foreground">
-          {progress < 100 ? `${Math.round(progress)}% complete` : "Almost there..."}
-        </p>
+        <p className="text-xs text-muted-foreground">This may take a moment...</p>
       </div>
     </div>
   );

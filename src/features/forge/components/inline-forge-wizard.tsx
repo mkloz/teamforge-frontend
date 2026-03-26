@@ -119,10 +119,7 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
             transition={{ duration: 0.3 }}
             className="absolute inset-0 z-40 flex items-center justify-center bg-background/95 backdrop-blur-sm rounded-2xl"
           >
-            <ForgeLoadingAnvil
-              progress={fw.forgingProgress}
-              label="Forging your group..."
-            />
+            <ForgeLoadingAnvil label="Forging your group..." />
           </motion.div>
         )}
       </AnimatePresence>
