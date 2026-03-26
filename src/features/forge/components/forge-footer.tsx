@@ -56,7 +56,7 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
   return (
     <div className="mt-auto -mx-4 md:-mx-12">
       {/* ── Sticky hint strip — informational text only, no buttons ── */}
-      <div className="sticky bottom-0 z-20 -mx-0 px-4 md:px-12 py-2 bg-background/95 backdrop-blur-md border-t border-border/40 md:hidden">
+      <div className="sticky bottom-0 z-20 px-4 md:px-12 py-2 bg-background/95 backdrop-blur-md border-t border-border/40">
         <div className="max-w-2xl mx-auto min-h-[22px] flex items-center justify-center">
           <AnimatePresence mode="wait">
             {fw.step === 1 && !fw.selectedActivity && (
@@ -79,28 +79,7 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
       </div>
 
       {/* ── Non-sticky CTA area — scrolls with content ── */}
-      <div className="px-4 md:px-12 pt-6 pb-8 md:pb-12">
-        {/* Hint text for md+ (not sticky on desktop — not needed) */}
-        <div className="hidden md:flex max-w-2xl mx-auto items-center justify-center min-h-[22px] mb-4">
-          <AnimatePresence mode="wait">
-            {fw.step === 1 && !fw.selectedActivity && (
-              <HintText key="h1-empty-md">Select a category to continue</HintText>
-            )}
-            {fw.step === 1 && fw.selectedActivity && (
-              <HintText key="h1-selected-md">Next: define date, time, and location</HintText>
-            )}
-            {fw.step === 2 && (
-              <HintText key="h2-md">Almost there — configure your matching algorithm next</HintText>
-            )}
-            {fw.step === 4 && fw.forgeResult === "success" && (
-              <HintText key="h4-md">Group matched — give it an identity next</HintText>
-            )}
-            {fw.step === 5 && (
-              <HintText key="h5-md">Final step — send your invitations</HintText>
-            )}
-          </AnimatePresence>
-        </div>
-
+      <div className="px-4 md:px-12 pt-5 pb-8 md:pb-12">
         <div className="max-w-2xl mx-auto w-full space-y-4">
         <div className="flex items-center gap-3">
           {/* Secondary Action / Back Button - moved from header to footer for mobile thumb-reach */}

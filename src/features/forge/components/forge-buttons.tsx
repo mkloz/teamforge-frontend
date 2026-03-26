@@ -66,13 +66,16 @@ export function AutoForgeButton({ onClick }: { onClick: () => void }) {
         <Cpu
           size={18}
           aria-hidden="true"
-          className="group-hover:rotate-12 transition-transform"
+          className="shrink-0 group-hover:rotate-12 transition-transform"
         />
-        <span>Auto-forge with algorithm</span>
+        <span className="truncate">
+          <span className="sm:hidden">Auto-forge</span>
+          <span className="hidden sm:inline">Auto-forge with algorithm</span>
+        </span>
         <Sparkles
           size={14}
           aria-hidden="true"
-          className="opacity-80 animate-pulse"
+          className="shrink-0 opacity-80 animate-pulse"
         />
       </Button>
     </div>
