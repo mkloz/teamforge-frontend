@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, Zap } from "lucide-react";
+import { Zap } from "lucide-react";
 import { useEffect } from "react";
 import { useForgeWizard } from "../hooks/use-forge-wizard";
 
@@ -13,7 +13,6 @@ import { Step4Success } from "./steps/step4-success";
 import { Step5Identity } from "./steps/step5-identity";
 import { Step6Invite } from "./steps/step6-invite";
 
-import { Button } from "@/shared/components/ui/button";
 import { ForgeFooter } from "./forge-footer";
 import { ForgeProgressBar } from "./forge-progress-bar";
 
@@ -54,21 +53,10 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
       <div className="sticky top-0 md:top-16 z-30 bg-transparent backdrop-blur-xl -mx-6 md:-mx-12 px-6 md:px-12 pb-3 border-b border-border/40 mb-2 shadow-sm shadow-black/5">
         <div className="flex items-center justify-between pt-4 mb-2 md:mb-3">
           <div className="flex items-center gap-3">
-            {fw.canGoBack ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={fw.goBack}
-                className="w-8 h-8 rounded-full shrink-0"
-              >
-                <ChevronLeft size={18} />
-              </Button>
-            ) : (
-              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-accent/10 shrink-0">
-                <Zap size={14} className="text-accent fill-current" />
-              </div>
-            )}
+            {/* Zap icon on step 1 only; no duplicate back button — navigation is in the footer */}
+            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-accent/10 shrink-0">
+              <Zap size={14} className="text-accent fill-current" />
+            </div>
             <div className="flex flex-col md:flex-row md:items-baseline gap-0 md:gap-4 overflow-hidden">
               <h2 className="text-base md:text-lg font-black text-foreground tracking-tight">
                 {currentMetadata.title}

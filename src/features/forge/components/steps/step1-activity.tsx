@@ -13,7 +13,6 @@ import {
   Scissors,
   HandHeart,
   History,
-  ChevronRight,
 } from "lucide-react";
 import { ACTIVITIES, RECENT } from "../../constants/forge.constants";
 
@@ -42,130 +41,148 @@ export function Step1Activity({
   onSelect,
 }: Step1ActivityProps) {
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      {/* Recent / Forged Before — quick-select row at top */}
+    <div className="space-y-5 animate-in fade-in duration-300">
+
+      {/* Recent / Quick-select row */}
       {RECENT.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between px-0.5">
-            <p className="text-[11px] font-bold tracking-widest text-muted-foreground/50 uppercase">
-              Quick select
+        <div className="space-y-2.5">
+          {/* Section heading — readable size, no all-caps, no tracking-widest */}
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold text-muted-foreground">
+              Recent activity
             </p>
             <button
               type="button"
-              className="flex items-center gap-0.5 text-[11px] font-bold text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+              className="flex items-center gap-1 text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
             >
-              history <ChevronRight size={10} />
+              <History size={11} />
+              <span>View all</span>
             </button>
           </div>
 
-          <div className="flex gap-2.5 overflow-x-auto pb-1 -mx-0.5 px-0.5 scrollbar-hide no-scrollbar snap-x touch-pan-x">
-            {RECENT.map(({ id, label, count }) => {
-              const Icon = ICON_MAP[id] || History;
-              const active = selectedActivity === label;
-              return (
-                <button
-                  key={label}
-                  type="button"
-                  onClick={() => onSelect(label)}
-                  className={cn(
-                    "group relative flex items-center gap-2.5 min-w-40 shrink-0 px-3 py-2.5 rounded-xl border transition-all duration-300 snap-start",
-                    active
-                      ? "border-accent bg-accent/10 shadow-xs ring-1 ring-accent/20"
-                      : "border-border/30 bg-background/50 hover:border-accent/20",
-                  )}
-                >
-                  <div
+          {/* Horizontal scroll — right-peek gradient signals more content */}
+          <div className="relative">
+            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar snap-x snap-mandatory touch-pan-x">
+              {RECENT.map(({ id, label, count }) => {
+                const Icon = ICON_MAP[id] || History;
+                const active = selectedActivity === label;
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => onSelect(label)}
+                    aria-pressed={active}
                     className={cn(
-                      "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300",
+                      "group relative flex items-center gap-3 min-w-[160px] shrink-0 px-3.5 py-3 rounded-2xl border snap-start transition-all duration-200",
                       active
-                        ? "bg-accent text-accent-foreground"
-                        : "bg-muted/50 text-muted-foreground group-hover:bg-accent/10 group-hover:text-accent",
+                        ? "border-accent bg-accent/10 ring-1 ring-accent/30"
+                        : "border-border/40 bg-card hover:border-accent/30 hover:bg-accent/5",
                     )}
                   >
-                    <Icon size={15} />
-                  </div>
-                  <div className="text-left min-w-0">
-                    <p
+                    <div
                       className={cn(
-                        "text-xs font-black tracking-tight truncate",
-                        active ? "text-accent" : "text-foreground",
+                        "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200",
+                        active
+                          ? "bg-accent text-accent-foreground"
+                          : "bg-muted text-muted-foreground group-hover:bg-accent/15 group-hover:text-accent",
                       )}
                     >
-                      {label}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground font-medium opacity-60">
-                      {count}× before
-                    </p>
-                  </div>
-                  {active && (
-                    <div className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                  )}
-                </button>
-              );
-            })}
+                      <Icon size={16} />
+                    </div>
+                    <div className="text-left min-w-0">
+                      <p
+                        className={cn(
+                          "text-sm font-semibold truncate leading-tight",
+                          active ? "text-accent" : "text-foreground",
+                        )}
+                      >
+                        {label}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {count}x before
+                      </p>
+                    </div>
+                    {active && (
+                      <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-accent" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            {/* Right-edge peek fade — signals horizontal scroll */}
+            <div className="absolute top-0 right-0 bottom-1 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none" />
           </div>
         </div>
       )}
 
-      {/* Categories Selection */}
-      <div className="space-y-3">
-        <div className="space-y-0.5 px-0.5">
-          <p className="text-[11px] font-bold tracking-widest text-muted-foreground/50 uppercase">
-            What's the vibe?
+      {/* Category grid */}
+      <div className="space-y-2.5">
+        <div>
+          {/* Corrected hierarchy: section title larger than description */}
+          <p className="text-xs font-semibold text-muted-foreground">
+            Choose a category
           </p>
-          <p className="text-[11px] text-muted-foreground/40 font-medium leading-snug">
-            Pick a style to find the right people for your group.
+          <p className="text-xs text-muted-foreground/60 mt-0.5 leading-relaxed">
+            Pick the style that fits your plan and we&apos;ll find the right people.
           </p>
         </div>
 
-        {/* Scroll-fade wrapper */}
-        <div className="relative">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 pb-2 max-h-[52vh] overflow-y-auto pr-0.5 scrollbar-hide no-scrollbar">
-            {ACTIVITIES.map(({ id, label, description }) => {
-              const Icon = ICON_MAP[id] || Activity;
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => onSelect(label)}
+        {/* Grid — taller cards for 44px+ touch targets, no height cap so content isn't hidden */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+          {ACTIVITIES.map(({ id, label, description }) => {
+            const Icon = ICON_MAP[id] || Activity;
+            const selected = selectedActivity === label;
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => onSelect(label)}
+                aria-pressed={selected}
+                className={cn(
+                  "group relative flex flex-col items-start gap-3 p-4 rounded-2xl border text-left transition-all duration-200 min-h-[100px]",
+                  selected
+                    ? "border-accent bg-accent/8 ring-1 ring-accent/25 shadow-sm"
+                    : "border-border/40 bg-card hover:border-accent/30 hover:bg-accent/5",
+                )}
+              >
+                {/* Selected check mark */}
+                {selected && (
+                  <span className="absolute top-2.5 right-2.5 w-4 h-4 rounded-full bg-accent flex items-center justify-center">
+                    <svg width="8" height="7" viewBox="0 0 8 7" fill="none">
+                      <path d="M1 3.5L3 5.5L7 1.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </span>
+                )}
+
+                {/* Icon */}
+                <div
                   className={cn(
-                    "group relative flex flex-col items-start gap-2.5 p-3 rounded-xl border transition-all duration-300",
-                    selectedActivity === label
-                      ? "border-accent bg-accent/5 shadow-xs ring-1 ring-accent/20"
-                      : "border-border/50 bg-background/50 hover:border-accent/20 hover:bg-accent/2",
+                    "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200",
+                    selected
+                      ? "bg-accent text-accent-foreground shadow-sm shadow-accent/25"
+                      : "bg-muted text-muted-foreground group-hover:bg-accent/15 group-hover:text-accent",
                   )}
                 >
-                  <div
+                  <Icon size={17} />
+                </div>
+
+                {/* Text — corrected opacity, correct size */}
+                <div className="space-y-0.5">
+                  <p
                     className={cn(
-                      "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300",
-                      selectedActivity === label
-                        ? "bg-accent text-accent-foreground shadow-lg shadow-accent/20"
-                        : "bg-muted text-muted-foreground group-hover:bg-accent/10 group-hover:text-accent",
+                      "text-sm font-semibold leading-tight",
+                      selected ? "text-accent" : "text-foreground",
                     )}
                   >
-                    <Icon size={15} />
-                  </div>
-                  <div className="space-y-1 text-left">
-                    <p
-                      className={cn(
-                        "text-xs font-black tracking-tight",
-                        selectedActivity === label
-                          ? "text-accent"
-                          : "text-foreground",
-                      )}
-                    >
-                      {label}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 opacity-70">
-                      {description}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-          {/* Bottom fade hint */}
-          <div className="absolute bottom-0 left-0 right-0 h-8 bg-linear-to-t from-background/60 to-transparent pointer-events-none rounded-b-xl" />
+                    {label}
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-snug line-clamp-2">
+                    {description}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

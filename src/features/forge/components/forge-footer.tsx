@@ -195,16 +195,16 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
           </div>
         </div>
 
-        {/* Error/Validation hints */}
+        {/* Error/Validation hints — readable contrast, no all-caps */}
         <AnimatePresence>
           {fw.step === 1 && !fw.canAdvanceStep1 && (
             <motion.p
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="text-center text-[11px] text-muted-foreground/40 font-medium"
+              className="text-center text-xs text-muted-foreground/70 font-medium"
             >
-              Select an activity above to continue
+              Select a category above to continue
             </motion.p>
           )}
           {fw.step === 2 &&
@@ -214,7 +214,7 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="text-center text-[11px] text-muted-foreground/40 font-medium"
+                className="text-center text-xs text-muted-foreground/70 font-medium"
               >
                 Plan name needs at least 3 characters
               </motion.p>

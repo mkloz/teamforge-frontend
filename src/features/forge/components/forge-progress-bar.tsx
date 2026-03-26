@@ -36,48 +36,38 @@ export function ForgeProgressBar({
           const isComplete = s < step;
           return (
             <div key={s} className="flex-1 space-y-1.5">
-              {/* Track bar */}
-              <div className="relative h-0.5 rounded-full overflow-hidden bg-muted">
+              {/* Track bar — 2px for better visibility */}
+              <div className="relative h-[3px] rounded-full overflow-hidden bg-muted">
                 <div
                   className={cn(
                     "absolute inset-0 rounded-full transition-all duration-500 ease-out",
                     s <= step ? activeColor : "bg-transparent",
                   )}
                 />
-                {/* Shimmer for completed steps */}
-                {isComplete && (
-                  <div
-                    className={cn(
-                      "absolute inset-0 rounded-full opacity-40",
-                      activeColor,
-                      "animate-pulse",
-                    )}
-                  />
-                )}
               </div>
 
-              {/* Step label + number */}
+              {/* Step label + number — floored at /50 so future steps read clearly */}
               <div className="flex items-center gap-1">
                 <span
                   className={cn(
-                    "text-[10px] font-black tabular-nums transition-colors duration-500",
+                    "text-[10px] font-bold tabular-nums transition-colors duration-500",
                     isActive
                       ? activeTextColor
                       : isComplete
-                        ? "text-muted-foreground/50"
-                        : "text-muted-foreground/20",
+                        ? "text-muted-foreground/60"
+                        : "text-muted-foreground/40",
                   )}
                 >
                   {s}.
                 </span>
                 <p
                   className={cn(
-                    "text-[11px] font-bold tracking-wider transition-colors duration-500",
+                    "text-[11px] font-semibold transition-colors duration-500",
                     isActive
                       ? activeTextColor
                       : isComplete
-                        ? "text-muted-foreground/40"
-                        : "text-muted-foreground/20",
+                        ? "text-muted-foreground/60"
+                        : "text-muted-foreground/40",
                   )}
                 >
                   {label}
