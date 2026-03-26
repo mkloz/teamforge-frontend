@@ -47,7 +47,7 @@ export function Step3Group({
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-4">
       {/* ── Method Selector ── */}
       <section className="space-y-2.5">
-        <p className="text-xs font-bold text-muted-foreground/50 tracking-widest uppercase px-0.5">
+        <p className="text-xs font-semibold text-muted-foreground px-0.5">
           Choose your method
         </p>
         <div className="grid grid-cols-2 gap-3">
@@ -72,7 +72,7 @@ export function Step3Group({
 
       {/* ── Group Details ── */}
       <section className="space-y-4 pt-2 border-t border-muted/20">
-        <p className="text-[11px] font-bold text-muted-foreground/50 tracking-widest uppercase px-0.5">
+        <p className="text-xs font-semibold text-muted-foreground px-0.5">
           Group details
         </p>
 
@@ -148,10 +148,9 @@ export function Step3Group({
                 className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/10 transition-colors"
               >
                 <div className="text-left space-y-0.5">
-                  <p className="text-xs font-bold">Algorithm tuning</p>
-                  <p className="text-[11px] text-muted-foreground/50">
-                    Match: {compatibilityWeight}% · Diversity: {diversityWeight}
-                    %
+                  <p className="text-xs font-semibold text-foreground">Algorithm tuning</p>
+                  <p className="text-xs text-muted-foreground/70">
+                    Match: {compatibilityWeight}% · Diversity: {diversityWeight}%
                   </p>
                 </div>
                 <ChevronDown
@@ -197,7 +196,7 @@ export function Step3Group({
 
       {/* ── Privacy Settings ── */}
       <section className="space-y-3 pt-2 border-t border-muted/20">
-        <p className="text-[11px] font-bold text-muted-foreground/50 tracking-widest uppercase px-0.5">
+        <p className="text-xs font-semibold text-muted-foreground px-0.5">
           Privacy settings
         </p>
         <div className="grid grid-cols-3 gap-2.5 px-0.5">
@@ -362,9 +361,9 @@ function WeightSlider({
     <div className="space-y-3">
       <div className="flex items-start justify-between">
         <div className="space-y-0.5">
-          <p className="text-xs font-bold text-muted-foreground/70">{label}</p>
+          <p className="text-xs font-semibold text-muted-foreground">{label}</p>
           {subLabel && (
-            <p className="text-[11px] text-muted-foreground/40">{subLabel}</p>
+            <p className="text-xs text-muted-foreground/60 leading-snug">{subLabel}</p>
           )}
         </div>
         <div
@@ -420,7 +419,7 @@ function WeightSlider({
         })}
       </div>
 
-      <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground/30 -mt-1">
+      <div className="flex justify-between text-[11px] font-medium text-muted-foreground/50 -mt-1">
         <span>{semanticLabels.min}</span>
         <span>{semanticLabels.max}</span>
       </div>

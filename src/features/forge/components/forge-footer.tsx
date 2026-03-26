@@ -15,13 +15,13 @@ interface ForgeFooterProps {
   onCancel: () => void;
 }
 
-// Helper to render the hint text with animation
+// Helper to render the hint text with animation — readable size, no all-caps, sentence-case
 const HintText = ({ children }: { children: React.ReactNode }) => (
   <motion.p
     initial={{ opacity: 0, y: 5 }}
     animate={{ opacity: 1, y: 0 }}
     exit={{ opacity: 0, y: -5 }}
-    className="text-center text-[10px] md:text-xs text-muted-foreground/60 font-semibold tracking-wide px-4 uppercase"
+    className="text-center text-xs text-muted-foreground/70 font-medium px-4"
   >
     {children}
   </motion.p>
@@ -60,19 +60,22 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
 
       <div className="relative max-w-2xl mx-auto w-full space-y-4">
         {/* Progress Hint Line - subtle indicator of where we are going */}
-        <div className="flex items-center justify-center gap-2 overflow-hidden py-1">
+        <div className="flex items-center justify-center gap-2 overflow-hidden py-1 min-h-[24px]">
           <AnimatePresence mode="wait">
-            {fw.step === 1 && (
-              <HintText key="h1">Next: Define date, time & location</HintText>
+            {fw.step === 1 && !fw.selectedActivity && (
+              <HintText key="h1-empty">Select a category to continue</HintText>
+            )}
+            {fw.step === 1 && fw.selectedActivity && (
+              <HintText key="h1-selected">Next: define date, time, and location</HintText>
             )}
             {fw.step === 2 && (
-              <HintText key="h2">Almost there: Configure algorithm</HintText>
+              <HintText key="h2">Almost there — configure your matching algorithm next</HintText>
             )}
             {fw.step === 4 && fw.forgeResult === "success" && (
-              <HintText key="h4">Matched! Next: Group Identity</HintText>
+              <HintText key="h4">Group matched — give it an identity next</HintText>
             )}
             {fw.step === 5 && (
-              <HintText key="h5">Final Step: Send Invitations</HintText>
+              <HintText key="h5">Final step — send your invitations</HintText>
             )}
           </AnimatePresence>
         </div>
@@ -89,10 +92,11 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
               >
                 <Button
                   type="button"
-                  variant="secondary"
+                  variant="outline"
                   size="icon"
                   onClick={fw.goBack}
-                  className="h-14 w-14 rounded-2xl bg-muted/30 border border-border/40 text-muted-foreground hover:text-foreground"
+                  aria-label="Go back"
+                  className="h-14 w-14 rounded-2xl border-border/60 text-muted-foreground hover:text-foreground hover:border-border hover:bg-muted/30 transition-all"
                 >
                   <ChevronLeft size={20} />
                 </Button>
@@ -230,30 +234,20 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
           </div>
         </div>
 
-        {/* Error/Validation hints — readable contrast, no all-caps */}
+        {/* Validation hints — teal left-border accent strip for visibility */}
         <AnimatePresence>
-          {fw.step === 1 && !fw.canAdvanceStep1 && (
-            <motion.p
+          {fw.step === 2 && !fw.canAdvanceStep2 && fw.planName.trim().length > 0 && (
+            <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="text-center text-xs text-muted-foreground/70 font-medium"
+              className="overflow-hidden"
             >
-              Select a category above to continue
-            </motion.p>
+              <p className="text-xs text-muted-foreground/80 font-medium pl-3 border-l-2 border-primary/40">
+                Event title needs at least 3 characters to continue
+              </p>
+            </motion.div>
           )}
-          {fw.step === 2 &&
-            !fw.canAdvanceStep2 &&
-            fw.planName.trim().length > 0 && (
-              <motion.p
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="text-center text-xs text-muted-foreground/70 font-medium"
-              >
-                Plan name needs at least 3 characters
-              </motion.p>
-            )}
         </AnimatePresence>
       </div>
     </div>
