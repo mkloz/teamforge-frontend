@@ -1,4 +1,4 @@
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ArrowRight } from "lucide-react";
 import type { ForgeMode } from "../../types/forge.types";
 
 export interface Step4FailedProps {
@@ -6,85 +6,77 @@ export interface Step4FailedProps {
 }
 
 export function Step4Failed({ forgeMode }: Step4FailedProps) {
+  const reasons =
+    forgeMode === "auto"
+      ? [
+          "The diversity or matching settings were too strict for the current member pool.",
+          "Privacy settings may be limiting who can see this group.",
+          "This activity or time slot has fewer people active right now.",
+        ]
+      : [
+          "There weren't enough available members for the group size you requested.",
+          "Privacy settings may be limiting who can see this group.",
+          "This activity or time slot has fewer people active right now.",
+        ];
+
+  const suggestions =
+    forgeMode === "auto"
+      ? ["Lower the matching threshold", "Expand the group size range", "Set privacy to Public"]
+      : ["Try a smaller group size", "Open the group to your network", "Try a different time or date"];
+
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Simulation Report Banner */}
-      <div className="flex items-center gap-4 p-5 rounded-2xl bg-linear-to-br from-destructive/10 via-destructive/2 to-transparent border border-destructive/20 shadow-xs">
-        <div className="w-11 h-11 rounded-xl bg-destructive flex items-center justify-center shrink-0 shadow-lg shadow-destructive/20">
-          <AlertCircle size={24} className="text-white" strokeWidth={3} />
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
+
+      {/* Error hero */}
+      <div className="rounded-2xl bg-destructive/6 border border-destructive/20 p-5 flex items-start gap-4">
+        <div className="w-12 h-12 rounded-2xl bg-destructive flex items-center justify-center shrink-0 shadow-lg shadow-destructive/20">
+          <AlertCircle size={22} className="text-white" strokeWidth={2.5} />
         </div>
-        <div className="space-y-0.5">
-          <p className="text-[10px] font-bold tracking-widest text-destructive/80 transition-colors">
-            No matches
-          </p>
-          <h3 className="text-base font-black text-foreground leading-tight tracking-tight">
-            We couldn't find a match
+        <div className="min-w-0">
+          <p className="text-xs font-semibold text-destructive/80">No matches found</p>
+          <h3 className="text-base font-bold text-foreground leading-tight mt-0.5">
+            We couldn&apos;t find a group
           </h3>
-          <p className="text-[9px] text-muted-foreground font-medium italic opacity-80">
-            Try adjusting your settings below
+          <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+            The algorithm ran but no compatible members were available. Try adjusting your settings and forging again.
           </p>
         </div>
       </div>
 
-      {/* Analysis Section */}
-      <div className="space-y-4">
-        <p className="text-[10px] font-bold text-muted-foreground/50 tracking-widest px-1">
-          What happened?
-        </p>
-        <div className="grid gap-3">
-          {[
-            forgeMode === "auto"
-              ? "The diversity settings were a bit too strict for the current pool of members."
-              : "There weren't enough available members for the group size you requested.",
-            "Privacy settings might be limiting who can see this group.",
-            "This activity or time slot has fewer people active right now.",
-          ].map((reason, i) => (
+      {/* What happened */}
+      <div className="space-y-3">
+        <p className="text-xs font-semibold text-muted-foreground">What might have happened</p>
+        <div className="flex flex-col gap-2">
+          {reasons.map((reason, i) => (
             <div
               key={i}
-              className="flex items-start gap-3 px-4 py-3 rounded-xl border border-border/50 bg-background/50 group hover:border-destructive/20 transition-all"
+              className="flex items-start gap-3 px-4 py-3.5 rounded-2xl border border-border/40 bg-card"
             >
-              <div className="w-1 h-5 rounded-full bg-destructive/10 group-hover:bg-destructive/30 transition-colors shrink-0" />
-              <p className="text-[10px] text-muted-foreground leading-relaxed">
-                {reason}
-              </p>
+              <div className="w-1.5 h-1.5 rounded-full bg-destructive/40 shrink-0 mt-1.5" />
+              <p className="text-sm text-muted-foreground leading-relaxed">{reason}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Recommended Adjustments */}
-      <div className="space-y-4">
-        <p className="text-[10px] font-bold text-muted-foreground/50 tracking-widest px-1">
-          Suggested changes
-        </p>
-        <div className="rounded-xl border border-accent/20 bg-linear-to-br from-accent/5 to-transparent p-5 space-y-3">
-          {(forgeMode === "auto"
-            ? [
-                "Lower the matching level",
-                "Expand the group size range",
-                "Set privacy to 'Public'",
-              ]
-            : [
-                "Try a smaller group size",
-                "Open to your network",
-                "Try a different time or date",
-              ]
-          ).map((rec, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <div className="w-1 h-1 rounded-full bg-accent/40" />
-              <p className="text-[10px] font-bold text-accent tracking-widest opacity-80">
-                {rec}
-              </p>
+      {/* Suggested changes */}
+      <div className="space-y-3">
+        <p className="text-xs font-semibold text-muted-foreground">Suggested adjustments</p>
+        <div className="rounded-2xl border border-accent/20 bg-accent/5 divide-y divide-accent/10 overflow-hidden">
+          {suggestions.map((rec, i) => (
+            <div key={i} className="flex items-center gap-3 px-4 py-3.5">
+              <ArrowRight size={14} className="text-accent/60 shrink-0" />
+              <p className="text-sm font-medium text-accent">{rec}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Footer Instruction */}
-      <p className="text-[10px] text-muted-foreground text-center font-medium italic opacity-60">
-        Tap <span className="text-foreground font-bold">Try again</span> to
-        change your settings.
+      {/* Footer cue */}
+      <p className="text-xs text-muted-foreground text-center leading-relaxed">
+        Tap <span className="font-semibold text-foreground">Try again</span> below to go back and adjust your settings.
       </p>
+
     </div>
   );
 }

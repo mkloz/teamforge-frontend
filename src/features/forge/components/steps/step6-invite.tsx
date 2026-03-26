@@ -1,5 +1,5 @@
 import { cn } from "@/shared/lib/utils";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, Send, Users } from "lucide-react";
 
 export interface Step6InviteProps {
   planName: string;
@@ -18,26 +18,28 @@ export function Step6Invite({
 }: Step6InviteProps) {
   if (invitesSent) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 gap-6 text-center animate-in fade-in zoom-in-95 duration-700">
-        <div className="w-20 h-20 rounded-[2.5rem] bg-linear-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-500/20 flex items-center justify-center shadow-lg shadow-emerald-500/10">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-inner">
-            <Check size={32} className="text-white" strokeWidth={3} />
+      <div className="flex flex-col items-center justify-center py-16 gap-6 text-center animate-in fade-in zoom-in-95 duration-500">
+        {/* Success icon */}
+        <div className="relative">
+          <div className="w-20 h-20 rounded-[1.75rem] bg-emerald-500 flex items-center justify-center shadow-xl shadow-emerald-500/25">
+            <Check size={36} className="text-white" strokeWidth={2.5} />
           </div>
+          <span className="absolute -top-1 -right-1 flex h-4 w-4">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500" />
+          </span>
         </div>
-        <div className="space-y-2">
-          <p className="text-[10px] font-bold tracking-widest text-emerald-600/60 transition-colors">
-            Invitations sent!
-          </p>
-          <h3 className="text-xl font-black text-foreground tracking-tight">
-            Your group is ready
+
+        <div className="space-y-2 max-w-xs">
+          <p className="text-xs font-semibold text-emerald-600">Invitations sent</p>
+          <h3 className="text-xl font-bold text-foreground tracking-tight">
+            Your group is live!
           </h3>
-          <p className="text-[11px] text-muted-foreground mt-2 max-w-70 leading-relaxed italic opacity-80">
-            {participantCount - 1} invitation
-            {participantCount - 1 !== 1 ? "s" : ""} have been sent out for{" "}
-            <span className="text-foreground font-bold italic">
-              "{planName}"
-            </span>
-            . You'll be notified as soon as they join.
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {participantCount - 1} invitation{participantCount - 1 !== 1 ? "s" : ""}{" "}
+            sent for{" "}
+            <span className="font-semibold text-foreground">&ldquo;{planName}&rdquo;</span>.
+            You&apos;ll be notified as each member joins.
           </p>
         </div>
       </div>
@@ -45,116 +47,111 @@ export function Step6Invite({
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Launch Summary Card */}
-      <div className="group relative p-4 rounded-2xl bg-linear-to-br from-border/40 via-muted/10 to-transparent border border-border/50 shadow-xs overflow-hidden">
-        <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity">
-          <Check size={48} className="text-foreground" />
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
+
+      {/* Group summary card */}
+      <div className="rounded-2xl border border-border/50 bg-card p-5 space-y-4">
+        <div className="space-y-0.5">
+          <p className="text-xs font-semibold text-muted-foreground">Group summary</p>
+          <h4 className="text-base font-bold text-foreground truncate">{planName}</h4>
         </div>
 
-        <div className="space-y-4 relative">
-          <div className="space-y-1">
-            <p className="text-[10px] font-bold tracking-widest text-muted-foreground/50">
-              Group summary
-            </p>
-            <h4 className="text-base font-black text-foreground tracking-tight truncate">
-              {planName}
-            </h4>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 pt-3 border-t border-border/30">
-            <div className="space-y-1">
-              <p className="text-[9px] font-black tracking-widest text-muted-foreground/50 uppercase">
-                Members
-              </p>
-              <p className="text-[11px] font-black text-foreground">
-                {participantCount} Confirmed
-              </p>
+        {/* Stats row */}
+        <div className="grid grid-cols-2 gap-3 pt-3 border-t border-border/30">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Users size={14} className="text-primary" />
             </div>
-            <div className="space-y-1">
-              <p className="text-[9px] font-bold tracking-widest text-muted-foreground/40">
-                Status
-              </p>
-              <div className="flex items-center gap-1.5">
-                <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                <p className="text-[10px] font-black text-emerald-600 tracking-widest">
-                  Verified
-                </p>
-              </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Members</p>
+              <p className="text-sm font-semibold text-foreground">{participantCount} confirmed</p>
             </div>
           </div>
-
-          <div className="flex -space-x-2 pt-1">
-            <div className="w-8 h-8 rounded-full bg-primary border-2 border-background flex items-center justify-center shrink-0 z-10 shadow-xs">
-              <span className="text-[7px] font-black text-primary-foreground uppercase">
-                You
-              </span>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+              <Check size={14} className="text-emerald-600" />
             </div>
-            {Array.from({ length: Math.min(5, participantCount - 1) }).map(
-              (_, i) => (
-                <div
-                  key={i}
-                  className="w-8 h-8 rounded-full bg-linear-to-br from-emerald-500/20 to-emerald-500/10 border-2 border-background flex items-center justify-center z-0 shadow-xs"
-                >
-                  <div className="w-1 h-1 rounded-full bg-emerald-500/40" />
-                </div>
-              ),
-            )}
+            <div>
+              <p className="text-xs text-muted-foreground">Status</p>
+              <p className="text-sm font-semibold text-emerald-600">Verified</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Avatar stack */}
+        <div className="flex items-center gap-2 pt-1">
+          <div className="flex -space-x-2">
+            <div className="w-8 h-8 rounded-full bg-primary border-2 border-card flex items-center justify-center z-10 shadow-sm">
+              <span className="text-[10px] font-bold text-primary-foreground">You</span>
+            </div>
+            {Array.from({ length: Math.min(5, participantCount - 1) }).map((_, i) => (
+              <div
+                key={i}
+                className="w-8 h-8 rounded-full bg-emerald-500/15 border-2 border-card z-0 shadow-sm"
+                style={{ zIndex: 9 - i }}
+              />
+            ))}
             {participantCount > 6 && (
-              <div className="w-8 h-8 rounded-full bg-muted border-2 border-background flex items-center justify-center z-0 shadow-xs">
-                <span className="text-[7px] font-black text-muted-foreground">
+              <div className="w-8 h-8 rounded-full bg-muted border-2 border-card flex items-center justify-center z-0 shadow-sm">
+                <span className="text-[10px] font-bold text-muted-foreground">
                   +{participantCount - 6}
                 </span>
               </div>
             )}
           </div>
+          <p className="text-xs text-muted-foreground">{participantCount} members ready</p>
         </div>
       </div>
 
-      {/* Access Key Section */}
-      <div className="space-y-2">
-        <p className="text-[10px] font-bold text-muted-foreground/50 tracking-widest px-1">
-          Invite link
-        </p>
-        <div className="relative group">
-          <div className="flex items-center gap-3 px-4 h-12 rounded-xl border border-border/50 bg-background/50 hover:bg-background transition-all group-hover:border-primary/20">
-            <span className="flex-1 text-[10px] text-muted-foreground truncate font-medium tracking-tight">
-              teamforge.app/join/grp_xk4j2m
-            </span>
-            <button
-              type="button"
-              onClick={onCopyLink}
-              className={cn(
-                "flex items-center gap-2 h-8 px-3 rounded-lg transition-all duration-300",
-                inviteCopied
-                  ? "bg-primary text-white shadow-lg shadow-primary/20"
-                  : "bg-muted/50 text-foreground hover:bg-primary/10 hover:text-primary",
-              )}
-            >
-              {inviteCopied ? (
-                <Check size={12} strokeWidth={3} />
-              ) : (
-                <Copy size={12} strokeWidth={3} />
-              )}
-              <span className="text-[10px] font-black tracking-widest uppercase">
-                Copied
-              </span>
-            </button>
+      {/* Invite link */}
+      <div className="space-y-2.5">
+        <p className="text-xs font-semibold text-muted-foreground">Share invite link</p>
+        <div className="flex items-center gap-2 px-4 h-13 rounded-2xl border border-border/50 bg-card">
+          <span className="flex-1 text-sm text-muted-foreground truncate">
+            teamforge.app/join/grp_xk4j2m
+          </span>
+          <button
+            type="button"
+            onClick={onCopyLink}
+            aria-label="Copy invite link"
+            className={cn(
+              "flex items-center gap-1.5 h-8 px-3 rounded-xl text-xs font-semibold transition-all duration-200 shrink-0",
+              inviteCopied
+                ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
+                : "bg-muted text-foreground hover:bg-primary/10 hover:text-primary",
+            )}
+          >
+            {inviteCopied ? (
+              <>
+                <Check size={12} strokeWidth={2.5} />
+                Copied!
+              </>
+            ) : (
+              <>
+                <Copy size={12} strokeWidth={2} />
+                Copy
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Send invites section */}
+      <div className="space-y-2.5">
+        <p className="text-xs font-semibold text-muted-foreground">Notify members</p>
+        <div className="flex gap-3 p-4 rounded-2xl border border-border/40 bg-card">
+          <Send size={16} className="text-primary/60 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <p className="text-xs font-semibold text-foreground">Send invitations</p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Tapping{" "}
+              <span className="font-semibold text-foreground">Confirm &amp; send</span>{" "}
+              below will notify all {participantCount - 1} members and create your group.
+            </p>
           </div>
         </div>
       </div>
 
-      <div className="group rounded-xl border border-border/50 bg-linear-to-br from-muted/5 to-transparent p-4 space-y-2 transition-all hover:border-border">
-        <div className="flex items-center gap-2.5">
-          <div className="w-1 h-5 rounded-full bg-muted-foreground/20 group-hover:bg-primary transition-colors" />
-          <p className="text-[10px] font-bold tracking-widest text-muted-foreground/50 group-hover:text-primary/70">
-            Reminder
-          </p>
-        </div>
-        <p className="text-[10px] text-muted-foreground leading-normal ml-3.5 italic opacity-80">
-          Notifications are sent after your final confirmation.
-        </p>
-      </div>
     </div>
   );
 }

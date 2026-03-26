@@ -1,5 +1,5 @@
 import { cn } from "@/shared/lib/utils";
-import { Check, RefreshCw, Sparkles, UserMinus } from "lucide-react";
+import { Check, RefreshCw, UserMinus } from "lucide-react";
 
 export interface Step4SuccessProps {
   planName: string;
@@ -22,95 +22,77 @@ export function Step4Success({
   onRemoveParticipant,
   onReforge,
 }: Step4SuccessProps) {
-  const activeCount =
-    participants.filter((p) => !removedIds.has(p.id)).length + 1;
+  const activeCount = participants.filter((p) => !removedIds.has(p.id)).length + 1;
 
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-10">
-      {/* Success Indicator Section */}
-      <div className="relative p-5 rounded-2xl bg-linear-to-br from-emerald-500/10 via-emerald-500/2 to-transparent border border-emerald-500/20 shadow-xs overflow-hidden">
-        <div className="absolute top-0 right-0 p-3 opacity-10 pointer-events-none animate-pulse">
-          <Sparkles size={40} className="text-emerald-500" />
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
+
+      {/* Hero success moment */}
+      <div className="rounded-2xl bg-emerald-500/8 border border-emerald-500/20 p-5 flex items-center gap-4">
+        <div className="relative shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/25">
+            <Check size={22} className="text-white" strokeWidth={2.5} />
+          </div>
+          <span className="absolute -top-1 -right-1 flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
+          </span>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <div className="w-11 h-11 rounded-xl bg-emerald-500 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/20">
-              <Check size={24} className="text-white" strokeWidth={3} />
-            </div>
-            <div className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
-          </div>
-          <div className="space-y-0.5">
-            <p className="text-[10px] font-bold tracking-widest text-emerald-600/60 uppercase">
-              Success!
-            </p>
-            <h3 className="text-base font-black text-foreground leading-tight tracking-tight">
-              Found a group for you
-            </h3>
-            <p className="text-[9px] text-muted-foreground font-medium italic opacity-80">
-              Ready for "{planName}"
-            </p>
-          </div>
+        <div className="min-w-0">
+          <p className="text-xs font-semibold text-emerald-600">Group forged</p>
+          <h3 className="text-base font-bold text-foreground leading-tight mt-0.5 truncate">
+            Ready for &ldquo;{planName}&rdquo;
+          </h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Review your group below before continuing.
+          </p>
         </div>
       </div>
 
-      {/* Participants List */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between px-1">
-          <p className="text-[10px] font-bold text-muted-foreground/50 tracking-widest">
-            Group members
-          </p>
-          <div className="px-2 py-0.5 rounded-lg bg-emerald-500/10 border border-emerald-500/10">
-            <span className="text-[9px] font-bold text-emerald-600 tracking-widest uppercase">
-              {activeCount} people
-            </span>
-          </div>
+      {/* Members section */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-semibold text-muted-foreground">Group members</p>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/15">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="text-xs font-semibold text-emerald-600">{activeCount} people</span>
+          </span>
         </div>
 
-        <div className="grid gap-3">
-          {/* Host Card */}
-          <div className="relative group flex items-center gap-3 px-4 py-3 rounded-xl bg-linear-to-r from-primary/10 to-transparent border border-primary/20 shadow-xs transition-all duration-300">
-            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20 relative">
-              <span className="text-[10px] font-black text-primary-foreground italic">
-                YOU
-              </span>
-              <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-background border border-primary flex items-center justify-center shadow-sm">
-                <span className="text-[9px] grayscale brightness-150">👑</span>
-              </div>
+        <div className="flex flex-col gap-2">
+          {/* Host */}
+          <div className="flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-primary/5 border border-primary/20">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm shadow-primary/20">
+              <span className="text-[11px] font-bold text-primary-foreground">You</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-black tracking-tight text-foreground leading-none">
-                You (Host)
-              </p>
-              <p className="text-[9px] text-muted-foreground/50 font-bold mt-1 tracking-widest italic uppercase">
-                Group Lead
-              </p>
+              <p className="text-sm font-semibold text-foreground">You (Host)</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Group lead</p>
             </div>
-            <div className="px-2 py-0.5 rounded-lg bg-primary/10 border border-primary/20">
-              <span className="text-[8px] font-bold text-primary tracking-widest uppercase">
-                HOST
-              </span>
-            </div>
+            <span className="px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
+              Host
+            </span>
           </div>
 
-          {/* Participant Cards */}
+          {/* Participants */}
           {participants.map((p) => {
             const removed = removedIds.has(p.id);
             return (
               <div
                 key={p.id}
                 className={cn(
-                  "group relative flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-300",
+                  "group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all duration-200",
                   removed
-                    ? "opacity-40 grayscale bg-muted/20 border-border/50 border-dashed"
-                    : "bg-background border-border/50 hover:border-accent/30 hover:bg-accent/2 hover:shadow-sm",
+                    ? "opacity-40 bg-muted/30 border-border/30 border-dashed"
+                    : "bg-card border-border/40 hover:border-accent/30",
                 )}
               >
                 <div
                   className={cn(
-                    "w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-xl font-black italic shadow-xs transition-all duration-300",
+                    "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-lg transition-all duration-200",
                     removed
                       ? "bg-muted text-muted-foreground"
-                      : "bg-accent/10 text-accent group-hover:scale-105 group-hover:rotate-1",
+                      : "bg-accent/10 group-hover:bg-accent/15",
                   )}
                 >
                   {p.avatar}
@@ -118,29 +100,29 @@ export function Step4Success({
                 <div className="flex-1 min-w-0">
                   <p
                     className={cn(
-                      "text-sm font-black tracking-tight leading-none transition-colors",
-                      removed
-                        ? "text-muted-foreground line-through"
-                        : "text-foreground group-hover:text-accent",
+                      "text-sm font-semibold leading-tight transition-colors",
+                      removed ? "text-muted-foreground line-through" : "text-foreground",
                     )}
                   >
                     {p.name}
                   </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <p className="text-[9px] text-muted-foreground/50 font-medium italic">
-                      {removed ? "Removed from session" : "Compatibility:"}
-                    </p>
-                    {!removed && (
-                      <span
-                        className={cn(
-                          "text-[9px] font-bold tabular-nums transition-colors px-1.5 py-0.5 rounded-lg border",
-                          p.compatibility >= 90
-                            ? "bg-emerald-500/10 border-emerald-500/10 text-emerald-500"
-                            : "bg-accent/10 border-accent/10 text-accent",
-                        )}
-                      >
-                        {p.compatibility}%
-                      </span>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    {removed ? (
+                      <p className="text-xs text-muted-foreground">Removed from session</p>
+                    ) : (
+                      <>
+                        <p className="text-xs text-muted-foreground">Compatibility</p>
+                        <span
+                          className={cn(
+                            "text-xs font-semibold px-1.5 py-0.5 rounded-md",
+                            p.compatibility >= 90
+                              ? "bg-emerald-500/10 text-emerald-600"
+                              : "bg-accent/10 text-accent",
+                          )}
+                        >
+                          {p.compatibility}%
+                        </span>
+                      </>
                     )}
                   </div>
                 </div>
@@ -148,9 +130,10 @@ export function Step4Success({
                   <button
                     type="button"
                     onClick={() => onRemoveParticipant(p.id)}
-                    className="flex items-center justify-center w-7 h-7 rounded-full bg-background border border-border/50 opacity-0 group-hover:opacity-100 hover:bg-destructive hover:border-destructive hover:text-white hover:scale-110 active:scale-95 transition-all duration-300 shadow-sm"
+                    aria-label={`Remove ${p.name}`}
+                    className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
                   >
-                    <UserMinus size={12} />
+                    <UserMinus size={14} />
                   </button>
                 )}
               </div>
@@ -158,33 +141,31 @@ export function Step4Success({
           })}
         </div>
 
+        {/* Recalculate CTA */}
         {removedIds.size > 0 && (
           <button
             type="button"
             onClick={onReforge}
-            className="mt-4 w-full flex items-center justify-center gap-2.5 py-4 rounded-2xl border border-dashed border-accent/40 bg-accent/3 text-accent text-[10px] font-black uppercase tracking-widest hover:bg-accent/5 transition-all animate-in zoom-in-95 duration-300"
+            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-dashed border-accent/30 bg-accent/5 text-accent text-sm font-semibold hover:bg-accent/10 transition-all duration-200 animate-in zoom-in-95"
           >
-            <RefreshCw size={14} className="animate-spin-slow" />
-            Recalculate Optimal Balance
+            <RefreshCw size={15} />
+            Recalculate optimal balance
           </button>
         )}
       </div>
 
-      {/* Helpful Hint */}
-      <div className="group rounded-xl border border-primary/20 bg-linear-to-br from-primary/3 to-transparent p-4 space-y-2 shadow-xs transition-all">
-        <div className="flex items-center gap-2.5">
-          <div className="w-1 h-5 rounded-full bg-primary/40 group-hover:bg-primary transition-colors" />
-          <p className="text-[10px] font-bold tracking-widest text-primary/80">
-            Note
+      {/* Contextual note */}
+      <div className="flex gap-3 p-4 rounded-2xl border border-border/40 bg-card">
+        <div className="w-0.5 rounded-full bg-primary/30 shrink-0 self-stretch" />
+        <div className="space-y-1">
+          <p className="text-xs font-semibold text-primary/80">How removal works</p>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Removing a participant queues them for future matching rather than blocking them. Use{" "}
+            <span className="font-semibold text-accent">Recalculate</span> if the remaining balance feels off.
           </p>
         </div>
-        <p className="text-[11px] text-muted-foreground leading-normal italic">
-          Removing a participant queues them for future matching instead of
-          excluding. Use{" "}
-          <span className="font-bold text-accent">Recalculate</span> if you're
-          unhappy with the remaining balance.
-        </p>
       </div>
+
     </div>
   );
 }
