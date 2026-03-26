@@ -43,6 +43,10 @@ export function useForgeWizard(onClose: () => void) {
   );
   const [removedIds, setRemovedIds] = useState<Set<string>>(new Set());
 
+  // Forge loading transition
+  const [isForging, setIsForging] = useState(false);
+  const [forgingProgress, setForgingProgress] = useState(0);
+
   // Step 5: Identity
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [avatarImage, setAvatarImage] = useState<string | null>(null);
@@ -101,26 +105,53 @@ export function useForgeWizard(onClose: () => void) {
     else if (step === 6) setStep(5);
   }, [step]);
 
+  // Shared forge animation runner — animates progress 0→100 over ~2.4s then resolves
+  const runForgeAnimation = useCallback(
+    (onComplete: () => void) => {
+      setIsForging(true);
+      setForgingProgress(0);
+      const start = performance.now();
+      const duration = 2400;
+      const tick = (now: number) => {
+        const elapsed = now - start;
+        const p = Math.min((elapsed / duration) * 100, 100);
+        setForgingProgress(p);
+        if (p < 100) {
+          requestAnimationFrame(tick);
+        } else {
+          setIsForging(false);
+          onComplete();
+        }
+      };
+      requestAnimationFrame(tick);
+    },
+    [],
+  );
+
   const handleManualForge = useCallback(() => {
     setNavDirection("forward");
-    setParticipants(MOCK_PARTICIPANTS.slice(0, fixedSize - 1));
-    setRemovedIds(new Set());
-    setForgeResult("success");
-    setStep(4);
-  }, [fixedSize]);
+    runForgeAnimation(() => {
+      setParticipants(MOCK_PARTICIPANTS.slice(0, fixedSize - 1));
+      setRemovedIds(new Set());
+      setForgeResult("success");
+      setStep(4);
+    });
+  }, [fixedSize, runForgeAnimation]);
 
   const handleAutoForge = useCallback(() => {
     setNavDirection("forward");
-    if (diversityWeight > 80) {
-      setForgeResult("failed");
-    } else {
-      const size = Math.floor((autoMinSize + autoMaxSize) / 2);
-      setParticipants(MOCK_PARTICIPANTS.slice(0, size - 1));
-      setRemovedIds(new Set());
-      setForgeResult("success");
-    }
-    setStep(4);
-  }, [diversityWeight, autoMinSize, autoMaxSize]);
+    runForgeAnimation(() => {
+      if (diversityWeight > 80) {
+        setForgeResult("failed");
+      } else {
+        const size = Math.floor((autoMinSize + autoMaxSize) / 2);
+        setParticipants(MOCK_PARTICIPANTS.slice(0, size - 1));
+        setRemovedIds(new Set());
+        setForgeResult("success");
+      }
+      setStep(4);
+    });
+  }, [diversityWeight, autoMinSize, autoMaxSize, runForgeAnimation]);
 
   const handleRemoveParticipant = useCallback((id: string) => {
     setRemovedIds((prev) => new Set([...prev, id]));
@@ -157,6 +188,8 @@ export function useForgeWizard(onClose: () => void) {
     forgeResult,
     participants,
     removedIds,
+    isForging,
+    forgingProgress,
     coverImage,
     avatarImage,
     inviteCopied,
