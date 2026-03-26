@@ -1,5 +1,4 @@
 import { cn } from "@/shared/lib/utils";
-import * as Slider from "@radix-ui/react-slider";
 import {
   AlertCircle,
   ChevronDown,
@@ -108,40 +107,40 @@ export function Step3Group({
                 </div>
               </div>
 
-              {/* Radix Slider with larger thumbs */}
-              <div className="relative py-1">
-                <Slider.Root
-                  className="relative flex items-center select-none touch-none w-full h-11"
-                  value={[autoMinSize, autoMaxSize]}
-                  onValueChange={([min, max]) => {
-                    onAutoMinSizeChange(min);
-                    onAutoMaxSizeChange(max);
-                  }}
-                  max={12}
-                  min={3}
-                  step={1}
-                  minStepsBetweenThumbs={1}
-                >
-                  <Slider.Track className="bg-muted relative grow rounded-full h-1.5">
-                    <Slider.Range className="absolute bg-primary rounded-full h-full" />
-                  </Slider.Track>
-                  {/* Large thumb with invisible hit area for touch */}
-                  <Slider.Thumb
-                    className="block w-5 h-5 bg-primary shadow-lg shadow-primary/30 border-2 border-background rounded-full hover:scale-110 active:scale-95 transition-all outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 cursor-grab active:cursor-grabbing"
-                    aria-label="Min members"
+              <div className="space-y-1 py-1">
+                {/* Min thumb */}
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-muted-foreground/50 w-5 shrink-0">Min</span>
+                  <input
+                    type="range"
+                    min={3}
+                    max={autoMaxSize - 1}
+                    step={1}
+                    value={autoMinSize}
+                    onChange={(e) => onAutoMinSizeChange(Number(e.target.value))}
+                    aria-label="Minimum members"
+                    className="range-input w-full h-2 rounded-full accent-primary cursor-pointer"
                   />
-                  <Slider.Thumb
-                    className="block w-5 h-5 bg-primary shadow-lg shadow-primary/30 border-2 border-background rounded-full hover:scale-110 active:scale-95 transition-all outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 cursor-grab active:cursor-grabbing"
-                    aria-label="Max members"
+                  <span className="text-[11px] font-bold text-primary tabular-nums w-4 text-right shrink-0">{autoMinSize}</span>
+                </div>
+                {/* Max thumb */}
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-muted-foreground/50 w-5 shrink-0">Max</span>
+                  <input
+                    type="range"
+                    min={autoMinSize + 1}
+                    max={12}
+                    step={1}
+                    value={autoMaxSize}
+                    onChange={(e) => onAutoMaxSizeChange(Number(e.target.value))}
+                    aria-label="Maximum members"
+                    className="range-input w-full h-2 rounded-full accent-primary cursor-pointer"
                   />
-                </Slider.Root>
-                <div className="flex justify-between px-0.5 -mt-1">
-                  <span className="text-[11px] font-bold text-muted-foreground/30 uppercase">
-                    3 members
-                  </span>
-                  <span className="text-[11px] font-bold text-muted-foreground/30 uppercase">
-                    12 members
-                  </span>
+                  <span className="text-[11px] font-bold text-primary tabular-nums w-4 text-right shrink-0">{autoMaxSize}</span>
+                </div>
+                <div className="flex justify-between px-0.5 pt-0.5">
+                  <span className="text-[11px] text-muted-foreground/30">3 members</span>
+                  <span className="text-[11px] text-muted-foreground/30">12 members</span>
                 </div>
               </div>
             </div>
@@ -384,35 +383,24 @@ function WeightSlider({
         </div>
       </div>
 
-      {/* Radix-based single slider for weight */}
-      <Slider.Root
-        className="relative flex items-center select-none touch-none w-full h-11"
-        value={[value]}
-        onValueChange={([v]) => onChange(v)}
-        onValueCommit={() => setDragging(false)}
-        onPointerDown={() => setDragging(true)}
+      <input
+        type="range"
         min={min}
         max={max}
         step={step}
-      >
-        <Slider.Track className="bg-muted relative grow rounded-full h-1.5">
-          <Slider.Range
-            className={cn(
-              "absolute rounded-full h-full transition-all",
-              isHighDiversity ? "bg-amber-500/60" : "bg-primary/60",
-            )}
-          />
-        </Slider.Track>
-        <Slider.Thumb
-          className={cn(
-            "block w-5 h-5 rounded-full border-2 border-background shadow-lg transition-all outline-none focus:ring-2 focus:ring-offset-2 cursor-grab active:cursor-grabbing hover:scale-110 active:scale-95",
-            isHighDiversity
-              ? "bg-amber-500 shadow-amber-500/30 focus:ring-amber-500/40"
-              : "bg-primary shadow-primary/30 focus:ring-primary/40",
-          )}
-          aria-label={label}
-        />
-      </Slider.Root>
+        value={value}
+        aria-label={label}
+        onChange={(e) => {
+          setDragging(true);
+          onChange(Number(e.target.value));
+        }}
+        onMouseUp={() => setDragging(false)}
+        onTouchEnd={() => setDragging(false)}
+        className={cn(
+          "range-input w-full h-2 rounded-full cursor-pointer",
+          isHighDiversity ? "accent-amber-500" : "accent-primary",
+        )}
+      />
 
       {/* Dot visualizer — gradient progression */}
       <div className="flex justify-between items-center gap-1 px-0.5 -mt-2">
