@@ -76,10 +76,23 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={onCancel}
-                className="text-[10px] font-bold tracking-widest text-muted-foreground/50 hover:text-foreground px-2.5 py-1.5 rounded-lg shrink-0"
+                onClick={() => {
+                  // Only confirm if user has made progress past step 1
+                  const hasProgress =
+                    fw.step > 1 ||
+                    fw.selectedActivity !== null;
+                  if (
+                    !hasProgress ||
+                    window.confirm(
+                      "Exit the forge? Your progress will be lost.",
+                    )
+                  ) {
+                    onCancel();
+                  }
+                }}
+                className="text-[10px] font-bold tracking-widest text-destructive/50 hover:text-destructive px-2.5 py-1.5 rounded-lg shrink-0 transition-colors"
               >
-                Exit
+                Cancel
               </Button>
             )}
           </div>

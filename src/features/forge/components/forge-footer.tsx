@@ -7,6 +7,7 @@ import {
 } from "./forge-buttons";
 import { Button } from "@/shared/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import type { ForgeWizardState } from "../hooks/use-forge-wizard";
 
 interface ForgeFooterProps {
@@ -27,6 +28,31 @@ const HintText = ({ children }: { children: React.ReactNode }) => (
 );
 
 export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
+  // Pulse the Continue button once when an activity is first selected
+  const [continuePulse, setContinuePulse] = useState(false);
+  const prevActivity = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (
+      fw.step === 1 &&
+      fw.selectedActivity &&
+      fw.selectedActivity !== prevActivity.current
+    ) {
+      prevActivity.current = fw.selectedActivity;
+      setContinuePulse(true);
+      const t = setTimeout(() => setContinuePulse(false), 650);
+      return () => clearTimeout(t);
+    }
+  }, [fw.selectedActivity, fw.step]);
+
+  // Trigger grid shake when Continue is tapped while disabled
+  const handleDisabledContinue = () => {
+    const shake = (
+      window as Window & { __forgeShakeGrid?: () => void }
+    ).__forgeShakeGrid;
+    if (shake) shake();
+  };
+
   return (
     <div className="sticky bottom-0 md:relative pt-4 mt-auto -mx-4 md:-mx-12 px-4 md:px-12 pb-6 md:pb-10 transition-all duration-500">
       {/* Background decoration for the sticky footer */}
@@ -80,8 +106,17 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
                 <motion.div
                   key="s1"
                   initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  animate={
+                    continuePulse
+                      ? { opacity: 1, y: 0, scale: [1, 1.025, 1] }
+                      : { opacity: 1, y: 0, scale: 1 }
+                  }
                   exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.55 }}
+                  // Capture taps on the disabled state to trigger grid shake
+                  onPointerDown={
+                    !fw.canAdvanceStep1 ? handleDisabledContinue : undefined
+                  }
                 >
                   <PrimaryButton
                     label="Continue to plan"

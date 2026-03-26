@@ -1,4 +1,5 @@
 import { cn } from "@/shared/lib/utils";
+import * as RadixSlider from "@radix-ui/react-slider";
 import {
   AlertCircle,
   ChevronDown,
@@ -107,40 +108,34 @@ export function Step3Group({
                 </div>
               </div>
 
-              <div className="space-y-1 py-1">
-                {/* Min thumb */}
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-muted-foreground/50 w-5 shrink-0">Min</span>
-                  <input
-                    type="range"
-                    min={3}
-                    max={autoMaxSize - 1}
-                    step={1}
-                    value={autoMinSize}
-                    onChange={(e) => onAutoMinSizeChange(Number(e.target.value))}
+              <div className="py-2 space-y-2">
+                <RadixSlider.Root
+                  className="relative flex items-center select-none touch-none w-full h-10"
+                  value={[autoMinSize, autoMaxSize]}
+                  onValueChange={([min, max]) => {
+                    onAutoMinSizeChange(min);
+                    onAutoMaxSizeChange(max);
+                  }}
+                  min={3}
+                  max={12}
+                  step={1}
+                  minStepsBetweenThumbs={1}
+                >
+                  <RadixSlider.Track className="bg-muted relative grow rounded-full h-1.5">
+                    <RadixSlider.Range className="absolute bg-primary rounded-full h-full" />
+                  </RadixSlider.Track>
+                  <RadixSlider.Thumb
+                    className="block w-6 h-6 bg-background border-2 border-primary rounded-full shadow-md shadow-primary/20 hover:scale-110 active:scale-95 transition-transform outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 cursor-grab active:cursor-grabbing"
                     aria-label="Minimum members"
-                    className="range-input w-full h-2 rounded-full accent-primary cursor-pointer"
                   />
-                  <span className="text-[11px] font-bold text-primary tabular-nums w-4 text-right shrink-0">{autoMinSize}</span>
-                </div>
-                {/* Max thumb */}
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-muted-foreground/50 w-5 shrink-0">Max</span>
-                  <input
-                    type="range"
-                    min={autoMinSize + 1}
-                    max={12}
-                    step={1}
-                    value={autoMaxSize}
-                    onChange={(e) => onAutoMaxSizeChange(Number(e.target.value))}
+                  <RadixSlider.Thumb
+                    className="block w-6 h-6 bg-background border-2 border-primary rounded-full shadow-md shadow-primary/20 hover:scale-110 active:scale-95 transition-transform outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 cursor-grab active:cursor-grabbing"
                     aria-label="Maximum members"
-                    className="range-input w-full h-2 rounded-full accent-primary cursor-pointer"
                   />
-                  <span className="text-[11px] font-bold text-primary tabular-nums w-4 text-right shrink-0">{autoMaxSize}</span>
-                </div>
-                <div className="flex justify-between px-0.5 pt-0.5">
-                  <span className="text-[11px] text-muted-foreground/30">3 members</span>
-                  <span className="text-[11px] text-muted-foreground/30">12 members</span>
+                </RadixSlider.Root>
+                <div className="flex justify-between px-0.5">
+                  <span className="text-[11px] text-muted-foreground/40">3 min</span>
+                  <span className="text-[11px] text-muted-foreground/40">12 max</span>
                 </div>
               </div>
             </div>

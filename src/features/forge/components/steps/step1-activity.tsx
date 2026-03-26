@@ -14,6 +14,7 @@ import {
   HandHeart,
   History,
 } from "lucide-react";
+import { useRef, useState } from "react";
 import { ACTIVITIES, RECENT } from "../../constants/forge.constants";
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -34,12 +35,29 @@ const ICON_MAP: Record<string, React.ElementType> = {
 export interface Step1ActivityProps {
   selectedActivity: string | null;
   onSelect: (activity: string) => void;
+  /** Called by ForgeFooter when the Continue button is tapped while disabled */
+  onShakeGrid?: () => void;
 }
 
 export function Step1Activity({
   selectedActivity,
   onSelect,
 }: Step1ActivityProps) {
+  const [shaking, setShaking] = useState(false);
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  const triggerShake = () => {
+    setShaking(true);
+    setTimeout(() => setShaking(false), 500);
+  };
+
+  // Expose triggerShake via a data attribute so ForgeFooter can call it imperatively
+  // via a CustomEvent dispatched on document
+  if (typeof window !== "undefined") {
+    (window as Window & { __forgeShakeGrid?: () => void }).__forgeShakeGrid =
+      triggerShake;
+  }
+
   return (
     <div className="space-y-5 animate-in fade-in duration-300">
 
@@ -128,7 +146,13 @@ export function Step1Activity({
         </div>
 
         {/* Grid — taller cards for 44px+ touch targets, no height cap so content isn't hidden */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+        <div
+          ref={gridRef}
+          className={cn(
+            "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 transition-transform",
+            shaking && "animate-[shake_0.45s_ease-in-out]",
+          )}
+        >
           {ACTIVITIES.map(({ id, label, description }) => {
             const Icon = ICON_MAP[id] || Activity;
             const selected = selectedActivity === label;
@@ -139,7 +163,7 @@ export function Step1Activity({
                 onClick={() => onSelect(label)}
                 aria-pressed={selected}
                 className={cn(
-                  "group relative flex flex-col items-start gap-3 p-4 rounded-2xl border text-left transition-all duration-200 min-h-[100px]",
+                  "group relative flex flex-col items-start gap-3 p-4 rounded-2xl border text-left transition-all duration-200 min-h-[100px] active:scale-[0.97]",
                   selected
                     ? "border-accent bg-accent/8 ring-1 ring-accent/25 shadow-sm"
                     : "border-border/40 bg-card hover:border-accent/30 hover:bg-accent/5",
