@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import { ForgeHero } from "./components/forge-hero";
 import { InlineForgeWizard } from "./components/inline-forge-wizard";
-import { ForgeLoadingShowcase } from "./components/loading/forge-loading-showcase";
 import { WalkthroughStep } from "./components/walkthrough-step";
 
 // ─── Data ──────────────────────────────────────────────────────────────────
@@ -55,7 +54,6 @@ const BRAND_TIPS = [
 
 export function ForgePage() {
   const [isWizardActive, setIsWizardActive] = useState(false);
-  const [showLoadingShowcase, setShowLoadingShowcase] = useState(false);
 
   // Tip rotation logic
   const [tipIndex, setTipIndex] = useState(0);
@@ -174,20 +172,7 @@ export function ForgePage() {
                   </div>
                 </section>
 
-                {/* ── Section 3: Loading Animation Showcase ── */}
-                <section id="forge-loading-showcase" className="space-y-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowLoadingShowcase((v) => !v)}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border/40 bg-card hover:border-primary/30 hover:bg-primary/5 transition-all text-sm font-semibold text-muted-foreground hover:text-foreground"
-                  >
-                    <Sparkles size={14} className="text-accent" />
-                    {showLoadingShowcase ? "Hide" : "View"} Loading Animation Concepts
-                  </button>
-                  {showLoadingShowcase && <ForgeLoadingShowcase />}
-                </section>
-
-                {/* ── Section 4: Periodic Tip ── */}
+                {/* ── Section 3: Periodic Tip ── */}
                 <section
                   id="forge-brand-tip"
                   className="flex items-center justify-center pt-8"
