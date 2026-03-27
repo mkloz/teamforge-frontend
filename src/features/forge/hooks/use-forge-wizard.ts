@@ -160,6 +160,14 @@ export function useForgeWizard(onClose: () => void) {
     setRemovedIds((prev) => new Set([...prev, id]));
   }, []);
 
+  const handleRestoreParticipant = useCallback((id: string) => {
+    setRemovedIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  }, []);
+
   const handleReforge = useCallback(() => {
     setNavDirection("back");
     setForgeResult("idle");
@@ -230,6 +238,7 @@ export function useForgeWizard(onClose: () => void) {
     handleManualForge,
     handleAutoForge,
     handleRemoveParticipant,
+    handleRestoreParticipant,
     handleReforge,
     handleCopyLink,
   };

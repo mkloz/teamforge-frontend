@@ -86,12 +86,13 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.4 }}
+          className="w-full max-w-xs"
         >
           <Button
-            variant="outline"
-            size="sm"
+            variant="default"
+            size="lg"
             onClick={fw.close}
-            className="rounded-xl px-6"
+            className="w-full rounded-2xl text-base font-bold"
           >
             Done
           </Button>
@@ -170,15 +171,10 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
                 <Zap size={14} className="text-accent fill-current" />
               </div>
             )}
-            <div className="flex flex-col md:flex-row md:items-baseline gap-0 md:gap-4 overflow-hidden">
+            <div className="flex items-baseline overflow-hidden">
               <h2 className="text-base md:text-lg font-black text-foreground tracking-tight">
                 {currentMetadata.title}
               </h2>
-              <div className="flex items-center gap-2">
-                <span className="hidden sm:inline-block text-[10px] font-bold text-muted-foreground/50 tracking-widest truncate max-w-30">
-                  {currentMetadata.sub}
-                </span>
-              </div>
             </div>
           </div>
 
@@ -269,6 +265,7 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
                 participants={fw.participants}
                 removedIds={fw.removedIds}
                 onRemoveParticipant={fw.handleRemoveParticipant}
+                onRestoreParticipant={fw.handleRestoreParticipant}
                 onReforge={fw.handleReforge}
               />
             )}

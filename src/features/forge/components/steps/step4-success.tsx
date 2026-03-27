@@ -1,5 +1,5 @@
 import { cn } from "@/shared/lib/utils";
-import { Check, RefreshCw, UserMinus } from "lucide-react";
+import { Check, RefreshCw, UserMinus, UserPlus } from "lucide-react";
 
 export interface Step4SuccessProps {
   planName: string;
@@ -12,6 +12,7 @@ export interface Step4SuccessProps {
   }>;
   removedIds: Set<string>;
   onRemoveParticipant: (id: string) => void;
+  onRestoreParticipant: (id: string) => void;
   onReforge: () => void;
 }
 
@@ -20,6 +21,7 @@ export function Step4Success({
   participants,
   removedIds,
   onRemoveParticipant,
+  onRestoreParticipant,
   onReforge,
 }: Step4SuccessProps) {
   const activeCount = participants.filter((p) => !removedIds.has(p.id)).length + 1;
@@ -122,7 +124,16 @@ export function Step4Success({
                     )}
                   </div>
                 </div>
-                {!removed && (
+                {removed ? (
+                  <button
+                    type="button"
+                    onClick={() => onRestoreParticipant(p.id)}
+                    aria-label={`Restore ${p.name}`}
+                    className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-emerald-500/10 hover:text-emerald-600 transition-all duration-200"
+                  >
+                    <UserPlus size={14} />
+                  </button>
+                ) : (
                   <button
                     type="button"
                     onClick={() => onRemoveParticipant(p.id)}
