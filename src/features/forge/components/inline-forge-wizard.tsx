@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, Zap } from "lucide-react";
+import { Check, ChevronLeft, Zap } from "lucide-react";
 import { ForgeLoadingAnvil } from "./loading/forge-loading-anvil";
 import { useEffect } from "react";
 import { useForgeWizard } from "../hooks/use-forge-wizard";
@@ -42,6 +42,63 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
     5: { title: "Give it a look", sub: "Group Identity" },
     6: { title: "Ready to go!", sub: "Invitations" },
   }[fw.step] || { title: "", sub: "" };
+
+  // ── Invitations sent screen — full-area replacement ──────────────────────
+  if (fw.invitesSent) {
+    return (
+      <motion.div
+        key="forge-invites-sent-screen"
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 1.02 }}
+        transition={{ duration: 0.45, ease: [0.32, 0.72, 0, 1] }}
+        className="w-full flex flex-col items-center justify-center min-h-[70vh] gap-8 px-4 text-center"
+      >
+        <motion.div
+          initial={{ scale: 0.7, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.15, duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+          className="w-24 h-24 rounded-[2rem] bg-emerald-500 flex items-center justify-center shadow-2xl shadow-emerald-500/30"
+        >
+          <Check size={44} className="text-white" strokeWidth={2.5} />
+        </motion.div>
+
+        <motion.div
+          className="flex flex-col items-center gap-3 max-w-xs"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.45 }}
+        >
+          <p className="text-xs font-bold tracking-widest text-emerald-600 uppercase">
+            Invitations sent
+          </p>
+          <h3 className="text-2xl font-black text-foreground tracking-tight">
+            Your group is live!
+          </h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {fw.activeParticipants.length} invitation{fw.activeParticipants.length !== 1 ? "s" : ""} sent for{" "}
+            <span className="font-semibold text-foreground">&ldquo;{fw.planName}&rdquo;</span>.
+            You&apos;ll be notified as each member joins.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.4 }}
+        >
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={fw.close}
+            className="rounded-xl px-6"
+          >
+            Done
+          </Button>
+        </motion.div>
+      </motion.div>
+    );
+  }
 
   // ── Loading screen — full-area replacement, not an overlay ──────────────
   if (fw.isForging) {
@@ -238,7 +295,6 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
                 coverImage={fw.coverImage}
                 inviteCopied={fw.inviteCopied}
                 onCopyLink={fw.handleCopyLink}
-                invitesSent={fw.invitesSent}
               />
             )}
           </motion.div>

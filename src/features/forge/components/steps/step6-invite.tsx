@@ -22,7 +22,6 @@ export interface Step6InviteProps {
   coverImage: string | null;
   inviteCopied: boolean;
   onCopyLink: () => void;
-  invitesSent: boolean;
 }
 
 export function Step6Invite({
@@ -34,34 +33,8 @@ export function Step6Invite({
   coverImage,
   inviteCopied,
   onCopyLink,
-  invitesSent,
 }: Step6InviteProps) {
   const gradientClass = coverImage ? PRESET_GRADIENTS[coverImage] : null;
-
-  if (invitesSent) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 gap-6 text-center animate-in fade-in zoom-in-95 duration-500">
-        <div className="relative">
-          <div className="w-20 h-20 rounded-[1.75rem] bg-emerald-500 flex items-center justify-center shadow-xl shadow-emerald-500/25">
-            <Check size={36} className="text-white" strokeWidth={2.5} />
-          </div>
-          <span className="absolute -top-1 -right-1 flex h-4 w-4">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500" />
-          </span>
-        </div>
-        <div className="space-y-2 max-w-xs">
-          <p className="text-xs font-semibold text-emerald-600">Invitations sent</p>
-          <h3 className="text-xl font-bold text-foreground tracking-tight">Your group is live!</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {participantCount - 1} invitation{participantCount - 1 !== 1 ? "s" : ""} sent for{" "}
-            <span className="font-semibold text-foreground">&ldquo;{planName}&rdquo;</span>.
-            You&apos;ll be notified as each member joins.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">

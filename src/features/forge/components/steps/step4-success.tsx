@@ -29,14 +29,10 @@ export function Step4Success({
 
       {/* Hero success moment */}
       <div className="rounded-2xl bg-emerald-500/8 border border-emerald-500/20 p-5 flex items-center gap-4">
-        <div className="relative shrink-0">
+        <div className="shrink-0">
           <div className="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/25">
             <Check size={22} className="text-white" strokeWidth={2.5} />
           </div>
-          <span className="absolute -top-1 -right-1 flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
-          </span>
         </div>
         <div className="min-w-0">
           <p className="text-xs font-semibold text-emerald-600">Group forged</p>
