@@ -32,7 +32,7 @@ const SPARKS = [
 
 // Keyframe timing: [lift, peak-hang, impact, recoil, rest]
 const TIMING = [0, 0.35, 0.5, 0.53, 0.65, 1];
-const DURATION = 2.0;
+const DURATION = 1.6;
 
 interface ForgeLoadingAnvilProps {
   label?: string;

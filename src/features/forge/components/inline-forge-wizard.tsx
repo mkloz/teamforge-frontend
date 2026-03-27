@@ -28,7 +28,7 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
   // Scroll to top on step change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [fw.step]);
+  }, [fw.step, fw.isForging]);
 
   // Header metadata per step
   const currentMetadata = {
@@ -43,11 +43,55 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
     6: { title: "Ready to go!", sub: "Invitations" },
   }[fw.step] || { title: "", sub: "" };
 
+  // ── Loading screen — full-area replacement, not an overlay ──────────────
+  if (fw.isForging) {
+    return (
+      <motion.div
+        key="forge-loading-screen"
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 1.02 }}
+        transition={{ duration: 0.45, ease: [0.32, 0.72, 0, 1] }}
+        className="w-full flex flex-col items-center justify-center min-h-[70vh] gap-10 px-4"
+      >
+        {/* Ambient glow behind animation */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(245,158,11,0.06) 0%, transparent 70%)",
+          }}
+          aria-hidden="true"
+        />
+
+        <ForgeLoadingAnvil
+          label="Forging your group..."
+          size={260}
+          className="relative z-10"
+        />
+
+        {/* Rotating status messages */}
+        <motion.div
+          className="relative z-10 flex flex-col items-center gap-2 text-center"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
+          <p className="text-xs text-muted-foreground/50 font-medium tracking-wide">
+            Matching you with compatible people based on interests &amp; personality
+          </p>
+        </motion.div>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
+      key="forge-wizard-form"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
       className="w-full h-full flex flex-col px-4 md:px-12 max-w-3xl mx-auto"
     >
       {/* ── Responsive Sticky Header ── */}
@@ -107,22 +151,6 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
           forgeResult={fw.forgeResult}
         />
       </div>
-
-      {/* ── Forge Loading Overlay (Phase 1 → Phase 2 transition) ── */}
-      <AnimatePresence>
-        {fw.isForging && (
-          <motion.div
-            key="forge-loading"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="absolute inset-0 z-40 flex items-center justify-center bg-background/95 backdrop-blur-sm rounded-2xl"
-          >
-            <ForgeLoadingAnvil label="Forging your group..." />
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* ── Content Area ── */}
       <div className="flex-1 relative mt-2">

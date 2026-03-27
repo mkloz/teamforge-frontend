@@ -105,16 +105,19 @@ export function useForgeWizard(onClose: () => void) {
     else if (step === 6) setStep(5);
   }, [step]);
 
-  // Shared forge animation runner — animates progress 0→100 over ~2.4s then resolves
+  // Shared forge animation runner — runs for a minimum visible duration (6s)
+  // then resolves. Since we don't know when the real algorithm finishes,
+  // the animation is infinite; we just enforce a minimum so users always
+  // see the full forge sequence before the result screen appears.
   const runForgeAnimation = useCallback(
     (onComplete: () => void) => {
       setIsForging(true);
       setForgingProgress(0);
       const start = performance.now();
-      const duration = 2400;
+      const minDuration = 6000;
       const tick = (now: number) => {
         const elapsed = now - start;
-        const p = Math.min((elapsed / duration) * 100, 100);
+        const p = Math.min((elapsed / minDuration) * 100, 100);
         setForgingProgress(p);
         if (p < 100) {
           requestAnimationFrame(tick);
