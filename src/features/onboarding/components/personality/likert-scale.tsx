@@ -1,5 +1,5 @@
 import { cn } from "@/shared/lib/utils";
-import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
+import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
 
 interface LikertScaleProps {
   value: 1 | 2 | 3 | 4 | 5 | undefined;

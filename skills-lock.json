@@ -21,6 +21,16 @@
       "sourceType": "github",
       "computedHash": "063a0e6448123cd359ad0044cc46b0e490cc7964d45ef4bb9fd842bd2ffbca67"
     },
+    "react-dev": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "computedHash": "4ce3a30e2ad46fdb79f01e0e44701f961c055da7f25f9418af0283a7ad54b791"
+    },
+    "react-refactor": {
+      "source": "pproenca/dot-skills",
+      "sourceType": "github",
+      "computedHash": "e8311b720ebd9143b16c119fad4817e683914e9499bb127d397c712a320ec6d4"
+    },
     "shadcn-ui": {
       "source": "giuseppe-trisciuoglio/developer-kit",
       "sourceType": "github",
