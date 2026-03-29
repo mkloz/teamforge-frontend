@@ -124,21 +124,9 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
 
         <ForgeLoadingAnvil
           label="Forging your group..."
-          size={260}
+          size={320}
           className="relative z-10"
         />
-
-        {/* Rotating status messages */}
-        <motion.div
-          className="relative z-10 flex flex-col items-center gap-2 text-center"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-        >
-          <p className="text-xs text-muted-foreground/50 font-medium tracking-wide">
-            Matching you with compatible people based on interests &amp; personality
-          </p>
-        </motion.div>
       </motion.div>
     );
   }

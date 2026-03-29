@@ -1,8 +1,9 @@
 "use client";
 
+import { GroupIdentityFields } from "@/features/forge/components/group-identity-fields";
 import { cn } from "@/shared/lib/utils";
 import { Check, ImagePlus, Upload, X } from "lucide-react";
-import { useId, useRef } from "react";
+import { useRef } from "react";
 
 export interface Step5IdentityProps {
   planName: string;
@@ -78,8 +79,6 @@ export function Step5Identity({
 }: Step5IdentityProps) {
   const coverInputRef = useRef<HTMLInputElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
-  const nameId = useId();
-  const descId = useId();
 
   const activePreset = PRESET_COVERS.find((c) => c.id === coverImage);
   const isUploadedCover = coverImage === "uploaded";
@@ -101,65 +100,15 @@ export function Step5Identity({
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
 
-      {/* ── Group identity (name + description) ── */}
-      <div className="space-y-4">
-        <div>
-          <p className="text-xs font-semibold text-muted-foreground">Group identity</p>
-          <p className="text-xs text-muted-foreground/60 mt-0.5">
-            Refine the name and description you set in the previous step.
-          </p>
-        </div>
-
-        <div className="space-y-1.5">
-          <label htmlFor={nameId} className="block text-xs font-semibold text-muted-foreground/70">
-            Name
-          </label>
-          <div className="relative flex items-center rounded-xl border border-border/60 bg-background/60 focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/12 focus-within:bg-background transition-all duration-150">
-            <input
-              id={nameId}
-              type="text"
-              value={groupName}
-              maxLength={40}
-              autoComplete="off"
-              placeholder="e.g. Iron Collective"
-              onChange={(e) => onGroupNameChange?.(e.target.value)}
-              className="w-full h-11 px-3.5 bg-transparent text-sm font-medium placeholder:text-muted-foreground/35 focus:outline-none rounded-xl"
-            />
-            {groupName && (
-              <button
-                type="button"
-                onClick={() => onGroupNameChange?.("")}
-                className="absolute right-2.5 text-muted-foreground/40 hover:text-muted-foreground transition-colors"
-                aria-label="Clear name"
-              >
-                <X size={13} />
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="space-y-1.5">
-          <label htmlFor={descId} className="block text-xs font-semibold text-muted-foreground/70">
-            Description <span className="font-normal text-muted-foreground/40">(optional)</span>
-          </label>
-          <textarea
-            id={descId}
-            value={groupDescription}
-            maxLength={200}
-            rows={2}
-            placeholder="What's this group about?"
-            onChange={(e) => onGroupDescriptionChange?.(e.target.value)}
-            className={cn(
-              "w-full rounded-xl border border-border/60 bg-background/60 px-3.5 py-3 text-sm font-medium",
-              "placeholder:text-muted-foreground/35 focus:outline-none focus:border-primary/60",
-              "focus:ring-2 focus:ring-primary/12 focus:bg-background transition-all duration-150 resize-none leading-relaxed",
-            )}
-          />
-          {groupDescription.length > 0 && (
-            <p className="text-[11px] text-muted-foreground/40 text-right">{groupDescription.length}/200</p>
-          )}
-        </div>
-      </div>
+      {/* ── Group identity (shared component, same as step 3) ── */}
+      <GroupIdentityFields
+        groupName={groupName}
+        onGroupNameChange={(v) => onGroupNameChange?.(v)}
+        groupDescription={groupDescription}
+        onGroupDescriptionChange={(v) => onGroupDescriptionChange?.(v)}
+        selectedActivity={activity}
+        subtitle="Refine the name and description you set earlier."
+      />
 
       {/* ── Plan photo (cover) preview ── */}
       <div className="space-y-3">
