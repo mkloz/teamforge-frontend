@@ -11,7 +11,7 @@ export type MessageStatus = "SENDING" | "SENT" | "DELIVERED" | "READ";
 /**
  * A user in a direct chat
  */
-export interface DirectChatUser {
+export interface Participant {
   id: string;
   name: string;
   avatar: string;
@@ -26,7 +26,7 @@ export interface DirectChatUser {
  */
 export interface DirectChat {
   id: string;
-  participant: DirectChatUser;
+  participant: Participant;
   createdAt: string;
   // Mutual connections
   mutualGroups?: {
