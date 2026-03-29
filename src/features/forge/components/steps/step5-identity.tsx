@@ -99,7 +99,6 @@ export function Step5Identity({
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
-
       {/* ── Group identity (shared component, same as step 3) ── */}
       <GroupIdentityFields
         groupName={groupName}
@@ -113,7 +112,9 @@ export function Step5Identity({
       {/* ── Plan photo (cover) preview ── */}
       <div className="space-y-3">
         <div>
-          <p className="text-xs font-semibold text-muted-foreground">Plan photo</p>
+          <p className="text-xs font-semibold text-muted-foreground">
+            Plan photo
+          </p>
           <p className="text-xs text-muted-foreground/60 mt-0.5">
             This image appears on the plan card visible to all members.
           </p>
@@ -128,8 +129,8 @@ export function Step5Identity({
             isUploadedCover
               ? "border-primary/40"
               : coverImage
-              ? "border-transparent"
-              : "border-dashed border-border/60 bg-muted/30 hover:border-primary/40 hover:bg-primary/3",
+                ? "border-transparent"
+                : "border-dashed border-border/60 bg-muted/30 hover:border-primary/40 hover:bg-primary/3",
           )}
         >
           {/* Gradient background when preset selected */}
@@ -153,7 +154,10 @@ export function Step5Identity({
           {!coverImage && (
             <div className="flex flex-col items-center gap-2 pointer-events-none">
               <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
-                <Upload size={18} className="text-muted-foreground group-hover:text-primary/70 transition-colors" />
+                <Upload
+                  size={18}
+                  className="text-muted-foreground group-hover:text-primary/70 transition-colors"
+                />
               </div>
               <p className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
                 Upload plan photo
@@ -174,7 +178,10 @@ export function Step5Identity({
           {coverImage && (
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); onCoverImageChange(null); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onCoverImageChange(null);
+              }}
               className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/40 hover:bg-black/60 flex items-center justify-center transition-colors z-10"
               aria-label="Remove cover"
             >
@@ -225,9 +232,12 @@ export function Step5Identity({
       {/* ── Group avatar upload ── */}
       <div className="space-y-3">
         <div>
-          <p className="text-xs font-semibold text-muted-foreground">Group avatar</p>
+          <p className="text-xs font-semibold text-muted-foreground">
+            Group avatar
+          </p>
           <p className="text-xs text-muted-foreground/60 mt-0.5">
-            A square icon that identifies your group across the app. Drag and drop or tap to upload.
+            A square icon that identifies your group across the app. Drag and
+            drop or tap to upload.
           </p>
         </div>
 
@@ -290,9 +300,13 @@ export function Step5Identity({
                   : "text-muted-foreground group-hover:text-foreground",
               )}
             >
-              {isUploadedAvatar ? "Avatar selected — tap to change" : "Drag & drop or tap to upload"}
+              {isUploadedAvatar
+                ? "Avatar selected — tap to change"
+                : "Drag & drop or tap to upload"}
             </p>
-            <p className="text-[11px] text-muted-foreground/50">PNG, JPG, WEBP up to 5 MB</p>
+            <p className="text-[11px] text-muted-foreground/50">
+              PNG, JPG, WEBP up to 5 MB
+            </p>
           </button>
         </div>
         <input
@@ -315,8 +329,8 @@ export function Step5Identity({
               isUploadedCover
                 ? "bg-primary/15"
                 : coverImage
-                ? `bg-gradient-to-br ${activePreset?.gradient}`
-                : "bg-muted/40",
+                  ? `bg-gradient-to-br ${activePreset?.gradient}`
+                  : "bg-muted/40",
             )}
           />
           {/* Info */}
@@ -327,11 +341,13 @@ export function Step5Identity({
                 isUploadedAvatar
                   ? "bg-primary/20"
                   : coverImage
-                  ? `bg-gradient-to-br ${activePreset?.gradient}`
-                  : "bg-muted",
+                    ? `bg-gradient-to-br ${activePreset?.gradient}`
+                    : "bg-muted",
               )}
             >
-              {isUploadedAvatar && <Check size={18} className="text-primary" strokeWidth={2.5} />}
+              {isUploadedAvatar && (
+                <Check size={18} className="text-primary" strokeWidth={2.5} />
+              )}
             </div>
             <div className="min-w-0 pt-2">
               <h3 className="text-sm font-bold text-foreground truncate">
@@ -344,7 +360,6 @@ export function Step5Identity({
           </div>
         </div>
       </div>
-
     </div>
   );
 }

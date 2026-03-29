@@ -32,13 +32,13 @@ function formatCountdown(isoString: string): string | null {
   const date = new Date(isoString);
   const now = new Date();
   const diffMs = date.getTime() - now.getTime();
-  
+
   // Only show countdown for upcoming events within 7 days
   if (diffMs < 0 || diffMs > 7 * 24 * 60 * 60 * 1000) return null;
-  
+
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-  
+
   if (diffHours < 1) return `${diffMins}m`;
   if (diffHours < 24) return `${diffHours}h`;
   const days = Math.ceil(diffHours / 24);
@@ -102,7 +102,9 @@ export function ConversationListItem({
           <p
             className={cn(
               "text-xs truncate",
-              hasUnread ? "text-foreground font-medium" : "text-muted-foreground",
+              hasUnread
+                ? "text-foreground font-medium"
+                : "text-muted-foreground",
               group.lastMessage?.isSystem && "italic",
             )}
           >

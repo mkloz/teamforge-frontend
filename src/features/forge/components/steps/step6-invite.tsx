@@ -38,7 +38,6 @@ export function Step6Invite({
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
-
       {/* ── Group summary card ── */}
       <div className="rounded-2xl border border-border/50 bg-card overflow-hidden shadow-sm">
         {/* Cover strip */}
@@ -48,8 +47,8 @@ export function Step6Invite({
             coverImage === "uploaded"
               ? "bg-primary/20"
               : gradientClass
-              ? `bg-gradient-to-br ${gradientClass}`
-              : "bg-gradient-to-br from-muted/60 to-muted/20",
+                ? `bg-gradient-to-br ${gradientClass}`
+                : "bg-gradient-to-br from-muted/60 to-muted/20",
           )}
         />
 
@@ -63,8 +62,8 @@ export function Step6Invite({
                 coverImage === "uploaded"
                   ? "bg-primary/15"
                   : gradientClass
-                  ? `bg-gradient-to-br ${gradientClass}`
-                  : "bg-muted",
+                    ? `bg-gradient-to-br ${gradientClass}`
+                    : "bg-muted",
               )}
             >
               <Zap size={20} className="text-white/80" />
@@ -74,7 +73,9 @@ export function Step6Invite({
                 {planName || "Untitled Group"}
               </h4>
               {activity && (
-                <p className="text-xs text-muted-foreground mt-0.5">{activity}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {activity}
+                </p>
               )}
             </div>
           </div>
@@ -90,7 +91,9 @@ export function Step6Invite({
             {planDate && (
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-muted/60 border border-border/40">
                 <Calendar size={12} className="text-primary shrink-0" />
-                <span className="text-xs font-semibold text-foreground">{planDate}</span>
+                <span className="text-xs font-semibold text-foreground">
+                  {planDate}
+                </span>
               </div>
             )}
             {planLocation && (
@@ -110,15 +113,19 @@ export function Step6Invite({
             <div className="flex -space-x-2">
               {/* Host */}
               <div className="w-7 h-7 rounded-full bg-primary border-2 border-card flex items-center justify-center shadow-sm z-10">
-                <span className="text-[9px] font-bold text-primary-foreground">You</span>
+                <span className="text-[9px] font-bold text-primary-foreground">
+                  You
+                </span>
               </div>
-              {Array.from({ length: Math.min(4, participantCount - 1) }).map((_, i) => (
-                <div
-                  key={i}
-                  className="w-7 h-7 rounded-full bg-accent/20 border-2 border-card shadow-sm"
-                  style={{ zIndex: 9 - i }}
-                />
-              ))}
+              {Array.from({ length: Math.min(4, participantCount - 1) }).map(
+                (_, i) => (
+                  <div
+                    key={i}
+                    className="w-7 h-7 rounded-full bg-accent/20 border-2 border-card shadow-sm"
+                    style={{ zIndex: 9 - i }}
+                  />
+                ),
+              )}
               {participantCount > 5 && (
                 <div
                   className="w-7 h-7 rounded-full bg-muted border-2 border-card flex items-center justify-center shadow-sm"
@@ -136,14 +143,18 @@ export function Step6Invite({
           </div>
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/15">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-semibold text-emerald-600">Verified</span>
+            <span className="text-xs font-semibold text-emerald-600">
+              Verified
+            </span>
           </span>
         </div>
       </div>
 
       {/* ── Invite link ── */}
       <div className="space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground">Share invite link</p>
+        <p className="text-xs font-semibold text-muted-foreground">
+          Share invite link
+        </p>
         <div className="flex items-center gap-2 px-4 h-12 rounded-2xl border border-border/50 bg-card">
           <span className="flex-1 text-sm text-muted-foreground truncate font-mono">
             teamforge.app/join/grp_xk4j2m
@@ -160,9 +171,15 @@ export function Step6Invite({
             )}
           >
             {inviteCopied ? (
-              <><Check size={12} strokeWidth={2.5} />Copied!</>
+              <>
+                <Check size={12} strokeWidth={2.5} />
+                Copied!
+              </>
             ) : (
-              <><Copy size={12} strokeWidth={2} />Copy</>
+              <>
+                <Copy size={12} strokeWidth={2} />
+                Copy
+              </>
             )}
           </button>
         </div>
@@ -172,14 +189,19 @@ export function Step6Invite({
       <div className="flex gap-3 p-4 rounded-2xl border border-border/40 bg-card">
         <div className="w-0.5 rounded-full bg-primary/30 shrink-0 self-stretch" />
         <div className="space-y-1">
-          <p className="text-xs font-semibold text-primary/80">Sending invitations</p>
+          <p className="text-xs font-semibold text-primary/80">
+            Sending invitations
+          </p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Tapping <span className="font-semibold text-foreground">Confirm &amp; send</span> below
-            will notify all {participantCount - 1} matched member{participantCount - 1 !== 1 ? "s" : ""} and create your group.
+            Tapping{" "}
+            <span className="font-semibold text-foreground">
+              Confirm &amp; send
+            </span>{" "}
+            below will notify all {participantCount - 1} matched member
+            {participantCount - 1 !== 1 ? "s" : ""} and create your group.
           </p>
         </div>
       </div>
-
     </div>
   );
 }

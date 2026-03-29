@@ -11,7 +11,9 @@ export function CompletedBanner({ groupName }: CompletedBannerProps) {
       {/* Success indicator */}
       <div className="flex items-center justify-center gap-2 py-2 bg-green-500/10 border-b border-green-500/20">
         <CheckCircle size={14} className="text-green-600" />
-        <span className="text-xs font-medium text-green-700">Event completed</span>
+        <span className="text-xs font-medium text-green-700">
+          Event completed
+        </span>
       </div>
 
       {/* Call to action */}

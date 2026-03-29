@@ -102,9 +102,17 @@ export function UserMenu() {
             )}
           >
             {isDark ? (
-              <Sun size={15} aria-hidden="true" className="text-muted-foreground" />
+              <Sun
+                size={15}
+                aria-hidden="true"
+                className="text-muted-foreground"
+              />
             ) : (
-              <Moon size={15} aria-hidden="true" className="text-muted-foreground" />
+              <Moon
+                size={15}
+                aria-hidden="true"
+                className="text-muted-foreground"
+              />
             )}
             {isDark ? "Switch to Light mode" : "Switch to Dark mode"}
             <span className="ml-auto text-xs text-muted-foreground">
@@ -123,7 +131,11 @@ export function UserMenu() {
               "focus-visible:outline-none focus-visible:bg-muted",
             )}
           >
-            <User size={15} aria-hidden="true" className="text-muted-foreground" />
+            <User
+              size={15}
+              aria-hidden="true"
+              className="text-muted-foreground"
+            />
             View Profile
           </Link>
 
@@ -138,7 +150,11 @@ export function UserMenu() {
               "focus-visible:outline-none focus-visible:bg-muted",
             )}
           >
-            <Settings size={15} aria-hidden="true" className="text-muted-foreground" />
+            <Settings
+              size={15}
+              aria-hidden="true"
+              className="text-muted-foreground"
+            />
             Settings
           </Link>
         </div>

@@ -54,13 +54,20 @@ function shouldShowSender(
   return timeDiff > 5 * 60 * 1000;
 }
 
-export function MessageList({ messages, messagesEndRef, containerRef }: MessageListProps) {
+export function MessageList({
+  messages,
+  messagesEndRef,
+  containerRef,
+}: MessageListProps) {
   return (
     <div ref={containerRef} className="h-full overflow-y-auto px-4 py-3">
       <div className="flex flex-col gap-1">
         {messages.map((message, index) => {
           const prevMessage = messages[index - 1];
-          const showDateSeparator = shouldShowDateSeparator(message, prevMessage);
+          const showDateSeparator = shouldShowDateSeparator(
+            message,
+            prevMessage,
+          );
           const showSender = shouldShowSender(message, prevMessage);
 
           return (
@@ -80,10 +87,7 @@ export function MessageList({ messages, messagesEndRef, containerRef }: MessageL
               ) : message.type === "PLAN_UPDATE" ? (
                 <ProposalMessage message={message} />
               ) : (
-                <MessageItem
-                  message={message}
-                  showSender={showSender}
-                />
+                <MessageItem message={message} showSender={showSender} />
               )}
             </div>
           );

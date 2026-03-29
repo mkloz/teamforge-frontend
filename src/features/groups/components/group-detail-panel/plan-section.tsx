@@ -44,8 +44,8 @@ function formatTime(isoString: string): string {
   });
 }
 
-export function PlanSection({ 
-  plan, 
+export function PlanSection({
+  plan,
   userRole = "MEMBER",
   showCoverImage = false,
 }: PlanSectionProps) {
@@ -124,7 +124,9 @@ export function PlanSection({
             <Calendar size={16} className="text-muted-foreground" />
           </div>
           <div>
-            <p className="font-medium text-foreground">{formatDate(plan.dateTime)}</p>
+            <p className="font-medium text-foreground">
+              {formatDate(plan.dateTime)}
+            </p>
           </div>
         </div>
 
@@ -134,7 +136,9 @@ export function PlanSection({
             <Clock size={16} className="text-muted-foreground" />
           </div>
           <div>
-            <p className="font-medium text-foreground">{formatTime(plan.dateTime)}</p>
+            <p className="font-medium text-foreground">
+              {formatTime(plan.dateTime)}
+            </p>
           </div>
         </div>
 

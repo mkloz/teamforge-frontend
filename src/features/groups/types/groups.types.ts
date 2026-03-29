@@ -17,11 +17,21 @@ export type PlanCategory =
 
 export type PlanStatus = "DRAFT" | "CONFIRMED" | "COMPLETED";
 
-export type GroupStatus = "FORMING" | "PENDING" | "ACTIVE" | "COMPLETED" | "DISSOLVED";
+export type GroupStatus =
+  | "FORMING"
+  | "PENDING"
+  | "ACTIVE"
+  | "COMPLETED"
+  | "DISSOLVED";
 
 export type MemberRole = "ADMIN" | "MEMBER";
 
-export type MessageType = "TEXT" | "IMAGE" | "LOCATION" | "SYSTEM" | "PLAN_UPDATE";
+export type MessageType =
+  | "TEXT"
+  | "IMAGE"
+  | "LOCATION"
+  | "SYSTEM"
+  | "PLAN_UPDATE";
 
 /**
  * The persistent Group identity (separate from the Plan)

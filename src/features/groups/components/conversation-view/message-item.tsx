@@ -15,12 +15,9 @@ function formatTime(isoString: string): string {
   });
 }
 
-export function MessageItem({ 
-  message, 
-  showSender, 
-}: MessageItemProps) {
+export function MessageItem({ message, showSender }: MessageItemProps) {
   const isOwn = message.isOwn;
-  
+
   // Simple read status: has anyone read this message?
   const isRead = message.readBy && message.readBy.length > 0;
   const isDelivered = true; // In real app, this would come from message status
@@ -72,10 +69,12 @@ export function MessageItem({
             {message.content}
           </p>
           {/* Time + read status */}
-          <div className={cn(
-            "flex items-center gap-1 mt-1",
-            isOwn ? "justify-end" : "",
-          )}>
+          <div
+            className={cn(
+              "flex items-center gap-1 mt-1",
+              isOwn ? "justify-end" : "",
+            )}
+          >
             <span
               className={cn(
                 "text-[10px] select-none",
@@ -85,13 +84,12 @@ export function MessageItem({
               {formatTime(message.timestamp)}
             </span>
             {/* Read checkmarks for own messages */}
-            {isOwn && (
-              isRead ? (
+            {isOwn &&
+              (isRead ? (
                 <CheckCheck size={14} className="text-primary-foreground/70" />
               ) : isDelivered ? (
                 <Check size={14} className="text-primary-foreground/50" />
-              ) : null
-            )}
+              ) : null)}
           </div>
         </div>
       </div>

@@ -50,7 +50,9 @@ export function NavItem({
         size={18}
         className={cn(
           "shrink-0 transition-colors duration-150",
-          active ? "text-primary" : "text-muted-foreground group-hover:text-foreground",
+          active
+            ? "text-primary"
+            : "text-muted-foreground group-hover:text-foreground",
         )}
         aria-hidden="true"
       />

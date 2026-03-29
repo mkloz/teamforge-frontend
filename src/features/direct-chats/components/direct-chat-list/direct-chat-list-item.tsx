@@ -1,6 +1,10 @@
 import { Check, CheckCheck, BellOff } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-import type { DirectChatPreview, OnlineStatus, MessageStatus } from "../../types/direct-chats.types";
+import type {
+  DirectChatPreview,
+  OnlineStatus,
+  MessageStatus,
+} from "../../types/direct-chats.types";
 
 interface DirectChatListItemProps {
   chat: DirectChatPreview;
@@ -42,7 +46,9 @@ function getOnlineStatusColor(status: OnlineStatus): string {
 function MessageStatusIcon({ status }: { status: MessageStatus }) {
   switch (status) {
     case "SENDING":
-      return <span className="w-3 h-3 rounded-full border border-muted-foreground/40 border-t-transparent animate-spin" />;
+      return (
+        <span className="w-3 h-3 rounded-full border border-muted-foreground/40 border-t-transparent animate-spin" />
+      );
     case "SENT":
       return <Check size={14} className="text-muted-foreground" />;
     case "DELIVERED":
@@ -98,7 +104,10 @@ export function DirectChatListItem({
               {chat.participantName}
             </h3>
             {chat.isMuted && (
-              <BellOff size={12} className="text-muted-foreground flex-shrink-0" />
+              <BellOff
+                size={12}
+                className="text-muted-foreground flex-shrink-0"
+              />
             )}
           </div>
           {chat.lastMessage && (
@@ -115,7 +124,7 @@ export function DirectChatListItem({
             {chat.lastMessage?.isOwn && (
               <MessageStatusIcon status={chat.lastMessage.status} />
             )}
-            
+
             {/* Typing indicator or message preview */}
             {chat.isTyping ? (
               <span className="text-xs text-teal-500 font-medium italic">
@@ -125,7 +134,9 @@ export function DirectChatListItem({
               <p
                 className={cn(
                   "text-xs truncate",
-                  hasUnread ? "text-foreground font-medium" : "text-muted-foreground",
+                  hasUnread
+                    ? "text-foreground font-medium"
+                    : "text-muted-foreground",
                 )}
               >
                 {chat.lastMessage?.content || "No messages yet"}

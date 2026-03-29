@@ -36,7 +36,8 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
     2: { title: "When and Where?", sub: "Planning Details" },
     3: { title: "Who are we looking for?", sub: "Group Preferences" },
     4: {
-      title: fw.forgeResult === "failed" ? "No matches found" : "We found a group!",
+      title:
+        fw.forgeResult === "failed" ? "No matches found" : "We found a group!",
       sub: fw.forgeResult === "failed" ? "Let's try adjusting" : "Success",
     },
     5: { title: "Give it a look", sub: "Group Identity" },
@@ -57,7 +58,11 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
         <motion.div
           initial={{ scale: 0.7, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.15, duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+          transition={{
+            delay: 0.15,
+            duration: 0.5,
+            ease: [0.34, 1.56, 0.64, 1],
+          }}
           className="w-24 h-24 rounded-[2rem] bg-emerald-500 flex items-center justify-center shadow-2xl shadow-emerald-500/30"
         >
           <Check size={44} className="text-white" strokeWidth={2.5} />
@@ -76,9 +81,12 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
             Your group is live!
           </h3>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            {fw.activeParticipants.length} invitation{fw.activeParticipants.length !== 1 ? "s" : ""} sent for{" "}
-            <span className="font-semibold text-foreground">&ldquo;{fw.planName}&rdquo;</span>.
-            You&apos;ll be notified as each member joins.
+            {fw.activeParticipants.length} invitation
+            {fw.activeParticipants.length !== 1 ? "s" : ""} sent for{" "}
+            <span className="font-semibold text-foreground">
+              &ldquo;{fw.planName}&rdquo;
+            </span>
+            . You&apos;ll be notified as each member joins.
           </p>
         </motion.div>
 
@@ -172,8 +180,14 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => {
-                  const hasProgress = fw.step > 1 || fw.selectedActivity !== null;
-                  if (!hasProgress || window.confirm("Exit the forge? Your progress will be lost.")) {
+                  const hasProgress =
+                    fw.step > 1 || fw.selectedActivity !== null;
+                  if (
+                    !hasProgress ||
+                    window.confirm(
+                      "Exit the forge? Your progress will be lost.",
+                    )
+                  ) {
                     onCancel();
                   }
                 }}

@@ -18,7 +18,11 @@ export function MembersSection({ members, maxMembers }: MembersSectionProps) {
           Members ({members.length}/{maxMembers})
         </h3>
         {canInvite && (
-          <Button variant="ghost" size="sm" className="h-7 text-xs text-primary">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 text-xs text-primary"
+          >
             <UserPlus size={14} className="mr-1" />
             Invite
           </Button>

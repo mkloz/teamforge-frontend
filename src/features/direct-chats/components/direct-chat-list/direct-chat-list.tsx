@@ -33,11 +33,15 @@ export function DirectChatList({
   // Filter logic
   const filteredChats = chats.filter((chat) => {
     // Search filter
-    if (searchQuery && !chat.participantName.toLowerCase().includes(searchQuery.toLowerCase())) {
+    if (
+      searchQuery &&
+      !chat.participantName.toLowerCase().includes(searchQuery.toLowerCase())
+    ) {
       return false;
     }
     // Tab filter
-    if (activeFilter === "online" && chat.onlineStatus !== "ONLINE") return false;
+    if (activeFilter === "online" && chat.onlineStatus !== "ONLINE")
+      return false;
     if (activeFilter === "unread" && chat.unreadCount === 0) return false;
     return true;
   });
@@ -93,7 +97,11 @@ export function DirectChatList({
       </div>
 
       {/* Chat list */}
-      <div className="flex-1 overflow-y-auto" role="listbox" aria-label="Direct messages">
+      <div
+        className="flex-1 overflow-y-auto"
+        role="listbox"
+        aria-label="Direct messages"
+      >
         {filteredChats.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-6 text-center">
             <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">

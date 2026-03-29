@@ -38,7 +38,7 @@ export function dmPreviewToUnified(c: DirectChatPreview): UnifiedConversation {
     title: c.participantName,
     subtitle: c.isTyping
       ? "typing..."
-      : c.lastMessage?.content ?? "No messages yet",
+      : (c.lastMessage?.content ?? "No messages yet"),
     avatarUrl: c.participantAvatar,
     timestamp: c.lastMessage?.timestamp ?? new Date(0).toISOString(),
     unreadCount: c.unreadCount,
@@ -68,7 +68,8 @@ export function applyFilter(
 
   if (filter === "groups") result = result.filter((i) => i.kind === "group");
   else if (filter === "dms") result = result.filter((i) => i.kind === "dm");
-  else if (filter === "unread") result = result.filter((i) => i.unreadCount > 0);
+  else if (filter === "unread")
+    result = result.filter((i) => i.unreadCount > 0);
 
   if (query.trim()) {
     const q = query.toLowerCase();

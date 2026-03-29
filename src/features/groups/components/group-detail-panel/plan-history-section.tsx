@@ -11,7 +11,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
-import type { PlanHistoryItem, PlanCategory, MemberRole } from "../../types/groups.types";
+import type {
+  PlanHistoryItem,
+  PlanCategory,
+  MemberRole,
+} from "../../types/groups.types";
 
 interface PlanHistorySectionProps {
   history: PlanHistoryItem[];
@@ -31,7 +35,10 @@ const categoryColors: Record<PlanCategory, string> = {
   Wellness: "bg-teal-500/15 text-teal-600",
 };
 
-export function PlanHistorySection({ history, userRole }: PlanHistorySectionProps) {
+export function PlanHistorySection({
+  history,
+  userRole,
+}: PlanHistorySectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const isAdmin = userRole === "ADMIN";
 
@@ -130,7 +137,9 @@ function HistoryCard({ item }: { item: PlanHistoryItem }) {
           {item.rating && (
             <div className="flex items-center gap-0.5 flex-shrink-0">
               <Star size={12} className="text-amber-500 fill-amber-500" />
-              <span className="text-xs text-muted-foreground">{item.rating}</span>
+              <span className="text-xs text-muted-foreground">
+                {item.rating}
+              </span>
             </div>
           )}
         </div>

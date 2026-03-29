@@ -101,7 +101,9 @@ function FieldLabel({
           </span>
         )}
       </label>
-      {hint && <span className="text-[11px] text-muted-foreground/50">{hint}</span>}
+      {hint && (
+        <span className="text-[11px] text-muted-foreground/50">{hint}</span>
+      )}
     </div>
   );
 }
@@ -183,7 +185,6 @@ export function Step2Plan({
 
   return (
     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300 pb-6">
-
       {/* ── Section 1: Event Title ── */}
       <SectionCard accent={isNameValid}>
         <SectionHeader
@@ -204,10 +205,12 @@ export function Step2Plan({
                 : undefined
             }
           >
-            <span className={cn(
-              "transition-colors",
-              isNameValid ? "text-primary" : "",
-            )}>
+            <span
+              className={cn(
+                "transition-colors",
+                isNameValid ? "text-primary" : "",
+              )}
+            >
               {isNameValid ? "Title" : "Title"}
             </span>
           </FieldLabel>
@@ -309,7 +312,11 @@ export function Step2Plan({
         />
 
         {/* Location type — horizontal radio cards */}
-        <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Location type">
+        <div
+          className="grid grid-cols-3 gap-2"
+          role="radiogroup"
+          aria-label="Location type"
+        >
           {LOCATION_TYPES.map(({ id, label, sub, Icon }) => {
             const active = locationType === id;
             return (
@@ -376,7 +383,8 @@ export function Step2Plan({
           <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-muted/40 border border-border/40 animate-in fade-in duration-200">
             <Monitor size={12} className="text-muted-foreground/50 shrink-0" />
             <p className="text-xs text-muted-foreground/70">
-              A meeting link can be shared with members after the group is forged.
+              A meeting link can be shared with members after the group is
+              forged.
             </p>
           </div>
         )}

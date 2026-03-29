@@ -1,15 +1,12 @@
 "use client";
 
 import { cn } from "@/shared/lib/utils";
-import {
-  BellOff,
-  Check,
-  CheckCheck,
-  Clock,
-  FileEdit,
-} from "lucide-react";
+import { BellOff, Check, CheckCheck, Clock, FileEdit } from "lucide-react";
 import type { UnifiedConversation } from "../types/unified-conversation.types";
-import type { MessageStatus, OnlineStatus } from "@/features/direct-chats/types/direct-chats.types";
+import type {
+  MessageStatus,
+  OnlineStatus,
+} from "@/features/direct-chats/types/direct-chats.types";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -42,9 +39,12 @@ function formatCountdown(isoString: string): string | null {
 
 function onlineStatusColor(status: OnlineStatus): string {
   switch (status) {
-    case "ONLINE": return "bg-green-500";
-    case "AWAY":   return "bg-amber-500";
-    case "OFFLINE":return "bg-muted-foreground/40";
+    case "ONLINE":
+      return "bg-green-500";
+    case "AWAY":
+      return "bg-amber-500";
+    case "OFFLINE":
+      return "bg-muted-foreground/40";
   }
 }
 
@@ -71,10 +71,15 @@ interface Props {
   onSelect: () => void;
 }
 
-export function UnifiedConversationListItem({ item, isSelected, onSelect }: Props) {
+export function UnifiedConversationListItem({
+  item,
+  isSelected,
+  onSelect,
+}: Props) {
   const hasUnread = item.unreadCount > 0;
   const isGroup = item.kind === "group";
-  const countdown = isGroup && item.planDateTime ? formatCountdown(item.planDateTime) : null;
+  const countdown =
+    isGroup && item.planDateTime ? formatCountdown(item.planDateTime) : null;
   const isDraft = isGroup && item.planStatus === "DRAFT";
 
   return (
@@ -89,9 +94,7 @@ export function UnifiedConversationListItem({ item, isSelected, onSelect }: Prop
         "border-l-2 transition-all duration-150",
         "hover:bg-muted/50 active:bg-muted/70",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary",
-        isSelected
-          ? "bg-primary/5 hover:bg-primary/8"
-          : "border-l-transparent",
+        isSelected ? "bg-primary/5 hover:bg-primary/8" : "border-l-transparent",
         isGroup && !isSelected && "hover:border-l-teal-500/40",
         isGroup && isSelected && "border-l-teal-500",
         !isGroup && isSelected && "border-l-primary",
@@ -127,8 +130,6 @@ export function UnifiedConversationListItem({ item, isSelected, onSelect }: Prop
             )}
           />
         )}
-
-
       </div>
 
       {/* ── Content ── */}
@@ -140,7 +141,10 @@ export function UnifiedConversationListItem({ item, isSelected, onSelect }: Prop
               {item.title}
             </h3>
             {!isGroup && item.isMuted && (
-              <BellOff size={11} className="text-muted-foreground flex-shrink-0" />
+              <BellOff
+                size={11}
+                className="text-muted-foreground flex-shrink-0"
+              />
             )}
           </div>
           <span className="text-[10px] text-muted-foreground flex-shrink-0">
@@ -178,27 +182,29 @@ export function UnifiedConversationListItem({ item, isSelected, onSelect }: Prop
         </div>
 
         {/* Footer row (groups only) — countdown & status badges */}
-        {isGroup && (countdown || isDraft || (item.pendingProposals ?? 0) > 0) && (
-          <div className="flex items-center gap-2 mt-1">
-            {countdown && (
-              <span className="flex items-center gap-0.5 text-[10px] font-medium text-teal-600 dark:text-teal-400">
-                <Clock size={10} />
-                {countdown}
-              </span>
-            )}
-            {isDraft && (
-              <span className="flex items-center gap-0.5 text-[10px] font-medium text-amber-600 dark:text-amber-400">
-                <FileEdit size={10} />
-                Pending
-              </span>
-            )}
-            {(item.pendingProposals ?? 0) > 0 && (
-              <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">
-                {item.pendingProposals} proposal{item.pendingProposals !== 1 ? "s" : ""}
-              </span>
-            )}
-          </div>
-        )}
+        {isGroup &&
+          (countdown || isDraft || (item.pendingProposals ?? 0) > 0) && (
+            <div className="flex items-center gap-2 mt-1">
+              {countdown && (
+                <span className="flex items-center gap-0.5 text-[10px] font-medium text-teal-600 dark:text-teal-400">
+                  <Clock size={10} />
+                  {countdown}
+                </span>
+              )}
+              {isDraft && (
+                <span className="flex items-center gap-0.5 text-[10px] font-medium text-amber-600 dark:text-amber-400">
+                  <FileEdit size={10} />
+                  Pending
+                </span>
+              )}
+              {(item.pendingProposals ?? 0) > 0 && (
+                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                  {item.pendingProposals} proposal
+                  {item.pendingProposals !== 1 ? "s" : ""}
+                </span>
+              )}
+            </div>
+          )}
       </div>
     </button>
   );

@@ -1,9 +1,16 @@
-import type { DirectChat, DirectChatPreview, DirectMessage } from "../types/direct-chats.types";
+import type {
+  DirectChat,
+  DirectChatPreview,
+  DirectMessage,
+} from "../types/direct-chats.types";
 
 // Helper to create ISO dates relative to now
-const minutesAgo = (m: number) => new Date(Date.now() - m * 60 * 1000).toISOString();
-const hoursAgo = (h: number) => new Date(Date.now() - h * 60 * 60 * 1000).toISOString();
-const daysAgo = (d: number) => new Date(Date.now() - d * 24 * 60 * 60 * 1000).toISOString();
+const minutesAgo = (m: number) =>
+  new Date(Date.now() - m * 60 * 1000).toISOString();
+const hoursAgo = (h: number) =>
+  new Date(Date.now() - h * 60 * 60 * 1000).toISOString();
+const daysAgo = (d: number) =>
+  new Date(Date.now() - d * 24 * 60 * 60 * 1000).toISOString();
 
 export const CURRENT_USER_ID = "user-current";
 

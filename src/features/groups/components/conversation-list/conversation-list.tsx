@@ -79,7 +79,11 @@ export function ConversationList({
       </div>
 
       {/* Conversation list */}
-      <div className="flex-1 overflow-y-auto" role="listbox" aria-label="Group conversations">
+      <div
+        className="flex-1 overflow-y-auto"
+        role="listbox"
+        aria-label="Group conversations"
+      >
         {filteredGroups.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-6 text-center">
             <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">

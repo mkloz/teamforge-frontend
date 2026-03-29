@@ -113,7 +113,8 @@ export function GroupIdentitySection({
 
           {/* Created date */}
           <p className="text-xs text-muted-foreground mt-0.5">
-            Created {new Date(identity.createdAt).toLocaleDateString("en-US", {
+            Created{" "}
+            {new Date(identity.createdAt).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
               year: "numeric",

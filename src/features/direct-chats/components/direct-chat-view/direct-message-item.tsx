@@ -1,6 +1,9 @@
 import { Check, CheckCheck } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-import type { DirectMessage, MessageStatus } from "../../types/direct-chats.types";
+import type {
+  DirectMessage,
+  MessageStatus,
+} from "../../types/direct-chats.types";
 
 interface DirectMessageItemProps {
   message: DirectMessage;
@@ -17,12 +20,20 @@ function formatTime(isoString: string): string {
   });
 }
 
-function MessageStatusIcon({ status, isOwn }: { status: MessageStatus; isOwn: boolean }) {
+function MessageStatusIcon({
+  status,
+  isOwn,
+}: {
+  status: MessageStatus;
+  isOwn: boolean;
+}) {
   if (!isOwn) return null;
-  
+
   switch (status) {
     case "SENDING":
-      return <span className="w-3 h-3 rounded-full border border-primary-foreground/40 border-t-transparent animate-spin" />;
+      return (
+        <span className="w-3 h-3 rounded-full border border-primary-foreground/40 border-t-transparent animate-spin" />
+      );
     case "SENT":
       return <Check size={14} className="text-primary-foreground/50" />;
     case "DELIVERED":
@@ -32,8 +43,8 @@ function MessageStatusIcon({ status, isOwn }: { status: MessageStatus; isOwn: bo
   }
 }
 
-export function DirectMessageItem({ 
-  message, 
+export function DirectMessageItem({
+  message,
   showAvatar,
   participantAvatar,
   participantName,
@@ -80,10 +91,12 @@ export function DirectMessageItem({
             {message.content}
           </p>
           {/* Time + read status */}
-          <div className={cn(
-            "flex items-center gap-1 mt-1",
-            isOwn ? "justify-end" : "",
-          )}>
+          <div
+            className={cn(
+              "flex items-center gap-1 mt-1",
+              isOwn ? "justify-end" : "",
+            )}
+          >
             <span
               className={cn(
                 "text-[10px] select-none",

@@ -63,7 +63,6 @@ export function Step3Group({
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-4">
-
       {/* ── 1. Group Identity (top) ─────────────────────────────────────────── */}
       <GroupIdentityFields
         groupName={groupName}
@@ -86,26 +85,31 @@ export function Step3Group({
         </div>
 
         <div className="flex flex-col gap-2">
-          {([
-            {
-              value: "public",
-              label: "Public",
-              description: "Anyone on TeamForge can discover and request to join.",
-              Icon: Globe,
-            },
-            {
-              value: "friends",
-              label: "Friends only",
-              description: "Only people in your network can see and request to join.",
-              Icon: UserCheck,
-            },
-            {
-              value: "invite",
-              label: "Private — invite only",
-              description: "Hidden from discovery. Members join by invitation only.",
-              Icon: Lock,
-            },
-          ] as const).map(({ value, label, description, Icon }) => {
+          {(
+            [
+              {
+                value: "public",
+                label: "Public",
+                description:
+                  "Anyone on TeamForge can discover and request to join.",
+                Icon: Globe,
+              },
+              {
+                value: "friends",
+                label: "Friends only",
+                description:
+                  "Only people in your network can see and request to join.",
+                Icon: UserCheck,
+              },
+              {
+                value: "invite",
+                label: "Private — invite only",
+                description:
+                  "Hidden from discovery. Members join by invitation only.",
+                Icon: Lock,
+              },
+            ] as const
+          ).map(({ value, label, description, Icon }) => {
             const active = visibility === value;
             return (
               <button
@@ -132,10 +136,17 @@ export function Step3Group({
                   <Icon size={17} />
                 </div>
                 <div className="flex-1 min-w-0 space-y-0.5">
-                  <p className={cn("text-sm font-semibold leading-tight", active ? "text-primary" : "text-foreground")}>
+                  <p
+                    className={cn(
+                      "text-sm font-semibold leading-tight",
+                      active ? "text-primary" : "text-foreground",
+                    )}
+                  >
                     {label}
                   </p>
-                  <p className="text-xs text-muted-foreground leading-snug">{description}</p>
+                  <p className="text-xs text-muted-foreground leading-snug">
+                    {description}
+                  </p>
                 </div>
                 <div
                   className={cn(
@@ -143,7 +154,9 @@ export function Step3Group({
                     active ? "border-primary bg-primary" : "border-border/50",
                   )}
                 >
-                  {active && <div className="w-1.5 h-1.5 rounded-full bg-primary-foreground" />}
+                  {active && (
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary-foreground" />
+                  )}
                 </div>
               </button>
             );
@@ -193,15 +206,15 @@ export function Step3Group({
                   Manual Group Creation
                 </h5>
                 <p className="text-xs text-muted-foreground leading-relaxed opacity-80">
-                  You are creating a standalone group. TeamForge won&apos;t search for
-                  additional members. Invite people manually after forging.
+                  You are creating a standalone group. TeamForge won&apos;t
+                  search for additional members. Invite people manually after
+                  forging.
                 </p>
               </div>
             </div>
           </div>
         ) : (
           <div className="space-y-5 animate-in fade-in zoom-in-95 duration-500">
-
             {/* ── Capacity ── */}
             <div className="px-0.5 space-y-3">
               {/* Tab row — value badge lives inside the active tab */}
@@ -278,8 +291,12 @@ export function Step3Group({
                       </RadixSlider.Root>
                     </div>
                     <div className="flex justify-between px-0.5">
-                      <span className="text-[11px] text-muted-foreground/40">3 min</span>
-                      <span className="text-[11px] text-muted-foreground/40">12 max</span>
+                      <span className="text-[11px] text-muted-foreground/40">
+                        3 min
+                      </span>
+                      <span className="text-[11px] text-muted-foreground/40">
+                        12 max
+                      </span>
                     </div>
                   </div>
                 ) : (
@@ -303,8 +320,12 @@ export function Step3Group({
                       </RadixSlider.Root>
                     </div>
                     <div className="flex justify-between px-0.5">
-                      <span className="text-[11px] text-muted-foreground/40">3 min</span>
-                      <span className="text-[11px] text-muted-foreground/40">12 max</span>
+                      <span className="text-[11px] text-muted-foreground/40">
+                        3 min
+                      </span>
+                      <span className="text-[11px] text-muted-foreground/40">
+                        12 max
+                      </span>
                     </div>
                   </div>
                 )}
@@ -319,9 +340,12 @@ export function Step3Group({
                 className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/10 transition-colors"
               >
                 <div className="text-left space-y-0.5">
-                  <p className="text-xs font-semibold text-foreground">Algorithm tuning</p>
+                  <p className="text-xs font-semibold text-foreground">
+                    Algorithm tuning
+                  </p>
                   <p className="text-xs text-muted-foreground/70">
-                    Match: {compatibilityWeight}% · Diversity: {diversityWeight}%
+                    Match: {compatibilityWeight}% · Diversity: {diversityWeight}
+                    %
                   </p>
                 </div>
                 <ChevronDown
@@ -379,7 +403,14 @@ interface ModeButtonProps {
   activeColor: "primary" | "accent";
 }
 
-function ModeButton({ active, onClick, icon, title, description, activeColor }: ModeButtonProps) {
+function ModeButton({
+  active,
+  onClick,
+  icon,
+  title,
+  description,
+  activeColor,
+}: ModeButtonProps) {
   return (
     <button
       type="button"
@@ -402,11 +433,21 @@ function ModeButton({ active, onClick, icon, title, description, activeColor }: 
         >
           {icon}
         </div>
-        <span className={cn("text-xs font-black tracking-tight", active ? "text-inherit" : "text-foreground")}>
+        <span
+          className={cn(
+            "text-xs font-black tracking-tight",
+            active ? "text-inherit" : "text-foreground",
+          )}
+        >
           {title}
         </span>
       </div>
-      <p className={cn("text-[11px] leading-snug font-semibold opacity-90 pr-2", active ? "text-inherit/80" : "text-muted-foreground")}>
+      <p
+        className={cn(
+          "text-[11px] leading-snug font-semibold opacity-90 pr-2",
+          active ? "text-inherit/80" : "text-muted-foreground",
+        )}
+      >
         {description}
       </p>
       {active && (
@@ -427,7 +468,16 @@ interface WeightSliderProps {
   subLabel?: string;
 }
 
-function WeightSlider({ label, value, onChange, min, max, step, warning, subLabel }: WeightSliderProps) {
+function WeightSlider({
+  label,
+  value,
+  onChange,
+  min,
+  max,
+  step,
+  warning,
+  subLabel,
+}: WeightSliderProps) {
   const [dragging, setDragging] = useState(false);
   const isHighDiversity = label.includes("Diversity") && value > 75;
   const semanticLabels = label.toLowerCase().includes("personality")
@@ -440,7 +490,11 @@ function WeightSlider({ label, value, onChange, min, max, step, warning, subLabe
       <div className="flex items-start justify-between">
         <div className="space-y-0.5">
           <p className="text-xs font-semibold text-muted-foreground">{label}</p>
-          {subLabel && <p className="text-xs text-muted-foreground/60 leading-snug">{subLabel}</p>}
+          {subLabel && (
+            <p className="text-xs text-muted-foreground/60 leading-snug">
+              {subLabel}
+            </p>
+          )}
         </div>
         <div
           className={cn(
@@ -460,10 +514,16 @@ function WeightSlider({ label, value, onChange, min, max, step, warning, subLabe
         step={step}
         value={value}
         aria-label={label}
-        onChange={(e) => { setDragging(true); onChange(Number(e.target.value)); }}
+        onChange={(e) => {
+          setDragging(true);
+          onChange(Number(e.target.value));
+        }}
         onMouseUp={() => setDragging(false)}
         onTouchEnd={() => setDragging(false)}
-        className={cn("range-input w-full h-2 rounded-full cursor-pointer", isHighDiversity ? "accent-amber-500" : "accent-primary")}
+        className={cn(
+          "range-input w-full h-2 rounded-full cursor-pointer",
+          isHighDiversity ? "accent-amber-500" : "accent-primary",
+        )}
       />
 
       <div className="flex justify-between items-center gap-1 px-0.5 -mt-2">
@@ -476,7 +536,11 @@ function WeightSlider({ label, value, onChange, min, max, step, warning, subLabe
               key={i}
               className={cn(
                 "h-1.5 flex-1 rounded-full transition-all duration-500",
-                active ? (isHighDiversity ? "bg-amber-500/50" : "bg-primary/50") : "bg-muted/30",
+                active
+                  ? isHighDiversity
+                    ? "bg-amber-500/50"
+                    : "bg-primary/50"
+                  : "bg-muted/30",
               )}
               style={active ? { opacity: 0.4 + intensity * 0.6 } : undefined}
             />

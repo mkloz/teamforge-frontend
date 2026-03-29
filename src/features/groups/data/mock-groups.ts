@@ -1,8 +1,10 @@
 import type { Group, GroupPreview, Message } from "../types/groups.types";
 
 // Helper to create ISO dates relative to now
-const hoursAgo = (h: number) => new Date(Date.now() - h * 60 * 60 * 1000).toISOString();
-const daysFromNow = (d: number) => new Date(Date.now() + d * 24 * 60 * 60 * 1000).toISOString();
+const hoursAgo = (h: number) =>
+  new Date(Date.now() - h * 60 * 60 * 1000).toISOString();
+const daysFromNow = (d: number) =>
+  new Date(Date.now() + d * 24 * 60 * 60 * 1000).toISOString();
 
 export const CURRENT_USER_ID = "user-current";
 
@@ -13,7 +15,8 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
     groupAvatar: "https://api.dicebear.com/7.x/shapes/svg?seed=trailblazers",
     planTitle: "Weekend Hiking Adventure",
     planCategory: "Outdoors",
-    planCoverImage: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=60",
+    planCoverImage:
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=60",
     planDateTime: daysFromNow(3),
     planStatus: "CONFIRMED",
     status: "ACTIVE",
@@ -38,7 +41,8 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
     groupAvatar: "https://api.dicebear.com/7.x/shapes/svg?seed=codecrafters",
     planTitle: "React Study Group",
     planCategory: "Tech",
-    planCoverImage: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=60",
+    planCoverImage:
+      "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=60",
     planDateTime: daysFromNow(1),
     planStatus: "CONFIRMED",
     status: "ACTIVE",
@@ -63,7 +67,8 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
     groupAvatar: "https://api.dicebear.com/7.x/shapes/svg?seed=gamenightcrew",
     planTitle: "Board Game Night",
     planCategory: "Social",
-    planCoverImage: "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=800&q=60",
+    planCoverImage:
+      "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=800&q=60",
     planDateTime: daysFromNow(5),
     planStatus: "DRAFT",
     status: "PENDING",
@@ -88,7 +93,8 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
     groupAvatar: "https://api.dicebear.com/7.x/shapes/svg?seed=jazzcollective",
     planTitle: "Jazz Jam Session",
     planCategory: "Music",
-    planCoverImage: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=60",
+    planCoverImage:
+      "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=60",
     planDateTime: daysFromNow(7),
     planStatus: "CONFIRMED",
     status: "ACTIVE",
@@ -115,15 +121,18 @@ export const MOCK_GROUPS: Record<string, Group> = {
     identity: {
       name: "Trail Blazers",
       avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=trailblazers",
-      description: "A group of outdoor enthusiasts who love exploring nature together.",
+      description:
+        "A group of outdoor enthusiasts who love exploring nature together.",
       createdAt: hoursAgo(720), // 30 days ago
     },
     plan: {
       id: "plan-1",
       title: "Weekend Hiking Adventure",
-      description: "A scenic hike through the local trails. All skill levels welcome! We'll take breaks and enjoy the views together.",
+      description:
+        "A scenic hike through the local trails. All skill levels welcome! We'll take breaks and enjoy the views together.",
       category: "Outdoors",
-      coverImage: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=60",
+      coverImage:
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=60",
       dateTime: daysFromNow(3),
       location: "Mount Tamalpais State Park",
       locationCoords: { lat: 37.9235, lng: -122.5965 },
@@ -134,7 +143,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
         id: "plan-history-1",
         title: "Sunset Beach Walk",
         category: "Outdoors",
-        coverImage: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=60",
+        coverImage:
+          "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=60",
         dateTime: hoursAgo(336), // 2 weeks ago
         location: "Ocean Beach, SF",
         completedAt: hoursAgo(336),
@@ -145,7 +155,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
         id: "plan-history-2",
         title: "Muir Woods Morning Hike",
         category: "Outdoors",
-        coverImage: "https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&q=60",
+        coverImage:
+          "https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&q=60",
         dateTime: hoursAgo(504), // 3 weeks ago
         location: "Muir Woods National Monument",
         completedAt: hoursAgo(504),
@@ -211,9 +222,11 @@ export const MOCK_GROUPS: Record<string, Group> = {
     plan: {
       id: "plan-2",
       title: "React Study Group",
-      description: "Weekly meetup to learn React together. We'll work through tutorials, build projects, and help each other debug.",
+      description:
+        "Weekly meetup to learn React together. We'll work through tutorials, build projects, and help each other debug.",
       category: "Tech",
-      coverImage: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=60",
+      coverImage:
+        "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=60",
       dateTime: daysFromNow(1),
       location: "Central Library, Study Room B",
       status: "CONFIRMED",
@@ -223,7 +236,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
         id: "plan-history-3",
         title: "TypeScript Deep Dive",
         category: "Tech",
-        coverImage: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=60",
+        coverImage:
+          "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=60",
         dateTime: hoursAgo(168), // 1 week ago
         location: "Central Library, Study Room B",
         completedAt: hoursAgo(168),
@@ -299,9 +313,11 @@ export const MOCK_GROUPS: Record<string, Group> = {
     plan: {
       id: "plan-3",
       title: "Board Game Night",
-      description: "Casual board game evening. Bring your favorites or try something new. Snacks welcome!",
+      description:
+        "Casual board game evening. Bring your favorites or try something new. Snacks welcome!",
       category: "Social",
-      coverImage: "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=800&q=60",
+      coverImage:
+        "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=800&q=60",
       dateTime: daysFromNow(5),
       location: "Drew's Place",
       status: "DRAFT",
@@ -310,8 +326,19 @@ export const MOCK_GROUPS: Record<string, Group> = {
         {
           id: "proposal-1",
           field: "dateTime",
-          currentValue: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }),
-          proposedValue: "Saturday, " + new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+          currentValue: new Date(
+            Date.now() + 5 * 24 * 60 * 60 * 1000,
+          ).toLocaleDateString("en-US", {
+            weekday: "long",
+            month: "short",
+            day: "numeric",
+          }),
+          proposedValue:
+            "Saturday, " +
+            new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toLocaleDateString(
+              "en-US",
+              { month: "short", day: "numeric" },
+            ),
           proposedBy: {
             id: "user-10",
             name: "Drew",
@@ -346,7 +373,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
         {
           id: "comment-1",
           field: "general",
-          content: "I can bring Catan and Ticket to Ride. Anyone have Wingspan?",
+          content:
+            "I can bring Catan and Ticket to Ride. Anyone have Wingspan?",
           author: {
             id: "user-10",
             name: "Drew",
@@ -418,9 +446,11 @@ export const MOCK_GROUPS: Record<string, Group> = {
     plan: {
       id: "plan-4",
       title: "Jazz Jam Session",
-      description: "Bring your instrument and let's make some music together. All skill levels welcome.",
+      description:
+        "Bring your instrument and let's make some music together. All skill levels welcome.",
       category: "Music",
-      coverImage: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=60",
+      coverImage:
+        "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=60",
       dateTime: daysFromNow(7),
       location: "Rhythm Studio, Room 3",
       locationCoords: { lat: 37.7749, lng: -122.4194 },
@@ -431,7 +461,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
         id: "plan-history-4",
         title: "Blues Night",
         category: "Music",
-        coverImage: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&q=60",
+        coverImage:
+          "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&q=60",
         dateTime: hoursAgo(168), // 1 week ago
         location: "Rhythm Studio, Room 3",
         completedAt: hoursAgo(168),
@@ -528,7 +559,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       id: "msg-4",
       groupId: "group-1",
       type: "TEXT",
-      content: "Same here! I've been wanting to explore that trail for a while.",
+      content:
+        "Same here! I've been wanting to explore that trail for a while.",
       senderId: "user-2",
       senderName: "Jordan",
       senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jordan",
@@ -652,7 +684,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       id: "msg-22",
       groupId: "group-2",
       type: "TEXT",
-      content: "Thanks for starting this! I'm excited to improve my React skills.",
+      content:
+        "Thanks for starting this! I'm excited to improve my React skills.",
       senderId: CURRENT_USER_ID,
       senderName: "Alex",
       senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",

@@ -1,5 +1,3 @@
-
-
 interface TypingUser {
   name: string;
   avatar: string;

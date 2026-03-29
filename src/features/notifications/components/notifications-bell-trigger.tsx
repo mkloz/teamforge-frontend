@@ -6,14 +6,18 @@ interface NotificationsBellTriggerProps {
   onClick: () => void;
 }
 
-export function NotificationsBellTrigger({ onClick }: NotificationsBellTriggerProps) {
+export function NotificationsBellTrigger({
+  onClick,
+}: NotificationsBellTriggerProps) {
   const { count } = useNotifications();
 
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-label={count > 0 ? `Notifications, ${count} unread` : "Notifications"}
+      aria-label={
+        count > 0 ? `Notifications, ${count} unread` : "Notifications"
+      }
       className={cn(
         "relative flex h-9 w-9 items-center justify-center rounded-xl",
         "text-muted-foreground hover:text-foreground hover:bg-muted",

@@ -12,23 +12,23 @@ import { cn } from "@/shared/lib/utils";
 
 // Deterministic spark positions matching the dense clustered cloud
 const SPARKS = [
-  { id: 1,  dx: -22, dy: -5,  size: 5, color: "#FBBF24" },
-  { id: 2,  dx:  18, dy: -8,  size: 4, color: "#F59E0B" },
-  { id: 3,  dx: -12, dy:  6,  size: 6, color: "#FCD34D" },
-  { id: 4,  dx:  26, dy:  2,  size: 3, color: "#FBBF24" },
-  { id: 5,  dx: -32, dy:  0,  size: 4, color: "#F59E0B" },
-  { id: 6,  dx:  12, dy: 10,  size: 5, color: "#FBBF24" },
-  { id: 7,  dx:  -6, dy: -14, size: 3, color: "#FCD34D" },
-  { id: 8,  dx:  22, dy: 12,  size: 4, color: "#F59E0B" },
-  { id: 9,  dx: -16, dy: -16, size: 2, color: "#FBBF24" },
-  { id: 10, dx:  32, dy: -6,  size: 5, color: "#FCD34D" },
-  { id: 11, dx: -26, dy: 12,  size: 3, color: "#F59E0B" },
-  { id: 12, dx:   6, dy: -20, size: 4, color: "#FBBF24" },
-  { id: 13, dx: -38, dy:  4,  size: 3, color: "#FCD34D" },
-  { id: 14, dx:  36, dy:  8,  size: 4, color: "#F59E0B" },
-  { id: 15, dx:   0, dy: 16,  size: 5, color: "#FBBF24" },
-  { id: 16, dx: -10, dy: 20,  size: 3, color: "#FCD34D" },
-  { id: 17, dx:  20, dy: -14, size: 2, color: "#F59E0B" },
+  { id: 1, dx: -22, dy: -5, size: 5, color: "#FBBF24" },
+  { id: 2, dx: 18, dy: -8, size: 4, color: "#F59E0B" },
+  { id: 3, dx: -12, dy: 6, size: 6, color: "#FCD34D" },
+  { id: 4, dx: 26, dy: 2, size: 3, color: "#FBBF24" },
+  { id: 5, dx: -32, dy: 0, size: 4, color: "#F59E0B" },
+  { id: 6, dx: 12, dy: 10, size: 5, color: "#FBBF24" },
+  { id: 7, dx: -6, dy: -14, size: 3, color: "#FCD34D" },
+  { id: 8, dx: 22, dy: 12, size: 4, color: "#F59E0B" },
+  { id: 9, dx: -16, dy: -16, size: 2, color: "#FBBF24" },
+  { id: 10, dx: 32, dy: -6, size: 5, color: "#FCD34D" },
+  { id: 11, dx: -26, dy: 12, size: 3, color: "#F59E0B" },
+  { id: 12, dx: 6, dy: -20, size: 4, color: "#FBBF24" },
+  { id: 13, dx: -38, dy: 4, size: 3, color: "#FCD34D" },
+  { id: 14, dx: 36, dy: 8, size: 4, color: "#F59E0B" },
+  { id: 15, dx: 0, dy: 16, size: 5, color: "#FBBF24" },
+  { id: 16, dx: -10, dy: 20, size: 3, color: "#FCD34D" },
+  { id: 17, dx: 20, dy: -14, size: 2, color: "#F59E0B" },
   { id: 18, dx: -20, dy: -10, size: 4, color: "#FBBF24" },
 ];
 
@@ -92,7 +92,10 @@ export function ForgeLoadingAnvil({
   if (shouldReduceMotion) {
     return (
       <div
-        className={cn("flex flex-col items-center justify-center gap-6 select-none", className)}
+        className={cn(
+          "flex flex-col items-center justify-center gap-6 select-none",
+          className,
+        )}
         style={{ width: size, height: size }}
         role="status"
         aria-label={displayLabel}
@@ -103,8 +106,12 @@ export function ForgeLoadingAnvil({
           className="w-4 h-4 bg-[#F59E0B] rounded-sm rotate-45"
         />
         <div className="text-center space-y-1">
-          <p className="text-sm font-semibold text-foreground">{displayLabel}</p>
-          <p className="text-xs text-muted-foreground">This may take a moment...</p>
+          <p className="text-sm font-semibold text-foreground">
+            {displayLabel}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            This may take a moment...
+          </p>
         </div>
       </div>
     );
@@ -112,7 +119,10 @@ export function ForgeLoadingAnvil({
 
   return (
     <div
-      className={cn("flex flex-col items-center justify-center gap-6 select-none", className)}
+      className={cn(
+        "flex flex-col items-center justify-center gap-6 select-none",
+        className,
+      )}
       role="status"
       aria-label={displayLabel}
     >
@@ -133,7 +143,7 @@ export function ForgeLoadingAnvil({
             fill="#F59E0B"
             animate={{
               opacity: [0, 0, 0, 0.4, 0, 0],
-              scale:   [0, 0, 0, 1.2, 1.5, 0],
+              scale: [0, 0, 0, 1.2, 1.5, 0],
             }}
             transition={{
               duration: DURATION,
@@ -149,7 +159,7 @@ export function ForgeLoadingAnvil({
             style={{ transformOrigin: "100px 168px" }}
             animate={{
               scaleY: [1, 1, 1, 0.8, 1.03, 1],
-              y:      [0, 0, 0,   4,   -1, 0],
+              y: [0, 0, 0, 4, -1, 0],
             }}
             transition={{
               duration: DURATION,
@@ -160,7 +170,7 @@ export function ForgeLoadingAnvil({
           >
             {/* Top tier */}
             <rect x="80" y="134" width="40" height="18" rx="4" fill="#374151" />
-            <rect x="80" y="134" width="40" height="5"  rx="3" fill="#4b5563" />
+            <rect x="80" y="134" width="40" height="5" rx="3" fill="#4b5563" />
             {/* Middle tier */}
             <rect x="86" y="152" width="28" height="8" rx="2" fill="#1f2937" />
             {/* Base */}
@@ -175,12 +185,14 @@ export function ForgeLoadingAnvil({
               cy="134"
               r={spark.size}
               fill={spark.color}
-              style={{ filter: "drop-shadow(0px 0px 3px rgba(245,158,11,0.8))" }}
+              style={{
+                filter: "drop-shadow(0px 0px 3px rgba(245,158,11,0.8))",
+              }}
               animate={{
-                opacity: [0, 0,            1,          0.8,              0],
-                scale:   [0, 0,            1,          0.8,              0],
-                x:       [0, 0, spark.dx * 1.1, spark.dx * 1.15, spark.dx * 1.2],
-                y:       [0, 0, spark.dy * 1.1, spark.dy + 10,   spark.dy + 25],
+                opacity: [0, 0, 1, 0.8, 0],
+                scale: [0, 0, 1, 0.8, 0],
+                x: [0, 0, spark.dx * 1.1, spark.dx * 1.15, spark.dx * 1.2],
+                y: [0, 0, spark.dy * 1.1, spark.dy + 10, spark.dy + 25],
               }}
               transition={{
                 duration: DURATION,
@@ -201,7 +213,13 @@ export function ForgeLoadingAnvil({
               duration: DURATION,
               repeat: Infinity,
               times: TIMING,
-              ease: ["easeOut", "easeInOut", [0.8, 0, 1, 1], "easeOut", "easeInOut"],
+              ease: [
+                "easeOut",
+                "easeInOut",
+                [0.8, 0, 1, 1],
+                "easeOut",
+                "easeInOut",
+              ],
             }}
           >
             {/* Handle */}
@@ -209,7 +227,7 @@ export function ForgeLoadingAnvil({
             {/* Head */}
             <rect x="91" y="106" width="18" height="28" rx="4" fill="#374151" />
             {/* Head highlight */}
-            <rect x="91" y="106" width="6"  height="28" rx="3" fill="#4b5563" />
+            <rect x="91" y="106" width="6" height="28" rx="3" fill="#4b5563" />
           </motion.g>
         </svg>
       </div>
@@ -228,7 +246,9 @@ export function ForgeLoadingAnvil({
             {displayLabel}
           </motion.p>
         </AnimatePresence>
-        <p className="text-xs text-muted-foreground">This may take a moment...</p>
+        <p className="text-xs text-muted-foreground">
+          This may take a moment...
+        </p>
       </div>
     </div>
   );
