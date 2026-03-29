@@ -1,6 +1,6 @@
-import { ArrowLeft, ChevronRight } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
+import { ArrowLeft, ChevronRight } from "lucide-react";
 import type { Group } from "../../types/groups.types";
 
 interface ConversationHeaderProps {
@@ -15,7 +15,7 @@ export function ConversationHeader({
   onToggleDetail,
 }: ConversationHeaderProps) {
   return (
-    <header className="shrink-0 flex items-center gap-2 px-2 pb-2 md:pt-2 border-b border-border bg-background/95 backdrop-blur-sm">
+    <header className="shrink-0 flex items-center gap-2 px-2 pb-2 md:pt-2 border-b border-border bg-canvas/95 backdrop-blur-sm">
       {/* Back button - mobile only */}
       <Button
         variant="ghost"

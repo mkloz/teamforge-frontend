@@ -1,11 +1,17 @@
-import { useRef, useEffect, useLayoutEffect, useState, useCallback } from "react";
-import { ChevronDown } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
+import { ChevronDown } from "lucide-react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import type { DirectChat, DirectMessage } from "../../types/direct-chats.types";
 import { DirectChatHeader } from "./direct-chat-header";
-import { DirectMessageItem } from "./direct-message-item";
 import { DirectMessageInput } from "./direct-message-input";
+import { DirectMessageItem } from "./direct-message-item";
 import { TypingIndicator } from "./typing-indicator";
 
 interface DirectChatViewProps {
@@ -25,7 +31,8 @@ function formatDateSeparator(isoString: string): string {
 
   if (diffDays === 0) return "Today";
   if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return date.toLocaleDateString("en-US", { weekday: "long" });
+  if (diffDays < 7)
+    return date.toLocaleDateString("en-US", { weekday: "long" });
   return date.toLocaleDateString("en-US", { month: "long", day: "numeric" });
 }
 
@@ -93,7 +100,7 @@ export function DirectChatView({
   }, []);
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-full">
       {/* Header */}
       <DirectChatHeader
         chat={chat}
@@ -103,11 +110,17 @@ export function DirectChatView({
 
       {/* Messages area */}
       <div className="flex-1 relative overflow-hidden">
-        <div ref={messagesContainerRef} className="h-full overflow-y-auto px-4 py-3">
+        <div
+          ref={messagesContainerRef}
+          className="h-full overflow-y-auto px-4 py-3"
+        >
           <div className="flex flex-col gap-1">
             {messages.map((message, index) => {
               const prevMessage = messages[index - 1];
-              const showDateSeparator = shouldShowDateSeparator(message, prevMessage);
+              const showDateSeparator = shouldShowDateSeparator(
+                message,
+                prevMessage,
+              );
               const showAvatar = shouldShowAvatar(message, prevMessage);
 
               return (
@@ -131,15 +144,15 @@ export function DirectChatView({
                 </div>
               );
             })}
-            
+
             {/* Typing indicator */}
             {isTyping && (
-              <TypingIndicator 
+              <TypingIndicator
                 name={chat.participant.name}
                 avatar={chat.participant.avatar}
               />
             )}
-            
+
             <div ref={messagesEndRef} />
           </div>
         </div>
@@ -153,7 +166,9 @@ export function DirectChatView({
             className={cn(
               "absolute bottom-4 right-4 h-10 w-10 rounded-full shadow-lg",
               "transition-all duration-200",
-              showScrollButton ? "scale-100 opacity-100" : "scale-75 opacity-0 pointer-events-none",
+              showScrollButton
+                ? "scale-100 opacity-100"
+                : "scale-75 opacity-0 pointer-events-none",
             )}
             aria-label="Scroll to bottom"
           >

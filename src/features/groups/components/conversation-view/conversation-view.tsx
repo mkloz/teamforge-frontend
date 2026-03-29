@@ -1,14 +1,14 @@
-import { useRef, useEffect, useLayoutEffect, useState } from "react";
-import { ChevronDown } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
+import { ChevronDown } from "lucide-react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { Group, Message } from "../../types/groups.types";
-import { ConversationHeader } from "./conversation-header";
 import { ChatStatusBar } from "./chat-status-bar";
-import { MessageList } from "./message-list";
-import { MessageInput } from "./message-input";
-import { TypingIndicator } from "./typing-indicator";
 import { CompletedBanner } from "./completed-banner";
+import { ConversationHeader } from "./conversation-header";
+import { MessageInput } from "./message-input";
+import { MessageList } from "./message-list";
+import { TypingIndicator } from "./typing-indicator";
 
 interface ConversationViewProps {
   group: Group;
@@ -72,12 +72,13 @@ export function ConversationView({
   const isCompleted = group.status === "COMPLETED";
 
   // Mock typing users for design (would come from real-time in production)
-  const typingUsers = group.plan.status === "DRAFT" ? [
-    { name: "Jordan", avatar: group.members[0]?.avatar }
-  ] : [];
+  const typingUsers =
+    group.plan.status === "DRAFT"
+      ? [{ name: "Jordan", avatar: group.members[0]?.avatar }]
+      : [];
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-full bg-canvas">
       {/* Header */}
       <ConversationHeader
         group={group}
@@ -94,16 +95,14 @@ export function ConversationView({
 
       {/* Messages area with relative positioning for FAB */}
       <div className="flex-1 relative overflow-hidden">
-        <MessageList 
-          messages={messages} 
-          messagesEndRef={messagesEndRef} 
+        <MessageList
+          messages={messages}
+          messagesEndRef={messagesEndRef}
           containerRef={messagesContainerRef}
         />
 
         {/* Typing indicator */}
-        {typingUsers.length > 0 && (
-          <TypingIndicator users={typingUsers} />
-        )}
+        {typingUsers.length > 0 && <TypingIndicator users={typingUsers} />}
 
         {/* Scroll to bottom FAB */}
         <Button
@@ -113,8 +112,8 @@ export function ConversationView({
           className={cn(
             "absolute bottom-4 right-4 h-10 w-10 rounded-full shadow-lg",
             "transition-all duration-200",
-            showScrollButton 
-              ? "opacity-100 translate-y-0" 
+            showScrollButton
+              ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-4 pointer-events-none",
           )}
           aria-label="Scroll to bottom"

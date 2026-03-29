@@ -1,7 +1,16 @@
-import { useEffect, useCallback } from "react";
-import { X, Bell, BellOff, Ban, Users, MessageSquare, Phone, Video } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
+import {
+  Ban,
+  Bell,
+  BellOff,
+  MessageSquare,
+  Phone,
+  Users,
+  Video,
+  X,
+} from "lucide-react";
+import { useCallback, useEffect } from "react";
 import type { DirectChat, OnlineStatus } from "../../types/direct-chats.types";
 
 interface ProfilePanelProps {
@@ -54,7 +63,7 @@ export function ProfilePanel({ chat, isOpen, onClose }: ProfilePanelProps) {
   return (
     <aside
       className={cn(
-        "hidden lg:flex flex-col h-full bg-background border-l border-border",
+        "hidden lg:flex flex-col h-full bg-canvas border-l border-border",
         "transition-all duration-300 ease-out",
         isOpen ? "w-80 opacity-100" : "w-0 opacity-0 overflow-hidden",
       )}
@@ -104,13 +113,25 @@ export function ProfilePanel({ chat, isOpen, onClose }: ProfilePanelProps) {
 
           {/* Quick actions */}
           <div className="flex items-center gap-2 mt-4">
-            <Button variant="outline" size="icon" className="h-10 w-10 rounded-full">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-10 w-10 rounded-full"
+            >
               <MessageSquare size={18} />
             </Button>
-            <Button variant="outline" size="icon" className="h-10 w-10 rounded-full">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-10 w-10 rounded-full"
+            >
               <Phone size={18} />
             </Button>
-            <Button variant="outline" size="icon" className="h-10 w-10 rounded-full">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-10 w-10 rounded-full"
+            >
               <Video size={18} />
             </Button>
           </div>
@@ -163,18 +184,24 @@ export function ProfilePanel({ chat, isOpen, onClose }: ProfilePanelProps) {
               {isMuted ? (
                 <>
                   <BellOff size={18} className="text-muted-foreground" />
-                  <span className="text-sm text-foreground">Unmute notifications</span>
+                  <span className="text-sm text-foreground">
+                    Unmute notifications
+                  </span>
                 </>
               ) : (
                 <>
                   <Bell size={18} className="text-muted-foreground" />
-                  <span className="text-sm text-foreground">Mute notifications</span>
+                  <span className="text-sm text-foreground">
+                    Mute notifications
+                  </span>
                 </>
               )}
             </button>
             <button className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-destructive/10 transition-colors text-destructive">
               <Ban size={18} />
-              <span className="text-sm">{isBlocked ? "Unblock user" : "Block user"}</span>
+              <span className="text-sm">
+                {isBlocked ? "Unblock user" : "Block user"}
+              </span>
             </button>
           </div>
         </div>
@@ -184,7 +211,11 @@ export function ProfilePanel({ chat, isOpen, onClose }: ProfilePanelProps) {
 }
 
 // Mobile version as a sheet/drawer
-export function ProfilePanelMobile({ chat, isOpen, onClose }: ProfilePanelProps) {
+export function ProfilePanelMobile({
+  chat,
+  isOpen,
+  onClose,
+}: ProfilePanelProps) {
   const { participant, mutualGroups, isMuted, isBlocked } = chat;
 
   if (!isOpen) return null;
@@ -196,9 +227,9 @@ export function ProfilePanelMobile({ chat, isOpen, onClose }: ProfilePanelProps)
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
-      
+
       {/* Panel */}
-      <div className="absolute inset-x-0 bottom-0 bg-background rounded-t-3xl max-h-[85vh] overflow-y-auto animate-in slide-in-from-bottom duration-300">
+      <div className="absolute inset-x-0 bottom-0 bg-canvas rounded-t-3xl max-h-[85vh] overflow-y-auto animate-in slide-in-from-bottom duration-300">
         {/* Handle */}
         <div className="flex justify-center py-3">
           <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
@@ -233,10 +264,18 @@ export function ProfilePanelMobile({ chat, isOpen, onClose }: ProfilePanelProps)
 
           {/* Quick actions */}
           <div className="flex items-center gap-3 mt-4">
-            <Button variant="outline" size="icon" className="h-12 w-12 rounded-full">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-12 w-12 rounded-full"
+            >
               <Phone size={20} />
             </Button>
-            <Button variant="outline" size="icon" className="h-12 w-12 rounded-full">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-12 w-12 rounded-full"
+            >
               <Video size={20} />
             </Button>
           </div>
@@ -284,18 +323,24 @@ export function ProfilePanelMobile({ chat, isOpen, onClose }: ProfilePanelProps)
             {isMuted ? (
               <>
                 <BellOff size={18} className="text-muted-foreground" />
-                <span className="text-sm text-foreground">Unmute notifications</span>
+                <span className="text-sm text-foreground">
+                  Unmute notifications
+                </span>
               </>
             ) : (
               <>
                 <Bell size={18} className="text-muted-foreground" />
-                <span className="text-sm text-foreground">Mute notifications</span>
+                <span className="text-sm text-foreground">
+                  Mute notifications
+                </span>
               </>
             )}
           </button>
           <button className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-destructive/10 transition-colors text-destructive">
             <Ban size={18} />
-            <span className="text-sm">{isBlocked ? "Unblock user" : "Block user"}</span>
+            <span className="text-sm">
+              {isBlocked ? "Unblock user" : "Block user"}
+            </span>
           </button>
         </div>
       </div>

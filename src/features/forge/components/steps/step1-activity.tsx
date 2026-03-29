@@ -14,7 +14,7 @@ import {
   HandHeart,
   History,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ACTIVITIES, RECENT } from "../../constants/forge.constants";
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -46,21 +46,27 @@ export function Step1Activity({
   const [shaking, setShaking] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  const triggerShake = () => {
+  const triggerShake = useCallback(() => {
     setShaking(true);
     setTimeout(() => setShaking(false), 500);
-  };
+  }, []);
 
-  // Expose triggerShake via a data attribute so ForgeFooter can call it imperatively
-  // via a CustomEvent dispatched on document
-  if (typeof window !== "undefined") {
-    (window as Window & { __forgeShakeGrid?: () => void }).__forgeShakeGrid =
-      triggerShake;
-  }
+  // Expose triggerShake via a global property so ForgeFooter can call it imperatively
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      (window as UnknownWindow).__forgeShakeGrid = triggerShake;
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        delete (window as UnknownWindow).__forgeShakeGrid;
+      }
+    };
+  }, [triggerShake]);
+
+  type UnknownWindow = Window & { __forgeShakeGrid?: () => void };
 
   return (
     <div className="space-y-5 animate-in fade-in duration-300">
-
       {/* Recent / Quick-select row */}
       {RECENT.length > 0 && (
         <div className="space-y-2.5">
@@ -141,7 +147,8 @@ export function Step1Activity({
             Choose a category
           </p>
           <p className="text-xs text-muted-foreground/60 mt-0.5 leading-relaxed">
-            Pick the style that fits your plan and we&apos;ll find the right people.
+            Pick the style that fits your plan and we&apos;ll find the right
+            people.
           </p>
         </div>
 
@@ -173,7 +180,13 @@ export function Step1Activity({
                 {selected && (
                   <span className="absolute top-2.5 right-2.5 w-4 h-4 rounded-full bg-accent flex items-center justify-center">
                     <svg width="8" height="7" viewBox="0 0 8 7" fill="none">
-                      <path d="M1 3.5L3 5.5L7 1.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path
+                        d="M1 3.5L3 5.5L7 1.5"
+                        stroke="white"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   </span>
                 )}

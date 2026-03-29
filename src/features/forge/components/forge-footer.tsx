@@ -39,17 +39,20 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
       fw.selectedActivity !== prevActivity.current
     ) {
       prevActivity.current = fw.selectedActivity;
-      setContinuePulse(true);
-      const t = setTimeout(() => setContinuePulse(false), 650);
-      return () => clearTimeout(t);
+      // Wrap in setTimeout to avoid calling setState synchronously during effect execution
+      const t1 = setTimeout(() => setContinuePulse(true), 0);
+      const t2 = setTimeout(() => setContinuePulse(false), 650);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
     }
   }, [fw.selectedActivity, fw.step]);
 
   // Trigger grid shake when Continue is tapped while disabled
   const handleDisabledContinue = () => {
-    const shake = (
-      window as Window & { __forgeShakeGrid?: () => void }
-    ).__forgeShakeGrid;
+    const shake = (window as Window & { __forgeShakeGrid?: () => void })
+      .__forgeShakeGrid;
     if (shake) shake();
   };
 
@@ -64,13 +67,19 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
               <HintText key="h1-empty">Select a category to continue</HintText>
             )}
             {fw.step === 1 && fw.selectedActivity && (
-              <HintText key="h1-selected">Next: define date, time, and location</HintText>
+              <HintText key="h1-selected">
+                Next: define date, time, and location
+              </HintText>
             )}
             {fw.step === 2 && (
-              <HintText key="h2">Almost there — configure your matching algorithm next</HintText>
+              <HintText key="h2">
+                Almost there — configure your matching algorithm next
+              </HintText>
             )}
             {fw.step === 4 && fw.forgeResult === "success" && (
-              <HintText key="h4">Group matched — give it an identity next</HintText>
+              <HintText key="h4">
+                Group matched — give it an identity next
+              </HintText>
             )}
             {fw.step === 5 && (
               <HintText key="h5">Final step — send your invitations</HintText>
@@ -238,21 +247,25 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
 
           {/* Validation hints — teal left-border accent strip for visibility */}
           <AnimatePresence>
-            {fw.step === 2 && !fw.canAdvanceStep2 && fw.planName.trim().length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden"
-              >
-                <p className="text-xs text-muted-foreground/80 font-medium pl-3 border-l-2 border-primary/40">
-                  Event title needs at least 3 characters to continue
-                </p>
-              </motion.div>
-            )}
+            {fw.step === 2 &&
+              !fw.canAdvanceStep2 &&
+              fw.planName.trim().length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <p className="text-xs text-muted-foreground/80 font-medium pl-3 border-l-2 border-primary/40">
+                    Event title needs at least 3 characters to continue
+                  </p>
+                </motion.div>
+              )}
           </AnimatePresence>
-        </div>{/* end max-w-2xl */}
-      </div>{/* end non-sticky CTA area */}
+        </div>
+        {/* end max-w-2xl */}
+      </div>
+      {/* end non-sticky CTA area */}
     </div>
   );
 }

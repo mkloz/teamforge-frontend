@@ -3,7 +3,10 @@
 import { cn } from "@/shared/lib/utils";
 import { MessageSquare, Search } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
-import type { FilterChip, UnifiedConversation } from "../types/unified-conversation.types";
+import type {
+  FilterChip,
+  UnifiedConversation,
+} from "../types/unified-conversation.types";
 import { UnifiedConversationListItem } from "./unified-conversation-list-item";
 
 interface UnifiedConversationListProps {
@@ -20,9 +23,9 @@ interface UnifiedConversationListProps {
 }
 
 const FILTERS: { key: FilterChip; label: string }[] = [
-  { key: "all",    label: "All" },
+  { key: "all", label: "All" },
   { key: "groups", label: "Groups" },
-  { key: "dms",    label: "DMs" },
+  { key: "dms", label: "DMs" },
   { key: "unread", label: "Unread" },
 ];
 
@@ -36,7 +39,7 @@ function filterBadge(
   unreadCount: number,
 ): number | null {
   if (key === "groups") return groupCount;
-  if (key === "dms")    return dmCount;
+  if (key === "dms") return dmCount;
   if (key === "unread") return unreadCount;
   return null;
 }
@@ -120,14 +123,14 @@ export function UnifiedConversationList({
             the search bar has scrolled out of the viewport */}
         <div
           className={cn(
-            "sticky top-0 z-10 px-4 py-2.5 border-b border-border",
-            "bg-background/95 backdrop-blur-sm",
+            "sticky top-0 z-10 px-4 py-2.5 border-b border-border no-scrollbar",
+            "bg-canvas/80 backdrop-blur-sm",
           )}
         >
           <div
             role="radiogroup"
             aria-label="Filter conversations"
-            className="flex gap-1.5 overflow-x-auto scrollbar-hide"
+            className="flex gap-1.5 no-scrollbar"
           >
             {FILTERS.map(({ key, label }) => {
               const badge = filterBadge(key, groupCount, dmCount, unreadCount);

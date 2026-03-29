@@ -1,13 +1,13 @@
-import { useEffect, useCallback } from "react";
-import { X } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
+import { X } from "lucide-react";
+import { useCallback, useEffect } from "react";
 import type { Group, MemberRole } from "../../types/groups.types";
-import { GroupIdentitySection } from "./group-identity-section";
-import { PlanSection } from "./plan-section";
-import { PlanHistorySection } from "./plan-history-section";
-import { MembersSection } from "./members-section";
 import { ActionsSection } from "./actions-section";
+import { GroupIdentitySection } from "./group-identity-section";
+import { MembersSection } from "./members-section";
+import { PlanHistorySection } from "./plan-history-section";
+import { PlanSection } from "./plan-section";
 
 interface GroupDetailPanelProps {
   group: Group;
@@ -15,7 +15,11 @@ interface GroupDetailPanelProps {
   onClose: () => void;
 }
 
-export function GroupDetailPanel({ group, isOpen, onClose }: GroupDetailPanelProps) {
+export function GroupDetailPanel({
+  group,
+  isOpen,
+  onClose,
+}: GroupDetailPanelProps) {
   // Close on Escape key
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -23,7 +27,7 @@ export function GroupDetailPanel({ group, isOpen, onClose }: GroupDetailPanelPro
         onClose();
       }
     },
-    [isOpen, onClose]
+    [isOpen, onClose],
   );
 
   useEffect(() => {
@@ -45,7 +49,7 @@ export function GroupDetailPanel({ group, isOpen, onClose }: GroupDetailPanelPro
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          "hidden lg:flex flex-col h-full border-l border-border bg-background",
+          "hidden lg:flex flex-col h-full border-l border-border bg-canvas",
           "transition-all duration-200 ease-in-out",
           isOpen ? "w-80" : "w-0 overflow-hidden",
         )}
@@ -58,7 +62,9 @@ export function GroupDetailPanel({ group, isOpen, onClose }: GroupDetailPanelPro
         className={cn(
           "lg:hidden fixed inset-0 z-50",
           "transition-opacity duration-200",
-          isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
+          isOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none",
         )}
       >
         {/* Backdrop */}
@@ -71,7 +77,7 @@ export function GroupDetailPanel({ group, isOpen, onClose }: GroupDetailPanelPro
         {/* Sheet */}
         <div
           className={cn(
-            "absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl",
+            "absolute bottom-0 left-0 right-0 bg-canvas rounded-t-2xl",
             "transition-transform duration-300 ease-out",
             "max-h-[85vh] flex flex-col",
             isOpen ? "translate-y-0" : "translate-y-full",
@@ -97,9 +103,10 @@ function DesktopPanelContent({
   onClose: () => void;
 }) {
   // Get current user's role (would come from auth context in production)
-  const currentUserRole: MemberRole = group.members.find(m => m.role === "ADMIN")?.id === group.createdBy 
-    ? "ADMIN" 
-    : "MEMBER";
+  const currentUserRole: MemberRole =
+    group.members.find((m) => m.role === "ADMIN")?.id === group.createdBy
+      ? "ADMIN"
+      : "MEMBER";
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -142,7 +149,10 @@ function DesktopPanelContent({
           <PlanSection plan={group.plan} userRole={currentUserRole} />
 
           {/* Members */}
-          <MembersSection members={group.members} maxMembers={group.maxMembers} />
+          <MembersSection
+            members={group.members}
+            maxMembers={group.maxMembers}
+          />
 
           {/* Plan History - for group reusability */}
           <PlanHistorySection
@@ -166,9 +176,10 @@ function MobilePanelContent({
   onClose: () => void;
 }) {
   // Get current user's role (would come from auth context in production)
-  const currentUserRole: MemberRole = group.members.find(m => m.role === "ADMIN")?.id === group.createdBy 
-    ? "ADMIN" 
-    : "MEMBER";
+  const currentUserRole: MemberRole =
+    group.members.find((m) => m.role === "ADMIN")?.id === group.createdBy
+      ? "ADMIN"
+      : "MEMBER";
 
   return (
     <div className="flex-1 overflow-y-auto pb-safe">

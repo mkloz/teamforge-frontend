@@ -1,6 +1,6 @@
-import { ArrowLeft, Phone, Video, MoreVertical } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
+import { ArrowLeft, MoreVertical, Phone, Video } from "lucide-react";
 import type { DirectChat, OnlineStatus } from "../../types/direct-chats.types";
 
 interface DirectChatHeaderProps {
@@ -52,7 +52,7 @@ export function DirectChatHeader({
   const { participant } = chat;
 
   return (
-    <header className="shrink-0 flex items-center gap-2 px-2 pb-2 md:pt-2 border-b border-border bg-background">
+    <header className="shrink-0 flex items-center gap-2 px-2 pb-2 md:pt-2 border-b border-border">
       {/* Back button - mobile only */}
       {onBack && (
         <Button

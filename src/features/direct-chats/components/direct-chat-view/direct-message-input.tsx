@@ -1,14 +1,17 @@
-import { useState, useCallback, useRef, useEffect } from "react";
-import { Paperclip, Send, Smile, Mic } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
+import { Mic, Paperclip, Send, Smile } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface DirectMessageInputProps {
   onSend: (content: string) => void;
   disabled?: boolean;
 }
 
-export function DirectMessageInput({ onSend, disabled = false }: DirectMessageInputProps) {
+export function DirectMessageInput({
+  onSend,
+  disabled = false,
+}: DirectMessageInputProps) {
   const [value, setValue] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -41,14 +44,18 @@ export function DirectMessageInput({ onSend, disabled = false }: DirectMessageIn
   );
 
   return (
-    <div className={cn(
-      "flex-shrink-0 px-3 py-2 border-t border-border bg-background",
-      "safe-area-inset-bottom",
-    )}>
-      <div className={cn(
-        "flex items-end gap-2 p-1 rounded-2xl transition-all duration-200",
-        isFocused ? "bg-muted/70 ring-1 ring-border" : "bg-muted/40",
-      )}>
+    <div
+      className={cn(
+        "flex-shrink-0 px-3 py-2 border-t border-border bg-canvas",
+        "safe-area-inset-bottom",
+      )}
+    >
+      <div
+        className={cn(
+          "flex items-end gap-2 p-1 rounded-2xl transition-all duration-200",
+          isFocused ? "bg-muted/70 ring-1 ring-border" : "bg-muted/40",
+        )}
+      >
         {/* Attachment button */}
         <Button
           variant="ghost"

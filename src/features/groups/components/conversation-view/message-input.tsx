@@ -1,7 +1,7 @@
-import { useState, useCallback, useRef, useEffect } from "react";
-import { Paperclip, Send, Smile } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
+import { Paperclip, Send, Smile } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface MessageInputProps {
   onSend: (content: string) => void;
@@ -45,14 +45,18 @@ export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
   }
 
   return (
-    <div className={cn(
-      "flex-shrink-0 px-3 py-2 border-t border-border bg-background",
-      "safe-area-inset-bottom", // For mobile safe area
-    )}>
-      <div className={cn(
-        "flex items-end gap-2 p-1 rounded-2xl transition-all duration-200",
-        isFocused ? "bg-muted/70 ring-1 ring-border" : "bg-muted/40",
-      )}>
+    <div
+      className={cn(
+        "flex-shrink-0 px-3 py-2 border-t border-border bg-canvas",
+        "safe-area-inset-bottom", // For mobile safe area
+      )}
+    >
+      <div
+        className={cn(
+          "flex items-end gap-2 p-1 rounded-2xl transition-all duration-200",
+          isFocused ? "bg-muted/70 ring-1 ring-border" : "bg-muted/40",
+        )}
+      >
         {/* Attachment button */}
         <Button
           variant="ghost"
@@ -103,8 +107,8 @@ export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
           size="icon"
           className={cn(
             "h-9 w-9 flex-shrink-0 rounded-full transition-all duration-200",
-            value.trim() 
-              ? "bg-primary text-primary-foreground hover:bg-primary/90 scale-100" 
+            value.trim()
+              ? "bg-primary text-primary-foreground hover:bg-primary/90 scale-100"
               : "bg-transparent text-muted-foreground scale-95 opacity-50",
           )}
           aria-label="Send message"

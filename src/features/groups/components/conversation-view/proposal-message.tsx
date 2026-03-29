@@ -1,5 +1,5 @@
-import { ThumbsUp, ThumbsDown, Clock, MapPin, FileText } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import { Clock, FileText, MapPin, ThumbsDown, ThumbsUp } from "lucide-react";
 import type { Message } from "../../types/groups.types";
 
 interface ProposalMessageProps {
@@ -39,7 +39,8 @@ export function ProposalMessage({ message }: ProposalMessageProps) {
     requiredVotes: 2,
   };
 
-  const progress = (proposalData.votes.approve / proposalData.requiredVotes) * 100;
+  const progress =
+    (proposalData.votes.approve / proposalData.requiredVotes) * 100;
 
   return (
     <div className="flex justify-center my-3">
@@ -56,13 +57,15 @@ export function ProposalMessage({ message }: ProposalMessageProps) {
             <span className="text-xs text-foreground">
               <span className="font-medium">{message.senderName}</span>
               {" proposed a change to "}
-              <span className="font-medium">{fieldLabels[proposalData.field]}</span>
+              <span className="font-medium">
+                {fieldLabels[proposalData.field]}
+              </span>
             </span>
           </div>
 
           {/* Change visualization */}
           <div className="p-3 space-y-2">
-            <div className="flex items-start gap-2 rounded-lg bg-background/50 p-2.5">
+            <div className="flex items-start gap-2 rounded-lg bg-canvas/50 p-2.5">
               <span className="flex-shrink-0 mt-0.5 text-muted-foreground">
                 {fieldIcons[proposalData.field]}
               </span>
@@ -80,7 +83,8 @@ export function ProposalMessage({ message }: ProposalMessageProps) {
             <div className="space-y-1">
               <div className="flex items-center justify-between text-[10px]">
                 <span className="text-muted-foreground">
-                  {proposalData.votes.approve} of {proposalData.requiredVotes} votes needed
+                  {proposalData.votes.approve} of {proposalData.requiredVotes}{" "}
+                  votes needed
                 </span>
                 {proposalData.votes.reject > 0 && (
                   <span className="text-red-500">

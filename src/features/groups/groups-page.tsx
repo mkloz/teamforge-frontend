@@ -75,11 +75,11 @@ export function GroupsPage() {
   );
 
   return (
-    <div className="fixed inset-0 top-16 md:left-16 lg:left-60 pb-24 md:pb-0 flex bg-background">
+    <div className="fixed inset-0 top-16 md:left-16 lg:left-60 pb-24 md:pb-0 flex bg-canvas">
       {/* Conversation List - always visible on desktop, conditional on mobile */}
       <div
         className={cn(
-          "flex-shrink-0 border-r border-border bg-background",
+          "flex-shrink-0 border-r border-border bg-canvas",
           // Mobile: full width when no selection, hidden when selection
           "w-full",
           // Tablet+: fixed width sidebar

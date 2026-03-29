@@ -78,8 +78,8 @@ export function ActivityPage() {
   );
 
   // Badge counts for filter chips
-  const groupCount  = MOCK_GROUP_PREVIEWS.length;
-  const dmCount     = MOCK_DIRECT_CHAT_PREVIEWS.length;
+  const groupCount = MOCK_GROUP_PREVIEWS.length;
+  const dmCount = MOCK_DIRECT_CHAT_PREVIEWS.length;
   const unreadCount = useMemo(
     () => allUnified.filter((i) => i.unreadCount > 0).length,
     [allUnified],
@@ -89,12 +89,16 @@ export function ActivityPage() {
   const selectedGroup =
     selectedKind === "group" && selectedId ? MOCK_GROUPS[selectedId] : null;
   const selectedGroupMessages =
-    selectedKind === "group" && selectedId ? (MOCK_MESSAGES[selectedId] ?? []) : [];
+    selectedKind === "group" && selectedId
+      ? (MOCK_MESSAGES[selectedId] ?? [])
+      : [];
 
   const selectedChat =
     selectedKind === "dm" && selectedId ? MOCK_DIRECT_CHATS[selectedId] : null;
   const selectedDirectMessages =
-    selectedKind === "dm" && selectedId ? (MOCK_DIRECT_MESSAGES[selectedId] ?? []) : [];
+    selectedKind === "dm" && selectedId
+      ? (MOCK_DIRECT_MESSAGES[selectedId] ?? [])
+      : [];
   const selectedChatPreview = MOCK_DIRECT_CHAT_PREVIEWS.find(
     (c) => c.id === selectedId,
   );
@@ -110,10 +114,22 @@ export function ActivityPage() {
         selectedGroupId: id,
         isDetailPanelOpen: window.innerWidth >= 1024,
       }));
-      setDirectState((prev) => ({ ...prev, selectedChatId: null, isProfilePanelOpen: false }));
+      setDirectState((prev) => ({
+        ...prev,
+        selectedChatId: null,
+        isProfilePanelOpen: false,
+      }));
     } else {
-      setDirectState((prev) => ({ ...prev, selectedChatId: id, isProfilePanelOpen: false }));
-      setGroupsState((prev) => ({ ...prev, selectedGroupId: null, isDetailPanelOpen: false }));
+      setDirectState((prev) => ({
+        ...prev,
+        selectedChatId: id,
+        isProfilePanelOpen: false,
+      }));
+      setGroupsState((prev) => ({
+        ...prev,
+        selectedGroupId: null,
+        isDetailPanelOpen: false,
+      }));
     }
   }, []);
 
@@ -121,13 +137,24 @@ export function ActivityPage() {
   const handleBack = useCallback(() => {
     setSelectedId(null);
     setSelectedKind(null);
-    setGroupsState((prev) => ({ ...prev, selectedGroupId: null, isDetailPanelOpen: false }));
-    setDirectState((prev) => ({ ...prev, selectedChatId: null, isProfilePanelOpen: false }));
+    setGroupsState((prev) => ({
+      ...prev,
+      selectedGroupId: null,
+      isDetailPanelOpen: false,
+    }));
+    setDirectState((prev) => ({
+      ...prev,
+      selectedChatId: null,
+      isProfilePanelOpen: false,
+    }));
   }, []);
 
   // ── Panel toggles ───────────────────────────────────────────────────────────
   const handleToggleGroupDetail = useCallback(() => {
-    setGroupsState((prev) => ({ ...prev, isDetailPanelOpen: !prev.isDetailPanelOpen }));
+    setGroupsState((prev) => ({
+      ...prev,
+      isDetailPanelOpen: !prev.isDetailPanelOpen,
+    }));
   }, []);
 
   const handleCloseGroupDetail = useCallback(() => {
@@ -135,7 +162,10 @@ export function ActivityPage() {
   }, []);
 
   const handleToggleProfile = useCallback(() => {
-    setDirectState((s) => ({ ...s, isProfilePanelOpen: !s.isProfilePanelOpen }));
+    setDirectState((s) => ({
+      ...s,
+      isProfilePanelOpen: !s.isProfilePanelOpen,
+    }));
   }, []);
 
   const handleCloseProfile = useCallback(() => {
@@ -143,8 +173,12 @@ export function ActivityPage() {
   }, []);
 
   // ── Message senders (no-op for mock) ────────────────────────────────────────
-  const handleGroupSendMessage  = useCallback((_: string) => {}, []);
-  const handleDirectSendMessage = useCallback((_: string) => {}, []);
+  const handleGroupSendMessage = useCallback(() => {
+    console.log("Mock group send");
+  }, []);
+  const handleDirectSendMessage = useCallback(() => {
+    console.log("Mock direct send");
+  }, []);
 
   // ── Bottom nav hide on mobile when viewing a conversation ──────────────────
   const hasSelection = !!selectedId;
@@ -165,14 +199,14 @@ export function ActivityPage() {
   return (
     <div
       className={cn(
-        "fixed inset-0 top-0 md:top-16 md:left-16 lg:left-60 flex bg-background",
+        "fixed inset-0 top-0 md:top-16 md:left-16 lg:left-60 flex bg-canvas",
         !hasSelection ? "pb-24 md:pb-0" : "pb-0",
       )}
     >
       {/* Left sidebar — unified list */}
       <div
         className={cn(
-          "flex-shrink-0 border-r border-border bg-background flex flex-col",
+          "flex-shrink-0 border-r border-border bg-canvas flex flex-col",
           "w-full md:w-72 lg:w-80",
           hasSelection && "hidden md:flex",
         )}
