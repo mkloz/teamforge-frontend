@@ -1,201 +1,63 @@
 import { cn } from "@/shared/lib/utils";
-import { useUiStore } from "@/shared/store/ui.store";
 import { MessageSquare } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useActivity } from "@/features/activity/hooks/use-activity";
 
 // Groups
-import { ConversationView } from "../groups/components/conversation-view/conversation-view";
-import { GroupDetailPanel } from "../groups/components/group-detail-panel/group-detail-panel";
-import {
-  MOCK_GROUP_PREVIEWS,
-  MOCK_GROUPS,
-  MOCK_MESSAGES,
-} from "../groups/data/mock-groups";
-import type { GroupsPageState } from "../groups/types/groups.types";
+import { ConversationView } from "@/features/activity/components/groups/conversation-view/conversation-view";
+import { GroupDetailPanel } from "@/features/activity/components/groups/group-detail-panel/group-detail-panel";
 
 // Direct chats
-import { DirectChatView } from "../direct-chats/components/direct-chat-view";
+import { DirectChatView } from "@/features/activity/components/direct-chats/direct-chat-view";
 import {
   ProfilePanel,
   ProfilePanelMobile,
-} from "../direct-chats/components/profile-panel";
-import {
-  MOCK_DIRECT_CHAT_PREVIEWS,
-  MOCK_DIRECT_CHATS,
-  MOCK_DIRECT_MESSAGES,
-} from "../direct-chats/data/mock-direct-chats";
-import type { DirectChatsState } from "../direct-chats/types/direct-chats.types";
+} from "@/features/activity/components/direct-chats/profile-panel";
 
 // Unified inbox
-import { UnifiedConversationList } from "./components/unified-conversation-list";
-import {
-  applyFilter,
-  dmPreviewToUnified,
-  groupPreviewToUnified,
-  sortByRecency,
-} from "./lib/unify-conversations";
-import type { FilterChip } from "./types/unified-conversation.types";
+import { UnifiedConversationList } from "@/features/activity/components/unified-conversation-list";
 
+/**
+ * ActivityPage - The main feature orchestrator for Unified Conversations,
+ * Groups and Direct Chats.
+ *
+ * @pattern Orchestrator (Page level)
+ * Logic is decoupled into useActivity() hook.
+ */
 export function ActivityPage() {
-  // ── Unified list state ──────────────────────────────────────────────────────
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeFilter, setActiveFilter] = useState<FilterChip>("all");
+  const {
+    // State
+    searchQuery,
+    activeFilter,
+    selectedId,
+    selectedKind,
+    groups,
+    direct,
+    hasSelection,
 
-  // Selected conversation (replaces activeTab + per-feature selectedId)
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [selectedKind, setSelectedKind] = useState<"group" | "dm" | null>(null);
+    // Derived
+    filteredItems,
+    groupCount,
+    dmCount,
+    unreadCount,
+    selectedGroup,
+    selectedGroupMessages,
+    selectedChat,
+    selectedDirectMessages,
+    selectedChatPreview,
 
-  // ── Per-feature state (panel toggles, drafts) ───────────────────────────────
-  const [groupsState, setGroupsState] = useState<GroupsPageState>({
-    selectedGroupId: null,
-    isDetailPanelOpen: false,
-    searchQuery: "",
-    draftMessages: {},
-  });
+    // Actions
+    setSearchQuery,
+    setActiveFilter,
+    handleSelectItem,
+    handleBack,
+    toggleGroupDetail,
+    closeGroupDetail,
+    toggleProfilePanel,
+    closeProfilePanel,
+    handleGroupSendMessage,
+    handleDirectSendMessage,
+  } = useActivity();
 
-  const [directState, setDirectState] = useState<DirectChatsState>({
-    selectedChatId: null,
-    isProfilePanelOpen: false,
-    searchQuery: "",
-    draftMessages: {},
-  });
-
-  const setBottomNavHidden = useUiStore((s) => s.setBottomNavHidden);
-
-  // ── Unified data ────────────────────────────────────────────────────────────
-  const allUnified = useMemo(
-    () =>
-      sortByRecency([
-        ...MOCK_GROUP_PREVIEWS.map(groupPreviewToUnified),
-        ...MOCK_DIRECT_CHAT_PREVIEWS.map(dmPreviewToUnified),
-      ]),
-    [],
-  );
-
-  const filteredItems = useMemo(
-    () => applyFilter(allUnified, activeFilter, searchQuery),
-    [allUnified, activeFilter, searchQuery],
-  );
-
-  // Badge counts for filter chips
-  const groupCount = MOCK_GROUP_PREVIEWS.length;
-  const dmCount = MOCK_DIRECT_CHAT_PREVIEWS.length;
-  const unreadCount = useMemo(
-    () => allUnified.filter((i) => i.unreadCount > 0).length,
-    [allUnified],
-  );
-
-  // ── Derived view data ───────────────────────────────────────────────────────
-  const selectedGroup =
-    selectedKind === "group" && selectedId ? MOCK_GROUPS[selectedId] : null;
-  const selectedGroupMessages =
-    selectedKind === "group" && selectedId
-      ? (MOCK_MESSAGES[selectedId] ?? [])
-      : [];
-
-  const selectedChat =
-    selectedKind === "dm" && selectedId ? MOCK_DIRECT_CHATS[selectedId] : null;
-  const selectedDirectMessages =
-    selectedKind === "dm" && selectedId
-      ? (MOCK_DIRECT_MESSAGES[selectedId] ?? [])
-      : [];
-  const selectedChatPreview = MOCK_DIRECT_CHAT_PREVIEWS.find(
-    (c) => c.id === selectedId,
-  );
-
-  // ── Selection handler ───────────────────────────────────────────────────────
-  const handleSelectItem = useCallback((id: string, kind: "group" | "dm") => {
-    setSelectedId(id);
-    setSelectedKind(kind);
-
-    if (kind === "group") {
-      setGroupsState((prev) => ({
-        ...prev,
-        selectedGroupId: id,
-        isDetailPanelOpen: window.innerWidth >= 1024,
-      }));
-      setDirectState((prev) => ({
-        ...prev,
-        selectedChatId: null,
-        isProfilePanelOpen: false,
-      }));
-    } else {
-      setDirectState((prev) => ({
-        ...prev,
-        selectedChatId: id,
-        isProfilePanelOpen: false,
-      }));
-      setGroupsState((prev) => ({
-        ...prev,
-        selectedGroupId: null,
-        isDetailPanelOpen: false,
-      }));
-    }
-  }, []);
-
-  // ── Back handlers ───────────────────────────────────────────────────────────
-  const handleBack = useCallback(() => {
-    setSelectedId(null);
-    setSelectedKind(null);
-    setGroupsState((prev) => ({
-      ...prev,
-      selectedGroupId: null,
-      isDetailPanelOpen: false,
-    }));
-    setDirectState((prev) => ({
-      ...prev,
-      selectedChatId: null,
-      isProfilePanelOpen: false,
-    }));
-  }, []);
-
-  // ── Panel toggles ───────────────────────────────────────────────────────────
-  const handleToggleGroupDetail = useCallback(() => {
-    setGroupsState((prev) => ({
-      ...prev,
-      isDetailPanelOpen: !prev.isDetailPanelOpen,
-    }));
-  }, []);
-
-  const handleCloseGroupDetail = useCallback(() => {
-    setGroupsState((prev) => ({ ...prev, isDetailPanelOpen: false }));
-  }, []);
-
-  const handleToggleProfile = useCallback(() => {
-    setDirectState((s) => ({
-      ...s,
-      isProfilePanelOpen: !s.isProfilePanelOpen,
-    }));
-  }, []);
-
-  const handleCloseProfile = useCallback(() => {
-    setDirectState((s) => ({ ...s, isProfilePanelOpen: false }));
-  }, []);
-
-  // ── Message senders (no-op for mock) ────────────────────────────────────────
-  const handleGroupSendMessage = useCallback(() => {
-    console.log("Mock group send");
-  }, []);
-  const handleDirectSendMessage = useCallback(() => {
-    console.log("Mock direct send");
-  }, []);
-
-  // ── Bottom nav hide on mobile when viewing a conversation ──────────────────
-  const hasSelection = !!selectedId;
-
-  useEffect(() => {
-    const handleResize = () => {
-      setBottomNavHidden(hasSelection && window.innerWidth < 768);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      setBottomNavHidden(false);
-    };
-  }, [hasSelection, setBottomNavHidden]);
-
-  // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <div
       className={cn(
@@ -204,9 +66,9 @@ export function ActivityPage() {
       )}
     >
       {/* Left sidebar — unified list */}
-      <div
+      <aside
         className={cn(
-          "flex-shrink-0 border-r border-border bg-canvas flex flex-col",
+          "flex flex-col shrink-0 border-r border-border bg-canvas transition-all duration-300",
           "w-full md:w-72 lg:w-80",
           hasSelection && "hidden md:flex",
         )}
@@ -223,74 +85,78 @@ export function ActivityPage() {
           onFilterChange={setActiveFilter}
           onSelectItem={handleSelectItem}
         />
-      </div>
+      </aside>
 
       {/* Main content area */}
-      <div
-        className={cn("flex-1 flex min-w-0", !hasSelection && "hidden md:flex")}
+      <main
+        className={cn(
+          "flex-1 flex min-w-0 transition-all duration-300",
+          !hasSelection && "hidden md:flex",
+        )}
       >
         {selectedKind === "group" && selectedId && selectedGroup ? (
-          <div className="flex-1 flex">
-            <div className="flex-1">
+          <div className="flex-1 flex overflow-hidden">
+            <div className="flex-1 flex flex-col min-w-0">
               <ConversationView
                 group={selectedGroup}
                 messages={selectedGroupMessages}
                 onBack={handleBack}
-                onToggleDetail={handleToggleGroupDetail}
+                onToggleDetail={toggleGroupDetail}
                 onSendMessage={handleGroupSendMessage}
               />
             </div>
             <GroupDetailPanel
               group={selectedGroup}
-              isOpen={groupsState.isDetailPanelOpen}
-              onClose={handleCloseGroupDetail}
+              isOpen={groups.isDetailPanelOpen}
+              onClose={closeGroupDetail}
             />
           </div>
         ) : selectedKind === "dm" && selectedId && selectedChat ? (
-          <>
-            <div className="flex-1">
+          <div className="flex-1 flex overflow-hidden">
+            <div className="flex-1 flex flex-col min-w-0">
               <DirectChatView
                 chat={selectedChat}
                 messages={selectedDirectMessages}
                 isTyping={selectedChatPreview?.isTyping}
                 onBack={handleBack}
-                onToggleProfile={handleToggleProfile}
+                onToggleProfile={toggleProfilePanel}
                 onSendMessage={handleDirectSendMessage}
               />
             </div>
             <ProfilePanel
               chat={selectedChat}
-              isOpen={directState.isProfilePanelOpen}
-              onClose={handleCloseProfile}
+              isOpen={direct.isProfilePanelOpen}
+              onClose={closeProfilePanel}
             />
             <ProfilePanelMobile
               chat={selectedChat}
-              isOpen={directState.isProfilePanelOpen}
-              onClose={handleCloseProfile}
+              isOpen={direct.isProfilePanelOpen}
+              onClose={closeProfilePanel}
             />
-          </>
+          </div>
         ) : (
-          <EmptyState />
+          <ActivityEmptyState />
         )}
-      </div>
+      </main>
     </div>
   );
 }
 
-function EmptyState() {
+function ActivityEmptyState() {
   return (
-    <div className="flex-1 hidden md:flex items-center justify-center">
-      <div className="text-center max-w-xs">
-        <div className="mx-auto w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
-          <MessageSquare size={28} className="text-muted-foreground/60" />
+    <section className="flex-1 hidden md:flex items-center justify-center bg-canvas/30 backdrop-blur-sm">
+      <div className="text-center max-w-sm px-6">
+        <div className="mx-auto w-20 h-20 rounded-2xl bg-muted/20 flex items-center justify-center mb-6 shadow-sm">
+          <MessageSquare size={32} className="text-muted-foreground/40" />
         </div>
-        <p className="text-lg font-semibold text-foreground">
-          Select a conversation
-        </p>
-        <p className="text-sm mt-2 text-muted-foreground leading-relaxed">
-          Choose a group or direct message from the list to start chatting.
+        <h2 className="text-xl font-bold text-ink">
+          Find your people, intelligently.
+        </h2>
+        <p className="text-sm mt-3 text-slate-muted leading-relaxed">
+          Select any group or direct message from the list on the left to start
+          chatting and planning activities together.
         </p>
       </div>
-    </div>
+    </section>
   );
 }

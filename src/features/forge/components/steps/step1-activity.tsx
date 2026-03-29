@@ -86,7 +86,7 @@ export function Step1Activity({
 
           {/* Horizontal scroll — right-peek gradient signals more content */}
           <div className="relative">
-            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar snap-x snap-mandatory touch-pan-x">
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 snap-x snap-mandatory touch-pan-x">
               {RECENT.map(({ id, label, count }) => {
                 const Icon = ICON_MAP[id] || History;
                 const active = selectedActivity === label;
@@ -97,7 +97,7 @@ export function Step1Activity({
                     onClick={() => onSelect(label)}
                     aria-pressed={active}
                     className={cn(
-                      "group relative flex items-center gap-3 min-w-[160px] shrink-0 px-3.5 py-3 rounded-2xl border snap-start transition-all duration-200",
+                      "group relative flex items-center gap-3 min-w-40 shrink-0 px-3.5 py-3 rounded-2xl border snap-start transition-all duration-200",
                       active
                         ? "border-accent bg-accent/10 ring-1 ring-accent/30"
                         : "border-border/40 bg-card hover:border-accent/30 hover:bg-accent/5",
@@ -134,7 +134,7 @@ export function Step1Activity({
               })}
             </div>
             {/* Right-edge peek fade — signals horizontal scroll */}
-            <div className="absolute top-0 right-0 bottom-1 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none" />
+            <div className="absolute top-0 right-0 bottom-1 w-8 bg-linear-to-l from-background to-transparent pointer-events-none" />
           </div>
         </div>
       )}
@@ -170,7 +170,7 @@ export function Step1Activity({
                 onClick={() => onSelect(label)}
                 aria-pressed={selected}
                 className={cn(
-                  "group relative flex flex-col items-start gap-3 p-4 rounded-2xl border text-left transition-all duration-200 min-h-[100px] active:scale-[0.97]",
+                  "group relative flex flex-col items-start gap-3 p-4 rounded-2xl border text-left transition-all duration-200 min-h-25 active:scale-[0.97]",
                   selected
                     ? "border-accent bg-accent/8 ring-1 ring-accent/25 shadow-sm"
                     : "border-border/40 bg-card hover:border-accent/30 hover:bg-accent/5",

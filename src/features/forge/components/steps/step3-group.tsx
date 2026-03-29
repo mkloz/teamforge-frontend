@@ -235,7 +235,7 @@ export function Step3Group({
                         type="button"
                         onClick={() => setCapacityMode(mode)}
                         className={cn(
-                          "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold transition-all duration-200 min-w-[64px] justify-center",
+                          "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold transition-all duration-200 min-w-16 justify-center",
                           active
                             ? "bg-background text-foreground shadow-sm"
                             : "text-muted-foreground/50 hover:text-muted-foreground",
@@ -261,7 +261,7 @@ export function Step3Group({
               </div>
 
               {/* Uniform slider container — identical min-height and layout for both modes */}
-              <div className="min-h-[72px] flex flex-col justify-center">
+              <div className="min-h-18 flex flex-col justify-center">
                 {capacityMode === "range" ? (
                   <div className="space-y-1 animate-in fade-in duration-200">
                     <div className="py-1">

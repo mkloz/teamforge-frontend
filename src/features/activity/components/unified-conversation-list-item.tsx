@@ -6,7 +6,8 @@ import type { UnifiedConversation } from "../types/unified-conversation.types";
 import type {
   MessageStatus,
   OnlineStatus,
-} from "@/features/direct-chats/types/direct-chats.types";
+} from "@/features/activity/types/direct-chats.types";
+import { memo } from "react";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -37,175 +38,189 @@ function formatCountdown(isoString: string): string | null {
   return `${Math.ceil(diffHours / 24)}d`;
 }
 
-function onlineStatusColor(status: OnlineStatus): string {
-  switch (status) {
-    case "ONLINE":
-      return "bg-green-500";
-    case "AWAY":
-      return "bg-amber-500";
-    case "OFFLINE":
-      return "bg-muted-foreground/40";
-  }
+function StatusIndicator({ status }: { status: OnlineStatus }) {
+  const colors = {
+    ONLINE: "bg-forge-teal",
+    AWAY: "bg-spark-amber",
+    OFFLINE: "bg-slate-muted/40",
+  };
+
+  return (
+    <span
+      className={cn(
+        "absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-background shadow-sm",
+        colors[status],
+      )}
+    />
+  );
 }
 
 function MsgStatusIcon({ status }: { status: MessageStatus }) {
   switch (status) {
     case "SENDING":
       return (
-        <span className="w-3 h-3 rounded-full border border-muted-foreground/40 border-t-transparent animate-spin" />
+        <span className="w-3 h-3 rounded-full border border-slate-muted/40 border-t-transparent animate-spin" />
       );
     case "SENT":
-      return <Check size={12} className="text-muted-foreground" />;
+      return <Check size={12} className="text-slate-muted" />;
     case "DELIVERED":
-      return <CheckCheck size={12} className="text-muted-foreground" />;
+      return <CheckCheck size={12} className="text-slate-muted" />;
     case "READ":
-      return <CheckCheck size={12} className="text-teal-500" />;
+      return <CheckCheck size={12} className="text-forge-teal" />;
   }
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-interface Props {
+interface UnifiedConversationListItemProps {
   item: UnifiedConversation;
   isSelected: boolean;
   onSelect: () => void;
 }
 
-export function UnifiedConversationListItem({
-  item,
-  isSelected,
-  onSelect,
-}: Props) {
-  const hasUnread = item.unreadCount > 0;
-  const isGroup = item.kind === "group";
-  const countdown =
-    isGroup && item.planDateTime ? formatCountdown(item.planDateTime) : null;
-  const isDraft = isGroup && item.planStatus === "DRAFT";
+/**
+ * UnifiedConversationListItem - Renders a single conversation in the sidebar list.
+ * Memoized to prevent redundant re-renders during search or scroll.
+ */
+export const UnifiedConversationListItem = memo(
+  function UnifiedConversationListItem({
+    item,
+    isSelected,
+    onSelect,
+  }: UnifiedConversationListItemProps) {
+    const hasUnread = item.unreadCount > 0;
+    const isGroup = item.kind === "group";
+    const countdown =
+      isGroup && item.planDateTime ? formatCountdown(item.planDateTime) : null;
+    const isDraft = isGroup && item.planStatus === "DRAFT";
 
-  return (
-    <button
-      type="button"
-      onClick={onSelect}
-      role="option"
-      aria-selected={isSelected}
-      aria-label={`${item.title}${hasUnread ? `, ${item.unreadCount} unread` : ""}`}
-      className={cn(
-        "w-full flex items-start gap-3 px-4 py-3 text-left",
-        "border-l-2 transition-all duration-150",
-        "hover:bg-muted/50 active:bg-muted/70",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary",
-        isSelected ? "bg-primary/5 hover:bg-primary/8" : "border-l-transparent",
-        isGroup && !isSelected && "hover:border-l-teal-500/40",
-        isGroup && isSelected && "border-l-teal-500",
-        !isGroup && isSelected && "border-l-primary",
-      )}
-    >
-      {/* ── Avatar ── */}
-      <div className="relative flex-shrink-0">
-        <img
-          src={item.avatarUrl}
-          alt={item.title}
-          className={cn(
-            "w-12 h-12 object-cover bg-muted",
-            isGroup ? "rounded-xl" : "rounded-full",
-          )}
-        />
-
-        {/* Group: plan cover thumbnail */}
-        {isGroup && item.planCoverImage && (
-          <img
-            src={item.planCoverImage}
-            alt=""
-            className="absolute -bottom-1 -right-1 w-5 h-5 rounded-md object-cover ring-2 ring-background"
-          />
+    return (
+      <button
+        type="button"
+        onClick={onSelect}
+        role="option"
+        aria-selected={isSelected}
+        aria-label={`${item.title}${hasUnread ? `, ${item.unreadCount} unread` : ""}`}
+        className={cn(
+          "relative group flex items-center gap-3.5 px-4 py-3.5 select-none transition-all duration-200 outline-none",
+          "before:content-[''] before:absolute before:left-0 before:top-0 before:h-full before:w-0.75 before:bg-forge-teal before:transition-all before:duration-300",
+          isSelected
+            ? "bg-muted/60 before:opacity-100"
+            : "hover:bg-muted/30 before:opacity-0 hover:before:opacity-40",
         )}
-
-        {/* DM: online status dot */}
-        {!isGroup && item.onlineStatus && (
-          <span
-            aria-label={item.onlineStatus.toLowerCase()}
+      >
+        {/* ── Avatar ── */}
+        <div className="relative shrink-0">
+          <div
             className={cn(
-              "absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-background",
-              onlineStatusColor(item.onlineStatus),
+              "relative",
+              isGroup ? "rounded-2xl" : "rounded-full",
+              "overflow-hidden ring-1 ring-border/50 group-hover/item:ring-forge-teal/30 transition-all duration-200 shadow-sm",
             )}
-          />
-        )}
-      </div>
+          >
+            <img
+              src={item.avatarUrl}
+              alt={item.title}
+              className="w-13 h-13 object-cover bg-muted"
+            />
+          </div>
 
-      {/* ── Content ── */}
-      <div className="flex-1 min-w-0">
-        {/* Title row */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <h3 className="text-sm font-semibold text-foreground truncate">
-              {item.title}
-            </h3>
-            {!isGroup && item.isMuted && (
-              <BellOff
-                size={11}
-                className="text-muted-foreground flex-shrink-0"
+          {/* Group: plan cover thumbnail */}
+          {isGroup && item.planCoverImage && (
+            <div className="absolute -bottom-1 -right-1 ring-2 ring-background rounded-lg overflow-hidden shadow-sm">
+              <img
+                src={item.planCoverImage}
+                alt=""
+                className="w-5.5 h-5.5 object-cover"
               />
-            )}
-          </div>
-          <span className="text-[10px] text-muted-foreground flex-shrink-0">
-            {formatTimestamp(item.timestamp)}
-          </span>
-        </div>
-
-        {/* Subtitle row */}
-        <div className="flex items-center justify-between gap-2 mt-0.5">
-          <div className="flex items-center gap-1 min-w-0 flex-1">
-            {/* Own-message status icon for DMs */}
-            {!isGroup && item.lastMessageIsOwn && item.lastMessageStatus && (
-              <MsgStatusIcon status={item.lastMessageStatus} />
-            )}
-            <p
-              className={cn(
-                "text-xs truncate",
-                item.isTyping
-                  ? "text-teal-500 font-medium italic"
-                  : hasUnread
-                    ? "text-foreground font-medium"
-                    : "text-muted-foreground",
-                item.lastMessageIsSystem && "italic",
-              )}
-            >
-              {item.subtitle}
-            </p>
-          </div>
-
-          {hasUnread && (
-            <span className="flex-shrink-0 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-              {item.unreadCount > 99 ? "99+" : item.unreadCount}
-            </span>
-          )}
-        </div>
-
-        {/* Footer row (groups only) — countdown & status badges */}
-        {isGroup &&
-          (countdown || isDraft || (item.pendingProposals ?? 0) > 0) && (
-            <div className="flex items-center gap-2 mt-1">
-              {countdown && (
-                <span className="flex items-center gap-0.5 text-[10px] font-medium text-teal-600 dark:text-teal-400">
-                  <Clock size={10} />
-                  {countdown}
-                </span>
-              )}
-              {isDraft && (
-                <span className="flex items-center gap-0.5 text-[10px] font-medium text-amber-600 dark:text-amber-400">
-                  <FileEdit size={10} />
-                  Pending
-                </span>
-              )}
-              {(item.pendingProposals ?? 0) > 0 && (
-                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">
-                  {item.pendingProposals} proposal
-                  {item.pendingProposals !== 1 ? "s" : ""}
-                </span>
-              )}
             </div>
           )}
-      </div>
-    </button>
-  );
-}
+
+          {/* DM: online status dot */}
+          {!isGroup && item.onlineStatus && (
+            <StatusIndicator status={item.onlineStatus} />
+          )}
+        </div>
+
+        {/* ── Content ── */}
+        <div className="flex-1 min-w-0 flex flex-col justify-center">
+          {/* Title row */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <h3
+                className={cn(
+                  "text-sm font-bold truncate transition-colors",
+                  isSelected
+                    ? "text-ink"
+                    : "text-ink/90 group-hover/item:text-ink",
+                )}
+              >
+                {item.title}
+              </h3>
+              {!isGroup && item.isMuted && (
+                <BellOff size={11} className="text-slate-muted/60 shrink-0" />
+              )}
+            </div>
+            <time className="text-[10px] font-medium text-slate-muted/80 shrink-0 tabular-nums">
+              {formatTimestamp(item.timestamp)}
+            </time>
+          </div>
+
+          {/* Subtitle row */}
+          <div className="flex items-center justify-between gap-2 mt-1">
+            <div className="flex items-center gap-1.5 min-w-0 flex-1">
+              {/* Own-message status icon for DMs */}
+              {!isGroup && item.lastMessageIsOwn && item.lastMessageStatus && (
+                <MsgStatusIcon status={item.lastMessageStatus} />
+              )}
+              <p
+                className={cn(
+                  "text-[12.5px] truncate leading-tight",
+                  item.isTyping
+                    ? "text-forge-teal font-semibold italic animate-pulse"
+                    : hasUnread
+                      ? "text-ink font-bold"
+                      : "text-slate-muted/80 group-hover/item:text-slate-muted",
+                  item.lastMessageIsSystem && "italic text-slate-muted/60",
+                )}
+              >
+                {item.subtitle}
+              </p>
+            </div>
+
+            {hasUnread && (
+              <span className="shrink-0 inline-flex items-center justify-center min-w-4.5 h-4.5 px-1.5 rounded-full bg-forge-teal text-[10px] font-black text-white shadow-sm shadow-forge-teal/20">
+                {item.unreadCount > 99 ? "99+" : item.unreadCount}
+              </span>
+            )}
+          </div>
+
+          {/* Footer row (groups only) — countdown & status badges */}
+          {isGroup &&
+            (countdown || isDraft || (item.pendingProposals ?? 0) > 0) && (
+              <div className="flex items-center gap-2.5 mt-2">
+                {countdown && (
+                  <span className="flex items-center gap-1 text-[10px] font-bold text-forge-teal/80">
+                    <Clock size={11} strokeWidth={2.5} />
+                    {countdown}
+                  </span>
+                )}
+                {isDraft && (
+                  <span className="flex items-center gap-1 text-[10px] font-bold text-spark-amber">
+                    <FileEdit size={11} strokeWidth={2.5} />
+                    Pending
+                  </span>
+                )}
+                {(item.pendingProposals ?? 0) > 0 && (
+                  <span className="text-[10px] font-black text-spark-amber uppercase tracking-wider">
+                    {item.pendingProposals} proposal
+                    {item.pendingProposals !== 1 ? "s" : ""}
+                  </span>
+                )}
+              </div>
+            )}
+        </div>
+      </button>
+    );
+  },
+);

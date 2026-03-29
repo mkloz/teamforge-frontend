@@ -1,11 +1,5 @@
-import type {
-  OnlineStatus,
-  MessageStatus,
-} from "@/features/direct-chats/types/direct-chats.types";
-import type {
-  PlanStatus,
-  GroupStatus,
-} from "@/features/groups/types/groups.types";
+import type { OnlineStatus, MessageStatus } from "./direct-chats.types";
+import type { PlanStatus, GroupStatus } from "./groups.types";
 
 export type ConversationKind = "group" | "dm";
 

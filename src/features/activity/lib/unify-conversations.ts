@@ -1,5 +1,5 @@
-import type { GroupPreview } from "@/features/groups/types/groups.types";
-import type { DirectChatPreview } from "@/features/direct-chats/types/direct-chats.types";
+import type { GroupPreview } from "../types/groups.types";
+import type { DirectChatPreview } from "../types/direct-chats.types";
 import type {
   UnifiedConversation,
   FilterChip,

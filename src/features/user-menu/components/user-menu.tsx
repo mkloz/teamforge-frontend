@@ -68,7 +68,7 @@ export function UserMenu() {
         aria-label="User menu"
         className={cn(
           // Position: right-aligned below the avatar with a small gap
-          "absolute right-0 top-[calc(100%+6px)] z-[70] w-56 origin-top-right",
+          "absolute right-0 top-[calc(100%+6px)] z-70 w-56 origin-top-right",
           // Cap height so it never runs off short viewports
           "max-h-[min(340px,calc(100vh-5rem))] overflow-y-auto",
           "rounded-2xl border border-border bg-popover shadow-xl shadow-black/10",

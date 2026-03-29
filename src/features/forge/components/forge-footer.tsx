@@ -61,7 +61,7 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
       {/* ── Sticky hint strip — informational text only, no buttons ── */}
       {/* bottom-14 on mobile clears the fixed h-14 AppBottomNav; md+ has no nav so bottom-0 */}
       <div className="sticky bottom-14 px-4 md:px-12 py-2 bg-transparent backdrop-blur-sm border-t border-border/40">
-        <div className="max-w-2xl mx-auto min-h-[22px] flex items-center justify-center">
+        <div className="max-w-2xl mx-auto min-h-5.5 flex items-center justify-center">
           <AnimatePresence mode="wait">
             {fw.step === 1 && !fw.selectedActivity && (
               <HintText key="h1-empty">Select a category to continue</HintText>

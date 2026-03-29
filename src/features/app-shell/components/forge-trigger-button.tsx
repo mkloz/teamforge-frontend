@@ -42,7 +42,7 @@ export function ForgeTriggerButton({
             >
               {/* Inner highlight */}
               <span
-                className="absolute inset-0 rounded-full bg-gradient-to-b from-white/20 to-transparent pointer-events-none"
+                className="absolute inset-0 rounded-full bg-linear-to-b from-white/20 to-transparent pointer-events-none"
                 aria-hidden="true"
               />
               <Zap size={22} aria-hidden="true" className="fill-current" />
@@ -77,7 +77,7 @@ export function ForgeTriggerButton({
           >
             {/* Inner highlight */}
             <span
-              className="absolute inset-0 rounded-xl bg-gradient-to-b from-white/15 to-transparent pointer-events-none"
+              className="absolute inset-0 rounded-xl bg-linear-to-b from-white/15 to-transparent pointer-events-none"
               aria-hidden="true"
             />
             <Zap

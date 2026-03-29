@@ -36,7 +36,7 @@ export function InterestsBrowseHeader({
   return (
     <div className="flex flex-col gap-3">
       {/* Quick-jump navigation */}
-      <nav className="flex overflow-x-auto no-scrollbar gap-2 -mx-5 px-5 lg:mx-0 lg:px-0">
+      <nav className="flex overflow-x-auto scrollbar-hide gap-2 -mx-5 px-5 lg:mx-0 lg:px-0">
         {INTEREST_CATEGORIES.map((cat) => (
           <button
             type="button"
