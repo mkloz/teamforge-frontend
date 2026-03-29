@@ -47,6 +47,10 @@ export function useForgeWizard(onClose: () => void) {
   const [isForging, setIsForging] = useState(false);
   const [forgingProgress, setForgingProgress] = useState(0);
 
+  // Group identity (shared across step 3 & step 5)
+  const [groupName, setGroupName] = useState("");
+  const [groupDescription, setGroupDescription] = useState("");
+
   // Step 5: Identity
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [avatarImage, setAvatarImage] = useState<string | null>(null);
@@ -72,6 +76,8 @@ export function useForgeWizard(onClose: () => void) {
     setPlanTime("");
     setPlanLocation("");
     setLocationType("TBD");
+    setGroupName("");
+    setGroupDescription("");
     setForgeMode("auto");
     setFixedSize(6);
     setAutoMinSize(4);
@@ -185,6 +191,8 @@ export function useForgeWizard(onClose: () => void) {
     navDirection,
     selectedActivity,
     planName,
+    groupName,
+    groupDescription,
     planDate,
     planTime,
     planLocation,
@@ -216,6 +224,8 @@ export function useForgeWizard(onClose: () => void) {
     // Setters
     setSelectedActivity,
     setPlanName,
+    setGroupName,
+    setGroupDescription,
     setPlanDate,
     setPlanTime,
     setPlanLocation,

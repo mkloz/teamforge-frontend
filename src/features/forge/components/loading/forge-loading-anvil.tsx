@@ -69,18 +69,22 @@ export function ForgeLoadingAnvil({
   useEffect(() => {
     if (shouldReduceMotion) return;
 
-    // Wait for the first impact, then advance every full cycle
+    // Fire exactly at the first impact then every full cycle thereafter.
+    // We use a timeout to align the first tick to the impact moment,
+    // then a stable interval for all subsequent hits.
+    let interval: ReturnType<typeof setInterval> | null = null;
+
     const firstHit = setTimeout(() => {
       setLabelIdx((i) => (i + 1) % FORGE_LABELS.length);
-
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         setLabelIdx((i) => (i + 1) % FORGE_LABELS.length);
       }, DURATION * 1000);
-
-      return () => clearInterval(interval);
     }, IMPACT_OFFSET_MS);
 
-    return () => clearTimeout(firstHit);
+    return () => {
+      clearTimeout(firstHit);
+      if (interval !== null) clearInterval(interval);
+    };
   }, [shouldReduceMotion]);
 
   const displayLabel = label ?? FORGE_LABELS[labelIdx];

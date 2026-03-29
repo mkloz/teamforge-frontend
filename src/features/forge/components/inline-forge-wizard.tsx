@@ -256,6 +256,11 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
                 onDiversityWeightChange={fw.setDiversityWeight}
                 visibility={fw.visibility}
                 onVisibilityChange={fw.setVisibility}
+                groupName={fw.groupName}
+                onGroupNameChange={fw.setGroupName}
+                groupDescription={fw.groupDescription}
+                onGroupDescriptionChange={fw.setGroupDescription}
+                selectedActivity={fw.selectedActivity}
               />
             )}
             {fw.step === 4 && fw.forgeResult === "success" && (
@@ -280,6 +285,10 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
                 onCoverImageChange={fw.setCoverImage}
                 avatarImage={fw.avatarImage}
                 onAvatarImageChange={fw.setAvatarImage}
+                groupName={fw.groupName}
+                onGroupNameChange={fw.setGroupName}
+                groupDescription={fw.groupDescription}
+                onGroupDescriptionChange={fw.setGroupDescription}
               />
             )}
             {fw.step === 6 && (
