@@ -57,29 +57,8 @@ export function UnifiedConversationList({
 
   return (
     <div className="flex flex-col h-full">
-      {/* ── Sticky header ── */}
-      <div className="flex-shrink-0 px-4 pt-4 pb-3 space-y-3 border-b border-border">
-        {/* Search */}
-        <div className="relative">
-          <Search
-            size={15}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-          />
-          <input
-            type="search"
-            placeholder="Search conversations..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className={cn(
-              "w-full h-9 pl-9 pr-3 rounded-xl text-sm bg-muted/50",
-              "border border-transparent focus:border-border focus:bg-background",
-              "focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all",
-              "placeholder:text-muted-foreground/50",
-            )}
-          />
-        </div>
-
-        {/* Filter chips */}
+      {/* ── Sticky filter chips ── */}
+      <div className="flex-shrink-0 px-4 pt-3 pb-2.5 border-b border-border bg-background z-10">
         <div
           role="radiogroup"
           aria-label="Filter conversations"
@@ -122,14 +101,36 @@ export function UnifiedConversationList({
         </div>
       </div>
 
-      {/* ── Scrollable list ── */}
+      {/* ── Scrollable list (search bar + items scroll together) ── */}
       <div
         role="listbox"
         aria-label="Conversations"
         className="flex-1 overflow-y-auto"
       >
+        {/* Search — scrolls with the list */}
+        <div className="px-4 pt-3 pb-2">
+          <div className="relative">
+            <Search
+              size={15}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+            />
+            <input
+              type="search"
+              placeholder="Search conversations..."
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className={cn(
+                "w-full h-9 pl-9 pr-3 rounded-xl text-sm bg-muted/50",
+                "border border-transparent focus:border-border focus:bg-background",
+                "focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all",
+                "placeholder:text-muted-foreground/50",
+              )}
+            />
+          </div>
+        </div>
+
         {items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full gap-3 py-16 px-6 text-center">
+          <div className="flex flex-col items-center justify-center gap-3 py-16 px-6 text-center">
             <div className="w-12 h-12 rounded-full bg-muted/60 flex items-center justify-center">
               <MessageSquare size={20} className="text-muted-foreground/50" />
             </div>

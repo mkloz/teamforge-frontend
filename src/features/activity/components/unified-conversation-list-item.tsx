@@ -7,7 +7,6 @@ import {
   CheckCheck,
   Clock,
   FileEdit,
-  Users,
 } from "lucide-react";
 import type { UnifiedConversation } from "../types/unified-conversation.types";
 import type { MessageStatus, OnlineStatus } from "@/features/direct-chats/types/direct-chats.types";
@@ -129,17 +128,7 @@ export function UnifiedConversationListItem({ item, isSelected, onSelect }: Prop
           />
         )}
 
-        {/* Kind pill — tiny, non-intrusive */}
-        <span
-          className={cn(
-            "absolute -top-1 -left-1 text-[9px] font-bold uppercase tracking-wide px-1 py-0.5 rounded-md leading-none",
-            isGroup
-              ? "bg-teal-500/15 text-teal-600 dark:text-teal-400"
-              : "bg-primary/10 text-primary",
-          )}
-        >
-          {isGroup ? "G" : "DM"}
-        </span>
+
       </div>
 
       {/* ── Content ── */}
@@ -188,46 +177,26 @@ export function UnifiedConversationListItem({ item, isSelected, onSelect }: Prop
           )}
         </div>
 
-        {/* Footer row (groups only) */}
-        {isGroup && (
-          <div className="flex items-center justify-between mt-1.5">
-            {/* Member avatars */}
-            <div className="flex items-center gap-1">
-              <div className="flex -space-x-1.5">
-                {(item.memberAvatars ?? []).slice(0, 4).map((av, i) => (
-                  <img
-                    key={i}
-                    src={av}
-                    alt=""
-                    className="w-4 h-4 rounded-full border border-background object-cover"
-                  />
-                ))}
-              </div>
-              <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
-                <Users size={9} />
-                {item.memberCount}
+        {/* Footer row (groups only) — countdown & status badges */}
+        {isGroup && (countdown || isDraft || (item.pendingProposals ?? 0) > 0) && (
+          <div className="flex items-center gap-2 mt-1">
+            {countdown && (
+              <span className="flex items-center gap-0.5 text-[10px] font-medium text-teal-600 dark:text-teal-400">
+                <Clock size={10} />
+                {countdown}
               </span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              {countdown && (
-                <span className="flex items-center gap-0.5 text-[10px] font-medium text-teal-600 dark:text-teal-400">
-                  <Clock size={10} />
-                  {countdown}
-                </span>
-              )}
-              {isDraft && (
-                <span className="flex items-center gap-0.5 text-[10px] font-medium text-amber-600 dark:text-amber-400">
-                  <FileEdit size={10} />
-                  Pending
-                </span>
-              )}
-              {(item.pendingProposals ?? 0) > 0 && (
-                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">
-                  {item.pendingProposals} proposal{item.pendingProposals !== 1 ? "s" : ""}
-                </span>
-              )}
-            </div>
+            )}
+            {isDraft && (
+              <span className="flex items-center gap-0.5 text-[10px] font-medium text-amber-600 dark:text-amber-400">
+                <FileEdit size={10} />
+                Pending
+              </span>
+            )}
+            {(item.pendingProposals ?? 0) > 0 && (
+              <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                {item.pendingProposals} proposal{item.pendingProposals !== 1 ? "s" : ""}
+              </span>
+            )}
           </div>
         )}
       </div>
