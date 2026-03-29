@@ -2,6 +2,7 @@
 
 import { cn } from "@/shared/lib/utils";
 import { MessageSquare, Search } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
 import type { FilterChip, UnifiedConversation } from "../types/unified-conversation.types";
 import { UnifiedConversationListItem } from "./unified-conversation-list-item";
 
@@ -25,7 +26,15 @@ const FILTERS: { key: FilterChip; label: string }[] = [
   { key: "unread", label: "Unread" },
 ];
 
-function filterBadge(key: FilterChip, groupCount: number, dmCount: number, unreadCount: number): number | null {
+// Height of the search bar block (pt-3 + h-9 + pb-2 = 12 + 36 + 8 = 56px)
+const SEARCH_H = 56;
+
+function filterBadge(
+  key: FilterChip,
+  groupCount: number,
+  dmCount: number,
+  unreadCount: number,
+): number | null {
   if (key === "groups") return groupCount;
   if (key === "dms")    return dmCount;
   if (key === "unread") return unreadCount;
@@ -44,6 +53,18 @@ export function UnifiedConversationList({
   onFilterChange,
   onSelectItem,
 }: UnifiedConversationListProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  // 1 = fully visible, 0 = fully faded
+  const [searchOpacity, setSearchOpacity] = useState(1);
+
+  const handleScroll = useCallback(() => {
+    const scrollTop = scrollRef.current?.scrollTop ?? 0;
+    // Fade completes over the first half of the search bar height
+    const fadeRange = SEARCH_H * 0.6;
+    const opacity = Math.max(0, 1 - scrollTop / fadeRange);
+    setSearchOpacity(opacity);
+  }, []);
+
   const emptyLabel =
     activeFilter === "groups"
       ? "No groups found"
@@ -56,59 +77,25 @@ export function UnifiedConversationList({
             : "No conversations yet";
 
   return (
-    <div className="flex flex-col h-full">
-      {/* ── Sticky filter chips ── */}
-      <div className="flex-shrink-0 px-4 pt-3 pb-2.5 border-b border-border bg-background z-10">
-        <div
-          role="radiogroup"
-          aria-label="Filter conversations"
-          className="flex gap-1.5 overflow-x-auto scrollbar-hide"
-        >
-          {FILTERS.map(({ key, label }) => {
-            const badge = filterBadge(key, groupCount, dmCount, unreadCount);
-            const isActive = activeFilter === key;
-            return (
-              <button
-                key={key}
-                type="button"
-                role="radio"
-                aria-checked={isActive}
-                onClick={() => onFilterChange(key)}
-                className={cn(
-                  "flex-shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-lg text-xs font-semibold transition-all duration-150",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                  isActive
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground",
-                )}
-              >
-                {label}
-                {badge != null && badge > 0 && (
-                  <span
-                    className={cn(
-                      "inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full text-[9px] font-bold leading-none",
-                      isActive
-                        ? "bg-primary-foreground/20 text-primary-foreground"
-                        : "bg-primary/15 text-primary",
-                    )}
-                  >
-                    {badge > 99 ? "99+" : badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* ── Scrollable list (search bar + items scroll together) ── */}
+    <div className="flex flex-col h-full overflow-hidden">
+      {/* ── Single scrollable region containing everything ── */}
       <div
+        ref={scrollRef}
+        onScroll={handleScroll}
         role="listbox"
         aria-label="Conversations"
         className="flex-1 overflow-y-auto"
       >
-        {/* Search — scrolls with the list */}
-        <div className="px-4 pt-3 pb-2">
+        {/* Search bar — scrolls with content, fades out on scroll */}
+        <div
+          className="px-4 pt-3 pb-2"
+          style={{
+            opacity: searchOpacity,
+            // Keep pointer-events off when invisible so hidden bar isn't accidentally clicked
+            pointerEvents: searchOpacity < 0.05 ? "none" : undefined,
+            transition: "opacity 60ms linear",
+          }}
+        >
           <div className="relative">
             <Search
               size={15}
@@ -129,6 +116,59 @@ export function UnifiedConversationList({
           </div>
         </div>
 
+        {/* Filter chips — sticky below the search bar, snaps to top:0 once
+            the search bar has scrolled out of the viewport */}
+        <div
+          className={cn(
+            "sticky top-0 z-10 px-4 py-2.5 border-b border-border",
+            "bg-background/95 backdrop-blur-sm",
+          )}
+        >
+          <div
+            role="radiogroup"
+            aria-label="Filter conversations"
+            className="flex gap-1.5 overflow-x-auto scrollbar-hide"
+          >
+            {FILTERS.map(({ key, label }) => {
+              const badge = filterBadge(key, groupCount, dmCount, unreadCount);
+              const isActive = activeFilter === key;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  role="radio"
+                  aria-checked={isActive}
+                  onClick={() => onFilterChange(key)}
+                  className={cn(
+                    "flex-shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-lg",
+                    "text-xs font-semibold transition-all duration-150",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                    isActive
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground",
+                  )}
+                >
+                  {label}
+                  {badge != null && badge > 0 && (
+                    <span
+                      className={cn(
+                        "inline-flex items-center justify-center min-w-[16px] h-4 px-1",
+                        "rounded-full text-[9px] font-bold leading-none",
+                        isActive
+                          ? "bg-primary-foreground/20 text-primary-foreground"
+                          : "bg-primary/15 text-primary",
+                      )}
+                    >
+                      {badge > 99 ? "99+" : badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Conversation items */}
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 py-16 px-6 text-center">
             <div className="w-12 h-12 rounded-full bg-muted/60 flex items-center justify-center">
