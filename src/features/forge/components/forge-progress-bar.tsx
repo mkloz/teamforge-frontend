@@ -31,7 +31,7 @@ export function ForgeProgressBar({
   return (
     <div className={cn("w-full", className)}>
       <div className="flex items-end gap-1.5">
-        {steps.map(({ s, label }, idx) => {
+        {steps.map(({ s, label }) => {
           const isActive = s === step;
           const isComplete = s < step;
 
