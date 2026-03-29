@@ -1,14 +1,9 @@
-import {
-  ConversationTabs,
-  type ConversationTabType,
-} from "@/shared/components/conversation-tabs";
 import { cn } from "@/shared/lib/utils";
-import { MessageSquare } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-
-// Groups imports
 import { useUiStore } from "@/shared/store/ui.store";
-import { ConversationList } from "../groups/components/conversation-list/conversation-list";
+import { MessageSquare } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+// Groups
 import { ConversationView } from "../groups/components/conversation-view/conversation-view";
 import { GroupDetailPanel } from "../groups/components/group-detail-panel/group-detail-panel";
 import {
@@ -18,8 +13,7 @@ import {
 } from "../groups/data/mock-groups";
 import type { GroupsPageState } from "../groups/types/groups.types";
 
-// Direct chats imports
-import { DirectChatList } from "../direct-chats/components/direct-chat-list";
+// Direct chats
 import { DirectChatView } from "../direct-chats/components/direct-chat-view";
 import {
   ProfilePanel,
@@ -32,10 +26,26 @@ import {
 } from "../direct-chats/data/mock-direct-chats";
 import type { DirectChatsState } from "../direct-chats/types/direct-chats.types";
 
-export function ActivityPage() {
-  const [activeTab, setActiveTab] = useState<ConversationTabType>("groups");
+// Unified inbox
+import { UnifiedConversationList } from "./components/unified-conversation-list";
+import {
+  applyFilter,
+  dmPreviewToUnified,
+  groupPreviewToUnified,
+  sortByRecency,
+} from "./lib/unify-conversations";
+import type { FilterChip } from "./types/unified-conversation.types";
 
-  // Groups state
+export function ActivityPage() {
+  // ── Unified list state ──────────────────────────────────────────────────────
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState<FilterChip>("all");
+
+  // Selected conversation (replaces activeTab + per-feature selectedId)
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedKind, setSelectedKind] = useState<"group" | "dm" | null>(null);
+
+  // ── Per-feature state (panel toggles, drafts) ───────────────────────────────
   const [groupsState, setGroupsState] = useState<GroupsPageState>({
     selectedGroupId: null,
     isDetailPanelOpen: false,
@@ -43,7 +53,6 @@ export function ActivityPage() {
     draftMessages: {},
   });
 
-  // Direct chats state
   const [directState, setDirectState] = useState<DirectChatsState>({
     selectedChatId: null,
     isProfilePanelOpen: false,
@@ -51,139 +60,108 @@ export function ActivityPage() {
     draftMessages: {},
   });
 
-  // UI Store
   const setBottomNavHidden = useUiStore((s) => s.setBottomNavHidden);
 
-  // Calculate unread counts
-  const groupsUnreadCount = MOCK_GROUP_PREVIEWS.filter(
-    (g) => g.unreadCount > 0,
-  ).length;
-  const directUnreadCount = MOCK_DIRECT_CHAT_PREVIEWS.filter(
-    (c) => c.unreadCount > 0,
-  ).length;
+  // ── Unified data ────────────────────────────────────────────────────────────
+  const allUnified = useMemo(
+    () =>
+      sortByRecency([
+        ...MOCK_GROUP_PREVIEWS.map(groupPreviewToUnified),
+        ...MOCK_DIRECT_CHAT_PREVIEWS.map(dmPreviewToUnified),
+      ]),
+    [],
+  );
 
-  // Groups handlers
-  const selectedGroup = groupsState.selectedGroupId
-    ? MOCK_GROUPS[groupsState.selectedGroupId]
-    : null;
-  const selectedGroupMessages = groupsState.selectedGroupId
-    ? (MOCK_MESSAGES[groupsState.selectedGroupId] ?? [])
-    : [];
+  const filteredItems = useMemo(
+    () => applyFilter(allUnified, activeFilter, searchQuery),
+    [allUnified, activeFilter, searchQuery],
+  );
 
-  const handleSelectGroup = useCallback((groupId: string) => {
-    setGroupsState((prev) => ({
-      ...prev,
-      selectedGroupId: groupId,
-      isDetailPanelOpen: window.innerWidth >= 1024,
-    }));
+  // Badge counts for filter chips
+  const groupCount  = MOCK_GROUP_PREVIEWS.length;
+  const dmCount     = MOCK_DIRECT_CHAT_PREVIEWS.length;
+  const unreadCount = useMemo(
+    () => allUnified.filter((i) => i.unreadCount > 0).length,
+    [allUnified],
+  );
+
+  // ── Derived view data ───────────────────────────────────────────────────────
+  const selectedGroup =
+    selectedKind === "group" && selectedId ? MOCK_GROUPS[selectedId] : null;
+  const selectedGroupMessages =
+    selectedKind === "group" && selectedId ? (MOCK_MESSAGES[selectedId] ?? []) : [];
+
+  const selectedChat =
+    selectedKind === "dm" && selectedId ? MOCK_DIRECT_CHATS[selectedId] : null;
+  const selectedDirectMessages =
+    selectedKind === "dm" && selectedId ? (MOCK_DIRECT_MESSAGES[selectedId] ?? []) : [];
+  const selectedChatPreview = MOCK_DIRECT_CHAT_PREVIEWS.find(
+    (c) => c.id === selectedId,
+  );
+
+  // ── Selection handler ───────────────────────────────────────────────────────
+  const handleSelectItem = useCallback((id: string, kind: "group" | "dm") => {
+    setSelectedId(id);
+    setSelectedKind(kind);
+
+    if (kind === "group") {
+      setGroupsState((prev) => ({
+        ...prev,
+        selectedGroupId: id,
+        isDetailPanelOpen: window.innerWidth >= 1024,
+      }));
+      setDirectState((prev) => ({ ...prev, selectedChatId: null, isProfilePanelOpen: false }));
+    } else {
+      setDirectState((prev) => ({ ...prev, selectedChatId: id, isProfilePanelOpen: false }));
+      setGroupsState((prev) => ({ ...prev, selectedGroupId: null, isDetailPanelOpen: false }));
+    }
   }, []);
 
-  const handleGroupBack = useCallback(() => {
-    setGroupsState((prev) => ({
-      ...prev,
-      selectedGroupId: null,
-      isDetailPanelOpen: false,
-    }));
+  // ── Back handlers ───────────────────────────────────────────────────────────
+  const handleBack = useCallback(() => {
+    setSelectedId(null);
+    setSelectedKind(null);
+    setGroupsState((prev) => ({ ...prev, selectedGroupId: null, isDetailPanelOpen: false }));
+    setDirectState((prev) => ({ ...prev, selectedChatId: null, isProfilePanelOpen: false }));
   }, []);
 
+  // ── Panel toggles ───────────────────────────────────────────────────────────
   const handleToggleGroupDetail = useCallback(() => {
-    setGroupsState((prev) => ({
-      ...prev,
-      isDetailPanelOpen: !prev.isDetailPanelOpen,
-    }));
+    setGroupsState((prev) => ({ ...prev, isDetailPanelOpen: !prev.isDetailPanelOpen }));
   }, []);
 
   const handleCloseGroupDetail = useCallback(() => {
-    setGroupsState((prev) => ({
-      ...prev,
-      isDetailPanelOpen: false,
-    }));
-  }, []);
-
-  const handleGroupSearchChange = useCallback((query: string) => {
-    setGroupsState((prev) => ({ ...prev, searchQuery: query }));
-  }, []);
-
-  const handleGroupSendMessage = useCallback((content: string) => {
-    console.log("Sending group message:", content);
-  }, []);
-
-  // Direct chat handlers
-  const selectedChat = directState.selectedChatId
-    ? MOCK_DIRECT_CHATS[directState.selectedChatId]
-    : null;
-  const selectedDirectMessages = directState.selectedChatId
-    ? (MOCK_DIRECT_MESSAGES[directState.selectedChatId] ?? [])
-    : [];
-  const selectedChatPreview = MOCK_DIRECT_CHAT_PREVIEWS.find(
-    (c) => c.id === directState.selectedChatId,
-  );
-
-  const handleSelectChat = useCallback((chatId: string) => {
-    setDirectState((s) => ({
-      ...s,
-      selectedChatId: chatId,
-      isProfilePanelOpen: false,
-    }));
-  }, []);
-
-  const handleChatBack = useCallback(() => {
-    setDirectState((s) => ({
-      ...s,
-      selectedChatId: null,
-      isProfilePanelOpen: false,
-    }));
+    setGroupsState((prev) => ({ ...prev, isDetailPanelOpen: false }));
   }, []);
 
   const handleToggleProfile = useCallback(() => {
-    setDirectState((s) => ({
-      ...s,
-      isProfilePanelOpen: !s.isProfilePanelOpen,
-    }));
+    setDirectState((s) => ({ ...s, isProfilePanelOpen: !s.isProfilePanelOpen }));
   }, []);
 
   const handleCloseProfile = useCallback(() => {
     setDirectState((s) => ({ ...s, isProfilePanelOpen: false }));
   }, []);
 
-  const handleDirectSearchChange = useCallback((query: string) => {
-    setDirectState((s) => ({ ...s, searchQuery: query }));
-  }, []);
+  // ── Message senders (no-op for mock) ────────────────────────────────────────
+  const handleGroupSendMessage  = useCallback((_: string) => {}, []);
+  const handleDirectSendMessage = useCallback((_: string) => {}, []);
 
-  const handleDirectSendMessage = useCallback((content: string) => {
-    console.log("Sending direct message:", content);
-  }, []);
+  // ── Bottom nav hide on mobile when viewing a conversation ──────────────────
+  const hasSelection = !!selectedId;
 
-  // Filter groups
-  const filteredGroups = MOCK_GROUP_PREVIEWS.filter((group) =>
-    group.planTitle
-      .toLowerCase()
-      .includes(groupsState.searchQuery.toLowerCase()),
-  );
-
-  // Determine if we're showing a conversation (for mobile layout)
-  const hasSelection =
-    activeTab === "groups"
-      ? !!groupsState.selectedGroupId
-      : !!directState.selectedChatId;
-
-  // Hide bottom nav on mobile if conversation is selected
   useEffect(() => {
     const handleResize = () => {
-      const isMobile = window.innerWidth < 768;
-      setBottomNavHidden(hasSelection && isMobile);
+      setBottomNavHidden(hasSelection && window.innerWidth < 768);
     };
-
-    // Initial check
     handleResize();
-
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
-      setBottomNavHidden(false); // Cleanup on unmount
+      setBottomNavHidden(false);
     };
   }, [hasSelection, setBottomNavHidden]);
 
+  // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <div
       className={cn(
@@ -191,7 +169,7 @@ export function ActivityPage() {
         !hasSelection ? "pb-24 md:pb-0" : "pb-0",
       )}
     >
-      {/* Left sidebar - List with tabs */}
+      {/* Left sidebar — unified list */}
       <div
         className={cn(
           "flex-shrink-0 border-r border-border bg-background flex flex-col",
@@ -199,105 +177,75 @@ export function ActivityPage() {
           hasSelection && "hidden md:flex",
         )}
       >
-        {/* Tabs */}
-        <div className="flex-shrink-0 p-3 border-b border-border">
-          <ConversationTabs
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            groupsUnreadCount={groupsUnreadCount}
-            directUnreadCount={directUnreadCount}
-          />
-        </div>
-
-        {/* List content based on active tab */}
-        <div className="flex-1 overflow-hidden">
-          {activeTab === "groups" ? (
-            <ConversationList
-              groups={filteredGroups}
-              selectedGroupId={groupsState.selectedGroupId}
-              searchQuery={groupsState.searchQuery}
-              onSearchChange={handleGroupSearchChange}
-              onSelectGroup={handleSelectGroup}
-            />
-          ) : (
-            <DirectChatList
-              chats={MOCK_DIRECT_CHAT_PREVIEWS}
-              selectedChatId={directState.selectedChatId}
-              searchQuery={directState.searchQuery}
-              onSearchChange={handleDirectSearchChange}
-              onSelectChat={handleSelectChat}
-            />
-          )}
-        </div>
+        <UnifiedConversationList
+          items={filteredItems}
+          selectedId={selectedId}
+          searchQuery={searchQuery}
+          activeFilter={activeFilter}
+          groupCount={groupCount}
+          dmCount={dmCount}
+          unreadCount={unreadCount}
+          onSearchChange={setSearchQuery}
+          onFilterChange={setActiveFilter}
+          onSelectItem={handleSelectItem}
+        />
       </div>
 
       {/* Main content area */}
       <div
         className={cn("flex-1 flex min-w-0", !hasSelection && "hidden md:flex")}
       >
-        {activeTab === "groups" ? (
-          // Groups view
+        {selectedKind === "group" && selectedId && selectedGroup ? (
+          <div className="flex-1 flex">
+            <div className="flex-1">
+              <ConversationView
+                group={selectedGroup}
+                messages={selectedGroupMessages}
+                onBack={handleBack}
+                onToggleDetail={handleToggleGroupDetail}
+                onSendMessage={handleGroupSendMessage}
+              />
+            </div>
+            <GroupDetailPanel
+              group={selectedGroup}
+              isOpen={groupsState.isDetailPanelOpen}
+              onClose={handleCloseGroupDetail}
+            />
+          </div>
+        ) : selectedKind === "dm" && selectedId && selectedChat ? (
           <>
-            {groupsState.selectedGroupId && selectedGroup ? (
-              <div className="flex-1 flex">
-                <div className="flex-1">
-                  <ConversationView
-                    group={selectedGroup}
-                    messages={selectedGroupMessages}
-                    onBack={handleGroupBack}
-                    onToggleDetail={handleToggleGroupDetail}
-                    onSendMessage={handleGroupSendMessage}
-                  />
-                </div>
-                <GroupDetailPanel
-                  group={selectedGroup}
-                  isOpen={groupsState.isDetailPanelOpen}
-                  onClose={handleCloseGroupDetail}
-                />
-              </div>
-            ) : (
-              <EmptyState message="Select a group to view messages" />
-            )}
+            <div className="flex-1">
+              <DirectChatView
+                chat={selectedChat}
+                messages={selectedDirectMessages}
+                isTyping={selectedChatPreview?.isTyping}
+                onBack={handleBack}
+                onToggleProfile={handleToggleProfile}
+                onSendMessage={handleDirectSendMessage}
+              />
+            </div>
+            <ProfilePanel
+              chat={selectedChat}
+              isOpen={directState.isProfilePanelOpen}
+              onClose={handleCloseProfile}
+            />
+            <ProfilePanelMobile
+              chat={selectedChat}
+              isOpen={directState.isProfilePanelOpen}
+              onClose={handleCloseProfile}
+            />
           </>
         ) : (
-          // Direct chats view
-          <>
-            {directState.selectedChatId && selectedChat ? (
-              <>
-                <div className="flex-1">
-                  <DirectChatView
-                    chat={selectedChat}
-                    messages={selectedDirectMessages}
-                    isTyping={selectedChatPreview?.isTyping}
-                    onBack={handleChatBack}
-                    onToggleProfile={handleToggleProfile}
-                    onSendMessage={handleDirectSendMessage}
-                  />
-                </div>
-                <ProfilePanel
-                  chat={selectedChat}
-                  isOpen={directState.isProfilePanelOpen}
-                  onClose={handleCloseProfile}
-                />
-                <ProfilePanelMobile
-                  chat={selectedChat}
-                  isOpen={directState.isProfilePanelOpen}
-                  onClose={handleCloseProfile}
-                />
-              </>
-            ) : (
-              <EmptyState message="Select a conversation to start messaging" />
-            )}
-          </>
+          <EmptyState />
         )}
       </div>
     </div>
   );
 }
 
-function EmptyState({ message }: { message: string }) {
+function EmptyState() {
   return (
-    <div className="flex-1 hidden md:flex items-center justify-center text-muted-foreground">
+    <div className="flex-1 hidden md:flex items-center justify-center">
       <div className="text-center max-w-xs">
         <div className="mx-auto w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
           <MessageSquare size={28} className="text-muted-foreground/60" />
@@ -306,7 +254,7 @@ function EmptyState({ message }: { message: string }) {
           Select a conversation
         </p>
         <p className="text-sm mt-2 text-muted-foreground leading-relaxed">
-          {message}
+          Choose a group or direct message from the list to start chatting.
         </p>
       </div>
     </div>
