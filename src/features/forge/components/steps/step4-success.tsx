@@ -129,7 +129,7 @@ export function Step4Success({
                     type="button"
                     onClick={() => onRestoreParticipant(p.id)}
                     aria-label={`Restore ${p.name}`}
-                    className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-emerald-500/10 hover:text-emerald-600 transition-all duration-200"
+                    className="w-8 h-8 rounded-xl flex items-center justify-center text-emerald-600 bg-emerald-500/10 md:opacity-0 md:bg-transparent md:text-muted-foreground md:group-hover:opacity-100 md:hover:bg-emerald-500/10 md:hover:text-emerald-600 transition-all duration-200"
                   >
                     <UserPlus size={14} />
                   </button>
@@ -138,7 +138,7 @@ export function Step4Success({
                     type="button"
                     onClick={() => onRemoveParticipant(p.id)}
                     aria-label={`Remove ${p.name}`}
-                    className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
+                    className="w-8 h-8 rounded-xl flex items-center justify-center text-destructive/60 bg-destructive/8 md:opacity-0 md:bg-transparent md:text-muted-foreground md:group-hover:opacity-100 md:hover:bg-destructive/10 md:hover:text-destructive transition-all duration-200"
                   >
                     <UserMinus size={14} />
                   </button>

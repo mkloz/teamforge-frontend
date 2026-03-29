@@ -3,9 +3,11 @@
 /**
  * ForgeLoadingAnvil — Infinite hammer-strike loading animation.
  * SVG + framer-motion. No canvas. Runs forever until unmounted.
+ * Label cycles on every hammer impact.
  */
 
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { cn } from "@/shared/lib/utils";
 
 // Deterministic spark positions matching the dense clustered cloud
@@ -32,7 +34,21 @@ const SPARKS = [
 
 // Keyframe timing: [lift, peak-hang, impact, recoil, rest]
 const TIMING = [0, 0.35, 0.5, 0.53, 0.65, 1];
-const DURATION = 1.6;
+const DURATION = 1.6; // seconds per cycle
+
+// Impact is at t = 0.5 * DURATION = 0.8 s into each cycle.
+// We schedule the label update slightly after impact for a natural feel.
+const IMPACT_OFFSET_MS = DURATION * 0.5 * 1000; // 800 ms
+
+// Labels that rotate on each hammer strike
+const FORGE_LABELS = [
+  "Lighting the forge...",
+  "Heating the metal...",
+  "Shaping your group...",
+  "Tempering the bonds...",
+  "Finding your people...",
+  "Almost there...",
+];
 
 interface ForgeLoadingAnvilProps {
   label?: string;
@@ -41,11 +57,33 @@ interface ForgeLoadingAnvilProps {
 }
 
 export function ForgeLoadingAnvil({
-  label = "Forging your group...",
+  label,
   className,
   size = 180,
 }: ForgeLoadingAnvilProps) {
   const shouldReduceMotion = useReducedMotion();
+
+  // Cycle through FORGE_LABELS on every hammer impact
+  const [labelIdx, setLabelIdx] = useState(0);
+
+  useEffect(() => {
+    if (shouldReduceMotion) return;
+
+    // Wait for the first impact, then advance every full cycle
+    const firstHit = setTimeout(() => {
+      setLabelIdx((i) => (i + 1) % FORGE_LABELS.length);
+
+      const interval = setInterval(() => {
+        setLabelIdx((i) => (i + 1) % FORGE_LABELS.length);
+      }, DURATION * 1000);
+
+      return () => clearInterval(interval);
+    }, IMPACT_OFFSET_MS);
+
+    return () => clearTimeout(firstHit);
+  }, [shouldReduceMotion]);
+
+  const displayLabel = label ?? FORGE_LABELS[labelIdx];
 
   if (shouldReduceMotion) {
     return (
@@ -53,7 +91,7 @@ export function ForgeLoadingAnvil({
         className={cn("flex flex-col items-center justify-center gap-6 select-none", className)}
         style={{ width: size, height: size }}
         role="status"
-        aria-label={label}
+        aria-label={displayLabel}
       >
         <motion.div
           animate={{ opacity: [0.4, 1, 0.4], scale: [0.95, 1.05, 0.95] }}
@@ -61,7 +99,7 @@ export function ForgeLoadingAnvil({
           className="w-4 h-4 bg-[#F59E0B] rounded-sm rotate-45"
         />
         <div className="text-center space-y-1">
-          <p className="text-sm font-semibold text-foreground">{label}</p>
+          <p className="text-sm font-semibold text-foreground">{displayLabel}</p>
           <p className="text-xs text-muted-foreground">This may take a moment...</p>
         </div>
       </div>
@@ -72,7 +110,7 @@ export function ForgeLoadingAnvil({
     <div
       className={cn("flex flex-col items-center justify-center gap-6 select-none", className)}
       role="status"
-      aria-label={label}
+      aria-label={displayLabel}
     >
       {/* SVG stage */}
       <div className="relative" style={{ width: size, height: size }}>
@@ -172,9 +210,20 @@ export function ForgeLoadingAnvil({
         </svg>
       </div>
 
-      {/* Labels */}
-      <div className="text-center space-y-1">
-        <p className="text-sm font-semibold text-foreground">{label}</p>
+      {/* Animated label — crossfades on each hammer hit */}
+      <div className="text-center space-y-1 min-h-[2.5rem] flex flex-col items-center justify-center">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.p
+            key={label ?? labelIdx}
+            initial={{ opacity: 0, y: 6, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -6, filter: "blur(4px)" }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="text-sm font-semibold text-foreground"
+          >
+            {displayLabel}
+          </motion.p>
+        </AnimatePresence>
         <p className="text-xs text-muted-foreground">This may take a moment...</p>
       </div>
     </div>

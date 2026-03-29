@@ -6,11 +6,22 @@ import {
   Cpu,
   Globe,
   Lock,
+  Sparkles,
   UserCheck,
+  X,
   Zap,
 } from "lucide-react";
-import { useState } from "react";
+import { useId, useRef, useState } from "react";
 import type { ForgeMode, Visibility } from "../../types/forge.types";
+
+// ── Name suggestions pool ─────────────────────────────────────────────────
+const NAME_POOL = [
+  "Iron Collective", "Anvil Squad", "The Forge", "Steel Circle",
+  "Ember Crew", "Catalyst Team", "Spark Assembly", "Alloy Guild",
+  "Crucible Pack", "Tempering Group", "Molten Core", "Hammer Bloc",
+  "Cinder Unit", "Fusion Cohort", "The Smelters", "Radiant Forge",
+  "Obsidian Band", "Burnished Crew", "Quenched Squad", "Flux Collective",
+];
 
 export interface Step3GroupProps {
   forgeMode: ForgeMode;
@@ -25,6 +36,12 @@ export interface Step3GroupProps {
   onDiversityWeightChange: (v: number) => void;
   visibility: Visibility;
   onVisibilityChange: (v: Visibility) => void;
+  // New optional fields
+  groupName?: string;
+  onGroupNameChange?: (v: string) => void;
+  groupDescription?: string;
+  onGroupDescriptionChange?: (v: string) => void;
+  existingGroupNames?: string[];
 }
 
 export function Step3Group({
@@ -40,14 +57,45 @@ export function Step3Group({
   onDiversityWeightChange,
   visibility,
   onVisibilityChange,
+  groupName = "",
+  onGroupNameChange,
+  groupDescription = "",
+  onGroupDescriptionChange,
+  existingGroupNames = [],
 }: Step3GroupProps) {
   const [algorithmsExpanded, setAlgorithmsExpanded] = useState(true);
 
+  // Capacity mode: "range" (two-thumb slider) | "fixed" (single number)
+  const [capacityMode, setCapacityMode] = useState<"range" | "fixed">("range");
+  const [fixedCapacity, setFixedCapacity] = useState(6);
+
+  // Name suggestions state
+  const [nameFocused, setNameFocused] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const nameId = useId();
+  const descId = useId();
+
+  // Filter suggestions: exclude existing names and names containing the current value
+  const filteredSuggestions = NAME_POOL.filter((n) => {
+    const lower = n.toLowerCase();
+    const query = groupName.toLowerCase();
+    const taken = existingGroupNames.map((e) => e.toLowerCase());
+    return !taken.includes(lower) && (query.length === 0 || lower.includes(query));
+  }).slice(0, 5);
+
+  const handleSuggestionPick = (name: string) => {
+    onGroupNameChange?.(name);
+    setShowSuggestions(false);
+    nameInputRef.current?.blur();
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-4">
+
       {/* ── Method Selector ── */}
       <section className="space-y-2.5">
-        <p className="text-xs font-semibold text-muted-foreground px-0.5">
+        <p className="text-xs md:text-sm font-semibold text-muted-foreground px-0.5">
           Choose your method
         </p>
         <div className="grid grid-cols-2 gap-3">
@@ -70,9 +118,106 @@ export function Step3Group({
         </div>
       </section>
 
+      {/* ── Group Identity (optional) ── */}
+      <section className="space-y-4 pt-2 border-t border-muted/20">
+        <p className="text-xs md:text-sm font-semibold text-muted-foreground px-0.5">
+          Group identity <span className="text-muted-foreground/40 font-normal">(optional)</span>
+        </p>
+
+        {/* Group name picker */}
+        <div className="space-y-1.5 relative">
+          <label htmlFor={nameId} className="block text-xs font-semibold text-muted-foreground/70">
+            Group name
+          </label>
+          <div
+            className={cn(
+              "relative flex items-center rounded-xl border bg-background/60 transition-all duration-150",
+              nameFocused
+                ? "border-primary/60 ring-2 ring-primary/12 bg-background"
+                : "border-border/60",
+            )}
+          >
+            <Sparkles
+              size={13}
+              className={cn(
+                "absolute left-3 pointer-events-none transition-colors",
+                nameFocused ? "text-primary/60" : "text-muted-foreground/30",
+              )}
+            />
+            <input
+              id={nameId}
+              ref={nameInputRef}
+              type="text"
+              value={groupName}
+              maxLength={40}
+              autoComplete="off"
+              placeholder="e.g. Iron Collective"
+              onFocus={() => { setNameFocused(true); setShowSuggestions(true); }}
+              onBlur={() => { setNameFocused(false); setTimeout(() => setShowSuggestions(false), 150); }}
+              onChange={(e) => { onGroupNameChange?.(e.target.value); setShowSuggestions(true); }}
+              className="w-full h-11 pl-8 pr-8 bg-transparent text-sm font-medium placeholder:text-muted-foreground/35 focus:outline-none rounded-xl"
+            />
+            {groupName && (
+              <button
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => { onGroupNameChange?.(""); nameInputRef.current?.focus(); }}
+                className="absolute right-2.5 text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+                aria-label="Clear name"
+              >
+                <X size={13} />
+              </button>
+            )}
+          </div>
+
+          {/* Suggestions dropdown */}
+          {showSuggestions && filteredSuggestions.length > 0 && (
+            <div className="absolute z-20 top-full left-0 right-0 mt-1 rounded-xl border border-border/60 bg-card shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150">
+              {filteredSuggestions.map((name) => (
+                <button
+                  key={name}
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => handleSuggestionPick(name)}
+                  className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-sm font-medium text-foreground hover:bg-primary/5 hover:text-primary transition-colors text-left"
+                >
+                  <Sparkles size={11} className="text-primary/40 shrink-0" />
+                  {name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Group description */}
+        <div className="space-y-1.5">
+          <label htmlFor={descId} className="block text-xs font-semibold text-muted-foreground/70">
+            Description
+          </label>
+          <textarea
+            id={descId}
+            value={groupDescription}
+            maxLength={200}
+            rows={3}
+            placeholder="What's this group about? A shared goal, project, or interest..."
+            onChange={(e) => onGroupDescriptionChange?.(e.target.value)}
+            className={cn(
+              "w-full rounded-xl border border-border/60 bg-background/60 px-3.5 py-3 text-sm font-medium",
+              "placeholder:text-muted-foreground/35 focus:outline-none focus:border-primary/60",
+              "focus:ring-2 focus:ring-primary/12 focus:bg-background transition-all duration-150 resize-none leading-relaxed",
+            )}
+          />
+          {groupDescription.length > 0 && (
+            <p className="text-[11px] text-muted-foreground/40 text-right">
+              {groupDescription.length}/200
+            </p>
+          )}
+        </div>
+      </section>
+
       {/* ── Group Details ── */}
       <section className="space-y-4 pt-2 border-t border-muted/20">
-        <p className="text-xs font-semibold text-muted-foreground px-0.5">
+        <p className="text-xs md:text-sm font-semibold text-muted-foreground px-0.5">
           Group details
         </p>
 
@@ -87,7 +232,7 @@ export function Step3Group({
                   Manual Group Creation
                 </h5>
                 <p className="text-xs text-muted-foreground leading-relaxed opacity-80">
-                  You are creating a standalone group. TeamForge won't search
+                  You are creating a standalone group. TeamForge won&apos;t search
                   for additional members. Invite people manually after forging.
                 </p>
               </div>
@@ -95,49 +240,133 @@ export function Step3Group({
           </div>
         ) : (
           <div className="space-y-5 animate-in fade-in zoom-in-95 duration-500">
-            {/* Capacity Range */}
-            <div className="px-0.5">
+            {/* ── Capacity ── */}
+            <div className="px-0.5 space-y-3">
+              {/* Mode toggle + label row */}
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-muted-foreground/50 tracking-wide">
-                  Capacity range
+                  Capacity
                 </span>
-                <div className="px-2.5 py-0.5 rounded-lg bg-primary/10 border border-primary/20 leading-none">
-                  <span className="text-xs font-black text-primary tabular-nums tracking-wider">
-                    {autoMinSize} - {autoMaxSize}
-                  </span>
+                <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-muted/30 border border-border/40">
+                  {(["range", "fixed"] as const).map((mode) => (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => setCapacityMode(mode)}
+                      className={cn(
+                        "px-2.5 py-1 rounded-md text-[11px] font-bold transition-all duration-200",
+                        capacityMode === mode
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground/50 hover:text-muted-foreground",
+                      )}
+                    >
+                      {mode === "range" ? "Range" : "Fixed"}
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              <div className="py-2 space-y-2">
-                <RadixSlider.Root
-                  className="relative flex items-center select-none touch-none w-full h-10"
-                  value={[autoMinSize, autoMaxSize]}
-                  onValueChange={([min, max]) => {
-                    onAutoMinSizeChange(min);
-                    onAutoMaxSizeChange(max);
-                  }}
-                  min={3}
-                  max={12}
-                  step={1}
-                  minStepsBetweenThumbs={1}
-                >
-                  <RadixSlider.Track className="bg-muted relative grow rounded-full h-1.5">
-                    <RadixSlider.Range className="absolute bg-primary rounded-full h-full" />
-                  </RadixSlider.Track>
-                  <RadixSlider.Thumb
-                    className="block w-6 h-6 bg-background border-2 border-primary rounded-full shadow-md shadow-primary/20 hover:scale-110 active:scale-95 transition-transform outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 cursor-grab active:cursor-grabbing"
-                    aria-label="Minimum members"
-                  />
-                  <RadixSlider.Thumb
-                    className="block w-6 h-6 bg-background border-2 border-primary rounded-full shadow-md shadow-primary/20 hover:scale-110 active:scale-95 transition-transform outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 cursor-grab active:cursor-grabbing"
-                    aria-label="Maximum members"
-                  />
-                </RadixSlider.Root>
-                <div className="flex justify-between px-0.5">
-                  <span className="text-[11px] text-muted-foreground/40">3 min</span>
-                  <span className="text-[11px] text-muted-foreground/40">12 max</span>
+              {/* Range mode */}
+              {capacityMode === "range" && (
+                <div className="space-y-1 animate-in fade-in duration-200">
+                  <div className="flex justify-end">
+                    <div className="px-2.5 py-0.5 rounded-lg bg-primary/10 border border-primary/20 leading-none">
+                      <span className="text-xs font-black text-primary tabular-nums tracking-wider">
+                        {autoMinSize} – {autoMaxSize}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="py-2 space-y-2">
+                    <RadixSlider.Root
+                      className="relative flex items-center select-none touch-none w-full h-10"
+                      value={[autoMinSize, autoMaxSize]}
+                      onValueChange={([min, max]) => {
+                        onAutoMinSizeChange(min);
+                        onAutoMaxSizeChange(max);
+                      }}
+                      min={3}
+                      max={12}
+                      step={1}
+                      minStepsBetweenThumbs={1}
+                    >
+                      <RadixSlider.Track className="bg-muted relative grow rounded-full h-1.5">
+                        <RadixSlider.Range className="absolute bg-primary rounded-full h-full" />
+                      </RadixSlider.Track>
+                      <RadixSlider.Thumb
+                        className="block w-6 h-6 bg-background border-2 border-primary rounded-full shadow-md shadow-primary/20 hover:scale-110 active:scale-95 transition-transform outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 cursor-grab active:cursor-grabbing"
+                        aria-label="Minimum members"
+                      />
+                      <RadixSlider.Thumb
+                        className="block w-6 h-6 bg-background border-2 border-primary rounded-full shadow-md shadow-primary/20 hover:scale-110 active:scale-95 transition-transform outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 cursor-grab active:cursor-grabbing"
+                        aria-label="Maximum members"
+                      />
+                    </RadixSlider.Root>
+                    <div className="flex justify-between px-0.5">
+                      <span className="text-[11px] text-muted-foreground/40">3 min</span>
+                      <span className="text-[11px] text-muted-foreground/40">12 max</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* Fixed mode */}
+              {capacityMode === "fixed" && (
+                <div className="space-y-2 animate-in fade-in duration-200">
+                  <div className="flex items-center gap-3">
+                    <RadixSlider.Root
+                      className="relative flex items-center select-none touch-none flex-1 h-10"
+                      value={[fixedCapacity]}
+                      onValueChange={([v]) => setFixedCapacity(v)}
+                      min={3}
+                      max={12}
+                      step={1}
+                    >
+                      <RadixSlider.Track className="bg-muted relative grow rounded-full h-1.5">
+                        <RadixSlider.Range className="absolute bg-accent rounded-full h-full" />
+                      </RadixSlider.Track>
+                      <RadixSlider.Thumb
+                        className="block w-6 h-6 bg-background border-2 border-accent rounded-full shadow-md shadow-accent/20 hover:scale-110 active:scale-95 transition-transform outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 cursor-grab active:cursor-grabbing"
+                        aria-label="Fixed capacity"
+                      />
+                    </RadixSlider.Root>
+
+                    {/* Numeric input */}
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setFixedCapacity((v) => Math.max(3, v - 1))}
+                        aria-label="Decrease"
+                        className="w-7 h-7 rounded-lg bg-muted/50 hover:bg-muted flex items-center justify-center text-muted-foreground font-bold text-sm transition-colors"
+                      >
+                        −
+                      </button>
+                      <input
+                        type="number"
+                        min={3}
+                        max={12}
+                        value={fixedCapacity}
+                        onChange={(e) => {
+                          const v = Math.min(12, Math.max(3, Number(e.target.value)));
+                          setFixedCapacity(v);
+                        }}
+                        className="w-10 h-7 text-center rounded-lg border border-border/50 bg-background text-sm font-black text-accent tabular-nums focus:outline-none focus:border-accent/60 focus:ring-1 focus:ring-accent/20"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFixedCapacity((v) => Math.min(12, v + 1))}
+                        aria-label="Increase"
+                        className="w-7 h-7 rounded-lg bg-muted/50 hover:bg-muted flex items-center justify-center text-muted-foreground font-bold text-sm transition-colors"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex justify-between px-0.5">
+                    <span className="text-[11px] text-muted-foreground/40">3 min</span>
+                    <span className="text-[11px] text-muted-foreground/40">12 max</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Collapsible Algorithm Tuning */}
@@ -197,7 +426,7 @@ export function Step3Group({
       {/* ── Privacy Settings ── */}
       <section className="space-y-3 pt-2 border-t border-muted/20">
         <div className="px-0.5">
-          <p className="text-xs font-semibold text-muted-foreground">Who can find this group?</p>
+          <p className="text-xs md:text-sm font-semibold text-muted-foreground">Who can find this group?</p>
           <p className="text-xs text-muted-foreground/60 mt-0.5">Controls who can discover and join.</p>
         </div>
 
@@ -237,7 +466,6 @@ export function Step3Group({
                     : "border-border/40 bg-card hover:border-primary/30 hover:bg-primary/3",
                 )}
               >
-                {/* Icon badge */}
                 <div
                   className={cn(
                     "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200 mt-0.5",
@@ -248,8 +476,6 @@ export function Step3Group({
                 >
                   <Icon size={17} />
                 </div>
-
-                {/* Text */}
                 <div className="flex-1 min-w-0 space-y-0.5">
                   <p
                     className={cn(
@@ -263,14 +489,10 @@ export function Step3Group({
                     {description}
                   </p>
                 </div>
-
-                {/* Selection indicator */}
                 <div
                   className={cn(
                     "w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center mt-1 transition-all duration-200",
-                    active
-                      ? "border-primary bg-primary"
-                      : "border-border/50",
+                    active ? "border-primary bg-primary" : "border-border/50",
                   )}
                 >
                   {active && (
@@ -297,14 +519,7 @@ interface ModeButtonProps {
   activeColor: "primary" | "accent";
 }
 
-function ModeButton({
-  active,
-  onClick,
-  icon,
-  title,
-  description,
-  activeColor,
-}: ModeButtonProps) {
+function ModeButton({ active, onClick, icon, title, description, activeColor }: ModeButtonProps) {
   return (
     <button
       type="button"
@@ -362,22 +577,12 @@ interface WeightSliderProps {
   subLabel?: string;
 }
 
-function WeightSlider({
-  label,
-  value,
-  onChange,
-  min,
-  max,
-  step,
-  warning,
-  subLabel,
-}: WeightSliderProps) {
+function WeightSlider({ label, value, onChange, min, max, step, warning, subLabel }: WeightSliderProps) {
   const [dragging, setDragging] = useState(false);
   const isHighDiversity = label.includes("Diversity") && value > 75;
   const semanticLabels = label.toLowerCase().includes("personality")
     ? { min: "Broad Match", max: "Highly Compatible" }
     : { min: "Consistent", max: "Diverse" };
-
   const pct = ((value - min) / (max - min)) * 100;
 
   return (
@@ -407,10 +612,7 @@ function WeightSlider({
         step={step}
         value={value}
         aria-label={label}
-        onChange={(e) => {
-          setDragging(true);
-          onChange(Number(e.target.value));
-        }}
+        onChange={(e) => { setDragging(true); onChange(Number(e.target.value)); }}
         onMouseUp={() => setDragging(false)}
         onTouchEnd={() => setDragging(false)}
         className={cn(
@@ -419,7 +621,6 @@ function WeightSlider({
         )}
       />
 
-      {/* Dot visualizer — gradient progression */}
       <div className="flex justify-between items-center gap-1 px-0.5 -mt-2">
         {Array.from({ length: 15 }).map((_, i) => {
           const dotPct = (i / 14) * 100;
@@ -431,9 +632,7 @@ function WeightSlider({
               className={cn(
                 "h-1.5 flex-1 rounded-full transition-all duration-500",
                 active
-                  ? isHighDiversity
-                    ? "bg-amber-500/50"
-                    : "bg-primary/50"
+                  ? isHighDiversity ? "bg-amber-500/50" : "bg-primary/50"
                   : "bg-muted/30",
               )}
               style={active ? { opacity: 0.4 + intensity * 0.6 } : undefined}
