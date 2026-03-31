@@ -77,7 +77,7 @@ function ActionButton({
       onClick={onClick}
       className={cn(
         "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left",
-        "transition-all duration-150 active:scale-[0.98]",
+        "transition duration-150 active:scale-[0.98]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         variant === "default" && "text-foreground hover:bg-muted/80",
         variant === "destructive" && "text-destructive hover:bg-destructive/10",

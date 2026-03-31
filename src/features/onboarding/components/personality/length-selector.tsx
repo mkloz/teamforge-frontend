@@ -40,14 +40,14 @@ export function LengthSelector({ onBack, onBegin }: LengthSelectorProps) {
       {/* Overline */}
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] mb-3 text-forge-teal"
+        className="font-sans text-micro font-semibold uppercase tracking-[0.18em] mb-3 text-forge-teal"
       >
         Test Length
       </motion.p>
 
       <motion.h2
         variants={fadeUpItem}
-        className="font-sans text-2xl font-bold leading-snug text-balance mb-2 text-[#1C1C1A]"
+        className="font-sans text-2xl font-bold leading-snug text-balance mb-2 text-ink"
       >
         How much time do you have?
       </motion.h2>
@@ -94,7 +94,7 @@ export function LengthSelector({ onBack, onBegin }: LengthSelectorProps) {
               )}
               {/* Recommended pill */}
               {config.recommended && (
-                <span className="absolute top-4 right-4 font-sans text-[10px] font-semibold rounded-full px-2.5 py-0.5 bg-amber-500 text-white">
+                <span className="absolute top-4 right-4 font-sans text-micro font-semibold rounded-full px-2.5 py-0.5 bg-amber-500 text-white">
                   Recommended
                 </span>
               )}
@@ -126,7 +126,7 @@ export function LengthSelector({ onBack, onBegin }: LengthSelectorProps) {
 
                 <div>
                   <div className="flex items-baseline gap-2">
-                    <span className="font-sans text-sm font-semibold text-[#1C1C1A]">
+                    <span className="font-sans text-sm font-semibold text-ink">
                       {config.label}
                     </span>
                     <span className="font-sans text-xs text-slate-500">

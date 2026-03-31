@@ -34,10 +34,21 @@ export const useTheme = () => {
   const root = document.documentElement;
 
   useEffect(() => {
+    // 1. Temporarily disable all CSS transitions
+    root.classList.add("disable-transitions");
+
+    // 2. Apply the new theme classes
     root.dataset.theme = theme;
     root.classList.remove(Theme.LIGHT, Theme.DARK);
     root.classList.add(theme);
-  }, [theme, root.classList, root.dataset]);
+
+    // 3. Force a synchronous browser reflow/layout calculation
+    // This makes sure the new theme styles apply instantly without animating
+    void window.getComputedStyle(root).opacity;
+
+    // 4. Restore CSS transitions for normal hover effects
+    root.classList.remove("disable-transitions");
+  }, [theme, root]);
 
   useEffect(() => {
     window.matchMedia("(prefers-color-scheme: dark)").onchange = (event) => {

@@ -28,7 +28,7 @@ export function NotificationsBellTrigger({
       <Bell size={18} aria-hidden="true" />
       {count > 0 && (
         <span
-          className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[9px] font-bold text-accent-foreground"
+          className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-nano font-bold text-accent-foreground"
           aria-hidden="true"
         >
           {count > 9 ? "9+" : count}

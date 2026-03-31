@@ -44,7 +44,7 @@ export function TypeHeader({ type, dimensionScores }: TypeHeaderProps) {
                   <div className="relative group">
                     <span
                       className={cn(
-                        "text-4xl md:text-5xl font-black tracking-tighter cursor-help transition-all duration-300 select-none block",
+                        "text-4xl md:text-5xl font-black tracking-tighter cursor-help transition duration-300 select-none block",
                         isBorderline
                           ? "text-ink/40 hover:text-ink/60"
                           : "text-ink hover:text-forge-teal hover:scale-105",
@@ -53,7 +53,7 @@ export function TypeHeader({ type, dimensionScores }: TypeHeaderProps) {
                       {letter}
                     </span>
                     {isBorderline && (
-                      <div className="absolute -bottom-1 left-0 right-0 h-1 bg-spark-amber/40 blur-[1px] rounded-full" />
+                      <div className="absolute -bottom-1 left-0 right-0 h-1 bg-spark-amber/40 blur-subtle rounded-full" />
                     )}
                   </div>
                 </TooltipTrigger>
@@ -62,7 +62,7 @@ export function TypeHeader({ type, dimensionScores }: TypeHeaderProps) {
                   className="max-w-70 text-center p-3.5 bg-popover text-popover-foreground rounded-xl shadow-xl border border-border z-100"
                 >
                   <div className="space-y-1.5">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-forge-teal">
+                    <p className="text-nano font-black uppercase tracking-widest text-forge-teal">
                       {DIMENSION_ORDER[index]} Dimension
                     </p>
                     {isBorderline && score ? (

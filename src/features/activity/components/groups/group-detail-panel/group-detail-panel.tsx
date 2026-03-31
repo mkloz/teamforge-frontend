@@ -49,7 +49,7 @@ export function GroupDetailPanel({
       <aside
         className={cn(
           "hidden lg:flex flex-col h-full border-l border-border bg-canvas",
-          "transition-all duration-300 ease-in-out",
+          "transition duration-300 ease-in-out",
           isOpen ? "w-80 opacity-100" : "w-0 opacity-0 overflow-hidden",
         )}
       >

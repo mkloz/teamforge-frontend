@@ -16,7 +16,7 @@ export const STEPS = [
           { label: "Judging", short: "J", fill: 65 },
         ].map(({ short, fill, label }) => (
           <div key={short} className="flex items-center gap-2">
-            <span className="text-forge-teal text-[10px] font-bold font-sans w-3">
+            <span className="text-forge-teal text-micro font-bold font-sans w-3">
               {short}
             </span>
             <div className="flex-1 h-1.5 rounded-full bg-forge-teal/10 overflow-hidden">
@@ -25,7 +25,7 @@ export const STEPS = [
                 style={{ width: `${fill}%` }}
               />
             </div>
-            <span className="text-slate-muted text-[10px] font-sans w-16 text-right truncate">
+            <span className="text-slate-muted text-micro font-sans w-16 text-right truncate">
               {label}
             </span>
           </div>
@@ -54,7 +54,7 @@ export const STEPS = [
                 style={{ width: `${w * 3.3}%` }}
               />
             </div>
-            <span className="text-slate-muted text-[10px] font-sans w-8 text-right shrink-0">
+            <span className="text-slate-muted text-micro font-sans w-8 text-right shrink-0">
               {w}%
             </span>
           </div>
@@ -73,21 +73,21 @@ export const STEPS = [
         <div className="flex items-center justify-between mb-3">
           <div className="flex -space-x-2.5">
             {[
-              { initials: "AK", bg: "#0D9488" },
-              { initials: "MR", bg: "#14B8A6" },
+              { initials: "AK", bg: "var(--color-forge-teal)" },
+              { initials: "MR", bg: "var(--color-forge-teal-light)" },
               { initials: "LP", bg: "#0f766e" },
               { initials: "DH", bg: "#0a6460" },
             ].map(({ initials, bg }, i) => (
               <div
                 key={i}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[10px] font-bold font-sans ring-2 ring-white"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-white text-micro font-bold font-sans ring-2 ring-white"
                 style={{ background: bg }}
               >
                 {initials}
               </div>
             ))}
           </div>
-          <span className="text-[10px] font-bold font-sans px-2 py-1 rounded-full bg-spark-amber/10 text-spark-amber">
+          <span className="text-micro font-bold font-sans px-2 py-1 rounded-full bg-spark-amber/10 text-spark-amber">
             94% match
           </span>
         </div>
@@ -95,7 +95,7 @@ export const STEPS = [
           {["Hiking", "Tech", "Coffee", "+ 2 more"].map((tag) => (
             <span
               key={tag}
-              className="text-[10px] font-medium font-sans text-forge-teal bg-forge-teal/10 px-2 py-0.5 rounded"
+              className="text-micro font-medium font-sans text-forge-teal bg-forge-teal/10 px-2 py-0.5 rounded"
             >
               {tag}
             </span>

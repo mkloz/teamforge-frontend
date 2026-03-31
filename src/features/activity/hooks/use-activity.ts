@@ -15,6 +15,8 @@ import {
   dmPreviewToUnified,
   sortByRecency,
   applyFilter,
+  groupMessageToUnified,
+  dmMessageToUnified,
 } from "../lib/unify-conversations";
 import { useUiStore } from "@/shared/store/ui.store";
 
@@ -56,13 +58,13 @@ export function useActivity() {
     [store.selectedKind, store.selectedId],
   );
 
-  const selectedGroupMessages = useMemo(
-    () =>
-      store.selectedKind === "group" && store.selectedId
-        ? (MOCK_MESSAGES[store.selectedId] ?? [])
-        : [],
-    [store.selectedKind, store.selectedId],
-  );
+  const selectedGroupMessages = useMemo(() => {
+    if (store.selectedKind === "group" && store.selectedId) {
+      const msgs = MOCK_MESSAGES[store.selectedId] ?? [];
+      return msgs.map(groupMessageToUnified);
+    }
+    return [];
+  }, [store.selectedKind, store.selectedId]);
 
   const selectedChat = useMemo(
     () =>
@@ -72,18 +74,37 @@ export function useActivity() {
     [store.selectedKind, store.selectedId],
   );
 
-  const selectedDirectMessages = useMemo(
-    () =>
-      store.selectedKind === "dm" && store.selectedId
-        ? (MOCK_DIRECT_MESSAGES[store.selectedId] ?? [])
-        : [],
-    [store.selectedKind, store.selectedId],
-  );
+  const selectedDirectMessages = useMemo(() => {
+    if (store.selectedKind === "dm" && store.selectedId && selectedChat) {
+      const msgs = MOCK_DIRECT_MESSAGES[store.selectedId] ?? [];
+      return msgs.map((m) =>
+        dmMessageToUnified(
+          m,
+          selectedChat.participant.name,
+          selectedChat.participant.avatar,
+        ),
+      );
+    }
+    return [];
+  }, [store.selectedKind, store.selectedId, selectedChat]);
 
   const selectedChatPreview = useMemo(
     () => MOCK_DIRECT_CHAT_PREVIEWS.find((c) => c.id === store.selectedId),
     [store.selectedId],
   );
+
+  // Unified typing list for groups (mocked based on plan status)
+  const typingUsers = useMemo(() => {
+    if (
+      store.selectedKind === "group" &&
+      selectedGroup?.plan.status === "DRAFT"
+    ) {
+      return [{ name: "Jordan", avatar: selectedGroup.members[0]?.avatar }];
+    }
+    return [];
+  }, [store.selectedKind, selectedGroup]);
+
+  const isTyping = selectedChatPreview?.isTyping ?? false;
 
   // ── Selection handler ───────────────────────────────────────────────────────
   const handleSelectItem = useCallback(
@@ -108,20 +129,17 @@ export function useActivity() {
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
-      // We don't want to reset it here if we are just unmounting but still have a selection
-      // However, usually we unmount when navigating away
       setBottomNavHidden(false);
     };
   }, [hasSelection, setBottomNavHidden]);
 
   // ── Message senders (no-op for mock) ────────────────────────────────────────
-  const handleGroupSendMessage = useCallback((content: string) => {
-    console.log("Mock group send:", content);
-  }, []);
-
-  const handleDirectSendMessage = useCallback((content: string) => {
-    console.log("Mock direct send:", content);
-  }, []);
+  const handleSendMessage = useCallback(
+    (content: string) => {
+      console.log(`Mock ${store.selectedKind} send:`, content);
+    },
+    [store.selectedKind],
+  );
 
   return {
     ...store,
@@ -134,10 +152,11 @@ export function useActivity() {
     selectedChat,
     selectedDirectMessages,
     selectedChatPreview,
+    isTyping,
+    typingUsers,
     handleSelectItem,
     handleBack,
-    handleGroupSendMessage,
-    handleDirectSendMessage,
+    handleSendMessage,
     hasSelection,
   };
 }

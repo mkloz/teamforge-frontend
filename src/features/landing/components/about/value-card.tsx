@@ -45,7 +45,7 @@ export function ValueCard({
             >
               <Icon size={20} aria-hidden="true" />
             </div>
-            <CardTitle className="font-sans font-semibold text-ink text-[15px]">
+            <CardTitle className="font-sans font-semibold text-ink text-md">
               {title}
             </CardTitle>
           </div>

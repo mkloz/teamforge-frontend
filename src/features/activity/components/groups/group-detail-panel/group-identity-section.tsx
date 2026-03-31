@@ -136,7 +136,7 @@ export function GroupIdentitySection({
       {/* Visual separator between identity and plan */}
       <div className="flex items-center gap-3 mt-5 mb-2">
         <div className="flex-1 h-px bg-border" />
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <span className="text-micro font-semibold uppercase tracking-wider text-muted-foreground">
           Current Plan
         </span>
         <div className="flex-1 h-px bg-border" />

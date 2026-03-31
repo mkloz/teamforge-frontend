@@ -72,7 +72,7 @@ export function UserMenu() {
           // Cap height so it never runs off short viewports
           "max-h-[min(340px,calc(100vh-5rem))] overflow-y-auto",
           "rounded-2xl border border-border bg-popover shadow-xl shadow-black/10",
-          "transition-all duration-150",
+          "transition duration-150",
           open
             ? "opacity-100 scale-100 pointer-events-auto"
             : "opacity-0 scale-95 pointer-events-none",

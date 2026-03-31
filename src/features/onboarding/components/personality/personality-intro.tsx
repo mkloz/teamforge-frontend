@@ -42,7 +42,7 @@ export function PersonalityIntro({ onStart }: PersonalityIntroProps) {
       {/* Overline */}
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] mb-4 text-forge-teal"
+        className="font-sans text-micro font-semibold uppercase tracking-[0.18em] mb-4 text-forge-teal"
       >
         Personality Assessment
       </motion.p>
@@ -50,20 +50,20 @@ export function PersonalityIntro({ onStart }: PersonalityIntroProps) {
       {/* Headline */}
       <motion.h1
         variants={fadeUpItem}
-        className="font-sans text-[2rem] md:text-[2.5rem] font-extrabold leading-tight text-balance mb-4 text-[#1C1C1A]"
+        className="font-sans text-display-sm md:text-display-lg font-extrabold leading-tight text-balance mb-4 text-ink"
       >
         What makes you, you?
       </motion.h1>
 
       {/* Body */}
       <motion.div variants={fadeUpItem}>
-        <p className="font-sans text-sm leading-relaxed text-pretty mb-2 text-slate-500">
+        <p className="font-sans text-sm leading-relaxed text-pretty mb-2 text-slate-muted">
           Before we build your group, we want to understand how your mind works
           – not your job title, not your hobbies, not your mood today.
         </p>
-        <p className="font-sans text-sm leading-relaxed text-pretty mb-6 text-slate-500">
+        <p className="font-sans text-sm leading-relaxed text-pretty mb-6 text-slate-muted">
           This is the{" "}
-          <span className="text-[#1C1C1A] font-medium">
+          <span className="text-ink font-medium">
             International Personality Item Pool (IPIP)
           </span>{" "}
           – a scientifically validated assessment used in peer-reviewed
@@ -77,7 +77,7 @@ export function PersonalityIntro({ onStart }: PersonalityIntroProps) {
       {/* Divider */}
       <motion.div
         variants={fadeUpItem}
-        className="w-full mb-6 h-px bg-slate-200"
+        className="w-full mb-6 h-px bg-border"
       />
 
       {/* Benefits */}
@@ -90,7 +90,7 @@ export function PersonalityIntro({ onStart }: PersonalityIntroProps) {
             <div className="flex items-center justify-center rounded-lg shrink-0 mt-0.5 w-7 h-7 bg-forge-teal/10">
               <Icon size={14} strokeWidth={2} className="text-forge-teal" />
             </div>
-            <p className="font-sans text-sm leading-relaxed text-slate-500">
+            <p className="font-sans text-sm leading-relaxed text-slate-muted">
               {text}
             </p>
           </div>
@@ -102,7 +102,7 @@ export function PersonalityIntro({ onStart }: PersonalityIntroProps) {
         <Button
           size="lg"
           onClick={onStart}
-          className="w-full flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl bg-forge-teal text-primary-foreground hover:bg-forge-teal-light shadow-[0_4px_16px_rgba(13,148,136,0.25)] hover:shadow-[0_8px_24px_rgba(13,148,136,0.4)] transition duration-200 active:scale-[0.98] h-12"
+          className="w-full flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl bg-forge-teal text-primary-foreground hover:bg-forge-teal-light shadow-teal-glow hover:shadow-teal-glow-lg transition duration-200 active:scale-[0.98] h-12"
         >
           Let's find out
           <ArrowRight size={16} strokeWidth={2.5} />

@@ -60,7 +60,7 @@ export function SearchResults({
           {/* Subcategory matches – expandable */}
           {results.subcategories.length > 0 && (
             <div className="flex flex-col gap-1">
-              <p className="font-sans text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
+              <p className="font-sans text-micro font-semibold uppercase tracking-wider text-slate-400 mb-1">
                 Categories
               </p>
               {results.subcategories.map(({ sub, categoryLabel }) => {
@@ -79,14 +79,14 @@ export function SearchResults({
                       className="w-full flex items-center gap-2 px-3 py-2.5 bg-slate-50 text-left group"
                     >
                       <div className="flex items-center gap-2">
-                        <span className="text-base leading-none">
-                          {sub.emoji}
+                        <span className="text-slate-500">
+                          <sub.icon className="w-5 h-5" strokeWidth={1.5} />
                         </span>
                         <div className="flex flex-col">
                           <span className="font-sans text-xs font-semibold text-slate-700">
                             {sub.label}
                           </span>
-                          <span className="font-sans text-[10px] text-slate-400 leading-none">
+                          <span className="font-sans text-micro text-slate-400 leading-none">
                             {categoryLabel}
                           </span>
                         </div>
@@ -95,7 +95,7 @@ export function SearchResults({
                         <motion.span
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className="ml-auto mr-2 shrink-0 flex items-center justify-center min-w-5 h-5 px-1.5 font-sans text-[10px] font-black bg-forge-teal text-white rounded-full leading-none shadow-[0_2px_4px_rgba(13,148,136,0.2)]"
+                          className="ml-auto mr-2 shrink-0 flex items-center justify-center min-w-5 h-5 px-1.5 font-sans text-micro font-black bg-forge-teal text-white rounded-full leading-none shadow-[0_2px_4px_rgba(13,148,136,0.2)]"
                         >
                           {subSelectedCount}
                         </motion.span>
@@ -145,7 +145,7 @@ export function SearchResults({
           {results.tags.length > 0 && (
             <div>
               {results.subcategories.length > 0 && (
-                <p className="font-sans text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                <p className="font-sans text-micro font-semibold uppercase tracking-wider text-slate-400 mb-2">
                   Tags
                 </p>
               )}

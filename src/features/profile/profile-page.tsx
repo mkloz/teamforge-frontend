@@ -79,7 +79,7 @@ export function ProfilePage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex flex-col flex-1 shrink-0 lg:max-w-[320px]"
+            className="flex flex-col flex-1 shrink-0 lg:max-w-80"
           >
             <PsychometricsSidebar profile={profile} />
           </motion.div>

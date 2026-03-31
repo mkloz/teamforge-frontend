@@ -3,25 +3,21 @@ import { MessageSquare } from "lucide-react";
 import { useActivity } from "@/features/activity/hooks/use-activity";
 
 // Groups
-import { ConversationView } from "@/features/activity/components/groups/conversation-view/conversation-view";
 import { GroupDetailPanel } from "@/features/activity/components/groups/group-detail-panel/group-detail-panel";
 
 // Direct chats
-import { DirectChatView } from "@/features/activity/components/direct-chats/direct-chat-view";
 import {
   ProfilePanel,
   ProfilePanelMobile,
 } from "@/features/activity/components/direct-chats/profile-panel";
 
-// Unified inbox
+// Unified components
 import { UnifiedConversationList } from "@/features/activity/components/unified-conversation-list";
+import { UnifiedConversationView } from "@/features/activity/components/chat/unified-conversation-view";
 
 /**
  * ActivityPage - The main feature orchestrator for Unified Conversations,
  * Groups and Direct Chats.
- *
- * @pattern Orchestrator (Page level)
- * Logic is decoupled into useActivity() hook.
  */
 export function ActivityPage() {
   const {
@@ -43,7 +39,8 @@ export function ActivityPage() {
     selectedGroupMessages,
     selectedChat,
     selectedDirectMessages,
-    selectedChatPreview,
+    isTyping,
+    typingUsers,
 
     // Actions
     setSearchQuery,
@@ -54,8 +51,7 @@ export function ActivityPage() {
     closeGroupDetail,
     toggleProfilePanel,
     closeProfilePanel,
-    handleGroupSendMessage,
-    handleDirectSendMessage,
+    handleSendMessage,
   } = useActivity();
 
   return (
@@ -68,7 +64,7 @@ export function ActivityPage() {
       {/* Left sidebar — unified list */}
       <aside
         className={cn(
-          "flex flex-col shrink-0 border-r border-border bg-canvas transition-all duration-300",
+          "flex flex-col shrink-0 border-r border-border bg-canvas transition-colors duration-300",
           "w-full md:w-72 lg:w-80",
           hasSelection && "hidden md:flex",
         )}
@@ -90,19 +86,21 @@ export function ActivityPage() {
       {/* Main content area */}
       <main
         className={cn(
-          "flex-1 flex min-w-0 transition-all duration-300",
+          "flex-1 flex min-w-0 duration-300",
           !hasSelection && "hidden md:flex",
         )}
       >
         {selectedKind === "group" && selectedId && selectedGroup ? (
           <div className="flex-1 flex overflow-hidden">
             <div className="flex-1 flex flex-col min-w-0">
-              <ConversationView
-                group={selectedGroup}
+              <UnifiedConversationView
+                kind="group"
+                data={selectedGroup}
                 messages={selectedGroupMessages}
+                typingUsers={typingUsers}
                 onBack={handleBack}
-                onToggleDetail={toggleGroupDetail}
-                onSendMessage={handleGroupSendMessage}
+                onToggleAction={toggleGroupDetail}
+                onSendMessage={handleSendMessage}
               />
             </div>
             <GroupDetailPanel
@@ -114,13 +112,14 @@ export function ActivityPage() {
         ) : selectedKind === "dm" && selectedId && selectedChat ? (
           <div className="flex-1 flex overflow-hidden">
             <div className="flex-1 flex flex-col min-w-0">
-              <DirectChatView
-                chat={selectedChat}
+              <UnifiedConversationView
+                kind="dm"
+                data={selectedChat}
                 messages={selectedDirectMessages}
-                isTyping={selectedChatPreview?.isTyping}
+                isTyping={isTyping}
                 onBack={handleBack}
-                onToggleProfile={toggleProfilePanel}
-                onSendMessage={handleDirectSendMessage}
+                onToggleAction={toggleProfilePanel}
+                onSendMessage={handleSendMessage}
               />
             </div>
             <ProfilePanel

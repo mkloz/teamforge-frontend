@@ -191,7 +191,7 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
                     onCancel();
                   }
                 }}
-                className="text-[10px] font-bold tracking-widest text-destructive/50 hover:text-destructive px-2.5 py-1.5 rounded-lg shrink-0 transition-colors"
+                className="text-micro font-bold tracking-widest text-destructive/50 hover:text-destructive px-2.5 py-1.5 rounded-lg shrink-0 transition-colors"
               >
                 Cancel
               </Button>

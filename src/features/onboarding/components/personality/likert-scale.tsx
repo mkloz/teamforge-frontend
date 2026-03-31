@@ -43,12 +43,11 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
             >
               <div
                 className={cn(
-                  "transition duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] rounded-full border-[1.5px] flex items-center justify-center pointer-events-none group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2",
+                  "w-5 h-5 transition duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] rounded-full border-thin flex items-center justify-center pointer-events-none group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2",
                   selected
-                    ? "bg-forge-teal border-forge-teal scale-[1.35] drop-shadow-[0_4px_12px_rgba(13,148,136,0.3)]"
+                    ? "bg-forge-teal border-forge-teal scale-[1.35] drop-shadow-sm"
                     : "bg-white border-slate-200 group-hover:bg-slate-50 group-hover:scale-[1.15] group-hover:border-slate-300 group-active:scale-[0.95]",
                 )}
-                style={{ width: 20, height: 20 }}
               >
                 <RadioGroupPrimitive.Indicator className="w-1.5 h-1.5 rounded-full bg-white" />
               </div>
@@ -67,7 +66,7 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
             {LABELS[point] && (
               <span
                 className={cn(
-                  "font-sans leading-[1.2] text-[10px] transition-colors duration-200 max-w-30",
+                  "font-sans leading-[1.2] text-micro transition-colors duration-200 max-w-30",
                   value === point
                     ? "text-forge-teal font-semibold"
                     : "text-slate-400 font-medium",

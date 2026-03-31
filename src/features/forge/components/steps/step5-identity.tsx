@@ -125,7 +125,7 @@ export function Step5Identity({
           type="button"
           onClick={() => coverInputRef.current?.click()}
           className={cn(
-            "group relative w-full h-40 rounded-2xl overflow-hidden border-2 transition-all duration-200 flex items-center justify-center",
+            "group relative w-full h-40 rounded-2xl overflow-hidden border-2 transition-colors duration-200 flex items-center justify-center",
             isUploadedCover
               ? "border-primary/40"
               : coverImage
@@ -137,7 +137,7 @@ export function Step5Identity({
           {!isUploadedCover && coverImage && (
             <div
               className={cn(
-                "absolute inset-0 bg-gradient-to-br transition-all duration-500",
+                "absolute inset-0 bg-gradient-to-br transition-colors duration-500",
                 activePreset?.gradient,
               )}
             />
@@ -167,7 +167,7 @@ export function Step5Identity({
 
           {/* Edit overlay on hover when something is set */}
           {coverImage && (
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 flex items-center justify-center">
               <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-foreground text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
                 Change photo
               </span>
@@ -208,14 +208,14 @@ export function Step5Identity({
                 onClick={() => onCoverImageChange(selected ? null : id)}
                 aria-pressed={selected}
                 className={cn(
-                  "group relative h-14 rounded-xl bg-gradient-to-br transition-all duration-200 overflow-hidden border-2",
+                  "group relative h-14 rounded-xl bg-gradient-to-br transition duration-200 overflow-hidden border-2",
                   gradient,
                   selected
                     ? "border-primary shadow-md shadow-primary/20 scale-[1.04]"
                     : "border-transparent hover:scale-[1.03] hover:shadow-sm",
                 )}
               >
-                <span className="absolute bottom-1 left-1.5 text-[10px] font-bold text-white/85 drop-shadow-sm">
+                <span className="absolute bottom-1 left-1.5 text-micro font-bold text-white/85 drop-shadow-sm">
                   {label}
                 </span>
                 {selected && (
@@ -245,7 +245,7 @@ export function Step5Identity({
           {/* Avatar preview circle */}
           <div
             className={cn(
-              "relative w-20 h-20 rounded-2xl border-2 shrink-0 overflow-hidden flex items-center justify-center transition-all duration-200",
+              "relative w-20 h-20 rounded-2xl border-2 shrink-0 overflow-hidden flex items-center justify-center transition-colors duration-200",
               isUploadedAvatar
                 ? "border-primary/40 bg-primary/10"
                 : "border-dashed border-border/60 bg-muted/40",
@@ -277,7 +277,7 @@ export function Step5Identity({
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleAvatarDrop}
             className={cn(
-              "group flex-1 min-h-20 rounded-2xl border-dashed border-2 flex flex-col items-center justify-center gap-1.5 transition-all duration-200 p-4",
+              "group flex-1 min-h-20 rounded-2xl border-dashed border-2 flex flex-col items-center justify-center gap-1.5 transition-colors duration-200 p-4",
               isUploadedAvatar
                 ? "border-primary/30 bg-primary/5"
                 : "border-border/50 bg-card hover:border-primary/40 hover:bg-primary/3",
@@ -304,7 +304,7 @@ export function Step5Identity({
                 ? "Avatar selected — tap to change"
                 : "Drag & drop or tap to upload"}
             </p>
-            <p className="text-[11px] text-muted-foreground/50">
+            <p className="text-micro text-muted-foreground/50">
               PNG, JPG, WEBP up to 5 MB
             </p>
           </button>
@@ -325,7 +325,7 @@ export function Step5Identity({
           {/* Cover */}
           <div
             className={cn(
-              "h-24 w-full transition-all duration-500",
+              "h-24 w-full transition-colors duration-500",
               isUploadedCover
                 ? "bg-primary/15"
                 : coverImage
@@ -337,7 +337,7 @@ export function Step5Identity({
           <div className="px-4 pb-4 pt-0 flex items-start gap-3">
             <div
               className={cn(
-                "w-14 h-14 rounded-xl border-4 border-card -mt-7 shrink-0 shadow-md flex items-center justify-center transition-all duration-300",
+                "w-14 h-14 rounded-xl border-4 border-card -mt-7 shrink-0 shadow-md flex items-center justify-center transition-colors duration-300",
                 isUploadedAvatar
                   ? "bg-primary/20"
                   : coverImage

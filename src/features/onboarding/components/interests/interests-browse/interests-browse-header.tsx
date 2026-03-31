@@ -42,7 +42,7 @@ export function InterestsBrowseHeader({
             type="button"
             key={`nav-${cat.id}`}
             onClick={() => handleQuickJump(cat.id)}
-            className="group flex items-center gap-1.5 whitespace-nowrap rounded-full bg-slate-50 hover:bg-slate-100 px-3 py-1 text-[11px] font-bold text-slate-500 transition-all active:scale-95 border-2"
+            className="group flex items-center gap-1.5 whitespace-nowrap rounded-full bg-slate-50 hover:bg-slate-100 px-3 py-1 text-micro font-bold text-slate-500 transition active:scale-95 border-2"
           >
             {SHORT_CAT_LABELS[cat.id] || cat.label}
           </button>
@@ -61,7 +61,7 @@ export function InterestsBrowseHeader({
           onChange={(e) => onSetSearch(e.target.value)}
           placeholder="Search 500+ interests…"
           aria-label="Search interests"
-          className="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-sans text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-forge-teal/10 focus:border-forge-teal transition-all shadow-sm"
+          className="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-sans text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-forge-teal/10 focus:border-forge-teal transition-colors shadow-sm"
         />
         {searchQuery && (
           <button

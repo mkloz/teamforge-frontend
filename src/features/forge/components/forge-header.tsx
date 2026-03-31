@@ -66,7 +66,7 @@ export function ForgeHeader({
             </h2>
             <span
               className={cn(
-                "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide",
+                "inline-flex items-center px-2 py-0.5 rounded-full text-micro font-bold uppercase tracking-wide",
                 ENTITY_PILL_COLORS[entity] ?? "bg-muted text-muted-foreground",
               )}
             >

@@ -25,7 +25,7 @@ export function StoryCard() {
             Our story
           </CardTitle>
         </div>
-        <CardContent className="p-0 space-y-4 font-sans text-[15px] text-slate-muted leading-relaxed">
+        <CardContent className="p-0 space-y-4 font-sans text-md text-slate-muted leading-relaxed">
           <p>
             Social media promised to connect everyone. Event platforms listed
             thousands of activities. Dating-style apps tried to cross over into

@@ -97,7 +97,7 @@ export function Step1Activity({
                     onClick={() => onSelect(label)}
                     aria-pressed={active}
                     className={cn(
-                      "group relative flex items-center gap-3 min-w-40 shrink-0 px-3.5 py-3 rounded-2xl border snap-start transition-all duration-200",
+                      "group relative flex items-center gap-3 min-w-40 shrink-0 px-3.5 py-3 rounded-2xl border snap-start transition-colors duration-200",
                       active
                         ? "border-accent bg-accent/10 ring-1 ring-accent/30"
                         : "border-border/40 bg-card hover:border-accent/30 hover:bg-accent/5",
@@ -105,7 +105,7 @@ export function Step1Activity({
                   >
                     <div
                       className={cn(
-                        "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200",
+                        "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-200",
                         active
                           ? "bg-accent text-accent-foreground"
                           : "bg-muted text-muted-foreground group-hover:bg-accent/15 group-hover:text-accent",
@@ -170,7 +170,7 @@ export function Step1Activity({
                 onClick={() => onSelect(label)}
                 aria-pressed={selected}
                 className={cn(
-                  "group relative flex flex-col items-start gap-3 p-4 rounded-2xl border text-left transition-all duration-200 min-h-25 active:scale-[0.97]",
+                  "group relative flex flex-col items-start gap-3 p-4 rounded-2xl border text-left transition duration-200 min-h-25 active:scale-[0.97]",
                   selected
                     ? "border-accent bg-accent/8 ring-1 ring-accent/25 shadow-sm"
                     : "border-border/40 bg-card hover:border-accent/30 hover:bg-accent/5",
@@ -194,7 +194,7 @@ export function Step1Activity({
                 {/* Icon */}
                 <div
                   className={cn(
-                    "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200",
+                    "w-10 h-10 rounded-xl flex items-center justify-center transition-colors duration-200",
                     selected
                       ? "bg-accent text-accent-foreground shadow-sm shadow-accent/25"
                       : "bg-muted text-muted-foreground group-hover:bg-accent/15 group-hover:text-accent",

@@ -62,7 +62,7 @@ export function NavItem({
 
       {badge != null && badge > 0 && (
         <span
-          className="hidden lg:flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground"
+          className="hidden lg:flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-micro font-bold text-accent-foreground"
           aria-label={`${badge} unread`}
         >
           {badge > 99 ? "99+" : badge}

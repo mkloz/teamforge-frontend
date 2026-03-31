@@ -1,3 +1,5 @@
+import type { UnifiedAttachment, UnifiedMessageReaction } from "./chat.types";
+
 /**
  * Direct Chats feature type definitions
  */
@@ -6,7 +8,12 @@ export type OnlineStatus = "ONLINE" | "AWAY" | "OFFLINE";
 
 export type DirectMessageType = "TEXT" | "IMAGE" | "VOICE" | "SYSTEM";
 
-export type MessageStatus = "SENDING" | "SENT" | "DELIVERED" | "READ";
+export type MessageStatus =
+  | "SENDING"
+  | "SENT"
+  | "DELIVERED"
+  | "READ"
+  | "FAILED";
 
 /**
  * A user in a direct chat
@@ -37,6 +44,7 @@ export interface DirectChat {
   // Settings
   isMuted: boolean;
   isBlocked: boolean;
+  pinnedMessages?: import("./chat.types").UnifiedMessage[];
 }
 
 /**
@@ -55,6 +63,7 @@ export interface DirectChatPreview {
     timestamp: string;
     isOwn: boolean;
     status: MessageStatus;
+    type?: DirectMessageType;
   };
   unreadCount: number;
   // Real-time indicators
@@ -74,13 +83,16 @@ export interface DirectMessage {
   timestamp: string;
   isOwn: boolean;
   status: MessageStatus;
-  // For voice messages
-  duration?: number;
-  // Reactions
-  reactions?: {
-    emoji: string;
-    userId: string;
-  }[];
+  // Production-level features
+  isEdited?: boolean;
+  isPinned?: boolean;
+  replyTo?: {
+    id: string;
+    content: string;
+    senderName: string;
+  };
+  attachments?: UnifiedAttachment[];
+  reactions?: Record<string, UnifiedMessageReaction[]>;
 }
 
 /**

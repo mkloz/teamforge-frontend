@@ -91,7 +91,7 @@ export function OceanChart({
           fill="var(--primary)"
           stroke="var(--card)"
           strokeWidth={2}
-          className="transition-all duration-200"
+          className=" duration-200"
         />
         <circle
           cx={numCx}
@@ -161,7 +161,7 @@ export function OceanChart({
           textAnchor="middle"
           dominantBaseline="middle"
           className={cn(
-            "text-[11px] font-medium transition-colors select-none outline-none",
+            "text-micro font-medium transition-colors select-none outline-none",
             isSelected ? "fill-primary" : "fill-muted-foreground",
           )}
           style={{
@@ -177,7 +177,7 @@ export function OceanChart({
             y={newY + 14}
             textAnchor="middle"
             dominantBaseline="middle"
-            className="text-[10px] font-bold select-none outline-none"
+            className="text-micro font-bold select-none outline-none"
             style={{ fill: primaryColor }}
           >
             {score}%

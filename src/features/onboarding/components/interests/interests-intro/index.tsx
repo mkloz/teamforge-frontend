@@ -40,14 +40,14 @@ export function InterestsIntro({ onStart }: InterestsIntroProps) {
 
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] mb-2 text-forge-teal"
+        className="font-sans text-micro font-semibold uppercase tracking-[0.18em] mb-2 text-forge-teal"
       >
         Step 2 of 2 · Interests
       </motion.p>
 
       <motion.h1
         variants={fadeUpItem}
-        className="font-sans text-[2rem] md:text-[2.5rem] font-extrabold leading-tight text-balance mb-4 text-[#1C1C1A]"
+        className="font-sans text-display-sm md:text-display-lg font-extrabold leading-tight text-balance mb-4 text-ink"
       >
         What do you love doing?
       </motion.h1>
@@ -60,7 +60,7 @@ export function InterestsIntro({ onStart }: InterestsIntroProps) {
         </p>
         <p className="font-sans text-sm leading-relaxed text-pretty mb-6 text-slate-500">
           Pick at least{" "}
-          <span className="text-[#1C1C1A] font-medium">
+          <span className="text-ink font-medium">
             10 that genuinely reflect you
           </span>
           . There are no wrong answers – only honest ones.

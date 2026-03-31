@@ -102,7 +102,7 @@ function FieldLabel({
         )}
       </label>
       {hint && (
-        <span className="text-[11px] text-muted-foreground/50">{hint}</span>
+        <span className="text-micro text-muted-foreground/50">{hint}</span>
       )}
     </div>
   );
@@ -120,7 +120,7 @@ function InputField({
   return (
     <div
       className={cn(
-        "relative group flex items-center rounded-xl border bg-background/60 transition-all duration-150",
+        "relative group flex items-center rounded-xl border bg-background/60 transition-colors duration-150",
         error
           ? "border-destructive/40 ring-1 ring-destructive/15"
           : "border-border/60 focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/12 focus-within:bg-background",
@@ -327,7 +327,7 @@ export function Step2Plan({
                 aria-checked={active}
                 onClick={() => onLocationTypeChange(id)}
                 className={cn(
-                  "group flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl border text-center transition-all duration-150 active:scale-[0.97]",
+                  "group flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl border text-center transition duration-150 active:scale-[0.97]",
                   active
                     ? "border-primary/30 bg-primary/8 ring-1 ring-primary/20 shadow-sm"
                     : "border-border/50 bg-background/40 hover:border-primary/20 hover:bg-primary/4",
@@ -335,7 +335,7 @@ export function Step2Plan({
               >
                 <div
                   className={cn(
-                    "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-150",
+                    "w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-150",
                     active
                       ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
                       : "bg-muted/60 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary",
@@ -352,7 +352,7 @@ export function Step2Plan({
                   >
                     {label}
                   </p>
-                  <p className="text-[10px] text-muted-foreground/60 leading-tight mt-0.5">
+                  <p className="text-micro text-muted-foreground/60 leading-tight mt-0.5">
                     {sub}
                   </p>
                 </div>

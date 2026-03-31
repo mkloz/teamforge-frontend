@@ -12,24 +12,24 @@ import { cn } from "@/shared/lib/utils";
 
 // Deterministic spark positions matching the dense clustered cloud
 const SPARKS = [
-  { id: 1, dx: -22, dy: -5, size: 5, color: "#FBBF24" },
-  { id: 2, dx: 18, dy: -8, size: 4, color: "#F59E0B" },
-  { id: 3, dx: -12, dy: 6, size: 6, color: "#FCD34D" },
-  { id: 4, dx: 26, dy: 2, size: 3, color: "#FBBF24" },
-  { id: 5, dx: -32, dy: 0, size: 4, color: "#F59E0B" },
-  { id: 6, dx: 12, dy: 10, size: 5, color: "#FBBF24" },
-  { id: 7, dx: -6, dy: -14, size: 3, color: "#FCD34D" },
-  { id: 8, dx: 22, dy: 12, size: 4, color: "#F59E0B" },
-  { id: 9, dx: -16, dy: -16, size: 2, color: "#FBBF24" },
-  { id: 10, dx: 32, dy: -6, size: 5, color: "#FCD34D" },
-  { id: 11, dx: -26, dy: 12, size: 3, color: "#F59E0B" },
-  { id: 12, dx: 6, dy: -20, size: 4, color: "#FBBF24" },
-  { id: 13, dx: -38, dy: 4, size: 3, color: "#FCD34D" },
-  { id: 14, dx: 36, dy: 8, size: 4, color: "#F59E0B" },
-  { id: 15, dx: 0, dy: 16, size: 5, color: "#FBBF24" },
-  { id: 16, dx: -10, dy: 20, size: 3, color: "#FCD34D" },
-  { id: 17, dx: 20, dy: -14, size: 2, color: "#F59E0B" },
-  { id: 18, dx: -20, dy: -10, size: 4, color: "#FBBF24" },
+  { id: 1, dx: -22, dy: -5, size: 5, color: "var(--color-spark-amber)" },
+  { id: 2, dx: 18, dy: -8, size: 4, color: "var(--color-spark-amber)" },
+  { id: 3, dx: -12, dy: 6, size: 6, color: "var(--color-spark-amber)" },
+  { id: 4, dx: 26, dy: 2, size: 3, color: "var(--color-spark-amber)" },
+  { id: 5, dx: -32, dy: 0, size: 4, color: "var(--color-spark-amber)" },
+  { id: 6, dx: 12, dy: 10, size: 5, color: "var(--color-spark-amber)" },
+  { id: 7, dx: -6, dy: -14, size: 3, color: "var(--color-spark-amber)" },
+  { id: 8, dx: 22, dy: 12, size: 4, color: "var(--color-spark-amber)" },
+  { id: 9, dx: -16, dy: -16, size: 2, color: "var(--color-spark-amber)" },
+  { id: 10, dx: 32, dy: -6, size: 5, color: "var(--color-spark-amber)" },
+  { id: 11, dx: -26, dy: 12, size: 3, color: "var(--color-spark-amber)" },
+  { id: 12, dx: 6, dy: -20, size: 4, color: "var(--color-spark-amber)" },
+  { id: 13, dx: -38, dy: 4, size: 3, color: "var(--color-spark-amber)" },
+  { id: 14, dx: 36, dy: 8, size: 4, color: "var(--color-spark-amber)" },
+  { id: 15, dx: 0, dy: 16, size: 5, color: "var(--color-spark-amber)" },
+  { id: 16, dx: -10, dy: 20, size: 3, color: "var(--color-spark-amber)" },
+  { id: 17, dx: 20, dy: -14, size: 2, color: "var(--color-spark-amber)" },
+  { id: 18, dx: -20, dy: -10, size: 4, color: "var(--color-spark-amber)" },
 ];
 
 // Keyframe timing: [lift, peak-hang, impact, recoil, rest]
@@ -103,7 +103,7 @@ export function ForgeLoadingAnvil({
         <motion.div
           animate={{ opacity: [0.4, 1, 0.4], scale: [0.95, 1.05, 0.95] }}
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          className="w-4 h-4 bg-[#F59E0B] rounded-sm rotate-45"
+          className="w-4 h-4 bg-spark-amber rounded-sm rotate-45"
         />
         <div className="text-center space-y-1">
           <p className="text-sm font-semibold text-foreground">
@@ -140,7 +140,7 @@ export function ForgeLoadingAnvil({
             cy="134"
             rx="40"
             ry="12"
-            fill="#F59E0B"
+            fill="var(--color-spark-amber)"
             animate={{
               opacity: [0, 0, 0, 0.4, 0, 0],
               scale: [0, 0, 0, 1.2, 1.5, 0],
@@ -233,7 +233,7 @@ export function ForgeLoadingAnvil({
       </div>
 
       {/* Animated label — crossfades on each hammer hit */}
-      <div className="text-center space-y-1 min-h-[2.5rem] flex flex-col items-center justify-center">
+      <div className="text-center space-y-1 min-h-12 flex flex-col items-center justify-center">
         <AnimatePresence mode="wait" initial={false}>
           <motion.p
             key={label ?? labelIdx}

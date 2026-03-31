@@ -78,7 +78,7 @@ function ActiveSlidingWaves({
         animate={{ opacity: 1, scale: 1, y: 22 }}
         transition={{ delay: 0.05, duration: 0.25, type: "spring" }}
         className={cn(
-          "absolute text-[12px] font-bold tracking-wider",
+          "absolute text-xs font-bold tracking-wider",
           textColorClass,
         )}
       >
@@ -125,7 +125,7 @@ function TabButton({ item }: TabButtonProps) {
         {/* Active state gets a perfectly round, saturated background to ground the focal point */}
         <div
           className={cn(
-            "flex items-center justify-center transition-all duration-300",
+            "flex items-center justify-center transition-colors duration-300",
             active
               ? `w-10 h-10 rounded-full ${activeColorBg} shadow-inner`
               : "w-9 h-9 rounded-full bg-transparent shadow-none",
@@ -135,7 +135,7 @@ function TabButton({ item }: TabButtonProps) {
             size={active ? 20 : 18}
             aria-hidden="true"
             className={cn(
-              "shrink-0 transition-all duration-300",
+              "shrink-0 transition-colors duration-300",
               active ? activeColorText : inactiveColorText,
             )}
           />
@@ -144,7 +144,7 @@ function TabButton({ item }: TabButtonProps) {
         {/* The text literally vanishes underneath to make space for the icon when active */}
         <span
           className={cn(
-            "text-[10px] font-semibold tracking-tight transition-all duration-300 whitespace-nowrap",
+            "text-micro font-semibold tracking-tight transition duration-300 whitespace-nowrap",
             active
               ? "absolute opacity-0 scale-50 translate-y-4"
               : "relative opacity-100 scale-100 translate-y-0 text-muted-foreground -mt-1",

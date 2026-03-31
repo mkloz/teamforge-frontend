@@ -148,13 +148,13 @@ function HistoryCard({ item }: { item: PlanHistoryItem }) {
         <div className="flex items-center gap-2 mt-1">
           <span
             className={cn(
-              "text-[10px] px-1.5 py-0.5 rounded font-medium",
+              "text-micro px-1.5 py-0.5 rounded font-medium",
               categoryColors[item.category],
             )}
           >
             {item.category}
           </span>
-          <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+          <span className="text-micro text-muted-foreground flex items-center gap-0.5">
             <Calendar size={10} />
             {new Date(item.dateTime).toLocaleDateString("en-US", {
               month: "short",
@@ -164,7 +164,7 @@ function HistoryCard({ item }: { item: PlanHistoryItem }) {
         </div>
 
         {/* Location */}
-        <p className="text-[10px] text-muted-foreground mt-1 truncate flex items-center gap-0.5">
+        <p className="text-micro text-muted-foreground mt-1 truncate flex items-center gap-0.5">
           <MapPin size={10} />
           {item.location}
         </p>

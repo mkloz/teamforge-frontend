@@ -35,4 +35,5 @@ export interface UnifiedConversation {
   groupStatus?: GroupStatus;
   pendingProposals?: number;
   senderName?: string; // last message sender for groups
+  subtitleIcon?: "voice" | "image" | "file" | "location" | "poll" | "proposal";
 }

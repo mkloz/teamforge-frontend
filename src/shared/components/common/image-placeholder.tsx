@@ -35,16 +35,16 @@ export const ImagePlaceholder: FC<ImagePlaceholderProps> = ({
       {...props}
     >
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-0 m-3 w-[15%] h-[15%] border-t-3 border-l-3" />
+        <div className="absolute top-0 left-0 m-3 w-[15%] h-[15%] border-t-thick border-l-thick" />
 
-        <div className="absolute top-0 right-0 m-3 w-[15%] h-[15%] border-t-3 border-r-3" />
+        <div className="absolute top-0 right-0 m-3 w-[15%] h-[15%] border-t-thick border-r-thick" />
 
-        <div className="absolute bottom-0 left-0 m-3 w-[15%] h-[15%] border-b-3 border-l-3" />
+        <div className="absolute bottom-0 left-0 m-3 w-[15%] h-[15%] border-b-thick border-l-thick" />
 
-        <div className="absolute bottom-0 right-0 m-3 w-[15%] h-[15%] border-b-3 border-r-3" />
+        <div className="absolute bottom-0 right-0 m-3 w-[15%] h-[15%] border-b-thick border-r-thick" />
       </div>
 
-      <div className="relative flex items-center justify-center size-1/4 min-w-8 min-h-8 max-w-16 max-h-16 bg-background/50 rounded-full backdrop-blur-[2px]">
+      <div className="relative flex items-center justify-center size-1/4 min-w-8 min-h-8 max-w-16 max-h-16 bg-background/50 rounded-full backdrop-blur-subtle">
         <Image className="text-border" />
       </div>
     </div>

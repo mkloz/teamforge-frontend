@@ -162,7 +162,7 @@ export function IntermissionPage({
         variants={fadeUpItem}
         className="flex flex-col items-center mb-4 gap-2"
       >
-        <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-forge-teal">
+        <span className="font-sans text-micro font-semibold uppercase tracking-[0.18em] text-forge-teal">
           Quick Break
         </span>
         <span className="font-sans text-xs font-medium text-slate-500 bg-slate-100/80 px-3 py-1 rounded-full">
@@ -172,7 +172,7 @@ export function IntermissionPage({
 
       <motion.h2
         variants={fadeUpItem}
-        className="font-sans text-[2rem] lg:text-[2.5rem] font-extrabold leading-tight text-balance mb-4 text-[#1C1C1A]"
+        className="font-sans text-display-sm lg:text-display-lg font-extrabold leading-tight text-balance mb-4 text-ink"
       >
         {content.title}
       </motion.h2>

@@ -310,7 +310,7 @@ export function GroupIdentityFields({
         </label>
         <div
           className={cn(
-            "relative flex items-center rounded-xl border bg-background/60 transition-all duration-150",
+            "relative flex items-center rounded-xl border bg-background/60 transition-colors duration-150",
             nameFocused
               ? "border-primary/60 ring-2 ring-primary/12 bg-background"
               : "border-border/60",
@@ -365,7 +365,7 @@ export function GroupIdentityFields({
                   nameInputRef.current?.blur();
                 }}
                 className={cn(
-                  "flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[11px] font-semibold transition-all duration-150",
+                  "flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-micro font-semibold transition-colors duration-150",
                   groupName === name
                     ? "border-primary/40 bg-primary/10 text-primary"
                     : "border-border/50 bg-card text-muted-foreground hover:border-primary/30 hover:bg-primary/5 hover:text-foreground",
@@ -400,11 +400,11 @@ export function GroupIdentityFields({
           className={cn(
             "w-full rounded-xl border border-border/60 bg-background/60 px-3.5 py-3 text-sm font-medium",
             "placeholder:text-muted-foreground/35 focus:outline-none focus:border-primary/60",
-            "focus:ring-2 focus:ring-primary/12 focus:bg-background transition-all duration-150 resize-none leading-relaxed",
+            "focus:ring-2 focus:ring-primary/12 focus:bg-background transition-colors duration-150 resize-none leading-relaxed",
           )}
         />
         {groupDescription.length > 0 && (
-          <p className="text-[11px] text-muted-foreground/40 text-right">
+          <p className="text-micro text-muted-foreground/40 text-right">
             {groupDescription.length}/200
           </p>
         )}

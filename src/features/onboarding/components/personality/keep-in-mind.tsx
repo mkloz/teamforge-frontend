@@ -49,7 +49,7 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
       {/* Overline */}
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] mb-4 text-forge-teal text-center"
+        className="font-sans text-micro font-semibold uppercase tracking-[0.18em] mb-4 text-forge-teal text-center"
       >
         Before you begin
       </motion.p>
@@ -57,7 +57,7 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
       {/* Headline */}
       <motion.h1
         variants={fadeUpItem}
-        className="font-sans text-[2rem] md:text-[2.5rem] font-extrabold leading-tight text-balance mb-6 text-[#1C1C1A] text-center"
+        className="font-sans text-display-sm md:text-display-lg font-extrabold leading-tight text-balance mb-6 text-ink text-center"
       >
         Keep in mind
       </motion.h1>
@@ -88,7 +88,7 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
                 {title}
               </span>
             </div>
-            <p className="font-sans text-[11px] leading-relaxed text-slate-500">
+            <p className="font-sans text-micro leading-relaxed text-slate-500">
               {text}
             </p>
           </div>

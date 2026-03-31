@@ -2,6 +2,7 @@ import { create } from "zustand";
 import type { FilterChip } from "../types/unified-conversation.types";
 import type { GroupsPageState } from "../types/groups.types";
 import type { DirectChatsState } from "../types/direct-chats.types";
+import type { UnifiedMessage } from "../types/chat.types";
 
 interface ActivityState {
   // Unified List UI
@@ -16,10 +17,16 @@ interface ActivityState {
   groups: GroupsPageState;
   direct: DirectChatsState;
 
+  replyingTo: UnifiedMessage | null;
+  pinnedMessages: UnifiedMessage[];
+
   // Actions
   setSearchQuery: (query: string) => void;
   setActiveFilter: (filter: FilterChip) => void;
   selectConversation: (id: string | null, kind: "group" | "dm" | null) => void;
+  setReplyingTo: (message: UnifiedMessage | null) => void;
+  pinMessage: (message: UnifiedMessage) => void;
+  unpinMessage: (messageId: string) => void;
 
   // Group Actions
   toggleGroupDetail: () => void;
@@ -40,6 +47,9 @@ export const useActivityStore = create<ActivityState>((set) => ({
   activeFilter: "all",
   selectedId: null,
   selectedKind: null,
+
+  replyingTo: null,
+  pinnedMessages: [],
 
   groups: {
     selectedGroupId: null,
@@ -121,10 +131,24 @@ export const useActivityStore = create<ActivityState>((set) => ({
       },
     })),
 
+  setReplyingTo: (message) => set({ replyingTo: message }),
+
+  pinMessage: (message) =>
+    set((state) => ({
+      pinnedMessages: [...state.pinnedMessages, message],
+    })),
+
+  unpinMessage: (messageId) =>
+    set((state) => ({
+      pinnedMessages: state.pinnedMessages.filter((m) => m.id !== messageId),
+    })),
+
   resetSelection: () =>
     set((state) => ({
       selectedId: null,
       selectedKind: null,
+      replyingTo: null,
+      pinnedMessages: [],
       groups: {
         ...state.groups,
         selectedGroupId: null,

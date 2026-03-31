@@ -1,3 +1,6 @@
+import type { UnifiedAttachment, UnifiedMessageReaction } from "./chat.types";
+import type { MessageStatus } from "./direct-chats.types";
+
 /**
  * Groups feature type definitions
  * Based on the unified Group-Plan architecture with separate identity
@@ -29,6 +32,7 @@ export type MemberRole = "ADMIN" | "MEMBER";
 export type MessageType =
   | "TEXT"
   | "IMAGE"
+  | "VOICE"
   | "LOCATION"
   | "SYSTEM"
   | "PLAN_UPDATE";
@@ -151,6 +155,7 @@ export interface Group {
   createdAt: string; // ISO datetime
   createdBy: string; // User ID of the creator
   maxMembers: number;
+  pinnedMessages?: import("./chat.types").UnifiedMessage[];
 }
 
 /**
@@ -180,6 +185,7 @@ export interface GroupPreview {
     senderName: string;
     timestamp: string;
     isSystem: boolean;
+    type?: MessageType;
   };
   unreadCount: number;
 }
@@ -197,7 +203,18 @@ export interface Message {
   senderAvatar: string;
   timestamp: string; // ISO datetime
   isOwn: boolean; // Whether current user sent this
+  status?: MessageStatus;
   readBy?: string[]; // User IDs who have read this message
+  isEdited?: boolean;
+  isPinned?: boolean;
+  hasVoted?: boolean; // For PLAN_UPDATE messages
+  replyTo?: {
+    id: string;
+    content: string;
+    senderName: string;
+  };
+  attachments?: UnifiedAttachment[];
+  reactions?: Record<string, UnifiedMessageReaction[]>;
 }
 
 /**

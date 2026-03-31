@@ -100,7 +100,7 @@ export function CalculatingScreen({ vector, onDone }: CalculatingScreenProps) {
         <TeamForgeLogo className="w-10 h-10 mb-8" showBackground={false} />
       </motion.div>
 
-      <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] mb-8 text-forge-teal">
+      <p className="font-sans text-micro font-semibold uppercase tracking-[0.18em] mb-8 text-forge-teal">
         Computing Personality Vector
       </p>
 

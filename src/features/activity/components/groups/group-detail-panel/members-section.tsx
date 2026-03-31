@@ -63,16 +63,16 @@ function MemberCard({ member }: { member: GroupMember }) {
           <p className="text-sm font-medium text-foreground truncate">
             {member.name}
           </p>
-          <Badge variant="mbti" className="text-[10px] px-1.5 py-0">
+          <Badge variant="mbti" className="text-micro px-1.5 py-0">
             {member.personalityType}
           </Badge>
         </div>
         <div className="flex items-center gap-2 mt-0.5">
-          <span className="text-[10px] text-muted-foreground">
+          <span className="text-micro text-muted-foreground">
             Trust: {Math.round(member.trustScore * 100)}%
           </span>
           <span className="text-muted-foreground">·</span>
-          <span className="text-[10px] text-primary">
+          <span className="text-micro text-primary">
             {member.compatibilityScore}% match
           </span>
         </div>

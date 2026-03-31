@@ -19,7 +19,7 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
       {/* Overline */}
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] mb-4 text-center text-forge-teal"
+        className="font-sans text-micro font-semibold uppercase tracking-[0.18em] mb-4 text-center text-forge-teal"
       >
         Personality Theory 101
       </motion.p>
@@ -27,29 +27,27 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
       {/* Headline */}
       <motion.h1
         variants={fadeUpItem}
-        className="font-sans text-[2rem] md:text-[2.25rem] font-extrabold leading-tight text-center text-balance mb-8 text-[#1C1C1A]"
+        className="font-sans text-display-sm md:text-display-md font-extrabold leading-tight text-center text-balance mb-8 text-ink"
       >
         A dimensional baseline
       </motion.h1>
 
       {/* Body Content */}
       <motion.div variants={fadeUpItem} className="flex flex-col gap-5 mb-8">
-        <p className="font-sans text-sm leading-relaxed text-pretty text-slate-500">
+        <p className="font-sans text-sm leading-relaxed text-pretty text-slate-muted">
           Most generic tests group people into strict categories (like entirely
           a "Thinker" or purely a "Feeler"). But human psychology is much more
           nuanced than that.
         </p>
 
-        <p className="font-sans text-sm leading-relaxed text-pretty text-slate-500">
+        <p className="font-sans text-sm leading-relaxed text-pretty text-slate-muted">
           That's where the{" "}
-          <span className="text-[#1C1C1A] font-medium">
-            Big Five (OCEAN) model
-          </span>{" "}
+          <span className="text-ink font-medium">Big Five (OCEAN) model</span>{" "}
           comes in. It doesn't box you in. Instead, it measures exactly where
           you sit on a <i>spectrum</i> for five distinct traits:
         </p>
 
-        <ul className="flex flex-col gap-2 font-sans text-sm text-slate-600 pl-4 border-l-2 border-forge-teal/30 ml-2">
+        <ul className="flex flex-col gap-2 font-sans text-sm text-slate-muted pl-4 border-l-2 border-forge-teal/30 ml-2">
           <li>
             <strong>O</strong>penness to Experience
           </li>
@@ -67,7 +65,7 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
           </li>
         </ul>
 
-        <p className="font-sans text-sm leading-relaxed text-pretty text-slate-500">
+        <p className="font-sans text-sm leading-relaxed text-pretty text-slate-muted">
           Because it measures traits on a continuous scale rather than a binary
           "this or that," the Big Five provides a remarkably accurate
           mathematical map of your working style. It's the gold standard in
@@ -92,7 +90,7 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
         <Button
           size="lg"
           onClick={onNext}
-          className="flex-1 flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl bg-forge-teal text-primary-foreground hover:bg-forge-teal-light shadow-[0_4px_16px_rgba(13,148,136,0.25)] hover:shadow-[0_8px_24px_rgba(13,148,136,0.4)] transition duration-200 active:scale-[0.98] h-12"
+          className="flex-1 flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl bg-forge-teal text-primary-foreground hover:bg-forge-teal-light shadow-teal-glow hover:shadow-teal-glow-lg transition duration-200 active:scale-[0.98] h-12"
         >
           Next step
           <ArrowRight size={16} strokeWidth={2.5} />

@@ -43,7 +43,7 @@ export function Step6Invite({
         {/* Cover strip */}
         <div
           className={cn(
-            "h-20 w-full transition-all duration-300",
+            "h-20 w-full transition-colors duration-300",
             coverImage === "uploaded"
               ? "bg-primary/20"
               : gradientClass
@@ -113,7 +113,7 @@ export function Step6Invite({
             <div className="flex -space-x-2">
               {/* Host */}
               <div className="w-7 h-7 rounded-full bg-primary border-2 border-card flex items-center justify-center shadow-sm z-10">
-                <span className="text-[9px] font-bold text-primary-foreground">
+                <span className="text-nano font-bold text-primary-foreground">
                   You
                 </span>
               </div>
@@ -131,7 +131,7 @@ export function Step6Invite({
                   className="w-7 h-7 rounded-full bg-muted border-2 border-card flex items-center justify-center shadow-sm"
                   style={{ zIndex: 4 }}
                 >
-                  <span className="text-[9px] font-bold text-muted-foreground">
+                  <span className="text-nano font-bold text-muted-foreground">
                     +{participantCount - 5}
                   </span>
                 </div>
@@ -164,7 +164,7 @@ export function Step6Invite({
             onClick={onCopyLink}
             aria-label="Copy invite link"
             className={cn(
-              "flex items-center gap-1.5 h-8 px-3 rounded-xl text-xs font-semibold transition-all duration-200 shrink-0",
+              "flex items-center gap-1.5 h-8 px-3 rounded-xl text-xs font-semibold transition-colors duration-200 shrink-0",
               inviteCopied
                 ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
                 : "bg-muted text-foreground hover:bg-primary/10 hover:text-primary",

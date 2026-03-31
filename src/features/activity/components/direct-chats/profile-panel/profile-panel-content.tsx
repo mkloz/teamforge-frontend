@@ -33,7 +33,7 @@ export function ProfilePanelContent({
         {/* Bio Section */}
         {participant.bio && (
           <div className="p-4 border-b border-border">
-            <h4 className="text-[11px] font-bold text-slate-muted uppercase tracking-wider mb-2">
+            <h4 className="text-micro font-bold text-slate-muted uppercase tracking-wider mb-2">
               About
             </h4>
             <p className="text-sm text-ink leading-relaxed font-medium">

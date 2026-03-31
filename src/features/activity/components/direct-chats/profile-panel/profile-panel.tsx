@@ -33,7 +33,7 @@ export function ProfilePanel({ chat, isOpen, onClose }: ProfilePanelProps) {
   return (
     <aside
       className={cn(
-        "hidden lg:flex flex-col h-full bg-canvas border-l border-border transition-all duration-300 ease-out",
+        "hidden lg:flex flex-col h-full bg-canvas border-l border-border transition duration-300 ease-out",
         isOpen ? "w-80 opacity-100" : "w-0 opacity-0 overflow-hidden",
       )}
     >

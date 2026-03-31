@@ -53,11 +53,11 @@ export function QuestionPage({
 
       {/* Page counter + time estimate */}
       <div className="flex justify-between items-center mb-2">
-        <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+        <span className="font-sans text-micro font-semibold uppercase tracking-widest text-slate-500">
           Page {pageNumber} of {totalPages}
         </span>
         {pagesLeft > 0 && (
-          <span className="font-sans text-[10px] font-medium text-slate-500/55">
+          <span className="font-sans text-micro font-medium text-slate-500/55">
             {formatTimeLeft(pagesLeft, pageQuestions.length)}
           </span>
         )}
@@ -77,7 +77,7 @@ export function QuestionPage({
             />
           );
         })}
-        <span className="font-sans text-[9px] font-medium ml-1 shrink-0 text-slate-500/45">
+        <span className="font-sans text-nano font-medium ml-1 shrink-0 text-slate-500/45">
           {answeredOnPage}/{pageQuestions.length}
         </span>
       </div>
@@ -109,7 +109,7 @@ export function QuestionPage({
         onClick={onNext}
         disabled={!allAnswered}
         className={cn(
-          "w-full flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl h-12 transition duration-200",
+          "w-full flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl h-12 transition-colors duration-200",
           allAnswered
             ? "bg-forge-teal text-primary-foreground hover:bg-forge-teal-light"
             : "bg-slate-500/10 text-slate-500/40",

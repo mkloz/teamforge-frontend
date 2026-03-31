@@ -75,7 +75,7 @@ export function NotificationsDrawer({
         aria-hidden="true"
         onClick={onClose}
         className={cn(
-          "fixed inset-0 z-55 bg-black/50 backdrop-blur-[2px]",
+          "fixed inset-0 z-55 bg-black/50 backdrop-blur-subtle",
           "transition-opacity duration-200",
           open
             ? "opacity-100 pointer-events-auto"

@@ -49,10 +49,10 @@ function BadgeItem({
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div className="flex items-center gap-2 cursor-help group transition-all duration-300 hover:-translate-y-0.5">
+        <div className="flex items-center gap-2 cursor-help group transition-transform duration-300 hover:-translate-y-0.5">
           {renderIconWrapper ? renderIconWrapper(iconContent) : iconContent}
           <div className="flex flex-col justify-center items-start">
-            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-muted leading-tight mb-0.5">
+            <span className="text-nano font-bold uppercase tracking-widest text-slate-muted leading-tight mb-0.5">
               {label}
             </span>
             <span
@@ -75,7 +75,7 @@ function BadgeItem({
             <Icon size={14} className={colorClass} />
             <p className="text-xs font-bold tracking-tight">{label} Detail</p>
           </div>
-          <p className="text-[10px] text-muted-foreground leading-relaxed">
+          <p className="text-micro text-muted-foreground leading-relaxed">
             {description}
           </p>
         </div>
@@ -149,7 +149,7 @@ export function ProfileBadges({ profile }: ProfileBadgesProps) {
                   />
                   <circle
                     className={cn(
-                      "stroke-current transition-all duration-1000",
+                      "stroke-current duration-1000",
                       trustColorClass,
                     )}
                     strokeWidth="4"
@@ -167,7 +167,7 @@ export function ProfileBadges({ profile }: ProfileBadgesProps) {
                 </svg>
                 <span
                   className={cn(
-                    "relative text-[9px] md:text-[10px] font-black leading-none",
+                    "relative text-nano md:text-micro font-black leading-none",
                     trustColorClass,
                   )}
                 >

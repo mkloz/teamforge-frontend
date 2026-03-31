@@ -107,7 +107,7 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
                     size="icon"
                     onClick={fw.goBack}
                     aria-label="Go back"
-                    className="h-14 w-14 rounded-2xl border-border/60 text-muted-foreground hover:text-foreground hover:border-border hover:bg-muted/30 transition-all"
+                    className="h-14 w-14 rounded-2xl border-border/60 text-muted-foreground hover:text-foreground hover:border-border hover:bg-muted/30 transition-colors"
                   >
                     <ChevronLeft size={20} />
                   </Button>

@@ -1,10 +1,10 @@
 import { cn } from "@/shared/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { motion } from "framer-motion";
-import { ChevronRight } from "lucide-react";
+import { type LucideIcon, ChevronRight } from "lucide-react";
 
 const subcategoryChipVariants = cva(
-  "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold font-sans transition-all duration-150 select-none leading-none border",
+  "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-micro font-semibold font-sans transition duration-150 select-none leading-none border",
   {
     variants: {
       state: {
@@ -20,7 +20,7 @@ const subcategoryChipVariants = cva(
 );
 
 const badgeVariants = cva(
-  "shrink-0 flex items-center justify-center min-w-[1.125rem] h-4.5 px-1 text-[9px] font-bold rounded-full leading-none",
+  "shrink-0 flex items-center justify-center min-w-[1.125rem] h-4.5 px-1 text-nano font-bold rounded-full leading-none",
   {
     variants: {
       state: {
@@ -37,7 +37,7 @@ const badgeVariants = cva(
 interface SubcategoryChipProps extends VariantProps<
   typeof subcategoryChipVariants
 > {
-  emoji: string;
+  icon: LucideIcon;
   label: string;
   selectedCount: number;
   expanded: boolean;
@@ -45,7 +45,7 @@ interface SubcategoryChipProps extends VariantProps<
 }
 
 export function SubcategoryChip({
-  emoji,
+  icon: Icon,
   label,
   selectedCount,
   expanded,
@@ -60,7 +60,7 @@ export function SubcategoryChip({
       whileTap={{ scale: 0.94 }}
       className={cn(subcategoryChipVariants({ state: currentState }))}
     >
-      <span className="text-sm leading-none">{emoji}</span>
+      <Icon className="w-3.5 h-3.5" strokeWidth={2.5} />
       <span>{label}</span>
       {selectedCount > 0 && (
         <span className={cn(badgeVariants({ state: currentState }))}>

@@ -29,7 +29,7 @@ export function HeroSection() {
                 className="w-1.5 h-1.5 rounded-full bg-forge-teal animate-pulse-glow"
                 aria-hidden="true"
               />
-              <span className="text-forge-teal-light text-[11px] font-semibold font-sans uppercase tracking-[0.14em]">
+              <span className="text-forge-teal-light text-micro font-semibold font-sans uppercase tracking-[0.14em]">
                 Smart Group Formation
               </span>
             </div>
@@ -37,7 +37,7 @@ export function HeroSection() {
             <h1 className="font-sans font-extrabold text-white leading-[1.08] mb-5 text-balance text-[clamp(2.25rem,5.5vw,4rem)]">
               Find your people,
               <br />
-              <span className="relative inline-block text-transparent bg-clip-text pb-2 bg-[linear-gradient(135deg,#14B8A6,#0D9488_40%,#F59E0B)] drop-shadow-[0_0_32px_rgba(13,148,136,0.35)]">
+              <span className="relative inline-block text-transparent bg-clip-text pb-2 bg-linear-to-br from-forge-teal-light via-forge-teal via-40% to-spark-amber drop-shadow-[0_0_32px_rgba(13,148,136,0.35)]">
                 intelligently.
               </span>
             </h1>

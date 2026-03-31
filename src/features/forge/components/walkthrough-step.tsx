@@ -49,7 +49,7 @@ export function WalkthroughStep({
           <div
             className={cn(
               "w-12 h-12 rounded-full flex items-center justify-center shrink-0 z-10 relative overflow-hidden",
-              "ring-4 bg-card transition-all duration-500",
+              "ring-4 bg-card duration-500",
               ringColor,
               glowColor,
             )}
@@ -87,7 +87,7 @@ export function WalkthroughStep({
                   </div>
                   <div
                     className={cn(
-                      "absolute top-0 right-0 w-5 h-5 flex items-center justify-center text-[10px] font-black text-white rounded-bl-lg shadow-sm z-20",
+                      "absolute top-0 right-0 w-5 h-5 flex items-center justify-center text-micro font-black text-white rounded-bl-lg shadow-sm z-20",
                       dotColor,
                     )}
                   >
@@ -115,14 +115,14 @@ export function WalkthroughStep({
               visible: { borderColor: "rgba(var(--muted-foreground), 0.3)" },
             }}
             className={cn(
-              "rounded-2xl border bg-card/40 backdrop-blur-xl p-5 transition-all duration-500",
+              "rounded-2xl border bg-card/40 backdrop-blur-xl p-5 transition duration-500",
               "border-white/5 dark:border-white/10 shadow-sm",
               index === 0 && "group-hover:bg-primary/3",
               index === 1 && "group-hover:bg-accent/3",
               index === 2 && "group-hover:bg-emerald-500/3",
             )}
           >
-            <h4 className="text-[16px] font-bold text-foreground mb-1.5 transition-colors group-hover:text-primary tracking-tight">
+            <h4 className="text-base font-bold text-foreground mb-1.5 transition-colors group-hover:text-primary tracking-tight">
               {title}
             </h4>
             <p className="text-sm text-muted-foreground leading-relaxed transition-colors group-hover:text-foreground/80">

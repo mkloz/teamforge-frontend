@@ -30,12 +30,12 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
     <div className="flex flex-col gap-2">
       {/* Label & Percentage Row */}
       <div className="flex items-center justify-between px-1">
-        <span className="text-[10px] font-black text-slate-muted uppercase tracking-widest">
+        <span className="text-micro font-black text-slate-muted uppercase tracking-widest">
           {labels.name}
         </span>
         <span
           className={cn(
-            "text-[10px] font-black uppercase tracking-widest transition-colors",
+            "text-micro font-black uppercase tracking-widest transition-colors",
             score.isBorderline ? "text-spark-amber" : "text-forge-teal",
           )}
         >
@@ -61,7 +61,7 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
               {/* Gradient fill based on position */}
               <div
                 className={cn(
-                  "absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out",
+                  "absolute inset-y-0 left-0 rounded-full transition-colors duration-700 ease-out",
                   score.isBorderline
                     ? "bg-linear-to-r from-spark-amber/30 to-spark-amber/60"
                     : "bg-linear-to-r from-forge-teal/30 to-forge-teal/60",
@@ -72,7 +72,7 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
               {/* Marker */}
               <div
                 className={cn(
-                  "absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-background shadow-md border-2 z-20 transition-all duration-700 ease-out",
+                  "absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-background shadow-md border-2 z-20 transition duration-700 ease-out",
                   score.isBorderline
                     ? "border-spark-amber ring-2 ring-spark-amber/10"
                     : "border-forge-teal ring-2 ring-forge-teal/10",

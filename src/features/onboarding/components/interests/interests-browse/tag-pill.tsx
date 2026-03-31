@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { X } from "lucide-react";
 
 const tagPillVariants = cva(
-  "relative inline-flex items-center rounded-full px-3 py-1.5 text-[11px] font-medium font-sans transition-colors duration-200 select-none leading-none border",
+  "relative inline-flex items-center rounded-full px-3 py-1.5 text-micro font-medium font-sans transition-colors duration-200 select-none leading-none border",
   {
     variants: {
       variant: {
@@ -73,7 +73,7 @@ export function TagPill({
         {/* Left Indicator (Checkmark) */}
         <div
           className={cn(
-            "relative flex items-center justify-start overflow-hidden h-4 transition-all duration-200 ease-out",
+            "relative flex items-center justify-start overflow-hidden h-4 duration-200 ease-out",
             selected ? "w-4" : "w-2",
           )}
         >
@@ -83,7 +83,7 @@ export function TagPill({
             viewBox="0 0 8 8"
             fill="none"
             className={cn(
-              "text-white shrink-0 transition-all duration-200 ease-out",
+              "text-white shrink-0 transition duration-200 ease-out",
               selected
                 ? "opacity-100 scale-100 translate-x-0"
                 : "opacity-0 scale-50 -translate-x-2",
@@ -104,7 +104,7 @@ export function TagPill({
         {/* Right Action (Reject) */}
         <div
           className={cn(
-            "flex items-center overflow-hidden h-4 transition-all duration-200 ease-out",
+            "flex items-center overflow-hidden h-4 duration-200 ease-out",
             selected ? "w-0" : onReject ? "w-5" : "w-2",
           )}
         >

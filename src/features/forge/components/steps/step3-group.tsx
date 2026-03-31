@@ -119,7 +119,7 @@ export function Step3Group({
                 aria-checked={active}
                 onClick={() => onVisibilityChange(value as Visibility)}
                 className={cn(
-                  "group w-full flex items-start gap-4 p-4 rounded-2xl border text-left transition-all duration-200",
+                  "group w-full flex items-start gap-4 p-4 rounded-2xl border text-left transition-colors duration-200",
                   active
                     ? "border-primary bg-primary/5 ring-1 ring-primary/20 shadow-sm"
                     : "border-border/40 bg-card hover:border-primary/30 hover:bg-primary/3",
@@ -127,7 +127,7 @@ export function Step3Group({
               >
                 <div
                   className={cn(
-                    "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200 mt-0.5",
+                    "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-200 mt-0.5",
                     active
                       ? "bg-primary text-primary-foreground shadow-sm shadow-primary/25"
                       : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary",
@@ -150,7 +150,7 @@ export function Step3Group({
                 </div>
                 <div
                   className={cn(
-                    "w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center mt-1 transition-all duration-200",
+                    "w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center mt-1 transition-colors duration-200",
                     active ? "border-primary bg-primary" : "border-border/50",
                   )}
                 >
@@ -235,7 +235,7 @@ export function Step3Group({
                         type="button"
                         onClick={() => setCapacityMode(mode)}
                         className={cn(
-                          "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold transition-all duration-200 min-w-16 justify-center",
+                          "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-micro font-bold transition-colors duration-200 min-w-16 justify-center",
                           active
                             ? "bg-background text-foreground shadow-sm"
                             : "text-muted-foreground/50 hover:text-muted-foreground",
@@ -291,10 +291,10 @@ export function Step3Group({
                       </RadixSlider.Root>
                     </div>
                     <div className="flex justify-between px-0.5">
-                      <span className="text-[11px] text-muted-foreground/40">
+                      <span className="text-micro text-muted-foreground/40">
                         3 min
                       </span>
-                      <span className="text-[11px] text-muted-foreground/40">
+                      <span className="text-micro text-muted-foreground/40">
                         12 max
                       </span>
                     </div>
@@ -320,10 +320,10 @@ export function Step3Group({
                       </RadixSlider.Root>
                     </div>
                     <div className="flex justify-between px-0.5">
-                      <span className="text-[11px] text-muted-foreground/40">
+                      <span className="text-micro text-muted-foreground/40">
                         3 min
                       </span>
-                      <span className="text-[11px] text-muted-foreground/40">
+                      <span className="text-micro text-muted-foreground/40">
                         12 max
                       </span>
                     </div>
@@ -416,7 +416,7 @@ function ModeButton({
       type="button"
       onClick={onClick}
       className={cn(
-        "group relative flex flex-col items-start gap-2.5 p-3.5 rounded-xl border text-left transition-all duration-300 overflow-hidden",
+        "group relative flex flex-col items-start gap-2.5 p-3.5 rounded-xl border text-left transition-colors duration-300 overflow-hidden",
         active
           ? activeColor === "primary"
             ? "border-primary bg-primary text-primary-foreground shadow-md"
@@ -444,7 +444,7 @@ function ModeButton({
       </div>
       <p
         className={cn(
-          "text-[11px] leading-snug font-semibold opacity-90 pr-2",
+          "text-micro leading-snug font-semibold opacity-90 pr-2",
           active ? "text-inherit/80" : "text-muted-foreground",
         )}
       >
@@ -535,7 +535,7 @@ function WeightSlider({
             <div
               key={i}
               className={cn(
-                "h-1.5 flex-1 rounded-full transition-all duration-500",
+                "h-1.5 flex-1 rounded-full transition-colors duration-500",
                 active
                   ? isHighDiversity
                     ? "bg-amber-500/50"
@@ -548,13 +548,13 @@ function WeightSlider({
         })}
       </div>
 
-      <div className="flex justify-between text-[11px] font-medium text-muted-foreground/50 -mt-1">
+      <div className="flex justify-between text-micro font-medium text-muted-foreground/50 -mt-1">
         <span>{semanticLabels.min}</span>
         <span>{semanticLabels.max}</span>
       </div>
 
       {warning && (
-        <div className="flex items-center gap-2 px-1 text-[11px] font-bold text-amber-600/80 tracking-tight animate-in fade-in slide-in-from-top-1">
+        <div className="flex items-center gap-2 px-1 text-micro font-bold text-amber-600/80 tracking-tight animate-in fade-in slide-in-from-top-1">
           <AlertCircle size={12} />
           {warning}
         </div>

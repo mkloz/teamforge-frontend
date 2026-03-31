@@ -97,7 +97,7 @@ export function AlgorithmStats({ inView }: AlgorithmStatsProps) {
             <p className="font-sans font-extrabold text-forge-teal text-xl mb-1">
               {value}
             </p>
-            <p className="font-sans text-white/40 text-[11px] leading-tight">
+            <p className="font-sans text-white/40 text-micro leading-tight">
               {label}
             </p>
           </div>

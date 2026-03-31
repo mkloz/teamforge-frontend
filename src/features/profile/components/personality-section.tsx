@@ -37,13 +37,13 @@ function PersonalitySummary({ profile }: { profile: PersonalityProfile }) {
     <div className="space-y-4">
       {/* Title badge */}
       <div className="flex items-center gap-2">
-        <span className="px-3.5 py-1.5 rounded-full text-[11px] font-semibold bg-spark-amber/10 text-spark-amber border border-spark-amber/20 tracking-tight">
+        <span className="px-3.5 py-1.5 rounded-full text-micro font-semibold bg-spark-amber/10 text-spark-amber border border-spark-amber/20 tracking-tight">
           {profile.title}
         </span>
       </div>
 
       {/* Summary */}
-      <p className="text-[17px] text-ink/90 font-medium leading-relaxed text-pretty">
+      <p className="text-lg text-ink/90 font-medium leading-relaxed text-pretty">
         {profile.summary}
       </p>
     </div>

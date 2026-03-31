@@ -34,7 +34,7 @@ export function QuestionCard({
     >
       {/* Header row: pill + answered badge */}
       <div className="flex items-center justify-between mb-3 h-6">
-        <span className="inline-flex items-center font-sans text-[9px] font-semibold uppercase tracking-widest rounded-full px-2.5 py-1 bg-slate-500/10 text-slate-500/65">
+        <span className="inline-flex items-center font-sans text-nano font-semibold uppercase tracking-widest rounded-full px-2.5 py-1 bg-slate-500/10 text-slate-500/65">
           Q {index} of {totalQuestions}
         </span>
 
@@ -45,7 +45,7 @@ export function QuestionCard({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
-              className="inline-flex items-center gap-1 font-sans text-[9px] font-semibold uppercase tracking-wider rounded-full px-2.5 py-1 bg-forge-teal/10 text-forge-teal"
+              className="inline-flex items-center gap-1 font-sans text-nano font-semibold uppercase tracking-wider rounded-full px-2.5 py-1 bg-forge-teal/10 text-forge-teal"
             >
               <Check size={10} strokeWidth={2.8} />
               Done
@@ -55,7 +55,7 @@ export function QuestionCard({
       </div>
 
       {/* Statement text */}
-      <p className="font-sans text-sm font-medium leading-relaxed mb-3 text-pretty text-[#1C1C1A]">
+      <p className="font-sans text-sm font-medium leading-relaxed mb-3 text-pretty text-ink">
         {question.text}
       </p>
 
