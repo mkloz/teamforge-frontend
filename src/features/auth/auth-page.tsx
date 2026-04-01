@@ -66,7 +66,7 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
           />
 
           {/* Form card container */}
-          <div className="relative w-full max-w-105 bg-white lg:bg-transparent lg:shadow-none shadow-[0_8px_32px_rgba(0,0,0,0.04)] ring-1 ring-slate-900/5 lg:ring-0 rounded-[2rem] p-8 sm:p-10 lg:p-0">
+          <div className="relative w-full max-w-105 bg-white lg:bg-transparent lg:shadow-none shadow-[0_8px_32px_rgba(0,0,0,0.04)] ring-1 ring-slate-900/5 lg:ring-0 rounded-4xl p-8 sm:p-10 lg:p-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={view}

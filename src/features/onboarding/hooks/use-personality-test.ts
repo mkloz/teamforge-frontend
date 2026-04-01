@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from "react";
 import { buildQuestionList, type TestLength } from "../data/ipip-questions";
 import {
   hydrateQuestions,
@@ -61,24 +62,30 @@ export function usePersonalityTest({
 
   // ── Actions ────────────────────────────────────────────────────────────────
 
-  function handleAnswer(questionId: number, val: 1 | 2 | 3 | 4 | 5) {
-    store.setAnswer(questionId, val);
-  }
+  const handleAnswer = useCallback(
+    (questionId: number, val: 1 | 2 | 3 | 4 | 5) => {
+      store.setAnswer(questionId, val);
+    },
+    [store],
+  );
 
-  function handleBegin(length: TestLength) {
-    const qs = buildQuestionList(length);
-    store.beginTest(
-      length,
-      qs.map((q) => q.id),
-    );
-  }
+  const handleBegin = useCallback(
+    (length: TestLength) => {
+      const qs = buildQuestionList(length);
+      store.beginTest(
+        length,
+        qs.map((q) => q.id),
+      );
+    },
+    [store],
+  );
 
-  function handleNextPage() {
+  const handleNextPage = useCallback(() => {
     if (screen.id !== "questions") return;
 
     if (shouldTriggerIntermission(screen.currentPage, testLength, totalPages)) {
-      const milestoneIndex =
-        screen.currentPage / getIntermissionInterval(testLength);
+      const interval = getIntermissionInterval(testLength);
+      const milestoneIndex = screen.currentPage / interval;
       store.setScreen({
         id: "intermission",
         type: milestoneIndex,
@@ -95,25 +102,48 @@ export function usePersonalityTest({
       store.setResultData(res, vec);
       store.setScreen({ id: "calculating" });
     }
-  }
+  }, [screen, testLength, totalPages, questions, answers, store]);
 
-  function handleContinueFromIntermission() {
+  const handleContinueFromIntermission = useCallback(() => {
     if (screen.id !== "intermission") return;
     store.setScreen({ id: "questions", currentPage: screen.nextPageIndex });
-  }
+  }, [screen, store]);
 
-  function handleCalculationDone() {
+  const handleCalculationDone = useCallback(() => {
     store.setScreen({ id: "results" });
-  }
+  }, [store]);
 
-  function handleRetake() {
+  const handleRetake = useCallback(() => {
     store.reset();
     store.setScreen({ id: "length" });
-  }
+  }, [store]);
 
-  function handleContinue() {
+  const handleContinue = useCallback(() => {
     onContinue?.();
-  }
+  }, [onContinue]);
+
+  const actions = useMemo(
+    () => ({
+      setScreen: store.setScreen,
+      handleAnswer,
+      handleBegin,
+      handleNextPage,
+      handleContinueFromIntermission,
+      handleCalculationDone,
+      handleRetake,
+      handleContinue,
+    }),
+    [
+      store.setScreen,
+      handleAnswer,
+      handleBegin,
+      handleNextPage,
+      handleContinueFromIntermission,
+      handleCalculationDone,
+      handleRetake,
+      handleContinue,
+    ],
+  );
 
   // ── Derived ────────────────────────────────────────────────────────────────
 
@@ -142,15 +172,6 @@ export function usePersonalityTest({
     pageStart,
     pageQuestions,
     progress,
-    actions: {
-      setScreen: store.setScreen,
-      handleAnswer,
-      handleBegin,
-      handleNextPage,
-      handleContinueFromIntermission,
-      handleCalculationDone,
-      handleRetake,
-      handleContinue,
-    },
+    actions,
   };
 }

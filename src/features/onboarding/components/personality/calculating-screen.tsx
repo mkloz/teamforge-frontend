@@ -1,5 +1,5 @@
 import { animate, motion, useAnimation } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { TeamForgeLogo } from "../../../../assets/logo";
 import { OCEAN_LABELS } from "../../data/type-descriptions";
 import {
@@ -50,7 +50,10 @@ function AnimatedCounter({ value, delay }: { value: number; delay: number }) {
 
 export function CalculatingScreen({ vector, onDone }: CalculatingScreenProps) {
   const controls = useAnimation();
-  const barWidths = DIMS.map((dim) => toDisplayPercent(vector, dim));
+  const barWidths = useMemo(
+    () => DIMS.map((dim) => toDisplayPercent(vector, dim)),
+    [vector],
+  );
   const [messageIndex, setMessageIndex] = useState(0);
 
   // Cycling messages
@@ -64,32 +67,45 @@ export function CalculatingScreen({ vector, onDone }: CalculatingScreenProps) {
   // Main animation sequence
   useEffect(() => {
     let mounted = true;
+    const sequenceStarted = { current: false };
+
     async function sequence() {
+      if (sequenceStarted.current) return;
+      sequenceStarted.current = true;
+
       // Small pause before starting
       await new Promise((resolve) => setTimeout(resolve, 600));
 
       if (!mounted) return;
 
-      // Animate each bar sequentially with a snappy spring
-      await controls.start((i) => ({
-        width: `${barWidths[i]}%`,
-        transition: {
-          type: "spring",
-          stiffness: 40,
-          damping: 12,
-          delay: i * 0.25,
-        },
-      }));
+      try {
+        // Animate each bar sequentially with a snappy spring
+        await controls.start((i) => ({
+          width: `${barWidths[i]}%`,
+          transition: {
+            type: "spring",
+            stiffness: 40,
+            damping: 12,
+            delay: i * 0.25,
+          },
+        }));
 
-      // Pause to let the user see the final state
-      await new Promise((resolve) => setTimeout(resolve, 1200));
-      if (mounted) onDone();
+        // Pause to let the user see the final state
+        await new Promise((resolve) => setTimeout(resolve, 1200));
+        if (mounted) onDone();
+      } catch (err) {
+        console.error("Animation sequence failed:", err);
+        if (mounted) onDone(); // Fail-safe: transition anyway
+      }
     }
+
     sequence();
+
     return () => {
       mounted = false;
     };
-  }, [controls, onDone, barWidths]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [controls]); // Only dependencies that shouldn't change
 
   return (
     <div className="flex flex-col items-center justify-center w-full px-6 py-12 lg:py-0">
