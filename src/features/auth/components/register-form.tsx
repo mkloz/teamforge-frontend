@@ -14,17 +14,17 @@ interface RegisterFormProps {
 
 const variants = {
   enter: (direction: number) => ({
-    x: direction > 0 ? 20 : -20,
+    y: direction > 0 ? 30 : -30,
     opacity: 0,
   }),
   center: {
     zIndex: 1,
-    x: 0,
+    y: 0,
     opacity: 1,
   },
   exit: (direction: number) => ({
     zIndex: 0,
-    x: direction < 0 ? 20 : -20,
+    y: direction < 0 ? 30 : -30,
     opacity: 0,
   }),
 };

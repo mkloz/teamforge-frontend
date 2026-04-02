@@ -99,7 +99,7 @@ export function PersonalityResults({
                 key={i}
                 variants={popDownItem}
                 className={cn(
-                  "flex flex-col items-center justify-center rounded-2xl w-14 sm:w-16 h-20 sm:h-24 bg-white border border-slate-100 shadow-sm gap-0.5",
+                  "flex flex-col items-center justify-center rounded-2xl w-14 sm:w-16 h-20 sm:h-24 bg-white border border-slate-100 sm:shadow-sm shadow-[0_1px_3px_rgba(0,0,0,0.05)] gap-0.5",
                   isIdentity && "bg-spark-amber/5 border-spark-amber/20",
                 )}
               >
@@ -163,7 +163,7 @@ export function PersonalityResults({
             <SectionTitle dotColor="bg-spark-amber">
               Personality Fingerprint
             </SectionTitle>
-            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
+            <div className="bg-transparent lg:bg-white rounded-3xl p-0 sm:p-6 border-0 lg:border border-slate-100 shadow-none lg:shadow-sm">
               <OceanChart scores={oceanScores} />
             </div>
           </section>

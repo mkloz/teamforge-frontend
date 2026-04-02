@@ -88,7 +88,7 @@ export function CategorySection({
               expandedSubcategories.has(sub.id) && (
                 <div
                   key={`tags-${sub.id}`}
-                  className="bg-slate-50/50 rounded-2xl p-4 border border-slate-100/50"
+                  className="bg-slate-50/50 lg:bg-slate-50/50 rounded-2xl p-4 border border-slate-100/50 lg:border-slate-100/50 sm:border-0 sm:bg-transparent sm:px-0"
                 >
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-slate-500">

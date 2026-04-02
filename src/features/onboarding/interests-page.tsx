@@ -37,10 +37,10 @@ export function InterestsPage() {
       <main className="flex-1 flex flex-col h-full overflow-hidden relative">
         <BackgroundTexture />
 
-        <div className="flex-1 overflow-y-scroll overflow-x-hidden px-5 pt-1 pb-0">
+        <div className="flex-1 overflow-y-scroll overflow-x-hidden px-5 pb-0">
           <Decorations progress={progress} />
           <div className="flex flex-col items-center justify-start w-full min-h-full">
-            <div className="relative w-full max-w-lg bg-white lg:bg-transparent lg:shadow-none shadow-[0_8px_32px_rgba(0,0,0,0.04)] ring-1 ring-slate-900/5 lg:ring-0 rounded-4xl p-8 sm:p-10 lg:p-0">
+            <div className="relative w-full max-w-lg p-6 sm:p-10 lg:p-0">
               <PersistentHeader state={state} />
 
               <div className="relative w-full">

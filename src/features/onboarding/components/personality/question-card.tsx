@@ -1,4 +1,3 @@
-import { Card } from "@/shared/components/ui/card";
 import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check } from "lucide-react";
@@ -24,12 +23,12 @@ export function QuestionCard({
   const answered = value !== undefined;
 
   return (
-    <Card
+    <div
       className={cn(
-        "relative w-full p-4 transition duration-200 bg-white",
+        "relative w-full p-4 sm:p-6 transition duration-200 bg-white sm:bg-white sm:rounded-2xl sm:border sm:border-slate-200/50 rounded-2xl border border-slate-200/50 shadow-none",
         answered
-          ? "border-forge-teal/45 shadow-[0_4px_20px_rgba(13,148,136,0.08)]"
-          : "border-slate-200/50 shadow-none hover:shadow-sm",
+          ? "border-forge-teal/45 shadow-[0_4px_20px_rgba(13,148,136,0.06)]"
+          : "hover:shadow-sm sm:hover:shadow-md",
       )}
     >
       {/* Header row: pill + answered badge */}
@@ -63,6 +62,6 @@ export function QuestionCard({
         value={value}
         onChange={(val) => onChange(question.id, val)}
       />
-    </Card>
+    </div>
   );
 }
