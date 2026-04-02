@@ -34,7 +34,7 @@ export function SelectionShelf({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
           transition={{ duration: 0.2 }}
-          className="mt-12 pt-8 border-t border-slate-100"
+          className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-slate-100"
         >
           <div className="flex items-center gap-2 mb-4">
             {isSearching ? (

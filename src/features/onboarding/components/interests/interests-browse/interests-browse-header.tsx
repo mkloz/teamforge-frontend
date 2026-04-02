@@ -1,4 +1,5 @@
 import { Search, X } from "lucide-react";
+import { cn } from "@/shared/lib/utils";
 import { INTEREST_CATEGORIES } from "../../../data/interests-data";
 
 const SHORT_CAT_LABELS: Record<string, string> = {
@@ -36,20 +37,23 @@ export function InterestsBrowseHeader({
   return (
     <div className="flex flex-col gap-3">
       {/* Quick-jump navigation */}
-      <nav className="flex overflow-x-auto scrollbar-hide gap-2 -mx-5 px-5 lg:mx-0 lg:px-0">
+      <nav className="flex overflow-x-auto scrollbar-hide gap-1.5 sm:gap-2 -mx-4 px-4 sm:-mx-5 sm:px-5 lg:mx-0 lg:px-0 pb-1">
         {INTEREST_CATEGORIES.map((cat) => (
           <button
             type="button"
             key={`nav-${cat.id}`}
             onClick={() => handleQuickJump(cat.id)}
-            className="group flex items-center gap-1.5 whitespace-nowrap rounded-full bg-slate-50 hover:bg-slate-100 px-3 py-1 text-micro font-bold text-slate-500 transition active:scale-95 border-2"
+            className="group flex items-center gap-1.5 whitespace-nowrap rounded-xl bg-slate-50 hover:bg-slate-100 hover:border-slate-300 px-3 py-1.5 text-[10px] sm:text-micro font-bold text-slate-500 transition active:scale-95 border border-slate-200 shadow-xs"
           >
+            <div
+              className={cn("w-1.5 h-1.5 rounded-full shrink-0", cat.color)}
+            />
             {SHORT_CAT_LABELS[cat.id] || cat.label}
           </button>
         ))}
       </nav>
 
-      <div className="relative group">
+      <div className="relative group mt-1">
         <Search
           size={14}
           className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-forge-teal transition-colors"
@@ -61,16 +65,16 @@ export function InterestsBrowseHeader({
           onChange={(e) => onSetSearch(e.target.value)}
           placeholder="Search 500+ interests…"
           aria-label="Search interests"
-          className="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-sans text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-forge-teal/10 focus:border-forge-teal transition-colors shadow-sm"
+          className="w-full pl-12 pr-12 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-sans text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-forge-teal/10 focus:border-forge-teal transition-all shadow-sm"
         />
         {searchQuery && (
           <button
             type="button"
             onClick={() => onSetSearch("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-slate-200 rounded-full transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-slate-100 rounded-full transition-colors"
             aria-label="Clear search"
           >
-            <X size={12} className="text-slate-500" strokeWidth={2.5} />
+            <X size={16} className="text-slate-400" strokeWidth={2.5} />
           </button>
         )}
       </div>

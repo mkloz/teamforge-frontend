@@ -108,7 +108,7 @@ export function CalculatingScreen({ vector, onDone }: CalculatingScreenProps) {
   }, [controls]); // Only dependencies that shouldn't change
 
   return (
-    <div className="flex flex-col items-center justify-center w-full px-6 py-12 lg:py-0">
+    <div className="flex flex-col items-center justify-start lg:justify-center w-full px-4 sm:px-6 pt-10 sm:pt-16 pb-12 lg:py-0">
       <motion.div
         animate={{ scale: [1, 1.05, 1] }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}

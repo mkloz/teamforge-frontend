@@ -45,7 +45,7 @@ export function QuestionPage({
   const allAnswered = answeredOnPage === pageQuestions.length;
 
   return (
-    <div className="flex flex-col w-full max-w-xl mx-auto">
+    <div className="flex flex-col w-full max-w-xl mx-auto px-0 sm:px-0">
       {/* Page counter + time estimate */}
       <div className="flex justify-between items-center mb-2">
         <span className="font-sans text-micro font-semibold uppercase tracking-widest text-slate-500">

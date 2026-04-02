@@ -33,7 +33,12 @@ const calculateProgress = (
   answersCount: number,
   totalQuestions: number,
 ): number => {
-  if (screenId === "questions" || screenId === "intermission") {
+  if (
+    screenId === "questions" ||
+    screenId === "intermission" ||
+    screenId === "length"
+  ) {
+    if (totalQuestions === 0) return 0;
     return answersCount / totalQuestions;
   }
   if (screenId === "calculating" || screenId === "results") {
@@ -106,8 +111,18 @@ export function usePersonalityTest({
 
   const handleContinueFromIntermission = useCallback(() => {
     if (screen.id !== "intermission") return;
+
+    // If they switched to a shorter test and are now "done"
+    if (screen.nextPageIndex > totalPages) {
+      const vec = calculateVector(questions, answers);
+      const res = vectorToType(vec);
+      store.setResultData(res, vec);
+      store.setScreen({ id: "calculating" });
+      return;
+    }
+
     store.setScreen({ id: "questions", currentPage: screen.nextPageIndex });
-  }, [screen, store]);
+  }, [screen, store, totalPages, questions, answers]);
 
   const handleCalculationDone = useCallback(() => {
     store.setScreen({ id: "results" });
@@ -127,6 +142,7 @@ export function usePersonalityTest({
       setScreen: store.setScreen,
       handleAnswer,
       handleBegin,
+      updateTestLength: store.updateTestLength,
       handleNextPage,
       handleContinueFromIntermission,
       handleCalculationDone,
@@ -137,6 +153,7 @@ export function usePersonalityTest({
       store.setScreen,
       handleAnswer,
       handleBegin,
+      store.updateTestLength,
       handleNextPage,
       handleContinueFromIntermission,
       handleCalculationDone,
@@ -154,9 +171,13 @@ export function usePersonalityTest({
     pageStart + questionsPerPage,
   );
 
+  const answeredInPoolCount = useMemo(() => {
+    return questions.filter((q) => answers[q.id] !== undefined).length;
+  }, [questions, answers]);
+
   const progress = calculateProgress(
     screen.id,
-    Object.keys(answers).length,
+    answeredInPoolCount,
     questions.length,
   );
 
@@ -165,6 +186,7 @@ export function usePersonalityTest({
     testLength,
     questions,
     answers,
+    answeredInPoolCount,
     result,
     vector,
     totalPages,

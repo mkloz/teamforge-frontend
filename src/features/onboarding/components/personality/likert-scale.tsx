@@ -18,11 +18,11 @@ const LABELS: Record<number, string> = {
 
 export function LikertScale({ value, onChange }: LikertScaleProps) {
   return (
-    <div className="flex flex-col w-full select-none -mt-4">
+    <div className="flex flex-col w-full select-none -mt-3 sm:-mt-4">
       <RadioGroupPrimitive.Root
         value={value ? value.toString() : ""}
         onValueChange={(val) => onChange(Number(val) as 1 | 2 | 3 | 4 | 5)}
-        className="relative grid grid-cols-5 w-full h-16 items-center focus-visible:outline-none"
+        className="relative grid grid-cols-5 w-full h-14 sm:h-16 items-center focus-visible:outline-none"
         aria-label="Rate your agreement"
       >
         {/* Connecting line */}
@@ -43,13 +43,13 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
             >
               <div
                 className={cn(
-                  "w-5 h-5 transition duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] rounded-full border-thin flex items-center justify-center pointer-events-none group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2",
+                  "w-5 h-5 sm:w-6 sm:h-6 transition duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] rounded-full border-thin flex items-center justify-center pointer-events-none group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2",
                   selected
-                    ? "bg-forge-teal border-forge-teal scale-[1.35] drop-shadow-sm"
-                    : "bg-white border-slate-200 group-hover:bg-slate-50 group-hover:scale-[1.15] group-hover:border-slate-300 group-active:scale-[0.95]",
+                    ? "bg-forge-teal border-forge-teal scale-[1.2] sm:scale-[1.35] drop-shadow-sm"
+                    : "bg-white border-slate-200 group-hover:bg-slate-50 group-hover:scale-[1.1] group-active:scale-[0.95]",
                 )}
               >
-                <RadioGroupPrimitive.Indicator className="w-1.5 h-1.5 rounded-full bg-white" />
+                <RadioGroupPrimitive.Indicator className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white" />
               </div>
             </RadioGroupPrimitive.Item>
           );
@@ -57,18 +57,18 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
       </RadioGroupPrimitive.Root>
 
       {/* Per-dot labels */}
-      <div className="grid grid-cols-5 w-full -mt-3">
+      <div className="grid grid-cols-5 w-full -mt-2 sm:-mt-3">
         {POINTS.map((point) => (
           <div
             key={`label-${point}`}
-            className="flex justify-center text-center px-1"
+            className="flex justify-center text-center px-0.5"
           >
             {LABELS[point] && (
               <span
                 className={cn(
-                  "font-sans leading-[1.2] text-micro transition-colors duration-200 max-w-30",
+                  "font-sans leading-[1.1] text-[10px] sm:text-micro transition-colors duration-200 max-w-full",
                   value === point
-                    ? "text-forge-teal font-semibold"
+                    ? "text-forge-teal font-bold"
                     : "text-slate-400 font-medium",
                 )}
               >

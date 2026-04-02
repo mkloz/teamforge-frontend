@@ -35,7 +35,7 @@ export function InterestsProgressBar({
   }
 
   return (
-    <div className="bg-white border-t border-slate-200/80 px-4 lg:px-0 py-3 lg:max-w-lg lg:mx-auto w-full">
+    <div className="bg-white/80 backdrop-blur-md border-t border-slate-200/60 px-4 sm:px-6 lg:px-0 py-3.5 lg:max-w-lg lg:mx-auto w-full">
       <div className="h-0.5 w-full bg-slate-100 rounded-full mb-3 overflow-hidden">
         <motion.div
           className="h-full rounded-full bg-forge-teal"

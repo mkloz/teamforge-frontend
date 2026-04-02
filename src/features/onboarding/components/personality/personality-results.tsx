@@ -81,7 +81,7 @@ export function PersonalityResults({
         </p>
 
         <motion.div
-          className="flex justify-center items-center gap-1.5 sm:gap-2 mb-8"
+          className="flex justify-center items-center gap-1 sm:gap-2 mb-8 overflow-hidden px-1"
           variants={resultsContainer}
         >
           {allLetters.map((letter, i) => {
@@ -99,13 +99,13 @@ export function PersonalityResults({
                 key={i}
                 variants={popDownItem}
                 className={cn(
-                  "flex flex-col items-center justify-center rounded-2xl w-14 sm:w-16 h-20 sm:h-24 bg-white border border-slate-100 sm:shadow-sm shadow-[0_1px_3px_rgba(0,0,0,0.05)] gap-0.5",
+                  "flex flex-col items-center justify-center rounded-xl sm:rounded-2xl w-12 sm:w-16 h-18 sm:h-24 bg-white border border-slate-100 sm:shadow-sm shadow-[0_1px_3px_rgba(0,0,0,0.05)] gap-0.5",
                   isIdentity && "bg-spark-amber/5 border-spark-amber/20",
                 )}
               >
                 <span
                   className={cn(
-                    "font-sans font-black leading-none text-2xl sm:text-3xl",
+                    "font-sans font-black leading-none text-xl sm:text-3xl",
                     isIdentity ? "text-spark-amber" : "text-ink",
                   )}
                 >
@@ -114,12 +114,12 @@ export function PersonalityResults({
 
                 <div
                   className={cn(
-                    "w-4 h-0.5 rounded-full opacity-40 mt-1 mb-1",
+                    "w-3 sm:w-4 h-0.5 rounded-full opacity-40 mt-1 mb-1",
                     isIdentity ? "bg-spark-amber" : "bg-forge-teal",
                   )}
                 />
 
-                <span className="font-sans font-bold leading-none text-[8px] sm:text-[9px] text-slate-muted uppercase tracking-wider">
+                <span className="font-sans font-bold leading-none text-[7px] sm:text-[9px] text-slate-muted uppercase tracking-wider">
                   {axisLabel}
                 </span>
               </motion.div>
@@ -129,7 +129,9 @@ export function PersonalityResults({
             if (isIdentity) {
               return (
                 <Fragment key="identity-group">
-                  <span className="text-2xl font-black text-slate-200">-</span>
+                  <span className="text-xl sm:text-2xl font-black text-slate-200">
+                    -
+                  </span>
                   {tile}
                 </Fragment>
               );
@@ -139,10 +141,10 @@ export function PersonalityResults({
           })}
         </motion.div>
 
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-black text-ink tracking-tight">
-            The {result.info.name}
-            <span className="text-slate-muted font-bold">
+        <div className="text-center mb-10 sm:mb-12 px-2">
+          <h2 className="text-2xl sm:text-3xl font-black text-ink tracking-tight">
+            {result.info.name}
+            <span className="text-slate-muted font-bold block sm:inline mt-1 sm:mt-0">
               {" "}
               · {result.variant === "A" ? "Assertive" : "Turbulent"}
             </span>

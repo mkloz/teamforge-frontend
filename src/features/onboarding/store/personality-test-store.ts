@@ -1,6 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { IPIP_QUESTIONS, type TestLength } from "../data/ipip-questions";
+import {
+  buildQuestionList,
+  IPIP_QUESTIONS,
+  type TestLength,
+} from "../data/ipip-questions";
 import type {
   OceanVectorWithMeta,
   RawAnswers,
@@ -43,6 +47,7 @@ interface PersonalityTestState extends PersistedTestState {
     result: PersonalityResult,
     vector: OceanVectorWithMeta,
   ) => void;
+  updateTestLength: (length: TestLength) => void;
   reset: () => void;
 }
 
@@ -71,6 +76,12 @@ export const usePersonalityTestStore = create<PersonalityTestState>()(
           answers: {},
           screen: { id: "questions", currentPage: 1 },
         }),
+
+      updateTestLength: (testLength) => {
+        const questions = buildQuestionList(testLength);
+        const questionIds = questions.map((q) => q.id);
+        set({ testLength, questionIds });
+      },
 
       setAnswer: (questionId, val) =>
         set((state) => ({

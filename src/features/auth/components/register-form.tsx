@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect } from "react";
 import { Form } from "@/shared/components/ui/form";
 import { cn } from "@/shared/lib/utils";
 import { useRegisterForm, type Step } from "../hooks/use-register-form";
@@ -10,6 +11,7 @@ interface RegisterFormProps {
   onSwitchToLogin: () => void;
   onSuccess?: () => void;
   onProgress?: (progress: number) => void;
+  onStepChange?: (step: Step) => void;
 }
 
 const variants = {
@@ -38,6 +40,7 @@ export function RegisterForm({
   onSwitchToLogin,
   onSuccess,
   onProgress,
+  onStepChange,
 }: RegisterFormProps) {
   const {
     form,
@@ -50,6 +53,11 @@ export function RegisterForm({
     goBackToStep2,
     onSubmit,
   } = useRegisterForm({ onSuccess, onProgress });
+
+  // Handle step change for scroll-to-top actions
+  useEffect(() => {
+    onStepChange?.(step);
+  }, [step, onStepChange]);
 
   return (
     <div className="flex flex-col w-full">
@@ -131,12 +139,12 @@ function StepHeader({ step }: { step: Step }) {
         : "Enter the 6-digit code we sent you.";
 
   return (
-    <div className="flex flex-col items-center mb-6">
-      <h1 className="font-sans text-3xl sm:text-4xl font-extrabold text-ink leading-tight text-balance text-center tracking-tight">
+    <div className="flex flex-col items-center mb-6 sm:mb-8">
+      <h1 className="font-sans text-2xl sm:text-4xl font-extrabold text-ink leading-tight text-balance text-center tracking-tight">
         {title}
         <span className="text-forge-teal">.</span>
       </h1>
-      <p className="font-sans text-sm sm:text-base text-slate-muted mt-2 text-center max-w-sm">
+      <p className="font-sans text-xs sm:text-base text-slate-muted mt-1 sm:mt-2 text-center max-w-sm">
         {description}
       </p>
     </div>
