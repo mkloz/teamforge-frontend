@@ -19,7 +19,13 @@ export function AlgorithmSection() {
           className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(13,148,136,0.1)_0%,transparent_70%)]"
           aria-hidden="true"
         />
-        <Particles className="opacity-90" quantity={80} color="#0D9488" />
+        <Particles
+          className="opacity-90"
+          quantity={80}
+          color="#0D9488"
+          lineDistance={220}
+          lineOpacity={0.35}
+        />
       </div>
       <div className="relative max-w-6xl mx-auto px-6">
         <div

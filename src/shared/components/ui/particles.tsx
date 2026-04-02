@@ -114,21 +114,23 @@ export const Particles: React.FC<ParticlesProps> = ({
   }, [quantity, dpr, circleParams]);
 
   const drawLines = useCallback(() => {
-    if (!context.current) return;
+    if (!context.current || circles.current.length === 0) return;
     const ctx = context.current;
     const points = circles.current;
     const distSqLimit = lineDistance * lineDistance;
 
-    ctx.beginPath();
-    ctx.lineWidth = 1.0;
-
     for (let i = 0; i < points.length; i++) {
       const pi = points[i];
+      // Skip lines for invisible particles
+      if (pi.alpha < 0.05) continue;
+
       const xi = pi.x + pi.translateX;
       const yi = pi.y + pi.translateY;
 
       for (let j = i + 1; j < points.length; j++) {
         const pj = points[j];
+        if (pj.alpha < 0.05) continue;
+
         const xj = pj.x + pj.translateX;
         const yj = pj.y + pj.translateY;
 
@@ -138,14 +140,18 @@ export const Particles: React.FC<ParticlesProps> = ({
 
         if (distSq < distSqLimit) {
           const distance = Math.sqrt(distSq);
-          const alpha = (1 - distance / lineDistance) * lineOpacity;
-          ctx.strokeStyle = `rgba(${rgbBase},${alpha.toFixed(2)})`;
+          const alphaValue = (1 - distance / lineDistance) * lineOpacity;
+
+          ctx.beginPath();
+          ctx.lineWidth = 1.0;
+          ctx.strokeStyle = `rgba(${rgbBase}, ${alphaValue.toFixed(2)})`;
           ctx.moveTo(xi, yi);
           ctx.lineTo(xj, yj);
+          ctx.stroke();
+          ctx.closePath();
         }
       }
     }
-    ctx.stroke();
   }, [lineDistance, lineOpacity, rgbBase]);
 
   const updateParticles = useCallback(() => {
