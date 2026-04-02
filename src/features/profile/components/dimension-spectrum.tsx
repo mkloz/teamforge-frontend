@@ -6,6 +6,7 @@ import {
 import { cn } from "@/shared/lib/utils";
 import type { DimensionScore } from "../types/profile.types";
 import { getBorderlineExplanation } from "../lib/narrative-generator";
+import { NumberTicker } from "@/shared/components/ui/number-ticker";
 
 interface DimensionSpectrumProps {
   score: DimensionScore;
@@ -39,7 +40,11 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
             score.isBorderline ? "text-spark-amber" : "text-forge-teal",
           )}
         >
-          {score.score}%
+          <NumberTicker
+            value={score.score}
+            className="text-inherit dark:text-inherit"
+          />
+          %
         </span>
       </div>
 

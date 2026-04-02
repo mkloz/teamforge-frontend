@@ -2,6 +2,7 @@ import { cn } from "@/shared/lib/utils";
 import { useInView } from "../../hooks/use-in-view";
 import { AlgorithmStats } from "./algorithm-stats";
 import { AlgorithmViz } from "./algorithm-viz";
+import { Particles } from "@/shared/components/ui/particles";
 
 export function AlgorithmSection() {
   const { ref, inView } = useInView(0.15);
@@ -13,10 +14,13 @@ export function AlgorithmSection() {
       className="relative bg-neutral-950 py-24 md:py-36 overflow-hidden"
       aria-label="How The Algorithm Works"
     >
-      <div
-        className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(13,148,136,0.07)_0%,transparent_70%)]"
-        aria-hidden="true"
-      />
+      <div className="absolute inset-0 z-0">
+        <div
+          className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(13,148,136,0.1)_0%,transparent_70%)]"
+          aria-hidden="true"
+        />
+        <Particles className="opacity-90" quantity={80} color="#0D9488" />
+      </div>
       <div className="relative max-w-6xl mx-auto px-6">
         <div
           className={cn(

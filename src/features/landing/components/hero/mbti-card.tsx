@@ -1,13 +1,21 @@
 import { cn } from "@/shared/lib/utils";
+import { motion } from "framer-motion";
 
 export function MbtiCard() {
   return (
-    <div
+    <motion.div
+      initial={{ y: 0, rotate: -2 }}
+      animate={{ y: [-12, 0], rotate: [-1, -2] }}
+      transition={{
+        duration: 4,
+        repeat: Infinity,
+        repeatType: "mirror",
+        ease: "easeInOut",
+      }}
       className={cn(
         "rounded-2xl px-4 py-3.5 w-45",
         "bg-[#0a1212]/80 backdrop-blur-xl border border-forge-teal/20",
         "shadow-[0_12px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.04)]",
-        "animate-float-card",
       )}
       aria-hidden="true"
     >
@@ -40,6 +48,6 @@ export function MbtiCard() {
           </div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }

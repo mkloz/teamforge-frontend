@@ -64,7 +64,7 @@ export function CtaSection() {
         aria-hidden="true"
       />
       <div
-        className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-size-[28px_28px]"
+        className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle,rgba(255,255,255,0.09)_1.8px,transparent_1.8px)] bg-size-[36px_36px]"
         aria-hidden="true"
       />
       <div

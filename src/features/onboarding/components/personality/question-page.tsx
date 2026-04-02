@@ -1,5 +1,4 @@
 import { Button } from "@/shared/components/ui/button";
-import { Progress } from "@/shared/components/ui/progress";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
@@ -38,7 +37,6 @@ export function QuestionPage({
   onAnswer,
   onNext,
 }: QuestionPageProps) {
-  const progressPct = Math.round((pageNumber / totalPages) * 100);
   const pagesLeft = totalPages - pageNumber;
 
   const answeredOnPage = pageQuestions.filter(
@@ -48,9 +46,6 @@ export function QuestionPage({
 
   return (
     <div className="flex flex-col w-full max-w-xl mx-auto">
-      {/* Global progress bar */}
-      <Progress value={progressPct} className="h-0.5 bg-slate-500/10 mb-1" />
-
       {/* Page counter + time estimate */}
       <div className="flex justify-between items-center mb-2">
         <span className="font-sans text-micro font-semibold uppercase tracking-widest text-slate-500">

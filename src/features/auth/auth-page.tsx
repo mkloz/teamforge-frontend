@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { useRef, useState } from "react";
 
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
+import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { LoginForm } from "./components/login-form";
 import { RegisterForm } from "./components/register-form";
 import { VoronoiCatalyst } from "./components/voronoi-catalyst";
@@ -52,57 +53,58 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
       </div>
 
       {/* Right half (Form Space) */}
-      <div
-        className="flex-1 flex items-center justify-center px-4 py-2 relative bg-canvas h-full overflow-y-auto overflow-x-hidden"
-        onInput={handleInput}
-      >
-        <div className="flex flex-col items-center justify-center w-full min-h-full py-16 lg:py-8">
-          <BackgroundTexture />
-
-          {/* Top accent line visible only on right side/mobile */}
-          <div
-            className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-forge-teal to-amber-400 opacity-80"
-            aria-hidden="true"
+      <div className="flex-1 relative flex flex-col h-full overflow-hidden bg-canvas">
+        <div
+          className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-2"
+          onInput={handleInput}
+        >
+          <TopProgressBar
+            progress={progress}
+            className="-mx-4 -mt-2 w-[calc(100%+32px)]"
           />
 
-          {/* Form card container */}
-          <div className="relative w-full max-w-105 bg-white lg:bg-transparent lg:shadow-none shadow-[0_8px_32px_rgba(0,0,0,0.04)] ring-1 ring-slate-900/5 lg:ring-0 rounded-4xl p-8 sm:p-10 lg:p-0">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={view}
-                initial={{
-                  opacity: 0,
-                  x: view === "login" ? -15 : 15,
-                }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{
-                  opacity: 0,
-                  x: view === "login" ? 15 : -15,
-                }}
-                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full"
-              >
-                {view === "login" ? (
-                  <LoginForm
-                    onSwitchToRegister={() => setView("register")}
-                    onProgress={setProgress}
-                    onSuccess={() => {
-                      setProgress(1);
-                      navigate({ to: "/onboarding/personality" });
-                    }}
-                  />
-                ) : (
-                  <RegisterForm
-                    onSwitchToLogin={() => setView("login")}
-                    onProgress={setProgress}
-                    onSuccess={() => {
-                      setProgress(1);
-                      navigate({ to: "/onboarding/personality" });
-                    }}
-                  />
-                )}
-              </motion.div>
-            </AnimatePresence>
+          <div className="flex flex-col items-center justify-center w-full min-h-full py-16 lg:py-8">
+            <BackgroundTexture />
+
+            {/* Form card container */}
+            <div className="relative w-full max-w-105 bg-white lg:bg-transparent lg:shadow-none shadow-[0_8px_32px_rgba(0,0,0,0.04)] ring-1 ring-slate-900/5 lg:ring-0 rounded-4xl p-8 sm:p-10 lg:p-0">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={view}
+                  initial={{
+                    opacity: 0,
+                    x: view === "login" ? -15 : 15,
+                  }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{
+                    opacity: 0,
+                    x: view === "login" ? 15 : -15,
+                  }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  className="w-full"
+                >
+                  {view === "login" ? (
+                    <LoginForm
+                      onSwitchToRegister={() => setView("register")}
+                      onProgress={setProgress}
+                      onSuccess={() => {
+                        setProgress(1);
+                        navigate({ to: "/onboarding/personality" });
+                      }}
+                    />
+                  ) : (
+                    <RegisterForm
+                      onSwitchToLogin={() => setView("login")}
+                      onProgress={setProgress}
+                      onSuccess={() => {
+                        setProgress(1);
+                        navigate({ to: "/onboarding/personality" });
+                      }}
+                    />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>

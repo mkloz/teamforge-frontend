@@ -45,7 +45,11 @@ export function ForgeTriggerButton({
                 className="absolute inset-0 rounded-full bg-linear-to-b from-white/20 to-transparent pointer-events-none"
                 aria-hidden="true"
               />
-              <Zap size={22} aria-hidden="true" className="fill-current" />
+              <Zap
+                size={22}
+                aria-hidden="true"
+                className="fill-current relative z-10"
+              />
             </button>
           </TooltipTrigger>
           <TooltipContent side="top">Forge a new group</TooltipContent>
@@ -83,9 +87,9 @@ export function ForgeTriggerButton({
             <Zap
               size={16}
               aria-hidden="true"
-              className="fill-current shrink-0"
+              className="fill-current shrink-0 relative z-10"
             />
-            <span>Forge My Group</span>
+            <span className="relative z-10">Forge My Group</span>
           </button>
         </TooltipTrigger>
         {/* Only show tooltip in collapsed (icon-only) sidebar; visible text makes it redundant on desktop */}

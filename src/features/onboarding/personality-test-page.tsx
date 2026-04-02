@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { usePersonalityTest } from "./hooks/use-personality-test";
 
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
+import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { VoronoiCatalyst } from "../auth/components/voronoi-catalyst";
 import { CalculatingScreen } from "./components/personality/calculating-screen";
 import { IntermissionPage } from "./components/personality/intermission-page";
@@ -117,33 +118,30 @@ export function PersonalityTestPage() {
   return (
     <div className="h-screen w-full max-h-dvh flex flex-col lg:flex-row relative overflow-hidden bg-canvas lg:bg-white">
       {/* Left half (Form Space) */}
-      <div className="flex-1 relative h-full overflow-y-auto overflow-x-hidden px-4">
-        <div className="flex flex-col items-center justify-center w-full min-h-full py-16 lg:py-4">
-          <BackgroundTexture />
-
-          <div
-            className="absolute top-0 left-0 right-0 h-1 lg:hidden bg-linear-to-r from-forge-teal to-amber-400 opacity-80"
-            aria-hidden="true"
+      <div className="flex-1 relative flex flex-col h-full overflow-hidden bg-canvas lg:bg-white">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden px-4">
+          <TopProgressBar
+            progress={testState.progress}
+            className="-mx-4 w-[calc(100%+32px)]"
           />
-          <div
-            className="hidden lg:block absolute top-0 left-0 right-0 h-1 bg-forge-teal"
-            aria-hidden="true"
-          />
+          <div className="flex flex-col items-center justify-center w-full min-h-full py-16 lg:py-4">
+            <BackgroundTexture />
 
-          {/* Form container */}
-          <div className="relative w-full max-w-lg bg-white lg:bg-transparent lg:shadow-none shadow-[0_8px_32px_rgba(0,0,0,0.04)] ring-1 ring-slate-900/5 lg:ring-0 rounded-[2rem] p-8 sm:p-10 lg:p-0">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={testState.screen.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="w-full flex-1"
-              >
-                <ScreenRenderer state={testState} />
-              </motion.div>
-            </AnimatePresence>
+            {/* Form container */}
+            <div className="relative w-full max-w-lg bg-white lg:bg-transparent lg:shadow-none shadow-[0_8px_32px_rgba(0,0,0,0.04)] ring-1 ring-slate-900/5 lg:ring-0 rounded-4xl p-8 sm:p-10 lg:p-0">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={testState.screen.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  className="w-full flex-1"
+                >
+                  <ScreenRenderer state={testState} />
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>

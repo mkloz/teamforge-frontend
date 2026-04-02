@@ -1,4 +1,5 @@
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
+import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { VoronoiCatalyst } from "../auth/components/voronoi-catalyst";
@@ -34,12 +35,12 @@ export function InterestsPage() {
 
       {/* ── Right – Interactive Form Pane ── */}
       <main className="flex-1 flex flex-col h-full overflow-hidden relative">
-        <Decorations />
         <BackgroundTexture />
 
         <div className="flex-1 overflow-y-scroll overflow-x-hidden px-5 pt-1 pb-0">
+          <Decorations progress={progress} />
           <div className="flex flex-col items-center justify-start w-full min-h-full">
-            <div className="relative w-full max-w-lg">
+            <div className="relative w-full max-w-lg bg-white lg:bg-transparent lg:shadow-none shadow-[0_8px_32px_rgba(0,0,0,0.04)] ring-1 ring-slate-900/5 lg:ring-0 rounded-4xl p-8 sm:p-10 lg:p-0">
               <PersistentHeader state={state} />
 
               <div className="relative w-full">
@@ -112,18 +113,12 @@ export function InterestsPage() {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function Decorations() {
+export function Decorations({ progress }: { progress: number }) {
   return (
-    <>
-      <div
-        className="absolute top-0 left-0 right-0 h-1 lg:hidden bg-linear-to-r from-forge-teal to-amber-400 opacity-80 z-10"
-        aria-hidden="true"
-      />
-      <div
-        className="hidden lg:block absolute top-0 left-0 right-0 h-1 bg-forge-teal z-10"
-        aria-hidden="true"
-      />
-    </>
+    <TopProgressBar
+      progress={progress}
+      className="-mx-5 -mt-1 w-[calc(100%+40px)]"
+    />
   );
 }
 
