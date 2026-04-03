@@ -17,6 +17,7 @@ interface UnifiedConversationViewProps {
   messages: UnifiedMessage[];
   isTyping?: boolean;
   typingUsers?: { name: string; avatar: string }[];
+  isActionOpen?: boolean;
   onBack: () => void;
   onToggleAction: () => void;
   onSendMessage: (content: string) => void;
@@ -32,6 +33,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView({
   messages,
   isTyping = false,
   typingUsers = [],
+  isActionOpen = false,
   onBack,
   onToggleAction,
   onSendMessage,
@@ -73,6 +75,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView({
         onlineStatus={headerProps.onlineStatus}
         isTyping={isMobile && activeTypingUsers.length > 0}
         typingText={typingText}
+        isActionOpen={isActionOpen}
         onBack={onBack}
         onToggleAction={onToggleAction}
       />
@@ -93,6 +96,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView({
           messagesEndRef={messagesEndRef}
           containerRef={messagesContainerRef}
           typingUsers={activeTypingUsers}
+          onToggleAction={onToggleAction}
         />
       </div>
 

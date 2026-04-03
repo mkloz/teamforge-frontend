@@ -4,12 +4,12 @@ export function ChatBackground() {
   return (
     <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
       {/* 1. Subtle Ambient Brand Glows (removed multiply so it works on dark background) */}
-      <div className="absolute -top-[20%] -right-[20%] w-full h-[120%] bg-forge-teal/5 blur-xl rounded-full" />
-      <div className="absolute -bottom-[20%] -left-[20%] w-full h-[120%] bg-spark-amber/5 blur-xl rounded-full" />
+      <div className="absolute -top-[10%] -right-[15%] w-[80%] h-full bg-forge-teal/3 dark:bg-forge-teal/10 blur-lg rounded-full animate-pulse-glow" />
+      <div className="absolute -bottom-[10%] -left-[15%] w-[80%] h-full bg-spark-amber/2 dark:bg-spark-amber/8 blur-lg rounded-full" />
 
       {/* 2. Topography / Connection Pattern Layer mapped via CSS Mask */}
       <div
-        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] bg-black dark:bg-white"
+        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.1] bg-black dark:bg-white"
         style={{
           maskImage: patternUrl,
           WebkitMaskImage: patternUrl,

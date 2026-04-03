@@ -1,13 +1,13 @@
 import { memo, useMemo } from "react";
+import { useSearchHeaderFade } from "../../hooks/use-search-header-fade";
 import type {
   FilterChip,
   UnifiedConversation,
 } from "../../types/unified-conversation.types";
 import { UnifiedConversationListItem } from "../unified-conversation-list-item";
-import { useSearchHeaderFade } from "../../hooks/use-search-header-fade";
 import { EmptyState } from "./empty-state";
-import { SearchHeader } from "./search-header";
 import { FilterHeader } from "./filter-header";
+import { SearchHeader } from "./search-header";
 
 interface UnifiedConversationListProps {
   items: UnifiedConversation[];
@@ -79,7 +79,7 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
           onFilterChange={onFilterChange}
         />
 
-        <div className="flex flex-col">
+        <div className="flex flex-col pb-8 sm:pb-0">
           {items.length === 0 ? (
             <EmptyState label={emptyLabel} />
           ) : (

@@ -52,7 +52,7 @@ function LinkPreviewMinimal({ url, isOwn }: { url: string; isOwn: boolean }) {
         "flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-medium",
         "border border-border/40 hover:bg-muted/50 transition-colors duration-150 group",
         isOwn
-          ? "bg-black/10 text-primary-foreground/80"
+          ? "bg-white/20 text-foreground border-primary/20 hover:bg-white/30"
           : "bg-muted/30 text-slate-muted",
       )}
     >
@@ -105,7 +105,7 @@ export const LinkPreview = memo(function LinkPreview({
         "border transition-colors duration-150",
         "hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40",
         isOwn
-          ? "bg-black/15 border-white/10 hover:bg-black/20"
+          ? "bg-white/25 dark:bg-black/25 border-primary/10 hover:bg-white/40 dark:hover:bg-black/40"
           : "bg-card border-border/50 hover:border-border",
       )}
     >
@@ -146,7 +146,9 @@ export const LinkPreview = memo(function LinkPreview({
           <span
             className={cn(
               "text-[10px] font-semibold uppercase tracking-widest truncate",
-              isOwn ? "text-primary-foreground/50" : "text-forge-teal/80",
+              isOwn
+                ? "text-primary dark:text-primary-foreground/50"
+                : "text-forge-teal/80",
             )}
           >
             {hostname}
@@ -157,7 +159,7 @@ export const LinkPreview = memo(function LinkPreview({
             <p
               className={cn(
                 "text-xs font-semibold leading-snug line-clamp-2",
-                isOwn ? "text-primary-foreground" : "text-ink",
+                isOwn ? "text-foreground" : "text-ink",
               )}
             >
               {data.title}
@@ -169,7 +171,7 @@ export const LinkPreview = memo(function LinkPreview({
             <p
               className={cn(
                 "text-[10px] leading-relaxed line-clamp-2",
-                isOwn ? "text-primary-foreground/65" : "text-slate-muted",
+                isOwn ? "text-foreground/70" : "text-slate-muted",
               )}
             >
               {data.description}
@@ -183,7 +185,7 @@ export const LinkPreview = memo(function LinkPreview({
           strokeWidth={1.5}
           className={cn(
             "shrink-0 self-start mt-0.5 opacity-0 group-hover:opacity-50 transition-opacity duration-150",
-            isOwn ? "text-primary-foreground" : "text-slate-muted",
+            isOwn ? "text-foreground" : "text-slate-muted",
           )}
           aria-hidden
         />

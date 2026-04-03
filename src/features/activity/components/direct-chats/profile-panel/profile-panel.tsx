@@ -2,7 +2,7 @@ import { cn } from "@/shared/lib/utils";
 import { useCallback, useEffect } from "react";
 import type { DirectChat } from "@/features/activity/types/direct-chats.types";
 import { ProfilePanelHeader } from "./profile-panel-header";
-import { ProfilePanelContent } from "./profile-panel-content";
+import { UserProfilePanel as ProfilePanelContent } from "@/features/profile/components/user-profile-panel/user-profile-panel";
 
 interface ProfilePanelProps {
   chat: DirectChat;

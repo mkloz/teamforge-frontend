@@ -74,8 +74,7 @@ export const GalleryItem = memo(
           onLoad={onLoad}
           onError={onError}
           className={cn(
-            "w-full h-full object-cover duration-700 group-hover/gallery-item:scale-105",
-            "transition-[opacity,transform]",
+            "w-full h-full object-cover transition-all duration-700 ease-out group-hover/gallery-item:scale-110",
             state === "loaded" ? "opacity-100" : "opacity-0",
           )}
         />
@@ -87,7 +86,7 @@ export const GalleryItem = memo(
             <div className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/20 backdrop-blur-md border border-white/10 opacity-0 group-hover/gallery-item:opacity-100 scale-90 group-hover/gallery-item:scale-100 transition-[opacity,transform] duration-200">
               <Layers size={14} className="text-white/80" />
             </div>
-            <div className="absolute inset-0 ring-inset ring-0 ring-white/20 group-hover/gallery-item:ring-8 duration-500" />
+            <div className="absolute inset-0 ring-inset ring-0 ring-white/20 group-hover/gallery-item:ring-8 transition-all duration-500 ease-out" />
           </>
         )}
 

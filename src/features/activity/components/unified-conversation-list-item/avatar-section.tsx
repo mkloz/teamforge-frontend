@@ -9,7 +9,7 @@ export const AvatarSection = memo(
       <div
         className={cn(
           "relative",
-          isGroup ? "rounded-2xl" : "rounded-full",
+          isGroup ? "rounded-xl" : "rounded-full",
           "overflow-hidden ring-1 ring-border/50 group-hover/item:ring-forge-teal/30 transition-colors duration-200 shadow-sm",
         )}
       >

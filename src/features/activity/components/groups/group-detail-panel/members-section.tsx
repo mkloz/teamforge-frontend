@@ -1,82 +1,63 @@
-import { Crown, UserPlus } from "lucide-react";
-import { Badge } from "@/shared/components/ui/badge";
+import { UserPlus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import type { GroupMember } from "@/features/activity/types/groups.types";
+import { MemberCard } from "./member-card";
+import { useMemo } from "react";
 
 interface MembersSectionProps {
   members: GroupMember[];
   maxMembers: number;
+  onShowProfile?: (member: GroupMember) => void;
 }
 
-export function MembersSection({ members, maxMembers }: MembersSectionProps) {
-  const canInvite = members.length < maxMembers;
+export function MembersSection({
+  members,
+  maxMembers,
+  onShowProfile,
+}: MembersSectionProps) {
+  const canInvite = useMemo(
+    () => members.length < maxMembers,
+    [members.length, maxMembers],
+  );
+
+  const memberCountString = useMemo(
+    () => `(${members.length}/${maxMembers})`,
+    [members.length, maxMembers],
+  );
 
   return (
-    <section>
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-foreground">
-          Members ({members.length}/{maxMembers})
+    <section aria-labelledby="members-heading">
+      <div className="flex items-center justify-between mb-4">
+        <h3
+          id="members-heading"
+          className="text-sm font-bold text-foreground uppercase tracking-widest"
+        >
+          Members{" "}
+          <span className="text-muted-foreground/60 font-medium ml-1">
+            {memberCountString}
+          </span>
         </h3>
         {canInvite && (
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
-            className="h-7 text-xs text-primary"
+            className="h-8 text-[11px] font-bold uppercase tracking-wider border-primary/20 hover:border-primary/40 hover:bg-primary/5 text-primary rounded-lg shadow-xs transition-all duration-300"
           >
-            <UserPlus size={14} className="mr-1" />
+            <UserPlus size={13} className="mr-1" />
             Invite
           </Button>
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {members.map((member) => (
-          <MemberCard key={member.id} member={member} />
+          <MemberCard
+            key={member.id}
+            member={member}
+            onShowProfile={onShowProfile}
+          />
         ))}
       </div>
     </section>
-  );
-}
-
-function MemberCard({ member }: { member: GroupMember }) {
-  const isAdmin = member.role === "ADMIN";
-
-  return (
-    <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
-      {/* Avatar */}
-      <div className="relative shrink-0">
-        <img
-          src={member.avatar}
-          alt={member.name}
-          className="w-10 h-10 rounded-full object-cover"
-        />
-        {isAdmin && (
-          <div className="absolute -bottom-0.5 -right-0.5 flex items-center justify-center w-4 h-4 rounded-full bg-amber-500 border border-background">
-            <Crown size={10} className="text-white" />
-          </div>
-        )}
-      </div>
-
-      {/* Info */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <p className="text-sm font-medium text-foreground truncate">
-            {member.name}
-          </p>
-          <Badge variant="mbti" className="text-micro px-1.5 py-0">
-            {member.personalityType}
-          </Badge>
-        </div>
-        <div className="flex items-center gap-2 mt-0.5">
-          <span className="text-micro text-muted-foreground">
-            Trust: {Math.round(member.trustScore * 100)}%
-          </span>
-          <span className="text-muted-foreground">·</span>
-          <span className="text-micro text-primary">
-            {member.compatibilityScore}% match
-          </span>
-        </div>
-      </div>
-    </div>
   );
 }

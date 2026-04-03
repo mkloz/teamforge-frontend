@@ -58,8 +58,7 @@ export const MessageFooter = memo(
           )}
           <span
             className={cn(
-              "text-nano select-none font-bold tabular-nums",
-              isOwn ? "text-primary-foreground" : "text-slate-muted",
+              "text-nano select-none font-bold tabular-nums text-slate-muted",
             )}
           >
             {formatChatTime(timestamp)}

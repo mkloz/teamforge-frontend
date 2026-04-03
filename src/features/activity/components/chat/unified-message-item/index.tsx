@@ -15,6 +15,11 @@ interface UnifiedMessageItemProps {
   showSender: boolean;
   showAvatar: boolean;
   kind: "dm" | "group";
+  onAvatarClick?: (
+    senderId: string,
+    senderName: string,
+    senderAvatar: string,
+  ) => void;
 }
 
 /**
@@ -25,6 +30,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
   showSender,
   showAvatar,
   kind,
+  onAvatarClick,
 }: UnifiedMessageItemProps) {
   const {
     isOwn,
@@ -76,11 +82,19 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
         {!isOwn && (
           <div className="w-7 shrink-0">
             {showAvatar && (
-              <img
-                src={senderAvatar}
-                alt={senderName}
-                className="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-border group-hover:scale-105 transition-transform"
-              />
+              <button
+                onClick={() =>
+                  onAvatarClick?.(message.senderId, senderName, senderAvatar)
+                }
+                className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal rounded-full"
+                aria-label={`View ${senderName}'s profile`}
+              >
+                <img
+                  src={senderAvatar}
+                  alt={senderName}
+                  className="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-border hover:scale-110 hover:ring-forge-teal/60 transition-all duration-200 cursor-pointer"
+                />
+              </button>
             )}
           </div>
         )}
@@ -102,16 +116,8 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
               className={cn(
                 "px-1 py-1 rounded-xl transition duration-300 flex flex-col relative w-fit shadow-xs",
                 isOwn
-                  ? cn(
-                      "bg-primary text-primary-foreground rounded-br-none",
-                      showAvatar &&
-                        "before:content-[''] before:absolute before:-right-2 before:-bottom-px before:w-2.5 before:h-3 before:bg-primary before:[clip-path:polygon(0_0,0_100%,100%_100%)] before:-z-10",
-                    )
-                  : cn(
-                      "bg-card border border-border text-ink rounded-bl-none",
-                      showAvatar &&
-                        "after:content-[''] after:absolute after:-left-1.5 after:bottom-0 after:w-1.75 after:h-2 after:bg-card after:[clip-path:polygon(100%_0,0_100%,100%_100%)] before:content-[''] before:absolute before:-left-2 before:-bottom-px before:w-2.5 before:h-3 before:bg-border before:[clip-path:polygon(100%_0,0_100%,100%_100%)] before:-z-10",
-                    ),
+                  ? "bg-secondary/80 backdrop-blur-md text-primary rounded-br-none"
+                  : "bg-card/20 backdrop-blur-md border border-border text-ink rounded-bl-none shadow-xs",
                 !content && "min-w-30",
               )}
             >

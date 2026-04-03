@@ -138,10 +138,10 @@ export const ProposalMessage = memo(function ProposalMessage({
 
           <div
             className={cn(
-              "relative rounded-xl border flex flex-col w-full transition-colors duration-300 shadow-xs",
+              "relative rounded-xl border flex flex-col w-full transition-colors duration-300 shadow-xs backdrop-blur-md",
               isOwn
-                ? "bg-primary border-primary/20 hover:border-primary/40 rounded-br-none"
-                : "bg-card border-border hover:border-spark-amber/30 rounded-bl-none",
+                ? "bg-secondary/80 border-primary/20 hover:border-primary/40 rounded-br-none text-foreground dark:text-primary"
+                : "bg-white/20 dark:bg-muted/10 border-border hover:border-spark-amber/30 rounded-bl-none text-ink",
             )}
           >
             <div className="p-1">

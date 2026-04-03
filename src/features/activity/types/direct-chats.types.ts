@@ -22,6 +22,8 @@ export interface Participant {
   id: string;
   name: string;
   avatar: string;
+  age?: number;
+  location?: string;
   bio?: string;
   personalityType?: string;
   onlineStatus: OnlineStatus;

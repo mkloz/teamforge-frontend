@@ -1,6 +1,6 @@
+import { useActivity } from "@/features/activity/hooks/use-activity";
 import { cn } from "@/shared/lib/utils";
 import { MessageSquare } from "lucide-react";
-import { useActivity } from "@/features/activity/hooks/use-activity";
 
 // Groups
 import { GroupDetailPanel } from "@/features/activity/components/groups/group-detail-panel/group-detail-panel";
@@ -12,8 +12,8 @@ import {
 } from "@/features/activity/components/direct-chats/profile-panel";
 
 // Unified components
-import { UnifiedConversationList } from "@/features/activity/components/unified-conversation-list";
 import { UnifiedConversationView } from "@/features/activity/components/chat/unified-conversation-view";
+import { UnifiedConversationList } from "@/features/activity/components/unified-conversation-list";
 
 /**
  * ActivityPage - The main feature orchestrator for Unified Conversations,
@@ -58,7 +58,7 @@ export function ActivityPage() {
     <div
       className={cn(
         "fixed inset-0 top-0 md:top-16 md:left-16 lg:left-60 flex bg-canvas",
-        !hasSelection ? "pb-24 md:pb-0" : "pb-0",
+        !hasSelection ? "pb-12 md:pb-0" : "pb-0",
       )}
     >
       {/* Left sidebar — unified list */}
@@ -98,6 +98,7 @@ export function ActivityPage() {
                 data={selectedGroup}
                 messages={selectedGroupMessages}
                 typingUsers={typingUsers}
+                isActionOpen={groups.isDetailPanelOpen}
                 onBack={handleBack}
                 onToggleAction={toggleGroupDetail}
                 onSendMessage={handleSendMessage}
@@ -117,6 +118,7 @@ export function ActivityPage() {
                 data={selectedChat}
                 messages={selectedDirectMessages}
                 isTyping={isTyping}
+                isActionOpen={direct.isProfilePanelOpen}
                 onBack={handleBack}
                 onToggleAction={toggleProfilePanel}
                 onSendMessage={handleSendMessage}

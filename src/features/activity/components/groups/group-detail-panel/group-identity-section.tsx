@@ -1,145 +1,82 @@
-import { useState } from "react";
-import { Camera, Pencil, Check, X, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-import { Button } from "@/shared/components/ui/button";
-import { Input } from "@/shared/components/ui/input";
-import type {
-  GroupIdentity,
-  MemberRole,
-} from "@/features/activity/types/groups.types";
+import type { GroupIdentity } from "@/features/activity/types/groups.types";
 
 interface GroupIdentitySectionProps {
   identity: GroupIdentity;
   memberCount: number;
   maxMembers: number;
-  userRole: MemberRole;
+  hideAvatar?: boolean;
 }
 
 export function GroupIdentitySection({
   identity,
   memberCount,
   maxMembers,
-  userRole,
+  hideAvatar = false,
 }: GroupIdentitySectionProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedName, setEditedName] = useState(identity.name);
-  const isAdmin = userRole === "ADMIN";
-
-  const handleSave = () => {
-    // Would save to API
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setEditedName(identity.name);
-    setIsEditing(false);
-  };
-
   return (
     <section className="relative">
-      {/* Group avatar and name - the persistent identity */}
-      <div className="flex items-center gap-4">
-        {/* Avatar with edit overlay for admins */}
-        <div className="relative group">
-          <div className="w-20 h-20 rounded-4xl overflow-hidden bg-muted ring-2 ring-border">
+      {/* Group identity - focusing on name and metadata */}
+      <div className="flex items-start gap-4">
+        {!hideAvatar && (
+          /* Avatar with edit overlay for admins (Fallback if hideAvatar is false) */
+          <div
+            className={cn(
+              "relative w-20 h-20 rounded-2xl overflow-hidden bg-muted ring-2 ring-border shadow-md",
+            )}
+          >
             <img
               src={identity.avatar}
               alt={identity.name}
               className="w-full h-full object-cover"
             />
           </div>
-          {isAdmin && (
-            <button
-              className={cn(
-                "absolute inset-0 flex items-center justify-center rounded-4xl",
-                "bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity",
-              )}
-              aria-label="Change group avatar"
-            >
-              <Camera size={20} className="text-white" />
-            </button>
-          )}
-        </div>
+        )}
 
         {/* Name and metadata */}
         <div className="flex-1 min-w-0">
-          {isEditing ? (
-            <div className="flex items-center gap-2">
-              <Input
-                value={editedName}
-                onChange={(e) => setEditedName(e.target.value)}
-                className="h-8 text-base font-bold"
-                autoFocus
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-green-600"
-                onClick={handleSave}
-              >
-                <Check size={16} />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-muted-foreground"
-                onClick={handleCancel}
-              >
-                <X size={16} />
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-foreground truncate">
-                {identity.name}
-              </h2>
-              {isAdmin && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                  onClick={() => setIsEditing(true)}
-                >
-                  <Pencil size={12} />
-                </Button>
-              )}
-            </div>
-          )}
+          <h2 className="text-xl font-bold text-foreground tracking-tight truncate leading-tight">
+            {identity.name}
+          </h2>
 
-          {/* Member count */}
-          <div className="flex items-center gap-1.5 mt-1 text-sm text-muted-foreground">
-            <Users size={14} />
-            <span>
-              {memberCount} of {maxMembers} members
-            </span>
+          {/* Member count & Metadata */}
+          <div className="flex items-center flex-wrap gap-x-2.5 gap-y-1 mt-1">
+            <div className="flex items-center gap-1 text-[13px] font-medium text-muted-foreground">
+              <Users size={12} className="text-teal-600/70" />
+              <span>
+                {memberCount}{" "}
+                <span className="text-muted-foreground/40 font-normal">/</span>{" "}
+                {maxMembers}{" "}
+                <span className="text-muted-foreground/40 font-normal">
+                  members
+                </span>
+              </span>
+            </div>
+
+            <span className="text-muted-foreground/20 hidden sm:inline">•</span>
+
+            <p className="text-[11px] text-muted-foreground/60 font-medium">
+              Created Mar 4, 2026
+            </p>
           </div>
-
-          {/* Created date */}
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Created{" "}
-            {new Date(identity.createdAt).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })}
-          </p>
         </div>
       </div>
 
       {/* Description */}
       {identity.description && (
-        <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
+        <p className="text-[13px] text-foreground/70 mt-3 leading-relaxed font-normal">
           {identity.description}
         </p>
       )}
 
-      {/* Visual separator between identity and plan */}
-      <div className="flex items-center gap-3 mt-5 mb-2">
-        <div className="flex-1 h-px bg-border" />
-        <span className="text-micro font-semibold uppercase tracking-wider text-muted-foreground">
+      {/* Visual separator between identity and plan - Premium Style */}
+      <div className="flex items-center gap-3 mt-6 mb-2">
+        <div className="h-px flex-1 bg-linear-to-r from-border/10 via-border to-border/10" />
+        <div className="px-3 py-1 rounded-full bg-muted/50 border border-border/50 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
           Current Plan
-        </span>
-        <div className="flex-1 h-px bg-border" />
+        </div>
+        <div className="h-px flex-1 bg-linear-to-r from-border/10 via-border to-border/10" />
       </div>
     </section>
   );

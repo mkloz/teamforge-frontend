@@ -16,6 +16,7 @@ interface UnifiedChatHeaderProps {
   secondaryAvatar?: string;
   isTyping?: boolean;
   typingText?: string;
+  isActionOpen?: boolean;
   onBack?: () => void;
   onToggleAction: () => void;
 }
@@ -33,6 +34,7 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
   secondaryAvatar,
   isTyping,
   typingText,
+  isActionOpen = false,
   onBack,
   onToggleAction,
 }: UnifiedChatHeaderProps) {
@@ -52,7 +54,7 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
           variant="ghost"
           size="icon"
           onClick={onBack}
-          className="h-9 w-9 lg:hidden mr-1 text-slate-muted hover:bg-muted/60"
+          className="h-9 w-9 lg:hidden mr-1 text-slate-muted hover:bg-muted/60 rounded-lg"
           aria-label="Back to conversations"
         >
           <ArrowLeft size={20} strokeWidth={2.5} />
@@ -83,8 +85,8 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
 
       <HeaderActions
         isSearching={isSearching}
+        isActionOpen={isActionOpen}
         onToggleSearch={(state) => toggleSearch(state)}
-        isGroup={isGroup}
         onToggleAction={onToggleAction}
       />
     </header>
