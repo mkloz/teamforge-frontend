@@ -74,14 +74,14 @@ export function PersonalityResults({
         variants={resultsContainer}
         initial="hidden"
         animate="visible"
-        className="max-w-2xl mx-auto px-4 py-12"
+        className="max-w-2xl mx-auto py-6"
       >
         <p className="font-sans text-[10px] font-bold uppercase tracking-[0.18em] mb-5 text-center text-forge-teal">
           Your Personality Type
         </p>
 
         <motion.div
-          className="flex justify-center items-center gap-1 sm:gap-2 mb-8 overflow-hidden px-1"
+          className="flex justify-center items-center gap-1 sm:gap-2 mb-8 px-1"
           variants={resultsContainer}
         >
           {allLetters.map((letter, i) => {
@@ -99,14 +99,16 @@ export function PersonalityResults({
                 key={i}
                 variants={popDownItem}
                 className={cn(
-                  "flex flex-col items-center justify-center rounded-xl sm:rounded-2xl w-12 sm:w-16 h-18 sm:h-24 bg-white border border-slate-100 sm:shadow-sm shadow-[0_1px_3px_rgba(0,0,0,0.05)] gap-0.5",
-                  isIdentity && "bg-spark-amber/5 border-spark-amber/20",
+                  "flex flex-col items-center justify-center rounded-xl sm:rounded-2xl w-14 sm:w-20 h-18 sm:h-20 bg-white border border-slate-100 sm:shadow-sm shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all gap-0.5",
+                  isIdentity
+                    ? "bg-linear-to-b from-spark-amber/3 to-spark-amber/8 border-spark-amber/20 shadow-spark-amber/10"
+                    : "bg-linear-to-b from-white to-slate-50/50",
                 )}
               >
                 <span
                   className={cn(
-                    "font-sans font-black leading-none text-xl sm:text-3xl",
-                    isIdentity ? "text-spark-amber" : "text-ink",
+                    "font-sans font-black leading-none text-2xl sm:text-3xl tracking-tight",
+                    isIdentity ? "text-spark-amber" : "text-slate-800",
                   )}
                 >
                   {letter}
@@ -114,12 +116,12 @@ export function PersonalityResults({
 
                 <div
                   className={cn(
-                    "w-3 sm:w-4 h-0.5 rounded-full opacity-40 mt-1 mb-1",
+                    "w-4 sm:w-5 h-0.75 rounded-full opacity-60 mt-0",
                     isIdentity ? "bg-spark-amber" : "bg-forge-teal",
                   )}
                 />
 
-                <span className="font-sans font-bold leading-none text-[7px] sm:text-[9px] text-slate-muted uppercase tracking-wider">
+                <span className="font-sans font-bold leading-none text-[8px] sm:text-[9px] text-slate-400 uppercase tracking-widest mt-1">
                   {axisLabel}
                 </span>
               </motion.div>
@@ -129,8 +131,8 @@ export function PersonalityResults({
             if (isIdentity) {
               return (
                 <Fragment key="identity-group">
-                  <span className="text-xl sm:text-2xl font-black text-slate-200">
-                    -
+                  <span className="text-xl sm:text-2xl font-bold text-slate-200 px-0.5">
+                    —
                   </span>
                   {tile}
                 </Fragment>

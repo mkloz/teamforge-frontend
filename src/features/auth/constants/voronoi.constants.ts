@@ -27,16 +27,16 @@ export const CORE_ANGLES = [
 ] as const;
 
 export const ANIMATION_CONFIG = {
-  lerpRate: 0.1,
+  lerpRate: 0.04,
   progressSpeed: 0.01,
   typingFadeIn: 0.05,
   typingFadeOut: 0.02,
-  parallaxFactor: 0.012,
-  frameParallaxFactor: 0.012,
+  parallaxFactor: 0.06,
+  frameParallaxFactor: 0.05,
   driftRadius: 15,
   friction: 0.94,
   springConstant: 0.004,
-  repulsionForce: 0.5,
-  repulsionRadius: 180,
-  hoverRadius: 180,
+  repulsionForce: 0.75,
+  repulsionRadius: 230,
+  hoverRadius: 230,
 } as const;

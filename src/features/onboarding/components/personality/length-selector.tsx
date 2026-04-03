@@ -120,7 +120,7 @@ const OptionCard = memo(
                 )}
               </div>
               <span className="font-sans text-[10px] font-bold text-slate-400">
-                {length} items &middot; {config.duration}
+                {length} items &middot; ~{config.estimatedMinutes} min
               </span>
             </div>
           </div>

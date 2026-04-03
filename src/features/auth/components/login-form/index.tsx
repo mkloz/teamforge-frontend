@@ -1,6 +1,5 @@
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
-import { GoogleIcon } from "@/shared/components/icons";
 import { Button } from "@/shared/components/ui/button";
 import {
   Form,
@@ -12,7 +11,12 @@ import {
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
 import { cn } from "@/shared/lib/utils";
-import { useLoginForm } from "../hooks/use-login-form";
+import { useLoginForm } from "../../hooks/use-login-form";
+import { FormHeader } from "./form-header";
+import { FormLevelError } from "./form-level-error";
+import { SocialLoginDivider } from "./social-login-divider";
+import { GoogleAuthButton } from "./google-auth-button";
+import { SwitchViewPrompt } from "./switch-view-prompt";
 
 interface LoginFormProps {
   onSwitchToRegister: () => void;
@@ -145,69 +149,5 @@ export function LoginForm({
 
       <SwitchViewPrompt onClick={onSwitchToRegister} />
     </div>
-  );
-}
-
-/** Internal Sub-Components for cleaner orchestration */
-
-function FormHeader() {
-  return (
-    <div className="flex flex-col items-center mb-6 sm:mb-8">
-      <h1 className="font-sans text-2xl sm:text-4xl font-extrabold text-ink leading-tight text-balance text-center tracking-tight">
-        Welcome back<span className="text-forge-teal">.</span>
-      </h1>
-      <p className="font-sans text-xs sm:text-base text-slate-muted mt-1 sm:mt-2 text-center">
-        Sign in to your TeamForge account.
-      </p>
-    </div>
-  );
-}
-
-function FormLevelError({ message }: { message: string }) {
-  return (
-    <div className="mb-4 flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-red-200 bg-red-50">
-      <span className="text-red-500 text-xs font-medium">{message}</span>
-    </div>
-  );
-}
-
-function SocialLoginDivider() {
-  return (
-    <div className="flex items-center gap-3 my-2">
-      <div className="flex-1 h-px bg-border" />
-      <span className="font-sans text-xs text-slate-muted font-medium whitespace-nowrap">
-        or continue with
-      </span>
-      <div className="flex-1 h-px bg-border" />
-    </div>
-  );
-}
-
-function GoogleAuthButton({ loading }: { loading: boolean }) {
-  return (
-    <Button
-      type="button"
-      variant="outline"
-      disabled={loading}
-      className="w-full h-12 rounded-xl border-border bg-white font-sans text-sm font-semibold text-ink flex items-center justify-center gap-2.5 hover:border-slate-muted hover:bg-slate-50 transition-all duration-200 cursor-pointer active:scale-[0.98] shadow-xs"
-    >
-      <GoogleIcon />
-      <span>Google</span>
-    </Button>
-  );
-}
-
-function SwitchViewPrompt({ onClick }: { onClick: () => void }) {
-  return (
-    <p className="font-sans text-sm text-slate-muted text-center mt-6">
-      Don&apos;t have an account?{" "}
-      <button
-        type="button"
-        onClick={onClick}
-        className="font-semibold text-forge-teal hover:underline cursor-pointer transition-colors focus:outline-hidden"
-      >
-        Sign up
-      </button>
-    </p>
   );
 }

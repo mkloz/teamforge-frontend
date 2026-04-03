@@ -79,7 +79,9 @@ function ScreenRenderer({
       return (
         <LengthSelector
           onBack={() => {
-            if (isAdjusting) {
+            if (state.previousScreen?.id === "intermission") {
+              actions.setScreen(state.previousScreen);
+            } else if (isAdjusting) {
               const resumePage = findFirstUnansweredPage(state.testLength);
               actions.setScreen({ id: "questions", currentPage: resumePage });
             } else {
@@ -113,6 +115,10 @@ function ScreenRenderer({
           answers={answers}
           onAnswer={actions.handleAnswer}
           onNext={actions.handleNextPage}
+          onReview={() => {
+            actions.setIsReviewMode(true);
+            actions.setScreen({ id: "questions", currentPage: 1 });
+          }}
         />
       );
     case "intermission":
@@ -121,7 +127,15 @@ function ScreenRenderer({
           milestoneIndex={screen.type}
           answeredCount={state.answeredInPoolCount}
           totalQuestions={questions.length}
-          onAdjustLength={() => actions.setScreen({ id: "length" })}
+          onAdjustLength={() => {
+            actions.setIsReviewMode(false);
+            actions.setScreen({ id: "length" });
+          }}
+          onExtend={(len) => {
+            actions.setIsReviewMode(false);
+            actions.updateTestLength(len);
+            actions.handleContinueFromIntermission();
+          }}
           onContinue={actions.handleContinueFromIntermission}
         />
       );

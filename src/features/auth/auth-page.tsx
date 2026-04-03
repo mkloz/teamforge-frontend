@@ -74,7 +74,7 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
 
           <div className="flex flex-col items-center justify-start lg:justify-center w-full min-h-full pt-20 pb-10 lg:py-8">
             {/* Form container: focused desktop width */}
-            <div className="relative w-full max-w-lg px-2 sm:px-10 lg:p-0">
+            <div className="relative w-full max-w-sm px-2 sm:px-10 lg:p-0">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={view}

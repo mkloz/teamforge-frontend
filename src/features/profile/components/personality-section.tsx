@@ -1,5 +1,5 @@
-import { Check } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
+import { Check } from "lucide-react";
 import {
   generateDetailedDescription,
   type PersonalityProfile,
@@ -61,7 +61,7 @@ function PersonalitySummary({
       )}
 
       {/* Summary */}
-      <p className="text-lg text-ink/90 font-medium leading-relaxed text-pretty">
+      <p className="text-lg text-ink/90 font-medium leading-relaxed text-pretty indent-8">
         {profile.summary}
       </p>
     </div>

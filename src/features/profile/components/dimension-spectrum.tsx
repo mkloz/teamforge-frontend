@@ -62,7 +62,7 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
         {/* Spectrum track */}
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="relative flex-1 h-2 rounded-full bg-slate-muted/10 cursor-help overflow-hidden border border-border/10">
+            <div className="relative flex-1 h-2 rounded-full bg-slate-muted/10 cursor-help border border-border/10">
               {/* Gradient fill based on position */}
               <div
                 className={cn(
@@ -77,13 +77,15 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
               {/* Marker */}
               <div
                 className={cn(
-                  "absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-background shadow-md border-2 z-20 transition duration-700 ease-out",
+                  "absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-white shadow-[0_2px_4px_rgba(0,0,0,0.12)] border-2 z-20 transition duration-700 ease-out",
                   score.isBorderline
                     ? "border-spark-amber ring-2 ring-spark-amber/10"
                     : "border-forge-teal ring-2 ring-forge-teal/10",
-                  "hover:scale-125 hover:shadow-lg",
+                  "hover:scale-110",
                 )}
-                style={{ left: `calc(${markerPosition}% - 7px)` }}
+                style={{
+                  left: `calc(${markerPosition}% - 7px)`,
+                }}
               />
             </div>
           </TooltipTrigger>

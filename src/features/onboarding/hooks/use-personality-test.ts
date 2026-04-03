@@ -88,9 +88,17 @@ export function usePersonalityTest({
   const handleNextPage = useCallback(() => {
     if (screen.id !== "questions") return;
 
-    if (shouldTriggerIntermission(screen.currentPage, testLength, totalPages)) {
+    const isFinalPage = screen.currentPage === totalPages;
+    const isNotDeep = testLength < 150;
+
+    // Skip intermissions entirely if in review mode
+    if (
+      !store.isReviewMode &&
+      (shouldTriggerIntermission(screen.currentPage, testLength, totalPages) ||
+        (isFinalPage && isNotDeep))
+    ) {
       const interval = getIntermissionInterval(testLength);
-      const milestoneIndex = screen.currentPage / interval;
+      const milestoneIndex = isFinalPage ? 99 : screen.currentPage / interval;
       store.setScreen({
         id: "intermission",
         type: milestoneIndex,
@@ -102,6 +110,10 @@ export function usePersonalityTest({
     if (screen.currentPage < totalPages) {
       store.setScreen({ id: "questions", currentPage: screen.currentPage + 1 });
     } else {
+      // If we were in review mode, we're done with it now
+      if (store.isReviewMode) {
+        store.setIsReviewMode(false);
+      }
       const vec = calculateVector(questions, answers);
       const res = vectorToType(vec);
       store.setResultData(res, vec);
@@ -112,9 +124,16 @@ export function usePersonalityTest({
   const handleContinueFromIntermission = useCallback(() => {
     if (screen.id !== "intermission") return;
 
+    // Recalculate based on store state to avoid stale closure if updateTestLength was just called
+    const currentStore = usePersonalityTestStore.getState();
+    const currentQuestions = hydrateQuestions(currentStore.questionIds);
+    const currentTotalPages = Math.ceil(
+      currentQuestions.length / questionsPerPage,
+    );
+
     // If they switched to a shorter test and are now "done"
-    if (screen.nextPageIndex > totalPages) {
-      const vec = calculateVector(questions, answers);
+    if (screen.nextPageIndex > currentTotalPages) {
+      const vec = calculateVector(currentQuestions, answers);
       const res = vectorToType(vec);
       store.setResultData(res, vec);
       store.setScreen({ id: "calculating" });
@@ -122,7 +141,7 @@ export function usePersonalityTest({
     }
 
     store.setScreen({ id: "questions", currentPage: screen.nextPageIndex });
-  }, [screen, store, totalPages, questions, answers]);
+  }, [screen, store, questionsPerPage, answers]);
 
   const handleCalculationDone = useCallback(() => {
     store.setScreen({ id: "results" });
@@ -143,6 +162,7 @@ export function usePersonalityTest({
       handleAnswer,
       handleBegin,
       updateTestLength: store.updateTestLength,
+      setIsReviewMode: store.setIsReviewMode,
       handleNextPage,
       handleContinueFromIntermission,
       handleCalculationDone,
@@ -154,6 +174,7 @@ export function usePersonalityTest({
       handleAnswer,
       handleBegin,
       store.updateTestLength,
+      store.setIsReviewMode,
       handleNextPage,
       handleContinueFromIntermission,
       handleCalculationDone,
@@ -186,6 +207,7 @@ export function usePersonalityTest({
     testLength,
     questions,
     answers,
+    previousScreen: store.previousScreen,
     answeredInPoolCount,
     result,
     vector,

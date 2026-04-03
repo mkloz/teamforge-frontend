@@ -25,7 +25,7 @@ export function QuestionCard({
   return (
     <div
       className={cn(
-        "relative w-full p-4 sm:p-6 transition-all duration-300 bg-white sm:rounded-2xl rounded-xl border border-slate-200/60 shadow-xs",
+        "relative w-full p-4 transition-all duration-300 bg-white sm:rounded-2xl rounded-xl border border-slate-200/60 shadow-xs",
         answered
           ? "border-forge-teal/30 bg-forge-teal/1 shadow-sm"
           : "hover:shadow-sm sm:hover:shadow-md active:bg-slate-50/50",
@@ -54,7 +54,7 @@ export function QuestionCard({
       </div>
 
       {/* Statement text */}
-      <h3 className="font-sans text-sm sm:text-base font-semibold leading-snug mb-3 sm:mb-4 text-pretty text-ink">
+      <h3 className="font-sans text-sm sm:text-base font-semibold leading-snug mb-3 sm:mb-5 text-pretty text-ink">
         {question.text}
       </h3>
 

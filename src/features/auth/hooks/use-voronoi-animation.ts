@@ -194,19 +194,29 @@ export function useVoronoiAnimation({ progress, isTyping }: UseVoronoiOptions) {
         (isTypingRef.current ? 0.05 : 0.02);
 
       // Interaction Lerping
+      const activeTarget = mouseActiveRef.current
+        ? targetMouseRef.current
+        : { x: centerX, y: centerY };
+
       currentMouseRef.current.x +=
-        (targetMouseRef.current.x - currentMouseRef.current.x) *
+        (activeTarget.x - currentMouseRef.current.x) *
         ANIMATION_CONFIG.lerpRate;
       currentMouseRef.current.y +=
-        (targetMouseRef.current.y - currentMouseRef.current.y) *
+        (activeTarget.y - currentMouseRef.current.y) *
         ANIMATION_CONFIG.lerpRate;
 
+      // GLOW & PHYSICS (Reactive/Instant)
+      // We use targetMouseRef here so the highlight and repulsion are perfectly synced with the cursor
+      const tdx = targetMouseRef.current.x - centerX;
+      const tdy = targetMouseRef.current.y - centerY;
+
+      const canvasMouseX = centerX + tdx * COS_RAD - tdy * SIN_RAD;
+      const canvasMouseY = centerY + tdx * SIN_RAD + tdy * COS_RAD;
+
+      // PARALLAX & DRIFT (Smooth/Slow)
+      // We use currentMouseRef here to keep the layer movement fluid and graceful
       const mdx = currentMouseRef.current.x - centerX;
       const mdy = currentMouseRef.current.y - centerY;
-
-      // Pre-calculated trig multiplication
-      const canvasMouseX = centerX + mdx * COS_RAD - mdy * SIN_RAD;
-      const canvasMouseY = centerY + mdx * SIN_RAD + mdy * COS_RAD;
 
       // PHYSICS UPDATE
       const { coreAvg, sparkPhase } = updateParticlePhysics({
@@ -248,8 +258,8 @@ export function useVoronoiAnimation({ progress, isTyping }: UseVoronoiOptions) {
       if (sparkPhase > 0.01) {
         drawCatalystCore(
           ctx,
-          coreAvg.x,
-          coreAvg.y,
+          coreAvg.x + fpx,
+          coreAvg.y + fpy,
           sparkPhase,
           sparkPhase * 0.9,
         );
@@ -277,14 +287,13 @@ export function useVoronoiAnimation({ progress, isTyping }: UseVoronoiOptions) {
 
   const handleMouseLeave = useCallback(() => {
     mouseActiveRef.current = false;
-    targetMouseRef.current = {
-      x: dimensions.width / 2,
-      y: dimensions.height / 2,
-    };
-  }, [dimensions]);
+    // We do NOT reset targetMouse here. Instead, let the animate loop
+    // handle the fallback to center while mouseActive is false.
+    // This prevents the glow from 'snapping' back to center while fading.
+  }, []);
 
   const handleMouseEnter = useCallback(() => {
-    mouseActiveRef.current = true;
+    // We wait for the first move event to snap the mouse position
   }, []);
 
   return {

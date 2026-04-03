@@ -936,7 +936,7 @@ export const TEST_LENGTH_CONFIG: Record<
   {
     label: string;
     sublabel: string;
-    duration: string;
+    estimatedMinutes: number;
     itemsPerDimension: number;
     questionsPerPage: number;
     recommended?: boolean;
@@ -945,14 +945,14 @@ export const TEST_LENGTH_CONFIG: Record<
   30: {
     label: "Quick",
     sublabel: "10 pages – just enough to get started",
-    duration: "~2 min",
+    estimatedMinutes: 2,
     itemsPerDimension: 6,
     questionsPerPage: 3,
   },
   50: {
     label: "Standard",
     sublabel: "17 pages – best accuracy / time balance",
-    duration: "~5 min",
+    estimatedMinutes: 5,
     itemsPerDimension: 10,
     questionsPerPage: 3,
     recommended: true,
@@ -960,7 +960,7 @@ export const TEST_LENGTH_CONFIG: Record<
   150: {
     label: "Deep",
     sublabel: "50 pages – for a match that improves with every retake",
-    duration: "~15 min",
+    estimatedMinutes: 15,
     itemsPerDimension: 30,
     questionsPerPage: 3,
   },

@@ -38,7 +38,7 @@ export function VoronoiCatalyst({
           width: dimensions.width,
           height: dimensions.height,
           // Initial transform; the actual transform is managed by the animation loop
-          transform: "scale(1.25) rotate(-25deg)",
+          transform: "scale(1.25)",
         }}
       />
       <div
