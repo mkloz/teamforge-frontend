@@ -1,6 +1,9 @@
 import { cn } from "@/shared/lib/utils";
 import { memo } from "react";
-import type { UnifiedMessage } from "../../types/chat.types";
+import type {
+  UnifiedMessage,
+  UnifiedAttachment,
+} from "@/features/activity/types/chat.types";
 import { DocumentMessage } from "../document-message";
 import { MediaGallery } from "../media-gallery";
 import { VoiceNote } from "../voice-note";
@@ -39,11 +42,11 @@ export const MessageMedia = memo(
         )}
       >
         {/* Voice Notes */}
-        {attachments.some((a) => a.type === "voice") && (
+        {attachments.some((a: UnifiedAttachment) => a.type === "voice") && (
           <div className="p-1 px-1.5 flex flex-col gap-1">
             {attachments
-              .filter((a) => a.type === "voice")
-              .map((voice) => (
+              .filter((a: UnifiedAttachment) => a.type === "voice")
+              .map((voice: UnifiedAttachment) => (
                 <VoiceNote
                   key={voice.id}
                   url={voice.url}
@@ -55,11 +58,11 @@ export const MessageMedia = memo(
         )}
 
         {/* Documents */}
-        {attachments.some((a) => a.type === "file") && (
+        {attachments.some((a: UnifiedAttachment) => a.type === "file") && (
           <div className="flex flex-col gap-1.5 w-full text-left">
             {attachments
-              .filter((a) => a.type === "file")
-              .map((file) => (
+              .filter((a: UnifiedAttachment) => a.type === "file")
+              .map((file: UnifiedAttachment) => (
                 <DocumentMessage
                   key={file.id}
                   attachment={file}
@@ -70,9 +73,11 @@ export const MessageMedia = memo(
         )}
 
         {/* Images / Gallery */}
-        {attachments.some((a) => a.type === "image") && (
+        {attachments.some((a: UnifiedAttachment) => a.type === "image") && (
           <MediaGallery
-            attachments={attachments.filter((a) => a.type === "image")}
+            attachments={attachments.filter(
+              (a: UnifiedAttachment) => a.type === "image",
+            )}
             isOwn={isOwn}
             rounding={galleryRounding}
             isOnlyContent={!replyTo && !content && reactionGroupsLength === 0}

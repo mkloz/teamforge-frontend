@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 import { memo } from "react";
-import type { UnifiedMessage } from "../../types/chat.types";
+import type { UnifiedMessage } from "@/features/activity/types/chat.types";
 
 interface ReplyReferenceProps {
   replyTo: UnifiedMessage["replyTo"];

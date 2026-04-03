@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Reply, X } from "lucide-react";
 import { memo } from "react";
 import { Button } from "@/shared/components/ui/button";
-import type { UnifiedMessage } from "../../types/chat.types";
+import type { UnifiedMessage } from "@/features/activity/types/chat.types";
 
 interface ReplyPreviewProps {
   replyingTo: UnifiedMessage | null;
