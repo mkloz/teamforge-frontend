@@ -51,7 +51,7 @@ function InterestTag({ interest }: { interest: Interest }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-bold border transition-all cursor-default shadow-xs",
+        "inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-bold border transition cursor-default shadow-xs",
         "bg-forge-teal/5 text-forge-teal border-forge-teal/15 hover:bg-forge-teal/10 hover:border-forge-teal/25 hover:scale-105 active:scale-95",
         "dark:bg-primary/10 dark:text-primary dark:border-primary/30",
       )}

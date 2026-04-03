@@ -25,10 +25,12 @@ export interface LeafTag {
   aliases?: string[];
 }
 
+import type { LucideIcon } from "lucide-react";
+
 export interface Subcategory {
   id: string;
   label: string;
-  emoji: string;
+  icon: LucideIcon;
   tags: LeafTag[];
 }
 

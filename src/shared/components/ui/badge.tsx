@@ -18,7 +18,7 @@ const badgeVariants = cva(
         teal: "border-transparent bg-forge-teal/10 text-forge-teal hover:bg-forge-teal/20",
         amber:
           "border-transparent bg-spark-amber/10 text-spark-amber hover:bg-spark-amber/20",
-        mbti: "border-transparent bg-forge-teal text-white uppercase text-[11px] font-bold px-2 py-0.5 rounded-full",
+        mbti: "border-transparent bg-forge-teal text-white uppercase text-micro font-bold px-2 py-0.5 rounded-full",
       },
     },
     defaultVariants: {

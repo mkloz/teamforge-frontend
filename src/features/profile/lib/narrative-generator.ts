@@ -34,35 +34,41 @@ const BORDERLINE_EXPLANATIONS: Record<string, string> = {
 
 export function generatePersonalityNarrative(
   stack: CognitiveFunction[],
-  borderlineScores: DimensionScore[]
+  borderlineScores: DimensionScore[],
 ): string {
   const dominant = stack[0];
   const auxiliary = stack[1];
-  
-  let narrative = DOMINANT_NARRATIVES[dominant.code] + " " + AUXILIARY_NARRATIVES[auxiliary.code];
-  
+
+  let narrative =
+    DOMINANT_NARRATIVES[dominant.code] +
+    " " +
+    AUXILIARY_NARRATIVES[auxiliary.code];
+
   // Add borderline note if applicable
   if (borderlineScores.length > 0) {
     const firstBorderline = borderlineScores[0];
     narrative += " " + BORDERLINE_EXPLANATIONS[firstBorderline.dimension];
   }
-  
+
   return narrative;
 }
 
-export function getBorderlineExplanation(dimension: string, score: number): string {
+export function getBorderlineExplanation(
+  dimension: string,
+  score: number,
+): string {
   const side = score <= 50 ? "first" : "second";
   const percentage = Math.abs(50 - score) <= 5 ? "nearly balanced" : "leaning";
-  
+
   const dimensionLabels: Record<string, [string, string]> = {
     EI: ["Extraversion", "Introversion"],
     SN: ["Sensing", "Intuition"],
     TF: ["Thinking", "Feeling"],
     JP: ["Judging", "Perceiving"],
   };
-  
+
   const [first, second] = dimensionLabels[dimension] || ["", ""];
   const leaning = side === "first" ? first : second;
-  
+
   return `Your ${first}/${second} preference is ${percentage} (${score}% toward ${leaning}). You likely relate to both descriptions depending on the context.`;
 }

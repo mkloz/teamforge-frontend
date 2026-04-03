@@ -1,8 +1,7 @@
 import { Button } from "@/shared/components/ui/button";
-import { Progress } from "@/shared/components/ui/progress";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, RotateCcw } from "lucide-react";
 import { fadeUpItem, staggerContainer } from "../../constants/motion";
 import type { IpipQuestion } from "../../data/ipip-questions";
 import type { RawAnswers } from "../../utils/score-calculator";
@@ -17,6 +16,7 @@ interface QuestionPageProps {
   answers: RawAnswers;
   onAnswer: (questionId: number, val: 1 | 2 | 3 | 4 | 5) => void;
   onNext: () => void;
+  onReview: () => void;
 }
 
 // Estimate ~5 seconds per question
@@ -37,8 +37,8 @@ export function QuestionPage({
   answers,
   onAnswer,
   onNext,
+  onReview,
 }: QuestionPageProps) {
-  const progressPct = Math.round((pageNumber / totalPages) * 100);
   const pagesLeft = totalPages - pageNumber;
 
   const answeredOnPage = pageQuestions.filter(
@@ -47,17 +47,14 @@ export function QuestionPage({
   const allAnswered = answeredOnPage === pageQuestions.length;
 
   return (
-    <div className="flex flex-col w-full max-w-xl mx-auto">
-      {/* Global progress bar */}
-      <Progress value={progressPct} className="h-0.5 bg-slate-500/10 mb-1" />
-
+    <div className="flex flex-col w-full max-w-xl mx-auto px-0 sm:px-0">
       {/* Page counter + time estimate */}
       <div className="flex justify-between items-center mb-2">
-        <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+        <span className="font-sans text-micro font-semibold uppercase tracking-widest text-slate-500">
           Page {pageNumber} of {totalPages}
         </span>
         {pagesLeft > 0 && (
-          <span className="font-sans text-[10px] font-medium text-slate-500/55">
+          <span className="font-sans text-micro font-medium text-slate-500/55">
             {formatTimeLeft(pagesLeft, pageQuestions.length)}
           </span>
         )}
@@ -77,7 +74,7 @@ export function QuestionPage({
             />
           );
         })}
-        <span className="font-sans text-[9px] font-medium ml-1 shrink-0 text-slate-500/45">
+        <span className="font-sans text-nano font-medium ml-1 shrink-0 text-slate-500/45">
           {answeredOnPage}/{pageQuestions.length}
         </span>
       </div>
@@ -103,21 +100,36 @@ export function QuestionPage({
         ))}
       </motion.div>
 
-      {/* Next / Submit button */}
-      <Button
-        size="lg"
-        onClick={onNext}
-        disabled={!allAnswered}
-        className={cn(
-          "w-full flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl h-12 transition duration-200",
-          allAnswered
-            ? "bg-forge-teal text-primary-foreground hover:bg-forge-teal-light"
-            : "bg-slate-500/10 text-slate-500/40",
+      {/* Action buttons */}
+      <div className="flex items-center gap-3">
+        {pageNumber === totalPages && (
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={onReview}
+            className="shrink-0 px-4 flex items-center justify-center gap-2 border-slate-200 text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-all rounded-xl h-12"
+          >
+            <RotateCcw size={16} strokeWidth={2.5} />
+            <span className="font-sans text-xs font-bold uppercase tracking-wide">
+              Review answers
+            </span>
+          </Button>
         )}
-      >
-        {pageNumber === totalPages ? "See my results" : "Next page"}
-        <ArrowRight size={16} strokeWidth={2.5} />
-      </Button>
+        <Button
+          size="lg"
+          onClick={onNext}
+          disabled={!allAnswered}
+          className={cn(
+            "flex-1 flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl h-12 transition-colors duration-200",
+            allAnswered
+              ? "bg-forge-teal text-primary-foreground hover:bg-forge-teal-light"
+              : "bg-slate-500/10 text-slate-500/40",
+          )}
+        >
+          {pageNumber === totalPages ? "See my results" : "Next page"}
+          <ArrowRight size={16} strokeWidth={2.5} />
+        </Button>
+      </div>
     </div>
   );
 }

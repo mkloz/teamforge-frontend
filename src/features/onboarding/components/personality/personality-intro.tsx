@@ -29,12 +29,12 @@ export function PersonalityIntro({ onStart }: PersonalityIntroProps) {
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="flex flex-col items-center text-center max-w-md mx-auto w-full gap-0"
+      className="flex flex-col max-w-md mx-auto w-full gap-0 pt-4 sm:pt-0 h-full justify-start sm:justify-center lg:h-auto"
     >
       {/* Logo */}
       <motion.div variants={fadeUpItem}>
         <TeamForgeLogo
-          className="w-10 h-10 mb-6 mx-auto"
+          className="w-10 h-10 mb-5 sm:mb-6 mx-auto"
           showBackground={false}
         />
       </motion.div>
@@ -42,7 +42,7 @@ export function PersonalityIntro({ onStart }: PersonalityIntroProps) {
       {/* Overline */}
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] mb-4 text-forge-teal"
+        className="font-sans text-[10px] sm:text-micro font-bold uppercase tracking-[0.2em] mb-4 text-forge-teal text-center"
       >
         Personality Assessment
       </motion.p>
@@ -50,47 +50,42 @@ export function PersonalityIntro({ onStart }: PersonalityIntroProps) {
       {/* Headline */}
       <motion.h1
         variants={fadeUpItem}
-        className="font-sans text-[2rem] md:text-[2.5rem] font-extrabold leading-tight text-balance mb-4 text-[#1C1C1A]"
+        className="font-sans text-2xl sm:text-display-lg font-extrabold leading-tight text-balance mb-4 text-ink text-center"
       >
         What makes you, you?
       </motion.h1>
 
       {/* Body */}
-      <motion.div variants={fadeUpItem}>
-        <p className="font-sans text-sm leading-relaxed text-pretty mb-2 text-slate-500">
+      <motion.div variants={fadeUpItem} className="text-left">
+        <p className="font-sans text-sm leading-relaxed text-pretty mb-3 text-slate-500 font-medium indent-8">
           Before we build your group, we want to understand how your mind works
-          – not your job title, not your hobbies, not your mood today.
+          – the core of your personality.
         </p>
-        <p className="font-sans text-sm leading-relaxed text-pretty mb-6 text-slate-500">
+        <p className="font-sans text-xs sm:text-sm leading-relaxed text-pretty mb-6 text-slate-500 indent-8">
           This is the{" "}
-          <span className="text-[#1C1C1A] font-medium">
-            International Personality Item Pool (IPIP)
-          </span>{" "}
-          – a scientifically validated assessment used in peer-reviewed
-          psychology research worldwide. Your scores place you in a
-          five-dimensional personality space. The result shapes every group you
-          will ever be matched into, and gives you a framework for understanding
-          yourself that goes far beyond a label.
+          <span className="text-ink font-semibold">IPIP Assessment</span> – a
+          scientifically validated framework. The result shapes your group
+          matches and gives you a framework for understanding yourself.
         </p>
       </motion.div>
 
       {/* Divider */}
       <motion.div
         variants={fadeUpItem}
-        className="w-full mb-6 h-px bg-slate-200"
+        className="w-full mb-6 h-px bg-slate-100"
       />
 
       {/* Benefits */}
       <motion.div
         variants={fadeUpItem}
-        className="flex flex-col gap-3 w-full mb-8 text-left"
+        className="flex flex-col gap-4 w-full mb-8 text-left"
       >
         {BENEFITS.map(({ icon: Icon, text }) => (
-          <div key={text} className="flex items-start gap-3">
-            <div className="flex items-center justify-center rounded-lg shrink-0 mt-0.5 w-7 h-7 bg-forge-teal/10">
-              <Icon size={14} strokeWidth={2} className="text-forge-teal" />
+          <div key={text} className="flex items-start gap-3.5">
+            <div className="flex items-center justify-center rounded-xl shrink-0 mt-0.5 w-8 h-8 bg-forge-teal/10">
+              <Icon size={14} strokeWidth={2.5} className="text-forge-teal" />
             </div>
-            <p className="font-sans text-sm leading-relaxed text-slate-500">
+            <p className="font-sans text-xs sm:text-sm leading-relaxed text-slate-500">
               {text}
             </p>
           </div>
@@ -102,7 +97,7 @@ export function PersonalityIntro({ onStart }: PersonalityIntroProps) {
         <Button
           size="lg"
           onClick={onStart}
-          className="w-full flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl bg-forge-teal text-primary-foreground hover:bg-forge-teal-light shadow-[0_4px_16px_rgba(13,148,136,0.25)] hover:shadow-[0_8px_24px_rgba(13,148,136,0.4)] transition duration-200 active:scale-[0.98] h-12"
+          className="w-full flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl bg-forge-teal text-white hover:bg-forge-teal/90 shadow-lg shadow-forge-teal/20 transition-all duration-200 active:scale-[0.98] h-12"
         >
           Let's find out
           <ArrowRight size={16} strokeWidth={2.5} />

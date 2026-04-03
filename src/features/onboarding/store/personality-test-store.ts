@@ -1,6 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { IPIP_QUESTIONS, type TestLength } from "../data/ipip-questions";
+import {
+  buildQuestionList,
+  IPIP_QUESTIONS,
+  type TestLength,
+} from "../data/ipip-questions";
 import type {
   OceanVectorWithMeta,
   RawAnswers,
@@ -29,6 +33,8 @@ interface PersistedTestState {
   answers: RawAnswers;
   result: PersonalityResult | null;
   vector: OceanVectorWithMeta | null;
+  previousScreen: ScreenState | null;
+  isReviewMode: boolean;
 }
 
 // ─── Full store ───────────────────────────────────────────────────────────────
@@ -43,6 +49,8 @@ interface PersonalityTestState extends PersistedTestState {
     result: PersonalityResult,
     vector: OceanVectorWithMeta,
   ) => void;
+  updateTestLength: (length: TestLength) => void;
+  setIsReviewMode: (isReviewMode: boolean) => void;
   reset: () => void;
 }
 
@@ -53,6 +61,8 @@ const DEFAULT_STATE: PersistedTestState = {
   answers: {},
   result: null,
   vector: null,
+  previousScreen: null,
+  isReviewMode: false,
 };
 
 export const usePersonalityTestStore = create<PersonalityTestState>()(
@@ -60,17 +70,30 @@ export const usePersonalityTestStore = create<PersonalityTestState>()(
     (set) => ({
       ...DEFAULT_STATE,
 
-      setScreen: (screen) => set({ screen }),
+      setScreen: (screen) =>
+        set((state) => ({
+          screen,
+          previousScreen: state.screen,
+        })),
+
+      setIsReviewMode: (isReviewMode: boolean) => set({ isReviewMode }),
 
       setTestLength: (testLength) => set({ testLength }),
 
       beginTest: (testLength, questionIds) =>
         set({
+          isReviewMode: false, // Reset on new test
           testLength,
           questionIds,
           answers: {},
           screen: { id: "questions", currentPage: 1 },
         }),
+
+      updateTestLength: (testLength) => {
+        const questions = buildQuestionList(testLength);
+        const questionIds = questions.map((q) => q.id);
+        set({ testLength, questionIds });
+      },
 
       setAnswer: (questionId, val) =>
         set((state) => ({
@@ -90,6 +113,8 @@ export const usePersonalityTestStore = create<PersonalityTestState>()(
         answers: state.answers,
         result: state.result,
         vector: state.vector,
+        previousScreen: state.previousScreen,
+        isReviewMode: state.isReviewMode,
       }),
     },
   ),

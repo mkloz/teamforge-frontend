@@ -42,7 +42,7 @@ function SectionCard({
       )}
     >
       {accent && (
-        <div className="absolute left-0 top-3 bottom-3 w-[3px] bg-primary/70 rounded-r-full" />
+        <div className="absolute left-0 top-3 bottom-3 w-0.75 bg-primary/70 rounded-r-full" />
       )}
       <div className="px-4 py-4 space-y-4">{children}</div>
     </div>
@@ -101,7 +101,9 @@ function FieldLabel({
           </span>
         )}
       </label>
-      {hint && <span className="text-[11px] text-muted-foreground/50">{hint}</span>}
+      {hint && (
+        <span className="text-micro text-muted-foreground/50">{hint}</span>
+      )}
     </div>
   );
 }
@@ -118,7 +120,7 @@ function InputField({
   return (
     <div
       className={cn(
-        "relative group flex items-center rounded-xl border bg-background/60 transition-all duration-150",
+        "relative group flex items-center rounded-xl border bg-background/60 transition-colors duration-150",
         error
           ? "border-destructive/40 ring-1 ring-destructive/15"
           : "border-border/60 focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/12 focus-within:bg-background",
@@ -183,7 +185,6 @@ export function Step2Plan({
 
   return (
     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300 pb-6">
-
       {/* ── Section 1: Event Title ── */}
       <SectionCard accent={isNameValid}>
         <SectionHeader
@@ -204,10 +205,12 @@ export function Step2Plan({
                 : undefined
             }
           >
-            <span className={cn(
-              "transition-colors",
-              isNameValid ? "text-primary" : "",
-            )}>
+            <span
+              className={cn(
+                "transition-colors",
+                isNameValid ? "text-primary" : "",
+              )}
+            >
               {isNameValid ? "Title" : "Title"}
             </span>
           </FieldLabel>
@@ -309,7 +312,11 @@ export function Step2Plan({
         />
 
         {/* Location type — horizontal radio cards */}
-        <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Location type">
+        <div
+          className="grid grid-cols-3 gap-2"
+          role="radiogroup"
+          aria-label="Location type"
+        >
           {LOCATION_TYPES.map(({ id, label, sub, Icon }) => {
             const active = locationType === id;
             return (
@@ -320,7 +327,7 @@ export function Step2Plan({
                 aria-checked={active}
                 onClick={() => onLocationTypeChange(id)}
                 className={cn(
-                  "group flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl border text-center transition-all duration-150 active:scale-[0.97]",
+                  "group flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl border text-center transition duration-150 active:scale-[0.97]",
                   active
                     ? "border-primary/30 bg-primary/8 ring-1 ring-primary/20 shadow-sm"
                     : "border-border/50 bg-background/40 hover:border-primary/20 hover:bg-primary/4",
@@ -328,7 +335,7 @@ export function Step2Plan({
               >
                 <div
                   className={cn(
-                    "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-150",
+                    "w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-150",
                     active
                       ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
                       : "bg-muted/60 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary",
@@ -345,7 +352,7 @@ export function Step2Plan({
                   >
                     {label}
                   </p>
-                  <p className="text-[10px] text-muted-foreground/60 leading-tight mt-0.5">
+                  <p className="text-micro text-muted-foreground/60 leading-tight mt-0.5">
                     {sub}
                   </p>
                 </div>
@@ -376,7 +383,8 @@ export function Step2Plan({
           <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-muted/40 border border-border/40 animate-in fade-in duration-200">
             <Monitor size={12} className="text-muted-foreground/50 shrink-0" />
             <p className="text-xs text-muted-foreground/70">
-              A meeting link can be shared with members after the group is forged.
+              A meeting link can be shared with members after the group is
+              forged.
             </p>
           </div>
         )}

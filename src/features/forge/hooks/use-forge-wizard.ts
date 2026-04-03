@@ -115,27 +115,24 @@ export function useForgeWizard(onClose: () => void) {
   // then resolves. Since we don't know when the real algorithm finishes,
   // the animation is infinite; we just enforce a minimum so users always
   // see the full forge sequence before the result screen appears.
-  const runForgeAnimation = useCallback(
-    (onComplete: () => void) => {
-      setIsForging(true);
-      setForgingProgress(0);
-      const start = performance.now();
-      const minDuration = 6000;
-      const tick = (now: number) => {
-        const elapsed = now - start;
-        const p = Math.min((elapsed / minDuration) * 100, 100);
-        setForgingProgress(p);
-        if (p < 100) {
-          requestAnimationFrame(tick);
-        } else {
-          setIsForging(false);
-          onComplete();
-        }
-      };
-      requestAnimationFrame(tick);
-    },
-    [],
-  );
+  const runForgeAnimation = useCallback((onComplete: () => void) => {
+    setIsForging(true);
+    setForgingProgress(0);
+    const start = performance.now();
+    const minDuration = 6000;
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const p = Math.min((elapsed / minDuration) * 100, 100);
+      setForgingProgress(p);
+      if (p < 100) {
+        requestAnimationFrame(tick);
+      } else {
+        setIsForging(false);
+        onComplete();
+      }
+    };
+    requestAnimationFrame(tick);
+  }, []);
 
   const handleManualForge = useCallback(() => {
     setNavDirection("forward");

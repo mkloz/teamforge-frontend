@@ -9,7 +9,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-forge-teal text-white shadow-sm hover:bg-[#0f9e92] hover:scale-[1.02] hover:bg-forge-teal-light shadow-[0_4px_16px_rgba(13,148,136,0.25)] hover:shadow-[0_8px_24px_rgba(13,148,136,0.4)] transition duration-200 active:scale-[0.98] disabled:shadow-none",
+          "bg-forge-teal text-white shadow-teal-glow hover:scale-[1.02] hover:bg-forge-teal-light hover:shadow-teal-glow-lg transition duration-200 active:scale-[0.98] disabled:shadow-none",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
@@ -17,7 +17,7 @@ const buttonVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost:
-          "border border-forge-teal text-forge-teal bg-transparent hover:bg-forge-teal hover:text-white dark:border-white/30 dark:text-white dark:hover:bg-white dark:hover:text-forge-teal",
+          "border-none bg-transparent hover:bg-muted hover:text-accent-foreground shadow-none",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {

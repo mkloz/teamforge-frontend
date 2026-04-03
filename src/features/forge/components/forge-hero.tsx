@@ -11,7 +11,7 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
   return (
     <section
       id="forge-hero"
-      className="relative overflow-hidden rounded-[32px] border border-accent/20 bg-linear-to-br from-accent/5 via-card to-accent/10 dark:from-accent/10 dark:via-card dark:to-accent/5 p-8 md:p-10 shadow-sm"
+      className="relative overflow-hidden rounded-4xl border border-accent/20 bg-linear-to-br from-accent/5 via-card to-accent/10 dark:from-accent/10 dark:via-card dark:to-accent/5 p-8 md:p-10 shadow-sm"
     >
       {/* Decorative glow blobs */}
       <div
@@ -34,7 +34,7 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             className="absolute inset-0 bg-accent/40 blur-3xl rounded-full"
           />
-          <div className="relative flex items-center justify-center w-28 h-28 rounded-[32px] bg-card border border-accent/20 shadow-2xl transition-all duration-500 group-hover:scale-105 group-hover:rotate-1 active:scale-95">
+          <div className="relative flex items-center justify-center w-28 h-28 rounded-4xl bg-card border border-accent/20 shadow-2xl transition-transform duration-500 group-hover:scale-105 group-hover:rotate-1 active:scale-95">
             <TeamForgeLogo className="w-16 h-16" showBackground={false} />
           </div>
         </div>
@@ -59,7 +59,7 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
             "shadow-[0_12px_40px_rgba(245,158,11,0.35)]",
             "hover:brightness-110 hover:shadow-[0_15px_45px_rgba(245,158,11,0.45)]",
             "active:scale-[0.98] active:shadow-[0_4px_15px_rgba(245,158,11,0.3)]",
-            "transition-all duration-300",
+            "transition duration-300",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2",
           )}
         >

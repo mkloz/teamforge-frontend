@@ -21,8 +21,8 @@ export function ProfileHero({ profile }: ProfileHeroProps) {
 
         {/* Bottom Section (Quote & Actions) */}
         <div className="flex flex-col gap-6">
-          <blockquote className="relative border-l-[3px] border-forge-teal/30 sm:pl-5 py-2 px-2 text-center sm:text-left">
-            <p className="relative z-10 text-[15px] sm:text-[17px] text-ink font-medium leading-relaxed text-pretty italic opacity-85 max-w-2xl">
+          <blockquote className="relative border-l-thick border-forge-teal/30 sm:pl-5 py-2 px-2 text-center sm:text-left">
+            <p className="relative z-10 text-sm sm:text-lg text-ink font-medium leading-relaxed text-pretty italic opacity-85 max-w-2xl">
               "{profile.bio}"
             </p>
           </blockquote>

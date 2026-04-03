@@ -25,7 +25,7 @@ interface StepOtpProps {
 }
 
 const OTP_SLOT_CLASS =
-  "h-12 flex-1 rounded-xl border border-border font-mono text-lg transition-colors focus-within:border-forge-teal focus-within:ring-2 focus-within:ring-[rgba(13,148,136,0.12)]";
+  "h-12 w-10 sm:w-12 max-w-[48px] rounded-xl border border-border font-mono text-lg transition-colors focus-within:border-forge-teal focus-within:ring-2 focus-within:ring-[rgba(13,148,136,0.12)]";
 
 export function StepOtp({ onBack, loading }: StepOtpProps) {
   const { control } = useFormContext<RegisterValues>();

@@ -70,8 +70,8 @@ export function AppTopbar({
             className="shrink-0 opacity-60"
           />
           <span>Search activities, people...</span>
-          <kbd className="ml-auto hidden sm:inline-flex h-5 items-center gap-0.5 rounded border border-border bg-background px-1.5 font-mono text-[10px] text-muted-foreground">
-            <span className="text-[11px]">⌘</span>K
+          <kbd className="ml-auto hidden sm:inline-flex h-5 items-center gap-0.5 rounded border border-border bg-background px-1.5 font-mono text-micro text-muted-foreground">
+            <span className="text-micro">⌘</span>K
           </kbd>
         </button>
       </div>

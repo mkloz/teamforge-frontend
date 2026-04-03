@@ -33,7 +33,7 @@ export function ThreeColumnLayout({
   hasSelection,
 }: ThreeColumnLayoutProps) {
   return (
-    <div className="fixed inset-0 top-16 md:left-16 lg:left-60 pb-24 md:pb-0 flex bg-background z-10 transition-all">
+    <div className="fixed inset-0 top-16 md:left-16 lg:left-60 pb-24 md:pb-0 flex bg-background z-10 transition-[left,padding,margin]">
       {/*
         Left Column (List)
         - Mobile: full width when no selection, hidden when selection

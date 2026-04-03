@@ -40,10 +40,10 @@ export function InterestsSuggest({
           <Sparkles size={22} className="text-amber-500" strokeWidth={1.5} />
         </div>
         <div className="flex items-center gap-2">
-          <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] text-forge-teal">
+          <span className="font-sans text-micro font-semibold uppercase tracking-[0.18em] text-forge-teal">
             Suggested for you
           </span>
-          <span className="font-sans text-[10px] font-bold uppercase tracking-widest text-white bg-forge-teal px-2 py-0.5 rounded-full">
+          <span className="font-sans text-micro font-bold uppercase tracking-widest text-white bg-forge-teal px-2 py-0.5 rounded-full">
             {mbtiType}
           </span>
         </div>
@@ -51,7 +51,7 @@ export function InterestsSuggest({
 
       <motion.h2
         variants={fadeUpItem}
-        className="font-sans text-[1.75rem] md:text-[2rem] font-extrabold leading-tight text-balance mb-2 text-[#1C1C1A]"
+        className="font-sans text-display-xs md:text-display-sm font-extrabold leading-tight text-balance mb-2 text-ink"
       >
         Here&apos;s a smart starting point
       </motion.h2>

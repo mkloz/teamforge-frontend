@@ -14,12 +14,12 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="flex flex-col max-w-md mx-auto w-full gap-0 h-full justify-center lg:h-auto"
+      className="flex flex-col max-w-lg mx-auto w-full gap-0 h-full justify-start pt-4 sm:pt-0 sm:justify-center lg:h-auto"
     >
       {/* Overline */}
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] mb-4 text-center text-forge-teal"
+        className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] mb-4 text-forge-teal text-center"
       >
         Personality Theory 101
       </motion.p>
@@ -27,64 +27,72 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
       {/* Headline */}
       <motion.h1
         variants={fadeUpItem}
-        className="font-sans text-[2rem] md:text-[2.25rem] font-extrabold leading-tight text-center text-balance mb-8 text-[#1C1C1A]"
+        className="font-sans text-[1.75rem] sm:text-3xl font-extrabold leading-tight text-balance mb-6 sm:mb-8 text-ink text-center"
       >
         A dimensional baseline
       </motion.h1>
 
       {/* Body Content */}
-      <motion.div variants={fadeUpItem} className="flex flex-col gap-5 mb-8">
-        <p className="font-sans text-sm leading-relaxed text-pretty text-slate-500">
+      <motion.div
+        variants={fadeUpItem}
+        className="flex flex-col gap-6 mb-10 leading-relaxed px-1 text-left"
+      >
+        <p className="font-sans text-sm sm:text-chat-input text-slate-600 font-medium indent-8">
           Most generic tests group people into strict categories (like entirely
           a "Thinker" or purely a "Feeler"). But human psychology is much more
           nuanced than that.
         </p>
 
-        <p className="font-sans text-sm leading-relaxed text-pretty text-slate-500">
-          That's where the{" "}
-          <span className="text-[#1C1C1A] font-medium">
-            Big Five (OCEAN) model
-          </span>{" "}
-          comes in. It doesn't box you in. Instead, it measures exactly where
-          you sit on a <i>spectrum</i> for five distinct traits:
-        </p>
+        <div className="space-y-4">
+          <p className="font-sans text-sm sm:text-chat-input leading-relaxed text-pretty text-slate-500">
+            That's where the{" "}
+            <span className="text-ink font-bold">Big Five (OCEAN) model</span>{" "}
+            comes in. Instead of boxing you in, it measures exactly where you
+            sit on a <i className="text-slate-600 font-medium">spectrum</i> for
+            five distinct traits:
+          </p>
 
-        <ul className="flex flex-col gap-2 font-sans text-sm text-slate-600 pl-4 border-l-2 border-forge-teal/30 ml-2">
-          <li>
-            <strong>O</strong>penness to Experience
-          </li>
-          <li>
-            <strong>C</strong>onscientiousness
-          </li>
-          <li>
-            <strong>E</strong>xtraversion
-          </li>
-          <li>
-            <strong>A</strong>greeableness
-          </li>
-          <li>
-            <strong>N</strong>euroticism (Emotional Stability)
-          </li>
-        </ul>
+          <ul className="flex flex-col gap-3 font-sans text-sm sm:text-chat-input text-slate-700 pl-5 border-l-2 border-forge-teal/30 ml-4 py-1">
+            <li className="flex items-center gap-2.5">
+              <span className="font-black text-forge-teal w-4">O</span>
+              <span>Openness to Experience</span>
+            </li>
+            <li className="flex items-center gap-2.5">
+              <span className="font-black text-forge-teal w-4">C</span>
+              <span>Conscientiousness</span>
+            </li>
+            <li className="flex items-center gap-2.5">
+              <span className="font-black text-forge-teal w-4">E</span>
+              <span>Extraversion</span>
+            </li>
+            <li className="flex items-center gap-2.5">
+              <span className="font-black text-forge-teal w-4">A</span>
+              <span>Agreeableness</span>
+            </li>
+            <li className="flex items-center gap-2.5">
+              <span className="font-black text-forge-teal w-4">N</span>
+              <span>Neuroticism (Stability)</span>
+            </li>
+          </ul>
+        </div>
 
-        <p className="font-sans text-sm leading-relaxed text-pretty text-slate-500">
-          Because it measures traits on a continuous scale rather than a binary
-          "this or that," the Big Five provides a remarkably accurate
-          mathematical map of your working style. It's the gold standard in
-          modern psychology, and the foundation of TeamForge.
+        <p className="font-sans text-sm sm:text-chat-input text-slate-500 opacity-90 leading-relaxed indent-8">
+          By measuring traits on a continuous scale, the Big Five provides a
+          remarkably accurate mathematical map of your personality. It's the
+          gold standard in modern psychology, and the foundation of TeamForge.
         </p>
       </motion.div>
 
       {/* Navigation */}
       <motion.div
         variants={fadeUpItem}
-        className="w-full flex items-center gap-3"
+        className="w-full flex items-center gap-3 mt-auto sm:mt-0 pt-6 sm:pt-0"
       >
         <Button
           size="lg"
           variant="outline"
           onClick={onBack}
-          className="flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors duration-200 h-12 w-1/3"
+          className="flex items-center justify-center gap-2 font-sans text-sm font-bold rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors duration-200 h-12 w-1/3 active:scale-[0.98]"
         >
           <ArrowLeft size={16} strokeWidth={2.5} />
           Back
@@ -92,7 +100,7 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
         <Button
           size="lg"
           onClick={onNext}
-          className="flex-1 flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl bg-forge-teal text-primary-foreground hover:bg-forge-teal-light shadow-[0_4px_16px_rgba(13,148,136,0.25)] hover:shadow-[0_8px_24px_rgba(13,148,136,0.4)] transition duration-200 active:scale-[0.98] h-12"
+          className="flex-1 flex items-center justify-center gap-2 font-sans text-sm font-bold rounded-xl bg-forge-teal text-white hover:bg-forge-teal/90 shadow-lg shadow-forge-teal/20 transition-all duration-200 active:scale-[0.98] h-12"
         >
           Next step
           <ArrowRight size={16} strokeWidth={2.5} />

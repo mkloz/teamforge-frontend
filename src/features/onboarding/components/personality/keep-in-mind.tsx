@@ -44,12 +44,12 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="flex flex-col max-w-md mx-auto w-full gap-0 h-full justify-center lg:h-auto"
+      className="flex flex-col max-w-md mx-auto w-full gap-0 h-full justify-start pt-4 sm:pt-0 sm:justify-center lg:h-auto"
     >
       {/* Overline */}
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-[10px] font-semibold uppercase tracking-[0.18em] mb-4 text-forge-teal text-center"
+        className="font-sans text-[10px] sm:text-micro font-bold uppercase tracking-[0.2em] mb-4 text-forge-teal text-center"
       >
         Before you begin
       </motion.p>
@@ -57,14 +57,14 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
       {/* Headline */}
       <motion.h1
         variants={fadeUpItem}
-        className="font-sans text-[2rem] md:text-[2.5rem] font-extrabold leading-tight text-balance mb-6 text-[#1C1C1A] text-center"
+        className="font-sans text-display-xs sm:text-display-sm font-extrabold leading-tight text-balance mb-6 text-ink text-center"
       >
         Keep in mind
       </motion.h1>
 
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-sm text-slate-500 mb-8 leading-relaxed text-center"
+        className="font-sans text-xs sm:text-sm text-slate-500 mb-8 leading-relaxed font-semibold indent-8"
       >
         It can be hard to find your actual personality underneath all the layers
         of expectations. To get the best results:
@@ -88,7 +88,7 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
                 {title}
               </span>
             </div>
-            <p className="font-sans text-[11px] leading-relaxed text-slate-500">
+            <p className="font-sans text-micro leading-relaxed text-slate-500">
               {text}
             </p>
           </div>
@@ -104,7 +104,7 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
           size="lg"
           variant="outline"
           onClick={onBack}
-          className="flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors duration-200 h-12 w-1/3"
+          className="flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors duration-200 h-12 w-1/3 active:scale-[0.98]"
         >
           <ArrowLeft size={16} strokeWidth={2.5} />
           Back
@@ -112,9 +112,9 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
         <Button
           size="lg"
           onClick={onNext}
-          className="flex-1 flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl bg-forge-teal text-primary-foreground hover:bg-forge-teal-light shadow-[0_4px_16px_rgba(13,148,136,0.25)] hover:shadow-[0_8px_24px_rgba(13,148,136,0.4)] transition duration-200 active:scale-[0.98] h-12"
+          className="flex-1 flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl bg-forge-teal text-white hover:bg-forge-teal/90 shadow-lg shadow-forge-teal/20 transition-all duration-200 active:scale-[0.98] h-12"
         >
-          Choose test length
+          Next step
           <ArrowRight size={16} strokeWidth={2.5} />
         </Button>
       </motion.div>

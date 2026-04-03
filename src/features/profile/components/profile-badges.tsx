@@ -7,6 +7,7 @@ import {
 } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 import { Shield, Sparkles, UserPlus, type LucideIcon } from "lucide-react";
+import { AnimatedCircularProgressBar } from "@/shared/components/ui/animated-circular-progress-bar";
 import type { UserProfile } from "../types/profile.types";
 
 interface ProfileBadgesProps {
@@ -49,10 +50,10 @@ function BadgeItem({
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div className="flex items-center gap-2 cursor-help group transition-all duration-300 hover:-translate-y-0.5">
+        <div className="flex items-center gap-2 cursor-help group transition-transform duration-300 hover:-translate-y-0.5">
           {renderIconWrapper ? renderIconWrapper(iconContent) : iconContent}
           <div className="flex flex-col justify-center items-start">
-            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-muted leading-tight mb-0.5">
+            <span className="text-nano font-bold uppercase tracking-widest text-slate-muted leading-tight mb-0.5">
               {label}
             </span>
             <span
@@ -75,7 +76,7 @@ function BadgeItem({
             <Icon size={14} className={colorClass} />
             <p className="text-xs font-bold tracking-tight">{label} Detail</p>
           </div>
-          <p className="text-[10px] text-muted-foreground leading-relaxed">
+          <p className="text-micro text-muted-foreground leading-relaxed">
             {description}
           </p>
         </div>
@@ -135,39 +136,22 @@ export function ProfileBadges({ profile }: ProfileBadgesProps) {
             description={`A composite metric of your verifiable contributions and social reliability. Integrity: ${profile.trustScore}%`}
             renderIconWrapper={() => (
               <div className="relative w-8 h-8 md:w-9 md:h-9 flex shrink-0 items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <svg
-                  className="absolute inset-0 -rotate-90 transform"
-                  viewBox="0 0 40 40"
-                >
-                  <circle
-                    className="text-slate-muted/15 stroke-current"
-                    strokeWidth="4"
-                    cx="20"
-                    cy="20"
-                    r="17"
-                    fill="transparent"
-                  />
-                  <circle
+                <div className="absolute inset-0 bg-transparent flex items-center justify-center">
+                  <AnimatedCircularProgressBar
+                    max={100}
+                    min={0}
+                    value={profile.trustScore}
+                    gaugePrimaryColor="currentColor"
+                    gaugeSecondaryColor="rgba(107, 114, 128, 0.15)"
                     className={cn(
-                      "stroke-current transition-all duration-1000",
+                      "w-full h-full text-[0px]", // hide internal text, use the absolute span
                       trustColorClass,
                     )}
-                    strokeWidth="4"
-                    strokeLinecap="round"
-                    strokeDasharray={2 * Math.PI * 17}
-                    strokeDashoffset={
-                      2 * Math.PI * 17 -
-                      (profile.trustScore / 100) * (2 * Math.PI * 17)
-                    }
-                    cx="20"
-                    cy="20"
-                    r="17"
-                    fill="transparent"
                   />
-                </svg>
+                </div>
                 <span
                   className={cn(
-                    "relative text-[9px] md:text-[10px] font-black leading-none",
+                    "relative text-nano md:text-micro font-black leading-none",
                     trustColorClass,
                   )}
                 >

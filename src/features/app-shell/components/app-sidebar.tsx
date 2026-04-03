@@ -65,7 +65,7 @@ export function AppSidebar({ className }: AppSidebarProps) {
           to="/forge"
           aria-label="Forge my group"
           className={cn(
-            "flex items-center justify-center gap-2 rounded-xl transition-all duration-300 relative",
+            "flex items-center justify-center gap-2 rounded-xl transition duration-300 relative",
             // Tablet: square icon button
             "h-10 w-10 lg:h-auto lg:w-full lg:px-4 lg:py-3",
             "font-semibold text-sm",
@@ -76,11 +76,6 @@ export function AppSidebar({ className }: AppSidebarProps) {
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2",
           )}
         >
-          {/* Active indicator dot */}
-          {isForgeActive && (
-            <span className="absolute -left-1 lg:-left-1.5 top-1/2 -translate-y-1/2 h-6 w-1 lg:w-1.5 bg-accent rounded-full" />
-          )}
-
           <TeamForgeLogo
             className={cn(
               "w-4 h-4 transition-transform duration-300",

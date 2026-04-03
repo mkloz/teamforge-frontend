@@ -24,11 +24,11 @@ export function Step4Success({
   onRestoreParticipant,
   onReforge,
 }: Step4SuccessProps) {
-  const activeCount = participants.filter((p) => !removedIds.has(p.id)).length + 1;
+  const activeCount =
+    participants.filter((p) => !removedIds.has(p.id)).length + 1;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
-
       {/* Hero success moment */}
       <div className="rounded-2xl bg-emerald-500/8 border border-emerald-500/20 p-5 flex items-center gap-4">
         <div className="shrink-0">
@@ -50,10 +50,14 @@ export function Step4Success({
       {/* Members section */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-semibold text-muted-foreground">Group members</p>
+          <p className="text-xs font-semibold text-muted-foreground">
+            Group members
+          </p>
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/15">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span className="text-xs font-semibold text-emerald-600">{activeCount} people</span>
+            <span className="text-xs font-semibold text-emerald-600">
+              {activeCount} people
+            </span>
           </span>
         </div>
 
@@ -61,10 +65,14 @@ export function Step4Success({
           {/* Host */}
           <div className="flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-primary/5 border border-primary/20">
             <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm shadow-primary/20">
-              <span className="text-[11px] font-bold text-primary-foreground">You</span>
+              <span className="text-micro font-bold text-primary-foreground">
+                You
+              </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-foreground">You (Host)</p>
+              <p className="text-sm font-semibold text-foreground">
+                You (Host)
+              </p>
               <p className="text-xs text-muted-foreground mt-0.5">Group lead</p>
             </div>
             <span className="px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
@@ -79,7 +87,7 @@ export function Step4Success({
               <div
                 key={p.id}
                 className={cn(
-                  "group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all duration-200",
+                  "group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition duration-200",
                   removed
                     ? "opacity-40 bg-muted/30 border-border/30 border-dashed"
                     : "bg-card border-border/40 hover:border-accent/30",
@@ -87,7 +95,7 @@ export function Step4Success({
               >
                 <div
                   className={cn(
-                    "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-lg transition-all duration-200",
+                    "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-lg transition-colors duration-200",
                     removed
                       ? "bg-muted text-muted-foreground"
                       : "bg-accent/10 group-hover:bg-accent/15",
@@ -99,17 +107,23 @@ export function Step4Success({
                   <p
                     className={cn(
                       "text-sm font-semibold leading-tight transition-colors",
-                      removed ? "text-muted-foreground line-through" : "text-foreground",
+                      removed
+                        ? "text-muted-foreground line-through"
+                        : "text-foreground",
                     )}
                   >
                     {p.name}
                   </p>
                   <div className="flex items-center gap-2 mt-0.5">
                     {removed ? (
-                      <p className="text-xs text-muted-foreground">Removed from session</p>
+                      <p className="text-xs text-muted-foreground">
+                        Removed from session
+                      </p>
                     ) : (
                       <>
-                        <p className="text-xs text-muted-foreground">Compatibility</p>
+                        <p className="text-xs text-muted-foreground">
+                          Compatibility
+                        </p>
                         <span
                           className={cn(
                             "text-xs font-semibold px-1.5 py-0.5 rounded-md",
@@ -129,7 +143,7 @@ export function Step4Success({
                     type="button"
                     onClick={() => onRestoreParticipant(p.id)}
                     aria-label={`Restore ${p.name}`}
-                    className="w-8 h-8 rounded-xl flex items-center justify-center text-emerald-600 bg-emerald-500/10 md:opacity-0 md:bg-transparent md:text-muted-foreground md:group-hover:opacity-100 md:hover:bg-emerald-500/10 md:hover:text-emerald-600 transition-all duration-200"
+                    className="w-8 h-8 rounded-xl flex items-center justify-center text-emerald-600 bg-emerald-500/10 md:opacity-0 md:bg-transparent md:text-muted-foreground md:group-hover:opacity-100 md:hover:bg-emerald-500/10 md:hover:text-emerald-600 transition duration-200"
                   >
                     <UserPlus size={14} />
                   </button>
@@ -138,7 +152,7 @@ export function Step4Success({
                     type="button"
                     onClick={() => onRemoveParticipant(p.id)}
                     aria-label={`Remove ${p.name}`}
-                    className="w-8 h-8 rounded-xl flex items-center justify-center text-destructive/60 bg-destructive/8 md:opacity-0 md:bg-transparent md:text-muted-foreground md:group-hover:opacity-100 md:hover:bg-destructive/10 md:hover:text-destructive transition-all duration-200"
+                    className="w-8 h-8 rounded-xl flex items-center justify-center text-destructive/60 bg-destructive/8 md:opacity-0 md:bg-transparent md:text-muted-foreground md:group-hover:opacity-100 md:hover:bg-destructive/10 md:hover:text-destructive transition duration-200"
                   >
                     <UserMinus size={14} />
                   </button>
@@ -153,7 +167,7 @@ export function Step4Success({
           <button
             type="button"
             onClick={onReforge}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-dashed border-accent/30 bg-accent/5 text-accent text-sm font-semibold hover:bg-accent/10 transition-all duration-200 animate-in zoom-in-95"
+            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-dashed border-accent/30 bg-accent/5 text-accent text-sm font-semibold hover:bg-accent/10 transition-colors duration-200 animate-in zoom-in-95"
           >
             <RefreshCw size={15} />
             Recalculate optimal balance
@@ -165,14 +179,17 @@ export function Step4Success({
       <div className="flex gap-3 p-4 rounded-2xl border border-border/40 bg-card">
         <div className="w-0.5 rounded-full bg-primary/30 shrink-0 self-stretch" />
         <div className="space-y-1">
-          <p className="text-xs font-semibold text-primary/80">How removal works</p>
+          <p className="text-xs font-semibold text-primary/80">
+            How removal works
+          </p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Removing a participant queues them for future matching rather than blocking them. Use{" "}
-            <span className="font-semibold text-accent">Recalculate</span> if the remaining balance feels off.
+            Removing a participant queues them for future matching rather than
+            blocking them. Use{" "}
+            <span className="font-semibold text-accent">Recalculate</span> if
+            the remaining balance feels off.
           </p>
         </div>
       </div>
-
     </div>
   );
 }

@@ -15,7 +15,7 @@ export function PageTitle({ isSearching }: PageTitleProps) {
           transition={{ duration: 0.2, ease: "easeInOut" }}
           className="mb-6 overflow-hidden pt-4"
         >
-          <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-forge-teal mb-1">
+          <p className="font-sans text-micro font-bold uppercase tracking-[0.2em] text-forge-teal mb-1">
             Step 2 of 2 · Interests
           </p>
           <h1 className="font-sans text-3xl font-black tracking-tight text-slate-900">

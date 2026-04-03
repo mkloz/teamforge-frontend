@@ -70,7 +70,7 @@ export function FeatureCard({
             className="shrink-0 w-full md:w-56 self-center z-10"
             aria-hidden="true"
           >
-            <p className="font-sans text-[10px] font-semibold uppercase tracking-widest text-forge-teal/60 mb-3">
+            <p className="font-sans text-micro font-semibold uppercase tracking-widest text-forge-teal/60 mb-3">
               Example vector
             </p>
             <div className="space-y-2.5">
@@ -81,7 +81,7 @@ export function FeatureCard({
                 { a: "J", b: "P", fill: 55 },
               ].map(({ a, b, fill }) => (
                 <div key={a} className="flex items-center gap-2">
-                  <span className="font-sans text-[10px] font-bold text-forge-teal w-3">
+                  <span className="font-sans text-micro font-bold text-forge-teal w-3">
                     {a}
                   </span>
                   <div className="flex-1 h-2 rounded-full bg-forge-teal/10 overflow-hidden">
@@ -90,7 +90,7 @@ export function FeatureCard({
                       style={{ width: `${fill}%` }}
                     />
                   </div>
-                  <span className="font-sans text-[10px] text-slate-muted w-3 text-right">
+                  <span className="font-sans text-micro text-slate-muted w-3 text-right">
                     {b}
                   </span>
                 </div>

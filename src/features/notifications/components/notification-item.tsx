@@ -86,7 +86,7 @@ export function NotificationItem({ item, onRead }: NotificationItemProps) {
         <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed line-clamp-2">
           {item.message}
         </p>
-        <p className="text-[10px] text-muted-foreground mt-1">
+        <p className="text-micro text-muted-foreground mt-1">
           {relativeTime(item.timestamp)}
         </p>
       </div>

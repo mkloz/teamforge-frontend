@@ -75,7 +75,7 @@ export function NotificationsDrawer({
         aria-hidden="true"
         onClick={onClose}
         className={cn(
-          "fixed inset-0 z-[55] bg-black/50 backdrop-blur-[2px]",
+          "fixed inset-0 z-55 bg-black/50 backdrop-blur-subtle",
           "transition-opacity duration-200",
           open
             ? "opacity-100 pointer-events-auto"
@@ -101,7 +101,7 @@ export function NotificationsDrawer({
         inert={!open ? "" : undefined}
         onKeyDown={handleKeyDown}
         className={cn(
-          "fixed z-[56] flex flex-col bg-card border-border outline-none",
+          "fixed z-56 flex flex-col bg-card border-border outline-none",
           // ── Desktop: right-side panel ─────────────────────────────────────
           "lg:top-0 lg:right-0 lg:bottom-0 lg:w-96",
           "lg:border-l lg:rounded-none",

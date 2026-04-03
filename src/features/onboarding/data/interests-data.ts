@@ -1,5 +1,33 @@
 import type { Category, LeafTag, MbtiType } from "./interests-types";
 
+import {
+  Activity,
+  Beer,
+  BookOpen,
+  Brain,
+  Coffee,
+  Dog,
+  Dumbbell,
+  Gamepad2,
+  Hammer,
+  Headphones,
+  Heart,
+  Laptop,
+  Music,
+  Palette,
+  Pizza,
+  Plane,
+  Popcorn,
+  Scale,
+  Scissors,
+  Sofa,
+  Stethoscope,
+  Tent,
+  TrendingUp,
+  Trophy,
+  Users,
+} from "lucide-react";
+
 export * from "./interests-types";
 
 // ─── Hierarchy ────────────────────────────────────────────────────────────────
@@ -15,7 +43,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "healthcare",
         label: "Healthcare",
-        emoji: "🩺",
+        icon: Stethoscope,
         tags: [
           { id: "doctor", label: "Doctor", aliases: ["physician", "medicine"] },
           { id: "nursing", label: "Nursing", aliases: ["nurse", "RN"] },
@@ -42,7 +70,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "education",
         label: "Education",
-        emoji: "📚",
+        icon: BookOpen,
         tags: [
           {
             id: "teaching",
@@ -84,7 +112,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "trades",
         label: "Trades & Build",
-        emoji: "🔨",
+        icon: Hammer,
         tags: [
           {
             id: "construction",
@@ -125,7 +153,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "business",
         label: "Business & Hustle",
-        emoji: "📈",
+        icon: TrendingUp,
         tags: [
           {
             id: "startups",
@@ -183,7 +211,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "public_service",
         label: "Public Service",
-        emoji: "⚖️",
+        icon: Scale,
         tags: [
           { id: "law", label: "Law / Lawyer", aliases: ["legal", "attorney"] },
           {
@@ -222,7 +250,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "tech_science",
         label: "Tech & Science",
-        emoji: "💻",
+        icon: Laptop,
         tags: [
           {
             id: "software_eng",
@@ -271,7 +299,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "service_hospitality",
         label: "Service & Hospitality",
-        emoji: "☕",
+        icon: Coffee,
         tags: [
           { id: "retail", label: "Retail", aliases: ["store", "shop"] },
           {
@@ -320,7 +348,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "media_arts",
         label: "Media & Arts",
-        emoji: "🎨",
+        icon: Palette,
         tags: [
           {
             id: "graphic_design",
@@ -380,7 +408,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "pets",
         label: "Pets & Animals",
-        emoji: "🐕",
+        icon: Dog,
         tags: [
           { id: "dogs", label: "Dogs", aliases: ["dog lover", "puppy"] },
           { id: "cats", label: "Cats", aliases: ["cat lover", "kitten"] },
@@ -416,7 +444,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "food_drink",
         label: "Food & Drink",
-        emoji: "🍕",
+        icon: Pizza,
         tags: [
           {
             id: "cooking",
@@ -478,7 +506,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "home_decor",
         label: "Home & Decor",
-        emoji: "🛋️",
+        icon: Sofa,
         tags: [
           {
             id: "houseplants",
@@ -535,7 +563,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "travel",
         label: "Travel",
-        emoji: "✈️",
+        icon: Plane,
         tags: [
           {
             id: "backpacking",
@@ -590,7 +618,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "life_values",
         label: "Life & Values",
-        emoji: "👨‍👩‍👧‍👦",
+        icon: Users,
         tags: [
           {
             id: "parenting",
@@ -653,7 +681,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "wellness",
         label: "Wellness",
-        emoji: "🧘",
+        icon: Heart,
         tags: [
           {
             id: "meditation",
@@ -710,7 +738,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "screen_time",
         label: "Screen Time",
-        emoji: "🍿",
+        icon: Popcorn,
         tags: [
           {
             id: "movies",
@@ -773,7 +801,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "audio_books",
         label: "Audio & Books",
-        emoji: "🎧",
+        icon: Headphones,
         tags: [
           {
             id: "reading",
@@ -834,7 +862,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "gaming_play",
         label: "Gaming & Play",
-        emoji: "🎮",
+        icon: Gamepad2,
         tags: [
           {
             id: "video_games",
@@ -912,7 +940,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "nightlife_social",
         label: "Nightlife & Social",
-        emoji: "🍻",
+        icon: Beer,
         tags: [
           {
             id: "bars_pubs",
@@ -974,7 +1002,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "fitness",
         label: "Fitness",
-        emoji: "🏋️",
+        icon: Dumbbell,
         tags: [
           {
             id: "gym_lifting",
@@ -1041,7 +1069,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "team_sports",
         label: "Team Sports",
-        emoji: "⚽",
+        icon: Trophy,
         tags: [
           {
             id: "football_soccer",
@@ -1078,7 +1106,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "individual_racket",
         label: "Individual & Racket",
-        emoji: "🎾",
+        icon: Activity,
         tags: [
           { id: "tennis", label: "Tennis", aliases: ["wimbledon", "court"] },
           { id: "golf", label: "Golf", aliases: ["links", "PGA"] },
@@ -1107,7 +1135,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "outdoors",
         label: "Outdoors",
-        emoji: "🏕️",
+        icon: Tent,
         tags: [
           {
             id: "hiking",
@@ -1192,7 +1220,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "visual_arts",
         label: "Visual Arts",
-        emoji: "✂️",
+        icon: Scissors,
         tags: [
           {
             id: "photography",
@@ -1261,7 +1289,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "music_performance",
         label: "Music & Performance",
-        emoji: "🎸",
+        icon: Music,
         tags: [
           {
             id: "playing_guitar",
@@ -1305,7 +1333,7 @@ export const INTEREST_CATEGORIES: Category[] = [
       {
         id: "tech_science_play",
         label: "Tech & Science Play",
-        emoji: "🧠",
+        icon: Brain,
         tags: [
           {
             id: "coding",

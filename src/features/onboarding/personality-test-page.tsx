@@ -1,7 +1,10 @@
+import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 import { AnimatePresence, motion } from "framer-motion";
+import { useMemo, useRef, useState } from "react";
 import { usePersonalityTest } from "./hooks/use-personality-test";
 
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
+import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { VoronoiCatalyst } from "../auth/components/voronoi-catalyst";
 import { CalculatingScreen } from "./components/personality/calculating-screen";
 import { IntermissionPage } from "./components/personality/intermission-page";
@@ -11,13 +14,21 @@ import { PersonalityIntro } from "./components/personality/personality-intro";
 import { PersonalityResults } from "./components/personality/personality-results";
 import { QuestionPage } from "./components/personality/question-page";
 import { Theory101 } from "./components/personality/theory-101";
+import {
+  buildQuestionList,
+  TEST_LENGTH_CONFIG,
+  type IpipQuestion,
+  type TestLength,
+} from "./data/ipip-questions";
 
 const QUESTIONS_PER_PAGE = 3;
 
 function ScreenRenderer({
   state,
+  onSelectionChange,
 }: {
   state: ReturnType<typeof usePersonalityTest>;
+  onSelectionChange: (length: TestLength) => void;
 }) {
   const {
     screen,
@@ -51,13 +62,48 @@ function ScreenRenderer({
           onNext={() => actions.setScreen({ id: "length" })}
         />
       );
-    case "length":
+    case "length": {
+      const isAdjusting = Object.keys(answers).length > 0;
+
+      const findFirstUnansweredPage = (testLength: TestLength) => {
+        const activeQuestions = buildQuestionList(testLength);
+        const config = TEST_LENGTH_CONFIG[testLength];
+        const firstUnansweredIndex = activeQuestions.findIndex(
+          (q: IpipQuestion) => !answers[q.id],
+        );
+        if (firstUnansweredIndex === -1)
+          return Math.ceil(activeQuestions.length / config.questionsPerPage);
+        return Math.floor(firstUnansweredIndex / config.questionsPerPage) + 1;
+      };
+
       return (
         <LengthSelector
-          onBack={() => actions.setScreen({ id: "guidelines" })}
-          onBegin={actions.handleBegin}
+          onBack={() => {
+            if (state.previousScreen?.id === "intermission") {
+              actions.setScreen(state.previousScreen);
+            } else if (isAdjusting) {
+              const resumePage = findFirstUnansweredPage(state.testLength);
+              actions.setScreen({ id: "questions", currentPage: resumePage });
+            } else {
+              actions.setScreen({ id: "guidelines" });
+            }
+          }}
+          onBegin={(length) => {
+            if (isAdjusting) {
+              actions.updateTestLength(length);
+              const resumePage = findFirstUnansweredPage(length);
+              actions.setScreen({ id: "questions", currentPage: resumePage });
+            } else {
+              actions.handleBegin(length);
+            }
+          }}
+          mode={isAdjusting ? "adjust" : "begin"}
+          initialLength={state.testLength}
+          answers={answers}
+          onSelectionChange={onSelectionChange}
         />
       );
+    }
     case "questions":
       return (
         <QuestionPage
@@ -69,14 +115,27 @@ function ScreenRenderer({
           answers={answers}
           onAnswer={actions.handleAnswer}
           onNext={actions.handleNextPage}
+          onReview={() => {
+            actions.setIsReviewMode(true);
+            actions.setScreen({ id: "questions", currentPage: 1 });
+          }}
         />
       );
     case "intermission":
       return (
         <IntermissionPage
           milestoneIndex={screen.type}
-          answeredCount={Object.keys(answers).length}
+          answeredCount={state.answeredInPoolCount}
           totalQuestions={questions.length}
+          onAdjustLength={() => {
+            actions.setIsReviewMode(false);
+            actions.setScreen({ id: "length" });
+          }}
+          onExtend={(len) => {
+            actions.setIsReviewMode(false);
+            actions.updateTestLength(len);
+            actions.handleContinueFromIntermission();
+          }}
           onContinue={actions.handleContinueFromIntermission}
         />
       );
@@ -103,6 +162,8 @@ function ScreenRenderer({
 }
 
 export function PersonalityTestPage() {
+  const [pendingLength, setPendingLength] = useState<TestLength | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const testState = usePersonalityTest({
     questionsPerPage: QUESTIONS_PER_PAGE,
     onContinue: () => {
@@ -114,41 +175,68 @@ export function PersonalityTestPage() {
     },
   });
 
+  const displayProgress = useMemo(() => {
+    if (testState.screen.id === "length" && pendingLength) {
+      const pool = buildQuestionList(pendingLength);
+      const answeredInPool = pool.filter(
+        (q) => testState.answers[q.id] !== undefined,
+      ).length;
+      return pool.length === 0 ? 0 : answeredInPool / pool.length;
+    }
+    return testState.progress;
+  }, [
+    testState.screen.id,
+    pendingLength,
+    testState.answers,
+    testState.progress,
+  ]);
+
+  useScrollToTop(
+    [
+      testState.screen.id,
+      "currentPage" in testState.screen
+        ? testState.screen.currentPage
+        : undefined,
+      "type" in testState.screen ? testState.screen.type : undefined,
+    ],
+    scrollContainerRef,
+  );
+
   return (
-    <div className="h-screen w-full max-h-dvh flex flex-col lg:flex-row relative overflow-hidden bg-canvas lg:bg-white">
-      {/* Left half (Form Space) */}
-      <div className="flex-1 relative h-full overflow-y-auto overflow-x-hidden px-4">
-        <div className="flex flex-col items-center justify-center w-full min-h-full py-16 lg:py-4">
-          <BackgroundTexture />
+    <div className="h-screen w-full max-h-dvh flex flex-col lg:flex-row relative overflow-hidden">
+      <div className="flex-1 relative flex flex-col h-full overflow-hidden">
+        <BackgroundTexture />
 
-          <div
-            className="absolute top-0 left-0 right-0 h-1 lg:hidden bg-linear-to-r from-forge-teal to-amber-400 opacity-80"
-            aria-hidden="true"
-          />
-          <div
-            className="hidden lg:block absolute top-0 left-0 right-0 h-1 bg-forge-teal"
-            aria-hidden="true"
-          />
+        <div
+          ref={scrollContainerRef}
+          className="flex-1 overflow-y-auto overflow-x-hidden relative h-full scroll-smooth"
+        >
+          <div className="absolute top-0 left-0 right-0 z-50">
+            <TopProgressBar progress={displayProgress} />
+          </div>
 
-          {/* Form container */}
-          <div className="relative w-full max-w-lg bg-white lg:bg-transparent lg:shadow-none shadow-[0_8px_32px_rgba(0,0,0,0.04)] ring-1 ring-slate-900/5 lg:ring-0 rounded-[2rem] p-8 sm:p-10 lg:p-0">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={testState.screen.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="w-full flex-1"
-              >
-                <ScreenRenderer state={testState} />
-              </motion.div>
-            </AnimatePresence>
+          <div className="flex flex-col items-center justify-start min-h-full py-4 sm:py-4 px-4 sm:px-6 relative">
+            <div className="w-full max-w-3xl relative">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={testState.screen.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <ScreenRenderer
+                    state={testState}
+                    onSelectionChange={setPendingLength}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Right half screen animation space */}
+      {/* ── Right half screen animation space ── */}
       <div className="hidden lg:flex flex-1 relative bg-hero-bg border-l border-slate-200 items-center justify-center overflow-hidden h-full">
         <VoronoiCatalyst progress={testState.progress} isTyping={false} />
       </div>

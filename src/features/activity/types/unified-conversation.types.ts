@@ -1,5 +1,5 @@
-import type { OnlineStatus, MessageStatus } from "@/features/direct-chats/types/direct-chats.types";
-import type { PlanStatus, GroupStatus } from "@/features/groups/types/groups.types";
+import type { OnlineStatus, MessageStatus } from "./direct-chats.types";
+import type { PlanStatus, GroupStatus } from "./groups.types";
 
 export type ConversationKind = "group" | "dm";
 
@@ -35,4 +35,5 @@ export interface UnifiedConversation {
   groupStatus?: GroupStatus;
   pendingProposals?: number;
   senderName?: string; // last message sender for groups
+  subtitleIcon?: "voice" | "image" | "file" | "location" | "poll" | "proposal";
 }

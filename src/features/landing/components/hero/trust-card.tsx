@@ -1,20 +1,28 @@
 import { cn } from "@/shared/lib/utils";
+import { motion } from "framer-motion";
 
 export function TrustCard() {
   const circumference = 2 * Math.PI * 16;
   const score = 4.2;
 
   return (
-    <div
+    <motion.div
+      initial={{ y: 0, rotate: 2 }}
+      animate={{ y: [-10, 0], rotate: [1, 2] }}
+      transition={{
+        duration: 5,
+        repeat: Infinity,
+        repeatType: "mirror",
+        ease: "easeInOut",
+      }}
       className={cn(
         "rounded-2xl px-4 py-3.5 w-37.5",
         "bg-[#0a1212]/80 backdrop-blur-xl border border-forge-teal/20",
         "shadow-[0_12px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.04)]",
-        "animate-float-card-c",
       )}
       aria-hidden="true"
     >
-      <p className="text-forge-teal/60 text-[9px] font-semibold font-sans mb-2.5 uppercase tracking-[0.15em]">
+      <p className="text-forge-teal/60 text-nano font-semibold font-sans mb-2.5 uppercase tracking-[0.15em]">
         Trust Score
       </p>
       <div className="flex items-center gap-2.5">
@@ -65,14 +73,14 @@ export function TrustCard() {
           </text>
         </svg>
         <div>
-          <p className="text-white/40 text-[9px] font-sans leading-snug">
+          <p className="text-white/40 text-nano font-sans leading-snug">
             Verified
           </p>
-          <p className="text-forge-teal-light text-[9px] font-semibold font-sans leading-snug">
+          <p className="text-forge-teal-light text-nano font-semibold font-sans leading-snug">
             Reliable
           </p>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

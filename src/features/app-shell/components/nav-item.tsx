@@ -50,7 +50,9 @@ export function NavItem({
         size={18}
         className={cn(
           "shrink-0 transition-colors duration-150",
-          active ? "text-primary" : "text-muted-foreground group-hover:text-foreground",
+          active
+            ? "text-primary"
+            : "text-muted-foreground group-hover:text-foreground",
         )}
         aria-hidden="true"
       />
@@ -60,7 +62,7 @@ export function NavItem({
 
       {badge != null && badge > 0 && (
         <span
-          className="hidden lg:flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground"
+          className="hidden lg:flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-micro font-bold text-accent-foreground"
           aria-label={`${badge} unread`}
         >
           {badge > 99 ? "99+" : badge}

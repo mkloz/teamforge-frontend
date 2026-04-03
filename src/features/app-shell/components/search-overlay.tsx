@@ -62,7 +62,7 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
       // @ts-expect-error — inert is valid HTML but not yet in React types
       inert={!open ? "" : undefined}
       className={cn(
-        "fixed inset-0 z-[60] flex flex-col bg-background transition-opacity duration-200",
+        "fixed inset-0 z-60 flex flex-col bg-background transition-opacity duration-200",
         open
           ? "opacity-100 pointer-events-auto"
           : "opacity-0 pointer-events-none",

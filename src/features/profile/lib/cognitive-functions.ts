@@ -1,11 +1,19 @@
-import type { MBTIType, CognitiveFunction, CognitiveFunctionCode } from "../types/profile.types";
+import type {
+  MBTIType,
+  CognitiveFunction,
+  CognitiveFunctionCode,
+} from "../types/profile.types";
 
 // Full function descriptions
-export const FUNCTION_INFO: Record<CognitiveFunctionCode, { name: string; shortName: string; description: string }> = {
+export const FUNCTION_INFO: Record<
+  CognitiveFunctionCode,
+  { name: string; shortName: string; description: string }
+> = {
   Ne: {
     name: "Extraverted Intuition",
     shortName: "Exploration",
-    description: "Sees patterns, possibilities, and connections in the external world",
+    description:
+      "Sees patterns, possibilities, and connections in the external world",
   },
   Ni: {
     name: "Introverted Intuition",
@@ -45,7 +53,15 @@ export const FUNCTION_INFO: Record<CognitiveFunctionCode, { name: string; shortN
 };
 
 // MBTI type to cognitive function stack mapping
-const TYPE_STACKS: Record<MBTIType, [CognitiveFunctionCode, CognitiveFunctionCode, CognitiveFunctionCode, CognitiveFunctionCode]> = {
+const TYPE_STACKS: Record<
+  MBTIType,
+  [
+    CognitiveFunctionCode,
+    CognitiveFunctionCode,
+    CognitiveFunctionCode,
+    CognitiveFunctionCode,
+  ]
+> = {
   // Analysts
   INTJ: ["Ni", "Te", "Fi", "Se"],
   INTP: ["Ti", "Ne", "Si", "Fe"],
@@ -68,7 +84,12 @@ const TYPE_STACKS: Record<MBTIType, [CognitiveFunctionCode, CognitiveFunctionCod
   ESFP: ["Se", "Fi", "Te", "Ni"],
 };
 
-const ROLES: ["dominant", "auxiliary", "tertiary", "inferior"] = ["dominant", "auxiliary", "tertiary", "inferior"];
+const ROLES: ["dominant", "auxiliary", "tertiary", "inferior"] = [
+  "dominant",
+  "auxiliary",
+  "tertiary",
+  "inferior",
+];
 
 export function getCognitiveStack(type: MBTIType): CognitiveFunction[] {
   const stack = TYPE_STACKS[type];
@@ -84,9 +105,13 @@ export function getCognitiveStack(type: MBTIType): CognitiveFunction[] {
 // Get function strength percentage for visualization
 export function getFunctionStrength(role: CognitiveFunction["role"]): number {
   switch (role) {
-    case "dominant": return 85;
-    case "auxiliary": return 65;
-    case "tertiary": return 40;
-    case "inferior": return 20;
+    case "dominant":
+      return 85;
+    case "auxiliary":
+      return 65;
+    case "tertiary":
+      return 40;
+    case "inferior":
+      return 20;
   }
 }

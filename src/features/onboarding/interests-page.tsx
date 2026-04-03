@@ -1,6 +1,9 @@
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
+import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
+import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRef } from "react";
 import { VoronoiCatalyst } from "../auth/components/voronoi-catalyst";
 import {
   InterestsBrowse,
@@ -17,16 +20,20 @@ import { MIN_INTERESTS } from "./data/interests-data";
 import { useInterests, type UseInterestsReturn } from "./hooks/use-interests";
 
 export function InterestsPage() {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const state = useInterests({
     onComplete: () => {
       window.location.href = "/";
     },
   });
 
+  // Auto-scroll on screen change
+  useScrollToTop([state.screen], scrollContainerRef);
+
   const progress = Math.min(state.selectedCount / MIN_INTERESTS, 1);
 
   return (
-    <div className="h-screen w-full max-h-dvh flex flex-col lg:flex-row relative overflow-hidden bg-canvas lg:bg-white">
+    <div className="h-screen w-full max-h-dvh flex flex-col lg:flex-row relative overflow-hidden">
       {/* ── Left – Visual Sidebar (Voronoi) ── */}
       <aside className="hidden lg:flex flex-1 relative bg-hero-bg border-r border-slate-200 items-center justify-center overflow-hidden h-full">
         <VoronoiCatalyst progress={progress} isTyping={false} />
@@ -34,12 +41,15 @@ export function InterestsPage() {
 
       {/* ── Right – Interactive Form Pane ── */}
       <main className="flex-1 flex flex-col h-full overflow-hidden relative">
-        <Decorations />
         <BackgroundTexture />
 
-        <div className="flex-1 overflow-y-scroll overflow-x-hidden px-5 pt-1 pb-0">
-          <div className="flex flex-col items-center justify-start w-full min-h-full">
-            <div className="relative w-full max-w-lg">
+        <div
+          ref={scrollContainerRef}
+          className="flex-1 overflow-y-scroll overflow-x-hidden px-4 sm:px-5 pb-0 scroll-smooth relative z-10"
+        >
+          <Decorations progress={progress} />
+          <div className="flex flex-col items-center justify-start w-full min-h-full py-6 sm:py-0">
+            <div className="relative w-full max-w-xl px-2 sm:px-10 lg:p-0">
               <PersistentHeader state={state} />
 
               <div className="relative w-full">
@@ -112,18 +122,12 @@ export function InterestsPage() {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function Decorations() {
+export function Decorations({ progress }: { progress: number }) {
   return (
-    <>
-      <div
-        className="absolute top-0 left-0 right-0 h-1 lg:hidden bg-linear-to-r from-forge-teal to-amber-400 opacity-80 z-10"
-        aria-hidden="true"
-      />
-      <div
-        className="hidden lg:block absolute top-0 left-0 right-0 h-1 bg-forge-teal z-10"
-        aria-hidden="true"
-      />
-    </>
+    <TopProgressBar
+      progress={progress}
+      className="-mx-4 sm:-mx-5 -mt-1 w-[calc(100%+32px)] sm:w-[calc(100%+40px)] sticky top-0 z-50"
+    />
   );
 }
 
@@ -133,7 +137,7 @@ function PersistentHeader({ state }: { state: UseInterestsReturn }) {
   return (
     <div
       className={cn(
-        "sticky top-0 z-20 -mx-5 px-5 backdrop-blur-sm bg-white/40 border-b border-slate-100 py-3 transition-opacity duration-300 opacity-100",
+        "sticky top-0 z-20 -mx-4 px-4 sm:-mx-5 sm:px-5 backdrop-blur-sm bg-white/40 border-b border-slate-100 py-3 transition-opacity duration-300 opacity-100",
       )}
     >
       {state.screen === "browse" && (

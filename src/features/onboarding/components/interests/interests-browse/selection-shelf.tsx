@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
+import { X, Sparkles } from "lucide-react";
 import { LEAF_TAG_BY_ID } from "../../../data/interests-data";
 import type { LeafTag } from "../../../data/interests-types";
 import { TagPill } from "./tag-pill";
@@ -34,20 +34,20 @@ export function SelectionShelf({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
           transition={{ duration: 0.2 }}
-          className="mt-12 pt-8 border-t border-slate-100"
+          className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-slate-100"
         >
           <div className="flex items-center gap-2 mb-4">
             {isSearching ? (
               <>
-                <div className="w-5 h-5 rounded-md bg-forge-teal/15 flex items-center justify-center">
-                  <span className="text-[11px] leading-none">✨</span>
+                <div className="w-5 h-5 rounded-md bg-forge-teal/15 flex items-center justify-center text-forge-teal">
+                  <Sparkles className="h-3 w-3" />
                 </div>
-                <p className="font-sans text-[10px] font-bold uppercase tracking-[0.15em] text-forge-teal">
+                <p className="font-sans text-micro font-bold uppercase tracking-[0.15em] text-forge-teal">
                   Suggested based on choices ({youMightAlsoLike.length})
                 </p>
               </>
             ) : (
-              <p className="font-sans text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
+              <p className="font-sans text-micro font-bold uppercase tracking-[0.15em] text-slate-400">
                 Your Selections ({selectedIds.size})
               </p>
             )}
@@ -74,7 +74,7 @@ export function SelectionShelf({
                       key={`shelf-${id}`}
                       type="button"
                       onClick={() => onToggle(id)}
-                      className="group flex items-center gap-1.5 rounded-full bg-forge-teal text-white px-3.5 py-1.5 text-[11px] font-bold shadow-sm hover:bg-teal-600 transition-all active:scale-95"
+                      className="group flex items-center gap-1.5 rounded-full bg-forge-teal text-white px-3.5 py-1.5 text-micro font-bold shadow-sm hover:bg-teal-600 transition active:scale-95"
                     >
                       {tag.label}
                       <X

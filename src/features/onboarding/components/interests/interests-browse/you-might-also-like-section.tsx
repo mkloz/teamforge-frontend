@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Sparkles } from "lucide-react";
 import { useState } from "react";
 import type { LeafTag } from "../../../data/interests-types";
 import { TagPill } from "./tag-pill";
@@ -30,15 +30,15 @@ export function YouMightAlsoLikeSection({
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center gap-2 px-4 py-3 group text-left"
       >
-        <div className="w-5 h-5 rounded-md bg-forge-teal/15 flex items-center justify-center shrink-0">
-          <span className="text-[11px] leading-none">✨</span>
+        <div className="w-5 h-5 rounded-md bg-forge-teal/15 flex items-center justify-center shrink-0 text-forge-teal">
+          <Sparkles className="h-3 w-3" />
         </div>
-        <span className="font-sans text-[11px] font-semibold text-forge-teal uppercase tracking-wider">
+        <span className="font-sans text-micro font-semibold text-forge-teal uppercase tracking-wider">
           You might also like
         </span>
         <div className="flex items-center gap-1.5 ml-1">
           <span className="w-1 h-1 rounded-full bg-forge-teal/40" />
-          <span className="font-sans text-[10px] font-bold text-forge-teal/60">
+          <span className="font-sans text-micro font-bold text-forge-teal/60">
             {tags.length}
           </span>
         </div>

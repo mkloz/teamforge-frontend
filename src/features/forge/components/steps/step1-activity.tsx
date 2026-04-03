@@ -14,7 +14,7 @@ import {
   HandHeart,
   History,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ACTIVITIES, RECENT } from "../../constants/forge.constants";
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -46,21 +46,27 @@ export function Step1Activity({
   const [shaking, setShaking] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  const triggerShake = () => {
+  const triggerShake = useCallback(() => {
     setShaking(true);
     setTimeout(() => setShaking(false), 500);
-  };
+  }, []);
 
-  // Expose triggerShake via a data attribute so ForgeFooter can call it imperatively
-  // via a CustomEvent dispatched on document
-  if (typeof window !== "undefined") {
-    (window as Window & { __forgeShakeGrid?: () => void }).__forgeShakeGrid =
-      triggerShake;
-  }
+  // Expose triggerShake via a global property so ForgeFooter can call it imperatively
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      (window as UnknownWindow).__forgeShakeGrid = triggerShake;
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        delete (window as UnknownWindow).__forgeShakeGrid;
+      }
+    };
+  }, [triggerShake]);
+
+  type UnknownWindow = Window & { __forgeShakeGrid?: () => void };
 
   return (
     <div className="space-y-5 animate-in fade-in duration-300">
-
       {/* Recent / Quick-select row */}
       {RECENT.length > 0 && (
         <div className="space-y-2.5">
@@ -80,7 +86,7 @@ export function Step1Activity({
 
           {/* Horizontal scroll — right-peek gradient signals more content */}
           <div className="relative">
-            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar snap-x snap-mandatory touch-pan-x">
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 snap-x snap-mandatory touch-pan-x">
               {RECENT.map(({ id, label, count }) => {
                 const Icon = ICON_MAP[id] || History;
                 const active = selectedActivity === label;
@@ -91,7 +97,7 @@ export function Step1Activity({
                     onClick={() => onSelect(label)}
                     aria-pressed={active}
                     className={cn(
-                      "group relative flex items-center gap-3 min-w-[160px] shrink-0 px-3.5 py-3 rounded-2xl border snap-start transition-all duration-200",
+                      "group relative flex items-center gap-3 min-w-40 shrink-0 px-3.5 py-3 rounded-2xl border snap-start transition-colors duration-200",
                       active
                         ? "border-accent bg-accent/10 ring-1 ring-accent/30"
                         : "border-border/40 bg-card hover:border-accent/30 hover:bg-accent/5",
@@ -99,7 +105,7 @@ export function Step1Activity({
                   >
                     <div
                       className={cn(
-                        "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200",
+                        "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-200",
                         active
                           ? "bg-accent text-accent-foreground"
                           : "bg-muted text-muted-foreground group-hover:bg-accent/15 group-hover:text-accent",
@@ -128,7 +134,7 @@ export function Step1Activity({
               })}
             </div>
             {/* Right-edge peek fade — signals horizontal scroll */}
-            <div className="absolute top-0 right-0 bottom-1 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none" />
+            <div className="absolute top-0 right-0 bottom-1 w-8 bg-linear-to-l from-background to-transparent pointer-events-none" />
           </div>
         </div>
       )}
@@ -141,7 +147,8 @@ export function Step1Activity({
             Choose a category
           </p>
           <p className="text-xs text-muted-foreground/60 mt-0.5 leading-relaxed">
-            Pick the style that fits your plan and we&apos;ll find the right people.
+            Pick the style that fits your plan and we&apos;ll find the right
+            people.
           </p>
         </div>
 
@@ -163,7 +170,7 @@ export function Step1Activity({
                 onClick={() => onSelect(label)}
                 aria-pressed={selected}
                 className={cn(
-                  "group relative flex flex-col items-start gap-3 p-4 rounded-2xl border text-left transition-all duration-200 min-h-[100px] active:scale-[0.97]",
+                  "group relative flex flex-col items-start gap-3 p-4 rounded-2xl border text-left transition duration-200 min-h-25 active:scale-[0.97]",
                   selected
                     ? "border-accent bg-accent/8 ring-1 ring-accent/25 shadow-sm"
                     : "border-border/40 bg-card hover:border-accent/30 hover:bg-accent/5",
@@ -173,7 +180,13 @@ export function Step1Activity({
                 {selected && (
                   <span className="absolute top-2.5 right-2.5 w-4 h-4 rounded-full bg-accent flex items-center justify-center">
                     <svg width="8" height="7" viewBox="0 0 8 7" fill="none">
-                      <path d="M1 3.5L3 5.5L7 1.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path
+                        d="M1 3.5L3 5.5L7 1.5"
+                        stroke="white"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   </span>
                 )}
@@ -181,7 +194,7 @@ export function Step1Activity({
                 {/* Icon */}
                 <div
                   className={cn(
-                    "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200",
+                    "w-10 h-10 rounded-xl flex items-center justify-center transition-colors duration-200",
                     selected
                       ? "bg-accent text-accent-foreground shadow-sm shadow-accent/25"
                       : "bg-muted text-muted-foreground group-hover:bg-accent/15 group-hover:text-accent",

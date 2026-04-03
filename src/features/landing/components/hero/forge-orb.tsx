@@ -1,5 +1,6 @@
 import { TeamForgeLogo } from "@/assets/logo";
 import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { GroupCard } from "./group-card";
 import { MbtiCard } from "./mbti-card";
 import { TrustCard } from "./trust-card";
@@ -121,22 +122,26 @@ export function ForgeOrb() {
   return (
     <div
       ref={containerRef}
-      className="relative flex items-center justify-center cursor-default w-full h-full min-h-90 md:min-h-125 px-10 md:pl-32 xl:pl-47 md:pr-25 md:py-20 xl:pr-37 perspective-[600px]"
+      className="relative flex items-center justify-center cursor-default w-full h-full min-h-90 md:min-h-125 px-10 md:pl-32 xl:pl-47 md:pr-25 md:py-20 xl:pr-37 perspective-orb"
     >
       <div
         ref={orbContainerRef}
-        className="w-[320px] h-80 xl:w-95 xl:h-95 relative transition-transform duration-700 ease-out"
+        className="w-80 h-80 xl:w-95 xl:h-95 relative transition-transform duration-700 ease-out"
         style={{
           transformStyle: "preserve-3d",
         }}
       >
-        <div
-          className="absolute inset-0 rounded-full blur-[2px] animate-orb-rotate bg-[conic-gradient(from_0deg,rgba(13,148,136,0.25),rgba(20,184,166,0.08),rgba(13,148,136,0.15),rgba(13,148,136,0.25))]"
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 rounded-full blur-subtle bg-[conic-gradient(from_0deg,rgba(13,148,136,0.25),rgba(20,184,166,0.08),rgba(13,148,136,0.15),rgba(13,148,136,0.25))]"
           aria-hidden="true"
         />
 
-        <div
-          className="absolute inset-3 rounded-full animate-orb-pulse bg-[radial-gradient(circle_at_40%_40%,rgba(13,148,136,0.15),rgba(9,9,9,0.95)_70%)]"
+        <motion.div
+          animate={{ scale: [1, 1.04, 1], opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute inset-3 rounded-full bg-[radial-gradient(circle_at_40%_40%,rgba(13,148,136,0.15),rgba(9,9,9,0.95)_70%)]"
           aria-hidden="true"
         />
 

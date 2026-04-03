@@ -1,3 +1,4 @@
+import { cn } from "@/shared/lib/utils";
 import { Check } from "lucide-react";
 import {
   generateDetailedDescription,
@@ -8,20 +9,29 @@ import { SectionTitle } from "./section-title";
 
 interface PersonalitySectionProps {
   profile: UserProfile;
+  hideHeaders?: boolean;
 }
 
-export function PersonalitySection({ profile }: PersonalitySectionProps) {
+export function PersonalitySection({
+  profile,
+  hideHeaders = false,
+}: PersonalitySectionProps) {
   const personalityProfile = generateDetailedDescription(profile.oceanScores);
 
   return (
     <div className="flex flex-col gap-8 w-full">
       {/* Primary Section Header */}
-      <h3 className="text-xl font-bold text-ink flex items-center gap-2">
-        Personality Insights
-      </h3>
+      {!hideHeaders && (
+        <h3 className="text-xl font-bold text-ink flex items-center gap-2">
+          Personality Insights
+        </h3>
+      )}
 
-      <div className="flex flex-col gap-10">
-        <PersonalitySummary profile={personalityProfile} />
+      <div className={cn("flex flex-col", hideHeaders ? "gap-6" : "gap-10")}>
+        <PersonalitySummary
+          profile={personalityProfile}
+          hideHeaders={hideHeaders}
+        />
 
         <div className="grid grid-cols-1 gap-10">
           <PersonalityStrengths strengths={personalityProfile.strengths} />
@@ -32,18 +42,26 @@ export function PersonalitySection({ profile }: PersonalitySectionProps) {
   );
 }
 
-function PersonalitySummary({ profile }: { profile: PersonalityProfile }) {
+function PersonalitySummary({
+  profile,
+  hideHeaders,
+}: {
+  profile: PersonalityProfile;
+  hideHeaders: boolean;
+}) {
   return (
     <div className="space-y-4">
       {/* Title badge */}
-      <div className="flex items-center gap-2">
-        <span className="px-3.5 py-1.5 rounded-full text-[11px] font-semibold bg-spark-amber/10 text-spark-amber border border-spark-amber/20 tracking-tight">
-          {profile.title}
-        </span>
-      </div>
+      {!hideHeaders && (
+        <div className="flex items-center gap-2">
+          <span className="px-3.5 py-1.5 rounded-full text-micro font-semibold bg-spark-amber/10 text-spark-amber border border-spark-amber/20 tracking-tight">
+            {profile.title}
+          </span>
+        </div>
+      )}
 
       {/* Summary */}
-      <p className="text-[17px] text-ink/90 font-medium leading-relaxed text-pretty">
+      <p className="text-lg text-ink/90 font-medium leading-relaxed text-pretty indent-8">
         {profile.summary}
       </p>
     </div>

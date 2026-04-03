@@ -68,11 +68,11 @@ export function UserMenu() {
         aria-label="User menu"
         className={cn(
           // Position: right-aligned below the avatar with a small gap
-          "absolute right-0 top-[calc(100%+6px)] z-[70] w-56 origin-top-right",
+          "absolute right-0 top-[calc(100%+6px)] z-70 w-56 origin-top-right",
           // Cap height so it never runs off short viewports
           "max-h-[min(340px,calc(100vh-5rem))] overflow-y-auto",
           "rounded-2xl border border-border bg-popover shadow-xl shadow-black/10",
-          "transition-all duration-150",
+          "transition duration-150",
           open
             ? "opacity-100 scale-100 pointer-events-auto"
             : "opacity-0 scale-95 pointer-events-none",
@@ -102,9 +102,17 @@ export function UserMenu() {
             )}
           >
             {isDark ? (
-              <Sun size={15} aria-hidden="true" className="text-muted-foreground" />
+              <Sun
+                size={15}
+                aria-hidden="true"
+                className="text-muted-foreground"
+              />
             ) : (
-              <Moon size={15} aria-hidden="true" className="text-muted-foreground" />
+              <Moon
+                size={15}
+                aria-hidden="true"
+                className="text-muted-foreground"
+              />
             )}
             {isDark ? "Switch to Light mode" : "Switch to Dark mode"}
             <span className="ml-auto text-xs text-muted-foreground">
@@ -123,7 +131,11 @@ export function UserMenu() {
               "focus-visible:outline-none focus-visible:bg-muted",
             )}
           >
-            <User size={15} aria-hidden="true" className="text-muted-foreground" />
+            <User
+              size={15}
+              aria-hidden="true"
+              className="text-muted-foreground"
+            />
             View Profile
           </Link>
 
@@ -138,7 +150,11 @@ export function UserMenu() {
               "focus-visible:outline-none focus-visible:bg-muted",
             )}
           >
-            <Settings size={15} aria-hidden="true" className="text-muted-foreground" />
+            <Settings
+              size={15}
+              aria-hidden="true"
+              className="text-muted-foreground"
+            />
             Settings
           </Link>
         </div>

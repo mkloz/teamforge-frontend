@@ -37,19 +37,19 @@ export function SuggestionsSection({
         <div className="w-5 h-5 rounded-md bg-amber-100 flex items-center justify-center shrink-0">
           <Sparkles size={11} className="text-amber-500" strokeWidth={2} />
         </div>
-        <span className="font-sans text-[11px] font-semibold text-slate-600 uppercase tracking-wider">
+        <span className="font-sans text-micro font-semibold text-slate-600 uppercase tracking-wider">
           Suggested for you
         </span>
         <div className="flex items-center gap-1.5 ml-1">
           <span className="w-1 h-1 rounded-full bg-slate-300" />
-          <span className="font-sans text-[10px] font-bold text-slate-400">
+          <span className="font-sans text-micro font-bold text-slate-400">
             {suggestedTags.length}
           </span>
         </div>
 
         {/* Right-side badges + chevron */}
         <div className="ml-auto flex items-center gap-1.5">
-          <span className="font-sans text-[10px] font-bold uppercase tracking-wider text-white bg-amber-400 px-2.5 py-0.5 rounded-full leading-none">
+          <span className="font-sans text-micro font-bold uppercase tracking-wider text-white bg-amber-400 px-2.5 py-0.5 rounded-full leading-none">
             {mbtiType}
           </span>
           <motion.span
@@ -73,7 +73,7 @@ export function SuggestionsSection({
             className="overflow-hidden"
           >
             <div className="px-4 pb-4">
-              <p className="font-sans text-[11px] text-slate-400 mb-3 leading-snug">
+              <p className="font-sans text-micro text-slate-400 mb-3 leading-snug">
                 Based on your personality – pick what resonates.
               </p>
               <div className="flex flex-wrap gap-1.5">

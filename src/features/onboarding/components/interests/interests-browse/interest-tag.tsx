@@ -25,8 +25,8 @@ export function InterestTag({
       onClick={disabled && !selected ? undefined : onToggle}
       whileTap={!disabled || selected ? { scale: 0.93 } : {}}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full font-sans font-medium transition-all duration-150 cursor-pointer select-none",
-        size === "sm" ? "px-2.5 py-1 text-[11px]" : "px-3 py-1.5 text-xs",
+        "inline-flex items-center gap-1.5 rounded-full font-sans font-medium transition duration-150 cursor-pointer select-none",
+        size === "sm" ? "px-2.5 py-1 text-micro" : "px-3 py-1.5 text-xs",
         selected
           ? "bg-forge-teal text-white shadow-[0_2px_8px_rgba(13,148,136,0.30)]"
           : "bg-slate-100 text-slate-600 hover:bg-slate-200",

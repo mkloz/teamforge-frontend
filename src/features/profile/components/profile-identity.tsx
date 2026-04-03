@@ -16,7 +16,7 @@ export function ProfileIdentity({ profile }: ProfileIdentityProps) {
       <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-2 gap-y-1 text-slate-muted sm:text-white/90 mt-2 font-medium">
         <span className="text-sm font-bold opacity-80">{profile.age} yrs</span>
         <span className="w-1 h-1 rounded-full bg-slate-muted/40 sm:bg-white/50" />
-        <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest min-w-0 opacity-80">
+        <div className="flex items-center gap-1 text-micro font-bold uppercase tracking-widest min-w-0 opacity-80">
           <MapPin
             size={12}
             className="text-forge-teal sm:text-white shrink-0"

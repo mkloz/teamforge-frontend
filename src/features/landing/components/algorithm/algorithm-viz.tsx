@@ -220,21 +220,21 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
       switch (node.type) {
         case "center":
           return {
-            fill: "#0D9488",
+            fill: "var(--color-forge-teal)",
             r: size * 0.055,
             textFill: "#fff",
             opacity: 1,
             glow: true,
-            glowColor: "#0D9488",
+            glowColor: "var(--color-forge-teal)",
           };
         case "selected":
           return {
-            fill: "#F59E0B",
+            fill: "var(--color-spark-amber)",
             r: size * 0.038,
-            textFill: "#1C1C1A",
+            textFill: "var(--color-ink)",
             opacity: 1,
             glow: true,
-            glowColor: "#F59E0B",
+            glowColor: "var(--color-spark-amber)",
           };
         case "rejected":
           return {
@@ -262,14 +262,18 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
   const getLineProps = useCallback(
     (node: DisplayNode) => {
       if (phase === "idle")
-        return { opacity: 0, stroke: "#0D9488", width: 0.8 };
+        return { opacity: 0, stroke: "var(--color-forge-teal)", width: 0.8 };
       if (node.type === "rejected")
         return { opacity: 0.02, stroke: "#374151", width: 0.5 };
       if (node.type === "selected")
-        return { opacity: 0.65, stroke: "#F59E0B", width: 1.8 };
+        return {
+          opacity: 0.65,
+          stroke: "var(--color-spark-amber)",
+          width: 1.8,
+        };
       if (phase === "scanning")
-        return { opacity: 0.15, stroke: "#0D9488", width: 0.8 };
-      return { opacity: 0.15, stroke: "#0D9488", width: 0.8 };
+        return { opacity: 0.15, stroke: "var(--color-forge-teal)", width: 0.8 };
+      return { opacity: 0.15, stroke: "var(--color-forge-teal)", width: 0.8 };
     },
     [phase],
   );
@@ -307,12 +311,28 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
       >
         <defs>
           <radialGradient id="centerGlow">
-            <stop offset="0%" stopColor="#0D9488" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="#0D9488" stopOpacity="0" />
+            <stop
+              offset="0%"
+              stopColor="var(--color-forge-teal)"
+              stopOpacity="0.4"
+            />
+            <stop
+              offset="100%"
+              stopColor="var(--color-forge-teal)"
+              stopOpacity="0"
+            />
           </radialGradient>
           <radialGradient id="amberGlow">
-            <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="#F59E0B" stopOpacity="0" />
+            <stop
+              offset="0%"
+              stopColor="var(--color-spark-amber)"
+              stopOpacity="0.4"
+            />
+            <stop
+              offset="100%"
+              stopColor="var(--color-spark-amber)"
+              stopOpacity="0"
+            />
           </radialGradient>
           <filter id="softBlur">
             <feGaussianBlur stdDeviation="4" />
@@ -327,7 +347,7 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
           cy={cy}
           r={size * 0.45}
           fill="none"
-          stroke="#0D9488"
+          stroke="var(--color-forge-teal)"
           strokeWidth="1"
           opacity="0.1"
           strokeDasharray="4 12"
@@ -340,7 +360,7 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
           cy={cy}
           r={size * 0.4}
           fill="none"
-          stroke="#14B8A6"
+          stroke="var(--color-forge-teal-light)"
           strokeWidth="0.5"
           opacity="0.15"
           strokeDasharray="2 6"
@@ -358,7 +378,7 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
               cx={cx}
               cy={cy}
               fill="none"
-              stroke="#0D9488"
+              stroke="var(--color-forge-teal)"
               strokeWidth="1"
               initial={{ r: size * 0.05, opacity: 0.6 }}
               animate={{ r: size * 0.48, opacity: 0 }}
@@ -376,7 +396,7 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
               cy={cy}
               r={size * 0.36}
               fill="none"
-              stroke="#0D9488"
+              stroke="var(--color-forge-teal)"
               strokeWidth="1"
               opacity="0.3"
               strokeDasharray="6 8"
@@ -448,7 +468,7 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
                     y2: yB,
                     opacity: phase === "formed" ? 0.45 : 0,
                   }}
-                  stroke="#F59E0B"
+                  stroke="var(--color-spark-amber)"
                   strokeWidth="1.5"
                   strokeDasharray="4 4"
                   transition={{ duration: 1.5, ease: "easeInOut" }}
@@ -485,7 +505,7 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
                       ease: "linear",
                       delay: pr.delay,
                     }}
-                    className="drop-shadow-[0_0_4px_#14B8A6]"
+                    className="drop-shadow-[0_0_4px_var(--color-forge-teal-light)]"
                   />
                 );
               })}

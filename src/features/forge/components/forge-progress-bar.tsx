@@ -38,10 +38,10 @@ export function ForgeProgressBar({
           return (
             <div key={s} className={cn("flex flex-col gap-1.5 flex-1")}>
               {/* Track bar */}
-              <div className="relative h-[3px] rounded-full overflow-hidden bg-muted">
+              <div className="relative h-0.75 rounded-full overflow-hidden bg-muted">
                 <div
                   className={cn(
-                    "absolute inset-0 rounded-full transition-all duration-500 ease-out",
+                    "absolute inset-0 rounded-full transition-colors duration-500 ease-out",
                     s <= step ? activeColor : "bg-transparent",
                   )}
                 />
@@ -51,7 +51,7 @@ export function ForgeProgressBar({
               <div className="flex items-center gap-1">
                 <span
                   className={cn(
-                    "text-[10px] font-bold tabular-nums transition-colors duration-500",
+                    "text-micro font-bold tabular-nums transition-colors duration-500",
                     isActive
                       ? activeTextColor
                       : isComplete
@@ -63,7 +63,7 @@ export function ForgeProgressBar({
                 </span>
                 <p
                   className={cn(
-                    "text-[11px] font-semibold transition-colors duration-500",
+                    "text-micro font-semibold transition-colors duration-500",
                     isActive
                       ? activeTextColor
                       : isComplete

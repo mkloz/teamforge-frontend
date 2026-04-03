@@ -35,7 +35,7 @@ export function InterestsProgressBar({
   }
 
   return (
-    <div className="bg-white border-t border-slate-200/80 px-4 lg:px-0 py-3 lg:max-w-lg lg:mx-auto w-full">
+    <div className="bg-white/80 backdrop-blur-md border-t border-slate-200/60 px-4 sm:px-6 lg:px-0 py-3.5 lg:max-w-lg lg:mx-auto w-full">
       <div className="h-0.5 w-full bg-slate-100 rounded-full mb-3 overflow-hidden">
         <motion.div
           className="h-full rounded-full bg-forge-teal"
@@ -45,14 +45,14 @@ export function InterestsProgressBar({
       </div>
       <div className="flex items-center justify-between gap-4">
         <div>
-          <span className="font-sans text-sm font-semibold text-[#1C1C1A]">
+          <span className="font-sans text-sm font-semibold text-ink">
             {selectedCount}
             <span className="font-normal text-slate-400">
               {" "}
               / {MAX_INTERESTS}
             </span>
           </span>
-          <p className="font-sans text-[11px] text-slate-400 leading-none mt-0.5">
+          <p className="font-sans text-micro text-slate-400 leading-none mt-0.5">
             {progressText}
           </p>
         </div>
@@ -61,9 +61,9 @@ export function InterestsProgressBar({
           onClick={canContinue ? onContinue : undefined}
           whileTap={canContinue ? { scale: 0.97 } : {}}
           className={cn(
-            "flex items-center gap-2 font-sans text-sm font-semibold rounded-xl h-10 px-5 transition-all duration-200 shrink-0",
+            "flex items-center gap-2 font-sans text-sm font-semibold rounded-xl h-10 px-5 transition-colors duration-200 shrink-0",
             canContinue
-              ? "bg-forge-teal text-white shadow-[0_4px_16px_rgba(13,148,136,0.25)] hover:shadow-[0_6px_20px_rgba(13,148,136,0.35)]"
+              ? "bg-forge-teal text-white shadow-teal-glow hover:shadow-teal-glow-lg"
               : "bg-slate-100 text-slate-400 cursor-not-allowed",
           )}
         >

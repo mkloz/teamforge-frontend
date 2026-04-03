@@ -6,6 +6,7 @@ import {
 import { cn } from "@/shared/lib/utils";
 import type { DimensionScore } from "../types/profile.types";
 import { getBorderlineExplanation } from "../lib/narrative-generator";
+import { NumberTicker } from "@/shared/components/ui/number-ticker";
 
 interface DimensionSpectrumProps {
   score: DimensionScore;
@@ -30,16 +31,20 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
     <div className="flex flex-col gap-2">
       {/* Label & Percentage Row */}
       <div className="flex items-center justify-between px-1">
-        <span className="text-[10px] font-black text-slate-muted uppercase tracking-widest">
+        <span className="text-micro font-black text-slate-muted uppercase tracking-widest">
           {labels.name}
         </span>
         <span
           className={cn(
-            "text-[10px] font-black uppercase tracking-widest transition-colors",
+            "text-micro font-black uppercase tracking-widest transition-colors",
             score.isBorderline ? "text-spark-amber" : "text-forge-teal",
           )}
         >
-          {score.score}%
+          <NumberTicker
+            value={score.score}
+            className="text-inherit dark:text-inherit"
+          />
+          %
         </span>
       </div>
 
@@ -57,11 +62,11 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
         {/* Spectrum track */}
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="relative flex-1 h-2 rounded-full bg-slate-muted/10 cursor-help overflow-hidden border border-border/10">
+            <div className="relative flex-1 h-2 rounded-full bg-slate-muted/10 cursor-help border border-border/10">
               {/* Gradient fill based on position */}
               <div
                 className={cn(
-                  "absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out",
+                  "absolute inset-y-0 left-0 rounded-full transition-colors duration-700 ease-out",
                   score.isBorderline
                     ? "bg-linear-to-r from-spark-amber/30 to-spark-amber/60"
                     : "bg-linear-to-r from-forge-teal/30 to-forge-teal/60",
@@ -72,13 +77,15 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
               {/* Marker */}
               <div
                 className={cn(
-                  "absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-background shadow-md border-2 z-20 transition-all duration-700 ease-out",
+                  "absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-white shadow-[0_2px_4px_rgba(0,0,0,0.12)] border-2 z-20 transition duration-700 ease-out",
                   score.isBorderline
                     ? "border-spark-amber ring-2 ring-spark-amber/10"
                     : "border-forge-teal ring-2 ring-forge-teal/10",
-                  "hover:scale-125 hover:shadow-lg",
+                  "hover:scale-110",
                 )}
-                style={{ left: `calc(${markerPosition}% - 7px)` }}
+                style={{
+                  left: `calc(${markerPosition}% - 7px)`,
+                }}
               />
             </div>
           </TooltipTrigger>

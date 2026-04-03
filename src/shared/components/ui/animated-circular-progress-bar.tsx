@@ -1,0 +1,100 @@
+import { cn } from "@/shared/lib/utils";
+import { motion, useSpring, useTransform } from "framer-motion";
+import { useEffect, useState } from "react";
+
+export interface AnimatedCircularProgressBarProps {
+  max: number;
+  value: number;
+  min: number;
+  gaugePrimaryColor: string;
+  gaugeSecondaryColor: string;
+  className?: string;
+}
+
+export function AnimatedCircularProgressBar({
+  max = 100,
+  min = 0,
+  value = 0,
+  gaugePrimaryColor,
+  gaugeSecondaryColor,
+  className,
+}: AnimatedCircularProgressBarProps) {
+  const [currentValue, setCurrentValue] = useState(value);
+
+  useEffect(() => {
+    setCurrentValue(value);
+  }, [value]);
+
+  const circumference = 2 * Math.PI * 45;
+  const percentPx = circumference / 100;
+
+  const springValue = useSpring(currentValue, {
+    stiffness: 40,
+    damping: 10,
+  });
+
+  const labelText = useTransform(springValue, (latest) => {
+    return `${Math.round(latest)}`;
+  });
+
+  return (
+    <div
+      className={cn("relative size-40 text-2xl font-semibold", className)}
+      style={
+        {
+          "--circle-size": "100px",
+          "--circumference": `${circumference}px`,
+          "--percent-to-px": `${percentPx}px`,
+        } as React.CSSProperties
+      }
+    >
+      <svg
+        fill="transparent"
+        className="size-full"
+        strokeWidth="2"
+        viewBox="0 0 100 100"
+      >
+        <circle
+          cx="50"
+          cy="50"
+          r="45"
+          strokeWidth="10"
+          strokeDashoffset="0"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className=" opacity-100"
+          style={
+            {
+              stroke: gaugeSecondaryColor,
+              "--stroke-percent": 90,
+            } as React.CSSProperties
+          }
+        />
+        <motion.circle
+          cx="50"
+          cy="50"
+          r="45"
+          strokeWidth="10"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          stroke={gaugePrimaryColor}
+          strokeDasharray={`${circumference}px ${circumference}px`}
+          initial={{ strokeDashoffset: circumference }}
+          animate={{
+            strokeDashoffset:
+              circumference -
+              ((currentValue - min) / (max - min)) * circumference,
+          }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="opacity-100"
+        />
+      </svg>
+      <motion.span
+        data-current-value={currentValue}
+        className="duration-[unset] absolute inset-0 m-auto mx-auto flex items-center justify-center text-center transition-none"
+      >
+        {labelText}
+      </motion.span>
+    </div>
+  );
+}
