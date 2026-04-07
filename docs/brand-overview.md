@@ -1,6 +1,6 @@
 # TeamForge — Brand Overview
 
-**Version 1.0 | For Design, Marketing & Development Teams**
+**Version 1.1 | For Design, Marketing & Development Teams**
 
 ---
 
@@ -14,9 +14,17 @@ This document defines how TeamForge presents itself visually and verbally across
 
 ## 2. The Core Idea
 
-The difference between a good weekend and a lonely one is 3 to 5 people. TeamForge exists to close that gap — not through random matching or endless scrolling, but through a deliberate, intelligent act: press one button and receive one compatible group.
+The difference between a good weekend and a lonely one is 3 to 5 people. TeamForge exists to close that gap — not through random matching or endless scrolling, but through a deliberate, intelligent act: press one button ("Forge my group") and receive one algorithmically selected, compatible group.
 
-The product uses personality profiling (MBTI as a 4-dimensional vector), interest similarity, social graph proximity, age alignment, and a trust score to form groups that feel familiar from the first message.
+The product uses a multi-factor scoring system combining:
+1. **MBTI personality** (4-dimensional vector)
+2. **OCEAN Big Five** psychometric scores
+3. **Interest similarity**
+4. **Social graph proximity**
+5. **Age alignment**
+6. **Exponential-smoothing trust score**
+
+These elements work together to form groups that feel familiar from the first message.
 
 ---
 
@@ -45,7 +53,7 @@ These values map directly to product features — they are not decoration.
 
 ### Intentionality
 
-Every connection is purposeful. The algorithm selects each group member for a mathematically computed reason. Nothing is random.
+Every connection is purposeful. The algorithm selects each group member for a mathematically computed reason based on our multi-factor scoring system. Nothing is random.
 
 ### Trust
 
@@ -53,15 +61,15 @@ The exponential-smoothing trust score is the system's moral spine. It rewards re
 
 ### Belonging
 
-The social graph bonus in the matching algorithm deliberately prioritizes existing friendships. TeamForge strengthens your existing social fabric while carefully introducing compatible new people.
+The social graph bonus in the matching algorithm deliberately prioritizes existing friendships and connections. TeamForge strengthens your existing social fabric while carefully introducing compatible new people using OCEAN and MBTI metrics.
 
 ### Accessibility
 
-Cold-start templates, 3-tap group formation, and automatic replacement make the experience effortless. The interface fights friction at every step.
+Guided onboarding, a unified activity feed, and 3-tap group formation (Forge wizard) make the experience effortless. The interface fights friction at every step safely.
 
 ### Growth
 
-MBTI is a discovery tool, not a label. Trust scores evolve. The system grows with the user.
+MBTI and OCEAN Big Five are discovery tools, not limiting labels. Trust scores evolve. The system grows with the user as their interests and interactions develop.
 
 ---
 
@@ -73,7 +81,7 @@ The voice never uses corporate jargon, dating-app language, or game mechanics. I
 | -------------- | -------------------- | ----------------------------------------------------------- |
 | Headline / CTA | Confident, direct    | "Find your people, intelligently."                          |
 | Onboarding     | Encouraging, curious | "Let's find out how you tick."                              |
-| MBTI result    | Affirming, warm      | "You're an ENTJ — a natural organiser with bold ideas."     |
+| Profiling      | Affirming, warm      | "You're an ENTJ — a natural organiser with bold ideas."     |
 | Group formed   | Celebratory          | "Your group is ready. Here's why they're perfect for you."  |
 | Empty state    | Gentle, activating   | "No groups yet. Let's forge your first one."                |
 | Error / limit  | Honest, constructive | "You've used your 3 searches today. Fresh starts tomorrow." |
@@ -102,7 +110,7 @@ The voice never uses corporate jargon, dating-app language, or game mechanics. I
 
 The logo is a rounded-square badge containing four Voronoi regions in varying teal opacities, meeting at a central amber convergence point.
 
-Each Voronoi region represents one group member — their distinct but compatible personality vector (MBTI dimension). The varying opacities (`1.0 / 0.83 / 0.66 / 0.50`) visualize the four MBTI dimensions converging. The amber dot at the center represents the moment all scoring factors converge and the group is forged — the MGS apex.
+Each Voronoi region represents one group member — their distinct but compatible psychometric profile. The varying opacities (`1.0 / 0.83 / 0.66 / 0.50`) visualize the individuals converging. The amber dot at the center represents the moment all scoring factors (MBTI, OCEAN, trust, interests, etc) align and the group is forged.
 
 The `#FAFAF8` strokes between regions are the group's shared boundaries — individuals remain distinct, but they belong together.
 

@@ -18,18 +18,10 @@ The palette uses exactly **5 roles**. No additional colors may be introduced wit
 | Primary text    | Ink         | `#1C1C1A` | `--color-ink`         | All headings and body text on light surfaces                                           |
 | Secondary text  | Slate       | `#6B7280` | `--color-slate-muted` | Captions, timestamps, secondary labels, placeholder text, borders                      |
 
-### Contextual Tokens (Dark Surfaces Only)
-
-| Role                                | Name       | Hex       | Usage                                                                                                          |
-| ----------------------------------- | ---------- | --------- | -------------------------------------------------------------------------------------------------------------- |
-| Hero / dark section background      | Void       | `#090909` | Hero, algorithm, CTA sections — dark-mode canvas                                                               |
-| Teal light (single allowed variant) | Teal Light | `#14B8A6` | One lighter teal variant; allowed only for gradients and secondary spectrum bars. **Not a sixth brand color.** |
-
 ### Palette Rules
 
-- Teal and Amber occupy a maximum of 15% of any screen surface. The remaining 85% is neutrals.
+- Teal and Amber occupy a maximum of 15% of any screen surface. The remaining 85% is neutrals (Canvas, Ink, Slate-muted).
 - Amber is **never** used on large surfaces, backgrounds, or text blocks.
-- `#14B8A6` is permitted only as a gradient endpoint alongside `#0D9488`. It must not appear as a standalone fill on interactive elements.
 - Never create additional teal hex variants (e.g., `#0f766e`, `#0a6460`). Use opacity modifiers on `#0D9488` instead.
 
 ### Color Emotion Reference
@@ -41,16 +33,6 @@ The palette uses exactly **5 roles**. No additional colors may be introduced wit
 | Canvas      | Paper, approachability, calm   | Warmer than pure white; reduces screen fatigue for a Gen Z audience                   |
 | Ink         | Authority, readability         | Warm charcoal reads more naturally than pure black on Canvas                          |
 | Slate       | Neutrality, hierarchy          | Recedes behind Teal and Amber; creates text hierarchy without a new color             |
-
-### Dark Mode Mapping
-
-| Light token           | Dark equivalent                                     |
-| --------------------- | --------------------------------------------------- |
-| Canvas `#FAFAF8`      | Void `#090909` or `#141413`                         |
-| White card `#FFFFFF`  | `#1C1C1A`                                           |
-| Ink `#1C1C1A`         | Off-white `#EDEDED`                                 |
-| Forge Teal `#0D9488`  | Teal Light `#14B8A6` (for contrast against dark bg) |
-| Spark Amber `#F59E0B` | `#FBBF24` (one step lighter)                        |
 
 ---
 
@@ -233,7 +215,6 @@ All scroll-triggered entrances use **fade-up** (`opacity: 0 → 1`, `translateY:
 
 ### Interaction Animations
 
-<<<<<<< HEAD
 | Interaction | Animation |
 | ---------------- | ----------------------------------------------------- |
 | Button hover | Scale 1.02, shadow intensify, 150ms ease |
@@ -250,44 +231,18 @@ All scroll-triggered entrances use **fade-up** (`opacity: 0 → 1`, `translateY:
 | Orb glow pulse       | `scale + opacity, 4s ease-in-out infinite`      | CSS only              |
 | Floating glass cards | Independent sine-wave float, 3.5–5s cycles      | CSS only              |
 
-=======
-| Interaction | Animation |
-|---|---|
-| Button hover | Scale 1.02, shadow intensify, 150ms ease |
-| Card hover | Border color → Teal, shadow → teal-tinted, 200ms ease |
-| Tag/pill select | Scale 0.95 then 1.0, background → Teal, 150ms ease |
-| Navigation hover | Underline slide-in from left, Teal, 200ms ease |
-
-### Background Animations
-
-| Element              | Animation                                       | Notes                 |
-| -------------------- | ----------------------------------------------- | --------------------- |
-| Hero node canvas     | 64 nodes, sinusoidal drift, pulsing connections | canvas-based, low CPU |
-| Orb ring             | `rotate 20s linear infinite`                    | CSS only              |
-| Orb glow pulse       | `scale + opacity, 4s ease-in-out infinite`      | CSS only              |
-| Floating glass cards | Independent sine-wave float, 3.5–5s cycles      | CSS only              |
-
-> > > > > > > 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
-
 ### Accessibility
 
 All animations must respect the `prefers-reduced-motion` media query:
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-<<<<<<< HEAD
     *,
     *::before,
     *::after {
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
     }
-=======
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
->>>>>>> 12a645afbd4c7c6f3006eaf45e9454e7c59fb829
 }
 ```
 
