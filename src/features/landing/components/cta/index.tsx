@@ -1,47 +1,11 @@
+import { useMouseGlow } from "../../hooks/use-mouse-glow";
 import { Button } from "@/shared/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { useEffect, useRef } from "react";
 
 export function CtaSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
-  const isHovered = useRef(false);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isHovered.current || !glowRef.current) return;
-      const rect = section.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 100;
-      const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-      glowRef.current.style.background = `radial-gradient(ellipse 55% 55% at ${x}% ${y}%, rgba(13, 148, 136, 0.25) 0%, transparent 70%)`;
-    };
-
-    const handleMouseEnter = () => {
-      isHovered.current = true;
-      if (glowRef.current) glowRef.current.style.opacity = "1";
-    };
-
-    const handleMouseLeave = () => {
-      isHovered.current = false;
-      if (glowRef.current) glowRef.current.style.opacity = "0";
-    };
-
-    section.addEventListener("mousemove", handleMouseMove);
-    section.addEventListener("mouseenter", handleMouseEnter);
-    section.addEventListener("mouseleave", handleMouseLeave);
-
-    return () => {
-      section.removeEventListener("mousemove", handleMouseMove);
-      section.removeEventListener("mouseenter", handleMouseEnter);
-      section.removeEventListener("mouseleave", handleMouseLeave);
-    };
-  }, []);
+  const { sectionRef, glowRef } = useMouseGlow();
 
   return (
     <section
@@ -107,10 +71,7 @@ export function CtaSection() {
         >
           <h2 className="font-sans font-bold text-white text-balance mb-6 leading-tight text-[clamp(2rem,5.5vw,3.5rem)]">
             Stop waiting for the right{" "}
-            <span className="bg-linear-to-r from-forge-teal to-forge-teal-light bg-clip-text text-transparent">
-              group
-            </span>{" "}
-            to appear.
+            <span className="text-forge-teal">group</span> to appear.
           </h2>
           <p className="font-sans text-lg leading-relaxed text-pretty max-w-xl mx-auto mb-12 text-white/50">
             Your personality, your interests, your people – forged into a group

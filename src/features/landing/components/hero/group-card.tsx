@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 
 export function GroupCard() {
   const members = [
-    { initials: "AK", color: "#0D9488" },
-    { initials: "MR", color: "#14B8A6" },
-    { initials: "LP", color: "#0f766e" },
-    { initials: "DH", color: "#0a6460" },
+    { avatar: "/avatars/avatar-3.jpg" },
+    { avatar: "/avatars/avatar-5.jpg" },
+    { avatar: "/avatars/avatar-8.jpg" },
+    { avatar: "/avatars/avatar-12.jpg" },
   ];
 
   return (
@@ -38,10 +38,14 @@ export function GroupCard() {
         {members.map((m, i) => (
           <div
             key={i}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-white text-micro font-bold font-sans ring-2 ring-hero-bg"
-            style={{ background: m.color, zIndex: members.length - i }}
+            className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center ring-2 ring-hero-bg bg-[#111]"
+            style={{ zIndex: members.length - i }}
           >
-            {m.initials}
+            <img
+              src={m.avatar}
+              alt="Member"
+              className="w-full h-full object-cover"
+            />
           </div>
         ))}
       </div>

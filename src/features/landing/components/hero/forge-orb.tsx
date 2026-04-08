@@ -5,6 +5,8 @@ import { GroupCard } from "./group-card";
 import { MbtiCard } from "./mbti-card";
 import { TrustCard } from "./trust-card";
 
+// We no longer need AVATARS here
+
 export function ForgeOrb() {
   const containerRef = useRef<HTMLDivElement>(null);
   const orbContainerRef = useRef<HTMLDivElement>(null);
@@ -190,7 +192,7 @@ export function ForgeOrb() {
             }
           >
             <div className="absolute inset-0">
-              <div className="absolute w-2 h-2 rounded-full -top-0.75 left-1/2 -translate-x-1/2 bg-(--dot-color) shadow-[0_0_var(--glow-size)_2px_var(--glow-color)] transition-[background-color,box-shadow] duration-100 ease-linear" />
+              <div className="absolute w-2 h-2 rounded-full -top-1 left-1/2 -translate-x-1/2 bg-(--dot-color) shadow-[0_0_var(--glow-size)_2px_var(--glow-color)] transition-[background-color,box-shadow] duration-100 ease-linear" />
             </div>
           </div>
         ))}

@@ -39,10 +39,8 @@ export function AlgorithmSection() {
           </p>
           <h2 className="font-sans font-extrabold text-white text-balance mx-auto max-w-2xl leading-tight text-[clamp(1.85rem,4.5vw,2.75rem)]">
             Watch the algorithm{" "}
-            <span className="bg-linear-to-r from-forge-teal to-spark-amber bg-clip-text text-transparent">
-              forge your group
-            </span>{" "}
-            in real time.
+            <span className="text-forge-teal">forge your group</span> in real
+            time.
           </h2>
           <p className="font-sans text-base md:text-lg text-white/50 mt-5 max-w-xl mx-auto leading-relaxed text-pretty">
             Personality, interests, trust, age, and your social circle – five

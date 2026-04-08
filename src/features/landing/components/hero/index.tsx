@@ -37,7 +37,7 @@ export function HeroSection() {
             <h1 className="font-sans font-extrabold text-white leading-[1.08] mb-5 text-balance text-[clamp(2.25rem,5.5vw,4rem)]">
               Find your people,
               <br />
-              <span className="relative inline-block text-transparent bg-clip-text pb-2 bg-linear-to-br from-forge-teal-light via-forge-teal via-40% to-spark-amber drop-shadow-[0_0_32px_rgba(13,148,136,0.35)]">
+              <span className="relative inline-block text-forge-teal pb-2 drop-shadow-[0_0_32px_rgba(13,148,136,0.35)]">
                 intelligently.
               </span>
             </h1>

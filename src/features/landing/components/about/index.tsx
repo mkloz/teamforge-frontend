@@ -1,48 +1,77 @@
-import { motion } from "framer-motion";
-import { VALUES } from "./about-data";
-import { MissionCard } from "./mission-card";
-import { StoryCard } from "./story-card";
-import { ValueCard } from "./value-card";
+import { motion, useScroll } from "framer-motion";
+import { useRef } from "react";
+import { ABOUT_CARDS } from "./about-data";
+import { StackCard } from "./stack-card";
 
 export function AboutSection() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
+
   return (
     <section
       id="about"
-      className="relative bg-canvas py-24 md:py-36 overflow-hidden"
-      aria-label="About TeamForge"
+      ref={containerRef}
+      className="relative bg-canvas w-full"
+      aria-labelledby="about-heading"
+      style={{
+        height: "500vh",
+      }}
     >
-      <div
-        className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle,rgba(13,148,136,0.03)_1px,transparent_1px)] bg-size-[40px_40px]"
-        aria-hidden="true"
-      />
-      <div className="relative z-10 max-w-6xl mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 32 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.7 }}
-          className="text-center max-w-3xl mx-auto mb-16 md:mb-24"
-        >
-          <p className="font-sans text-xs font-semibold uppercase tracking-widest mb-4 text-forge-teal">
-            Why TeamForge exists
-          </p>
-          <h2 className="font-sans font-bold text-ink text-balance mb-6 md:mb-8 leading-tight text-[clamp(1.75rem,4.5vw,2.75rem)]">
-            The difference between a good weekend and a lonely one is{" "}
-            <span className="text-forge-teal">3 to 5 people</span>.
-          </h2>
-          <p className="font-sans text-lg text-slate-muted leading-relaxed text-pretty max-w-2xl mx-auto">
-            In every city, thousands of people want to run, play board games, or
-            try a new restaurant – but they lack the right group to do it with.
-            Not because they are antisocial. Because finding compatible people
-            is unreasonably hard.
-          </p>
-        </motion.div>
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-5">
-          <StoryCard />
-          <MissionCard />
-          {VALUES.map((value, i) => (
-            <ValueCard key={value.title} {...value} index={i} />
-          ))}
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center">
+        <div className="max-w-7xl mx-auto w-full px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24 items-center">
+            {/* Left Column: Sticky Narrative */}
+            <header className="flex flex-col justify-center items-center md:items-start text-center md:text-left h-full max-w-xl z-20 pt-12 md:pt-0">
+              <motion.h2
+                id="about-heading"
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-3xl md:text-5xl lg:text-6xl font-black leading-[1.1] text-ink text-balance font-sans italic tracking-tight"
+              >
+                Designed for the way humans{" "}
+                <span className="text-forge-teal">actually connect.</span>
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="text-base md:text-xl font-normal leading-relaxed text-slate-muted mt-6 md:mt-8 text-pretty font-sans"
+              >
+                The difference between a hollow weekend and a meaningful one is
+                the right circle. We solved the social search problem so you can
+                focus on the connection.
+              </motion.p>
+            </header>
+
+            {/* Right Column: Cards Stacking */}
+            <div className="relative h-100 md:h-screen md:mt-0 flex items-center">
+              <div
+                className="w-full relative h-100 md:h-150"
+                role="region"
+                aria-label="Brand narrative cards"
+              >
+                {ABOUT_CARDS.map((card, i) => {
+                  const targetScale = 1 - (ABOUT_CARDS.length - i) * 0.04;
+                  return (
+                    <StackCard
+                      key={card.id}
+                      card={card}
+                      index={i}
+                      progress={scrollYProgress}
+                      targetScale={targetScale}
+                      totalCards={ABOUT_CARDS.length}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

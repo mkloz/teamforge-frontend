@@ -1,105 +1,87 @@
-import { Brain, Flame, Users } from "lucide-react";
+import { MapPin } from "lucide-react";
+import type { ReactNode } from "react";
 
-export const STEPS = [
+export interface Step {
+  number: string;
+  title: string;
+  description: string;
+  accent?: ReactNode;
+}
+
+export const STEPS: Step[] = [
   {
     number: "01",
-    icon: Brain,
     title: "Discover Yourself",
     description:
-      "A 2-minute personality quiz maps your MBTI profile into a 4-dimensional compatibility vector. Combined with your interests, it becomes your unique matching fingerprint.",
+      "Start by taking our interactive personality test. We go beyond basic interests to map your MBTI and Big Five OCEAN traits. This helps us understand how you actually interact with others in real-world settings.",
     accent: (
-      <div className="mt-5 space-y-2" aria-hidden="true">
-        {[
-          { label: "Extraversion", short: "E", fill: 80 },
-          { label: "Intuition", short: "N", fill: 55 },
-          { label: "Thinking", short: "T", fill: 70 },
-          { label: "Judging", short: "J", fill: 65 },
-        ].map(({ short, fill, label }) => (
-          <div key={short} className="flex items-center gap-2">
-            <span className="text-forge-teal text-micro font-bold font-sans w-3">
-              {short}
-            </span>
-            <div className="flex-1 h-1.5 rounded-full bg-forge-teal/10 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-linear-to-r from-forge-teal to-forge-teal-light"
-                style={{ width: `${fill}%` }}
-              />
-            </div>
-            <span className="text-slate-muted text-micro font-sans w-16 text-right truncate">
-              {label}
-            </span>
-          </div>
+      <div className="flex flex-wrap gap-2">
+        {["Introverted", "Analytical", "Open", "Calm"].map((tag) => (
+          <span
+            key={tag}
+            className="px-3 py-1 bg-forge-teal/10 border border-forge-teal/20 text-forge-teal text-xs font-bold rounded-full"
+          >
+            {tag}
+          </span>
         ))}
       </div>
     ),
   },
   {
     number: "02",
-    icon: Flame,
-    title: "Press Forge",
+    title: "Pick what you want to do",
     description:
-      "One button. The algorithm evaluates personality distance, interest overlap, age alignment, trust scores, and social graph proximity across all candidates in under 2 seconds.",
+      "Tell us what you're in the mood for. Whether it's a morning hike, a deep-work cafe session, or a game of padel, your intent acts as the north star for our matching algorithm.",
     accent: (
-      <div className="mt-5 space-y-2" aria-hidden="true">
-        {[
-          { label: "Personality distance", w: 30 },
-          { label: "Interest overlap", w: 30 },
-          { label: "Social proximity", w: 20 },
-          { label: "Age alignment", w: 10 },
-        ].map(({ label, w }) => (
-          <div key={label} className="flex items-center gap-2">
-            <div className="flex-1 h-1 rounded-full bg-spark-amber/10 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-spark-amber opacity-70"
-                style={{ width: `${w * 3.3}%` }}
-              />
-            </div>
-            <span className="text-slate-muted text-micro font-sans w-8 text-right shrink-0">
-              {w}%
-            </span>
-          </div>
-        ))}
+      <div className="flex items-center gap-3 p-3 bg-canvas border border-slate-200 rounded-xl max-w-xs shadow-sm">
+        <div className="p-2 bg-spark-amber/10 rounded-lg">
+          <MapPin className="w-5 h-5 text-spark-amber" />
+        </div>
+        <div>
+          <p className="text-xs font-bold text-ink">Hiking Trip</p>
+          <p className="text-[10px] text-slate-muted">Saturday, 10:00 AM</p>
+        </div>
       </div>
     ),
   },
   {
     number: "03",
-    icon: Users,
-    title: "Meet Your Group",
+    title: "Let the algorithm do the work",
     description:
-      "See exactly why each person was selected – shared interests, mutual friends, compatible personality vectors. Confirm, open group chat, and coordinate your real-world meetup.",
+      "TeamForge analyzes thousands of local users. We don't just find people who like the same things; we find the people who actually complement your personality to ensure high-vibe group chemistry.",
     accent: (
-      <div className="mt-5" aria-hidden="true">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex -space-x-2.5">
-            {[
-              { initials: "AK", bg: "var(--color-forge-teal)" },
-              { initials: "MR", bg: "var(--color-forge-teal-light)" },
-              { initials: "LP", bg: "#0f766e" },
-              { initials: "DH", bg: "#0a6460" },
-            ].map(({ initials, bg }, i) => (
-              <div
-                key={i}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-white text-micro font-bold font-sans ring-2 ring-white"
-                style={{ background: bg }}
-              >
-                {initials}
-              </div>
-            ))}
-          </div>
-          <span className="text-micro font-bold font-sans px-2 py-1 rounded-full bg-spark-amber/10 text-spark-amber">
-            94% match
-          </span>
+      <div className="space-y-2">
+        <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+          <div className="h-full bg-forge-teal w-2/3 animate-pulse" />
         </div>
-        <div className="flex flex-wrap gap-1.5">
-          {["Hiking", "Tech", "Coffee", "+ 2 more"].map((tag) => (
-            <span
-              key={tag}
-              className="text-micro font-medium font-sans text-forge-teal bg-forge-teal/10 px-2 py-0.5 rounded"
-            >
-              {tag}
-            </span>
-          ))}
+        <div className="flex justify-between items-center text-[10px] font-mono text-slate-muted">
+          <span>SCANNING COMPATIBILITY...</span>
+          <span className="text-forge-teal">84%</span>
+        </div>
+      </div>
+    ),
+  },
+  {
+    number: "04",
+    title: "Meet your new friends",
+    description:
+      "One button, one perfect group. No endless scrolling or swiping. Join a group of 4-6 compatible people and start making plans directly. It's social discovery, minus the friction.",
+    accent: (
+      <div className="flex -space-x-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="w-10 h-10 rounded-full border-2 border-canvas bg-slate-200 overflow-hidden shadow-sm"
+          >
+            <img
+              src={`/avatars/avatar-${i}.jpg`}
+              alt="Group member"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ))}
+        <div className="w-10 h-10 rounded-full border-2 border-canvas bg-forge-teal flex items-center justify-center text-white text-[10px] font-bold shadow-sm">
+          +2
         </div>
       </div>
     ),

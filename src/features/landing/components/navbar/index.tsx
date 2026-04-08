@@ -1,3 +1,4 @@
+import { useWindowScroll } from "../../hooks/use-window-scroll";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
@@ -13,23 +14,9 @@ const NAV_LINKS = [
 ];
 
 export function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
+  const scrolled = useWindowScroll(60);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const isScrolled = window.scrollY > 60;
-      if (isScrolled !== scrolled) {
-        setScrolled(isScrolled);
-      }
-    };
-
-    handleScroll();
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [scrolled]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
