@@ -108,18 +108,13 @@ const OptionCard = memo(
                 <span className="font-sans text-base font-extrabold text-ink leading-tight">
                   {config.label}
                 </span>
-                {isRecommended && (
-                  <span className="font-sans text-[8px] font-bold uppercase tracking-widest bg-spark-amber text-white px-1.5 py-0.5 rounded-full shrink-0">
-                    Best value
-                  </span>
-                )}
                 {isAdjust && isComplete && (
-                  <span className="font-sans text-[8px] font-bold uppercase tracking-widest bg-forge-teal text-white px-1.5 py-0.5 rounded-full shrink-0">
+                  <span className="font-sans text-xs font-black uppercase tracking-wide bg-forge-teal text-white px-2 py-0.5 rounded-full shrink-0">
                     Done
                   </span>
                 )}
               </div>
-              <span className="font-sans text-[10px] font-bold text-slate-400">
+              <span className="font-sans text-xs font-bold text-slate-400">
                 {length} items &middot; ~{config.estimatedMinutes} min
               </span>
             </div>
@@ -133,8 +128,8 @@ const OptionCard = memo(
               {config.sublabel}
             </p>
 
-            <div className="flex items-center gap-1 opacity-70">
-              <span className="font-sans text-[9px] font-bold text-slate-400 uppercase tracking-tighter mr-1">
+            <div className="flex items-center gap-2 opacity-80">
+              <span className="font-sans text-xs font-black text-slate-500 uppercase tracking-wide">
                 {isAdjust && answeredCount > 0
                   ? isComplete
                     ? "Completed"
@@ -143,7 +138,7 @@ const OptionCard = memo(
               </span>
 
               {isAdjust && answeredCount > 0 ? (
-                <div className="flex-1 h-1 bg-slate-100 rounded-full max-w-30 overflow-hidden">
+                <div className="flex-1 h-1.5 bg-slate-100 rounded-full max-w-30 overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${progressPercent}%` }}
@@ -151,17 +146,19 @@ const OptionCard = memo(
                   />
                 </div>
               ) : (
-                RESOLUTION_SEGMENTS.map((i) => (
-                  <div
-                    key={i}
-                    className={cn(
-                      "h-1 w-2.5 rounded-full transition-colors",
-                      i < (length === 30 ? 2 : length === 50 ? 4 : 6)
-                        ? "bg-forge-teal/40"
-                        : "bg-slate-100",
-                    )}
-                  />
-                ))
+                <div className="flex gap-1">
+                  {RESOLUTION_SEGMENTS.map((i) => (
+                    <div
+                      key={i}
+                      className={cn(
+                        "h-1.5 w-3 rounded-full transition-colors",
+                        i < (length === 30 ? 2 : length === 50 ? 4 : 6)
+                          ? "bg-forge-teal/40"
+                          : "bg-slate-100",
+                      )}
+                    />
+                  ))}
+                </div>
               )}
             </div>
           </div>
@@ -219,7 +216,7 @@ export function LengthSelector({
 
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] mb-3 text-forge-teal text-center"
+        className="font-sans text-xs font-bold uppercase tracking-[0.15em] mb-3 text-forge-teal text-center"
       >
         {isAdjust ? "Intermission" : "Assessment depth"}
       </motion.p>

@@ -19,12 +19,12 @@ export const TeamForgeLogo: React.FC<TeamForgeVoronoiProps> = ({
     >
       <defs>
         <clipPath id="group-boundary">
-          <rect x="16" y="16" width="88" height="88" rx="24" />
+          <rect x="16" y="16" width="88" height="88" rx="8" />
         </clipPath>
       </defs>
 
       {showBackground && (
-        <rect width="120" height="120" rx="24" fill="#FAFAF8" />
+        <rect width="120" height="120" rx="8" fill="#FAFAF8" />
       )}
 
       <g clipPath="url(#group-boundary)">

@@ -7,9 +7,8 @@ import type { VoronoiCatalystProps } from "../types/voronoi.types";
  * that reacts to authentication progress and user input.
  */
 export function VoronoiCatalyst({
-  isTyping = false,
   progress = 0,
-}: VoronoiCatalystProps) {
+}: Omit<VoronoiCatalystProps, "isTyping">) {
   const {
     containerRef,
     canvasRef,
@@ -17,7 +16,7 @@ export function VoronoiCatalyst({
     handleMouseMove,
     handleMouseEnter,
     handleMouseLeave,
-  } = useVoronoiAnimation({ progress, isTyping });
+  } = useVoronoiAnimation({ progress });
 
   const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
 

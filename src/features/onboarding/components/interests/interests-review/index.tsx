@@ -47,11 +47,11 @@ export function InterestsReview({
               <div className="flex items-center gap-2 mb-3 px-1">
                 <div
                   className={cn(
-                    "w-2 h-2 rounded-full shadow-xs",
+                    "w-1.5 h-1.5 rounded-full shadow-sm",
                     category.color,
                   )}
                 />
-                <span className="font-sans text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500">
+                <span className="font-sans text-[10px] font-bold uppercase tracking-[0.14em] text-slate-muted/60">
                   {category.label}
                 </span>
               </div>
@@ -60,25 +60,24 @@ export function InterestsReview({
                   const tag = LEAF_TAG_BY_ID[id];
                   if (!tag) return null;
                   return (
-                    <motion.div
+                    <motion.button
                       key={id}
                       layout
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
                       transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                      className="inline-flex items-center gap-1 bg-forge-teal/8 border border-forge-teal/10 text-forge-teal rounded-full pl-3 pr-1 py-1.5 text-xs font-bold font-sans transition-colors hover:bg-forge-teal/15"
+                      type="button"
+                      onClick={() => onRemove(id)}
+                      className="group inline-flex items-center gap-1.5 bg-forge-teal text-white rounded-full px-3.5 py-1.5 text-xs font-bold font-sans shadow-sm transition hover:bg-teal-600 active:scale-95"
                     >
                       <span className="leading-none">{tag.label}</span>
-                      <button
-                        type="button"
-                        onClick={() => onRemove(id)}
-                        className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-forge-teal/20 transition-all ml-0.5 -mr-0.5 active:scale-90"
-                        aria-label={`Remove ${tag.label}`}
-                      >
-                        <X size={12} strokeWidth={3} />
-                      </button>
-                    </motion.div>
+                      <X
+                        size={14}
+                        className="opacity-60 group-hover:opacity-100 transition-opacity"
+                        strokeWidth={3}
+                      />
+                    </motion.button>
                   );
                 })}
               </div>

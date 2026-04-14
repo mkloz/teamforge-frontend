@@ -3,8 +3,12 @@ import {
   useTransform,
   useReducedMotion,
   useSpring,
+  motion,
+  AnimatePresence,
+  useMotionValueEvent,
 } from "framer-motion";
 import { useRef, useState, useEffect, useCallback } from "react";
+import { ChevronDown } from "lucide-react";
 import { STEPS } from "./how-it-works-data";
 import { ContentStep } from "./content-step";
 import { VoronoiLogo } from "./voronoi-logo";
@@ -18,6 +22,12 @@ export function HowItWorksSection() {
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
+  });
+
+  const [isActive, setIsActive] = useState(false);
+
+  useMotionValueEvent(scrollYProgress, "change", (p) => {
+    setIsActive(p > 0.1 && p < 0.9);
   });
 
   // Spring animations for a smoother, physical feel
@@ -66,7 +76,7 @@ export function HowItWorksSection() {
     <section
       ref={containerRef}
       id="how-it-works"
-      className="relative bg-canvas h-[500vh]"
+      className="relative bg-canvas h-[400vh]"
       aria-labelledby="how-it-works-heading"
     >
       <h2 id="how-it-works-heading" className="sr-only">
@@ -75,11 +85,9 @@ export function HowItWorksSection() {
       <div className="sticky top-0 h-screen w-full flex flex-col md:flex-row items-center overflow-hidden">
         {/* Background Decorative Element */}
         <div
-          className="absolute inset-0 pointer-events-none opacity-20"
+          className="absolute inset-0 pointer-events-none"
           aria-hidden="true"
-        >
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-200 h-200 bg-forge-teal/5 rounded-full blur-[120px]" />
-        </div>
+        />
 
         {/* Left Side: Content Storytelling */}
         <div className="relative z-10 w-full md:w-1/2 h-[60vh] md:h-full flex items-center justify-center p-6 md:p-24 order-2 md:order-1">
@@ -114,6 +122,16 @@ export function HowItWorksSection() {
                 key={i}
                 index={i}
                 smoothProgress={smoothProgress}
+                onClick={() => {
+                  if (containerRef.current) {
+                    const sectionTop = containerRef.current.offsetTop;
+                    const sectionHeight = containerRef.current.offsetHeight;
+                    const targetScroll =
+                      sectionTop +
+                      (i / STEPS.length) * (sectionHeight - window.innerHeight);
+                    window.scrollTo({ top: targetScroll, behavior: "smooth" });
+                  }
+                }}
               />
             ))}
           </nav>
@@ -125,6 +143,25 @@ export function HowItWorksSection() {
             tiltY={tiltY}
             shouldReduceMotion={!!shouldReduceMotion}
           />
+
+          <AnimatePresence>
+            {isActive && (
+              <motion.button
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                onClick={() =>
+                  document
+                    .getElementById("algorithm")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+                className="absolute bottom-8 right-8 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-slate-muted hover:text-ink hover:bg-white/10 hover:border-white/20 transition-all uppercase tracking-widest"
+              >
+                Skip Section
+                <ChevronDown size={14} className="mt-0.5" />
+              </motion.button>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </section>

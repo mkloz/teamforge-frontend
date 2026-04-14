@@ -40,3 +40,5 @@ export const ANIMATION_CONFIG = {
   repulsionRadius: 230,
   hoverRadius: 230,
 } as const;
+
+export const AUTH_TYPING_EVENT = "teamforge:auth-typing";

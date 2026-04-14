@@ -64,14 +64,14 @@ export function LoginForm({
                 </FormLabel>
                 <FormControl>
                   <Input
-                    className="h-11 px-3.5 rounded-xl border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-colors duration-200"
+                    className="h-11 px-3.5 rounded-xl border border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 transition-all duration-200"
                     placeholder="you@example.com"
                     type="email"
                     autoComplete="email"
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="text-xs font-medium text-red-500 mt-1" />
+                <FormMessage className="text-xs font-medium text-destructive mt-1" />
               </FormItem>
             )}
           />
@@ -88,7 +88,6 @@ export function LoginForm({
                   <a
                     href="/auth/forgot-password"
                     className="font-sans text-xs font-medium text-forge-teal hover:underline transition-colors focus:ring-2 focus:ring-forge-teal/20 outline-hidden"
-                    tabIndex={-1}
                   >
                     Forgot password?
                   </a>
@@ -97,7 +96,7 @@ export function LoginForm({
                   <div className="relative">
                     <Input
                       type={showPassword ? "text" : "password"}
-                      className="h-11 pl-3.5 pr-10 rounded-xl border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-colors duration-200"
+                      className="h-11 pl-3.5 pr-10 rounded-xl border border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 transition-all duration-200"
                       placeholder="••••••••"
                       autoComplete="current-password"
                       aria-invalid={!!form.formState.errors.password}
@@ -115,7 +114,7 @@ export function LoginForm({
                     </button>
                   </div>
                 </FormControl>
-                <FormMessage className="text-xs font-medium text-red-500 mt-1" />
+                <FormMessage className="text-xs font-medium text-destructive mt-1" />
               </FormItem>
             )}
           />
@@ -132,7 +131,7 @@ export function LoginForm({
             {loading ? (
               <div className="flex items-center gap-2">
                 <Loader2 size={16} className="animate-spin" />
-                <span>Signing in...</span>
+                <span>Entering the forge...</span>
               </div>
             ) : (
               <div className="flex items-center justify-center gap-2">

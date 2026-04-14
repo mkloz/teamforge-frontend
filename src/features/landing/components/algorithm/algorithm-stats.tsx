@@ -21,13 +21,13 @@ export function AlgorithmStats({ inView }: AlgorithmStatsProps) {
           {[
             {
               step: "01",
-              title: "Find compatible candidates",
-              desc: "The system scans nearby users and scores them against your personality, interests, age, and trust. The top 50 most compatible advance.",
+              title: "Discovering resonance",
+              desc: "We identify local individuals whose core values and social energy align with yours. We filter for depth, ensuring every member is ready for genuine interaction.",
             },
             {
               step: "02",
-              title: "Build the best group",
-              desc: "Members are picked one by one, each chosen to maximize the group's overall compatibility. Friends and friends-of-friends get a boost.",
+              title: "Building group harmony",
+              desc: "Every member is chosen with the whole circle in mind. We prioritize social safety and mutual familiarity to ensure the group dynamic feels natural and welcoming.",
             },
           ].map(({ step, title, desc }) => (
             <div key={step} className="flex gap-4">
@@ -38,7 +38,7 @@ export function AlgorithmStats({ inView }: AlgorithmStatsProps) {
                 <p className="font-sans font-semibold text-white text-sm mb-1">
                   {title}
                 </p>
-                <p className="font-sans text-sm text-white/40 leading-relaxed">
+                <p className="font-sans text-sm text-text-dark-muted leading-relaxed">
                   {desc}
                 </p>
               </div>
@@ -47,14 +47,14 @@ export function AlgorithmStats({ inView }: AlgorithmStatsProps) {
         </div>
       </div>
 
-      <div className="mb-10">
+      <div>
         <h3 className="font-sans font-bold text-white text-sm mb-4 uppercase tracking-widest">
-          Scoring Factors
+          What we look for
         </h3>
         <div className="space-y-3">
           {FACTORS.map(({ label, weight, color }) => (
             <div key={label} className="flex items-center gap-3">
-              <span className="font-sans text-xs text-white/40 w-36 shrink-0 truncate">
+              <span className="font-sans text-xs text-text-dark-muted w-36 shrink-0 truncate">
                 {label}
               </span>
               <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
@@ -68,40 +68,12 @@ export function AlgorithmStats({ inView }: AlgorithmStatsProps) {
                   }}
                 />
               </div>
-              <span className="font-sans text-xs font-bold text-white/60 w-8 text-right tabular-nums">
+              <span className="font-sans text-xs font-bold text-text-dark-secondary w-8 text-right tabular-nums">
                 {weight}%
               </span>
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="grid grid-cols-3 gap-3">
-        {[
-          { value: "< 2s", label: "Formation time" },
-          { value: "5", label: "Scoring factors" },
-          { value: "50+", label: "Candidates evaluated" },
-        ].map(({ value, label }, i) => (
-          <div
-            key={label}
-            className={cn(
-              "rounded-2xl p-4 text-center backdrop-blur-sm bg-white/3 border border-white/5",
-              "transition-[opacity,transform] duration-500",
-            )}
-            style={{
-              opacity: inView ? 1 : 0,
-              transform: inView ? "translateY(0)" : "translateY(12px)",
-              transitionDelay: `${1000 + i * 100}ms`,
-            }}
-          >
-            <p className="font-sans font-extrabold text-forge-teal text-xl mb-1">
-              {value}
-            </p>
-            <p className="font-sans text-white/40 text-micro leading-tight">
-              {label}
-            </p>
-          </div>
-        ))}
       </div>
     </div>
   );

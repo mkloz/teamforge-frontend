@@ -49,7 +49,7 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
       {/* Overline */}
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-[10px] sm:text-micro font-bold uppercase tracking-[0.2em] mb-4 text-forge-teal text-center"
+        className="font-sans text-xs font-bold uppercase tracking-[0.15em] mb-4 text-forge-teal text-center"
       >
         Before you begin
       </motion.p>
@@ -64,7 +64,7 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
 
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-xs sm:text-sm text-slate-500 mb-8 leading-relaxed font-semibold indent-8"
+        className="font-sans text-sm sm:text-base text-slate-500 mb-8 leading-relaxed font-medium text-center"
       >
         It can be hard to find your actual personality underneath all the layers
         of expectations. To get the best results:
@@ -73,24 +73,21 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
       {/* Guidelines */}
       <motion.div
         variants={fadeUpItem}
-        className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8 w-full"
+        className="flex flex-col gap-5 mb-10 w-full pl-2 sm:pl-4"
       >
         {GUIDELINES.map(({ icon: Icon, title, text }) => (
-          <div
-            key={title}
-            className="flex flex-col gap-2 p-4 rounded-xl bg-slate-50 border border-slate-100"
-          >
-            <div className="flex items-center gap-2.5">
-              <div className="flex items-center justify-center rounded-md shrink-0 w-6 h-6 bg-white border border-slate-200 text-slate-600 shadow-sm">
-                <Icon size={12} strokeWidth={2} />
-              </div>
-              <span className="font-sans text-xs font-semibold text-slate-800 leading-tight">
+          <div key={title} className="flex items-start gap-4">
+            <div className="flex items-center justify-center shrink-0 w-8 h-8 rounded-full bg-forge-teal/10 text-forge-teal mt-0.5">
+              <Icon size={16} strokeWidth={2.5} />
+            </div>
+            <div className="flex flex-col gap-1 text-left">
+              <span className="font-sans text-sm font-bold text-ink leading-tight">
                 {title}
               </span>
+              <p className="font-sans text-sm text-slate-500 font-medium leading-relaxed max-w-sm">
+                {text}
+              </p>
             </div>
-            <p className="font-sans text-micro leading-relaxed text-slate-500">
-              {text}
-            </p>
           </div>
         ))}
       </motion.div>

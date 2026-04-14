@@ -11,9 +11,9 @@ export interface Step {
 export const STEPS: Step[] = [
   {
     number: "01",
-    title: "Discover Yourself",
+    title: "Get to know yourself",
     description:
-      "Start by taking our interactive personality test. We go beyond basic interests to map your MBTI and Big Five OCEAN traits. This helps us understand how you actually interact with others in real-world settings.",
+      "Share the core of who you are—your values, your energy, and your curiosity. We use these insights to weave you into a circle where you truly belong.",
     accent: (
       <div className="flex flex-wrap gap-2">
         {["Introverted", "Analytical", "Open", "Calm"].map((tag) => (
@@ -29,9 +29,9 @@ export const STEPS: Step[] = [
   },
   {
     number: "02",
-    title: "Pick what you want to do",
+    title: "Choose your activity",
     description:
-      "Tell us what you're in the mood for. Whether it's a morning hike, a deep-work cafe session, or a game of padel, your intent acts as the north star for our matching algorithm.",
+      "Whether it's a quiet morning in a cafe, a weekend hike, or a session on the court—whatever you're in the mood for, that's where we start.",
     accent: (
       <div className="flex items-center gap-3 p-3 bg-canvas border border-slate-200 rounded-xl max-w-xs shadow-sm">
         <div className="p-2 bg-spark-amber/10 rounded-lg">
@@ -46,16 +46,16 @@ export const STEPS: Step[] = [
   },
   {
     number: "03",
-    title: "Let the algorithm do the work",
+    title: "Curated connections",
     description:
-      "TeamForge analyzes thousands of local users. We don't just find people who like the same things; we find the people who actually complement your personality to ensure high-vibe group chemistry.",
+      "Our algorithm finds the intersection of personality and purpose. It carefully selects a group where every individual adds a unique spark to the collective.",
     accent: (
       <div className="space-y-2">
         <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
           <div className="h-full bg-forge-teal w-2/3 animate-pulse" />
         </div>
         <div className="flex justify-between items-center text-[10px] font-mono text-slate-muted">
-          <span>SCANNING COMPATIBILITY...</span>
+          <span>CURATING YOUR CIRCLE...</span>
           <span className="text-forge-teal">84%</span>
         </div>
       </div>
@@ -63,9 +63,9 @@ export const STEPS: Step[] = [
   },
   {
     number: "04",
-    title: "Meet your new friends",
+    title: "Meet with intention",
     description:
-      "One button, one perfect group. No endless scrolling or swiping. Join a group of 4-6 compatible people and start making plans directly. It's social discovery, minus the friction.",
+      "One purposeful group, forged for a specific activity. No digital fatigue, just a real-world connection ready to happen.",
     accent: (
       <div className="flex -space-x-4">
         {[1, 2, 3, 4].map((i) => (

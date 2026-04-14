@@ -1,5 +1,6 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import { cn } from "@/shared/lib/utils";
+import { ChevronDown, Compass } from "lucide-react";
 import { useState } from "react";
 import type { LeafTag } from "../../../data/interests-types";
 import { TagPill } from "./tag-pill";
@@ -23,59 +24,54 @@ export function YouMightAlsoLikeSection({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-      className="mb-4 rounded-2xl border border-forge-teal/20  overflow-hidden"
+      className="mb-4 rounded-2xl border border-forge-teal/15 overflow-hidden"
     >
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center gap-2 px-4 py-3 group text-left"
       >
-        <div className="w-5 h-5 rounded-md bg-forge-teal/15 flex items-center justify-center shrink-0 text-forge-teal">
-          <Sparkles className="h-3 w-3" />
-        </div>
-        <span className="font-sans text-micro font-semibold text-forge-teal uppercase tracking-wider">
+        <Compass className="size-3 text-forge-teal" />
+        <span className="font-sans text-xs font-bold text-forge-teal uppercase tracking-wider">
           You might also like
         </span>
         <div className="flex items-center gap-1.5 ml-1">
-          <span className="w-1 h-1 rounded-full bg-forge-teal/40" />
-          <span className="font-sans text-micro font-bold text-forge-teal/60">
+          <span className="w-1 h-1 rounded-full bg-forge-teal/30" />
+          <span className="font-sans text-xs font-bold text-forge-teal/70">
             {tags.length}
           </span>
         </div>
         <motion.span
           animate={{ rotate: open ? 0 : -90 }}
           transition={{ duration: 0.18 }}
-          className="ml-auto text-forge-teal/40"
+          className="ml-auto text-forge-teal/30"
         >
-          <ChevronDown size={13} strokeWidth={2} />
+          <ChevronDown size={14} strokeWidth={2} />
         </motion.span>
       </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden"
-          >
-            <div className="flex flex-wrap gap-1.5 px-4 pb-4">
-              {tags.map((tag) => (
-                <TagPill
-                  key={tag.id}
-                  label={tag.label}
-                  selected={selectedIds.has(tag.id)}
-                  disabled={isAtMax}
-                  onToggle={() => onToggle(tag.id)}
-                  onReject={() => onReject(tag.id)}
-                  aliases={tag.aliases}
-                  animated
-                />
-              ))}
-            </div>
-          </motion.div>
+      <div
+        className={cn(
+          "grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
         )}
-      </AnimatePresence>
+      >
+        <div className="overflow-hidden">
+          <div className="flex flex-wrap gap-1.5 px-4 pb-4">
+            {tags.map((tag) => (
+              <TagPill
+                key={tag.id}
+                label={tag.label}
+                selected={selectedIds.has(tag.id)}
+                disabled={isAtMax}
+                onToggle={() => onToggle(tag.id)}
+                onReject={() => onReject(tag.id)}
+                aliases={tag.aliases}
+                animated
+              />
+            ))}
+          </div>
+        </div>
+      </div>
     </motion.div>
   );
 }

@@ -22,7 +22,7 @@ export function TrustCard() {
       )}
       aria-hidden="true"
     >
-      <p className="text-forge-teal/60 text-nano font-semibold font-sans mb-2.5 uppercase tracking-[0.15em]">
+      <p className="text-forge-teal text-nano font-semibold font-sans mb-2.5 uppercase tracking-[0.15em] opacity-90">
         Trust Score
       </p>
       <div className="flex items-center gap-2.5">
@@ -73,7 +73,7 @@ export function TrustCard() {
           </text>
         </svg>
         <div>
-          <p className="text-white/40 text-nano font-sans leading-snug">
+          <p className="text-text-dark-muted text-nano font-sans leading-snug">
             Verified
           </p>
           <p className="text-forge-teal-light text-nano font-semibold font-sans leading-snug">

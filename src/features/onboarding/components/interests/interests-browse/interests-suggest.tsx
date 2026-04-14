@@ -1,6 +1,6 @@
 import { Button } from "@/shared/components/ui/button";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Zap } from "lucide-react";
 import { fadeUpItem, staggerContainer } from "../../../constants/motion";
 import type { LeafTag } from "../../../data/interests-types";
 import { InterestTag } from "./interest-tag";
@@ -36,14 +36,16 @@ export function InterestsSuggest({
         variants={fadeUpItem}
         className="flex flex-col items-center gap-3 mb-4"
       >
-        <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center">
-          <Sparkles size={22} className="text-amber-500" strokeWidth={1.5} />
-        </div>
+        <Zap
+          size={22}
+          className="text-spark-amber fill-spark-amber"
+          strokeWidth={1.5}
+        />
         <div className="flex items-center gap-2">
-          <span className="font-sans text-micro font-semibold uppercase tracking-[0.18em] text-forge-teal">
+          <span className="font-sans text-[11px] font-bold uppercase tracking-[0.18em] text-forge-teal">
             Suggested for you
           </span>
-          <span className="font-sans text-micro font-bold uppercase tracking-widest text-white bg-forge-teal px-2 py-0.5 rounded-full">
+          <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-white bg-forge-teal px-2 py-0.5 rounded-full">
             {mbtiType}
           </span>
         </div>
@@ -53,15 +55,15 @@ export function InterestsSuggest({
         variants={fadeUpItem}
         className="font-sans text-display-xs md:text-display-sm font-extrabold leading-tight text-balance mb-2 text-ink"
       >
-        Here&apos;s a smart starting point
+        Start with what resonates
       </motion.h2>
 
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-sm leading-relaxed text-slate-500 mb-6 text-pretty"
+        className="font-sans text-sm leading-relaxed text-slate-muted mb-6 text-pretty"
       >
-        Based on your personality profile. Select the ones that resonate –
-        you&apos;ll browse all categories next to fine-tune.
+        Based on your personality. Select the ones that resonate—we&apos;ll
+        fine-tune everything next.
       </motion.p>
 
       {/* Tag cloud */}
@@ -92,9 +94,9 @@ export function InterestsSuggest({
       {/* Selection count */}
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-xs text-slate-400 mb-6"
+        className="font-sans text-[10px] font-bold uppercase tracking-widest text-slate-muted/50 mb-6"
       >
-        {selectedCount} of {suggestedTags.length} selected
+        {selectedCount} selected so far
       </motion.p>
 
       {/* CTA */}
@@ -102,7 +104,7 @@ export function InterestsSuggest({
         <Button
           size="lg"
           onClick={onContinue}
-          className="w-full flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl bg-forge-teal text-primary-foreground hover:bg-forge-teal-light shadow-[0_4px_16px_rgba(13,148,136,0.25)] hover:shadow-[0_8px_24px_rgba(13,148,136,0.4)] transition duration-200 active:scale-[0.98] h-12"
+          className="w-full flex items-center justify-center gap-2 font-sans text-sm font-bold rounded-xl bg-forge-teal text-white shadow-teal-glow hover:shadow-teal-glow-lg transition duration-200 active:scale-[0.98] h-12"
         >
           Continue to browse all interests
           <ArrowRight size={16} strokeWidth={2.5} />

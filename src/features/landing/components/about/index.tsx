@@ -1,14 +1,25 @@
-import { motion, useScroll } from "framer-motion";
-import { useRef } from "react";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValueEvent,
+  useScroll,
+} from "framer-motion";
+import { ChevronDown } from "lucide-react";
+import { useRef, useState } from "react";
 import { ABOUT_CARDS } from "./about-data";
 import { StackCard } from "./stack-card";
 
 export function AboutSection() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isActive, setIsActive] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
+  });
+
+  useMotionValueEvent(scrollYProgress, "change", (p) => {
+    setIsActive(p > 0.1 && p < 0.9);
   });
 
   return (
@@ -18,7 +29,7 @@ export function AboutSection() {
       className="relative bg-canvas w-full"
       aria-labelledby="about-heading"
       style={{
-        height: "500vh",
+        height: "400vh",
       }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center">
@@ -72,6 +83,24 @@ export function AboutSection() {
               </div>
             </div>
           </div>
+          <AnimatePresence>
+            {isActive && (
+              <motion.button
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                onClick={() =>
+                  document
+                    .getElementById("cta")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+                className="absolute bottom-8 right-8 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-slate-muted hover:text-ink hover:bg-white/10 hover:border-white/20 transition-all uppercase tracking-widest"
+              >
+                Skip Section
+                <ChevronDown size={14} className="mt-0.5" />
+              </motion.button>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </section>

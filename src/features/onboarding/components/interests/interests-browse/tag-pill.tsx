@@ -9,16 +9,15 @@ import { motion } from "framer-motion";
 import { X } from "lucide-react";
 
 const tagPillVariants = cva(
-  "relative inline-flex items-center rounded-full px-3 py-1.5 text-micro font-medium font-sans transition-colors duration-200 select-none leading-none border",
+  "relative inline-flex items-center rounded-full px-3 py-1.5 text-xs font-bold font-sans transition-colors duration-200 select-none leading-none border",
   {
     variants: {
       variant: {
         default:
-          "bg-white border-slate-200 text-slate-600 hover:border-forge-teal/50 hover:text-forge-teal",
-        selected:
-          "bg-forge-teal border-forge-teal text-white shadow-[0_2px_6px_rgba(13,148,136,0.25)]",
+          "bg-white border-slate-muted/15 text-slate-muted hover:border-forge-teal/50 hover:text-forge-teal",
+        selected: "bg-forge-teal border-forge-teal text-white shadow-teal-glow",
         disabled:
-          "opacity-30 cursor-not-allowed pointer-events-none bg-white border-slate-200 text-slate-600",
+          "opacity-30 cursor-not-allowed pointer-events-none bg-canvas border-slate-muted/10 text-slate-muted",
       },
     },
     defaultVariants: {
@@ -78,8 +77,8 @@ export function TagPill({
           )}
         >
           <svg
-            width="10"
-            height="10"
+            width="12"
+            height="12"
             viewBox="0 0 8 8"
             fill="none"
             className={cn(
@@ -92,7 +91,7 @@ export function TagPill({
             <path
               d="M1.5 4l2 2L6.5 1.5"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -115,11 +114,11 @@ export function TagPill({
                 e.stopPropagation();
                 onReject();
               }}
-              className="ml-1 p-0.5 rounded-full hover:bg-slate-200 transition-colors group/dismiss"
+              className="ml-1 p-0.5 rounded-full hover:bg-slate-muted/10 transition-colors group/dismiss"
             >
               <X
-                size={10}
-                className="text-slate-400 group-hover/dismiss:text-slate-600 transition-colors"
+                size={14}
+                className="text-slate-muted/60 group-hover/dismiss:text-slate-muted transition-colors"
                 strokeWidth={3}
               />
             </button>

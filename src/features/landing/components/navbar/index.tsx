@@ -18,13 +18,53 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // Focus trap and body scroll lock
   useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMenuOpen(false);
-    };
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
-  }, []);
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+
+      const handleTab = (e: KeyboardEvent) => {
+        if (e.key !== "Tab" || !menuRef.current) return;
+
+        const focusable = menuRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        );
+        const first = focusable[0] as HTMLElement;
+        const last = focusable[focusable.length - 1] as HTMLElement;
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            last.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === last) {
+            first.focus();
+            e.preventDefault();
+          }
+        }
+      };
+
+      const handleEsc = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setMenuOpen(false);
+      };
+
+      document.addEventListener("keydown", handleTab);
+      document.addEventListener("keydown", handleEsc);
+
+      // Auto focus first link when menu opens
+      if (menuRef.current) {
+        const firstLink = menuRef.current.querySelector("a") as HTMLElement;
+        firstLink?.focus();
+      }
+
+      return () => {
+        document.body.style.overflow = "";
+        document.removeEventListener("keydown", handleTab);
+        document.removeEventListener("keydown", handleEsc);
+      };
+    }
+  }, [menuOpen]);
 
   const handleNavClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -55,7 +95,7 @@ export function Navbar() {
               e.preventDefault();
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
-            className="flex items-center gap-2 select-none"
+            className="flex items-center gap-2 select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-hero-bg rounded-lg px-2 -ml-2 transition-all"
             aria-label="TeamForge home"
           >
             <TeamForgeLogo className="w-8 h-8" showBackground={false} />
@@ -74,7 +114,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleNavClick(e, link.href)}
-                className="font-sans text-sm font-medium text-white/60 hover:text-white transition-colors duration-200 relative group"
+                className="font-sans text-sm font-medium text-text-dark-secondary hover:text-white transition-colors duration-200 relative group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-sm"
               >
                 {link.label}
                 <span className="absolute -bottom-0.5 left-0 right-0 h-px bg-forge-teal scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
@@ -86,7 +126,7 @@ export function Navbar() {
             <Button
               variant="outline"
               asChild
-              className="border-white/20 text-white/70 hover:bg-white/10 hover:text-white hover:border-white/40 bg-transparent px-4 py-2"
+              className="border-white/20 text-text-dark-secondary hover:bg-white/10 hover:text-white hover:border-white/40 bg-transparent px-4 py-2"
             >
               <Link to="/auth/login">Log In</Link>
             </Button>
@@ -96,7 +136,7 @@ export function Navbar() {
           </div>
 
           <button
-            className="md:hidden text-white/70 hover:text-white p-2 rounded-lg transition-colors"
+            className="md:hidden text-text-dark-secondary hover:text-white p-2 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal"
             onClick={() => setMenuOpen((v) => !v)}
             aria-expanded={menuOpen}
             aria-label="Toggle menu"
@@ -115,17 +155,20 @@ export function Navbar() {
             : "opacity-0 pointer-events-none",
         )}
         aria-hidden={!menuOpen}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mobile Navigation Menu"
       >
         <nav
           className="flex flex-col items-center gap-6"
-          aria-label="Mobile navigation"
+          aria-label="Mobile navigation links"
         >
           {NAV_LINKS.map((link) => (
             <a
               key={link.href}
               href={link.href}
               onClick={(e) => handleNavClick(e, link.href)}
-              className="font-sans text-2xl font-semibold text-white/70 hover:text-white transition-colors"
+              className="font-sans text-2xl font-semibold text-text-dark-secondary hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-4 rounded-md px-4 py-2"
             >
               {link.label}
             </a>
@@ -135,13 +178,17 @@ export function Navbar() {
           <Button
             variant="outline"
             asChild
-            className="w-full border-white/20 text-white hover:bg-white/10 hover:border-white/40 bg-transparent text-base"
+            className="w-full border-white/20 text-white hover:bg-white/10 hover:border-white/40 bg-transparent text-base focus-visible:ring-offset-hero-bg"
           >
             <Link to="/auth/login" onClick={() => setMenuOpen(false)}>
               Log In
             </Link>
           </Button>
-          <Button variant="default" asChild className="w-full text-base py-6">
+          <Button
+            variant="default"
+            asChild
+            className="w-full text-base py-6 focus-visible:ring-offset-hero-bg"
+          >
             <Link to="/auth/register" onClick={() => setMenuOpen(false)}>
               Get Started
             </Link>

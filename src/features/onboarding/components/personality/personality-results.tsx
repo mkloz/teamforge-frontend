@@ -76,7 +76,7 @@ export function PersonalityResults({
         animate="visible"
         className="max-w-2xl mx-auto py-6"
       >
-        <p className="font-sans text-[10px] font-bold uppercase tracking-[0.18em] mb-5 text-center text-forge-teal">
+        <p className="font-sans text-xs font-bold uppercase tracking-[0.15em] mb-5 text-center text-forge-teal">
           Your Personality Type
         </p>
 
@@ -116,12 +116,12 @@ export function PersonalityResults({
 
                 <div
                   className={cn(
-                    "w-4 sm:w-5 h-0.75 rounded-full opacity-60 mt-0",
+                    "w-5 sm:w-6 h-1 rounded-full opacity-60 mt-0",
                     isIdentity ? "bg-spark-amber" : "bg-forge-teal",
                   )}
                 />
 
-                <span className="font-sans font-bold leading-none text-[8px] sm:text-[9px] text-slate-400 uppercase tracking-widest mt-1">
+                <span className="font-sans font-bold leading-none text-xs text-slate-400 uppercase tracking-wider mt-2 px-1">
                   {axisLabel}
                 </span>
               </motion.div>
@@ -216,7 +216,7 @@ export function PersonalityResults({
           </a>
         </div>
 
-        <p className="font-sans text-micro text-center mt-6 text-slate-muted/55">
+        <p className="font-sans text-xs text-center mt-6 text-slate-muted/65">
           Retaking replaces your current results. Your first match may change as
           a result.
         </p>

@@ -11,22 +11,22 @@ export function BalanceNudge() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -4 }}
       transition={{ duration: 0.2 }}
-      className="flex items-start gap-2.5 mb-4 px-3.5 py-3 bg-amber-50 border border-amber-200 rounded-xl"
+      className="flex items-start gap-2.5 mb-4 px-3.5 py-3 bg-spark-amber/5 border border-spark-amber/20 rounded-xl"
     >
-      <div className="text-amber-600 shrink-0 mt-0.5">
+      <div className="text-spark-amber shrink-0 mt-0.5">
         <Sprout size={16} strokeWidth={2} />
       </div>
-      <p className="font-sans text-xs text-amber-800 leading-snug flex-1">
+      <p className="font-sans text-xs text-ink leading-snug flex-1">
         Great depth in one area! Adding interests from other categories helps us
         find better team matches for you.
       </p>
       <button
         type="button"
         onClick={() => setDismissed(true)}
-        className="text-amber-400 hover:text-amber-600 shrink-0 mt-0.5 transition-colors"
+        className="text-spark-amber/50 hover:text-spark-amber shrink-0 mt-0.5 transition-colors"
         aria-label="Dismiss"
       >
-        <X size={13} strokeWidth={2.5} />
+        <X size={14} strokeWidth={2.5} />
       </button>
     </motion.div>
   );

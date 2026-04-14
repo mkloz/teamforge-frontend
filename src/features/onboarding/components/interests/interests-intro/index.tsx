@@ -40,7 +40,7 @@ export function InterestsIntro({ onStart }: InterestsIntroProps) {
 
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-[10px] sm:text-micro font-bold uppercase tracking-[0.2em] mb-3 text-forge-teal"
+        className="font-sans text-xs font-bold uppercase tracking-[0.2em] mb-3 text-forge-teal"
       >
         Step 2 of 2 · Interests
       </motion.p>
@@ -53,20 +53,22 @@ export function InterestsIntro({ onStart }: InterestsIntroProps) {
       </motion.h1>
 
       <motion.div variants={fadeUpItem}>
-        <p className="font-sans text-xs sm:text-sm leading-relaxed text-pretty mb-3 text-slate-500 font-medium">
+        <p className="font-sans text-[13px] sm:text-sm leading-relaxed text-pretty mb-3 text-slate-muted font-medium">
           Interests are the second dimension of your profile. They power the
           activities your group gets recommended.
         </p>
-        <p className="font-sans text-xs sm:text-sm leading-relaxed text-pretty mb-6 text-slate-500">
+        <p className="font-sans text-[13px] sm:text-sm leading-relaxed text-pretty mb-6 text-slate-muted/80">
           Pick at least{" "}
-          <span className="text-ink font-semibold">10 interests</span>. There
-          are no wrong answers – only honest ones.
+          <span className="text-ink font-bold border-b border-forge-teal/30">
+            10 interests
+          </span>
+          . There are no wrong answers – only honest ones.
         </p>
       </motion.div>
 
       <motion.div
         variants={fadeUpItem}
-        className="w-full mb-6 h-px bg-slate-100"
+        className="w-full mb-6 h-px bg-slate-muted/10"
       />
 
       <motion.div
@@ -75,10 +77,10 @@ export function InterestsIntro({ onStart }: InterestsIntroProps) {
       >
         {BENEFITS.map(({ icon: Icon, text }) => (
           <div key={text} className="flex items-start gap-3.5">
-            <div className="flex items-center justify-center rounded-xl shrink-0 mt-0.5 w-8 h-8 bg-forge-teal/10">
+            <div className="flex items-center justify-center rounded-xl shrink-0 mt-0.5 w-8 h-8 bg-forge-teal/5">
               <Icon size={14} strokeWidth={2.5} className="text-forge-teal" />
             </div>
-            <p className="font-sans text-xs sm:text-sm leading-relaxed text-slate-500">
+            <p className="font-sans text-[13px] sm:text-sm leading-relaxed text-slate-muted">
               {text}
             </p>
           </div>

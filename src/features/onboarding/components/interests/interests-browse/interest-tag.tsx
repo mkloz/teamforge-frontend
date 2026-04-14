@@ -26,7 +26,7 @@ export function InterestTag({
       whileTap={!disabled || selected ? { scale: 0.93 } : {}}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full font-sans font-medium transition duration-150 cursor-pointer select-none",
-        size === "sm" ? "px-2.5 py-1 text-micro" : "px-3 py-1.5 text-xs",
+        size === "sm" ? "px-2.5 py-1 text-xs" : "px-3 py-1.5 text-xs",
         selected
           ? "bg-forge-teal text-white shadow-[0_2px_8px_rgba(13,148,136,0.30)]"
           : "bg-slate-100 text-slate-600 hover:bg-slate-200",
@@ -42,7 +42,7 @@ export function InterestTag({
           exit={{ scale: 0, opacity: 0 }}
           transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Check size={10} strokeWidth={3} />
+          <Check size={14} strokeWidth={2.5} />
         </motion.span>
       )}
       {tag.label}

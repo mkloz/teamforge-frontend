@@ -19,10 +19,10 @@ export function MbtiCard() {
       )}
       aria-hidden="true"
     >
-      <p className="text-forge-teal/60 text-nano font-semibold font-sans mb-1.5 uppercase tracking-[0.15em]">
+      <p className="text-forge-teal text-nano font-semibold font-sans mb-1.5 uppercase tracking-[0.15em] opacity-90">
         Personality
       </p>
-      <p className="text-forge-teal-light text-2xl font-extrabold font-sans tracking-tight mb-2.5">
+      <p className="text-white text-2xl font-extrabold font-sans tracking-tight mb-2.5">
         ENTJ
       </p>
       <div className="space-y-1.5">
@@ -42,7 +42,7 @@ export function MbtiCard() {
                 style={{ width: `${fill}%` }}
               />
             </div>
-            <span className="text-white/20 text-nano font-sans w-2.5 text-right">
+            <span className="text-text-dark-muted text-nano font-sans w-2.5 text-right">
               {peer}
             </span>
           </div>

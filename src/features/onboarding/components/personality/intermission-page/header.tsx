@@ -36,7 +36,7 @@ export function IntermissionHeader({
       </div>
 
       <div className="flex flex-col items-start justify-center h-20 pl-6 border-l border-slate-200/80">
-        <span className="font-sans text-[10px] font-black uppercase tracking-[0.25em] text-forge-teal/80 mb-1">
+        <span className="font-sans text-xs font-black uppercase tracking-[0.2em] text-forge-teal/80 mb-1">
           Quick Break
         </span>
         <div className="flex items-baseline gap-1.5">

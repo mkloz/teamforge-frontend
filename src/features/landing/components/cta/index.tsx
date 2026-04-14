@@ -20,34 +20,9 @@ export function CtaSection() {
         aria-hidden="true"
         style={{
           opacity: 0,
-          background: `radial-gradient(ellipse 55% 55% at 50% 50%, rgba(13, 148, 136, 0.25) 0%, transparent 70%)`,
+          background: `radial-gradient(circle at center, rgba(13, 148, 136, 0.15) 0%, transparent 70%)`,
         }}
       />
-      <div
-        className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_80%_60%_at_50%_100%,rgba(13,148,136,0.12)_0%,transparent_65%)]"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle,rgba(255,255,255,0.09)_1.8px,transparent_1.8px)] bg-size-[36px_36px]"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute -top-32 -left-32 w-80 h-80 rounded-full border border-forge-teal/30 pointer-events-none"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute -top-20 -left-20 w-56 h-56 rounded-full border border-forge-teal/20 pointer-events-none"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute -bottom-24 -right-24 w-72 h-72 rounded-full border border-spark-amber/25 pointer-events-none"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute -bottom-12 -right-12 w-48 h-48 rounded-full border border-spark-amber/15 pointer-events-none"
-        aria-hidden="true"
-      />
-
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -73,7 +48,7 @@ export function CtaSection() {
             Stop waiting for the right{" "}
             <span className="text-forge-teal">group</span> to appear.
           </h2>
-          <p className="font-sans text-lg leading-relaxed text-pretty max-w-xl mx-auto mb-12 text-white/50">
+          <p className="font-sans text-lg leading-relaxed text-pretty max-w-xl mx-auto mb-12 text-text-dark-secondary">
             Your personality, your interests, your people – forged into a group
             made for you, in one tap.
           </p>
@@ -109,7 +84,7 @@ export function CtaSection() {
           <Button
             variant="outline"
             asChild
-            className="w-full sm:w-auto px-8 py-7 text-base text-white/55 bg-white/5 border-white/10 hover:text-white/85 hover:border-white/15 hover:bg-white/10"
+            className="w-full sm:w-auto px-8 py-7 text-base text-text-dark-secondary bg-white/5 border-white/10 hover:text-white hover:border-white/15 hover:bg-white/10"
           >
             <a href="#how-it-works">See how it works</a>
           </Button>
@@ -119,7 +94,7 @@ export function CtaSection() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.7, delay: 0.7 }}
-          className="font-sans text-xs text-white/25"
+          className="font-sans text-xs text-text-dark-muted"
         >
           No credit card required &nbsp;&middot;&nbsp; No spam
         </motion.p>

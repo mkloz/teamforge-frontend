@@ -27,7 +27,7 @@ export function GroupCard() {
       aria-hidden="true"
     >
       <div className="flex items-center justify-between mb-2.5">
-        <p className="text-forge-teal/60 text-nano font-semibold font-sans uppercase tracking-[0.15em]">
+        <p className="text-forge-teal text-nano font-semibold font-sans uppercase tracking-[0.15em] opacity-90">
           Your Group
         </p>
         <span className="text-spark-amber text-nano font-bold font-sans bg-spark-amber/10 px-2 py-0.5 rounded-full border border-spark-amber/20">
@@ -53,7 +53,7 @@ export function GroupCard() {
         {["Hiking", "Tech", "Coffee"].map((tag) => (
           <span
             key={tag}
-            className="text-nano font-medium font-sans text-white/30 bg-white/5 px-1.5 py-0.5 rounded"
+            className="text-nano font-medium font-sans text-text-dark-muted bg-white/5 px-1.5 py-0.5 rounded"
           >
             {tag}
           </span>

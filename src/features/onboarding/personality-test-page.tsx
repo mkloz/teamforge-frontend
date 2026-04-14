@@ -238,7 +238,7 @@ export function PersonalityTestPage() {
 
       {/* ── Right half screen animation space ── */}
       <div className="hidden lg:flex flex-1 relative bg-hero-bg border-l border-slate-200 items-center justify-center overflow-hidden h-full">
-        <VoronoiCatalyst progress={testState.progress} isTyping={false} />
+        <VoronoiCatalyst progress={testState.progress} />
       </div>
     </div>
   );

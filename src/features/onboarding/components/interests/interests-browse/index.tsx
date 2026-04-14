@@ -132,21 +132,23 @@ export function InterestsBrowse({
           {/* Search Results Layer */}
           <AnimatePresence>
             {isSearching && (
-              <motion.div
-                key="search-results"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="w-full"
-              >
-                <SearchResults
-                  query={searchQuery}
-                  results={searchResults}
-                  selectedIds={selectedIds}
-                  isAtMax={isAtMax}
-                  onToggle={onToggle}
-                />
-              </motion.div>
+              <>
+                <motion.div
+                  key="search-results"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="relative z-20 w-full"
+                >
+                  <SearchResults
+                    query={searchQuery}
+                    results={searchResults}
+                    selectedIds={selectedIds}
+                    isAtMax={isAtMax}
+                    onToggle={onToggle}
+                  />
+                </motion.div>
+              </>
             )}
           </AnimatePresence>
         </div>

@@ -41,26 +41,30 @@ export function SearchResults({
     >
       {totalCount === 0 ? (
         <div className="flex flex-col items-center py-16 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center mb-3">
-            <Search size={20} className="text-slate-300" strokeWidth={1.5} />
+          <div className="w-12 h-12 rounded-2xl bg-slate-muted/5 flex items-center justify-center mb-3 border border-slate-muted/10">
+            <Search
+              size={20}
+              className="text-slate-muted/30"
+              strokeWidth={1.5}
+            />
           </div>
-          <p className="font-sans text-sm font-medium text-slate-400">
+          <p className="font-sans text-sm font-bold text-slate-muted">
             No results for &ldquo;{query}&rdquo;
           </p>
-          <p className="font-sans text-xs text-slate-300 mt-1">
+          <p className="font-sans text-xs text-slate-muted/50 mt-1">
             Try a different word
           </p>
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          <p className="font-sans text-xs text-slate-400">
+          <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-slate-muted/40">
             {totalCount} result{totalCount !== 1 ? "s" : ""}
           </p>
 
           {/* Subcategory matches – expandable */}
           {results.subcategories.length > 0 && (
             <div className="flex flex-col gap-1">
-              <p className="font-sans text-micro font-semibold uppercase tracking-wider text-slate-400 mb-1">
+              <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-slate-muted/50 mb-1">
                 Categories
               </p>
               {results.subcategories.map(({ sub, categoryLabel }) => {
@@ -71,22 +75,22 @@ export function SearchResults({
                 return (
                   <div
                     key={sub.id}
-                    className="rounded-xl border border-slate-200 overflow-hidden"
+                    className="rounded-xl border border-slate-muted/15 overflow-hidden bg-white hover:border-slate-muted/30 transition-colors"
                   >
                     <button
                       type="button"
                       onClick={() => toggleSub(sub.id)}
-                      className="w-full flex items-center gap-2 px-3 py-2.5 bg-slate-50 text-left group"
+                      className="w-full flex items-center gap-2 px-3 py-2.5 bg-canvas text-left group"
                     >
                       <div className="flex items-center gap-2">
-                        <span className="text-slate-500">
+                        <span className="text-slate-muted/60">
                           <sub.icon className="w-5 h-5" strokeWidth={1.5} />
                         </span>
                         <div className="flex flex-col">
-                          <span className="font-sans text-xs font-semibold text-slate-700">
+                          <span className="font-sans text-xs font-bold text-ink">
                             {sub.label}
                           </span>
-                          <span className="font-sans text-micro text-slate-400 leading-none">
+                          <span className="font-sans text-[10px] font-bold uppercase tracking-wider text-slate-muted/50 leading-none">
                             {categoryLabel}
                           </span>
                         </div>
@@ -95,7 +99,7 @@ export function SearchResults({
                         <motion.span
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className="ml-auto mr-2 shrink-0 flex items-center justify-center min-w-5 h-5 px-1.5 font-sans text-micro font-black bg-forge-teal text-white rounded-full leading-none shadow-[0_2px_4px_rgba(13,148,136,0.2)]"
+                          className="ml-auto mr-2 shrink-0 flex items-center justify-center min-w-5 h-5 px-1.5 font-sans text-xs font-bold bg-forge-teal text-white rounded-full leading-none shadow-teal-glow"
                         >
                           {subSelectedCount}
                         </motion.span>
@@ -104,11 +108,11 @@ export function SearchResults({
                         animate={{ rotate: open ? 0 : -90 }}
                         transition={{ duration: 0.18 }}
                         className={cn(
-                          "shrink-0 text-slate-400 transition-colors group-hover:text-slate-500",
+                          "shrink-0 text-slate-muted/40 transition-colors group-hover:text-slate-muted",
                           subSelectedCount === 0 && "ml-auto",
                         )}
                       >
-                        <ChevronDown size={13} strokeWidth={2.5} />
+                        <ChevronDown size={14} strokeWidth={2.5} />
                       </motion.span>
                     </button>
                     <AnimatePresence initial={false}>
@@ -145,7 +149,7 @@ export function SearchResults({
           {results.tags.length > 0 && (
             <div>
               {results.subcategories.length > 0 && (
-                <p className="font-sans text-micro font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-slate-muted/50 mb-2">
                   Tags
                 </p>
               )}

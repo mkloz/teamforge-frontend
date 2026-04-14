@@ -2,9 +2,15 @@ import { BackgroundTexture } from "@/shared/components/common/background-texture
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 import { cn } from "@/shared/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
-import { useRef } from "react";
+import {
+  AnimatePresence,
+  motion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import { useRef, useState } from "react";
 import { VoronoiCatalyst } from "../auth/components/voronoi-catalyst";
+import { CompletionBlueprint } from "./components/completion-blueprint";
 import {
   InterestsBrowse,
   InterestsBrowseHeader,
@@ -21,9 +27,11 @@ import { useInterests, type UseInterestsReturn } from "./hooks/use-interests";
 
 export function InterestsPage() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isDone, setIsDone] = useState(false);
+
   const state = useInterests({
     onComplete: () => {
-      window.location.href = "/";
+      setIsDone(true);
     },
   });
 
@@ -35,23 +43,23 @@ export function InterestsPage() {
   return (
     <div className="h-screen w-full max-h-dvh flex flex-col lg:flex-row relative overflow-hidden">
       {/* ── Left – Visual Sidebar (Voronoi) ── */}
-      <aside className="hidden lg:flex flex-1 relative bg-hero-bg border-r border-slate-200 items-center justify-center overflow-hidden h-full">
-        <VoronoiCatalyst progress={progress} isTyping={false} />
+      <aside className="hidden lg:flex flex-1 relative bg-hero-bg border-r border-slate-muted/10 items-center justify-center overflow-hidden h-full">
+        <VoronoiCatalyst progress={progress} />
       </aside>
 
       {/* ── Right – Interactive Form Pane ── */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden relative">
+      <main className="flex-1 flex flex-col h-full overflow-hidden relative bg-canvas">
         <BackgroundTexture />
 
         <div
           ref={scrollContainerRef}
-          className="flex-1 overflow-y-scroll overflow-x-hidden px-4 sm:px-5 pb-0 scroll-smooth relative z-10"
+          className="flex-1 overflow-y-scroll overflow-x-hidden pb-0 scroll-smooth relative z-10"
         >
           <Decorations progress={progress} />
-          <div className="flex flex-col items-center justify-start w-full min-h-full py-6 sm:py-0">
-            <div className="relative w-full max-w-xl px-2 sm:px-10 lg:p-0">
-              <PersistentHeader state={state} />
+          <PersistentHeader state={state} scrollRef={scrollContainerRef} />
 
+          <div className="flex flex-col items-center justify-start w-full min-h-full py-6 sm:py-0">
+            <div className="relative w-full max-w-xl lg:px-0 px-4 sm:px-5">
               <div className="relative w-full">
                 <AnimatePresence mode="wait" initial={false}>
                   {state.screen === "intro" && (
@@ -116,6 +124,19 @@ export function InterestsPage() {
 
         <InterestsFooter state={state} />
       </main>
+
+      {/* ── Success Overlay (Blueprint) ── */}
+      <AnimatePresence>
+        {isDone && (
+          <CompletionBlueprint
+            mbtiType={state.mbtiType}
+            interestCount={state.selectedCount}
+            onEnter={() => {
+              window.location.href = "/home";
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -131,49 +152,79 @@ export function Decorations({ progress }: { progress: number }) {
   );
 }
 
-function PersistentHeader({ state }: { state: UseInterestsReturn }) {
+function PersistentHeader({
+  state,
+  scrollRef,
+}: {
+  state: UseInterestsReturn;
+  scrollRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  const { scrollY } = useScroll({
+    container: scrollRef,
+  });
+
+  const headerOpacity = useTransform(scrollY, [0, 40], [1, 0]);
+
   if (state.screen === "intro") return null;
 
   return (
     <div
       className={cn(
-        "sticky top-0 z-20 -mx-4 px-4 sm:-mx-5 sm:px-5 backdrop-blur-sm bg-white/40 border-b border-slate-100 py-3 transition-opacity duration-300 opacity-100",
+        "sticky z-20 w-full border-b bg-canvas/80 border-slate-muted/10 pt-3 backdrop-blur-sm",
+        state.screen === "browse" ? "-top-13" : "top-0 shadow-sm",
       )}
     >
-      {state.screen === "browse" && (
-        <InterestsBrowseHeader
-          searchQuery={state.searchQuery}
-          onSetSearch={state.setSearchQuery}
-          onExpandCategoryOnly={state.expandCategoryOnly}
-        />
-      )}
-      {state.screen === "review" && (
-        <InterestsReviewHeader totalSelected={state.selectedCount} />
-      )}
+      <div className="max-w-xl mx-auto lg:px-0 px-4 sm:px-5 pb-2">
+        {state.screen === "browse" && (
+          <div className="flex flex-col">
+            {/* Tier 1: Pills */}
+            <motion.div style={{ opacity: headerOpacity }} className="mb-3">
+              <InterestsBrowseHeader
+                searchQuery={state.searchQuery}
+                onSetSearch={state.setSearchQuery}
+                onExpandCategoryOnly={state.expandCategoryOnly}
+                variant="pills"
+              />
+            </motion.div>
+
+            {/* Tier 2: Search */}
+            <InterestsBrowseHeader
+              searchQuery={state.searchQuery}
+              onSetSearch={state.setSearchQuery}
+              onExpandCategoryOnly={state.expandCategoryOnly}
+              variant="search"
+            />
+          </div>
+        )}
+
+        {state.screen === "review" && (
+          <InterestsReviewHeader totalSelected={state.selectedCount} />
+        )}
+      </div>
     </div>
   );
 }
 
 function InterestsFooter({ state }: { state: UseInterestsReturn }) {
   return (
-    <div className="shrink-0 w-full relative z-30">
-      {state.screen === "browse" && (
-        <div className="px-5 lg:px-0">
+    <div className="shrink-0 w-full relative z-30 bg-canvas border-t border-slate-muted/10">
+      <div className="max-w-xl mx-auto lg:px-0 px-4 sm:px-5 w-full">
+        {state.screen === "browse" && (
           <InterestsProgressBar
             selectedCount={state.selectedCount}
             canContinue={state.canContinue}
             isAtMax={state.isAtMax}
             onContinue={state.goToReview}
           />
-        </div>
-      )}
-      {state.screen === "review" && (
-        <InterestsReviewFooter
-          onConfirm={state.finalize}
-          canConfirm={state.canContinue}
-          onBack={state.goToBrowse}
-        />
-      )}
+        )}
+        {state.screen === "review" && (
+          <InterestsReviewFooter
+            onConfirm={state.finalize}
+            canConfirm={state.canContinue}
+            onBack={state.goToBrowse}
+          />
+        )}
+      </div>
     </div>
   );
 }

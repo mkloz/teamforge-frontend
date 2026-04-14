@@ -10,7 +10,7 @@ export function InterestsReviewHeader({
   return (
     <div className="flex items-center justify-between w-full">
       <div className="pt-4">
-        <p className="font-sans text-micro font-semibold uppercase tracking-[0.18em] text-forge-teal mb-1">
+        <p className="font-sans text-xs font-bold uppercase tracking-[0.18em] text-forge-teal mb-1">
           Review
         </p>
         <h2 className="font-sans text-2xl font-extrabold text-ink">

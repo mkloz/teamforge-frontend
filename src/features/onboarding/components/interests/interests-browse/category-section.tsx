@@ -45,7 +45,7 @@ export function CategorySection({
               category.color,
             )}
           />
-          <span className="font-sans text-sm font-bold text-slate-900 group-hover:text-forge-teal transition-colors">
+          <span className="font-sans text-sm font-bold text-ink group-hover:text-forge-teal transition-colors">
             {category.label}
           </span>
         </div>
@@ -53,7 +53,7 @@ export function CategorySection({
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="ml-auto mr-2 shrink-0 flex items-center justify-center min-w-5 h-5 px-1.5 font-sans text-micro font-black bg-forge-teal text-white rounded-full leading-none shadow-[0_2px_4px_rgba(13,148,136,0.2)]"
+            className="ml-auto mr-2 shrink-0 flex items-center justify-center min-w-5 h-5 px-1.5 font-sans text-xs font-bold bg-forge-teal text-white rounded-full leading-none shadow-[0_2px_4px_rgba(13,148,136,0.2)]"
           >
             {selectedInCat}
           </motion.span>
@@ -88,13 +88,13 @@ export function CategorySection({
               expandedSubcategories.has(sub.id) && (
                 <div
                   key={`tags-${sub.id}`}
-                  className="bg-slate-50/50 lg:bg-slate-50/50 rounded-2xl p-4 border border-slate-100/50 lg:border-slate-100/50 sm:border-0 sm:bg-transparent sm:px-0"
+                  className="py-2 flex flex-col gap-3"
                 >
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-slate-500">
-                      <sub.icon className="w-4 h-4" strokeWidth={2.5} />
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-slate-muted/60">
+                      <sub.icon className="w-3.5 h-3.5" strokeWidth={2.5} />
                     </span>
-                    <span className="text-micro font-bold uppercase tracking-widest text-slate-400">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-muted/40">
                       {sub.label}
                     </span>
                   </div>

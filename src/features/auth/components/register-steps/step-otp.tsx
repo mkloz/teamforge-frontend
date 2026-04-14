@@ -25,7 +25,7 @@ interface StepOtpProps {
 }
 
 const OTP_SLOT_CLASS =
-  "h-12 w-10 sm:w-12 max-w-[48px] rounded-xl border border-border font-mono text-lg transition-colors focus-within:border-forge-teal focus-within:ring-2 focus-within:ring-[rgba(13,148,136,0.12)]";
+  "h-12 w-10 sm:w-12 max-w-[48px] rounded-xl border border-border bg-white font-mono text-lg hover:border-forge-teal/40 transition-all duration-200 focus-within:border-forge-teal focus-within:ring-2 focus-within:ring-forge-teal/15";
 
 export function StepOtp({ onBack, loading }: StepOtpProps) {
   const { control } = useFormContext<RegisterValues>();
@@ -73,7 +73,7 @@ export function StepOtp({ onBack, loading }: StepOtpProps) {
                 </InputOTPGroup>
               </InputOTP>
             </FormControl>
-            <FormMessage className="text-xs font-medium text-red-500 text-center" />
+            <FormMessage className="text-xs font-medium text-destructive text-center" />
           </FormItem>
         )}
       />
@@ -90,7 +90,7 @@ export function StepOtp({ onBack, loading }: StepOtpProps) {
         {loading ? (
           <>
             <Loader2 size={16} className="animate-spin mr-2" />
-            Creating account...
+            Forging your profile...
           </>
         ) : (
           <>

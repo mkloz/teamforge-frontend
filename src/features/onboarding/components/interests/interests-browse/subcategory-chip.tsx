@@ -4,12 +4,12 @@ import { motion } from "framer-motion";
 import { type LucideIcon, ChevronRight } from "lucide-react";
 
 const subcategoryChipVariants = cva(
-  "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-micro font-semibold font-sans transition duration-150 select-none leading-none border",
+  "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold font-sans transition duration-150 select-none leading-none border",
   {
     variants: {
       state: {
         collapsed:
-          "bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-100",
+          "bg-white border-slate-muted/15 text-slate-muted hover:border-slate-muted/30 hover:bg-canvas",
         expanded: "bg-forge-teal/10 border-forge-teal/30 text-forge-teal",
       },
     },
@@ -20,12 +20,12 @@ const subcategoryChipVariants = cva(
 );
 
 const badgeVariants = cva(
-  "shrink-0 flex items-center justify-center min-w-[1.125rem] h-4.5 px-1 text-nano font-bold rounded-full leading-none",
+  "shrink-0 flex items-center justify-center min-w-[1.125rem] h-4.5 px-1 text-[10px] font-bold rounded-full leading-none",
   {
     variants: {
       state: {
-        collapsed: "bg-slate-200 text-slate-600",
-        expanded: "bg-forge-teal text-white",
+        collapsed: "bg-slate-muted/15 text-slate-muted",
+        expanded: "bg-forge-teal text-white shadow-sm",
       },
     },
     defaultVariants: {
@@ -72,7 +72,7 @@ export function SubcategoryChip({
         transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
         className="opacity-60"
       >
-        <ChevronRight size={11} strokeWidth={2.5} />
+        <ChevronRight size={14} strokeWidth={2.5} />
       </motion.span>
     </motion.button>
   );

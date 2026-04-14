@@ -19,7 +19,7 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
       {/* Overline */}
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] mb-4 text-forge-teal text-center"
+        className="font-sans text-xs font-bold uppercase tracking-[0.2em] mb-4 text-forge-teal text-center"
       >
         Personality Theory 101
       </motion.p>

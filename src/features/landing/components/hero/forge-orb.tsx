@@ -1,6 +1,6 @@
 import { TeamForgeLogo } from "@/assets/logo";
 import { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { GroupCard } from "./group-card";
 import { MbtiCard } from "./mbti-card";
 import { TrustCard } from "./trust-card";
@@ -10,11 +10,14 @@ import { TrustCard } from "./trust-card";
 export function ForgeOrb() {
   const containerRef = useRef<HTMLDivElement>(null);
   const orbContainerRef = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   const dotRefs = useRef<(HTMLDivElement | null)[]>([]);
   const tailRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
+    if (shouldReduceMotion) return;
+
     let frame: number;
     // periods in milliseconds - slightly coprime to prevent syncing
     const periods = [13000, 16000, 22000, 28000];
@@ -87,9 +90,10 @@ export function ForgeOrb() {
     };
     frame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(frame);
-  }, []);
+  }, [shouldReduceMotion]);
 
   useEffect(() => {
+    if (shouldReduceMotion) return;
     const container = containerRef.current;
     if (!container) return;
 
@@ -119,7 +123,7 @@ export function ForgeOrb() {
       container.removeEventListener("mousemove", handleMouseMove);
       container.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, []);
+  }, [shouldReduceMotion]);
 
   return (
     <div
@@ -134,15 +138,27 @@ export function ForgeOrb() {
         }}
       >
         <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          animate={shouldReduceMotion ? { rotate: 0 } : { rotate: 360 }}
+          transition={
+            shouldReduceMotion
+              ? { duration: 0 }
+              : { duration: 20, repeat: Infinity, ease: "linear" }
+          }
           className="absolute inset-0 rounded-full blur-subtle bg-[conic-gradient(from_0deg,rgba(13,148,136,0.25),rgba(20,184,166,0.08),rgba(13,148,136,0.15),rgba(13,148,136,0.25))]"
           aria-hidden="true"
         />
 
         <motion.div
-          animate={{ scale: [1, 1.04, 1], opacity: [0.6, 1, 0.6] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          animate={
+            shouldReduceMotion
+              ? { scale: 1, opacity: 0.8 }
+              : { scale: [1, 1.04, 1], opacity: [0.6, 1, 0.6] }
+          }
+          transition={
+            shouldReduceMotion
+              ? { duration: 0 }
+              : { duration: 4, repeat: Infinity, ease: "easeInOut" }
+          }
           className="absolute inset-3 rounded-full bg-[radial-gradient(circle_at_40%_40%,rgba(13,148,136,0.15),rgba(9,9,9,0.95)_70%)]"
           aria-hidden="true"
         />

@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useMemo, useCallback } from "react";
 import { cn } from "@/shared/lib/utils";
-import { useScroll, useSpring } from "framer-motion";
+import { useScroll, useSpring, useReducedMotion } from "framer-motion";
 
 interface ParticlesProps {
   className?: string;
@@ -63,6 +63,7 @@ export const Particles: React.FC<ParticlesProps> = ({
     damping: 15,
   });
   const scrollOffset = useRef<number>(0);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     return smoothScroll.on("change", (v) => {
@@ -233,7 +234,11 @@ export const Particles: React.FC<ParticlesProps> = ({
     }
 
     resizeCanvas();
-    animate(performance.now());
+    if (!shouldReduceMotion) {
+      animate(performance.now());
+    } else {
+      updateParticles();
+    }
 
     window.addEventListener("resize", resizeCanvas);
     return () => {
@@ -243,7 +248,7 @@ export const Particles: React.FC<ParticlesProps> = ({
         window.cancelAnimationFrame(animationFrameId.current);
       }
     };
-  }, [resizeCanvas, animate]);
+  }, [resizeCanvas, animate, shouldReduceMotion, updateParticles]);
 
   return (
     <div

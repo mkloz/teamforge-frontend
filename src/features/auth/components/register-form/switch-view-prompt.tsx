@@ -5,7 +5,7 @@ interface SwitchViewPromptProps {
 export function SwitchViewPrompt({ onClick }: SwitchViewPromptProps) {
   return (
     <p className="font-sans text-sm text-slate-muted text-center mt-6">
-      Already have an account?{" "}
+      Already forged an account?{" "}
       <button
         type="button"
         onClick={onClick}

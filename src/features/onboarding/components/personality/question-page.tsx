@@ -50,11 +50,11 @@ export function QuestionPage({
     <div className="flex flex-col w-full max-w-xl mx-auto px-0 sm:px-0">
       {/* Page counter + time estimate */}
       <div className="flex justify-between items-center mb-2">
-        <span className="font-sans text-micro font-semibold uppercase tracking-widest text-slate-500">
+        <span className="font-sans text-xs font-bold uppercase tracking-widest text-slate-500">
           Page {pageNumber} of {totalPages}
         </span>
         {pagesLeft > 0 && (
-          <span className="font-sans text-micro font-medium text-slate-500/55">
+          <span className="font-sans text-xs font-medium text-slate-500/60">
             {formatTimeLeft(pagesLeft, pageQuestions.length)}
           </span>
         )}
@@ -74,7 +74,7 @@ export function QuestionPage({
             />
           );
         })}
-        <span className="font-sans text-nano font-medium ml-1 shrink-0 text-slate-500/45">
+        <span className="font-sans text-xs font-black ml-1 shrink-0 text-slate-500/60 leading-none">
           {answeredOnPage}/{pageQuestions.length}
         </span>
       </div>

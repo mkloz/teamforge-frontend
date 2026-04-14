@@ -19,40 +19,48 @@ export function InterestsProgressBar({
 
   let progressText = "Ready to review";
   if (!canContinue) {
-    progressText = `${MIN_INTERESTS - selectedCount} more to unlock`;
+    progressText = `${MIN_INTERESTS - selectedCount} more for a complete profile`;
   } else if (isAtMax) {
-    progressText = "Maximum reached";
+    progressText = "Selection finalized";
   } else {
     // Dynamic text
     const ratio = selectedCount / MAX_INTERESTS;
     if (ratio >= 0.8) {
-      progressText = "Well rounded profile";
+      progressText = "Solid profile foundation";
     } else if (ratio >= 0.5) {
-      progressText = "Nice variety";
+      progressText = "Adding more dimensions";
     } else {
-      progressText = "Great start";
+      progressText = "Defining your interests";
     }
   }
 
   return (
-    <div className="bg-white/80 backdrop-blur-md border-t border-slate-200/60 px-4 sm:px-6 lg:px-0 py-3.5 lg:max-w-lg lg:mx-auto w-full">
-      <div className="h-0.5 w-full bg-slate-100 rounded-full mb-3 overflow-hidden">
+    <div
+      className="w-full py-3.5"
+      role="progressbar"
+      aria-valuenow={selectedCount}
+      aria-valuemin={0}
+      aria-valuemax={MAX_INTERESTS}
+      aria-label="Interests selection progress"
+    >
+      <div className="h-1 w-full bg-slate-muted/10 rounded-full mb-3 overflow-hidden">
         <motion.div
-          className="h-full rounded-full bg-forge-teal"
-          animate={{ width: `${pct}%` }}
-          transition={{ duration: 0.35, ease: "easeOut" }}
+          className="h-full w-full bg-forge-teal origin-left"
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: pct / 100 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         />
       </div>
       <div className="flex items-center justify-between gap-4">
         <div>
-          <span className="font-sans text-sm font-semibold text-ink">
+          <span className="font-sans text-sm font-bold text-ink">
             {selectedCount}
-            <span className="font-normal text-slate-400">
+            <span className="font-normal text-slate-muted/50">
               {" "}
               / {MAX_INTERESTS}
             </span>
           </span>
-          <p className="font-sans text-micro text-slate-400 leading-none mt-0.5">
+          <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-slate-muted/60 leading-none mt-1">
             {progressText}
           </p>
         </div>
@@ -60,11 +68,16 @@ export function InterestsProgressBar({
           type="button"
           onClick={canContinue ? onContinue : undefined}
           whileTap={canContinue ? { scale: 0.97 } : {}}
+          aria-label={
+            canContinue
+              ? "Review your selected interests"
+              : "Select more interests to continue"
+          }
           className={cn(
-            "flex items-center gap-2 font-sans text-sm font-semibold rounded-xl h-10 px-5 transition-colors duration-200 shrink-0",
+            "flex items-center gap-2 font-sans text-sm font-bold rounded-xl h-10 px-5 transition-all duration-200 shrink-0",
             canContinue
               ? "bg-forge-teal text-white shadow-teal-glow hover:shadow-teal-glow-lg"
-              : "bg-slate-100 text-slate-400 cursor-not-allowed",
+              : "bg-slate-muted/5 text-slate-muted/40 cursor-not-allowed border border-slate-muted/10",
           )}
         >
           Review picks

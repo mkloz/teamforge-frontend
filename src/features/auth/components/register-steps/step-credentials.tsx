@@ -17,9 +17,9 @@ import type { RegisterValues } from "../../schemas/auth-schemas";
 
 const STRENGTH_LEVELS = [
   { score: 0 as const, label: "", color: "" },
-  { score: 1 as const, label: "Weak", color: "#EF4444" },
-  { score: 2 as const, label: "Good", color: "#F59E0B" },
-  { score: 3 as const, label: "Strong", color: "#0D9488" },
+  { score: 1 as const, label: "Weak", color: "var(--color-destructive)" },
+  { score: 2 as const, label: "Good", color: "var(--color-spark-amber)" },
+  { score: 3 as const, label: "Strong", color: "var(--color-forge-teal)" },
 ] as const;
 
 function getPasswordStrength(password: string): {
@@ -62,13 +62,13 @@ export function StepCredentials({ onNext }: StepCredentialsProps) {
             </FormLabel>
             <FormControl>
               <Input
-                className="h-11 px-3.5 rounded-xl border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-colors duration-200"
+                className="h-11 px-3.5 rounded-xl border border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 transition-all duration-200"
                 placeholder="Alex Johnson"
                 autoComplete="name"
                 {...field}
               />
             </FormControl>
-            <FormMessage className="text-xs font-medium text-red-500" />
+            <FormMessage className="text-xs font-medium text-destructive" />
           </FormItem>
         )}
       />
@@ -84,14 +84,14 @@ export function StepCredentials({ onNext }: StepCredentialsProps) {
             </FormLabel>
             <FormControl>
               <Input
-                className="h-11 px-3.5 rounded-xl border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-colors duration-200"
+                className="h-11 px-3.5 rounded-xl border border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 transition-all duration-200"
                 placeholder="you@example.com"
                 type="email"
                 autoComplete="email"
                 {...field}
               />
             </FormControl>
-            <FormMessage className="text-xs font-medium text-red-500" />
+            <FormMessage className="text-xs font-medium text-destructive" />
           </FormItem>
         )}
       />
@@ -109,7 +109,7 @@ export function StepCredentials({ onNext }: StepCredentialsProps) {
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
-                  className="h-11 pl-3.5 pr-10 rounded-xl border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-colors duration-200"
+                  className="h-11 pl-3.5 pr-10 rounded-xl border border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 transition-all duration-200"
                   placeholder="••••••••"
                   autoComplete="new-password"
                   aria-invalid={!!formState.errors.password}
@@ -134,7 +134,9 @@ export function StepCredentials({ onNext }: StepCredentialsProps) {
                       className="flex-1 rounded-full transition-[background-color] duration-300"
                       style={{
                         background:
-                          strength.score >= seg ? strength.color : "#E5E7EB",
+                          strength.score >= seg
+                            ? strength.color
+                            : "var(--color-border)",
                       }}
                     />
                   ))}
@@ -149,7 +151,7 @@ export function StepCredentials({ onNext }: StepCredentialsProps) {
                 )}
               </div>
             )}
-            <FormMessage className="text-xs font-medium text-red-500" />
+            <FormMessage className="text-xs font-medium text-destructive" />
           </FormItem>
         )}
       />

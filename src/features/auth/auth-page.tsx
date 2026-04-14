@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
+import { AUTH_TYPING_EVENT } from "./constants/voronoi.constants";
 import { LoginForm } from "./components/login-form";
 import { RegisterForm } from "./components/register-form";
 import { VoronoiCatalyst } from "./components/voronoi-catalyst";
@@ -20,21 +21,15 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState<AuthView>(defaultView);
   const [authStep, setAuthStep] = useState<number>(1);
-  const [isTyping, setIsTyping] = useState(false);
   const [progress, setProgress] = useState(0);
-  const typingTimerRef = useRef<number | null>(null);
   const navigate = useNavigate();
 
   // Auto-scroll on view change or step transition
   useScrollToTop([view, authStep], scrollContainerRef);
 
   const handleInput = () => {
-    setIsTyping(true);
-    if (typingTimerRef.current !== null)
-      window.clearTimeout(typingTimerRef.current);
-    typingTimerRef.current = window.setTimeout(() => {
-      setIsTyping(false);
-    }, 800);
+    // Dispatch custom event to update animation without re-rendering the whole page tree
+    window.dispatchEvent(new CustomEvent(AUTH_TYPING_EVENT));
   };
 
   return (
@@ -43,7 +38,7 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
       <div className="absolute top-0 left-0 right-0 h-16 lg:h-24 flex items-center px-4 lg:px-10 z-30 pointer-events-none">
         <Link
           to="/"
-          className="pointer-events-auto flex items-center gap-1.5 font-sans text-xs sm:text-sm font-medium transition-colors group lg:bg-white/5 lg:hover:bg-white/10 lg:backdrop-blur-md lg:border lg:border-white/10 lg:px-4 lg:py-2.5 lg:rounded-full text-slate-muted hover:text-ink lg:text-white/70 lg:hover:text-white lg:shadow-[0_4px_24px_rgba(0,0,0,0.1)] py-2 px-1"
+          className="pointer-events-auto flex items-center gap-1.5 font-sans text-xs sm:text-sm font-medium transition-all group lg:bg-canvas lg:hover:bg-white lg:border lg:border-border lg:px-5 lg:py-2.5 lg:rounded-full text-slate-muted hover:text-ink lg:shadow-sm lg:hover:shadow-md py-2 px-1"
         >
           <ArrowLeft
             size={14}
@@ -55,7 +50,7 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
 
       {/* Left half screen animation space */}
       <div className="hidden lg:flex flex-1 relative bg-hero-bg border-r border-border items-center justify-center overflow-hidden h-full">
-        <VoronoiCatalyst progress={progress} isTyping={isTyping} />
+        <VoronoiCatalyst progress={progress} />
       </div>
 
       {/* Right half (Form Space) */}

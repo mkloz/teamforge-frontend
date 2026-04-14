@@ -2,6 +2,7 @@ import { Delaunay } from "d3-delaunay";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ANIMATION_CONFIG,
+  AUTH_TYPING_EVENT,
   GUARD_OFFSETS,
   NUM_CORE,
   NUM_GUARD,
@@ -13,7 +14,6 @@ import type { Dimensions, MouseState, Point } from "../types/voronoi.types";
 
 interface UseVoronoiOptions {
   progress: number;
-  isTyping: boolean;
 }
 
 // Pre-calculate constants outside the hook
@@ -21,7 +21,7 @@ const RAD = 25 * (Math.PI / 180);
 const COS_RAD = Math.cos(RAD);
 const SIN_RAD = Math.sin(RAD);
 
-export function useVoronoiAnimation({ progress, isTyping }: UseVoronoiOptions) {
+export function useVoronoiAnimation({ progress }: UseVoronoiOptions) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointsRef = useRef<Point[]>([]);
@@ -34,10 +34,11 @@ export function useVoronoiAnimation({ progress, isTyping }: UseVoronoiOptions) {
   const timeRef = useRef(0);
   const startTimeRef = useRef(0); // Set in useEffect
   const typingPulseRef = useRef(0);
+  const typingTimerRef = useRef<number | null>(null);
 
   // Input State Refs
   const progressRef = useRef(progress);
-  const isTypingRef = useRef(isTyping);
+  const isTypingRef = useRef(false);
 
   // Interaction Refs
   const targetMouseRef = useRef<MouseState>({ x: -1000, y: -1000 });
@@ -53,9 +54,28 @@ export function useVoronoiAnimation({ progress, isTyping }: UseVoronoiOptions) {
   useEffect(() => {
     progressRef.current = progress;
   }, [progress]);
+
+  // Handle typing events via CustomEvent to avoid re-renders
   useEffect(() => {
-    isTypingRef.current = isTyping;
-  }, [isTyping]);
+    const handleTyping = () => {
+      isTypingRef.current = true;
+      if (typingTimerRef.current !== null) {
+        window.clearTimeout(typingTimerRef.current);
+      }
+      typingTimerRef.current = window.setTimeout(() => {
+        isTypingRef.current = false;
+        typingTimerRef.current = null;
+      }, 800);
+    };
+
+    window.addEventListener(AUTH_TYPING_EVENT, handleTyping);
+    return () => {
+      window.removeEventListener(AUTH_TYPING_EVENT, handleTyping);
+      if (typingTimerRef.current !== null) {
+        window.clearTimeout(typingTimerRef.current);
+      }
+    };
+  }, []);
 
   // Set start time on mount to maintain purity
   useEffect(() => {

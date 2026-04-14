@@ -42,7 +42,7 @@ export function PersonalityIntro({ onStart }: PersonalityIntroProps) {
       {/* Overline */}
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-[10px] sm:text-micro font-bold uppercase tracking-[0.2em] mb-4 text-forge-teal text-center"
+        className="font-sans text-xs font-bold uppercase tracking-[0.2em] mb-4 text-forge-teal text-center"
       >
         Personality Assessment
       </motion.p>

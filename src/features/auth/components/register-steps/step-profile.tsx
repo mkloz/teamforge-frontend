@@ -52,7 +52,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
                 <FormControl>
                   <Input
                     type="number"
-                    className="h-11 px-3.5 rounded-xl border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-colors duration-200"
+                    className="h-11 px-3.5 rounded-xl border border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 transition-all duration-200"
                     placeholder="22"
                     {...field}
                     value={field.value ?? ""}
@@ -65,7 +65,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
                     }
                   />
                 </FormControl>
-                <FormMessage className="text-xs font-medium text-red-500" />
+                <FormMessage className="text-xs font-medium text-destructive" />
               </FormItem>
             )}
           />
@@ -86,7 +86,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="w-full h-11 px-3.5 rounded-xl border-border bg-white font-sans text-sm outline-none focus:border-forge-teal aria-invalid:border-destructive transition-colors duration-200">
+                    <SelectTrigger className="w-full h-11 px-3.5 rounded-xl border border-border bg-white font-sans text-sm hover:border-forge-teal/40 outline-none focus:border-forge-teal focus:ring-2 focus:ring-forge-teal/15 aria-invalid:border-destructive transition-all duration-200">
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
                   </FormControl>
@@ -105,7 +105,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
                     ))}
                   </SelectContent>
                 </Select>
-                <FormMessage className="text-xs font-medium text-red-500" />
+                <FormMessage className="text-xs font-medium text-destructive" />
               </FormItem>
             )}
           />
@@ -127,12 +127,12 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
             </FormLabel>
             <FormControl>
               <Input
-                className="h-11 px-3.5 rounded-xl border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted focus-visible:border-forge-teal transition-colors duration-200"
+                className="h-11 px-3.5 rounded-xl border border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 transition-all duration-200"
                 placeholder="Kyiv"
                 {...field}
               />
             </FormControl>
-            <FormMessage className="text-xs font-medium text-red-500" />
+            <FormMessage className="text-xs font-medium text-destructive" />
           </FormItem>
         )}
       />

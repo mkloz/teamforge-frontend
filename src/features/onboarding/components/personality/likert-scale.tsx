@@ -27,7 +27,7 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
       >
         {/* Connecting line */}
         <div
-          className="absolute left-[10%] right-[10%] top-1/2 -translate-y-1/2 h-px bg-slate-200 pointer-events-none"
+          className="absolute left-[10%] right-[10%] top-1/2 -translate-y-1/2 h-0.5 bg-slate-100 pointer-events-none"
           aria-hidden="true"
         />
 
@@ -43,13 +43,13 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
             >
               <div
                 className={cn(
-                  "w-5 h-5 sm:w-6 sm:h-6 transition duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] rounded-full border-thin flex items-center justify-center pointer-events-none group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2",
+                  "w-5 h-5 sm:w-6 sm:h-6 transition duration-200 rounded-full border-2 flex items-center justify-center pointer-events-none group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2",
                   selected
-                    ? "bg-forge-teal border-forge-teal scale-[1.2] sm:scale-[1.35] drop-shadow-sm"
-                    : "bg-white border-slate-200 group-hover:bg-slate-50 group-hover:scale-[1.1] group-active:scale-[0.95]",
+                    ? "bg-forge-teal border-forge-teal scale-[1.1] sm:scale-[1.15] shadow-xs"
+                    : "bg-white border-slate-200 group-hover:border-slate-300 group-hover:bg-slate-50 group-hover:scale-[1.05] group-active:scale-[0.95]",
                 )}
               >
-                <RadioGroupPrimitive.Indicator className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white" />
+                <RadioGroupPrimitive.Indicator className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-white" />
               </div>
             </RadioGroupPrimitive.Item>
           );
@@ -66,10 +66,10 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
             {LABELS[point] && (
               <span
                 className={cn(
-                  "font-sans leading-[1.1] text-[10px] sm:text-micro transition-colors duration-200 max-w-full",
+                  "font-sans leading-tight text-xs transition-colors duration-200 max-w-full",
                   value === point
-                    ? "text-forge-teal font-bold"
-                    : "text-slate-400 font-medium",
+                    ? "text-forge-teal font-black"
+                    : "text-slate-500 font-medium",
                 )}
               >
                 {LABELS[point]}

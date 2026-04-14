@@ -14,12 +14,14 @@ interface InterestsBrowseHeaderProps {
   searchQuery: string;
   onSetSearch: (q: string) => void;
   onExpandCategoryOnly: (id: string) => void;
+  variant: "pills" | "search";
 }
 
 export function InterestsBrowseHeader({
   searchQuery,
   onSetSearch,
   onExpandCategoryOnly,
+  variant,
 }: InterestsBrowseHeaderProps) {
   function handleQuickJump(catId: string) {
     onExpandCategoryOnly(catId);
@@ -34,16 +36,15 @@ export function InterestsBrowseHeader({
     });
   }
 
-  return (
-    <div className="flex flex-col gap-3">
-      {/* Quick-jump navigation */}
-      <nav className="flex overflow-x-auto scrollbar-hide gap-1.5 sm:gap-2 -mx-4 px-4 sm:-mx-5 sm:px-5 lg:mx-0 lg:px-0 pb-1">
+  if (variant === "pills") {
+    return (
+      <nav className="flex overflow-x-auto scrollbar-hide gap-1.5 sm:gap-2 scroll-smooth items-center h-10">
         {INTEREST_CATEGORIES.map((cat) => (
           <button
             type="button"
             key={`nav-${cat.id}`}
             onClick={() => handleQuickJump(cat.id)}
-            className="group flex items-center gap-1.5 whitespace-nowrap rounded-xl bg-slate-50 hover:bg-slate-100 hover:border-slate-300 px-3 py-1.5 text-[10px] sm:text-micro font-bold text-slate-500 transition active:scale-95 border border-slate-200 shadow-xs"
+            className="group flex items-center gap-1.5 whitespace-nowrap rounded-xl bg-white hover:bg-canvas hover:border-slate-muted/30 px-3 py-1.5 text-xs font-bold text-slate-muted transition active:scale-95 border border-slate-muted/15 shadow-sm"
           >
             <div
               className={cn("w-1.5 h-1.5 rounded-full shrink-0", cat.color)}
@@ -52,32 +53,34 @@ export function InterestsBrowseHeader({
           </button>
         ))}
       </nav>
+    );
+  }
 
-      <div className="relative group mt-1">
-        <Search
-          size={14}
-          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-forge-teal transition-colors"
-          strokeWidth={2.5}
-        />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => onSetSearch(e.target.value)}
-          placeholder="Search 500+ interests…"
-          aria-label="Search interests"
-          className="w-full pl-12 pr-12 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-sans text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-forge-teal/10 focus:border-forge-teal transition-all shadow-sm"
-        />
-        {searchQuery && (
-          <button
-            type="button"
-            onClick={() => onSetSearch("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-slate-100 rounded-full transition-colors"
-            aria-label="Clear search"
-          >
-            <X size={16} className="text-slate-400" strokeWidth={2.5} />
-          </button>
-        )}
-      </div>
+  return (
+    <div className="relative group w-full">
+      <Search
+        size={14}
+        className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-muted/60 group-focus-within:text-forge-teal transition-colors"
+        strokeWidth={2.5}
+      />
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => onSetSearch(e.target.value)}
+        placeholder="Search 500+ interests…"
+        aria-label="Search interests"
+        className="w-full pl-10 pr-10 h-10 bg-white border border-slate-muted/15 rounded-xl text-sm font-sans text-ink placeholder:text-slate-muted/40 focus:bg-white focus:outline-none focus:ring-thick focus:ring-forge-teal/15 focus:border-forge-teal transition-all shadow-[0_2px_10px_rgba(0,0,0,0.02)]"
+      />
+      {searchQuery && (
+        <button
+          type="button"
+          onClick={() => onSetSearch("")}
+          className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-slate-muted/10 rounded-full transition-colors"
+          aria-label="Clear search"
+        >
+          <X size={16} className="text-slate-muted/50" strokeWidth={2.5} />
+        </button>
+      )}
     </div>
   );
 }

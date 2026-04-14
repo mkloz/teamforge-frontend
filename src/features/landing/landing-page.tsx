@@ -6,6 +6,7 @@ import { Footer } from "./components/footer";
 import { HeroSection } from "./components/hero";
 import { HowItWorksSection } from "./components/how-it-works";
 import { Navbar } from "./components/navbar";
+import { SideNav } from "./components/side-nav";
 
 export function LandingPage() {
   useLandingSEO();
@@ -19,6 +20,7 @@ export function LandingPage() {
         Skip to main content
       </a>
       <Navbar />
+      <SideNav />
 
       <main id="main-content">
         <HeroSection />
