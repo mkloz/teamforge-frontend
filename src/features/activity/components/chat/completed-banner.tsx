@@ -34,16 +34,18 @@ export const CompletedBanner = memo(function CompletedBanner({
         {/* Star rating (design only) */}
         <div className="flex items-center justify-center gap-1 mb-3">
           {[1, 2, 3, 4, 5].map((star) => (
-            <button
+            <Button
               key={star}
-              className="p-1 hover:scale-110 transition-transform"
+              variant="ghost"
+              size="icon-xs"
+              className="p-1 hover:scale-110"
               aria-label={`Rate ${star} stars`}
             >
               <Star
-                size={24}
-                className="text-muted-foreground/40 hover:text-amber-400 hover:fill-amber-400 transition-colors"
+                size={22}
+                className="text-slate-muted/30 hover:text-spark-amber hover:fill-spark-amber transition-colors"
               />
-            </button>
+            </Button>
           ))}
         </div>
 

@@ -10,11 +10,12 @@ export function GoogleAuthButton({ loading }: GoogleAuthButtonProps) {
     <Button
       type="button"
       variant="outline"
+      size="lg"
       disabled={loading}
-      className="w-full h-12 rounded-xl border-border bg-white font-sans text-sm font-semibold text-ink flex items-center justify-center gap-2.5 hover:border-slate-muted hover:bg-slate-50 transition-all duration-200 cursor-pointer active:scale-[0.98] shadow-xs"
+      className="w-full flex items-center justify-center gap-2.5"
     >
       <GoogleIcon />
-      <span>Google</span>
+      <span>Continue with Google</span>
     </Button>
   );
 }

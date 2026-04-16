@@ -1,4 +1,5 @@
 import { TeamForgeLogo } from "@/assets/logo";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { Search } from "lucide-react";
@@ -52,16 +53,15 @@ export function AppTopbar({
 
       {/* ── Centre: Search bar (desktop only — mobile uses icon button) ──────── */}
       <div className="hidden lg:flex flex-1 justify-center px-4">
-        <button
-          type="button"
+        <Button
+          variant="ghost"
           onClick={onSearchClick}
           aria-label="Open search"
           className={cn(
-            "w-full max-w-sm flex items-center gap-2.5 h-9 px-3.5 rounded-xl",
-            "bg-muted border border-border text-muted-foreground text-sm",
-            "hover:border-primary/30 hover:text-foreground hover:bg-muted/80",
-            "transition-colors duration-150",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            "w-full max-w-sm flex items-center gap-2.5 h-9 px-3.5 rounded-xl border-2 border-transparent",
+            "bg-muted text-muted-foreground text-sm font-medium",
+            "hover:border-primary/20 hover:text-foreground hover:bg-muted/80",
+            "active:translate-y-px active:scale-[0.99]",
           )}
         >
           <Search
@@ -69,29 +69,25 @@ export function AppTopbar({
             aria-hidden="true"
             className="shrink-0 opacity-60"
           />
-          <span>Search activities, people...</span>
-          <kbd className="ml-auto hidden sm:inline-flex h-5 items-center gap-0.5 rounded border border-border bg-background px-1.5 font-mono text-micro text-muted-foreground">
+          <span className="flex-1 text-left">Search activities, people...</span>
+          <kbd className="hidden sm:inline-flex h-5 items-center gap-0.5 rounded border border-border bg-background px-1.5 font-mono text-micro text-muted-foreground whitespace-nowrap">
             <span className="text-micro">⌘</span>K
           </kbd>
-        </button>
+        </Button>
       </div>
 
       {/* ── Right: Actions cluster ───────────────────────────────────────────── */}
       <div className="ml-auto lg:ml-0 flex items-center gap-1">
         {/* Mobile search icon */}
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={onSearchClick}
           aria-label="Open search"
-          className={cn(
-            "lg:hidden flex h-9 w-9 items-center justify-center rounded-xl",
-            "text-muted-foreground hover:text-foreground hover:bg-muted",
-            "transition-colors duration-150",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          )}
+          className="lg:hidden h-9 w-9 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted"
         >
           <Search size={18} aria-hidden="true" />
-        </button>
+        </Button>
 
         {notificationsTrigger}
         {userMenuSlot}

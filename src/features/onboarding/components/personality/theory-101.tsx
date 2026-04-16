@@ -88,20 +88,11 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
         variants={fadeUpItem}
         className="w-full flex items-center gap-3 mt-auto sm:mt-0 pt-6 sm:pt-0"
       >
-        <Button
-          size="lg"
-          variant="outline"
-          onClick={onBack}
-          className="flex items-center justify-center gap-2 font-sans text-sm font-bold rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors duration-200 h-12 w-1/3 active:scale-[0.98]"
-        >
+        <Button size="lg" variant="outline" onClick={onBack} className="w-1/3">
           <ArrowLeft size={16} strokeWidth={2.5} />
           Back
         </Button>
-        <Button
-          size="lg"
-          onClick={onNext}
-          className="flex-1 flex items-center justify-center gap-2 font-sans text-sm font-bold rounded-xl bg-forge-teal text-white hover:bg-forge-teal/90 shadow-lg shadow-forge-teal/20 transition-all duration-200 active:scale-[0.98] h-12"
-        >
+        <Button size="lg" onClick={onNext} className="flex-1">
           Next step
           <ArrowRight size={16} strokeWidth={2.5} />
         </Button>

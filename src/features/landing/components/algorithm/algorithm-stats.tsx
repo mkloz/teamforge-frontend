@@ -57,9 +57,9 @@ export function AlgorithmStats({ inView }: AlgorithmStatsProps) {
               <span className="font-sans text-xs text-text-dark-muted w-36 shrink-0 truncate">
                 {label}
               </span>
-              <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+              <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden ring-1 ring-white/10">
                 <div
-                  className="h-full rounded-full"
+                  className="h-full rounded-full shadow-[0_0_12px_rgba(20,184,166,0.3)]"
                   style={{
                     width: inView ? `${weight * 3.3}%` : "0%",
                     background: `linear-gradient(90deg, ${color}, ${color}88)`,

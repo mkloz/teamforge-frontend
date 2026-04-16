@@ -65,7 +65,7 @@ export function ProfilePanelInfo({
               size="icon"
               variant="outline"
               onClick={onBack}
-              className="h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 border-white/20 text-white shadow-sm transition-all duration-200"
+              className="rounded-full bg-white/10 hover:bg-white/20 border-white/20 text-white shadow-sm transition-all"
               aria-label="Go back"
             >
               <ChevronLeft size={18} />
@@ -81,7 +81,7 @@ export function ProfilePanelInfo({
             <Button
               size="icon"
               variant="outline"
-              className="h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 border-white/20 text-white shadow-sm transition-all duration-200"
+              className="rounded-full bg-white/10 hover:bg-white/20 border-white/20 text-white shadow-sm transition-all"
               aria-label="View full profile"
             >
               <ExternalLink size={14} />
@@ -131,36 +131,30 @@ export function ProfilePanelInfo({
         {/* 4. Knowledgeable Actions */}
         <div className="flex items-center gap-2 w-full pt-1">
           {isDirectChat ? (
-            <Button className="flex-1 rounded-xl bg-forge-teal dark:bg-forge-teal-light hover:opacity-90 text-white dark:text-hero-bg font-semibold h-10 gap-2 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]">
+            <Button variant="primary" className="flex-1">
               <UserPlus size={16} />
               Connect
             </Button>
           ) : (
-            <Button className="flex-1 rounded-xl bg-forge-teal dark:bg-forge-teal-light hover:opacity-90 text-white dark:text-hero-bg font-semibold h-10 gap-2 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]">
+            <Button variant="primary" className="flex-1">
               <MessageSquareText size={16} />
               Message
             </Button>
           )}
 
           {!isDirectChat && (
-            <Button
-              variant="outline"
-              className="h-10 w-10 rounded-xl border-border bg-card hover:bg-canvas hover:border-forge-teal transition-all flex items-center justify-center p-0"
-              aria-label="Add Buddy"
-            >
-              <UserPlus size={18} className="text-slate-muted" />
+            <Button variant="outline" size="icon" aria-label="Add Buddy">
+              <UserPlus size={18} />
             </Button>
           )}
 
           <Button
             variant="outline"
-            className={cn(
-              "h-10 rounded-xl border-border bg-card hover:bg-canvas hover:border-forge-teal transition-all flex items-center justify-center p-0",
-              isDirectChat ? "flex-1" : "w-10",
-            )}
+            size={isDirectChat ? "default" : "icon"}
+            className={cn(isDirectChat && "flex-1")}
             aria-label="Info"
           >
-            <Info size={18} className="text-slate-muted" />
+            <Info size={18} />
             {isDirectChat && (
               <span className="ml-2 text-sm font-semibold text-slate-muted group-hover:text-forge-teal transition-colors">
                 Details

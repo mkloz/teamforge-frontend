@@ -13,7 +13,7 @@ export const STEPS: Step[] = [
     number: "01",
     title: "Get to know yourself",
     description:
-      "Share the core of who you are—your values, your energy, and your curiosity. We use these insights to weave you into a circle where you truly belong.",
+      "Share what makes you, you—from your values to your personality. We use these insights to find a group where you'll genuinely fit in.",
     accent: (
       <div className="flex flex-wrap gap-2">
         {["Introverted", "Analytical", "Open", "Calm"].map((tag) => (
@@ -31,7 +31,7 @@ export const STEPS: Step[] = [
     number: "02",
     title: "Choose your activity",
     description:
-      "Whether it's a quiet morning in a cafe, a weekend hike, or a session on the court—whatever you're in the mood for, that's where we start.",
+      "Whether it's a quiet morning in a cafe, a weekend hike, or a session on the court—whatever you're in the mood for, we start with your plan.",
     accent: (
       <div className="flex items-center gap-3 p-3 bg-canvas border border-slate-200 rounded-xl max-w-xs shadow-sm">
         <div className="p-2 bg-spark-amber/10 rounded-lg">
@@ -48,7 +48,7 @@ export const STEPS: Step[] = [
     number: "03",
     title: "Curated connections",
     description:
-      "Our algorithm finds the intersection of personality and purpose. It carefully selects a group where every individual adds a unique spark to the collective.",
+      "Our system finds the balance between personality and goals. It assembles a group where every individual contributes to the dynamic, ensuring everyone actually clicks.",
     accent: (
       <div className="space-y-2">
         <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">

@@ -1,6 +1,6 @@
 import { Button } from "@/shared/components/ui/button";
 import { motion } from "framer-motion";
-import { ArrowRight, Zap } from "lucide-react";
+import { ArrowRight, Fingerprint, Zap } from "lucide-react";
 import { fadeUpItem, staggerContainer } from "../../../constants/motion";
 import type { LeafTag } from "../../../data/interests-types";
 import { InterestTag } from "./interest-tag";
@@ -45,9 +45,12 @@ export function InterestsSuggest({
           <span className="font-sans text-[11px] font-bold uppercase tracking-[0.18em] text-forge-teal">
             Suggested for you
           </span>
-          <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-white bg-forge-teal px-2 py-0.5 rounded-full">
-            {mbtiType}
-          </span>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-forge-teal/10 border border-forge-teal/20 text-forge-teal shadow-none backdrop-blur-sm">
+            <Fingerprint size={10} className="opacity-70" />
+            <span className="font-sans text-[10px] font-extrabold uppercase tracking-wider leading-none">
+              {mbtiType}
+            </span>
+          </div>
         </div>
       </motion.div>
 
@@ -104,7 +107,7 @@ export function InterestsSuggest({
         <Button
           size="lg"
           onClick={onContinue}
-          className="w-full flex items-center justify-center gap-2 font-sans text-sm font-bold rounded-xl bg-forge-teal text-white shadow-teal-glow hover:shadow-teal-glow-lg transition duration-200 active:scale-[0.98] h-12"
+          className="w-full flex items-center justify-center gap-2"
         >
           Continue to browse all interests
           <ArrowRight size={16} strokeWidth={2.5} />

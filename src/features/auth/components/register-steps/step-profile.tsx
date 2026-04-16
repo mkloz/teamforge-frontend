@@ -113,7 +113,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
       </div>
 
       <p className="text-xs text-slate-muted mt-0 text-center">
-        Gender is used for your profile only – not part of matching.
+        We only show this on your profile; it doesn't affect your matching.
       </p>
 
       {/* City full-width */}
@@ -137,12 +137,8 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
         )}
       />
 
-      <Button
-        type="button"
-        onClick={onNext}
-        className="w-full h-12 rounded-xl mt-4 text-sm sm:text-base font-semibold group transition-[transform,box-shadow,background-color] duration-200 active:scale-[0.98] shadow-lg shadow-forge-teal/20 hover:shadow-forge-teal/40 hover:-translate-y-0.5 bg-forge-teal text-white hover:bg-teal-500"
-      >
-        Continue
+      <Button type="button" onClick={onNext} size="lg" className="w-full mt-4">
+        Looks good
         <ArrowRightAnimated />
       </Button>
 
@@ -150,10 +146,11 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
         type="button"
         variant="ghost"
         onClick={onBack}
-        className="flex items-center justify-center gap-1.5 font-sans text-sm font-medium text-slate-muted hover:text-ink hover:bg-transparent border-0"
+        size="sm"
+        className="text-slate-muted hover:text-ink hover:bg-transparent"
       >
         <ArrowLeft size={14} />
-        Back
+        Wait, go back
       </Button>
     </div>
   );

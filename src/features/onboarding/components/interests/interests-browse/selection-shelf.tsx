@@ -1,3 +1,4 @@
+import { Button } from "@/shared/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Sparkles } from "lucide-react";
 import { LEAF_TAG_BY_ID } from "../../../data/interests-data";
@@ -70,11 +71,11 @@ export function SelectionShelf({
                   const tag = LEAF_TAG_BY_ID[id];
                   if (!tag) return null;
                   return (
-                    <button
+                    <Button
                       key={`shelf-${id}`}
-                      type="button"
+                      size="xs"
                       onClick={() => onToggle(id)}
-                      className="group flex items-center gap-1.5 rounded-full bg-forge-teal text-white px-3.5 py-1.5 text-xs font-bold shadow-sm hover:bg-teal-600 transition active:scale-95"
+                      className="rounded-full gap-1.5"
                     >
                       {tag.label}
                       <X
@@ -82,7 +83,7 @@ export function SelectionShelf({
                         className="opacity-60 group-hover:opacity-100 transition-opacity"
                         strokeWidth={3}
                       />
-                    </button>
+                    </Button>
                   );
                 })}
           </div>

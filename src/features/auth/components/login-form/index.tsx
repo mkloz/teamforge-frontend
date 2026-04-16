@@ -1,4 +1,4 @@
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -10,7 +10,6 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
-import { cn } from "@/shared/lib/utils";
 import { useLoginForm } from "../../hooks/use-login-form";
 import { FormHeader } from "./form-header";
 import { FormLevelError } from "./form-level-error";
@@ -102,16 +101,18 @@ export function LoginForm({
                       aria-invalid={!!form.formState.errors.password}
                       {...field}
                     />
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       type="button"
                       aria-label={
                         showPassword ? "Hide password" : "Show password"
                       }
                       onClick={togglePasswordVisibility}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-muted hover:text-forge-teal transition-colors focus:outline-hidden"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-9 text-slate-muted hover:text-forge-teal"
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </button>
+                    </Button>
                   </div>
                 </FormControl>
                 <FormMessage className="text-xs font-medium text-destructive mt-1" />
@@ -121,24 +122,12 @@ export function LoginForm({
 
           <Button
             type="submit"
-            disabled={loading}
-            className={cn(
-              "w-full h-12 rounded-xl mt-2 text-sm sm:text-base font-semibold group transition-all duration-200 cursor-pointer active:scale-[0.98]",
-              !loading &&
-                "shadow-lg shadow-forge-teal/20 hover:shadow-forge-teal/40 hover:-translate-y-0.5 bg-forge-teal text-white hover:bg-teal-500",
-            )}
+            loading={loading}
+            size="lg"
+            className="w-full mt-2"
           >
-            {loading ? (
-              <div className="flex items-center gap-2">
-                <Loader2 size={16} className="animate-spin" />
-                <span>Entering the forge...</span>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center gap-2">
-                <span>Sign In</span>
-                <ArrowRightAnimated />
-              </div>
-            )}
+            Let's go
+            <ArrowRightAnimated />
           </Button>
 
           <SocialLoginDivider />

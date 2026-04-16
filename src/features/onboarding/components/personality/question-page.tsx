@@ -100,34 +100,21 @@ export function QuestionPage({
         ))}
       </motion.div>
 
-      {/* Action buttons */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         {pageNumber === totalPages && (
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={onReview}
-            className="shrink-0 px-4 flex items-center justify-center gap-2 border-slate-200 text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-all rounded-xl h-12"
-          >
-            <RotateCcw size={16} strokeWidth={2.5} />
-            <span className="font-sans text-xs font-bold uppercase tracking-wide">
-              Review answers
-            </span>
+          <Button variant="outline" onClick={onReview}>
+            <RotateCcw size={16} />
+            Review
           </Button>
         )}
         <Button
-          size="lg"
+          variant="primary"
           onClick={onNext}
           disabled={!allAnswered}
-          className={cn(
-            "flex-1 flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl h-12 transition-colors duration-200",
-            allAnswered
-              ? "bg-forge-teal text-primary-foreground hover:bg-forge-teal-light"
-              : "bg-slate-500/10 text-slate-500/40",
-          )}
+          className="flex-1"
         >
-          {pageNumber === totalPages ? "See my results" : "Next page"}
-          <ArrowRight size={16} strokeWidth={2.5} />
+          {pageNumber === totalPages ? "See results" : "Next page"}
+          <ArrowRight size={18} />
         </Button>
       </div>
     </div>

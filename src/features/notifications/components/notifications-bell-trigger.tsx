@@ -1,5 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 import { Bell } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
 import { useNotifications } from "../hooks/use-notifications";
 
 interface NotificationsBellTriggerProps {
@@ -12,28 +13,27 @@ export function NotificationsBellTrigger({
   const { count } = useNotifications();
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
+      size="icon-sm"
       onClick={onClick}
       aria-label={
         count > 0 ? `Notifications, ${count} unread` : "Notifications"
       }
       className={cn(
-        "relative flex h-9 w-9 items-center justify-center rounded-xl",
-        "text-muted-foreground hover:text-foreground hover:bg-muted",
-        "transition-colors duration-150",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "relative rounded-xl shrink-0",
+        "text-slate-muted hover:text-ink",
       )}
     >
       <Bell size={18} aria-hidden="true" />
       {count > 0 && (
         <span
-          className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-nano font-bold text-accent-foreground"
+          className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-spark-amber px-1 text-none font-black text-ink shadow-[0_0_8px_rgba(245,158,11,0.4)]"
           aria-hidden="true"
         >
           {count > 9 ? "9+" : count}
         </span>
       )}
-    </button>
+    </Button>
   );
 }

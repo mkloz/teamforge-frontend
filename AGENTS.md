@@ -11,6 +11,7 @@ This file provides authoritative context for AI coding agents (Copilot, Claude, 
 The core mechanic is simple: press one button ("Forge my group") and receive one algorithmically selected, compatible group. No endless scrolling, no random matching — every connection is purposeful and mathematically computed.
 
 The platform uses a multi-factor scoring system combining:
+
 - **MBTI personality** (4-dimensional vector)
 - **OCEAN Big Five** psychometric scores
 - **Interest similarity**
@@ -22,23 +23,23 @@ The platform uses a multi-factor scoring system combining:
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | React 19.2 + TypeScript 5.9 |
-| Build tool | Vite 7 |
-| Routing | TanStack Router v1 (file-based, type-safe) |
-| Server state | TanStack Query v5 |
-| Client state | Zustand v5 |
-| Forms | React Hook Form v7 + Zod v4 |
-| Styling | Tailwind CSS v4 |
-| UI primitives | shadcn/ui + Radix UI |
-| HTTP client | ky (with auto token refresh) |
-| Animations | Framer Motion v12 |
-| Data viz | Recharts + D3 (color, delaunay, voronoi, ease, interpolate, timer) |
-| Icons | Lucide React (primary), React Icons (fallback) |
-| Linting | ESLint 9 + typescript-eslint |
-| Formatting | Prettier 3.8 |
-| Git hooks | Husky + lint-staged |
+| Layer         | Technology                                                         |
+| ------------- | ------------------------------------------------------------------ |
+| Framework     | React 19.2 + TypeScript 5.9                                        |
+| Build tool    | Vite 7                                                             |
+| Routing       | TanStack Router v1 (file-based, type-safe)                         |
+| Server state  | TanStack Query v5                                                  |
+| Client state  | Zustand v5                                                         |
+| Forms         | React Hook Form v7 + Zod v4                                        |
+| Styling       | Tailwind CSS v4                                                    |
+| UI primitives | shadcn/ui + Radix UI                                               |
+| HTTP client   | ky (with auto token refresh)                                       |
+| Animations    | Framer Motion v12                                                  |
+| Data viz      | Recharts + D3 (color, delaunay, voronoi, ease, interpolate, timer) |
+| Icons         | Lucide React (primary), React Icons (fallback)                     |
+| Linting       | ESLint 9 + typescript-eslint                                       |
+| Formatting    | Prettier 3.8                                                       |
+| Git hooks     | Husky + lint-staged                                                |
 
 ---
 
@@ -121,6 +122,7 @@ src/features/<feature-name>/
 ```
 
 **Rules:**
+
 - Keep all feature code co-located. Never import one feature's internals into another feature.
 - Cross-feature shared code belongs in `src/shared/`.
 - Page components are thin orchestrators — business logic goes in hooks.
@@ -137,6 +139,7 @@ import { apiClient } from "@/shared/api/api";
 ```
 
 **Key behaviors:**
+
 - Automatically attaches `Authorization: Bearer <accessToken>` to every request.
 - On a `401` response, automatically attempts a token refresh via `POST auth/refresh`.
 - If the refresh fails (or we are already on the refresh endpoint), tokens are cleared and the user is redirected to `/`.
@@ -147,12 +150,12 @@ import { apiClient } from "@/shared/api/api";
 
 ## State Management
 
-| Concern | Tool | Location |
-|---|---|---|
-| Server data (API responses) | TanStack Query | Feature `hooks/` files |
-| UI state shared across components | Zustand store | Feature `store/` files |
-| Form state | React Hook Form | Inline in form components |
-| Local ephemeral state | `useState` / `useReducer` | Component level |
+| Concern                           | Tool                      | Location                  |
+| --------------------------------- | ------------------------- | ------------------------- |
+| Server data (API responses)       | TanStack Query            | Feature `hooks/` files    |
+| UI state shared across components | Zustand store             | Feature `store/` files    |
+| Form state                        | React Hook Form           | Inline in form components |
+| Local ephemeral state             | `useState` / `useReducer` | Component level           |
 
 **Do not use `localStorage` for persistence.** All persistent state must go through the API layer.
 
@@ -161,12 +164,14 @@ import { apiClient } from "@/shared/api/api";
 ## Key Domain Types
 
 ### User Profile (`src/features/profile/types/profile.types.ts`)
+
 - `UserProfile` — full user entity with MBTI, OCEAN scores, interests, trust score
 - `MBTIType` — union of all 16 MBTI types
 - `DimensionScore` — per-axis score (0–100) for EI, SN, TF, JP
 - `OceanScores` — Big Five scores (openness, conscientiousness, extraversion, agreeableness, neuroticism)
 
 ### Groups (`src/features/groups/types/groups.types.ts`)
+
 - `Group` — full group entity with embedded `Plan`, `GroupIdentity`, and `GroupMember[]`
 - `GroupPreview` — lightweight denormalized version for list rendering
 - `Plan` — what the group will do: title, category, datetime, location, proposals, comments
@@ -176,6 +181,7 @@ import { apiClient } from "@/shared/api/api";
 - `Message` — a single chat message with type, sender, and read receipts
 
 ### Forge (`src/features/forge/types/forge.types.ts`)
+
 - `ForgeMode` — `"auto"` (algorithm picks group) | `"manual"` (user selects members)
 - `FixedGroupSize` — `4 | 6 | 8`
 - `Visibility` — `"public" | "friends" | "invite"`
@@ -188,6 +194,7 @@ import { apiClient } from "@/shared/api/api";
 The Forge wizard is the core product interaction. It lives at `/forge` and is implemented as a multi-step wizard (`src/features/forge/`).
 
 **Steps:**
+
 1. **Activity** — user selects or describes what they want to do
 2. **Plan** — user sets plan details (title, date, location)
 3. **Group** — algorithm runs and presents a compatible group
@@ -212,10 +219,10 @@ Both steps store their state via Zustand stores in `src/features/onboarding/stor
 
 ## Environment Variables
 
-| Variable | Required | Description |
-|---|---|---|
-| `VITE_API_URL` | Yes | Base URL for the backend REST API (e.g., `https://api.teamforge.app`) |
-| `VITE_GOOGLE_CLIENT_ID` | Yes | Google OAuth client ID for social login |
+| Variable                | Required | Description                                                           |
+| ----------------------- | -------- | --------------------------------------------------------------------- |
+| `VITE_API_URL`          | Yes      | Base URL for the backend REST API (e.g., `https://api.teamforge.app`) |
+| `VITE_GOOGLE_CLIENT_ID` | Yes      | Google OAuth client ID for social login                               |
 
 Set these in `.env.local` for local development. Never commit `.env.local` to version control.
 
@@ -238,18 +245,20 @@ All visual design follows the specifications in `docs/visual-style-guide.md`. Th
 - Never introduce additional hex variants. Use opacity modifiers on `#0D9488` if a lighter teal is needed for a non-gradient context.
 
 **Typography:**
+
 - Single font family: **Inter** across the entire app.
 - Map to `--font-sans` CSS token.
 - Minimum font size: 12px. Body line-height: 1.4–1.6.
 
 **Icons:**
+
 - **Lucide React** is the primary icon library. Use `react-icons` only for icons unavailable in Lucide.
 - Default stroke width: `1.5` at 20–24px, `2` at 16px.
 - Never use emojis as icons.
 
 **Border radius:**
+
 - Cards: `rounded-2xl` (16px)
-- Buttons/inputs: `rounded-xl` (10–12px)
 - Pills/avatars: `rounded-full`
 - Never use `rounded-none` on user-facing interactive elements.
 
@@ -285,14 +294,14 @@ All visual design follows the specifications in `docs/visual-style-guide.md`. Th
 
 TeamForge speaks like a knowledgeable peer, never a corporation.
 
-| Context | Tone | Example |
-|---|---|---|
-| Headline / CTA | Confident, direct | "Find your people, intelligently." |
-| Onboarding | Encouraging, curious | "Let's find out how you tick." |
-| MBTI result | Affirming, warm | "You're an ENTJ — a natural organiser with bold ideas." |
-| Group formed | Celebratory | "Your group is ready. Here's why they're perfect for you." |
-| Empty state | Gentle, activating | "No groups yet. Let's forge your first one." |
-| Error / limit | Honest, constructive | "You've used your 3 searches today. Fresh starts tomorrow." |
+| Context        | Tone                 | Example                                                     |
+| -------------- | -------------------- | ----------------------------------------------------------- |
+| Headline / CTA | Confident, direct    | "Find your people, intelligently."                          |
+| Onboarding     | Encouraging, curious | "Let's find out how you tick."                              |
+| MBTI result    | Affirming, warm      | "You're an ENTJ — a natural organiser with bold ideas."     |
+| Group formed   | Celebratory          | "Your group is ready. Here's why they're perfect for you."  |
+| Empty state    | Gentle, activating   | "No groups yet. Let's forge your first one."                |
+| Error / limit  | Honest, constructive | "You've used your 3 searches today. Fresh starts tomorrow." |
 
 Primary slogan: **"Find your people, intelligently."**
 

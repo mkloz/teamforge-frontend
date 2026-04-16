@@ -1,3 +1,4 @@
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Search } from "lucide-react";
@@ -75,12 +76,12 @@ export function SearchResults({
                 return (
                   <div
                     key={sub.id}
-                    className="rounded-xl border border-slate-muted/15 overflow-hidden bg-white hover:border-slate-muted/30 transition-colors"
+                    className="rounded-xl border border-slate-muted/15 overflow-hidden transition-colors"
                   >
-                    <button
-                      type="button"
+                    <Button
+                      variant="ghost"
                       onClick={() => toggleSub(sub.id)}
-                      className="w-full flex items-center gap-2 px-3 py-2.5 bg-canvas text-left group"
+                      className="w-full h-auto justify-start flex items-center gap-2 px-3 py-2.5 rounded-none text-left group"
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-slate-muted/60">
@@ -108,13 +109,13 @@ export function SearchResults({
                         animate={{ rotate: open ? 0 : -90 }}
                         transition={{ duration: 0.18 }}
                         className={cn(
-                          "shrink-0 text-slate-muted/40 transition-colors group-hover:text-slate-muted",
+                          "shrink-0 text-slate-muted/40 transition-colors group-hover:text-slate-muted transition-none",
                           subSelectedCount === 0 && "ml-auto",
                         )}
                       >
                         <ChevronDown size={14} strokeWidth={2.5} />
                       </motion.span>
-                    </button>
+                    </Button>
                     <AnimatePresence initial={false}>
                       {open && (
                         <motion.div
@@ -124,7 +125,7 @@ export function SearchResults({
                           transition={{ duration: 0.2 }}
                           className="overflow-hidden"
                         >
-                          <div className="flex flex-wrap gap-1.5 p-3">
+                          <div className="flex flex-wrap gap-1.5 p-3 pt-4">
                             {sub.tags.map((tag) => (
                               <TagPill
                                 key={tag.id}

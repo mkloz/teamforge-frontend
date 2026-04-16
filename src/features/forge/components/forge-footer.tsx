@@ -102,12 +102,11 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
                   className="shrink-0"
                 >
                   <Button
-                    type="button"
                     variant="outline"
                     size="icon"
                     onClick={fw.goBack}
+                    className="size-14 rounded-2xl border-border/60 text-slate-muted hover:text-ink hover:border-ink shadow-button-outline/10"
                     aria-label="Go back"
-                    className="h-14 w-14 rounded-2xl border-border/60 text-muted-foreground hover:text-foreground hover:border-border hover:bg-muted/30 transition-colors"
                   >
                     <ChevronLeft size={20} />
                   </Button>

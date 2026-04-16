@@ -5,7 +5,7 @@
 export function ArrowRightAnimated() {
   return (
     <svg
-      className="w-4 h-4 ml-1.5 opacity-0 -translate-x-2 transition-[transform,opacity] duration-200 group-hover:opacity-100 group-hover:translate-x-0"
+      className="w-4 h-4 ml-1.5 opacity-0 -translate-x-2 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-x-0"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"

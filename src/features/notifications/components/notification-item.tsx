@@ -1,5 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 import { Bell, Star, UserPlus, Users, Zap } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
 import type { NotificationItem as NotificationItemType } from "../types/notification.types";
 import { NotificationType } from "../types/notification.types";
 
@@ -55,49 +56,51 @@ export function NotificationItem({ item, onRead }: NotificationItemProps) {
   const Icon = config.icon;
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
+      asChild
       onClick={() => onRead(item.id)}
       className={cn(
-        "w-full text-left flex items-start gap-3 px-4 py-3",
-        "border-l-2 transition-colors duration-150",
-        "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
-        config.borderClass,
-        !item.read && "bg-secondary/60",
+        "w-full h-auto p-0 rounded-none border-none hover:bg-muted/50 focus-visible:ring-inset",
+        !item.read && "bg-secondary/20",
       )}
-      aria-label={`${item.title}: ${item.message}`}
     >
-      {/* Icon badge */}
-      <span
+      <div
         className={cn(
-          "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
-          config.colorClass,
+          "w-full flex items-start gap-4 px-4 py-3.5 border-l-4 transition-all duration-200 cursor-pointer",
+          config.borderClass,
         )}
-        aria-hidden="true"
+        aria-label={`${item.title}: ${item.message}`}
       >
-        <Icon size={14} />
-      </span>
-
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-foreground leading-snug truncate">
-          {item.title}
-        </p>
-        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed line-clamp-2">
-          {item.message}
-        </p>
-        <p className="text-micro text-muted-foreground mt-1">
-          {relativeTime(item.timestamp)}
-        </p>
-      </div>
-
-      {/* Unread dot */}
-      {!item.read && (
+        {/* Icon badge */}
         <span
-          className="mt-2 h-2 w-2 shrink-0 rounded-full bg-primary"
-          aria-label="Unread"
-        />
-      )}
-    </button>
+          className={cn(
+            "mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full shadow-sm",
+            config.colorClass,
+          )}
+          aria-hidden="true"
+        >
+          <Icon size={16} strokeWidth={2.5} />
+        </span>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0 flex flex-col gap-0.5">
+          <p className="text-[14px] font-bold text-white leading-tight truncate">
+            {item.title}
+          </p>
+          <p className="text-[12.5px] text-slate-muted leading-snug line-clamp-2">
+            {item.message}
+          </p>
+          <div className="flex items-center gap-2 mt-1.5">
+            <p className="text-[10px] font-bold text-slate-muted/50 uppercase tracking-widest">
+              {relativeTime(item.timestamp)}
+            </p>
+            {!item.read && (
+              <span className="h-1.5 w-1.5 rounded-full bg-forge-teal shadow-[0_0_8px_rgba(13,148,136,0.3)]" />
+            )}
+          </div>
+        </div>
+      </div>
+    </Button>
   );
 }

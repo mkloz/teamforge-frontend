@@ -7,17 +7,17 @@ interface StepHeaderProps {
 export function StepHeader({ step }: StepHeaderProps) {
   const title =
     step === 1
-      ? "Join the forge"
+      ? "Let's build your profile"
       : step === 2
-        ? "A bit more about you"
-        : "Verify your identity";
+        ? "Tell us about yourself"
+        : "Final security check";
 
   const description =
     step === 1
       ? "Start with the basics to secure your account."
       : step === 2
-        ? "Just a few details to tailor your experience."
-        : "Enter the 6-digit code sent to your email.";
+        ? "Just a few details to help us forge better groups."
+        : "Check your email for a 6-digit code.";
 
   return (
     <div className="flex flex-col items-center mb-6 sm:mb-8">

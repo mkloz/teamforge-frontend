@@ -70,24 +70,25 @@ export const useActivityStore = create<ActivityState>((set) => ({
   setActiveFilter: (activeFilter) => set({ activeFilter }),
 
   selectConversation: (id, kind) =>
-    set((state) => ({
-      selectedId: id,
-      selectedKind: kind,
-      groups: {
-        ...state.groups,
-        selectedGroupId: kind === "group" ? id : null,
-        // Auto-open detail panel on large screens when selecting a group
-        isDetailPanelOpen:
-          kind === "group" &&
-          typeof window !== "undefined" &&
-          window.innerWidth >= 1024,
-      },
-      direct: {
-        ...state.direct,
-        selectedChatId: kind === "dm" ? id : null,
-        isProfilePanelOpen: false,
-      },
-    })),
+    set((state) => {
+      const isDesktop =
+        typeof window !== "undefined" && window.innerWidth >= 1024;
+
+      return {
+        selectedId: id,
+        selectedKind: kind,
+        groups: {
+          ...state.groups,
+          selectedGroupId: kind === "group" ? id : null,
+          isDetailPanelOpen: kind === "group" && isDesktop,
+        },
+        direct: {
+          ...state.direct,
+          selectedChatId: kind === "dm" ? id : null,
+          isProfilePanelOpen: kind === "dm" && isDesktop,
+        },
+      };
+    }),
 
   toggleGroupDetail: () =>
     set((state) => ({

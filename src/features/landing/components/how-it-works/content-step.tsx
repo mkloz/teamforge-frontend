@@ -36,14 +36,26 @@ export function ContentStep({
 
   const opacity = useTransform(
     smoothProgress,
-    [start, start + 0.05, isLast ? 1 : end - 0.05, isLast ? 1.1 : end],
-    [0, 1, 1, isLast ? 1 : 0],
+    [
+      index === 0 ? -0.1 : start,
+      index === 0 ? 0 : start + 0.05,
+      isLast ? 1 : end - 0.05,
+      isLast ? 1.1 : end,
+    ],
+    [index === 0 ? 1 : 0, 1, 1, isLast ? 1 : 0],
   );
 
   const y = useTransform(
     smoothProgress,
-    [start, start + 0.05, isLast ? 1 : end - 0.05, isLast ? 1.1 : end],
-    shouldReduceMotion ? [0, 0, 0, 0] : [20, 0, 0, isLast ? 0 : -20],
+    [
+      index === 0 ? -0.1 : start,
+      index === 0 ? 0 : start + 0.05,
+      isLast ? 1 : end - 0.05,
+      isLast ? 1.1 : end,
+    ],
+    shouldReduceMotion
+      ? [0, 0, 0, 0]
+      : [index === 0 ? 0 : 20, 0, 0, isLast ? 0 : -20],
   );
 
   return (
@@ -53,7 +65,7 @@ export function ContentStep({
       aria-hidden={!isActive}
     >
       <div className="flex flex-col gap-2">
-        <h3 className="font-sans font-extrabold text-ink text-3xl md:text-5xl mb-2 leading-tight tracking-tight text-balance italic">
+        <h3 className="font-sans font-extrabold text-ink text-3xl md:text-5xl mb-2 leading-tight tracking-tight text-balance">
           {step.title}
         </h3>
         <p className="font-sans text-lg text-slate-muted leading-relaxed mb-4 text-pretty">

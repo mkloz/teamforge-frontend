@@ -39,9 +39,19 @@ interface AlgoNodeProps {
   cx: number;
   cy: number;
   size: number;
+  isHovered: boolean;
+  onHover: (id: number | null) => void;
 }
 
-export function AlgoNode({ node, phase, cx, cy, size }: AlgoNodeProps) {
+export function AlgoNode({
+  node,
+  phase,
+  cx,
+  cy,
+  size,
+  isHovered,
+  onHover,
+}: AlgoNodeProps) {
   const getNodeStyle = () => {
     switch (node.type) {
       case "center":
@@ -56,7 +66,7 @@ export function AlgoNode({ node, phase, cx, cy, size }: AlgoNodeProps) {
       case "selected":
         return {
           fill: "var(--color-spark-amber)",
-          r: size * 0.038,
+          r: isHovered ? size * 0.045 : size * 0.038,
           textFill: "var(--color-ink)",
           opacity: 1,
           glow: true,
@@ -67,18 +77,18 @@ export function AlgoNode({ node, phase, cx, cy, size }: AlgoNodeProps) {
           fill: "#1f2937",
           r: size * 0.025,
           textFill: "#4b5563",
-          opacity: 0.15,
+          opacity: isHovered ? 0.6 : 0.15,
           glow: false,
           glowColor: "",
         };
       default:
         return {
           fill: "#0D9488",
-          r: size * 0.032,
+          r: isHovered ? size * 0.04 : size * 0.032,
           textFill: "#fff",
           opacity: phase === "idle" ? 0 : 0.8,
-          glow: false,
-          glowColor: "",
+          glow: isHovered,
+          glowColor: "var(--color-forge-teal)",
         };
     }
   };
@@ -99,12 +109,15 @@ export function AlgoNode({ node, phase, cx, cy, size }: AlgoNodeProps) {
 
   return (
     <motion.g
+      onMouseEnter={() => node.type !== "center" && onHover(node.id)}
+      onMouseLeave={() => onHover(null)}
+      className={node.type === "center" ? "" : "cursor-pointer"}
       initial={{ x: cx, y: cy, opacity: 0, scale: 0 }}
       animate={{
         x: targetX,
         y: targetY,
         opacity: ns.opacity,
-        scale: phase === "idle" ? 0 : 1,
+        scale: phase === "idle" ? 0 : isHovered ? 1.2 : 1,
       }}
       transition={{
         x: {
@@ -117,12 +130,13 @@ export function AlgoNode({ node, phase, cx, cy, size }: AlgoNodeProps) {
         },
         opacity: { duration: 0.5 },
         scale: {
-          duration: 0.6,
-          delay: node.type === "center" ? 0 : 0.1 + node.id * 0.04,
+          type: "spring",
+          stiffness: 300,
+          damping: 20,
         },
       }}
     >
-      {ns.glow && (
+      {(ns.glow || isHovered) && (
         <>
           <motion.circle
             cx={0}
@@ -132,18 +146,22 @@ export function AlgoNode({ node, phase, cx, cy, size }: AlgoNodeProps) {
               node.type === "selected" ? "url(#amberGlow)" : "url(#centerGlow)"
             }
             initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1 }}
+            animate={{ scale: 1.2, opacity: 1.5 }}
+            transition={{
+              duration: 1,
+              repeat: Infinity,
+              repeatType: "reverse",
+            }}
           />
           <motion.circle
             cx={0}
             cy={0}
             r={ns.r * 1.6}
-            fill={ns.glowColor}
+            fill={ns.glowColor || "var(--color-forge-teal)"}
             opacity={0.15}
             filter="url(#softBlur)"
             initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 0.15 }}
+            animate={{ scale: 1, opacity: 0.25 }}
             transition={{ duration: 1 }}
           />
         </>
@@ -162,8 +180,8 @@ export function AlgoNode({ node, phase, cx, cy, size }: AlgoNodeProps) {
             animate={{ r: ns.r }}
             fill="#111"
             stroke={ns.fill}
-            strokeWidth={node.type === "selected" ? 2 : 1}
-            transition={{ duration: 0.6 }}
+            strokeWidth={node.type === "selected" || isHovered ? 2.5 : 1}
+            transition={{ duration: 0.4 }}
           />
           <image
             href={node.avatar}
@@ -199,29 +217,32 @@ export function AlgoNode({ node, phase, cx, cy, size }: AlgoNodeProps) {
         </>
       )}
 
-      {node.type !== "center" && (
+      {node.type !== "center" && !isHovered && (
         <motion.text
           x={0}
-          y={ns.r + size * 0.025}
+          y={ns.r + size * (node.type === "selected" ? 0.001 : 0.003)}
           textAnchor="middle"
           animate={{
             fill:
               node.type === "selected"
-                ? "rgba(245,158,11,0.9)" // Brighter Amber
+                ? "rgba(245,158,11,0.9)"
                 : node.type === "rejected"
-                  ? "rgba(255,255,255,0.15)" // Still faded but visible
-                  : "rgba(255,255,255,0.5)", // Default state needs more contrast
+                  ? "rgba(255,255,255,0.15)"
+                  : "rgba(255,255,255,0.5)",
+            opacity: 0.8,
+            y: ns.r + size * (node.type === "selected" ? 0.001 : 0.003),
           }}
           fontSize={size * 0.018}
           className="font-sans pointer-events-none"
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.3 }}
         >
-          {node.interest}
+          {node.tag}
         </motion.text>
       )}
 
       <AnimatePresence>
         {node.type !== "center" &&
+          !isHovered &&
           (phase === "evaluating" ||
             phase === "selecting" ||
             phase === "formed") && (

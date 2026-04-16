@@ -1,4 +1,4 @@
-import { cn } from "@/shared/lib/utils";
+import { Button } from "@/shared/components/ui/button";
 import { motion } from "framer-motion";
 import { MAX_INTERESTS, MIN_INTERESTS } from "../../../data/interests-data";
 
@@ -64,21 +64,15 @@ export function InterestsProgressBar({
             {progressText}
           </p>
         </div>
-        <motion.button
-          type="button"
+        <Button
           onClick={canContinue ? onContinue : undefined}
-          whileTap={canContinue ? { scale: 0.97 } : {}}
+          disabled={!canContinue}
           aria-label={
             canContinue
               ? "Review your selected interests"
               : "Select more interests to continue"
           }
-          className={cn(
-            "flex items-center gap-2 font-sans text-sm font-bold rounded-xl h-10 px-5 transition-all duration-200 shrink-0",
-            canContinue
-              ? "bg-forge-teal text-white shadow-teal-glow hover:shadow-teal-glow-lg"
-              : "bg-slate-muted/5 text-slate-muted/40 cursor-not-allowed border border-slate-muted/10",
-          )}
+          className="shrink-0"
         >
           Review picks
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -90,7 +84,7 @@ export function InterestsProgressBar({
               strokeLinejoin="round"
             />
           </svg>
-        </motion.button>
+        </Button>
       </div>
     </div>
   );

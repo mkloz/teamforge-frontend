@@ -113,7 +113,7 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        className="relative z-10 flex-1 overflow-y-auto px-4 pt-4 pb-0 scroll-smooth scrollbar-none scroll-margin-top-12"
+        className="relative z-10 flex-1 overflow-y-auto px-1 pt-4 pb-0 scroll-smooth scrollbar-none scroll-margin-top-12"
       >
         <div className="flex flex-col pb-2">
           {groupedMessages.map((group) => (

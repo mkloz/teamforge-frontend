@@ -11,18 +11,20 @@ import {
   Paperclip,
 } from "lucide-react";
 import { memo } from "react";
+import { Button } from "@/shared/components/ui/button";
 
 export const AttachmentMenu = memo(({ disabled }: { disabled: boolean }) => (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
-      <button
-        type="button"
-        className="text-slate-muted hover:text-forge-teal transition-colors outline-none cursor-pointer"
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        className="text-slate-muted hover:text-forge-teal transition-colors outline-none cursor-pointer rounded-full"
         aria-label="Add attachment"
         disabled={disabled}
       >
         <Paperclip size={22} strokeWidth={2.2} />
-      </button>
+      </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent
       align="start"

@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { InterestsCloud } from "./components/interests-cloud";
 import { PersonalitySection } from "./components/personality-section";
 import { ProfileHero } from "./components/profile-hero";
@@ -48,41 +47,22 @@ export function ProfilePage() {
       </div>
 
       {/* Profile Cover Banner */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="absolute top-0 left-0 right-0 h-32 md:h-48 bg-linear-to-br from-forge-teal to-forge-teal/80 z-0 shadow-sm"
-      />
+      <div className="absolute top-0 left-0 right-0 h-32 md:h-48 bg-linear-to-br from-forge-teal to-forge-teal/80 z-0 shadow-sm" />
 
       <div className="flex flex-col max-w-6xl mx-auto px-4 md:px-8 pt-12 md:pt-24 lg:pt-24 pb-12 lg:pb-16 gap-12 relative z-10 w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
+        <div>
           <ProfileHero profile={profile} />
-        </motion.div>
+        </div>
 
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-col gap-8 flex-2 min-w-0"
-          >
+          <div className="flex flex-col gap-8 flex-2 min-w-0">
             <PersonalitySection profile={profile} />
             <InterestsCloud interests={profile.interests} />
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex flex-col flex-1 shrink-0 lg:max-w-80"
-          >
+          <div className="flex flex-col flex-1 shrink-0 lg:max-w-80">
             <PsychometricsSidebar profile={profile} />
-          </motion.div>
+          </div>
         </div>
       </div>
     </main>

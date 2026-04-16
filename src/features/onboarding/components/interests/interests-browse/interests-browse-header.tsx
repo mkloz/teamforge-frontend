@@ -1,5 +1,6 @@
-import { Search, X } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
+import { Search, X } from "lucide-react";
 import { INTEREST_CATEGORIES } from "../../../data/interests-data";
 
 const SHORT_CAT_LABELS: Record<string, string> = {
@@ -38,26 +39,27 @@ export function InterestsBrowseHeader({
 
   if (variant === "pills") {
     return (
-      <nav className="flex overflow-x-auto scrollbar-hide gap-1.5 sm:gap-2 scroll-smooth items-center h-10">
+      <nav className="flex overflow-x-auto scrollbar-hide gap-1.5 sm:gap-2 scroll-smooth items-center h-10 py-1 -m-1 px-1">
         {INTEREST_CATEGORIES.map((cat) => (
-          <button
-            type="button"
+          <Button
+            variant="outline"
+            size="xs"
             key={`nav-${cat.id}`}
             onClick={() => handleQuickJump(cat.id)}
-            className="group flex items-center gap-1.5 whitespace-nowrap rounded-xl bg-white hover:bg-canvas hover:border-slate-muted/30 px-3 py-1.5 text-xs font-bold text-slate-muted transition active:scale-95 border border-slate-muted/15 shadow-sm"
+            className="rounded-full bg-white text-slate-muted border-slate-muted/15 focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-1 focus-visible:outline-none shrink-0"
           >
             <div
               className={cn("w-1.5 h-1.5 rounded-full shrink-0", cat.color)}
             />
             {SHORT_CAT_LABELS[cat.id] || cat.label}
-          </button>
+          </Button>
         ))}
       </nav>
     );
   }
 
   return (
-    <div className="relative group w-full">
+    <div className="relative group w-full mt-2">
       <Search
         size={14}
         className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-muted/60 group-focus-within:text-forge-teal transition-colors"
@@ -72,14 +74,15 @@ export function InterestsBrowseHeader({
         className="w-full pl-10 pr-10 h-10 bg-white border border-slate-muted/15 rounded-xl text-sm font-sans text-ink placeholder:text-slate-muted/40 focus:bg-white focus:outline-none focus:ring-thick focus:ring-forge-teal/15 focus:border-forge-teal transition-all shadow-[0_2px_10px_rgba(0,0,0,0.02)]"
       />
       {searchQuery && (
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => onSetSearch("")}
-          className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-slate-muted/10 rounded-full transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full active:translate-y-[-50%]!"
           aria-label="Clear search"
         >
           <X size={16} className="text-slate-muted/50" strokeWidth={2.5} />
-        </button>
+        </Button>
       )}
     </div>
   );

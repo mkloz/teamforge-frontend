@@ -1,5 +1,6 @@
 export { InterestsReviewFooter } from "./interests-review-footer";
 export { InterestsReviewHeader } from "./interests-review-header";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
@@ -60,24 +61,28 @@ export function InterestsReview({
                   const tag = LEAF_TAG_BY_ID[id];
                   if (!tag) return null;
                   return (
-                    <motion.button
+                    <Button
                       key={id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                      type="button"
-                      onClick={() => onRemove(id)}
-                      className="group inline-flex items-center gap-1.5 bg-forge-teal text-white rounded-full px-3.5 py-1.5 text-xs font-bold font-sans shadow-sm transition hover:bg-teal-600 active:scale-95"
+                      size="xs"
+                      asChild
+                      className="rounded-full shadow-xs"
                     >
-                      <span className="leading-none">{tag.label}</span>
-                      <X
-                        size={14}
-                        className="opacity-60 group-hover:opacity-100 transition-opacity"
-                        strokeWidth={3}
-                      />
-                    </motion.button>
+                      <motion.button
+                        layout
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                        onClick={() => onRemove(id)}
+                      >
+                        <span className="leading-none">{tag.label}</span>
+                        <X
+                          size={14}
+                          className="opacity-60 group-hover:opacity-100 transition-opacity"
+                          strokeWidth={3}
+                        />
+                      </motion.button>
+                    </Button>
                   );
                 })}
               </div>

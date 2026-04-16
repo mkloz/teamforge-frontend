@@ -20,18 +20,25 @@ export function PersonalitySection({
 
   return (
     <div className="flex flex-col gap-8 w-full">
-      {/* Primary Section Header */}
-      {!hideHeaders && (
-        <h3 className="text-xl font-bold text-ink flex items-center gap-2">
-          Personality Insights
-        </h3>
-      )}
+      <div className="flex items-center justify-between">
+        {/* Primary Section Header */}
+        {!hideHeaders && (
+          <h3 className="text-xl font-bold text-ink flex items-center gap-2">
+            Personality Insights
+          </h3>
+        )}
+        {/* Title badge */}
+        {!hideHeaders && (
+          <div className="flex items-center gap-2">
+            <span className="px-3.5 py-1.5 rounded-full text-micro font-semibold bg-spark-amber/10 text-spark-amber border border-spark-amber/20 tracking-tight">
+              {personalityProfile.title}
+            </span>
+          </div>
+        )}
+      </div>
 
       <div className={cn("flex flex-col", hideHeaders ? "gap-6" : "gap-10")}>
-        <PersonalitySummary
-          profile={personalityProfile}
-          hideHeaders={hideHeaders}
-        />
+        <PersonalitySummary profile={personalityProfile} />
 
         <div className="grid grid-cols-1 gap-10">
           <PersonalityStrengths strengths={personalityProfile.strengths} />
@@ -42,24 +49,9 @@ export function PersonalitySection({
   );
 }
 
-function PersonalitySummary({
-  profile,
-  hideHeaders,
-}: {
-  profile: PersonalityProfile;
-  hideHeaders: boolean;
-}) {
+function PersonalitySummary({ profile }: { profile: PersonalityProfile }) {
   return (
     <div className="space-y-4">
-      {/* Title badge */}
-      {!hideHeaders && (
-        <div className="flex items-center gap-2">
-          <span className="px-3.5 py-1.5 rounded-full text-micro font-semibold bg-spark-amber/10 text-spark-amber border border-spark-amber/20 tracking-tight">
-            {profile.title}
-          </span>
-        </div>
-      )}
-
       {/* Summary */}
       <p className="text-lg text-ink/90 font-medium leading-relaxed text-pretty indent-8">
         {profile.summary}

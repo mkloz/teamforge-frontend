@@ -21,7 +21,7 @@ export function ExtensionSection({
   return (
     <motion.div
       variants={fadeUpItem}
-      className="w-full mb-2 flex flex-col items-start text-left"
+      className="w-full mb-6 flex flex-col items-start text-left"
     >
       <div className="h-px w-full bg-slate-200/60 mb-8" />
 

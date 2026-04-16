@@ -49,13 +49,15 @@ export const ScrollActionButtons = memo(
             exit={{ opacity: 0, scale: 0.8, y: 10 }}
             className="pointer-events-auto"
           >
-            <button
+            <Button
               onClick={onScrollToUnvoted}
-              className="group flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-spark-amber text-white border border-spark-amber/20 hover:scale-105 active:scale-95 transition-transform outline-none"
+              variant="secondary"
+              size="xs"
+              className="group flex items-center gap-2 px-2.5 py-1.5 rounded-full border border-spark-amber/20"
             >
               <AlertCircle size={14} className="animate-pulse" />
               <span className="text-micro font-black tracking-wider">Vote</span>
-            </button>
+            </Button>
           </motion.div>
         )}
       </div>

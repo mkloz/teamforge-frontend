@@ -116,12 +116,12 @@ export function PersonalityResults({
 
                 <div
                   className={cn(
-                    "w-5 sm:w-6 h-1 rounded-full opacity-60 mt-0",
+                    "w-5 sm:w-7 h-0.5 rounded-full opacity-60 -mt-1",
                     isIdentity ? "bg-spark-amber" : "bg-forge-teal",
                   )}
                 />
 
-                <span className="font-sans font-bold leading-none text-xs text-slate-400 uppercase tracking-wider mt-2 px-1">
+                <span className="font-sans font-bold leading-none text-nano text-slate-400 uppercase tracking-wider mt-1 px-1">
                   {axisLabel}
                 </span>
               </motion.div>
@@ -143,7 +143,7 @@ export function PersonalityResults({
           })}
         </motion.div>
 
-        <div className="text-center mb-10 sm:mb-12 px-2">
+        <div className="text-center mb-2 sm:mb-4 px-2">
           <h2 className="text-2xl sm:text-3xl font-black text-ink tracking-tight">
             {result.info.name}
             <span className="text-slate-muted font-bold block sm:inline mt-1 sm:mt-0">
@@ -153,7 +153,7 @@ export function PersonalityResults({
           </h2>
         </div>
 
-        <div className="flex flex-col gap-8 mt-4">
+        <div className="flex flex-col gap-8">
           <section className="animate-fade-in">
             <PersonalitySection
               profile={{ oceanScores } as UserProfile}
@@ -187,19 +187,12 @@ export function PersonalityResults({
         </div>
 
         <div className="mt-16 pt-8 border-t border-slate-100 flex flex-col sm:flex-row gap-4">
-          <Button
-            onClick={onContinue}
-            className="flex-1 h-14 rounded-2xl bg-forge-teal hover:bg-forge-teal/90 text-white font-bold text-lg shadow-lg shadow-forge-teal/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
-          >
+          <Button size="hero" onClick={onContinue} className="flex-1">
             Continue
-            <ArrowRight className="ml-2" size={20} />
+            <ArrowRight size={20} />
           </Button>
-          <Button
-            variant="outline"
-            onClick={onRetake}
-            className="h-14 px-8 rounded-2xl border-slate-200 text-slate-muted font-bold transition-all hover:bg-slate-50"
-          >
-            <RefreshCcw className="mr-2" size={18} />
+          <Button variant="outline" size="hero" onClick={onRetake}>
+            <RefreshCcw size={18} />
             Retake test
           </Button>
         </div>

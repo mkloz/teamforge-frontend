@@ -4,7 +4,7 @@ export interface AlgoNode {
   y: number;
   label: string;
   type: "center" | "candidate" | "selected" | "rejected";
-  interest: string;
+  tag: string;
   angle: number;
   avatar?: string;
 }

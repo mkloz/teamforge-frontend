@@ -1,5 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 import { X } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNotifications } from "../hooks/use-notifications";
 import { NotificationItem } from "./notification-item";
@@ -123,26 +124,28 @@ export function NotificationsDrawer({
         />
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 h-14 border-b border-border shrink-0">
-          <h2 className="font-semibold text-base text-foreground tracking-tight">
+        <div className="flex items-center justify-between px-6 h-16 border-b border-border shrink-0">
+          <h2 className="font-bold text-lg text-white tracking-tight">
             Notifications
           </h2>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
+          <div className="flex items-center gap-1.5">
+            <Button
+              variant="link"
+              size="sm"
               onClick={markAllRead}
-              className="text-xs text-primary hover:text-primary/70 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+              className="text-[12px] text-forge-teal hover:text-forge-teal/80 font-bold h-auto p-0"
             >
               Mark all read
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon-xs"
               onClick={onClose}
               aria-label="Close notifications"
-              className="flex h-8 w-8 items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="text-slate-muted hover:text-ink rounded-lg p-0"
             >
-              <X size={15} aria-hidden="true" />
-            </button>
+              <X size={20} strokeWidth={2.5} aria-hidden="true" />
+            </Button>
           </div>
         </div>
 
@@ -156,8 +159,8 @@ export function NotificationsDrawer({
             <>
               {today.length > 0 && (
                 <section aria-label="Today's notifications">
-                  <div className="px-5 py-2.5 sticky top-0 bg-card/95 backdrop-blur-sm border-b border-border">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <div className="px-6 py-4 sticky top-0 bg-card/95 backdrop-blur-md border-b border-border/50 z-10">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-muted/60">
                       Today
                     </p>
                   </div>
@@ -168,8 +171,8 @@ export function NotificationsDrawer({
               )}
               {earlier.length > 0 && (
                 <section aria-label="Earlier notifications">
-                  <div className="px-5 py-2.5 sticky top-0 bg-card/95 backdrop-blur-sm border-b border-border">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <div className="px-6 py-4 sticky top-0 bg-card/95 backdrop-blur-md border-b border-border/50 z-10">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-muted/60">
                       Earlier
                     </p>
                   </div>

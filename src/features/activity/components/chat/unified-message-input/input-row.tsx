@@ -2,6 +2,7 @@ import { cn } from "@/shared/lib/utils";
 import { Smile } from "lucide-react";
 import React, { memo } from "react";
 import { AttachmentMenu } from "./attachment-menu";
+import { Button } from "@/shared/components/ui/button";
 
 interface InputRowProps {
   value: string;
@@ -26,15 +27,16 @@ export const InputRow = memo(
     disabled,
   }: InputRowProps) => (
     <>
-      <div className="shrink-0 flex items-end pb-2.5 pl-3">
-        <button
-          type="button"
-          className="text-slate-muted hover:text-spark-amber transition-colors outline-none cursor-pointer"
+      <div className="shrink-0 flex items-end pb-1 pl-2">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="text-slate-muted hover:text-spark-amber transition-colors outline-none cursor-pointer rounded-full"
           aria-label="Add emoji"
           disabled={disabled}
         >
-          <Smile size={24} strokeWidth={2} />
-        </button>
+          <Smile size={22} strokeWidth={2} />
+        </Button>
       </div>
 
       <div className="flex-1 relative flex items-center min-h-11 py-2.75 px-2.5">
@@ -58,7 +60,7 @@ export const InputRow = memo(
         />
       </div>
 
-      <div className="shrink-0 flex items-end pb-2.5 pr-3">
+      <div className="shrink-0 flex items-end pb-1 pr-2">
         <AttachmentMenu disabled={disabled} />
       </div>
     </>

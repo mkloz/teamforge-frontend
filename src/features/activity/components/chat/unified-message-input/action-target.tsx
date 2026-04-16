@@ -37,7 +37,8 @@ export const ActionTarget = memo(
             onClick={onSend}
             disabled={disabled}
             size="icon"
-            className="h-11 w-11 shrink-0 rounded-full bg-forge-teal text-white shadow-md hover:bg-forge-teal/90 active:scale-95"
+            variant="primary"
+            className="rounded-full flex-none shadow-teal-glow"
             aria-label="Send message"
           >
             <Send size={18} strokeWidth={2.5} className="ml-0.5" />
@@ -65,7 +66,7 @@ export const ActionTarget = memo(
                   variant="outline"
                   size="icon"
                   onClick={onCancelRecording}
-                  className="h-11 w-11 shrink-0 text-red-500 hover:text-white border-red-500/20 hover:bg-red-500 rounded-full bg-card/60"
+                  className="rounded-full text-red-500 hover:text-white border-red-500/20 hover:bg-red-500 bg-card/60"
                   aria-label="Cancel recording"
                 >
                   <Trash2 size={20} />
@@ -85,7 +86,7 @@ export const ActionTarget = memo(
            * context menu from hijacking the hold gesture on iOS / Android.
            */}
           <Button
-            variant="default"
+            variant="primary"
             size="icon"
             // ── Desktop ──────────────────────────────────────────────
             onMouseDown={(e) => {
@@ -113,11 +114,11 @@ export const ActionTarget = memo(
             // Suppress long-press context menu on Android / iOS
             onContextMenu={(e) => e.preventDefault()}
             className={cn(
-              "h-11 w-11 shrink-0 rounded-full transition-[background-color,box-shadow,transform] duration-300 shadow-md",
+              "rounded-full transition-all duration-300",
               "touch-none select-none", // touch-none prevents scroll interference
               isRecording
-                ? "bg-red-500 text-white scale-[1.15] shadow-[0_8px_20px_rgba(239,68,68,0.35)] -translate-y-1"
-                : "bg-forge-teal text-white hover:bg-forge-teal/90",
+                ? "bg-red-500 text-white scale-[1.15] after:hidden shadow-none! border-transparent"
+                : "text-white shadow-none hover:shadow-teal-glow",
             )}
             aria-label={
               isRecording ? "Release to send" : "Hold to record voice message"

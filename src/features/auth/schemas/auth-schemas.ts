@@ -3,27 +3,27 @@ import { z } from "zod";
 export const loginSchema = z.object({
   email: z
     .string()
-    .min(1, "Email is required.")
-    .email("Enter a valid email address."),
-  password: z.string().min(6, "Password must be at least 6 characters."),
+    .min(1, "Don't forget your email.")
+    .email("Check that email again—it looks a bit off."),
+  password: z.string().min(6, "Make it at least 6 characters for safety."),
 });
 
 export type LoginValues = z.infer<typeof loginSchema>;
 
 export const registerSchema = z.object({
-  name: z.string().min(1, "Full name is required."),
+  name: z.string().min(1, "What's your name?"),
   email: z
     .string()
-    .min(1, "Email is required.")
-    .email("Enter a valid email address."),
-  password: z.string().min(6, "Password must be at least 6 characters."),
-  otp: z.string().min(6, "Enter a complete 6-digit code."),
+    .min(1, "Don't forget your email.")
+    .email("Check that email again—it looks a bit off."),
+  password: z.string().min(6, "Make it at least 6 characters for safety."),
+  otp: z.string().min(6, "We need all 6 digits to verify."),
   age: z
-    .number({ error: "Age is required." })
-    .min(16, "Enter a valid age (16–99).")
-    .max(99, "Enter a valid age (16–99)."),
-  city: z.string().min(1, "City is required."),
-  gender: z.string().min(1, "Please select a gender."),
+    .number({ error: "How old are you?" })
+    .min(16, "Enter your age (we support 16 to 99).")
+    .max(99, "Enter your age (we support 16 to 99)."),
+  city: z.string().min(1, "Where are you based?"),
+  gender: z.string().min(1, "Tell us your gender."),
 });
 
 export type RegisterValues = z.infer<typeof registerSchema>;

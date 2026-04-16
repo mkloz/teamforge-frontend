@@ -20,7 +20,7 @@ export const MOCK_DIRECT_CHAT_PREVIEWS: DirectChatPreview[] = [
     participantId: "user-designer",
     participantName: "✨ DM Design Playground",
     participantAvatar:
-      "https://api.dicebear.com/7.x/shapes/svg?seed=dmplayground&backgroundColor=0d9488",
+      "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=200&h=200&fit=crop&q=80",
     onlineStatus: "ONLINE",
     lastMessage: {
       content: "DM visual tests are live! 📱✨",
@@ -37,7 +37,8 @@ export const MOCK_DIRECT_CHAT_PREVIEWS: DirectChatPreview[] = [
     id: "dm-1",
     participantId: "user-jordan",
     participantName: "Jordan Lee",
-    participantAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jordan",
+    participantAvatar:
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&q=80",
     onlineStatus: "ONLINE",
     lastMessage: {
       content: "Yeah, definitely! Can't wait.",
@@ -54,7 +55,8 @@ export const MOCK_DIRECT_CHAT_PREVIEWS: DirectChatPreview[] = [
     id: "dm-2",
     participantId: "user-sam",
     participantName: "Sam Rivera",
-    participantAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sam",
+    participantAvatar:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
     onlineStatus: "AWAY",
     lastSeen: minutesAgo(15),
     lastMessage: {
@@ -71,7 +73,8 @@ export const MOCK_DIRECT_CHAT_PREVIEWS: DirectChatPreview[] = [
     id: "dm-3",
     participantId: "user-casey",
     participantName: "Casey Chen",
-    participantAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Casey",
+    participantAvatar:
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&q=80",
     onlineStatus: "ONLINE",
     lastMessage: {
       content: "The React study group was great!",
@@ -87,7 +90,8 @@ export const MOCK_DIRECT_CHAT_PREVIEWS: DirectChatPreview[] = [
     id: "dm-4",
     participantId: "user-taylor",
     participantName: "Taylor Morgan",
-    participantAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Taylor",
+    participantAvatar:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&q=80",
     onlineStatus: "OFFLINE",
     lastSeen: hoursAgo(5),
     lastMessage: {
@@ -104,7 +108,8 @@ export const MOCK_DIRECT_CHAT_PREVIEWS: DirectChatPreview[] = [
     id: "dm-5",
     participantId: "user-alex",
     participantName: "Alex Kim",
-    participantAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+    participantAvatar:
+      "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
     onlineStatus: "OFFLINE",
     lastSeen: daysAgo(2),
     lastMessage: {
@@ -126,7 +131,7 @@ export const MOCK_DIRECT_CHATS: Record<string, DirectChat> = {
       id: "user-designer",
       name: "Designer (Visual Tests)",
       avatar:
-        "https://api.dicebear.com/7.x/shapes/svg?seed=dmplayground&backgroundColor=0d9488",
+        "https://images.unsplash.com/photo-1558655146-d09347e92766?w=200&h=200&fit=crop&q=80",
       bio: "Automated test suite for verifying 1-on-1 interaction states.",
       personalityType: "INTJ",
       onlineStatus: "ONLINE",
@@ -137,7 +142,7 @@ export const MOCK_DIRECT_CHATS: Record<string, DirectChat> = {
         id: "design-playground",
         name: "✨ UI Design Playground",
         avatar:
-          "https://api.dicebear.com/7.x/shapes/svg?seed=playground&backgroundColor=0d9488",
+          "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=200&h=200&fit=crop&q=80",
       },
     ],
     isMuted: false,
@@ -148,7 +153,8 @@ export const MOCK_DIRECT_CHATS: Record<string, DirectChat> = {
     participant: {
       id: "user-jordan",
       name: "Jordan Lee",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jordan",
+      avatar:
+        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&q=80",
       bio: "Outdoor enthusiast and trail runner. Always looking for new adventures!",
       personalityType: "ENFP",
       onlineStatus: "ONLINE",
@@ -158,7 +164,8 @@ export const MOCK_DIRECT_CHATS: Record<string, DirectChat> = {
       {
         id: "group-1",
         name: "Trail Blazers",
-        avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=trailblazers",
+        avatar:
+          "https://images.unsplash.com/photo-1551632432-c735e7a93522?w=200&h=200&fit=crop&q=80",
       },
     ],
     isMuted: false,
@@ -169,7 +176,8 @@ export const MOCK_DIRECT_CHATS: Record<string, DirectChat> = {
     participant: {
       id: "user-sam",
       name: "Sam Rivera",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sam",
+      avatar:
+        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
       bio: "Coffee lover, book reader, occasional hiker.",
       personalityType: "INFJ",
       onlineStatus: "AWAY",
@@ -180,7 +188,8 @@ export const MOCK_DIRECT_CHATS: Record<string, DirectChat> = {
       {
         id: "group-1",
         name: "Trail Blazers",
-        avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=trailblazers",
+        avatar:
+          "https://images.unsplash.com/photo-1551632432-c735e7a93522?w=200&h=200&fit=crop&q=80",
       },
     ],
     isMuted: false,
@@ -191,7 +200,8 @@ export const MOCK_DIRECT_CHATS: Record<string, DirectChat> = {
     participant: {
       id: "user-casey",
       name: "Casey Chen",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Casey",
+      avatar:
+        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&q=80",
       bio: "Full-stack developer. React enthusiast. Building cool stuff.",
       personalityType: "INTJ",
       onlineStatus: "ONLINE",
@@ -201,7 +211,8 @@ export const MOCK_DIRECT_CHATS: Record<string, DirectChat> = {
       {
         id: "group-2",
         name: "Code Crafters",
-        avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=codecrafters",
+        avatar:
+          "https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=200&h=200&fit=crop&q=80",
       },
     ],
     isMuted: false,
@@ -212,7 +223,8 @@ export const MOCK_DIRECT_CHATS: Record<string, DirectChat> = {
     participant: {
       id: "user-taylor",
       name: "Taylor Morgan",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Taylor",
+      avatar:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&q=80",
       bio: "Product designer and typography nerd. I dream in grids.",
       personalityType: "ISFP",
       onlineStatus: "OFFLINE",
@@ -228,7 +240,8 @@ export const MOCK_DIRECT_CHATS: Record<string, DirectChat> = {
     participant: {
       id: "user-alex",
       name: "Alex Kim",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      avatar:
+        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
       bio: "Jazz pianist and part-time software engineer. Harmony in all things.",
       personalityType: "INFJ",
       onlineStatus: "OFFLINE",
@@ -239,7 +252,8 @@ export const MOCK_DIRECT_CHATS: Record<string, DirectChat> = {
       {
         id: "group-3",
         name: "Jazz & Jam",
-        avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=jazzjam",
+        avatar:
+          "https://images.unsplash.com/photo-1511192303578-4a7b9747d6a5?w=200&h=200&fit=crop&q=80",
       },
     ],
     isMuted: false,
@@ -424,7 +438,7 @@ export const MOCK_DIRECT_MESSAGES: Record<string, DirectMessage[]> = {
       attachments: Array.from({ length: 12 }).map((_, i) => ({
         id: `dm-heavy-${i}`,
         type: "image",
-        url: `https://images.unsplash.com/photo-${1600000000000 + i}?w=800&q=80`,
+        url: `https://plus.unsplash.com/premium_photo-1661281397737-9b5d75b52beb?w=800&q=80&sig=dm-${i}`,
         name: `Asset_${i}.png`,
       })),
     },

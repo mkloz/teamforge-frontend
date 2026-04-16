@@ -1,6 +1,6 @@
-import React, { useRef, useEffect, useMemo, useCallback } from "react";
 import { cn } from "@/shared/lib/utils";
-import { useScroll, useSpring, useReducedMotion } from "framer-motion";
+import { useReducedMotion, useScroll, useSpring } from "framer-motion";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 
 interface ParticlesProps {
   className?: string;
@@ -166,9 +166,9 @@ export const Particles: React.FC<ParticlesProps> = ({
       particle.x += particle.dx + vx;
       particle.y += particle.dy + vy;
 
-      particle.translateY = scrollVal * 300 * (particle.magnetism / 5);
+      particle.translateY = scrollVal * 1000 * (particle.magnetism / 5);
       particle.translateX =
-        Math.sin(scrollVal * 8) * 12 * (particle.magnetism / 5);
+        Math.sin(scrollVal * 12) * 40 * (particle.magnetism / 5);
 
       if (particle.alpha < particle.targetAlpha) {
         particle.alpha += 0.02;

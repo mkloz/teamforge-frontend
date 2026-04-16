@@ -1,3 +1,8 @@
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
@@ -23,51 +28,59 @@ export function NavItem({
   const active = matchPrefix ? startsWith(to) : isActive(to);
 
   return (
-    <Link
-      to={to}
-      aria-current={active ? "page" : undefined}
-      aria-label={label}
-      className={cn(
-        "group relative flex items-center rounded-xl transition-colors duration-150",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-        // Tablet (md): icon-only centered square
-        "justify-center h-10 w-10 lg:justify-start lg:h-auto lg:w-auto lg:gap-3 lg:px-3 lg:py-2.5",
-        "text-sm font-medium",
-        active
-          ? "bg-secondary text-primary"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground",
-      )}
-    >
-      {/* Active left-border indicator — wider and taller for visibility */}
-      {active && (
-        <span
-          className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-primary"
-          aria-hidden="true"
-        />
-      )}
-
-      <Icon
-        size={18}
-        className={cn(
-          "shrink-0 transition-colors duration-150",
-          active
-            ? "text-primary"
-            : "text-muted-foreground group-hover:text-foreground",
-        )}
-        aria-hidden="true"
-      />
-
-      {/* Label: hidden on tablet, visible on desktop */}
-      <span className="hidden lg:inline flex-1 truncate">{label}</span>
-
-      {badge != null && badge > 0 && (
-        <span
-          className="hidden lg:flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-micro font-bold text-accent-foreground"
-          aria-label={`${badge} unread`}
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Link
+          to={to}
+          aria-current={active ? "page" : undefined}
+          aria-label={label}
+          className={cn(
+            "group relative flex items-center rounded-xl transition-colors duration-150",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+            // Icon-only centered square for both tablet and desktop
+            "justify-center h-10 w-10",
+            "text-sm font-medium",
+            active
+              ? "bg-secondary text-primary"
+              : "text-muted-foreground hover:bg-muted hover:text-foreground",
+          )}
         >
-          {badge > 99 ? "99+" : badge}
-        </span>
-      )}
-    </Link>
+          {/* Active left-border indicator — thin and subtle */}
+          {active && (
+            <span
+              className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-primary"
+              aria-hidden="true"
+            />
+          )}
+
+          <Icon
+            size={20}
+            className={cn(
+              "shrink-0 transition-colors duration-150",
+              active
+                ? "text-primary"
+                : "text-muted-foreground group-hover:text-foreground",
+            )}
+            aria-hidden="true"
+          />
+
+          {/* Label: hidden on both tablet and desktop now */}
+          <span className="sr-only">{label}</span>
+
+          {badge != null && badge > 0 && (
+            <span
+              className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground shadow-sm"
+              aria-label={`${badge} unread`}
+            >
+              {badge > 9 ? "9+" : badge}
+            </span>
+          )}
+        </Link>
+      </TooltipTrigger>
+      <TooltipContent side="right">
+        {label}
+        {badge != null && badge > 0 && ` (${badge})`}
+      </TooltipContent>
+    </Tooltip>
   );
 }

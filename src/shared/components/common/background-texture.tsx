@@ -19,13 +19,6 @@ export function BackgroundTexture() {
           maskImage: "radial-gradient(circle, transparent 30%, black 80%)",
         }}
       />
-
-      {/* Ultra-soft Diffusion Gradients */}
-      <div className="absolute -top-[5%] -left-[5%] w-[60%] h-[60%] rounded-full opacity-[0.03] blur-[120px] bg-forge-teal" />
-      <div className="absolute bottom-[0%] -right-[5%] w-[50%] h-[50%] rounded-full opacity-[0.03] blur-[120px] bg-spark-amber" />
-
-      {/* Paper Grain - Very subtle */}
-      <div className="absolute inset-0 opacity-[0.008] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
     </div>
   );
 }

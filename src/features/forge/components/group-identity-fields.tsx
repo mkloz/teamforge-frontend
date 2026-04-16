@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { Sparkles, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
@@ -356,16 +357,17 @@ export function GroupIdentityFields({
         {visibleSuggestions.length > 0 && (
           <div className="flex flex-wrap gap-1.5 pt-1">
             {visibleSuggestions.map((name) => (
-              <button
+              <Button
                 key={name}
-                type="button"
+                variant="ghost"
+                size="xs"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => {
                   onGroupNameChange(name);
                   nameInputRef.current?.blur();
                 }}
                 className={cn(
-                  "flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-micro font-semibold transition-colors duration-150",
+                  "h-auto px-2 py-1 rounded-lg border text-micro font-semibold transition-colors duration-150",
                   groupName === name
                     ? "border-primary/40 bg-primary/10 text-primary"
                     : "border-border/50 bg-card text-muted-foreground hover:border-primary/30 hover:bg-primary/5 hover:text-foreground",
@@ -373,7 +375,7 @@ export function GroupIdentityFields({
               >
                 <Sparkles size={9} className="shrink-0 opacity-60" />
                 {name}
-              </button>
+              </Button>
             ))}
           </div>
         )}

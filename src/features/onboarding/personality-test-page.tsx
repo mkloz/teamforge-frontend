@@ -216,7 +216,7 @@ export function PersonalityTestPage() {
           </div>
 
           <div className="flex flex-col items-center justify-start min-h-full py-4 sm:py-4 px-4 sm:px-6 relative">
-            <div className="w-full max-w-3xl relative">
+            <div className="w-full max-w-xl relative">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={testState.screen.id}

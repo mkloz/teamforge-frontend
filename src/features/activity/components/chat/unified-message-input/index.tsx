@@ -93,8 +93,8 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
   );
 
   return (
-    <div className="shrink-0 px-3 py-1.5 border-t border-border/60 bg-canvas/90 backdrop-blur-xl safe-area-inset-bottom z-10">
-      <div className="flex items-end gap-2.5 w-full mx-auto max-w-3xl">
+    <div className="shrink-0 px-3 pt-2 pb-2.5 border-t border-border/60 bg-canvas/90 backdrop-blur-xl safe-area-inset-bottom z-30 isolate overflow-visible min-h-16">
+      <div className="flex items-end gap-2.5 w-full mx-auto">
         {/* Input Pill */}
         <div className={containerClasses}>
           <ReplyPreview
@@ -134,7 +134,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
         </div>
 
         {/* Action Button */}
-        <div className="shrink-0 flex items-end">
+        <div className="shrink-0 flex items-end h-11 mb-0.5">
           <ActionTarget
             hasContent={!!value.trim()}
             isRecording={isRecording}

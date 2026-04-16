@@ -133,18 +133,19 @@ export const VoiceNote = memo(function VoiceNote({
         </div>
 
         {/* Features: Speed Toggle */}
-        <button
+        <Button
           onClick={toggleSpeed}
-          type="button"
+          variant="subtle"
+          size="xs"
           className={cn(
-            "h-8 px-2 rounded-lg text-micro font-black tabular-nums transition hover:scale-105 active:scale-95 border",
+            "h-8 px-2 rounded-lg text-micro font-black tabular-nums transition border shrink-0",
             isOwn
               ? "bg-primary/5 dark:bg-white/5 border-primary/10 dark:border-white/10 text-primary/70 dark:text-white/70 hover:bg-primary/10 dark:hover:bg-white/10"
               : "bg-forge-teal/5 border-forge-teal/10 text-forge-teal/70 hover:bg-forge-teal/10",
           )}
         >
           {playbackSpeed}x
-        </button>
+        </Button>
       </div>
 
       {/* Time Info */}

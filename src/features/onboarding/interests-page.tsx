@@ -170,15 +170,15 @@ function PersistentHeader({
   return (
     <div
       className={cn(
-        "sticky z-20 w-full border-b bg-canvas/80 border-slate-muted/10 pt-3 backdrop-blur-sm",
-        state.screen === "browse" ? "-top-13" : "top-0 shadow-sm",
+        "sticky z-40 w-full border-b bg-canvas/90 border-slate-muted/10 pt-3 backdrop-blur-sm shadow-none",
+        state.screen === "browse" ? "-top-10" : "top-0 shadow-sm",
       )}
     >
-      <div className="max-w-xl mx-auto lg:px-0 px-4 sm:px-5 pb-2">
+      <div className="max-w-xl mx-auto lg:px-0 px-4 sm:px-5">
         {state.screen === "browse" && (
-          <div className="flex flex-col">
+          <div className="flex flex-col mb-1">
             {/* Tier 1: Pills */}
-            <motion.div style={{ opacity: headerOpacity }} className="mb-3">
+            <motion.div style={{ opacity: headerOpacity }}>
               <InterestsBrowseHeader
                 searchQuery={state.searchQuery}
                 onSetSearch={state.setSearchQuery}

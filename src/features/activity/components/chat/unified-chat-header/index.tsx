@@ -48,13 +48,13 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
   } = useHeaderSearch();
 
   return (
-    <header className="shrink-0 flex items-center gap-2 px-3 pb-3 pt-2 md:pt-3 border-b border-border bg-canvas/80 backdrop-blur-md sticky top-0 z-10">
+    <header className="shrink-0 flex items-center gap-2 px-3 pb-3 pt-2 md:pt-3 border-b border-border bg-canvas/80 backdrop-blur-md sticky top-0 z-100">
       {onBack && (
         <Button
           variant="ghost"
-          size="icon"
+          size="icon-sm"
           onClick={onBack}
-          className="h-9 w-9 lg:hidden mr-1 text-slate-muted hover:bg-muted/60 rounded-lg"
+          className="lg:hidden mr-1 text-slate-muted shrink-0"
           aria-label="Back to conversations"
         >
           <ArrowLeft size={20} strokeWidth={2.5} />

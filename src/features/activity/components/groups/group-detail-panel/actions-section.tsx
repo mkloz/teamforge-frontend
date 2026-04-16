@@ -1,5 +1,6 @@
 import { CalendarPlus, Share2, BellOff, LogOut, Flag } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
+import { Button } from "@/shared/components/ui/button";
 import type { GroupStatus } from "@/features/activity/types/groups.types";
 
 interface ActionsSectionProps {
@@ -73,28 +74,31 @@ function ActionButton({
   variant = "default",
 }: ActionButtonProps) {
   return (
-    <button
+    <Button
+      variant="ghost"
       onClick={onClick}
       className={cn(
-        "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left",
-        "transition duration-150 active:scale-[0.98]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        variant === "default" && "text-foreground hover:bg-muted/80",
-        variant === "destructive" && "text-destructive hover:bg-destructive/10",
-        variant === "muted" && "text-muted-foreground hover:bg-muted/60",
+        "w-full h-auto flex items-center justify-start gap-4 px-3 py-2.5 rounded-xl border border-transparent shadow-none transition-all duration-200",
+        variant === "default" && "text-ink hover:bg-muted/80",
+        variant === "destructive" &&
+          "text-red-500 hover:bg-red-500/10 hover:border-red-500/20",
+        variant === "muted" && "text-slate-muted hover:bg-muted hover:text-ink",
       )}
     >
       <span
         className={cn(
-          "shrink-0 p-1.5 rounded-lg",
-          variant === "default" && "bg-muted",
-          variant === "destructive" && "bg-destructive/10",
-          variant === "muted" && "bg-muted/50",
+          "shrink-0 p-2 rounded-lg transition-colors",
+          variant === "default" &&
+            "bg-muted group-hover:bg-ink group-hover:text-white",
+          variant === "destructive" &&
+            "bg-red-500/10 group-hover:bg-red-500 group-hover:text-white",
+          variant === "muted" &&
+            "bg-muted/50 group-hover:bg-ink group-hover:text-white",
         )}
       >
         {icon}
       </span>
-      <span className="text-sm font-medium">{label}</span>
-    </button>
+      <span className="text-sm font-bold tracking-tight">{label}</span>
+    </Button>
   );
 }

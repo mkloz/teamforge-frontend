@@ -63,7 +63,7 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
             duration: 0.5,
             ease: [0.34, 1.56, 0.64, 1],
           }}
-          className="w-24 h-24 rounded-[2rem] bg-emerald-500 flex items-center justify-center shadow-2xl shadow-emerald-500/30"
+          className="w-24 h-24 rounded-4xl bg-emerald-500 flex items-center justify-center shadow-2xl shadow-emerald-500/30"
         >
           <Check size={44} className="text-white" strokeWidth={2.5} />
         </motion.div>
@@ -97,7 +97,7 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
           className="w-full max-w-xs"
         >
           <Button
-            variant="default"
+            variant="primary"
             size="lg"
             onClick={fw.close}
             className="w-full rounded-2xl text-base font-bold"
@@ -154,16 +154,16 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
           <div className="flex items-center gap-3">
             {fw.canGoBack ? (
               <Button
-                type="button"
                 variant="ghost"
-                size="icon"
+                size="sm"
                 onClick={fw.goBack}
-                className="w-8 h-8 rounded-full shrink-0"
+                className="size-8 p-0 rounded-full shrink-0 text-slate-muted hover:text-ink"
+                aria-label="Go back"
               >
                 <ChevronLeft size={18} />
               </Button>
             ) : (
-              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-accent/10 shrink-0">
+              <div className="size-8 rounded-full flex items-center justify-center bg-accent/10 shrink-0">
                 <Zap size={14} className="text-accent fill-current" />
               </div>
             )}
@@ -191,7 +191,7 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
                     onCancel();
                   }
                 }}
-                className="text-micro font-bold tracking-widest text-destructive/50 hover:text-destructive px-2.5 py-1.5 rounded-lg shrink-0 transition-colors"
+                className="h-8 px-3 rounded-lg text-[10px] font-black uppercase tracking-widest text-red-500/50 hover:text-red-500 hover:bg-red-500/5 transition-colors"
               >
                 Cancel
               </Button>

@@ -3,6 +3,7 @@ import { Theme, useTheme } from "@/shared/store/theme.store";
 import { Link } from "@tanstack/react-router";
 import { LogOut, Moon, Settings, Sun, User } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { Button } from "@/shared/components/ui/button";
 import { useUserMenu } from "../hooks/use-user-menu";
 
 export function UserMenu() {
@@ -37,30 +38,24 @@ export function UserMenu() {
   return (
     <div ref={containerRef} className="relative">
       {/* Avatar trigger — min 44x44 touch target per WCAG 2.5.5 */}
-      <button
-        type="button"
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={() => setOpen(!open)}
+        className="rounded-full shrink-0"
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label="Open user menu"
-        className={cn(
-          // Visual size is 32px, but outer touch target is 44px via padding
-          "flex h-11 w-11 items-center justify-center rounded-full",
-          "-m-1.5", // Negative margin to keep visual alignment
-          "hover:bg-muted/50 transition-colors duration-150",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-        )}
       >
         <span
           className={cn(
             "flex h-8 w-8 items-center justify-center rounded-full",
-            "bg-primary/15 text-primary border border-primary/20",
+            "bg-primary/10 text-primary border border-primary/20",
           )}
         >
-          {/* Placeholder avatar — will show real user photo when auth is wired */}
           <User size={14} aria-hidden="true" />
         </span>
-      </button>
+      </Button>
 
       {/* Dropdown */}
       <div

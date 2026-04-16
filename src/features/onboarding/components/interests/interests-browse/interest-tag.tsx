@@ -1,3 +1,4 @@
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
@@ -19,33 +20,51 @@ export function InterestTag({
   size = "md",
 }: InterestTagProps) {
   return (
-    <motion.button
-      type="button"
-      layout="position"
-      onClick={disabled && !selected ? undefined : onToggle}
-      whileTap={!disabled || selected ? { scale: 0.93 } : {}}
+    <Button
+      variant={selected ? "primary" : "outline"}
+      size={size === "sm" ? "xs" : "sm"}
+      asChild
+      disabled={disabled && !selected}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full font-sans font-medium transition duration-150 cursor-pointer select-none",
-        size === "sm" ? "px-2.5 py-1 text-xs" : "px-3 py-1.5 text-xs",
-        selected
-          ? "bg-forge-teal text-white shadow-[0_2px_8px_rgba(13,148,136,0.30)]"
-          : "bg-slate-100 text-slate-600 hover:bg-slate-200",
-        disabled &&
-          !selected &&
-          "opacity-35 cursor-not-allowed pointer-events-none",
+        "rounded-full h-auto py-1.5 px-3",
+        !selected &&
+          "bg-slate-100 text-slate-muted border-none hover:bg-slate-200",
       )}
     >
-      {selected && (
-        <motion.span
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0, opacity: 0 }}
-          transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <Check size={14} strokeWidth={2.5} />
-        </motion.span>
-      )}
-      {tag.label}
-    </motion.button>
+      <motion.button
+        layout
+        transition={
+          selected
+            ? { type: "spring", stiffness: 700, damping: 35 }
+            : { duration: 0 }
+        }
+        onClick={onToggle}
+        whileTap={!disabled || selected ? { scale: 0.93 } : {}}
+        className="active:scale-100"
+      >
+        <div className="flex items-center justify-center">
+          {/* Left Indicator (Checkmark) - Prevents text jumping */}
+          <div
+            className={cn(
+              "relative flex items-center justify-start overflow-hidden h-4 duration-200 ease-out",
+              selected ? "w-4" : "w-0",
+            )}
+          >
+            <Check
+              size={13}
+              strokeWidth={3}
+              className={cn(
+                "shrink-0 transition duration-200 ease-out",
+                selected
+                  ? "opacity-100 scale-100 translate-x-0"
+                  : "opacity-0 scale-50 -translate-x-2",
+              )}
+            />
+          </div>
+
+          <span className="shrink-0">{tag.label}</span>
+        </div>
+      </motion.button>
+    </Button>
   );
 }

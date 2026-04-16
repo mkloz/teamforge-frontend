@@ -50,10 +50,12 @@ const BRAND_TIPS = [
   "High-trust groups, low-friction entry.",
 ];
 
+import { useForgeStore } from "./store/forge-store";
+
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export function ForgePage() {
-  const [isWizardActive, setIsWizardActive] = useState(false);
+  const { isWizardActive, setIsWizardActive } = useForgeStore();
 
   // Tip rotation logic
   const [tipIndex, setTipIndex] = useState(0);

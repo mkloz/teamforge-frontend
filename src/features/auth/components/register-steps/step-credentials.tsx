@@ -115,14 +115,16 @@ export function StepCredentials({ onNext }: StepCredentialsProps) {
                   aria-invalid={!!formState.errors.password}
                   {...field}
                 />
-                <button
+                <Button
+                  variant="ghost"
+                  size="icon"
                   type="button"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-muted hover:text-forge-teal transition-colors"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-9 text-slate-muted hover:text-forge-teal"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
+                </Button>
               </div>
             </FormControl>
             {passwordValue?.length > 0 && (
@@ -156,30 +158,22 @@ export function StepCredentials({ onNext }: StepCredentialsProps) {
         )}
       />
 
-      <Button
-        type="button"
-        onClick={onNext}
-        className="w-full h-12 rounded-xl mt-2 text-sm sm:text-base font-semibold group transition-[transform,box-shadow,background-color] duration-200 active:scale-[0.98] shadow-lg shadow-forge-teal/20 hover:shadow-forge-teal/40 hover:-translate-y-0.5 bg-forge-teal text-white hover:bg-teal-500"
-      >
-        Continue
+      <Button type="button" onClick={onNext} size="lg" className="w-full mt-2">
+        Next step
         <ArrowRightAnimated />
       </Button>
 
       <div className="flex items-center gap-3">
         <div className="flex-1 h-px bg-border" />
         <span className="font-sans text-xs text-slate-muted font-medium">
-          or continue with
+          or use
         </span>
         <div className="flex-1 h-px bg-border" />
       </div>
 
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full h-12 rounded-xl border-border bg-white font-sans text-sm font-semibold text-ink flex items-center justify-center gap-2.5 hover:border-slate-muted hover:bg-slate-50 transition-colors duration-200 active:scale-[0.98] shadow-sm"
-      >
+      <Button type="button" variant="outline" size="lg" className="w-full">
         <GoogleIcon />
-        Google
+        Continue with Google
       </Button>
     </div>
   );

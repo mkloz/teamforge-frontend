@@ -18,8 +18,9 @@ export function PrimaryButton({
     <Button
       onClick={onClick}
       disabled={disabled}
+      variant="primary"
       size="lg"
-      className="w-full h-14 rounded-2xl font-bold group"
+      className="w-full h-14 rounded-2xl font-bold group shadow-button-primary/20"
     >
       <span className="relative z-10 flex items-center gap-2.5">
         {label}
@@ -38,9 +39,10 @@ export function ManualForgeButton({ onClick }: { onClick: () => void }) {
     <div className="space-y-4">
       <Button
         onClick={onClick}
+        variant="secondary"
         size="lg"
         aria-label="Forge this group"
-        className="w-full h-14 rounded-2xl font-bold bg-accent text-accent-foreground hover:bg-accent/90 shadow-2xl shadow-accent/20 hover:shadow-accent/40 group"
+        className="w-full h-14 rounded-2xl font-bold group shadow-button-secondary/30"
       >
         <Zap
           size={18}
@@ -59,9 +61,10 @@ export function AutoForgeButton({ onClick }: { onClick: () => void }) {
     <div className="space-y-4">
       <Button
         onClick={onClick}
+        variant="primary"
         size="lg"
         aria-label="Auto-forge with algorithm"
-        className="w-full h-14 rounded-2xl font-bold group"
+        className="w-full h-14 rounded-2xl font-bold group shadow-button-primary/20"
       >
         <Cpu
           size={18}
@@ -86,8 +89,9 @@ export function ReforgeButton({ onClick }: { onClick: () => void }) {
   return (
     <Button
       onClick={onClick}
+      variant="secondary"
       size="lg"
-      className="w-full h-14 rounded-2xl font-bold bg-accent text-accent-foreground hover:bg-accent/90 shadow-2xl shadow-accent/20 hover:shadow-accent/40 group"
+      className="w-full h-14 rounded-2xl font-bold group shadow-button-secondary/30"
     >
       <RefreshCw
         size={15}

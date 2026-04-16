@@ -115,9 +115,9 @@ export function GroupPanelContent({
           </h3>
           <Button
             variant="ghost"
-            size="icon"
+            size="icon-xs"
             onClick={onClose}
-            className="h-8 w-8 hover:bg-muted"
+            className="text-slate-muted hover:text-ink transition-colors"
             aria-label="Close panel"
           >
             <X size={16} />
@@ -151,10 +151,10 @@ export function GroupPanelContent({
             {currentUserRole === "ADMIN" && (
               <Button
                 variant="ghost"
-                size="icon"
+                size="icon-xs"
                 className={cn(
-                  "absolute z-30 transition-all",
-                  isMobile ? "top-4 right-14 h-9 w-9" : "top-3 right-4 h-8 w-8",
+                  "absolute z-30 transition-all p-0",
+                  isMobile ? "top-4 right-14 size-9" : "top-3 right-4",
                   "bg-black/20 hover:bg-black/40 backdrop-blur-sm text-white border-0 rounded-full",
                 )}
                 aria-label="Edit group settings"
@@ -167,9 +167,9 @@ export function GroupPanelContent({
               /* Mobile Close Button - Touch Optimized */
               <Button
                 variant="ghost"
-                size="icon"
+                size="icon-xs"
                 onClick={onClose}
-                className="absolute top-3 right-3 h-8 w-8 bg-black/20 hover:bg-black/40 backdrop-blur-sm text-white border-0 rounded-full"
+                className="absolute top-3 right-3 p-0 bg-black/20 hover:bg-black/40 backdrop-blur-sm text-white border-0 rounded-full"
                 aria-label="Close group panel"
               >
                 <X size={16} />

@@ -1,5 +1,5 @@
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
@@ -16,7 +16,6 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/shared/components/ui/input-otp";
-import { cn } from "@/shared/lib/utils";
 import type { RegisterValues } from "../../schemas/auth-schemas";
 
 interface StepOtpProps {
@@ -78,26 +77,9 @@ export function StepOtp({ onBack, loading }: StepOtpProps) {
         )}
       />
 
-      <Button
-        type="submit"
-        disabled={loading}
-        className={cn(
-          "w-full h-12 rounded-xl mt-4 text-sm sm:text-base font-semibold group transition-[transform,box-shadow,background-color] duration-200 active:scale-[0.98]",
-          !loading &&
-            "shadow-lg shadow-forge-teal/20 hover:shadow-forge-teal/40 hover:-translate-y-0.5 bg-forge-teal text-white hover:bg-teal-500",
-        )}
-      >
-        {loading ? (
-          <>
-            <Loader2 size={16} className="animate-spin mr-2" />
-            Forging your profile...
-          </>
-        ) : (
-          <>
-            Verify & Create
-            <ArrowRightAnimated />
-          </>
-        )}
+      <Button type="submit" loading={loading} size="lg" className="w-full mt-4">
+        I'm ready to forge
+        <ArrowRightAnimated />
       </Button>
 
       <Button
@@ -105,10 +87,11 @@ export function StepOtp({ onBack, loading }: StepOtpProps) {
         variant="ghost"
         disabled={loading}
         onClick={onBack}
-        className="flex items-center justify-center gap-1.5 font-sans text-sm font-medium text-slate-muted hover:text-ink hover:bg-transparent mt-2 border-0"
+        size="sm"
+        className="mt-2 text-slate-muted hover:text-ink hover:bg-transparent"
       >
         <ArrowLeft size={14} />
-        Back
+        Go back
       </Button>
     </div>
   );

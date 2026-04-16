@@ -1,5 +1,4 @@
 import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Target } from "lucide-react";
 import { fadeUpItem } from "../../../constants/motion";
@@ -36,8 +35,9 @@ export function ActionSection({
         <motion.div variants={fadeUpItem} className="w-full mb-3">
           <Button
             variant="outline"
+            size="sm"
             onClick={onAdjustLength}
-            className="w-full flex items-center justify-center gap-2 font-sans text-xs font-bold rounded-xl border-slate-200 text-slate-500 hover:bg-slate-50 transition-all h-11"
+            className="w-full"
           >
             <Target size={14} strokeWidth={2.5} />
             Adjust test depth
@@ -47,14 +47,10 @@ export function ActionSection({
 
       <motion.div variants={fadeUpItem} className="w-full pb-8">
         <Button
+          variant={upgradeConfig ? "secondary" : "primary"}
           size="lg"
           onClick={onContinue}
-          className={cn(
-            "w-full flex items-center justify-center gap-2 font-sans text-sm font-bold rounded-xl transition-all duration-200 active:scale-[0.98] h-14",
-            upgradeConfig
-              ? "bg-spark-amber text-white hover:bg-spark-amber/90 shadow-lg shadow-spark-amber/20"
-              : "bg-forge-teal text-white hover:bg-forge-teal/90 shadow-lg shadow-forge-teal/20",
-          )}
+          className="w-full"
         >
           {buttonLabel}
           {upgradeConfig ? (

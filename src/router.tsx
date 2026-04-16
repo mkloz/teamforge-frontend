@@ -47,6 +47,11 @@ const ForgePage = lazy(() =>
     default: m.ForgePage,
   })),
 );
+const DesignSystemPage = lazy(() =>
+  import("./features/design-system/design-system-page").then((m) => ({
+    default: m.DesignSystemPage,
+  })),
+);
 
 function LazyPage({
   component: Component,
@@ -144,6 +149,12 @@ const forgeRoute = createRoute({
   component: () => <LazyPage component={ForgePage} />,
 });
 
+const designSystemRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/design-system",
+  component: () => <LazyPage component={DesignSystemPage} />,
+});
+
 // ─── Route tree ───────────────────────────────────────────────────────────────
 
 const routeTree = rootRoute.addChildren([
@@ -152,6 +163,7 @@ const routeTree = rootRoute.addChildren([
   registerRoute,
   personalityRoute,
   interestsRoute,
+  designSystemRoute,
   appShellRoute.addChildren([
     homeRoute,
     exploreRoute,

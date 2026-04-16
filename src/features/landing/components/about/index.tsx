@@ -6,6 +6,7 @@ import {
 } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useRef, useState } from "react";
+import { Button } from "@/shared/components/ui/button";
 import { ABOUT_CARDS } from "./about-data";
 import { StackCard } from "./stack-card";
 
@@ -42,7 +43,7 @@ export function AboutSection() {
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-3xl md:text-5xl lg:text-6xl font-black leading-[1.1] text-ink text-balance font-sans italic tracking-tight"
+                className="text-3xl md:text-5xl lg:text-6xl font-black leading-[1.1] text-ink text-balance font-sans tracking-tight"
               >
                 Designed for the way humans{" "}
                 <span className="text-forge-teal">actually connect.</span>
@@ -85,20 +86,26 @@ export function AboutSection() {
           </div>
           <AnimatePresence>
             {isActive && (
-              <motion.button
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                onClick={() =>
-                  document
-                    .getElementById("cta")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
-                className="absolute bottom-8 right-8 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-slate-muted hover:text-ink hover:bg-white/10 hover:border-white/20 transition-all uppercase tracking-widest"
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="absolute bottom-8 right-8 z-50 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] h-9 px-4"
               >
-                Skip Section
-                <ChevronDown size={14} className="mt-0.5" />
-              </motion.button>
+                <motion.button
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  onClick={() =>
+                    document
+                      .getElementById("cta")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  Skip Section
+                  <ChevronDown size={14} className="mt-0.5" />
+                </motion.button>
+              </Button>
             )}
           </AnimatePresence>
         </div>

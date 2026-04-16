@@ -1,10 +1,8 @@
 import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
-import { useSwipeToReply } from "@/features/activity/hooks/use-swipe-to-reply";
 import type { UnifiedMessage } from "@/features/activity/types/chat.types";
 import { cn } from "@/shared/lib/utils";
-import { motion } from "framer-motion";
-import { Reply } from "lucide-react";
 import { memo } from "react";
+import { Button } from "@/shared/components/ui/button";
 import { MessageContent } from "./message-content";
 import { MessageFooter } from "./message-footer";
 import { MessageMedia } from "./message-media";
@@ -44,9 +42,6 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
   } = message;
   const isGroup = kind === "group";
 
-  // Gesture logic
-  const { x, opacity, scale, handleDragEnd } = useSwipeToReply(message, isOwn);
-
   // Layout logic
   const { reactionGroups, galleryRounding, isReadByOthers } = useMessageLayout({
     message,
@@ -55,46 +50,32 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
 
   return (
     <div className="relative group overflow-hidden">
-      {/* Swipe to reply icon */}
-      <motion.div
-        style={{ opacity, scale, x: isOwn ? -20 : 20 }}
+      <div
         className={cn(
-          "absolute top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 rounded-full bg-forge-teal/20 text-forge-teal",
-          isOwn ? "right-10" : "left-10",
-        )}
-      >
-        <Reply size={16} strokeWidth={2.5} />
-      </motion.div>
-
-      <motion.div
-        drag="x"
-        dragConstraints={{ left: isOwn ? -100 : 0, right: isOwn ? 0 : 100 }}
-        dragElastic={0.2}
-        onDragEnd={handleDragEnd}
-        style={{ x }}
-        className={cn(
-          "flex items-end gap-2 px-2 relative z-10",
+          "flex items-end gap-2 px-1 relative z-10",
           isOwn ? "justify-end" : "justify-start",
           showSender ? "mt-3" : "mt-0.5",
         )}
       >
         {/* Avatar */}
         {!isOwn && (
-          <div className="w-7 shrink-0">
+          <div className="w-6 md:w-7 shrink-0">
             {showAvatar && (
-              <button
+              <Button
+                variant="ghost"
+                size="icon-sm"
                 onClick={() =>
                   onAvatarClick?.(message.senderId, senderName, senderAvatar)
                 }
-                className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal rounded-full"
+                className="rounded-full shrink-0 h-auto w-auto p-0"
                 aria-label={`View ${senderName}'s profile`}
               >
                 <img
                   src={senderAvatar}
                   alt={senderName}
-                  className="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-border hover:scale-110 hover:ring-forge-teal/60 transition-all duration-200 cursor-pointer"
+                  className="w-6 h-6 md:w-7 md:h-7 rounded-full object-cover shrink-0 ring-1 ring-border group-hover:scale-105 transition-transform duration-200"
                 />
-              </button>
+              </Button>
             )}
           </div>
         )}
@@ -154,7 +135,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 });

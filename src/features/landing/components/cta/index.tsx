@@ -11,7 +11,7 @@ export function CtaSection() {
     <section
       id="cta"
       ref={sectionRef}
-      className="relative overflow-hidden py-28 md:py-40 bg-hero-bg"
+      className="relative overflow-hidden py-28 md:py-40 bg-hero-bg dark"
       aria-label="Get started with TeamForge"
     >
       <div
@@ -49,8 +49,8 @@ export function CtaSection() {
             <span className="text-forge-teal">group</span> to appear.
           </h2>
           <p className="font-sans text-lg leading-relaxed text-pretty max-w-xl mx-auto mb-12 text-text-dark-secondary">
-            Your personality, your interests, your people – forged into a group
-            made for you, in one tap.
+            Your personality and interests, intelligently assembled into a group
+            built to click. All in one button.
           </p>
         </motion.div>
         <motion.div
@@ -60,22 +60,15 @@ export function CtaSection() {
           transition={{ duration: 0.7, delay: 0.2 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6"
         >
-          <Button
-            asChild
-            className="group relative w-full sm:w-auto px-8 py-7 text-base overflow-hidden hover:bg-[#0f9e92] shadow-[0_0_24px_rgba(13,148,136,0.35)] hover:shadow-[0_0_40px_rgba(13,148,136,0.55)]"
-          >
+          <Button asChild size="hero" className="w-full sm:w-auto">
             <Link
               to="/auth/register"
               aria-label="Create your free TeamForge account"
             >
-              <span
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-[linear-gradient(105deg,transparent_30%,rgba(255,255,255,0.12)_50%,transparent_70%)] bg-size-[200%_100%]"
-                aria-hidden="true"
-              />
-              <span className="relative z-10">Create Free Account</span>
+              Create Free Account
               <ArrowRight
-                size={18}
-                className="relative z-10 transition-transform duration-200 group-hover:translate-x-1"
+                size={20}
+                className="ml-2 transition-transform duration-200 group-hover:translate-x-1"
                 aria-hidden="true"
               />
             </Link>
@@ -84,7 +77,8 @@ export function CtaSection() {
           <Button
             variant="outline"
             asChild
-            className="w-full sm:w-auto px-8 py-7 text-base text-text-dark-secondary bg-white/5 border-white/10 hover:text-white hover:border-white/15 hover:bg-white/10"
+            size="hero"
+            className="w-full sm:w-auto"
           >
             <a href="#how-it-works">See how it works</a>
           </Button>

@@ -2,6 +2,7 @@
 
 import { cn } from "@/shared/lib/utils";
 import { Check, Copy, Calendar, MapPin, Users, Zap } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
 
 // Mirror the preset gradient map from step5 so the cover thumbnail renders correctly
 const PRESET_GRADIENTS: Record<string, string> = {
@@ -47,8 +48,8 @@ export function Step6Invite({
             coverImage === "uploaded"
               ? "bg-primary/20"
               : gradientClass
-                ? `bg-gradient-to-br ${gradientClass}`
-                : "bg-gradient-to-br from-muted/60 to-muted/20",
+                ? `bg-linear-to-br ${gradientClass}`
+                : "bg-linear-to-br from-muted/60 to-muted/20",
           )}
         />
 
@@ -62,7 +63,7 @@ export function Step6Invite({
                 coverImage === "uploaded"
                   ? "bg-primary/15"
                   : gradientClass
-                    ? `bg-gradient-to-br ${gradientClass}`
+                    ? `bg-linear-to-br ${gradientClass}`
                     : "bg-muted",
               )}
             >
@@ -159,15 +160,16 @@ export function Step6Invite({
           <span className="flex-1 text-sm text-muted-foreground truncate font-mono">
             teamforge.app/join/grp_xk4j2m
           </span>
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onCopyLink}
             aria-label="Copy invite link"
             className={cn(
-              "flex items-center gap-1.5 h-8 px-3 rounded-xl text-xs font-semibold transition-colors duration-200 shrink-0",
+              "flex items-center gap-1.5 h-8 px-3 rounded-xl text-xs font-semibold shrink-0 transition-all active:scale-95",
               inviteCopied
-                ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
-                : "bg-muted text-foreground hover:bg-primary/10 hover:text-primary",
+                ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20 hover:bg-primary/90"
+                : "bg-muted text-ink hover:bg-primary/10 hover:text-primary",
             )}
           >
             {inviteCopied ? (
@@ -181,7 +183,7 @@ export function Step6Invite({
                 Copy
               </>
             )}
-          </button>
+          </Button>
         </div>
       </div>
 

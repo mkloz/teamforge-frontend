@@ -4,7 +4,7 @@ import { createDimensionScores } from "../lib/profile-utils";
 export const MOCK_PROFILE: UserProfile = {
   id: "user-self",
   avatar:
-    "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex&backgroundColor=b6e3f4",
+    "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
   name: "Alex Johnson",
   age: 28,
   location: "Portland, OR",
@@ -48,7 +48,7 @@ export const MOCK_PROFILE: UserProfile = {
 export const MOCK_PROFILE_INTJ: UserProfile = {
   id: "user-intj",
   avatar:
-    "https://api.dicebear.com/7.x/avataaars/svg?seed=Morgan&backgroundColor=c0aede",
+    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
   name: "Morgan Chen",
   age: 32,
   location: "Seattle, WA",

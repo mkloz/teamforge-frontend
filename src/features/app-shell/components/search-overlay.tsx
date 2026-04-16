@@ -1,3 +1,4 @@
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { Clock, Search, TrendingUp, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -87,14 +88,15 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
           )}
           aria-label="Search"
         />
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={onClose}
           aria-label="Close search"
-          className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="h-9 w-9 rounded-xl text-muted-foreground shrink-0"
         >
           <X size={18} aria-hidden="true" />
-        </button>
+        </Button>
       </div>
 
       {/* Results / placeholder area */}
@@ -116,19 +118,15 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {RECENT_SEARCHES.map((term) => (
-                    <button
+                    <Button
                       key={term}
-                      type="button"
+                      variant="ghost"
+                      size="xs"
                       onClick={() => setQuery(term)}
-                      className={cn(
-                        "px-3 py-1.5 rounded-full text-sm",
-                        "bg-secondary text-secondary-foreground",
-                        "hover:bg-primary/15 hover:text-primary transition-colors",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                      )}
+                      className="rounded-full bg-secondary/80 text-secondary-foreground hover:bg-primary/20 hover:text-primary transition-all active:scale-95"
                     >
                       {term}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </section>
@@ -146,26 +144,21 @@ export function SearchOverlay({ open, onClose }: SearchOverlayProps) {
                   Trending Activities
                 </h3>
               </div>
-              <div className="grid gap-2">
+              <div className="grid gap-3">
                 {TRENDING_ACTIVITIES.map((activity) => (
-                  <button
+                  <Button
                     key={activity.label}
-                    type="button"
+                    variant="outline"
                     onClick={() => setQuery(activity.label)}
-                    className={cn(
-                      "flex items-center justify-between px-4 py-3 rounded-xl text-left",
-                      "bg-card border border-border",
-                      "hover:border-primary/30 hover:bg-card/80 transition-colors",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                    )}
+                    className="flex items-center justify-between h-auto px-4 py-3.5 rounded-2xl text-left border-border/60 bg-card hover:border-primary/30 transition-all hover:bg-card active:scale-[0.99]"
                   >
-                    <span className="text-sm font-medium text-foreground">
+                    <span className="text-sm font-semibold text-foreground">
                       {activity.label}
                     </span>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-muted-foreground opacity-70">
                       {activity.category}
                     </span>
-                  </button>
+                  </Button>
                 ))}
               </div>
             </section>

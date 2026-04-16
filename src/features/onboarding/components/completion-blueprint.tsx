@@ -1,3 +1,4 @@
+import { Button } from "@/shared/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, Database, Fingerprint } from "lucide-react";
 import { VoronoiCatalyst } from "../../auth/components/voronoi-catalyst";
@@ -58,8 +59,7 @@ export function CompletionBlueprint({
     >
       {/* Immersive Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute inset-0 bg-radial-[at_50%_50%] from-forge-teal/10 via-transparent to-transparent opacity-50" />
-        <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 opacity-40">
           <VoronoiCatalyst progress={1} />
         </div>
         {/* Subtle Scanlines */}
@@ -76,10 +76,10 @@ export function CompletionBlueprint({
         <motion.div variants={fadeUp} className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-forge-teal/10 border border-forge-teal/20 text-forge-teal text-[10px] font-bold uppercase tracking-[0.3em] mb-4">
             <Database size={12} />
-            Profile Synced
+            Profile Created
           </div>
           <h1 className="font-sans text-4xl font-extrabold text-white tracking-tight leading-tight">
-            Identity <span className="text-forge-teal">Forged</span>
+            Welcome to <span className="text-forge-teal">TeamForge</span>
           </h1>
         </motion.div>
 
@@ -118,7 +118,7 @@ export function CompletionBlueprint({
             <div className="flex-1 p-8 pt-4 flex flex-col gap-8">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <p className="font-sans text-[9px] font-bold uppercase tracking-widest text-white/30">
+                  <p className="font-sans text-[9px] font-bold uppercase tracking-widest text-white/50">
                     Interests Map
                   </p>
                   <p className="font-sans text-2xl font-bold text-white">
@@ -129,7 +129,7 @@ export function CompletionBlueprint({
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="font-sans text-[9px] font-bold uppercase tracking-widest text-white/30">
+                  <p className="font-sans text-[9px] font-bold uppercase tracking-widest text-white/50">
                     Trust Rating
                   </p>
                   <div className="flex items-center gap-1.5 pt-1">
@@ -152,22 +152,18 @@ export function CompletionBlueprint({
           variants={fadeUp}
           className="w-full mt-12 flex flex-col items-center"
         >
-          <button
+          <Button
+            variant="primary"
+            size="hero"
+            className="w-full"
             onClick={onEnter}
-            className="group relative w-full h-14 overflow-hidden rounded-2xl transition-all duration-300 active:scale-[0.98]"
           >
-            {/* Button Background with Hover Effect */}
-            <div className="absolute inset-0 bg-forge-teal transition-transform duration-500 group-hover:scale-105" />
-            <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent,rgba(255,255,255,0.1),transparent)] -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-
-            <span className="relative z-10 font-sans font-bold text-white flex items-center justify-center gap-3">
-              Enter TeamForge
-              <ArrowRight
-                size={20}
-                className="transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </span>
-          </button>
+            Enter
+            <ArrowRight
+              size={20}
+              className="transition-transform duration-300 group-hover:translate-x-1"
+            />
+          </Button>
 
           <p className="mt-6 font-sans text-[10px] text-white/30 font-medium uppercase tracking-widest text-center max-w-50 leading-relaxed">
             Finding your people, intelligently.

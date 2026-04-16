@@ -9,6 +9,7 @@ import {
 } from "framer-motion";
 import { useRef, useState, useEffect, useCallback } from "react";
 import { ChevronDown } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
 import { STEPS } from "./how-it-works-data";
 import { ContentStep } from "./content-step";
 import { VoronoiLogo } from "./voronoi-logo";
@@ -146,20 +147,26 @@ export function HowItWorksSection() {
 
           <AnimatePresence>
             {isActive && (
-              <motion.button
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                onClick={() =>
-                  document
-                    .getElementById("algorithm")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
-                className="absolute bottom-8 right-8 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-slate-muted hover:text-ink hover:bg-white/10 hover:border-white/20 transition-all uppercase tracking-widest"
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="absolute bottom-8 right-8 z-50 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] h-9 px-4"
               >
-                Skip Section
-                <ChevronDown size={14} className="mt-0.5" />
-              </motion.button>
+                <motion.button
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  onClick={() =>
+                    document
+                      .getElementById("algorithm")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  Skip Section
+                  <ChevronDown size={14} className="mt-0.5" />
+                </motion.button>
+              </Button>
             )}
           </AnimatePresence>
         </div>

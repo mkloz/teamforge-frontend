@@ -245,7 +245,7 @@ export const ChatStatusBar = memo(function ChatStatusBar({
         // Single-row, compact but consistent height
         // pl-4 reserves space for the dot indicator column (w-3.5 absolute)
         "relative flex items-center gap-2 pl-4 pr-2 py-1.5 min-h-0",
-        "w-full shrink-0 z-10",
+        "w-full shrink-0 z-90",
         "border-b border-border/50",
         "bg-canvas dark:bg-canvas",
         "cursor-pointer select-none group",

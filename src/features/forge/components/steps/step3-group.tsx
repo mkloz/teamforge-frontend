@@ -3,6 +3,7 @@
 import { GroupIdentityFields } from "@/features/forge/components/group-identity-fields";
 import { cn } from "@/shared/lib/utils";
 import * as RadixSlider from "@radix-ui/react-slider";
+import { Button } from "@/shared/components/ui/button";
 import {
   AlertCircle,
   ChevronDown,
@@ -334,28 +335,33 @@ export function Step3Group({
 
             {/* Collapsible Algorithm Tuning — collapsed by default */}
             <div className="rounded-xl border overflow-hidden">
-              <button
-                type="button"
-                onClick={() => setAlgorithmsExpanded((v) => !v)}
-                className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/10 transition-colors"
+              <Button
+                variant="ghost"
+                asChild
+                className="w-full h-auto flex items-center justify-between px-4 py-3 rounded-none hover:bg-muted/10 transition-colors"
               >
-                <div className="text-left space-y-0.5">
-                  <p className="text-xs font-semibold text-foreground">
-                    Algorithm tuning
-                  </p>
-                  <p className="text-xs text-muted-foreground/70">
-                    Match: {compatibilityWeight}% · Diversity: {diversityWeight}
-                    %
-                  </p>
-                </div>
-                <ChevronDown
-                  size={15}
-                  className={cn(
-                    "text-muted-foreground/40 transition-transform duration-300",
-                    algorithmsExpanded ? "rotate-180" : "",
-                  )}
-                />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setAlgorithmsExpanded((v) => !v)}
+                >
+                  <div className="text-left space-y-0.5">
+                    <p className="text-xs font-semibold text-foreground">
+                      Algorithm tuning
+                    </p>
+                    <p className="text-xs text-muted-foreground/70">
+                      Match: {compatibilityWeight}% · Diversity:{" "}
+                      {diversityWeight}%
+                    </p>
+                  </div>
+                  <ChevronDown
+                    size={15}
+                    className={cn(
+                      "text-muted-foreground/40 transition-transform duration-300",
+                      algorithmsExpanded ? "rotate-180" : "",
+                    )}
+                  />
+                </button>
+              </Button>
 
               {algorithmsExpanded && (
                 <div className="px-4 pb-4 space-y-5 border-t border-muted/15 pt-4 animate-in fade-in slide-in-from-top-2 duration-300">

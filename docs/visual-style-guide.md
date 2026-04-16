@@ -117,14 +117,13 @@ This applies to all section content. Never break this to `max-w-none` for text c
 
 Consistent rounding is one of the primary signals of the brand's "Structured Warmth" aesthetic.
 
-| Context                    | Radius  | Tailwind class |
-| -------------------------- | ------- | -------------- |
-| Page cards / section cards | 16px    | `rounded-2xl`  |
-| Buttons                    | 10–12px | `rounded-xl`   |
-| Input fields               | 10px    | `rounded-xl`   |
-| Tag pills / badges         | Full    | `rounded-full` |
-| Avatar images              | Full    | `rounded-full` |
-| Modal / large overlay      | 20px    | `rounded-3xl`  |
+| Context                    | Radius | Tailwind class |
+| -------------------------- | ------ | -------------- |
+| Page cards / section cards | 16px   | `rounded-2xl`  |
+| Input fields               | 10px   | `rounded-xl`   |
+| Tag pills / badges         | Full   | `rounded-full` |
+| Avatar images              | Full   | `rounded-full` |
+| Modal / large overlay      | 20px   | `rounded-3xl`  |
 
 **Never use sharp corners** (i.e., `rounded-none`) on user-facing cards, buttons, or inputs. Sharp corners communicate coldness. Fully circular containers (`rounded-full`) are reserved for avatars and pill badges only.
 
@@ -215,12 +214,12 @@ All scroll-triggered entrances use **fade-up** (`opacity: 0 → 1`, `translateY:
 
 ### Interaction Animations
 
-| Interaction | Animation |
+| Interaction      | Animation                                             |
 | ---------------- | ----------------------------------------------------- |
-| Button hover | Scale 1.02, shadow intensify, 150ms ease |
-| Card hover | Border color → Teal, shadow → teal-tinted, 200ms ease |
-| Tag/pill select | Scale 0.95 then 1.0, background → Teal, 150ms ease |
-| Navigation hover | Underline slide-in from left, Teal, 200ms ease |
+| Button hover     | Scale 1.02, shadow intensify, 150ms ease              |
+| Card hover       | Border color → Teal, shadow → teal-tinted, 200ms ease |
+| Tag/pill select  | Scale 0.95 then 1.0, background → Teal, 150ms ease    |
+| Navigation hover | Underline slide-in from left, Teal, 200ms ease        |
 
 ### Background Animations
 
@@ -250,54 +249,40 @@ All animations must respect the `prefers-reduced-motion` media query:
 
 ## 10. Component Patterns
 
-### Primary Button
-
-```
-Forge Teal background (#0D9488)
-White text, 14–16px / SemiBold
-Height: 44–52px
-Padding: 0 24px
-Border-radius: rounded-xl (10–12px)
-On dark: add teal glow shadow
-On hover: scale(1.02), intensify shadow
-```
-
-### Ghost Button
-
-```
-Transparent background
-Teal text (or white on dark)
-1px Teal border (or white/30% on dark)
-Same sizing as primary
-On hover: Teal fill, white text transition
 ```
 
 ### Tag / Interest Pill
 
 ```
+
 Resting: Slate/8% background, Slate text, rounded-full
 Selected: Forge Teal background, white text, rounded-full
 Height: 28–32px, Padding: 0 12px
 Font: 12px / Medium
+
 ```
 
 ### MBTI Badge
 
 ```
+
 Forge Teal background
 White text, 11px / Bold / Uppercase
 Rounded-full
 Padding: 2px 8px
+
 ```
 
 ### Trust Score Ring
 
 ```
+
 Outer ring track: Slate at 20% opacity
 Fill ring: Forge Teal
 Center value: Spark Amber text, font-bold
 Ring size: 48–64px
 SVG stroke-linecap: round
+
 ```
 
 ---
@@ -323,3 +308,4 @@ SVG stroke-linecap: round
 ---
 
 _For brand concept, mission, values, and logo usage rules — see `brand-overview.md`._
+```

@@ -207,7 +207,7 @@ export function LengthSelector({
           variant="ghost"
           size="sm"
           onClick={onBack}
-          className="flex items-center gap-1.5 font-sans text-xs font-medium mb-2 w-fit text-slate-400 hover:text-slate-600 px-0 hover:bg-transparent border-0 focus:ring-0 focus:outline-none focus:bg-transparent"
+          className="text-slate-400 hover:text-slate-600 px-0 hover:bg-transparent"
         >
           <ArrowLeft size={14} strokeWidth={2} />
           {isAdjust ? "Return to break" : "Back"}
@@ -252,16 +252,16 @@ export function LengthSelector({
 
       <motion.div variants={fadeUpItem} className="flex justify-center">
         <Button
-          size="lg"
+          size="hero"
           onClick={() => onBegin(selected)}
-          className="w-full sm:w-auto min-w-50 h-14 rounded-xl text-base font-bold bg-forge-teal hover:bg-forge-teal/90 shadow-lg shadow-forge-teal/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+          className="w-full sm:w-auto min-w-50"
         >
           {isAdjust
             ? isSelectedComplete
               ? "Complete & View Results"
               : "Confirm & Continue"
             : "Begin assessment"}
-          <ArrowRight className="ml-2" size={18} strokeWidth={2.5} />
+          <ArrowRight size={18} strokeWidth={2.5} />
         </Button>
       </motion.div>
     </motion.div>

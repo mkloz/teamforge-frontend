@@ -3,7 +3,7 @@ import { TeamForgeLogo } from "../../../../assets/logo";
 export function Footer() {
   return (
     <footer
-      className="bg-hero-bg py-5 border-t border-white/5"
+      className="bg-hero-bg py-5 border-t border-white/5 dark"
       aria-label="Site footer"
     >
       <div className="max-w-6xl mx-auto px-6">

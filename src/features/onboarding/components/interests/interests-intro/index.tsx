@@ -91,7 +91,7 @@ export function InterestsIntro({ onStart }: InterestsIntroProps) {
         <Button
           size="lg"
           onClick={onStart}
-          className="w-full flex items-center justify-center gap-2 font-sans text-sm font-semibold rounded-xl bg-forge-teal text-white hover:bg-forge-teal/90 shadow-lg shadow-forge-teal/20 transition-all duration-200 active:scale-[0.98] h-12"
+          className="w-full flex items-center justify-center gap-2"
         >
           Let&apos;s pick your interests
           <ArrowRight size={16} strokeWidth={2.5} />

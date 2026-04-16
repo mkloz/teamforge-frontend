@@ -66,10 +66,10 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
             {LABELS[point] && (
               <span
                 className={cn(
-                  "font-sans leading-tight text-xs transition-colors duration-200 max-w-full",
+                  "text-xs transition-colors duration-200 max-w-full",
                   value === point
-                    ? "text-forge-teal font-black"
-                    : "text-slate-500 font-medium",
+                    ? "text-forge-teal font-bold"
+                    : "text-slate-500 font-semibold",
                 )}
               >
                 {LABELS[point]}

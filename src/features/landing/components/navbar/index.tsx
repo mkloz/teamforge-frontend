@@ -7,8 +7,8 @@ import { useEffect, useRef, useState } from "react";
 import { TeamForgeLogo } from "../../../../assets/logo";
 
 const NAV_LINKS = [
+  { label: "Home", href: "#hero" },
   { label: "How It Works", href: "#how-it-works" },
-  { label: "Features", href: "#features" },
   { label: "The Algorithm", href: "#algorithm" },
   { label: "About", href: "#about" },
 ];
@@ -82,7 +82,7 @@ export function Navbar() {
     <>
       <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-150",
+          "fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-150 dark",
           scrolled
             ? "bg-hero-bg/95 backdrop-blur-md border-b border-white/5"
             : "bg-transparent",
@@ -123,33 +123,31 @@ export function Navbar() {
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <Button
-              variant="outline"
-              asChild
-              className="border-white/20 text-text-dark-secondary hover:bg-white/10 hover:text-white hover:border-white/40 bg-transparent px-4 py-2"
-            >
+            <Button variant="outline" asChild size="sm">
               <Link to="/auth/login">Log In</Link>
             </Button>
-            <Button variant="default" asChild className="px-5 py-2">
+            <Button variant="primary" asChild size="sm">
               <Link to="/auth/register">Get Started</Link>
             </Button>
           </div>
 
-          <button
-            className="md:hidden text-text-dark-secondary hover:text-white p-2 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal"
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden text-text-dark-secondary hover:text-white"
             onClick={() => setMenuOpen((v) => !v)}
             aria-expanded={menuOpen}
             aria-label="Toggle menu"
           >
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
+          </Button>
         </div>
       </header>
 
       <div
         ref={menuRef}
         className={cn(
-          "fixed inset-0 z-40 bg-hero-bg/98 backdrop-blur-lg flex flex-col items-center justify-center gap-8 transition-opacity duration-150",
+          "fixed inset-0 z-40 bg-hero-bg/98 backdrop-blur-lg flex flex-col items-center justify-center gap-8 transition-opacity duration-150 dark",
           menuOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none",
@@ -163,12 +161,18 @@ export function Navbar() {
           className="flex flex-col items-center gap-6"
           aria-label="Mobile navigation links"
         >
-          {NAV_LINKS.map((link) => (
+          {NAV_LINKS.map((link, i) => (
             <a
               key={link.href}
               href={link.href}
               onClick={(e) => handleNavClick(e, link.href)}
-              className="font-sans text-2xl font-semibold text-text-dark-secondary hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-4 rounded-md px-4 py-2"
+              className={cn(
+                "font-sans text-2xl font-semibold text-text-dark-secondary hover:text-white transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-4 rounded-md px-4 py-2",
+                menuOpen
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4",
+              )}
+              style={{ transitionDelay: `${i * 100}ms` }}
             >
               {link.label}
             </a>
@@ -178,16 +182,28 @@ export function Navbar() {
           <Button
             variant="outline"
             asChild
-            className="w-full border-white/20 text-white hover:bg-white/10 hover:border-white/40 bg-transparent text-base focus-visible:ring-offset-hero-bg"
+            size="lg"
+            className={cn(
+              "w-full bg-transparent transition-all duration-300 delay-300",
+              menuOpen
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4",
+            )}
           >
             <Link to="/auth/login" onClick={() => setMenuOpen(false)}>
               Log In
             </Link>
           </Button>
           <Button
-            variant="default"
+            variant="primary"
             asChild
-            className="w-full text-base py-6 focus-visible:ring-offset-hero-bg"
+            size="lg"
+            className={cn(
+              "w-full py-6 transition-all duration-300 delay-400",
+              menuOpen
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4",
+            )}
           >
             <Link to="/auth/register" onClick={() => setMenuOpen(false)}>
               Get Started

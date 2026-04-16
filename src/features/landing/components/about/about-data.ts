@@ -18,7 +18,7 @@ export const ABOUT_CARDS: AboutCard[] = [
     id: 2,
     title: "The Goal",
     description:
-      "We wanted something different – a system that understands your personality, knows your interests, respects your social circle, and hands you a ready-made compatible group in seconds. So we built TeamForge. The system suggests, you show up.",
+      "We wanted a system that understands your personality, interests, and social circle, then connects you with a compatible group in seconds. TeamForge suggests, you show up.",
     variant: "default",
   },
   {

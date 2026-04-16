@@ -6,10 +6,11 @@ import { useRef, useState } from "react";
 
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
-import { AUTH_TYPING_EVENT } from "./constants/voronoi.constants";
+import { Button } from "@/shared/components/ui/button";
 import { LoginForm } from "./components/login-form";
 import { RegisterForm } from "./components/register-form";
 import { VoronoiCatalyst } from "./components/voronoi-catalyst";
+import { AUTH_TYPING_EVENT } from "./constants/voronoi.constants";
 
 type AuthView = "login" | "register";
 
@@ -36,16 +37,20 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
     <div className="h-screen w-full max-h-dvh flex flex-col lg:flex-row relative overflow-hidden">
       {/* Top Header Strip with Back Link */}
       <div className="absolute top-0 left-0 right-0 h-16 lg:h-24 flex items-center px-4 lg:px-10 z-30 pointer-events-none">
-        <Link
-          to="/"
-          className="pointer-events-auto flex items-center gap-1.5 font-sans text-xs sm:text-sm font-medium transition-all group lg:bg-canvas lg:hover:bg-white lg:border lg:border-border lg:px-5 lg:py-2.5 lg:rounded-full text-slate-muted hover:text-ink lg:shadow-sm lg:hover:shadow-md py-2 px-1"
+        <Button
+          variant="ghost"
+          asChild
+          size="sm"
+          className="pointer-events-auto rounded-full bg-canvas/10 backdrop-blur-sm border border-ink/5 text-primary-foreground hover:text-ink hover:bg-white hover:border-ink/10 hover:shadow-sm h-9 px-4 transition-all group"
         >
-          <ArrowLeft
-            size={14}
-            className="transition-transform group-hover:-translate-x-1 sm:w-4 sm:h-4"
-          />
-          <span>Back to teamforge.app</span>
-        </Link>
+          <Link to="/" className="flex items-center gap-2">
+            <ArrowLeft
+              size={16}
+              className="transition-transform duration-300 ease-out group-hover:-translate-x-1"
+            />
+            <span className="text-xs font-medium">Back home</span>
+          </Link>
+        </Button>
       </div>
 
       {/* Left half screen animation space */}

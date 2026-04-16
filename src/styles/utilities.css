@@ -17,6 +17,35 @@
   .disable-transitions * {
     transition: none !important;
   }
+
+  /* Flagship Button Utilities */
+  .btn-hull {
+    @apply relative border border-white/10 shadow-[0_4px_14px_0_rgba(13,148,136,0.39)] ring-1 ring-forge-teal dark:shadow-none;
+  }
+
+  /* Inner light spill for that premium 'glass' inset look */
+  .btn-light-spill::before {
+    content: "";
+    @apply pointer-events-none absolute inset-px rounded-[inherit] border-t border-white/30 border-x;
+  }
+
+  .btn-sweep-container {
+    @apply relative overflow-hidden;
+  }
+
+  .btn-sweep-container::after {
+    content: "";
+    @apply pointer-events-none absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/20 to-transparent transition-transform duration-500;
+  }
+
+  .btn-sweep-container:hover::after {
+    @apply translate-x-full;
+  }
+
+  /* 3D Press effect for Spark Variant */
+  .btn-3d {
+    @apply shadow-[0_8px_0_#D97706,0_15px_25px_rgba(245,158,11,0.35)] transition-all duration-150 active:translate-y-1.5 active:shadow-[0_2px_0_#D97706,0_5px_10px_rgba(245,158,11,0.2)];
+  }
 }
 
 /* Custom scrollbar for webkit browsers - theme responsive */

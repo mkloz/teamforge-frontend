@@ -37,7 +37,7 @@ export function CategorySection({
       id={`category-${category.id}`}
       className="scroll-m-28 border-none"
     >
-      <AccordionTrigger className="hover:no-underline py-4 group">
+      <AccordionTrigger className="hover:no-underline py-4 group  rounded-lg px-2 -mx-2 transition-all focus-visible:underline focus-visible:text-forge-teal">
         <div className="flex items-center gap-3">
           <div
             className={cn(
@@ -45,7 +45,7 @@ export function CategorySection({
               category.color,
             )}
           />
-          <span className="font-sans text-sm font-bold text-ink group-hover:text-forge-teal transition-colors">
+          <span className="font-sans text-sm font-bold group-hover:text-forge-teal transition-colors">
             {category.label}
           </span>
         </div>
@@ -63,7 +63,7 @@ export function CategorySection({
       <AccordionContent>
         <div className="pb-6 flex flex-col gap-4">
           {/* Subcategory chips */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 p-1.5">
             {category.subcategories.map((sub) => {
               const expanded = expandedSubcategories.has(sub.id);
               const selectedInSub = sub.tags.filter((t) =>
@@ -98,7 +98,7 @@ export function CategorySection({
                       {sub.label}
                     </span>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 p-1.5">
                     {sub.tags.map((tag) => (
                       <TagPill
                         key={tag.id}

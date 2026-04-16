@@ -11,7 +11,7 @@ export function AlgorithmSection() {
     <section
       id="algorithm"
       ref={ref}
-      className="relative bg-hero-bg py-24 md:py-36 overflow-hidden"
+      className="relative bg-hero-bg py-24 md:py-36 overflow-hidden dark"
       aria-label="How The Algorithm Works"
     >
       <div className="absolute inset-0 z-0">
@@ -38,12 +38,12 @@ export function AlgorithmSection() {
             Under The Hood
           </p>
           <h2 className="font-sans font-extrabold text-white text-balance mx-auto max-w-2xl leading-tight text-[clamp(1.85rem,4.5vw,2.75rem)]">
-            See the architecture of your{" "}
-            <span className="text-forge-teal">next connection.</span>
+            How we forge your{" "}
+            <span className="text-forge-teal">next group.</span>
           </h2>
           <p className="font-sans text-base md:text-lg text-text-dark-secondary mt-5 max-w-xl mx-auto leading-relaxed text-pretty">
-            We analyze shared values, unique personalities, and social proximity
-            to create a group that feels effortless from the first hello.
+            We analyze values, personality, and social proximity to build groups
+            where real-world connection feels natural from the start.
           </p>
         </div>
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">

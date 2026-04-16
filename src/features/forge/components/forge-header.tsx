@@ -1,4 +1,5 @@
 import { X, ChevronLeft, Check, Zap } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import type { ForgeResult } from "../types/forge.types";
 
@@ -35,14 +36,15 @@ export function ForgeHeader({
     <div className="flex items-center justify-between px-6 md:px-10 pt-10 md:pt-8 pb-4">
       <div className="flex items-center gap-3">
         {canGoBack ? (
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onBack}
             aria-label="Go back"
-            className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted transition-colors shrink-0"
+            className="size-8 p-0 rounded-full text-slate-muted hover:text-ink shrink-0"
           >
             <ChevronLeft size={18} />
-          </button>
+          </Button>
         ) : (
           <div
             className={cn(
@@ -77,14 +79,15 @@ export function ForgeHeader({
         </div>
       </div>
 
-      <button
-        type="button"
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={onClose}
         aria-label="Close"
-        className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-muted transition-colors text-muted-foreground shrink-0"
+        className="size-8 p-0 rounded-full text-slate-muted hover:text-ink shrink-0"
       >
         <X size={16} />
-      </button>
+      </Button>
     </div>
   );
 }

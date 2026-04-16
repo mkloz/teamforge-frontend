@@ -1,5 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 import { Check, RefreshCw, UserMinus, UserPlus } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
 
 export interface Step4SuccessProps {
   planName: string;
@@ -139,23 +140,25 @@ export function Step4Success({
                   </div>
                 </div>
                 {removed ? (
-                  <button
-                    type="button"
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => onRestoreParticipant(p.id)}
                     aria-label={`Restore ${p.name}`}
-                    className="w-8 h-8 rounded-xl flex items-center justify-center text-emerald-600 bg-emerald-500/10 md:opacity-0 md:bg-transparent md:text-muted-foreground md:group-hover:opacity-100 md:hover:bg-emerald-500/10 md:hover:text-emerald-600 transition duration-200"
+                    className="size-8 rounded-xl text-emerald-600 bg-emerald-500/10 md:opacity-0 md:group-hover:opacity-100 hover:bg-emerald-500/10 hover:text-emerald-600 transition-opacity"
                   >
                     <UserPlus size={14} />
-                  </button>
+                  </Button>
                 ) : (
-                  <button
-                    type="button"
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => onRemoveParticipant(p.id)}
                     aria-label={`Remove ${p.name}`}
-                    className="w-8 h-8 rounded-xl flex items-center justify-center text-destructive/60 bg-destructive/8 md:opacity-0 md:bg-transparent md:text-muted-foreground md:group-hover:opacity-100 md:hover:bg-destructive/10 md:hover:text-destructive transition duration-200"
+                    className="size-8 rounded-xl text-destructive/60 bg-destructive/8 md:opacity-0 md:group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-opacity"
                   >
                     <UserMinus size={14} />
-                  </button>
+                  </Button>
                 )}
               </div>
             );
@@ -164,14 +167,14 @@ export function Step4Success({
 
         {/* Recalculate CTA */}
         {removedIds.size > 0 && (
-          <button
-            type="button"
+          <Button
+            variant="outline"
             onClick={onReforge}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-dashed border-accent/30 bg-accent/5 text-accent text-sm font-semibold hover:bg-accent/10 transition-colors duration-200 animate-in zoom-in-95"
+            className="w-full py-6 rounded-2xl border-dashed border-accent/30 bg-accent/5 text-accent font-semibold hover:bg-accent/10 shadow-none hover:shadow-none animate-in zoom-in-95"
           >
             <RefreshCw size={15} />
             Recalculate optimal balance
-          </button>
+          </Button>
         )}
       </div>
 

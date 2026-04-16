@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 import { memo } from "react";
+import { Button } from "@/shared/components/ui/button";
 
 export interface ReactionGroup {
   emoji: string;
@@ -38,12 +39,14 @@ export const MessageReactions = memo(function MessageReactions({
         {reactions.map((reaction) => (
           <Tooltip key={reaction.emoji}>
             <TooltipTrigger asChild>
-              <button
+              <Button
+                variant={reaction.isActive ? "primary" : "subtle"}
+                size="xs"
                 className={cn(
-                  "flex items-center gap-1 px-1.5 py-0.5 rounded-full border text-micro font-bold transition hover:scale-105 active:scale-95",
+                  "h-auto py-0.5 px-1.5 rounded-full border text-micro font-bold transition-all",
                   reaction.isActive
                     ? "bg-forge-teal/10 border-forge-teal/20 text-forge-teal shadow-[0_2px_8px_-2px_rgba(13,148,136,0.2)]"
-                    : "bg-white/10 dark:bg-black/10 border-white/10 dark:border-white/5 text-slate-muted hover:border-slate-muted/20",
+                    : "border-transparent",
                 )}
               >
                 <span className="text-xs leading-none">{reaction.emoji}</span>
@@ -52,7 +55,7 @@ export const MessageReactions = memo(function MessageReactions({
                     {reaction.count}
                   </span>
                 )}
-              </button>
+              </Button>
             </TooltipTrigger>
             <TooltipContent
               side="top"

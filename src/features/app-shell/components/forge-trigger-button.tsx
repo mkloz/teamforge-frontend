@@ -1,3 +1,4 @@
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import {
   Tooltip,
@@ -24,33 +25,24 @@ export function ForgeTriggerButton({
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <button
-              type="button"
+            <Button
+              variant="secondary"
               onClick={onClick}
               aria-label="Forge a new group"
               className={cn(
-                // Raised amber circle sitting above bottom nav
-                "relative flex h-14 w-14 items-center justify-center rounded-full",
-                "bg-accent text-accent-foreground",
-                "shadow-amber-glow",
-                "transition duration-150 active:scale-95",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2",
+                // Floating amber circle with flagship mechanical physics
+                "h-14 w-14 rounded-full shadow-amber-glow",
                 "motion-safe:animate-[pulse-glow-amber_2.5s_ease-in-out_1]",
-                "motion-safe:hover:scale-105 hover:shadow-[0_6px_32px_rgba(245,158,11,0.7)]",
+                "hover:shadow-[0_8px_32px_rgba(245,158,11,0.65)]",
                 className,
               )}
             >
-              {/* Inner highlight */}
-              <span
-                className="absolute inset-0 rounded-full bg-linear-to-b from-white/20 to-transparent pointer-events-none"
-                aria-hidden="true"
-              />
               <Zap
                 size={22}
                 aria-hidden="true"
                 className="fill-current relative z-10"
               />
-            </button>
+            </Button>
           </TooltipTrigger>
           <TooltipContent side="top">Forge a new group</TooltipContent>
         </Tooltip>
@@ -58,39 +50,29 @@ export function ForgeTriggerButton({
     );
   }
 
-  // Sidebar variant — full width pill with tooltip on tablet (icon-only) mode
+  // Sidebar variant — flagship secondary button
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <button
-            type="button"
+          <Button
+            variant="secondary"
             onClick={onClick}
             aria-label="Forge a new group"
             className={cn(
-              "relative flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3",
-              "bg-accent text-accent-foreground font-semibold text-sm",
-              "shadow-amber-glow",
-              "transition duration-150",
-              "hover:shadow-[0_6px_28px_rgba(245,158,11,0.55)] hover:brightness-110",
-              "active:scale-[0.97] active:shadow-[0_2px_10px_rgba(245,158,11,0.3)]",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2",
+              "w-full h-auto py-3 px-4 rounded-xl shadow-amber-glow",
               "motion-safe:animate-[pulse-glow-amber_2.5s_ease-in-out_1]",
+              "hover:shadow-[0_8px_24px_rgba(245,158,11,0.45)]",
               className,
             )}
           >
-            {/* Inner highlight */}
-            <span
-              className="absolute inset-0 rounded-xl bg-linear-to-b from-white/15 to-transparent pointer-events-none"
-              aria-hidden="true"
-            />
             <Zap
               size={16}
               aria-hidden="true"
               className="fill-current shrink-0 relative z-10"
             />
             <span className="relative z-10">Forge My Group</span>
-          </button>
+          </Button>
         </TooltipTrigger>
         {/* Only show tooltip in collapsed (icon-only) sidebar; visible text makes it redundant on desktop */}
         <TooltipContent side="right" className="lg:hidden">

@@ -27,7 +27,7 @@ export function ProfileHero({ profile }: ProfileHeroProps) {
             </p>
           </blockquote>
 
-          <ProfileActions />
+          <ProfileActions className="sm:hidden" />
         </div>
       </div>
     </div>

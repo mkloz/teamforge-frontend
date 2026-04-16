@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Zap } from "lucide-react";
 import { TeamForgeLogo } from "@/assets/logo";
-import { cn } from "@/shared/lib/utils";
+import { Button } from "@/shared/components/ui/button";
 
 interface ForgeHeroProps {
   onForgeClick: () => void;
@@ -50,29 +50,19 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
         </div>
 
         {/* CTA Button */}
-        <button
-          type="button"
+        <Button
           onClick={onForgeClick}
-          className={cn(
-            "group relative flex items-center justify-center gap-3 rounded-2xl px-10 py-4.5 w-full max-w-xs overflow-hidden",
-            "bg-accent text-accent-foreground font-bold text-base",
-            "shadow-[0_12px_40px_rgba(245,158,11,0.35)]",
-            "hover:brightness-110 hover:shadow-[0_15px_45px_rgba(245,158,11,0.45)]",
-            "active:scale-[0.98] active:shadow-[0_4px_15px_rgba(245,158,11,0.3)]",
-            "transition duration-300",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2",
-          )}
+          variant="secondary"
+          size="lg"
+          className="w-full max-w-xs h-14 rounded-2xl group shadow-button-secondary/30"
+          aria-label="Forge My Group"
         >
-          {/* Animated Shine Effect */}
-          <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-[shine_2s_ease-in-out_infinite] pointer-events-none" />
-
           <Zap
             size={20}
-            aria-hidden="true"
             className="fill-current group-hover:scale-110 group-hover:rotate-12 transition-transform"
           />
           <span className="tracking-tight">Forge My Group</span>
-        </button>
+        </Button>
       </div>
     </section>
   );

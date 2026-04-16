@@ -1,6 +1,7 @@
 import { MapPin } from "lucide-react";
 import type { UserProfile } from "../types/profile.types";
 import { ProfileBadges } from "./profile-badges";
+import { ProfileActions } from "./profile-actions";
 
 interface ProfileIdentityProps {
   profile: UserProfile;
@@ -25,9 +26,10 @@ export function ProfileIdentity({ profile }: ProfileIdentityProps) {
         </div>
       </div>
 
-      {/* Universal Badges Row */}
-      <div className="flex w-full items-center justify-center sm:justify-start mt-5 sm:mt-8 scrollbar-none pb-1 relative left-0">
+      {/* Universal Badges & Actions Row */}
+      <div className="flex flex-col sm:flex-row w-full items-center sm:items-end justify-center sm:justify-between mt-5 sm:mt-10 gap-6 sm:gap-4 pb-1">
         <ProfileBadges profile={profile} />
+        <ProfileActions className="hidden sm:flex" />
       </div>
     </div>
   );

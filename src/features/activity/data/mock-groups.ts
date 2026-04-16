@@ -13,7 +13,7 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
     id: "design-playground",
     groupName: "✨ UI Design Playground",
     groupAvatar:
-      "https://api.dicebear.com/7.x/shapes/svg?seed=playground&backgroundColor=0d9488",
+      "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=200&h=200&fit=crop&q=80",
     planTitle: "Visual Test Suite",
     planCategory: "Tech",
     planCoverImage:
@@ -23,8 +23,8 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
     status: "ACTIVE",
     memberCount: 2,
     memberAvatars: [
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Designer",
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
     ],
     lastMessage: {
       content: "Welcome to the interactive playground! 🚀",
@@ -37,7 +37,8 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
   {
     id: "group-1",
     groupName: "Trail Blazers",
-    groupAvatar: "https://api.dicebear.com/7.x/shapes/svg?seed=trailblazers",
+    groupAvatar:
+      "https://images.unsplash.com/photo-1551632432-c735e7a93522?w=200&h=200&fit=crop&q=80",
     planTitle: "Weekend Hiking Adventure",
     planCategory: "Outdoors",
     planCoverImage:
@@ -47,10 +48,10 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
     status: "ACTIVE",
     memberCount: 4,
     memberAvatars: [
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Jordan",
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Sam",
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Taylor",
+      "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&q=80",
     ],
     lastMessage: {
       content: "",
@@ -64,7 +65,8 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
   {
     id: "group-2",
     groupName: "Code Crafters",
-    groupAvatar: "https://api.dicebear.com/7.x/shapes/svg?seed=codecrafters",
+    groupAvatar:
+      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=200&h=200&fit=crop&q=80",
     planTitle: "React Study Group",
     planCategory: "Tech",
     planCoverImage:
@@ -74,10 +76,10 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
     status: "ACTIVE",
     memberCount: 5,
     memberAvatars: [
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Morgan",
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Casey",
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Riley",
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Quinn",
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&q=80",
     ],
     lastMessage: {
       content: "I'll bring my laptop and the React docs",
@@ -90,7 +92,8 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
   {
     id: "group-3",
     groupName: "Game Night Crew",
-    groupAvatar: "https://api.dicebear.com/7.x/shapes/svg?seed=gamenightcrew",
+    groupAvatar:
+      "https://images.unsplash.com/photo-1553481187-be93c21490a9?w=200&h=200&fit=crop&q=80",
     planTitle: "Board Game Night",
     planCategory: "Social",
     planCoverImage:
@@ -100,9 +103,9 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
     status: "PENDING",
     memberCount: 3,
     memberAvatars: [
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Jamie",
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Drew",
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Avery",
+      "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1567532939604-b6b5b0ad2604?w=200&h=200&fit=crop&q=80",
     ],
     lastMessage: {
       content: "Should we do Friday or Saturday?",
@@ -116,7 +119,8 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
   {
     id: "group-4",
     groupName: "Jazz Collective",
-    groupAvatar: "https://api.dicebear.com/7.x/shapes/svg?seed=jazzcollective",
+    groupAvatar:
+      "https://images.unsplash.com/photo-1511192303578-4a7b9747d6a5?w=200&h=200&fit=crop&q=80",
     planTitle: "Jazz Jam Session",
     planCategory: "Music",
     planCoverImage:
@@ -126,10 +130,10 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
     status: "ACTIVE",
     memberCount: 4,
     memberAvatars: [
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Blake",
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie",
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Dana",
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Elliot",
+      "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&q=80",
     ],
     lastMessage: {
       content: "Plan confirmed! See you at the studio.",
@@ -147,7 +151,7 @@ export const MOCK_GROUPS: Record<string, Group> = {
     identity: {
       name: "✨ UI Design Playground",
       avatar:
-        "https://api.dicebear.com/7.x/shapes/svg?seed=playground&backgroundColor=0d9488",
+        "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=200&h=200&fit=crop&q=80",
       description:
         "A centralized test suite for verifying UnifiedMessage visual states and interactions.",
       createdAt: hoursAgo(720),
@@ -169,7 +173,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: CURRENT_USER_ID,
         name: "Alex",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+        avatar:
+          "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
         personalityType: "ENTJ",
         trustScore: 1.0,
         role: "ADMIN",
@@ -179,7 +184,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: "user-designer",
         name: "Designer",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Designer",
+        avatar:
+          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80",
         personalityType: "INTJ",
         trustScore: 0.95,
         role: "MEMBER",
@@ -196,7 +202,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
     id: "group-1",
     identity: {
       name: "Trail Blazers",
-      avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=trailblazers",
+      avatar:
+        "https://images.unsplash.com/photo-1551632432-c735e7a93522?w=200&h=200&fit=crop&q=80",
       description:
         "A group of outdoor enthusiasts who love exploring nature together.",
       createdAt: hoursAgo(720), // 30 days ago
@@ -244,7 +251,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: CURRENT_USER_ID,
         name: "Alex",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+        avatar:
+          "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
         personalityType: "ENTJ",
         trustScore: 0.82,
         role: "ADMIN",
@@ -254,7 +262,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: "user-2",
         name: "Jordan",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jordan",
+        avatar:
+          "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&q=80",
         personalityType: "ENFP",
         trustScore: 0.91,
         role: "MEMBER",
@@ -264,7 +273,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: "user-3",
         name: "Sam",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sam",
+        avatar:
+          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
         personalityType: "INTJ",
         trustScore: 0.78,
         role: "MEMBER",
@@ -274,7 +284,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: "user-4",
         name: "Taylor",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Taylor",
+        avatar:
+          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&q=80",
         personalityType: "ISFJ",
         trustScore: 0.85,
         role: "MEMBER",
@@ -290,7 +301,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
         content: "Reminder: Bring your own water and a light jacket!",
         senderId: CURRENT_USER_ID,
         senderName: "Alex",
-        senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+        senderAvatar:
+          "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
         timestamp: hoursAgo(48),
         isOwn: true,
         status: "READ",
@@ -301,7 +313,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
         content: "Meeting location changed to the South Gate entrance.",
         senderId: "user-2",
         senderName: "Jordan",
-        senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jordan",
+        senderAvatar:
+          "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&q=80",
         timestamp: hoursAgo(24),
         isOwn: false,
         status: "READ",
@@ -315,7 +328,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
     id: "group-2",
     identity: {
       name: "Code Crafters",
-      avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=codecrafters",
+      avatar:
+        "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=200&h=200&fit=crop&q=80",
       description: "Weekly tech meetups to learn and grow together.",
       createdAt: hoursAgo(480), // 20 days ago
     },
@@ -349,7 +363,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: "user-5",
         name: "Morgan",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Morgan",
+        avatar:
+          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
         personalityType: "INTP",
         trustScore: 0.88,
         role: "ADMIN",
@@ -359,7 +374,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: CURRENT_USER_ID,
         name: "Alex",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+        avatar:
+          "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
         personalityType: "ENTJ",
         trustScore: 0.82,
         role: "MEMBER",
@@ -369,7 +385,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: "user-6",
         name: "Casey",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Casey",
+        avatar:
+          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&q=80",
         personalityType: "ENFJ",
         trustScore: 0.75,
         role: "MEMBER",
@@ -379,7 +396,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: "user-7",
         name: "Riley",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Riley",
+        avatar:
+          "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=200&h=200&fit=crop&q=80",
         personalityType: "ISTJ",
         trustScore: 0.92,
         role: "MEMBER",
@@ -389,7 +407,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: "user-8",
         name: "Quinn",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Quinn",
+        avatar:
+          "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&q=80",
         personalityType: "ESTP",
         trustScore: 0.68,
         role: "MEMBER",
@@ -406,7 +425,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
     id: "group-3",
     identity: {
       name: "Game Night Crew",
-      avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=gamenightcrew",
+      avatar:
+        "https://images.unsplash.com/photo-1553481187-be93c21490a9?w=200&h=200&fit=crop&q=80",
       description: "Regular game nights with friends, new and old.",
       createdAt: hoursAgo(240), // 10 days ago
     },
@@ -442,7 +462,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
           proposedBy: {
             id: "user-10",
             name: "Drew",
-            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Drew",
+            avatar:
+              "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&q=80",
           },
           createdAt: hoursAgo(5),
           votes: {
@@ -459,7 +480,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
           proposedBy: {
             id: "user-9",
             name: "Jamie",
-            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jamie",
+            avatar:
+              "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=200&h=200&fit=crop&q=80",
           },
           createdAt: hoursAgo(3),
           votes: {
@@ -478,7 +500,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
           author: {
             id: "user-10",
             name: "Drew",
-            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Drew",
+            avatar:
+              "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&q=80",
           },
           createdAt: hoursAgo(6),
           reactions: [
@@ -492,7 +515,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
           author: {
             id: "user-9",
             name: "Jamie",
-            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jamie",
+            avatar:
+              "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=200&h=200&fit=crop&q=80",
           },
           createdAt: hoursAgo(2),
         },
@@ -502,7 +526,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: "user-9",
         name: "Jamie",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jamie",
+        avatar:
+          "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=200&h=200&fit=crop&q=80",
         personalityType: "ENFP",
         trustScore: 0.79,
         role: "ADMIN",
@@ -512,7 +537,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: "user-10",
         name: "Drew",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Drew",
+        avatar:
+          "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&q=80",
         personalityType: "ISTP",
         trustScore: 0.84,
         role: "MEMBER",
@@ -522,7 +548,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: CURRENT_USER_ID,
         name: "Alex",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+        avatar:
+          "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
         personalityType: "ENTJ",
         trustScore: 0.82,
         role: "MEMBER",
@@ -539,7 +566,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
     id: "group-4",
     identity: {
       name: "Jazz Collective",
-      avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=jazzcollective",
+      avatar:
+        "https://images.unsplash.com/photo-1511192303578-4a7b9747d6a5?w=200&h=200&fit=crop&q=80",
       description: "Musicians who jam together regularly.",
       createdAt: hoursAgo(360), // 15 days ago
     },
@@ -574,7 +602,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: "user-11",
         name: "Blake",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Blake",
+        avatar:
+          "https://images.unsplash.com/photo-1567532939604-b6b5b0ad2604?w=200&h=200&fit=crop&q=80",
         personalityType: "INFP",
         trustScore: 0.91,
         role: "ADMIN",
@@ -584,7 +613,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: "user-12",
         name: "Charlie",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie",
+        avatar:
+          "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop&q=80",
         personalityType: "ESFP",
         trustScore: 0.77,
         role: "MEMBER",
@@ -594,7 +624,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: "user-13",
         name: "Dana",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Dana",
+        avatar:
+          "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&q=80",
         personalityType: "INTJ",
         trustScore: 0.88,
         role: "MEMBER",
@@ -604,7 +635,8 @@ export const MOCK_GROUPS: Record<string, Group> = {
       {
         id: "user-14",
         name: "Elliot",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Elliot",
+        avatar:
+          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&q=80",
         personalityType: "ENFJ",
         trustScore: 0.85,
         role: "MEMBER",
@@ -639,7 +671,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "👋 Welcome to the Unified Component Test Suite!",
       senderId: "user-designer",
       senderName: "Designer",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Designer",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(23.9),
       isOwn: false,
     },
@@ -650,7 +683,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "🚀",
       senderId: CURRENT_USER_ID,
       senderName: "Alex",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(23.8),
       isOwn: true,
       status: "READ",
@@ -663,7 +697,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
         "Check out this single image mock. It should be large and edge-to-edge.",
       senderId: "user-designer",
       senderName: "Designer",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Designer",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(22),
       isOwn: false,
       attachments: [
@@ -682,7 +717,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "And here is a gallery of 3 photos for comparison:",
       senderId: "user-designer",
       senderName: "Designer",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Designer",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(21.9),
       isOwn: false,
       attachments: [
@@ -711,7 +747,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
         "This is my message (teal) with multiple reactions. It's quite a long sentence to see how the reactions stack underneath the bubble without pushing metadata too far.",
       senderId: CURRENT_USER_ID,
       senderName: "Alex",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(20),
       isOwn: true,
       status: "READ",
@@ -728,7 +765,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "",
       senderId: "user-designer",
       senderName: "Designer",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Designer",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(19),
       isOwn: false,
       attachments: [
@@ -748,7 +786,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "Replying to your specs with another voice note:",
       senderId: CURRENT_USER_ID,
       senderName: "Alex",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(18.5),
       isOwn: true,
       status: "DELIVERED",
@@ -774,7 +813,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "Proposal: Update branding colors to Forge Teal",
       senderId: "user-designer",
       senderName: "Designer",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Designer",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(10),
       isOwn: false,
       hasVoted: false,
@@ -797,7 +837,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "Check this link preview out: https://teamforge.app",
       senderId: CURRENT_USER_ID,
       senderName: "Alex",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(1),
       isOwn: true,
       status: "READ",
@@ -809,13 +850,14 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "Testing a 10-image massive gallery overflow:",
       senderId: "user-designer",
       senderName: "Designer",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Designer",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(0.9),
       isOwn: false,
       attachments: Array.from({ length: 10 }).map((_, i) => ({
         id: `patt-heavy-${i}`,
         type: "image",
-        url: `https://images.unsplash.com/photo-${1500000000000 + i}?w=800&q=80`,
+        url: `https://plus.unsplash.com/premium_photo-1661281397737-9b5d75b52beb?w=800&q=80&sig=${i}`,
       })),
     },
     {
@@ -826,7 +868,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
         "This message has a lot of reactions from different people to test the wrap-around logic.",
       senderId: "user-designer",
       senderName: "Designer",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Designer",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(0.8),
       isOwn: false,
       reactions: {
@@ -854,7 +897,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "",
       senderId: CURRENT_USER_ID,
       senderName: "Alex",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(0.7),
       isOwn: true,
       status: "READ",
@@ -873,7 +917,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "Short voice note (1s):",
       senderId: "user-designer",
       senderName: "Designer",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Designer",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(0.6),
       isOwn: false,
       attachments: [
@@ -916,7 +961,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
         "Testing edge cases for text padding and very long words: Supercalifragilisticexpialidocious_and_even_longer_unbroken_string_of_characters_to_test_word_break_overflow_behavior_in_responsive_containers.",
       senderId: CURRENT_USER_ID,
       senderName: "Alex",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(0.4),
       isOwn: true,
       status: "SENT",
@@ -928,7 +974,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "Wait, the 10th photo is missing a filter! 🎨",
       senderId: "user-designer",
       senderName: "Designer",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Designer",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(0.35),
       isOwn: false,
       replyTo: {
@@ -944,7 +991,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "Did you catch that last part of the voice memo?",
       senderId: CURRENT_USER_ID,
       senderName: "Alex",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(0.25),
       isOwn: true,
       status: "READ",
@@ -961,7 +1009,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "Testing delivery status: DELIVERED",
       senderId: CURRENT_USER_ID,
       senderName: "Alex",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(0.15),
       isOwn: true,
       status: "DELIVERED",
@@ -973,7 +1022,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "Testing delivery status: FAILED ⚠️",
       senderId: CURRENT_USER_ID,
       senderName: "Alex",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(0.1),
       isOwn: true,
       status: "FAILED",
@@ -1009,7 +1059,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "Hey everyone! Excited to go hiking this weekend.",
       senderId: CURRENT_USER_ID,
       senderName: "Alex",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(67),
       isOwn: true,
       readBy: ["user-2", "user-3", "user-4"],
@@ -1022,7 +1073,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
         "Same here! I've been wanting to explore that trail for a while.",
       senderId: "user-2",
       senderName: "Jordan",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jordan",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(66),
       isOwn: false,
     },
@@ -1066,7 +1118,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "I'll bring some snacks for everyone! 🍎🥜",
       senderId: "user-3",
       senderName: "Sam",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sam",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(47.5),
       isOwn: false,
       status: "READ",
@@ -1091,7 +1144,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
         "Check out the trail map I found. Looks like we have two options for the summit.",
       senderId: "user-4",
       senderName: "Taylor",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Taylor",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(24.5),
       isOwn: false,
       attachments: [
@@ -1117,7 +1171,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
         "The North trail looks more scenic but it's a bit steeper. What do you all think?",
       senderId: "user-4",
       senderName: "Taylor",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Taylor",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(24.4),
       isOwn: false,
       replyTo: {
@@ -1134,7 +1189,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "I'm down for the steeper one if the view is worth it! 🏔️",
       senderId: CURRENT_USER_ID,
       senderName: "Alex",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(5),
       isOwn: true,
       status: "READ",
@@ -1146,7 +1202,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "Quick voice note about the carpool arrangements:",
       senderId: "user-2",
       senderName: "Jordan",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jordan",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(4.5),
       isOwn: false,
       attachments: [
@@ -1166,7 +1223,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "Sounds good Jordan. I'll be at the pickup point at 8 AM sharp.",
       senderId: CURRENT_USER_ID,
       senderName: "Alex",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(4.2),
       isOwn: true,
       attachments: [
@@ -1194,7 +1252,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
         "Here are some photos from my last trip there to get everyone hyped! 📸✨✨",
       senderId: "user-3",
       senderName: "Sam",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sam",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(2),
       isOwn: false,
       attachments: [
@@ -1249,7 +1308,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
         "This is a really long message to test how the chat bubble handles extensive blocks of text that might span several lines. We need to ensure the layout remains stable, the tracking is tight but readable, and the metadata (like time and status) doesn't overlap with the text content. TeamForge is all about efficient communication, but sometimes people like to type a lot when they're excited about a trek!",
       senderId: "user-2",
       senderName: "Jordan",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jordan",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(0.5),
       isOwn: false,
       isEdited: true,
@@ -1262,7 +1322,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
         "Proposal: Move gathering point to the North Entrance for better cell reception.",
       senderId: "user-4",
       senderName: "Taylor",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Taylor",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(0.2),
       isOwn: false,
       hasVoted: false,
@@ -1287,7 +1348,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "Welcome to the React Study Group! Let's learn together.",
       senderId: "user-5",
       senderName: "Morgan",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Morgan",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(119),
       isOwn: false,
     },
@@ -1299,7 +1361,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
         "Thanks for starting this! I'm excited to improve my React skills.",
       senderId: CURRENT_USER_ID,
       senderName: "Alex",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(96),
       isOwn: true,
     },
@@ -1310,7 +1373,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "I'll bring my laptop and the React docs",
       senderId: "user-6",
       senderName: "Casey",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Casey",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(2),
       isOwn: false,
     },
@@ -1334,7 +1398,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "Hey! Anyone up for a board game night this weekend?",
       senderId: "user-9",
       senderName: "Jamie",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jamie",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(47),
       isOwn: false,
     },
@@ -1345,7 +1410,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "Count me in! I have Catan and Ticket to Ride.",
       senderId: "user-10",
       senderName: "Drew",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Drew",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(44),
       isOwn: false,
     },
@@ -1356,7 +1422,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "Should we do Friday or Saturday?",
       senderId: "user-10",
       senderName: "Drew",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Drew",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(5),
       isOwn: false,
     },
@@ -1367,7 +1434,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "",
       senderId: "user-9",
       senderName: "Jamie",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jamie",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(4),
       isOwn: false,
       hasVoted: false,
@@ -1379,7 +1447,8 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
       content: "",
       senderId: "user-10",
       senderName: "Drew",
-      senderAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Drew",
+      senderAvatar:
+        "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&q=80",
       timestamp: hoursAgo(3),
       isOwn: false,
       hasVoted: true,
