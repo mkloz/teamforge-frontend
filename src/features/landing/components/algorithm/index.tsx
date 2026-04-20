@@ -1,8 +1,8 @@
+import { Particles } from "@/shared/components/ui/particles";
 import { cn } from "@/shared/lib/utils";
 import { useInView } from "../../hooks/use-in-view";
 import { AlgorithmStats } from "./algorithm-stats";
 import { AlgorithmViz } from "./algorithm-viz";
-import { Particles } from "@/shared/components/ui/particles";
 
 export function AlgorithmSection() {
   const { ref, inView } = useInView(0.15);
@@ -34,9 +34,6 @@ export function AlgorithmSection() {
             inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6",
           )}
         >
-          <p className="font-sans text-xs font-semibold uppercase tracking-widest text-forge-teal mb-4">
-            Under The Hood
-          </p>
           <h2 className="font-sans font-extrabold text-white text-balance mx-auto max-w-2xl leading-tight text-[clamp(1.85rem,4.5vw,2.75rem)]">
             How we forge your{" "}
             <span className="text-forge-teal">next group.</span>

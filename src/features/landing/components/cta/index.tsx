@@ -1,8 +1,8 @@
-import { useMouseGlow } from "../../hooks/use-mouse-glow";
 import { Button } from "@/shared/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { useMouseGlow } from "../../hooks/use-mouse-glow";
 
 export function CtaSection() {
   const { sectionRef, glowRef } = useMouseGlow();
@@ -29,15 +29,7 @@ export function CtaSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.7 }}
-        >
-          <span className="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full border border-forge-teal/25 bg-forge-teal/10 text-forge-teal mb-8">
-            <span
-              className="w-1.5 h-1.5 rounded-full bg-forge-teal shadow-[0_0_6px_#0D9488]"
-              aria-hidden="true"
-            />
-            Ready when you are
-          </span>
-        </motion.div>
+        ></motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -80,7 +72,7 @@ export function CtaSection() {
             size="hero"
             className="w-full sm:w-auto"
           >
-            <a href="#how-it-works">See how it works</a>
+            <Link to="/auth/login">See how it works</Link>
           </Button>
         </motion.div>
         <motion.p

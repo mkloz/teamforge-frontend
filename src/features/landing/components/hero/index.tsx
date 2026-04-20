@@ -13,16 +13,6 @@ export function HeroSection() {
       <div className="relative z-10 w-full max-w-7xl mx-auto pl-6 px-6 md:pl-12 pt-28 pb-20">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
           <div className="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left max-w-xl animate-hero-fade-in">
-            <div className="flex items-center gap-2 mb-6 px-3.5 py-1.5 rounded-full border border-forge-teal/25 bg-forge-teal/6">
-              <span
-                className="w-1.5 h-1.5 rounded-full bg-forge-teal animate-pulse-glow"
-                aria-hidden="true"
-              />
-              <span className="text-forge-teal-light text-micro font-semibold font-sans uppercase tracking-[0.14em]">
-                Built for real connections
-              </span>
-            </div>
-
             <h1 className="font-sans font-extrabold text-white leading-[1.08] mb-5 text-balance text-[clamp(2.25rem,5.5vw,4rem)]">
               Find your people,
               <br />

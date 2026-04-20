@@ -154,7 +154,7 @@ export const Pagination = ({
         return (
           <Button
             key={pageNumber}
-            variant={isActive ? "default" : "outline"}
+            variant={isActive ? "primary" : "outline"}
             size={isMobile ? "sm" : "icon"}
             onClick={() => onPageChange(pageNumber)}
             aria-label={`Page ${pageNumber}`}
