@@ -1,6 +1,6 @@
 import * as RadixSlider from "@radix-ui/react-slider";
-import { FILTER_BOUNDARIES } from "../constants/explore.constants";
-import { useExploreStore } from "../store/use-explore-store";
+import { FILTER_BOUNDARIES } from "../../constants/explore.constants";
+import { useExploreStore } from "../../store/use-explore-store";
 
 export function SizeFilter() {
   const { sizeRange, setSizeRange } = useExploreStore();

@@ -7,9 +7,18 @@ import {
 } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
-import { Compass, Home, MessageSquare, Settings, User } from "lucide-react";
+import {
+  Compass,
+  Home,
+  MessageSquare,
+  Search,
+  Settings,
+  User,
+} from "lucide-react";
+import type { ReactNode } from "react";
 import { useActiveRoute } from "../hooks/use-active-route";
 import { NavItem } from "./nav-item";
+import { useForgeStore } from "../../forge/store/forge-store";
 
 const NAV_ITEMS = [
   { to: "/home", icon: Home, label: "Home" },
@@ -25,11 +34,15 @@ const NAV_ITEMS = [
 
 interface AppSidebarProps {
   className?: string;
+  notificationsTrigger?: ReactNode;
+  onSearchClick?: () => void;
 }
 
-import { useForgeStore } from "../../forge/store/forge-store";
-
-export function AppSidebar({ className }: AppSidebarProps) {
+export function AppSidebar({
+  className,
+  notificationsTrigger,
+  onSearchClick,
+}: AppSidebarProps) {
   const { isActive } = useActiveRoute();
   const isForgeActive = isActive("/forge");
   const { openWizard } = useForgeStore();
@@ -45,7 +58,7 @@ export function AppSidebar({ className }: AppSidebarProps) {
     <aside
       aria-label="Desktop navigation"
       className={cn(
-        "fixed top-16 left-0 bottom-0 z-40",
+        "fixed top-0 left-0 bottom-0 z-40",
         // Hidden on mobile, icon-only on tablet and desktop
         "hidden md:flex flex-col",
         "w-14",
@@ -53,9 +66,22 @@ export function AppSidebar({ className }: AppSidebarProps) {
         className,
       )}
     >
+      {/* Top section: Logo */}
+      <div className="flex h-16 items-center justify-center shrink-0">
+        <Link
+          to="/home"
+          className="hover:opacity-80 transition-opacity"
+          aria-label="TeamForge home"
+        >
+          <TeamForgeLogo className="size-8" showBackground={false} />
+        </Link>
+      </div>
+
+      <div className="mx-1.5 h-px bg-sidebar-border/50" aria-hidden="true" />
+
       {/* Primary nav */}
       <nav
-        className="flex flex-col items-center gap-1 px-1.5 pt-1.5 pb-2 flex-1"
+        className="flex flex-col items-center gap-1 px-1.5 pt-3 pb-2 flex-1"
         aria-label="App navigation"
       >
         {NAV_ITEMS.map((item) => (
@@ -67,13 +93,31 @@ export function AppSidebar({ className }: AppSidebarProps) {
             matchPrefix={"matchPrefix" in item ? item.matchPrefix : false}
           />
         ))}
+
+        {/* Desktop Search Trigger */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onSearchClick}
+              aria-label="Search"
+              className="size-10 rounded-xl text-foreground/70 hover:text-foreground hover:bg-accent/10"
+            >
+              <Search size={20} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right">Search (⌘K)</TooltipContent>
+        </Tooltip>
       </nav>
 
-      {/* Divider between nav and utility section */}
-      <div className="mx-1.5 h-px bg-sidebar-border" aria-hidden="true" />
+      {/* Divider */}
+      <div className="mx-1.5 h-px bg-sidebar-border/50" aria-hidden="true" />
 
-      {/* Bottom section: settings + forge */}
-      <div className="px-1.5 py-2 flex flex-col items-center gap-1.5">
+      {/* Bottom section: notifications, settings + forge */}
+      <div className="px-1.5 py-4 flex flex-col items-center gap-3">
+        {notificationsTrigger}
+
         <NavItem to="/settings" icon={Settings} label="Settings" />
 
         {/* Forge button — icon only */}

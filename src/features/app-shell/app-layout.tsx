@@ -8,7 +8,6 @@ import { NotificationsDrawer } from "../notifications/components/notifications-d
 import { UserMenu } from "../user-menu/components/user-menu";
 import { AppBottomNav } from "./components/app-bottom-nav";
 import { AppSidebar } from "./components/app-sidebar";
-import { AppTopbar } from "./components/app-topbar";
 import { SearchOverlay } from "./components/search-overlay";
 
 function PageSkeleton() {
@@ -45,24 +44,27 @@ export function AppLayout() {
           Skip to main content
         </a>
 
-        {/* Persistent top bar */}
-        <AppTopbar
+        {/* Persistent top bar removed for desktop per user request */}
+
+        {/* Global User Menu Trigger — Top Right as requested */}
+        <div className="fixed top-4 right-4 md:top-6 md:right-8 z-50">
+          <UserMenu />
+        </div>
+
+        {/* Desktop sidebar */}
+        <AppSidebar
           onSearchClick={() => setSearchOpen(true)}
           notificationsTrigger={
             <NotificationsBellTrigger
               onClick={() => setNotificationsOpen(true)}
             />
           }
-          userMenuSlot={<UserMenu />}
         />
-
-        {/* Desktop sidebar */}
-        <AppSidebar />
 
         {/* Main content area */}
         <main
           id="main-content"
-          className="md:pt-16 md:pl-14 pb-20 md:pb-4 min-h-screen"
+          className="md:pl-14 pb-20 md:pb-4 min-h-screen"
           tabIndex={-1}
         >
           {/* Content wrapper — pages define their own max-width as needed */}

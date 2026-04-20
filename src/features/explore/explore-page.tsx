@@ -9,7 +9,7 @@ export function ExplorePage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-12 gap-8 w-full max-w-screen-2xl mx-auto px-4 lg:px-6 pt-2 md:pt-6 ">
         {/* LEFT SIDEBAR: Branding, Identity & Sorting - Stationary Sticky */}
         <div className="hidden xl:block xl:col-span-3 border-r border-border/40 pr-4 relative">
-          <div className="sticky top-24 self-start">
+          <div className="sticky top-8 self-start">
             <ExploreLeftSection />
           </div>
         </div>
@@ -22,7 +22,7 @@ export function ExplorePage() {
 
         {/* RIGHT SIDEBAR: Filtering - Stationary Sticky */}
         <div className="hidden lg:block lg:col-span-4 xl:col-span-3 border-l border-border/40 pl-4 relative">
-          <div className="sticky top-24 self-start">
+          <div className="sticky top-8 self-start">
             <ExploreRightFilters />
           </div>
         </div>

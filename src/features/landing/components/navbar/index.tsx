@@ -123,10 +123,20 @@ export function Navbar() {
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <Button variant="outline" asChild size="sm">
+            <Button
+              variant="outline"
+              asChild
+              size="sm"
+              className="hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none"
+            >
               <Link to="/auth/login">Log In</Link>
             </Button>
-            <Button variant="primary" asChild size="sm">
+            <Button
+              variant="primary"
+              asChild
+              size="sm"
+              className="hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none"
+            >
               <Link to="/auth/register">Get Started</Link>
             </Button>
           </div>
@@ -185,6 +195,7 @@ export function Navbar() {
             size="lg"
             className={cn(
               "w-full bg-transparent transition-all duration-300 delay-300",
+              "hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none",
               menuOpen
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-4",
@@ -200,6 +211,7 @@ export function Navbar() {
             size="lg"
             className={cn(
               "w-full py-6 transition-all duration-300 delay-400",
+              "hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none",
               menuOpen
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-4",

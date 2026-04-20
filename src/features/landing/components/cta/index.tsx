@@ -52,7 +52,11 @@ export function CtaSection() {
           transition={{ duration: 0.7, delay: 0.2 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6"
         >
-          <Button asChild size="hero" className="w-full sm:w-auto">
+          <Button
+            asChild
+            size="hero"
+            className="w-full sm:w-auto hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none"
+          >
             <Link
               to="/auth/register"
               aria-label="Create your free TeamForge account"
@@ -70,7 +74,7 @@ export function CtaSection() {
             variant="outline"
             asChild
             size="hero"
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none"
           >
             <Link to="/auth/login">See how it works</Link>
           </Button>

@@ -29,7 +29,11 @@ export function HeroSection() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center gap-4 mb-10 w-full sm:w-auto">
-              <Button asChild size="hero" className="w-full sm:w-auto">
+              <Button
+                asChild
+                size="hero"
+                className="w-full sm:w-auto hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none"
+              >
                 <Link to="/auth/register">
                   Get Started – Free
                   <ArrowRight

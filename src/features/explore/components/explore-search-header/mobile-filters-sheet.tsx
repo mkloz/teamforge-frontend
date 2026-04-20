@@ -10,7 +10,7 @@ import {
 } from "@/shared/components/ui/sheet";
 import { cn } from "@/shared/lib/utils";
 import { ListFilter, SlidersHorizontal } from "lucide-react";
-import { useExploreStore } from "../store/use-explore-store";
+import { useExploreStore } from "../../store/use-explore-store";
 import { ExploreRightFilters } from "../explore-right-filters";
 
 export function MobileFiltersSheet() {

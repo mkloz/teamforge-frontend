@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
-import { DEFAULT_FILTERS } from "../constants/explore.constants";
-import { useExploreStore } from "../store/use-explore-store";
+import { DEFAULT_FILTERS } from "../../constants/explore.constants";
+import { useExploreStore } from "../../store/use-explore-store";
 import { FilterTag } from "../filter-tag";
 
 export function SelectedFiltersBar() {

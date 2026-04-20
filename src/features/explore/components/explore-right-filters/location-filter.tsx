@@ -1,8 +1,8 @@
 import { cn } from "@/shared/lib/utils";
 import * as RadixSlider from "@radix-ui/react-slider";
 import { Globe, Laptop, MapPin, Route } from "lucide-react";
-import { FILTER_BOUNDARIES } from "../constants/explore.constants";
-import { useExploreStore } from "../store/use-explore-store";
+import { FILTER_BOUNDARIES } from "../../constants/explore.constants";
+import { useExploreStore } from "../../store/use-explore-store";
 
 export function LocationFilter() {
   const { locationMode, setLocationMode, distance, setDistance } =

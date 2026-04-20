@@ -2,7 +2,7 @@ import { CalendarClock, Gift, Laptop, Route, Ticket } from "lucide-react";
 
 interface CardMetaProps {
   date: string;
-  distance: string;
+  distance: string | undefined;
   locationMode?: string;
   cost: string;
 }

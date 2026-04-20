@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 import { Handshake, Unlock, Users } from "lucide-react";
-import { useExploreStore } from "../store/use-explore-store";
+import { useExploreStore } from "../../store/use-explore-store";
 
 export function AccessFilter() {
   const { access, setAccess } = useExploreStore();

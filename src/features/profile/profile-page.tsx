@@ -1,17 +1,16 @@
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import { InterestsCloud } from "./components/interests-cloud";
 import { PersonalitySection } from "./components/personality-section";
 import { ProfileHero } from "./components/profile-hero";
 import { PsychometricsSidebar } from "./components/psychometrics-sidebar";
 import { useProfile } from "./hooks/use-profile";
-import { UserMenu } from "../user-menu/components/user-menu";
-import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export function ProfilePage() {
   const { profile, isLoading, error } = useProfile();
 
   if (isLoading) {
     return (
-      <main className="min-h-full relative bg-canvas pb-20 md:pb-0 px-4 md:px-8 pt-24">
+      <main className="min-h-full relative bg-canvas pb-20 md:pb-0 px-4 md:px-8 pt-20 md:pt-24">
         <div className="max-w-6xl mx-auto space-y-12">
           <Skeleton className="h-48 w-full rounded-2xl" />
           <div className="flex flex-col lg:flex-row gap-12">
@@ -41,15 +40,10 @@ export function ProfilePage() {
 
   return (
     <main className="min-h-full relative bg-canvas pb-20 md:pb-0">
-      {/* Mobile Top Actions */}
-      <div className="absolute top-4 right-4 z-50 md:hidden bg-background/20 backdrop-blur-md rounded-full">
-        <UserMenu />
-      </div>
-
       {/* Profile Cover Banner */}
-      <div className="absolute top-0 left-0 right-0 h-32 md:h-48 bg-linear-to-br from-forge-teal to-forge-teal/80 z-0 shadow-sm" />
+      <div className="absolute top-0 left-0 right-0 h-36 md:h-40 bg-linear-to-br from-forge-teal to-forge-teal/80 z-0 shadow-sm" />
 
-      <div className="flex flex-col max-w-6xl mx-auto px-4 md:px-8 pt-12 md:pt-24 lg:pt-24 pb-12 lg:pb-16 gap-12 relative z-10 w-full">
+      <div className="flex flex-col max-w-6xl mx-auto px-4 md:px-8 pt-16 md:pt-20 lg:pt-20 pb-12 lg:pb-16 gap-12 relative z-10 w-full">
         <div>
           <ProfileHero profile={profile} />
         </div>

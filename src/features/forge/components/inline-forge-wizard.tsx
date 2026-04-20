@@ -149,7 +149,7 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
       className="w-full h-full flex flex-col px-4 md:px-12 max-w-3xl mx-auto"
     >
       {/* ── Responsive Sticky Header ── */}
-      <div className="sticky top-0 md:top-16 z-30 bg-transparent backdrop-blur-xl -mx-6 md:-mx-12 px-6 md:px-12 pb-3 border-b border-border/40 mb-2 shadow-sm shadow-black/5">
+      <div className="sticky top-0 md:top-0 z-30 bg-transparent backdrop-blur-xl -mx-6 md:-mx-12 px-6 md:px-12 pb-3 border-b border-border/40 mb-2 shadow-sm shadow-black/5">
         <div className="flex items-center justify-between pt-4 mb-2 md:mb-3">
           <div className="flex items-center gap-3">
             {fw.canGoBack ? (

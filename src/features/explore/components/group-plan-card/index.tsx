@@ -1,9 +1,9 @@
 import { ArrowRight } from "lucide-react";
-import type { GroupPreview } from "../types/explore.types";
-import { CardImage } from "./card-image";
-import { CardHeader } from "./card-header";
-import { CardMeta } from "./card-meta";
+import type { GroupPreview } from "../../types/explore.types";
 import { CardFooter } from "./card-footer";
+import { CardHeader } from "./card-header";
+import { CardImage } from "./card-image";
+import { CardMeta } from "./card-meta";
 
 type GroupPlanCardProps = Omit<GroupPreview, "id">;
 
