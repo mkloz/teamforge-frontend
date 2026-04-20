@@ -1,18 +1,31 @@
+import { ExploreFeed } from "./components/explore-feed";
+import { ExploreLeftSection } from "./components/explore-left-section";
+import { ExploreRightFilters } from "./components/explore-right-filters";
+import { ExploreSearchHeader } from "./components/explore-search-header";
+
 export function ExplorePage() {
   return (
-    <div className="flex flex-col gap-4 px-4 md:px-0 md:pt-0 pt-2">
-      <div className="hidden md:block">
-        <h1 className="text-3xl font-bold text-foreground">Explore</h1>
-        <p className="text-muted-foreground leading-relaxed mt-2">
-          Search and discover activities, people, and groups. Browse by interest
-          category or use filters to find exactly what you're looking for.
-        </p>
-      </div>
+    <div className="w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-12 gap-8 w-full max-w-screen-2xl mx-auto px-4 lg:px-6 pt-2 md:pt-6 ">
+        {/* LEFT SIDEBAR: Branding, Identity & Sorting - Stationary Sticky */}
+        <div className="hidden xl:block xl:col-span-3 border-r border-border/40 pr-4 relative">
+          <div className="sticky top-24 self-start">
+            <ExploreLeftSection />
+          </div>
+        </div>
 
-      <div className="mt-2 md:mt-4 p-6 rounded-2xl border border-border bg-card">
-        <p className="text-sm text-muted-foreground">
-          Placeholder content — the full Explore page will be built next.
-        </p>
+        {/* CENTER FEED: Search & Results - Always the reference height for sidebars */}
+        <main className="col-span-1 lg:col-span-8 xl:col-span-6 flex flex-col min-w-0 min-h-[120vh] pb-32">
+          <ExploreSearchHeader />
+          <ExploreFeed />
+        </main>
+
+        {/* RIGHT SIDEBAR: Filtering - Stationary Sticky */}
+        <div className="hidden lg:block lg:col-span-4 xl:col-span-3 border-l border-border/40 pl-4 relative">
+          <div className="sticky top-24 self-start">
+            <ExploreRightFilters />
+          </div>
+        </div>
       </div>
     </div>
   );
