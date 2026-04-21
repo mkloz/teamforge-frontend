@@ -1,15 +1,35 @@
+import { GroupsGrid } from "./components/groups-grid";
+import { HomeHero } from "./components/home-hero";
+import { Invitations } from "./components/invitations";
+import { RecommendedGroups } from "./components/recommended-groups";
+import { UpcomingPlans } from "./components/upcoming-plans";
+
 export function HomePage() {
   return (
-    <div className="flex flex-col gap-4 px-4 md:px-0 md:pt-0">
-      <div className="hidden md:block">
-        <h1 className="text-3xl font-bold text-foreground">Home</h1>
-        <p className="text-muted-foreground leading-relaxed">Home page</p>
-      </div>
+    <div className="w-full max-w-screen-2xl mx-auto px-4 lg:px-6 pt-2 md:pt-6 pb-8">
+      {/* 12-column grid: main column (8) + sticky sidebar (4) on lg+ */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+        {/* Left / main column: Hero → Plans → Recommendations */}
+        <main
+          id="main-content"
+          className="col-span-1 lg:col-span-8 flex flex-col gap-10"
+        >
+          <HomeHero />
+          <div className="h-px w-full bg-border/50" aria-hidden="true" />
+          <UpcomingPlans />
+          <RecommendedGroups />
+        </main>
 
-      <div className="mt-4 p-6 rounded-2xl border border-border bg-card">
-        <p className="text-sm text-muted-foreground">
-          Placeholder content — the full Home page will be built next.
-        </p>
+        {/* Right / sidebar column: Groups grid + Stats (sticky on desktop) */}
+        <aside
+          aria-label="Your groups and stats"
+          className="col-span-1 lg:col-span-4 flex flex-col gap-8"
+        >
+          <div className="lg:sticky lg:top-8 flex flex-col gap-8">
+            <Invitations />
+            <GroupsGrid />
+          </div>
+        </aside>
       </div>
     </div>
   );
