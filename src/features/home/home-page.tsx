@@ -1,7 +1,6 @@
 import { GroupsGrid } from "./components/groups-grid";
 import { HomeHero } from "./components/home-hero";
 import { Invitations } from "./components/invitations";
-import { PersonalStats } from "./components/personal-stats";
 import { RecommendedGroups } from "./components/recommended-groups";
 import { UpcomingPlans } from "./components/upcoming-plans";
 
@@ -29,7 +28,6 @@ export function HomePage() {
           <div className="lg:sticky lg:top-8 flex flex-col gap-8">
             <Invitations />
             <GroupsGrid />
-            <PersonalStats />
           </div>
         </aside>
       </div>
