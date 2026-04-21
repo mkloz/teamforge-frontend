@@ -1,7 +1,14 @@
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
-import { Compass, MessageCircle, Plus, Sparkles, User } from "lucide-react";
+import {
+  Bell,
+  Compass,
+  MessageCircle,
+  Plus,
+  Sparkles,
+  User,
+} from "lucide-react";
 import { MOCK_CURRENT_USER } from "../data/mock-home";
 
 function getGreeting(firstName: string): { greeting: string; sub: string } {
@@ -57,17 +64,52 @@ export function HomeHero() {
       >
         {/* Left column: greeting + CTA */}
         <div className="flex flex-col gap-5 flex-1 min-w-0">
-          {/* Greeting */}
-          <motion.div variants={itemVariants} className="flex flex-col gap-0.5">
-            <h1
-              id="home-hero-heading"
-              className="text-2xl md:text-3xl font-black tracking-tighter text-foreground leading-none"
+          {/* Greeting row with notification bell */}
+          <motion.div
+            variants={itemVariants}
+            className="flex items-start justify-between gap-3"
+          >
+            <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+              <h1
+                id="home-hero-heading"
+                className="text-2xl md:text-3xl font-black tracking-tighter text-foreground leading-none"
+              >
+                {greeting}
+              </h1>
+              <p className="text-sm text-muted-foreground font-medium leading-relaxed">
+                {sub}
+              </p>
+            </div>
+
+            {/* Notification bell */}
+            <button
+              type="button"
+              aria-label="View notifications (3 unread)"
+              className={cn(
+                "relative shrink-0 flex items-center justify-center size-10 rounded-2xl",
+                "border border-border bg-card",
+                "text-muted-foreground hover:text-foreground hover:border-forge-teal/30 hover:bg-secondary",
+                "transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "mt-0.5",
+              )}
             >
-              {greeting}
-            </h1>
-            <p className="text-sm text-muted-foreground font-medium leading-relaxed">
-              {sub}
-            </p>
+              <Bell className="size-4.5" aria-hidden="true" />
+              {/* Unread badge */}
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 350,
+                  damping: 20,
+                  delay: 0.4,
+                }}
+                className="absolute -top-1 -right-1 flex items-center justify-center size-4 rounded-full bg-spark-amber border-2 border-background text-[9px] font-black text-white leading-none"
+                aria-hidden="true"
+              >
+                3
+              </motion.span>
+            </button>
           </motion.div>
 
           {/* Primary CTA card */}

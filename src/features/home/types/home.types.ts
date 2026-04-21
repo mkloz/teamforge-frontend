@@ -47,3 +47,14 @@ export interface UserStats {
   connections: number;
   profileCompleteness: number;
 }
+
+export interface GroupInvitation {
+  id: string;
+  groupName: string;
+  avatarSeed: string;
+  invitedBy: string;
+  inviterAvatarSeed: string;
+  memberCount: number;
+  activityType: string;
+  receivedAt: string;
+}

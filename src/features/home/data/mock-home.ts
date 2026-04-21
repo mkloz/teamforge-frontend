@@ -1,4 +1,5 @@
 import type {
+  GroupInvitation,
   RecommendedGroup,
   UpcomingPlan,
   UserGroup,
@@ -96,6 +97,29 @@ export const MOCK_USER_GROUPS: UserGroup[] = [
     memberCount: 4,
     lastActivity: "1w ago",
     hasUnread: false,
+  },
+];
+
+export const MOCK_INVITATIONS: GroupInvitation[] = [
+  {
+    id: "inv-1",
+    groupName: "Sunday Trail Runners",
+    avatarSeed: "trail-runners",
+    invitedBy: "Jordan Kim",
+    inviterAvatarSeed: "jordan-kim",
+    memberCount: 5,
+    activityType: "Outdoors",
+    receivedAt: "2h ago",
+  },
+  {
+    id: "inv-2",
+    groupName: "Indie Film Watchers",
+    avatarSeed: "indie-film",
+    invitedBy: "Riley Park",
+    inviterAvatarSeed: "riley-park",
+    memberCount: 3,
+    activityType: "Arts",
+    receivedAt: "Yesterday",
   },
 ];
 
