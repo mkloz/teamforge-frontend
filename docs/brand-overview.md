@@ -17,12 +17,11 @@ This document defines how TeamForge presents itself visually and verbally across
 The difference between a good weekend and a lonely one is 3 to 5 people. TeamForge exists to close that gap — not through random matching or endless scrolling, but through a deliberate, intelligent act: press one button ("Forge my group") and receive one algorithmically selected, compatible group.
 
 The product uses a multi-factor scoring system combining:
-1. **MBTI personality** (4-dimensional vector)
-2. **OCEAN Big Five** psychometric scores
-3. **Interest similarity**
-4. **Social graph proximity**
-5. **Age alignment**
-6. **Exponential-smoothing trust score**
+1. **Embedded personality profiling** (4-letter personality type code)
+2. **Interest similarity**
+3. **Social graph proximity**
+4. **Age alignment**
+5. **Exponential-smoothing trust score**
 
 These elements work together to form groups that feel familiar from the first message.
 
@@ -61,7 +60,7 @@ The exponential-smoothing trust score is the system's moral spine. It rewards re
 
 ### Belonging
 
-The social graph bonus in the matching algorithm deliberately prioritizes existing friendships and connections. TeamForge strengthens your existing social fabric while carefully introducing compatible new people using OCEAN and MBTI metrics.
+The social graph bonus in the matching algorithm deliberately prioritizes existing friendships and connections. TeamForge strengthens your existing social fabric while carefully introducing compatible new people using personality type compatibility.
 
 ### Accessibility
 
@@ -69,7 +68,7 @@ Guided onboarding, a unified activity feed, and 3-tap group formation (Forge wiz
 
 ### Growth
 
-MBTI and OCEAN Big Five are discovery tools, not limiting labels. Trust scores evolve. The system grows with the user as their interests and interactions develop.
+Personality types are discovery tools, not limiting labels. Trust scores evolve. The system grows with the user as their interests and interactions develop.
 
 ---
 
@@ -77,14 +76,14 @@ MBTI and OCEAN Big Five are discovery tools, not limiting labels. Trust scores e
 
 The voice never uses corporate jargon, dating-app language, or game mechanics. It speaks like a knowledgeable peer.
 
-| Context        | Tone                 | Example                                                     |
-| -------------- | -------------------- | ----------------------------------------------------------- |
-| Headline / CTA | Confident, direct    | "Find your people, intelligently."                          |
-| Onboarding     | Encouraging, curious | "Let's find out how you tick."                              |
-| Profiling      | Affirming, warm      | "You're an ENTJ — a natural organiser with bold ideas."     |
-| Group formed   | Celebratory          | "Your group is ready. Here's why they're perfect for you."  |
-| Empty state    | Gentle, activating   | "No groups yet. Let's forge your first one."                |
-| Error / limit  | Honest, constructive | "You've used your 3 searches today. Fresh starts tomorrow." |
+| Context            | Tone                 | Example                                                     |
+| ------------------ | -------------------- | ----------------------------------------------------------- |
+| Headline / CTA     | Confident, direct    | "Find your people, intelligently."                          |
+| Onboarding         | Encouraging, curious | "Let's find out how you tick."                              |
+| Personality result | Affirming, warm      | "You're an ENTJ — a natural organiser with bold ideas."     |
+| Group formed       | Celebratory          | "Your group is ready. Here's why they're perfect for you."  |
+| Empty state        | Gentle, activating   | "No groups yet. Let's forge your first one."                |
+| Error / limit      | Honest, constructive | "You've used your 3 searches today. Fresh starts tomorrow." |
 
 ---
 

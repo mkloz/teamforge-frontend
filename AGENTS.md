@@ -12,8 +12,7 @@ The core mechanic is simple: press one button ("Forge my group") and receive one
 
 The platform uses a multi-factor scoring system combining:
 
-- **MBTI personality** (4-dimensional vector)
-- **OCEAN Big Five** psychometric scores
+- **Personality type compatibility** (4-letter type code)
 - **Interest similarity**
 - **Social graph proximity**
 - **Age alignment**
@@ -165,10 +164,8 @@ import { apiClient } from "@/shared/api/api";
 
 ### User Profile (`src/features/profile/types/profile.types.ts`)
 
-- `UserProfile` — full user entity with MBTI, OCEAN scores, interests, trust score
-- `MBTIType` — union of all 16 MBTI types
-- `DimensionScore` — per-axis score (0–100) for EI, SN, TF, JP
-- `OceanScores` — Big Five scores (openness, conscientiousness, extraversion, agreeableness, neuroticism)
+- `UserProfile` — full user entity with personality type, interests, trust score
+- `PersonalityType` — 4-letter personality type code (e.g., "INFP", "ESTJ")
 
 ### Groups (`src/features/groups/types/groups.types.ts`)
 
@@ -183,7 +180,7 @@ import { apiClient } from "@/shared/api/api";
 ### Forge (`src/features/forge/types/forge.types.ts`)
 
 - `ForgeMode` — `"auto"` (algorithm picks group) | `"manual"` (user selects members)
-- `FixedGroupSize` — `4 | 6 | 8`
+- `GroupSize` — `2-8` members
 - `Visibility` — `"public" | "friends" | "invite"`
 - `ForgeResult` — `"idle" | "success" | "failed"`
 
@@ -210,7 +207,7 @@ The wizard state is managed by `src/features/forge/hooks/use-forge-wizard.ts`. T
 
 New users complete two onboarding steps before accessing the app:
 
-1. **Personality test** (`/onboarding/personality`) — an IPIP-NEO questionnaire that derives both MBTI type and OCEAN scores. Questions are in `src/features/onboarding/data/ipip-questions.ts`. The scorer lives in `src/features/onboarding/utils/score-calculator.ts`.
+1. **Personality test** (`/onboarding/personality`) — a questionnaire that determines the user's 4-letter personality type code. Questions are in `src/features/onboarding/data/ipip-questions.ts`. The scorer lives in `src/features/onboarding/utils/score-calculator.ts`.
 2. **Interests selection** (`/onboarding/interests`) — users browse and select interest tags across categories. Logic is in `src/features/onboarding/utils/interest-logic.ts`.
 
 Both steps store their state via Zustand stores in `src/features/onboarding/store/`.
@@ -294,14 +291,14 @@ All visual design follows the specifications in `docs/visual-style-guide.md`. Th
 
 TeamForge speaks like a knowledgeable peer, never a corporation.
 
-| Context        | Tone                 | Example                                                     |
-| -------------- | -------------------- | ----------------------------------------------------------- |
-| Headline / CTA | Confident, direct    | "Find your people, intelligently."                          |
-| Onboarding     | Encouraging, curious | "Let's find out how you tick."                              |
-| MBTI result    | Affirming, warm      | "You're an ENTJ — a natural organiser with bold ideas."     |
-| Group formed   | Celebratory          | "Your group is ready. Here's why they're perfect for you."  |
-| Empty state    | Gentle, activating   | "No groups yet. Let's forge your first one."                |
-| Error / limit  | Honest, constructive | "You've used your 3 searches today. Fresh starts tomorrow." |
+| Context           | Tone                 | Example                                                     |
+| ----------------- | -------------------- | ----------------------------------------------------------- |
+| Headline / CTA    | Confident, direct    | "Find your people, intelligently."                          |
+| Onboarding        | Encouraging, curious | "Let's find out how you tick."                              |
+| Personality result| Affirming, warm      | "You're an ENTJ — a natural organiser with bold ideas."     |
+| Group formed      | Celebratory          | "Your group is ready. Here's why they're perfect for you."  |
+| Empty state       | Gentle, activating   | "No groups yet. Let's forge your first one."                |
+| Error / limit     | Honest, constructive | "You've used your 3 searches today. Fresh starts tomorrow." |
 
 Primary slogan: **"Find your people, intelligently."**
 
