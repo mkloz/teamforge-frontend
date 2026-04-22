@@ -81,9 +81,9 @@ The "Forge my group" interaction is radically simple:
 - User receives one recommendation (not a list)
 - Accept or decline - no analysis paralysis
 
-### 2. Personality-Enhanced Compatibility Scoring
+### 2. Embedded Personality Profiling
 
-Unlike competitors who match on one dimension, TeamForge uses a weighted scoring system that includes embedded personality profiling:
+Unlike competitors who match on one dimension, TeamForge uses embedded personality profiling as a core differentiator. Users complete a questionnaire during onboarding that determines their 4-letter personality type code, enabling nuanced compatibility matching based on cognitive preferences and social styles.
 
 | Factor | Weight | Purpose |
 |--------|--------|---------|
@@ -93,8 +93,6 @@ Unlike competitors who match on one dimension, TeamForge uses a weighted scoring
 | **Age alignment** | Medium | Groups people at similar life stages |
 | **Trust score** | High | Rewards reliable participants |
 | **Location proximity** | Variable | Enables in-person activities |
-
-The personality type system uses a 4-letter code derived from user questionnaire responses, enabling nuanced compatibility matching based on cognitive preferences and social styles.
 
 ### 3. Activity-Centric Design
 

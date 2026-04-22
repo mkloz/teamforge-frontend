@@ -112,7 +112,7 @@ interface Group {
   description: string | null;
   avatar: string | null;
   status: 'FORMING' | 'PENDING' | 'ACTIVE' | 'PLANNING' | 'COMPLETED' | 'DISBANDED';
-  maxMembers: number; // Range: 2-16
+  maxMembers: number; // Range: 2-8
   createdAt: string;
   updatedAt: string;
   disbandedAt: string | null;

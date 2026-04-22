@@ -78,20 +78,20 @@ interface AuthResponse {
 
 ### 1.2 Personality Test
 
-**Purpose:** Collect user personality data to enable compatibility matching.
+**Purpose:** Collect user personality data to enable compatibility matching through embedded personality profiling.
 
 #### User Stories
 
-- As a new user, I complete a questionnaire to determine my personality profile
-- As a user, I see my results after completing the test
+- As a new user, I complete a questionnaire to determine my 4-letter personality type
+- As a user, I see my personality type result after completing the test
 - As a user, I can retake the test from settings
 
 #### Test Structure
 
-- **Questions:** 50 IPIP-style questions
+- **Questions:** 50 questions
 - **Scale:** 5-point Likert (Strongly Disagree to Strongly Agree)
 - **Duration:** 5-8 minutes
-- **Output:** Scores that inform matching
+- **Output:** 4-letter personality type code (e.g., "INFP", "ESTJ")
 
 #### Components
 
@@ -100,7 +100,7 @@ interface AuthResponse {
 | `PersonalityTestPage` | `features/onboarding/` | Main test container |
 | `QuestionCard` | `features/onboarding/components/` | Individual question display |
 | `ProgressBar` | `features/onboarding/components/` | Test progress indicator |
-| `ResultCard` | `features/onboarding/components/` | Score visualization |
+| `ResultCard` | `features/onboarding/components/` | Personality type visualization |
 
 #### Scoring Logic
 
@@ -108,12 +108,12 @@ Location: `features/onboarding/utils/score-calculator.ts`
 
 ```typescript
 interface PersonalityResult {
-  scores: {
-    openness: number;        // 0-100
-    conscientiousness: number;
-    extraversion: number;
-    agreeableness: number;
-    neuroticism: number;
+  personalityType: string; // 4-letter code (e.g., "INFP", "ESTJ")
+  dimensionScores: {
+    ei: number; // 0-100 (Introversion-Extraversion)
+    sn: number; // 0-100 (Sensing-Intuition)
+    tf: number; // 0-100 (Thinking-Feeling)
+    jp: number; // 0-100 (Judging-Perceiving)
   };
 }
 ```
@@ -225,10 +225,10 @@ Category (e.g., "Sports")
 
 #### Group Size Options
 
-Groups support 2-16 members, with common presets:
+Groups support 2-8 members:
 - 2-4 members (intimate)
-- 5-8 members (standard)
-- 9-16 members (large events)
+- 5-6 members (standard)
+- 7-8 members (larger gatherings)
 
 #### Components
 
@@ -296,7 +296,7 @@ interface ForgeState {
 | Filter | Options |
 |--------|---------|
 | **Categories** | Multi-select from interest categories |
-| **Size range** | Slider (2-8 members) |
+| **Size range** | Slider (2-8 members, max 8) |
 | **Distance** | Slider (1-50+ km) |
 | **Location mode** | Any, In-Person, Online |
 | **Access** | All, Open, By Request |
@@ -417,12 +417,12 @@ FORMING → PENDING → ACTIVE → PLANNING → COMPLETED
 
 ### 2.6 Profile
 
-**Purpose:** Display user profile with personality insights and trust information.
+**Purpose:** Display user profile with embedded personality type and trust information.
 
 #### User Stories
 
 - As a user, I view my own profile
-- As a user, I see my personality summary
+- As a user, I see my 4-letter personality type
 - As a user, I see my trust score
 - As a user, I see my interests
 - As a user, I can edit my profile information
@@ -433,7 +433,7 @@ FORMING → PENDING → ACTIVE → PLANNING → COMPLETED
 | Section | Content |
 |---------|---------|
 | **Header** | Avatar, name, bio, trust score |
-| **Personality** | Visual representation of traits |
+| **Personality** | 4-letter personality type badge |
 | **Interests** | Interest tags by category |
 | **Activity** | Completed activities count, member since |
 

@@ -192,7 +192,7 @@ model Group {
   description String?
   avatar      String?
   status      GroupStatus @default(FORMING)
-  maxMembers  Int         @default(6) @map("max_members") // Range: 2-16
+  maxMembers  Int         @default(6) @map("max_members") // Range: 2-8
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
   disbandedAt DateTime?   @map("disbanded_at")
