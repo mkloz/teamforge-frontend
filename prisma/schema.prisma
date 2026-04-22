@@ -1,15 +1,11 @@
 // ============================================================================
 // PRISMA SCHEMA - TeamForge Backend
 // ============================================================================
-// Normalized database schema following best practices:
-// - Single source of truth for each data element
-// - Proper foreign key constraints with cascade rules
-// - Composite indexes for common query patterns
-// - Self-referential structures where appropriate
-// - Soft delete support for critical entities
+// Simplified, normalized schema focused on core requirements:
+// - Age-based profile (not birthDate)
+// - Simple Plan-Group relationship
+// - Essential enums only
 // ============================================================================
-
-// ======== Datasource & Generators ========
 
 datasource db {
   provider = "postgresql"
@@ -36,56 +32,37 @@ model User {
   emailVerified Boolean          @default(false) @map("email_verified")
   createdAt     DateTime         @default(now()) @map("created_at")
   updatedAt     DateTime         @updatedAt @map("updated_at")
-  deletedAt     DateTime?        @map("deleted_at") // Soft delete
+  deletedAt     DateTime?        @map("deleted_at")
 
   // --- Profile ---
-  birthDate DateTime? @map("birth_date") // More precise than age
-  gender    Gender?
-  city      String?
-  timezone  String?   // For scheduling across timezones
+  age    Int?
+  gender Gender?
+  city   String?
 
-  // --- Algorithm & Matching ---
+  // --- Matching ---
   searchStatus    SearchStatus @default(IDLE) @map("search_status")
   trustScore      Float        @default(0.5) @map("trust_score")
   profileComplete Boolean      @default(false) @map("profile_complete")
-  lastActiveAt    DateTime?    @map("last_active_at") // For activity-based matching
-
-  // MBTI (discrete type + continuous vectors for matching)
-  mbtiType     String? @map("mbti_type") // e.g., "INTJ"
-  mbtiVectorEi Float?  @map("mbti_vector_ei") // 0=E, 1=I
-  mbtiVectorSn Float?  @map("mbti_vector_sn") // 0=S, 1=N
-  mbtiVectorTf Float?  @map("mbti_vector_tf") // 0=T, 1=F
-  mbtiVectorJp Float?  @map("mbti_vector_jp") // 0=J, 1=P
-
-  // OCEAN Big Five (0-1 normalized scale)
-  oceanOpenness          Float? @map("ocean_openness")
-  oceanConscientiousness Float? @map("ocean_conscientiousness")
-  oceanExtraversion      Float? @map("ocean_extraversion")
-  oceanAgreeableness     Float? @map("ocean_agreeableness")
-  oceanNeuroticism       Float? @map("ocean_neuroticism")
-
-  // Derived archetype from personality data
-  archetype String?
 
   // --- Relations ---
-  interests          UserInterest[]
-  sentFriendships    Friendship[]        @relation("FriendshipRequester")
-  receivedFriendships Friendship[]       @relation("FriendshipReceiver")
-  createdActivities  Activity[]          @relation("ActivityCreator")
-  groupMemberships   GroupMember[]
-  sentMessages       Message[]
-  notifications      Notification[]
-  invitesSent        Invite[]            @relation("InviteSender")
-  invitesReceived    Invite[]            @relation("InviteReceiver")
-  ratingsGiven       Rating[]            @relation("RatingGiver")
-  ratingsReceived    Rating[]            @relation("RatingReceiver")
-  chatParticipations ChatParticipant[]
-  reactions          Reaction[]
-  proposals          PlanProposal[]      @relation("ProposalAuthor")
-  proposalVotes      ProposalVote[]
-  planComments       PlanComment[]
-  sessions           Session[]
-  otpCodes           OtpCode[]
+  interests           UserInterest[]
+  sentFriendships     Friendship[]      @relation("FriendshipRequester")
+  receivedFriendships Friendship[]      @relation("FriendshipReceiver")
+  createdActivities   Activity[]        @relation("ActivityCreator")
+  groupMemberships    GroupMember[]
+  sentMessages        Message[]
+  notifications       Notification[]
+  invitesSent         Invite[]          @relation("InviteSender")
+  invitesReceived     Invite[]          @relation("InviteReceiver")
+  ratingsGiven        Rating[]          @relation("RatingGiver")
+  ratingsReceived     Rating[]          @relation("RatingReceiver")
+  chatParticipations  ChatParticipant[]
+  reactions           Reaction[]
+  proposals           PlanProposal[]    @relation("ProposalAuthor")
+  proposalVotes       ProposalVote[]
+  planComments        PlanComment[]
+  sessions            Session[]
+  otpCodes            OtpCode[]
 
   @@index([email])
   @@index([city])
@@ -129,33 +106,27 @@ model OtpCode {
 // ============================================================================
 // INTERESTS (Self-referential hierarchy)
 // ============================================================================
-// Simplified to a single table with parent reference.
-// Categories have parentId = null, subcategories reference categories,
-// leaf interests reference subcategories.
 
 model Interest {
   id          String  @id @default(cuid())
   name        String
-  slug        String  @unique // URL-friendly identifier
+  slug        String  @unique
   description String?
-  icon        String? // Icon identifier or emoji
-  color       String? // Theme color (hex or tailwind class)
+  icon        String?
+  color       String?
   sortOrder   Int     @default(0) @map("sort_order")
   isActive    Boolean @default(true) @map("is_active")
 
-  // Hierarchical structure
   parentId String?    @map("parent_id")
   parent   Interest?  @relation("InterestHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
   children Interest[] @relation("InterestHierarchy")
 
-  // Search aliases (alternative names, abbreviations)
   aliases String[] @default([])
 
-  // Relations
   users      UserInterest[]
   activities ActivityInterest[]
 
-  @@unique([parentId, name]) // Unique name within parent
+  @@unique([parentId, name])
   @@index([parentId])
   @@index([slug])
   @@map("interests")
@@ -177,8 +148,6 @@ model UserInterest {
 // ============================================================================
 // ACTIVITIES & GROUPS
 // ============================================================================
-// Activity = what someone wants to do (the intent)
-// Group = the people doing it together (formed around an activity)
 
 model Activity {
   id          String             @id @default(cuid())
@@ -195,7 +164,6 @@ model Activity {
   creatorId String @map("creator_id")
   creator   User   @relation("ActivityCreator", fields: [creatorId], references: [id], onDelete: Cascade)
 
-  // Relations
   interests ActivityInterest[]
   group     Group?
 
@@ -226,18 +194,13 @@ model Group {
   maxMembers  Int         @default(6) @map("max_members")
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
-  disbandedAt DateTime?   @map("disbanded_at") // Soft delete for groups
+  disbandedAt DateTime?   @map("disbanded_at")
 
-  // Source activity (1:1)
   activityId String   @unique @map("activity_id")
   activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
 
-  // Current active plan (optional, nullable FK)
-  currentPlanId String? @unique @map("current_plan_id")
-
-  // Relations
   members GroupMember[]
-  plans   Plan[]
+  plan    Plan?
   chat    Chat?
   invites Invite[]
   ratings Rating[]
@@ -250,8 +213,8 @@ model Group {
 model GroupMember {
   role               GroupRole @default(MEMBER)
   joinedAt           DateTime  @default(now()) @map("joined_at")
-  leftAt             DateTime? @map("left_at") // Track when members leave
-  compatibilityScore Float?    @map("compatibility_score") // 0-1 scale
+  leftAt             DateTime? @map("left_at")
+  compatibilityScore Float?    @map("compatibility_score")
 
   userId  String @map("user_id")
   groupId String @map("group_id")
@@ -265,50 +228,40 @@ model GroupMember {
 }
 
 // ============================================================================
-// PLANS (What groups do together)
+// PLANS (Simple 1:1 with Group)
 // ============================================================================
 
 model Plan {
-  id           String       @id @default(cuid())
-  title        String
-  description  String?
-  category     PlanCategory
-  coverImage   String?      @map("cover_image")
-  status       PlanStatus   @default(DRAFT)
-  
-  // Scheduling
-  dateTime     DateTime?    @map("date_time")
-  endDateTime  DateTime?    @map("end_date_time") // For multi-hour/day events
-  
-  // Location
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  category    PlanCategory
+  coverImage  String?      @map("cover_image")
+  status      PlanStatus   @default(DRAFT)
+
+  dateTime DateTime? @map("date_time")
+
   locationMode LocationMode @default(IN_PERSON) @map("location_mode")
-  location     String?      // Address or venue name
+  location     String?
   locationLat  Float?       @map("location_lat")
   locationLng  Float?       @map("location_lng")
-  meetingUrl   String?      @map("meeting_url") // For online events
-  
-  // Cost
+
   cost        CostType @default(FREE)
-  costAmount  Float?   @map("cost_amount") // Actual amount if PAID
-  costDetails String?  @map("cost_details") // e.g., "Split evenly"
-  
-  // Completion
+  costAmount  Float?   @map("cost_amount")
+  costDetails String?  @map("cost_details")
+
   completedAt DateTime? @map("completed_at")
   cancelledAt DateTime? @map("cancelled_at")
-  
-  // Timestamps
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  groupId String @map("group_id")
+  groupId String @unique @map("group_id")
   group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
-  // Relations
   proposals PlanProposal[]
   comments  PlanComment[]
-  ratings   Rating[]       // Ratings reference the specific plan
 
-  @@index([groupId])
   @@index([status])
   @@index([dateTime])
   @@map("plans")
@@ -350,11 +303,11 @@ model ProposalVote {
 }
 
 model PlanComment {
-  id        String    @id @default(cuid())
-  field     PlanField? // null = general comment
+  id        String     @id @default(cuid())
+  field     PlanField?
   content   String
-  createdAt DateTime  @default(now()) @map("created_at")
-  editedAt  DateTime? @map("edited_at")
+  createdAt DateTime   @default(now()) @map("created_at")
+  editedAt  DateTime?  @map("edited_at")
 
   planId String @map("plan_id")
   plan   Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
@@ -381,7 +334,6 @@ model Friendship {
   requester User @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
   receiver  User @relation("FriendshipReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
 
-  // Private chat (created when accepted)
   privateChatId String? @unique @map("private_chat_id")
   privateChat   Chat?   @relation(fields: [privateChatId], references: [id], onDelete: SetNull)
 
@@ -399,18 +351,14 @@ model Chat {
   type      ChatType
   createdAt DateTime @default(now()) @map("created_at")
 
-  // For GROUP chats (1:1 with Group)
   groupId String? @unique @map("group_id")
   group   Group?  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
-  // For PRIVATE chats (linked via Friendship)
   friendship Friendship?
 
-  // Pinned message
   pinnedMessageId String?  @unique @map("pinned_message_id")
   pinnedMessage   Message? @relation("PinnedMessage", fields: [pinnedMessageId], references: [id], onDelete: SetNull)
 
-  // Relations
   participants ChatParticipant[]
   messages     Message[]
 
@@ -423,7 +371,6 @@ model ChatParticipant {
   joinedAt  DateTime  @default(now()) @map("joined_at")
   leftAt    DateTime? @map("left_at")
 
-  // Track read position efficiently
   lastReadMessageId String? @map("last_read_message_id")
 
   userId String @map("user_id")
@@ -445,7 +392,7 @@ model Message {
   isEdited  Boolean       @default(false) @map("is_edited")
   createdAt DateTime      @default(now()) @map("created_at")
   editedAt  DateTime?     @map("edited_at")
-  deletedAt DateTime?     @map("deleted_at") // Soft delete for messages
+  deletedAt DateTime?     @map("deleted_at")
 
   chatId String @map("chat_id")
   chat   Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
@@ -453,12 +400,10 @@ model Message {
   senderId String @map("sender_id")
   sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
 
-  // Reply threading
   replyToId String?   @map("reply_to_id")
   replyTo   Message?  @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
   replies   Message[] @relation("MessageReplies")
 
-  // Relations
   reactions   Reaction[]
   attachments Attachment[]
   pinnedIn    Chat?        @relation("PinnedMessage")
@@ -474,17 +419,12 @@ model Attachment {
   type         AttachmentType
   url          String
   name         String?
-  size         Int?           // Bytes
+  size         Int?
   mimeType     String?        @map("mime_type")
   thumbnailUrl String?        @map("thumbnail_url")
-  
-  // Media metadata
-  width    Int?   // For images/videos
-  height   Int?   // For images/videos
-  duration Int?   // Seconds (for audio/video)
-  waveform Float[] @default([]) // Voice note visualization
-
-  createdAt DateTime @default(now()) @map("created_at")
+  duration     Int?
+  waveform     Float[]        @default([])
+  createdAt    DateTime       @default(now()) @map("created_at")
 
   messageId String  @map("message_id")
   message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
@@ -513,28 +453,21 @@ model Reaction {
 
 model Rating {
   id        String   @id @default(cuid())
-  score     Int      // 1-5 integer scale
+  score     Int      // 1-5
   comment   String?
   createdAt DateTime @default(now()) @map("created_at")
 
-  // Who gave the rating
   raterId String @map("rater_id")
   rater   User   @relation("RatingGiver", fields: [raterId], references: [id], onDelete: Cascade)
 
-  // Who received the rating
   rateeId String @map("ratee_id")
   ratee   User   @relation("RatingReceiver", fields: [rateeId], references: [id], onDelete: Cascade)
 
-  // Context: which group and plan
   groupId String @map("group_id")
   group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
-  planId String @map("plan_id")
-  plan   Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
-
-  @@unique([raterId, rateeId, planId]) // One rating per user per plan
+  @@unique([raterId, rateeId, groupId])
   @@index([rateeId])
-  @@index([planId])
   @@map("ratings")
 }
 
@@ -546,20 +479,17 @@ model Invite {
   id          String       @id @default(cuid())
   type        InviteType
   status      InviteStatus @default(PENDING)
-  message     String?      // Personal message
+  message     String?
   createdAt   DateTime     @default(now()) @map("created_at")
   expiresAt   DateTime?    @map("expires_at")
   respondedAt DateTime?    @map("responded_at")
 
-  // Invite to a group
   groupId String @map("group_id")
   group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
-  // Who is being invited
   inviteeId String @map("invitee_id")
   invitee   User   @relation("InviteReceiver", fields: [inviteeId], references: [id], onDelete: Cascade)
 
-  // Who sent the invite (optional - could be system for algorithm matches)
   inviterId String? @map("inviter_id")
   inviter   User?   @relation("InviteSender", fields: [inviterId], references: [id], onDelete: SetNull)
 
@@ -573,12 +503,11 @@ model Notification {
   type      NotificationType
   title     String
   message   String
-  link      String?          // Deep link to relevant page
+  link      String?
   avatarUrl String?          @map("avatar_url")
   isRead    Boolean          @default(false) @map("is_read")
   createdAt DateTime         @default(now()) @map("created_at")
 
-  // Polymorphic reference (type + id pattern)
   entityType EntityType? @map("entity_type")
   entityId   String?     @map("entity_id")
 
@@ -591,19 +520,17 @@ model Notification {
 }
 
 // ============================================================================
-// ENUMS
+// ENUMS (Simplified)
 // ============================================================================
 
 enum AuthProviderType {
   EMAIL
   GOOGLE
-  APPLE
 }
 
 enum OtpPurpose {
   EMAIL_VERIFICATION
   PASSWORD_RESET
-  TWO_FACTOR
 }
 
 enum Gender {
@@ -611,13 +538,11 @@ enum Gender {
   FEMALE
   NON_BINARY
   OTHER
-  PREFER_NOT_TO_SAY
 }
 
 enum SearchStatus {
   IDLE
   SEARCHING
-  PAUSED
 }
 
 enum ActivityVisibility {
@@ -627,25 +552,25 @@ enum ActivityVisibility {
 }
 
 enum ActivityStatus {
-  OPEN       // Accepting members
-  MATCHING   // Algorithm working
-  MATCHED    // Group formed
-  CLOSED     // No longer accepting
+  OPEN
+  MATCHING
+  MATCHED
+  CLOSED
   CANCELLED
 }
 
 enum ForgeMode {
-  AUTO    // Algorithm finds members
-  MANUAL  // Creator invites manually
+  AUTO
+  MANUAL
 }
 
 enum GroupStatus {
-  FORMING    // Initial state, building membership
-  PENDING    // Waiting for confirmations
-  ACTIVE     // Group is functioning
-  PLANNING   // Working on a plan
-  COMPLETED  // Plan successfully executed
-  DISBANDED  // Group dissolved
+  FORMING
+  PENDING
+  ACTIVE
+  PLANNING
+  COMPLETED
+  DISBANDED
 }
 
 enum GroupRole {
@@ -697,19 +622,16 @@ enum ProposalStatus {
 enum VoteType {
   APPROVE
   REJECT
-  ABSTAIN
 }
 
 enum LocationMode {
   IN_PERSON
   ONLINE
-  HYBRID
 }
 
 enum CostType {
   FREE
   PAID
-  SPLIT
 }
 
 enum FriendshipStatus {
@@ -729,10 +651,8 @@ enum MessageType {
   IMAGE
   VOICE
   FILE
-  LOCATION
-  SYSTEM       // Automated messages
-  PLAN_UPDATE  // Plan change notifications
-  POLL         // Voting/polling
+  SYSTEM
+  PLAN_UPDATE
 }
 
 enum MessageStatus {
@@ -751,9 +671,9 @@ enum AttachmentType {
 }
 
 enum InviteType {
-  ALGORITHM_MATCH  // System-generated from matching
-  FRIEND_INVITE    // Invited by a friend
-  DIRECT_INVITE    // Direct invite from group admin
+  ALGORITHM_MATCH
+  FRIEND_INVITE
+  DIRECT_INVITE
 }
 
 enum InviteStatus {
@@ -765,17 +685,14 @@ enum InviteStatus {
 }
 
 enum NotificationType {
-  // Social
   FRIEND_REQUEST
   FRIEND_ACCEPTED
-  // Groups
   GROUP_FORMED
   GROUP_INVITE
   GROUP_JOIN_REQUEST
   GROUP_JOIN_APPROVED
   GROUP_MEMBER_LEFT
   GROUP_DISBANDED
-  // Plans
   PLAN_CREATED
   PLAN_CONFIRMED
   PLAN_UPDATED
@@ -783,13 +700,10 @@ enum NotificationType {
   PLAN_STARTING_SOON
   PLAN_COMPLETED
   PLAN_CANCELLED
-  // Messaging
   NEW_MESSAGE
   MESSAGE_MENTION
-  // Ratings
   RATING_REQUEST
   RATING_RECEIVED
-  // System
   SYSTEM_ANNOUNCEMENT
   ACCOUNT_SECURITY
 }
