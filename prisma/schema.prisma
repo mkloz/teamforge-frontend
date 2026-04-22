@@ -1,0 +1,709 @@
+// ======== Datasource & Generators ========
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ============================================================================
+// AUTHENTICATION & USER MODELS
+// ============================================================================
+
+model User {
+  // --- Core Identity ---
+  id            String           @id @default(cuid())
+  email         String           @unique
+  password      String? // Null for OAuth users
+  name          String
+  avatar        String?
+  bio           String?
+  authProvider  AuthProviderType @default(EMAIL)
+  emailVerified Boolean          @default(false) @map("email_verified")
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+
+  // --- Profile Information ---
+  age    Int?
+  gender Gender?
+  city   String?
+
+  // --- Personality & Algorithm Fields ---
+  searchStatus    SearchStatus @default(IDLE) @map("search_status")
+  trustScore      Float        @default(0.5) @map("trust_score")
+  profileComplete Boolean      @default(false) @map("profile_complete")
+
+  // MBTI Personality Type (derived from dimension scores)
+  mbtiType String? @map("mbti_type")
+
+  // MBTI Dimension Vectors (continuous 0-1 scale for matching algorithm)
+  // 0 = E/S/T/J, 1 = I/N/F/P
+  mbtiVectorEi Float? @map("mbti_vector_ei") // Extraversion vs Introversion
+  mbtiVectorSn Float? @map("mbti_vector_sn") // Sensing vs Intuition
+  mbtiVectorTf Float? @map("mbti_vector_tf") // Thinking vs Feeling
+  mbtiVectorJp Float? @map("mbti_vector_jp") // Judging vs Perceiving
+
+  // OCEAN Big Five Personality Scores (0-100 scale)
+  oceanOpenness          Float? @map("ocean_openness")
+  oceanConscientiousness Float? @map("ocean_conscientiousness")
+  oceanExtraversion      Float? @map("ocean_extraversion")
+  oceanAgreeableness     Float? @map("ocean_agreeableness")
+  oceanNeuroticism       Float? @map("ocean_neuroticism")
+
+  // Derived Archetype (calculated from MBTI + OCEAN)
+  archetype String?
+
+  // --- Relations ---
+  interests        UserInterest[]
+  sentFriendships  Friendship[]     @relation("SentFriendships")
+  recvdFriendships Friendship[]     @relation("ReceivedFriendships")
+  createdActivities Activity[]       @relation("ActivityCreator")
+  groupMemberships GroupMember[]
+  sentMessages     Message[]
+  notifications    Notification[]   @relation("NotificationReceiver")
+  invites          Invite[]         @relation("UserInvites")
+  ratingsGiven     Rating[]         @relation("Rater")
+  ratingsReceived  Rating[]         @relation("Ratee")
+  chatParticipations ChatParticipant[]
+  reactions        Reaction[]
+  messageReads     MessageReadStatus[]
+  proposals        PlanProposal[]   @relation("ProposalAuthor")
+  proposalVotes    ProposalVote[]
+  planComments     PlanComment[]    @relation("CommentAuthor")
+  sessions         Session[]
+  otpCodes         OtpCode[]
+
+  @@index([email])
+  @@index([city])
+  @@index([searchStatus])
+  @@index([mbtiType])
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  userAgent String?  @map("user_agent")
+  ipAddress String?  @map("ip_address")
+
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
+
+model OtpCode {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  code      String
+  purpose   OtpPurpose
+  expiresAt DateTime @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId, purpose])
+  @@map("otp_codes")
+}
+
+// ============================================================================
+// INTERESTS & CATEGORIES
+// ============================================================================
+
+model InterestCategory {
+  id          String        @id @default(cuid())
+  name        String        @unique
+  description String?
+  color       String? // Tailwind color class
+  sortOrder   Int           @default(0) @map("sort_order")
+  subcategories InterestSubcategory[]
+
+  @@map("interest_categories")
+}
+
+model InterestSubcategory {
+  id         String           @id @default(cuid())
+  name       String
+  icon       String? // Icon identifier
+  categoryId String           @map("category_id")
+  category   InterestCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  interests  Interest[]
+
+  @@unique([categoryId, name])
+  @@map("interest_subcategories")
+}
+
+model Interest {
+  id            String               @id @default(cuid())
+  name          String               @unique
+  aliases       String[] // Alternative names for search
+  subcategoryId String?              @map("subcategory_id")
+  subcategory   InterestSubcategory? @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
+
+  users        UserInterest[]
+  activities   ActivityInterest[]
+
+  @@index([name])
+  @@map("interests")
+}
+
+model UserInterest {
+  userId     String   @map("user_id")
+  interestId String   @map("interest_id")
+  addedAt    DateTime @default(now()) @map("added_at")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interest   Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@id([userId, interestId])
+  @@map("user_interests")
+}
+
+// ============================================================================
+// ACTIVITIES & GROUPS
+// ============================================================================
+
+model Activity {
+  id          String           @id @default(cuid())
+  title       String
+  description String?
+  city        String?
+  visibility  ActivityVisibility @default(PUBLIC)
+  forgeMode   ForgeMode        @default(AUTO)
+  maxMembers  Int?             @map("max_members")
+  createdAt   DateTime         @default(now()) @map("created_at")
+
+  creatorId String @map("creator_id")
+  creator   User   @relation("ActivityCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+
+  group     Group?
+  interests ActivityInterest[]
+
+  @@index([city])
+  @@index([creatorId])
+  @@map("activities")
+}
+
+model ActivityInterest {
+  activityId String   @map("activity_id")
+  interestId String   @map("interest_id")
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  interest   Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@id([activityId, interestId])
+  @@map("activity_interests")
+}
+
+model Group {
+  id          String      @id @default(cuid())
+  status      GroupStatus @default(FORMING)
+  maxMembers  Int         @default(6) @map("max_members")
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  // Group Identity (persistent across plans)
+  name        String
+  avatar      String?
+  description String?
+
+  // Source Activity
+  activityId String   @unique @map("activity_id")
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  // Relations
+  members     GroupMember[]
+  plans       Plan[]
+  currentPlan Plan?        @relation("CurrentPlan", fields: [currentPlanId], references: [id])
+  currentPlanId String?    @unique @map("current_plan_id")
+  chat        Chat?
+  invites     Invite[]
+  ratings     Rating[]
+
+  @@index([status])
+  @@map("groups")
+}
+
+model GroupMember {
+  userId            String    @map("user_id")
+  groupId           String    @map("group_id")
+  role              GroupRole @default(MEMBER)
+  joinedAt          DateTime  @default(now()) @map("joined_at")
+  compatibilityScore Float?   @map("compatibility_score") // 0-100
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@id([userId, groupId])
+  @@map("group_members")
+}
+
+// ============================================================================
+// PLANS (What groups do together)
+// ============================================================================
+
+model Plan {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  category    PlanCategory
+  coverImage  String?      @map("cover_image")
+  dateTime    DateTime?    @map("date_time")
+  location    String?
+  locationLat Float?       @map("location_lat")
+  locationLng Float?       @map("location_lng")
+  locationMode LocationMode @default(IN_PERSON) @map("location_mode")
+  cost        CostType     @default(FREE)
+  status      PlanStatus   @default(DRAFT)
+  completedAt DateTime?    @map("completed_at")
+  rating      Float?       // Average rating after completion (1-5)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  groupId String @map("group_id")
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  // Reverse relation for currentPlan
+  currentForGroup Group? @relation("CurrentPlan")
+
+  // Collaboration
+  proposals PlanProposal[]
+  comments  PlanComment[]
+
+  @@index([groupId])
+  @@index([status])
+  @@index([dateTime])
+  @@map("plans")
+}
+
+model PlanProposal {
+  id            String         @id @default(cuid())
+  field         PlanField
+  currentValue  String         @map("current_value")
+  proposedValue String         @map("proposed_value")
+  status        ProposalStatus @default(PENDING)
+  createdAt     DateTime       @default(now()) @map("created_at")
+  resolvedAt    DateTime?      @map("resolved_at")
+
+  planId String @map("plan_id")
+  plan   Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  proposerId String @map("proposer_id")
+  proposer   User   @relation("ProposalAuthor", fields: [proposerId], references: [id], onDelete: Cascade)
+
+  votes ProposalVote[]
+
+  @@index([planId, status])
+  @@map("plan_proposals")
+}
+
+model ProposalVote {
+  id         String   @id @default(cuid())
+  vote       VoteType
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  proposalId String       @map("proposal_id")
+  proposal   PlanProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([proposalId, userId])
+  @@map("proposal_votes")
+}
+
+model PlanComment {
+  id        String    @id @default(cuid())
+  field     PlanField? // null = general comment
+  content   String
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  planId String @map("plan_id")
+  plan   Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  authorId String @map("author_id")
+  author   User   @relation("CommentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([planId])
+  @@map("plan_comments")
+}
+
+// ============================================================================
+// SOCIAL - FRIENDSHIPS
+// ============================================================================
+
+model Friendship {
+  requesterId String           @map("requester_id")
+  receiverId  String           @map("receiver_id")
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  requester User @relation("SentFriendships", fields: [requesterId], references: [id], onDelete: Cascade)
+  receiver  User @relation("ReceivedFriendships", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  // Private chat created when friendship is accepted
+  privateChatId String? @unique @map("private_chat_id")
+  privateChat   Chat?   @relation(fields: [privateChatId], references: [id], onDelete: SetNull)
+
+  @@id([requesterId, receiverId])
+  @@map("friendships")
+}
+
+// ============================================================================
+// CHAT & MESSAGING
+// ============================================================================
+
+model Chat {
+  id        String   @id @default(cuid())
+  type      ChatType
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // For GROUP chats
+  groupId String? @unique @map("group_id")
+  group   Group?  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  // For PRIVATE chats (linked via Friendship)
+  friendship Friendship?
+
+  // Pinned message
+  pinnedMessageId String?  @unique @map("pinned_message_id")
+  pinnedMessage   Message? @relation("PinnedMessage", fields: [pinnedMessageId], references: [id], onDelete: SetNull)
+
+  participants ChatParticipant[]
+  messages     Message[]
+
+  @@map("chats")
+}
+
+model ChatParticipant {
+  userId       String   @map("user_id")
+  chatId       String   @map("chat_id")
+  isMuted      Boolean  @default(false) @map("is_muted")
+  isBlocked    Boolean  @default(false) @map("is_blocked")
+  lastReadAt   DateTime? @map("last_read_at")
+  joinedAt     DateTime @default(now()) @map("joined_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  @@id([userId, chatId])
+  @@map("chat_participants")
+}
+
+model Message {
+  id        String        @id @default(cuid())
+  type      MessageType   @default(TEXT)
+  content   String
+  status    MessageStatus @default(SENT)
+  isEdited  Boolean       @default(false) @map("is_edited")
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  chatId String @map("chat_id")
+  chat   Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  senderId String @map("sender_id")
+  sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  // Reply threading
+  replyToId String?  @map("reply_to_id")
+  replyTo   Message? @relation("Replies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies   Message[] @relation("Replies")
+
+  // Relations
+  reactions    Reaction[]
+  readStatuses MessageReadStatus[]
+  attachments  Attachment[]
+  pinnedInChat Chat?               @relation("PinnedMessage")
+
+  @@index([chatId, createdAt])
+  @@index([senderId])
+  @@map("messages")
+}
+
+model Attachment {
+  id           String         @id @default(cuid())
+  type         AttachmentType
+  url          String
+  name         String?
+  size         Int? // bytes
+  mimeType     String?        @map("mime_type")
+  thumbnailUrl String?        @map("thumbnail_url")
+  duration     Int? // seconds (for voice/video)
+  waveform     Float[] // For voice note visualization
+  createdAt    DateTime       @default(now()) @map("created_at")
+
+  messageId String  @map("message_id")
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+  @@map("attachments")
+}
+
+model Reaction {
+  id        String   @id @default(cuid())
+  emoji     String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  messageId String  @map("message_id")
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId, emoji])
+  @@map("reactions")
+}
+
+model MessageReadStatus {
+  id     String   @id @default(cuid())
+  readAt DateTime @default(now()) @map("read_at")
+
+  messageId String  @map("message_id")
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId])
+  @@map("message_read_statuses")
+}
+
+// ============================================================================
+// RATINGS & TRUST
+// ============================================================================
+
+model Rating {
+  id        String   @id @default(cuid())
+  score     Float // 1-5
+  comment   String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  raterId String @map("rater_id")
+  rateeId String @map("ratee_id")
+  groupId String @map("group_id")
+
+  rater User  @relation("Rater", fields: [raterId], references: [id], onDelete: Cascade)
+  ratee User  @relation("Ratee", fields: [rateeId], references: [id], onDelete: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([raterId, rateeId, groupId])
+  @@index([rateeId])
+  @@map("ratings")
+}
+
+// ============================================================================
+// INVITES & NOTIFICATIONS
+// ============================================================================
+
+model Invite {
+  id        String       @id @default(cuid())
+  status    InviteStatus @default(PENDING)
+  message   String? // Optional personal message
+  createdAt DateTime     @default(now()) @map("created_at")
+  expiresAt DateTime?    @map("expires_at")
+  respondedAt DateTime?  @map("responded_at")
+
+  groupId String @map("group_id")
+  userId  String @map("user_id")
+
+  // Who sent the invite (for friend invites)
+  inviterId String? @map("inviter_id")
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation("UserInvites", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId, status])
+  @@map("invites")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  type      NotificationType
+  title     String
+  message   String
+  link      String? // Deep link to relevant page
+  avatarUrl String?          @map("avatar_url")
+  isRead    Boolean          @default(false) @map("is_read")
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  // Optional reference IDs for context
+  referenceId   String? @map("reference_id") // Generic ID reference
+  referenceType String? @map("reference_type") // Type of reference (group, user, plan, etc.)
+
+  receiverId String @map("receiver_id")
+  receiver   User   @relation("NotificationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([receiverId, isRead, createdAt])
+  @@map("notifications")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum AuthProviderType {
+  EMAIL
+  GOOGLE
+}
+
+enum OtpPurpose {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  NON_BINARY
+  PREFER_NOT_TO_SAY
+}
+
+enum SearchStatus {
+  IDLE
+  SEARCHING
+}
+
+enum ActivityVisibility {
+  PUBLIC
+  FRIENDS
+  INVITE_ONLY
+}
+
+enum ForgeMode {
+  MANUAL
+  AUTO
+}
+
+enum GroupStatus {
+  FORMING // Waiting for algorithm match
+  PENDING // Awaiting member confirmations
+  ACTIVE // Group is active
+  COMPLETED // Plan completed
+  DISSOLVED // Group disbanded
+}
+
+enum GroupRole {
+  ADMIN
+  MEMBER
+}
+
+enum PlanCategory {
+  TECH
+  SPORTS
+  ARTS
+  SOCIAL
+  OUTDOORS
+  LEARNING
+  MUSIC
+  FOOD
+  GAMING
+  WELLNESS
+}
+
+enum PlanStatus {
+  DRAFT
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum PlanField {
+  TITLE
+  DESCRIPTION
+  DATE_TIME
+  LOCATION
+}
+
+enum ProposalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum VoteType {
+  APPROVE
+  REJECT
+}
+
+enum LocationMode {
+  IN_PERSON
+  ONLINE
+}
+
+enum CostType {
+  FREE
+  PAID
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
+}
+
+enum ChatType {
+  GROUP
+  PRIVATE
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  VOICE
+  FILE
+  LOCATION
+  SYSTEM
+  PLAN_UPDATE
+}
+
+enum MessageStatus {
+  SENDING
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+enum AttachmentType {
+  IMAGE
+  FILE
+  VOICE
+  VIDEO
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+}
+
+enum NotificationType {
+  // Social
+  FRIEND_REQUEST
+  FRIEND_ACCEPT
+  // Groups
+  GROUP_FORMED
+  GROUP_INVITE
+  JOIN_REQUEST
+  GROUP_JOIN_APPROVED
+  GROUP_REPLACEMENT_OFFER
+  // Plans
+  PLAN_CONFIRMED
+  PLAN_UPDATED
+  PLAN_PROPOSAL
+  // Messaging
+  NEW_CHAT_MESSAGE
+  // Ratings
+  RATING_REQUEST
+  RATING_RECEIVED
+  // System
+  SYSTEM
+}
