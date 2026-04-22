@@ -12,7 +12,7 @@ export function HomePage() {
         {/* Left / main column: Hero → Plans → Recommendations */}
         <main
           id="main-content"
-          className="col-span-1 lg:col-span-8 flex flex-col gap-10"
+          className="col-span-1 lg:col-span-8 flex flex-col gap-12"
         >
           <HomeHero />
           <div className="h-px w-full bg-border/50" aria-hidden="true" />

@@ -25,7 +25,6 @@ export function IdentityCard({
               Match Identity
             </h4>
             <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-80 flex items-center gap-1">
-              <span className="size-1.5 rounded-full bg-forge-teal animate-pulse" />
               Verified
             </span>
           </div>

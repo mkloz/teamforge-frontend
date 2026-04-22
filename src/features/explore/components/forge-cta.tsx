@@ -4,16 +4,7 @@ import { Plus } from "lucide-react";
 
 export function ForgeCTA() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ scale: 1.02 }}
-      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-      className="relative overflow-hidden bg-ink text-background p-5 rounded-4xl shadow-2xl border-thick border-white/5 group/card"
-    >
-      {/* Decorative Glow */}
-      <div className="absolute -top-24 -right-24 size-48 bg-forge-teal/30 blur-hero rounded-full transition-opacity group-hover/card:opacity-100 opacity-60" />
-
+    <div className="relative overflow-hidden bg-ink text-background p-5 rounded-4xl shadow-2xl border-thick border-white/5 group/card">
       <div className="relative z-10 space-y-5">
         <div className="space-y-2">
           <h3 className="text-2xl font-black leading-tight tracking-tighter">
@@ -36,6 +27,6 @@ export function ForgeCTA() {
           </Button>
         </motion.div>
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -1,20 +1,35 @@
+import { cn } from "@/shared/lib/utils";
 import { Handshake } from "lucide-react";
 
 interface CardHeaderProps {
   groupName: string;
   groupAvatarUrl?: string;
   access: string;
+  variant?: "default" | "compact";
 }
 
 export function CardHeader({
   groupName,
   groupAvatarUrl,
   access,
+  variant = "default",
 }: CardHeaderProps) {
+  const isCompact = variant === "compact";
+
   return (
-    <div className="flex justify-between items-start gap-4 mb-3">
+    <div
+      className={cn(
+        "flex justify-between items-start gap-4",
+        isCompact ? "mb-2" : "mb-3",
+      )}
+    >
       <div className="flex items-center gap-2.5">
-        <div className="w-6 h-6 rounded-full overflow-hidden bg-muted border border-border shrink-0">
+        <div
+          className={cn(
+            "rounded-full overflow-hidden bg-muted border border-border shrink-0",
+            isCompact ? "size-5" : "size-6",
+          )}
+        >
           <img
             src={
               groupAvatarUrl ||
@@ -24,7 +39,12 @@ export function CardHeader({
             className="w-full h-full object-cover"
           />
         </div>
-        <span className="text-sm font-semibold text-muted-foreground tracking-tight group-hover:text-foreground transition-colors truncate">
+        <span
+          className={cn(
+            "font-semibold text-muted-foreground tracking-tight group-hover:text-foreground transition-colors truncate",
+            isCompact ? "text-xs" : "text-sm",
+          )}
+        >
           {groupName}
         </span>
       </div>

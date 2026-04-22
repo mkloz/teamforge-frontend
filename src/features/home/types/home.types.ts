@@ -30,13 +30,20 @@ export interface UserGroup {
 
 export interface RecommendedGroup {
   id: string;
-  name: string;
-  activityType: string;
+  matchScore: number;
+  title: string;
+  groupName: string;
+  groupAvatarUrl?: string;
   imageUrl: string;
-  compatibility: number;
-  memberCount: number;
-  memberAvatarSeeds: string[];
+  date: string;
+  distance: string;
+  locationMode: "In-Person" | "Online";
+  cost: "Free" | "Paid";
+  category: string;
+  currentSize: number;
+  capacity: number;
   access: "Open" | "By Request";
+  isFull?: boolean;
   personalizationCue: string;
 }
 

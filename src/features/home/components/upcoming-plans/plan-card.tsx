@@ -1,0 +1,154 @@
+import { cn } from "@/shared/lib/utils";
+import { motion } from "framer-motion";
+import { Calendar, CheckCircle2, Clock, MessageCircle } from "lucide-react";
+import type { PlanStatus, UpcomingPlan } from "../../types/home.types";
+
+/* ── Status config ─────────────────────────────────────────────────── */
+const STATUS_CONFIG: Record<
+  PlanStatus,
+  { label: string; classes: string; icon: React.ElementType }
+> = {
+  confirmed: {
+    label: "Confirmed",
+    classes: "bg-forge-teal/10 text-forge-teal",
+    icon: CheckCircle2,
+  },
+  pending: {
+    label: "Pending",
+    classes: "bg-spark-amber/10 text-spark-amber",
+    icon: Clock,
+  },
+  planning: {
+    label: "Planning",
+    classes: "bg-muted text-muted-foreground",
+    icon: Calendar,
+  },
+};
+
+interface PlanCardProps {
+  plan: UpcomingPlan;
+  index: number;
+}
+
+/**
+ * Individual plan card showing activity details, status, and member avatars.
+ */
+export function PlanCard({ plan, index }: PlanCardProps) {
+  const status = STATUS_CONFIG[plan.status];
+  const StatusIcon = status.icon;
+
+  const dateParts = plan.date.split(" ");
+  const dayName = dateParts[0].replace(",", "");
+  const month = dateParts[1];
+  const dayNum = dateParts[2];
+  const timeStr = dateParts.slice(4).join(" ");
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.4,
+        delay: index * 0.07,
+        ease: [0.23, 1, 0.32, 1],
+      }}
+      role="listitem"
+      className={cn(
+        "group flex flex-row items-center gap-3 md:gap-4",
+        "rounded-2xl border border-border/50 bg-card p-3 md:p-4",
+        "transition-all duration-150 cursor-pointer",
+        "hover:-translate-y-0.5 hover:border-ink hover:shadow-button-outline",
+        "dark:hover:border-white dark:hover:shadow-button-outline-dark",
+      )}
+    >
+      {/* Calendar date block */}
+      <div
+        className="shrink-0 flex flex-col items-center w-13 rounded-xl border border-border/50 overflow-hidden bg-background shadow-xs"
+        aria-hidden="true"
+      >
+        <div className="w-full bg-muted text-muted-foreground text-center py-1 text-[10px] font-black uppercase tracking-widest border-b border-border/50">
+          {month}
+        </div>
+        <div className="w-full flex flex-col items-center py-1.5">
+          <span className="text-xl font-black text-foreground leading-none">
+            {dayNum}
+          </span>
+          <span className="text-[10px] font-bold text-muted-foreground mt-0.5">
+            {dayName}
+          </span>
+        </div>
+      </div>
+
+      {/* Plan info */}
+      <div className="flex flex-col gap-0.5 flex-1 min-w-0 pl-1">
+        <p className="text-sm font-bold text-foreground leading-snug truncate group-hover:text-primary transition-colors duration-200">
+          {plan.title}
+        </p>
+        <p className="text-xs text-muted-foreground font-medium truncate">
+          {plan.groupName}
+        </p>
+        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+          {/* Time pill */}
+          <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
+            <Clock className="size-3" aria-hidden="true" />
+            {timeStr}
+          </span>
+          {/* Status badge */}
+          <span
+            className={cn(
+              "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide",
+              status.classes,
+            )}
+          >
+            <StatusIcon className="size-3" aria-hidden="true" />
+            {status.label}
+          </span>
+        </div>
+      </div>
+
+      {/* Right: avatar stack + action button */}
+      <div className="shrink-0 flex flex-col items-end gap-2.5">
+        {/* Member avatar stack */}
+        <div
+          className="flex -space-x-2.5"
+          aria-label={`${plan.memberAvatarSeeds.length} members`}
+        >
+          {plan.memberAvatarSeeds.slice(0, 3).map((seed, i) => (
+            <div
+              key={i}
+              className="size-8 rounded-full border-2 border-card bg-muted overflow-hidden shadow-xs"
+            >
+              <img
+                src={`https://api.dicebear.com/7.x/notionists/svg?seed=${seed}`}
+                alt={`Member ${i + 1}`}
+                className="size-full object-cover"
+                loading="lazy"
+              />
+            </div>
+          ))}
+          {plan.memberAvatarSeeds.length > 3 && (
+            <div className="size-8 rounded-full border-2 border-card bg-muted flex items-center justify-center text-xs font-extrabold text-muted-foreground shadow-xs">
+              +{plan.memberAvatarSeeds.length - 3}
+            </div>
+          )}
+        </div>
+
+        {/* Chat button */}
+        <button
+          type="button"
+          aria-label={`Open chat for ${plan.title}`}
+          className={cn(
+            "flex items-center gap-1 px-2.5 py-1 rounded-xl",
+            "text-xs font-bold text-muted-foreground",
+            "border border-border bg-background",
+            "hover:border-forge-teal/50 hover:text-forge-teal hover:bg-secondary",
+            "transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          )}
+        >
+          <MessageCircle className="size-3" aria-hidden="true" />
+          Chat
+        </button>
+      </div>
+    </motion.div>
+  );
+}

@@ -1,3 +1,4 @@
+import { cn } from "@/shared/lib/utils";
 import { Target } from "lucide-react";
 
 interface CardImageProps {
@@ -5,6 +6,7 @@ interface CardImageProps {
   title: string;
   matchScore: number;
   category: string;
+  variant?: "default" | "compact";
 }
 
 export function CardImage({
@@ -12,11 +14,20 @@ export function CardImage({
   title,
   matchScore,
   category,
+  variant = "default",
 }: CardImageProps) {
   const isHighMatch = matchScore >= 90;
+  const isCompact = variant === "compact";
 
   return (
-    <div className="relative h-56 md:h-auto md:w-2/5 overflow-hidden shrink-0 border-b-2 md:border-b-0 md:border-r-2 border-border group-hover:border-ink dark:group-hover:border-white transition-colors duration-150">
+    <div
+      className={cn(
+        "relative overflow-hidden shrink-0 transition-colors duration-150 border-border group-hover:border-ink dark:group-hover:border-white",
+        isCompact
+          ? "w-full aspect-video border-b-2"
+          : "h-56 md:h-auto md:w-2/5 border-b-2 md:border-b-0 md:border-r-2",
+      )}
+    >
       <img
         src={imageUrl}
         alt={title}

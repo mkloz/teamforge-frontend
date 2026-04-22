@@ -1,3 +1,4 @@
+import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
 
 interface CardFooterProps {
@@ -6,6 +7,7 @@ interface CardFooterProps {
   isFull: boolean;
   access: string;
   title: string;
+  variant?: "default" | "compact";
 }
 
 export function CardFooter({
@@ -14,9 +16,17 @@ export function CardFooter({
   isFull,
   access,
   title,
+  variant = "default",
 }: CardFooterProps) {
+  const isCompact = variant === "compact";
+
   return (
-    <div className="flex items-center justify-between pt-2 mt-auto relative z-20 gap-3">
+    <div
+      className={cn(
+        "flex items-center justify-between mt-auto relative z-20 gap-3",
+        isCompact ? "pt-1" : "pt-2",
+      )}
+    >
       {/* Availability Insights */}
       <div className="flex items-center gap-2.5">
         {/* Avatar Stack */}
@@ -24,7 +34,10 @@ export function CardFooter({
           {[...Array(Math.min(currentSize, 4))].map((_, i) => (
             <div
               key={i}
-              className="w-7 h-7 rounded-full border-thin border-canvas bg-canvas flex items-center justify-center overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:z-20 relative"
+              className={cn(
+                "rounded-full border-thin border-canvas bg-canvas flex items-center justify-center overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:z-20 relative",
+                isCompact ? "size-6" : "w-7 h-7",
+              )}
             >
               <img
                 src={`https://api.dicebear.com/7.x/notionists/svg?seed=${title}${i}`}
@@ -37,14 +50,24 @@ export function CardFooter({
 
           {/* Remainder Badge */}
           {currentSize > 4 && (
-            <div className="w-7 h-7 rounded-full border-thin border-canvas bg-muted flex items-center justify-center text-[10px] font-extrabold text-muted-foreground relative z-10 transition-transform duration-300 hover:-translate-y-1 hover:z-20">
+            <div
+              className={cn(
+                "rounded-full border-thin border-canvas bg-muted flex items-center justify-center text-[10px] font-extrabold text-muted-foreground relative z-10 transition-transform duration-300 hover:-translate-y-1 hover:z-20",
+                isCompact ? "size-6" : "w-7 h-7",
+              )}
+            >
               +{currentSize - 4}
             </div>
           )}
         </div>
 
         {/* Spots Left / Capacity */}
-        <div className="text-xs flex flex-col justify-center leading-tight">
+        <div
+          className={cn(
+            "flex flex-col justify-center leading-tight",
+            isCompact ? "text-[10px]" : "text-xs",
+          )}
+        >
           <span className="font-extrabold text-foreground">
             {currentSize}/{capacity}
           </span>
@@ -64,7 +87,11 @@ export function CardFooter({
       >
         <Button
           variant={isFull ? "outline" : "primary"}
-          className={`shrink-0 z-20 shadow-sm ${isFull ? "opacity-50 pointer-events-none hidden md:inline-flex" : ""}`}
+          size={isCompact ? "sm" : "default"}
+          className={cn(
+            "shrink-0 z-20 shadow-sm",
+            isFull && "opacity-50 pointer-events-none hidden md:inline-flex",
+          )}
         >
           {isFull ? "Full" : access === "By Request" ? "Request" : "Join"}
         </Button>
