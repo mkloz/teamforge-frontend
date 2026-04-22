@@ -24,6 +24,7 @@ interface User {
   avatar: string | null;
   bio: string | null;
   authProvider: 'EMAIL' | 'GOOGLE';
+  googleId?: string | null;
   emailVerified: boolean;
   createdAt: string; // ISO 8601
   updatedAt: string;
@@ -33,6 +34,11 @@ interface User {
   gender: 'MALE' | 'FEMALE' | 'NON_BINARY' | 'OTHER' | null;
   city: string | null;
   personalityType: string | null; // 4-letter type code (e.g., "INFP", "ESTJ")
+  oceanO: number | null; // Openness
+  oceanC: number | null; // Conscientiousness
+  oceanE: number | null; // Extraversion
+  oceanA: number | null; // Agreeableness
+  oceanN: number | null; // Neuroticism
   
   // Matching
   searchStatus: 'IDLE' | 'SEARCHING';
@@ -87,7 +93,10 @@ interface Activity {
   title: string;
   description: string | null;
   city: string | null;
+  locationLat: number | null;
+  locationLng: number | null;
   visibility: 'PUBLIC' | 'FRIENDS_ONLY' | 'INVITE_ONLY';
+  access: 'OPEN' | 'BY_REQUEST';
   forgeMode: 'AUTO' | 'MANUAL';
   status: 'OPEN' | 'MATCHING' | 'MATCHED' | 'CLOSED' | 'CANCELLED';
   createdAt: string;
@@ -159,7 +168,7 @@ interface Plan {
   
   dateTime: string | null; // ISO 8601
   
-  locationMode: 'IN_PERSON' | 'ONLINE';
+  locationMode: 'IN_PERSON' | 'ONLINE' | 'TBD';
   location: string | null;
   locationLat: number | null;
   locationLng: number | null;
@@ -197,7 +206,6 @@ interface Chat {
   createdAt: string;
   
   groupId: string | null;
-  pinnedMessageId: string | null;
   
   participants?: ChatParticipant[];
   messages?: Message[];
@@ -209,6 +217,7 @@ interface Message {
   content: string;
   status: 'SENDING' | 'SENT' | 'DELIVERED' | 'READ' | 'FAILED';
   isEdited: boolean;
+  isPinned: boolean;
   createdAt: string;
   editedAt: string | null;
   deletedAt: string | null;
@@ -469,7 +478,10 @@ interface CreateActivityRequest {
   title: string;
   description?: string;
   city?: string;
+  locationLat?: number;
+  locationLng?: number;
   visibility: ActivityVisibility;
+  access?: 'OPEN' | 'BY_REQUEST';
   forgeMode: ForgeMode;
   interestIds: string[];
 }
@@ -490,7 +502,7 @@ interface ForgeRequest {
     description?: string;
     category: PlanCategory;
     dateTime?: string;
-    locationMode: LocationMode;
+    locationMode: LocationMode; // Including 'TBD'
     location?: string;
     locationLat?: number;
     locationLng?: number;
