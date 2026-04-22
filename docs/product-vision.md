@@ -81,17 +81,20 @@ The "Forge my group" interaction is radically simple:
 - User receives one recommendation (not a list)
 - Accept or decline - no analysis paralysis
 
-### 2. Multi-Factor Compatibility Scoring
+### 2. Personality-Enhanced Compatibility Scoring
 
-Unlike competitors who match on one dimension, TeamForge uses a weighted scoring system:
+Unlike competitors who match on one dimension, TeamForge uses a weighted scoring system that includes embedded personality profiling:
 
 | Factor | Weight | Purpose |
 |--------|--------|---------|
+| **Personality type compatibility** | High | Core psychological alignment (4-letter type code) |
 | **Interest similarity** | High | Ensures shared activity enjoyment |
 | **Social graph proximity** | High | Prioritizes friend-of-friend connections |
 | **Age alignment** | Medium | Groups people at similar life stages |
 | **Trust score** | High | Rewards reliable participants |
 | **Location proximity** | Variable | Enables in-person activities |
+
+The personality type system uses a 4-letter code derived from user questionnaire responses, enabling nuanced compatibility matching based on cognitive preferences and social styles.
 
 ### 3. Activity-Centric Design
 

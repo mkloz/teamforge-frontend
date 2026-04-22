@@ -32,6 +32,7 @@ interface User {
   age: number | null;
   gender: 'MALE' | 'FEMALE' | 'NON_BINARY' | 'OTHER' | null;
   city: string | null;
+  personalityType: string | null; // 4-letter type code (e.g., "INFP", "ESTJ")
   
   // Matching
   searchStatus: 'IDLE' | 'SEARCHING';
@@ -111,7 +112,7 @@ interface Group {
   description: string | null;
   avatar: string | null;
   status: 'FORMING' | 'PENDING' | 'ACTIVE' | 'PLANNING' | 'COMPLETED' | 'DISBANDED';
-  maxMembers: number;
+  maxMembers: number; // Range: 2-16
   createdAt: string;
   updatedAt: string;
   disbandedAt: string | null;
@@ -483,7 +484,7 @@ interface CreateActivityResponse {
 ```typescript
 // POST /activities/:id/forge
 interface ForgeRequest {
-  groupSize: 4 | 6 | 8;
+  groupSize: number; // 2-16
   plan: {
     title: string;
     description?: string;

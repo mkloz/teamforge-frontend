@@ -225,9 +225,10 @@ Category (e.g., "Sports")
 
 #### Group Size Options
 
-- 4 members (intimate)
-- 6 members (standard)
-- 8 members (large)
+Groups support 2-16 members, with common presets:
+- 2-4 members (intimate)
+- 5-8 members (standard)
+- 9-16 members (large events)
 
 #### Components
 

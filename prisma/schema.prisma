@@ -35,9 +35,10 @@ model User {
   deletedAt     DateTime?        @map("deleted_at")
 
   // --- Profile ---
-  age    Int?
-  gender Gender?
-  city   String?
+  age             Int?
+  gender          Gender?
+  city            String?
+  personalityType String? @map("personality_type") // 4-letter type code (e.g., "INFP", "ESTJ")
 
   // --- Matching ---
   searchStatus    SearchStatus @default(IDLE) @map("search_status")
@@ -191,7 +192,7 @@ model Group {
   description String?
   avatar      String?
   status      GroupStatus @default(FORMING)
-  maxMembers  Int         @default(6) @map("max_members")
+  maxMembers  Int         @default(6) @map("max_members") // Range: 2-16
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
   disbandedAt DateTime?   @map("disbanded_at")
