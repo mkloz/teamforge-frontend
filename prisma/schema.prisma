@@ -1,3 +1,14 @@
+// ============================================================================
+// PRISMA SCHEMA - TeamForge Backend
+// ============================================================================
+// Normalized database schema following best practices:
+// - Single source of truth for each data element
+// - Proper foreign key constraints with cascade rules
+// - Composite indexes for common query patterns
+// - Self-referential structures where appropriate
+// - Soft delete support for critical entities
+// ============================================================================
+
 // ======== Datasource & Generators ========
 
 datasource db {
@@ -6,159 +17,158 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres"]
 }
 
 // ============================================================================
-// AUTHENTICATION & USER MODELS
+// AUTHENTICATION & USER
 // ============================================================================
 
 model User {
-  // --- Core Identity ---
   id            String           @id @default(cuid())
   email         String           @unique
-  password      String? // Null for OAuth users
+  password      String?          // Null for OAuth users
   name          String
   avatar        String?
   bio           String?
-  authProvider  AuthProviderType @default(EMAIL)
+  authProvider  AuthProviderType @default(EMAIL) @map("auth_provider")
   emailVerified Boolean          @default(false) @map("email_verified")
   createdAt     DateTime         @default(now()) @map("created_at")
   updatedAt     DateTime         @updatedAt @map("updated_at")
+  deletedAt     DateTime?        @map("deleted_at") // Soft delete
 
-  // --- Profile Information ---
-  age    Int?
-  gender Gender?
-  city   String?
+  // --- Profile ---
+  birthDate DateTime? @map("birth_date") // More precise than age
+  gender    Gender?
+  city      String?
+  timezone  String?   // For scheduling across timezones
 
-  // --- Personality & Algorithm Fields ---
+  // --- Algorithm & Matching ---
   searchStatus    SearchStatus @default(IDLE) @map("search_status")
   trustScore      Float        @default(0.5) @map("trust_score")
   profileComplete Boolean      @default(false) @map("profile_complete")
+  lastActiveAt    DateTime?    @map("last_active_at") // For activity-based matching
 
-  // MBTI Personality Type (derived from dimension scores)
-  mbtiType String? @map("mbti_type")
+  // MBTI (discrete type + continuous vectors for matching)
+  mbtiType     String? @map("mbti_type") // e.g., "INTJ"
+  mbtiVectorEi Float?  @map("mbti_vector_ei") // 0=E, 1=I
+  mbtiVectorSn Float?  @map("mbti_vector_sn") // 0=S, 1=N
+  mbtiVectorTf Float?  @map("mbti_vector_tf") // 0=T, 1=F
+  mbtiVectorJp Float?  @map("mbti_vector_jp") // 0=J, 1=P
 
-  // MBTI Dimension Vectors (continuous 0-1 scale for matching algorithm)
-  // 0 = E/S/T/J, 1 = I/N/F/P
-  mbtiVectorEi Float? @map("mbti_vector_ei") // Extraversion vs Introversion
-  mbtiVectorSn Float? @map("mbti_vector_sn") // Sensing vs Intuition
-  mbtiVectorTf Float? @map("mbti_vector_tf") // Thinking vs Feeling
-  mbtiVectorJp Float? @map("mbti_vector_jp") // Judging vs Perceiving
-
-  // OCEAN Big Five Personality Scores (0-100 scale)
+  // OCEAN Big Five (0-1 normalized scale)
   oceanOpenness          Float? @map("ocean_openness")
   oceanConscientiousness Float? @map("ocean_conscientiousness")
   oceanExtraversion      Float? @map("ocean_extraversion")
   oceanAgreeableness     Float? @map("ocean_agreeableness")
   oceanNeuroticism       Float? @map("ocean_neuroticism")
 
-  // Derived Archetype (calculated from MBTI + OCEAN)
+  // Derived archetype from personality data
   archetype String?
 
   // --- Relations ---
-  interests        UserInterest[]
-  sentFriendships  Friendship[]     @relation("SentFriendships")
-  recvdFriendships Friendship[]     @relation("ReceivedFriendships")
-  createdActivities Activity[]       @relation("ActivityCreator")
-  groupMemberships GroupMember[]
-  sentMessages     Message[]
-  notifications    Notification[]   @relation("NotificationReceiver")
-  invites          Invite[]         @relation("UserInvites")
-  ratingsGiven     Rating[]         @relation("Rater")
-  ratingsReceived  Rating[]         @relation("Ratee")
+  interests          UserInterest[]
+  sentFriendships    Friendship[]        @relation("FriendshipRequester")
+  receivedFriendships Friendship[]       @relation("FriendshipReceiver")
+  createdActivities  Activity[]          @relation("ActivityCreator")
+  groupMemberships   GroupMember[]
+  sentMessages       Message[]
+  notifications      Notification[]
+  invitesSent        Invite[]            @relation("InviteSender")
+  invitesReceived    Invite[]            @relation("InviteReceiver")
+  ratingsGiven       Rating[]            @relation("RatingGiver")
+  ratingsReceived    Rating[]            @relation("RatingReceiver")
   chatParticipations ChatParticipant[]
-  reactions        Reaction[]
-  messageReads     MessageReadStatus[]
-  proposals        PlanProposal[]   @relation("ProposalAuthor")
-  proposalVotes    ProposalVote[]
-  planComments     PlanComment[]    @relation("CommentAuthor")
-  sessions         Session[]
-  otpCodes         OtpCode[]
+  reactions          Reaction[]
+  proposals          PlanProposal[]      @relation("ProposalAuthor")
+  proposalVotes      ProposalVote[]
+  planComments       PlanComment[]
+  sessions           Session[]
+  otpCodes           OtpCode[]
 
   @@index([email])
   @@index([city])
   @@index([searchStatus])
-  @@index([mbtiType])
+  @@index([deletedAt])
   @@map("users")
 }
 
 model Session {
   id        String   @id @default(cuid())
-  userId    String   @map("user_id")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   token     String   @unique
   expiresAt DateTime @map("expires_at")
   createdAt DateTime @default(now()) @map("created_at")
   userAgent String?  @map("user_agent")
   ipAddress String?  @map("ip_address")
 
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
-  @@index([token])
+  @@index([expiresAt])
   @@map("sessions")
 }
 
 model OtpCode {
-  id        String   @id @default(cuid())
-  userId    String   @map("user_id")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String     @id @default(cuid())
   code      String
   purpose   OtpPurpose
-  expiresAt DateTime @map("expires_at")
-  usedAt    DateTime? @map("used_at")
-  createdAt DateTime @default(now()) @map("created_at")
+  expiresAt DateTime   @map("expires_at")
+  usedAt    DateTime?  @map("used_at")
+  createdAt DateTime   @default(now()) @map("created_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, purpose])
+  @@index([expiresAt])
   @@map("otp_codes")
 }
 
 // ============================================================================
-// INTERESTS & CATEGORIES
+// INTERESTS (Self-referential hierarchy)
 // ============================================================================
-
-model InterestCategory {
-  id          String        @id @default(cuid())
-  name        String        @unique
-  description String?
-  color       String? // Tailwind color class
-  sortOrder   Int           @default(0) @map("sort_order")
-  subcategories InterestSubcategory[]
-
-  @@map("interest_categories")
-}
-
-model InterestSubcategory {
-  id         String           @id @default(cuid())
-  name       String
-  icon       String? // Icon identifier
-  categoryId String           @map("category_id")
-  category   InterestCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  interests  Interest[]
-
-  @@unique([categoryId, name])
-  @@map("interest_subcategories")
-}
+// Simplified to a single table with parent reference.
+// Categories have parentId = null, subcategories reference categories,
+// leaf interests reference subcategories.
 
 model Interest {
-  id            String               @id @default(cuid())
-  name          String               @unique
-  aliases       String[] // Alternative names for search
-  subcategoryId String?              @map("subcategory_id")
-  subcategory   InterestSubcategory? @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique // URL-friendly identifier
+  description String?
+  icon        String? // Icon identifier or emoji
+  color       String? // Theme color (hex or tailwind class)
+  sortOrder   Int     @default(0) @map("sort_order")
+  isActive    Boolean @default(true) @map("is_active")
 
-  users        UserInterest[]
-  activities   ActivityInterest[]
+  // Hierarchical structure
+  parentId String?    @map("parent_id")
+  parent   Interest?  @relation("InterestHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children Interest[] @relation("InterestHierarchy")
 
-  @@index([name])
+  // Search aliases (alternative names, abbreviations)
+  aliases String[] @default([])
+
+  // Relations
+  users      UserInterest[]
+  activities ActivityInterest[]
+
+  @@unique([parentId, name]) // Unique name within parent
+  @@index([parentId])
+  @@index([slug])
   @@map("interests")
 }
 
 model UserInterest {
-  userId     String   @map("user_id")
-  interestId String   @map("interest_id")
-  addedAt    DateTime @default(now()) @map("added_at")
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  interest   Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+  addedAt DateTime @default(now()) @map("added_at")
+
+  userId     String @map("user_id")
+  interestId String @map("interest_id")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interest Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
 
   @@id([userId, interestId])
   @@map("user_interests")
@@ -167,33 +177,41 @@ model UserInterest {
 // ============================================================================
 // ACTIVITIES & GROUPS
 // ============================================================================
+// Activity = what someone wants to do (the intent)
+// Group = the people doing it together (formed around an activity)
 
 model Activity {
-  id          String           @id @default(cuid())
+  id          String             @id @default(cuid())
   title       String
   description String?
   city        String?
   visibility  ActivityVisibility @default(PUBLIC)
-  forgeMode   ForgeMode        @default(AUTO)
-  maxMembers  Int?             @map("max_members")
-  createdAt   DateTime         @default(now()) @map("created_at")
+  forgeMode   ForgeMode          @default(AUTO) @map("forge_mode")
+  status      ActivityStatus     @default(OPEN)
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+  deletedAt   DateTime?          @map("deleted_at")
 
   creatorId String @map("creator_id")
   creator   User   @relation("ActivityCreator", fields: [creatorId], references: [id], onDelete: Cascade)
 
-  group     Group?
+  // Relations
   interests ActivityInterest[]
+  group     Group?
 
   @@index([city])
   @@index([creatorId])
+  @@index([status])
+  @@index([deletedAt])
   @@map("activities")
 }
 
 model ActivityInterest {
-  activityId String   @map("activity_id")
-  interestId String   @map("interest_id")
-  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  interest   Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+  activityId String @map("activity_id")
+  interestId String @map("interest_id")
+
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  interest Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
 
   @@id([activityId, interestId])
   @@map("activity_interests")
@@ -201,43 +219,48 @@ model ActivityInterest {
 
 model Group {
   id          String      @id @default(cuid())
+  name        String
+  description String?
+  avatar      String?
   status      GroupStatus @default(FORMING)
   maxMembers  Int         @default(6) @map("max_members")
   createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  disbandedAt DateTime?   @map("disbanded_at") // Soft delete for groups
 
-  // Group Identity (persistent across plans)
-  name        String
-  avatar      String?
-  description String?
-
-  // Source Activity
+  // Source activity (1:1)
   activityId String   @unique @map("activity_id")
   activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
 
+  // Current active plan (optional, nullable FK)
+  currentPlanId String? @unique @map("current_plan_id")
+
   // Relations
-  members     GroupMember[]
-  plans       Plan[]
-  currentPlan Plan?        @relation("CurrentPlan", fields: [currentPlanId], references: [id])
-  currentPlanId String?    @unique @map("current_plan_id")
-  chat        Chat?
-  invites     Invite[]
-  ratings     Rating[]
+  members GroupMember[]
+  plans   Plan[]
+  chat    Chat?
+  invites Invite[]
+  ratings Rating[]
 
   @@index([status])
+  @@index([disbandedAt])
   @@map("groups")
 }
 
 model GroupMember {
-  userId            String    @map("user_id")
-  groupId           String    @map("group_id")
-  role              GroupRole @default(MEMBER)
-  joinedAt          DateTime  @default(now()) @map("joined_at")
-  compatibilityScore Float?   @map("compatibility_score") // 0-100
+  role               GroupRole @default(MEMBER)
+  joinedAt           DateTime  @default(now()) @map("joined_at")
+  leftAt             DateTime? @map("left_at") // Track when members leave
+  compatibilityScore Float?    @map("compatibility_score") // 0-1 scale
+
+  userId  String @map("user_id")
+  groupId String @map("group_id")
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@id([userId, groupId])
+  @@index([groupId])
   @@map("group_members")
 }
 
@@ -246,32 +269,44 @@ model GroupMember {
 // ============================================================================
 
 model Plan {
-  id          String       @id @default(cuid())
-  title       String
-  description String?
-  category    PlanCategory
-  coverImage  String?      @map("cover_image")
-  dateTime    DateTime?    @map("date_time")
-  location    String?
-  locationLat Float?       @map("location_lat")
-  locationLng Float?       @map("location_lng")
+  id           String       @id @default(cuid())
+  title        String
+  description  String?
+  category     PlanCategory
+  coverImage   String?      @map("cover_image")
+  status       PlanStatus   @default(DRAFT)
+  
+  // Scheduling
+  dateTime     DateTime?    @map("date_time")
+  endDateTime  DateTime?    @map("end_date_time") // For multi-hour/day events
+  
+  // Location
   locationMode LocationMode @default(IN_PERSON) @map("location_mode")
-  cost        CostType     @default(FREE)
-  status      PlanStatus   @default(DRAFT)
-  completedAt DateTime?    @map("completed_at")
-  rating      Float?       // Average rating after completion (1-5)
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @updatedAt @map("updated_at")
+  location     String?      // Address or venue name
+  locationLat  Float?       @map("location_lat")
+  locationLng  Float?       @map("location_lng")
+  meetingUrl   String?      @map("meeting_url") // For online events
+  
+  // Cost
+  cost        CostType @default(FREE)
+  costAmount  Float?   @map("cost_amount") // Actual amount if PAID
+  costDetails String?  @map("cost_details") // e.g., "Split evenly"
+  
+  // Completion
+  completedAt DateTime? @map("completed_at")
+  cancelledAt DateTime? @map("cancelled_at")
+  
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   groupId String @map("group_id")
   group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
-  // Reverse relation for currentPlan
-  currentForGroup Group? @relation("CurrentPlan")
-
-  // Collaboration
+  // Relations
   proposals PlanProposal[]
   comments  PlanComment[]
+  ratings   Rating[]       // Ratings reference the specific plan
 
   @@index([groupId])
   @@index([status])
@@ -282,7 +317,7 @@ model Plan {
 model PlanProposal {
   id            String         @id @default(cuid())
   field         PlanField
-  currentValue  String         @map("current_value")
+  currentValue  String?        @map("current_value")
   proposedValue String         @map("proposed_value")
   status        ProposalStatus @default(PENDING)
   createdAt     DateTime       @default(now()) @map("created_at")
@@ -301,9 +336,8 @@ model PlanProposal {
 }
 
 model ProposalVote {
-  id         String   @id @default(cuid())
-  vote       VoteType
-  createdAt  DateTime @default(now()) @map("created_at")
+  vote      VoteType
+  createdAt DateTime @default(now()) @map("created_at")
 
   proposalId String       @map("proposal_id")
   proposal   PlanProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
@@ -311,7 +345,7 @@ model ProposalVote {
   userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([proposalId, userId])
+  @@id([proposalId, userId])
   @@map("proposal_votes")
 }
 
@@ -320,12 +354,13 @@ model PlanComment {
   field     PlanField? // null = general comment
   content   String
   createdAt DateTime  @default(now()) @map("created_at")
+  editedAt  DateTime? @map("edited_at")
 
   planId String @map("plan_id")
   plan   Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
 
   authorId String @map("author_id")
-  author   User   @relation("CommentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([planId])
   @@map("plan_comments")
@@ -336,20 +371,22 @@ model PlanComment {
 // ============================================================================
 
 model Friendship {
-  requesterId String           @map("requester_id")
-  receiverId  String           @map("receiver_id")
-  status      FriendshipStatus @default(PENDING)
-  createdAt   DateTime         @default(now()) @map("created_at")
-  updatedAt   DateTime         @updatedAt @map("updated_at")
+  status    FriendshipStatus @default(PENDING)
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
 
-  requester User @relation("SentFriendships", fields: [requesterId], references: [id], onDelete: Cascade)
-  receiver  User @relation("ReceivedFriendships", fields: [receiverId], references: [id], onDelete: Cascade)
+  requesterId String @map("requester_id")
+  receiverId  String @map("receiver_id")
 
-  // Private chat created when friendship is accepted
+  requester User @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  receiver  User @relation("FriendshipReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  // Private chat (created when accepted)
   privateChatId String? @unique @map("private_chat_id")
   privateChat   Chat?   @relation(fields: [privateChatId], references: [id], onDelete: SetNull)
 
   @@id([requesterId, receiverId])
+  @@index([receiverId])
   @@map("friendships")
 }
 
@@ -362,7 +399,7 @@ model Chat {
   type      ChatType
   createdAt DateTime @default(now()) @map("created_at")
 
-  // For GROUP chats
+  // For GROUP chats (1:1 with Group)
   groupId String? @unique @map("group_id")
   group   Group?  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
@@ -373,6 +410,7 @@ model Chat {
   pinnedMessageId String?  @unique @map("pinned_message_id")
   pinnedMessage   Message? @relation("PinnedMessage", fields: [pinnedMessageId], references: [id], onDelete: SetNull)
 
+  // Relations
   participants ChatParticipant[]
   messages     Message[]
 
@@ -380,17 +418,22 @@ model Chat {
 }
 
 model ChatParticipant {
-  userId       String   @map("user_id")
-  chatId       String   @map("chat_id")
-  isMuted      Boolean  @default(false) @map("is_muted")
-  isBlocked    Boolean  @default(false) @map("is_blocked")
-  lastReadAt   DateTime? @map("last_read_at")
-  joinedAt     DateTime @default(now()) @map("joined_at")
+  isMuted   Boolean   @default(false) @map("is_muted")
+  isBlocked Boolean   @default(false) @map("is_blocked")
+  joinedAt  DateTime  @default(now()) @map("joined_at")
+  leftAt    DateTime? @map("left_at")
+
+  // Track read position efficiently
+  lastReadMessageId String? @map("last_read_message_id")
+
+  userId String @map("user_id")
+  chatId String @map("chat_id")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
 
   @@id([userId, chatId])
+  @@index([chatId])
   @@map("chat_participants")
 }
 
@@ -401,7 +444,8 @@ model Message {
   status    MessageStatus @default(SENT)
   isEdited  Boolean       @default(false) @map("is_edited")
   createdAt DateTime      @default(now()) @map("created_at")
-  updatedAt DateTime      @updatedAt @map("updated_at")
+  editedAt  DateTime?     @map("edited_at")
+  deletedAt DateTime?     @map("deleted_at") // Soft delete for messages
 
   chatId String @map("chat_id")
   chat   Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
@@ -410,18 +454,18 @@ model Message {
   sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
 
   // Reply threading
-  replyToId String?  @map("reply_to_id")
-  replyTo   Message? @relation("Replies", fields: [replyToId], references: [id], onDelete: SetNull)
-  replies   Message[] @relation("Replies")
+  replyToId String?   @map("reply_to_id")
+  replyTo   Message?  @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies   Message[] @relation("MessageReplies")
 
   // Relations
-  reactions    Reaction[]
-  readStatuses MessageReadStatus[]
-  attachments  Attachment[]
-  pinnedInChat Chat?               @relation("PinnedMessage")
+  reactions   Reaction[]
+  attachments Attachment[]
+  pinnedIn    Chat?        @relation("PinnedMessage")
 
   @@index([chatId, createdAt])
   @@index([senderId])
+  @@index([deletedAt])
   @@map("messages")
 }
 
@@ -430,12 +474,17 @@ model Attachment {
   type         AttachmentType
   url          String
   name         String?
-  size         Int? // bytes
+  size         Int?           // Bytes
   mimeType     String?        @map("mime_type")
   thumbnailUrl String?        @map("thumbnail_url")
-  duration     Int? // seconds (for voice/video)
-  waveform     Float[] // For voice note visualization
-  createdAt    DateTime       @default(now()) @map("created_at")
+  
+  // Media metadata
+  width    Int?   // For images/videos
+  height   Int?   // For images/videos
+  duration Int?   // Seconds (for audio/video)
+  waveform Float[] @default([]) // Voice note visualization
+
+  createdAt DateTime @default(now()) @map("created_at")
 
   messageId String  @map("message_id")
   message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
@@ -445,7 +494,6 @@ model Attachment {
 }
 
 model Reaction {
-  id        String   @id @default(cuid())
   emoji     String
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -455,22 +503,8 @@ model Reaction {
   userId String @map("user_id")
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([messageId, userId, emoji])
+  @@id([messageId, userId, emoji])
   @@map("reactions")
-}
-
-model MessageReadStatus {
-  id     String   @id @default(cuid())
-  readAt DateTime @default(now()) @map("read_at")
-
-  messageId String  @map("message_id")
-  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
-
-  userId String @map("user_id")
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([messageId, userId])
-  @@map("message_read_statuses")
 }
 
 // ============================================================================
@@ -479,20 +513,28 @@ model MessageReadStatus {
 
 model Rating {
   id        String   @id @default(cuid())
-  score     Float // 1-5
+  score     Int      // 1-5 integer scale
   comment   String?
   createdAt DateTime @default(now()) @map("created_at")
 
+  // Who gave the rating
   raterId String @map("rater_id")
+  rater   User   @relation("RatingGiver", fields: [raterId], references: [id], onDelete: Cascade)
+
+  // Who received the rating
   rateeId String @map("ratee_id")
+  ratee   User   @relation("RatingReceiver", fields: [rateeId], references: [id], onDelete: Cascade)
+
+  // Context: which group and plan
   groupId String @map("group_id")
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
-  rater User  @relation("Rater", fields: [raterId], references: [id], onDelete: Cascade)
-  ratee User  @relation("Ratee", fields: [rateeId], references: [id], onDelete: Cascade)
-  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  planId String @map("plan_id")
+  plan   Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
 
-  @@unique([raterId, rateeId, groupId])
+  @@unique([raterId, rateeId, planId]) // One rating per user per plan
   @@index([rateeId])
+  @@index([planId])
   @@map("ratings")
 }
 
@@ -501,24 +543,28 @@ model Rating {
 // ============================================================================
 
 model Invite {
-  id        String       @id @default(cuid())
-  status    InviteStatus @default(PENDING)
-  message   String? // Optional personal message
-  createdAt DateTime     @default(now()) @map("created_at")
-  expiresAt DateTime?    @map("expires_at")
-  respondedAt DateTime?  @map("responded_at")
+  id          String       @id @default(cuid())
+  type        InviteType
+  status      InviteStatus @default(PENDING)
+  message     String?      // Personal message
+  createdAt   DateTime     @default(now()) @map("created_at")
+  expiresAt   DateTime?    @map("expires_at")
+  respondedAt DateTime?    @map("responded_at")
 
+  // Invite to a group
   groupId String @map("group_id")
-  userId  String @map("user_id")
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
-  // Who sent the invite (for friend invites)
+  // Who is being invited
+  inviteeId String @map("invitee_id")
+  invitee   User   @relation("InviteReceiver", fields: [inviteeId], references: [id], onDelete: Cascade)
+
+  // Who sent the invite (optional - could be system for algorithm matches)
   inviterId String? @map("inviter_id")
+  inviter   User?   @relation("InviteSender", fields: [inviterId], references: [id], onDelete: SetNull)
 
-  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  user  User  @relation("UserInvites", fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([groupId, userId])
-  @@index([userId, status])
+  @@unique([groupId, inviteeId])
+  @@index([inviteeId, status])
   @@map("invites")
 }
 
@@ -527,19 +573,20 @@ model Notification {
   type      NotificationType
   title     String
   message   String
-  link      String? // Deep link to relevant page
+  link      String?          // Deep link to relevant page
   avatarUrl String?          @map("avatar_url")
   isRead    Boolean          @default(false) @map("is_read")
   createdAt DateTime         @default(now()) @map("created_at")
 
-  // Optional reference IDs for context
-  referenceId   String? @map("reference_id") // Generic ID reference
-  referenceType String? @map("reference_type") // Type of reference (group, user, plan, etc.)
+  // Polymorphic reference (type + id pattern)
+  entityType EntityType? @map("entity_type")
+  entityId   String?     @map("entity_id")
 
   receiverId String @map("receiver_id")
-  receiver   User   @relation("NotificationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiver   User   @relation(fields: [receiverId], references: [id], onDelete: Cascade)
 
   @@index([receiverId, isRead, createdAt])
+  @@index([entityType, entityId])
   @@map("notifications")
 }
 
@@ -550,46 +597,60 @@ model Notification {
 enum AuthProviderType {
   EMAIL
   GOOGLE
+  APPLE
 }
 
 enum OtpPurpose {
   EMAIL_VERIFICATION
   PASSWORD_RESET
+  TWO_FACTOR
 }
 
 enum Gender {
   MALE
   FEMALE
   NON_BINARY
+  OTHER
   PREFER_NOT_TO_SAY
 }
 
 enum SearchStatus {
   IDLE
   SEARCHING
+  PAUSED
 }
 
 enum ActivityVisibility {
   PUBLIC
-  FRIENDS
+  FRIENDS_ONLY
   INVITE_ONLY
 }
 
+enum ActivityStatus {
+  OPEN       // Accepting members
+  MATCHING   // Algorithm working
+  MATCHED    // Group formed
+  CLOSED     // No longer accepting
+  CANCELLED
+}
+
 enum ForgeMode {
-  MANUAL
-  AUTO
+  AUTO    // Algorithm finds members
+  MANUAL  // Creator invites manually
 }
 
 enum GroupStatus {
-  FORMING // Waiting for algorithm match
-  PENDING // Awaiting member confirmations
-  ACTIVE // Group is active
-  COMPLETED // Plan completed
-  DISSOLVED // Group disbanded
+  FORMING    // Initial state, building membership
+  PENDING    // Waiting for confirmations
+  ACTIVE     // Group is functioning
+  PLANNING   // Working on a plan
+  COMPLETED  // Plan successfully executed
+  DISBANDED  // Group dissolved
 }
 
 enum GroupRole {
   ADMIN
+  MODERATOR
   MEMBER
 }
 
@@ -604,11 +665,15 @@ enum PlanCategory {
   FOOD
   GAMING
   WELLNESS
+  TRAVEL
+  OTHER
 }
 
 enum PlanStatus {
   DRAFT
+  PROPOSED
   CONFIRMED
+  IN_PROGRESS
   COMPLETED
   CANCELLED
 }
@@ -618,27 +683,33 @@ enum PlanField {
   DESCRIPTION
   DATE_TIME
   LOCATION
+  COST
+  CATEGORY
 }
 
 enum ProposalStatus {
   PENDING
   APPROVED
   REJECTED
+  WITHDRAWN
 }
 
 enum VoteType {
   APPROVE
   REJECT
+  ABSTAIN
 }
 
 enum LocationMode {
   IN_PERSON
   ONLINE
+  HYBRID
 }
 
 enum CostType {
   FREE
   PAID
+  SPLIT
 }
 
 enum FriendshipStatus {
@@ -659,8 +730,9 @@ enum MessageType {
   VOICE
   FILE
   LOCATION
-  SYSTEM
-  PLAN_UPDATE
+  SYSTEM       // Automated messages
+  PLAN_UPDATE  // Plan change notifications
+  POLL         // Voting/polling
 }
 
 enum MessageStatus {
@@ -673,9 +745,15 @@ enum MessageStatus {
 
 enum AttachmentType {
   IMAGE
-  FILE
-  VOICE
   VIDEO
+  AUDIO
+  FILE
+}
+
+enum InviteType {
+  ALGORITHM_MATCH  // System-generated from matching
+  FRIEND_INVITE    // Invited by a friend
+  DIRECT_INVITE    // Direct invite from group admin
 }
 
 enum InviteStatus {
@@ -683,27 +761,44 @@ enum InviteStatus {
   ACCEPTED
   DECLINED
   EXPIRED
+  CANCELLED
 }
 
 enum NotificationType {
   // Social
   FRIEND_REQUEST
-  FRIEND_ACCEPT
+  FRIEND_ACCEPTED
   // Groups
   GROUP_FORMED
   GROUP_INVITE
-  JOIN_REQUEST
+  GROUP_JOIN_REQUEST
   GROUP_JOIN_APPROVED
-  GROUP_REPLACEMENT_OFFER
+  GROUP_MEMBER_LEFT
+  GROUP_DISBANDED
   // Plans
+  PLAN_CREATED
   PLAN_CONFIRMED
   PLAN_UPDATED
   PLAN_PROPOSAL
+  PLAN_STARTING_SOON
+  PLAN_COMPLETED
+  PLAN_CANCELLED
   // Messaging
-  NEW_CHAT_MESSAGE
+  NEW_MESSAGE
+  MESSAGE_MENTION
   // Ratings
   RATING_REQUEST
   RATING_RECEIVED
   // System
-  SYSTEM
+  SYSTEM_ANNOUNCEMENT
+  ACCOUNT_SECURITY
+}
+
+enum EntityType {
+  USER
+  GROUP
+  PLAN
+  ACTIVITY
+  MESSAGE
+  INVITE
 }
