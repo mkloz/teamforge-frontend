@@ -1,5 +1,5 @@
+import { motion } from "framer-motion";
 import { Users } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
 
 interface GroupIdentitySectionProps {
   name: string;
@@ -23,17 +23,19 @@ export function GroupIdentitySection({
       {/* Group identity - focusing on name and metadata */}
       <div className="flex items-start gap-4">
         {!hideAvatar && (
-          /* Avatar with edit overlay for admins (Fallback if hideAvatar is false) */
-          <div
-            className={cn(
-              "relative w-20 h-20 rounded-2xl overflow-hidden bg-muted ring-2 ring-border shadow-md",
-            )}
-          >
-            <img
-              src={avatar || undefined}
-              alt={name}
-              className="w-full h-full object-cover"
-            />
+          <div className="px-4 relative z-10">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="w-20 h-20 rounded-xl overflow-hidden bg-muted ring-4 ring-canvas shadow-xl flex items-center justify-center group pointer-events-auto"
+            >
+              <img
+                src={avatar || undefined}
+                alt={`${name} avatar`}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            </motion.div>
           </div>
         )}
 

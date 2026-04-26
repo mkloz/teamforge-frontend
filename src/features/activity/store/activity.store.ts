@@ -8,6 +8,7 @@ interface ActivityState {
   // Unified List UI
   searchQuery: string;
   activeFilter: FilterChip;
+  sidebarDensity: "default" | "compact";
 
   // Selection
   selectedId: string | null;
@@ -23,6 +24,7 @@ interface ActivityState {
   // Actions
   setSearchQuery: (query: string) => void;
   setActiveFilter: (filter: FilterChip) => void;
+  setSidebarDensity: (density: "default" | "compact") => void;
   selectConversation: (id: string | null, kind: "group" | "dm" | null) => void;
   setReplyingTo: (message: UnifiedMessage | null) => void;
   pinMessage: (message: UnifiedMessage) => void;
@@ -45,6 +47,7 @@ interface ActivityState {
 export const useActivityStore = create<ActivityState>((set) => ({
   searchQuery: "",
   activeFilter: "all",
+  sidebarDensity: "default",
   selectedId: null,
   selectedKind: null,
 
@@ -68,6 +71,7 @@ export const useActivityStore = create<ActivityState>((set) => ({
   setSearchQuery: (searchQuery) => set({ searchQuery }),
 
   setActiveFilter: (activeFilter) => set({ activeFilter }),
+  setSidebarDensity: (sidebarDensity) => set({ sidebarDensity }),
 
   selectConversation: (id, kind) =>
     set((state) => {

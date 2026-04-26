@@ -19,7 +19,7 @@ export function PsychometricsSidebar({ profile }: PsychometricsSidebarProps) {
       {/* OCEAN Radar Chart Section */}
       <section className="space-y-6">
         <SectionTitle dotColor="bg-spark-amber">OCEAN Profile</SectionTitle>
-        <div className="bg-canvas border border-border/40 rounded-3xl p-4 md:p-6 shadow-xs">
+        <div className="bg-canvas border border-border/40 rounded-2xl p-4 md:p-6 shadow-xs">
           <OceanChart
             scores={profile.oceanScores}
             selectedTrait={selectedTrait}

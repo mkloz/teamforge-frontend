@@ -119,7 +119,7 @@ export function WalkthroughStep({
               "border-white/5 dark:border-white/10 shadow-sm",
               index === 0 && "group-hover:bg-primary/3",
               index === 1 && "group-hover:bg-accent/3",
-              index === 2 && "group-hover:bg-emerald-500/3",
+              index === 2 && "group-hover:bg-forge-teal/3",
             )}
           >
             <h4 className="text-base font-bold text-foreground mb-1.5 transition-colors group-hover:text-primary tracking-tight">

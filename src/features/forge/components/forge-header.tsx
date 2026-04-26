@@ -17,7 +17,7 @@ const ENTITY_PILL_COLORS: Record<string, string> = {
   Activity: "bg-muted text-muted-foreground",
   Plan: "bg-primary/10 text-primary",
   Group: "bg-accent/15 text-accent",
-  Success: "bg-emerald-500/10 text-emerald-600",
+  Success: "bg-forge-teal/10 text-forge-teal",
   Failed: "bg-destructive/10 text-destructive",
   Identity: "bg-muted text-muted-foreground",
   Invite: "bg-muted text-muted-foreground",

@@ -13,8 +13,8 @@ export function ProfileAvatar({ src, fullName }: ProfileAvatarProps) {
         alt={fullName}
         className="relative w-38 h-38 sm:w-38 sm:h-38 rounded-full object-cover border-thick border-canvas bg-muted shadow-lg z-10 transition-transform duration-300 group-hover:scale-[1.02]"
       />
-      <div className="absolute bottom-2 right-2 w-5 h-5 rounded-full bg-emerald-500 border-2 border-canvas z-20 shadow-sm flex items-center justify-center">
-        <div className="absolute inset-0 rounded-full bg-emerald-500 animate-[ping_2.5s_cubic-bezier(0,0,0.2,1)_infinite] opacity-75" />
+      <div className="absolute bottom-2 right-2 w-5 h-5 rounded-full bg-forge-teal border-2 border-canvas z-20 shadow-sm flex items-center justify-center">
+        <div className="absolute inset-0 rounded-full bg-forge-teal animate-[ping_2.5s_cubic-bezier(0,0,0.2,1)_infinite] opacity-75" />
       </div>
     </div>
   );

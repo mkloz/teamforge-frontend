@@ -484,11 +484,13 @@ function WeightSlider({
   warning,
   subLabel,
 }: WeightSliderProps) {
-  const [dragging, setDragging] = useState(false);
-  const isHighDiversity = label.includes("Diversity") && value > 75;
-  const semanticLabels = label.toLowerCase().includes("personality")
-    ? { min: "Broad Match", max: "Highly Compatible" }
-    : { min: "Consistent", max: "Diverse" };
+  const isHighDiversity =
+    label.toLowerCase().includes("diversity") && value > 75;
+  const semanticLabels =
+    label.toLowerCase().includes("personality") ||
+    label.toLowerCase().includes("matching")
+      ? { min: "Broad", max: "Exact" }
+      : { min: "Homogeneous", max: "Diverse" };
   const pct = ((value - min) / (max - min)) * 100;
 
   return (
@@ -505,50 +507,55 @@ function WeightSlider({
         <div
           className={cn(
             "text-sm font-black italic tabular-nums transition-colors duration-300 shrink-0",
-            isHighDiversity ? "text-amber-500" : "text-primary",
-            dragging && "scale-110 transition-transform",
+            isHighDiversity ? "text-spark-amber" : "text-forge-teal",
           )}
         >
           {value}%
         </div>
       </div>
 
-      <input
-        type="range"
+      <RadixSlider.Root
+        className="relative flex items-center select-none touch-none w-full h-5"
+        value={[value]}
+        onValueChange={([v]) => onChange(v)}
         min={min}
         max={max}
         step={step}
-        value={value}
-        aria-label={label}
-        onChange={(e) => {
-          setDragging(true);
-          onChange(Number(e.target.value));
-        }}
-        onMouseUp={() => setDragging(false)}
-        onTouchEnd={() => setDragging(false)}
-        className={cn(
-          "range-input w-full h-2 rounded-full cursor-pointer",
-          isHighDiversity ? "accent-amber-500" : "accent-primary",
-        )}
-      />
+      >
+        <RadixSlider.Track className="bg-muted relative grow rounded-full h-1.5">
+          <RadixSlider.Range
+            className={cn(
+              "absolute rounded-full h-full",
+              isHighDiversity ? "bg-spark-amber" : "bg-forge-teal",
+            )}
+          />
+        </RadixSlider.Track>
+        <RadixSlider.Thumb
+          className={cn(
+            "block w-5 h-5 bg-background border-2 rounded-full shadow-md hover:scale-110 active:scale-95 transition-transform outline-none cursor-grab active:cursor-grabbing",
+            isHighDiversity
+              ? "border-spark-amber shadow-spark-amber/20 focus-visible:ring-spark-amber/50"
+              : "border-forge-teal shadow-forge-teal/20 focus-visible:ring-forge-teal/50",
+          )}
+          aria-label={label}
+        />
+      </RadixSlider.Root>
 
-      <div className="flex justify-between items-center gap-1 px-0.5 -mt-2">
+      <div className="flex justify-between items-center gap-1 px-0.5 -mt-1.5">
         {Array.from({ length: 15 }).map((_, i) => {
           const dotPct = (i / 14) * 100;
           const active = pct >= dotPct;
-          const intensity = active ? Math.min(1, (pct - dotPct) / 20 + 0.4) : 0;
           return (
             <div
               key={i}
               className={cn(
-                "h-1.5 flex-1 rounded-full transition-colors duration-500",
+                "h-1 flex-1 rounded-full transition-colors duration-500",
                 active
                   ? isHighDiversity
-                    ? "bg-amber-500/50"
-                    : "bg-primary/50"
-                  : "bg-muted/30",
+                    ? "bg-spark-amber/40"
+                    : "bg-forge-teal/40"
+                  : "bg-muted/20",
               )}
-              style={active ? { opacity: 0.4 + intensity * 0.6 } : undefined}
             />
           );
         })}
@@ -560,7 +567,7 @@ function WeightSlider({
       </div>
 
       {warning && (
-        <div className="flex items-center gap-2 px-1 text-micro font-bold text-amber-600/80 tracking-tight animate-in fade-in slide-in-from-top-1">
+        <div className="flex items-center gap-2 px-1 text-micro font-bold text-spark-amber/80 tracking-tight animate-in fade-in slide-in-from-top-1">
           <AlertCircle size={12} />
           {warning}
         </div>

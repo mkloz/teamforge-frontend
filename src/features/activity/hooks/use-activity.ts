@@ -158,5 +158,7 @@ export function useActivity() {
     handleBack,
     handleSendMessage,
     hasSelection,
+    sidebarDensity: store.sidebarDensity,
+    setSidebarDensity: store.setSidebarDensity,
   };
 }

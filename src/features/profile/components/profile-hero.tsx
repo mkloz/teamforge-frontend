@@ -1,7 +1,7 @@
 import type { UserProfile } from "../types/profile.types";
+import { ProfileActions } from "./profile-actions";
 import { ProfileAvatar } from "./profile-avatar";
 import { ProfileIdentity } from "./profile-identity";
-import { ProfileActions } from "./profile-actions";
 
 interface ProfileHeroProps {
   profile: UserProfile;
@@ -21,13 +21,13 @@ export function ProfileHero({ profile }: ProfileHeroProps) {
 
         {/* Bottom Section (Quote & Actions) */}
         <div className="flex flex-col gap-6">
-          <blockquote className="relative border-l-thick border-forge-teal/30 sm:pl-5 py-2 px-2 text-center sm:text-left">
-            <p className="relative z-10 text-sm sm:text-lg text-ink font-medium leading-relaxed text-pretty italic opacity-85 max-w-2xl">
-              "{profile.bio}"
+          <blockquote className="relative max-w-2xl">
+            <p className="relative z-10 text-lg md:text-xl text-ink/80 font-medium leading-relaxed text-pretty">
+              {profile.bio}
             </p>
           </blockquote>
 
-          <ProfileActions className="sm:hidden" />
+          <ProfileActions className="lg:hidden" />
         </div>
       </div>
     </div>

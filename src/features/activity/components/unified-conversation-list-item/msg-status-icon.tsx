@@ -1,20 +1,36 @@
 import { Check, CheckCheck } from "lucide-react";
 import { memo } from "react";
+import { cn } from "@/shared/lib/utils";
 import type { MessageStatus } from "../../types/direct-chats.types";
 
-export const MsgStatusIcon = memo(({ status }: { status: MessageStatus }) => {
-  switch (status) {
-    case "SENDING":
-      return (
-        <span className="w-3 h-3 rounded-full border border-slate-muted/40 border-t-transparent animate-spin" />
-      );
-    case "SENT":
-      return <Check size={12} className="text-slate-muted" />;
-    case "DELIVERED":
-      return <CheckCheck size={12} className="text-slate-muted" />;
-    case "READ":
-      return <CheckCheck size={12} className="text-forge-teal" />;
-    default:
-      return null;
-  }
-});
+export const MsgStatusIcon = memo(
+  ({
+    status,
+    isCompact = false,
+  }: {
+    status: MessageStatus;
+    isCompact?: boolean;
+  }) => {
+    const size = isCompact ? 10 : 12;
+
+    switch (status) {
+      case "SENDING":
+        return (
+          <span
+            className={cn(
+              "rounded-full border border-slate-muted/40 border-t-transparent animate-spin",
+              isCompact ? "w-2.5 h-2.5" : "w-3 h-3",
+            )}
+          />
+        );
+      case "SENT":
+        return <Check size={size} className="text-slate-muted" />;
+      case "DELIVERED":
+        return <CheckCheck size={size} className="text-slate-muted" />;
+      case "READ":
+        return <CheckCheck size={size} className="text-forge-teal" />;
+      default:
+        return null;
+    }
+  },
+);

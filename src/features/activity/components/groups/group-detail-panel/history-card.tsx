@@ -12,7 +12,7 @@ export function HistoryCard({ item }: HistoryCardProps) {
   return (
     <div className="flex gap-3.5 p-2 rounded-xl bg-muted/20 hover:bg-muted/40 border border-transparent hover:border-border/50 transition-all duration-300 group">
       {/* Thumbnail with hover zoom */}
-      <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-xs">
+      <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 shadow-xs">
         <img
           src={item.coverImage || undefined}
           alt={item.title}

@@ -11,18 +11,8 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
   return (
     <section
       id="forge-hero"
-      className="relative overflow-hidden rounded-4xl border border-accent/20 bg-linear-to-br from-accent/5 via-card to-accent/10 dark:from-accent/10 dark:via-card dark:to-accent/5 p-8 md:p-10 shadow-sm"
+      className="relative overflow-hidden rounded-4xl border border-accent/20 bg-card p-8 md:p-10 shadow-sm"
     >
-      {/* Decorative glow blobs */}
-      <div
-        className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-accent/8 blur-3xl pointer-events-none"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-accent/6 blur-3xl pointer-events-none"
-        aria-hidden="true"
-      />
-
       <div className="relative flex flex-col items-center text-center gap-8">
         {/* Logo Badge — The Voronoi Nexus */}
         <div className="relative group">

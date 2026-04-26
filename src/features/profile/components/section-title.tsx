@@ -4,20 +4,17 @@ interface SectionTitleProps {
   children: React.ReactNode;
   dotColor?: string;
   className?: string;
-  uppercase?: boolean;
 }
 
 export function SectionTitle({
   children,
   dotColor = "bg-forge-teal",
   className,
-  uppercase = true,
 }: SectionTitleProps) {
   return (
     <h3
       className={cn(
-        "text-xs font-bold text-ink flex items-center gap-2 tracking-widest",
-        uppercase && "uppercase",
+        "text-xs uppercase tracking-widest font-bold text-slate-muted flex items-center gap-2.5",
         className,
       )}
     >

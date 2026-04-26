@@ -142,9 +142,9 @@ export function Step6Invite({
               {participantCount} member{participantCount !== 1 ? "s" : ""} ready
             </p>
           </div>
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/15">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-semibold text-emerald-600">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-forge-teal/10 border border-forge-teal/15">
+            <span className="w-1.5 h-1.5 rounded-full bg-forge-teal animate-pulse" />
+            <span className="text-xs font-semibold text-forge-teal">
               Verified
             </span>
           </span>
@@ -189,7 +189,7 @@ export function Step6Invite({
 
       {/* ── Notify members note ── */}
       <div className="flex gap-3 p-4 rounded-2xl border border-border/40 bg-card">
-        <div className="w-0.5 rounded-full bg-primary/30 shrink-0 self-stretch" />
+        <div className="rounded-full bg-primary/20 w-2 h-2 mt-1.5 shrink-0" />
         <div className="space-y-1">
           <p className="text-xs font-semibold text-primary/80">
             Sending invitations

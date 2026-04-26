@@ -1,8 +1,8 @@
+import type { OnlineStatus } from "@/features/activity/types/direct-chats.types";
 import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { memo } from "react";
-import type { OnlineStatus } from "@/features/activity/types/direct-chats.types";
 import { UnifiedTypingIndicator } from "../unified-typing-indicator";
 
 interface HeaderInfoProps {
@@ -41,7 +41,7 @@ export const HeaderInfo = memo(
         <div
           className={cn(
             "relative overflow-hidden transition-all duration-300 group-hover/header-info:shadow-sm",
-            isGroup ? "w-10 h-10 rounded-lg" : "w-10 h-10 rounded-full",
+            isGroup ? "w-10 h-10 rounded-md" : "w-10 h-10 rounded-full",
           )}
         >
           <img
@@ -54,7 +54,7 @@ export const HeaderInfo = memo(
 
         {/* Secondary indicator (Group member or Online Status) */}
         {isGroup && secondaryAvatar ? (
-          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-lg overflow-hidden z-10 transition-transform duration-300 group-hover/header-info:translate-x-0.5 group-hover/header-info:translate-y-0.5 shadow-sm">
+          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-lg overflow-hidden z-10 transition-transform duration-300 group-hover/header-info:translate-x-0.5 group-hover/header-info:translate-y-0.5 shadow-sm">
             <img
               src={secondaryAvatar}
               alt=""

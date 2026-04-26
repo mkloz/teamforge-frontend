@@ -1,3 +1,4 @@
+import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { InterestsCloud } from "./components/interests-cloud";
 import { PersonalitySection } from "./components/personality-section";
@@ -32,7 +33,16 @@ export function ProfilePage() {
           <h2 className="text-2xl font-bold text-ink">
             Failed to load profile
           </h2>
-          <p className="text-slate-muted">Please try again later.</p>
+          <p className="text-slate-muted">
+            Something went wrong. Please try again.
+          </p>
+          <Button
+            variant="outline"
+            onClick={() => window.location.reload()}
+            className="mt-2"
+          >
+            Retry
+          </Button>
         </div>
       </main>
     );
@@ -40,8 +50,38 @@ export function ProfilePage() {
 
   return (
     <main className="min-h-full relative bg-canvas pb-20 md:pb-0">
-      {/* Profile Cover Banner */}
-      <div className="absolute top-0 left-0 right-0 h-36 md:h-40 bg-linear-to-br from-forge-teal to-forge-teal/80 z-0 shadow-sm" />
+      {/* Profile Cover Banner — Teal canvas with MBTI type as ghosted watermark */}
+      <div className="absolute top-0 left-0 right-0 h-36 md:h-44 bg-forge-teal z-0 overflow-hidden">
+        {/* Subtle gradient overlay to add depth to the teal */}
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-black/5 to-black/20"
+          aria-hidden="true"
+        />
+
+        {/* Dot grid texture */}
+        <div
+          className="absolute inset-0 opacity-15"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, #FAFAF8 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }}
+          aria-hidden="true"
+        />
+
+        {/* MBTI type watermark */}
+        {profile.personalityType && (
+          <span
+            className="absolute top-1/2 -translate-y-1/2 text-[9rem] md:text-[11rem] font-black tracking-tighter text-white/10 select-none pointer-events-none leading-none mix-blend-overlay w-full sm:text-right text-center sm:px-6"
+            aria-hidden="true"
+          >
+            {profile.personalityType}
+          </span>
+        )}
+
+        {/* Crisp bottom border */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-black/10" />
+      </div>
 
       <div className="flex flex-col max-w-6xl mx-auto px-4 md:px-8 pt-16 md:pt-20 lg:pt-20 pb-12 lg:pb-16 gap-12 relative z-10 w-full">
         <div>

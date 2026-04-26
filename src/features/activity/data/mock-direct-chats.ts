@@ -6,6 +6,7 @@ import {
   createMockMessage,
   createMockChat,
   createMockAttachment,
+  createMockUser,
 } from "./mock-utils";
 import type { Message } from "@/shared/schemas";
 
@@ -112,48 +113,231 @@ export const MOCK_DIRECT_CHAT_PREVIEWS: DirectChatPreview[] = [
     isTyping: false,
     isMuted: true,
   },
+  {
+    id: "dm-long-name",
+    participantId: "user-overflow",
+    participantFullName: "Alexandros Bartholomew Montgomery-Wickens III",
+    participantAvatar:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&q=80",
+    onlineStatus: "AWAY",
+    lastSeen: minutesAgo(5),
+    lastMessage: {
+      content:
+        "This is a very long message content to test truncation in the conversation list preview as well. It should ideally end with an ellipsis.",
+      createdAt: hoursAgo(1),
+      isOwn: false,
+      status: "READ",
+      type: "TEXT",
+    },
+    unreadCount: 0,
+    isTyping: false,
+    isMuted: false,
+  },
+  {
+    id: "dm-unread-max",
+    participantId: "user-chatter",
+    participantFullName: "Chatty Cathy",
+    participantAvatar:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&q=80",
+    onlineStatus: "ONLINE",
+    lastMessage: {
+      content: "Did you see my last 99 messages?",
+      createdAt: minutesAgo(1),
+      isOwn: false,
+      status: "DELIVERED",
+      type: "TEXT",
+    },
+    unreadCount: 999,
+    isTyping: false,
+    isMuted: false,
+  },
+  {
+    id: "dm-empty",
+    participantId: "user-new",
+    participantFullName: "New Friend",
+    participantAvatar: null,
+    onlineStatus: "ONLINE",
+    unreadCount: 0,
+    isTyping: false,
+    isMuted: false,
+  },
 ];
 
 export const MOCK_DIRECT_CHATS: Record<string, DirectChat> = {
   "dm-playground": createMockChat({
     id: "dm-playground",
     participants: [
-      { userId: CURRENT_USER_ID, chatId: "dm-playground" },
-      { userId: "user-designer", chatId: "dm-playground" },
+      {
+        userId: CURRENT_USER_ID,
+        chatId: "dm-playground",
+        user: createMockUser({ id: CURRENT_USER_ID, fullName: "Alex" }),
+      },
+      {
+        userId: "user-designer",
+        chatId: "dm-playground",
+        user: createMockUser({
+          id: "user-designer",
+          fullName: "✨ DM Design Playground",
+          avatar:
+            "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=200&h=200&fit=crop&q=80",
+          onlineStatus: "ONLINE",
+        }),
+      },
     ],
     createdAt: hoursAgo(100),
   }),
   "dm-1": createMockChat({
     id: "dm-1",
     participants: [
-      { userId: CURRENT_USER_ID, chatId: "dm-1" },
-      { userId: "user-jordan", chatId: "dm-1" },
+      {
+        userId: CURRENT_USER_ID,
+        chatId: "dm-1",
+        user: createMockUser({ id: CURRENT_USER_ID, fullName: "Alex" }),
+      },
+      {
+        userId: "user-jordan",
+        chatId: "dm-1",
+        user: createMockUser({
+          id: "user-jordan",
+          fullName: "Jordan Lee",
+          avatar:
+            "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&q=80",
+          onlineStatus: "ONLINE",
+        }),
+      },
     ],
     createdAt: daysAgo(30),
   }),
   "dm-2": createMockChat({
     id: "dm-2",
     participants: [
-      { userId: CURRENT_USER_ID, chatId: "dm-2" },
-      { userId: "user-sam", chatId: "dm-2" },
+      {
+        userId: CURRENT_USER_ID,
+        chatId: "dm-2",
+        user: createMockUser({ id: CURRENT_USER_ID, fullName: "Alex" }),
+      },
+      {
+        userId: "user-sam",
+        chatId: "dm-2",
+        user: createMockUser({
+          id: "user-sam",
+          fullName: "Sam Rivera",
+          avatar:
+            "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
+          onlineStatus: "AWAY",
+        }),
+      },
     ],
     createdAt: daysAgo(45),
   }),
   "dm-3": createMockChat({
     id: "dm-3",
     participants: [
-      { userId: CURRENT_USER_ID, chatId: "dm-3" },
-      { userId: "user-casey", chatId: "dm-3" },
+      {
+        userId: CURRENT_USER_ID,
+        chatId: "dm-3",
+        user: createMockUser({ id: CURRENT_USER_ID, fullName: "Alex" }),
+      },
+      {
+        userId: "user-casey",
+        chatId: "dm-3",
+        user: createMockUser({
+          id: "user-casey",
+          fullName: "Casey Chen",
+          avatar:
+            "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&q=80",
+          onlineStatus: "ONLINE",
+        }),
+      },
     ],
     createdAt: daysAgo(20),
   }),
   "dm-4": createMockChat({
     id: "dm-4",
     participants: [
-      { userId: CURRENT_USER_ID, chatId: "dm-4" },
-      { userId: "user-taylor", chatId: "dm-4" },
+      {
+        userId: CURRENT_USER_ID,
+        chatId: "dm-4",
+        user: createMockUser({ id: CURRENT_USER_ID, fullName: "Alex" }),
+      },
+      {
+        userId: "user-taylor",
+        chatId: "dm-4",
+        user: createMockUser({
+          id: "user-taylor",
+          fullName: "Taylor Morgan",
+          avatar:
+            "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&q=80",
+          onlineStatus: "OFFLINE",
+        }),
+      },
     ],
     createdAt: daysAgo(60),
+  }),
+  "dm-long-name": createMockChat({
+    id: "dm-long-name",
+    participants: [
+      {
+        userId: CURRENT_USER_ID,
+        chatId: "dm-long-name",
+        user: createMockUser({ id: CURRENT_USER_ID, fullName: "Alex" }),
+      },
+      {
+        userId: "user-overflow",
+        chatId: "dm-long-name",
+        user: createMockUser({
+          id: "user-overflow",
+          fullName: "Alexandros Bartholomew Montgomery-Wickens III",
+          avatar:
+            "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&q=80",
+          onlineStatus: "AWAY",
+        }),
+      },
+    ],
+    createdAt: daysAgo(5),
+  }),
+  "dm-unread-max": createMockChat({
+    id: "dm-unread-max",
+    participants: [
+      {
+        userId: CURRENT_USER_ID,
+        chatId: "dm-unread-max",
+        user: createMockUser({ id: CURRENT_USER_ID, fullName: "Alex" }),
+      },
+      {
+        userId: "user-chatter",
+        chatId: "dm-unread-max",
+        user: createMockUser({
+          id: "user-chatter",
+          fullName: "Chatty Cathy",
+          avatar:
+            "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&q=80",
+          onlineStatus: "ONLINE",
+        }),
+      },
+    ],
+    createdAt: daysAgo(1),
+  }),
+  "dm-empty": createMockChat({
+    id: "dm-empty",
+    participants: [
+      {
+        userId: CURRENT_USER_ID,
+        chatId: "dm-empty",
+        user: createMockUser({ id: CURRENT_USER_ID, fullName: "Alex" }),
+      },
+      {
+        userId: "user-new",
+        chatId: "dm-empty",
+        user: createMockUser({
+          id: "user-new",
+          fullName: "New Friend",
+          avatar: null,
+          onlineStatus: "ONLINE",
+        }),
+      },
+    ],
+    createdAt: minutesAgo(10),
   }),
 };
 
@@ -199,6 +383,84 @@ export const MOCK_DIRECT_MESSAGES: Record<string, Message[]> = {
           url: "#",
           duration: 4,
           name: "Memo_1.m4a",
+          waveform: [10, 20, 30, 40, 50, 40, 30, 20, 10, 20, 30, 40, 50],
+        }),
+      ],
+    }),
+    createMockMessage({
+      id: "dm-p-4",
+      chatId: "dm-playground",
+      senderId: "user-designer",
+      content: "This is a failed message to test the retry UI.",
+      createdAt: hoursAgo(22),
+      status: "FAILED",
+    }),
+    createMockMessage({
+      id: "dm-p-5",
+      chatId: "dm-playground",
+      senderId: CURRENT_USER_ID,
+      content: "And I am currently sending this one...",
+      createdAt: hoursAgo(0.1),
+      status: "SENDING",
+    }),
+    createMockMessage({
+      id: "dm-p-6",
+      chatId: "dm-playground",
+      senderId: "user-designer",
+      content:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+      createdAt: hoursAgo(20),
+      status: "READ",
+    }),
+    createMockMessage({
+      id: "dm-p-7",
+      chatId: "dm-playground",
+      senderId: "user-designer",
+      content:
+        "Line 1\nLine 2\nLine 3 with some more text to see how multiple lines behave in the bubble.",
+      createdAt: hoursAgo(19),
+      status: "READ",
+    }),
+    createMockMessage({
+      id: "dm-p-8",
+      chatId: "dm-playground",
+      senderId: "user-designer",
+      content:
+        "Check out https://google.com and also https://github.com/teamforge",
+      createdAt: hoursAgo(18),
+      status: "READ",
+    }),
+    createMockMessage({
+      id: "dm-p-9",
+      chatId: "dm-playground",
+      senderId: "user-designer",
+      content: "👍🔥",
+      createdAt: hoursAgo(17),
+      status: "READ",
+    }),
+    createMockMessage({
+      id: "dm-p-10",
+      chatId: "dm-playground",
+      senderId: "system",
+      content: "Encryption is enabled. Your messages are private.",
+      createdAt: hoursAgo(50),
+      type: "SYSTEM",
+      status: "SENT",
+    }),
+    createMockMessage({
+      id: "dm-p-11",
+      chatId: "dm-playground",
+      senderId: "user-designer",
+      content: "Here is the project brief for the upcoming forge.",
+      createdAt: hoursAgo(16),
+      status: "READ",
+      attachments: [
+        createMockAttachment({
+          id: "dm-patt-3",
+          type: "FILE",
+          name: "Project_Brief_v2.pdf",
+          size: 2048576,
+          mimeType: "application/pdf",
         }),
       ],
     }),

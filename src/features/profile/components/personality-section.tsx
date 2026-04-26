@@ -19,24 +19,7 @@ export function PersonalitySection({
   const personalityProfile = generateDetailedDescription(profile.oceanScores);
 
   return (
-    <div className="flex flex-col gap-8 w-full">
-      <div className="flex items-center justify-between">
-        {/* Primary Section Header */}
-        {!hideHeaders && (
-          <h3 className="text-xl font-bold text-ink flex items-center gap-2">
-            Personality Insights
-          </h3>
-        )}
-        {/* Title badge */}
-        {!hideHeaders && (
-          <div className="flex items-center gap-2">
-            <span className="px-3.5 py-1.5 rounded-full text-micro font-semibold bg-spark-amber/10 text-spark-amber border border-spark-amber/20 tracking-tight">
-              {personalityProfile.title}
-            </span>
-          </div>
-        )}
-      </div>
-
+    <div className="flex flex-col gap-6 w-full">
       <div className={cn("flex flex-col", hideHeaders ? "gap-6" : "gap-10")}>
         <PersonalitySummary profile={personalityProfile} />
 
@@ -52,8 +35,13 @@ export function PersonalitySection({
 function PersonalitySummary({ profile }: { profile: PersonalityProfile }) {
   return (
     <div className="space-y-4">
+      {/* Title as premium sub-headline */}
+      <h4 className="text-2xl md:text-3xl font-bold text-ink tracking-tight">
+        {profile.title}
+      </h4>
+
       {/* Summary */}
-      <p className="text-lg text-ink/90 font-medium leading-relaxed text-pretty indent-8">
+      <p className="text-lg text-ink/90 font-medium leading-relaxed text-pretty">
         {profile.summary}
       </p>
     </div>
@@ -67,11 +55,11 @@ function PersonalityStrengths({ strengths }: { strengths: string[] }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
         {strengths.map((strength) => (
-          <div key={strength} className="flex items-center gap-3.5 group">
-            <div className="w-6 h-6 rounded-lg bg-forge-teal/10 flex items-center justify-center shrink-0 transition-colors group-hover:bg-forge-teal/20">
-              <Check size={14} className="text-forge-teal font-bold" />
+          <div key={strength} className="flex items-start gap-3 group">
+            <div className="mt-1 flex items-center justify-center shrink-0">
+              <Check size={16} className="text-forge-teal" strokeWidth={3} />
             </div>
-            <span className="text-sm font-semibold text-ink leading-tight">
+            <span className="text-base font-medium text-ink/90 leading-tight">
               {strength}
             </span>
           </div>
@@ -83,10 +71,10 @@ function PersonalityStrengths({ strengths }: { strengths: string[] }) {
 
 function GroupDynamics({ inGroups }: { inGroups: string }) {
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <SectionTitle dotColor="bg-spark-amber">Group Dynamics</SectionTitle>
-      <div className="relative pl-4 border-l-2 border-spark-amber/30">
-        <p className="text-base text-ink/90 leading-relaxed font-medium italic">
+      <div className="pl-4 border-l-2 border-border/50">
+        <p className="text-base text-ink/80 leading-relaxed font-medium italic">
           {inGroups}
         </p>
       </div>

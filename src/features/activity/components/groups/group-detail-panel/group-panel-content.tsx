@@ -1,20 +1,20 @@
-import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
-import { X, Pencil } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
+import type { DirectChat } from "@/features/activity/types/direct-chats.types";
 import type {
   Group,
-  MemberRole,
   GroupMember,
+  MemberRole,
 } from "@/features/activity/types/groups.types";
+import { UserProfilePanel } from "@/features/profile/components/user-profile-panel/user-profile-panel";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
+import { motion } from "framer-motion";
+import { Pencil, X } from "lucide-react";
+import { useMemo, useState } from "react";
 import { ActionsSection } from "./actions-section";
 import { GroupIdentitySection } from "./group-identity-section";
 import { MembersSection } from "./members-section";
 import { PlanHistorySection } from "./plan-history-section";
 import { PlanSection } from "./plan-section";
-import { UserProfilePanel } from "@/features/profile/components/user-profile-panel/user-profile-panel";
-import type { DirectChat } from "@/features/activity/types/direct-chats.types";
 
 interface GroupPanelContentProps {
   group: Group;
@@ -174,22 +174,6 @@ export function GroupPanelContent({
                 <X size={16} />
               </Button>
             )}
-          </div>
-
-          {/* Overlapping Avatar Overlay - Spring Animation */}
-          <div className="px-4 -mt-8 relative z-10">
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-20 h-20 rounded-2xl overflow-hidden bg-muted ring-4 ring-canvas shadow-xl flex items-center justify-center group pointer-events-auto"
-            >
-              <img
-                src={group.avatar || undefined}
-                alt={`${group.name} avatar`}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-            </motion.div>
           </div>
         </header>
 

@@ -1,4 +1,5 @@
 import { memo, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useSearchHeaderFade } from "../../hooks/use-search-header-fade";
 import type {
   FilterChip,
@@ -14,11 +15,13 @@ interface UnifiedConversationListProps {
   selectedId: string | null;
   searchQuery: string;
   activeFilter: FilterChip;
+  sidebarDensity: "default" | "compact";
   groupCount: number;
   dmCount: number;
   unreadCount: number;
   onSearchChange: (q: string) => void;
   onFilterChange: (f: FilterChip) => void;
+  onDensityChange: (d: "default" | "compact") => void;
   onSelectItem: (id: string, kind: "group" | "dm") => void;
 }
 
@@ -36,11 +39,13 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
   selectedId,
   searchQuery,
   activeFilter,
+  sidebarDensity,
   groupCount,
   dmCount,
   unreadCount,
   onSearchChange,
   onFilterChange,
+  onDensityChange,
   onSelectItem,
 }: UnifiedConversationListProps) {
   const { scrollRef, opacity, handleScroll, isPointerEnabled } =
@@ -77,22 +82,41 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
           activeFilter={activeFilter}
           counts={{ groupCount, dmCount, unreadCount }}
           onFilterChange={onFilterChange}
+          density={sidebarDensity}
+          onDensityChange={onDensityChange}
         />
 
-        <div className="flex flex-col pb-8 sm:pb-0">
+        <motion.div
+          className="flex flex-col pb-8 sm:pb-0"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.05,
+              },
+            },
+          }}
+        >
           {items.length === 0 ? (
-            <EmptyState label={emptyLabel} />
+            <EmptyState
+              label={emptyLabel}
+              showForgeCta={!searchQuery && activeFilter === "all"}
+            />
           ) : (
-            items.map((item) => (
-              <UnifiedConversationListItem
-                key={`${item.kind}-${item.id}`}
-                item={item}
-                isSelected={item.id === selectedId}
-                onSelect={() => onSelectItem(item.id, item.kind)}
-              />
-            ))
+            <AnimatePresence mode="popLayout" initial={false}>
+              {items.map((item) => (
+                <UnifiedConversationListItem
+                  key={`${item.kind}-${item.id}`}
+                  item={item}
+                  isSelected={item.id === selectedId}
+                  density={sidebarDensity}
+                  onSelect={() => onSelectItem(item.id, item.kind)}
+                />
+              ))}
+            </AnimatePresence>
           )}
-        </div>
+        </motion.div>
       </div>
     </div>
   );

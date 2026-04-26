@@ -17,7 +17,7 @@ export function MemberCard({ member, onShowProfile }: MemberCardProps) {
     >
       {/* Avatar Container */}
       <div className="relative shrink-0">
-        <div className="w-10 h-10 rounded-xl overflow-hidden ring-1 ring-border/20 group-hover/member:ring-border/40 transition-all">
+        <div className="w-10 h-10 rounded-full overflow-hidden ring-1 ring-border/20 group-hover/member:ring-border/40 transition-all">
           <img
             src={member.user?.avatar || ""}
             alt={member.user?.fullName || "User"}

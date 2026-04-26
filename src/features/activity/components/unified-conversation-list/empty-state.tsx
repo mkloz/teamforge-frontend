@@ -1,17 +1,43 @@
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Zap } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { memo } from "react";
 
 interface EmptyStateProps {
   label: string;
+  /** When true shows the Forge CTA — used for the "No conversations yet" base empty state */
+  showForgeCta?: boolean;
 }
 
-export const EmptyState = memo(function EmptyState({ label }: EmptyStateProps) {
+export const EmptyState = memo(function EmptyState({
+  label,
+  showForgeCta = false,
+}: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center gap-4 py-20 px-6 text-center animate-in fade-in slide-in-from-bottom-2">
-      <div className="w-14 h-14 rounded-2xl bg-muted/30 flex items-center justify-center opacity-40 shadow-sm border border-border/10">
-        <MessageSquare size={24} className="text-forge-teal" />
+    <div className="flex flex-col items-center justify-center gap-5 py-20 px-6 text-center animate-in fade-in slide-in-from-bottom-2">
+      <div className="w-14 h-14 rounded-2xl bg-forge-teal/8 flex items-center justify-center shadow-sm border border-forge-teal/15">
+        <MessageSquare
+          size={22}
+          className="text-forge-teal"
+          strokeWidth={1.5}
+        />
       </div>
-      <p className="text-sm font-medium text-slate-muted/90">{label}</p>
+      <div className="flex flex-col gap-1.5">
+        <p className="text-sm font-semibold text-ink/80">{label}</p>
+        {showForgeCta && (
+          <p className="text-xs text-slate-muted leading-relaxed max-w-45 mx-auto">
+            Let's forge your first one.
+          </p>
+        )}
+      </div>
+      {showForgeCta && (
+        <Link
+          to="/forge"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-forge-teal text-white text-xs font-bold tracking-tight shadow-sm hover:bg-forge-teal/90 active:scale-95 transition-all duration-200"
+        >
+          <Zap size={13} className="fill-current" />
+          Forge a group
+        </Link>
+      )}
     </div>
   );
 });

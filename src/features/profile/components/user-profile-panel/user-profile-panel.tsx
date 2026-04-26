@@ -22,13 +22,21 @@ export function UserProfilePanel({
   onBack,
 }: UserProfilePanelProps) {
   // Find the other participant who is not the current user
-  const participantData = chat.participants?.find(
-    (p) => p.userId !== CURRENT_USER_ID,
-  );
+  // Fallback to the first participant if only one exists (e.g. viewing own profile)
+  const participantData =
+    chat.participants?.find((p) => p.userId !== CURRENT_USER_ID) ||
+    chat.participants?.[0];
+
   const participant = participantData?.user;
   const { mutualGroups, isMuted, isBlocked } = chat;
 
-  if (!participant) return null;
+  if (!participant) {
+    return (
+      <div className="flex-1 flex items-center justify-center p-8 text-center">
+        <p className="text-sm text-slate-muted">User profile not found</p>
+      </div>
+    );
+  }
 
   return (
     <div

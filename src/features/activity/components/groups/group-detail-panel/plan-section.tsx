@@ -66,12 +66,12 @@ export function PlanSection({ plan }: PlanSectionProps) {
         {/* Date Row */}
         <div className="flex items-center gap-3 text-sm group/item">
           <div
-            className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-500/10 transition-colors duration-300"
+            className="flex items-center justify-center w-8 h-8 rounded-lg bg-forge-teal/10 transition-colors duration-300"
             aria-hidden="true"
           >
             <Calendar
               size={15}
-              className="text-teal-600 dark:text-teal-400 opacity-90 shadow-xs"
+              className="text-forge-teal opacity-90 shadow-xs"
             />
           </div>
           <div>
@@ -82,13 +82,10 @@ export function PlanSection({ plan }: PlanSectionProps) {
         {/* Time Row */}
         <div className="flex items-center gap-3 text-sm group/item">
           <div
-            className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-500/10 transition-colors duration-300"
+            className="flex items-center justify-center w-8 h-8 rounded-lg bg-forge-teal/10 transition-colors duration-300"
             aria-hidden="true"
           >
-            <Clock
-              size={15}
-              className="text-teal-600 dark:text-teal-400 opacity-90 shadow-xs"
-            />
+            <Clock size={15} className="text-forge-teal opacity-90 shadow-xs" />
           </div>
           <div>
             <p className="font-bold text-foreground text-sm">{formattedTime}</p>
@@ -98,12 +95,12 @@ export function PlanSection({ plan }: PlanSectionProps) {
         {/* Location Row */}
         <div className="flex items-center gap-3 text-sm group/item">
           <div
-            className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal-500/10 transition-colors duration-300"
+            className="flex items-center justify-center w-8 h-8 rounded-lg bg-forge-teal/10 transition-colors duration-300"
             aria-hidden="true"
           >
             <MapPin
               size={15}
-              className="text-teal-600 dark:text-teal-400 opacity-90 shadow-xs"
+              className="text-forge-teal opacity-90 shadow-xs"
             />
           </div>
           <div className="flex-1 min-w-0">

@@ -1,7 +1,13 @@
 import { cn } from "@/shared/lib/utils";
 import { memo } from "react";
 export const StatusIndicator = memo(
-  ({ status }: { status: "ONLINE" | "AWAY" | "OFFLINE" }) => {
+  ({
+    status,
+    isCompact = false,
+  }: {
+    status: "ONLINE" | "AWAY" | "OFFLINE";
+    isCompact?: boolean;
+  }) => {
     const colors = {
       ONLINE: "bg-forge-teal",
       AWAY: "bg-spark-amber",
@@ -11,7 +17,8 @@ export const StatusIndicator = memo(
     return (
       <span
         className={cn(
-          "absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-background shadow-sm",
+          "absolute bottom-0 right-0 rounded-full border-2 border-background shadow-sm",
+          isCompact ? "w-2.5 h-2.5" : "w-3.5 h-3.5",
           colors[status],
         )}
       />

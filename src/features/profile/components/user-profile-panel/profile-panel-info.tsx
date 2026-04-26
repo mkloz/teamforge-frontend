@@ -24,9 +24,9 @@ interface ProfilePanelInfoProps {
 function getOnlineStatusColor(status: OnlineStatus): string {
   switch (status) {
     case "ONLINE":
-      return "bg-green-500";
+      return "bg-forge-teal";
     case "AWAY":
-      return "bg-amber-500";
+      return "bg-spark-amber";
     case "OFFLINE":
       return "bg-muted-foreground/40";
     default:
@@ -178,17 +178,17 @@ export function ProfilePanelInfo({
         </div>
       </div>
 
-      {/* 6. About Section - Peer Wisdom style */}
+      {/* 6. About Section - Structured treatment */}
       {participant.bio && (
         <div className="px-6 pt-10">
           <h4 className="text-xs font-semibold text-slate-muted uppercase tracking-widest px-1 mb-4">
             About
           </h4>
-          <blockquote className="relative border-l-thick border-forge-teal/20 pl-4 py-1">
+          <div className="relative bg-forge-teal/5 rounded-2xl p-4 border border-forge-teal/10">
             <p className="text-sm text-ink leading-relaxed font-medium italic text-pretty opacity-90">
               "{participant.bio}"
             </p>
-          </blockquote>
+          </div>
         </div>
       )}
 

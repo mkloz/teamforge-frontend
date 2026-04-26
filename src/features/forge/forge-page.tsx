@@ -32,10 +32,10 @@ const WALKTHROUGH_STEPS = [
   },
   {
     icon: Handshake,
-    ringColor: "ring-emerald-500/20",
-    dotColor: "bg-emerald-500",
-    glowColor: "shadow-[0_0_20px_rgba(16,185,129,0.25)]",
-    iconColor: "text-emerald-500 dark:text-emerald-400",
+    ringColor: "ring-forge-teal/20",
+    dotColor: "bg-forge-teal",
+    glowColor: "shadow-[0_0_20px_rgba(13,148,136,0.25)]",
+    iconColor: "text-forge-teal",
     title: "Meet & Connect",
     description:
       "Your group is formed and spots are locked. Chat, finalize details, and show up. Real connections, zero friction.",
@@ -84,7 +84,7 @@ export function ForgePage() {
   return (
     <div
       className={cn(
-        "mx-auto flex flex-col md:pb-12 h-full duration-500",
+        "mx-auto flex flex-col md:pb-12 h-full",
         isWizardActive
           ? "w-full max-w-none px-0 gap-0"
           : "max-w-4xl gap-10 px-4 md:px-8",
@@ -133,7 +133,7 @@ export function ForgePage() {
                     <div
                       className={cn(
                         "absolute left-6 top-[15%] bottom-[15%] w-0.5 rounded-full z-0 transition duration-1000",
-                        "bg-linear-to-b from-primary via-accent to-emerald-500 opacity-20",
+                        "bg-linear-to-b from-primary via-accent to-forge-teal opacity-20",
                       )}
                       aria-hidden="true"
                     />

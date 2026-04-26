@@ -1,6 +1,7 @@
 import { useActivity } from "@/features/activity/hooks/use-activity";
 import { cn } from "@/shared/lib/utils";
 import { MessageSquare } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Groups
 import { GroupDetailPanel } from "@/features/activity/components/groups/group-detail-panel/group-detail-panel";
@@ -52,6 +53,8 @@ export function ActivityPage() {
     toggleProfilePanel,
     closeProfilePanel,
     handleSendMessage,
+    sidebarDensity,
+    setSidebarDensity,
   } = useActivity();
 
   return (
@@ -74,11 +77,13 @@ export function ActivityPage() {
           selectedId={selectedId}
           searchQuery={searchQuery}
           activeFilter={activeFilter}
+          sidebarDensity={sidebarDensity}
           groupCount={groupCount}
           dmCount={dmCount}
           unreadCount={unreadCount}
           onSearchChange={setSearchQuery}
           onFilterChange={setActiveFilter}
+          onDensityChange={setSidebarDensity}
           onSelectItem={handleSelectItem}
         />
       </aside>
@@ -90,54 +95,78 @@ export function ActivityPage() {
           !hasSelection && "hidden md:flex",
         )}
       >
-        {selectedKind === "group" && selectedId && selectedGroup ? (
-          <div className="flex-1 flex overflow-hidden">
-            <div className="flex-1 flex flex-col min-w-0">
-              <UnifiedConversationView
-                kind="group"
-                data={selectedGroup}
-                messages={selectedGroupMessages}
-                typingUsers={typingUsers}
-                isActionOpen={groups.isDetailPanelOpen}
-                onBack={handleBack}
-                onToggleAction={toggleGroupDetail}
-                onSendMessage={handleSendMessage}
+        <AnimatePresence mode="wait">
+          {selectedKind === "group" && selectedId && selectedGroup ? (
+            <motion.div
+              key={`group-${selectedId}`}
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="flex-1 flex overflow-hidden"
+            >
+              <div className="flex-1 flex flex-col min-w-0">
+                <UnifiedConversationView
+                  kind="group"
+                  data={selectedGroup}
+                  messages={selectedGroupMessages}
+                  typingUsers={typingUsers}
+                  isActionOpen={groups.isDetailPanelOpen}
+                  onBack={handleBack}
+                  onToggleAction={toggleGroupDetail}
+                  onSendMessage={handleSendMessage}
+                />
+              </div>
+              <GroupDetailPanel
+                group={selectedGroup}
+                isOpen={groups.isDetailPanelOpen}
+                onClose={closeGroupDetail}
               />
-            </div>
-            <GroupDetailPanel
-              group={selectedGroup}
-              isOpen={groups.isDetailPanelOpen}
-              onClose={closeGroupDetail}
-            />
-          </div>
-        ) : selectedKind === "dm" && selectedId && selectedChat ? (
-          <div className="flex-1 flex overflow-hidden">
-            <div className="flex-1 flex flex-col min-w-0">
-              <UnifiedConversationView
-                kind="dm"
-                data={selectedChat}
-                messages={selectedDirectMessages}
-                isTyping={isTyping}
-                isActionOpen={direct.isProfilePanelOpen}
-                onBack={handleBack}
-                onToggleAction={toggleProfilePanel}
-                onSendMessage={handleSendMessage}
+            </motion.div>
+          ) : selectedKind === "dm" && selectedId && selectedChat ? (
+            <motion.div
+              key={`dm-${selectedId}`}
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="flex-1 flex overflow-hidden"
+            >
+              <div className="flex-1 flex flex-col min-w-0">
+                <UnifiedConversationView
+                  kind="dm"
+                  data={selectedChat}
+                  messages={selectedDirectMessages}
+                  isTyping={isTyping}
+                  isActionOpen={direct.isProfilePanelOpen}
+                  onBack={handleBack}
+                  onToggleAction={toggleProfilePanel}
+                  onSendMessage={handleSendMessage}
+                />
+              </div>
+              <ProfilePanel
+                chat={selectedChat}
+                isOpen={direct.isProfilePanelOpen}
+                onClose={closeProfilePanel}
               />
-            </div>
-            <ProfilePanel
-              chat={selectedChat}
-              isOpen={direct.isProfilePanelOpen}
-              onClose={closeProfilePanel}
-            />
-            <ProfilePanelMobile
-              chat={selectedChat}
-              isOpen={direct.isProfilePanelOpen}
-              onClose={closeProfilePanel}
-            />
-          </div>
-        ) : (
-          <ActivityEmptyState />
-        )}
+              <ProfilePanelMobile
+                chat={selectedChat}
+                isOpen={direct.isProfilePanelOpen}
+                onClose={closeProfilePanel}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex-1 flex"
+            >
+              <ActivityEmptyState />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );
@@ -147,15 +176,19 @@ function ActivityEmptyState() {
   return (
     <section className="flex-1 hidden md:flex items-center justify-center bg-canvas/30 backdrop-blur-sm">
       <div className="text-center max-w-sm px-6">
-        <div className="mx-auto w-20 h-20 rounded-2xl bg-muted/20 flex items-center justify-center mb-6 shadow-sm">
-          <MessageSquare size={32} className="text-muted-foreground/40" />
+        <div className="mx-auto w-16 h-16 rounded-2xl bg-forge-teal/8 flex items-center justify-center mb-6 shadow-sm border border-forge-teal/15">
+          <MessageSquare
+            size={28}
+            className="text-forge-teal"
+            strokeWidth={1.5}
+          />
         </div>
-        <h2 className="text-xl font-bold text-ink">
-          Find your people, intelligently.
+        <h2 className="text-lg font-bold text-ink">
+          Pick a conversation to begin.
         </h2>
-        <p className="text-sm mt-3 text-slate-muted leading-relaxed">
-          Select any group or direct message from the list on the left to start
-          chatting and planning activities together.
+        <p className="text-sm mt-2 text-slate-muted leading-relaxed">
+          Select any group or direct message from the list to start chatting and
+          planning activities together.
         </p>
       </div>
     </section>

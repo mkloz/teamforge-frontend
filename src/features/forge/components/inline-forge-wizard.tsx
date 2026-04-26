@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, ChevronLeft, Zap } from "lucide-react";
 import { ForgeLoadingAnvil } from "./loading/forge-loading-anvil";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { Group, Plan, Activity } from "@/shared/schemas";
 import { useForgeWizard } from "../hooks/use-forge-wizard";
 
@@ -16,6 +16,17 @@ import { Step5Identity } from "./steps/step5-identity";
 import { Step6Invite } from "./steps/step6-invite";
 
 import { Button } from "@/shared/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/shared/components/ui/alert-dialog";
 import { ForgeFooter } from "./forge-footer";
 import { ForgeProgressBar } from "./forge-progress-bar";
 
@@ -25,6 +36,8 @@ interface InlineForgeWizardProps {
 
 export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
   const fw = useForgeWizard(onCancel);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const hasProgress = fw.step > 1 || fw.selectedActivity !== null;
 
   // Scroll to top on step change
   useEffect(() => {
@@ -64,7 +77,7 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
             duration: 0.5,
             ease: [0.34, 1.56, 0.64, 1],
           }}
-          className="w-24 h-24 rounded-4xl bg-emerald-500 flex items-center justify-center shadow-2xl shadow-emerald-500/30"
+          className="w-24 h-24 rounded-4xl bg-forge-teal flex items-center justify-center shadow-2xl shadow-forge-teal/30"
         >
           <Check size={44} className="text-white" strokeWidth={2.5} />
         </motion.div>
@@ -75,7 +88,7 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.45 }}
         >
-          <p className="text-xs font-bold tracking-widest text-emerald-600 uppercase">
+          <p className="text-xs font-bold tracking-widest text-forge-teal uppercase">
             Invitations sent
           </p>
           <h3 className="text-2xl font-black text-foreground tracking-tight">
@@ -177,25 +190,47 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
 
           <div className="flex items-center gap-2">
             {fw.isPreForge && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  const hasProgress =
-                    fw.step > 1 || fw.selectedActivity !== null;
-                  if (
-                    !hasProgress ||
-                    window.confirm(
-                      "Exit the forge? Your progress will be lost.",
-                    )
-                  ) {
-                    onCancel();
-                  }
-                }}
-                className="h-8 px-3 rounded-lg text-[10px] font-black uppercase tracking-widest text-red-500/50 hover:text-red-500 hover:bg-red-500/5 transition-colors"
+              <AlertDialog
+                open={showCancelDialog}
+                onOpenChange={setShowCancelDialog}
               >
-                Cancel
-              </Button>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      if (!hasProgress) {
+                        onCancel();
+                      } else {
+                        setShowCancelDialog(true);
+                      }
+                    }}
+                    className="h-8 px-3 rounded-lg text-[10px] font-black uppercase tracking-widest text-red-500/50 hover:text-red-500 hover:bg-red-500/5 transition-colors"
+                  >
+                    Cancel
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="rounded-2xl">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Exit the forge?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Your progress will be lost. You can start a new forge at
+                      any time.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="rounded-xl">
+                      Keep editing
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={onCancel}
+                      className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Discard &amp; exit
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
           </div>
         </div>

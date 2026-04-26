@@ -5,6 +5,7 @@ import {
   createMockGroup,
   createMockPlan,
   createMockGroupMember,
+  createMockAttachment,
 } from "./mock-utils";
 import type { Message } from "@/shared/schemas";
 
@@ -77,6 +78,91 @@ export const MOCK_GROUP_PREVIEWS: GroupPreview[] = [
     },
     unreadCount: 3,
   },
+  {
+    id: "group-long-name",
+    name: "The Extraordinary League of Super Hiking Adventurers and Nature Enthusiasts and Outdoor People Who Like to Walk Very Far",
+    avatar:
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=200&h=200&fit=crop&q=80",
+    planTitle:
+      "The Great Expedition to the Highest Peaks of the Northern Range",
+    planCategory: "OUTDOORS",
+    planCoverImage:
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80",
+    planDateTime: daysFromNow(10),
+    planStatus: "PROPOSED",
+    status: "PLANNING",
+    memberCount: 5,
+    memberAvatars: [
+      "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&q=80",
+    ],
+    lastMessage: {
+      content:
+        "Let's make sure everyone brings enough water for the long haul.",
+      type: "TEXT",
+      sender: { fullName: "Arthur", avatar: null },
+      createdAt: hoursAgo(2),
+      isSystem: false,
+    },
+    unreadCount: 0,
+  },
+  {
+    id: "group-unread-max",
+    name: "Chatty Group",
+    avatar:
+      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=200&h=200&fit=crop&q=80",
+    planTitle: "Coffee and Code",
+    planCategory: "SOCIAL",
+    planCoverImage:
+      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80",
+    planDateTime: daysFromNow(1),
+    planStatus: "CONFIRMED",
+    status: "ACTIVE",
+    memberCount: 3,
+    memberAvatars: [
+      "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
+    ],
+    lastMessage: {
+      content: "I'm sending so many messages right now!",
+      type: "TEXT",
+      sender: { fullName: "Sam", avatar: null },
+      createdAt: hoursAgo(0.01),
+      isSystem: false,
+    },
+    unreadCount: 999,
+  },
+  {
+    id: "group-full",
+    name: "Maximum Efficiency",
+    avatar:
+      "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=200&h=200&fit=crop&q=80",
+    planTitle: "Strategy Session",
+    planCategory: "TECH",
+    planCoverImage:
+      "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=800&q=80",
+    planDateTime: daysFromNow(2),
+    planStatus: "CONFIRMED",
+    status: "ACTIVE",
+    memberCount: 8,
+    memberAvatars: [
+      "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&q=80",
+    ],
+    lastMessage: {
+      content: "Group is full and ready to go!",
+      type: "SYSTEM",
+      sender: { fullName: "System", avatar: null },
+      createdAt: hoursAgo(5),
+      isSystem: true,
+    },
+    unreadCount: 0,
+  },
 ];
 
 export const MOCK_GROUPS: Record<string, Group> = {
@@ -146,6 +232,61 @@ export const MOCK_GROUPS: Record<string, Group> = {
       status: "CONFIRMED",
     }),
   }),
+  "group-long-name": createMockGroup({
+    id: "group-long-name",
+    name: "The Extraordinary League of Super Hiking Adventurers and Nature Enthusiasts and Outdoor People Who Like to Walk Very Far",
+    description:
+      "This is a very long group description to test how it is handled in the group detail panel. It should be scrollable or truncated with a 'show more' option depending on the UI design.",
+    members: [
+      createMockGroupMember({ userId: CURRENT_USER_ID, role: "MEMBER" }),
+      createMockGroupMember({
+        userId: "user-1",
+        role: "MEMBER",
+        user: createMockUser({ id: "user-1", fullName: "Arthur" }),
+      }),
+      createMockGroupMember({
+        userId: "user-2",
+        role: "MEMBER",
+        user: createMockUser({ id: "user-2", fullName: "Beth" }),
+      }),
+      createMockGroupMember({
+        userId: "user-3",
+        role: "MEMBER",
+        user: createMockUser({ id: "user-3", fullName: "Charles" }),
+      }),
+      createMockGroupMember({
+        userId: "user-4",
+        role: "MEMBER",
+        user: createMockUser({ id: "user-4", fullName: "Diana" }),
+      }),
+    ],
+    plan: createMockPlan({
+      id: "plan-long",
+      title: "The Great Expedition to the Highest Peaks of the Northern Range",
+      status: "PROPOSED",
+      category: "OUTDOORS",
+    }),
+  }),
+  "group-full": createMockGroup({
+    id: "group-full",
+    name: "Maximum Efficiency",
+    members: Array.from({ length: 8 }).map((_, i) =>
+      createMockGroupMember({
+        userId: `user-full-${i}`,
+        user: createMockUser({
+          id: `user-full-${i}`,
+          fullName: `Member ${i + 1}`,
+          avatar: `https://i.pravatar.cc/150?u=user-full-${i}`,
+        }),
+      }),
+    ),
+    plan: createMockPlan({
+      id: "plan-full",
+      title: "Strategy Session",
+      status: "CONFIRMED",
+      category: "TECH",
+    }),
+  }),
 };
 
 export const MOCK_GROUP_MESSAGES: Record<string, Message[]> = {
@@ -166,6 +307,57 @@ export const MOCK_GROUP_MESSAGES: Record<string, Message[]> = {
       content: "Hey everyone! Let's test some messages.",
       createdAt: hoursAgo(70),
       status: "READ",
+    }),
+    createMockMessage({
+      id: "msg-p-3",
+      chatId: "chat-playground",
+      senderId: "system",
+      content: "Plan details updated: Time changed to 6:00 PM",
+      createdAt: hoursAgo(69),
+      type: "PLAN_UPDATE",
+      status: "READ",
+    }),
+    createMockMessage({
+      id: "msg-p-4",
+      chatId: "chat-playground",
+      senderId: "user-designer",
+      content: "Does this time work for everyone?",
+      createdAt: hoursAgo(68),
+      status: "READ",
+      reactions: [
+        {
+          emoji: "👍",
+          createdAt: hoursAgo(67),
+          messageId: "msg-p-4",
+          userId: CURRENT_USER_ID,
+        },
+        {
+          emoji: "🚀",
+          createdAt: hoursAgo(67),
+          messageId: "msg-p-4",
+          userId: "user-designer",
+        },
+      ],
+    }),
+    createMockMessage({
+      id: "msg-p-5",
+      chatId: "chat-playground",
+      senderId: "user-designer",
+      content: "Look at these designs!",
+      createdAt: hoursAgo(66),
+      status: "READ",
+      attachments: [
+        createMockAttachment({
+          id: "att-1",
+          name: "desktop.png",
+          url: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&q=80",
+        }),
+        createMockAttachment({
+          id: "att-2",
+          name: "mobile.png",
+          url: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80",
+        }),
+      ],
     }),
   ],
   "group-1": [

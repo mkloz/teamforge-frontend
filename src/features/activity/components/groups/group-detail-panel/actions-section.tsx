@@ -78,7 +78,7 @@ function ActionButton({
       variant="ghost"
       onClick={onClick}
       className={cn(
-        "w-full h-auto flex items-center justify-start gap-4 px-3 py-2.5 rounded-xl border border-transparent shadow-none transition-all duration-200",
+        "w-full h-auto flex items-center justify-start gap-4 px-3 py-2.5 rounded-xl border border-transparent shadow-none transition-all duration-200 group",
         variant === "default" && "text-ink hover:bg-muted/80",
         variant === "destructive" &&
           "text-red-500 hover:bg-red-500/10 hover:border-red-500/20",

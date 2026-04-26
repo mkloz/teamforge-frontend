@@ -34,38 +34,38 @@ export function Step4Failed({ forgeMode }: Step4FailedProps) {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
-      {/* Error hero */}
-      <div className="rounded-2xl bg-destructive/6 border border-destructive/20 p-5 flex items-start gap-4">
-        <div className="w-12 h-12 rounded-2xl bg-destructive flex items-center justify-center shrink-0 shadow-lg shadow-destructive/20">
-          <AlertCircle size={22} className="text-white" strokeWidth={2.5} />
+      {/* Warm Warning Hero */}
+      <div className="rounded-2xl bg-spark-amber/5 border border-spark-amber/20 p-5 flex items-start gap-4 shadow-sm">
+        <div className="w-12 h-12 rounded-2xl bg-spark-amber flex items-center justify-center shrink-0 shadow-lg shadow-spark-amber/20">
+          <AlertCircle size={22} className="text-white" strokeWidth={2} />
         </div>
         <div className="min-w-0">
-          <p className="text-xs font-semibold text-destructive/80">
-            No matches found
+          <p className="text-xs font-bold text-spark-amber uppercase tracking-wider">
+            Pool constraint
           </p>
-          <h3 className="text-base font-bold text-foreground leading-tight mt-0.5">
-            We couldn&apos;t find a group
+          <h3 className="text-lg font-bold text-ink leading-tight mt-1">
+            We couldn&apos;t form a group
           </h3>
-          <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-            The algorithm ran but no compatible members were available. Try
-            adjusting your settings and forging again.
+          <p className="text-sm text-slate-muted mt-1.5 leading-relaxed">
+            Our algorithm analyzed the current pool but couldn&apos;t find a
+            perfectly compatible match for your settings.
           </p>
         </div>
       </div>
 
-      {/* What happened */}
+      {/* Analysis Context */}
       <div className="space-y-3">
-        <p className="text-xs font-semibold text-muted-foreground">
-          What might have happened
+        <p className="text-xs font-bold text-slate-muted uppercase tracking-widest px-1">
+          Likely causes
         </p>
-        <div className="flex flex-col gap-2">
+        <div className="grid gap-3">
           {reasons.map((reason, i) => (
             <div
               key={i}
-              className="flex items-start gap-3 px-4 py-3.5 rounded-2xl border border-border/40 bg-card"
+              className="flex items-start gap-4 px-5 py-4 rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm shadow-sm"
             >
-              <div className="w-1.5 h-1.5 rounded-full bg-destructive/40 shrink-0 mt-1.5" />
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <div className="w-1.5 h-1.5 rounded-full bg-spark-amber/40 shrink-0 mt-2" />
+              <p className="text-[13px] text-slate-muted font-medium leading-relaxed">
                 {reason}
               </p>
             </div>
@@ -73,26 +73,31 @@ export function Step4Failed({ forgeMode }: Step4FailedProps) {
         </div>
       </div>
 
-      {/* Suggested changes */}
+      {/* Suggested adjustments */}
       <div className="space-y-3">
-        <p className="text-xs font-semibold text-muted-foreground">
+        <p className="text-xs font-bold text-slate-muted uppercase tracking-widest px-1">
           Suggested adjustments
         </p>
-        <div className="rounded-2xl border border-accent/20 bg-accent/5 divide-y divide-accent/10 overflow-hidden">
+        <div className="rounded-2xl border border-forge-teal/10 bg-forge-teal/5 divide-y divide-forge-teal/10 overflow-hidden shadow-sm">
           {suggestions.map((rec, i) => (
-            <div key={i} className="flex items-center gap-3 px-4 py-3.5">
-              <ArrowRight size={14} className="text-accent/60 shrink-0" />
-              <p className="text-sm font-medium text-accent">{rec}</p>
+            <div
+              key={i}
+              className="flex items-center gap-3 px-5 py-4 hover:bg-forge-teal/10 transition-colors duration-200"
+            >
+              <ArrowRight size={14} className="text-forge-teal shrink-0" />
+              <p className="text-sm font-semibold text-forge-teal/90">{rec}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Footer cue */}
-      <p className="text-xs text-muted-foreground text-center leading-relaxed">
-        Tap <span className="font-semibold text-foreground">Try again</span>{" "}
-        below to go back and adjust your settings.
-      </p>
+      <div className="py-4 border-t border-border/40">
+        <p className="text-xs text-slate-muted text-center leading-relaxed italic opacity-80">
+          Tap <span className="font-bold text-ink">Try again</span> below to go
+          back and adjust your settings.
+        </p>
+      </div>
     </div>
   );
 }

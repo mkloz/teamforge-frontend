@@ -28,14 +28,14 @@ export function Step4Success({
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
       {/* Hero success moment */}
-      <div className="rounded-2xl bg-emerald-500/8 border border-emerald-500/20 p-5 flex items-center gap-4">
+      <div className="rounded-2xl bg-forge-teal/8 border border-forge-teal/20 p-5 flex items-center gap-4">
         <div className="shrink-0">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/25">
+          <div className="w-12 h-12 rounded-2xl bg-forge-teal flex items-center justify-center shadow-lg shadow-forge-teal/25">
             <Check size={22} className="text-white" strokeWidth={2.5} />
           </div>
         </div>
         <div className="min-w-0">
-          <p className="text-xs font-semibold text-emerald-600">Group forged</p>
+          <p className="text-xs font-semibold text-forge-teal">Group forged</p>
           <h3 className="text-base font-bold text-foreground leading-tight mt-0.5 truncate">
             Ready for &ldquo;{planName}&rdquo;
           </h3>
@@ -51,9 +51,9 @@ export function Step4Success({
           <p className="text-xs font-semibold text-muted-foreground">
             Group members
           </p>
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/15">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span className="text-xs font-semibold text-emerald-600">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-forge-teal/10 border border-forge-teal/15">
+            <span className="w-1.5 h-1.5 rounded-full bg-forge-teal" />
+            <span className="text-xs font-semibold text-forge-teal">
               {activeCount} people
             </span>
           </span>
@@ -126,7 +126,7 @@ export function Step4Success({
                           className={cn(
                             "text-xs font-semibold px-1.5 py-0.5 rounded-md",
                             p.compatibilityScore >= 90
-                              ? "bg-emerald-500/10 text-emerald-600"
+                              ? "bg-forge-teal/10 text-forge-teal"
                               : "bg-accent/10 text-accent",
                           )}
                         >
@@ -142,7 +142,7 @@ export function Step4Success({
                     size="icon"
                     onClick={() => onRestoreParticipant(p.userId)}
                     aria-label={`Restore ${p.user?.fullName}`}
-                    className="size-8 rounded-xl text-emerald-600 bg-emerald-500/10 md:opacity-0 md:group-hover:opacity-100 hover:bg-emerald-500/10 hover:text-emerald-600 transition-opacity"
+                    className="size-8 rounded-xl text-forge-teal bg-forge-teal/10 md:opacity-0 md:group-hover:opacity-100 hover:bg-forge-teal/10 hover:text-forge-teal transition-opacity"
                   >
                     <UserPlus size={14} />
                   </Button>
@@ -177,7 +177,7 @@ export function Step4Success({
 
       {/* Contextual note */}
       <div className="flex gap-3 p-4 rounded-2xl border border-border/40 bg-card">
-        <div className="w-0.5 rounded-full bg-primary/30 shrink-0 self-stretch" />
+        <div className="rounded-full bg-primary/20 w-2 h-2 mt-1.5 shrink-0" />
         <div className="space-y-1">
           <p className="text-xs font-semibold text-primary/80">
             How removal works
