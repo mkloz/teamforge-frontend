@@ -87,7 +87,7 @@ export function InterestsPage() {
                         selectedIds={state.selectedIds}
                         searchQuery={state.searchQuery}
                         searchResults={state.searchResults}
-                        mbtiType={state.mbtiType}
+                        personalityType={state.personalityType}
                         suggestedTags={state.suggestedTags}
                         youMightAlsoLike={state.youMightAlsoLike}
                         showBalanceNudge={state.showBalanceNudge}
@@ -129,7 +129,7 @@ export function InterestsPage() {
       <AnimatePresence>
         {isDone && (
           <CompletionBlueprint
-            mbtiType={state.mbtiType}
+            personalityType={state.personalityType}
             interestCount={state.selectedCount}
             onEnter={() => {
               window.location.href = "/home";

@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Check, ChevronLeft, Zap } from "lucide-react";
 import { ForgeLoadingAnvil } from "./loading/forge-loading-anvil";
 import { useEffect } from "react";
+import type { Group, Plan, Activity } from "@/shared/schemas";
 import { useForgeWizard } from "../hooks/use-forge-wizard";
 
 import { Step1Activity } from "./steps/step1-activity";
@@ -37,8 +38,8 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
     3: { title: "Who are we looking for?", sub: "Group Preferences" },
     4: {
       title:
-        fw.forgeResult === "failed" ? "No matches found" : "We found a group!",
-      sub: fw.forgeResult === "failed" ? "Let's try adjusting" : "Success",
+        fw.forgeResult === "FAILED" ? "No matches found" : "We found a group!",
+      sub: fw.forgeResult === "FAILED" ? "Let's try adjusting" : "Success",
     },
     5: { title: "Give it a look", sub: "Group Identity" },
     6: { title: "Ready to go!", sub: "Invitations" },
@@ -265,10 +266,13 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
                 selectedActivity={fw.selectedActivity}
               />
             )}
-            {fw.step === 4 && fw.forgeResult === "success" && (
+            {fw.step === 4 && fw.forgeResult === "SUCCESS" && (
               <Step4Success
-                planName={fw.planName}
-                activity={fw.selectedActivity ?? ""}
+                group={
+                  {
+                    plan: { title: fw.planName } as Partial<Plan>,
+                  } as Partial<Group>
+                }
                 participants={fw.participants}
                 removedIds={fw.removedIds}
                 onRemoveParticipant={fw.handleRemoveParticipant}
@@ -276,13 +280,19 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
                 onReforge={fw.handleReforge}
               />
             )}
-            {fw.step === 4 && fw.forgeResult === "failed" && (
+            {fw.step === 4 && fw.forgeResult === "FAILED" && (
               <Step4Failed forgeMode={fw.forgeMode} />
             )}
             {fw.step === 5 && (
               <Step5Identity
-                planName={fw.planName}
-                activity={fw.selectedActivity}
+                group={
+                  {
+                    plan: { title: fw.planName } as Partial<Plan>,
+                    activity: {
+                      title: fw.selectedActivity || "",
+                    } as Partial<Activity>,
+                  } as Partial<Group>
+                }
                 coverImage={fw.coverImage}
                 onCoverImageChange={fw.setCoverImage}
                 avatarImage={fw.avatarImage}
@@ -295,10 +305,18 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
             )}
             {fw.step === 6 && (
               <Step6Invite
-                planName={fw.planName || "Your Group"}
-                activity={fw.selectedActivity}
-                planDate={fw.planDate}
-                planLocation={fw.planLocation}
+                group={
+                  {
+                    plan: {
+                      title: fw.planName,
+                      dateTime: fw.planDate,
+                      location: fw.planLocation,
+                    } as Partial<Plan>,
+                    activity: {
+                      title: fw.selectedActivity || "",
+                    } as Partial<Activity>,
+                  } as Partial<Group>
+                }
                 participantCount={fw.activeParticipants.length + 1}
                 coverImage={fw.coverImage}
                 inviteCopied={fw.inviteCopied}

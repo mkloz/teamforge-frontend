@@ -1,11 +1,12 @@
 import type { OceanVector } from "./score-calculator";
+import type { PersonalityType } from "@/shared/schemas/enums";
 import {
   TYPE_DESCRIPTIONS,
   type PersonalityTypeInfo,
 } from "../data/type-descriptions";
 
 export interface PersonalityResult {
-  type: string; // e.g. "ENTJ"
+  type: PersonalityType; // e.g. "ENTJ"
   variant: "A" | "T"; // Assertive / Turbulent
   info: PersonalityTypeInfo;
 }
@@ -27,7 +28,7 @@ export function vectorToType(vector: OceanVector): PersonalityResult {
   const jp = vector.C > 0 ? "J" : "P";
   const variant: "A" | "T" = vector.N <= 0 ? "A" : "T";
 
-  const type = `${ei}${sn}${tf}${jp}`;
+  const type = `${ei}${sn}${tf}${jp}` as PersonalityType;
   const info = TYPE_DESCRIPTIONS[type] ?? TYPE_DESCRIPTIONS["INFP"];
 
   return { type, variant, info };

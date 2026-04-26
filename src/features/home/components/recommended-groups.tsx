@@ -55,10 +55,15 @@ export function RecommendedGroups() {
           className="w-full"
         >
           <CarouselContent className="-ml-4">
-            {recommendations.map((group) => (
-              <CarouselItem key={group.id} className="pl-4 basis-70">
+            {recommendations.map((recommendation) => (
+              <CarouselItem key={recommendation.id} className="pl-4 basis-70">
                 <div className="flex justify-center w-full">
-                  <GroupPlanCard {...group} variant="compact" />
+                  <GroupPlanCard
+                    group={recommendation}
+                    matchScore={recommendation.matchScore}
+                    distance={recommendation.distance}
+                    variant="compact"
+                  />
                 </div>
               </CarouselItem>
             ))}
@@ -72,9 +77,14 @@ export function RecommendedGroups() {
         className="hidden md:grid gap-4 justify-items-center"
         style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}
       >
-        {recommendations.map((group) => (
-          <div key={group.id} className="w-full flex justify-center">
-            <GroupPlanCard {...group} variant="compact" />
+        {recommendations.map((recommendation) => (
+          <div key={recommendation.id} className="w-full flex justify-center">
+            <GroupPlanCard
+              group={recommendation}
+              matchScore={recommendation.matchScore}
+              distance={recommendation.distance}
+              variant="compact"
+            />
           </div>
         ))}
       </div>

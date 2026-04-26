@@ -1,53 +1,25 @@
-import type { UnifiedAttachment, UnifiedMessageReaction } from "./chat.types";
+import type {
+  Chat as SharedChat,
+  Message as SharedMessage,
+  User as SharedUser,
+} from "@/shared/schemas";
+import type {
+  MessageStatus,
+  MessageType,
+  ChatType,
+} from "@/shared/schemas/enums";
 
 /**
  * Direct Chats feature type definitions
+ * Re-exporting canonical types for convenience
  */
 
+export type { MessageStatus, MessageType, ChatType };
 export type OnlineStatus = "ONLINE" | "AWAY" | "OFFLINE";
 
-export type DirectMessageType = "TEXT" | "IMAGE" | "VOICE" | "SYSTEM";
-
-export type MessageStatus =
-  | "SENDING"
-  | "SENT"
-  | "DELIVERED"
-  | "READ"
-  | "FAILED";
-
-/**
- * A user in a direct chat
- */
-export interface Participant {
-  id: string;
-  name: string;
-  avatar: string;
-  age?: number;
-  location?: string;
-  bio?: string;
-  personalityType?: string;
-  onlineStatus: OnlineStatus;
-  lastSeen?: string; // ISO datetime
-}
-
-/**
- * A direct chat conversation
- */
-export interface DirectChat {
-  id: string;
-  participant: Participant;
-  createdAt: string;
-  // Mutual connections
-  mutualGroups?: {
-    id: string;
-    name: string;
-    avatar: string;
-  }[];
-  // Settings
-  isMuted: boolean;
-  isBlocked: boolean;
-  pinnedMessages?: import("./chat.types").UnifiedMessage[];
-}
+export type DirectChat = SharedChat;
+export type Participant = SharedUser;
+export type DirectMessage = SharedMessage;
 
 /**
  * Preview for direct chat list
@@ -55,46 +27,22 @@ export interface DirectChat {
 export interface DirectChatPreview {
   id: string;
   participantId: string;
-  participantName: string;
-  participantAvatar: string;
-  onlineStatus: OnlineStatus;
+  participantFullName: string;
+  participantAvatar: string | null;
+  onlineStatus?: "ONLINE" | "AWAY" | "OFFLINE";
   lastSeen?: string;
   // Conversation data
   lastMessage?: {
     content: string;
-    timestamp: string;
+    createdAt: string;
     isOwn: boolean;
     status: MessageStatus;
-    type?: DirectMessageType;
+    type?: MessageType;
   };
   unreadCount: number;
   // Real-time indicators
   isTyping: boolean;
   isMuted: boolean;
-}
-
-/**
- * A message in a direct chat
- */
-export interface DirectMessage {
-  id: string;
-  chatId: string;
-  type: DirectMessageType;
-  content: string;
-  senderId: string;
-  timestamp: string;
-  isOwn: boolean;
-  status: MessageStatus;
-  // Production-level features
-  isEdited?: boolean;
-  isPinned?: boolean;
-  replyTo?: {
-    id: string;
-    content: string;
-    senderName: string;
-  };
-  attachments?: UnifiedAttachment[];
-  reactions?: Record<string, UnifiedMessageReaction[]>;
 }
 
 /**

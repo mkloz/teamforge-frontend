@@ -1,16 +1,12 @@
 import { cn } from "@/shared/lib/utils";
 import { Check, RefreshCw, UserMinus, UserPlus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import type { Group } from "@/shared/schemas/group";
+import type { ForgeParticipant } from "../../constants/forge.constants";
 
 export interface Step4SuccessProps {
-  planName: string;
-  activity: string;
-  participants: Array<{
-    id: string;
-    name: string;
-    avatar: string;
-    compatibility: number;
-  }>;
+  group: Partial<Group>;
+  participants: ForgeParticipant[];
   removedIds: Set<string>;
   onRemoveParticipant: (id: string) => void;
   onRestoreParticipant: (id: string) => void;
@@ -18,15 +14,16 @@ export interface Step4SuccessProps {
 }
 
 export function Step4Success({
-  planName,
+  group,
   participants,
   removedIds,
   onRemoveParticipant,
   onRestoreParticipant,
   onReforge,
 }: Step4SuccessProps) {
+  const planName = group.plan?.title || "Upcoming Activity";
   const activeCount =
-    participants.filter((p) => !removedIds.has(p.id)).length + 1;
+    participants.filter((p) => !removedIds.has(p.userId)).length + 1;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
@@ -83,10 +80,10 @@ export function Step4Success({
 
           {/* Participants */}
           {participants.map((p) => {
-            const removed = removedIds.has(p.id);
+            const removed = removedIds.has(p.userId);
             return (
               <div
-                key={p.id}
+                key={p.userId}
                 className={cn(
                   "group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition duration-200",
                   removed
@@ -102,7 +99,7 @@ export function Step4Success({
                       : "bg-accent/10 group-hover:bg-accent/15",
                   )}
                 >
-                  {p.avatar}
+                  {p.user?.avatar}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p
@@ -113,7 +110,7 @@ export function Step4Success({
                         : "text-foreground",
                     )}
                   >
-                    {p.name}
+                    {p.user?.fullName}
                   </p>
                   <div className="flex items-center gap-2 mt-0.5">
                     {removed ? (
@@ -128,12 +125,12 @@ export function Step4Success({
                         <span
                           className={cn(
                             "text-xs font-semibold px-1.5 py-0.5 rounded-md",
-                            p.compatibility >= 90
+                            p.compatibilityScore >= 90
                               ? "bg-emerald-500/10 text-emerald-600"
                               : "bg-accent/10 text-accent",
                           )}
                         >
-                          {p.compatibility}%
+                          {p.compatibilityScore}%
                         </span>
                       </>
                     )}
@@ -143,8 +140,8 @@ export function Step4Success({
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onRestoreParticipant(p.id)}
-                    aria-label={`Restore ${p.name}`}
+                    onClick={() => onRestoreParticipant(p.userId)}
+                    aria-label={`Restore ${p.user?.fullName}`}
                     className="size-8 rounded-xl text-emerald-600 bg-emerald-500/10 md:opacity-0 md:group-hover:opacity-100 hover:bg-emerald-500/10 hover:text-emerald-600 transition-opacity"
                   >
                     <UserPlus size={14} />
@@ -153,8 +150,8 @@ export function Step4Success({
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onRemoveParticipant(p.id)}
-                    aria-label={`Remove ${p.name}`}
+                    onClick={() => onRemoveParticipant(p.userId)}
+                    aria-label={`Remove ${p.user?.fullName}`}
                     className="size-8 rounded-xl text-destructive/60 bg-destructive/8 md:opacity-0 md:group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-opacity"
                   >
                     <UserMinus size={14} />

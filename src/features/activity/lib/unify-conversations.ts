@@ -1,38 +1,30 @@
-import type { GroupPreview, Message } from "../types/groups.types";
-import type {
-  DirectChatPreview,
-  DirectMessage,
-} from "../types/direct-chats.types";
+import type { Message } from "@/shared/schemas";
+import type { GroupPreview } from "../types/groups.types";
+import type { DirectChatPreview } from "../types/direct-chats.types";
 import type {
   UnifiedConversation,
-  FilterChip,
+  ConversationFilter,
 } from "../types/unified-conversation.types";
 import type { UnifiedMessage } from "../types/chat.types";
 
+/**
+ * Maps a GroupPreview (UI-specific) to a UnifiedConversation
+ */
 export function groupPreviewToUnified(g: GroupPreview): UnifiedConversation {
-  let subtitleIcon: UnifiedConversation["subtitleIcon"];
   let subtitle = g.lastMessage?.content || "No messages yet";
 
   if (g.lastMessage) {
     if (g.lastMessage.isSystem) {
       subtitle = g.lastMessage.content;
     } else {
-      const prefix = g.lastMessage.senderName
-        ? `${g.lastMessage.senderName}: `
+      const prefix = g.lastMessage.sender.fullName
+        ? `${g.lastMessage.sender.fullName}: `
         : "";
 
       let content = g.lastMessage.content;
       if (!content) {
-        if (g.lastMessage.type === "VOICE") {
-          content = "Voice Note";
-          subtitleIcon = "voice";
-        } else if (g.lastMessage.type === "IMAGE") {
-          content = "Photo";
-          subtitleIcon = "image";
-        } else if (g.lastMessage.type === "PLAN_UPDATE") {
-          content = "Proposal";
-          subtitleIcon = "proposal";
-        }
+        if (g.lastMessage.type === "VOICE") content = "Voice Note";
+        else if (g.lastMessage.type === "IMAGE") content = "Photo";
       }
 
       subtitle = `${prefix}${content}`;
@@ -42,40 +34,32 @@ export function groupPreviewToUnified(g: GroupPreview): UnifiedConversation {
   return {
     id: g.id,
     kind: "group",
-    title: g.groupName,
+    title: g.name,
     subtitle,
-    subtitleIcon,
-    avatarUrl: g.groupAvatar,
-    timestamp: g.lastMessage?.timestamp ?? g.planDateTime,
+    avatarUrl: g.avatar,
+    secondaryAvatar: g.planCoverImage || undefined,
     unreadCount: g.unreadCount,
-    lastMessageIsSystem: g.lastMessage?.isSystem,
-    // Group-specific
-    memberCount: g.memberCount,
-    memberAvatars: g.memberAvatars,
-    planCoverImage: g.planCoverImage,
+    isMuted: false,
+    isTyping: false,
+    lastMessage: g.lastMessage,
     planDateTime: g.planDateTime,
     planStatus: g.planStatus,
-    groupStatus: g.status,
     pendingProposals: g.pendingProposals,
-    senderName: g.lastMessage?.senderName,
   };
 }
 
+/**
+ * Maps a DirectChatPreview (UI-specific) to a UnifiedConversation
+ */
 export function dmPreviewToUnified(c: DirectChatPreview): UnifiedConversation {
-  let subtitleIcon: UnifiedConversation["subtitleIcon"];
   let subtitle = c.lastMessage?.content || "No messages yet";
 
   if (c.isTyping) {
     subtitle = "typing...";
   } else if (c.lastMessage) {
     if (!c.lastMessage.content) {
-      if (c.lastMessage.type === "VOICE") {
-        subtitle = "Voice Note";
-        subtitleIcon = "voice";
-      } else if (c.lastMessage.type === "IMAGE") {
-        subtitle = "Photo";
-        subtitleIcon = "image";
-      }
+      if (c.lastMessage.type === "VOICE") subtitle = "Voice Note";
+      else if (c.lastMessage.type === "IMAGE") subtitle = "Photo";
     } else {
       subtitle = c.lastMessage.content;
     }
@@ -84,85 +68,70 @@ export function dmPreviewToUnified(c: DirectChatPreview): UnifiedConversation {
   return {
     id: c.id,
     kind: "dm",
-    title: c.participantName,
+    title: c.participantFullName,
     subtitle,
-    subtitleIcon,
     avatarUrl: c.participantAvatar,
-    timestamp: c.lastMessage?.timestamp ?? new Date(0).toISOString(),
     unreadCount: c.unreadCount,
-    lastMessageIsOwn: c.lastMessage?.isOwn,
-    lastMessageStatus: c.lastMessage?.status,
-    // DM-specific
-    onlineStatus: c.onlineStatus,
-    isTyping: c.isTyping,
     isMuted: c.isMuted,
+    isTyping: c.isTyping,
+    onlineStatus: c.onlineStatus,
+    lastMessage: c.lastMessage
+      ? {
+          content: c.lastMessage.content,
+          createdAt: c.lastMessage.createdAt,
+          type: c.lastMessage.type,
+          isSystem: false,
+          isOwn: c.lastMessage.isOwn,
+          status: c.lastMessage.status,
+          sender: {
+            fullName: c.lastMessage.isOwn ? "Me" : c.participantFullName,
+            avatar: c.lastMessage.isOwn ? null : c.participantAvatar,
+          },
+        }
+      : undefined,
   };
 }
 
-export function groupMessageToUnified(m: Message): UnifiedMessage {
-  return {
-    id: m.id,
-    type: m.type,
-    content: m.content,
-    senderId: m.senderId,
-    senderName: m.senderName,
-    senderAvatar: m.senderAvatar,
-    timestamp: m.timestamp,
-    isOwn: m.isOwn,
-    status: m.status || "READ",
-    readBy: m.readBy,
-    chatId: m.groupId,
-    // Pass through new features
-    attachments: m.attachments,
-    reactions: m.reactions,
-    replyTo: m.replyTo,
-    isEdited: m.isEdited,
-    isPinned: m.isPinned,
-  };
-}
-
-export function dmMessageToUnified(
-  m: DirectMessage,
-  participantName: string,
-  participantAvatar: string,
+/**
+ * Maps a canonical Message to a UnifiedMessage (UI-ready)
+ */
+export function messageToUnified(
+  m: Message,
+  currentUserId: string,
 ): UnifiedMessage {
+  const isOwn = m.senderId === currentUserId;
+
   return {
-    id: m.id,
-    type: m.type,
-    content: m.content,
-    senderId: m.senderId,
-    senderName: m.isOwn ? "Me" : participantName,
-    senderAvatar: m.isOwn ? "" : participantAvatar,
-    timestamp: m.timestamp,
-    isOwn: m.isOwn,
-    status: m.status,
-    chatId: m.chatId,
-    // Pass through new features
-    attachments: m.attachments,
-    reactions: m.reactions,
-    replyTo: m.replyTo,
-    isEdited: m.isEdited,
-    isPinned: m.isPinned,
+    ...m,
+    isOwn,
   };
 }
 
+/**
+ * Sorts conversations by last activity
+ */
 export function sortByRecency(
   items: UnifiedConversation[],
 ): UnifiedConversation[] {
-  return [...items].sort(
-    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-  );
+  return [...items].sort((a, b) => {
+    const aTime = a.lastMessage?.createdAt || "0";
+    const bTime = b.lastMessage?.createdAt || "0";
+    return new Date(bTime).getTime() - new Date(aTime).getTime();
+  });
 }
 
+/**
+ * Applies filters and search query to conversation list
+ */
 export function applyFilter(
   items: UnifiedConversation[],
-  filter: FilterChip,
+  filter: ConversationFilter,
   query: string,
 ): UnifiedConversation[] {
   let result = items;
 
   if (filter === "groups") result = result.filter((i) => i.kind === "group");
-  else if (filter === "dms") result = result.filter((i) => i.kind === "dm");
+  else if (filter === "direct") result = result.filter((i) => i.kind === "dm");
   else if (filter === "unread")
     result = result.filter((i) => i.unreadCount > 0);
 
@@ -171,7 +140,7 @@ export function applyFilter(
     result = result.filter(
       (i) =>
         i.title.toLowerCase().includes(q) ||
-        i.subtitle.toLowerCase().includes(q),
+        (i.subtitle && i.subtitle.toLowerCase().includes(q)),
     );
   }
 

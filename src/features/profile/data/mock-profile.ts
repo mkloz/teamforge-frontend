@@ -3,84 +3,128 @@ import { createDimensionScores } from "../lib/profile-utils";
 
 export const MOCK_PROFILE: UserProfile = {
   id: "user-self",
+  email: "alex.johnson@example.com",
+  emailVerified: true,
+  authProvider: "EMAIL",
+  fullName: "Alex Johnson",
   avatar:
     "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
-  name: "Alex Johnson",
-  age: 28,
-  location: "Portland, OR",
   bio: "Adventure seeker who believes the best moments happen when plans go sideways.",
-
-  mbtiType: "ENFP",
-  dimensionScores: createDimensionScores(
-    48, // E/I - borderline! (48% toward E, very close to center)
-    78, // S/N - clearly N (78% toward N)
-    82, // T/F - clearly F (82% toward F)
-    65, // J/P - P (65% toward P)
-  ),
-
-  archetype: "The Spark",
+  age: 28,
+  gender: "MALE",
+  city: "Portland, OR",
+  createdAt: "2024-03-15T00:00:00Z",
+  updatedAt: "2024-03-15T00:00:00Z",
+  searchStatus: "IDLE",
   trustScore: 94,
+  profileComplete: true,
 
-  // OCEAN scores (derived from ENFP tendencies)
+  // Personality
+  personalityType: "ENFP",
+  oceanO: 85,
+  oceanC: 45,
+  oceanE: 72,
+  oceanA: 78,
+  oceanN: 52,
+
+  // UI Projections
   oceanScores: {
-    openness: 85, // High - creative, curious, imaginative
-    conscientiousness: 45, // Moderate-low - flexible, spontaneous
-    extraversion: 72, // High - social, energetic
-    agreeableness: 78, // High - warm, cooperative
-    neuroticism: 52, // Moderate - emotionally aware
+    openness: 85,
+    conscientiousness: 45,
+    extraversion: 72,
+    agreeableness: 78,
+    neuroticism: 52,
   },
+  dimensionScores: createDimensionScores(
+    48, // E/I
+    78, // S/N
+    82, // T/F
+    65, // J/P
+  ),
+  archetype: "The Spark",
 
   interests: [
-    { id: "1", label: "Hiking", category: "outdoors" },
-    { id: "2", label: "Live Music", category: "music" },
-    { id: "3", label: "Coffee Culture", category: "food" },
-    { id: "4", label: "Board Games", category: "gaming" },
-    { id: "5", label: "Photography", category: "creative" },
-    { id: "6", label: "Day Trips", category: "outdoors" },
-    { id: "7", label: "Cooking Classes", category: "learning" },
-    { id: "8", label: "Volleyball", category: "sports" },
+    {
+      id: "1",
+      label: "Hiking",
+      slug: "hiking",
+      description: null,
+      icon: "Mountain",
+      color: "#0d9488",
+      sortOrder: 1,
+      isActive: true,
+      parentId: null,
+      aliases: [],
+    },
+    {
+      id: "2",
+      label: "Live Music",
+      slug: "live-music",
+      description: null,
+      icon: "Music",
+      color: "#f59e0b",
+      sortOrder: 2,
+      isActive: true,
+      parentId: null,
+      aliases: [],
+    },
+    {
+      id: "3",
+      label: "Coffee Culture",
+      slug: "coffee",
+      description: null,
+      icon: "Coffee",
+      color: "#ec4899",
+      sortOrder: 3,
+      isActive: true,
+      parentId: null,
+      aliases: [],
+    },
   ],
-
-  joinedAt: "2024-03-15T00:00:00Z",
 };
 
 // Alternative profile for testing different types
 export const MOCK_PROFILE_INTJ: UserProfile = {
   id: "user-intj",
+  email: "morgan.chen@example.com",
+  emailVerified: true,
+  authProvider: "GOOGLE",
+  fullName: "Morgan Chen",
   avatar:
     "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
-  name: "Morgan Chen",
-  age: 32,
-  location: "Seattle, WA",
   bio: "Building systems that make sense. Chess player, sci-fi reader, occasional mountain climber.",
-
-  mbtiType: "INTJ",
-  dimensionScores: createDimensionScores(
-    72, // I (72% toward I)
-    85, // N (85% toward N)
-    35, // T (35% toward T, clear T)
-    28, // J (28% toward J, clear J)
-  ),
-
-  archetype: "The Strategist",
+  age: 32,
+  gender: "MALE",
+  city: "Seattle, WA",
+  createdAt: "2023-11-20T00:00:00Z",
+  updatedAt: "2023-11-20T00:00:00Z",
+  searchStatus: "IDLE",
   trustScore: 97,
+  profileComplete: true,
 
-  // OCEAN scores (derived from INTJ tendencies)
+  // Personality
+  personalityType: "INTJ",
+  oceanO: 78,
+  oceanC: 88,
+  oceanE: 28,
+  oceanA: 42,
+  oceanN: 35,
+
+  // UI Projections
   oceanScores: {
-    openness: 78, // High - intellectual curiosity
-    conscientiousness: 88, // Very high - organized, goal-oriented
-    extraversion: 28, // Low - reserved, independent
-    agreeableness: 42, // Moderate-low - direct, objective
-    neuroticism: 35, // Low - emotionally stable
+    openness: 78,
+    conscientiousness: 88,
+    extraversion: 28,
+    agreeableness: 42,
+    neuroticism: 35,
   },
+  dimensionScores: createDimensionScores(
+    72, // I
+    85, // N
+    35, // T
+    28, // J
+  ),
+  archetype: "The Strategist",
 
-  interests: [
-    { id: "1", label: "Chess", category: "gaming" },
-    { id: "2", label: "Sci-Fi Books", category: "learning" },
-    { id: "3", label: "Rock Climbing", category: "sports" },
-    { id: "4", label: "Tech Meetups", category: "social" },
-    { id: "5", label: "Minimalist Design", category: "creative" },
-  ],
-
-  joinedAt: "2023-11-20T00:00:00Z",
+  interests: [],
 };

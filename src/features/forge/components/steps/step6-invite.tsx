@@ -14,11 +14,10 @@ const PRESET_GRADIENTS: Record<string, string> = {
   sky: "from-sky-400 to-blue-600",
 };
 
+import type { Group } from "@/shared/schemas/group";
+
 export interface Step6InviteProps {
-  planName: string;
-  activity: string | null;
-  planDate: string;
-  planLocation: string;
+  group: Partial<Group>;
   participantCount: number;
   coverImage: string | null;
   inviteCopied: boolean;
@@ -26,15 +25,16 @@ export interface Step6InviteProps {
 }
 
 export function Step6Invite({
-  planName,
-  activity,
-  planDate,
-  planLocation,
+  group,
   participantCount,
   coverImage,
   inviteCopied,
   onCopyLink,
 }: Step6InviteProps) {
+  const planName = group.plan?.title || "";
+  const activity = group.activity?.title || null;
+  const planDate = group.plan?.dateTime || "";
+  const planLocation = group.plan?.location || "";
   const gradientClass = coverImage ? PRESET_GRADIENTS[coverImage] : null;
 
   return (

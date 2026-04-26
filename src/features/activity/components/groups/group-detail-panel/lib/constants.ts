@@ -4,22 +4,27 @@ import type {
 } from "@/features/activity/types/groups.types";
 
 export const categoryColors: Record<PlanCategory, string> = {
-  Tech: "bg-blue-500/15 text-blue-600",
-  Sports: "bg-green-500/15 text-green-600",
-  Arts: "bg-purple-500/15 text-purple-600",
-  Social: "bg-orange-500/15 text-orange-600",
-  Outdoors: "bg-emerald-500/15 text-emerald-600",
-  Learning: "bg-indigo-500/15 text-indigo-600",
-  Music: "bg-pink-500/15 text-pink-600",
-  Food: "bg-amber-500/15 text-amber-600",
-  Gaming: "bg-violet-500/15 text-violet-600",
-  Wellness: "bg-teal-500/15 text-teal-600",
+  TECH: "bg-blue-500/15 text-blue-600",
+  SPORTS: "bg-green-500/15 text-green-600",
+  ARTS: "bg-purple-500/15 text-purple-600",
+  SOCIAL: "bg-orange-500/15 text-orange-600",
+  OUTDOORS: "bg-emerald-500/15 text-emerald-600",
+  LEARNING: "bg-indigo-500/15 text-indigo-600",
+  MUSIC: "bg-pink-500/15 text-pink-600",
+  FOOD: "bg-amber-500/15 text-amber-600",
+  GAMING: "bg-violet-500/15 text-violet-600",
+  WELLNESS: "bg-teal-500/15 text-teal-600",
+  TRAVEL: "bg-sky-500/15 text-sky-600",
+  OTHER: "bg-slate-500/15 text-slate-600",
 };
 
 export const statusColors: Record<PlanStatus, string> = {
   DRAFT: "bg-slate-500/15 text-slate-600",
+  PROPOSED: "bg-amber-500/15 text-amber-600",
   CONFIRMED: "bg-teal-500/15 text-teal-600",
+  IN_PROGRESS: "bg-indigo-500/15 text-indigo-600",
   COMPLETED: "bg-blue-500/15 text-blue-600",
+  CANCELLED: "bg-red-500/15 text-red-600",
 };
 
 export const formatDate = (date: string | Date) => {

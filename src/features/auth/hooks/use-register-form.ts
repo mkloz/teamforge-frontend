@@ -25,7 +25,7 @@ export function useRegisterForm({
     resolver: zodResolver(registerSchema),
     mode: "onBlur",
     defaultValues: {
-      name: "",
+      fullName: "",
       email: "",
       password: "",
       otp: "",
@@ -41,7 +41,7 @@ export function useRegisterForm({
   useEffect(() => {
     if (!onProgress) return;
     let filled = 0;
-    if (values.name && values.name.length > 2) filled++;
+    if (values.fullName && values.fullName.length > 2) filled++;
     if (values.email && values.email.length > 4) filled++;
     if (values.password && values.password.length > 5) filled++;
     if (values.otp && values.otp.length === 6) filled++;
@@ -54,7 +54,7 @@ export function useRegisterForm({
 
   // Step transitions
   const goToStep2 = useCallback(async () => {
-    const isValid = await form.trigger(["name", "email", "password"]);
+    const isValid = await form.trigger(["fullName", "email", "password"]);
     if (isValid) {
       setDirection(1);
       setStep(2);

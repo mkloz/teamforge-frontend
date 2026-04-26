@@ -1,52 +1,10 @@
-export type PlanStatus = "confirmed" | "pending" | "planning";
-export type ActivityCategory =
-  | "Outdoors"
-  | "Tech"
-  | "Arts"
-  | "Food"
-  | "Sports"
-  | "Music"
-  | "Social"
-  | "Wellness";
+import type { Group, Plan, User } from "@/shared/schemas";
 
-export interface UpcomingPlan {
-  id: string;
-  title: string;
-  date: string;
-  groupName: string;
-  status: PlanStatus;
-  memberAvatarSeeds: string[];
-  category: ActivityCategory;
-}
+export type { PlanStatus, PlanCategory } from "@/shared/schemas/enums";
 
-export interface UserGroup {
-  id: string;
-  name: string;
-  avatarSeed: string;
-  memberCount: number;
-  lastActivity: string;
-  hasUnread: boolean;
-}
-
-export interface RecommendedGroup {
-  id: string;
-  matchScore: number;
-  title: string;
-  groupName: string;
-  groupAvatarUrl?: string;
-  imageUrl: string;
-  date: string;
-  distance: string;
-  locationMode: "In-Person" | "Online";
-  cost: "Free" | "Paid";
-  category: string;
-  currentSize: number;
-  capacity: number;
-  access: "Open" | "By Request";
-  isFull?: boolean;
-  personalizationCue: string;
-}
-
+/**
+ * UI-specific projection for stats displayed on the home dashboard.
+ */
 export interface UserStats {
   trustScore: number;
   groupsJoined: number;
@@ -55,13 +13,24 @@ export interface UserStats {
   profileCompleteness: number;
 }
 
-export interface GroupInvitation {
+/**
+ * For the Home feature, we use the core Plan, Group, and User types
+ * from the shared schemas to ensure consistency.
+ */
+export type UpcomingPlan = Plan;
+export type UserGroup = Group & {
+  hasUnread?: boolean;
+  lastActivity?: string;
+};
+
+export type RecommendedGroup = Group & {
+  matchScore: number;
+  distance: string;
+  personalizationCue: string;
+};
+export type GroupInvitation = {
   id: string;
-  groupName: string;
-  avatarSeed: string;
-  invitedBy: string;
-  inviterAvatarSeed: string;
-  memberCount: number;
-  activityType: string;
+  group: Group;
+  invitedBy: User;
   receivedAt: string;
-}
+};

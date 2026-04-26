@@ -7,7 +7,7 @@ export interface Step4FailedProps {
 
 export function Step4Failed({ forgeMode }: Step4FailedProps) {
   const reasons =
-    forgeMode === "auto"
+    forgeMode === "AUTO"
       ? [
           "The diversity or matching settings were too strict for the current member pool.",
           "Privacy settings may be limiting who can see this group.",
@@ -20,7 +20,7 @@ export function Step4Failed({ forgeMode }: Step4FailedProps) {
         ];
 
   const suggestions =
-    forgeMode === "auto"
+    forgeMode === "AUTO"
       ? [
           "Lower the matching threshold",
           "Expand the group size range",

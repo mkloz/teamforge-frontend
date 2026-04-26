@@ -2,18 +2,19 @@ import { motion } from "framer-motion";
 import { cn } from "@/shared/lib/utils";
 import { ChevronDown, Fingerprint, Zap } from "lucide-react";
 import { useState } from "react";
-import type { LeafTag, MbtiType } from "../../../data/interests-types";
+import type { LeafTag } from "../../../data/interests-types";
+import type { PersonalityType } from "@/shared/schemas/enums";
 import { TagPill } from "./tag-pill";
 
 export function SuggestionsSection({
-  mbtiType,
+  personalityType,
   suggestedTags,
   selectedIds,
   isAtMax,
   onToggle,
   onReject,
 }: {
-  mbtiType: MbtiType;
+  personalityType: PersonalityType;
   suggestedTags: LeafTag[];
   selectedIds: Set<string>;
   isAtMax: boolean;
@@ -51,7 +52,7 @@ export function SuggestionsSection({
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-spark-amber/10 border border-spark-amber/20 text-spark-amber shadow-none">
             <Fingerprint size={10} className="opacity-70" />
             <span className="font-sans text-[10px] font-extrabold uppercase tracking-wider leading-none">
-              {mbtiType}
+              {personalityType}
             </span>
           </div>
           <motion.span

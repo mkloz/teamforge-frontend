@@ -24,20 +24,20 @@ export function useForgeWizard(onClose: () => void) {
   const [planTime, setPlanTime] = useState("");
   const [planLocation, setPlanLocation] = useState("");
   const [locationType, setLocationType] = useState<
-    "MY PLACE" | "TBD" | "VIRTUAL"
+    "IN_PERSON" | "ONLINE" | "TBD"
   >("TBD");
 
   // Step 3: Group
-  const [forgeMode, setForgeMode] = useState<ForgeMode>("auto");
+  const [forgeMode, setForgeMode] = useState<ForgeMode>("AUTO");
   const [fixedSize, setFixedSize] = useState<FixedGroupSize>(6);
   const [autoMinSize, setAutoMinSize] = useState(4);
   const [autoMaxSize, setAutoMaxSize] = useState(8);
   const [compatibilityWeight, setCompatibilityWeight] = useState(70);
   const [diversityWeight, setDiversityWeight] = useState(50);
-  const [visibility, setVisibility] = useState<Visibility>("friends");
+  const [visibility, setVisibility] = useState<Visibility>("FRIENDS_ONLY");
 
   // Step 4: Post-forge Result
-  const [forgeResult, setForgeResult] = useState<ForgeResult>("idle");
+  const [forgeResult, setForgeResult] = useState<ForgeResult>("IDLE");
   const [participants, setParticipants] = useState(
     MOCK_PARTICIPANTS.slice(0, 5),
   );
@@ -60,7 +60,9 @@ export function useForgeWizard(onClose: () => void) {
   const [invitesSent, setInvitesSent] = useState(false);
 
   // Derived state
-  const activeParticipants = participants.filter((p) => !removedIds.has(p.id));
+  const activeParticipants = participants.filter(
+    (p) => !removedIds.has(p.userId),
+  );
   const canAdvanceStep1 = !!selectedActivity;
   const canAdvanceStep2 = planName.trim().length >= 3;
   const isPreForge = step <= 3;
@@ -78,14 +80,14 @@ export function useForgeWizard(onClose: () => void) {
     setLocationType("TBD");
     setGroupName("");
     setGroupDescription("");
-    setForgeMode("auto");
+    setForgeMode("AUTO");
     setFixedSize(6);
     setAutoMinSize(4);
     setAutoMaxSize(8);
     setCompatibilityWeight(70);
     setDiversityWeight(50);
-    setVisibility("friends");
-    setForgeResult("idle");
+    setVisibility("FRIENDS_ONLY");
+    setForgeResult("IDLE");
     setParticipants(MOCK_PARTICIPANTS.slice(0, 5));
     setRemovedIds(new Set());
     setCoverImage(null);
@@ -139,7 +141,7 @@ export function useForgeWizard(onClose: () => void) {
     runForgeAnimation(() => {
       setParticipants(MOCK_PARTICIPANTS.slice(0, fixedSize - 1));
       setRemovedIds(new Set());
-      setForgeResult("success");
+      setForgeResult("SUCCESS");
       setStep(4);
     });
   }, [fixedSize, runForgeAnimation]);
@@ -148,12 +150,12 @@ export function useForgeWizard(onClose: () => void) {
     setNavDirection("forward");
     runForgeAnimation(() => {
       if (diversityWeight > 80) {
-        setForgeResult("failed");
+        setForgeResult("FAILED");
       } else {
         const size = Math.floor((autoMinSize + autoMaxSize) / 2);
         setParticipants(MOCK_PARTICIPANTS.slice(0, size - 1));
         setRemovedIds(new Set());
-        setForgeResult("success");
+        setForgeResult("SUCCESS");
       }
       setStep(4);
     });
@@ -173,7 +175,7 @@ export function useForgeWizard(onClose: () => void) {
 
   const handleReforge = useCallback(() => {
     setNavDirection("back");
-    setForgeResult("idle");
+    setForgeResult("IDLE");
     setStep(3);
   }, []);
 

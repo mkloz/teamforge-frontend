@@ -16,13 +16,14 @@ import { MessageRenderer } from "./message-renderer";
 import { ScrollActionButtons } from "./scroll-action-buttons";
 import { TypingPresence } from "./typing-presence";
 import { UnreadIndicator } from "./unread-indicator";
+import type { User, ChatParticipant } from "@/shared/schemas";
 
 interface UnifiedMessageListProps {
   messages: UnifiedMessage[];
   kind: "dm" | "group";
   messagesEndRef: React.RefObject<HTMLDivElement | null>;
   containerRef?: React.RefObject<HTMLDivElement | null>;
-  typingUsers?: { name: string; avatar: string }[];
+  typingUsers?: { fullName: string; avatar: string }[];
   onToggleAction?: () => void;
 }
 
@@ -40,19 +41,19 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
 }: UnifiedMessageListProps) {
   const [selectedSender, setSelectedSender] = useState<{
     id: string;
-    name: string;
+    fullName: string;
     avatar: string;
   } | null>(null);
 
   const handleAvatarClick = useCallback(
-    (senderId: string, senderName: string, senderAvatar: string) => {
+    (sender: User) => {
       if (kind === "dm") {
         onToggleAction?.();
       } else {
         setSelectedSender({
-          id: senderId,
-          name: senderName,
-          avatar: senderAvatar,
+          id: sender.id,
+          fullName: sender.fullName,
+          avatar: sender.avatar || "",
         });
       }
     },
@@ -63,21 +64,45 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
 
   // Build a minimal DirectChat from the sender info to reuse UserProfilePanel
   const senderChat: DirectChat | null = selectedSender
-    ? {
+    ? ({
         id: `temp-${selectedSender.id}`,
-        participant: {
-          id: selectedSender.id,
-          name: selectedSender.name,
-          avatar: selectedSender.avatar,
-          onlineStatus: "ONLINE",
-          age: 25,
-          location: "London, UK",
-          bio: "TeamForge member.",
-        },
+        type: "PRIVATE",
+        participants: [
+          {
+            userId: selectedSender.id,
+            chatId: `temp-${selectedSender.id}`,
+            user: {
+              id: selectedSender.id,
+              fullName: selectedSender.fullName,
+              avatar: selectedSender.avatar,
+              onlineStatus: "ONLINE",
+              personalityType: "ENTJ",
+              trustScore: 1.0,
+              bio: "TeamForge member.",
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              email: "",
+              emailVerified: true,
+              authProvider: "EMAIL",
+              searchStatus: "IDLE",
+              profileComplete: true,
+              age: null,
+              gender: null,
+              city: null,
+              oceanO: null,
+              oceanC: null,
+              oceanE: null,
+              oceanA: null,
+              oceanN: null,
+            } as User,
+          } as ChatParticipant,
+        ],
         createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         isMuted: false,
         isBlocked: false,
-      }
+        groupId: null,
+      } as DirectChat)
     : null;
   useEffect(() => {
     if (selectedSender) {

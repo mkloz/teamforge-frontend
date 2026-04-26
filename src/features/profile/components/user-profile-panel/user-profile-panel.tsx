@@ -3,6 +3,7 @@ import type { DirectChat } from "@/features/activity/types/direct-chats.types";
 import { ProfilePanelInfo } from "./profile-panel-info";
 import { MutualGroupsSection } from "./mutual-groups-section";
 import { ProfilePanelSettings } from "./profile-panel-settings";
+import { CURRENT_USER_ID } from "@/features/activity/data/mock-direct-chats";
 
 interface UserProfilePanelProps {
   chat: DirectChat;
@@ -20,7 +21,14 @@ export function UserProfilePanel({
   isDirectChat = true,
   onBack,
 }: UserProfilePanelProps) {
-  const { participant, mutualGroups, isMuted, isBlocked } = chat;
+  // Find the other participant who is not the current user
+  const participantData = chat.participants?.find(
+    (p) => p.userId !== CURRENT_USER_ID,
+  );
+  const participant = participantData?.user;
+  const { mutualGroups, isMuted, isBlocked } = chat;
+
+  if (!participant) return null;
 
   return (
     <div
@@ -42,8 +50,8 @@ export function UserProfilePanel({
 
         {isDirectChat && (
           <ProfilePanelSettings
-            isMuted={isMuted}
-            isBlocked={isBlocked}
+            isMuted={isMuted ?? false}
+            isBlocked={isBlocked ?? false}
             isMobile={isMobile}
           />
         )}

@@ -1,23 +1,5 @@
 export type InterestsScreen = "intro" | "browse" | "review";
 
-export type MbtiType =
-  | "INTJ"
-  | "INTP"
-  | "ENTJ"
-  | "ENTP"
-  | "INFJ"
-  | "INFP"
-  | "ENFJ"
-  | "ENFP"
-  | "ISTJ"
-  | "ISFJ"
-  | "ESTJ"
-  | "ESFJ"
-  | "ISTP"
-  | "ISFP"
-  | "ESTP"
-  | "ESFP";
-
 export interface LeafTag {
   id: string;
   label: string;

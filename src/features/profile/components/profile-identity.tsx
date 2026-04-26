@@ -11,7 +11,7 @@ export function ProfileIdentity({ profile }: ProfileIdentityProps) {
   return (
     <div className="flex flex-col items-center sm:items-start justify-center min-w-0 flex-1 pt-2 sm:pt-0">
       <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-ink sm:text-white leading-tight text-center sm:text-left text-balance drop-shadow-sm sm:drop-shadow-md">
-        {profile.name}
+        {profile.fullName}
       </h1>
 
       <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-2 gap-y-1 text-slate-muted sm:text-white/90 mt-2 font-medium">
@@ -22,7 +22,7 @@ export function ProfileIdentity({ profile }: ProfileIdentityProps) {
             size={12}
             className="text-forge-teal sm:text-white shrink-0"
           />
-          <span className="truncate">{profile.location}</span>
+          <span className="truncate">{profile.city}</span>
         </div>
       </div>
 

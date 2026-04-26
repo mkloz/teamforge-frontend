@@ -1,16 +1,19 @@
 import { Users } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-import type { GroupIdentity } from "@/features/activity/types/groups.types";
 
 interface GroupIdentitySectionProps {
-  identity: GroupIdentity;
+  name: string;
+  description: string | null;
+  avatar?: string | null;
   memberCount: number;
   maxMembers: number;
   hideAvatar?: boolean;
 }
 
 export function GroupIdentitySection({
-  identity,
+  name,
+  description,
+  avatar,
   memberCount,
   maxMembers,
   hideAvatar = false,
@@ -27,8 +30,8 @@ export function GroupIdentitySection({
             )}
           >
             <img
-              src={identity.avatar}
-              alt={identity.name}
+              src={avatar || undefined}
+              alt={name}
               className="w-full h-full object-cover"
             />
           </div>
@@ -37,7 +40,7 @@ export function GroupIdentitySection({
         {/* Name and metadata */}
         <div className="flex-1 min-w-0">
           <h2 className="text-xl font-bold text-foreground tracking-tight truncate leading-tight">
-            {identity.name}
+            {name}
           </h2>
 
           {/* Member count & Metadata */}
@@ -64,9 +67,9 @@ export function GroupIdentitySection({
       </div>
 
       {/* Description */}
-      {identity.description && (
+      {description && (
         <p className="text-[13px] text-foreground/70 mt-3 leading-relaxed font-normal">
-          {identity.description}
+          {description}
         </p>
       )}
 

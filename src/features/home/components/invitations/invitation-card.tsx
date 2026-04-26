@@ -20,6 +20,10 @@ export function InvitationCard({
   onAccept,
   onDecline,
 }: InvitationCardProps) {
+  const group = invitation.group;
+  const inviter = invitation.invitedBy;
+  const memberCount = group.members?.length ?? 0;
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 10, scale: 0.97 }}
@@ -30,7 +34,7 @@ export function InvitationCard({
         delay: index * 0.06,
         ease: [0.23, 1, 0.32, 1],
       }}
-      aria-label={`Invitation to join ${invitation.groupName}`}
+      aria-label={`Invitation to join ${group.name}`}
       className={cn(
         "group relative flex flex-col gap-3 rounded-2xl border p-3",
         "border-forge-teal/20 bg-secondary/50",
@@ -43,7 +47,7 @@ export function InvitationCard({
         <div className="relative shrink-0">
           <div className="size-14 rounded-lg overflow-hidden border border-border/50 bg-muted">
             <img
-              src={`https://api.dicebear.com/7.x/shapes/svg?seed=${invitation.groupName}`}
+              src={`https://api.dicebear.com/7.x/shapes/svg?seed=${group.name}`}
               alt=""
               className="size-full object-cover"
               loading="lazy"
@@ -52,8 +56,8 @@ export function InvitationCard({
           {/* Group logo overlap in bottom right */}
           <div className="absolute -bottom-1.5 -right-1.5 size-6 rounded-full overflow-hidden border-2 border-card bg-muted z-10">
             <img
-              src={`https://api.dicebear.com/7.x/identicon/svg?seed=${invitation.avatarSeed}`}
-              alt={`${invitation.groupName} logo`}
+              src={`https://api.dicebear.com/7.x/identicon/svg?seed=${group.avatar || "default"}`}
+              alt={`${group.name} logo`}
               className="size-full object-cover"
               loading="lazy"
             />
@@ -64,7 +68,7 @@ export function InvitationCard({
         <div className="flex flex-col flex-1 min-w-0 pt-0.5">
           <div className="flex justify-between items-center gap-2">
             <span className="text-[10px] font-bold text-forge-teal uppercase tracking-widest truncate">
-              Invitation
+              Invitation from {inviter.fullName}
             </span>
             <span className="text-[10px] font-semibold text-muted-foreground shrink-0">
               {invitation.receivedAt}
@@ -72,21 +76,21 @@ export function InvitationCard({
           </div>
 
           <h3 className="text-sm font-black text-foreground truncate mt-0.5 leading-snug">
-            {invitation.groupName}
+            {group.name}
           </h3>
 
           {/* Members & Category */}
           <div className="flex items-center gap-2 mt-1">
             <span className="flex items-center gap-1 text-xs text-muted-foreground font-medium">
               <Users className="size-3 shrink-0" aria-hidden="true" />
-              {invitation.memberCount} members
+              {memberCount} members
             </span>
             <span
               className="size-1 rounded-full bg-border"
               aria-hidden="true"
             />
             <span className="text-xs text-muted-foreground font-medium">
-              {invitation.activityType}
+              {group.activityId}
             </span>
           </div>
         </div>

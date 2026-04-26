@@ -52,7 +52,7 @@ export function MembersSection({
       <div className="space-y-3">
         {members.map((member) => (
           <MemberCard
-            key={member.id}
+            key={member.userId}
             member={member}
             onShowProfile={onShowProfile}
           />

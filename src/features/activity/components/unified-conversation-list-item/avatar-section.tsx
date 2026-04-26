@@ -14,16 +14,16 @@ export const AvatarSection = memo(
         )}
       >
         <img
-          src={item.avatarUrl}
+          src={item.avatarUrl || undefined}
           alt={item.title}
           className="w-12 h-12 object-cover bg-muted"
         />
       </div>
 
-      {isGroup && item.planCoverImage && (
+      {isGroup && item.secondaryAvatar && (
         <div className="absolute -bottom-1 -right-1 ring-2 ring-background rounded-lg overflow-hidden shadow-sm">
           <img
-            src={item.planCoverImage}
+            src={item.secondaryAvatar}
             alt=""
             className="w-5.5 h-5.5 object-cover"
           />

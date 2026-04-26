@@ -1,13 +1,13 @@
 import { z } from "zod";
-import { groupStatusSchema, groupRoleSchema } from "./enums";
-import type { User } from "./user";
-import { userSchema } from "./user";
 import type { Activity } from "./activity";
 import { activitySchema } from "./activity";
-import type { Plan } from "./plan";
-import { planSchema } from "./plan";
 import type { Chat } from "./chat";
 import { chatSchema } from "./chat";
+import { groupRoleSchema, groupStatusSchema } from "./enums";
+import type { Plan } from "./plan";
+import { planSchema } from "./plan";
+import type { User } from "./user";
+import { userSchema } from "./user";
 
 const groupMemberData = {
   userId: z.string(),

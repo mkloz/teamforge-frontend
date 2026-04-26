@@ -1,4 +1,4 @@
-import type { OnlineStatus } from "../types/direct-chats.types";
+import type { OnlineStatus } from "@/shared/schemas/enums";
 import type { UnifiedMessage } from "../types/chat.types";
 
 /**
@@ -61,8 +61,8 @@ export function shouldShowDateSeparator(
   previous?: UnifiedMessage,
 ): boolean {
   if (!previous) return true;
-  const currentDate = new Date(current.timestamp).toDateString();
-  const previousDate = new Date(previous.timestamp).toDateString();
+  const currentDate = new Date(current.createdAt).toDateString();
+  const previousDate = new Date(previous.createdAt).toDateString();
   return currentDate !== previousDate;
 }
 
@@ -80,8 +80,8 @@ export function shouldShowSenderAnchor(
 
   // Show sender anchor if more than 5 minutes between messages
   const timeDiff =
-    new Date(current.timestamp).getTime() -
-    new Date(previous.timestamp).getTime();
+    new Date(current.createdAt).getTime() -
+    new Date(previous.createdAt).getTime();
   return timeDiff > 5 * 60 * 1000;
 }
 
@@ -99,7 +99,7 @@ export function shouldShowAvatar(
 
   // Show avatar if more than 5 minutes between messages
   const timeDiff =
-    new Date(next.timestamp).getTime() - new Date(current.timestamp).getTime();
+    new Date(next.createdAt).getTime() - new Date(current.createdAt).getTime();
   return timeDiff > 5 * 60 * 1000;
 }
 
@@ -180,16 +180,16 @@ export function formatCountdown(isoString: string): string | null {
  * formatTypingText - Generates a readable string for typing status.
  */
 export function formatTypingText(
-  users: { name: string }[],
+  users: { fullName: string }[],
   isGroup: boolean,
 ): string | undefined {
   if (users.length === 0) return undefined;
 
   if (isGroup) {
-    if (users.length === 1) return `${users[0].name} is typing`;
+    if (users.length === 1) return `${users[0].fullName} is typing`;
     if (users.length === 2)
-      return `${users[0].name} and ${users[1].name} are typing`;
-    return `${users[0].name} and ${users.length - 1} others are typing`;
+      return `${users[0].fullName} and ${users[1].fullName} are typing`;
+    return `${users[0].fullName} and ${users.length - 1} others are typing`;
   }
 
   return "typing";

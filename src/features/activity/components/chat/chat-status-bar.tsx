@@ -55,6 +55,24 @@ const PLAN_CONFIG = {
     accentClass: "bg-slate-muted/50",
     colorClass: "text-slate-muted",
   },
+  PROPOSED: {
+    icon: FileEdit,
+    label: "Proposed",
+    accentClass: "bg-spark-amber/70",
+    colorClass: "text-spark-amber",
+  },
+  IN_PROGRESS: {
+    icon: FileEdit,
+    label: "In Progress",
+    accentClass: "bg-forge-teal",
+    colorClass: "text-forge-teal",
+  },
+  CANCELLED: {
+    icon: X,
+    label: "Cancelled",
+    accentClass: "bg-red-500/50",
+    colorClass: "text-red-500",
+  },
 } as const;
 
 // ─── Pager dots (left-edge position indicator) ───────────────────────────────
@@ -135,7 +153,7 @@ export const ChatStatusBar = memo(function ChatStatusBar({
       list.push({
         id: `plan-${plan.id}`,
         label: cfg.label,
-        body: `${plan.title} · ${formatChatFullDate(plan.dateTime)} · ${plan.location}`,
+        body: `${plan.title} · ${plan.dateTime ? formatChatFullDate(plan.dateTime) : "Date TBD"} · ${plan.location || "Location TBD"}`,
         accentClass: cfg.accentClass,
         colorClass: cfg.colorClass,
         icon: cfg.icon,

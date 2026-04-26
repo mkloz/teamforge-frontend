@@ -10,7 +10,7 @@ interface ActionsSectionProps {
 
 export function ActionsSection({ groupStatus }: ActionsSectionProps) {
   const isCompleted =
-    groupStatus === "COMPLETED" || groupStatus === "DISSOLVED";
+    groupStatus === "COMPLETED" || groupStatus === "DISBANDED";
 
   return (
     <section className="space-y-2">

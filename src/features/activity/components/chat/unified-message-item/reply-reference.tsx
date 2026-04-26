@@ -18,7 +18,7 @@ export const ReplyReference = memo(
         )}
       >
         <div className="text-micro font-bold text-forge-teal truncate tracking-tighter opacity-90 uppercase">
-          {replyTo.senderName}
+          {replyTo.sender?.fullName}
         </div>
         <p
           className={cn(

@@ -1,8 +1,13 @@
 import type {
   DirectChat,
   DirectChatPreview,
-  DirectMessage,
 } from "../types/direct-chats.types";
+import {
+  createMockMessage,
+  createMockChat,
+  createMockAttachment,
+} from "./mock-utils";
+import type { Message } from "@/shared/schemas";
 
 // Helper to create ISO dates relative to now
 const minutesAgo = (m: number) =>
@@ -18,13 +23,13 @@ export const MOCK_DIRECT_CHAT_PREVIEWS: DirectChatPreview[] = [
   {
     id: "dm-playground",
     participantId: "user-designer",
-    participantName: "✨ DM Design Playground",
+    participantFullName: "✨ DM Design Playground",
     participantAvatar:
       "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=200&h=200&fit=crop&q=80",
     onlineStatus: "ONLINE",
     lastMessage: {
       content: "DM visual tests are live! 📱✨",
-      timestamp: minutesAgo(1),
+      createdAt: minutesAgo(1),
       isOwn: false,
       status: "READ",
       type: "TEXT",
@@ -36,13 +41,13 @@ export const MOCK_DIRECT_CHAT_PREVIEWS: DirectChatPreview[] = [
   {
     id: "dm-1",
     participantId: "user-jordan",
-    participantName: "Jordan Lee",
+    participantFullName: "Jordan Lee",
     participantAvatar:
       "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&q=80",
     onlineStatus: "ONLINE",
     lastMessage: {
       content: "Yeah, definitely! Can't wait.",
-      timestamp: minutesAgo(1),
+      createdAt: minutesAgo(1),
       isOwn: true,
       status: "READ",
       type: "TEXT",
@@ -54,16 +59,17 @@ export const MOCK_DIRECT_CHAT_PREVIEWS: DirectChatPreview[] = [
   {
     id: "dm-2",
     participantId: "user-sam",
-    participantName: "Sam Rivera",
+    participantFullName: "Sam Rivera",
     participantAvatar:
       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
     onlineStatus: "AWAY",
     lastSeen: minutesAgo(15),
     lastMessage: {
       content: "Thanks for the recommendations!",
-      timestamp: hoursAgo(1),
+      createdAt: hoursAgo(1),
       isOwn: true,
       status: "DELIVERED",
+      type: "TEXT",
     },
     unreadCount: 0,
     isTyping: false,
@@ -72,15 +78,16 @@ export const MOCK_DIRECT_CHAT_PREVIEWS: DirectChatPreview[] = [
   {
     id: "dm-3",
     participantId: "user-casey",
-    participantName: "Casey Chen",
+    participantFullName: "Casey Chen",
     participantAvatar:
       "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&q=80",
     onlineStatus: "ONLINE",
     lastMessage: {
       content: "The React study group was great!",
-      timestamp: hoursAgo(3),
+      createdAt: hoursAgo(3),
       isOwn: false,
       status: "READ",
+      type: "TEXT",
     },
     unreadCount: 0,
     isTyping: false,
@@ -89,732 +96,129 @@ export const MOCK_DIRECT_CHAT_PREVIEWS: DirectChatPreview[] = [
   {
     id: "dm-4",
     participantId: "user-taylor",
-    participantName: "Taylor Morgan",
+    participantFullName: "Taylor Morgan",
     participantAvatar:
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&q=80",
     onlineStatus: "OFFLINE",
     lastSeen: hoursAgo(5),
     lastMessage: {
       content: "See you next week!",
-      timestamp: daysAgo(1),
+      createdAt: daysAgo(1),
       isOwn: true,
       status: "READ",
+      type: "TEXT",
     },
     unreadCount: 0,
     isTyping: false,
     isMuted: true,
-  },
-  {
-    id: "dm-5",
-    participantId: "user-alex",
-    participantName: "Alex Kim",
-    participantAvatar:
-      "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
-    onlineStatus: "OFFLINE",
-    lastSeen: daysAgo(2),
-    lastMessage: {
-      content: "Let me know if you want to join the music session",
-      timestamp: daysAgo(3),
-      isOwn: false,
-      status: "READ",
-    },
-    unreadCount: 0,
-    isTyping: false,
-    isMuted: false,
   },
 ];
 
 export const MOCK_DIRECT_CHATS: Record<string, DirectChat> = {
-  "dm-playground": {
+  "dm-playground": createMockChat({
     id: "dm-playground",
-    participant: {
-      id: "user-designer",
-      name: "Designer (Visual Tests)",
-      avatar:
-        "https://images.unsplash.com/photo-1558655146-d09347e92766?w=200&h=200&fit=crop&q=80",
-      bio: "Automated test suite for verifying 1-on-1 interaction states.",
-      personalityType: "INTJ",
-      onlineStatus: "ONLINE",
-    },
+    participants: [
+      { userId: CURRENT_USER_ID, chatId: "dm-playground" },
+      { userId: "user-designer", chatId: "dm-playground" },
+    ],
     createdAt: hoursAgo(100),
-    mutualGroups: [
-      {
-        id: "design-playground",
-        name: "✨ UI Design Playground",
-        avatar:
-          "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=200&h=200&fit=crop&q=80",
-      },
-    ],
-    isMuted: false,
-    isBlocked: false,
-  },
-  "dm-1": {
+  }),
+  "dm-1": createMockChat({
     id: "dm-1",
-    participant: {
-      id: "user-jordan",
-      name: "Jordan Lee",
-      avatar:
-        "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&q=80",
-      bio: "Outdoor enthusiast and trail runner. Always looking for new adventures!",
-      personalityType: "ENFP",
-      onlineStatus: "ONLINE",
-    },
+    participants: [
+      { userId: CURRENT_USER_ID, chatId: "dm-1" },
+      { userId: "user-jordan", chatId: "dm-1" },
+    ],
     createdAt: daysAgo(30),
-    mutualGroups: [
-      {
-        id: "group-1",
-        name: "Trail Blazers",
-        avatar:
-          "https://images.unsplash.com/photo-1551632432-c735e7a93522?w=200&h=200&fit=crop&q=80",
-      },
-    ],
-    isMuted: false,
-    isBlocked: false,
-  },
-  "dm-2": {
+  }),
+  "dm-2": createMockChat({
     id: "dm-2",
-    participant: {
-      id: "user-sam",
-      name: "Sam Rivera",
-      avatar:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80",
-      bio: "Coffee lover, book reader, occasional hiker.",
-      personalityType: "INFJ",
-      onlineStatus: "AWAY",
-      lastSeen: minutesAgo(15),
-    },
+    participants: [
+      { userId: CURRENT_USER_ID, chatId: "dm-2" },
+      { userId: "user-sam", chatId: "dm-2" },
+    ],
     createdAt: daysAgo(45),
-    mutualGroups: [
-      {
-        id: "group-1",
-        name: "Trail Blazers",
-        avatar:
-          "https://images.unsplash.com/photo-1551632432-c735e7a93522?w=200&h=200&fit=crop&q=80",
-      },
-    ],
-    isMuted: false,
-    isBlocked: false,
-  },
-  "dm-3": {
+  }),
+  "dm-3": createMockChat({
     id: "dm-3",
-    participant: {
-      id: "user-casey",
-      name: "Casey Chen",
-      avatar:
-        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&q=80",
-      bio: "Full-stack developer. React enthusiast. Building cool stuff.",
-      personalityType: "INTJ",
-      onlineStatus: "ONLINE",
-    },
+    participants: [
+      { userId: CURRENT_USER_ID, chatId: "dm-3" },
+      { userId: "user-casey", chatId: "dm-3" },
+    ],
     createdAt: daysAgo(20),
-    mutualGroups: [
-      {
-        id: "group-2",
-        name: "Code Crafters",
-        avatar:
-          "https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=200&h=200&fit=crop&q=80",
-      },
-    ],
-    isMuted: false,
-    isBlocked: false,
-  },
-  "dm-4": {
+  }),
+  "dm-4": createMockChat({
     id: "dm-4",
-    participant: {
-      id: "user-taylor",
-      name: "Taylor Morgan",
-      avatar:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&q=80",
-      bio: "Product designer and typography nerd. I dream in grids.",
-      personalityType: "ISFP",
-      onlineStatus: "OFFLINE",
-      lastSeen: hoursAgo(5),
-    },
-    createdAt: daysAgo(60),
-    mutualGroups: [],
-    isMuted: true,
-    isBlocked: false,
-  },
-  "dm-5": {
-    id: "dm-5",
-    participant: {
-      id: "user-alex",
-      name: "Alex Kim",
-      avatar:
-        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&q=80",
-      bio: "Jazz pianist and part-time software engineer. Harmony in all things.",
-      personalityType: "INFJ",
-      onlineStatus: "OFFLINE",
-      lastSeen: daysAgo(2),
-    },
-    createdAt: daysAgo(90),
-    mutualGroups: [
-      {
-        id: "group-3",
-        name: "Jazz & Jam",
-        avatar:
-          "https://images.unsplash.com/photo-1511192303578-4a7b9747d6a5?w=200&h=200&fit=crop&q=80",
-      },
+    participants: [
+      { userId: CURRENT_USER_ID, chatId: "dm-4" },
+      { userId: "user-taylor", chatId: "dm-4" },
     ],
-    isMuted: false,
-    isBlocked: false,
-  },
+    createdAt: daysAgo(60),
+  }),
 };
 
-export const MOCK_DIRECT_MESSAGES: Record<string, DirectMessage[]> = {
+export const MOCK_DIRECT_MESSAGES: Record<string, Message[]> = {
   "dm-playground": [
-    {
+    createMockMessage({
       id: "dm-p-1",
       chatId: "dm-playground",
-      type: "TEXT",
+      senderId: "user-designer",
       content:
         "👋 Welcome to the DM Design Sandbox. This chat mirrors all UI possibilities for 1-on-1 messaging.",
-      senderId: "user-designer",
-      timestamp: hoursAgo(48),
-      isOwn: false,
+      createdAt: hoursAgo(48),
       status: "READ",
-    },
-    {
+    }),
+    createMockMessage({
       id: "dm-p-2",
       chatId: "dm-playground",
-      type: "TEXT",
+      senderId: "user-designer",
       content:
         "Let's start with a single large photo (1200w). In DMs, this should feel very personal and high-quality.",
-      senderId: "user-designer",
-      timestamp: hoursAgo(24),
-      isOwn: false,
+      createdAt: hoursAgo(24),
       status: "READ",
       attachments: [
-        {
+        createMockAttachment({
           id: "dm-patt-1",
-          type: "image",
+          type: "IMAGE",
           url: "https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=1200&q=80",
           name: "Portrait.jpg",
-        },
+        }),
       ],
-    },
-    {
+    }),
+    createMockMessage({
       id: "dm-p-3",
       chatId: "dm-playground",
-      type: "TEXT",
-      content: "Nice! Here's a quick voice note response.",
       senderId: CURRENT_USER_ID,
-      timestamp: hoursAgo(23.5),
-      isOwn: true,
+      content: "Nice! Here's a quick voice note response.",
+      createdAt: hoursAgo(23.5),
       status: "READ",
       attachments: [
-        {
+        createMockAttachment({
           id: "dm-patt-2",
-          type: "voice",
+          type: "AUDIO",
           url: "#",
           duration: 4,
           name: "Memo_1.m4a",
-        },
+        }),
       ],
-    },
-    {
-      id: "dm-p-4",
-      chatId: "dm-playground",
-      type: "TEXT",
-      content:
-        "Can you send those design variants we discussed? Just want to see how the 3-image grid looks in this narrow view.",
-      senderId: "user-designer",
-      timestamp: hoursAgo(5),
-      isOwn: false,
-      status: "READ",
-    },
-    {
-      id: "dm-p-5",
-      chatId: "dm-playground",
-      type: "TEXT",
-      content: "Sure thing, check these out! 🎨",
-      senderId: CURRENT_USER_ID,
-      timestamp: hoursAgo(2),
-      isOwn: true,
-      status: "READ",
-      attachments: [
-        {
-          id: "dm-g-1",
-          type: "image",
-          url: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=800&q=80",
-        },
-        {
-          id: "dm-g-2",
-          type: "image",
-          url: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&q=80",
-        },
-        {
-          id: "dm-g-3",
-          type: "image",
-          url: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80",
-        },
-      ],
-    },
-    {
-      id: "dm-p-6",
-      chatId: "dm-playground",
-      type: "TEXT",
-      content:
-        "Reacting to that grid to see the DM reaction cluster alignment:",
-      senderId: "user-designer",
-      timestamp: hoursAgo(1),
-      isOwn: false,
-      status: "READ",
-      replyTo: {
-        id: "dm-p-5",
-        senderName: "Alex",
-        content: "Photo Gallery (+1)",
-      },
-      reactions: {
-        "❤️": [
-          { userId: CURRENT_USER_ID, emoji: "❤️" },
-          { userId: "user-designer", emoji: "❤️" },
-        ],
-        "✨": [{ userId: "user-designer", emoji: "✨" }],
-        "🔥": [{ userId: "user-designer", emoji: "🔥" }],
-      },
-    },
-    {
-      id: "dm-p-7",
-      chatId: "dm-playground",
-      type: "TEXT",
-      content:
-        "One more test: A really long message on the left side to see how it balances with the right-side heavy stack we just created. Padding, margins, and the 'sender name' anchor (which should be hidden in DMs if enabled).",
-      senderId: "user-designer",
-      timestamp: minutesAgo(15),
-      isOwn: false,
-      status: "READ",
-    },
-    {
-      id: "dm-p-8",
-      chatId: "dm-playground",
-      type: "TEXT",
-      content: "And the final status matrix checks:",
-      senderId: CURRENT_USER_ID,
-      timestamp: minutesAgo(5),
-      isOwn: true,
-      status: "SENT",
-    },
-    {
-      id: "dm-p-9",
-      chatId: "dm-playground",
-      type: "TEXT",
-      content: "DELIVERED STATE",
-      senderId: CURRENT_USER_ID,
-      timestamp: minutesAgo(4),
-      isOwn: true,
-      status: "DELIVERED",
-    },
-    {
-      id: "dm-p-10",
-      chatId: "dm-playground",
-      type: "TEXT",
-      content: "FAILED STATE 🛑",
-      senderId: CURRENT_USER_ID,
-      timestamp: minutesAgo(1),
-      isOwn: true,
-      status: "READ", // Mocking failed state visually in the bubble
-    },
-    {
-      id: "dm-p-11",
-      chatId: "dm-playground",
-      type: "SYSTEM",
-      content:
-        "🔒 Messages are end-to-end encrypted. No one outside of this chat, not even TeamForge, can read them.",
-      senderId: "system",
-      timestamp: hoursAgo(49),
-      isOwn: false,
-      status: "READ",
-    },
-    {
-      id: "dm-p-12",
-      chatId: "dm-playground",
-      type: "TEXT",
-      content: "Massive DM Gallery Test (12 images):",
-      senderId: "user-designer",
-      timestamp: minutesAgo(12),
-      isOwn: false,
-      status: "READ",
-      attachments: Array.from({ length: 12 }).map((_, i) => ({
-        id: `dm-heavy-${i}`,
-        type: "image",
-        url: `https://plus.unsplash.com/premium_photo-1661281397737-9b5d75b52beb?w=800&q=80&sig=dm-${i}`,
-        name: `Asset_${i}.png`,
-      })),
-    },
-    {
-      id: "dm-p-13",
-      chatId: "dm-playground",
-      type: "TEXT",
-      content: "Reaction Cluster Stress Test (Narrow):",
-      senderId: CURRENT_USER_ID,
-      timestamp: minutesAgo(10),
-      isOwn: true,
-      status: "READ",
-      reactions: {
-        "👍": Array.from({ length: 8 }).map((_, i) => ({
-          userId: `v-${i}`,
-          emoji: "👍",
-        })),
-        "🚀": Array.from({ length: 4 }).map((_, i) => ({
-          userId: `v-r-${i}`,
-          emoji: "🚀",
-        })),
-        "🥳": [{ userId: "v-p-1", emoji: "🥳" }],
-        "💙": [{ userId: "v-p-2", emoji: "💙" }],
-        "⚡": [{ userId: "v-p-3", emoji: "⚡" }],
-        "💡": [{ userId: "v-p-4", emoji: "💡" }],
-      },
-    },
-    {
-      id: "dm-p-14",
-      chatId: "dm-playground",
-      type: "TEXT",
-      content: "",
-      senderId: "user-designer",
-      timestamp: minutesAgo(8),
-      isOwn: false,
-      status: "READ",
-      attachments: [
-        {
-          id: "dm-att-pure",
-          type: "image",
-          url: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&q=80",
-        },
-      ],
-    },
-    {
-      id: "dm-p-15",
-      chatId: "dm-playground",
-      type: "VOICE",
-      content: "Micro-memo (1s):",
-      senderId: CURRENT_USER_ID,
-      timestamp: minutesAgo(5),
-      isOwn: true,
-      status: "DELIVERED",
-      attachments: [
-        {
-          id: "dm-v-micro",
-          type: "voice",
-          url: "#",
-          duration: 1,
-          name: "Snap.m4a",
-        },
-      ],
-    },
-    {
-      id: "dm-p-16",
-      chatId: "dm-playground",
-      type: "TEXT",
-      content: "Reply to a micro-memo reference:",
-      senderId: "user-designer",
-      timestamp: minutesAgo(2),
-      isOwn: false,
-      status: "READ",
-      replyTo: {
-        id: "dm-p-15",
-        senderName: "Alex",
-        content: "Voice Note (0:01)",
-      },
-    },
-    {
-      id: "dm-p-17",
-      chatId: "dm-playground",
-      type: "TEXT",
-      content:
-        "Here are the project specs and the persona data you requested. 📂",
-      senderId: "user-designer",
-      timestamp: minutesAgo(1.5),
-      isOwn: false,
-      status: "READ",
-      attachments: [
-        {
-          id: "doc-1",
-          type: "file",
-          name: "Project_Requirements_v2.pdf",
-          size: 2450000,
-          mimeType: "application/pdf",
-          url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-        },
-        {
-          id: "doc-2",
-          type: "file",
-          name: "User_Persona_Export.json",
-          size: 15400,
-          mimeType: "application/json",
-          url: "#",
-        },
-      ],
-    },
-    {
-      id: "dm-p-18",
-      chatId: "dm-playground",
-      type: "TEXT",
-      content: "Mixed Media Stack: One photo and the source script.",
-      senderId: CURRENT_USER_ID,
-      timestamp: minutesAgo(1),
-      isOwn: true,
-      status: "READ",
-      attachments: [
-        {
-          id: "dm-mixed-img",
-          type: "image",
-          url: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80",
-          name: "developer-setup.jpg",
-        },
-        {
-          id: "dm-mixed-file",
-          type: "file",
-          name: "fetch-logic.ts",
-          size: 4200,
-          mimeType: "text/typescript",
-          url: "#",
-        },
-      ],
-    },
+    }),
   ],
   "dm-1": [
-    {
+    createMockMessage({
       id: "dm1-msg-1",
       chatId: "dm-1",
-      type: "TEXT",
-      content: "Hey! How's the trail prep going?",
       senderId: "user-jordan",
-      timestamp: hoursAgo(2),
-      isOwn: false,
+      content: "Hey! How's the trail prep going?",
+      createdAt: hoursAgo(2),
       status: "READ",
-    },
-    {
+    }),
+    createMockMessage({
       id: "dm1-msg-2",
       chatId: "dm-1",
-      type: "TEXT",
+      senderId: CURRENT_USER_ID,
       content: "Going well! I got new hiking boots yesterday",
-      senderId: CURRENT_USER_ID,
-      timestamp: hoursAgo(1.5),
-      isOwn: true,
+      createdAt: hoursAgo(1.5),
       status: "READ",
-    },
-    {
-      id: "dm1-msg-3",
-      chatId: "dm-1",
-      type: "TEXT",
-      content: "Nice! Make sure to break them in before Saturday",
-      senderId: "user-jordan",
-      timestamp: hoursAgo(1),
-      isOwn: false,
-      status: "READ",
-    },
-    {
-      id: "dm1-msg-4",
-      chatId: "dm-1",
-      type: "TEXT",
-      content: "Good thinking. I'll do some walks this week",
-      senderId: CURRENT_USER_ID,
-      timestamp: hoursAgo(0.5),
-      isOwn: true,
-      status: "READ",
-    },
-    {
-      id: "dm1-msg-5",
-      chatId: "dm-1",
-      type: "TEXT",
-      content: "Are you coming to the hike on Saturday?",
-      senderId: "user-jordan",
-      timestamp: minutesAgo(5),
-      isOwn: false,
-      status: "READ",
-    },
-    {
-      id: "dm1-msg-6",
-      chatId: "dm-1",
-      type: "VOICE",
-      content: "",
-      senderId: "user-jordan",
-      timestamp: minutesAgo(4),
-      isOwn: false,
-      status: "READ",
-      attachments: [
-        {
-          id: "voice-dm-1",
-          type: "voice",
-          url: "#",
-          duration: 45,
-          waveform: [5, 15, 10, 25, 20, 35, 30, 45, 40, 55, 50, 65, 60, 75],
-        },
-      ],
-    },
-    {
-      id: "dm1-msg-7",
-      chatId: "dm-1",
-      type: "TEXT",
-      content: "Yeah, definitely! Can't wait.",
-      senderId: CURRENT_USER_ID,
-      timestamp: minutesAgo(1),
-      isOwn: true,
-      status: "READ",
-      replyTo: {
-        id: "dm1-msg-6",
-        senderName: "Jordan",
-        content: "Voice Note (0:45)",
-      },
-      reactions: {
-        "❤️": [{ emoji: "❤️", userId: "user-jordan" }],
-      },
-    },
-    {
-      id: "dm1-msg-8",
-      chatId: "dm-1",
-      type: "TEXT",
-      content: "Look at these views from the scout trip! 🏔️✨",
-      senderId: CURRENT_USER_ID,
-      timestamp: minutesAgo(0.5),
-      isOwn: true,
-      status: "READ",
-      attachments: [
-        {
-          id: "dm-att-1",
-          type: "image",
-          url: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80",
-        },
-        {
-          id: "dm-att-2",
-          type: "image",
-          url: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80",
-        },
-        {
-          id: "dm-att-3",
-          type: "image",
-          url: "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=800&q=80",
-        },
-      ],
-    },
-  ],
-  "dm-2": [
-    {
-      id: "dm2-msg-1",
-      chatId: "dm-2",
-      type: "TEXT",
-      content: "Do you have any book recommendations?",
-      senderId: CURRENT_USER_ID,
-      timestamp: hoursAgo(3),
-      isOwn: true,
-      status: "READ",
-    },
-    {
-      id: "dm2-msg-2",
-      chatId: "dm-2",
-      type: "TEXT",
-      content: "I just finished 'Atomic Habits' - highly recommend it!",
-      senderId: "user-sam",
-      timestamp: hoursAgo(2.5),
-      isOwn: false,
-      status: "READ",
-    },
-    {
-      id: "dm2-msg-3",
-      chatId: "dm-2",
-      type: "TEXT",
-      content: "Thanks for the recommendations!",
-      senderId: CURRENT_USER_ID,
-      timestamp: hoursAgo(1),
-      isOwn: true,
-      status: "DELIVERED",
-    },
-  ],
-  "dm-3": [
-    {
-      id: "dm3-msg-1",
-      chatId: "dm-3",
-      type: "TEXT",
-      content: "That study session was really helpful",
-      senderId: "user-casey",
-      timestamp: hoursAgo(4),
-      isOwn: false,
-      status: "READ",
-    },
-    {
-      id: "dm3-msg-2",
-      chatId: "dm-3",
-      type: "TEXT",
-      content: "Agreed! I finally understand hooks better now",
-      senderId: CURRENT_USER_ID,
-      timestamp: hoursAgo(3.5),
-      isOwn: true,
-      status: "READ",
-    },
-    {
-      id: "dm3-msg-3",
-      chatId: "dm-3",
-      type: "TEXT",
-      content: "The React study group was great!",
-      senderId: "user-casey",
-      timestamp: hoursAgo(3),
-      isOwn: false,
-      status: "READ",
-    },
-  ],
-  "dm-4": [
-    {
-      id: "dm4-msg-1",
-      chatId: "dm-4",
-      type: "TEXT",
-      content: "Hey, do you have those Figma files?",
-      senderId: "user-taylor",
-      timestamp: daysAgo(2),
-      isOwn: false,
-      status: "READ",
-    },
-    {
-      id: "dm4-msg-2",
-      chatId: "dm-4",
-      type: "TEXT",
-      content: "Sent them to your email just now!",
-      senderId: CURRENT_USER_ID,
-      timestamp: daysAgo(1),
-      isOwn: true,
-      status: "READ",
-    },
-    {
-      id: "dm4-msg-3",
-      chatId: "dm-4",
-      type: "TEXT",
-      content: "Got them. See you next week!",
-      senderId: "user-taylor",
-      timestamp: daysAgo(1),
-      isOwn: false,
-      status: "READ",
-    },
-  ],
-  "dm-5": [
-    {
-      id: "dm5-msg-1",
-      chatId: "dm-5",
-      type: "TEXT",
-      content: "Hey! The music room is booked for Friday.",
-      senderId: "user-alex",
-      timestamp: daysAgo(4),
-      isOwn: false,
-      status: "READ",
-    },
-    {
-      id: "dm5-msg-2",
-      chatId: "dm-5",
-      type: "TEXT",
-      content: "Awesome, I'll bring the bass guitar.",
-      senderId: CURRENT_USER_ID,
-      timestamp: daysAgo(3),
-      isOwn: true,
-      status: "READ",
-    },
-    {
-      id: "dm5-msg-3",
-      chatId: "dm-5",
-      type: "TEXT",
-      content: "Let me know if you want to join the music session",
-      senderId: "user-alex",
-      timestamp: daysAgo(3),
-      isOwn: false,
-      status: "READ",
-    },
+    }),
   ],
 };

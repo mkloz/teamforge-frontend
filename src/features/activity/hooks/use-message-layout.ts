@@ -14,20 +14,33 @@ export function useMessageLayout({ message, isOwn }: UseMessageLayoutProps) {
   const { attachments, content, replyTo, reactions } = message;
 
   const reactionGroups = useMemo(() => {
-    if (!reactions) return [];
-    return Object.entries(reactions).map(([emoji, reactions]) => ({
+    if (!reactions || !Array.isArray(reactions)) return [];
+
+    const groups: Record<string, { count: number; isActive: boolean }> = {};
+    reactions.forEach((r) => {
+      if (!groups[r.emoji]) {
+        groups[r.emoji] = { count: 0, isActive: false };
+      }
+      groups[r.emoji].count++;
+      if (r.userId === "user-current") {
+        // TODO: Wire to actual auth user ID
+        groups[r.emoji].isActive = true;
+      }
+    });
+
+    return Object.entries(groups).map(([emoji, data]) => ({
       emoji,
-      count: reactions.length,
-      isActive: reactions.some((r) => r.userId === "current-user"), // TODO: Wire to actual auth user ID
+      count: data.count,
+      isActive: data.isActive,
     }));
   }, [reactions]);
 
   const galleryRounding = useMemo(() => {
-    if (!attachments?.some((a) => a.type === "image")) return "";
+    if (!attachments?.some((a) => a.type === "IMAGE")) return "";
 
     const hasAbove =
       !!replyTo ||
-      attachments.some((a) => a.type === "file" || a.type === "voice");
+      attachments.some((a) => a.type === "FILE" || a.type === "AUDIO");
     const hasBelow = !!content || reactionGroups.length > 0;
     const isOnlyContent = !hasAbove && !hasBelow;
 
@@ -41,6 +54,6 @@ export function useMessageLayout({ message, isOwn }: UseMessageLayoutProps) {
   return {
     reactionGroups,
     galleryRounding,
-    isReadByOthers: !!(message.readBy && message.readBy.length > 0),
+    isReadByOthers: message.status === "READ",
   };
 }

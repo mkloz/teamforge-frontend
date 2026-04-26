@@ -53,7 +53,7 @@ function getBadgeCount(
   counts: { groupCount: number; dmCount: number; unreadCount: number },
 ): number | null {
   if (key === "groups") return counts.groupCount;
-  if (key === "dms") return counts.dmCount;
+  if (key === "direct") return counts.dmCount;
   if (key === "unread") return counts.unreadCount;
   return null;
 }

@@ -3,20 +3,20 @@ import { useActivityStore } from "../store/activity.store";
 import {
   MOCK_GROUP_PREVIEWS,
   MOCK_GROUPS,
-  MOCK_MESSAGES,
+  MOCK_GROUP_MESSAGES as MOCK_MESSAGES,
 } from "../data/mock-groups";
 import {
   MOCK_DIRECT_CHAT_PREVIEWS,
   MOCK_DIRECT_CHATS,
   MOCK_DIRECT_MESSAGES,
+  CURRENT_USER_ID,
 } from "../data/mock-direct-chats";
 import {
   groupPreviewToUnified,
   dmPreviewToUnified,
   sortByRecency,
   applyFilter,
-  groupMessageToUnified,
-  dmMessageToUnified,
+  messageToUnified,
 } from "../lib/unify-conversations";
 import { useUiStore } from "@/shared/store/ui.store";
 
@@ -61,7 +61,7 @@ export function useActivity() {
   const selectedGroupMessages = useMemo(() => {
     if (store.selectedKind === "group" && store.selectedId) {
       const msgs = MOCK_MESSAGES[store.selectedId] ?? [];
-      return msgs.map(groupMessageToUnified);
+      return msgs.map((m) => messageToUnified(m, CURRENT_USER_ID));
     }
     return [];
   }, [store.selectedKind, store.selectedId]);
@@ -77,13 +77,7 @@ export function useActivity() {
   const selectedDirectMessages = useMemo(() => {
     if (store.selectedKind === "dm" && store.selectedId && selectedChat) {
       const msgs = MOCK_DIRECT_MESSAGES[store.selectedId] ?? [];
-      return msgs.map((m) =>
-        dmMessageToUnified(
-          m,
-          selectedChat.participant.name,
-          selectedChat.participant.avatar,
-        ),
-      );
+      return msgs.map((m) => messageToUnified(m, CURRENT_USER_ID));
     }
     return [];
   }, [store.selectedKind, store.selectedId, selectedChat]);
@@ -97,9 +91,15 @@ export function useActivity() {
   const typingUsers = useMemo(() => {
     if (
       store.selectedKind === "group" &&
-      selectedGroup?.plan.status === "DRAFT"
+      selectedGroup?.plan?.status === "DRAFT"
     ) {
-      return [{ name: "Jordan", avatar: selectedGroup.members[0]?.avatar }];
+      const firstMember = selectedGroup.members?.[0];
+      return [
+        {
+          fullName: firstMember?.user?.fullName || "Jordan",
+          avatar: firstMember?.user?.avatar || "",
+        },
+      ];
     }
     return [];
   }, [store.selectedKind, selectedGroup]);

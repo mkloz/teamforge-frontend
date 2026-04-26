@@ -1,4 +1,5 @@
-import type { Category, LeafTag, MbtiType } from "./interests-types";
+import type { Category, LeafTag } from "./interests-types";
+import type { PersonalityType } from "@/shared/schemas/enums";
 
 import {
   Activity,
@@ -1417,7 +1418,7 @@ export const MAX_INTERESTS = 50;
  * correlate with that type's activity profile.
  * Surfaces a "Suggested for you" screen during interests onboarding.
  */
-export const MBTI_SUGGESTIONS: Record<MbtiType, string[]> = {
+export const MBTI_SUGGESTIONS: Record<PersonalityType, string[]> = {
   INTJ: [
     "software_eng",
     "data_science",

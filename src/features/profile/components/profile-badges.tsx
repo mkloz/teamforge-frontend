@@ -173,11 +173,11 @@ export function ProfileBadges({ profile }: ProfileBadgesProps) {
           <BadgeItem
             icon={UserPlus}
             label="Type"
-            value={profile.mbtiType}
+            value={profile.personalityType || "N/A"}
             colorClass="text-forge-teal"
             bgClass="text-ink"
             iconBgClass="bg-forge-teal/10"
-            description={`Based on Jungian personality theory, your ${profile.mbtiType} type defines how you process information.`}
+            description={`Based on Jungian personality theory, your ${profile.personalityType} type defines how you process information.`}
           />
         </motion.div>
 

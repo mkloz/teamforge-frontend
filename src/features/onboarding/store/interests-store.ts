@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { MBTI_SUGGESTIONS } from "../data/interests-data";
-import type { InterestsScreen, MbtiType } from "../data/interests-types";
+import type { InterestsScreen } from "../data/interests-types";
+import type { PersonalityType } from "@/shared/schemas/enums";
 
 // ─── Persisted state ──────────────────────────────────────────────────────────
 
@@ -9,7 +10,7 @@ interface PersistedState {
   selectedIds: string[];
   rejectedIds: string[];
   screen: InterestsScreen;
-  mbtiType: MbtiType | null;
+  personalityType: PersonalityType | null;
 }
 
 // ─── Full store ───────────────────────────────────────────────────────────────
@@ -19,7 +20,7 @@ interface InterestsState extends PersistedState {
   toggle: (id: string, maxInterests: number) => void;
   toggleReject: (id: string) => void;
   setScreen: (screen: InterestsScreen) => void;
-  setMbtiType: (type: MbtiType | string | null) => void;
+  setPersonalityType: (type: PersonalityType | string | null) => void;
   addIds: (ids: string[], maxInterests: number) => void;
   reset: () => void;
 }
@@ -28,7 +29,7 @@ const DEFAULT_STATE: PersistedState = {
   selectedIds: [],
   rejectedIds: [],
   screen: "intro",
-  mbtiType: null,
+  personalityType: null,
 };
 
 export const useInterestsStore = create<InterestsState>()(
@@ -83,10 +84,10 @@ export const useInterestsStore = create<InterestsState>()(
 
       setScreen: (screen) => set({ screen }),
 
-      setMbtiType: (type) => {
+      setPersonalityType: (type) => {
         // Guard against unknown types
         if (type && !(type in MBTI_SUGGESTIONS)) return;
-        set({ mbtiType: type as MbtiType });
+        set({ personalityType: type as PersonalityType });
       },
 
       reset: () => set(DEFAULT_STATE),
@@ -98,7 +99,7 @@ export const useInterestsStore = create<InterestsState>()(
         selectedIds: state.selectedIds,
         rejectedIds: state.rejectedIds,
         screen: state.screen,
-        mbtiType: state.mbtiType,
+        personalityType: state.personalityType,
       }),
     },
   ),

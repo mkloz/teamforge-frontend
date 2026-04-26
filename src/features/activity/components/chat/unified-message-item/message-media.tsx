@@ -12,7 +12,7 @@ interface MessageMediaProps {
   attachments: UnifiedMessage["attachments"];
   isOwn: boolean;
   content?: string;
-  timestamp: string;
+  createdAt: string;
   status: UnifiedMessage["status"];
   isReadByOthers: boolean;
   galleryRounding: string;
@@ -25,7 +25,7 @@ export const MessageMedia = memo(
     attachments,
     isOwn,
     content,
-    timestamp,
+    createdAt,
     status,
     isReadByOthers,
     galleryRounding,
@@ -42,15 +42,15 @@ export const MessageMedia = memo(
         )}
       >
         {/* Voice Notes */}
-        {attachments.some((a: UnifiedAttachment) => a.type === "voice") && (
+        {attachments.some((a: UnifiedAttachment) => a.type === "AUDIO") && (
           <div className="p-1 px-1.5 flex flex-col gap-1">
             {attachments
-              .filter((a: UnifiedAttachment) => a.type === "voice")
+              .filter((a: UnifiedAttachment) => a.type === "AUDIO")
               .map((voice: UnifiedAttachment) => (
                 <VoiceNote
                   key={voice.id}
                   url={voice.url}
-                  duration={voice.duration}
+                  duration={voice.duration ?? undefined}
                   isOwn={isOwn}
                 />
               ))}
@@ -58,10 +58,10 @@ export const MessageMedia = memo(
         )}
 
         {/* Documents */}
-        {attachments.some((a: UnifiedAttachment) => a.type === "file") && (
+        {attachments.some((a: UnifiedAttachment) => a.type === "FILE") && (
           <div className="flex flex-col gap-1.5 w-full text-left">
             {attachments
-              .filter((a: UnifiedAttachment) => a.type === "file")
+              .filter((a: UnifiedAttachment) => a.type === "FILE")
               .map((file: UnifiedAttachment) => (
                 <DocumentMessage
                   key={file.id}
@@ -73,15 +73,15 @@ export const MessageMedia = memo(
         )}
 
         {/* Images / Gallery */}
-        {attachments.some((a: UnifiedAttachment) => a.type === "image") && (
+        {attachments.some((a: UnifiedAttachment) => a.type === "IMAGE") && (
           <MediaGallery
             attachments={attachments.filter(
-              (a: UnifiedAttachment) => a.type === "image",
+              (a: UnifiedAttachment) => a.type === "IMAGE",
             )}
             isOwn={isOwn}
             rounding={galleryRounding}
             isOnlyContent={!replyTo && !content && reactionGroupsLength === 0}
-            timestamp={timestamp}
+            timestamp={createdAt}
             status={status}
             isReadByOthers={isReadByOthers}
           />

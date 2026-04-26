@@ -27,8 +27,9 @@ export const ProposalMessage = memo(function ProposalMessage({
   showSender,
 }: ProposalMessageProps) {
   const [isExpanded, setIsExpanded] = useState(true);
-  const { isOwn, senderAvatar, senderName, timestamp, reactions, status } =
-    message;
+  const { isOwn, sender, createdAt: timestamp, reactions, status } = message;
+  const senderFullName = sender?.fullName || "System";
+  const senderAvatar = sender?.avatar || "";
 
   // Swipe-to-reply logic
   const { x, opacity, scale, handleDragEnd } = useSwipeToReply(message, isOwn);
@@ -45,25 +46,25 @@ export const ProposalMessage = memo(function ProposalMessage({
         voters: [
           {
             id: "1",
-            name: "Michal",
+            fullName: "Michal",
             avatar: "https://i.pravatar.cc/150?u=1",
             type: "approve",
           },
           {
             id: "2",
-            name: "Alice",
+            fullName: "Alice",
             avatar: "https://i.pravatar.cc/150?u=2",
             type: "approve",
           },
           {
             id: "3",
-            name: "Bob",
+            fullName: "Bob",
             avatar: "https://i.pravatar.cc/150?u=3",
             type: "reject",
           },
           {
             id: "4",
-            name: "Sam",
+            fullName: "Sam",
             avatar: "https://i.pravatar.cc/150?u=4",
             type: "approve",
           },
@@ -78,11 +79,23 @@ export const ProposalMessage = memo(function ProposalMessage({
     (proposalData.votes.approve / proposalData.requiredVotes) * 100;
 
   const reactionGroups = useMemo(() => {
-    if (!reactions) return [];
-    return Object.entries(reactions).map(([emoji, reactions]) => ({
+    if (!reactions || !Array.isArray(reactions)) return [];
+
+    const groups: Record<string, { count: number; isActive: boolean }> = {};
+    reactions.forEach((r) => {
+      if (!groups[r.emoji]) {
+        groups[r.emoji] = { count: 0, isActive: false };
+      }
+      groups[r.emoji].count++;
+      if (r.userId === "user-current") {
+        groups[r.emoji].isActive = true;
+      }
+    });
+
+    return Object.entries(groups).map(([emoji, data]) => ({
       emoji,
-      count: reactions.length,
-      isActive: reactions.some((r) => r.userId === "current-user"),
+      count: data.count,
+      isActive: data.isActive,
     }));
   }, [reactions]);
 
@@ -117,7 +130,7 @@ export const ProposalMessage = memo(function ProposalMessage({
             {showAvatar && (
               <img
                 src={senderAvatar}
-                alt={senderName}
+                alt={senderFullName}
                 className="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-border shadow-sm transition-transform hover:scale-105"
               />
             )}
@@ -132,7 +145,7 @@ export const ProposalMessage = memo(function ProposalMessage({
         >
           {!isOwn && showSender && (
             <p className="text-micro font-bold text-forge-teal mb-0.5 ml-1.5 tracking-tight opacity-90">
-              {senderName}
+              {senderFullName}
             </p>
           )}
 

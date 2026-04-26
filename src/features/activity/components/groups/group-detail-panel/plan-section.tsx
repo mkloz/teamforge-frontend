@@ -16,11 +16,11 @@ interface PlanSectionProps {
 export function PlanSection({ plan }: PlanSectionProps) {
   // Memoize date/time formatting for performance
   const formattedDate = useMemo(
-    () => formatDate(plan.dateTime),
+    () => (plan.dateTime ? formatDate(plan.dateTime) : "Date TBD"),
     [plan.dateTime],
   );
   const formattedTime = useMemo(
-    () => formatTime(plan.dateTime),
+    () => (plan.dateTime ? formatTime(plan.dateTime) : "Time TBD"),
     [plan.dateTime],
   );
 
@@ -110,9 +110,9 @@ export function PlanSection({ plan }: PlanSectionProps) {
             <p className="font-bold text-foreground text-sm truncate">
               {plan.location}
             </p>
-            {plan.locationCoords && (
+            {plan.locationLat !== null && plan.locationLng !== null && (
               <a
-                href={`https://maps.google.com/?q=${plan.locationCoords.lat},${plan.locationCoords.lng}`}
+                href={`https://maps.google.com/?q=${plan.locationLat},${plan.locationLng}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center text-[11px] text-primary font-semibold hover:underline gap-1 group-hover/item:translate-x-1 transition-transform"

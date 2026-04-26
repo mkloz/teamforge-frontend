@@ -1,39 +1,53 @@
-import type { OnlineStatus, MessageStatus } from "./direct-chats.types";
-import type { PlanStatus, GroupStatus } from "./groups.types";
+import type { Group, Chat } from "@/shared/schemas";
+import type { MessageType, MessageStatus } from "@/shared/schemas/enums";
 
-export type ConversationKind = "group" | "dm";
+/**
+ * Filter options for the unified activity feed
+ */
+export type FilterChip = "all" | "groups" | "direct" | "unread";
 
-export type FilterChip = "all" | "groups" | "dms" | "unread";
-
+/**
+ * UnifiedConversation - A shared type for both DM and Group previews in the activity feed.
+ * It is a union of Group and Chat canonical types with UI-specific extensions.
+ */
 export interface UnifiedConversation {
   id: string;
-  kind: ConversationKind;
+  kind: "dm" | "group";
 
-  // Common display fields
+  // Display properties (derived from canonical data)
   title: string;
-  subtitle: string; // last message preview or typing indicator text
-  avatarUrl: string;
-  timestamp: string; // ISO — used for recency sort
+  subtitle?: string;
+  avatarUrl: string | null;
+  secondaryAvatar?: string; // e.g. plan cover image or inviter
+
+  // Status indicators
+  onlineStatus?: "ONLINE" | "AWAY" | "OFFLINE";
   unreadCount: number;
+  isMuted: boolean;
+  isTyping: boolean;
 
-  // Last message metadata
-  lastMessageIsOwn?: boolean;
-  lastMessageStatus?: MessageStatus;
-  lastMessageIsSystem?: boolean;
+  // Last message metadata (Standardized to canonical patterns)
+  lastMessage?: {
+    content: string;
+    sender: {
+      fullName: string;
+      avatar: string | null;
+    };
+    createdAt: string;
+    isSystem: boolean;
+    isOwn?: boolean;
+    status?: MessageStatus;
+    type?: MessageType;
+  };
 
-  // DM-only
-  onlineStatus?: OnlineStatus;
-  isTyping?: boolean;
-  isMuted?: boolean;
-
-  // Group-only
-  memberCount?: number;
-  memberAvatars?: string[];
-  planCoverImage?: string;
+  // Feature-specific metadata for UI
   planDateTime?: string;
-  planStatus?: PlanStatus;
-  groupStatus?: GroupStatus;
+  planStatus?: string;
   pendingProposals?: number;
-  senderName?: string; // last message sender for groups
-  subtitleIcon?: "voice" | "image" | "file" | "location" | "poll" | "proposal";
+
+  // Links to raw canonical data
+  rawGroup?: Group;
+  rawChat?: Chat;
 }
+
+export type ConversationFilter = FilterChip;

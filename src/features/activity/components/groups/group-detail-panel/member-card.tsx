@@ -19,8 +19,8 @@ export function MemberCard({ member, onShowProfile }: MemberCardProps) {
       <div className="relative shrink-0">
         <div className="w-10 h-10 rounded-xl overflow-hidden ring-1 ring-border/20 group-hover/member:ring-border/40 transition-all">
           <img
-            src={member.avatar}
-            alt={member.name}
+            src={member.user?.avatar || ""}
+            alt={member.user?.fullName || "User"}
             className="w-full h-full object-cover transition-transform duration-500 group-hover/member:scale-110"
             loading="lazy"
           />
@@ -39,18 +39,18 @@ export function MemberCard({ member, onShowProfile }: MemberCardProps) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-0.5">
           <p className="text-sm font-semibold text-foreground truncate">
-            {member.name}
+            {member.user?.fullName}
           </p>
           <Badge
             variant="mbti"
             className="text-[9px] h-4 px-1.5 font-bold tracking-tight"
           >
-            {member.personalityType}
+            {member.user?.personalityType}
           </Badge>
         </div>
         <div className="flex items-center gap-2.5">
           <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">
-            Trust {Math.round(member.trustScore * 100)}%
+            Trust {Math.round((member.user?.trustScore || 0) * 100)}%
           </span>
           <div className="w-px h-2 bg-border/50" />
           <span className="text-[9px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider">

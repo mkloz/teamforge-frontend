@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
-import { DEFAULT_FILTERS } from "../../constants/explore.constants";
+import { CATEGORIES, DEFAULT_FILTERS } from "../../constants/explore.constants";
 import { useExploreStore } from "../../store/use-explore-store";
 import { FilterTag } from "../filter-tag";
 
@@ -25,12 +25,12 @@ export function SelectedFiltersBar() {
   if (!filtered) return null;
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="popLayout">
       <motion.div
         initial={{ opacity: 0, height: 0 }}
         animate={{ opacity: 1, height: "auto" }}
         exit={{ opacity: 0, height: 0 }}
-        className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide"
+        className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1"
       >
         <button
           onClick={resetFilters}
@@ -45,18 +45,24 @@ export function SelectedFiltersBar() {
         <div className="flex items-center gap-1.5">
           <AnimatePresence mode="popLayout">
             {selectedCategories
-              .filter((c) => c !== "All")
-              .map((cat) => (
-                <motion.div
-                  key={cat}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  layout
-                >
-                  <FilterTag label={cat} onRemove={() => removeCategory(cat)} />
-                </motion.div>
-              ))}
+              .filter((c) => c !== "ALL")
+              .map((catId) => {
+                const catInfo = CATEGORIES.find((c) => c.id === catId);
+                return (
+                  <motion.div
+                    key={catId}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    layout
+                  >
+                    <FilterTag
+                      label={catInfo?.label || catId}
+                      onRemove={() => removeCategory(catId)}
+                    />
+                  </motion.div>
+                );
+              })}
             {locationMode !== DEFAULT_FILTERS.locationMode && (
               <motion.div
                 key="location"
@@ -66,7 +72,13 @@ export function SelectedFiltersBar() {
                 layout
               >
                 <FilterTag
-                  label={locationMode === "In-Person" ? "Local" : locationMode}
+                  label={
+                    locationMode === "IN_PERSON"
+                      ? "Local"
+                      : locationMode === "ONLINE"
+                        ? "Online"
+                        : "TBD"
+                  }
                   onRemove={() => setLocationMode(DEFAULT_FILTERS.locationMode)}
                 />
               </motion.div>
@@ -80,13 +92,13 @@ export function SelectedFiltersBar() {
                 layout
               >
                 <FilterTag
-                  label={access === "Open" ? "Open access" : "By request"}
+                  label={access === "OPEN" ? "Open access" : "By request"}
                   onRemove={() => setAccess(DEFAULT_FILTERS.access)}
                 />
               </motion.div>
             )}
             {distance !== DEFAULT_FILTERS.distance &&
-              locationMode !== "Online" && (
+              locationMode !== "ONLINE" && (
                 <motion.div
                   key="distance"
                   initial={{ opacity: 0, scale: 0.8 }}

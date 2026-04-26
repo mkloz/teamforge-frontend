@@ -1,6 +1,7 @@
 import { cn } from "@/shared/lib/utils";
 import { Handshake, Unlock, Users } from "lucide-react";
 import { useExploreStore } from "../../store/use-explore-store";
+import type { AccessMode } from "../../types/explore.types";
 
 export function AccessFilter() {
   const { access, setAccess } = useExploreStore();
@@ -13,9 +14,9 @@ export function AccessFilter() {
       <div className="flex p-1 bg-muted/20 rounded-xl border border-border/40 relative gap-1">
         {(
           [
-            { id: "All", label: "Any", icon: Users },
-            { id: "Open", label: "Open", icon: Unlock },
-            { id: "Request", label: "Req", icon: Handshake },
+            { id: "ALL", label: "Any", icon: Users },
+            { id: "OPEN", label: "Open", icon: Unlock },
+            { id: "BY_REQUEST", label: "Req", icon: Handshake },
           ] as const
         ).map((opt) => {
           const active = access === opt.id;
@@ -23,7 +24,7 @@ export function AccessFilter() {
           return (
             <button
               key={opt.id}
-              onClick={() => setAccess(opt.id)}
+              onClick={() => setAccess(opt.id as AccessMode)}
               className={cn(
                 "relative z-10 flex-1 flex flex-row items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
                 active

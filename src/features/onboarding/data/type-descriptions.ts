@@ -1,3 +1,5 @@
+import type { PersonalityType } from "@/shared/schemas/enums";
+
 export interface PersonalityTypeInfo {
   letters: string;
   name: string;
@@ -6,7 +8,7 @@ export interface PersonalityTypeInfo {
   inGroups: string;
 }
 
-export const TYPE_DESCRIPTIONS: Record<string, PersonalityTypeInfo> = {
+export const TYPE_DESCRIPTIONS: Record<PersonalityType, PersonalityTypeInfo> = {
   INTJ: {
     letters: "INTJ",
     name: "The Architect",

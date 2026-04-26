@@ -1,24 +1,23 @@
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
+import type { Group } from "@/shared/schemas";
 
 interface CardFooterProps {
-  currentSize: number;
-  capacity: number;
+  group: Group;
   isFull: boolean;
-  access: string;
-  title: string;
   variant?: "default" | "compact";
 }
 
 export function CardFooter({
-  currentSize,
-  capacity,
+  group,
   isFull,
-  access,
-  title,
   variant = "default",
 }: CardFooterProps) {
   const isCompact = variant === "compact";
+  const currentSize = group.members?.length || 0;
+  const capacity = group.maxMembers || 0;
+  const access = group.activity?.access || "OPEN";
+  const title = group.plan?.title || group.activity?.title || "Activity";
 
   return (
     <div
@@ -93,7 +92,7 @@ export function CardFooter({
             isFull && "opacity-50 pointer-events-none hidden md:inline-flex",
           )}
         >
-          {isFull ? "Full" : access === "By Request" ? "Request" : "Join"}
+          {isFull ? "Full" : access === "BY_REQUEST" ? "Request" : "Join"}
         </Button>
       </button>
     </div>

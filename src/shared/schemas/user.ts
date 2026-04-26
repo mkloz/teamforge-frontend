@@ -1,9 +1,15 @@
 import { z } from "zod";
-import { authProviderSchema, genderSchema, searchStatusSchema } from "./enums";
+import {
+  authProviderSchema,
+  genderSchema,
+  onlineStatusSchema,
+  personalityTypeSchema,
+  searchStatusSchema,
+} from "./enums";
 
 const interestData = {
   id: z.string(),
-  name: z.string(),
+  label: z.string(),
   slug: z.string(),
   description: z.string().nullable(),
   icon: z.string().nullable(),
@@ -29,7 +35,7 @@ export const interestSchema: z.ZodSchema<Interest> = z.lazy(() =>
 const userData = {
   id: z.string(),
   email: z.string().email(),
-  name: z.string(),
+  fullName: z.string(),
   avatar: z.string().nullable(),
   bio: z.string().nullable(),
   authProvider: authProviderSchema,
@@ -40,13 +46,14 @@ const userData = {
   age: z.number().nullable(),
   gender: genderSchema.nullable(),
   city: z.string().nullable(),
-  personalityType: z.string().nullable(),
+  personalityType: personalityTypeSchema.nullable(),
   oceanO: z.number().nullable(),
   oceanC: z.number().nullable(),
   oceanE: z.number().nullable(),
   oceanA: z.number().nullable(),
   oceanN: z.number().nullable(),
   searchStatus: searchStatusSchema,
+  onlineStatus: onlineStatusSchema.optional(),
   trustScore: z.number(),
   profileComplete: z.boolean(),
 };

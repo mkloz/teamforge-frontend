@@ -25,7 +25,7 @@ interface UnifiedConversationListProps {
 const FILTERS: { key: FilterChip; label: string }[] = [
   { key: "all", label: "All" },
   { key: "groups", label: "Groups" },
-  { key: "dms", label: "DMs" },
+  { key: "direct", label: "DMs" },
   { key: "unread", label: "Unread" },
 ];
 
@@ -50,7 +50,7 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
 
   const emptyLabel = useMemo(() => {
     if (activeFilter === "groups") return "No groups found";
-    if (activeFilter === "dms") return "No direct messages found";
+    if (activeFilter === "direct") return "No direct messages found";
     if (activeFilter === "unread") return "No unread conversations";
     if (searchQuery) return "No conversations match your search";
     return "No conversations yet";

@@ -14,7 +14,7 @@ export function ProfileHero({ profile }: ProfileHeroProps) {
         {/* Top Header Row */}
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 w-full">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 min-w-0 flex-1">
-            <ProfileAvatar src={profile.avatar} name={profile.name} />
+            <ProfileAvatar src={profile.avatar} fullName={profile.fullName} />
             <ProfileIdentity profile={profile} />
           </div>
         </div>

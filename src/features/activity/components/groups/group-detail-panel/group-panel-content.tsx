@@ -50,44 +50,43 @@ export function GroupPanelContent({
   // Memoize current user's role (derive from group data)
   // In production, this would likely come from an Auth Context
   const currentUserRole: MemberRole = useMemo(() => {
-    const isAdmin =
-      group.members.find((m) => m.role === "ADMIN")?.id === group.createdBy;
+    const isAdmin = group.members?.some((m) => m.role === "ADMIN");
     return isAdmin ? "ADMIN" : "MEMBER";
-  }, [group.members, group.createdBy]);
+  }, [group.members]);
 
   // Performance: memoize member count to avoid recalculation if not needed
   const memberCount = useMemo(
-    () => group.members.length,
-    [group.members.length],
+    () => group.members?.length || 0,
+    [group.members?.length],
   );
 
   // Map GroupMember to a mock DirectChat for the UserProfilePanel
   const memberChat: DirectChat | null = useMemo(() => {
-    if (!selectedMember) return null;
+    if (!selectedMember || !selectedMember.user) return null;
     return {
-      id: `temp-dm-${selectedMember.id}`,
-      participant: {
-        id: selectedMember.id,
-        name: selectedMember.name,
-        avatar: selectedMember.avatar,
-        personalityType: selectedMember.personalityType,
-        age: 26, // Mocked
-        location: "London, UK", // Mocked
-        onlineStatus: "ONLINE", // Mocked
-        bio: "Creative group member passionate about collective experiences.", // Mocked
-      },
+      id: `temp-dm-${selectedMember.userId}`,
+      type: "PRIVATE",
       createdAt: new Date().toISOString(),
+      groupId: null,
+      participants: [
+        {
+          userId: selectedMember.userId,
+          chatId: `temp-dm-${selectedMember.userId}`,
+          user: selectedMember.user,
+        },
+      ],
+      updatedAt: new Date().toISOString(),
       isMuted: false,
       isBlocked: false,
       mutualGroups: [
         {
           id: group.id,
-          name: group.identity.name,
-          avatar: group.identity.avatar,
+          name: group.name,
+          avatar: group.avatar,
         },
       ],
-    };
-  }, [selectedMember, group.id, group.identity]);
+    } as DirectChat;
+  }, [selectedMember, group.id, group.name, group.avatar]);
 
   if (selectedMember && memberChat) {
     return (
@@ -140,7 +139,7 @@ export function GroupPanelContent({
               initial={{ scale: 1.1 }}
               animate={{ scale: 1 }}
               transition={{ duration: 0.6 }}
-              src={group.plan.coverImage}
+              src={group.plan?.coverImage || undefined}
               alt=""
               className="w-full h-full object-cover"
               loading="eager" // Hero image
@@ -186,8 +185,8 @@ export function GroupPanelContent({
               className="w-20 h-20 rounded-2xl overflow-hidden bg-muted ring-4 ring-canvas shadow-xl flex items-center justify-center group pointer-events-auto"
             >
               <img
-                src={group.identity.avatar}
-                alt={`${group.identity.name} avatar`}
+                src={group.avatar || undefined}
+                alt={`${group.name} avatar`}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
             </motion.div>
@@ -204,25 +203,27 @@ export function GroupPanelContent({
           {/* Group Identity Details */}
           <motion.div variants={itemVariants}>
             <GroupIdentitySection
-              identity={group.identity}
+              name={group.name}
+              description={group.description}
               memberCount={memberCount}
               maxMembers={group.maxMembers}
-              hideAvatar
             />
           </motion.div>
 
           {/* Current Active Plan Section */}
           <motion.div variants={itemVariants}>
-            <PlanSection plan={group.plan} />
+            {group.plan && <PlanSection plan={group.plan} />}
           </motion.div>
 
           {/* Members List Section */}
           <motion.div variants={itemVariants}>
-            <MembersSection
-              members={group.members}
-              maxMembers={group.maxMembers}
-              onShowProfile={(m) => setSelectedMember(m)}
-            />
+            {group.members && (
+              <MembersSection
+                members={group.members}
+                maxMembers={group.maxMembers}
+                onShowProfile={(m) => setSelectedMember(m)}
+              />
+            )}
           </motion.div>
 
           {/* Plan History Feed */}

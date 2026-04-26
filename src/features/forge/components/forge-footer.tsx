@@ -76,7 +76,7 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
                 Almost there — configure your matching algorithm next
               </HintText>
             )}
-            {fw.step === 4 && fw.forgeResult === "success" && (
+            {fw.step === 4 && fw.forgeResult === "SUCCESS" && (
               <HintText key="h4">
                 Group matched — give it an identity next
               </HintText>
@@ -164,7 +164,7 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                   >
-                    {fw.forgeMode === "manual" ? (
+                    {fw.forgeMode === "MANUAL" ? (
                       <ManualForgeButton onClick={fw.handleManualForge} />
                     ) : (
                       <AutoForgeButton onClick={fw.handleAutoForge} />
@@ -172,7 +172,7 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
                   </motion.div>
                 )}
 
-                {fw.step === 4 && fw.forgeResult === "success" && (
+                {fw.step === 4 && fw.forgeResult === "SUCCESS" && (
                   <motion.div
                     key="s4s"
                     initial={{ opacity: 0, y: 10 }}
@@ -187,7 +187,7 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
                   </motion.div>
                 )}
 
-                {fw.step === 4 && fw.forgeResult === "failed" && (
+                {fw.step === 4 && fw.forgeResult === "FAILED" && (
                   <motion.div
                     key="s4f"
                     initial={{ opacity: 0, y: 10 }}

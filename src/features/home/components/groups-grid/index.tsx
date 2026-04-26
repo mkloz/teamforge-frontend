@@ -74,7 +74,13 @@ export function GroupsGrid() {
         className="flex flex-col gap-1.5"
       >
         {groups.map((group, i) => (
-          <GroupRow key={group.id} group={group} index={i} />
+          <GroupRow
+            key={group.id}
+            group={group}
+            index={i}
+            hasUnread={group.hasUnread}
+            lastActivity={group.lastActivity}
+          />
         ))}
       </div>
 

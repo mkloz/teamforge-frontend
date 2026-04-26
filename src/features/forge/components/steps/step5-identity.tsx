@@ -5,9 +5,10 @@ import { cn } from "@/shared/lib/utils";
 import { Check, ImagePlus, Upload, X } from "lucide-react";
 import { useRef } from "react";
 
+import type { Group } from "@/shared/schemas/group";
+
 export interface Step5IdentityProps {
-  planName: string;
-  activity: string | null;
+  group: Partial<Group>;
   coverImage: string | null;
   onCoverImageChange: (url: string | null) => void;
   avatarImage: string | null;
@@ -66,8 +67,7 @@ const PRESET_COVERS: {
 ];
 
 export function Step5Identity({
-  planName,
-  activity,
+  group,
   coverImage,
   onCoverImageChange,
   avatarImage,
@@ -77,6 +77,8 @@ export function Step5Identity({
   groupDescription = "",
   onGroupDescriptionChange,
 }: Step5IdentityProps) {
+  const planName = group.plan?.title || "";
+  const activity = group.activity?.title || null;
   const coverInputRef = useRef<HTMLInputElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
@@ -137,7 +139,7 @@ export function Step5Identity({
           {!isUploadedCover && coverImage && (
             <div
               className={cn(
-                "absolute inset-0 bg-gradient-to-br transition-colors duration-500",
+                "absolute inset-0 bg-linear-to-br transition-colors duration-500",
                 activePreset?.gradient,
               )}
             />
@@ -208,7 +210,7 @@ export function Step5Identity({
                 onClick={() => onCoverImageChange(selected ? null : id)}
                 aria-pressed={selected}
                 className={cn(
-                  "group relative h-14 rounded-xl bg-gradient-to-br transition duration-200 overflow-hidden border-2",
+                  "group relative h-14 rounded-xl bg-linear-to-br transition duration-200 overflow-hidden border-2",
                   gradient,
                   selected
                     ? "border-primary shadow-md shadow-primary/20 scale-[1.04]"
@@ -329,7 +331,7 @@ export function Step5Identity({
               isUploadedCover
                 ? "bg-primary/15"
                 : coverImage
-                  ? `bg-gradient-to-br ${activePreset?.gradient}`
+                  ? `bg-linear-to-br ${activePreset?.gradient}`
                   : "bg-muted/40",
             )}
           />
@@ -341,7 +343,7 @@ export function Step5Identity({
                 isUploadedAvatar
                   ? "bg-primary/20"
                   : coverImage
-                    ? `bg-gradient-to-br ${activePreset?.gradient}`
+                    ? `bg-linear-to-br ${activePreset?.gradient}`
                     : "bg-muted",
               )}
             >

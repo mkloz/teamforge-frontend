@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { formatTypingText } from "../../lib/chat-utils";
 
 interface TypingUser {
-  name: string;
+  fullName: string;
   avatar: string;
 }
 
@@ -47,12 +47,12 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
             <AnimatePresence mode="popLayout">
               {users.slice(0, 3).map((user) => (
                 <motion.img
-                  key={user.name}
+                  key={user.fullName}
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0 }}
                   src={user.avatar}
-                  alt={user.name}
+                  alt={user.fullName}
                   className="w-5.5 h-5.5 rounded-full object-cover ring-2 ring-canvas shadow-sm"
                 />
               ))}
@@ -80,7 +80,7 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         src={users[0]?.avatar}
-        alt={users[0]?.name}
+        alt={users[0]?.fullName}
         className="w-8 h-8 rounded-full object-cover shrink-0 ring-1 ring-border/20 shadow-sm"
       />
       <div

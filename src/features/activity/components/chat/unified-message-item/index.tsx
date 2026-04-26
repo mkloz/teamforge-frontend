@@ -8,16 +8,14 @@ import { MessageFooter } from "./message-footer";
 import { MessageMedia } from "./message-media";
 import { ReplyReference } from "./reply-reference";
 
+import type { User } from "@/shared/schemas";
+
 interface UnifiedMessageItemProps {
   message: UnifiedMessage;
   showSender: boolean;
   showAvatar: boolean;
   kind: "dm" | "group";
-  onAvatarClick?: (
-    senderId: string,
-    senderName: string,
-    senderAvatar: string,
-  ) => void;
+  onAvatarClick?: (sender: User) => void;
 }
 
 /**
@@ -32,14 +30,15 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
 }: UnifiedMessageItemProps) {
   const {
     isOwn,
-    timestamp,
+    createdAt: timestamp,
     status,
     content,
     attachments,
     replyTo,
-    senderAvatar,
-    senderName,
+    sender,
   } = message;
+  const senderFullName = sender?.fullName || "Unknown";
+  const senderAvatar = sender?.avatar || "";
   const isGroup = kind === "group";
 
   // Layout logic
@@ -64,15 +63,13 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
               <Button
                 variant="ghost"
                 size="icon-sm"
-                onClick={() =>
-                  onAvatarClick?.(message.senderId, senderName, senderAvatar)
-                }
+                onClick={() => sender && onAvatarClick?.(sender)}
                 className="rounded-full shrink-0 h-auto w-auto p-0"
-                aria-label={`View ${senderName}'s profile`}
+                aria-label={`View ${senderFullName}'s profile`}
               >
                 <img
                   src={senderAvatar}
-                  alt={senderName}
+                  alt={senderFullName}
                   className="w-6 h-6 md:w-7 md:h-7 rounded-full object-cover shrink-0 ring-1 ring-border group-hover:scale-105 transition-transform duration-200"
                 />
               </Button>
@@ -88,7 +85,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
         >
           {!isOwn && isGroup && showSender && (
             <p className="text-micro font-bold text-forge-teal mb-0.5 ml-1.5 tracking-tight opacity-90">
-              {senderName}
+              {senderFullName}
             </p>
           )}
 
@@ -108,7 +105,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
                 attachments={attachments}
                 isOwn={isOwn}
                 content={content}
-                timestamp={timestamp}
+                createdAt={timestamp}
                 status={status}
                 isReadByOthers={isReadByOthers}
                 galleryRounding={galleryRounding}
@@ -127,7 +124,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
                 content={content}
                 reactionGroups={reactionGroups}
                 isOwn={isOwn}
-                timestamp={timestamp}
+                createdAt={timestamp}
                 status={status}
                 isReadByOthers={isReadByOthers}
                 isEdited={message.isEdited}

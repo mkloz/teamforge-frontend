@@ -13,10 +13,16 @@ const chatParticipantData = {
   chatId: z.string(),
 };
 
-export type ChatParticipant = z.infer<z.ZodObject<typeof chatParticipantData>>;
+export type ChatParticipant = z.infer<
+  z.ZodObject<typeof chatParticipantData>
+> & {
+  user?: User;
+};
 
 export const chatParticipantSchema: z.ZodSchema<ChatParticipant> = z.lazy(() =>
-  z.object(chatParticipantData),
+  z.object(chatParticipantData).extend({
+    user: userSchema.optional(),
+  }),
 );
 
 const reactionData = {
@@ -98,6 +104,9 @@ export type Chat = z.infer<z.ZodObject<typeof chatData>> & {
   participants?: ChatParticipant[];
   messages?: Message[];
   pinnedMessages?: Message[];
+  isMuted?: boolean;
+  isBlocked?: boolean;
+  mutualGroups?: { id: string; name: string; avatar: string | null }[];
 };
 
 export const chatSchema: z.ZodSchema<Chat> = z.lazy(() =>

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { memo } from "react";
 
 interface ProposalVotersProps {
-  voters: { id: string; name: string; avatar: string; type: string }[];
+  voters: { id: string; fullName: string; avatar: string; type: string }[];
   score: string;
   progress: number;
 }
@@ -23,8 +23,8 @@ export const ProposalVoters = memo(
                   ? "ring-forge-teal"
                   : "ring-destructive",
               )}
-              title={`${voter.name} (${voter.type})`}
-              alt={voter.name}
+              title={`${voter.fullName} (${voter.type})`}
+              alt={voter.fullName}
             />
           ))}
         </div>

@@ -7,9 +7,9 @@ import { Activity } from "react";
 import { INTEREST_CATEGORIES } from "../../../data/interests-data";
 import type {
   LeafTag,
-  MbtiType,
   SearchResults as SearchResultsType,
 } from "../../../data/interests-types";
+import type { PersonalityType } from "@/shared/schemas/enums";
 import { BalanceNudge } from "./balance-nudge";
 import { CategorySection } from "./category-section";
 import { PageTitle } from "./page-title";
@@ -22,7 +22,7 @@ interface InterestsBrowseProps {
   selectedIds: Set<string>;
   searchQuery: string;
   searchResults: SearchResultsType;
-  mbtiType: MbtiType | null;
+  personalityType: PersonalityType | null;
   suggestedTags: LeafTag[];
   youMightAlsoLike: LeafTag[];
   showBalanceNudge: boolean;
@@ -41,7 +41,7 @@ export function InterestsBrowse({
   selectedIds,
   searchQuery,
   searchResults,
-  mbtiType,
+  personalityType,
   suggestedTags,
   youMightAlsoLike,
   showBalanceNudge,
@@ -85,9 +85,9 @@ export function InterestsBrowse({
               )}
             >
               {/* Contextual Sections */}
-              {mbtiType && suggestedTags.length > 0 && (
+              {personalityType && suggestedTags.length > 0 && (
                 <SuggestionsSection
-                  mbtiType={mbtiType}
+                  personalityType={personalityType}
                   suggestedTags={suggestedTags}
                   selectedIds={selectedIds}
                   isAtMax={isAtMax}

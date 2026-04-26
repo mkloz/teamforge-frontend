@@ -19,8 +19,8 @@ export interface Step2PlanProps {
   onPlanTimeChange: (v: string) => void;
   planLocation: string;
   onPlanLocationChange: (v: string) => void;
-  locationType: "MY PLACE" | "TBD" | "VIRTUAL";
-  onLocationTypeChange: (v: "MY PLACE" | "TBD" | "VIRTUAL") => void;
+  locationType: "IN_PERSON" | "ONLINE" | "TBD";
+  onLocationTypeChange: (v: "IN_PERSON" | "ONLINE" | "TBD") => void;
 }
 
 // ── Shared primitives ──────────────────────────────────────────────────────
@@ -155,16 +155,16 @@ export function Step2Plan({
   const isNameValid = trimmed.length >= 3;
   const charCount = trimmed.length;
 
-  const showAddress = locationType !== "VIRTUAL" && locationType !== "TBD";
+  const showAddress = locationType === "IN_PERSON";
 
   const LOCATION_TYPES: {
-    id: "MY PLACE" | "TBD" | "VIRTUAL";
+    id: "IN_PERSON" | "ONLINE" | "TBD";
     label: string;
     sub: string;
     Icon: React.ElementType;
   }[] = [
     {
-      id: "MY PLACE",
+      id: "IN_PERSON",
       label: "In person",
       sub: "Specific address",
       Icon: Home,
@@ -176,7 +176,7 @@ export function Step2Plan({
       Icon: Globe,
     },
     {
-      id: "VIRTUAL",
+      id: "ONLINE",
       label: "Virtual",
       sub: "Online meeting",
       Icon: Monitor,
@@ -379,7 +379,7 @@ export function Step2Plan({
         )}
 
         {/* Virtual / TBD contextual note */}
-        {locationType === "VIRTUAL" && (
+        {locationType === "ONLINE" && (
           <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-muted/40 border border-border/40 animate-in fade-in duration-200">
             <Monitor size={12} className="text-muted-foreground/50 shrink-0" />
             <p className="text-xs text-muted-foreground/70">

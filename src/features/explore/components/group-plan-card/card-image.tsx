@@ -1,23 +1,34 @@
 import { cn } from "@/shared/lib/utils";
 import { Target } from "lucide-react";
+import type { Group } from "@/shared/schemas";
 
 interface CardImageProps {
-  imageUrl: string;
-  title: string;
+  group: Group;
   matchScore: number;
-  category: string;
   variant?: "default" | "compact";
 }
 
 export function CardImage({
-  imageUrl,
-  title,
+  group,
   matchScore,
-  category,
   variant = "default",
 }: CardImageProps) {
   const isHighMatch = matchScore >= 90;
   const isCompact = variant === "compact";
+
+  const plan = group.plan;
+  const activity = group.activity;
+
+  const title = plan?.title || activity?.title || "Unnamed Activity";
+  const imageUrl =
+    plan?.coverImage ||
+    "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=600&auto=format&fit=crop";
+  const category = plan?.category || "OTHER";
+
+  // Format category name (e.g. OUTDOORS -> Outdoors)
+
+  const categoryLabel =
+    category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
 
   return (
     <div
@@ -56,7 +67,7 @@ export function CardImage({
       {/* Bottom Left Floating Pill (Category) */}
       <div className="absolute bottom-4 left-5">
         <span className="px-3 py-1.5 bg-black/40 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-sm">
-          {category}
+          {categoryLabel}
         </span>
       </div>
     </div>

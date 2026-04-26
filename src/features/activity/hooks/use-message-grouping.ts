@@ -12,7 +12,7 @@ export function useMessageGrouping(messages: UnifiedMessage[]) {
     messages.forEach((msg, idx) => {
       const prevMsg = messages[idx - 1];
       if (!prevMsg || shouldShowDateSeparator(msg, prevMsg)) {
-        groups.push({ date: msg.timestamp, items: [msg] });
+        groups.push({ date: msg.createdAt, items: [msg] });
       } else {
         groups[groups.length - 1].items.push(msg);
       }

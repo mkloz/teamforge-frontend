@@ -2,18 +2,27 @@ import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight, MessageCircle, Users } from "lucide-react";
-import type { UserGroup } from "../../types/home.types";
+import type { Group } from "@/shared/schemas";
 
 interface GroupRowProps {
-  group: UserGroup;
+  group: Group;
   index: number;
+  hasUnread?: boolean;
+  lastActivity?: string;
 }
 
 /**
  * Individual group row for the GroupsGrid list.
  * Optimized with Framer Motion for smooth entry.
  */
-export function GroupRow({ group, index }: GroupRowProps) {
+export function GroupRow({
+  group,
+  index,
+  hasUnread = false,
+  lastActivity,
+}: GroupRowProps) {
+  const memberCount = group.members?.length ?? 0;
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -8 }}
@@ -28,13 +37,13 @@ export function GroupRow({ group, index }: GroupRowProps) {
       <Link
         // @ts-expect-error: Route not yet implemented in router tree
         to={`/groups/${group.id}`}
-        aria-label={`${group.name}${group.hasUnread ? ", has unread messages" : ""}. Last active ${group.lastActivity}.`}
+        aria-label={`${group.name}${hasUnread ? ", has unread messages" : ""}. Last active ${lastActivity}.`}
         className={cn(
           "group flex items-center gap-3 rounded-2xl border px-3 py-2.5",
           "transition-all duration-150 cursor-pointer",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           "hover:border-forge-teal/30 hover:bg-secondary",
-          group.hasUnread
+          hasUnread
             ? "border-forge-teal/20 bg-secondary/50"
             : "border-border bg-transparent",
         )}
@@ -44,20 +53,20 @@ export function GroupRow({ group, index }: GroupRowProps) {
           <div
             className={cn(
               "size-9 rounded-full overflow-hidden border-2 transition-colors duration-150",
-              group.hasUnread
+              hasUnread
                 ? "border-forge-teal/50"
                 : "border-border group-hover:border-forge-teal/30",
             )}
           >
             <img
-              src={`https://api.dicebear.com/7.x/identicon/svg?seed=${group.avatarSeed}`}
+              src={`https://api.dicebear.com/7.x/identicon/svg?seed=${group.avatar || "default"}`}
               alt=""
               className="size-full object-cover"
               loading="lazy"
             />
           </div>
           {/* Unread dot */}
-          {group.hasUnread && (
+          {hasUnread && (
             <span
               className="absolute -top-0.5 -right-0.5 size-2.5 rounded-full bg-spark-amber border-2 border-card"
               aria-hidden="true"
@@ -70,7 +79,7 @@ export function GroupRow({ group, index }: GroupRowProps) {
           <span
             className={cn(
               "text-sm font-bold leading-tight truncate transition-colors duration-150",
-              group.hasUnread
+              hasUnread
                 ? "text-foreground"
                 : "text-foreground group-hover:text-primary",
             )}
@@ -80,21 +89,21 @@ export function GroupRow({ group, index }: GroupRowProps) {
           <div className="flex items-center gap-2 mt-0.5">
             <span className="flex items-center gap-1 text-xs text-muted-foreground font-medium">
               <Users className="size-2.5 shrink-0" aria-hidden="true" />
-              {group.memberCount}
+              {memberCount}
             </span>
             <span
               className="size-0.5 rounded-full bg-border"
               aria-hidden="true"
             />
             <span className="text-xs text-muted-foreground font-medium truncate">
-              {group.lastActivity}
+              {lastActivity}
             </span>
           </div>
         </div>
 
         {/* Trailing icon */}
         <div className="shrink-0" aria-hidden="true">
-          {group.hasUnread ? (
+          {hasUnread ? (
             <MessageCircle className="size-4 text-forge-teal" />
           ) : (
             <ArrowRight className="size-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-150" />

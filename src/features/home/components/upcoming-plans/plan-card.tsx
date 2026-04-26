@@ -8,19 +8,34 @@ const STATUS_CONFIG: Record<
   PlanStatus,
   { label: string; classes: string; icon: React.ElementType }
 > = {
-  confirmed: {
+  CONFIRMED: {
     label: "Confirmed",
     classes: "bg-forge-teal/10 text-forge-teal",
     icon: CheckCircle2,
   },
-  pending: {
-    label: "Pending",
+  PROPOSED: {
+    label: "Proposed",
     classes: "bg-spark-amber/10 text-spark-amber",
     icon: Clock,
   },
-  planning: {
-    label: "Planning",
+  DRAFT: {
+    label: "Draft",
     classes: "bg-muted text-muted-foreground",
+    icon: Calendar,
+  },
+  IN_PROGRESS: {
+    label: "In Progress",
+    classes: "bg-blue-500/10 text-blue-500",
+    icon: Clock,
+  },
+  COMPLETED: {
+    label: "Completed",
+    classes: "bg-green-500/10 text-green-500",
+    icon: CheckCircle2,
+  },
+  CANCELLED: {
+    label: "Cancelled",
+    classes: "bg-red-500/10 text-red-500",
     icon: Calendar,
   },
 };
@@ -34,14 +49,25 @@ interface PlanCardProps {
  * Individual plan card showing activity details, status, and member avatars.
  */
 export function PlanCard({ plan, index }: PlanCardProps) {
-  const status = STATUS_CONFIG[plan.status];
+  const status = STATUS_CONFIG[plan.status] || STATUS_CONFIG.DRAFT;
   const StatusIcon = status.icon;
 
-  const dateParts = plan.date.split(" ");
-  const dayName = dateParts[0].replace(",", "");
-  const month = dateParts[1];
-  const dayNum = dateParts[2];
-  const timeStr = dateParts.slice(4).join(" ");
+  // Format ISO date
+  const date = plan.dateTime ? new Date(plan.dateTime) : new Date();
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const dayNum = date.getDate();
+  const dayName = date.toLocaleString("en-US", { weekday: "short" });
+  const timeStr = date.toLocaleString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  const groupName = plan.group?.name || "Unknown Group";
+  const members = plan.group?.members || [];
+  const memberAvatars = members
+    .map((m) => m.user?.avatar)
+    .filter(Boolean) as string[];
 
   return (
     <motion.div
@@ -85,7 +111,7 @@ export function PlanCard({ plan, index }: PlanCardProps) {
           {plan.title}
         </p>
         <p className="text-xs text-muted-foreground font-medium truncate">
-          {plan.groupName}
+          {groupName}
         </p>
         <div className="flex items-center gap-2 mt-1.5 flex-wrap">
           {/* Time pill */}
@@ -111,9 +137,9 @@ export function PlanCard({ plan, index }: PlanCardProps) {
         {/* Member avatar stack */}
         <div
           className="flex -space-x-2.5"
-          aria-label={`${plan.memberAvatarSeeds.length} members`}
+          aria-label={`${memberAvatars.length} members`}
         >
-          {plan.memberAvatarSeeds.slice(0, 3).map((seed, i) => (
+          {memberAvatars.slice(0, 3).map((seed, i) => (
             <div
               key={i}
               className="size-8 rounded-full border-2 border-card bg-muted overflow-hidden shadow-xs"
@@ -126,9 +152,9 @@ export function PlanCard({ plan, index }: PlanCardProps) {
               />
             </div>
           ))}
-          {plan.memberAvatarSeeds.length > 3 && (
+          {memberAvatars.length > 3 && (
             <div className="size-8 rounded-full border-2 border-card bg-muted flex items-center justify-center text-xs font-extrabold text-muted-foreground shadow-xs">
-              +{plan.memberAvatarSeeds.length - 3}
+              +{memberAvatars.length - 3}
             </div>
           )}
         </div>

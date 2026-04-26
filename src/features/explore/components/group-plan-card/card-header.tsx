@@ -1,20 +1,17 @@
 import { cn } from "@/shared/lib/utils";
 import { Handshake } from "lucide-react";
+import type { Group } from "@/shared/schemas";
 
 interface CardHeaderProps {
-  groupName: string;
-  groupAvatarUrl?: string;
-  access: string;
+  group: Group;
   variant?: "default" | "compact";
 }
 
-export function CardHeader({
-  groupName,
-  groupAvatarUrl,
-  access,
-  variant = "default",
-}: CardHeaderProps) {
+export function CardHeader({ group, variant = "default" }: CardHeaderProps) {
   const isCompact = variant === "compact";
+  const groupName = group.name;
+  const groupAvatarUrl = group.avatar;
+  const access = group.activity?.access || "OPEN";
 
   return (
     <div
@@ -32,8 +29,9 @@ export function CardHeader({
         >
           <img
             src={
-              groupAvatarUrl ||
-              `https://api.dicebear.com/7.x/initials/svg?seed=${groupName}`
+              groupAvatarUrl
+                ? `https://api.dicebear.com/7.x/identicon/svg?seed=${groupAvatarUrl}`
+                : `https://api.dicebear.com/7.x/initials/svg?seed=${groupName}`
             }
             alt={groupName}
             className="w-full h-full object-cover"
@@ -50,7 +48,7 @@ export function CardHeader({
       </div>
 
       {/* Top Right Request info pill if any */}
-      {access === "By Request" && (
+      {access === "BY_REQUEST" && (
         <span className="flex items-center gap-1 shrink-0 px-2 py-0.5 rounded-md border border-border/80 text-muted-foreground text-[10px] font-bold uppercase tracking-wider bg-background/50">
           <Handshake className="w-3 h-3" />
           Req

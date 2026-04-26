@@ -5,18 +5,19 @@ import {
   LEAF_TAG_BY_ID,
   MBTI_SUGGESTIONS,
 } from "../data/interests-data";
-import type { LeafTag, MbtiType, SearchResults } from "../data/interests-types";
+import type { LeafTag, SearchResults } from "../data/interests-types";
+import type { PersonalityType } from "@/shared/schemas/enums";
 
 /**
  * Calculates MBTI-based suggestions based on the user's personality type.
  */
 export function getMbtiSuggestions(
-  mbtiType: MbtiType | null,
+  personalityType: PersonalityType | null,
   selectedIds: Set<string>,
   rejectedIds: Set<string>,
 ): LeafTag[] {
-  if (!mbtiType) return [];
-  const suggestions = MBTI_SUGGESTIONS[mbtiType] || [];
+  if (!personalityType) return [];
+  const suggestions = MBTI_SUGGESTIONS[personalityType] || [];
 
   return suggestions
     .map((id) => LEAF_TAG_BY_ID[id])

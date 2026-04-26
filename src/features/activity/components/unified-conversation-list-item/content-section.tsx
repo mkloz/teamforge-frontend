@@ -42,18 +42,22 @@ export const ContentSection = memo(
             )}
           </div>
           <time className="text-micro font-medium text-slate-muted shrink-0 tabular-nums">
-            {formatRelativeTime(item.timestamp)}
+            {item.lastMessage?.createdAt
+              ? formatRelativeTime(item.lastMessage.createdAt)
+              : ""}
           </time>
         </div>
 
         {/* Subtitle and Unread row */}
         <div className="flex items-center justify-between gap-2 mt-1">
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
-            {!isGroup && item.lastMessageIsOwn && item.lastMessageStatus && (
-              <MsgStatusIcon status={item.lastMessageStatus} />
-            )}
+            {!isGroup &&
+              item.lastMessage?.isOwn &&
+              item.lastMessage?.status && (
+                <MsgStatusIcon status={item.lastMessage.status} />
+              )}
             <div className="flex items-center gap-1 overflow-hidden min-w-0">
-              <SubtitleIcon type={item.subtitleIcon} />
+              <SubtitleIcon type={item.lastMessage?.type} />
 
               {item.isTyping ? (
                 <div className="flex items-baseline gap-1 animate-in fade-in slide-in-from-left-2 duration-300">
@@ -69,7 +73,7 @@ export const ContentSection = memo(
                     hasUnread
                       ? "text-ink font-bold"
                       : "text-slate-muted/80 group-hover/item:text-slate-muted",
-                    item.lastMessageIsSystem && "italic text-slate-muted/60",
+                    item.lastMessage?.isSystem && "italic text-slate-muted/60",
                   )}
                 >
                   {item.subtitle}

@@ -10,7 +10,7 @@ interface MessageFooterProps {
   content?: string;
   reactionGroups: ReactionGroup[];
   isOwn: boolean;
-  timestamp: string;
+  createdAt: string;
   status: UnifiedMessage["status"];
   isReadByOthers: boolean;
   isEdited?: boolean;
@@ -22,14 +22,14 @@ export const MessageFooter = memo(
     content,
     reactionGroups,
     isOwn,
-    timestamp,
+    createdAt,
     status,
     isReadByOthers,
     isEdited,
   }: MessageFooterProps) => {
     // If we show as part of media gallery (only image content), we don't render footer here
     const hasOnlyImageMedia =
-      attachments?.some((a) => a.type === "image") &&
+      attachments?.some((a) => a.type === "IMAGE") &&
       !content &&
       reactionGroups.length === 0;
     if (hasOnlyImageMedia) return null;
@@ -61,7 +61,7 @@ export const MessageFooter = memo(
               "text-nano select-none font-bold tabular-nums text-slate-muted",
             )}
           >
-            {formatChatTime(timestamp)}
+            {formatChatTime(createdAt)}
           </span>
           <MessageStatusIcon
             status={status}

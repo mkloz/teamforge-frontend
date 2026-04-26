@@ -61,7 +61,7 @@ export const DocumentMessage = memo(function DocumentMessage({
               isOwn ? "text-white/80" : "text-slate-muted",
             )}
           >
-            {formatFileSize(attachment.size)}
+            {formatFileSize(attachment.size || 0)}
           </span>
           <div
             className={cn(

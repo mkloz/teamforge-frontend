@@ -1,7 +1,5 @@
-import type {
-  OnlineStatus,
-  Participant,
-} from "@/features/activity/types/direct-chats.types";
+import type { Participant } from "@/features/activity/types/direct-chats.types";
+import type { OnlineStatus } from "@/shared/schemas/enums";
 import { OceanDiagram } from "@/features/profile/components/ocean-chart";
 import type { OceanScores } from "@/features/profile/types/profile.types";
 import { Button } from "@/shared/components/ui/button";
@@ -31,6 +29,8 @@ function getOnlineStatusColor(status: OnlineStatus): string {
       return "bg-amber-500";
     case "OFFLINE":
       return "bg-muted-foreground/40";
+    default:
+      return "bg-muted-foreground/40";
   }
 }
 
@@ -40,7 +40,9 @@ export function ProfilePanelInfo({
   isDirectChat = false,
   onBack,
 }: ProfilePanelInfoProps) {
-  const statusColor = getOnlineStatusColor(participant.onlineStatus);
+  const statusColor = getOnlineStatusColor(
+    participant.onlineStatus || "OFFLINE",
+  );
 
   // Mock OCEAN scores for the side panel
   const mockOceanScores: OceanScores = {
@@ -99,8 +101,8 @@ export function ProfilePanelInfo({
           className="relative group"
         >
           <img
-            src={participant.avatar}
-            alt={participant.name}
+            src={participant.avatar || ""}
+            alt={participant.fullName}
             className={cn(
               "rounded-full object-cover bg-card ring-4 ring-canvas shadow-sm transition-all duration-300",
               isMobile ? "w-20 h-20" : "w-24 h-24",
@@ -118,12 +120,12 @@ export function ProfilePanelInfo({
         {/* 3. Peer-led Identity */}
         <div className="space-y-0.5">
           <h3 className="text-xl md:text-2xl font-extrabold text-ink tracking-tight leading-tight">
-            {participant.name}
+            {participant.fullName}
           </h3>
           <div className="flex items-center justify-center gap-1.5">
             <p className="text-xs font-medium text-slate-muted tracking-normal">
               {participant.age || 24} ·{" "}
-              {participant.location || "San Francisco, CA"}
+              {participant.city || "San Francisco, CA"}
             </p>
           </div>
         </div>

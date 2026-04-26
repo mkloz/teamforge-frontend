@@ -89,21 +89,21 @@ export function Step3Group({
           {(
             [
               {
-                value: "public",
+                value: "PUBLIC",
                 label: "Public",
                 description:
                   "Anyone on TeamForge can discover and request to join.",
                 Icon: Globe,
               },
               {
-                value: "friends",
+                value: "FRIENDS_ONLY",
                 label: "Friends only",
                 description:
                   "Only people in your network can see and request to join.",
                 Icon: UserCheck,
               },
               {
-                value: "invite",
+                value: "INVITE_ONLY",
                 label: "Private — invite only",
                 description:
                   "Hidden from discovery. Members join by invitation only.",
@@ -172,16 +172,16 @@ export function Step3Group({
         </p>
         <div className="grid grid-cols-2 gap-3">
           <ModeButton
-            active={forgeMode === "auto"}
-            onClick={() => onForgeModeChange("auto")}
+            active={forgeMode === "AUTO"}
+            onClick={() => onForgeModeChange("AUTO")}
             icon={<Cpu size={16} />}
             title="Algorithmic"
             description="Algorithm finds the best balance for you."
             activeColor="primary"
           />
           <ModeButton
-            active={forgeMode === "manual"}
-            onClick={() => onForgeModeChange("manual")}
+            active={forgeMode === "MANUAL"}
+            onClick={() => onForgeModeChange("MANUAL")}
             icon={<Zap size={16} />}
             title="Manual"
             description="You pick the members and set a fixed size."
@@ -196,7 +196,7 @@ export function Step3Group({
           Group details
         </p>
 
-        {forgeMode === "manual" ? (
+        {forgeMode === "MANUAL" ? (
           <div className="animate-in fade-in zoom-in-95 duration-500">
             <div className="rounded-xl border border-muted/20 bg-muted/5 p-4 flex gap-3.5">
               <div className="w-9 h-9 rounded-lg bg-orange-500/10 flex items-center justify-center shrink-0 mt-0.5">

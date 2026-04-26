@@ -4,16 +4,14 @@ import { SystemMessage } from "../system-message";
 import { ProposalMessage } from "../proposal-message";
 import { UnifiedMessageItem } from "../unified-message-item";
 
+import type { User } from "@/shared/schemas";
+
 interface MessageRendererProps {
   message: UnifiedMessage;
   showAvatar: boolean;
   showSender: boolean;
   kind: "dm" | "group";
-  onAvatarClick?: (
-    senderId: string,
-    senderName: string,
-    senderAvatar: string,
-  ) => void;
+  onAvatarClick?: (sender: User) => void;
 }
 
 export const MessageRenderer = memo(

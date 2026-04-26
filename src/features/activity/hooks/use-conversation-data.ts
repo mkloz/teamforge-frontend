@@ -2,12 +2,13 @@ import { useMemo } from "react";
 import type { Group } from "../types/groups.types";
 import type { DirectChat } from "../types/direct-chats.types";
 import { getStatusText, formatTypingText } from "../lib/chat-utils";
+import { CURRENT_USER_ID } from "../data/mock-direct-chats";
 
 interface UseConversationDataProps {
   kind: "dm" | "group";
   data: Group | DirectChat;
   isTyping?: boolean;
-  typingUsers?: { name: string; avatar: string }[];
+  typingUsers?: { fullName: string; avatar: string }[];
 }
 
 /**
@@ -23,35 +24,43 @@ export function useConversationData({
   const group = isGroup ? (data as Group) : null;
   const chat = !isGroup ? (data as DirectChat) : null;
 
+  const participant = useMemo(() => {
+    if (isGroup || !chat) return null;
+    const pData = chat.participants?.find((p) => p.userId !== CURRENT_USER_ID);
+    return pData?.user;
+  }, [isGroup, chat]);
+
   const headerProps = useMemo(() => {
     if (isGroup && group) {
       return {
-        title: group.identity.name,
-        subtitle: `${group.members.length} members`,
-        avatarUrl: group.identity.avatar,
-        secondaryAvatar: group.plan.coverImage,
+        title: group.name,
+        subtitle: `${group.members?.length || 0} members`,
+        avatarUrl: group.avatar,
+        secondaryAvatar: group.plan?.coverImage,
       };
-    } else if (chat) {
+    } else if (chat && participant) {
       return {
-        title: chat.participant.name,
+        title: participant.fullName,
         subtitle: getStatusText(
-          chat.participant.onlineStatus,
-          chat.participant.lastSeen,
+          participant.onlineStatus || "OFFLINE",
+          undefined, // lastSeen not in schema yet
         ),
-        avatarUrl: chat.participant.avatar,
-        onlineStatus: chat.participant.onlineStatus,
+        avatarUrl: participant.avatar,
+        onlineStatus: participant.onlineStatus,
       };
     }
     return { title: "", avatarUrl: "" };
-  }, [isGroup, group, chat]);
+  }, [isGroup, group, chat, participant]);
 
   const activeTypingUsers = useMemo(() => {
     if (isGroup) return typingUsers;
-    if (isTyping && chat) {
-      return [{ name: chat.participant.name, avatar: chat.participant.avatar }];
+    if (isTyping && participant) {
+      return [
+        { fullName: participant.fullName, avatar: participant.avatar || "" },
+      ];
     }
     return [];
-  }, [isGroup, typingUsers, isTyping, chat]);
+  }, [isGroup, typingUsers, isTyping, participant]);
 
   const typingText = useMemo(
     () => formatTypingText(activeTypingUsers, isGroup),

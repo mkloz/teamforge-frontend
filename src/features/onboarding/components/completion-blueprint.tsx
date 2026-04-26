@@ -2,15 +2,15 @@ import { Button } from "@/shared/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, Database, Fingerprint } from "lucide-react";
 import { VoronoiCatalyst } from "../../auth/components/voronoi-catalyst";
-import type { MbtiType } from "../data/interests-types";
+import type { PersonalityType } from "@/shared/schemas/enums";
 
 interface CompletionBlueprintProps {
-  mbtiType: MbtiType | null;
+  personalityType: PersonalityType | null;
   interestCount: number;
   onEnter: () => void;
 }
 
-const MBTI_NICKNAMES: Record<MbtiType, string> = {
+const PERSONALITY_NICKNAMES: Record<PersonalityType, string> = {
   INTJ: "The Architect",
   INTP: "The Logician",
   ENTJ: "The Commander",
@@ -44,11 +44,13 @@ const stagger = {
 };
 
 export function CompletionBlueprint({
-  mbtiType,
+  personalityType,
   interestCount,
   onEnter,
 }: CompletionBlueprintProps) {
-  const nickname = mbtiType ? MBTI_NICKNAMES[mbtiType] : "The Forge Explorer";
+  const nickname = personalityType
+    ? PERSONALITY_NICKNAMES[personalityType]
+    : "The Forge Explorer";
 
   return (
     <motion.div
@@ -102,7 +104,7 @@ export function CompletionBlueprint({
                 <Fingerprint size={16} className="text-forge-teal/40" />
               </div>
               <h2 className="font-sans text-5xl font-black text-white tracking-tight">
-                {mbtiType || "????"}
+                {personalityType || "????"}
               </h2>
               <p className="font-sans text-lg font-medium text-spark-amber">
                 {nickname}

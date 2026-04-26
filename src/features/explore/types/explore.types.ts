@@ -1,30 +1,25 @@
-export type LocationMode = "Any" | "In-Person" | "Online";
-export type AccessMode = "All" | "Open" | "Request";
-export type SortOption = "match" | "soonest" | "newest";
+import type { Group } from "@/shared/schemas";
+import type { LocationMode, PlanCategory } from "@/shared/schemas/enums";
+
+export type { LocationMode } from "@/shared/schemas/enums";
+export type AccessMode = "ALL" | "OPEN" | "BY_REQUEST";
+export type SortOption = "MATCH" | "SOONEST" | "NEWEST";
 
 export interface ExploreFilters {
-  selectedCategories: string[];
+  selectedCategories: (PlanCategory | "ALL")[];
   sizeRange: [number, number];
   distance: number;
-  locationMode: LocationMode;
+  locationMode: LocationMode | "ALL";
   access: AccessMode;
   sortBy: SortOption;
 }
 
-export interface GroupPreview {
-  id: string;
+/**
+ * GroupPreview used in Explore feed.
+ * It is essentially a Group that includes a Plan and a matchScore.
+ */
+export type GroupPreview = Group & {
   matchScore: number;
-  title: string;
-  groupName: string;
-  groupAvatarUrl?: string;
-  imageUrl?: string;
-  date: string;
   distance?: string;
-  locationMode: "In-Person" | "Online";
-  cost: "Free" | "Paid";
-  category: string;
-  currentSize: number;
-  capacity: number;
-  access: "Open" | "By Request";
   isFull?: boolean;
-}
+};

@@ -16,7 +16,7 @@ interface UnifiedConversationViewProps {
   data: Group | DirectChat;
   messages: UnifiedMessage[];
   isTyping?: boolean;
-  typingUsers?: { name: string; avatar: string }[];
+  typingUsers?: { fullName: string; avatar: string }[];
   isActionOpen?: boolean;
   onBack: () => void;
   onToggleAction: () => void;
@@ -54,13 +54,15 @@ export const UnifiedConversationView = memo(function UnifiedConversationView({
     isCompleted,
   } = useConversationData({ kind, data, isTyping, typingUsers });
 
+  const chatData = isGroup ? group?.chat : (data as DirectChat);
+  const dataPinnedMessages = (chatData?.pinnedMessages ||
+    []) as UnifiedMessage[];
+
   const allPinnedMessages = [
-    ...(data.pinnedMessages || []),
+    ...dataPinnedMessages,
     ...storePinnedMessages.filter(
       (storeMsg) =>
-        !(data.pinnedMessages || []).some(
-          (dataMsg) => dataMsg.id === storeMsg.id,
-        ),
+        !dataPinnedMessages.some((dataMsg) => dataMsg.id === storeMsg.id),
     ),
   ];
 
@@ -70,8 +72,8 @@ export const UnifiedConversationView = memo(function UnifiedConversationView({
         kind={kind}
         title={headerProps.title}
         subtitle={headerProps.subtitle}
-        avatarUrl={headerProps.avatarUrl}
-        secondaryAvatar={headerProps.secondaryAvatar}
+        avatarUrl={headerProps.avatarUrl || ""}
+        secondaryAvatar={headerProps.secondaryAvatar || undefined}
         onlineStatus={headerProps.onlineStatus}
         isTyping={isMobile && activeTypingUsers.length > 0}
         typingText={typingText}
@@ -101,7 +103,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView({
       </div>
 
       {/* Input area */}
-      {isCompleted && group ? (
+      {isCompleted && group?.plan ? (
         <CompletedBanner groupName={group.plan.title} />
       ) : (
         <UnifiedMessageInput onSend={onSendMessage} />

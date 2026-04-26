@@ -6,20 +6,21 @@ import type {
   SortOption,
   ExploreFilters,
 } from "../types/explore.types";
+import type { PlanCategory } from "@/shared/schemas/enums";
 
 interface ExploreState extends ExploreFilters {
   // Actions
-  setSelectedCategories: (categories: string[]) => void;
+  setSelectedCategories: (categories: (PlanCategory | "ALL")[]) => void;
   setSizeRange: (range: [number, number]) => void;
   setDistance: (distance: number) => void;
-  setLocationMode: (mode: LocationMode) => void;
+  setLocationMode: (mode: LocationMode | "ALL") => void;
   setAccess: (access: AccessMode) => void;
   setSortBy: (sortBy: SortOption) => void;
 
   // Helpers
   resetFilters: () => void;
   isAnythingFiltered: () => boolean;
-  removeCategory: (category: string) => void;
+  removeCategory: (category: PlanCategory | "ALL") => void;
 }
 
 export const useExploreStore = create<ExploreState>((set, get) => ({
@@ -56,6 +57,6 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
   removeCategory: (category) => {
     const { selectedCategories } = get();
     const next = selectedCategories.filter((c) => c !== category);
-    set({ selectedCategories: next.length === 0 ? ["All"] : next });
+    set({ selectedCategories: next.length === 0 ? ["ALL"] : next });
   },
 }));

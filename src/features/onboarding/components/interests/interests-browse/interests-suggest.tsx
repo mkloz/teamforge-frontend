@@ -4,9 +4,10 @@ import { ArrowRight, Fingerprint, Zap } from "lucide-react";
 import { fadeUpItem, staggerContainer } from "../../../constants/motion";
 import type { LeafTag } from "../../../data/interests-types";
 import { InterestTag } from "./interest-tag";
+import type { PersonalityType } from "@/shared/schemas/enums";
 
 interface InterestsSuggestProps {
-  mbtiType: string;
+  personalityType: PersonalityType;
   suggestedTags: LeafTag[];
   selectedIds: Set<string>;
   onToggle: (id: string) => void;
@@ -14,7 +15,7 @@ interface InterestsSuggestProps {
 }
 
 export function InterestsSuggest({
-  mbtiType,
+  personalityType,
   suggestedTags,
   selectedIds,
   onToggle,
@@ -48,7 +49,7 @@ export function InterestsSuggest({
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-forge-teal/10 border border-forge-teal/20 text-forge-teal shadow-none backdrop-blur-sm">
             <Fingerprint size={10} className="opacity-70" />
             <span className="font-sans text-[10px] font-extrabold uppercase tracking-wider leading-none">
-              {mbtiType}
+              {personalityType}
             </span>
           </div>
         </div>

@@ -3,7 +3,7 @@ import { cn } from "@/shared/lib/utils";
 interface MutualGroup {
   id: string;
   name: string;
-  avatar: string;
+  avatar: string | null;
 }
 
 interface MutualGroupsSectionProps {
@@ -30,7 +30,7 @@ export function MutualGroupsSection({ groups }: MutualGroupsSectionProps) {
           >
             <div className="relative shrink-0">
               <img
-                src={group.avatar}
+                src={group.avatar || ""}
                 alt={group.name}
                 className="w-11 h-11 rounded-full object-cover bg-canvas ring-2 ring-card shadow-xs transition-transform duration-500 group-hover:scale-105"
               />

@@ -49,11 +49,11 @@ export function ForgeHeader({
           <div
             className={cn(
               "flex items-center justify-center w-8 h-8 rounded-full shrink-0",
-              forgeResult === "success" ? "bg-primary/10" : "bg-accent/10",
+              forgeResult === "SUCCESS" ? "bg-primary/10" : "bg-accent/10",
             )}
             aria-hidden="true"
           >
-            {forgeResult === "success" ? (
+            {forgeResult === "SUCCESS" ? (
               <Check size={15} className="text-primary" />
             ) : (
               <Zap size={15} className="text-accent fill-current" />

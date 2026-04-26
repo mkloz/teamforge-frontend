@@ -1,33 +1,31 @@
 import { cn } from "@/shared/lib/utils";
 import { ArrowRight } from "lucide-react";
-import type { GroupPreview } from "../../types/explore.types";
+import type { Group } from "@/shared/schemas";
 import { CardFooter } from "./card-footer";
 import { CardHeader } from "./card-header";
 import { CardImage } from "./card-image";
 import { CardMeta } from "./card-meta";
 
-type GroupPlanCardProps = Omit<GroupPreview, "id"> & {
+type GroupPlanCardProps = {
+  group: Group;
+  matchScore: number;
+  distance?: string;
+  isFull?: boolean;
   variant?: "default" | "compact";
 };
 
 export function GroupPlanCard({
+  group,
   matchScore,
-  title,
-  groupName,
-  groupAvatarUrl,
-  imageUrl = "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=600&auto=format&fit=crop",
-  date,
   distance,
-  locationMode = "In-Person",
-  cost,
-  category,
-  currentSize,
-  capacity,
-  access,
   isFull = false,
   variant = "default",
 }: GroupPlanCardProps) {
   const isCompact = variant === "compact";
+  const plan = group.plan;
+  const activity = group.activity;
+
+  const title = plan?.title || activity?.title || "Unnamed Activity";
 
   return (
     <div className="group relative list-none outline-none">
@@ -41,13 +39,7 @@ export function GroupPlanCard({
           isCompact ? "flex-col max-w-[320px]" : "flex-col md:flex-row",
         )}
       >
-        <CardImage
-          imageUrl={imageUrl}
-          title={title}
-          matchScore={matchScore}
-          category={category}
-          variant={variant}
-        />
+        <CardImage group={group} matchScore={matchScore} variant={variant} />
 
         {/* Content Body */}
         <div
@@ -56,12 +48,7 @@ export function GroupPlanCard({
             isCompact ? "p-4" : "p-5 md:p-6",
           )}
         >
-          <CardHeader
-            groupName={groupName}
-            groupAvatarUrl={groupAvatarUrl}
-            access={access}
-            variant={variant}
-          />
+          <CardHeader group={group} variant={variant} />
 
           {/* Plan Title Sequence */}
           <div className={cn("relative z-20", isCompact ? "mb-3" : "mb-5")}>
@@ -82,25 +69,11 @@ export function GroupPlanCard({
             )}
           </div>
 
-          {!isCompact && (
-            <CardMeta
-              date={date}
-              distance={distance}
-              locationMode={locationMode}
-              cost={cost}
-            />
-          )}
+          {!isCompact && <CardMeta plan={group.plan} distance={distance} />}
 
           <div className="h-px w-full bg-border/60 my-0 mt-auto relative z-10" />
 
-          <CardFooter
-            currentSize={currentSize}
-            capacity={capacity}
-            isFull={isFull}
-            access={access}
-            title={title}
-            variant={variant}
-          />
+          <CardFooter group={group} isFull={isFull} variant={variant} />
         </div>
       </div>
     </div>

@@ -14,7 +14,7 @@ export function HistoryCard({ item }: HistoryCardProps) {
       {/* Thumbnail with hover zoom */}
       <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-xs">
         <img
-          src={item.coverImage}
+          src={item.coverImage || undefined}
           alt={item.title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           loading="lazy"
@@ -50,10 +50,12 @@ export function HistoryCard({ item }: HistoryCardProps) {
           </span>
           <span className="text-[9px] font-bold text-muted-foreground uppercase flex items-center gap-1 opacity-50">
             <Calendar size={9} />
-            {new Date(item.dateTime).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-            })}
+            {item.dateTime
+              ? new Date(item.dateTime).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })
+              : "TBD"}
           </span>
         </div>
 

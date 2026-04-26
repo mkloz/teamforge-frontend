@@ -1,21 +1,7 @@
-// MBTI Types
-export type MBTIType =
-  | "INTJ"
-  | "INTP"
-  | "ENTJ"
-  | "ENTP"
-  | "INFJ"
-  | "INFP"
-  | "ENFJ"
-  | "ENFP"
-  | "ISTJ"
-  | "ISFJ"
-  | "ESTJ"
-  | "ESFJ"
-  | "ISTP"
-  | "ISFP"
-  | "ESTP"
-  | "ESFP";
+import type { User, Interest as SharedInterest } from "@/shared/schemas";
+import type { PersonalityType } from "@/shared/schemas/enums";
+
+export type MBTIType = PersonalityType;
 
 export type DimensionKey = "EI" | "SN" | "TF" | "JP";
 
@@ -44,21 +30,7 @@ export interface CognitiveFunction {
   role: "dominant" | "auxiliary" | "tertiary" | "inferior";
 }
 
-export interface Interest {
-  id: string;
-  label: string;
-  category:
-    | "outdoors"
-    | "social"
-    | "creative"
-    | "sports"
-    | "food"
-    | "music"
-    | "learning"
-    | "gaming";
-}
-
-// OCEAN Big Five Personality Traits
+// OCEAN Big Five Personality Traits (UI projection)
 export interface OceanScores {
   openness: number; // 0-100: Curiosity, creativity, openness to new experiences
   conscientiousness: number; // 0-100: Organization, dependability, self-discipline
@@ -76,28 +48,17 @@ export interface OceanTraitMeta {
   lowDescription: string; // What low score means
 }
 
-export interface UserProfile {
-  id: string;
-  avatar: string;
-  name: string;
-  age: number;
-  location: string;
-  bio: string;
-
-  // MBTI data
-  mbtiType: MBTIType;
-  dimensionScores: DimensionScore[];
-
-  // OCEAN Big Five scores
+/**
+ * UserProfile is a UI-specific projection of the core User entity.
+ * It combines the base user data with derived psychometric scores
+ * and localized interest mappings.
+ */
+export type UserProfile = User & {
+  // UI Projections
   oceanScores: OceanScores;
-
-  // Derived data
+  dimensionScores: DimensionScore[];
   archetype: string;
-  trustScore: number; // 0-100
 
-  // Interests
-  interests: Interest[];
-
-  // Metadata
-  joinedAt: string;
-}
+  // Interests (localized for UI)
+  interests: SharedInterest[];
+};

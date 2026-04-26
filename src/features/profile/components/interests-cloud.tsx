@@ -1,5 +1,4 @@
 import {
-  Map,
   Users,
   Palette,
   Trophy,
@@ -9,25 +8,28 @@ import {
   Gamepad2,
   Sparkle,
   type LucideIcon,
+  Mountain,
+  Coffee,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-import type { Interest } from "../types/profile.types";
+import type { Interest as SharedInterest } from "@/shared/schemas";
 import { SectionTitle } from "./section-title";
 
 interface InterestsCloudProps {
-  interests: Interest[];
+  interests: SharedInterest[];
 }
 
-// Map categories to icons
-const CATEGORY_ICONS: Record<string, LucideIcon> = {
-  outdoors: Map,
-  social: Users,
-  creative: Palette,
-  sports: Trophy,
-  food: Utensils,
-  music: Music,
-  learning: BookOpen,
-  gaming: Gamepad2,
+// Map icon names from schema to components
+const ICON_MAP: Record<string, LucideIcon> = {
+  Mountain: Mountain,
+  Users: Users,
+  Palette: Palette,
+  Trophy: Trophy,
+  Utensils: Utensils,
+  Music: Music,
+  BookOpen: BookOpen,
+  Gamepad2: Gamepad2,
+  Coffee: Coffee,
 };
 
 export function InterestsCloud({ interests }: InterestsCloudProps) {
@@ -45,8 +47,8 @@ export function InterestsCloud({ interests }: InterestsCloudProps) {
   );
 }
 
-function InterestTag({ interest }: { interest: Interest }) {
-  const Icon = CATEGORY_ICONS[interest.category] ?? Sparkle;
+function InterestTag({ interest }: { interest: SharedInterest }) {
+  const Icon = (interest.icon && ICON_MAP[interest.icon]) || Sparkle;
 
   return (
     <span

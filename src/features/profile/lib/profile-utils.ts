@@ -1,4 +1,9 @@
-import type { DimensionScore } from "../types/profile.types";
+import type { User } from "@/shared/schemas";
+import type {
+  DimensionScore,
+  OceanScores,
+  UserProfile,
+} from "../types/profile.types";
 
 /**
  * Determines the MBTI letter from a score (0-100)
@@ -57,4 +62,31 @@ export function createDimensionScores(
       isBorderline: isBorderline(jp),
     },
   ];
+}
+
+/**
+ * Transforms a raw User object from the schema into a rich UserProfile
+ * projection with derived psychometric scores and UI-ready fields.
+ */
+export function inflateUserProfile(user: User): UserProfile {
+  const oceanScores: OceanScores = {
+    openness: user.oceanO ?? 50,
+    conscientiousness: user.oceanC ?? 50,
+    extraversion: user.oceanE ?? 50,
+    agreeableness: user.oceanA ?? 50,
+    neuroticism: user.oceanN ?? 50,
+  };
+
+  return {
+    ...user,
+    oceanScores,
+    dimensionScores: createDimensionScores(
+      user.oceanE ?? 50,
+      user.oceanO ?? 50,
+      user.oceanA ?? 50,
+      user.oceanC ?? 50,
+    ),
+    archetype: user.personalityType ? "The Explorer" : "The Adaptive Ally", // Simplified for now
+    interests: user.interests ?? [],
+  };
 }
