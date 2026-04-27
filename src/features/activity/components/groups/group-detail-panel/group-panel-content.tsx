@@ -9,6 +9,7 @@ import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { Pencil, X } from "lucide-react";
+import { groupStatusColors, groupStatusLabels } from "./lib/constants";
 import { useMemo, useState } from "react";
 import { ActionsSection } from "./actions-section";
 import { GroupIdentitySection } from "./group-identity-section";
@@ -148,6 +149,16 @@ export function GroupPanelContent({
             {/* Gradient: stronger pull-down so avatar reads cleanly on top */}
             <div className="absolute inset-0 bg-linear-to-t from-canvas/90 via-canvas/10 to-transparent" />
 
+            {/* Group Status Badge Overlay */}
+            <span
+              className={cn(
+                "absolute top-3 left-3 inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase backdrop-blur-sm",
+                groupStatusColors[group.status],
+              )}
+            >
+              {groupStatusLabels[group.status]}
+            </span>
+
             {/* Global Edit Button - Optimized for Admin Role */}
             {currentUserRole === "ADMIN" && (
               <Button
@@ -193,6 +204,8 @@ export function GroupPanelContent({
               description={group.description}
               memberCount={memberCount}
               maxMembers={group.maxMembers}
+              createdAt={group.createdAt}
+              status={group.status}
             />
           </motion.div>
 

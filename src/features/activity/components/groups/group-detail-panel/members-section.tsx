@@ -25,18 +25,27 @@ export function MembersSection({
     [members.length, maxMembers],
   );
 
+  const slotsRemaining = maxMembers - members.length;
+
   return (
     <section aria-labelledby="members-heading">
       <div className="flex items-center justify-between mb-3">
-        <h3
-          id="members-heading"
-          className="text-sm font-bold text-foreground uppercase tracking-widest"
-        >
-          Members{" "}
-          <span className="text-muted-foreground/60 font-medium ml-1">
-            {memberCountString}
-          </span>
-        </h3>
+        <div className="flex items-center gap-2">
+          <h3
+            id="members-heading"
+            className="text-sm font-bold text-foreground uppercase tracking-widest"
+          >
+            Members{" "}
+            <span className="text-muted-foreground/60 font-medium ml-1">
+              {memberCountString}
+            </span>
+          </h3>
+          {slotsRemaining > 0 && slotsRemaining <= 3 && (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/15 text-amber-600">
+              {slotsRemaining} {slotsRemaining === 1 ? "slot" : "slots"} left
+            </span>
+          )}
+        </div>
         {canInvite && (
           <Button
             variant="outline"

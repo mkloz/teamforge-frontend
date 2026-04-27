@@ -1,7 +1,9 @@
 import type {
   PlanCategory,
   PlanStatus,
+  GroupStatus,
 } from "@/features/activity/types/groups.types";
+import type { CostType, LocationMode } from "@/shared/schemas/enums";
 
 export const categoryColors: Record<PlanCategory, string> = {
   TECH: "bg-blue-500/15 text-blue-600",
@@ -40,4 +42,44 @@ export const formatTime = (date: string | Date) => {
     hour: "numeric",
     minute: "2-digit",
   });
+};
+
+// Cost type badges
+export const costColors: Record<CostType, string> = {
+  FREE: "bg-forge-teal/15 text-forge-teal",
+  PAID: "bg-spark-amber/15 text-amber-600",
+};
+
+// Location mode badges
+export const locationModeColors: Record<LocationMode, string> = {
+  IN_PERSON: "bg-emerald-500/15 text-emerald-600",
+  ONLINE: "bg-blue-500/15 text-blue-600",
+  TBD: "bg-slate-500/15 text-slate-600",
+};
+
+// Group status badges
+export const groupStatusColors: Record<GroupStatus, string> = {
+  FORMING: "bg-blue-500/15 text-blue-600",
+  PENDING: "bg-amber-500/15 text-amber-600",
+  ACTIVE: "bg-forge-teal/15 text-forge-teal",
+  PLANNING: "bg-indigo-500/15 text-indigo-600",
+  COMPLETED: "bg-green-500/15 text-green-600",
+  DISBANDED: "bg-red-500/15 text-red-600",
+};
+
+// Location mode display labels
+export const locationModeLabels: Record<LocationMode, string> = {
+  IN_PERSON: "In Person",
+  ONLINE: "Online",
+  TBD: "TBD",
+};
+
+// Group status display labels
+export const groupStatusLabels: Record<GroupStatus, string> = {
+  FORMING: "Forming",
+  PENDING: "Pending",
+  ACTIVE: "Active",
+  PLANNING: "Planning",
+  COMPLETED: "Completed",
+  DISBANDED: "Disbanded",
 };
