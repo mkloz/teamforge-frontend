@@ -1,3 +1,4 @@
+import { FriendsInvitation } from "./components/friends-invitation";
 import { GroupsGrid } from "./components/groups-grid";
 import { HomeHero } from "./components/home-hero";
 import { Invitations } from "./components/invitations";
@@ -28,6 +29,8 @@ export function HomePage() {
           <div className="lg:sticky lg:top-8 flex flex-col gap-8">
             <Invitations />
             <GroupsGrid />
+            <div className="h-px w-full bg-border/30" aria-hidden="true" />
+            <FriendsInvitation />
           </div>
         </aside>
       </div>

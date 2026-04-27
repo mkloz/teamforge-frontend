@@ -5,6 +5,7 @@ import { PersonalitySection } from "./components/personality-section";
 import { ProfileHero } from "./components/profile-hero";
 import { PsychometricsSidebar } from "./components/psychometrics-sidebar";
 import { useProfile } from "./hooks/use-profile";
+import { UserMenu } from "@/features/user-menu/components/user-menu";
 
 export function ProfilePage() {
   const { profile, isLoading, error } = useProfile();
@@ -83,6 +84,11 @@ export function ProfilePage() {
         <div className="absolute bottom-0 left-0 right-0 h-px bg-black/10" />
       </div>
 
+      {/* User Menu — Positioned over the banner but outside overflow-hidden container */}
+      <div className="absolute top-4 right-4 md:top-6 md:right-8 z-50">
+        <UserMenu />
+      </div>
+
       <div className="flex flex-col max-w-6xl mx-auto px-4 md:px-8 pt-16 md:pt-20 lg:pt-20 pb-12 lg:pb-16 gap-12 relative z-10 w-full">
         <div>
           <ProfileHero profile={profile} />
@@ -90,7 +96,7 @@ export function ProfilePage() {
 
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
           <div className="flex flex-col gap-8 flex-2 min-w-0">
-            <PersonalitySection profile={profile} />
+            <PersonalitySection oceanScores={profile.oceanScores} />
             <InterestsCloud interests={profile.interests} />
           </div>
 

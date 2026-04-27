@@ -137,7 +137,7 @@ export const Pagination = ({
       </Button>
 
       {paginationRange.map((item, idx) => {
-        if (item === DOTS) {
+        if (typeof item !== "number") {
           return (
             <span
               key={`dots-${idx}`}
@@ -148,7 +148,7 @@ export const Pagination = ({
           );
         }
 
-        const pageNumber = item as number;
+        const pageNumber = item;
         const isActive = pageNumber === currentPage;
 
         return (

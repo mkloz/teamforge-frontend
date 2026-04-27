@@ -17,7 +17,7 @@ export const SearchHeader = memo(function SearchHeader({
 }: SearchHeaderProps) {
   return (
     <div
-      className="px-4 pt-3 pb-2 transition-opacity duration-75"
+      className="px-4 pt-2.5 pb-0.5 transition-opacity duration-75"
       style={{
         opacity,
         pointerEvents: isEnabled ? "auto" : "none",

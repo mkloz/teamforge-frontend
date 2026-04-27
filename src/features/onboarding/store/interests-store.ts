@@ -85,9 +85,14 @@ export const useInterestsStore = create<InterestsState>()(
       setScreen: (screen) => set({ screen }),
 
       setPersonalityType: (type) => {
-        // Guard against unknown types
-        if (type && !(type in MBTI_SUGGESTIONS)) return;
-        set({ personalityType: type as PersonalityType });
+        const isPersonalityType = (t: string): t is PersonalityType =>
+          t in MBTI_SUGGESTIONS;
+
+        if (type && typeof type === "string" && isPersonalityType(type)) {
+          set({ personalityType: type });
+        } else {
+          set({ personalityType: null });
+        }
       },
 
       reset: () => set(DEFAULT_STATE),

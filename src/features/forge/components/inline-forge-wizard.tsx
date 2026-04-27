@@ -2,9 +2,8 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, ChevronLeft, Zap } from "lucide-react";
-import { ForgeLoadingAnvil } from "./loading/forge-loading-anvil";
 import { useEffect, useState } from "react";
-import type { Group, Plan, Activity } from "@/shared/schemas";
+import { ForgeLoadingAnvil } from "./loading/forge-loading-anvil";
 import { useForgeWizard } from "../hooks/use-forge-wizard";
 
 import { Step1Activity } from "./steps/step1-activity";
@@ -303,11 +302,7 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
             )}
             {fw.step === 4 && fw.forgeResult === "SUCCESS" && (
               <Step4Success
-                group={
-                  {
-                    plan: { title: fw.planName } as Partial<Plan>,
-                  } as Partial<Group>
-                }
+                planTitle={fw.planName}
                 participants={fw.participants}
                 removedIds={fw.removedIds}
                 onRemoveParticipant={fw.handleRemoveParticipant}
@@ -320,14 +315,8 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
             )}
             {fw.step === 5 && (
               <Step5Identity
-                group={
-                  {
-                    plan: { title: fw.planName } as Partial<Plan>,
-                    activity: {
-                      title: fw.selectedActivity || "",
-                    } as Partial<Activity>,
-                  } as Partial<Group>
-                }
+                planTitle={fw.planName}
+                activityTitle={fw.selectedActivity || ""}
                 coverImage={fw.coverImage}
                 onCoverImageChange={fw.setCoverImage}
                 avatarImage={fw.avatarImage}
@@ -340,18 +329,10 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
             )}
             {fw.step === 6 && (
               <Step6Invite
-                group={
-                  {
-                    plan: {
-                      title: fw.planName,
-                      dateTime: fw.planDate,
-                      location: fw.planLocation,
-                    } as Partial<Plan>,
-                    activity: {
-                      title: fw.selectedActivity || "",
-                    } as Partial<Activity>,
-                  } as Partial<Group>
-                }
+                planTitle={fw.planName}
+                planDate={fw.planDate}
+                planLocation={fw.planLocation}
+                activityTitle={fw.selectedActivity || ""}
                 participantCount={fw.activeParticipants.length + 1}
                 coverImage={fw.coverImage}
                 inviteCopied={fw.inviteCopied}

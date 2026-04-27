@@ -17,9 +17,9 @@ export function RecommendedGroups() {
   if (isLoading && recommendations.length === 0) {
     return (
       <div className="w-full flex flex-col gap-5 animate-pulse">
-        <div className="h-6 w-48 bg-muted rounded" />
-        <div className="flex gap-4 overflow-hidden">
-          {[1, 2].map((i) => (
+        <div className="h-6 w-48 bg-muted rounded self-center" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 overflow-hidden">
+          {[1, 2, 3].map((i) => (
             <div
               key={i}
               className="h-64 w-full bg-muted rounded-3xl shrink-0"
@@ -74,10 +74,9 @@ export function RecommendedGroups() {
       {/* Desktop Grid */}
       <div
         role="list"
-        className="hidden md:grid gap-4 justify-items-center"
-        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}
+        className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
       >
-        {recommendations.map((recommendation) => (
+        {recommendations.slice(0, 3).map((recommendation) => (
           <div key={recommendation.id} className="w-full flex justify-center">
             <GroupPlanCard
               group={recommendation}

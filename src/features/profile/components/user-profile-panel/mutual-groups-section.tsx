@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 
-interface MutualGroup {
+export interface MutualGroup {
   id: string;
   name: string;
   avatar: string | null;

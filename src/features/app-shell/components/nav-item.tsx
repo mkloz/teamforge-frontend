@@ -53,28 +53,28 @@ export function NavItem({
             />
           )}
 
-          <Icon
-            size={20}
-            className={cn(
-              "shrink-0 transition-colors duration-150",
-              active
-                ? "text-primary"
-                : "text-muted-foreground group-hover:text-foreground",
+          <div className="relative flex items-center justify-center">
+            <Icon
+              size={20}
+              className={cn(
+                "shrink-0 transition-colors duration-150",
+                active
+                  ? "text-primary"
+                  : "text-muted-foreground group-hover:text-foreground",
+              )}
+              aria-hidden="true"
+            />
+
+            {badge != null && badge > 0 && (
+              <span
+                className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground shadow-sm border-2 border-sidebar"
+                aria-label={`${badge} unread`}
+              >
+                {badge > 9 ? "9+" : badge}
+              </span>
             )}
-            aria-hidden="true"
-          />
-
-          {/* Label: hidden on both tablet and desktop now */}
+          </div>
           <span className="sr-only">{label}</span>
-
-          {badge != null && badge > 0 && (
-            <span
-              className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground shadow-sm"
-              aria-label={`${badge} unread`}
-            >
-              {badge > 9 ? "9+" : badge}
-            </span>
-          )}
         </Link>
       </TooltipTrigger>
       <TooltipContent side="right">

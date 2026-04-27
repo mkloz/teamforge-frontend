@@ -2,7 +2,6 @@ import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
 import type { UnifiedMessage } from "@/features/activity/types/chat.types";
 import { cn } from "@/shared/lib/utils";
 import { memo } from "react";
-import { Button } from "@/shared/components/ui/button";
 import { MessageContent } from "./message-content";
 import { MessageFooter } from "./message-footer";
 import { MessageMedia } from "./message-media";
@@ -24,10 +23,8 @@ interface UnifiedMessageItemProps {
 export const UnifiedMessageItem = memo(function UnifiedMessageItem({
   message,
   showSender,
-  showAvatar,
   kind,
-  onAvatarClick,
-}: UnifiedMessageItemProps) {
+}: Omit<UnifiedMessageItemProps, "showAvatar" | "onAvatarClick">) {
   const {
     isOwn,
     createdAt: timestamp,
@@ -35,11 +32,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
     content,
     attachments,
     replyTo,
-    sender,
   } = message;
-  const senderFullName = sender?.fullName || "Unknown";
-  const senderAvatar = sender?.avatar || "";
-  const isGroup = kind === "group";
 
   // Layout logic
   const { reactionGroups, galleryRounding, isReadByOthers } = useMessageLayout({
@@ -51,41 +44,19 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
     <div className="relative group overflow-hidden">
       <div
         className={cn(
-          "flex items-end gap-2 px-1 relative z-10",
+          "flex items-end relative z-10 w-full",
           isOwn ? "justify-end" : "justify-start",
-          showSender ? "mt-3" : "mt-0.5",
         )}
       >
-        {/* Avatar */}
-        {!isOwn && (
-          <div className="w-6 md:w-7 shrink-0">
-            {showAvatar && (
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => sender && onAvatarClick?.(sender)}
-                className="rounded-full shrink-0 h-auto w-auto p-0"
-                aria-label={`View ${senderFullName}'s profile`}
-              >
-                <img
-                  src={senderAvatar}
-                  alt={senderFullName}
-                  className="w-6 h-6 md:w-7 md:h-7 rounded-full object-cover shrink-0 ring-1 ring-border group-hover:scale-105 transition-transform duration-200"
-                />
-              </Button>
-            )}
-          </div>
-        )}
-
         <div
           className={cn(
-            "max-w-[85%] sm:max-w-[75%] md:max-w-[65%] flex flex-col",
+            "max-w-full sm:max-w-[90%] md:max-w-[85%] flex flex-col",
             isOwn ? "items-end ml-auto" : "items-start mr-auto",
           )}
         >
-          {!isOwn && isGroup && showSender && (
+          {!isOwn && kind === "group" && showSender && (
             <p className="text-micro font-bold text-forge-teal mb-0.5 ml-1.5 tracking-tight opacity-90">
-              {senderFullName}
+              {message.sender?.fullName || "Unknown"}
             </p>
           )}
 

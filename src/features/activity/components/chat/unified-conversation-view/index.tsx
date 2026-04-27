@@ -11,9 +11,11 @@ import { UnifiedChatHeader } from "../unified-chat-header";
 import { UnifiedMessageInput } from "../unified-message-input";
 import { UnifiedMessageList } from "../unified-message-list/index";
 
-interface UnifiedConversationViewProps {
-  kind: "dm" | "group";
-  data: Group | DirectChat;
+type UnifiedConversationViewProps =
+  | (BaseConversationProps & { kind: "dm"; data: DirectChat })
+  | (BaseConversationProps & { kind: "group"; data: Group });
+
+interface BaseConversationProps {
   messages: UnifiedMessage[];
   isTyping?: boolean;
   typingUsers?: { fullName: string; avatar: string }[];
@@ -27,17 +29,20 @@ interface UnifiedConversationViewProps {
  * UnifiedConversationView - The flagship container for all conversations.
  * Consolidates Groups and Direct Chats into a single, high-performance UI.
  */
-export const UnifiedConversationView = memo(function UnifiedConversationView({
-  kind,
-  data,
-  messages,
-  isTyping = false,
-  typingUsers = [],
-  isActionOpen = false,
-  onBack,
-  onToggleAction,
-  onSendMessage,
-}: UnifiedConversationViewProps) {
+export const UnifiedConversationView = memo(function UnifiedConversationView(
+  props: UnifiedConversationViewProps,
+) {
+  const {
+    messages,
+    isTyping = false,
+    typingUsers = [],
+    isActionOpen = false,
+    onBack,
+    onToggleAction,
+    onSendMessage,
+  } = props;
+  const { kind, data } = props;
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -45,18 +50,24 @@ export const UnifiedConversationView = memo(function UnifiedConversationView({
   const unpinMessage = useActivityStore((state) => state.unpinMessage);
   const isMobile = useIsMobile();
 
-  const {
-    isGroup,
-    group,
-    headerProps,
-    activeTypingUsers,
-    typingText,
-    isCompleted,
-  } = useConversationData({ kind, data, isTyping, typingUsers });
+  const conversationData = useConversationData(
+    kind === "group"
+      ? { kind, data, isTyping, typingUsers }
+      : { kind, data, isTyping, typingUsers },
+  );
 
-  const chatData = isGroup ? group?.chat : (data as DirectChat);
-  const dataPinnedMessages = (chatData?.pinnedMessages ||
-    []) as UnifiedMessage[];
+  const { headerProps, activeTypingUsers, typingText, isCompleted } =
+    conversationData;
+
+  const pinnedMessagesFromData =
+    kind === "group" ? data.chat?.pinnedMessages : data.pinnedMessages;
+
+  const dataPinnedMessages: UnifiedMessage[] = (
+    pinnedMessagesFromData || []
+  ).map((msg) => ({
+    ...msg,
+    isOwn: false, // Default for pinned messages from others or system
+  }));
 
   const allPinnedMessages = [
     ...dataPinnedMessages,
@@ -83,7 +94,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView({
       />
 
       <ChatStatusBar
-        plan={isGroup && group ? group.plan : undefined}
+        plan={kind === "group" ? data.plan : undefined}
         pinnedMessages={allPinnedMessages}
         onViewDetails={onToggleAction}
         onUnpinPinnedMessage={unpinMessage}
@@ -103,8 +114,8 @@ export const UnifiedConversationView = memo(function UnifiedConversationView({
       </div>
 
       {/* Input area */}
-      {isCompleted && group?.plan ? (
-        <CompletedBanner groupName={group.plan.title} />
+      {isCompleted && kind === "group" && data.plan ? (
+        <CompletedBanner groupName={data.plan.title} />
       ) : (
         <UnifiedMessageInput onSend={onSendMessage} />
       )}

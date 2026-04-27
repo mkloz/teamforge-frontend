@@ -108,7 +108,7 @@ export const HeaderInfo = memo(
                 className="h-2.5 opacity-80"
               />
             </motion.div>
-          ) : (
+          ) : !isGroup && subtitle ? (
             <motion.p
               key="subtitle"
               initial={{ opacity: 0, y: 3 }}
@@ -119,7 +119,7 @@ export const HeaderInfo = memo(
             >
               {subtitle}
             </motion.p>
-          )}
+          ) : null}
         </AnimatePresence>
       </div>
     </button>

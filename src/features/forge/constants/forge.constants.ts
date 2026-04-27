@@ -1,10 +1,14 @@
 import type { FixedGroupSize } from "../types/forge.types";
 import type { GroupMember } from "@/shared/schemas/group";
 
-export const ALGORITHM_GROUP_SIZES = [
-  { value: 4 as FixedGroupSize, label: "4", note: "Tight-knit" },
-  { value: 6 as FixedGroupSize, label: "6", note: "Balanced" },
-  { value: 8 as FixedGroupSize, label: "8", note: "Expansive" },
+export const ALGORITHM_GROUP_SIZES: {
+  value: FixedGroupSize;
+  label: string;
+  note: string;
+}[] = [
+  { value: 4, label: "4", note: "Tight-knit" },
+  { value: 6, label: "6", note: "Balanced" },
+  { value: 8, label: "8", note: "Expansive" },
 ];
 
 /**

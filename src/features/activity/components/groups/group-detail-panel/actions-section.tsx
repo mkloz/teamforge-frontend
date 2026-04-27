@@ -14,7 +14,9 @@ export function ActionsSection({ groupStatus }: ActionsSectionProps) {
 
   return (
     <section className="space-y-2">
-      <h3 className="text-sm font-semibold text-foreground mb-3">Actions</h3>
+      <h3 className="text-sm font-bold text-foreground uppercase tracking-widest mb-3">
+        Actions
+      </h3>
 
       {/* Primary actions */}
       {!isCompleted && (
@@ -38,7 +40,7 @@ export function ActionsSection({ groupStatus }: ActionsSectionProps) {
       )}
 
       {/* Separator */}
-      <div className="border-t border-border my-3" />
+      <div className="border-t border-border my-2.5" />
 
       {/* Destructive actions */}
       {!isCompleted && (

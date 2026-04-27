@@ -1,7 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 import { Bell } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
-import { useNotifications } from "../hooks/use-notifications";
 
 interface NotificationsBellTriggerProps {
   onClick: () => void;
@@ -10,7 +9,8 @@ interface NotificationsBellTriggerProps {
 export function NotificationsBellTrigger({
   onClick,
 }: NotificationsBellTriggerProps) {
-  const { count } = useNotifications();
+  // Use hardcoded count for consistency across nav items as requested
+  const count = 3;
 
   return (
     <Button
@@ -28,7 +28,7 @@ export function NotificationsBellTrigger({
       <Bell size={18} aria-hidden="true" />
       {count > 0 && (
         <span
-          className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-spark-amber px-1 text-none font-black text-ink shadow-[0_0_8px_rgba(245,158,11,0.4)]"
+          className="absolute top-0 right-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground shadow-sm border-2 border-sidebar"
           aria-hidden="true"
         >
           {count > 9 ? "9+" : count}

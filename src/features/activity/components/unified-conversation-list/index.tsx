@@ -1,5 +1,5 @@
 import { memo, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { useSearchHeaderFade } from "../../hooks/use-search-header-fade";
 import type {
   FilterChip,
@@ -86,18 +86,7 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
           onDensityChange={onDensityChange}
         />
 
-        <motion.div
-          className="flex flex-col pb-8 sm:pb-0"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            visible: {
-              transition: {
-                staggerChildren: 0.05,
-              },
-            },
-          }}
-        >
+        <div className="flex flex-col pb-8 sm:pb-0">
           {items.length === 0 ? (
             <EmptyState
               label={emptyLabel}
@@ -116,7 +105,7 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
               ))}
             </AnimatePresence>
           )}
-        </motion.div>
+        </div>
       </div>
     </div>
   );

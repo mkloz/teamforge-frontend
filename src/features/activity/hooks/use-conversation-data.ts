@@ -4,12 +4,14 @@ import type { DirectChat } from "../types/direct-chats.types";
 import { getStatusText, formatTypingText } from "../lib/chat-utils";
 import { CURRENT_USER_ID } from "../data/mock-direct-chats";
 
-interface UseConversationDataProps {
-  kind: "dm" | "group";
-  data: Group | DirectChat;
+interface BaseProps {
   isTyping?: boolean;
   typingUsers?: { fullName: string; avatar: string }[];
 }
+
+export type UseConversationDataProps =
+  | (BaseProps & { kind: "dm"; data: DirectChat })
+  | (BaseProps & { kind: "group"; data: Group });
 
 /**
  * useConversationData - Derives header props and active typing state based on conversation type.
@@ -21,8 +23,8 @@ export function useConversationData({
   typingUsers = [],
 }: UseConversationDataProps) {
   const isGroup = kind === "group";
-  const group = isGroup ? (data as Group) : null;
-  const chat = !isGroup ? (data as DirectChat) : null;
+  const group = isGroup ? data : null;
+  const chat = !isGroup ? data : null;
 
   const participant = useMemo(() => {
     if (isGroup || !chat) return null;

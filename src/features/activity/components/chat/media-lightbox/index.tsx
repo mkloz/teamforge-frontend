@@ -1,9 +1,5 @@
 import { Button } from "@/shared/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-} from "@/shared/components/ui/dialog";
+import { Dialog, DialogContent } from "@/shared/components/ui/dialog";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronLeft,
@@ -11,7 +7,6 @@ import {
   Download,
   ImageOff,
   Loader2,
-  X,
 } from "lucide-react";
 import { memo } from "react";
 import type { UnifiedAttachment } from "@/features/activity/types/chat.types";
@@ -19,6 +14,12 @@ import { useImageState } from "@/shared/hooks/use-image-state";
 import { NavButton } from "./nav-button";
 import { ThumbnailStrip } from "./thumbnail-strip";
 import { cn } from "@/shared/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 
 interface MediaLightboxProps {
   isOpen: boolean;
@@ -107,17 +108,16 @@ export const MediaLightbox = memo(function MediaLightbox({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[100vw] w-full h-dvh p-0 border-none bg-black/98 backdrop-blur-3xl overflow-hidden shadow-none flex flex-col pointer-events-auto">
+      <DialogContent className="max-w-[100vw] w-full h-dvh p-0 border-none bg-black/98 backdrop-blur-3xl overflow-hidden shadow-none flex flex-col pointer-events-auto [&>button]:right-6 [&>button]:top-6 [&>button]:h-10 [&>button]:w-10 [&>button]:rounded-full [&>button]:bg-white/10 [&>button]:text-white [&>button]:opacity-100 [&>button]:hover:bg-white/20 [&>button]:transition-all [&>button]:flex [&>button]:items-center [&>button]:justify-center [&>button_svg]:h-5 [&>button_svg]:w-5">
         <AnimatePresence mode="popLayout">
           <motion.div
             key="lightbox-container"
             className="relative w-full h-full flex flex-col"
           >
-            {/* Controls Strip */}
             <motion.div
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              className="absolute top-0 inset-x-0 h-20 px-8 flex items-center justify-between z-50 bg-linear-to-b from-black/60 to-transparent pointer-events-none"
+              className="absolute top-0 inset-x-0 h-20 pl-8 pr-28 flex items-center justify-between z-50 bg-linear-to-b from-black/60 to-transparent pointer-events-none"
             >
               <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-2">
@@ -130,26 +130,28 @@ export const MediaLightbox = memo(function MediaLightbox({
                 </div>
               </div>
               <div className="flex items-center gap-4 pointer-events-auto">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white/60 hover:text-white hover:bg-white/10 rounded-full transition active:scale-90"
-                >
-                  <Download size={20} />
-                </Button>
-                <DialogClose asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-white/60 hover:text-white hover:bg-white/10 rounded-full transition active:scale-90"
-                  >
-                    <X size={22} />
-                  </Button>
-                </DialogClose>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-white/60 hover:text-white hover:bg-white/10 rounded-full transition active:scale-90 pointer-events-auto"
+                      >
+                        <Download size={20} />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="bottom"
+                      className="bg-white/10 backdrop-blur-md border-white/10 text-white font-bold text-xs"
+                    >
+                      Download Image
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </motion.div>
 
-            {/* Main View Area */}
             <div className="flex-1 relative flex items-center justify-center p-2 sm:p-10 pointer-events-auto overflow-hidden">
               <AnimatePresence mode="wait" initial={false}>
                 {currentMedia && (

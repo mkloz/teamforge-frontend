@@ -1,4 +1,4 @@
-import { Calendar, MapPin, Clock } from "lucide-react";
+import { Calendar, MapPin } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import type { Plan } from "@/features/activity/types/groups.types";
 import { useMemo } from "react";
@@ -25,7 +25,12 @@ export function PlanSection({ plan }: PlanSectionProps) {
   );
 
   return (
-    <div className="space-y-4" aria-labelledby="current-plan-title">
+    <div className="space-y-0" aria-labelledby="current-plan-title">
+      {/* Eyebrow label */}
+      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-2">
+        Current Plan
+      </p>
+
       {/* Title and badges */}
       <div className="flex items-start justify-between gap-3">
         <h2
@@ -57,14 +62,14 @@ export function PlanSection({ plan }: PlanSectionProps) {
       </div>
 
       {/* Description */}
-      <p className="text-[13px] text-foreground/60 mt-3 leading-relaxed line-clamp-2">
+      <p className="text-[13px] text-foreground/60 mt-2 leading-relaxed line-clamp-2">
         {plan.description}
       </p>
 
       {/* Details - Compact List */}
-      <div className="mt-4 space-y-2.5">
-        {/* Date Row */}
-        <div className="flex items-center gap-3 text-sm group/item">
+      <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+        {/* Date/Time Row */}
+        <div className="col-span-2 flex items-center gap-3 group/item">
           <div
             className="flex items-center justify-center w-8 h-8 rounded-lg bg-forge-teal/10 transition-colors duration-300"
             aria-hidden="true"
@@ -75,25 +80,16 @@ export function PlanSection({ plan }: PlanSectionProps) {
             />
           </div>
           <div>
-            <p className="font-bold text-foreground text-sm">{formattedDate}</p>
-          </div>
-        </div>
-
-        {/* Time Row */}
-        <div className="flex items-center gap-3 text-sm group/item">
-          <div
-            className="flex items-center justify-center w-8 h-8 rounded-lg bg-forge-teal/10 transition-colors duration-300"
-            aria-hidden="true"
-          >
-            <Clock size={15} className="text-forge-teal opacity-90 shadow-xs" />
-          </div>
-          <div>
-            <p className="font-bold text-foreground text-sm">{formattedTime}</p>
+            <p className="font-bold text-foreground text-sm">
+              {formattedDate}{" "}
+              <span className="text-slate-muted/50 mx-1">·</span>{" "}
+              {formattedTime}
+            </p>
           </div>
         </div>
 
         {/* Location Row */}
-        <div className="flex items-center gap-3 text-sm group/item">
+        <div className="col-span-2 flex items-center gap-3 text-sm group/item">
           <div
             className="flex items-center justify-center w-8 h-8 rounded-lg bg-forge-teal/10 transition-colors duration-300"
             aria-hidden="true"

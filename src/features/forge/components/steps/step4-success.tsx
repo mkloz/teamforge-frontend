@@ -1,11 +1,10 @@
 import { cn } from "@/shared/lib/utils";
 import { Check, RefreshCw, UserMinus, UserPlus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
-import type { Group } from "@/shared/schemas/group";
 import type { ForgeParticipant } from "../../constants/forge.constants";
 
 export interface Step4SuccessProps {
-  group: Partial<Group>;
+  planTitle: string;
   participants: ForgeParticipant[];
   removedIds: Set<string>;
   onRemoveParticipant: (id: string) => void;
@@ -14,14 +13,13 @@ export interface Step4SuccessProps {
 }
 
 export function Step4Success({
-  group,
+  planTitle,
   participants,
   removedIds,
   onRemoveParticipant,
   onRestoreParticipant,
   onReforge,
 }: Step4SuccessProps) {
-  const planName = group.plan?.title || "Upcoming Activity";
   const activeCount =
     participants.filter((p) => !removedIds.has(p.userId)).length + 1;
 
@@ -37,7 +35,7 @@ export function Step4Success({
         <div className="min-w-0">
           <p className="text-xs font-semibold text-forge-teal">Group forged</p>
           <h3 className="text-base font-bold text-foreground leading-tight mt-0.5 truncate">
-            Ready for &ldquo;{planName}&rdquo;
+            Ready for &ldquo;{planTitle}&rdquo;
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
             Review your group below before continuing.

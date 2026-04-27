@@ -45,7 +45,12 @@ export function useRegisterForm({
     if (values.email && values.email.length > 4) filled++;
     if (values.password && values.password.length > 5) filled++;
     if (values.otp && values.otp.length === 6) filled++;
-    if (values.age && values.age !== ("" as unknown as number)) filled++;
+    if (
+      values.age !== undefined &&
+      values.age !== null &&
+      String(values.age) !== ""
+    )
+      filled++;
     if (values.city && values.city.length > 2) filled++;
     if (values.gender && values.gender.length > 1) filled++;
 

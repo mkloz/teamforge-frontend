@@ -13,7 +13,9 @@ export const BoxBordersSwitch: React.FC = () => {
     const addRedBorders = () => {
       const allElements = document.querySelectorAll("*");
       allElements.forEach((element) => {
-        (element as HTMLElement).style.outline = "1px solid red";
+        if (element instanceof HTMLElement) {
+          element.style.outline = "1px solid red";
+        }
       });
     };
     if (show) addRedBorders();
@@ -21,7 +23,9 @@ export const BoxBordersSwitch: React.FC = () => {
     return () => {
       const allElements = document.querySelectorAll("*");
       allElements.forEach((element) => {
-        (element as HTMLElement).style.outline = "";
+        if (element instanceof HTMLElement) {
+          element.style.outline = "";
+        }
       });
     };
   }, [show]);

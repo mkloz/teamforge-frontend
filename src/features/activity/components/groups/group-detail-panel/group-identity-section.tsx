@@ -23,12 +23,12 @@ export function GroupIdentitySection({
       {/* Group identity - focusing on name and metadata */}
       <div className="flex items-start gap-4">
         {!hideAvatar && (
-          <div className="px-4 relative z-10">
+          <div className="relative z-10">
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-20 h-20 rounded-xl overflow-hidden bg-muted ring-4 ring-canvas shadow-xl flex items-center justify-center group pointer-events-auto"
+              className="w-20 h-20 rounded-xl overflow-hidden bg-muted ring-2 ring-border/30 shadow-lg flex items-center justify-center group pointer-events-auto"
             >
               <img
                 src={avatar || undefined}
@@ -74,15 +74,6 @@ export function GroupIdentitySection({
           {description}
         </p>
       )}
-
-      {/* Visual separator between identity and plan - Premium Style */}
-      <div className="flex items-center gap-3 mt-6 mb-2">
-        <div className="h-px flex-1 bg-linear-to-r from-border/10 via-border to-border/10" />
-        <div className="px-3 py-1 rounded-full bg-muted/50 border border-border/50 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
-          Current Plan
-        </div>
-        <div className="h-px flex-1 bg-linear-to-r from-border/10 via-border to-border/10" />
-      </div>
     </section>
   );
 }

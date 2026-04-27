@@ -11,8 +11,8 @@ import {
   Compass,
   Home,
   MessageSquare,
-  Search,
   Settings,
+  Flame,
   User,
 } from "lucide-react";
 import type { ReactNode } from "react";
@@ -28,6 +28,7 @@ const NAV_ITEMS = [
     icon: MessageSquare,
     label: "Activity",
     matchPrefix: true,
+    badge: 5,
   },
   { to: "/profile", icon: User, label: "Profile" },
 ] as const;
@@ -35,13 +36,11 @@ const NAV_ITEMS = [
 interface AppSidebarProps {
   className?: string;
   notificationsTrigger?: ReactNode;
-  onSearchClick?: () => void;
 }
 
 export function AppSidebar({
   className,
   notificationsTrigger,
-  onSearchClick,
 }: AppSidebarProps) {
   const { isActive } = useActiveRoute();
   const isForgeActive = isActive("/forge");
@@ -69,9 +68,9 @@ export function AppSidebar({
       {/* Top section: Logo */}
       <div className="flex h-16 items-center justify-center shrink-0">
         <Link
-          to="/home"
+          to="/"
           className="hover:opacity-80 transition-opacity"
-          aria-label="TeamForge home"
+          aria-label="TeamForge landing page"
         >
           <TeamForgeLogo className="size-8" showBackground={false} />
         </Link>
@@ -90,25 +89,10 @@ export function AppSidebar({
             to={item.to}
             icon={item.icon}
             label={item.label}
+            badge={"badge" in item ? (item.badge as number) : undefined}
             matchPrefix={"matchPrefix" in item ? item.matchPrefix : false}
           />
         ))}
-
-        {/* Desktop Search Trigger */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onSearchClick}
-              aria-label="Search"
-              className="size-10 rounded-xl text-foreground/70 hover:text-foreground hover:bg-accent/10"
-            >
-              <Search size={20} />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right">Search (⌘K)</TooltipContent>
-        </Tooltip>
       </nav>
 
       {/* Divider */}
@@ -126,12 +110,12 @@ export function AppSidebar({
             <Button
               asChild
               size="icon"
-              variant={isForgeActive ? "secondary" : "ghost"}
+              variant="ghost"
               className={cn(
-                "relative flex items-center justify-center rounded-xl transition-all duration-300 size-10",
+                "group relative flex items-center justify-center rounded-xl transition-all duration-150 size-10",
                 isForgeActive
-                  ? "shadow-amber-glow brightness-110"
-                  : "bg-muted/50 text-foreground hover:bg-accent/10 hover:text-accent border border-accent/10 hover:border-accent/30",
+                  ? "bg-accent/10 text-accent"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
               <Link
@@ -139,12 +123,19 @@ export function AppSidebar({
                 onClick={handleForgeClick}
                 aria-label="Forge my group"
               >
-                <TeamForgeLogo
+                {/* Active indicator */}
+                {isForgeActive && (
+                  <span
+                    className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-accent"
+                    aria-hidden="true"
+                  />
+                )}
+
+                <Flame
                   className={cn(
                     "size-5 transition-transform duration-300",
                     isForgeActive && "scale-110",
                   )}
-                  showBackground={false}
                 />
                 <span className="sr-only">Forge My Group</span>
               </Link>

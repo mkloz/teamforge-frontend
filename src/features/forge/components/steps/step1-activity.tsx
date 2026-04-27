@@ -39,6 +39,12 @@ export interface Step1ActivityProps {
   onShakeGrid?: () => void;
 }
 
+declare global {
+  interface Window {
+    __forgeShakeGrid?: () => void;
+  }
+}
+
 export function Step1Activity({
   selectedActivity,
   onSelect,
@@ -53,17 +59,11 @@ export function Step1Activity({
 
   // Expose triggerShake via a global property so ForgeFooter can call it imperatively
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      (window as UnknownWindow).__forgeShakeGrid = triggerShake;
-    }
+    window.__forgeShakeGrid = triggerShake;
     return () => {
-      if (typeof window !== "undefined") {
-        delete (window as UnknownWindow).__forgeShakeGrid;
-      }
+      delete window.__forgeShakeGrid;
     };
   }, [triggerShake]);
-
-  type UnknownWindow = Window & { __forgeShakeGrid?: () => void };
 
   return (
     <div className="space-y-5 animate-in fade-in duration-300">

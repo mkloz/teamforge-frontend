@@ -31,11 +31,10 @@ export const UnifiedConversationListItem = memo(
         onClick={onSelect}
         role="option"
         aria-selected={isSelected}
-        variants={{
-          hidden: { opacity: 0, y: 10 },
-          visible: { opacity: 1, y: 0 },
-        }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
         className={cn(
           "relative group flex items-center select-none transition duration-200 outline-none w-full text-left",
           isCompact ? "gap-2.5 px-3 py-2" : "gap-3.5 px-4 py-3.5",

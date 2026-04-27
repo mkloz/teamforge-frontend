@@ -1,9 +1,9 @@
-import { cn } from "@/shared/lib/utils";
-import { memo } from "react";
-import { FilterChipItem } from "./filter-chip-item";
-import type { FilterChip } from "../../types/unified-conversation.types";
-import { LayoutList, Rows } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
+import { LayoutList, Rows } from "lucide-react";
+import { memo } from "react";
+import type { FilterChip } from "../../types/unified-conversation.types";
+import { FilterChipItem } from "./filter-chip-item";
 
 interface FilterHeaderProps {
   filters: { key: FilterChip; label: string }[];
@@ -54,14 +54,14 @@ export const FilterHeader = memo(function FilterHeader({
   return (
     <nav
       className={cn(
-        "sticky top-0 z-20 px-4 py-2 border-b border-border/60",
+        "sticky top-0 z-20 px-4 py-1 border-b border-border/60",
         "bg-canvas/80 backdrop-blur-md flex items-center justify-between",
       )}
     >
       <div
         role="radiogroup"
         aria-label="Filter conversations"
-        className="flex gap-1.5 overflow-x-auto scrollbar-hide px-0.5 outline-none flex-1"
+        className="flex gap-1.5 overflow-x-auto scrollbar-hide px-0.5 py-1.5 outline-none flex-1"
         onKeyDown={handleKeyDown}
         tabIndex={0}
       >

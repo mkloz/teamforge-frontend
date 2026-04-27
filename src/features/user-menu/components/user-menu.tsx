@@ -15,7 +15,12 @@ export function UserMenu() {
   useEffect(() => {
     if (!open) return;
     const handleClick = (e: MouseEvent) => {
-      if (!containerRef.current?.contains(e.target as Node)) close();
+      if (
+        e.target instanceof Node &&
+        !containerRef.current?.contains(e.target)
+      ) {
+        close();
+      }
     };
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);

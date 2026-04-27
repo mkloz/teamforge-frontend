@@ -67,7 +67,7 @@ export function PlanCard({ plan, index }: PlanCardProps) {
   const members = plan.group?.members || [];
   const memberAvatars = members
     .map((m) => m.user?.avatar)
-    .filter(Boolean) as string[];
+    .filter((avatar): avatar is string => Boolean(avatar));
 
   return (
     <motion.div

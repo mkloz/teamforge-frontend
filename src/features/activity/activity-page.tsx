@@ -16,6 +16,8 @@ import {
 import { UnifiedConversationView } from "@/features/activity/components/chat/unified-conversation-view";
 import { UnifiedConversationList } from "@/features/activity/components/unified-conversation-list";
 
+import { useMediaQuery } from "@/shared/hooks/use-media-query";
+
 /**
  * ActivityPage - The main feature orchestrator for Unified Conversations,
  * Groups and Direct Chats.
@@ -56,6 +58,8 @@ export function ActivityPage() {
     sidebarDensity,
     setSidebarDensity,
   } = useActivity();
+
+  const isMobile = useMediaQuery("(max-width: 1024px)");
 
   return (
     <div
@@ -149,11 +153,13 @@ export function ActivityPage() {
                 isOpen={direct.isProfilePanelOpen}
                 onClose={closeProfilePanel}
               />
-              <ProfilePanelMobile
-                chat={selectedChat}
-                isOpen={direct.isProfilePanelOpen}
-                onClose={closeProfilePanel}
-              />
+              {isMobile && (
+                <ProfilePanelMobile
+                  chat={selectedChat}
+                  isOpen={direct.isProfilePanelOpen}
+                  onClose={closeProfilePanel}
+                />
+              )}
             </motion.div>
           ) : (
             <motion.div

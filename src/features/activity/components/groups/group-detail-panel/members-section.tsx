@@ -27,7 +27,7 @@ export function MembersSection({
 
   return (
     <section aria-labelledby="members-heading">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <h3
           id="members-heading"
           className="text-sm font-bold text-foreground uppercase tracking-widest"

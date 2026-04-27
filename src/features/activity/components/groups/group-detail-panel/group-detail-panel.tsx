@@ -2,6 +2,13 @@ import { cn } from "@/shared/lib/utils";
 import { useCallback, useEffect } from "react";
 import type { Group } from "@/features/activity/types/groups.types";
 import { GroupPanelContent } from "./group-panel-content";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/shared/components/ui/drawer";
+import { useMediaQuery } from "@/shared/hooks/use-media-query";
 
 interface GroupDetailPanelProps {
   group: Group;
@@ -9,15 +16,13 @@ interface GroupDetailPanelProps {
   onClose: () => void;
 }
 
-/**
- * GroupDetailPanel - Side panel showing group information, members, and plans.
- * Optimized for both desktop sidebar and mobile sheet.
- */
 export function GroupDetailPanel({
   group,
   isOpen,
   onClose,
 }: GroupDetailPanelProps) {
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+
   // Close on Escape key
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -33,16 +38,6 @@ export function GroupDetailPanel({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  // Prevent body scroll when mobile sheet is open
-  useEffect(() => {
-    if (isOpen && window.innerWidth < 1024) {
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = "";
-      };
-    }
-  }, [isOpen]);
-
   return (
     <>
       {/* Desktop sidebar */}
@@ -56,40 +51,18 @@ export function GroupDetailPanel({
         <GroupPanelContent group={group} onClose={onClose} />
       </aside>
 
-      {/* Mobile/Tablet overlay sheet */}
-      <div
-        className={cn(
-          "lg:hidden fixed inset-0 z-50",
-          "transition-opacity duration-300",
-          isOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none",
-        )}
+      {/* Mobile/Tablet overlay sheet using shadcn Drawer */}
+      <Drawer
+        open={isOpen && !isDesktop}
+        onOpenChange={(open) => !open && onClose()}
       >
-        {/* Backdrop */}
-        <div
-          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-          onClick={onClose}
-          aria-hidden="true"
-        />
-
-        {/* Sheet */}
-        <div
-          className={cn(
-            "absolute bottom-0 left-0 right-0 bg-canvas rounded-t-3xl",
-            "transition-transform duration-300 ease-out",
-            "max-h-[85vh] flex flex-col overflow-hidden shadow-2xl",
-            isOpen ? "translate-y-0" : "translate-y-full",
-          )}
-        >
-          {/* Drag handle */}
-          <div className="flex shrink-0 justify-center py-3">
-            <div className="w-10 h-1.5 rounded-full bg-muted-foreground/30" />
-          </div>
-
+        <DrawerContent className="lg:hidden bg-canvas border-t rounded-t-3xl max-h-[85vh] flex flex-col overflow-hidden">
+          <DrawerHeader className="sr-only">
+            <DrawerTitle>{group.name} Details</DrawerTitle>
+          </DrawerHeader>
           <GroupPanelContent group={group} onClose={onClose} isMobile />
-        </div>
-      </div>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }

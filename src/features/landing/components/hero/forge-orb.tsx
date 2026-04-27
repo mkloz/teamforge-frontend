@@ -169,49 +169,53 @@ export function ForgeOrb() {
         />
 
         {/* The 4 MBTI Data Vectors (Comet Tails) */}
-        {[0, 1, 2, 3].map((i) => (
-          <div
-            key={`tail-${i}`}
-            className="absolute inset-[8%]"
-            ref={(el) => {
-              tailRefs.current[i] = el;
-            }}
-            aria-hidden="true"
-            style={
-              {
-                "--tail-color-end": "rgba(13,148,136,0.85)",
-                "--tail-color-start": "rgba(13,148,136,0.15)",
-              } as React.CSSProperties
-            }
-          >
-            <div className="absolute inset-0">
-              <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,transparent_0%,transparent_70%,var(--tail-color-start)_85%,var(--tail-color-end)_100%)] [-webkit-mask-image:radial-gradient(closest-side,transparent_calc(100%-2px),black_calc(100%-1px))] mask-[radial-gradient(closest-side,transparent_calc(100%-2px),black_calc(100%-1px))]" />
+        {[0, 1, 2, 3].map((i) => {
+          const tailStyle: React.CSSProperties & Record<string, string> = {
+            "--tail-color-end": "rgba(13,148,136,0.85)",
+            "--tail-color-start": "rgba(13,148,136,0.15)",
+          };
+
+          return (
+            <div
+              key={`tail-${i}`}
+              className="absolute inset-[8%]"
+              ref={(el) => {
+                tailRefs.current[i] = el;
+              }}
+              aria-hidden="true"
+              style={tailStyle}
+            >
+              <div className="absolute inset-0">
+                <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,transparent_0%,transparent_70%,var(--tail-color-start)_85%,var(--tail-color-end)_100%)] [-webkit-mask-image:radial-gradient(closest-side,transparent_calc(100%-2px),black_calc(100%-1px))] mask-[radial-gradient(closest-side,transparent_calc(100%-2px),black_calc(100%-1px))]" />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         {/* The 4 MBTI Data Vectors (Dots) */}
-        {[0, 1, 2, 3].map((i) => (
-          <div
-            key={`dot-${i}`}
-            className="absolute inset-[8%]"
-            ref={(el) => {
-              dotRefs.current[i] = el;
-            }}
-            aria-hidden="true"
-            style={
-              {
-                "--dot-color": "rgba(13,148,136,1)",
-                "--glow-color": "rgba(13,148,136,0.5)",
-                "--glow-size": "12px",
-              } as React.CSSProperties
-            }
-          >
-            <div className="absolute inset-0">
-              <div className="absolute w-2 h-2 rounded-full -top-1 left-1/2 -translate-x-1/2 bg-(--dot-color) shadow-[0_0_var(--glow-size)_2px_var(--glow-color)] transition-[background-color,box-shadow] duration-100 ease-linear" />
+        {[0, 1, 2, 3].map((i) => {
+          const dotStyle: React.CSSProperties & Record<string, string> = {
+            "--dot-color": "rgba(13,148,136,1)",
+            "--glow-color": "rgba(13,148,136,0.5)",
+            "--glow-size": "12px",
+          };
+
+          return (
+            <div
+              key={`dot-${i}`}
+              className="absolute inset-[8%]"
+              ref={(el) => {
+                dotRefs.current[i] = el;
+              }}
+              aria-hidden="true"
+              style={dotStyle}
+            >
+              <div className="absolute inset-0">
+                <div className="absolute w-2 h-2 rounded-full -top-1 left-1/2 -translate-x-1/2 bg-(--dot-color) shadow-[0_0_var(--glow-size)_2px_var(--glow-color)] transition-[background-color,box-shadow] duration-100 ease-linear" />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none transform-[translateZ(30px)]">
           {" "}

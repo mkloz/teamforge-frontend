@@ -5,10 +5,9 @@ import { cn } from "@/shared/lib/utils";
 import { Check, ImagePlus, Upload, X } from "lucide-react";
 import { useRef } from "react";
 
-import type { Group } from "@/shared/schemas/group";
-
 export interface Step5IdentityProps {
-  group: Partial<Group>;
+  planTitle: string;
+  activityTitle: string;
   coverImage: string | null;
   onCoverImageChange: (url: string | null) => void;
   avatarImage: string | null;
@@ -67,7 +66,8 @@ const PRESET_COVERS: {
 ];
 
 export function Step5Identity({
-  group,
+  planTitle,
+  activityTitle,
   coverImage,
   onCoverImageChange,
   avatarImage,
@@ -77,8 +77,6 @@ export function Step5Identity({
   groupDescription = "",
   onGroupDescriptionChange,
 }: Step5IdentityProps) {
-  const planName = group.plan?.title || "";
-  const activity = group.activity?.title || null;
   const coverInputRef = useRef<HTMLInputElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
@@ -107,7 +105,7 @@ export function Step5Identity({
         onGroupNameChange={(v) => onGroupNameChange?.(v)}
         groupDescription={groupDescription}
         onGroupDescriptionChange={(v) => onGroupDescriptionChange?.(v)}
-        selectedActivity={activity}
+        selectedActivity={activityTitle}
         subtitle="Refine the name and description you set earlier."
       />
 
@@ -353,10 +351,10 @@ export function Step5Identity({
             </div>
             <div className="min-w-0 pt-2">
               <h3 className="text-sm font-bold text-foreground truncate">
-                {planName || "Untitled Group"}
+                {planTitle || "Untitled Group"}
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {activity || "Activity not set"}
+                {activityTitle || "Activity not set"}
               </p>
             </div>
           </div>

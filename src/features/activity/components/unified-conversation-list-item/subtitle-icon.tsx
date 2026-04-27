@@ -13,7 +13,7 @@ export const SubtitleIcon = memo(
     if (!type) return null;
     const size = isCompact ? 12 : 14;
 
-    const icons = {
+    const icons: Partial<Record<MessageType, React.ReactElement>> = {
       VOICE: <Mic size={size} className="shrink-0 text-forge-teal" />,
       IMAGE: <ImageIcon size={size} className="shrink-0 text-forge-teal" />,
       FILE: <FileText size={size} className="shrink-0 text-forge-teal" />,
@@ -21,6 +21,7 @@ export const SubtitleIcon = memo(
         <ClipboardList size={size} className="shrink-0 text-spark-amber" />
       ),
     };
-    return (icons as Record<string, React.ReactElement>)[type] || null;
+
+    return icons[type] || null;
   },
 );

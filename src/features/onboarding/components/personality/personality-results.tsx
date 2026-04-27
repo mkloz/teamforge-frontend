@@ -3,10 +3,8 @@ import { OceanChart } from "@/features/profile/components/ocean-chart";
 import { PersonalitySection } from "@/features/profile/components/personality-section";
 import { SectionTitle } from "@/features/profile/components/section-title";
 import type {
-  DimensionKey,
   DimensionScore,
   OceanScores,
-  UserProfile,
 } from "@/features/profile/types/profile.types";
 import { Button } from "@/shared/components/ui/button";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
@@ -35,25 +33,25 @@ export function PersonalityResults({
 
   const dimensionScores: DimensionScore[] = [
     {
-      dimension: "EI" as DimensionKey,
+      dimension: "EI",
       score: Math.round(((1 - vector.E) / 2) * 100),
       letter: result.type[0],
       isBorderline: Math.abs(vector.E) < 0.167,
     },
     {
-      dimension: "SN" as DimensionKey,
+      dimension: "SN",
       score: Math.round(((vector.O + 1) / 2) * 100),
       letter: result.type[1],
       isBorderline: Math.abs(vector.O) < 0.167,
     },
     {
-      dimension: "TF" as DimensionKey,
+      dimension: "TF",
       score: Math.round(((vector.A + 1) / 2) * 100),
       letter: result.type[2],
       isBorderline: Math.abs(vector.A) < 0.167,
     },
     {
-      dimension: "JP" as DimensionKey,
+      dimension: "JP",
       score: Math.round(((1 - vector.C) / 2) * 100),
       letter: result.type[3],
       isBorderline: Math.abs(vector.C) < 0.167,
@@ -155,10 +153,7 @@ export function PersonalityResults({
 
         <div className="flex flex-col gap-8">
           <section className="animate-fade-in">
-            <PersonalitySection
-              profile={{ oceanScores } as UserProfile}
-              hideHeaders={true}
-            />
+            <PersonalitySection oceanScores={oceanScores} hideHeaders={true} />
           </section>
 
           <div className="h-px bg-slate-100" />

@@ -2,7 +2,7 @@ import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
-import { Compass, Home, MessageSquare, User, Zap } from "lucide-react";
+import { Compass, Flame, Home, MessageSquare, User } from "lucide-react";
 import { useActiveRoute } from "../hooks/use-active-route";
 
 interface NavItem {
@@ -10,19 +10,21 @@ interface NavItem {
   to?: string;
   icon: LucideIcon;
   label: string;
+  badge?: number;
   matchPrefix?: boolean;
 }
 
 const TABS: NavItem[] = [
-  { id: "home", to: "/home", icon: Home, label: "Home" },
+  { id: "home", to: "/home", icon: Home, label: "Home", badge: 3 },
   { id: "explore", to: "/explore", icon: Compass, label: "Explore" },
-  { id: "forge", to: "/forge", icon: Zap, label: "Forge" },
+  { id: "forge", to: "/forge", icon: Flame, label: "Forge" },
   {
     id: "activity",
     to: "/activity",
     icon: MessageSquare,
     label: "Activity",
     matchPrefix: true,
+    badge: 5,
   },
   { id: "profile", to: "/profile", icon: User, label: "Profile" },
 ];
@@ -120,12 +122,12 @@ function TabButton({ item }: TabButtonProps) {
       <motion.div
         whileTap={{ scale: 0.85 }}
         transition={{ type: "spring", stiffness: 400, damping: 17 }}
-        className="relative flex flex-col items-center justify-center z-10 w-full h-full -mt-1"
+        className="relative flex flex-col items-center justify-center z-10 w-full h-full"
       >
         {/* Active state gets a perfectly round, saturated background to ground the focal point */}
         <div
           className={cn(
-            "flex items-center justify-center transition-colors duration-300",
+            "relative flex items-center justify-center transition-colors duration-300",
             active
               ? `w-10 h-10 rounded-full ${activeColorBg} shadow-inner`
               : "w-9 h-9 rounded-full bg-transparent shadow-none",
@@ -139,6 +141,17 @@ function TabButton({ item }: TabButtonProps) {
               active ? activeColorText : inactiveColorText,
             )}
           />
+          {item.badge != null && item.badge > 0 && (
+            <span
+              className={cn(
+                "absolute top-0.5 right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground shadow-sm",
+                "border-2 border-background", // Add border to create separation
+                active && "scale-110",
+              )}
+            >
+              {item.badge > 9 ? "9+" : item.badge}
+            </span>
+          )}
         </div>
 
         {/* The text literally vanishes underneath to make space for the icon when active */}

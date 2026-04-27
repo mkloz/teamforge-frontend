@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import React from "react";
 
 import { cn } from "@/shared/lib/utils";
 
@@ -76,15 +76,13 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   return (
     <style
       dangerouslySetInnerHTML={{
-        __html: Object.entries(THEMES)
+        __html: (["light", "dark"] as const)
           .map(
-            ([theme, prefix]) => `
-${prefix} [data-chart=${id}] {
+            (theme) => `
+${THEMES[theme]} [data-chart=${id}] {
 ${colorConfig
   .map(([key, itemConfig]) => {
-    const color =
-      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
-      itemConfig.color;
+    const color = itemConfig.theme?.[theme] || itemConfig.color;
     return color ? `  --color-${key}: ${color};` : null;
   })
   .filter(Boolean)
@@ -132,6 +130,8 @@ const ChartTooltip = ({
   nameKey?: string;
   labelKey?: string;
 }) => {
+  const { config } = useChart();
+
   if (!active || !payload?.length) {
     return null;
   }
@@ -154,8 +154,15 @@ const ChartTooltip = ({
       )}
       <div className="grid gap-1.5">
         {payload.map((item, index) => {
-          const itemConfig = {} as { label?: string; color?: string };
+          const key = `${item.name || item.dataKey || "value"}`;
+          const itemConfig = config[key];
           const indicatorColor = color || item.fill || item.stroke;
+
+          const itemStyle: React.CSSProperties &
+            Record<string, string | number> = {
+            "--color-bg": indicatorColor ?? "transparent",
+            "--color-border": indicatorColor ?? "transparent",
+          };
 
           return (
             <div
@@ -175,12 +182,7 @@ const ChartTooltip = ({
                         indicator === "dashed",
                     },
                   )}
-                  style={
-                    {
-                      "--color-bg": indicatorColor,
-                      "--color-border": indicatorColor,
-                    } as React.CSSProperties
-                  }
+                  style={itemStyle}
                 />
               )}
               <div className="flex flex-1 justify-between leading-none">
@@ -188,8 +190,8 @@ const ChartTooltip = ({
                   {itemConfig?.label || item.name}
                 </span>
                 <span className="font-mono font-medium tabular-nums text-foreground">
-                  {formatter
-                    ? formatter(item.value as number, item.name)
+                  {formatter && typeof item.value === "number"
+                    ? formatter(item.value, item.name)
                     : item.value}
                 </span>
               </div>
@@ -228,7 +230,7 @@ const ChartLegend = ({
     <div className={cn("flex items-center justify-center gap-4", className)}>
       {payload.map((item) => {
         const _key = `${nameKey || item.dataKey || "value"}`;
-        const itemConfig = config[_key as keyof typeof config];
+        const itemConfig = config[_key];
 
         return (
           <div
@@ -255,9 +257,9 @@ const ChartLegendContent = ChartLegend;
 
 export {
   ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
   ChartStyle,
+  ChartTooltip,
+  ChartTooltipContent,
 };

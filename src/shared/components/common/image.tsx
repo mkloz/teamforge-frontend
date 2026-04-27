@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import * as React from "react";
+import React from "react";
 
 import { cn } from "@/shared/lib/utils";
 
@@ -48,7 +48,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
   ) => {
     const [isLoading, setIsLoading] = React.useState(false);
     const [error, setError] = React.useState(false);
-    const imageRef = React.useRef<HTMLImageElement>(null);
+    const imageRef = React.useRef<HTMLImageElement | null>(null);
     const [fallbackFailed, setFallbackFailed] = React.useState(false);
 
     const isSrcProvided = Boolean(src && src !== "");
@@ -90,9 +90,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
         {!fallbackFailed && (
           <img
             ref={(node) => {
-              (
-                imageRef as React.MutableRefObject<HTMLImageElement | null>
-              ).current = node;
+              imageRef.current = node;
               if (typeof ref === "function") ref(node);
               else if (ref) ref.current = node;
             }}

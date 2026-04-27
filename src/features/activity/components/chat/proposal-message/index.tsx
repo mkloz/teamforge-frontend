@@ -1,15 +1,15 @@
+import { useSwipeToReply } from "@/features/activity/hooks/use-swipe-to-reply";
+import { formatChatTime } from "@/features/activity/lib/chat-utils";
 import type { UnifiedMessage } from "@/features/activity/types/chat.types";
 import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Reply, ThumbsUp } from "lucide-react";
 import { memo, useMemo, useState } from "react";
-import { useSwipeToReply } from "@/features/activity/hooks/use-swipe-to-reply";
-import { formatChatTime } from "@/features/activity/lib/chat-utils";
 import { MessageReactions } from "../message-reactions";
-import { ProposalHeader } from "./proposal-header";
-import { ProposalComparison } from "./proposal-comparison";
-import { ProposalVoters } from "./proposal-voters";
 import { ProposalActions } from "./proposal-actions";
+import { ProposalComparison } from "./proposal-comparison";
+import { ProposalHeader } from "./proposal-header";
+import { ProposalVoters } from "./proposal-voters";
 
 interface ProposalMessageProps {
   message: UnifiedMessage;
@@ -23,13 +23,11 @@ interface ProposalMessageProps {
  */
 export const ProposalMessage = memo(function ProposalMessage({
   message,
-  showAvatar,
   showSender,
-}: ProposalMessageProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+}: Omit<ProposalMessageProps, "showAvatar">) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const { isOwn, sender, createdAt: timestamp, reactions, status } = message;
   const senderFullName = sender?.fullName || "System";
-  const senderAvatar = sender?.avatar || "";
 
   // Swipe-to-reply logic
   const { x, opacity, scale, handleDragEnd } = useSwipeToReply(message, isOwn);
@@ -119,24 +117,10 @@ export const ProposalMessage = memo(function ProposalMessage({
         onDragEnd={handleDragEnd}
         style={{ x }}
         className={cn(
-          "flex items-end gap-2 px-2 relative z-10 py-0.5",
-          isOwn ? "flex-row-reverse" : "flex-row",
-          showSender ? "mt-3" : "mt-0.5",
+          "flex items-end relative z-10 w-full",
+          isOwn ? "justify-end" : "justify-start",
         )}
       >
-        {/* Avatar */}
-        {!isOwn && (
-          <div className="w-7 shrink-0">
-            {showAvatar && (
-              <img
-                src={senderAvatar}
-                alt={senderFullName}
-                className="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-border shadow-sm transition-transform hover:scale-105"
-              />
-            )}
-          </div>
-        )}
-
         <div
           className={cn(
             "w-full sm:w-80 flex flex-col group/proposal",
@@ -151,14 +135,14 @@ export const ProposalMessage = memo(function ProposalMessage({
 
           <div
             className={cn(
-              "relative rounded-xl border flex flex-col w-full transition-colors duration-300 shadow-xs backdrop-blur-md",
+              "relative rounded-xl border flex flex-col w-full transition-all duration-300 shadow-xs backdrop-blur-md",
               isOwn
-                ? "bg-secondary/80 border-primary/20 hover:border-primary/40 rounded-br-none text-foreground dark:text-primary"
-                : "bg-white/20 dark:bg-muted/10 border-border hover:border-spark-amber/30 rounded-bl-none text-ink",
+                ? "bg-secondary/80 border-primary/20 hover:border-primary/40 rounded-br-none"
+                : "bg-white/20 dark:bg-muted/10 border-border hover:border-spark-amber/30 rounded-bl-none",
             )}
           >
-            <div className="p-1">
-              <div className="border-b border-spark-amber/10 overflow-hidden">
+            <div className="p-0.5">
+              <div className="overflow-hidden">
                 <ProposalHeader
                   field={proposalData.field}
                   isExpanded={isExpanded}

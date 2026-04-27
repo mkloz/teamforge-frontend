@@ -130,13 +130,20 @@ export function applyFilter(
 ): UnifiedConversation[] {
   let result = items;
 
-  if (filter === "groups") result = result.filter((i) => i.kind === "group");
-  else if (filter === "direct") result = result.filter((i) => i.kind === "dm");
-  else if (filter === "unread")
-    result = result.filter((i) => i.unreadCount > 0);
+  // Normalize filter to handle potential casing or alias mismatches
+  const f = filter.toLowerCase();
 
-  if (query.trim()) {
-    const q = query.toLowerCase();
+  if (f === "groups") {
+    result = result.filter((i) => i.kind === "group");
+  } else if (f === "direct" || f === "dm") {
+    result = result.filter((i) => i.kind === "dm");
+  } else if (f === "unread") {
+    result = result.filter((i) => (i.unreadCount || 0) > 0);
+  }
+
+  // Search filtering
+  if (query && query.trim()) {
+    const q = query.toLowerCase().trim();
     result = result.filter(
       (i) =>
         i.title.toLowerCase().includes(q) ||

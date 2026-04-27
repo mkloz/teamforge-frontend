@@ -103,12 +103,20 @@ export function useForgeWizard(onClose: () => void) {
 
   const goNext = useCallback(() => {
     setNavDirection("forward");
-    if (step < 6) setStep((s) => (s + 1) as Step);
-  }, [step]);
+    setStep((s) => {
+      if (s === 1) return 2;
+      if (s === 2) return 3;
+      if (s === 3) return 4;
+      if (s === 4) return 5;
+      if (s === 5) return 6;
+      return s;
+    });
+  }, []);
 
   const goBack = useCallback(() => {
     setNavDirection("back");
-    if (step > 1 && step <= 3) setStep((s) => (s - 1) as Step);
+    if (step === 2) setStep(1);
+    else if (step === 3) setStep(2);
     else if (step === 5) setStep(4);
     else if (step === 6) setStep(5);
   }, [step]);

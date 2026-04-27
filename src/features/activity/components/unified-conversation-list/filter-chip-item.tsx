@@ -1,6 +1,5 @@
 import { cn } from "@/shared/lib/utils";
 import { memo } from "react";
-import { Button } from "@/shared/components/ui/button";
 
 interface FilterChipItemProps {
   label: string;
@@ -16,35 +15,29 @@ export const FilterChipItem = memo(function FilterChipItem({
   badge,
 }: FilterChipItemProps) {
   return (
-    <Button
-      asChild
-      variant={isActive ? "primary" : "subtle"}
-      size="xs"
+    <button
+      type="button"
+      onClick={onClick}
       className={cn(
-        "shrink-0 h-8 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all duration-200",
-        isActive && "shadow-md shadow-forge-teal/20",
+        "shrink-0 h-6 px-2.5 rounded-full text-[10px] font-bold transition-all duration-150 active:scale-95 flex items-center gap-1.5 cursor-pointer",
+        isActive
+          ? "bg-forge-teal text-white border-2 border-button-primary-border shadow-button-primary -translate-y-0.5"
+          : "bg-canvas border-2 border-border/60 text-slate-muted hover:border-forge-teal/40 hover:text-ink",
       )}
     >
-      <button
-        type="button"
-        role="radio"
-        aria-checked={isActive}
-        onClick={onClick}
-      >
-        {label}
-        {badge != null && badge > 0 && (
-          <span
-            className={cn(
-              "ml-1.5 inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full text-none font-black leading-none transition-colors",
-              isActive
-                ? "bg-white/20 text-white"
-                : "bg-forge-teal text-white shadow-sm shadow-forge-teal/30",
-            )}
-          >
-            {badge > 99 ? "99+" : badge}
-          </span>
-        )}
-      </button>
-    </Button>
+      <span>{label}</span>
+      {badge != null && badge > 0 && (
+        <span
+          className={cn(
+            "inline-flex items-center justify-center min-w-3.5 h-3.5 px-0.5 rounded-full text-[8px] font-black leading-none transition-colors",
+            isActive
+              ? "bg-white/20 text-white"
+              : "bg-forge-teal/10 text-forge-teal",
+          )}
+        >
+          {badge > 99 ? "99+" : badge}
+        </span>
+      )}
+    </button>
   );
 });

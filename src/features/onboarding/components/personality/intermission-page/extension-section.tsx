@@ -34,25 +34,20 @@ export function ExtensionSection({
       </p>
 
       <div className="flex flex-col w-full gap-3">
-        {(Object.keys(TEST_LENGTH_CONFIG) as unknown as TestLength[])
-          .filter((len) => Number(len) > totalQuestions)
-          .map((len) => {
-            const numLen = Number(len) as TestLength;
+        {([30, 50, 150] as const)
+          .filter((len) => len > totalQuestions)
+          .map((numLen) => {
             const config = TEST_LENGTH_CONFIG[numLen];
             const isSelected = selectedUpgrade === numLen;
 
             const currentEst =
-              (
-                Object.values(TEST_LENGTH_CONFIG) as Array<{
-                  itemsPerDimension: number;
-                  estimatedMinutes: number;
-                }>
-              ).find((c) => c.itemsPerDimension * 5 === totalQuestions)
-                ?.estimatedMinutes || 0;
+              Object.values(TEST_LENGTH_CONFIG).find(
+                (c) => c.itemsPerDimension * 5 === totalQuestions,
+              )?.estimatedMinutes || 0;
 
             return (
               <button
-                key={len}
+                key={numLen}
                 onClick={() => onSelect(isSelected ? null : numLen)}
                 className={cn(
                   "w-full flex items-center justify-between py-3 px-4 rounded-xl transition-all cursor-pointer group/btn relative border active:scale-[0.98]",

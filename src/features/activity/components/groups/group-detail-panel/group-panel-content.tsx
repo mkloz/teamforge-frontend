@@ -15,6 +15,7 @@ import { GroupIdentitySection } from "./group-identity-section";
 import { MembersSection } from "./members-section";
 import { PlanHistorySection } from "./plan-history-section";
 import { PlanSection } from "./plan-section";
+import { PinnedMessagesSection } from "./pinned-messages-section";
 
 interface GroupPanelContentProps {
   group: Group;
@@ -63,7 +64,7 @@ export function GroupPanelContent({
   // Map GroupMember to a mock DirectChat for the UserProfilePanel
   const memberChat: DirectChat | null = useMemo(() => {
     if (!selectedMember || !selectedMember.user) return null;
-    return {
+    const chat: DirectChat = {
       id: `temp-dm-${selectedMember.userId}`,
       type: "PRIVATE",
       createdAt: new Date().toISOString(),
@@ -75,7 +76,6 @@ export function GroupPanelContent({
           user: selectedMember.user,
         },
       ],
-      updatedAt: new Date().toISOString(),
       isMuted: false,
       isBlocked: false,
       mutualGroups: [
@@ -85,7 +85,8 @@ export function GroupPanelContent({
           avatar: group.avatar,
         },
       ],
-    } as DirectChat;
+    };
+    return chat;
   }, [selectedMember, group.id, group.name, group.avatar]);
 
   if (selectedMember && memberChat) {
@@ -134,7 +135,7 @@ export function GroupPanelContent({
         {/* Header section with cover/avatar overlap */}
         <header className="relative">
           {/* Cover image area with entrance scale animation */}
-          <div className={cn("relative w-full", isMobile ? "h-40" : "h-32")}>
+          <div className={cn("relative w-full", isMobile ? "h-44" : "h-36")}>
             <motion.img
               initial={{ scale: 1.1 }}
               animate={{ scale: 1 }}
@@ -144,7 +145,8 @@ export function GroupPanelContent({
               className="w-full h-full object-cover"
               loading="eager" // Hero image
             />
-            <div className="absolute inset-0 bg-linear-to-t from-canvas via-canvas/20 to-transparent" />
+            {/* Gradient: stronger pull-down so avatar reads cleanly on top */}
+            <div className="absolute inset-0 bg-linear-to-t from-canvas/90 via-canvas/10 to-transparent" />
 
             {/* Global Edit Button - Optimized for Admin Role */}
             {currentUserRole === "ADMIN" && (
@@ -182,9 +184,9 @@ export function GroupPanelContent({
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="p-4 space-y-6"
+          className="px-4 pt-3 pb-6"
         >
-          {/* Group Identity Details */}
+          {/* Group Identity Details — sits tight below the cover */}
           <motion.div variants={itemVariants}>
             <GroupIdentitySection
               name={group.name}
@@ -194,32 +196,47 @@ export function GroupPanelContent({
             />
           </motion.div>
 
-          {/* Current Active Plan Section */}
-          <motion.div variants={itemVariants}>
-            {group.plan && <PlanSection plan={group.plan} />}
-          </motion.div>
+          {/* Current Active Plan — closely related to identity, tighter gap */}
+          {group.plan && (
+            <motion.div variants={itemVariants} className="mt-5">
+              <PlanSection plan={group.plan} />
+            </motion.div>
+          )}
+
+          {/* Pinned Messages — contextual importance, sits before the broad member list */}
+          {group.chat?.pinnedMessages &&
+            group.chat.pinnedMessages.length > 0 && (
+              <motion.div variants={itemVariants} className="mt-6">
+                <PinnedMessagesSection
+                  pinnedMessages={group.chat.pinnedMessages}
+                />
+              </motion.div>
+            )}
+
+          {/* Divider: separates plan context from people */}
+          <div className="border-t border-border/50 my-6" />
 
           {/* Members List Section */}
-          <motion.div variants={itemVariants}>
-            {group.members && (
+          {group.members && (
+            <motion.div variants={itemVariants}>
               <MembersSection
                 members={group.members}
                 maxMembers={group.maxMembers}
                 onShowProfile={(m) => setSelectedMember(m)}
               />
-            )}
-          </motion.div>
+            </motion.div>
+          )}
 
-          {/* Plan History Feed */}
-          <motion.div variants={itemVariants}>
+          {/* Plan History — generous separation, it's a secondary zone */}
+          <motion.div variants={itemVariants} className="mt-8">
             <PlanHistorySection
               history={group.planHistory ?? []}
               userRole={currentUserRole}
             />
           </motion.div>
 
-          {/* Critical Group Actions */}
-          <motion.div variants={itemVariants} className="pt-2">
+          {/* Critical Group Actions — maximum separation, danger zone */}
+          <motion.div variants={itemVariants} className="mt-8">
             <ActionsSection groupId={group.id} groupStatus={group.status} />
           </motion.div>
         </motion.div>

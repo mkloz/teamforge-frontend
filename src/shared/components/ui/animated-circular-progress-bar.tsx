@@ -37,16 +37,22 @@ export function AnimatedCircularProgressBar({
     return `${Math.round(latest)}`;
   });
 
+  const containerStyle: React.CSSProperties & Record<string, string | number> =
+    {
+      "--circle-size": "100px",
+      "--circumference": `${circumference}px`,
+      "--percent-to-px": `${percentPx}px`,
+    };
+
+  const circleStyle: React.CSSProperties & Record<string, string | number> = {
+    stroke: gaugeSecondaryColor,
+    "--stroke-percent": 90,
+  };
+
   return (
     <div
       className={cn("relative size-40 text-2xl font-semibold", className)}
-      style={
-        {
-          "--circle-size": "100px",
-          "--circumference": `${circumference}px`,
-          "--percent-to-px": `${percentPx}px`,
-        } as React.CSSProperties
-      }
+      style={containerStyle}
     >
       <svg
         fill="transparent"
@@ -63,12 +69,7 @@ export function AnimatedCircularProgressBar({
           strokeLinecap="round"
           strokeLinejoin="round"
           className=" opacity-100"
-          style={
-            {
-              stroke: gaugeSecondaryColor,
-              "--stroke-percent": 90,
-            } as React.CSSProperties
-          }
+          style={circleStyle}
         />
         <motion.circle
           cx="50"

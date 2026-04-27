@@ -14,10 +14,11 @@ const PRESET_GRADIENTS: Record<string, string> = {
   sky: "from-sky-400 to-blue-600",
 };
 
-import type { Group } from "@/shared/schemas/group";
-
 export interface Step6InviteProps {
-  group: Partial<Group>;
+  planTitle: string;
+  planDate: string;
+  planLocation: string;
+  activityTitle: string;
   participantCount: number;
   coverImage: string | null;
   inviteCopied: boolean;
@@ -25,16 +26,15 @@ export interface Step6InviteProps {
 }
 
 export function Step6Invite({
-  group,
+  planTitle,
+  planDate,
+  planLocation,
+  activityTitle,
   participantCount,
   coverImage,
   inviteCopied,
   onCopyLink,
 }: Step6InviteProps) {
-  const planName = group.plan?.title || "";
-  const activity = group.activity?.title || null;
-  const planDate = group.plan?.dateTime || "";
-  const planLocation = group.plan?.location || "";
   const gradientClass = coverImage ? PRESET_GRADIENTS[coverImage] : null;
 
   return (
@@ -71,11 +71,11 @@ export function Step6Invite({
             </div>
             <div className="min-w-0 pb-0.5">
               <h4 className="text-base font-bold text-foreground truncate leading-tight">
-                {planName || "Untitled Group"}
+                {planTitle || "Untitled Group"}
               </h4>
-              {activity && (
+              {activityTitle && (
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {activity}
+                  {activityTitle}
                 </p>
               )}
             </div>

@@ -27,6 +27,12 @@ const HintText = ({ children }: { children: React.ReactNode }) => (
   </motion.p>
 );
 
+declare global {
+  interface Window {
+    __forgeShakeGrid?: () => void;
+  }
+}
+
 export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
   // Pulse the Continue button once when an activity is first selected
   const [continuePulse, setContinuePulse] = useState(false);
@@ -51,8 +57,7 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
 
   // Trigger grid shake when Continue is tapped while disabled
   const handleDisabledContinue = () => {
-    const shake = (window as Window & { __forgeShakeGrid?: () => void })
-      .__forgeShakeGrid;
+    const shake = window.__forgeShakeGrid;
     if (shake) shake();
   };
 

@@ -6,7 +6,6 @@ import {
   MIN_INTERESTS,
 } from "../data/interests-data";
 import type { InterestsScreen } from "../data/interests-types";
-import type { PersonalityType } from "@/shared/schemas/enums";
 import { useInterestsStore } from "../store/interests-store";
 import {
   getCorrelatedSuggestions,
@@ -43,7 +42,7 @@ export function useInterests({ onComplete }: UseInterestsOptions) {
     const params = new URLSearchParams(window.location.search);
     const mbti = params.get("mbti");
     if (mbti && mbti in MBTI_SUGGESTIONS && !store.personalityType) {
-      store.setPersonalityType(mbti as PersonalityType);
+      store.setPersonalityType(mbti);
     }
   }, [store]);
 

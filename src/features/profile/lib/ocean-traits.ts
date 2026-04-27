@@ -285,6 +285,16 @@ export interface PersonalityProfile {
   inGroups: string;
 }
 
+function isOceanTraitKey(key: string): key is OceanTraitKey {
+  return [
+    "openness",
+    "conscientiousness",
+    "extraversion",
+    "agreeableness",
+    "neuroticism",
+  ].includes(key);
+}
+
 // Generate comprehensive personality description
 export function generateDetailedDescription(
   scores: OceanScores,
@@ -293,8 +303,10 @@ export function generateDetailedDescription(
   const lowTraits: OceanTraitKey[] = [];
 
   Object.entries(scores).forEach(([key, value]) => {
-    if (value >= 65) highTraits.push(key as OceanTraitKey);
-    if (value <= 35) lowTraits.push(key as OceanTraitKey);
+    if (isOceanTraitKey(key)) {
+      if (value >= 65) highTraits.push(key);
+      if (value <= 35) lowTraits.push(key);
+    }
   });
 
   // Try to find matching description pattern

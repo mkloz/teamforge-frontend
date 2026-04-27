@@ -5,6 +5,7 @@ import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { Bell, Compass, MessageCircle, Plus, User } from "lucide-react";
 import { MOCK_CURRENT_USER } from "../../data/mock-home";
 import { ForgeOrbScene } from "./forge-orb-scene";
+import { useUiStore } from "@/shared/store/ui.store";
 
 /* ─── Greeting helper ──────────────────────────────────────────────── */
 function getGreeting(firstName: string): { greeting: string; sub: string } {
@@ -52,6 +53,9 @@ const itemVariants: Variants = {
 export function HomeHero() {
   const { greeting, sub } = getGreeting(MOCK_CURRENT_USER.firstName);
   const reduced = useReducedMotion() ?? false;
+  const setNotificationsOpen = useUiStore(
+    (state) => state.setNotificationsOpen,
+  );
 
   return (
     <section aria-labelledby="home-hero-heading" className="w-full">
@@ -81,6 +85,7 @@ export function HomeHero() {
           {/* Notification bell */}
           <button
             type="button"
+            onClick={() => setNotificationsOpen(true)}
             aria-label="View notifications (3 unread)"
             className={cn(
               "relative shrink-0 flex items-center justify-center size-10 rounded-2xl",
@@ -100,7 +105,7 @@ export function HomeHero() {
                 damping: 20,
                 delay: 0.4,
               }}
-              className="absolute -top-1.5 -right-1.5 flex items-center justify-center size-5 rounded-full bg-spark-amber border-2 border-background text-xs font-black text-white leading-none"
+              className="absolute -top-1.5 -right-1.5 flex items-center justify-center size-5 rounded-full bg-accent border-2 border-background text-[10px] font-bold text-accent-foreground shadow-sm"
               aria-hidden="true"
             >
               3

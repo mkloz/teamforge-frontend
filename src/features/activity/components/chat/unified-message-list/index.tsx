@@ -1,22 +1,22 @@
 import { useChatScroll } from "@/features/activity/hooks/use-chat-scroll";
 import { useMessageGrouping } from "@/features/activity/hooks/use-message-grouping";
-import {
-  shouldShowAvatar,
-  shouldShowSenderAnchor,
-} from "@/features/activity/lib/chat-utils";
 import type { UnifiedMessage } from "@/features/activity/types/chat.types";
-import type { DirectChat } from "@/features/activity/types/direct-chats.types";
 import { UserProfilePanel } from "@/features/profile/components/user-profile-panel/user-profile-panel";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { ChatBackground } from "../chat-background";
 import { DateSeparator } from "./date-separator";
 import { MessageRenderer } from "./message-renderer";
 import { ScrollActionButtons } from "./scroll-action-buttons";
 import { TypingPresence } from "./typing-presence";
-import { UnreadIndicator } from "./unread-indicator";
-import type { User, ChatParticipant } from "@/shared/schemas";
+import type { User } from "@/shared/schemas";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/shared/components/ui/drawer";
 
 interface UnifiedMessageListProps {
   messages: UnifiedMessage[];
@@ -39,82 +39,20 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
   typingUsers = [],
   onToggleAction,
 }: UnifiedMessageListProps) {
-  const [selectedSender, setSelectedSender] = useState<{
-    id: string;
-    fullName: string;
-    avatar: string;
-  } | null>(null);
+  const [selectedSender, setSelectedSender] = useState<User | null>(null);
 
   const handleAvatarClick = useCallback(
     (sender: User) => {
       if (kind === "dm") {
         onToggleAction?.();
       } else {
-        setSelectedSender({
-          id: sender.id,
-          fullName: sender.fullName,
-          avatar: sender.avatar || "",
-        });
+        setSelectedSender(sender);
       }
     },
     [kind, onToggleAction],
   );
 
   const handleCloseProfile = useCallback(() => setSelectedSender(null), []);
-
-  // Build a minimal DirectChat from the sender info to reuse UserProfilePanel
-  const senderChat: DirectChat | null = selectedSender
-    ? ({
-        id: `temp-${selectedSender.id}`,
-        type: "PRIVATE",
-        participants: [
-          {
-            userId: selectedSender.id,
-            chatId: `temp-${selectedSender.id}`,
-            user: {
-              id: selectedSender.id,
-              fullName: selectedSender.fullName,
-              avatar: selectedSender.avatar,
-              onlineStatus: "ONLINE",
-              personalityType: "ENTJ",
-              trustScore: 1.0,
-              bio: "TeamForge member.",
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-              email: "",
-              emailVerified: true,
-              authProvider: "EMAIL",
-              searchStatus: "IDLE",
-              profileComplete: true,
-              age: null,
-              gender: null,
-              city: null,
-              oceanO: null,
-              oceanC: null,
-              oceanE: null,
-              oceanA: null,
-              oceanN: null,
-            } as User,
-          } as ChatParticipant,
-        ],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        isMuted: false,
-        isBlocked: false,
-        groupId: null,
-      } as DirectChat)
-    : null;
-  useEffect(() => {
-    if (selectedSender) {
-      // Body scroll lock on mobile only
-      if (window.innerWidth < 768) {
-        document.body.style.overflow = "hidden";
-        return () => {
-          document.body.style.overflow = "";
-        };
-      }
-    }
-  }, [selectedSender]);
 
   const { showScrollToBottom, handleScroll, scrollToBottom } = useChatScroll(
     messagesEndRef,
@@ -129,9 +67,6 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
     el?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
-  // We keep track of the global index across date groups for unread indicators and context
-  let globalMsgIdx = 0;
-
   return (
     <div className="relative h-full flex flex-col min-h-0 bg-canvas">
       <ChatBackground />
@@ -141,44 +76,76 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
         className="relative z-10 flex-1 overflow-y-auto px-1 pt-4 pb-0 scroll-smooth scrollbar-none scroll-margin-top-12"
       >
         <div className="flex flex-col pb-2">
-          {groupedMessages.map((group) => (
+          {groupedMessages.map((dateGroup) => (
             <div
-              key={`group-${group.date}`}
+              key={`date-${dateGroup.date}`}
               className="flex flex-col gap-0.5 relative"
             >
-              <DateSeparator date={group.date} />
+              <DateSeparator date={dateGroup.date} />
 
-              {group.items.map((message) => {
-                const currentIdx = globalMsgIdx++;
-                const prevMessage = messages[currentIdx - 1];
-                const nextMessage = messages[currentIdx + 1];
-
-                const showSenderName = shouldShowSenderAnchor(
-                  message,
-                  prevMessage,
-                );
-                const showAvatar = shouldShowAvatar(message, nextMessage);
-                const isSameAsPrev = prevMessage?.senderId === message.senderId;
+              {dateGroup.senderGroups.map((senderGroup, groupIdx) => {
+                // Handle both mock variants until auth store is integrated
+                const isOwn =
+                  senderGroup.senderId === "current-user" ||
+                  senderGroup.senderId === "user-current";
 
                 return (
                   <div
-                    key={message.id}
-                    id={`msg-${message.id}`}
+                    key={`sender-group-${dateGroup.date}-${senderGroup.senderId}-${groupIdx}`}
                     className={cn(
-                      "flex flex-col",
-                      isSameAsPrev ? "gap-0.5" : "gap-1.5",
+                      "flex items-stretch gap-3 group/sender mb-3 relative",
+                      isOwn ? "flex-row-reverse" : "flex-row",
                     )}
                   >
-                    {/* Unread Indicator Anchor - roughly 3 messages from bottom if fresh */}
-                    {currentIdx === messages.length - 3 && <UnreadIndicator />}
+                    {/* Avatar Column (Sticky) */}
+                    {!isOwn && senderGroup.senderId !== "system" && (
+                      <div className="w-8 shrink-0 flex flex-col justify-end">
+                        <div className="sticky bottom-2 flex flex-col items-center">
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            onClick={() =>
+                              senderGroup.sender &&
+                              handleAvatarClick(senderGroup.sender)
+                            }
+                            className="rounded-full h-8 w-8 p-0"
+                            aria-label={`View ${senderGroup.sender?.fullName}'s profile`}
+                          >
+                            <img
+                              src={senderGroup.sender?.avatar || ""}
+                              alt={senderGroup.sender?.fullName || "User"}
+                              className="w-8 h-8 rounded-full object-cover ring-1 ring-border shadow-sm"
+                            />
+                          </Button>
+                        </div>
+                      </div>
+                    )}
 
-                    <MessageRenderer
-                      message={message}
-                      showAvatar={showAvatar}
-                      showSender={showSenderName}
-                      kind={kind}
-                      onAvatarClick={handleAvatarClick}
-                    />
+                    {/* Messages Column */}
+                    <div
+                      className={cn(
+                        "flex-1 flex flex-col min-w-0",
+                        isOwn ? "items-end" : "items-start",
+                      )}
+                    >
+                      {senderGroup.items.map((message, msgIdx) => {
+                        const isFirstInGroup = msgIdx === 0;
+
+                        return (
+                          <div
+                            key={message.id}
+                            id={`msg-${message.id}`}
+                            className="w-full"
+                          >
+                            <MessageRenderer
+                              message={message}
+                              showSender={isFirstInGroup}
+                              kind={kind}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 );
               })}
@@ -204,47 +171,26 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
         }}
       />
 
-      {/* User Profile Panel - Custom Conditional Rendering with Framer Motion */}
-      <AnimatePresence>
-        {senderChat && (
-          <div className="fixed inset-0 z-100 flex items-end sm:items-center sm:justify-center sm:p-6">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-              onClick={handleCloseProfile}
-              aria-hidden="true"
+      {/* User Profile Panel - Using shadcn Drawer for better accessibility and unified physics */}
+      <Drawer
+        open={!!selectedSender}
+        onOpenChange={(open) => !open && handleCloseProfile()}
+      >
+        <DrawerContent className="bg-canvas border-t rounded-t-3xl max-h-[75svh] sm:max-w-md mx-auto">
+          <DrawerHeader className="sr-only">
+            <DrawerTitle>User Profile</DrawerTitle>
+          </DrawerHeader>
+
+          {selectedSender && (
+            <UserProfilePanel
+              participant={selectedSender}
+              isMobile={true}
+              isDirectChat={false}
+              onBack={handleCloseProfile}
             />
-
-            {/* Profile Panel (Mobile: Bottom Sheet, Desktop: Modal) */}
-            <motion.div
-              initial={{ y: "100%", opacity: 0.5 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: "100%", opacity: 0.5 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className={cn(
-                "relative z-10 w-full overflow-hidden border border-border bg-canvas shadow-2xl flex flex-col",
-                "rounded-t-3xl sm:rounded-2xl max-h-[75svh] sm:max-w-sm",
-              )}
-            >
-              {/* Mobile Drag Handle Visual - matches Group Detail Panel */}
-              <div className="flex justify-center p-3 shrink-0 sm:hidden">
-                <div className="w-10 h-1.5 rounded-full bg-muted-foreground/30" />
-              </div>
-
-              <UserProfilePanel
-                chat={senderChat}
-                isMobile={true}
-                isDirectChat={false}
-                onBack={handleCloseProfile}
-              />
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+          )}
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 });

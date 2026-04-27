@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useExploreStore } from "../store/use-explore-store";
 import { MOCK_GROUPS } from "../data/mock-explore";
-import type { PlanCategory } from "@/shared/schemas/enums";
 
 export function useExploreGroups() {
   const store = useExploreStore();
@@ -35,7 +34,7 @@ export function useExploreGroups() {
         const groupCategory = plan?.category || "OTHER";
         const categoryMatch =
           store.selectedCategories.includes("ALL") ||
-          store.selectedCategories.includes(groupCategory as PlanCategory);
+          store.selectedCategories.includes(groupCategory);
 
         // Location mode filter
         const locationMatch =

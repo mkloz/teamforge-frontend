@@ -3,6 +3,12 @@ import { useCallback, useEffect } from "react";
 import type { DirectChat } from "@/features/activity/types/direct-chats.types";
 import { ProfilePanelHeader } from "./profile-panel-header";
 import { UserProfilePanel as ProfilePanelContent } from "@/features/profile/components/user-profile-panel/user-profile-panel";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/shared/components/ui/drawer";
 
 interface ProfilePanelProps {
   chat: DirectChat;
@@ -45,41 +51,23 @@ export function ProfilePanel({ chat, isOpen, onClose }: ProfilePanelProps) {
 
 /**
  * ProfilePanelMobile - Mobile bottom drawer for direct chat profiles.
- * Uses a slide-up animation and safe-area inset blurs.
+ * Uses shadcn Drawer for high-performance sliding and accessibility.
  */
 export function ProfilePanelMobile({
   chat,
   isOpen,
   onClose,
 }: ProfilePanelProps) {
-  if (!isOpen) return null;
-
   return (
-    <div className="lg:hidden fixed inset-0 z-50">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-400"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
-      {/* Sheet Content */}
-      <div
-        className={cn(
-          "absolute inset-x-0 bottom-0 bg-canvas rounded-t-3xl max-h-[90vh]",
-          "flex flex-col animate-in slide-in-from-bottom duration-400 overflow-hidden",
-          "shadow-[0_-8px_40px_-15px_rgba(0,0,0,0.3)]",
-        )}
-      >
-        {/* Handle for visual cues */}
-        <div className="flex justify-center p-3 shrink-0">
-          <div className="w-12 h-1.5 rounded-full bg-muted-foreground/20 hover:bg-muted-foreground/40 transition-colors" />
-        </div>
-
-        <div className="flex-1 overflow-y-auto min-h-0 pb-10">
+    <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DrawerContent className="bg-canvas border-t rounded-t-3xl h-[90vh]">
+        <DrawerHeader className="sr-only">
+          <DrawerTitle>User Profile</DrawerTitle>
+        </DrawerHeader>
+        <div className="flex-1 overflow-y-auto min-h-0 pb-10 scrollbar-hide">
           <ProfilePanelContent chat={chat} isMobile={true} />
         </div>
-      </div>
-    </div>
+      </DrawerContent>
+    </Drawer>
   );
 }

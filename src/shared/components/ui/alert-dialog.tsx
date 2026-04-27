@@ -3,19 +3,19 @@
  * Provides the same API as the standard shadcn/ui AlertDialog without
  * requiring an additional @radix-ui/react-alert-dialog dependency.
  */
-import * as React from "react";
 import { cn } from "@/shared/lib/utils";
+import React from "react";
+import { buttonVariants } from "./button-variants";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogClose,
 } from "./dialog";
-import { buttonVariants } from "./button-variants";
 
 const AlertDialog = Dialog;
 const AlertDialogTrigger = DialogTrigger;
@@ -89,12 +89,12 @@ AlertDialogCancel.displayName = "AlertDialogCancel";
 
 export {
   AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogTitle,
-  AlertDialogDescription,
   AlertDialogAction,
   AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 };

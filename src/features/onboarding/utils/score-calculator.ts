@@ -44,9 +44,13 @@ export function calculateVector(
     return Math.max(-1, Math.min(1, (sum - midpoint) / maxDev));
   };
 
-  const vector = Object.fromEntries(
-    dims.map((dim) => [dim, normalize(sums[dim], counts[dim])]),
-  ) as unknown as OceanVector;
+  const vector: OceanVector = {
+    O: normalize(sums.O, counts.O),
+    C: normalize(sums.C, counts.C),
+    E: normalize(sums.E, counts.E),
+    A: normalize(sums.A, counts.A),
+    N: normalize(sums.N, counts.N),
+  };
 
   const SOFT_THRESHOLD = 0.167;
   const softBoundary: Dimension[] = dims.filter(

@@ -5,10 +5,8 @@ import { Outlet } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { NotificationsBellTrigger } from "../notifications/components/notifications-bell-trigger";
 import { NotificationsDrawer } from "../notifications/components/notifications-drawer";
-import { UserMenu } from "../user-menu/components/user-menu";
 import { AppBottomNav } from "./components/app-bottom-nav";
 import { AppSidebar } from "./components/app-sidebar";
-import { SearchOverlay } from "./components/search-overlay";
 
 function PageSkeleton() {
   return (
@@ -25,13 +23,8 @@ export function AppLayout() {
   // Ensure theme class is applied on every render of the authenticated shell
   useTheme();
 
-  const {
-    searchOpen,
-    notificationsOpen,
-    bottomNavHidden,
-    setSearchOpen,
-    setNotificationsOpen,
-  } = useUiStore();
+  const { notificationsOpen, bottomNavHidden, setNotificationsOpen } =
+    useUiStore();
 
   return (
     <TooltipProvider>
@@ -46,14 +39,8 @@ export function AppLayout() {
 
         {/* Persistent top bar removed for desktop per user request */}
 
-        {/* Global User Menu Trigger — Top Right as requested */}
-        <div className="fixed top-4 right-4 md:top-6 md:right-8 z-50">
-          <UserMenu />
-        </div>
-
         {/* Desktop sidebar */}
         <AppSidebar
-          onSearchClick={() => setSearchOpen(true)}
           notificationsTrigger={
             <NotificationsBellTrigger
               onClick={() => setNotificationsOpen(true)}
@@ -79,7 +66,6 @@ export function AppLayout() {
         {!bottomNavHidden && <AppBottomNav />}
 
         {/* Overlays */}
-        <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
         <NotificationsDrawer
           open={notificationsOpen}
           onClose={() => setNotificationsOpen(false)}

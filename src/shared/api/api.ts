@@ -8,8 +8,12 @@ export interface Tokens {
   refreshToken: string;
 }
 export const tokensStore = {
-  getState: () => ({
-    tokens: { accessToken: "", refreshToken: "" } as Tokens | null,
+  getState: (): {
+    tokens: Tokens | null;
+    deleteTokens: () => void;
+    setTokens: (t: Tokens) => void;
+  } => ({
+    tokens: { accessToken: "", refreshToken: "" },
     deleteTokens: () => {},
     setTokens: (t: Tokens) => {
       void t;

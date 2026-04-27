@@ -1,6 +1,7 @@
-import { Crown } from "lucide-react";
+import { Crown, Sparkles } from "lucide-react";
 import { Badge } from "@/shared/components/ui/badge";
 import type { GroupMember } from "../../../types/groups.types";
+import { cn } from "@/shared/lib/utils";
 
 interface MemberCardProps {
   member: GroupMember;
@@ -9,6 +10,7 @@ interface MemberCardProps {
 
 export function MemberCard({ member, onShowProfile }: MemberCardProps) {
   const isAdmin = member.role === "ADMIN";
+  const isHighCompatibility = (member.compatibilityScore || 0) > 90;
 
   return (
     <button
@@ -17,7 +19,12 @@ export function MemberCard({ member, onShowProfile }: MemberCardProps) {
     >
       {/* Avatar Container */}
       <div className="relative shrink-0">
-        <div className="w-10 h-10 rounded-full overflow-hidden ring-1 ring-border/20 group-hover/member:ring-border/40 transition-all">
+        <div
+          className={cn(
+            "w-10 h-10 rounded-full overflow-hidden ring-1 ring-border/20 group-hover/member:ring-border/40 transition-all",
+            isHighCompatibility && "ring-forge-teal/30 ring-2",
+          )}
+        >
           <img
             src={member.user?.avatar || ""}
             alt={member.user?.fullName || "User"}
@@ -47,13 +54,23 @@ export function MemberCard({ member, onShowProfile }: MemberCardProps) {
           >
             {member.user?.personalityType}
           </Badge>
+          {isHighCompatibility && (
+            <Sparkles size={12} className="text-forge-teal animate-pulse" />
+          )}
         </div>
         <div className="flex items-center gap-2.5">
           <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">
-            Trust {Math.round((member.user?.trustScore || 0) * 100)}%
+            Trust {member.user?.trustScore}%
           </span>
           <div className="w-px h-2 bg-border/50" />
-          <span className="text-[9px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider">
+          <span
+            className={cn(
+              "text-[9px] font-bold uppercase tracking-wider",
+              isHighCompatibility
+                ? "text-forge-teal"
+                : "text-muted-foreground/60",
+            )}
+          >
             {member.compatibilityScore}% match
           </span>
         </div>

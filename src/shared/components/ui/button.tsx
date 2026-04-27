@@ -1,7 +1,7 @@
 import { cn } from "@/shared/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import { Loader2 } from "lucide-react";
-import * as React from "react";
+import React from "react";
 import { buttonVariants, type ButtonVariants } from "./button-variants";
 
 export interface ButtonV2Props
@@ -99,8 +99,16 @@ const Button = React.memo(
               {/* Layer 3: Content Container - Maintains layout width while loading */}
               <span
                 className={cn(
-                  "flex items-center justify-center gap-2 transition-opacity duration-150 h-full w-full",
+                  "flex items-center gap-2 transition-opacity duration-150 h-full w-full",
                   loading ? "opacity-0" : "opacity-100",
+                  // Respect justification from the outer button
+                  finalClasses.includes("justify-start")
+                    ? "justify-start"
+                    : finalClasses.includes("justify-end")
+                      ? "justify-end"
+                      : finalClasses.includes("justify-between")
+                        ? "justify-between"
+                        : "justify-center",
                 )}
               >
                 {children}

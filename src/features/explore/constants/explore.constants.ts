@@ -29,17 +29,16 @@ export const FILTER_BOUNDARIES = {
   size: { min: 2, max: 20, defaultMin: 3, defaultMax: 8 },
 } as const;
 
-import type { PlanCategory, LocationMode } from "@/shared/schemas/enums";
-import type { AccessMode } from "../types/explore.types";
+import type { ExploreFilters } from "../types/explore.types";
 
-export const DEFAULT_FILTERS = {
-  selectedCategories: ["ALL"] as (PlanCategory | "ALL")[],
+export const DEFAULT_FILTERS: ExploreFilters = {
+  selectedCategories: ["ALL"],
   sizeRange: [
     FILTER_BOUNDARIES.size.defaultMin,
     FILTER_BOUNDARIES.size.defaultMax,
-  ] as [number, number],
+  ],
   distance: FILTER_BOUNDARIES.distance.default,
-  locationMode: "ALL" as LocationMode | "ALL",
-  access: "ALL" as AccessMode,
-  sortBy: "MATCH" as const,
+  locationMode: "ALL",
+  access: "ALL",
+  sortBy: "MATCH",
 };

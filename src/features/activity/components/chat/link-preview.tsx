@@ -1,7 +1,7 @@
-import { memo } from "react";
-import { ExternalLink, Globe } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
 import { useLinkPreview } from "@/features/activity/hooks/use-link-preview";
+import { cn } from "@/shared/lib/utils";
+import { ExternalLink, Globe } from "lucide-react";
+import { memo } from "react";
 
 interface LinkPreviewProps {
   url: string;
@@ -119,8 +119,10 @@ export const LinkPreview = memo(function LinkPreview({
             loading="lazy"
             onError={(e) => {
               // Hide the whole image container if it fails
-              (e.currentTarget.parentElement as HTMLElement).style.display =
-                "none";
+              const parent = e.currentTarget.parentElement;
+              if (parent instanceof HTMLElement) {
+                parent.style.display = "none";
+              }
             }}
           />
         </div>
@@ -136,7 +138,7 @@ export const LinkPreview = memo(function LinkPreview({
             className="w-5 h-5 rounded object-contain shrink-0 mt-0.5 opacity-80"
             loading="lazy"
             onError={(e) => {
-              (e.currentTarget as HTMLImageElement).style.display = "none";
+              e.currentTarget.style.display = "none";
             }}
           />
         )}

@@ -93,7 +93,7 @@ export function QuestionPage({
               question={q}
               index={startIndex + i}
               totalQuestions={totalQuestions}
-              value={answers[q.id] as 1 | 2 | 3 | 4 | 5 | undefined}
+              value={answers[q.id]}
               onChange={onAnswer}
             />
           </motion.div>

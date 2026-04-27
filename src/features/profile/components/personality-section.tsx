@@ -4,19 +4,29 @@ import {
   generateDetailedDescription,
   type PersonalityProfile,
 } from "../lib/ocean-traits";
-import type { UserProfile } from "../types/profile.types";
+import type { OceanScores } from "../types/profile.types";
 import { SectionTitle } from "./section-title";
 
 interface PersonalitySectionProps {
-  profile: UserProfile;
+  oceanScores?: OceanScores;
   hideHeaders?: boolean;
 }
 
 export function PersonalitySection({
-  profile,
+  oceanScores,
   hideHeaders = false,
 }: PersonalitySectionProps) {
-  const personalityProfile = generateDetailedDescription(profile.oceanScores);
+  // Provide default scores if none are provided to avoid crashing
+  const defaultScores: OceanScores = {
+    openness: 50,
+    conscientiousness: 50,
+    extraversion: 50,
+    agreeableness: 50,
+    neuroticism: 50,
+  };
+  const personalityProfile = generateDetailedDescription(
+    oceanScores || defaultScores,
+  );
 
   return (
     <div className="flex flex-col gap-6 w-full">

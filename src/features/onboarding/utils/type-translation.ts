@@ -22,13 +22,13 @@ export interface PersonalityResult {
  *   A/T  ←  Neuroticism (N)     ≤ 0 → A (assertive/stable), > 0 → T (turbulent)
  */
 export function vectorToType(vector: OceanVector): PersonalityResult {
-  const ei = vector.E > 0 ? "E" : "I";
-  const sn = vector.O > 0 ? "N" : "S";
-  const tf = vector.A > 0 ? "F" : "T";
-  const jp = vector.C > 0 ? "J" : "P";
+  const ei: "E" | "I" = vector.E > 0 ? "E" : "I";
+  const sn: "S" | "N" = vector.O > 0 ? "N" : "S";
+  const tf: "T" | "F" = vector.A > 0 ? "F" : "T";
+  const jp: "J" | "P" = vector.C > 0 ? "J" : "P";
   const variant: "A" | "T" = vector.N <= 0 ? "A" : "T";
 
-  const type = `${ei}${sn}${tf}${jp}` as PersonalityType;
+  const type: PersonalityType = `${ei}${sn}${tf}${jp}`;
   const info = TYPE_DESCRIPTIONS[type] ?? TYPE_DESCRIPTIONS["INFP"];
 
   return { type, variant, info };

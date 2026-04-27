@@ -29,8 +29,11 @@ export function Navbar() {
         const focusable = menuRef.current.querySelectorAll(
           'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
         );
-        const first = focusable[0] as HTMLElement;
-        const last = focusable[focusable.length - 1] as HTMLElement;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (!(first instanceof HTMLElement) || !(last instanceof HTMLElement))
+          return;
 
         if (e.shiftKey) {
           if (document.activeElement === first) {
@@ -54,8 +57,10 @@ export function Navbar() {
 
       // Auto focus first link when menu opens
       if (menuRef.current) {
-        const firstLink = menuRef.current.querySelector("a") as HTMLElement;
-        firstLink?.focus();
+        const firstLink = menuRef.current.querySelector("a");
+        if (firstLink instanceof HTMLElement) {
+          firstLink.focus();
+        }
       }
 
       return () => {

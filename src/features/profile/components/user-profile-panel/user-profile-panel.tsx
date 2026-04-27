@@ -1,12 +1,15 @@
 import { cn } from "@/shared/lib/utils";
-import type { DirectChat } from "@/features/activity/types/direct-chats.types";
 import { ProfilePanelInfo } from "./profile-panel-info";
-import { MutualGroupsSection } from "./mutual-groups-section";
+import { MutualGroupsSection, type MutualGroup } from "./mutual-groups-section";
 import { ProfilePanelSettings } from "./profile-panel-settings";
-import { CURRENT_USER_ID } from "@/features/activity/data/mock-direct-chats";
+import type { User, Chat } from "@/shared/schemas";
 
 interface UserProfilePanelProps {
-  chat: DirectChat;
+  participant?: User;
+  chat?: Chat;
+  mutualGroups?: MutualGroup[];
+  isMuted?: boolean;
+  isBlocked?: boolean;
   isMobile?: boolean;
   isDirectChat?: boolean;
   onBack?: () => void;
@@ -16,20 +19,27 @@ interface UserProfilePanelProps {
  * UserProfilePanel - Unified content for the user profile side panel.
  */
 export function UserProfilePanel({
+  participant: propParticipant,
   chat,
+  mutualGroups: propMutualGroups,
+  isMuted: propIsMuted,
+  isBlocked: propIsBlocked,
   isMobile = false,
   isDirectChat = true,
   onBack,
 }: UserProfilePanelProps) {
-  // Find the other participant who is not the current user
-  // Fallback to the first participant if only one exists (e.g. viewing own profile)
-  const participantData =
-    chat.participants?.find((p) => p.userId !== CURRENT_USER_ID) ||
-    chat.participants?.[0];
+  // Derive participant from chat if not provided
+  const participant =
+    propParticipant ||
+    chat?.participants?.find((p) => p.user?.id !== "current-user")?.user ||
+    chat?.participants?.[0]?.user;
 
-  const participant = participantData?.user;
-  const { mutualGroups, isMuted, isBlocked } = chat;
+  // Derive mutual groups from chat if not provided
+  const mutualGroups = propMutualGroups || chat?.mutualGroups || [];
 
+  // Derive settings from chat if not provided
+  const isMuted = propIsMuted ?? chat?.isMuted ?? false;
+  const isBlocked = propIsBlocked ?? chat?.isBlocked ?? false;
   if (!participant) {
     return (
       <div className="flex-1 flex items-center justify-center p-8 text-center">
