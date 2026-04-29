@@ -2,6 +2,7 @@ import { Form } from "@/shared/components/ui/form";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import { useRegisterForm, type Step } from "../../hooks/use-register-form";
+import { FormLevelError } from "../login-form/form-level-error";
 import { StepCredentials } from "../register-steps/step-credentials";
 import { StepOtp } from "../register-steps/step-otp";
 import { StepProfile } from "../register-steps/step-profile";
@@ -48,6 +49,7 @@ export function RegisterForm({
     step,
     direction,
     loading,
+    rootError,
     goToStep2,
     goToStep3,
     goBackToStep1,
@@ -63,6 +65,8 @@ export function RegisterForm({
   return (
     <div className="flex flex-col w-full">
       <StepHeader step={step} />
+
+      {rootError && <FormLevelError message={rootError} />}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

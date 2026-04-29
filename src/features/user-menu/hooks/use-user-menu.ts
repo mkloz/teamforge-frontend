@@ -5,7 +5,6 @@ export function useUserMenu() {
 
   return {
     open,
-    setOpen,
     toggle: () => setOpen((v) => !v),
     close: () => setOpen(false),
   };

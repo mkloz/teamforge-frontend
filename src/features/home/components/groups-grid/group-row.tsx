@@ -1,27 +1,52 @@
+import type { GroupApi } from "@/shared/schemas";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight, MessageCircle, Users } from "lucide-react";
-import type { Group } from "@/shared/schemas";
 
 interface GroupRowProps {
-  group: Group;
+  group: GroupApi;
   index: number;
-  hasUnread?: boolean;
-  lastActivity?: string;
 }
 
-/**
- * Individual group row for the GroupsGrid list.
- * Optimized with Framer Motion for smooth entry.
- */
-export function GroupRow({
-  group,
-  index,
-  hasUnread = false,
-  lastActivity,
-}: GroupRowProps) {
-  const memberCount = group.members?.length ?? 0;
+function formatRelativeTime(value: string) {
+  const timestamp = new Date(value).getTime();
+
+  if (Number.isNaN(timestamp)) {
+    return "Recently";
+  }
+
+  const diffMs = Date.now() - timestamp;
+  const diffMinutes = Math.max(1, Math.floor(diffMs / 60_000));
+
+  if (diffMinutes < 60) {
+    return `${diffMinutes}m ago`;
+  }
+
+  const diffHours = Math.floor(diffMinutes / 60);
+
+  if (diffHours < 24) {
+    return `${diffHours}h ago`;
+  }
+
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffDays < 7) {
+    return `${diffDays}d ago`;
+  }
+
+  return `${Math.floor(diffDays / 7)}w ago`;
+}
+
+export function GroupRow({ group, index }: GroupRowProps) {
+  const lastActivity = formatRelativeTime(group.updatedAt);
+  const initials =
+    group.name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "TF";
 
   return (
     <motion.div
@@ -35,61 +60,41 @@ export function GroupRow({
       role="listitem"
     >
       <Link
-        // @ts-expect-error: Route not yet implemented in router tree
-        to={`/groups/${group.id}`}
-        aria-label={`${group.name}${hasUnread ? ", has unread messages" : ""}. Last active ${lastActivity}.`}
+        to="/activity"
+        aria-label={`${group.name}. Last active ${lastActivity}.`}
         className={cn(
           "group flex items-center gap-3 rounded-2xl border px-3 py-2.5",
           "transition-all duration-150 cursor-pointer",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           "hover:border-forge-teal/30 hover:bg-secondary",
-          hasUnread
-            ? "border-forge-teal/20 bg-secondary/50"
-            : "border-border bg-transparent",
+          "border-border bg-transparent",
         )}
       >
-        {/* Avatar with unread ring */}
         <div className="relative shrink-0">
-          <div
-            className={cn(
-              "size-9 rounded-full overflow-hidden border-2 transition-colors duration-150",
-              hasUnread
-                ? "border-forge-teal/50"
-                : "border-border group-hover:border-forge-teal/30",
+          <div className="size-9 rounded-full overflow-hidden border-2 border-border transition-colors duration-150 group-hover:border-forge-teal/30 bg-canvas flex items-center justify-center">
+            {group.avatar ? (
+              <img
+                src={group.avatar}
+                alt={group.name}
+                className="size-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <span className="text-xs font-black text-forge-teal">
+                {initials}
+              </span>
             )}
-          >
-            <img
-              src={`https://api.dicebear.com/7.x/identicon/svg?seed=${group.avatar || "default"}`}
-              alt=""
-              className="size-full object-cover"
-              loading="lazy"
-            />
           </div>
-          {/* Unread dot */}
-          {hasUnread && (
-            <span
-              className="absolute -top-0.5 -right-0.5 size-2.5 rounded-full bg-spark-amber border-2 border-card"
-              aria-hidden="true"
-            />
-          )}
         </div>
 
-        {/* Name + metadata */}
         <div className="flex flex-col gap-0 flex-1 min-w-0">
-          <span
-            className={cn(
-              "text-sm font-bold leading-tight truncate transition-colors duration-150",
-              hasUnread
-                ? "text-foreground"
-                : "text-foreground group-hover:text-primary",
-            )}
-          >
+          <span className="text-sm font-bold leading-tight truncate text-foreground transition-colors duration-150 group-hover:text-primary">
             {group.name}
           </span>
           <div className="flex items-center gap-2 mt-0.5">
             <span className="flex items-center gap-1 text-xs text-muted-foreground font-medium">
               <Users className="size-2.5 shrink-0" aria-hidden="true" />
-              {memberCount}
+              {group.members.length}
             </span>
             <span
               className="size-0.5 rounded-full bg-border"
@@ -101,9 +106,8 @@ export function GroupRow({
           </div>
         </div>
 
-        {/* Trailing icon */}
         <div className="shrink-0" aria-hidden="true">
-          {hasUnread ? (
+          {group.plan ? (
             <MessageCircle className="size-4 text-forge-teal" />
           ) : (
             <ArrowRight className="size-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-150" />

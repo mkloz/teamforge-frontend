@@ -3,7 +3,7 @@ import { useImageState } from "@/shared/hooks/use-image-state";
 import { ImageOff, Layers } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { memo } from "react";
-import type { UnifiedAttachment } from "@/features/activity/types/chat.types";
+import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import { MoreOverlay } from "./more-overlay";
 
 interface GalleryItemProps {

@@ -1,7 +1,7 @@
 import { CalendarPlus, Share2, BellOff, LogOut, Flag } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
-import type { GroupStatus } from "@/features/activity/types/groups.types";
+import type { GroupStatus } from "@/features/activity/lib/activity-contract";
 
 interface ActionsSectionProps {
   groupId: string;

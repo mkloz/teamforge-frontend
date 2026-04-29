@@ -1,9 +1,9 @@
+import type { PlanStatus } from "@/shared/schemas";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { Calendar, CheckCircle2, Clock, MessageCircle } from "lucide-react";
-import type { PlanStatus, UpcomingPlan } from "../../types/home.types";
+import type { PlannedGroup } from "../../api/home.queries";
 
-/* ── Status config ─────────────────────────────────────────────────── */
 const STATUS_CONFIG: Record<
   PlanStatus,
   { label: string; classes: string; icon: React.ElementType }
@@ -41,18 +41,14 @@ const STATUS_CONFIG: Record<
 };
 
 interface PlanCardProps {
-  plan: UpcomingPlan;
+  group: PlannedGroup;
   index: number;
 }
 
-/**
- * Individual plan card showing activity details, status, and member avatars.
- */
-export function PlanCard({ plan, index }: PlanCardProps) {
+export function PlanCard({ group, index }: PlanCardProps) {
+  const plan = group.plan;
   const status = STATUS_CONFIG[plan.status] || STATUS_CONFIG.DRAFT;
   const StatusIcon = status.icon;
-
-  // Format ISO date
   const date = plan.dateTime ? new Date(plan.dateTime) : new Date();
   const month = date.toLocaleString("en-US", { month: "short" });
   const dayNum = date.getDate();
@@ -62,12 +58,11 @@ export function PlanCard({ plan, index }: PlanCardProps) {
     minute: "2-digit",
     hour12: true,
   });
-
-  const groupName = plan.group?.name || "Unknown Group";
-  const members = plan.group?.members || [];
-  const memberAvatars = members
-    .map((m) => m.user?.avatar)
-    .filter((avatar): avatar is string => Boolean(avatar));
+  const memberPreviews = group.members.map((member) => ({
+    id: member.userId,
+    avatar: member.user.avatar,
+    name: member.user.name,
+  }));
 
   return (
     <motion.div
@@ -87,7 +82,6 @@ export function PlanCard({ plan, index }: PlanCardProps) {
         "dark:hover:border-white dark:hover:shadow-button-outline-dark",
       )}
     >
-      {/* Calendar date block */}
       <div
         className="shrink-0 flex flex-col items-center w-13 rounded-xl border border-border/50 overflow-hidden bg-background shadow-xs"
         aria-hidden="true"
@@ -105,21 +99,18 @@ export function PlanCard({ plan, index }: PlanCardProps) {
         </div>
       </div>
 
-      {/* Plan info */}
       <div className="flex flex-col gap-0.5 flex-1 min-w-0 pl-1">
         <p className="text-sm font-bold text-foreground leading-snug truncate group-hover:text-primary transition-colors duration-200">
           {plan.title}
         </p>
         <p className="text-xs text-muted-foreground font-medium truncate">
-          {groupName}
+          {group.name}
         </p>
         <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-          {/* Time pill */}
           <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
             <Clock className="size-3" aria-hidden="true" />
             {timeStr}
           </span>
-          {/* Status badge */}
           <span
             className={cn(
               "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide",
@@ -132,34 +123,42 @@ export function PlanCard({ plan, index }: PlanCardProps) {
         </div>
       </div>
 
-      {/* Right: avatar stack + action button */}
       <div className="shrink-0 flex flex-col items-end gap-2.5">
-        {/* Member avatar stack */}
         <div
           className="flex -space-x-2.5"
-          aria-label={`${memberAvatars.length} members`}
+          aria-label={`${memberPreviews.length} members`}
         >
-          {memberAvatars.slice(0, 3).map((seed, i) => (
+          {memberPreviews.slice(0, 3).map((member) => (
             <div
-              key={i}
-              className="size-8 rounded-full border-2 border-card bg-muted overflow-hidden shadow-xs"
+              key={member.id}
+              className="size-8 rounded-full border-2 border-card bg-muted overflow-hidden shadow-xs flex items-center justify-center"
             >
-              <img
-                src={`https://api.dicebear.com/7.x/notionists/svg?seed=${seed}`}
-                alt={`Member ${i + 1}`}
-                className="size-full object-cover"
-                loading="lazy"
-              />
+              {member.avatar ? (
+                <img
+                  src={member.avatar}
+                  alt={member.name}
+                  className="size-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <span className="text-[10px] font-black text-forge-teal">
+                  {member.name
+                    .split(/\s+/)
+                    .filter(Boolean)
+                    .slice(0, 2)
+                    .map((part) => part[0]?.toUpperCase())
+                    .join("") || "TF"}
+                </span>
+              )}
             </div>
           ))}
-          {memberAvatars.length > 3 && (
+          {memberPreviews.length > 3 && (
             <div className="size-8 rounded-full border-2 border-card bg-muted flex items-center justify-center text-xs font-extrabold text-muted-foreground shadow-xs">
-              +{memberAvatars.length - 3}
+              +{memberPreviews.length - 3}
             </div>
           )}
         </div>
 
-        {/* Chat button */}
         <button
           type="button"
           aria-label={`Open chat for ${plan.title}`}

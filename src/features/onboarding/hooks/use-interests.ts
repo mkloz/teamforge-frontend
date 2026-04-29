@@ -1,11 +1,24 @@
-import { useDeferredValue, useEffect, useState, useTransition } from "react";
 import {
-  INTEREST_CATEGORIES,
-  MAX_INTERESTS,
-  MBTI_SUGGESTIONS,
-  MIN_INTERESTS,
-} from "../data/interests-data";
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { AuthQueries } from "@/features/auth/api/auth.queries";
+import { MAX_INTERESTS, MIN_INTERESTS } from "../data/interests-data";
 import type { InterestsScreen } from "../data/interests-types";
+import { OnboardingQueries } from "../api/onboarding.queries";
+import { buildLeafInterestMap } from "../lib/interest-catalog";
+import {
+  createInitialCollapsedCategories,
+  expandCategoryOnly as buildExpandedCategoryState,
+  readMbtiFromSearch,
+  toggleCollapsedCategory,
+  toggleExpandedSubcategory,
+} from "../lib/interests-browser-state";
 import { useInterestsStore } from "../store/interests-store";
 import {
   getCorrelatedSuggestions,
@@ -18,126 +31,200 @@ interface UseInterestsOptions {
   onComplete: () => void;
 }
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
-
 export type UseInterestsReturn = ReturnType<typeof useInterests>;
 
 export function useInterests({ onComplete }: UseInterestsOptions) {
   const store = useInterestsStore();
+  const queryClient = useQueryClient();
   const [isPending, startTransition] = useTransition();
+  const { data: currentUser } = AuthQueries.useCurrentUser();
 
-  // ── Session state ──────────────────────────────────────────────────────────
+  const {
+    data: categories = [],
+    error: catalogError,
+    isLoading: isCatalogLoading,
+    refetch: retryCatalog,
+  } = useQuery(OnboardingQueries.interestTree());
+
+  const { mutateAsync: saveInterests, isPending: isSaving } = useMutation({
+    mutationFn: OnboardingQueries.setInterests,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: AuthQueries.currentUserQueryKey,
+      });
+    },
+  });
+
   const [searchQuery, setSearchQuery] = useState("");
   const deferredSearchQuery = useDeferredValue(searchQuery);
-
+  const [saveErrorMessage, setSaveErrorMessage] = useState<string | null>(null);
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(
-    () => new Set(INTEREST_CATEGORIES.map((c) => c.id)),
+    new Set(),
   );
   const [expandedSubcategories, setExpandedSubcategories] = useState<
     Set<string>
   >(new Set());
 
-  // ── MBTI detection ─────────────────────────────────────────────────────────
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const mbti = params.get("mbti");
-    if (mbti && mbti in MBTI_SUGGESTIONS && !store.personalityType) {
+    const mbti = readMbtiFromSearch(window.location.search);
+
+    if (mbti && !store.personalityType) {
       store.setPersonalityType(mbti);
+      return;
     }
-  }, [store]);
 
-  // ── Derived Data ───────────────────────────────────────────────────────────
+    if (currentUser?.personalityType && !store.personalityType) {
+      store.setPersonalityType(currentUser.personalityType);
+    }
+  }, [currentUser?.personalityType, store]);
 
-  const selectedSet = new Set(store.selectedIds);
-  const rejectedSet = new Set(store.rejectedIds);
+  const leafById = useMemo(
+    () => buildLeafInterestMap(categories),
+    [categories],
+  );
+  const resolvedCollapsedCategories = useMemo(() => {
+    if (collapsedCategories.size > 0 || !categories.length) {
+      return collapsedCategories;
+    }
 
-  const suggestedTags = getMbtiSuggestions(
-    store.personalityType,
-    selectedSet,
-    rejectedSet,
+    return createInitialCollapsedCategories(categories);
+  }, [categories, collapsedCategories]);
+
+  useEffect(() => {
+    if (!categories.length) {
+      return;
+    }
+
+    const validCurrentIds = store.selectedIds.filter((id) => leafById[id]);
+    const userInterestIds =
+      currentUser?.interests
+        ?.map((interest) => interest.id)
+        .filter((id) => leafById[id]) ?? [];
+
+    if (!store.selectedIds.length && userInterestIds.length) {
+      store.replaceSelected(userInterestIds, MAX_INTERESTS);
+      return;
+    }
+
+    if (validCurrentIds.length !== store.selectedIds.length) {
+      store.replaceSelected(validCurrentIds, MAX_INTERESTS);
+    }
+  }, [categories, currentUser?.interests, leafById, store]);
+
+  const selectedSet = useMemo(
+    () => new Set(store.selectedIds),
+    [store.selectedIds],
+  );
+  const rejectedSet = useMemo(
+    () => new Set(store.rejectedIds),
+    [store.rejectedIds],
   );
 
-  const searchResults = getSearchResults(deferredSearchQuery);
-
-  const suggestedIds = new Set(suggestedTags.map((t) => t.id));
-  const youMightAlsoLike = getCorrelatedSuggestions(
-    store.selectedIds,
-    rejectedSet,
-    suggestedIds,
+  const suggestedTags = useMemo(
+    () =>
+      getMbtiSuggestions(
+        store.personalityType,
+        leafById,
+        selectedSet,
+        rejectedSet,
+      ),
+    [leafById, rejectedSet, selectedSet, store.personalityType],
   );
 
-  const showBalanceNudge = getShouldShowBalanceNudge(store.selectedIds);
+  const searchResults = useMemo(
+    () => getSearchResults(deferredSearchQuery, categories),
+    [categories, deferredSearchQuery],
+  );
+
+  const suggestedIds = useMemo(
+    () => new Set(suggestedTags.map((tag) => tag.id)),
+    [suggestedTags],
+  );
+
+  const youMightAlsoLike = useMemo(
+    () =>
+      getCorrelatedSuggestions(
+        store.selectedIds,
+        rejectedSet,
+        suggestedIds,
+        leafById,
+        categories,
+      ),
+    [categories, leafById, rejectedSet, store.selectedIds, suggestedIds],
+  );
+
+  const showBalanceNudge = useMemo(
+    () => getShouldShowBalanceNudge(store.selectedIds, categories),
+    [categories, store.selectedIds],
+  );
 
   const canContinue = store.selectedIds.length >= MIN_INTERESTS;
   const isAtMax = store.selectedIds.length >= MAX_INTERESTS;
 
-  // ── Actions ────────────────────────────────────────────────────────────────
-
-  function toggleCategory(catId: string) {
-    setCollapsedCategories((prev) => {
-      const next = new Set(prev);
-      if (next.has(catId)) {
-        next.delete(catId);
-      } else {
-        next.add(catId);
-      }
-      return next;
-    });
+  function toggleCategory(categoryId: string) {
+    setCollapsedCategories((prev) =>
+      toggleCollapsedCategory(
+        prev.size > 0 || !categories.length
+          ? prev
+          : createInitialCollapsedCategories(categories),
+        categoryId,
+      ),
+    );
   }
 
-  function expandCategoryOnly(catId: string) {
-    setCollapsedCategories(() => {
-      const allIds = INTEREST_CATEGORIES.map((c) => c.id);
-      const next = new Set(allIds);
-      next.delete(catId);
-      return next;
-    });
+  function expandCategoryOnly(categoryId: string) {
+    setCollapsedCategories(() =>
+      buildExpandedCategoryState(categories, categoryId),
+    );
   }
 
-  function toggleSubcategory(subId: string) {
+  function toggleSubcategory(subcategoryId: string) {
     startTransition(() => {
-      setExpandedSubcategories((prev) => {
-        const next = new Set(prev);
-        if (next.has(subId)) {
-          next.delete(subId);
-        } else {
-          // Find the category this subcategory belongs to and collapse others in it
-          const category = INTEREST_CATEGORIES.find((c) =>
-            c.subcategories.some((s) => s.id === subId),
-          );
-          if (category) {
-            for (const sub of category.subcategories) {
-              next.delete(sub.id);
-            }
-          }
-          next.add(subId);
-        }
-        return next;
-      });
+      setExpandedSubcategories((prev) =>
+        toggleExpandedSubcategory(categories, prev, subcategoryId),
+      );
     });
   }
 
-  function finalize() {
-    onComplete();
+  async function finalize() {
+    if (!canContinue || isSaving) {
+      return;
+    }
+
+    setSaveErrorMessage(null);
+
+    try {
+      await saveInterests({
+        interestIds: store.selectedIds,
+      });
+
+      onComplete();
+    } catch (error) {
+      if (error instanceof Error && error.message) {
+        setSaveErrorMessage(error.message);
+        return;
+      }
+
+      setSaveErrorMessage(
+        "We couldn’t save your interests just yet. Please try again.",
+      );
+    }
   }
 
   const goToReview = () => store.setScreen("review");
   const goToBrowse = () => store.setScreen("browse");
-  const setScreen = (s: InterestsScreen) => store.setScreen(s);
+  const setScreen = (screen: InterestsScreen) => store.setScreen(screen);
   const toggle = (id: string) => store.toggle(id, MAX_INTERESTS);
   const reject = (id: string) => store.toggleReject(id);
 
   return {
-    // Persistent Store State
     screen: store.screen,
     personalityType: store.personalityType,
-
-    // Session State
+    categories,
+    leafById,
     searchQuery,
-    collapsedCategories,
+    collapsedCategories: resolvedCollapsedCategories,
     expandedSubcategories,
-
-    // Derived Data
     selectedIds: selectedSet,
     selectedCount: store.selectedIds.length,
     canContinue,
@@ -146,8 +233,10 @@ export function useInterests({ onComplete }: UseInterestsOptions) {
     searchResults,
     youMightAlsoLike,
     showBalanceNudge,
-
-    // Actions
+    isCatalogLoading,
+    catalogError,
+    isSaving,
+    saveErrorMessage,
     setSearchQuery,
     toggleCategory,
     expandCategoryOnly,
@@ -158,6 +247,7 @@ export function useInterests({ onComplete }: UseInterestsOptions) {
     toggle,
     reject,
     finalize,
+    retryCatalog,
     isPending,
   };
 }

@@ -1,7 +1,7 @@
 import { cn } from "@/shared/lib/utils";
 import { memo } from "react";
 import { motion } from "framer-motion";
-import type { UnifiedConversation } from "../../types/unified-conversation.types";
+import type { UnifiedConversation } from "../../lib/activity-contract";
 import { AvatarSection } from "./avatar-section";
 import { ContentSection } from "./content-section";
 

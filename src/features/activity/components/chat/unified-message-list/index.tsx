@@ -1,7 +1,7 @@
 import { useChatScroll } from "@/features/activity/hooks/use-chat-scroll";
 import { useMessageGrouping } from "@/features/activity/hooks/use-message-grouping";
-import type { UnifiedMessage } from "@/features/activity/types/chat.types";
-import { UserProfilePanel } from "@/features/profile/components/user-profile-panel/user-profile-panel";
+import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { UserProfilePanel } from "@/shared/components/user-profile-panel/user-profile-panel";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import React, { memo, useCallback, useState } from "react";
@@ -10,21 +10,36 @@ import { DateSeparator } from "./date-separator";
 import { MessageRenderer } from "./message-renderer";
 import { ScrollActionButtons } from "./scroll-action-buttons";
 import { TypingPresence } from "./typing-presence";
-import type { User } from "@/shared/schemas";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
 } from "@/shared/components/ui/drawer";
+import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
 
 interface UnifiedMessageListProps {
   messages: UnifiedMessage[];
   kind: "dm" | "group";
   messagesEndRef: React.RefObject<HTMLDivElement | null>;
   containerRef?: React.RefObject<HTMLDivElement | null>;
-  typingUsers?: { fullName: string; avatar: string }[];
+  typingUsers?: { name: string; avatar: string }[];
   onToggleAction?: () => void;
+}
+
+function getParticipantDisplayName(participant?: ActivityParticipant | null) {
+  return participant?.name?.trim() || "User";
+}
+
+function getParticipantInitials(participant?: ActivityParticipant | null) {
+  const initials = getParticipantDisplayName(participant)
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+
+  return initials || "TF";
 }
 
 /**
@@ -39,10 +54,11 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
   typingUsers = [],
   onToggleAction,
 }: UnifiedMessageListProps) {
-  const [selectedSender, setSelectedSender] = useState<User | null>(null);
+  const [selectedSender, setSelectedSender] =
+    useState<ActivityParticipant | null>(null);
 
   const handleAvatarClick = useCallback(
-    (sender: User) => {
+    (sender: ActivityParticipant) => {
       if (kind === "dm") {
         onToggleAction?.();
       } else {
@@ -84,10 +100,10 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
               <DateSeparator date={dateGroup.date} />
 
               {dateGroup.senderGroups.map((senderGroup, groupIdx) => {
-                // Handle both mock variants until auth store is integrated
                 const isOwn =
-                  senderGroup.senderId === "current-user" ||
-                  senderGroup.senderId === "user-current";
+                  senderGroup.items[0]?.isOwn ??
+                  (senderGroup.senderId === "current-user" ||
+                    senderGroup.senderId === "user-current");
 
                 return (
                   <div
@@ -109,13 +125,21 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
                               handleAvatarClick(senderGroup.sender)
                             }
                             className="rounded-full h-8 w-8 p-0"
-                            aria-label={`View ${senderGroup.sender?.fullName}'s profile`}
+                            aria-label={`View ${getParticipantDisplayName(senderGroup.sender)}'s profile`}
                           >
-                            <img
-                              src={senderGroup.sender?.avatar || ""}
-                              alt={senderGroup.sender?.fullName || "User"}
-                              className="w-8 h-8 rounded-full object-cover ring-1 ring-border shadow-sm"
-                            />
+                            {senderGroup.sender?.avatar ? (
+                              <img
+                                src={senderGroup.sender.avatar}
+                                alt={getParticipantDisplayName(
+                                  senderGroup.sender,
+                                )}
+                                className="w-8 h-8 rounded-full object-cover ring-1 ring-border shadow-sm"
+                              />
+                            ) : (
+                              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-[10px] font-bold text-muted-foreground ring-1 ring-border shadow-sm">
+                                {getParticipantInitials(senderGroup.sender)}
+                              </div>
+                            )}
                           </Button>
                         </div>
                       </div>

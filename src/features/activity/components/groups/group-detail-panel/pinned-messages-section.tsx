@@ -1,9 +1,9 @@
 import { Pin } from "lucide-react";
-import type { Message } from "@/features/activity/types/groups.types";
+import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import dayjs from "dayjs";
 
 interface PinnedMessagesSectionProps {
-  pinnedMessages: Message[];
+  pinnedMessages: UnifiedMessage[];
 }
 
 export function PinnedMessagesSection({
@@ -28,7 +28,7 @@ export function PinnedMessagesSection({
           >
             <div className="flex justify-between items-start mb-1">
               <span className="text-[12px] font-semibold text-ink leading-none">
-                {message.sender?.fullName || "System"}
+                {message.sender?.name || "System"}
               </span>
               <span className="text-[10px] text-slate-muted font-medium">
                 {message.createdAt && dayjs(message.createdAt).format("MMM D")}

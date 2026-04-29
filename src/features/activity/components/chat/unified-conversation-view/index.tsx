@@ -1,8 +1,10 @@
 import { useConversationData } from "@/features/activity/hooks/use-conversation-data";
 import { useActivityStore } from "@/features/activity/store/activity.store";
-import type { UnifiedMessage } from "@/features/activity/types/chat.types";
-import type { DirectChat } from "@/features/activity/types/direct-chats.types";
-import type { Group } from "@/features/activity/types/groups.types";
+import type {
+  DirectChat,
+  Group,
+  UnifiedMessage,
+} from "@/features/activity/lib/activity-contract";
 import { useIsMobile } from "@/shared/hooks/use-breakpoint";
 import { memo, useRef } from "react";
 import { ChatStatusBar } from "../chat-status-bar";
@@ -18,7 +20,7 @@ type UnifiedConversationViewProps =
 interface BaseConversationProps {
   messages: UnifiedMessage[];
   isTyping?: boolean;
-  typingUsers?: { fullName: string; avatar: string }[];
+  typingUsers?: { name: string; avatar: string }[];
   isActionOpen?: boolean;
   onBack: () => void;
   onToggleAction: () => void;
@@ -64,7 +66,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
 
   const dataPinnedMessages: UnifiedMessage[] = (
     pinnedMessagesFromData || []
-  ).map((msg) => ({
+  ).map((msg: UnifiedMessage) => ({
     ...msg,
     isOwn: false, // Default for pinned messages from others or system
   }));
@@ -83,8 +85,8 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
         kind={kind}
         title={headerProps.title}
         subtitle={headerProps.subtitle}
-        avatarUrl={headerProps.avatarUrl || ""}
-        secondaryAvatar={headerProps.secondaryAvatar || undefined}
+        avatarUrl={headerProps.avatarUrl}
+        secondaryAvatar={headerProps.secondaryAvatar}
         onlineStatus={headerProps.onlineStatus}
         isTyping={isMobile && activeTypingUsers.length > 0}
         typingText={typingText}
@@ -94,7 +96,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
       />
 
       <ChatStatusBar
-        plan={kind === "group" ? data.plan : undefined}
+        plan={kind === "group" ? (data.plan ?? undefined) : undefined}
         pinnedMessages={allPinnedMessages}
         onViewDetails={onToggleAction}
         onUnpinPinnedMessage={unpinMessage}

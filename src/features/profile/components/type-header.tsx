@@ -1,3 +1,5 @@
+import type { PersonalityType } from "@/shared/schemas/enums";
+import type { DimensionScore } from "@/shared/types/psychometrics";
 import {
   Tooltip,
   TooltipContent,
@@ -5,12 +7,11 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
-import type { MBTIType, DimensionScore } from "../types/profile.types";
 import { getTypeTitle } from "../lib/archetypes";
 import { getBorderlineExplanation } from "../lib/narrative-generator";
 
 interface TypeHeaderProps {
-  type: MBTIType;
+  type: PersonalityType;
   dimensionScores: DimensionScore[];
 }
 

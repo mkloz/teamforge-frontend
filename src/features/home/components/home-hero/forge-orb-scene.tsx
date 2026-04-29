@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { MOCK_CURRENT_USER } from "../../data/mock-home";
 
 /**
  * Avatar seeds → deterministic initials & hue for floating member bubbles.
@@ -44,6 +43,7 @@ function polar(cx: number, cy: number, angleDeg: number, r: number) {
 }
 
 interface ForgeOrbSceneProps {
+  firstName: string;
   reduced: boolean;
 }
 
@@ -51,7 +51,7 @@ interface ForgeOrbSceneProps {
  * Animated SVG scene representing the "Forge" algorithm.
  * Features orbiting member avatars and connection lines.
  */
-export function ForgeOrbScene({ reduced }: ForgeOrbSceneProps) {
+export function ForgeOrbScene({ firstName, reduced }: ForgeOrbSceneProps) {
   const CX = 130;
   const CY = 130;
   const SIZE = 260;
@@ -186,7 +186,7 @@ export function ForgeOrbScene({ reduced }: ForgeOrbSceneProps) {
         transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1], delay: 0.15 }}
       >
         <img
-          src={`https://api.dicebear.com/7.x/notionists/svg?seed=${MOCK_CURRENT_USER.firstName}`}
+          src={`https://api.dicebear.com/7.x/notionists/svg?seed=${firstName}`}
           alt="Your avatar"
           className="size-full object-cover"
         />

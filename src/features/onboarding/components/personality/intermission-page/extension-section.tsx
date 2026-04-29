@@ -23,12 +23,12 @@ export function ExtensionSection({
       variants={fadeUpItem}
       className="w-full mb-6 flex flex-col items-start text-left"
     >
-      <div className="h-px w-full bg-slate-200/60 mb-8" />
+      <div className="h-px w-full bg-slate-200/60 dark:bg-white/10 mb-8" />
 
       <h3 className="font-sans text-base font-bold text-ink mb-1.5 flex items-center gap-2">
         Continue Exploring
       </h3>
-      <p className="font-sans text-sm text-slate-500 font-medium mb-6 leading-relaxed">
+      <p className="font-sans text-sm text-muted-foreground font-medium mb-6 leading-relaxed">
         You've completed the baseline assessment. You can stop here, or answer
         more questions to generate a higher-resolution profile.
       </p>
@@ -53,7 +53,7 @@ export function ExtensionSection({
                   "w-full flex items-center justify-between py-3 px-4 rounded-xl transition-all cursor-pointer group/btn relative border active:scale-[0.98]",
                   isSelected
                     ? "border-forge-teal bg-forge-teal/5 shadow-sm shadow-forge-teal/10"
-                    : "border-slate-200/60 bg-white hover:border-slate-300 hover:shadow-xs",
+                    : "border-slate-200/60 dark:border-white/10 bg-card hover:border-slate-300 dark:hover:border-white/16 hover:shadow-xs",
                 )}
               >
                 <div className="flex flex-col items-start relative z-10">
@@ -63,7 +63,7 @@ export function ExtensionSection({
                         "font-sans text-xs font-bold uppercase tracking-wider rounded-full px-2 py-0.5",
                         isSelected
                           ? "bg-forge-teal text-white"
-                          : "bg-slate-100 text-slate-500",
+                          : "bg-slate-100 dark:bg-white/8 text-muted-foreground",
                       )}
                     >
                       {config.label}
@@ -77,7 +77,7 @@ export function ExtensionSection({
 
                 <div className="flex items-center gap-3 relative z-10">
                   <div className="flex flex-col items-end mr-2">
-                    <span className="font-sans text-xs text-slate-400 font-medium lowercase">
+                    <span className="font-sans text-xs text-muted-foreground font-medium lowercase">
                       est. +{config.estimatedMinutes - currentEst} min
                     </span>
                   </div>
@@ -86,7 +86,7 @@ export function ExtensionSection({
                       "w-6 h-6 rounded-full flex items-center justify-center border-2 transition-all",
                       isSelected
                         ? "bg-forge-teal border-forge-teal text-white"
-                        : "bg-white border-slate-200 text-slate-300 group-hover/btn:border-slate-300 group-hover/btn:text-slate-400",
+                        : "bg-card border-slate-200 dark:border-white/12 text-slate-300 dark:text-white/40 group-hover/btn:border-slate-300 dark:group-hover/btn:border-white/18 group-hover/btn:text-slate-400 dark:group-hover/btn:text-white/60",
                     )}
                   >
                     {isSelected ? (

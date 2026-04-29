@@ -4,7 +4,7 @@ import {
   generateDetailedDescription,
   type PersonalityProfile,
 } from "../lib/ocean-traits";
-import type { OceanScores } from "../types/profile.types";
+import type { OceanScores } from "../lib/profile-contract";
 import { SectionTitle } from "./section-title";
 
 interface PersonalitySectionProps {
@@ -16,17 +16,25 @@ export function PersonalitySection({
   oceanScores,
   hideHeaders = false,
 }: PersonalitySectionProps) {
-  // Provide default scores if none are provided to avoid crashing
-  const defaultScores: OceanScores = {
-    openness: 50,
-    conscientiousness: 50,
-    extraversion: 50,
-    agreeableness: 50,
-    neuroticism: 50,
-  };
-  const personalityProfile = generateDetailedDescription(
-    oceanScores || defaultScores,
-  );
+  if (!oceanScores) {
+    return (
+      <div className="flex flex-col gap-6 w-full">
+        <div className={cn("flex flex-col", hideHeaders ? "gap-6" : "gap-10")}>
+          <div className="space-y-4">
+            <h4 className="text-2xl md:text-3xl font-bold text-ink tracking-tight">
+              Personality profile still calibrating
+            </h4>
+            <p className="text-base text-slate-muted font-medium leading-relaxed text-pretty">
+              We do not have a complete OCEAN profile for this account yet, so
+              these narrative insights are not available.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const personalityProfile = generateDetailedDescription(oceanScores);
 
   return (
     <div className="flex flex-col gap-6 w-full">

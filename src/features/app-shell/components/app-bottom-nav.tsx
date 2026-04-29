@@ -15,7 +15,7 @@ interface NavItem {
 }
 
 const TABS: NavItem[] = [
-  { id: "home", to: "/home", icon: Home, label: "Home", badge: 3 },
+  { id: "home", to: "/home", icon: Home, label: "Home" },
   { id: "explore", to: "/explore", icon: Compass, label: "Explore" },
   { id: "forge", to: "/forge", icon: Flame, label: "Forge" },
   {
@@ -24,7 +24,6 @@ const TABS: NavItem[] = [
     icon: MessageSquare,
     label: "Activity",
     matchPrefix: true,
-    badge: 5,
   },
   { id: "profile", to: "/profile", icon: User, label: "Profile" },
 ];

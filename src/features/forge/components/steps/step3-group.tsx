@@ -14,11 +14,46 @@ import {
   Zap,
 } from "lucide-react";
 import { useState } from "react";
-import type { ForgeMode, Visibility } from "../../types/forge.types";
+import type {
+  FixedGroupSize,
+  ForgeMode,
+  GroupSizeMode,
+  Visibility,
+} from "../../lib/forge-contract";
+
+const VISIBILITY_OPTIONS: Array<{
+  value: Visibility;
+  label: string;
+  description: string;
+  Icon: typeof Globe;
+}> = [
+  {
+    value: "PUBLIC",
+    label: "Public",
+    description: "Anyone on TeamForge can discover and request to join.",
+    Icon: Globe,
+  },
+  {
+    value: "FRIENDS_ONLY",
+    label: "Friends only",
+    description: "Only people in your network can see and request to join.",
+    Icon: UserCheck,
+  },
+  {
+    value: "INVITE_ONLY",
+    label: "Private — invite only",
+    description: "Hidden from discovery. Members join by invitation only.",
+    Icon: Lock,
+  },
+];
 
 export interface Step3GroupProps {
   forgeMode: ForgeMode;
   onForgeModeChange: (v: ForgeMode) => void;
+  fixedSize: FixedGroupSize;
+  onFixedSizeChange: (v: number) => void;
+  groupSizeMode: GroupSizeMode;
+  onGroupSizeModeChange: (v: GroupSizeMode) => void;
   autoMinSize: number;
   onAutoMinSizeChange: (v: number) => void;
   autoMaxSize: number;
@@ -40,6 +75,10 @@ export interface Step3GroupProps {
 export function Step3Group({
   forgeMode,
   onForgeModeChange,
+  fixedSize,
+  onFixedSizeChange,
+  groupSizeMode,
+  onGroupSizeModeChange,
   autoMinSize,
   onAutoMinSizeChange,
   autoMaxSize,
@@ -59,8 +98,6 @@ export function Step3Group({
 }: Step3GroupProps) {
   // Algorithm tuning collapsed by default
   const [algorithmsExpanded, setAlgorithmsExpanded] = useState(false);
-  const [capacityMode, setCapacityMode] = useState<"range" | "fixed">("range");
-  const [fixedCapacity, setFixedCapacity] = useState(6);
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-4">
@@ -86,31 +123,7 @@ export function Step3Group({
         </div>
 
         <div className="flex flex-col gap-2">
-          {(
-            [
-              {
-                value: "PUBLIC",
-                label: "Public",
-                description:
-                  "Anyone on TeamForge can discover and request to join.",
-                Icon: Globe,
-              },
-              {
-                value: "FRIENDS_ONLY",
-                label: "Friends only",
-                description:
-                  "Only people in your network can see and request to join.",
-                Icon: UserCheck,
-              },
-              {
-                value: "INVITE_ONLY",
-                label: "Private — invite only",
-                description:
-                  "Hidden from discovery. Members join by invitation only.",
-                Icon: Lock,
-              },
-            ] as const
-          ).map(({ value, label, description, Icon }) => {
+          {VISIBILITY_OPTIONS.map(({ value, label, description, Icon }) => {
             const active = visibility === value;
             return (
               <button
@@ -118,7 +131,7 @@ export function Step3Group({
                 type="button"
                 role="radio"
                 aria-checked={active}
-                onClick={() => onVisibilityChange(value as Visibility)}
+                onClick={() => onVisibilityChange(value)}
                 className={cn(
                   "group w-full flex items-start gap-4 p-4 rounded-2xl border text-left transition-colors duration-200",
                   active
@@ -225,16 +238,17 @@ export function Step3Group({
                 </span>
                 <div className="flex items-center gap-0 p-0.5 rounded-lg bg-muted/30 border border-border/40">
                   {(["range", "fixed"] as const).map((mode) => {
-                    const active = capacityMode === mode;
+                    const nextMode = mode === "range" ? "RANGE" : "FIXED";
+                    const active = groupSizeMode === nextMode;
                     const badge =
                       mode === "range"
                         ? `${autoMinSize}–${autoMaxSize}`
-                        : `${fixedCapacity}`;
+                        : `${fixedSize}`;
                     return (
                       <button
                         key={mode}
                         type="button"
-                        onClick={() => setCapacityMode(mode)}
+                        onClick={() => onGroupSizeModeChange(nextMode)}
                         className={cn(
                           "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-micro font-bold transition-colors duration-200 min-w-16 justify-center",
                           active
@@ -263,7 +277,7 @@ export function Step3Group({
 
               {/* Uniform slider container — identical min-height and layout for both modes */}
               <div className="min-h-18 flex flex-col justify-center">
-                {capacityMode === "range" ? (
+                {groupSizeMode === "RANGE" ? (
                   <div className="space-y-1 animate-in fade-in duration-200">
                     <div className="py-1">
                       <RadixSlider.Root
@@ -273,8 +287,8 @@ export function Step3Group({
                           onAutoMinSizeChange(min);
                           onAutoMaxSizeChange(max);
                         }}
-                        min={3}
-                        max={12}
+                        min={2}
+                        max={8}
                         step={1}
                         minStepsBetweenThumbs={1}
                       >
@@ -293,10 +307,10 @@ export function Step3Group({
                     </div>
                     <div className="flex justify-between px-0.5">
                       <span className="text-micro text-muted-foreground/40">
-                        3 min
+                        2 min
                       </span>
                       <span className="text-micro text-muted-foreground/40">
-                        12 max
+                        8 max
                       </span>
                     </div>
                   </div>
@@ -305,10 +319,10 @@ export function Step3Group({
                     <div className="py-1">
                       <RadixSlider.Root
                         className="relative flex items-center select-none touch-none w-full h-10"
-                        value={[fixedCapacity]}
-                        onValueChange={([v]) => setFixedCapacity(v)}
-                        min={3}
-                        max={12}
+                        value={[fixedSize]}
+                        onValueChange={([v]) => onFixedSizeChange(v)}
+                        min={2}
+                        max={8}
                         step={1}
                       >
                         <RadixSlider.Track className="bg-muted relative grow rounded-full h-1.5">
@@ -322,10 +336,10 @@ export function Step3Group({
                     </div>
                     <div className="flex justify-between px-0.5">
                       <span className="text-micro text-muted-foreground/40">
-                        3 min
+                        2 min
                       </span>
                       <span className="text-micro text-muted-foreground/40">
-                        12 max
+                        8 max
                       </span>
                     </div>
                   </div>

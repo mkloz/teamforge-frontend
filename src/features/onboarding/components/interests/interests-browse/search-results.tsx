@@ -3,7 +3,11 @@ import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Search } from "lucide-react";
 import { useState } from "react";
-import type { SearchResults as SearchResultsType } from "../../../data/interests-types";
+import {
+  getLeafInterests,
+  getSubcategoryIcon,
+} from "../../../lib/interest-catalog";
+import type { InterestSearchResults } from "../../../utils/interest-logic";
 import { TagPill } from "./tag-pill";
 
 export function SearchResults({
@@ -14,7 +18,7 @@ export function SearchResults({
   onToggle,
 }: {
   query: string;
-  results: SearchResultsType;
+  results: InterestSearchResults;
   selectedIds: Set<string>;
   isAtMax: boolean;
   onToggle: (id: string) => void;
@@ -68,31 +72,33 @@ export function SearchResults({
               <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-slate-muted/50 mb-1">
                 Categories
               </p>
-              {results.subcategories.map(({ sub, categoryLabel }) => {
-                const open = expandedSubs.has(sub.id);
-                const subSelectedCount = sub.tags.filter((t) =>
-                  selectedIds.has(t.id),
+              {results.subcategories.map(({ subcategory, category }) => {
+                const open = expandedSubs.has(subcategory.id);
+                const subSelectedCount = getLeafInterests(subcategory).filter(
+                  (interest) => selectedIds.has(interest.id),
                 ).length;
+                const Icon = getSubcategoryIcon(subcategory.id);
+
                 return (
                   <div
-                    key={sub.id}
+                    key={subcategory.id}
                     className="rounded-xl border border-slate-muted/15 overflow-hidden transition-colors"
                   >
                     <Button
                       variant="ghost"
-                      onClick={() => toggleSub(sub.id)}
+                      onClick={() => toggleSub(subcategory.id)}
                       className="w-full h-auto justify-start flex items-center gap-2 px-3 py-2.5 rounded-none text-left group"
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-slate-muted/60">
-                          <sub.icon className="w-5 h-5" strokeWidth={1.5} />
+                          <Icon className="w-5 h-5" strokeWidth={1.5} />
                         </span>
                         <div className="flex flex-col">
                           <span className="font-sans text-xs font-bold text-ink">
-                            {sub.label}
+                            {subcategory.name}
                           </span>
                           <span className="font-sans text-[10px] font-bold uppercase tracking-wider text-slate-muted/50 leading-none">
-                            {categoryLabel}
+                            {category.name}
                           </span>
                         </div>
                       </div>
@@ -126,10 +132,10 @@ export function SearchResults({
                           className="overflow-hidden"
                         >
                           <div className="flex flex-wrap gap-1.5 p-3 pt-4">
-                            {sub.tags.map((tag) => (
+                            {getLeafInterests(subcategory).map((tag) => (
                               <TagPill
                                 key={tag.id}
-                                label={tag.label}
+                                label={tag.name}
                                 selected={selectedIds.has(tag.id)}
                                 disabled={isAtMax}
                                 onToggle={() => onToggle(tag.id)}
@@ -162,15 +168,15 @@ export function SearchResults({
                       matchedAlias
                         ? matchedAlias.charAt(0).toUpperCase() +
                           matchedAlias.slice(1)
-                        : tag.label
+                        : tag.name
                     }
                     selected={selectedIds.has(tag.id)}
                     disabled={isAtMax}
                     onToggle={() => onToggle(tag.id)}
                     aliases={
-                      matchedAlias && tag.label !== matchedAlias
+                      matchedAlias && tag.name !== matchedAlias
                         ? [
-                            tag.label,
+                            tag.name,
                             ...(tag.aliases?.filter(
                               (a) => a !== matchedAlias,
                             ) ?? []),

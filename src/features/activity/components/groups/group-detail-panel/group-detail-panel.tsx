@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 import { useCallback, useEffect } from "react";
-import type { Group } from "@/features/activity/types/groups.types";
+import type { Group } from "@/features/activity/lib/activity-contract";
 import { GroupPanelContent } from "./group-panel-content";
 import {
   Drawer,

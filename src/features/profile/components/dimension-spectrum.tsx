@@ -5,7 +5,7 @@ import {
 } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 import { getBorderlineExplanation } from "../lib/narrative-generator";
-import type { DimensionScore } from "../types/profile.types";
+import type { DimensionScore } from "@/shared/types/psychometrics";
 
 interface DimensionSpectrumProps {
   score: DimensionScore;

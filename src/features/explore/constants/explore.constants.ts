@@ -1,8 +1,15 @@
 import { Activity, Clock, Target } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import type { SortOption } from "../types/explore.types";
+import type {
+  ExploreFilters,
+  ExploreSortOption,
+} from "../schemas/explore-filters.schema";
 
-export const SORTS: { id: SortOption; label: string; icon: LucideIcon }[] = [
+export const SORTS: {
+  id: ExploreSortOption;
+  label: string;
+  icon: LucideIcon;
+}[] = [
   { id: "MATCH", label: "Top Match", icon: Target },
   { id: "SOONEST", label: "Soonest", icon: Clock },
   { id: "NEWEST", label: "Newest", icon: Activity },
@@ -28,8 +35,6 @@ export const FILTER_BOUNDARIES = {
   distance: { min: 2, max: 50, default: 15 },
   size: { min: 2, max: 20, defaultMin: 3, defaultMax: 8 },
 } as const;
-
-import type { ExploreFilters } from "../types/explore.types";
 
 export const DEFAULT_FILTERS: ExploreFilters = {
   selectedCategories: ["ALL"],

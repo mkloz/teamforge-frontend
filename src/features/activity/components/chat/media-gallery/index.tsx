@@ -2,7 +2,7 @@ import { MediaLightbox } from "@/features/activity/components/chat/media-lightbo
 import type {
   UnifiedAttachment,
   UnifiedMessage,
-} from "@/features/activity/types/chat.types";
+} from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 import { memo, useState } from "react";
 import { GalleryItem } from "./gallery-item";

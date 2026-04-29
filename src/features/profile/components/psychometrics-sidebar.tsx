@@ -1,15 +1,20 @@
 import { useState } from "react";
-import type { UserProfile, OceanTraitKey } from "../types/profile.types";
+import { OceanChart } from "@/shared/components/psychometrics/ocean-chart";
+import type { OceanTraitKey } from "@/shared/types/psychometrics";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
+import type { DimensionScore, OceanScores } from "../lib/profile-contract";
 import { DimensionSpectrum } from "./dimension-spectrum";
-import { OceanChart } from "./ocean-chart";
 import { SectionTitle } from "./section-title";
 
 interface PsychometricsSidebarProps {
-  profile: UserProfile;
+  oceanScores: OceanScores | null;
+  dimensionScores: DimensionScore[] | null;
 }
 
-export function PsychometricsSidebar({ profile }: PsychometricsSidebarProps) {
+export function PsychometricsSidebar({
+  oceanScores,
+  dimensionScores,
+}: PsychometricsSidebarProps) {
   const [selectedTrait, setSelectedTrait] = useState<OceanTraitKey | null>(
     null,
   );
@@ -20,11 +25,17 @@ export function PsychometricsSidebar({ profile }: PsychometricsSidebarProps) {
       <section className="space-y-6">
         <SectionTitle dotColor="bg-spark-amber">OCEAN Profile</SectionTitle>
         <div className="bg-canvas border border-border/40 rounded-2xl p-4 md:p-6 shadow-xs">
-          <OceanChart
-            scores={profile.oceanScores}
-            selectedTrait={selectedTrait}
-            onTraitSelect={setSelectedTrait}
-          />
+          {oceanScores ? (
+            <OceanChart
+              scores={oceanScores}
+              selectedTrait={selectedTrait}
+              onTraitSelect={setSelectedTrait}
+            />
+          ) : (
+            <p className="text-sm font-medium text-slate-muted">
+              OCEAN scores are not available yet.
+            </p>
+          )}
         </div>
       </section>
 
@@ -32,11 +43,17 @@ export function PsychometricsSidebar({ profile }: PsychometricsSidebarProps) {
       <section className="space-y-6">
         <SectionTitle dotColor="bg-forge-teal">Trait Dimensions</SectionTitle>
         <div className="space-y-4 px-1">
-          <TooltipProvider delayDuration={200}>
-            {profile.dimensionScores.map((score) => (
-              <DimensionSpectrum key={score.dimension} score={score} />
-            ))}
-          </TooltipProvider>
+          {dimensionScores ? (
+            <TooltipProvider delayDuration={200}>
+              {dimensionScores.map((score) => (
+                <DimensionSpectrum key={score.dimension} score={score} />
+              ))}
+            </TooltipProvider>
+          ) : (
+            <p className="text-sm font-medium text-slate-muted">
+              Trait dimension data is not available yet.
+            </p>
+          )}
         </div>
       </section>
     </div>

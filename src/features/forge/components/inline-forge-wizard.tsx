@@ -283,6 +283,10 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
               <Step3Group
                 forgeMode={fw.forgeMode}
                 onForgeModeChange={fw.setForgeMode}
+                fixedSize={fw.fixedSize}
+                onFixedSizeChange={fw.setFixedSize}
+                groupSizeMode={fw.groupSizeMode}
+                onGroupSizeModeChange={fw.setGroupSizeMode}
                 autoMinSize={fw.autoMinSize}
                 onAutoMinSizeChange={fw.setAutoMinSize}
                 autoMaxSize={fw.autoMaxSize}

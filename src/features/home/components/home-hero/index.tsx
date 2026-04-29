@@ -3,9 +3,10 @@ import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { Bell, Compass, MessageCircle, Plus, User } from "lucide-react";
-import { MOCK_CURRENT_USER } from "../../data/mock-home";
-import { ForgeOrbScene } from "./forge-orb-scene";
+import { useNotifications } from "@/features/notifications/hooks/use-notifications";
 import { useUiStore } from "@/shared/store/ui.store";
+import { useHomeViewer } from "../../hooks/use-home-viewer";
+import { ForgeOrbScene } from "./forge-orb-scene";
 
 /* ─── Greeting helper ──────────────────────────────────────────────── */
 function getGreeting(firstName: string): { greeting: string; sub: string } {
@@ -51,7 +52,9 @@ const itemVariants: Variants = {
  * HomeHero section with personalized greeting, CTA, and animated Forge Orb.
  */
 export function HomeHero() {
-  const { greeting, sub } = getGreeting(MOCK_CURRENT_USER.firstName);
+  const { firstName } = useHomeViewer();
+  const { count: unreadNotifications } = useNotifications();
+  const { greeting, sub } = getGreeting(firstName);
   const reduced = useReducedMotion() ?? false;
   const setNotificationsOpen = useUiStore(
     (state) => state.setNotificationsOpen,
@@ -86,7 +89,11 @@ export function HomeHero() {
           <button
             type="button"
             onClick={() => setNotificationsOpen(true)}
-            aria-label="View notifications (3 unread)"
+            aria-label={
+              unreadNotifications > 0
+                ? `View notifications (${unreadNotifications} unread)`
+                : "View notifications"
+            }
             className={cn(
               "relative shrink-0 flex items-center justify-center size-10 rounded-2xl",
               "border border-border bg-card",
@@ -96,20 +103,22 @@ export function HomeHero() {
             )}
           >
             <Bell className="size-[18px]" aria-hidden="true" />
-            <motion.span
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{
-                type: "spring",
-                stiffness: 350,
-                damping: 20,
-                delay: 0.4,
-              }}
-              className="absolute -top-1.5 -right-1.5 flex items-center justify-center size-5 rounded-full bg-accent border-2 border-background text-[10px] font-bold text-accent-foreground shadow-sm"
-              aria-hidden="true"
-            >
-              3
-            </motion.span>
+            {unreadNotifications > 0 && (
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 350,
+                  damping: 20,
+                  delay: 0.4,
+                }}
+                className="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-5 h-5 px-1 rounded-full bg-accent border-2 border-background text-[10px] font-bold text-accent-foreground shadow-sm"
+                aria-hidden="true"
+              >
+                {unreadNotifications}
+              </motion.span>
+            )}
           </button>
         </motion.div>
 
@@ -182,7 +191,7 @@ export function HomeHero() {
             className="hidden md:flex items-center justify-center shrink-0"
             aria-hidden="true"
           >
-            <ForgeOrbScene reduced={reduced} />
+            <ForgeOrbScene firstName={firstName} reduced={reduced} />
           </motion.div>
         </div>
       </motion.div>

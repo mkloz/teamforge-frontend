@@ -1,6 +1,6 @@
 import { Calendar, MapPin } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-import type { Plan } from "@/features/activity/types/groups.types";
+import type { Plan } from "@/features/activity/lib/activity-contract";
 import { useMemo } from "react";
 import {
   categoryColors,
@@ -8,6 +8,8 @@ import {
   formatDate,
   formatTime,
 } from "./lib/constants";
+import { CreatePlanProposalForm } from "./create-plan-proposal-form";
+import { PlanProposalsSection } from "./plan-proposals-section";
 
 interface PlanSectionProps {
   plan: Plan;
@@ -116,6 +118,12 @@ export function PlanSection({ plan }: PlanSectionProps) {
           </div>
         </div>
       </div>
+
+      <CreatePlanProposalForm plan={plan} />
+      <PlanProposalsSection
+        groupId={plan.groupId}
+        proposals={plan.proposals ?? []}
+      />
     </div>
   );
 }

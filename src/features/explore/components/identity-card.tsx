@@ -1,6 +1,6 @@
 import { ShieldCheck } from "lucide-react";
-import { OceanDiagram } from "../../profile/components/ocean-chart";
-import type { OceanScores } from "../../profile/types/profile.types";
+import { OceanDiagram } from "@/shared/components/psychometrics/ocean-chart";
+import type { OceanScores } from "@/shared/types/psychometrics";
 
 interface IdentityCardProps {
   mbti: string;
@@ -42,7 +42,6 @@ export function IdentityCard({
         </div>
       </div>
 
-      {/* Reusing the official OceanDiagram from Profile feature */}
       <div className="w-full aspect-5/4 max-w-70 mx-auto -my-4 flex items-center justify-center">
         <OceanDiagram scores={oceanScores} interactive={false} />
       </div>

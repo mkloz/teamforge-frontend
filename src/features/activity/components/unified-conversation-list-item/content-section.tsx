@@ -1,8 +1,15 @@
 import { cn } from "@/shared/lib/utils";
 import { BellOff } from "lucide-react";
 import { memo } from "react";
-import type { UnifiedConversation } from "../../types/unified-conversation.types";
+import type { UnifiedConversation } from "../../lib/activity-contract";
 import { formatRelativeTime, formatCountdown } from "../../lib/chat-utils";
+import {
+  getConversationIsMuted,
+  getConversationPlanDateTime,
+  getConversationPlanStatus,
+  getConversationSubtitle,
+  getConversationTitle,
+} from "../../lib/unify-conversations";
 import { UnifiedTypingIndicator } from "../chat/unified-typing-indicator";
 import { MsgStatusIcon } from "./msg-status-icon";
 import { SubtitleIcon } from "./subtitle-icon";
@@ -19,9 +26,15 @@ interface ContentSectionProps {
 export const ContentSection = memo(
   ({ item, isGroup, isSelected, isCompact = false }: ContentSectionProps) => {
     const hasUnread = item.unreadCount > 0;
+    const title = getConversationTitle(item);
+    const subtitle = getConversationSubtitle(item);
     const countdown =
-      isGroup && item.planDateTime ? formatCountdown(item.planDateTime) : null;
-    const isDraft = isGroup && item.planStatus === "DRAFT";
+      isGroup && getConversationPlanDateTime(item)
+        ? formatCountdown(getConversationPlanDateTime(item)!)
+        : null;
+    const isDraft = isGroup && getConversationPlanStatus(item) === "DRAFT";
+    const isMuted = getConversationIsMuted(item);
+    const latestMessage = item.latestMessage;
 
     return (
       <div className="flex-1 min-w-0 flex flex-col justify-center">
@@ -37,9 +50,9 @@ export const ContentSection = memo(
                   : "text-ink/90 group-hover/item:text-ink",
               )}
             >
-              {item.title}
+              {title}
             </h3>
-            {!isGroup && item.isMuted && (
+            {!isGroup && isMuted && (
               <BellOff
                 size={isCompact ? 9 : 11}
                 className="text-slate-muted/60 shrink-0"
@@ -52,8 +65,8 @@ export const ContentSection = memo(
               isCompact && "scale-90 origin-right",
             )}
           >
-            {item.lastMessage?.createdAt
-              ? formatRelativeTime(item.lastMessage.createdAt)
+            {latestMessage?.createdAt
+              ? formatRelativeTime(latestMessage.createdAt)
               : ""}
           </time>
         </div>
@@ -66,19 +79,14 @@ export const ContentSection = memo(
           )}
         >
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
-            {!isGroup &&
-              item.lastMessage?.isOwn &&
-              item.lastMessage?.status && (
-                <MsgStatusIcon
-                  status={item.lastMessage.status}
-                  isCompact={isCompact}
-                />
-              )}
-            <div className="flex items-center gap-1 overflow-hidden min-w-0">
-              <SubtitleIcon
-                type={item.lastMessage?.type}
+            {!isGroup && latestMessage?.isOwn && latestMessage?.status && (
+              <MsgStatusIcon
+                status={latestMessage.status}
                 isCompact={isCompact}
               />
+            )}
+            <div className="flex items-center gap-1 overflow-hidden min-w-0">
+              <SubtitleIcon type={latestMessage?.type} isCompact={isCompact} />
 
               {item.isTyping ? (
                 <div className="flex items-baseline gap-1 animate-in fade-in slide-in-from-left-2 duration-300">
@@ -103,10 +111,10 @@ export const ContentSection = memo(
                     hasUnread
                       ? "text-ink font-bold"
                       : "text-slate-muted/80 group-hover/item:text-slate-muted",
-                    item.lastMessage?.isSystem && "italic text-slate-muted/60",
+                    latestMessage?.isSystem && "italic text-slate-muted/60",
                   )}
                 >
-                  {item.subtitle}
+                  {subtitle}
                 </p>
               )}
             </div>
@@ -117,11 +125,7 @@ export const ContentSection = memo(
 
         {/* Group-specific indicators footer — Hidden in compact */}
         {isGroup && !isCompact && (
-          <GroupIndicators
-            countdown={countdown}
-            isDraft={isDraft}
-            pendingProposals={item.pendingProposals}
-          />
+          <GroupIndicators countdown={countdown} isDraft={isDraft} />
         )}
       </div>
     );

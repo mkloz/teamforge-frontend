@@ -4,13 +4,16 @@ import {
   createRoute,
   createRouter,
   Outlet,
+  redirect,
 } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 import { AppLayout } from "./features/app-shell/app-layout";
+import { AuthQueries } from "./features/auth/api/auth.queries";
 import { AuthPage } from "./features/auth/auth-page";
 import { LandingPage } from "./features/landing/landing-page";
 import { InterestsPage } from "./features/onboarding/interests-page";
 import { PersonalityTestPage } from "./features/onboarding/personality-test-page";
+import { authSession } from "./shared/api/auth-session";
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -65,6 +68,20 @@ function LazyPage({
   );
 }
 
+async function redirectAuthenticatedUser() {
+  if (!authSession.hasTokens()) {
+    return;
+  }
+
+  const currentUser = await AuthQueries.ensureCurrentUser().catch(() => null);
+
+  if (!currentUser) {
+    return;
+  }
+
+  throw redirect({ to: "/home" });
+}
+
 // ─── Root route ──────────────────────────────────────────────────────────────
 
 const rootRoute = createRootRoute({
@@ -82,12 +99,14 @@ const landingRoute = createRoute({
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/auth/login",
+  beforeLoad: redirectAuthenticatedUser,
   component: () => <AuthPage defaultView="login" />,
 });
 
 const registerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/auth/register",
+  beforeLoad: redirectAuthenticatedUser,
   component: () => <AuthPage defaultView="register" />,
 });
 
@@ -108,6 +127,17 @@ const interestsRoute = createRoute({
 const appShellRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "app-shell",
+  beforeLoad: async () => {
+    if (!authSession.hasTokens()) {
+      throw redirect({ to: "/auth/login" });
+    }
+
+    try {
+      await AuthQueries.ensureCurrentUser();
+    } catch {
+      throw redirect({ to: "/auth/login" });
+    }
+  },
   component: AppLayout,
 });
 

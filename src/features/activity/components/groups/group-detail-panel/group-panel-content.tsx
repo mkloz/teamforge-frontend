@@ -1,10 +1,11 @@
-import type { DirectChat } from "@/features/activity/types/direct-chats.types";
+import type { DirectChat } from "@/features/activity/lib/activity-contract";
 import type {
   Group,
   GroupMember,
   MemberRole,
-} from "@/features/activity/types/groups.types";
-import { UserProfilePanel } from "@/features/profile/components/user-profile-panel/user-profile-panel";
+} from "@/features/activity/lib/activity-contract";
+import { buildMemberProfileChat } from "@/features/activity/lib/activity-projections";
+import { UserProfilePanel } from "@/shared/components/user-profile-panel/user-profile-panel";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
@@ -51,7 +52,7 @@ export function GroupPanelContent({
   // Memoize current user's role (derive from group data)
   // In production, this would likely come from an Auth Context
   const currentUserRole: MemberRole = useMemo(() => {
-    const isAdmin = group.members?.some((m) => m.role === "ADMIN");
+    const isAdmin = group.members?.some((m: GroupMember) => m.role === "ADMIN");
     return isAdmin ? "ADMIN" : "MEMBER";
   }, [group.members]);
 
@@ -61,33 +62,10 @@ export function GroupPanelContent({
     [group.members?.length],
   );
 
-  // Map GroupMember to a mock DirectChat for the UserProfilePanel
+  // Build a backend-shaped chat projection for the shared profile panel.
   const memberChat: DirectChat | null = useMemo(() => {
-    if (!selectedMember || !selectedMember.user) return null;
-    const chat: DirectChat = {
-      id: `temp-dm-${selectedMember.userId}`,
-      type: "PRIVATE",
-      createdAt: new Date().toISOString(),
-      groupId: null,
-      participants: [
-        {
-          userId: selectedMember.userId,
-          chatId: `temp-dm-${selectedMember.userId}`,
-          user: selectedMember.user,
-        },
-      ],
-      isMuted: false,
-      isBlocked: false,
-      mutualGroups: [
-        {
-          id: group.id,
-          name: group.name,
-          avatar: group.avatar,
-        },
-      ],
-    };
-    return chat;
-  }, [selectedMember, group.id, group.name, group.avatar]);
+    return buildMemberProfileChat(selectedMember, group);
+  }, [selectedMember, group]);
 
   if (selectedMember && memberChat) {
     return (

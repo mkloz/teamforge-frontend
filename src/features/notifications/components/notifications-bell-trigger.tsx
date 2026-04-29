@@ -1,6 +1,7 @@
 import { cn } from "@/shared/lib/utils";
 import { Bell } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import { useNotifications } from "../hooks/use-notifications";
 
 interface NotificationsBellTriggerProps {
   onClick: () => void;
@@ -9,8 +10,7 @@ interface NotificationsBellTriggerProps {
 export function NotificationsBellTrigger({
   onClick,
 }: NotificationsBellTriggerProps) {
-  // Use hardcoded count for consistency across nav items as requested
-  const count = 3;
+  const { count } = useNotifications();
 
   return (
     <Button

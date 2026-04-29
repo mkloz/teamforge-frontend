@@ -2,7 +2,7 @@ import type {
   OceanScores,
   OceanTraitKey,
   OceanTraitMeta,
-} from "../types/profile.types";
+} from "./profile-contract";
 
 // Extended trait metadata with rich, detailed descriptions
 export interface ExtendedTraitMeta extends OceanTraitMeta {

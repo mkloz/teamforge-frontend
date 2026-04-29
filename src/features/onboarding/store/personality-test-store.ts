@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import {
   buildQuestionList,
   IPIP_QUESTIONS,
@@ -23,12 +22,11 @@ export type ScreenState =
   | { id: "calculating" }
   | { id: "results" };
 
-// ─── Persisted shape ──────────────────────────────────────────────────────────
+// ─── Store shape ──────────────────────────────────────────────────────────────
 
-interface PersistedTestState {
+interface PersonalityTestSnapshot {
   screen: ScreenState;
   testLength: TestLength;
-  /** Serialised as a plain array for JSON-safe storage */
   questionIds: number[];
   answers: RawAnswers;
   result: PersonalityResult | null;
@@ -39,7 +37,7 @@ interface PersistedTestState {
 
 // ─── Full store ───────────────────────────────────────────────────────────────
 
-interface PersonalityTestState extends PersistedTestState {
+interface PersonalityTestState extends PersonalityTestSnapshot {
   // Actions
   setScreen: (screen: ScreenState) => void;
   setTestLength: (length: TestLength) => void;
@@ -54,7 +52,7 @@ interface PersonalityTestState extends PersistedTestState {
   reset: () => void;
 }
 
-const DEFAULT_STATE: PersistedTestState = {
+const DEFAULT_STATE: PersonalityTestSnapshot = {
   screen: { id: "intro" },
   testLength: 50,
   questionIds: [],
@@ -66,58 +64,43 @@ const DEFAULT_STATE: PersistedTestState = {
 };
 
 export const usePersonalityTestStore = create<PersonalityTestState>()(
-  persist(
-    (set) => ({
-      ...DEFAULT_STATE,
+  (set) => ({
+    ...DEFAULT_STATE,
 
-      setScreen: (screen) =>
-        set((state) => ({
-          screen,
-          previousScreen: state.screen,
-        })),
+    setScreen: (screen) =>
+      set((state) => ({
+        screen,
+        previousScreen: state.screen,
+      })),
 
-      setIsReviewMode: (isReviewMode: boolean) => set({ isReviewMode }),
+    setIsReviewMode: (isReviewMode: boolean) => set({ isReviewMode }),
 
-      setTestLength: (testLength) => set({ testLength }),
+    setTestLength: (testLength) => set({ testLength }),
 
-      beginTest: (testLength, questionIds) =>
-        set({
-          isReviewMode: false, // Reset on new test
-          testLength,
-          questionIds,
-          answers: {},
-          screen: { id: "questions", currentPage: 1 },
-        }),
-
-      updateTestLength: (testLength) => {
-        const questions = buildQuestionList(testLength);
-        const questionIds = questions.map((q) => q.id);
-        set({ testLength, questionIds });
-      },
-
-      setAnswer: (questionId, val) =>
-        set((state) => ({
-          answers: { ...state.answers, [questionId]: val },
-        })),
-
-      setResultData: (result, vector) => set({ result, vector }),
-
-      reset: () => set(DEFAULT_STATE),
-    }),
-    {
-      name: "tf_personality_v1",
-      partialize: (state) => ({
-        screen: state.screen,
-        testLength: state.testLength,
-        questionIds: state.questionIds,
-        answers: state.answers,
-        result: state.result,
-        vector: state.vector,
-        previousScreen: state.previousScreen,
-        isReviewMode: state.isReviewMode,
+    beginTest: (testLength, questionIds) =>
+      set({
+        isReviewMode: false,
+        testLength,
+        questionIds,
+        answers: {},
+        screen: { id: "questions", currentPage: 1 },
       }),
+
+    updateTestLength: (testLength) => {
+      const questions = buildQuestionList(testLength);
+      const questionIds = questions.map((question) => question.id);
+      set({ testLength, questionIds });
     },
-  ),
+
+    setAnswer: (questionId, val) =>
+      set((state) => ({
+        answers: { ...state.answers, [questionId]: val },
+      })),
+
+    setResultData: (result, vector) => set({ result, vector }),
+
+    reset: () => set(DEFAULT_STATE),
+  }),
 );
 
 /**

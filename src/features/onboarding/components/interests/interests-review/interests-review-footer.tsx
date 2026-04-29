@@ -5,26 +5,28 @@ interface InterestsReviewFooterProps {
   onConfirm: () => void;
   canConfirm: boolean;
   onBack: () => void;
+  isSaving?: boolean;
 }
 
 export function InterestsReviewFooter({
   onConfirm,
   canConfirm,
   onBack,
+  isSaving = false,
 }: InterestsReviewFooterProps) {
   return (
     <div className="w-full flex items-center gap-3 pt-4 pb-6 sm:pb-5">
-      <Button variant="outline" size="lg" onClick={onBack}>
+      <Button variant="outline" size="lg" onClick={onBack} disabled={isSaving}>
         Back
       </Button>
       <Button
         variant="primary"
         size="lg"
         onClick={onConfirm}
-        disabled={!canConfirm}
+        disabled={!canConfirm || isSaving}
         className="flex-1"
       >
-        Confirm & Finish
+        {isSaving ? "Saving…" : "Confirm & Finish"}
         <CheckCircle2 size={18} />
       </Button>
     </div>

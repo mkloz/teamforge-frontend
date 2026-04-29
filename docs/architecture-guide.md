@@ -70,7 +70,7 @@ TeamForge follows a decoupled architecture with a React-based frontend (this rep
 | Framework | React | 19.2 | UI rendering |
 | Language | TypeScript | 5.9 | Type safety |
 | Build | Vite | 7.x | Development and bundling |
-| Routing | TanStack Router | 1.x | File-based, type-safe routing |
+| Routing | TanStack Router | 1.x | Manual route tree in `src/router.tsx` |
 | Server State | TanStack Query | 5.x | API data fetching and caching |
 | Client State | Zustand | 5.x | UI state management |
 | Forms | React Hook Form + Zod | 7.x / 4.x | Form handling and validation |
@@ -87,13 +87,12 @@ src/
 ├── config/                  # Environment configuration
 │   └── config.ts           # Runtime env vars
 ├── features/               # Feature modules (domain-driven)
-│   ├── activity/           # Conversation feed
-│   ├── app-shell/          # Layout (sidebar, topbar, bottom nav)
+│   ├── activity/           # Conversation feed, direct chats, group detail panels
+│   ├── app-shell/          # Layout (sidebar and bottom nav)
 │   ├── auth/               # Authentication flows
-│   ├── direct-chats/       # 1:1 messaging
+│   ├── design-system/      # Internal component showcase / visual QA route
 │   ├── explore/            # Group/user discovery
 │   ├── forge/              # Core "Forge my group" wizard
-│   ├── groups/             # Group management
 │   ├── home/               # Dashboard
 │   ├── landing/            # Public marketing page
 │   ├── notifications/      # Notification system
@@ -102,8 +101,13 @@ src/
 │   ├── settings/           # Account settings
 │   └── user-menu/          # User dropdown menu
 ├── shared/                 # Cross-cutting concerns
-│   ├── api/                # Configured HTTP client
-│   └── components/         # Reusable UI components
+│   ├── api/                # Configured HTTP client, session, query client
+│   ├── components/         # Reusable UI components
+│   ├── hooks/              # Shared hooks
+│   ├── lib/                # Shared utilities and mappers
+│   ├── providers/          # App-wide providers
+│   ├── schemas/            # Canonical backend-aligned domain schemas
+│   └── store/              # Shared UI stores
 ├── index.css               # Tailwind directives + CSS vars
 ├── main.tsx                # App entry point
 └── router.tsx              # Route definitions
@@ -119,6 +123,7 @@ src/features/<feature-name>/
 ├── components/               # Feature-specific components
 │   └── <sub-feature>/
 │       └── component.tsx
+├── api/                      # Feature-local services, adapters, query factories
 ├── hooks/                    # Custom hooks (data fetching, UI logic)
 ├── store/                    # Zustand stores (local UI state)
 ├── types/                    # TypeScript interfaces
@@ -133,6 +138,14 @@ src/features/<feature-name>/
 - No cross-feature imports of internal modules
 - Shared code goes in `src/shared/`
 - Page components are thin - business logic lives in hooks
+- Backend-facing data seams should live in feature-local `api/` modules
+
+### Current Frontend Notes
+
+- Routes are still declared manually in `src/router.tsx`; the repo is not using TanStack file-based routing.
+- The authenticated app shell is protected through the `app-shell` route `beforeLoad`.
+- Conversation and group UI currently live inside `src/features/activity/` rather than standalone `direct-chats/` or `groups/` feature folders.
+- Canonical backend-aligned domain models live in `src/shared/schemas/`, while features layer UI-specific projections on top.
 
 ---
 

@@ -3,7 +3,7 @@ import * as RadixSlider from "@radix-ui/react-slider";
 import { Globe, Laptop, MapPin, Route } from "lucide-react";
 import { FILTER_BOUNDARIES } from "../../constants/explore.constants";
 import { useExploreStore } from "../../store/use-explore-store";
-import type { LocationMode } from "../../types/explore.types";
+import type { ExploreLocationMode } from "../../schemas/explore-filters.schema";
 
 export function LocationFilter() {
   const { locationMode, setLocationMode, distance, setDistance } =
@@ -27,7 +27,7 @@ export function LocationFilter() {
           return (
             <button
               key={opt.id}
-              onClick={() => setLocationMode(opt.id as LocationMode | "ALL")}
+              onClick={() => setLocationMode(opt.id as ExploreLocationMode)}
               className={cn(
                 "relative z-10 flex-1 flex flex-row items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
                 active

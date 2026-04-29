@@ -25,7 +25,7 @@ export function InsightSection({
 
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-sm sm:text-chat-input leading-relaxed mb-8 text-slate-600 font-medium px-2"
+        className="font-sans text-sm sm:text-chat-input leading-relaxed mb-8 text-muted-foreground font-medium px-2"
       >
         {description}
       </motion.p>
@@ -37,7 +37,7 @@ export function InsightSection({
         <span className="font-sans text-xs font-bold text-ink block mb-2 tracking-tight">
           {factTitle}
         </span>
-        <p className="font-sans text-[13px] text-slate-500 leading-relaxed">
+        <p className="font-sans text-[13px] text-muted-foreground leading-relaxed">
           {fact}
         </p>
       </motion.div>

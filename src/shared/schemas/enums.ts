@@ -73,6 +73,27 @@ export const planStatusSchema = z.enum([
 ]);
 export type PlanStatus = z.infer<typeof planStatusSchema>;
 
+export const planProposalFieldSchema = z.enum([
+  "TITLE",
+  "DESCRIPTION",
+  "DATE_TIME",
+  "LOCATION",
+  "COST",
+  "CATEGORY",
+]);
+export type PlanProposalField = z.infer<typeof planProposalFieldSchema>;
+
+export const planProposalStatusSchema = z.enum([
+  "PENDING",
+  "APPROVED",
+  "REJECTED",
+  "WITHDRAWN",
+]);
+export type PlanProposalStatus = z.infer<typeof planProposalStatusSchema>;
+
+export const planProposalVoteSchema = z.enum(["APPROVE", "REJECT"]);
+export type PlanProposalVote = z.infer<typeof planProposalVoteSchema>;
+
 export const locationModeSchema = z.enum(["IN_PERSON", "ONLINE", "TBD"]);
 export type LocationMode = z.infer<typeof locationModeSchema>;
 

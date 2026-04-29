@@ -1,12 +1,11 @@
 import { useMemo } from "react";
-import type { Group } from "../types/groups.types";
-import type { DirectChat } from "../types/direct-chats.types";
+import { getOtherChatParticipant } from "../lib/activity-projections";
+import type { DirectChat, Group } from "../lib/activity-contract";
 import { getStatusText, formatTypingText } from "../lib/chat-utils";
-import { CURRENT_USER_ID } from "../data/mock-direct-chats";
 
 interface BaseProps {
   isTyping?: boolean;
-  typingUsers?: { fullName: string; avatar: string }[];
+  typingUsers?: { name: string; avatar: string }[];
 }
 
 export type UseConversationDataProps =
@@ -28,8 +27,7 @@ export function useConversationData({
 
   const participant = useMemo(() => {
     if (isGroup || !chat) return null;
-    const pData = chat.participants?.find((p) => p.userId !== CURRENT_USER_ID);
-    return pData?.user;
+    return getOtherChatParticipant(chat);
   }, [isGroup, chat]);
 
   const headerProps = useMemo(() => {
@@ -42,7 +40,7 @@ export function useConversationData({
       };
     } else if (chat && participant) {
       return {
-        title: participant.fullName,
+        title: participant.name,
         subtitle: getStatusText(
           participant.onlineStatus || "OFFLINE",
           undefined, // lastSeen not in schema yet
@@ -57,9 +55,7 @@ export function useConversationData({
   const activeTypingUsers = useMemo(() => {
     if (isGroup) return typingUsers;
     if (isTyping && participant) {
-      return [
-        { fullName: participant.fullName, avatar: participant.avatar || "" },
-      ];
+      return [{ name: participant.name, avatar: participant.avatar || "" }];
     }
     return [];
   }, [isGroup, typingUsers, isTyping, participant]);

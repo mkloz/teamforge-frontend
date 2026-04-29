@@ -1,31 +1,31 @@
 import { cn } from "@/shared/lib/utils";
+import type { ExploreGroup } from "@/shared/schemas";
 import { ArrowRight } from "lucide-react";
-import type { Group } from "@/shared/schemas";
 import { CardFooter } from "./card-footer";
 import { CardHeader } from "./card-header";
 import { CardImage } from "./card-image";
 import { CardMeta } from "./card-meta";
+import {
+  getExploreGroupDistanceLabel,
+  getExploreGroupMatchScore,
+  isExploreGroupFull,
+} from "../../lib/explore-presenters";
 
 type GroupPlanCardProps = {
-  group: Group;
-  matchScore: number;
-  distance?: string;
-  isFull?: boolean;
+  group: ExploreGroup;
   variant?: "default" | "compact";
 };
 
 export function GroupPlanCard({
   group,
-  matchScore,
-  distance,
-  isFull = false,
   variant = "default",
 }: GroupPlanCardProps) {
   const isCompact = variant === "compact";
   const plan = group.plan;
-  const activity = group.activity;
-
-  const title = plan?.title || activity?.title || "Unnamed Activity";
+  const title = plan?.title || group.activity.title || "Unnamed Activity";
+  const matchScore = getExploreGroupMatchScore(group);
+  const distance = getExploreGroupDistanceLabel(group);
+  const isFull = isExploreGroupFull(group);
 
   return (
     <div className="group relative list-none outline-none">
@@ -69,7 +69,7 @@ export function GroupPlanCard({
             )}
           </div>
 
-          {!isCompact && <CardMeta plan={group.plan} distance={distance} />}
+          {!isCompact && <CardMeta group={group} distance={distance} />}
 
           <div className="h-px w-full bg-border/60 my-0 mt-auto relative z-10" />
 

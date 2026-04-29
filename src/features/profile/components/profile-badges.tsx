@@ -8,10 +8,12 @@ import {
 import { cn } from "@/shared/lib/utils";
 import { Shield, Sparkles, UserPlus, type LucideIcon } from "lucide-react";
 import { AnimatedCircularProgressBar } from "@/shared/components/ui/animated-circular-progress-bar";
-import type { UserProfile } from "../types/profile.types";
+import type { User } from "@/shared/schemas";
+import { normalizeTrustScore } from "../lib/profile-utils";
 
 interface ProfileBadgesProps {
-  profile: UserProfile;
+  user: User;
+  archetype: string;
 }
 
 interface BadgeItemProps {
@@ -101,20 +103,17 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-export function ProfileBadges({ profile }: ProfileBadgesProps) {
+export function ProfileBadges({ user, archetype }: ProfileBadgesProps) {
+  const trustScore = normalizeTrustScore(user.trustScore);
   const trustColorClass =
-    profile.trustScore >= 80
+    trustScore >= 80
       ? "text-primary"
-      : profile.trustScore >= 50
+      : trustScore >= 50
         ? "text-spark-amber"
         : "text-destructive";
 
   const trustLabel =
-    profile.trustScore >= 80
-      ? "High"
-      : profile.trustScore >= 50
-        ? "Medium"
-        : "Low";
+    trustScore >= 80 ? "High" : trustScore >= 50 ? "Medium" : "Low";
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -133,14 +132,14 @@ export function ProfileBadges({ profile }: ProfileBadgesProps) {
             colorClass={trustColorClass}
             bgClass={trustColorClass}
             iconBgClass="bg-transparent"
-            description={`A composite metric of your verifiable contributions and social reliability. Integrity: ${profile.trustScore}%`}
+            description={`A composite metric of your verifiable contributions and social reliability. Integrity: ${trustScore}%`}
             renderIconWrapper={() => (
               <div className="relative w-8 h-8 md:w-9 md:h-9 flex shrink-0 items-center justify-center group-hover:scale-110 transition-transform duration-300">
                 <div className="absolute inset-0 bg-transparent flex items-center justify-center">
                   <AnimatedCircularProgressBar
                     max={100}
                     min={0}
-                    value={profile.trustScore}
+                    value={trustScore}
                     gaugePrimaryColor="currentColor"
                     gaugeSecondaryColor="rgba(107, 114, 128, 0.15)"
                     className={cn(
@@ -155,7 +154,7 @@ export function ProfileBadges({ profile }: ProfileBadgesProps) {
                     trustColorClass,
                   )}
                 >
-                  {profile.trustScore}
+                  {trustScore}
                 </span>
               </div>
             )}
@@ -173,11 +172,11 @@ export function ProfileBadges({ profile }: ProfileBadgesProps) {
           <BadgeItem
             icon={UserPlus}
             label="Type"
-            value={profile.personalityType || "N/A"}
+            value={user.personalityType || "N/A"}
             colorClass="text-forge-teal"
             bgClass="text-ink"
             iconBgClass="bg-forge-teal/10"
-            description={`Based on Jungian personality theory, your ${profile.personalityType} type defines how you process information.`}
+            description={`Based on Jungian personality theory, your ${user.personalityType ?? "profile"} type defines how you process information.`}
           />
         </motion.div>
 
@@ -192,11 +191,11 @@ export function ProfileBadges({ profile }: ProfileBadgesProps) {
           <BadgeItem
             icon={Sparkles}
             label="Role"
-            value={profile.archetype}
+            value={archetype}
             colorClass="text-spark-amber"
             bgClass="text-ink"
             iconBgClass="bg-spark-amber/10"
-            description={`The ${profile.archetype} archetype identifies your core value proposition in collaborative environments.`}
+            description={`The ${archetype} archetype identifies your core value proposition in collaborative environments.`}
           />
         </motion.div>
       </motion.div>

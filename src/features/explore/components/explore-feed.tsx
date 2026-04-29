@@ -70,12 +70,7 @@ export function ExploreFeed() {
             }}
             layout
           >
-            <GroupPlanCard
-              group={group}
-              matchScore={group.matchScore}
-              distance={group.distance}
-              isFull={group.isFull}
-            />
+            <GroupPlanCard group={group} />
           </motion.div>
         ))}
       </AnimatePresence>

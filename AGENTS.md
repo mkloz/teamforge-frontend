@@ -26,7 +26,7 @@ The platform uses a multi-factor scoring system combining:
 | ------------- | ------------------------------------------------------------------ |
 | Framework     | React 19.2 + TypeScript 5.9                                        |
 | Build tool    | Vite 7                                                             |
-| Routing       | TanStack Router v1 (file-based, type-safe)                         |
+| Routing       | TanStack Router v1 (manually defined route tree in `src/router.tsx`) |
 | Server state  | TanStack Query v5                                                  |
 | Client state  | Zustand v5                                                         |
 | Forms         | React Hook Form v7 + Zod v4                                        |
@@ -50,23 +50,27 @@ src/
 ├── config/              # App-wide runtime config (env vars)
 │   └── config.ts        # VITE_API_URL, VITE_GOOGLE_CLIENT_ID
 ├── features/            # All product features, co-located by domain
-│   ├── activity/        # Unified conversation activity feed
-│   ├── app-shell/       # Persistent layout: sidebar, topbar, bottom nav
+│   ├── activity/        # Unified conversation feed, direct chats, group detail panels
+│   ├── app-shell/       # Persistent layout: sidebar and bottom nav
 │   ├── auth/            # Login + multi-step registration (OTP, profile)
-│   ├── direct-chats/    # 1-on-1 messaging
+│   ├── design-system/   # Internal component showcase / visual QA route
 │   ├── explore/         # User/group discovery
 │   ├── forge/           # The core "Forge my group" wizard
-│   ├── groups/          # Group conversations, plan management
 │   ├── home/            # Authenticated home/dashboard
 │   ├── landing/         # Public marketing landing page
-│   ├── notifications/   # Notification bell, drawer, store
+│   ├── notifications/   # Notification bell, drawer, and notification data hooks
 │   ├── onboarding/      # Personality test (IPIP/MBTI) + interests selection
 │   ├── profile/         # User profile with MBTI/OCEAN visualizations
 │   ├── settings/        # Account & app settings
 │   └── user-menu/       # User avatar menu (profile, settings, logout)
 ├── shared/
-│   ├── api/             # Configured ky API client with JWT refresh logic
-│   └── components/      # Generic reusable UI components
+│   ├── api/             # Configured ky API client, session, and query client
+│   ├── components/      # Generic reusable UI components
+│   ├── hooks/           # Shared hooks
+│   ├── lib/             # Shared utilities and mappers
+│   ├── providers/       # App-wide providers
+│   ├── schemas/         # Canonical backend-aligned domain schemas
+│   └── store/           # Shared UI stores
 ├── index.css            # Tailwind v4 directives + CSS custom properties
 ├── main.tsx             # React app entry point
 └── router.tsx           # Full TanStack Router tree
@@ -76,7 +80,7 @@ src/
 
 ## Routing Architecture
 
-Routes are defined in `src/router.tsx`. There are two route groups:
+Routes are defined manually in `src/router.tsx`. There are two main route groups plus an internal design-system route:
 
 **Public routes** (no app shell, full-page layouts):
 | Path | Component |
@@ -97,13 +101,18 @@ Routes are defined in `src/router.tsx`. There are two route groups:
 | `/settings` | `SettingsPage` |
 | `/forge` | `ForgePage` |
 
-All authenticated pages are lazy-loaded via `React.lazy` + `Suspense` for optimal bundle splitting.
+**Internal route**:
+| Path | Component |
+|---|---|
+| `/design-system` | `DesignSystemPage` |
+
+Authenticated routes are protected through the `app-shell` route `beforeLoad`, and app pages are lazy-loaded via `React.lazy` + `Suspense` for bundle splitting.
 
 ---
 
 ## Feature Architecture Pattern
 
-Every feature follows the same internal structure. Do not deviate from this pattern when adding or modifying features.
+Features are co-located and should stay structurally consistent, but not every feature needs every folder.
 
 ```
 src/features/<feature-name>/
@@ -111,6 +120,7 @@ src/features/<feature-name>/
 ├── components/                   # Feature-specific components
 │   └── <sub-feature>/
 │       └── component.tsx
+├── api/                          # Feature-local services, adapters, query factories
 ├── hooks/                        # Custom hooks (data fetching, UI state)
 ├── store/                        # Zustand stores (client state only)
 ├── types/                        # TypeScript interfaces and type unions
@@ -125,6 +135,7 @@ src/features/<feature-name>/
 - Keep all feature code co-located. Never import one feature's internals into another feature.
 - Cross-feature shared code belongs in `src/shared/`.
 - Page components are thin orchestrators — business logic goes in hooks.
+- Prefer feature-local `api/` modules for backend-facing data seams and query builders.
 - Mock data files (`data/mock-*.ts`) are temporary scaffolding. Replace with TanStack Query hooks when the backend is ready.
 
 ---
@@ -141,7 +152,7 @@ import { apiClient } from "@/shared/api/api";
 
 - Automatically attaches `Authorization: Bearer <accessToken>` to every request.
 - On a `401` response, automatically attempts a token refresh via `POST auth/refresh`.
-- If the refresh fails (or we are already on the refresh endpoint), tokens are cleared and the user is redirected to `/`.
+- If the refresh fails (or we are already on the refresh endpoint), tokens are cleared and the app redirects to `/auth/login`.
 - Base URL is set from `VITE_API_URL` in the environment config.
 - Never call `fetch` directly. Always use `apiClient`.
 
@@ -151,9 +162,9 @@ import { apiClient } from "@/shared/api/api";
 
 | Concern                           | Tool                      | Location                  |
 | --------------------------------- | ------------------------- | ------------------------- |
-| Server data (API responses)       | TanStack Query            | Feature `hooks/` files    |
+| Server data (API responses)       | TanStack Query            | Feature `hooks/` + `api/` |
 | UI state shared across components | Zustand store             | Feature `store/` files    |
-| Form state                        | React Hook Form           | Inline in form components |
+| Form state                        | React Hook Form           | Feature hooks/components  |
 | Local ephemeral state             | `useState` / `useReducer` | Component level           |
 
 **Do not use `localStorage` for persistence.** All persistent state must go through the API layer.
@@ -167,15 +178,12 @@ import { apiClient } from "@/shared/api/api";
 - `UserProfile` — full user entity with personality type, interests, trust score
 - `PersonalityType` — 4-letter personality type code (e.g., "INFP", "ESTJ")
 
-### Groups (`src/features/groups/types/groups.types.ts`)
+### Conversations & Groups (`src/shared/schemas/group.ts`, `src/shared/schemas/chat.ts`, `src/features/activity/types/*.ts`)
 
-- `Group` — full group entity with embedded `Plan`, `GroupIdentity`, and `GroupMember[]`
-- `GroupPreview` — lightweight denormalized version for list rendering
-- `Plan` — what the group will do: title, category, datetime, location, proposals, comments
-- `PlanProposal` — a member-proposed change to a plan field with voting
-- `GroupStatus` — `FORMING | PENDING | ACTIVE | COMPLETED | DISSOLVED`
-- `PlanStatus` — `DRAFT | CONFIRMED | COMPLETED`
-- `Message` — a single chat message with type, sender, and read receipts
+- Canonical backend-aligned group, plan, message, and chat models live in `src/shared/schemas/`.
+- `src/features/activity/types/groups.types.ts` contains activity-specific group projections like `GroupPreview` and `PlanHistoryItem`.
+- `src/features/activity/types/direct-chats.types.ts` contains DM-specific preview/state types layered on top of the shared chat schema.
+- Current group and direct-chat UI both live inside the `activity` feature rather than standalone `groups/` or `direct-chats/` feature folders.
 
 ### Forge (`src/features/forge/types/forge.types.ts`)
 
@@ -207,8 +215,8 @@ The wizard state is managed by `src/features/forge/hooks/use-forge-wizard.ts`. T
 
 New users complete two onboarding steps before accessing the app:
 
-1. **Personality test** (`/onboarding/personality`) — a questionnaire that determines the user's 4-letter personality type code. Questions are in `src/features/onboarding/data/ipip-questions.ts`. The scorer lives in `src/features/onboarding/utils/score-calculator.ts`.
-2. **Interests selection** (`/onboarding/interests`) — users browse and select interest tags across categories. Logic is in `src/features/onboarding/utils/interest-logic.ts`.
+1. **Personality test** (`/onboarding/personality`) — a questionnaire that determines the user's 4-letter personality type code. Questions are in `src/features/onboarding/data/ipip-questions.ts`. Score calculation lives in `src/features/onboarding/utils/score-calculator.ts`, with flow/result orchestration helpers in `src/features/onboarding/lib/`.
+2. **Interests selection** (`/onboarding/interests`) — users browse and select interest tags across categories. Core selection logic is in `src/features/onboarding/utils/interest-logic.ts`, with browse-state helpers in `src/features/onboarding/lib/interests-browser-state.ts`.
 
 Both steps store their state via Zustand stores in `src/features/onboarding/store/`.
 

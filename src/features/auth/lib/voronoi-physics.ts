@@ -1,4 +1,4 @@
-import type { Point, Dimensions } from "../types/voronoi.types";
+import type { Dimensions, Point } from "./voronoi-contract";
 import {
   NUM_CORE,
   NUM_GUARD,

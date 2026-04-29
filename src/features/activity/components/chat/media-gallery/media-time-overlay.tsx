@@ -1,5 +1,5 @@
 import { memo } from "react";
-import type { UnifiedMessage } from "../../../types/chat.types";
+import type { UnifiedMessage } from "../../../lib/activity-contract";
 import { formatChatTime } from "../../../lib/chat-utils";
 import { MessageStatusIcon } from "../message-status-icon";
 

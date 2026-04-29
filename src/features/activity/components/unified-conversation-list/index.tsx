@@ -4,7 +4,7 @@ import { useSearchHeaderFade } from "../../hooks/use-search-header-fade";
 import type {
   FilterChip,
   UnifiedConversation,
-} from "../../types/unified-conversation.types";
+} from "../../lib/activity-contract";
 import { UnifiedConversationListItem } from "../unified-conversation-list-item";
 import { EmptyState } from "./empty-state";
 import { FilterHeader } from "./filter-header";

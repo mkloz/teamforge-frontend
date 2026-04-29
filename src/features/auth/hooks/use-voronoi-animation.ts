@@ -10,7 +10,7 @@ import {
 } from "../constants/voronoi.constants";
 import { updateParticlePhysics } from "../lib/voronoi-physics";
 import { drawCatalystCore, drawParticleCells } from "../lib/voronoi-renderer";
-import type { Dimensions, MouseState, Point } from "../types/voronoi.types";
+import type { Dimensions, MouseState, Point } from "../lib/voronoi-contract";
 
 interface UseVoronoiOptions {
   progress: number;

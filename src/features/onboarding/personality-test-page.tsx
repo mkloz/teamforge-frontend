@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useRef, useState } from "react";
@@ -14,12 +15,11 @@ import { PersonalityIntro } from "./components/personality/personality-intro";
 import { PersonalityResults } from "./components/personality/personality-results";
 import { QuestionPage } from "./components/personality/question-page";
 import { Theory101 } from "./components/personality/theory-101";
-import {
-  buildQuestionList,
-  TEST_LENGTH_CONFIG,
-  type IpipQuestion,
-  type TestLength,
-} from "./data/ipip-questions";
+import { AuthQueries } from "../auth/api/auth.queries";
+import { findFirstUnansweredPage } from "./lib/personality-test-flow";
+import { getOceanScoresFromVector } from "./lib/personality-results";
+import { OnboardingQueries } from "./api/onboarding.queries";
+import { buildQuestionList, type TestLength } from "./data/ipip-questions";
 
 const QUESTIONS_PER_PAGE = 3;
 
@@ -65,24 +65,17 @@ function ScreenRenderer({
     case "length": {
       const isAdjusting = Object.keys(answers).length > 0;
 
-      const findFirstUnansweredPage = (testLength: TestLength) => {
-        const activeQuestions = buildQuestionList(testLength);
-        const config = TEST_LENGTH_CONFIG[testLength];
-        const firstUnansweredIndex = activeQuestions.findIndex(
-          (q: IpipQuestion) => !answers[q.id],
-        );
-        if (firstUnansweredIndex === -1)
-          return Math.ceil(activeQuestions.length / config.questionsPerPage);
-        return Math.floor(firstUnansweredIndex / config.questionsPerPage) + 1;
-      };
-
       return (
         <LengthSelector
           onBack={() => {
             if (state.previousScreen?.id === "intermission") {
               actions.setScreen(state.previousScreen);
             } else if (isAdjusting) {
-              const resumePage = findFirstUnansweredPage(state.testLength);
+              const resumePage = findFirstUnansweredPage(
+                state.testLength,
+                answers,
+                QUESTIONS_PER_PAGE,
+              );
               actions.setScreen({ id: "questions", currentPage: resumePage });
             } else {
               actions.setScreen({ id: "guidelines" });
@@ -91,7 +84,11 @@ function ScreenRenderer({
           onBegin={(length) => {
             if (isAdjusting) {
               actions.updateTestLength(length);
-              const resumePage = findFirstUnansweredPage(length);
+              const resumePage = findFirstUnansweredPage(
+                length,
+                answers,
+                QUESTIONS_PER_PAGE,
+              );
               actions.setScreen({ id: "questions", currentPage: resumePage });
             } else {
               actions.handleBegin(length);
@@ -164,14 +161,34 @@ function ScreenRenderer({
 export function PersonalityTestPage() {
   const [pendingLength, setPendingLength] = useState<TestLength | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const invalidateCurrentUser = AuthQueries.useInvalidateCurrentUser();
+  const persistPersonalityMutation = useMutation({
+    mutationFn: OnboardingQueries.updatePersonality,
+    onSuccess: async () => {
+      await invalidateCurrentUser();
+    },
+  });
   const testState = usePersonalityTest({
     questionsPerPage: QUESTIONS_PER_PAGE,
-    onContinue: () => {
+    onContinue: async () => {
+      if (testState.result && testState.vector) {
+        const oceanScores = getOceanScoresFromVector(testState.vector);
+
+        await persistPersonalityMutation.mutateAsync({
+          personalityType: testState.result.type,
+          oceanO: oceanScores.openness,
+          oceanC: oceanScores.conscientiousness,
+          oceanE: oceanScores.extraversion,
+          oceanA: oceanScores.agreeableness,
+          oceanN: oceanScores.neuroticism,
+        });
+      }
+
       const mbtiType = testState.result?.type ?? "";
       const destination = mbtiType
         ? `/onboarding/interests?mbti=${encodeURIComponent(mbtiType)}`
         : "/onboarding/interests";
-      window.location.href = destination;
+      window.location.assign(destination);
     },
   });
 

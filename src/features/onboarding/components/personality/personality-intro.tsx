@@ -57,11 +57,11 @@ export function PersonalityIntro({ onStart }: PersonalityIntroProps) {
 
       {/* Body */}
       <motion.div variants={fadeUpItem} className="text-left">
-        <p className="font-sans text-sm leading-relaxed text-pretty mb-3 text-slate-500 font-medium indent-8">
+        <p className="font-sans text-sm leading-relaxed text-pretty mb-3 text-muted-foreground font-medium indent-8">
           Before we build your group, we want to understand how your mind works
           – the core of your personality.
         </p>
-        <p className="font-sans text-xs sm:text-sm leading-relaxed text-pretty mb-6 text-slate-500 indent-8">
+        <p className="font-sans text-xs sm:text-sm leading-relaxed text-pretty mb-6 text-muted-foreground indent-8">
           This is the{" "}
           <span className="text-ink font-semibold">IPIP Assessment</span> – a
           scientifically validated framework. The result shapes your group
@@ -72,7 +72,7 @@ export function PersonalityIntro({ onStart }: PersonalityIntroProps) {
       {/* Divider */}
       <motion.div
         variants={fadeUpItem}
-        className="w-full mb-6 h-px bg-slate-100"
+        className="w-full mb-6 h-px bg-slate-100 dark:bg-white/10"
       />
 
       {/* Benefits */}
@@ -85,7 +85,7 @@ export function PersonalityIntro({ onStart }: PersonalityIntroProps) {
             <div className="flex items-center justify-center rounded-xl shrink-0 mt-0.5 w-8 h-8 bg-forge-teal/10">
               <Icon size={14} strokeWidth={2.5} className="text-forge-teal" />
             </div>
-            <p className="font-sans text-xs sm:text-sm leading-relaxed text-slate-500">
+            <p className="font-sans text-xs sm:text-sm leading-relaxed text-muted-foreground">
               {text}
             </p>
           </div>

@@ -406,12 +406,12 @@ FORMING → PENDING → ACTIVE → PLANNING → COMPLETED
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
-| `GroupDetailView` | `features/groups/components/` | Group info panel |
-| `MemberList` | `features/groups/components/` | Member roster |
-| `PlanCard` | `features/groups/components/` | Plan summary |
-| `PlanProposalForm` | `features/groups/components/` | Create proposal |
-| `ProposalVoteCard` | `features/groups/components/` | Vote interface |
-| `RatingDialog` | `features/groups/components/` | Post-activity rating |
+| `GroupDetailView` | `features/activity/components/groups/group-detail-panel/` | Group info panel |
+| `MemberList` | `features/activity/components/groups/group-detail-panel/` | Member roster |
+| `PlanCard` | `features/activity/components/groups/group-detail-panel/` | Plan summary |
+| `PlanProposalForm` | `features/activity/components/chat/proposal-message/` | Create proposal / proposal messaging UI |
+| `ProposalVoteCard` | `features/activity/components/chat/proposal-message/` | Vote interface |
+| `RatingDialog` | `features/activity/components/groups/group-detail-panel/` | Post-activity rating surface |
 
 ---
 

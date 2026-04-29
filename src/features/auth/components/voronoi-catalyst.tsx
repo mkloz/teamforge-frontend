@@ -1,5 +1,5 @@
 import { useVoronoiAnimation } from "../hooks/use-voronoi-animation";
-import type { VoronoiCatalystProps } from "../types/voronoi.types";
+import type { VoronoiCatalystProps } from "../lib/voronoi-contract";
 
 /**
  * VoronoiCatalyst Component

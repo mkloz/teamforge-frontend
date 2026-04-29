@@ -1,6 +1,14 @@
 import { useCallback, useMemo } from "react";
 import { buildQuestionList, type TestLength } from "../data/ipip-questions";
 import {
+  calculatePersonalityProgress,
+  countAnsweredQuestions,
+  getIntermissionInterval,
+  getQuestionPageSlice,
+  resolvePersonalityQuestions,
+  shouldTriggerIntermission,
+} from "../lib/personality-test-flow";
+import {
   hydrateQuestions,
   usePersonalityTestStore,
   type ScreenState,
@@ -8,60 +16,26 @@ import {
 import { calculateVector } from "../utils/score-calculator";
 import { vectorToType } from "../utils/type-translation";
 
-export type { ScreenState };
-
 interface UsePersonalityTestProps {
   questionsPerPage: number;
   onContinue?: () => void;
 }
-
-const getIntermissionInterval = (length: TestLength): number => {
-  return length === 50 ? 6 : 5;
-};
-
-const shouldTriggerIntermission = (
-  currentPage: number,
-  length: TestLength,
-  totalPages: number,
-): boolean => {
-  const interval = getIntermissionInterval(length);
-  return currentPage % interval === 0 && currentPage < totalPages;
-};
-
-const calculateProgress = (
-  screenId: ScreenState["id"],
-  answersCount: number,
-  totalQuestions: number,
-): number => {
-  if (
-    screenId === "questions" ||
-    screenId === "intermission" ||
-    screenId === "length"
-  ) {
-    if (totalQuestions === 0) return 0;
-    return answersCount / totalQuestions;
-  }
-  if (screenId === "calculating" || screenId === "results") {
-    return 1;
-  }
-  return 0;
-};
+export type { ScreenState };
 
 export function usePersonalityTest({
   questionsPerPage,
   onContinue,
 }: UsePersonalityTestProps) {
-  // ── Zustand store (persisted) ──────────────────────────────────────────────
+  // ── Zustand store ──────────────────────────────────────────────────────────
   const store = usePersonalityTestStore();
   const { screen, testLength, questionIds, answers, result, vector } = store;
 
   // Reconstruct full question objects from stored IDs (or build fresh if none)
-  const questions = (() => {
-    if (questionIds.length > 0) {
-      return hydrateQuestions(questionIds);
-    }
-    return buildQuestionList(testLength);
-  })();
+  const questions = resolvePersonalityQuestions(
+    questionIds,
+    testLength,
+    hydrateQuestions,
+  );
 
   const totalPages = Math.ceil(questions.length / questionsPerPage);
 
@@ -186,17 +160,17 @@ export function usePersonalityTest({
   // ── Derived ────────────────────────────────────────────────────────────────
 
   const currentPage = screen.id === "questions" ? screen.currentPage : 1;
-  const pageStart = (currentPage - 1) * questionsPerPage;
-  const pageQuestions = questions.slice(
-    pageStart,
-    pageStart + questionsPerPage,
+  const { pageStart, pageQuestions } = getQuestionPageSlice(
+    questions,
+    currentPage,
+    questionsPerPage,
   );
 
   const answeredInPoolCount = useMemo(() => {
-    return questions.filter((q) => answers[q.id] !== undefined).length;
+    return countAnsweredQuestions(questions, answers);
   }, [questions, answers]);
 
-  const progress = calculateProgress(
+  const progress = calculatePersonalityProgress(
     screen.id,
     answeredInPoolCount,
     questions.length,

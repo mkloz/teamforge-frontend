@@ -1,30 +1,61 @@
+import type { Invite } from "@/shared/schemas";
 import { AnimatePresence, motion } from "framer-motion";
 import { Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useHomeData } from "../../hooks/use-home-data";
+import { useHomeInvitationActions } from "../../hooks/use-home-invitation-actions";
 import { InvitationCard } from "./invitation-card";
 
-/**
- * Invitations section showing pending group invites.
- * Uses local state to manage immediate removal feedback while syncing with hook data.
- */
 export function Invitations() {
   const { invitations } = useHomeData();
-  const [pending, setPending] = useState(invitations);
+  const [pending, setPending] = useState<Invite[]>(invitations);
+  const {
+    acceptInvitation,
+    declineInvitation,
+    isAccepting,
+    isDeclining,
+    acceptingInviteId,
+    decliningInviteId,
+  } = useHomeInvitationActions();
 
-  // Sync with hook data when it changes (e.g. after a refetch)
   useEffect(() => {
     setPending(invitations);
   }, [invitations]);
 
-  const handleAccept = (id: string) => {
+  const handleAccept = async (id: string) => {
     setPending((prev) => prev.filter((inv) => inv.id !== id));
-    // In a real app, we would call a mutation here
+
+    try {
+      await acceptInvitation(id);
+    } catch {
+      setPending((prev) => {
+        const restoredInvite = invitations.find((inv) => inv.id === id);
+
+        if (!restoredInvite || prev.some((inv) => inv.id === id)) {
+          return prev;
+        }
+
+        return [restoredInvite, ...prev];
+      });
+    }
   };
 
-  const handleDecline = (id: string) => {
+  const handleDecline = async (id: string) => {
     setPending((prev) => prev.filter((inv) => inv.id !== id));
-    // In a real app, we would call a mutation here
+
+    try {
+      await declineInvitation(id);
+    } catch {
+      setPending((prev) => {
+        const restoredInvite = invitations.find((inv) => inv.id === id);
+
+        if (!restoredInvite || prev.some((inv) => inv.id === id)) {
+          return prev;
+        }
+
+        return [restoredInvite, ...prev];
+      });
+    }
   };
 
   if (pending.length === 0) return null;
@@ -40,7 +71,6 @@ export function Invitations() {
         aria-labelledby="invitations-heading"
         className="w-full flex flex-col gap-4"
       >
-        {/* Section header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h2
@@ -49,7 +79,6 @@ export function Invitations() {
             >
               Invitations
             </h2>
-            {/* Count badge */}
             <motion.span
               key={pending.length}
               initial={{ scale: 0.7, opacity: 0 }}
@@ -66,7 +95,6 @@ export function Invitations() {
           <Mail className="size-4 text-muted-foreground" aria-hidden="true" />
         </div>
 
-        {/* Cards list */}
         <div
           role="list"
           aria-label="Pending group invitations"
@@ -80,6 +108,8 @@ export function Invitations() {
                   index={i}
                   onAccept={handleAccept}
                   onDecline={handleDecline}
+                  isAccepting={isAccepting && acceptingInviteId === inv.id}
+                  isDeclining={isDeclining && decliningInviteId === inv.id}
                 />
               </div>
             ))}

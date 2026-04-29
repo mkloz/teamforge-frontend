@@ -9,7 +9,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { memo } from "react";
-import type { UnifiedAttachment } from "@/features/activity/types/chat.types";
+import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import { useImageState } from "@/shared/hooks/use-image-state";
 import { NavButton } from "./nav-button";
 import { ThumbnailStrip } from "./thumbnail-strip";

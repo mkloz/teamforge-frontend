@@ -65,12 +65,12 @@ const OptionCard = memo(
           }
         }}
         className={cn(
-          "relative overflow-hidden w-full text-left p-5 transition-all duration-300 cursor-pointer border-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/20",
+          "relative overflow-hidden w-full text-left p-5 transition-all duration-300 cursor-pointer border-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/20 bg-card text-card-foreground",
           isSelected
-            ? "border-forge-teal/30 bg-white shadow-[0_8px_308px_rgba(13,148,136,0.08)]"
+            ? "border-forge-teal/30 bg-card shadow-[0_8px_308px_rgba(13,148,136,0.08)] dark:shadow-[0_8px_32px_rgba(20,184,166,0.12)]"
             : isRecommended
-              ? "border-forge-teal/10 bg-white shadow-xs hover:border-forge-teal/20"
-              : "border-slate-100 bg-white shadow-none hover:shadow-sm hover:border-slate-200",
+              ? "border-forge-teal/10 bg-card shadow-xs hover:border-forge-teal/20 dark:border-forge-teal/20"
+              : "border-border bg-card shadow-none hover:shadow-sm hover:border-slate-200 dark:hover:border-white/15",
         )}
       >
         {isSelected && (
@@ -114,22 +114,22 @@ const OptionCard = memo(
                   </span>
                 )}
               </div>
-              <span className="font-sans text-xs font-bold text-slate-400">
+              <span className="font-sans text-xs font-bold text-muted-foreground">
                 {length} items &middot; ~{config.estimatedMinutes} min
               </span>
             </div>
           </div>
 
-          <div className="hidden sm:block w-full h-10 bg-slate-100/80" />
+          <div className="hidden sm:block w-full h-10 bg-slate-100/80 dark:bg-white/8" />
 
           {/* Detail Column */}
           <div className="flex flex-col justify-center">
-            <p className="font-sans text-xs text-slate-500 font-medium leading-relaxed mb-2 sm:mb-1.5 text-pretty">
+            <p className="font-sans text-xs text-muted-foreground font-medium leading-relaxed mb-2 sm:mb-1.5 text-pretty">
               {config.sublabel}
             </p>
 
             <div className="flex items-center gap-2 opacity-80">
-              <span className="font-sans text-xs font-black text-slate-500 uppercase tracking-wide">
+              <span className="font-sans text-xs font-black text-muted-foreground uppercase tracking-wide">
                 {isAdjust && answeredCount > 0
                   ? isComplete
                     ? "Completed"
@@ -138,7 +138,7 @@ const OptionCard = memo(
               </span>
 
               {isAdjust && answeredCount > 0 ? (
-                <div className="flex-1 h-1.5 bg-slate-100 rounded-full max-w-30 overflow-hidden">
+                <div className="flex-1 h-1.5 bg-slate-100 dark:bg-white/10 rounded-full max-w-30 overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${progressPercent}%` }}
@@ -154,7 +154,7 @@ const OptionCard = memo(
                         "h-1.5 w-3 rounded-full transition-colors",
                         i < (length === 30 ? 2 : length === 50 ? 4 : 6)
                           ? "bg-forge-teal/40"
-                          : "bg-slate-100",
+                          : "bg-slate-100 dark:bg-white/10",
                       )}
                     />
                   ))}
@@ -207,7 +207,7 @@ export function LengthSelector({
           variant="ghost"
           size="sm"
           onClick={onBack}
-          className="text-slate-400 hover:text-slate-600 px-0 hover:bg-transparent"
+          className="text-muted-foreground hover:text-foreground px-0 hover:bg-transparent"
         >
           <ArrowLeft size={14} strokeWidth={2} />
           {isAdjust ? "Return to break" : "Back"}
@@ -230,7 +230,7 @@ export function LengthSelector({
 
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-sm sm:text-chat-input leading-relaxed mb-10 text-slate-500 font-medium max-w-md mx-auto text-center"
+        className="font-sans text-sm sm:text-chat-input leading-relaxed mb-10 text-muted-foreground font-medium max-w-md mx-auto text-center"
       >
         {isAdjust
           ? "You can increase or decrease the remaining density of your test. Your existing progress will be preserved regardless of your choice."

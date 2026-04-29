@@ -1,8 +1,8 @@
 import { cn } from "@/shared/lib/utils";
 import { useCallback, useEffect } from "react";
-import type { DirectChat } from "@/features/activity/types/direct-chats.types";
+import type { DirectChat } from "@/features/activity/lib/activity-contract";
 import { ProfilePanelHeader } from "./profile-panel-header";
-import { UserProfilePanel as ProfilePanelContent } from "@/features/profile/components/user-profile-panel/user-profile-panel";
+import { UserProfilePanel as ProfilePanelContent } from "@/shared/components/user-profile-panel/user-profile-panel";
 import {
   Drawer,
   DrawerContent,

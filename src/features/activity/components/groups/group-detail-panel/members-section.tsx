@@ -1,6 +1,6 @@
 import { UserPlus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
-import type { GroupMember } from "@/features/activity/types/groups.types";
+import type { GroupMember } from "@/features/activity/lib/activity-contract";
 import { MemberCard } from "./member-card";
 import { useMemo } from "react";
 

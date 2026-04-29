@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { AuthApi } from "../api/auth.api";
 import { registerSchema, type RegisterValues } from "../schemas/auth-schemas";
 
 interface UseRegisterFormOptions {
@@ -20,12 +21,13 @@ export function useRegisterForm({
   const [step, setStep] = useState<Step>(1);
   const [direction, setDirection] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [rootError, setRootError] = useState<string | null>(null);
 
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
     mode: "onBlur",
     defaultValues: {
-      fullName: "",
+      name: "",
       email: "",
       password: "",
       otp: "",
@@ -41,7 +43,7 @@ export function useRegisterForm({
   useEffect(() => {
     if (!onProgress) return;
     let filled = 0;
-    if (values.fullName && values.fullName.length > 2) filled++;
+    if (values.name && values.name.length > 2) filled++;
     if (values.email && values.email.length > 4) filled++;
     if (values.password && values.password.length > 5) filled++;
     if (values.otp && values.otp.length === 6) filled++;
@@ -59,7 +61,8 @@ export function useRegisterForm({
 
   // Step transitions
   const goToStep2 = useCallback(async () => {
-    const isValid = await form.trigger(["fullName", "email", "password"]);
+    setRootError(null);
+    const isValid = await form.trigger(["name", "email", "password"]);
     if (isValid) {
       setDirection(1);
       setStep(2);
@@ -67,6 +70,7 @@ export function useRegisterForm({
   }, [form]);
 
   const goToStep3 = useCallback(async () => {
+    setRootError(null);
     const isValid = await form.trigger(["age", "city", "gender"]);
     if (isValid) {
       setDirection(1);
@@ -75,11 +79,13 @@ export function useRegisterForm({
   }, [form]);
 
   const goBackToStep1 = useCallback(() => {
+    setRootError(null);
     setDirection(-1);
     setStep(1);
   }, []);
 
   const goBackToStep2 = useCallback(() => {
+    setRootError(null);
     setDirection(-1);
     setStep(2);
   }, []);
@@ -89,14 +95,18 @@ export function useRegisterForm({
       const isValid = await form.trigger(["otp"]);
       if (!isValid) return;
 
+      setRootError(null);
       setLoading(true);
       try {
-        // TODO: Integrate with apiClient from @/shared/api/api
-        await new Promise((r) => setTimeout(r, 1800));
-        console.log("Registration complete", formValues);
+        await AuthApi.registerWithEmail(formValues);
         onSuccess?.();
       } catch (error) {
-        console.error("Registration failed", error);
+        setRootError(
+          AuthApi.getAuthErrorMessage(
+            error,
+            "We couldn't finish creating your account. Please try again.",
+          ),
+        );
       } finally {
         setLoading(false);
       }
@@ -109,6 +119,7 @@ export function useRegisterForm({
     step,
     direction,
     loading,
+    rootError,
     goToStep2,
     goToStep3,
     goBackToStep1,

@@ -1,14 +1,14 @@
+import type { Interest } from "@/shared/schemas";
 import { Button } from "@/shared/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Sparkles } from "lucide-react";
-import { LEAF_TAG_BY_ID } from "../../../data/interests-data";
-import type { LeafTag } from "../../../data/interests-types";
 import { TagPill } from "./tag-pill";
 
 interface SelectionShelfProps {
   isSearching: boolean;
+  leafById: Record<string, Interest>;
   selectedIds: Set<string>;
-  youMightAlsoLike: LeafTag[];
+  youMightAlsoLike: Interest[];
   isAtMax: boolean;
   onToggle: (id: string) => void;
   onReject: (id: string) => void;
@@ -16,6 +16,7 @@ interface SelectionShelfProps {
 
 export function SelectionShelf({
   isSearching,
+  leafById,
   selectedIds,
   youMightAlsoLike,
   isAtMax,
@@ -58,7 +59,7 @@ export function SelectionShelf({
               ? youMightAlsoLike.map((tag) => (
                   <TagPill
                     key={`search-suggestion-${tag.id}`}
-                    label={tag.label}
+                    label={tag.name}
                     selected={selectedIds.has(tag.id)}
                     disabled={isAtMax}
                     onToggle={() => onToggle(tag.id)}
@@ -68,7 +69,7 @@ export function SelectionShelf({
                   />
                 ))
               : [...selectedIds].map((id) => {
-                  const tag = LEAF_TAG_BY_ID[id];
+                  const tag = leafById[id];
                   if (!tag) return null;
                   return (
                     <Button
@@ -77,7 +78,7 @@ export function SelectionShelf({
                       onClick={() => onToggle(id)}
                       className="rounded-full gap-1.5"
                     >
-                      {tag.label}
+                      {tag.name}
                       <X
                         size={14}
                         className="opacity-60 group-hover:opacity-100 transition-opacity"

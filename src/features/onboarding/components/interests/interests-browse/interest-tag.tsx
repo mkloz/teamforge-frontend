@@ -28,7 +28,7 @@ export function InterestTag({
       className={cn(
         "rounded-full h-auto py-1.5 px-3",
         !selected &&
-          "bg-slate-100 text-slate-muted border-none hover:bg-slate-200",
+          "bg-slate-100 dark:bg-white/8 text-slate-muted dark:text-slate-300 border-none hover:bg-slate-200 dark:hover:bg-white/12",
       )}
     >
       <motion.button

@@ -1,4 +1,4 @@
-import type { OnlineStatus } from "@/features/activity/types/direct-chats.types";
+import type { OnlineStatus } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
@@ -8,13 +8,24 @@ import { UnifiedTypingIndicator } from "../unified-typing-indicator";
 interface HeaderInfoProps {
   title: string;
   subtitle?: string;
-  avatarUrl: string;
+  avatarUrl?: string | null;
   isGroup: boolean;
-  secondaryAvatar?: string;
+  secondaryAvatar?: string | null;
   onlineStatus?: OnlineStatus;
   isTyping?: boolean;
   typingText?: string;
   onToggle: () => void;
+}
+
+function getTitleInitials(title: string) {
+  const initials = title
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+
+  return initials || "TF";
 }
 
 export const HeaderInfo = memo(
@@ -44,11 +55,17 @@ export const HeaderInfo = memo(
             isGroup ? "w-10 h-10 rounded-md" : "w-10 h-10 rounded-full",
           )}
         >
-          <img
-            src={avatarUrl}
-            alt={title}
-            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/header-info:scale-110"
-          />
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt={title}
+              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/header-info:scale-110"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-muted text-[10px] font-bold text-muted-foreground">
+              {getTitleInitials(title)}
+            </div>
+          )}
           <div className="absolute inset-0 bg-ink/0 group-hover/header-info:bg-ink/5 transition-colors" />
         </div>
 

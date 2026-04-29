@@ -1,5 +1,5 @@
 import { useHeaderSearch } from "@/features/activity/hooks/use-header-search";
-import type { OnlineStatus } from "@/features/activity/types/direct-chats.types";
+import type { OnlineStatus } from "@/features/activity/lib/activity-contract";
 import { Button } from "@/shared/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { memo } from "react";
@@ -10,10 +10,10 @@ import { HeaderSearch } from "./header-search";
 interface UnifiedChatHeaderProps {
   title: string;
   subtitle?: string;
-  avatarUrl: string;
+  avatarUrl?: string | null;
   kind: "dm" | "group";
   onlineStatus?: OnlineStatus;
-  secondaryAvatar?: string;
+  secondaryAvatar?: string | null;
   isTyping?: boolean;
   typingText?: string;
   isActionOpen?: boolean;

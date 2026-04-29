@@ -1,17 +1,14 @@
+import type { Interest } from "@/shared/schemas";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { Search, X } from "lucide-react";
-import { INTEREST_CATEGORIES } from "../../../data/interests-data";
-
-const SHORT_CAT_LABELS: Record<string, string> = {
-  careers: "Career",
-  lifestyle: "Lifestyle",
-  entertainment: "Entertainment",
-  sports_outdoors: "Sports & Outdoors",
-  hobbies_creating: "Hobbies",
-};
+import {
+  getCategoryColorClass,
+  getCategoryShortLabel,
+} from "../../../lib/interest-catalog";
 
 interface InterestsBrowseHeaderProps {
+  categories: Interest[];
   searchQuery: string;
   onSetSearch: (q: string) => void;
   onExpandCategoryOnly: (id: string) => void;
@@ -19,6 +16,7 @@ interface InterestsBrowseHeaderProps {
 }
 
 export function InterestsBrowseHeader({
+  categories,
   searchQuery,
   onSetSearch,
   onExpandCategoryOnly,
@@ -40,18 +38,21 @@ export function InterestsBrowseHeader({
   if (variant === "pills") {
     return (
       <nav className="flex overflow-x-auto scrollbar-hide gap-1.5 sm:gap-2 scroll-smooth items-center h-10 py-1 -m-1 px-1">
-        {INTEREST_CATEGORIES.map((cat) => (
+        {categories.map((category) => (
           <Button
             variant="outline"
             size="xs"
-            key={`nav-${cat.id}`}
-            onClick={() => handleQuickJump(cat.id)}
-            className="rounded-full bg-white text-slate-muted border-slate-muted/15 focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-1 focus-visible:outline-none shrink-0"
+            key={`nav-${category.id}`}
+            onClick={() => handleQuickJump(category.id)}
+            className="rounded-full bg-card text-slate-muted border-slate-muted/15 dark:border-white/10 focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-1 focus-visible:outline-none shrink-0"
           >
             <div
-              className={cn("w-1.5 h-1.5 rounded-full shrink-0", cat.color)}
+              className={cn(
+                "w-1.5 h-1.5 rounded-full shrink-0",
+                getCategoryColorClass(category.id),
+              )}
             />
-            {SHORT_CAT_LABELS[cat.id] || cat.label}
+            {getCategoryShortLabel(category.id, category.name)}
           </Button>
         ))}
       </nav>
@@ -69,9 +70,9 @@ export function InterestsBrowseHeader({
         type="text"
         value={searchQuery}
         onChange={(e) => onSetSearch(e.target.value)}
-        placeholder="Search 500+ interests…"
+        placeholder="Search interests…"
         aria-label="Search interests"
-        className="w-full pl-10 pr-10 h-10 bg-white border border-slate-muted/15 rounded-xl text-sm font-sans text-ink placeholder:text-slate-muted/40 focus:bg-white focus:outline-none focus:ring-thick focus:ring-forge-teal/15 focus:border-forge-teal transition-all shadow-[0_2px_10px_rgba(0,0,0,0.02)]"
+        className="w-full pl-10 pr-10 h-10 bg-card border border-slate-muted/15 dark:border-white/10 rounded-xl text-sm font-sans text-ink placeholder:text-slate-muted/50 focus:bg-card focus:outline-none focus:ring-thick focus:ring-forge-teal/15 focus:border-forge-teal transition-all shadow-[0_2px_10px_rgba(0,0,0,0.02)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.14)]"
       />
       {searchQuery && (
         <Button

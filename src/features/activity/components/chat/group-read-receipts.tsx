@@ -3,7 +3,7 @@ import { CheckCheck } from "lucide-react";
 
 interface Reader {
   id: string;
-  fullName: string;
+  name: string;
   avatarUrl: string;
   readAt: string;
 }
@@ -36,12 +36,12 @@ export const GroupReadReceipts = memo(function GroupReadReceipts({
           >
             <img
               src={reader.avatarUrl}
-              alt={reader.fullName}
+              alt={reader.name}
               className="w-9 h-9 rounded-full object-cover ring-1 ring-border/20 group-hover:ring-forge-teal/40 transition-colors"
             />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-ink truncate group-hover:text-forge-teal transition-colors">
-                {reader.fullName}
+                {reader.name}
               </p>
               <p className="text-micro text-slate-muted">
                 Read {reader.readAt}

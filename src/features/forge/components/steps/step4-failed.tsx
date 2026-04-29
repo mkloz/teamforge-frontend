@@ -1,5 +1,5 @@
 import { AlertCircle, ArrowRight } from "lucide-react";
-import type { ForgeMode } from "../../types/forge.types";
+import type { ForgeMode } from "../../lib/forge-contract";
 
 export interface Step4FailedProps {
   forgeMode: ForgeMode;
@@ -14,9 +14,9 @@ export function Step4Failed({ forgeMode }: Step4FailedProps) {
           "This activity or time slot has fewer people active right now.",
         ]
       : [
-          "There weren't enough available members for the group size you requested.",
-          "Privacy settings may be limiting who can see this group.",
-          "This activity or time slot has fewer people active right now.",
+          "Manual group creation is not exposed by the current backend yet.",
+          "This screen can collect manual preferences, but the API only supports AUTO forging today.",
+          "Switch to Algorithmic mode if you want to create a real group right now.",
         ];
 
   const suggestions =
@@ -27,9 +27,9 @@ export function Step4Failed({ forgeMode }: Step4FailedProps) {
           "Set privacy to Public",
         ]
       : [
-          "Try a smaller group size",
-          "Open the group to your network",
-          "Try a different time or date",
+          "Switch to Algorithmic mode",
+          "Keep the plan details and try AUTO forging",
+          "Return later when manual group creation is supported by the API",
         ];
 
   return (
@@ -47,8 +47,9 @@ export function Step4Failed({ forgeMode }: Step4FailedProps) {
             We couldn&apos;t form a group
           </h3>
           <p className="text-sm text-slate-muted mt-1.5 leading-relaxed">
-            Our algorithm analyzed the current pool but couldn&apos;t find a
-            perfectly compatible match for your settings.
+            {forgeMode === "AUTO"
+              ? "Our algorithm analyzed the current pool but couldn&apos;t find a perfectly compatible match for your settings."
+              : "This frontend flow can capture manual preferences, but the current backend contract does not support creating manual groups yet."}
           </p>
         </div>
       </div>

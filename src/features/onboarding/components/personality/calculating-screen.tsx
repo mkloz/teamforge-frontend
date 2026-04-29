@@ -141,14 +141,14 @@ export function CalculatingScreen({ vector, onDone }: CalculatingScreenProps) {
               }}
             >
               <div className="flex justify-between items-baseline">
-                <span className="font-sans text-xs font-semibold text-slate-700">
+                <span className="font-sans text-xs font-semibold text-foreground/90">
                   {labels.label}
                 </span>
                 <span className="font-sans text-xs font-bold text-forge-teal">
                   <AnimatedCounter value={targetValue} delay={0.6 + i * 0.25} />
                 </span>
               </div>
-              <div className="w-full rounded-full overflow-hidden h-2 bg-slate-100 relative shadow-inner">
+              <div className="w-full rounded-full overflow-hidden h-2 bg-slate-100 dark:bg-white/10 relative shadow-inner">
                 <motion.div
                   custom={i}
                   animate={controls}
@@ -168,7 +168,7 @@ export function CalculatingScreen({ vector, onDone }: CalculatingScreenProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.3 }}
-          className="font-sans text-xs font-medium text-slate-400 text-center"
+          className="font-sans text-xs font-medium text-muted-foreground text-center"
         >
           {LOADING_MESSAGES[messageIndex]}
         </motion.p>

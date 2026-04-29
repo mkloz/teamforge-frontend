@@ -37,22 +37,22 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
         variants={fadeUpItem}
         className="flex flex-col gap-6 mb-10 leading-relaxed px-1 text-left"
       >
-        <p className="font-sans text-sm sm:text-chat-input text-slate-600 font-medium indent-8">
+        <p className="font-sans text-sm sm:text-chat-input text-muted-foreground font-medium indent-8">
           Most generic tests group people into strict categories (like entirely
           a "Thinker" or purely a "Feeler"). But human psychology is much more
           nuanced than that.
         </p>
 
         <div className="space-y-4">
-          <p className="font-sans text-sm sm:text-chat-input leading-relaxed text-pretty text-slate-500">
+          <p className="font-sans text-sm sm:text-chat-input leading-relaxed text-pretty text-muted-foreground">
             That's where the{" "}
             <span className="text-ink font-bold">Big Five (OCEAN) model</span>{" "}
             comes in. Instead of boxing you in, it measures exactly where you
-            sit on a <i className="text-slate-600 font-medium">spectrum</i> for
-            five distinct traits:
+            sit on a <i className="text-foreground/85 font-medium">spectrum</i>{" "}
+            for five distinct traits:
           </p>
 
-          <ul className="flex flex-col gap-3 font-sans text-sm sm:text-chat-input text-slate-700 pl-5 border-l-2 border-forge-teal/30 ml-4 py-1">
+          <ul className="flex flex-col gap-3 font-sans text-sm sm:text-chat-input text-foreground/90 pl-5 border-l-2 border-forge-teal/30 ml-4 py-1">
             <li className="flex items-center gap-2.5">
               <span className="font-black text-forge-teal w-4">O</span>
               <span>Openness to Experience</span>
@@ -76,7 +76,7 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
           </ul>
         </div>
 
-        <p className="font-sans text-sm sm:text-chat-input text-slate-500 opacity-90 leading-relaxed indent-8">
+        <p className="font-sans text-sm sm:text-chat-input text-muted-foreground opacity-90 leading-relaxed indent-8">
           By measuring traits on a continuous scale, the Big Five provides a
           remarkably accurate mathematical map of your personality. It's the
           gold standard in modern psychology, and the foundation of TeamForge.

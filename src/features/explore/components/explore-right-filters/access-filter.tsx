@@ -1,7 +1,7 @@
 import { cn } from "@/shared/lib/utils";
 import { Handshake, Unlock, Users } from "lucide-react";
 import { useExploreStore } from "../../store/use-explore-store";
-import type { AccessMode } from "../../types/explore.types";
+import type { ExploreAccessMode } from "../../schemas/explore-filters.schema";
 
 export function AccessFilter() {
   const { access, setAccess } = useExploreStore();
@@ -24,7 +24,7 @@ export function AccessFilter() {
           return (
             <button
               key={opt.id}
-              onClick={() => setAccess(opt.id as AccessMode)}
+              onClick={() => setAccess(opt.id as ExploreAccessMode)}
               className={cn(
                 "relative z-10 flex-1 flex flex-row items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
                 active

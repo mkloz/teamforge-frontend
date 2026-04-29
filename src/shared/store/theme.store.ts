@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 
 export const Theme = {
   LIGHT: "light",
@@ -8,58 +7,66 @@ export const Theme = {
 } as const;
 
 type Theme = (typeof Theme)[keyof typeof Theme];
+type ThemeSource = "system" | "manual";
 
 interface ThemeStore {
   theme: Theme;
+  source: ThemeSource;
   setTheme: (theme: Theme) => void;
+  syncWithSystem: (theme: Theme) => void;
   inverse: () => void;
 }
 
-export const useThemeStore = create(
-  persist<ThemeStore>(
-    (set, get) => ({
-      theme: Theme.DARK,
-      setTheme: (theme) => set({ theme }),
-      inverse: () => {
-        const newTheme = get().theme === Theme.LIGHT ? Theme.DARK : Theme.LIGHT;
-        set({ theme: newTheme });
-      },
-    }),
-    { name: "theme", storage: createJSONStorage(() => localStorage) },
-  ),
-);
+export const useThemeStore = create<ThemeStore>((set, get) => ({
+  theme: Theme.DARK,
+  source: "system",
+  setTheme: (theme) => set({ theme, source: "manual" }),
+  syncWithSystem: (theme) =>
+    set((state) =>
+      state.source === "manual" ? state : { theme, source: "system" },
+    ),
+  inverse: () => {
+    const nextTheme = get().theme === Theme.LIGHT ? Theme.DARK : Theme.LIGHT;
+    set({ theme: nextTheme, source: "manual" });
+  },
+}));
 
-export const useTheme = () => {
-  const { theme, setTheme, inverse } = useThemeStore((state) => state);
-  const root = document.documentElement;
+export function useInitializeTheme() {
+  const theme = useThemeStore((state) => state.theme);
+  const syncWithSystem = useThemeStore((state) => state.syncWithSystem);
 
   useEffect(() => {
-    // 1. Temporarily disable all CSS transitions
-    root.classList.add("disable-transitions");
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
-    // 2. Apply the new theme classes
+    syncWithSystem(mediaQuery.matches ? Theme.DARK : Theme.LIGHT);
+
+    const handleChange = (event: MediaQueryListEvent) => {
+      syncWithSystem(event.matches ? Theme.DARK : Theme.LIGHT);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
+  }, [syncWithSystem]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+
+    root.classList.add("disable-transitions");
     root.dataset.theme = theme;
     root.classList.remove(Theme.LIGHT, Theme.DARK);
     root.classList.add(theme);
-
-    // 3. Force a synchronous browser reflow/layout calculation
-    // This makes sure the new theme styles apply instantly without animating
     void window.getComputedStyle(root).opacity;
-
-    // 4. Restore CSS transitions for normal hover effects
     root.classList.remove("disable-transitions");
-  }, [theme, root]);
+  }, [theme]);
+}
 
-  useEffect(() => {
-    window.matchMedia("(prefers-color-scheme: dark)").onchange = (event) => {
-      const newColorScheme = event.matches ? Theme.DARK : Theme.LIGHT;
-      setTheme(newColorScheme);
-    };
-
-    return () => {
-      window.matchMedia("(prefers-color-scheme: dark)").onchange = null;
-    };
-  }, [setTheme]);
+export const useTheme = () => {
+  const theme = useThemeStore((state) => state.theme);
+  const setTheme = useThemeStore((state) => state.setTheme);
+  const inverse = useThemeStore((state) => state.inverse);
 
   return {
     theme,

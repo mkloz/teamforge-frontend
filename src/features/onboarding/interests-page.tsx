@@ -1,5 +1,6 @@
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
+import { Button } from "@/shared/components/ui/button";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 import { cn } from "@/shared/lib/utils";
 import {
@@ -8,7 +9,7 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { VoronoiCatalyst } from "../auth/components/voronoi-catalyst";
 import { CompletionBlueprint } from "./components/completion-blueprint";
 import {
@@ -83,22 +84,47 @@ export function InterestsPage() {
                       exit={{ opacity: 0, y: 10 }}
                       transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
                     >
-                      <InterestsBrowse
-                        selectedIds={state.selectedIds}
-                        searchQuery={state.searchQuery}
-                        searchResults={state.searchResults}
-                        personalityType={state.personalityType}
-                        suggestedTags={state.suggestedTags}
-                        youMightAlsoLike={state.youMightAlsoLike}
-                        showBalanceNudge={state.showBalanceNudge}
-                        isAtMax={state.isAtMax}
-                        collapsedCategories={state.collapsedCategories}
-                        expandedSubcategories={state.expandedSubcategories}
-                        onToggle={state.toggle}
-                        onReject={state.reject}
-                        onToggleCategory={state.toggleCategory}
-                        onToggleSubcategory={state.toggleSubcategory}
-                      />
+                      {state.isCatalogLoading ? (
+                        <InterestsCatalogState
+                          title="Loading interests"
+                          body="Pulling the latest interest catalog from TeamForge."
+                        />
+                      ) : state.catalogError ? (
+                        <InterestsCatalogState
+                          title="Couldn’t load interests"
+                          body="The interest catalog didn’t come through. Try again."
+                          action={
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onClick={() => {
+                                void state.retryCatalog();
+                              }}
+                            >
+                              Retry
+                            </Button>
+                          }
+                        />
+                      ) : (
+                        <InterestsBrowse
+                          categories={state.categories}
+                          leafById={state.leafById}
+                          selectedIds={state.selectedIds}
+                          searchQuery={state.searchQuery}
+                          searchResults={state.searchResults}
+                          personalityType={state.personalityType}
+                          suggestedTags={state.suggestedTags}
+                          youMightAlsoLike={state.youMightAlsoLike}
+                          showBalanceNudge={state.showBalanceNudge}
+                          isAtMax={state.isAtMax}
+                          collapsedCategories={state.collapsedCategories}
+                          expandedSubcategories={state.expandedSubcategories}
+                          onToggle={state.toggle}
+                          onReject={state.reject}
+                          onToggleCategory={state.toggleCategory}
+                          onToggleSubcategory={state.toggleSubcategory}
+                        />
+                      )}
                     </motion.div>
                   )}
 
@@ -111,6 +137,8 @@ export function InterestsPage() {
                       transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
                     >
                       <InterestsReview
+                        categories={state.categories}
+                        leafById={state.leafById}
                         selectedIds={state.selectedIds}
                         onRemove={state.toggle}
                       />
@@ -180,6 +208,7 @@ function PersistentHeader({
             {/* Tier 1: Pills */}
             <motion.div style={{ opacity: headerOpacity }}>
               <InterestsBrowseHeader
+                categories={state.categories}
                 searchQuery={state.searchQuery}
                 onSetSearch={state.setSearchQuery}
                 onExpandCategoryOnly={state.expandCategoryOnly}
@@ -189,6 +218,7 @@ function PersistentHeader({
 
             {/* Tier 2: Search */}
             <InterestsBrowseHeader
+              categories={state.categories}
               searchQuery={state.searchQuery}
               onSetSearch={state.setSearchQuery}
               onExpandCategoryOnly={state.expandCategoryOnly}
@@ -217,14 +247,36 @@ function InterestsFooter({ state }: { state: UseInterestsReturn }) {
             onContinue={state.goToReview}
           />
         )}
+        {state.screen === "review" && state.saveErrorMessage && (
+          <p className="pt-4 text-sm text-red-600">{state.saveErrorMessage}</p>
+        )}
         {state.screen === "review" && (
           <InterestsReviewFooter
             onConfirm={state.finalize}
             canConfirm={state.canContinue}
             onBack={state.goToBrowse}
+            isSaving={state.isSaving}
           />
         )}
       </div>
+    </div>
+  );
+}
+
+function InterestsCatalogState({
+  title,
+  body,
+  action,
+}: {
+  title: string;
+  body: string;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="flex min-h-[360px] flex-col items-center justify-center gap-3 rounded-3xl border border-slate-muted/10 dark:border-white/10 bg-white/70 dark:bg-card/90 px-6 py-10 text-center shadow-[0_12px_32px_rgba(28,28,26,0.04)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.28)]">
+      <h2 className="font-sans text-lg font-semibold text-ink">{title}</h2>
+      <p className="max-w-sm font-sans text-sm text-slate-muted">{body}</p>
+      {action}
     </div>
   );
 }

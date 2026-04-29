@@ -21,10 +21,10 @@ import {
 import type { RegisterValues } from "../../schemas/auth-schemas";
 
 const GENDER_OPTIONS = [
-  { value: "male", label: "Male" },
-  { value: "female", label: "Female" },
-  { value: "non_binary", label: "Non-binary" },
-  { value: "prefer_not_to_say", label: "Prefer not to say" },
+  { value: "MALE", label: "Male" },
+  { value: "FEMALE", label: "Female" },
+  { value: "NON_BINARY", label: "Non-binary" },
+  { value: "OTHER", label: "Prefer not to say" },
 ] as const;
 
 interface StepProfileProps {

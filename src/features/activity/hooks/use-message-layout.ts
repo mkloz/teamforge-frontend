@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { cn } from "@/shared/lib/utils";
-import type { UnifiedMessage } from "../types/chat.types";
+import type { UnifiedMessage } from "../lib/activity-contract";
 
 interface UseMessageLayoutProps {
   message: UnifiedMessage;

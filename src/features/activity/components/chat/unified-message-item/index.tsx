@@ -1,5 +1,5 @@
 import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
-import type { UnifiedMessage } from "@/features/activity/types/chat.types";
+import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 import { memo } from "react";
 import { MessageContent } from "./message-content";
@@ -56,7 +56,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
         >
           {!isOwn && kind === "group" && showSender && (
             <p className="text-micro font-bold text-forge-teal mb-0.5 ml-1.5 tracking-tight opacity-90">
-              {message.sender?.fullName || "Unknown"}
+              {message.sender?.name || "Unknown"}
             </p>
           )}
 

@@ -1,4 +1,5 @@
 import { TeamForgeLogo } from "@/assets/logo";
+import { NotificationsBellTrigger } from "@/features/notifications/components/notifications-bell-trigger";
 import { Button } from "@/shared/components/ui/button";
 import {
   Tooltip,
@@ -15,7 +16,6 @@ import {
   Flame,
   User,
 } from "lucide-react";
-import type { ReactNode } from "react";
 import { useActiveRoute } from "../hooks/use-active-route";
 import { NavItem } from "./nav-item";
 import { useForgeStore } from "../../forge/store/forge-store";
@@ -28,19 +28,18 @@ const NAV_ITEMS = [
     icon: MessageSquare,
     label: "Activity",
     matchPrefix: true,
-    badge: 5,
   },
   { to: "/profile", icon: User, label: "Profile" },
 ] as const;
 
 interface AppSidebarProps {
   className?: string;
-  notificationsTrigger?: ReactNode;
+  onNotificationsOpen?: () => void;
 }
 
 export function AppSidebar({
   className,
-  notificationsTrigger,
+  onNotificationsOpen,
 }: AppSidebarProps) {
   const { isActive } = useActiveRoute();
   const isForgeActive = isActive("/forge");
@@ -100,7 +99,9 @@ export function AppSidebar({
 
       {/* Bottom section: notifications, settings + forge */}
       <div className="px-1.5 py-4 flex flex-col items-center gap-3">
-        {notificationsTrigger}
+        <NotificationsBellTrigger
+          onClick={onNotificationsOpen ?? (() => undefined)}
+        />
 
         <NavItem to="/settings" icon={Settings} label="Settings" />
 

@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { AuthApi } from "../api/auth.api";
 import { loginSchema, type LoginValues } from "../schemas/auth-schemas";
 
 interface UseLoginFormOptions {
@@ -40,12 +41,15 @@ export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
       setRootError(null);
       setLoading(true);
       try {
-        // TODO: Integrate with apiClient from @/shared/api/api
-        await new Promise((r) => setTimeout(r, 1800));
-        console.log("Login submitted", values);
+        await AuthApi.loginWithEmail(values);
         onSuccess?.();
-      } catch {
-        setRootError("Invalid email or password. Please try again.");
+      } catch (error) {
+        setRootError(
+          AuthApi.getAuthErrorMessage(
+            error,
+            "Invalid email or password. Please try again.",
+          ),
+        );
       } finally {
         setLoading(false);
       }

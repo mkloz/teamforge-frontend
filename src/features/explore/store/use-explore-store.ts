@@ -1,21 +1,21 @@
 import { create } from "zustand";
+import type { PlanCategory } from "@/shared/schemas/enums";
 import { DEFAULT_FILTERS } from "../constants/explore.constants";
 import type {
-  LocationMode,
-  AccessMode,
-  SortOption,
   ExploreFilters,
-} from "../types/explore.types";
-import type { PlanCategory } from "@/shared/schemas/enums";
+  ExploreAccessMode,
+  ExploreLocationMode,
+  ExploreSortOption,
+} from "../schemas/explore-filters.schema";
 
 interface ExploreState extends ExploreFilters {
   // Actions
   setSelectedCategories: (categories: (PlanCategory | "ALL")[]) => void;
   setSizeRange: (range: [number, number]) => void;
   setDistance: (distance: number) => void;
-  setLocationMode: (mode: LocationMode | "ALL") => void;
-  setAccess: (access: AccessMode) => void;
-  setSortBy: (sortBy: SortOption) => void;
+  setLocationMode: (mode: ExploreLocationMode) => void;
+  setAccess: (access: ExploreAccessMode) => void;
+  setSortBy: (sortBy: ExploreSortOption) => void;
 
   // Helpers
   resetFilters: () => void;

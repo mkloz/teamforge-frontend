@@ -3,9 +3,6 @@ import { CalendarDays } from "lucide-react";
 import { useHomeData } from "../../hooks/use-home-data";
 import { PlanCard } from "./plan-card";
 
-/**
- * Empty state shown when there are no upcoming plans.
- */
 function EmptyPlans() {
   return (
     <div className="flex flex-col items-center gap-3 py-10 text-center rounded-2xl border-2 border-dashed border-border bg-card/50">
@@ -27,10 +24,6 @@ function EmptyPlans() {
   );
 }
 
-/**
- * UpcomingPlans section showing confirmed and pending activities.
- * Integrated with TanStack Query via useHomeData.
- */
 export function UpcomingPlans() {
   const { plans, isLoading } = useHomeData();
 
@@ -55,7 +48,6 @@ export function UpcomingPlans() {
       aria-labelledby="upcoming-plans-heading"
       className="w-full flex flex-col gap-5"
     >
-      {/* Section header */}
       <div className="flex items-center justify-between">
         <h2
           id="upcoming-plans-heading"
@@ -71,13 +63,12 @@ export function UpcomingPlans() {
         </Link>
       </div>
 
-      {/* Cards list */}
       {plans.length === 0 ? (
         <EmptyPlans />
       ) : (
         <div role="list" className="flex flex-col gap-3">
           {plans.map((plan, i) => (
-            <PlanCard key={plan.id} plan={plan} index={i} />
+            <PlanCard key={plan.plan.id} group={plan} index={i} />
           ))}
         </div>
       )}

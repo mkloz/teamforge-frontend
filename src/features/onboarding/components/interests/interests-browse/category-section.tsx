@@ -1,3 +1,4 @@
+import type { Interest } from "@/shared/schemas";
 import {
   AccordionContent,
   AccordionItem,
@@ -5,12 +6,17 @@ import {
 } from "@/shared/components/ui/accordion";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
-import type { Category } from "../../../data/interests-types";
+import {
+  getCategoryColorClass,
+  getLeafInterests,
+  getSubcategories,
+  getSubcategoryIcon,
+} from "../../../lib/interest-catalog";
 import { SubcategoryChip } from "./subcategory-chip";
 import { TagPill } from "./tag-pill";
 
 interface CategorySectionProps {
-  category: Category;
+  category: Interest;
   selectedIds: Set<string>;
   expandedSubcategories: Set<string>;
   isAtMax: boolean;
@@ -26,9 +32,12 @@ export function CategorySection({
   onToggleSubcategory,
   onToggleTag,
 }: CategorySectionProps) {
-  const allTagsInCat = category.subcategories.flatMap((s) => s.tags);
-  const selectedInCat = allTagsInCat.filter((t) =>
-    selectedIds.has(t.id),
+  const subcategories = getSubcategories(category);
+  const allTagsInCategory = subcategories.flatMap((subcategory) =>
+    getLeafInterests(subcategory),
+  );
+  const selectedInCategory = allTagsInCategory.filter((interest) =>
+    selectedIds.has(interest.id),
   ).length;
 
   return (
@@ -42,20 +51,20 @@ export function CategorySection({
           <div
             className={cn(
               "w-2 h-2 rounded-full shrink-0 transition-transform duration-300 group-hover:scale-125",
-              category.color,
+              getCategoryColorClass(category.id),
             )}
           />
           <span className="font-sans text-sm font-bold group-hover:text-forge-teal transition-colors">
-            {category.label}
+            {category.name}
           </span>
         </div>
-        {selectedInCat > 0 && (
+        {selectedInCategory > 0 && (
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             className="ml-auto mr-2 shrink-0 flex items-center justify-center min-w-5 h-5 px-1.5 font-sans text-xs font-bold bg-forge-teal text-white rounded-full leading-none shadow-[0_2px_4px_rgba(13,148,136,0.2)]"
           >
-            {selectedInCat}
+            {selectedInCategory}
           </motion.span>
         )}
       </AccordionTrigger>
@@ -64,45 +73,52 @@ export function CategorySection({
         <div className="pb-6 flex flex-col gap-4">
           {/* Subcategory chips */}
           <div className="flex flex-wrap gap-2 p-1.5">
-            {category.subcategories.map((sub) => {
-              const expanded = expandedSubcategories.has(sub.id);
-              const selectedInSub = sub.tags.filter((t) =>
-                selectedIds.has(t.id),
-              ).length;
+            {subcategories.map((subcategory) => {
+              const expanded = expandedSubcategories.has(subcategory.id);
+              const selectedInSubcategory = getLeafInterests(
+                subcategory,
+              ).filter((interest) => selectedIds.has(interest.id)).length;
+
               return (
                 <SubcategoryChip
-                  key={sub.id}
-                  icon={sub.icon}
-                  label={sub.label}
-                  selectedCount={selectedInSub}
+                  key={subcategory.id}
+                  icon={getSubcategoryIcon(subcategory.id)}
+                  label={subcategory.name}
+                  selectedCount={selectedInSubcategory}
                   expanded={expanded}
-                  onToggle={() => onToggleSubcategory(sub.id)}
+                  onToggle={() => onToggleSubcategory(subcategory.id)}
                 />
               );
             })}
           </div>
 
           {/* Tag clouds */}
-          {category.subcategories.map(
-            (sub) =>
-              expandedSubcategories.has(sub.id) && (
+          {subcategories.map(
+            (subcategory) =>
+              expandedSubcategories.has(subcategory.id) && (
                 <div
-                  key={`tags-${sub.id}`}
+                  key={`tags-${subcategory.id}`}
                   className="py-2 flex flex-col gap-3"
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-slate-muted/60">
-                      <sub.icon className="w-3.5 h-3.5" strokeWidth={2.5} />
+                      {(() => {
+                        const Icon = getSubcategoryIcon(subcategory.id);
+
+                        return (
+                          <Icon className="w-3.5 h-3.5" strokeWidth={2.5} />
+                        );
+                      })()}
                     </span>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-slate-muted/40">
-                      {sub.label}
+                      {subcategory.name}
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-2 p-1.5">
-                    {sub.tags.map((tag) => (
+                    {getLeafInterests(subcategory).map((tag) => (
                       <TagPill
                         key={tag.id}
-                        label={tag.label}
+                        label={tag.name}
                         selected={selectedIds.has(tag.id)}
                         disabled={isAtMax}
                         onToggle={() => onToggleTag(tag.id)}

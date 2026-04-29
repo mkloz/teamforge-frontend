@@ -1,7 +1,7 @@
 import { cn } from "@/shared/lib/utils";
 import { Check, RefreshCw, UserMinus, UserPlus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
-import type { ForgeParticipant } from "../../constants/forge.constants";
+import type { ForgeParticipant } from "../../lib/forge-contract";
 
 export interface Step4SuccessProps {
   planTitle: string;
@@ -10,6 +10,22 @@ export interface Step4SuccessProps {
   onRemoveParticipant: (id: string) => void;
   onRestoreParticipant: (id: string) => void;
   onReforge: () => void;
+}
+
+function getParticipantName(participant: ForgeParticipant) {
+  return participant.user?.name?.trim() || "Group member";
+}
+
+function getParticipantInitials(participant: ForgeParticipant) {
+  const name = getParticipantName(participant);
+  const initials = name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+
+  return initials || "TF";
 }
 
 export function Step4Success({
@@ -22,6 +38,33 @@ export function Step4Success({
 }: Step4SuccessProps) {
   const activeCount =
     participants.filter((p) => !removedIds.has(p.userId)).length + 1;
+
+  function getParticipantMeta(participant: ForgeParticipant) {
+    if (participant.compatibilityScore !== null) {
+      return {
+        label: "Compatibility",
+        value: `${participant.compatibilityScore}%`,
+        className:
+          participant.compatibilityScore >= 90
+            ? "bg-forge-teal/10 text-forge-teal"
+            : "bg-accent/10 text-accent",
+      };
+    }
+
+    if (typeof participant.user?.trustScore === "number") {
+      return {
+        label: "Trust",
+        value: `${participant.user.trustScore}%`,
+        className: "bg-spark-amber/10 text-spark-amber",
+      };
+    }
+
+    return {
+      label: "Status",
+      value: "Candidate",
+      className: "bg-muted text-muted-foreground",
+    };
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
@@ -79,6 +122,7 @@ export function Step4Success({
           {/* Participants */}
           {participants.map((p) => {
             const removed = removedIds.has(p.userId);
+            const participantMeta = getParticipantMeta(p);
             return (
               <div
                 key={p.userId}
@@ -97,7 +141,17 @@ export function Step4Success({
                       : "bg-accent/10 group-hover:bg-accent/15",
                   )}
                 >
-                  {p.user?.avatar}
+                  {p.user?.avatar ? (
+                    <img
+                      src={p.user.avatar}
+                      alt={getParticipantName(p)}
+                      className="h-full w-full rounded-xl object-cover"
+                    />
+                  ) : (
+                    <span className="text-xs font-bold text-foreground/80">
+                      {getParticipantInitials(p)}
+                    </span>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p
@@ -108,7 +162,7 @@ export function Step4Success({
                         : "text-foreground",
                     )}
                   >
-                    {p.user?.fullName}
+                    {getParticipantName(p)}
                   </p>
                   <div className="flex items-center gap-2 mt-0.5">
                     {removed ? (
@@ -118,17 +172,15 @@ export function Step4Success({
                     ) : (
                       <>
                         <p className="text-xs text-muted-foreground">
-                          Compatibility
+                          {participantMeta.label}
                         </p>
                         <span
                           className={cn(
                             "text-xs font-semibold px-1.5 py-0.5 rounded-md",
-                            p.compatibilityScore >= 90
-                              ? "bg-forge-teal/10 text-forge-teal"
-                              : "bg-accent/10 text-accent",
+                            participantMeta.className,
                           )}
                         >
-                          {p.compatibilityScore}%
+                          {participantMeta.value}
                         </span>
                       </>
                     )}
@@ -139,7 +191,7 @@ export function Step4Success({
                     variant="ghost"
                     size="icon"
                     onClick={() => onRestoreParticipant(p.userId)}
-                    aria-label={`Restore ${p.user?.fullName}`}
+                    aria-label={`Restore ${getParticipantName(p)}`}
                     className="size-8 rounded-xl text-forge-teal bg-forge-teal/10 md:opacity-0 md:group-hover:opacity-100 hover:bg-forge-teal/10 hover:text-forge-teal transition-opacity"
                   >
                     <UserPlus size={14} />
@@ -149,7 +201,7 @@ export function Step4Success({
                     variant="ghost"
                     size="icon"
                     onClick={() => onRemoveParticipant(p.userId)}
-                    aria-label={`Remove ${p.user?.fullName}`}
+                    aria-label={`Remove ${getParticipantName(p)}`}
                     className="size-8 rounded-xl text-destructive/60 bg-destructive/8 md:opacity-0 md:group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-opacity"
                   >
                     <UserMinus size={14} />

@@ -3,7 +3,7 @@ import { memo } from "react";
 import type {
   UnifiedMessage,
   UnifiedAttachment,
-} from "@/features/activity/types/chat.types";
+} from "@/features/activity/lib/activity-contract";
 import { DocumentMessage } from "../document-message";
 import { MediaGallery } from "../media-gallery";
 import { VoiceNote } from "../voice-note";

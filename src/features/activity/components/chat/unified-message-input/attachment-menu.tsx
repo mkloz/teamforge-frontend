@@ -4,12 +4,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
-import {
-  ClipboardList,
-  FileText,
-  Image as ImageIcon,
-  Paperclip,
-} from "lucide-react";
+import { FileText, Image as ImageIcon, Paperclip } from "lucide-react";
 import { memo } from "react";
 import { Button } from "@/shared/components/ui/button";
 
@@ -34,11 +29,6 @@ export const AttachmentMenu = memo(({ disabled }: { disabled: boolean }) => (
       {[
         { icon: ImageIcon, label: "Photos & Videos", color: "text-forge-teal" },
         { icon: FileText, label: "Document", color: "text-forge-teal" },
-        {
-          icon: ClipboardList,
-          label: "New Proposal",
-          color: "text-spark-amber",
-        },
       ].map((item) => (
         <DropdownMenuItem
           key={item.label}

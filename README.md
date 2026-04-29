@@ -27,7 +27,7 @@ The core mechanic: press one button — **"Forge my group"** — and receive one
 |---|---|
 | Framework | React 19.2 + TypeScript 5.9 |
 | Build tool | Vite 7 |
-| Routing | TanStack Router v1 (file-based, type-safe) |
+| Routing | TanStack Router v1 (manual route tree in `src/router.tsx`) |
 | Server state | TanStack Query v5 |
 | Client state | Zustand v5 |
 | Forms | React Hook Form v7 + Zod v4 |
@@ -84,23 +84,27 @@ teamforge-frontend/
 │   ├── config/
 │   │   └── config.ts            # Runtime env vars (VITE_API_URL, VITE_GOOGLE_CLIENT_ID)
 │   ├── features/                # All product features, co-located by domain
-│   │   ├── activity/            # Unified conversation activity feed
-│   │   ├── app-shell/           # Persistent layout: sidebar, topbar, bottom nav
+│   │   ├── activity/            # Unified conversation feed, direct chats, group detail panels
+│   │   ├── app-shell/           # Persistent layout: sidebar and bottom nav
 │   │   ├── auth/                # Login + multi-step registration (OTP, profile)
-│   │   ├── direct-chats/        # 1-on-1 messaging
+│   │   ├── design-system/       # Internal component showcase / visual QA route
 │   │   ├── explore/             # User/group discovery
 │   │   ├── forge/               # Core "Forge my group" multi-step wizard
-│   │   ├── groups/              # Group conversations and plan management
 │   │   ├── home/                # Authenticated home/dashboard
 │   │   ├── landing/             # Public marketing landing page
-│   │   ├── notifications/       # Notification bell, drawer, store
+│   │   ├── notifications/       # Notification bell, drawer, and data hooks
 │   │   ├── onboarding/          # Personality test (IPIP/MBTI) + interests selection
 │   │   ├── profile/             # User profile with MBTI/OCEAN visualizations
 │   │   ├── settings/            # Account and app settings
 │   │   └── user-menu/           # User avatar menu (profile, settings, logout)
 │   ├── shared/
-│   │   ├── api/                 # Configured ky client with JWT auto-refresh
-│   │   └── components/          # Generic reusable UI components
+│   │   ├── api/                 # Configured ky client, session, query client
+│   │   ├── components/          # Generic reusable UI components
+│   │   ├── hooks/               # Shared hooks
+│   │   ├── lib/                 # Shared utilities and mappers
+│   │   ├── providers/           # App-wide providers
+│   │   ├── schemas/             # Canonical backend-aligned domain schemas
+│   │   └── store/               # Shared UI stores
 │   ├── index.css                # Tailwind v4 directives + CSS custom properties
 │   ├── main.tsx                 # React app entry point
 │   └── router.tsx               # Full TanStack Router tree
@@ -115,6 +119,7 @@ Each feature follows a consistent internal layout:
 src/features/<feature>/
 ├── <feature>-page.tsx    # Top-level page component (route target)
 ├── components/           # Feature-specific UI components
+├── api/                  # Feature-local services, adapters, query factories
 ├── hooks/                # Custom hooks (data fetching, UI state)
 ├── store/                # Zustand stores (client state only)
 ├── types/                # TypeScript interfaces and type unions
@@ -123,6 +128,8 @@ src/features/<feature>/
 ├── data/                 # Temporary mock data (replaced by API hooks when ready)
 └── lib/                  # Pure utility functions
 ```
+
+Not every feature uses every folder, but backend-facing data seams should live in feature-local `api/` modules. Conversation and group UI currently live inside `src/features/activity/`, not separate `direct-chats/` or `groups/` feature folders.
 
 ---
 

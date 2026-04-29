@@ -1,15 +1,36 @@
+import { AuthApi } from "@/features/auth/api/auth.api";
+import { AuthQueries } from "@/features/auth/api/auth.queries";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { Theme, useTheme } from "@/shared/store/theme.store";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { LogOut, Moon, Settings, Sun, User } from "lucide-react";
-import { useEffect, useRef } from "react";
-import { Button } from "@/shared/components/ui/button";
+import { useEffect, useRef, useState } from "react";
 import { useUserMenu } from "../hooks/use-user-menu";
 
+function getUserInitials(name?: string | null) {
+  if (!name) {
+    return "TF";
+  }
+
+  const initials = name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+
+  return initials || "TF";
+}
+
 export function UserMenu() {
-  const { open, setOpen, close } = useUserMenu();
+  const { open, toggle, close } = useUserMenu();
   const { theme, setTheme, isDark } = useTheme();
+  const { data: currentUser } = AuthQueries.useCurrentUser();
   const containerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const userInitials = getUserInitials(currentUser?.name);
 
   // Close on outside click
   useEffect(() => {
@@ -40,13 +61,25 @@ export function UserMenu() {
     setTheme(isDark ? Theme.LIGHT : Theme.DARK);
   };
 
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+
+    try {
+      await AuthApi.logoutUser();
+      close();
+      await navigate({ to: "/" });
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
+
   return (
     <div ref={containerRef} className="relative">
       {/* Avatar trigger — min 44x44 touch target per WCAG 2.5.5 */}
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => setOpen(!open)}
+        onClick={toggle}
         className="rounded-full shrink-0"
         aria-expanded={open}
         aria-haspopup="menu"
@@ -58,7 +91,17 @@ export function UserMenu() {
             "bg-primary/10 text-primary border border-primary/20",
           )}
         >
-          <User size={14} aria-hidden="true" />
+          {currentUser?.avatar ? (
+            <img
+              src={currentUser.avatar}
+              alt={currentUser.name}
+              className="h-full w-full rounded-full object-cover"
+            />
+          ) : (
+            <span className="text-[11px] font-bold tracking-wide">
+              {userInitials}
+            </span>
+          )}
         </span>
       </Button>
 
@@ -81,10 +124,10 @@ export function UserMenu() {
         {/* User info header */}
         <div className="px-4 py-3 border-b border-border">
           <p className="text-sm font-medium text-foreground truncate">
-            Your Account
+            {currentUser?.name ?? "Account details syncing"}
           </p>
           <p className="text-xs text-muted-foreground truncate mt-0.5">
-            Signed in
+            {currentUser?.email ?? "Your session is active"}
           </p>
         </div>
 
@@ -164,15 +207,17 @@ export function UserMenu() {
           <button
             type="button"
             role="menuitem"
-            onClick={close}
+            onClick={handleSignOut}
+            disabled={isSigningOut}
             className={cn(
               "flex w-full items-center gap-3 px-4 py-2.5 text-sm",
+              "disabled:opacity-60 disabled:pointer-events-none",
               "text-destructive hover:bg-destructive/10 transition-colors duration-100",
               "focus-visible:outline-none focus-visible:bg-destructive/10",
             )}
           >
             <LogOut size={15} aria-hidden="true" />
-            Sign Out
+            {isSigningOut ? "Signing Out..." : "Sign Out"}
           </button>
         </div>
       </div>

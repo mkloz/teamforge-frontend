@@ -1,9 +1,7 @@
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import { useUiStore } from "@/shared/store/ui.store";
-import { useTheme } from "@/shared/store/theme.store";
 import { Outlet } from "@tanstack/react-router";
 import { Suspense } from "react";
-import { NotificationsBellTrigger } from "../notifications/components/notifications-bell-trigger";
 import { NotificationsDrawer } from "../notifications/components/notifications-drawer";
 import { AppBottomNav } from "./components/app-bottom-nav";
 import { AppSidebar } from "./components/app-sidebar";
@@ -20,9 +18,6 @@ function PageSkeleton() {
 }
 
 export function AppLayout() {
-  // Ensure theme class is applied on every render of the authenticated shell
-  useTheme();
-
   const { notificationsOpen, bottomNavHidden, setNotificationsOpen } =
     useUiStore();
 
@@ -40,13 +35,7 @@ export function AppLayout() {
         {/* Persistent top bar removed for desktop per user request */}
 
         {/* Desktop sidebar */}
-        <AppSidebar
-          notificationsTrigger={
-            <NotificationsBellTrigger
-              onClick={() => setNotificationsOpen(true)}
-            />
-          }
-        />
+        <AppSidebar onNotificationsOpen={() => setNotificationsOpen(true)} />
 
         {/* Main content area */}
         <main

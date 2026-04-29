@@ -9,7 +9,7 @@ import {
 
 const interestData = {
   id: z.string(),
-  label: z.string(),
+  name: z.string(),
   slug: z.string(),
   description: z.string().nullable(),
   icon: z.string().nullable(),
@@ -35,7 +35,7 @@ export const interestSchema: z.ZodSchema<Interest> = z.lazy(() =>
 const userData = {
   id: z.string(),
   email: z.string().email(),
-  fullName: z.string(),
+  name: z.string(),
   avatar: z.string().nullable(),
   bio: z.string().nullable(),
   authProvider: authProviderSchema,

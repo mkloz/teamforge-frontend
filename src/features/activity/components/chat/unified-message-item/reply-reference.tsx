@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 import { memo } from "react";
-import type { UnifiedMessage } from "@/features/activity/types/chat.types";
+import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 
 interface ReplyReferenceProps {
   replyTo: UnifiedMessage["replyTo"];
@@ -18,7 +18,7 @@ export const ReplyReference = memo(
         )}
       >
         <div className="text-micro font-bold text-forge-teal truncate tracking-tighter opacity-90 uppercase">
-          {replyTo.sender?.fullName}
+          {replyTo.sender?.name}
         </div>
         <p
           className={cn(

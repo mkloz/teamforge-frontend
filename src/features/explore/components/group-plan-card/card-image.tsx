@@ -1,9 +1,9 @@
 import { cn } from "@/shared/lib/utils";
+import type { ExploreGroup } from "@/shared/schemas";
 import { Target } from "lucide-react";
-import type { Group } from "@/shared/schemas";
 
 interface CardImageProps {
-  group: Group;
+  group: ExploreGroup;
   matchScore: number;
   variant?: "default" | "compact";
 }
@@ -17,12 +17,7 @@ export function CardImage({
   const isCompact = variant === "compact";
 
   const plan = group.plan;
-  const activity = group.activity;
-
-  const title = plan?.title || activity?.title || "Unnamed Activity";
-  const imageUrl =
-    plan?.coverImage ||
-    "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=600&auto=format&fit=crop";
+  const title = plan?.title || group.activity.title || "Unnamed Activity";
   const category = plan?.category || "OTHER";
 
   // Format category name (e.g. OUTDOORS -> Outdoors)
@@ -39,12 +34,25 @@ export function CardImage({
           : "h-56 md:h-auto md:w-2/5 border-b-2 md:border-b-0 md:border-r-2",
       )}
     >
-      <img
-        src={imageUrl}
-        alt={title}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-        loading="lazy"
-      />
+      {group.avatar ? (
+        <img
+          src={group.avatar}
+          alt={title}
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          loading="lazy"
+        />
+      ) : (
+        <div className="absolute inset-0 flex flex-col justify-between bg-linear-to-br from-forge-teal/18 via-canvas to-spark-amber/18 p-5">
+          <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-muted">
+            Artwork pending
+          </span>
+          <div className="max-w-52">
+            <p className="text-lg font-black leading-tight text-ink line-clamp-3">
+              {title}
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="absolute inset-0 bg-linear-to-b from-black/20 via-transparent to-black/70 pointer-events-none" />
 

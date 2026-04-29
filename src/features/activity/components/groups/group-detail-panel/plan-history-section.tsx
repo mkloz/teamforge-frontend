@@ -5,7 +5,7 @@ import { Button } from "@/shared/components/ui/button";
 import type {
   PlanHistoryItem,
   MemberRole,
-} from "@/features/activity/types/groups.types";
+} from "@/features/activity/lib/activity-contract";
 import { HistoryCard } from "./history-card";
 
 interface PlanHistorySectionProps {

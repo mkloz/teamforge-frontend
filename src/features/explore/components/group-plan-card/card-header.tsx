@@ -1,17 +1,23 @@
 import { cn } from "@/shared/lib/utils";
+import type { ExploreGroup } from "@/shared/schemas";
 import { Handshake } from "lucide-react";
-import type { Group } from "@/shared/schemas";
 
 interface CardHeaderProps {
-  group: Group;
+  group: ExploreGroup;
   variant?: "default" | "compact";
 }
 
 export function CardHeader({ group, variant = "default" }: CardHeaderProps) {
   const isCompact = variant === "compact";
   const groupName = group.name;
-  const groupAvatarUrl = group.avatar;
-  const access = group.activity?.access || "OPEN";
+  const access = group.access;
+  const initials =
+    groupName
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "TF";
 
   return (
     <div
@@ -23,19 +29,21 @@ export function CardHeader({ group, variant = "default" }: CardHeaderProps) {
       <div className="flex items-center gap-2.5">
         <div
           className={cn(
-            "rounded-full overflow-hidden bg-muted border border-border shrink-0",
+            "rounded-full overflow-hidden bg-muted border border-border shrink-0 flex items-center justify-center",
             isCompact ? "size-5" : "size-6",
           )}
         >
-          <img
-            src={
-              groupAvatarUrl
-                ? `https://api.dicebear.com/7.x/identicon/svg?seed=${groupAvatarUrl}`
-                : `https://api.dicebear.com/7.x/initials/svg?seed=${groupName}`
-            }
-            alt={groupName}
-            className="w-full h-full object-cover"
-          />
+          {group.avatar ? (
+            <img
+              src={group.avatar}
+              alt={groupName}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-[10px] font-black text-forge-teal">
+              {initials}
+            </span>
+          )}
         </div>
         <span
           className={cn(

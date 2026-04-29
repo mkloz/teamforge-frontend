@@ -1,11 +1,8 @@
+import { OceanChart } from "@/shared/components/psychometrics/ocean-chart";
+import type { DimensionScore, OceanScores } from "@/shared/types/psychometrics";
 import { DimensionSpectrum } from "@/features/profile/components/dimension-spectrum";
-import { OceanChart } from "@/features/profile/components/ocean-chart";
 import { PersonalitySection } from "@/features/profile/components/personality-section";
 import { SectionTitle } from "@/features/profile/components/section-title";
-import type {
-  DimensionScore,
-  OceanScores,
-} from "@/features/profile/types/profile.types";
 import { Button } from "@/shared/components/ui/button";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
@@ -13,6 +10,10 @@ import { motion } from "framer-motion";
 import { ArrowRight, ExternalLink, RefreshCcw } from "lucide-react";
 import { Fragment } from "react";
 import { popDownItem, resultsContainer } from "../../constants/motion";
+import {
+  getDimensionScoresFromVector,
+  getOceanScoresFromVector,
+} from "../../lib/personality-results";
 import type { OceanVectorWithMeta } from "../../utils/score-calculator";
 import type { PersonalityResult } from "../../utils/type-translation";
 
@@ -31,40 +32,11 @@ export function PersonalityResults({
 }: PersonalityResultsProps) {
   const allLetters = [...result.type.split(""), result.variant];
 
-  const dimensionScores: DimensionScore[] = [
-    {
-      dimension: "EI",
-      score: Math.round(((1 - vector.E) / 2) * 100),
-      letter: result.type[0],
-      isBorderline: Math.abs(vector.E) < 0.167,
-    },
-    {
-      dimension: "SN",
-      score: Math.round(((vector.O + 1) / 2) * 100),
-      letter: result.type[1],
-      isBorderline: Math.abs(vector.O) < 0.167,
-    },
-    {
-      dimension: "TF",
-      score: Math.round(((vector.A + 1) / 2) * 100),
-      letter: result.type[2],
-      isBorderline: Math.abs(vector.A) < 0.167,
-    },
-    {
-      dimension: "JP",
-      score: Math.round(((1 - vector.C) / 2) * 100),
-      letter: result.type[3],
-      isBorderline: Math.abs(vector.C) < 0.167,
-    },
-  ];
-
-  const oceanScores: OceanScores = {
-    openness: Math.round(((vector.O + 1) / 2) * 100),
-    conscientiousness: Math.round(((vector.C + 1) / 2) * 100),
-    extraversion: Math.round(((vector.E + 1) / 2) * 100),
-    agreeableness: Math.round(((vector.A + 1) / 2) * 100),
-    neuroticism: Math.round(((vector.N + 1) / 2) * 100),
-  };
+  const dimensionScores: DimensionScore[] = getDimensionScoresFromVector(
+    result,
+    vector,
+  );
+  const oceanScores: OceanScores = getOceanScoresFromVector(vector);
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -97,16 +69,16 @@ export function PersonalityResults({
                 key={i}
                 variants={popDownItem}
                 className={cn(
-                  "flex flex-col items-center justify-center rounded-xl sm:rounded-2xl w-14 sm:w-20 h-18 sm:h-20 bg-white border border-slate-100 sm:shadow-sm shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all gap-0.5",
+                  "flex flex-col items-center justify-center rounded-xl sm:rounded-2xl w-14 sm:w-20 h-18 sm:h-20 bg-card border border-border sm:shadow-sm shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.22)] transition-all gap-0.5",
                   isIdentity
-                    ? "bg-linear-to-b from-spark-amber/3 to-spark-amber/8 border-spark-amber/20 shadow-spark-amber/10"
-                    : "bg-linear-to-b from-white to-slate-50/50",
+                    ? "bg-linear-to-b from-spark-amber/3 to-spark-amber/8 border-spark-amber/20 shadow-spark-amber/10 dark:from-spark-amber/10 dark:to-spark-amber/6"
+                    : "bg-linear-to-b from-card to-slate-50/50 dark:to-white/4",
                 )}
               >
                 <span
                   className={cn(
                     "font-sans font-black leading-none text-2xl sm:text-3xl tracking-tight",
-                    isIdentity ? "text-spark-amber" : "text-slate-800",
+                    isIdentity ? "text-spark-amber" : "text-ink",
                   )}
                 >
                   {letter}
@@ -119,7 +91,7 @@ export function PersonalityResults({
                   )}
                 />
 
-                <span className="font-sans font-bold leading-none text-nano text-slate-400 uppercase tracking-wider mt-1 px-1">
+                <span className="font-sans font-bold leading-none text-nano text-muted-foreground uppercase tracking-wider mt-1 px-1">
                   {axisLabel}
                 </span>
               </motion.div>
@@ -129,7 +101,7 @@ export function PersonalityResults({
             if (isIdentity) {
               return (
                 <Fragment key="identity-group">
-                  <span className="text-xl sm:text-2xl font-bold text-slate-200 px-0.5">
+                  <span className="text-xl sm:text-2xl font-bold text-slate-200 dark:text-white/15 px-0.5">
                     —
                   </span>
                   {tile}
@@ -156,18 +128,18 @@ export function PersonalityResults({
             <PersonalitySection oceanScores={oceanScores} hideHeaders={true} />
           </section>
 
-          <div className="h-px bg-slate-100" />
+          <div className="h-px bg-slate-100 dark:bg-white/10" />
 
           <section className="space-y-6 animate-fade-in">
             <SectionTitle dotColor="bg-spark-amber">
               Personality Fingerprint
             </SectionTitle>
-            <div className="bg-transparent lg:bg-white rounded-3xl p-0 sm:p-6 border-0 lg:border border-slate-100 shadow-none lg:shadow-sm">
+            <div className="bg-transparent lg:bg-card rounded-3xl p-0 sm:p-6 border-0 lg:border border-border shadow-none lg:shadow-sm dark:lg:shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
               <OceanChart scores={oceanScores} />
             </div>
           </section>
 
-          <div className="h-px bg-slate-100" />
+          <div className="h-px bg-slate-100 dark:bg-white/10" />
 
           <section className="space-y-6 animate-fade-in px-1">
             <SectionTitle dotColor="bg-forge-teal">
@@ -181,7 +153,7 @@ export function PersonalityResults({
           </section>
         </div>
 
-        <div className="mt-16 pt-8 border-t border-slate-100 flex flex-col sm:flex-row gap-4">
+        <div className="mt-16 pt-8 border-t border-slate-100 dark:border-white/10 flex flex-col sm:flex-row gap-4">
           <Button size="hero" onClick={onContinue} className="flex-1">
             Continue
             <ArrowRight size={20} />
@@ -204,7 +176,7 @@ export function PersonalityResults({
           </a>
         </div>
 
-        <p className="font-sans text-xs text-center mt-6 text-slate-muted/65">
+        <p className="font-sans text-xs text-center mt-6 text-slate-muted/75 dark:text-slate-muted/85">
           Retaking replaces your current results. Your first match may change as
           a result.
         </p>

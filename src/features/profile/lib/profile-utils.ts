@@ -1,9 +1,6 @@
 import type { User } from "@/shared/schemas";
-import type {
-  DimensionScore,
-  OceanScores,
-  UserProfile,
-} from "../types/profile.types";
+import type { DimensionScore, OceanScores } from "./profile-contract";
+import { getArchetype } from "./archetypes";
 
 /**
  * Determines the MBTI letter from a score (0-100)
@@ -64,29 +61,64 @@ export function createDimensionScores(
   ];
 }
 
-/**
- * Transforms a raw User object from the schema into a rich UserProfile
- * projection with derived psychometric scores and UI-ready fields.
- */
-export function inflateUserProfile(user: User): UserProfile {
-  const oceanScores: OceanScores = {
-    openness: user.oceanO ?? 50,
-    conscientiousness: user.oceanC ?? 50,
-    extraversion: user.oceanE ?? 50,
-    agreeableness: user.oceanA ?? 50,
-    neuroticism: user.oceanN ?? 50,
-  };
+export function normalizeTrustScore(score: number): number {
+  if (score > 0 && score <= 1) {
+    return Math.round(score * 100);
+  }
+
+  return Math.round(score);
+}
+
+export function getUserOceanScores(user: User): OceanScores | null {
+  const { oceanO, oceanC, oceanE, oceanA, oceanN } = user;
+
+  if (
+    oceanO === null ||
+    oceanO === undefined ||
+    oceanC === null ||
+    oceanC === undefined ||
+    oceanE === null ||
+    oceanE === undefined ||
+    oceanA === null ||
+    oceanA === undefined ||
+    oceanN === null ||
+    oceanN === undefined
+  ) {
+    return null;
+  }
 
   return {
-    ...user,
-    oceanScores,
-    dimensionScores: createDimensionScores(
-      user.oceanE ?? 50,
-      user.oceanO ?? 50,
-      user.oceanA ?? 50,
-      user.oceanC ?? 50,
-    ),
-    archetype: user.personalityType ? "The Explorer" : "The Adaptive Ally", // Simplified for now
-    interests: user.interests ?? [],
+    openness: oceanO,
+    conscientiousness: oceanC,
+    extraversion: oceanE,
+    agreeableness: oceanA,
+    neuroticism: oceanN,
   };
+}
+
+export function getUserDimensionScores(user: User): DimensionScore[] | null {
+  const { oceanO, oceanC, oceanE, oceanA, oceanN } = user;
+
+  if (
+    oceanO === null ||
+    oceanO === undefined ||
+    oceanC === null ||
+    oceanC === undefined ||
+    oceanE === null ||
+    oceanE === undefined ||
+    oceanA === null ||
+    oceanA === undefined ||
+    oceanN === null ||
+    oceanN === undefined
+  ) {
+    return null;
+  }
+
+  return createDimensionScores(oceanE, oceanO, oceanA, oceanC);
+}
+
+export function getUserArchetype(user: User): string {
+  return user.personalityType
+    ? getArchetype(user.personalityType)
+    : "Still Taking Shape";
 }

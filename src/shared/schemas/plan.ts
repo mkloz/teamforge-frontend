@@ -3,6 +3,9 @@ import {
   costTypeSchema,
   locationModeSchema,
   planCategorySchema,
+  planProposalFieldSchema,
+  planProposalStatusSchema,
+  planProposalVoteSchema,
   planStatusSchema,
 } from "./enums";
 import type { Group } from "./group";
@@ -10,12 +13,26 @@ import { groupSchema } from "./group";
 
 const planProposalData = {
   id: z.string(),
-  field: z.string(),
+  field: planProposalFieldSchema,
   currentValue: z.string().nullable(),
   proposedValue: z.string(),
-  status: z.string(),
+  status: planProposalStatusSchema,
   createdAt: z.string().datetime(),
   resolvedAt: z.string().datetime().nullable(),
+  planId: z.string(),
+  proposerId: z.string(),
+  proposer: z.object({
+    id: z.string(),
+    name: z.string(),
+    avatar: z.string().nullable(),
+  }),
+  votes: z.array(
+    z.object({
+      userId: z.string(),
+      vote: planProposalVoteSchema,
+      createdAt: z.string().datetime(),
+    }),
+  ),
 };
 
 export type PlanProposal = z.infer<z.ZodObject<typeof planProposalData>>;

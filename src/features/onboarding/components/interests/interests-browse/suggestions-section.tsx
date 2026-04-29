@@ -2,8 +2,8 @@ import { motion } from "framer-motion";
 import { cn } from "@/shared/lib/utils";
 import { ChevronDown, Fingerprint, Zap } from "lucide-react";
 import { useState } from "react";
-import type { LeafTag } from "../../../data/interests-types";
 import type { PersonalityType } from "@/shared/schemas/enums";
+import type { Interest } from "@/shared/schemas";
 import { TagPill } from "./tag-pill";
 
 export function SuggestionsSection({
@@ -15,7 +15,7 @@ export function SuggestionsSection({
   onReject,
 }: {
   personalityType: PersonalityType;
-  suggestedTags: LeafTag[];
+  suggestedTags: Interest[];
   selectedIds: Set<string>;
   isAtMax: boolean;
   onToggle: (id: string) => void;
@@ -84,7 +84,7 @@ export function SuggestionsSection({
               {suggestedTags.map((tag) => (
                 <TagPill
                   key={tag.id}
-                  label={tag.label}
+                  label={tag.name}
                   selected={selectedIds.has(tag.id)}
                   disabled={isAtMax}
                   onToggle={() => onToggle(tag.id)}

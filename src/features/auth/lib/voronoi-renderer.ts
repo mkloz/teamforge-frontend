@@ -1,5 +1,5 @@
 import { Voronoi } from "d3-delaunay";
-import type { Point } from "../types/voronoi.types";
+import type { Point } from "./voronoi-contract";
 import { COLORS, ANIMATION_CONFIG } from "../constants/voronoi.constants";
 
 export function drawParticleCells(

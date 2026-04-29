@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Reply, X } from "lucide-react";
 import { memo } from "react";
 import { Button } from "@/shared/components/ui/button";
-import type { UnifiedMessage } from "@/features/activity/types/chat.types";
+import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 
 interface ReplyPreviewProps {
   replyingTo: UnifiedMessage | null;
@@ -26,7 +26,7 @@ export const ReplyPreview = memo(
                 <div className="flex items-center gap-1.5 mb-0.5">
                   <Reply size={12} className="text-forge-teal" />
                   <span className="text-xs font-bold text-forge-teal truncate tracking-tight uppercase">
-                    {replyingTo.sender?.fullName}
+                    {replyingTo.sender?.name}
                   </span>
                 </div>
                 <p className="text-xs text-slate-muted truncate leading-relaxed">

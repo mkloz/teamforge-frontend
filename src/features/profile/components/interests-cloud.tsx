@@ -38,11 +38,17 @@ export function InterestsCloud({ interests }: InterestsCloudProps) {
       <SectionTitle dotColor="bg-forge-teal">Interests & Passions</SectionTitle>
 
       {/* Tags Container */}
-      <div className="flex flex-wrap gap-2.5">
-        {interests.map((interest) => (
-          <InterestTag key={interest.id} interest={interest} />
-        ))}
-      </div>
+      {interests.length > 0 ? (
+        <div className="flex flex-wrap gap-2.5">
+          {interests.map((interest) => (
+            <InterestTag key={interest.id} interest={interest} />
+          ))}
+        </div>
+      ) : (
+        <p className="text-sm font-medium text-slate-muted">
+          No interests have been saved yet.
+        </p>
+      )}
     </div>
   );
 }
@@ -59,7 +65,7 @@ function InterestTag({ interest }: { interest: SharedInterest }) {
       )}
     >
       <Icon size={14} className="shrink-0 opacity-85" />
-      {interest.label}
+      {interest.name}
     </span>
   );
 }

@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
-import type { UserProfile } from "../types/profile.types";
-import { MOCK_PROFILE } from "../data/mock-profile";
+import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { AuthQueries } from "@/features/auth/api/auth.queries";
+import type { User } from "@/shared/schemas";
+import { ProfileQueries } from "../api/profile.queries";
 
 /**
  * Custom hook to manage user profile data.
@@ -8,34 +10,26 @@ import { MOCK_PROFILE } from "../data/mock-profile";
  * with future API or global state management (e.g., TanStack Query).
  */
 export function useProfile(userId?: string) {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const currentUserQuery = AuthQueries.useCurrentUser();
+  const publicProfileQuery = useQuery({
+    ...ProfileQueries.profile(userId ?? ""),
+    enabled: !!userId,
+  });
 
-  useEffect(() => {
-    // Simulate API fetch delay
-    const fetchProfile = async () => {
-      try {
-        setIsLoading(true);
-        // Simulate a tiny delay for realism
-        await new Promise((resolve) => setTimeout(resolve, 300));
+  const profile = useMemo<User | null>(() => {
+    if (userId) {
+      return publicProfileQuery.data ?? null;
+    }
 
-        // In the future, this would be:
-        // const response = await fetch(`/api/profile/${userId}`);
-        // setProfile(await response.json());
+    return currentUserQuery.data ?? null;
+  }, [currentUserQuery.data, publicProfileQuery.data, userId]);
 
-        setProfile(MOCK_PROFILE);
-        setIsLoading(false);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err : new Error("Failed to fetch profile"),
-        );
-        setIsLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, [userId]);
-
-  return { profile, isLoading, error };
+  return {
+    profile,
+    isLoading: userId
+      ? publicProfileQuery.isLoading
+      : currentUserQuery.isLoading,
+    error: userId ? publicProfileQuery.error : currentUserQuery.error,
+    refetch: userId ? publicProfileQuery.refetch : currentUserQuery.refetch,
+  };
 }

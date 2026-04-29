@@ -1,8 +1,8 @@
+import type { PersonalityType } from "@/shared/schemas/enums";
 import type {
-  MBTIType,
   CognitiveFunction,
   CognitiveFunctionCode,
-} from "../types/profile.types";
+} from "./profile-contract";
 
 // Full function descriptions
 export const FUNCTION_INFO: Record<
@@ -54,7 +54,7 @@ export const FUNCTION_INFO: Record<
 
 // MBTI type to cognitive function stack mapping
 const TYPE_STACKS: Record<
-  MBTIType,
+  PersonalityType,
   [
     CognitiveFunctionCode,
     CognitiveFunctionCode,
@@ -91,7 +91,7 @@ const ROLES: ["dominant", "auxiliary", "tertiary", "inferior"] = [
   "inferior",
 ];
 
-export function getCognitiveStack(type: MBTIType): CognitiveFunction[] {
+export function getCognitiveStack(type: PersonalityType): CognitiveFunction[] {
   const stack = TYPE_STACKS[type];
   return stack.map((code, index) => ({
     code,

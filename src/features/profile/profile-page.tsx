@@ -6,9 +6,14 @@ import { ProfileHero } from "./components/profile-hero";
 import { PsychometricsSidebar } from "./components/psychometrics-sidebar";
 import { useProfile } from "./hooks/use-profile";
 import { UserMenu } from "@/features/user-menu/components/user-menu";
+import {
+  getUserArchetype,
+  getUserDimensionScores,
+  getUserOceanScores,
+} from "./lib/profile-utils";
 
 export function ProfilePage() {
-  const { profile, isLoading, error } = useProfile();
+  const { profile, isLoading, error, refetch } = useProfile();
 
   if (isLoading) {
     return (
@@ -39,7 +44,9 @@ export function ProfilePage() {
           </p>
           <Button
             variant="outline"
-            onClick={() => window.location.reload()}
+            onClick={() => {
+              void refetch();
+            }}
             className="mt-2"
           >
             Retry
@@ -48,6 +55,10 @@ export function ProfilePage() {
       </main>
     );
   }
+
+  const oceanScores = getUserOceanScores(profile);
+  const dimensionScores = getUserDimensionScores(profile);
+  const archetype = getUserArchetype(profile);
 
   return (
     <main className="min-h-full relative bg-canvas pb-20 md:pb-0">
@@ -91,17 +102,20 @@ export function ProfilePage() {
 
       <div className="flex flex-col max-w-6xl mx-auto px-4 md:px-8 pt-16 md:pt-20 lg:pt-20 pb-12 lg:pb-16 gap-12 relative z-10 w-full">
         <div>
-          <ProfileHero profile={profile} />
+          <ProfileHero user={profile} archetype={archetype} />
         </div>
 
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
           <div className="flex flex-col gap-8 flex-2 min-w-0">
-            <PersonalitySection oceanScores={profile.oceanScores} />
-            <InterestsCloud interests={profile.interests} />
+            <PersonalitySection oceanScores={oceanScores ?? undefined} />
+            <InterestsCloud interests={profile.interests ?? []} />
           </div>
 
           <div className="flex flex-col flex-1 shrink-0 lg:max-w-80">
-            <PsychometricsSidebar profile={profile} />
+            <PsychometricsSidebar
+              oceanScores={oceanScores}
+              dimensionScores={dimensionScores}
+            />
           </div>
         </div>
       </div>

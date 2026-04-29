@@ -1,27 +1,42 @@
 import { fuzzyMatch } from "@/shared/lib/fuzzy";
-import {
-  CORRELATED_TAGS,
-  INTEREST_CATEGORIES,
-  LEAF_TAG_BY_ID,
-  MBTI_SUGGESTIONS,
-} from "../data/interests-data";
-import type { LeafTag, SearchResults } from "../data/interests-types";
+import type { Interest } from "@/shared/schemas";
 import type { PersonalityType } from "@/shared/schemas/enums";
+import { CORRELATED_TAGS, MBTI_SUGGESTIONS } from "../data/interests-data";
+import {
+  getCategoryLeafIds,
+  getLeafInterests,
+  getSubcategories,
+} from "../lib/interest-catalog";
+
+export interface InterestSearchResults {
+  tags: Array<{
+    category: Interest;
+    matchedAlias?: string;
+    tag: Interest;
+  }>;
+  subcategories: Array<{
+    category: Interest;
+    subcategory: Interest;
+  }>;
+}
 
 /**
  * Calculates MBTI-based suggestions based on the user's personality type.
  */
 export function getMbtiSuggestions(
   personalityType: PersonalityType | null,
+  leafById: Record<string, Interest>,
   selectedIds: Set<string>,
   rejectedIds: Set<string>,
-): LeafTag[] {
+): Interest[] {
   if (!personalityType) return [];
   const suggestions = MBTI_SUGGESTIONS[personalityType] || [];
 
   return suggestions
-    .map((id) => LEAF_TAG_BY_ID[id])
-    .filter((t): t is LeafTag => !!t && !rejectedIds.has(t.id))
+    .map((id) => leafById[id])
+    .filter((interest): interest is Interest => {
+      return Boolean(interest) && !rejectedIds.has(interest.id);
+    })
     .sort((a, b) => {
       const aSelected = selectedIds.has(a.id);
       const bSelected = selectedIds.has(b.id);
@@ -33,23 +48,26 @@ export function getMbtiSuggestions(
 /**
  * Performs fuzzy search across categories, subcategories, and tags.
  */
-export function getSearchResults(query: string): SearchResults {
+export function getSearchResults(
+  query: string,
+  categories: Interest[],
+): InterestSearchResults {
   const q = query.trim().toLowerCase();
   if (q.length < 2) return { tags: [], subcategories: [] };
 
-  const results: SearchResults = { tags: [], subcategories: [] };
+  const results: InterestSearchResults = { tags: [], subcategories: [] };
 
-  for (const cat of INTEREST_CATEGORIES) {
-    for (const sub of cat.subcategories) {
-      if (fuzzyMatch(sub.label, q)) {
-        results.subcategories.push({ sub, categoryLabel: cat.label });
+  for (const category of categories) {
+    for (const subcategory of getSubcategories(category)) {
+      if (fuzzyMatch(subcategory.name, q)) {
+        results.subcategories.push({ subcategory, category });
       }
-      for (const tag of sub.tags) {
-        const matchedAlias = tag.aliases?.find((a) => fuzzyMatch(a, q));
-        if (fuzzyMatch(tag.label, q) || matchedAlias) {
+      for (const tag of getLeafInterests(subcategory)) {
+        const matchedAlias = tag.aliases.find((alias) => fuzzyMatch(alias, q));
+        if (fuzzyMatch(tag.name, q) || matchedAlias) {
           results.tags.push({
             tag,
-            categoryLabel: cat.label,
+            category,
             matchedAlias,
           });
         }
@@ -66,7 +84,9 @@ export function getCorrelatedSuggestions(
   selectedIds: string[],
   rejectedIds: Set<string>,
   suggestedIds: Set<string>,
-): LeafTag[] {
+  leafById: Record<string, Interest>,
+  categories: Interest[],
+): Interest[] {
   if (selectedIds.length < 2) return [];
 
   const selectedSet = new Set(selectedIds);
@@ -88,21 +108,21 @@ export function getCorrelatedSuggestions(
 
   // 2. Implicit subcategory siblings (weighted low)
   for (const id of selectedIds) {
-    const leaf = LEAF_TAG_BY_ID[id];
+    const leaf = leafById[id];
     if (!leaf) continue;
 
-    // Find the subcategory this leaf belongs to
-    // Optimisation: We could precompute this map if INTEREST_CATEGORIES is huge
-    const category = INTEREST_CATEGORIES.find((c) =>
-      c.subcategories.some((s) => s.tags.some((t) => t.id === id)),
+    const category = categories.find((categoryItem) =>
+      getSubcategories(categoryItem).some((subcategory) =>
+        getLeafInterests(subcategory).some((interest) => interest.id === id),
+      ),
     );
     if (!category) continue;
-    const sub = category.subcategories.find((s) =>
-      s.tags.some((t) => t.id === id),
+    const subcategory = getSubcategories(category).find((subcategoryItem) =>
+      getLeafInterests(subcategoryItem).some((interest) => interest.id === id),
     );
-    if (!sub) continue;
+    if (!subcategory) continue;
 
-    for (const sibling of sub.tags) {
+    for (const sibling of getLeafInterests(subcategory)) {
       if (
         sibling.id !== id &&
         !selectedSet.has(sibling.id) &&
@@ -117,22 +137,25 @@ export function getCorrelatedSuggestions(
   return Array.from(candidates.entries())
     .sort((a, b) => b[1] - a[1])
     .slice(0, 15)
-    .map(([id]) => LEAF_TAG_BY_ID[id])
-    .filter((t): t is LeafTag => !!t);
+    .map(([id]) => leafById[id])
+    .filter((interest): interest is Interest => Boolean(interest));
 }
 
 /**
  * Checks if the user's choices are overly weighted in one category.
  */
-export function getShouldShowBalanceNudge(selectedIds: string[]): boolean {
+export function getShouldShowBalanceNudge(
+  selectedIds: string[],
+  categories: Interest[],
+): boolean {
   const selectedCount = selectedIds.length;
   if (selectedCount < 10) return false;
 
-  for (const cat of INTEREST_CATEGORIES) {
-    const catIds = new Set(
-      cat.subcategories.flatMap((s) => s.tags.map((t) => t.id)),
-    );
-    const countInCat = selectedIds.filter((id) => catIds.has(id)).length;
+  for (const category of categories) {
+    const categoryLeafIds = new Set(getCategoryLeafIds(category));
+    const countInCat = selectedIds.filter((id) =>
+      categoryLeafIds.has(id),
+    ).length;
     if (countInCat / selectedCount > 0.7) return true;
   }
   return false;

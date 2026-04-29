@@ -1,7 +1,7 @@
 import type {
   PlanCategory,
   PlanStatus,
-} from "@/features/activity/types/groups.types";
+} from "@/features/activity/lib/activity-contract";
 
 export const categoryColors: Record<PlanCategory, string> = {
   TECH: "bg-blue-500/15 text-blue-600",

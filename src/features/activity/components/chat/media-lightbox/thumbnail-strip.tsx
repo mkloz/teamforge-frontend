@@ -2,7 +2,7 @@ import { cn } from "@/shared/lib/utils";
 import { useImageState } from "@/shared/hooks/use-image-state";
 import { ImageOff } from "lucide-react";
 import { memo } from "react";
-import type { UnifiedAttachment } from "@/features/activity/types/chat.types";
+import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 
 interface ThumbnailStripProps {
   attachments: UnifiedAttachment[];

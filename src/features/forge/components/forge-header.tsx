@@ -1,7 +1,7 @@
 import { X, ChevronLeft, Check, Zap } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
-import type { ForgeResult } from "../types/forge.types";
+import type { ForgeResult } from "../lib/forge-contract";
 
 interface ForgeHeaderProps {
   title: string;

@@ -1,0 +1,4420 @@
+openapi: 3.0.0
+paths:
+  /:
+    get:
+      operationId: AppController_getHello
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example:
+                      Hello! This is the root endpoint. Please use /api/v1 for the API. Docs
+                      are available at /api/v1/docs.
+                required:
+                  - message
+        '429':
+          description: Too many requests
+      summary: Get the API root message and documentation entrypoint
+      tags:
+        - App
+      security: []
+  /api/v1/file-upload:
+    post:
+      operationId: FileUploadController_uploadShare
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UrlResponse'
+        '429':
+          description: Too many requests
+      summary: Upload a public file and return its accessible URL
+      tags:
+        - FileUpload
+      security: []
+  /api/v1/health:
+    get:
+      operationId: HealthController_check
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: ok
+                      info:
+                        type: object
+                        example: &a1
+                          database: &a2
+                            status: up
+                        additionalProperties:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                          additionalProperties:
+                            type: string
+                        nullable: true
+                      error:
+                        type: object
+                        example: {}
+                        additionalProperties:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                          additionalProperties:
+                            type: string
+                        nullable: true
+                      details:
+                        type: object
+                        example: *a1
+                        additionalProperties:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                          additionalProperties:
+                            type: string
+        '429':
+          description: Too many requests
+        '503':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    example: 503
+                    type: integer
+                    description: HTTP status code.
+                  message:
+                    description: Error message.
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: error
+                      info:
+                        type: object
+                        example: *a1
+                        additionalProperties:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                          additionalProperties:
+                            type: string
+                        nullable: true
+                      error:
+                        type: object
+                        example:
+                          redis: &a3
+                            status: down
+                            message: Could not connect
+                        additionalProperties:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                          additionalProperties:
+                            type: string
+                        nullable: true
+                      details:
+                        type: object
+                        example:
+                          database: *a2
+                          redis: *a3
+                        additionalProperties:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                          additionalProperties:
+                            type: string
+                  timestamp:
+                    example: 2023-08-20T12:34:56Z
+                    type: string
+                    format: date-time
+                    description: Timestamp when the exception occurred.
+                  method:
+                    example: GET
+                    type: string
+                    description: HTTP method that triggered the exception.
+                  path:
+                    example: /api/resource
+                    type: string
+                    description: Request path that triggered the exception.
+                required:
+                  - status
+                  - timestamp
+                  - method
+      summary: 'Get state of api. [open for: everyone]'
+      tags: &a7
+        - Healthcheck
+      security: []
+  /api/v1/health/frontend:
+    get:
+      operationId: HealthController_checkFrontend
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: ok
+                      info:
+                        type: object
+                        example: &a4
+                          database: &a5
+                            status: up
+                        additionalProperties:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                          additionalProperties:
+                            type: string
+                        nullable: true
+                      error:
+                        type: object
+                        example: {}
+                        additionalProperties:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                          additionalProperties:
+                            type: string
+                        nullable: true
+                      details:
+                        type: object
+                        example: *a4
+                        additionalProperties:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                          additionalProperties:
+                            type: string
+        '429':
+          description: Too many requests
+        '503':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    example: 503
+                    type: integer
+                    description: HTTP status code.
+                  message:
+                    description: Error message.
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: error
+                      info:
+                        type: object
+                        example: *a4
+                        additionalProperties:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                          additionalProperties:
+                            type: string
+                        nullable: true
+                      error:
+                        type: object
+                        example:
+                          redis: &a6
+                            status: down
+                            message: Could not connect
+                        additionalProperties:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                          additionalProperties:
+                            type: string
+                        nullable: true
+                      details:
+                        type: object
+                        example:
+                          database: *a5
+                          redis: *a6
+                        additionalProperties:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                          additionalProperties:
+                            type: string
+                  timestamp:
+                    example: 2023-08-20T12:34:56Z
+                    type: string
+                    format: date-time
+                    description: Timestamp when the exception occurred.
+                  method:
+                    example: GET
+                    type: string
+                    description: HTTP method that triggered the exception.
+                  path:
+                    example: /api/resource
+                    type: string
+                    description: Request path that triggered the exception.
+                required:
+                  - status
+                  - timestamp
+                  - method
+      summary: 'Get state of frontend. [open for: everyone]'
+      tags: *a7
+      security: []
+  /api/v1/health/ok:
+    get:
+      operationId: HealthController_ok
+      parameters: []
+      responses:
+        '200':
+          description: ''
+        '429':
+          description: Too many requests
+      summary: 'Get callback from backend. [open for: everyone]'
+      tags: *a7
+      security: []
+  /api/v1/users/me:
+    get:
+      operationId: UserController_me
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEntity'
+        '429':
+          description: Too many requests
+      security: &a8
+        - bearer: []
+      summary: Get the authenticated user profile
+      tags: &a9
+        - Users
+    patch:
+      operationId: UserController_update
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEntity'
+        '429':
+          description: Too many requests
+      security: *a8
+      summary: Update the authenticated user profile
+      tags: *a9
+  /api/v1/users/{id}:
+    get:
+      operationId: UserController_getById
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: User ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicUserEntity'
+        '429':
+          description: Too many requests
+      security: []
+      summary: Get a public user profile by ID
+      tags: *a9
+  /api/v1/users/me/avatar:
+    patch:
+      operationId: UserController_updateAvatar
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEntity'
+        '429':
+          description: Too many requests
+      security: *a8
+      summary: Upload or replace the authenticated user avatar
+      tags: *a9
+  /api/v1/auth/login:
+    post:
+      operationId: AuthController_login
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
+      responses:
+        '200':
+          description: User successfully logged in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tokens'
+        '400':
+          description: Invalid email or password
+      summary: Log in with email and password
+      tags: &a10
+        - Auth
+      security: []
+  /api/v1/auth/register:
+    post:
+      operationId: AuthController_register
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterDto'
+      responses:
+        '200':
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEntity'
+        '400':
+          description: Email already exists or invalid data
+      summary: Register a new account with email and password
+      tags: *a10
+      security: []
+  /api/v1/auth/logout:
+    post:
+      operationId: AuthController_logout
+      parameters: []
+      responses:
+        '200':
+          description: User successfully logged out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        '401':
+          description: Invalid or expired refresh token
+      security:
+        - bearer: []
+      summary: Log out and revoke the current refresh token
+      tags: *a10
+  /api/v1/auth/refresh:
+    post:
+      operationId: AuthController_refresh
+      parameters: []
+      responses:
+        '200':
+          description: Access token successfully refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tokens'
+        '401':
+          description: Invalid or expired refresh token
+      security:
+        - bearer: []
+      summary: Refresh the access token using a valid refresh token
+      tags: *a10
+  /api/v1/auth/activate/{token}:
+    post:
+      operationId: AuthController_activate
+      parameters:
+        - name: token
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account successfully activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tokens'
+        '400':
+          description: Invalid or expired activation token
+      summary: Activate an account from an email verification token
+      tags: *a10
+      security: []
+  /api/v1/auth/send-reset-password-link:
+    post:
+      operationId: AuthController_sendResetPasswordLink
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailDto'
+      responses:
+        '200':
+          description: Reset link sent if email exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        '400':
+          description: Invalid email or unverified account
+      summary: Send a password reset link to a verified email address
+      tags: *a10
+      security: []
+  /api/v1/auth/reset-password:
+    post:
+      operationId: AuthController_resetPassword
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordDto'
+      responses:
+        '200':
+          description: Password successfully reset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        '400':
+          description: Invalid or expired reset token
+      summary: Reset a password with a valid reset token
+      tags: *a10
+      security: []
+  /api/v1/auth/google/login:
+    post:
+      operationId: AuthGoogleController_login
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthGoogleLoginDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tokens'
+        '400':
+          description: Invalid Google token or unsupported auth provider
+      summary: Log in or register with a Google access token
+      tags:
+        - AuthGoogle
+      security: []
+  /api/v1/interests:
+    get:
+      operationId: InterestsController_getTree
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InterestEntity'
+        '429':
+          description: Too many requests
+      summary: Get the full hierarchical interest tree
+      tags: &a11
+        - Interests
+      security: []
+  /api/v1/interests/categories:
+    get:
+      operationId: InterestsController_getCategories
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InterestEntity'
+        '429':
+          description: Too many requests
+      summary: Get top-level interest categories
+      tags: *a11
+      security: []
+  /api/v1/interests/search:
+    get:
+      operationId: InterestsController_search
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+        - name: search
+          required: false
+          in: query
+          description: Search by name, slug, or description
+          schema:
+            example: basketball
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInterests'
+        '429':
+          description: Too many requests
+      summary: Search interests by name, slug, or description
+      tags: *a11
+      security: []
+  /api/v1/users/me/interests:
+    post:
+      operationId: UserInterestsController_setInterests
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetUserInterestsDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInterestsEntity'
+        '429':
+          description: Too many requests
+      security:
+        - bearer: []
+      summary: Replace the current user interest selections
+      tags:
+        - Users
+  /api/v1/activities:
+    post:
+      operationId: ActivitiesController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateActivityDto'
+      responses:
+        '201':
+          description: Activity successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityEntity'
+        '400':
+          description: Profile incomplete or invalid interest IDs
+      security: &a12
+        - bearer: []
+      summary: Create a new activity for forging or manual coordination
+      tags: &a13
+        - Activities
+  /api/v1/activities/{id}:
+    get:
+      operationId: ActivitiesController_getById
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Activity ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityEntity'
+        '403':
+          description: You do not have access to this activity
+        '404':
+          description: Activity not found
+      security: *a12
+      summary: Get one of your activities by ID
+      tags: *a13
+    delete:
+      operationId: ActivitiesController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Activity ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: Activity successfully cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityEntity'
+        '400':
+          description: Activity already cancelled or group already formed
+        '403':
+          description: You do not have access to this activity
+        '404':
+          description: Activity not found
+      security: *a12
+      summary: Cancel one of your activities
+      tags: *a13
+  /api/v1/activities/{id}/forge:
+    post:
+      operationId: ActivitiesController_forge
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Activity ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgeActivityDto'
+      responses:
+        '201':
+          description: Group successfully forged
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForgeActivityResultEntity'
+        '400':
+          description: Group already formed, invalid status, or not enough compatible users
+        '403':
+          description: You do not have access to this activity
+        '404':
+          description: Activity not found
+      security: *a12
+      summary:
+        Forge a compatible group from an AUTO activity and create its initial
+        plan and chat
+      tags: *a13
+  /api/v1/chats:
+    get:
+      operationId: ChatController_getMany
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+        - name: type
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - GROUP
+              - PRIVATE
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedChats'
+        '429':
+          description: Too many requests
+      security: &a14
+        - bearer: []
+      summary: List chats for the current user
+      tags: &a15
+        - Chat
+  /api/v1/chats/{id}:
+    get:
+      operationId: ChatController_getById
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Chat ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatEntity'
+        '403':
+          description: You do not have access to this chat
+        '404':
+          description: Chat not found
+      security: *a14
+      summary: Get a single chat
+      tags: *a15
+  /api/v1/chats/{id}/messages:
+    get:
+      operationId: ChatController_getMessages
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Chat ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMessages'
+        '403':
+          description: You do not have access to this chat
+        '404':
+          description: Chat not found
+      security: *a14
+      summary: List messages in a chat
+      tags: *a15
+    post:
+      operationId: ChatController_sendMessage
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Chat ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMessageDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageEntity'
+        '400':
+          description: Invalid message data
+        '403':
+          description: You are blocked or do not have access to this chat
+        '404':
+          description: Chat or reply target not found
+      security: *a14
+      summary: Send a message to a chat
+      tags: *a15
+  /api/v1/chats/{id}/messages/{messageId}:
+    patch:
+      operationId: ChatController_updateMessage
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Chat ID
+          schema:
+            example: clx1chat123
+            type: string
+        - name: messageId
+          required: true
+          in: path
+          description: Message ID
+          schema:
+            example: clx1message123
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMessageDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageEntity'
+        '403':
+          description: You can only edit your own text messages
+        '404':
+          description: Chat or message not found
+      security: *a14
+      summary: Edit one of your messages
+      tags: *a15
+    delete:
+      operationId: ChatController_deleteMessage
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Chat ID
+          schema:
+            example: clx1chat123
+            type: string
+        - name: messageId
+          required: true
+          in: path
+          description: Message ID
+          schema:
+            example: clx1message123
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageEntity'
+        '403':
+          description: You can only delete your own messages
+        '404':
+          description: Chat or message not found
+      security: *a14
+      summary: Soft-delete one of your messages
+      tags: *a15
+  /api/v1/chats/{id}/messages/{messageId}/reactions:
+    post:
+      operationId: ChatController_reactToMessage
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Chat ID
+          schema:
+            example: clx1chat123
+            type: string
+        - name: messageId
+          required: true
+          in: path
+          description: Message ID
+          schema:
+            example: clx1message123
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMessageReactionDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageEntity'
+        '403':
+          description: You are blocked or do not have access to this chat
+        '404':
+          description: Chat or message not found
+      security: *a14
+      summary: Add a reaction to a message
+      tags: *a15
+    delete:
+      operationId: ChatController_removeReaction
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Chat ID
+          schema:
+            example: clx1chat123
+            type: string
+        - name: messageId
+          required: true
+          in: path
+          description: Message ID
+          schema:
+            example: clx1message123
+            type: string
+        - name: emoji
+          required: true
+          in: query
+          description: Emoji to remove from your reactions on this message
+          schema:
+            example: 🔥
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageEntity'
+        '403':
+          description: You are blocked or do not have access to this chat
+        '404':
+          description: Chat or message not found
+      security: *a14
+      summary: Remove one of your reactions from a message
+      tags: *a15
+  /api/v1/chats/{id}/read:
+    post:
+      operationId: ChatController_markRead
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Chat ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarkChatReadDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatEntity'
+        '403':
+          description: You do not have access to this chat
+        '404':
+          description: Chat not found
+      security: *a14
+      summary: Mark a chat as read
+      tags: *a15
+  /api/v1/friends:
+    get:
+      operationId: FriendshipsController_getManyFriends
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFriendships'
+        '429':
+          description: Too many requests
+      security: &a16
+        - bearer: []
+      summary: List accepted friends for the current user
+      tags: &a17
+        - Friendships
+  /api/v1/friends/requests/incoming:
+    get:
+      operationId: FriendshipsController_getIncomingRequests
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFriendships'
+        '429':
+          description: Too many requests
+      security: *a16
+      summary: List incoming friend requests
+      tags: *a17
+  /api/v1/friends/requests/outgoing:
+    get:
+      operationId: FriendshipsController_getOutgoingRequests
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFriendships'
+        '429':
+          description: Too many requests
+      security: *a16
+      summary: List outgoing friend requests
+      tags: *a17
+  /api/v1/friends/blocked:
+    get:
+      operationId: FriendshipsController_getBlockedUsers
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFriendships'
+        '429':
+          description: Too many requests
+      security: *a16
+      summary: List users blocked by the current user
+      tags: *a17
+  /api/v1/friends/requests:
+    post:
+      operationId: FriendshipsController_createRequest
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFriendRequestDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FriendshipEntity'
+        '429':
+          description: Too many requests
+      security: *a16
+      summary: Send a friend request
+      tags: *a17
+  /api/v1/friends/requests/{id}/accept:
+    post:
+      operationId: FriendshipsController_acceptRequest
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Requester user ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FriendshipEntity'
+        '429':
+          description: Too many requests
+      security: *a16
+      summary: Accept an incoming friend request
+      tags: *a17
+  /api/v1/friends/requests/{id}/decline:
+    post:
+      operationId: FriendshipsController_declineRequest
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Requester user ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FriendshipEntity'
+        '429':
+          description: Too many requests
+      security: *a16
+      summary: Decline an incoming friend request
+      tags: *a17
+  /api/v1/friends/{id}:
+    delete:
+      operationId: FriendshipsController_removeFriend
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Friend user ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FriendshipEntity'
+        '429':
+          description: Too many requests
+      security: *a16
+      summary: Remove an existing friend
+      tags: *a17
+  /api/v1/friends/{id}/block:
+    post:
+      operationId: FriendshipsController_blockUser
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Target user ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FriendshipEntity'
+        '429':
+          description: Too many requests
+      security: *a16
+      summary: Block a user
+      tags: *a17
+    delete:
+      operationId: FriendshipsController_unblockUser
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Target user ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FriendshipEntity'
+        '429':
+          description: Too many requests
+      security: *a16
+      summary: Unblock a user you previously blocked
+      tags: *a17
+  /api/v1/explore/groups:
+    get:
+      operationId: ExploreController_getGroups
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+        - name: search
+          required: false
+          in: query
+          description: Search by group, activity, or plan title
+          schema:
+            example: basketball
+            type: string
+        - name: city
+          required: false
+          in: query
+          schema:
+            example: London
+            type: string
+        - name: category
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - TECH
+              - SPORTS
+              - ARTS
+              - SOCIAL
+              - OUTDOORS
+              - LEARNING
+              - MUSIC
+              - FOOD
+              - GAMING
+              - WELLNESS
+              - TRAVEL
+              - OTHER
+        - name: access
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - OPEN
+              - BY_REQUEST
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedExploreGroups'
+        '429':
+          description: Too many requests
+      security: &a18
+        - bearer: []
+      summary: Browse groups available in explore
+      tags: &a19
+        - Explore
+  /api/v1/explore/groups/{id}/join:
+    post:
+      operationId: ExploreController_joinGroup
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Group ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExploreJoinResultEntity'
+        '429':
+          description: Too many requests
+      security: *a18
+      summary: Join or request to join an explore group
+      tags: *a19
+  /api/v1/groups:
+    get:
+      operationId: GroupsController_getMany
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - FORMING
+              - PENDING
+              - ACTIVE
+              - PLANNING
+              - COMPLETED
+              - DISBANDED
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGroups'
+        '429':
+          description: Too many requests
+      security: &a20
+        - bearer: []
+      summary: List groups for the current user
+      tags: &a21
+        - Groups
+  /api/v1/groups/{id}:
+    get:
+      operationId: GroupsController_getById
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Group ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupEntity'
+        '429':
+          description: Too many requests
+      security: *a20
+      summary: Get a single group
+      tags: *a21
+    patch:
+      operationId: GroupsController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Group ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGroupDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupEntity'
+        '429':
+          description: Too many requests
+      security: *a20
+      summary: Update a group as an admin
+      tags: *a21
+  /api/v1/groups/{id}/leave:
+    post:
+      operationId: GroupsController_leave
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Group ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupEntity'
+        '429':
+          description: Too many requests
+      security: *a20
+      summary: Leave a group
+      tags: *a21
+  /api/v1/groups/{id}/remove-member:
+    post:
+      operationId: GroupsController_removeMember
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Group ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveGroupMemberDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupEntity'
+        '429':
+          description: Too many requests
+      security: *a20
+      summary: Remove a member from a group as an admin
+      tags: *a21
+  /api/v1/groups/{id}/disband:
+    post:
+      operationId: GroupsController_disband
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Group ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupEntity'
+        '429':
+          description: Too many requests
+      security: *a20
+      summary: Disband a group as an admin
+      tags: *a21
+  /api/v1/invites/received:
+    get:
+      operationId: InvitesController_getReceived
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - PENDING
+              - ACCEPTED
+              - DECLINED
+              - EXPIRED
+              - CANCELLED
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInvites'
+        '429':
+          description: Too many requests
+      security: &a22
+        - bearer: []
+      summary: List invites received by the current user
+      tags: &a23
+        - Invites
+  /api/v1/invites/sent:
+    get:
+      operationId: InvitesController_getSent
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - PENDING
+              - ACCEPTED
+              - DECLINED
+              - EXPIRED
+              - CANCELLED
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInvites'
+        '429':
+          description: Too many requests
+      security: *a22
+      summary: List invites sent by the current user
+      tags: *a23
+  /api/v1/invites:
+    post:
+      operationId: InvitesController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInviteDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteEntity'
+        '429':
+          description: Too many requests
+      security: *a22
+      summary: Send or resend a group invite
+      tags: *a23
+  /api/v1/invites/{id}/accept:
+    post:
+      operationId: InvitesController_accept
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Invite ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteEntity'
+        '429':
+          description: Too many requests
+      security: *a22
+      summary: Accept a group invite
+      tags: *a23
+  /api/v1/invites/{id}/decline:
+    post:
+      operationId: InvitesController_decline
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Invite ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteEntity'
+        '429':
+          description: Too many requests
+      security: *a22
+      summary: Decline a group invite
+      tags: *a23
+  /api/v1/plans/{id}:
+    get:
+      operationId: PlansController_getById
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Plan ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanEntity'
+        '429':
+          description: Too many requests
+      security: &a24
+        - bearer: []
+      summary: Get a plan for a group you belong to
+      tags: &a25
+        - Plans
+    patch:
+      operationId: PlansController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Plan ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePlanDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanEntity'
+        '429':
+          description: Too many requests
+      security: *a24
+      summary: Update a group plan as a group admin
+      tags: *a25
+  /api/v1/plans/{id}/confirm:
+    post:
+      operationId: PlansController_confirm
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Plan ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanEntity'
+        '429':
+          description: Too many requests
+      security: *a24
+      summary: Confirm a draft or planning-stage group plan
+      tags: *a25
+  /api/v1/plans/{id}/complete:
+    post:
+      operationId: PlansController_complete
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Plan ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanEntity'
+        '429':
+          description: Too many requests
+      security: *a24
+      summary: Mark a group plan as completed
+      tags: *a25
+  /api/v1/plans/{id}/cancel:
+    post:
+      operationId: PlansController_cancel
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Plan ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanEntity'
+        '429':
+          description: Too many requests
+      security: *a24
+      summary: Cancel a group plan and reopen planning for the group
+      tags: *a25
+  /api/v1/plans/{id}/proposals:
+    get:
+      operationId: PlanProposalsController_getMany
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Plan ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlanProposalEntity'
+        '429':
+          description: Too many requests
+      security: &a26
+        - bearer: []
+      summary: List proposals for a plan in your group
+      tags: &a27
+        - Plan Proposals
+    post:
+      operationId: PlanProposalsController_create
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Plan ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePlanProposalDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanProposalEntity'
+        '429':
+          description: Too many requests
+      security: *a26
+      summary: Create a new proposal for a group plan
+      tags: *a27
+  /api/v1/proposals/{id}/vote:
+    post:
+      operationId: PlanProposalsController_vote
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Proposal ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VotePlanProposalDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanProposalEntity'
+        '429':
+          description: Too many requests
+      security: *a26
+      summary: Vote on a pending plan proposal
+      tags: *a27
+  /api/v1/proposals/{id}:
+    delete:
+      operationId: PlanProposalsController_withdraw
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Proposal ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanProposalEntity'
+        '429':
+          description: Too many requests
+      security: *a26
+      summary: Withdraw one of your pending plan proposals
+      tags: *a27
+  /api/v1/notifications:
+    get:
+      operationId: NotificationsController_getMany
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+        - name: type
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - FRIEND_REQUEST
+              - FRIEND_ACCEPTED
+              - GROUP_FORMED
+              - GROUP_INVITE
+              - GROUP_JOIN_REQUEST
+              - GROUP_JOIN_APPROVED
+              - GROUP_MEMBER_LEFT
+              - GROUP_DISBANDED
+              - PLAN_CREATED
+              - PLAN_CONFIRMED
+              - PLAN_UPDATED
+              - PLAN_PROPOSAL
+              - PLAN_STARTING_SOON
+              - PLAN_COMPLETED
+              - PLAN_CANCELLED
+              - NEW_MESSAGE
+              - MESSAGE_MENTION
+              - RATING_REQUEST
+              - RATING_RECEIVED
+              - SYSTEM_ANNOUNCEMENT
+              - ACCOUNT_SECURITY
+        - name: isRead
+          required: false
+          in: query
+          description: Filter notifications by read state
+          schema:
+            example: false
+            type: boolean
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNotifications'
+        '429':
+          description: Too many requests
+      security: &a28
+        - bearer: []
+      summary: List your notifications
+      tags: &a29
+        - Notifications
+  /api/v1/notifications/unread-count:
+    get:
+      operationId: NotificationsController_getUnreadCount
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationUnreadCountEntity'
+        '429':
+          description: Too many requests
+      security: *a28
+      summary: Get your unread notification count
+      tags: *a29
+  /api/v1/notifications/{id}/read:
+    post:
+      operationId: NotificationsController_markRead
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Notification ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationEntity'
+        '429':
+          description: Too many requests
+      security: *a28
+      summary: Mark one notification as read
+      tags: *a29
+  /api/v1/notifications/read-all:
+    post:
+      operationId: NotificationsController_markAllRead
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationUnreadCountEntity'
+        '429':
+          description: Too many requests
+      security: *a28
+      summary: Mark all of your notifications as read
+      tags: *a29
+  /api/v1/ratings/groups/{id}:
+    get:
+      operationId: RatingsController_getGroupRatings
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+        - name: rateeId
+          required: false
+          in: query
+          description: Optional filter by rated user
+          schema:
+            example: clx1user456
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRatings'
+        '429':
+          description: Too many requests
+      security: &a30
+        - bearer: []
+      summary: List ratings for a completed group you participated in
+      tags: &a31
+        - Ratings
+  /api/v1/ratings:
+    post:
+      operationId: RatingsController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRatingDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateRatingResultEntity'
+        '429':
+          description: Too many requests
+      security: *a30
+      summary: Submit ratings for your group experience
+      tags: *a31
+info:
+  title: TeamForge API
+  description: TeamForge is an intelligent social platform that forms small,
+    compatible groups of people for shared real-world activities. It targets
+    students and young professionals aged 18–28 who want to meet like-minded
+    people without the friction of traditional social discovery.
+  version: '1.0'
+  contact: {}
+  license:
+    name: LICENSE
+    url: https://github.com/mkloz/teamforge-backend
+tags: []
+servers:
+  - url: /
+    description: Current host
+components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+      description: Enter JWT token
+  schemas:
+    UrlResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          example: https://example.com
+      required:
+        - url
+    UserEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clv123abc
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          example: john@example.com
+        avatar:
+          type: string
+          example: https://example.com/avatar.png
+        bio:
+          type: string
+          example: Software engineer and hiking enthusiast
+        authProvider:
+          type: string
+          enum:
+            - EMAIL
+            - GOOGLE
+        emailVerified:
+          type: boolean
+          example: true
+        createdAt:
+          format: date-time
+          type: string
+          example: 2024-01-01T00:00:00Z
+        updatedAt:
+          format: date-time
+          type: string
+          example: 2024-01-01T00:00:00Z
+        age:
+          type: number
+          example: 25
+        gender:
+          type: string
+          enum:
+            - MALE
+            - FEMALE
+            - NON_BINARY
+            - OTHER
+        city:
+          type: string
+          example: London
+        personalityType:
+          type: string
+          example: ENTJ
+        oceanO:
+          type: number
+          example: 80
+        oceanC:
+          type: number
+          example: 80
+        oceanE:
+          type: number
+          example: 80
+        oceanA:
+          type: number
+          example: 80
+        oceanN:
+          type: number
+          example: 80
+        searchStatus:
+          type: string
+          enum:
+            - IDLE
+            - SEARCHING
+        trustScore:
+          type: number
+          example: 0.5
+        profileComplete:
+          type: boolean
+          example: false
+      required:
+        - id
+        - name
+        - email
+        - authProvider
+        - emailVerified
+        - createdAt
+        - updatedAt
+        - searchStatus
+        - trustScore
+        - profileComplete
+    PublicUserEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clv123abc
+        name:
+          type: string
+          example: John Doe
+        avatar:
+          type: string
+          example: https://example.com/avatar.png
+        bio:
+          type: string
+          example: Software engineer and hiking enthusiast
+        createdAt:
+          format: date-time
+          type: string
+          example: 2024-01-01T00:00:00Z
+        age:
+          type: number
+          example: 25
+        gender:
+          type: string
+          enum:
+            - MALE
+            - FEMALE
+            - NON_BINARY
+            - OTHER
+        city:
+          type: string
+          example: London
+        personalityType:
+          type: string
+          example: ENTJ
+        oceanO:
+          type: number
+          example: 80
+        oceanC:
+          type: number
+          example: 80
+        oceanE:
+          type: number
+          example: 80
+        oceanA:
+          type: number
+          example: 80
+        oceanN:
+          type: number
+          example: 80
+        trustScore:
+          type: number
+          example: 0.5
+      required:
+        - id
+        - name
+        - createdAt
+        - trustScore
+    UpdateUserDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: John Doe
+        bio:
+          type: string
+          example: Hiking enthusiast
+        age:
+          type: number
+          example: 25
+        gender:
+          type: string
+          enum:
+            - MALE
+            - FEMALE
+            - NON_BINARY
+            - OTHER
+        city:
+          type: string
+          example: London
+        personalityType:
+          type: string
+          example: ENTJ
+        oceanO:
+          type: number
+          example: 80
+        oceanC:
+          type: number
+          example: 80
+        oceanE:
+          type: number
+          example: 80
+        oceanA:
+          type: number
+          example: 80
+        oceanN:
+          type: number
+          example: 80
+    LoginDto:
+      type: object
+      properties:
+        email:
+          type: string
+          example: example@example.com
+        password:
+          type: string
+          example: Pass123@
+      required:
+        - email
+        - password
+    Tokens:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+          example: shiovpm.sefdvssfv.ndsgfesdcv
+        accessToken:
+          type: string
+          example: wrbesef.vrwsaefd.vwsefvs
+      required:
+        - refreshToken
+        - accessToken
+    RegisterDto:
+      type: object
+      properties:
+        email:
+          type: string
+          example: example@example.com
+        password:
+          type: string
+          example: Pass123@
+        name:
+          type: string
+          example: John Doe
+        bio:
+          type: string
+          example: This is my bio
+      required:
+        - email
+        - password
+        - name
+    Success:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+      required:
+        - success
+    EmailDto:
+      type: object
+      properties:
+        email:
+          type: string
+          example: example@example.com
+      required:
+        - email
+    ResetPasswordDto:
+      type: object
+      properties:
+        password:
+          type: string
+          example: Pass123@
+        token:
+          type: string
+      required:
+        - password
+        - token
+    AuthGoogleLoginDto:
+      type: object
+      properties:
+        code:
+          type: string
+          example: abc
+      required:
+        - code
+    InterestEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1interest123
+        name:
+          type: string
+          example: Basketball
+        slug:
+          type: string
+          example: basketball
+        description:
+          type: string
+          example: Indoor and outdoor basketball games
+        icon:
+          type: string
+          example: basketball
+        color:
+          type: string
+          example: '#F97316'
+        sortOrder:
+          type: number
+          example: 1
+        isActive:
+          type: boolean
+          example: true
+        parentId:
+          type: string
+          example: clx1category123
+        aliases:
+          example:
+            - hoops
+            - pickup
+          type: array
+          items:
+            type: string
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterestEntity'
+      required:
+        - id
+        - name
+        - slug
+        - sortOrder
+        - isActive
+        - aliases
+    PaginationMeta:
+      type: object
+      properties:
+        totalItemsCount:
+          type: number
+          example: 1
+        itemsPerPage:
+          type: number
+          example: 20
+        currentPage:
+          type: number
+          example: 1
+        totalPages:
+          type: number
+          example: 1
+      required:
+        - totalItemsCount
+        - itemsPerPage
+        - currentPage
+        - totalPages
+    PaginatedInterests:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterestEntity'
+      required:
+        - meta
+        - items
+    SetUserInterestsDto:
+      type: object
+      properties:
+        interestIds:
+          example:
+            - clx1interest1
+            - clx1interest2
+            - clx1interest3
+            - clx1interest4
+            - clx1interest5
+          minItems: 5
+          maxItems: 50
+          type: array
+          items:
+            type: string
+      required:
+        - interestIds
+    UserInterestsEntity:
+      type: object
+      properties:
+        interests:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterestEntity'
+      required:
+        - interests
+    CreateActivityDto:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Friday basketball run
+        description:
+          type: string
+          example: Looking for a small group for evening hoops
+        city:
+          type: string
+          example: London
+        locationLat:
+          type: number
+          example: 51.5072
+        locationLng:
+          type: number
+          example: -0.1276
+        visibility:
+          type: string
+          enum:
+            - PUBLIC
+            - FRIENDS_ONLY
+            - INVITE_ONLY
+          default: PUBLIC
+        access:
+          type: string
+          enum:
+            - OPEN
+            - BY_REQUEST
+          default: OPEN
+        forgeMode:
+          type: string
+          enum:
+            - AUTO
+            - MANUAL
+          default: AUTO
+        interestIds:
+          example:
+            - clx1interest1
+            - clx1interest2
+          minItems: 1
+          maxItems: 20
+          type: array
+          items:
+            type: string
+      required:
+        - title
+        - interestIds
+    ActivityEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1activity123
+        title:
+          type: string
+          example: Friday basketball run
+        description:
+          type: string
+          example: Looking for a small group for evening hoops
+        city:
+          type: string
+          example: London
+        locationLat:
+          type: number
+          example: 51.5072
+        locationLng:
+          type: number
+          example: -0.1276
+        visibility:
+          type: string
+          enum:
+            - PUBLIC
+            - FRIENDS_ONLY
+            - INVITE_ONLY
+        access:
+          type: string
+          enum:
+            - OPEN
+            - BY_REQUEST
+        forgeMode:
+          type: string
+          enum:
+            - AUTO
+            - MANUAL
+        status:
+          type: string
+          enum:
+            - OPEN
+            - MATCHING
+            - MATCHED
+            - CLOSED
+            - CANCELLED
+        createdAt:
+          format: date-time
+          type: string
+          example: 2025-04-02T16:27:17Z
+        updatedAt:
+          format: date-time
+          type: string
+          example: 2025-04-02T16:27:17Z
+        creatorId:
+          type: string
+          example: clx1user123
+        interests:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterestEntity'
+      required:
+        - id
+        - title
+        - visibility
+        - access
+        - forgeMode
+        - status
+        - createdAt
+        - updatedAt
+        - creatorId
+        - interests
+    ForgePlanDto:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Friday evening basketball
+        description:
+          type: string
+          example: Casual run at the local courts
+        category:
+          type: string
+          enum:
+            - TECH
+            - SPORTS
+            - ARTS
+            - SOCIAL
+            - OUTDOORS
+            - LEARNING
+            - MUSIC
+            - FOOD
+            - GAMING
+            - WELLNESS
+            - TRAVEL
+            - OTHER
+        dateTime:
+          type: string
+          example: 2026-04-30T18:30:00.000Z
+        locationMode:
+          type: string
+          enum:
+            - IN_PERSON
+            - ONLINE
+            - TBD
+        location:
+          type: string
+          example: Regents Park Courts
+        locationLat:
+          type: number
+          example: 51.5313
+        locationLng:
+          type: number
+          example: -0.1569
+        cost:
+          type: string
+          enum:
+            - FREE
+            - PAID
+        costAmount:
+          type: number
+          example: 12.5
+        costDetails:
+          type: string
+          example: Court booking split between the group
+      required:
+        - title
+        - category
+        - locationMode
+        - cost
+    ForgeActivityDto:
+      type: object
+      properties:
+        groupSize:
+          type: number
+          example: 4
+          minimum: 2
+          maximum: 8
+        plan:
+          $ref: '#/components/schemas/ForgePlanDto'
+      required:
+        - groupSize
+        - plan
+    ForgedChatEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1chat123
+        type:
+          type: string
+          enum:
+            - GROUP
+            - PRIVATE
+      required:
+        - id
+        - type
+    ForgedGroupMemberEntity:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: clx1user123
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - MODERATOR
+            - MEMBER
+        compatibilityScore:
+          type: number
+          example: 0.8421
+          nullable: true
+      required:
+        - userId
+        - role
+        - compatibilityScore
+    ForgedGroupEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1group123
+        name:
+          type: string
+          example: Friday Basketball Crew
+        status:
+          type: string
+          enum:
+            - FORMING
+            - PENDING
+            - ACTIVE
+            - PLANNING
+            - COMPLETED
+            - DISBANDED
+        maxMembers:
+          type: integer
+          example: 4
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/ForgedGroupMemberEntity'
+      required:
+        - id
+        - name
+        - status
+        - maxMembers
+        - members
+    ForgedPlanEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1plan123
+        title:
+          type: string
+          example: Friday evening basketball
+        category:
+          type: string
+          enum:
+            - TECH
+            - SPORTS
+            - ARTS
+            - SOCIAL
+            - OUTDOORS
+            - LEARNING
+            - MUSIC
+            - FOOD
+            - GAMING
+            - WELLNESS
+            - TRAVEL
+            - OTHER
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - PROPOSED
+            - CONFIRMED
+            - IN_PROGRESS
+            - COMPLETED
+            - CANCELLED
+        locationMode:
+          type: string
+          enum:
+            - IN_PERSON
+            - ONLINE
+            - TBD
+        cost:
+          type: string
+          enum:
+            - FREE
+            - PAID
+      required:
+        - id
+        - title
+        - category
+        - status
+        - locationMode
+        - cost
+    ForgeActivityResultEntity:
+      type: object
+      properties:
+        activityId:
+          type: string
+          example: clx1activity123
+        activityStatus:
+          type: string
+          enum:
+            - OPEN
+            - MATCHING
+            - MATCHED
+            - CLOSED
+            - CANCELLED
+        chat:
+          $ref: '#/components/schemas/ForgedChatEntity'
+        group:
+          $ref: '#/components/schemas/ForgedGroupEntity'
+        plan:
+          $ref: '#/components/schemas/ForgedPlanEntity'
+      required:
+        - activityId
+        - activityStatus
+        - chat
+        - group
+        - plan
+    ChatEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1chat123
+        type:
+          type: string
+          enum:
+            - GROUP
+            - PRIVATE
+        createdAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        groupId:
+          type: string
+          example: clx1group123
+          nullable: true
+      required:
+        - id
+        - type
+        - createdAt
+    PaginatedChats:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatEntity'
+      required:
+        - meta
+        - items
+    MessageEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1message123
+        type:
+          type: string
+          enum:
+            - TEXT
+            - IMAGE
+            - VOICE
+            - FILE
+            - SYSTEM
+            - PLAN_UPDATE
+        content:
+          type: string
+          example: Anyone free to meet 15 minutes earlier?
+        status:
+          type: string
+          enum:
+            - SENDING
+            - SENT
+            - DELIVERED
+            - READ
+            - FAILED
+        isEdited:
+          type: boolean
+          example: false
+        isPinned:
+          type: boolean
+          example: false
+        createdAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        editedAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:05:00.000Z
+          nullable: true
+        deletedAt:
+          format: date-time
+          type: string
+          example: null
+          nullable: true
+        chatId:
+          type: string
+          example: clx1chat123
+        senderId:
+          type: string
+          example: clx1user123
+        replyToId:
+          type: string
+          example: clx1message122
+          nullable: true
+      required:
+        - id
+        - type
+        - content
+        - status
+        - isEdited
+        - isPinned
+        - createdAt
+        - chatId
+        - senderId
+    PaginatedMessages:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageEntity'
+      required:
+        - meta
+        - items
+    CreateMessageDto:
+      type: object
+      properties:
+        content:
+          type: string
+          example: Anyone free to meet 15 minutes earlier?
+        replyToId:
+          type: string
+          example: clx1message123
+      required:
+        - content
+    UpdateMessageDto:
+      type: object
+      properties:
+        content:
+          type: string
+          example: Let us meet 15 minutes earlier instead.
+      required:
+        - content
+    CreateMessageReactionDto:
+      type: object
+      properties:
+        emoji:
+          type: string
+          example: 🔥
+          description: Emoji to add as a reaction
+      required:
+        - emoji
+    MarkChatReadDto:
+      type: object
+      properties:
+        messageId:
+          type: string
+          example: clx1message123
+          description:
+            Optional message ID to mark as the latest read message. When
+            omitted, the latest available message in the chat is used.
+    FriendshipUserEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1user123
+        name:
+          type: string
+          example: John Doe
+        avatar:
+          type: string
+          example: https://example.com/avatar.png
+          nullable: true
+        city:
+          type: string
+          example: London
+          nullable: true
+        personalityType:
+          type: string
+          example: ENTJ
+          nullable: true
+        trustScore:
+          type: number
+          example: 0.74
+      required:
+        - id
+        - name
+        - trustScore
+    FriendshipPrivateChatEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1chat123
+        type:
+          type: string
+          enum:
+            - GROUP
+            - PRIVATE
+        createdAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+      required:
+        - id
+        - type
+        - createdAt
+    FriendshipEntity:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - PENDING
+            - ACCEPTED
+            - DECLINED
+            - BLOCKED
+        createdAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        updatedAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        requesterId:
+          type: string
+          example: clx1user123
+        receiverId:
+          type: string
+          example: clx1user456
+        privateChatId:
+          type: string
+          example: clx1chat123
+          nullable: true
+        requester:
+          $ref: '#/components/schemas/FriendshipUserEntity'
+        receiver:
+          $ref: '#/components/schemas/FriendshipUserEntity'
+        counterpart:
+          $ref: '#/components/schemas/FriendshipUserEntity'
+        privateChat:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/FriendshipPrivateChatEntity'
+      required:
+        - status
+        - createdAt
+        - updatedAt
+        - requesterId
+        - receiverId
+        - requester
+        - receiver
+        - counterpart
+    PaginatedFriendships:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FriendshipEntity'
+      required:
+        - meta
+        - items
+    CreateFriendRequestDto:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: clx1user456
+      required:
+        - userId
+    ExploreInterestEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1interest123
+        name:
+          type: string
+          example: Basketball
+        slug:
+          type: string
+          example: basketball
+      required:
+        - id
+        - name
+        - slug
+    ExploreActivityEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1activity123
+        title:
+          type: string
+          example: Friday basketball run
+        city:
+          type: string
+          example: London
+          nullable: true
+        visibility:
+          type: string
+          enum:
+            - PUBLIC
+            - FRIENDS_ONLY
+            - INVITE_ONLY
+        access:
+          type: string
+          enum:
+            - OPEN
+            - BY_REQUEST
+        interests:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExploreInterestEntity'
+      required:
+        - id
+        - title
+        - visibility
+        - access
+        - interests
+    ExplorePlanEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1plan123
+        title:
+          type: string
+          example: Friday evening basketball
+        category:
+          type: string
+          enum:
+            - TECH
+            - SPORTS
+            - ARTS
+            - SOCIAL
+            - OUTDOORS
+            - LEARNING
+            - MUSIC
+            - FOOD
+            - GAMING
+            - WELLNESS
+            - TRAVEL
+            - OTHER
+        dateTime:
+          format: date-time
+          type: string
+          example: 2026-04-30T18:30:00.000Z
+          nullable: true
+        locationMode:
+          type: string
+          enum:
+            - IN_PERSON
+            - ONLINE
+            - TBD
+        cost:
+          type: string
+          enum:
+            - FREE
+            - PAID
+      required:
+        - id
+        - title
+        - category
+        - locationMode
+        - cost
+    ExploreMemberEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1user123
+        name:
+          type: string
+          example: John Doe
+        avatar:
+          type: string
+          example: https://example.com/avatar.png
+          nullable: true
+        personalityType:
+          type: string
+          example: ENTJ
+          nullable: true
+        trustScore:
+          type: number
+          example: 0.72
+      required:
+        - id
+        - name
+        - trustScore
+    CompatibilityEntity:
+      type: object
+      properties:
+        interestOverlap:
+          type: number
+          example: 0.7
+        personalityCompatibility:
+          type: number
+          example: 0.65
+        cityAlignment:
+          type: number
+          example: 1
+        ageAlignment:
+          type: number
+          example: 0.83
+        trustScore:
+          type: number
+          example: 0.68
+        friendshipProximity:
+          type: number
+          example: 0.33
+        total:
+          type: number
+          example: 0.7215
+      required:
+        - interestOverlap
+        - personalityCompatibility
+        - cityAlignment
+        - ageAlignment
+        - trustScore
+        - friendshipProximity
+        - total
+    ExploreGroupEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1group123
+        name:
+          type: string
+          example: Friday Basketball Crew
+        description:
+          type: string
+          example: Weekly pickup group for after-work games
+          nullable: true
+        avatar:
+          type: string
+          example: https://example.com/group-avatar.png
+          nullable: true
+        status:
+          type: string
+          enum:
+            - FORMING
+            - PENDING
+            - ACTIVE
+            - PLANNING
+            - COMPLETED
+            - DISBANDED
+        maxMembers:
+          type: number
+          example: 6
+        activeMembersCount:
+          type: number
+          example: 4
+        access:
+          type: string
+          enum:
+            - OPEN
+            - BY_REQUEST
+        activity:
+          $ref: '#/components/schemas/ExploreActivityEntity'
+        plan:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/ExplorePlanEntity'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExploreMemberEntity'
+        compatibility:
+          $ref: '#/components/schemas/CompatibilityEntity'
+      required:
+        - id
+        - name
+        - status
+        - maxMembers
+        - activeMembersCount
+        - access
+        - activity
+        - members
+        - compatibility
+    PaginatedExploreGroups:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExploreGroupEntity'
+      required:
+        - meta
+        - items
+    ExploreJoinResultEntity:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - JOINED
+            - REQUESTED
+        groupId:
+          type: string
+          example: clx1group123
+        chatId:
+          type: string
+          example: clx1chat123
+          nullable: true
+        message:
+          type: string
+          example: You joined the group successfully.
+      required:
+        - status
+        - groupId
+        - message
+    GroupActivitySummaryEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1activity123
+        title:
+          type: string
+          example: Friday basketball run
+        city:
+          type: string
+          example: London
+        status:
+          type: string
+          enum:
+            - OPEN
+            - MATCHING
+            - MATCHED
+            - CLOSED
+            - CANCELLED
+        visibility:
+          type: string
+          enum:
+            - PUBLIC
+            - FRIENDS_ONLY
+            - INVITE_ONLY
+        access:
+          type: string
+          enum:
+            - OPEN
+            - BY_REQUEST
+        forgeMode:
+          type: string
+          enum:
+            - AUTO
+            - MANUAL
+        interests:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterestEntity'
+      required:
+        - id
+        - title
+        - status
+        - visibility
+        - access
+        - forgeMode
+        - interests
+    GroupPlanSummaryEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1plan123
+        title:
+          type: string
+          example: Friday evening basketball
+        category:
+          type: string
+          enum:
+            - TECH
+            - SPORTS
+            - ARTS
+            - SOCIAL
+            - OUTDOORS
+            - LEARNING
+            - MUSIC
+            - FOOD
+            - GAMING
+            - WELLNESS
+            - TRAVEL
+            - OTHER
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - PROPOSED
+            - CONFIRMED
+            - IN_PROGRESS
+            - COMPLETED
+            - CANCELLED
+        dateTime:
+          format: date-time
+          type: string
+          example: 2026-04-30T18:30:00.000Z
+        locationMode:
+          type: string
+          enum:
+            - IN_PERSON
+            - ONLINE
+            - TBD
+        cost:
+          type: string
+          enum:
+            - FREE
+            - PAID
+      required:
+        - id
+        - title
+        - category
+        - status
+        - locationMode
+        - cost
+    GroupMemberUserEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1user123
+        name:
+          type: string
+          example: John Doe
+        avatar:
+          type: string
+          example: https://example.com/avatar.png
+        personalityType:
+          type: string
+          example: ENTJ
+        trustScore:
+          type: number
+          example: 0.72
+      required:
+        - id
+        - name
+        - trustScore
+    GroupMemberEntity:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: clx1user123
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - MODERATOR
+            - MEMBER
+        joinedAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        leftAt:
+          format: date-time
+          type: string
+          example: 2026-04-28T10:00:00.000Z
+          nullable: true
+        compatibilityScore:
+          type: number
+          example: 0.8421
+          nullable: true
+        user:
+          $ref: '#/components/schemas/GroupMemberUserEntity'
+      required:
+        - userId
+        - role
+        - joinedAt
+        - user
+    GroupEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1group123
+        name:
+          type: string
+          example: Friday Basketball Crew
+        description:
+          type: string
+          example: Weekly pickup group for after-work games
+        avatar:
+          type: string
+          example: https://example.com/group-avatar.png
+        status:
+          type: string
+          enum:
+            - FORMING
+            - PENDING
+            - ACTIVE
+            - PLANNING
+            - COMPLETED
+            - DISBANDED
+        maxMembers:
+          type: number
+          example: 4
+        createdAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        updatedAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        disbandedAt:
+          format: date-time
+          type: string
+          example: null
+          nullable: true
+        activityId:
+          type: string
+          example: clx1activity123
+        activity:
+          $ref: '#/components/schemas/GroupActivitySummaryEntity'
+        plan:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/GroupPlanSummaryEntity'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupMemberEntity'
+      required:
+        - id
+        - name
+        - status
+        - maxMembers
+        - createdAt
+        - updatedAt
+        - activityId
+        - activity
+        - members
+    PaginatedGroups:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupEntity'
+      required:
+        - meta
+        - items
+    UpdateGroupDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Friday Basketball Crew
+        description:
+          type: string
+          example: Weekly pickup group for after-work games
+        avatar:
+          type: string
+          example: https://example.com/group-avatar.png
+    RemoveGroupMemberDto:
+      type: object
+      properties:
+        memberId:
+          type: string
+          example: clx1user123
+      required:
+        - memberId
+    InviteGroupEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1group123
+        name:
+          type: string
+          example: Friday Basketball Crew
+        avatar:
+          type: string
+          example: https://example.com/group-avatar.png
+          nullable: true
+        status:
+          type: string
+          enum:
+            - FORMING
+            - PENDING
+            - ACTIVE
+            - PLANNING
+            - COMPLETED
+            - DISBANDED
+        maxMembers:
+          type: number
+          example: 6
+        activeMembersCount:
+          type: number
+          example: 4
+      required:
+        - id
+        - name
+        - status
+        - maxMembers
+        - activeMembersCount
+    InviteUserEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1user123
+        name:
+          type: string
+          example: John Doe
+        avatar:
+          type: string
+          example: https://example.com/avatar.png
+          nullable: true
+        personalityType:
+          type: string
+          example: ENTJ
+          nullable: true
+        trustScore:
+          type: number
+          example: 0.73
+      required:
+        - id
+        - name
+        - trustScore
+    InviteEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1invite123
+        type:
+          type: string
+          enum:
+            - ALGORITHM_MATCH
+            - FRIEND_INVITE
+            - DIRECT_INVITE
+        status:
+          type: string
+          enum:
+            - PENDING
+            - ACCEPTED
+            - DECLINED
+            - EXPIRED
+            - CANCELLED
+        message:
+          type: string
+          example: We have one spot left for this Friday run if you want in.
+          nullable: true
+        createdAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        expiresAt:
+          format: date-time
+          type: string
+          example: 2026-05-02T18:00:00.000Z
+          nullable: true
+        respondedAt:
+          format: date-time
+          type: string
+          example: 2026-04-28T10:00:00.000Z
+          nullable: true
+        groupId:
+          type: string
+          example: clx1group123
+        inviteeId:
+          type: string
+          example: clx1user456
+        inviterId:
+          type: string
+          example: clx1user123
+          nullable: true
+        group:
+          $ref: '#/components/schemas/InviteGroupEntity'
+        invitee:
+          $ref: '#/components/schemas/InviteUserEntity'
+        inviter:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/InviteUserEntity'
+      required:
+        - id
+        - type
+        - status
+        - createdAt
+        - groupId
+        - inviteeId
+        - group
+        - invitee
+    PaginatedInvites:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InviteEntity'
+      required:
+        - meta
+        - items
+    CreateInviteDto:
+      type: object
+      properties:
+        groupId:
+          type: string
+          example: clx1group123
+        inviteeId:
+          type: string
+          example: clx1user456
+        type:
+          type: string
+          enum:
+            - ALGORITHM_MATCH
+            - FRIEND_INVITE
+            - DIRECT_INVITE
+          default: DIRECT_INVITE
+        message:
+          type: string
+          example: We have one spot left for this Friday run if you want in.
+        expiresAt:
+          type: string
+          example: 2026-05-02T18:00:00.000Z
+      required:
+        - groupId
+        - inviteeId
+    PlanGroupActivityEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1activity123
+        title:
+          type: string
+          example: Friday basketball run
+        status:
+          type: string
+          enum:
+            - OPEN
+            - MATCHING
+            - MATCHED
+            - CLOSED
+            - CANCELLED
+      required:
+        - id
+        - title
+        - status
+    PlanGroupMemberEntity:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: clx1user123
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - MODERATOR
+            - MEMBER
+      required:
+        - userId
+        - role
+    PlanGroupEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1group123
+        name:
+          type: string
+          example: Friday Basketball Crew
+        status:
+          type: string
+          enum:
+            - FORMING
+            - PENDING
+            - ACTIVE
+            - PLANNING
+            - COMPLETED
+            - DISBANDED
+        activity:
+          $ref: '#/components/schemas/PlanGroupActivityEntity'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlanGroupMemberEntity'
+      required:
+        - id
+        - name
+        - status
+        - activity
+        - members
+    PlanEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1plan123
+        title:
+          type: string
+          example: Friday evening basketball
+        description:
+          type: string
+          example: Casual run at the local courts
+        category:
+          type: string
+          enum:
+            - TECH
+            - SPORTS
+            - ARTS
+            - SOCIAL
+            - OUTDOORS
+            - LEARNING
+            - MUSIC
+            - FOOD
+            - GAMING
+            - WELLNESS
+            - TRAVEL
+            - OTHER
+        coverImage:
+          type: string
+          example: https://example.com/cover.png
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - PROPOSED
+            - CONFIRMED
+            - IN_PROGRESS
+            - COMPLETED
+            - CANCELLED
+        dateTime:
+          format: date-time
+          type: string
+          example: 2026-04-30T18:30:00.000Z
+        locationMode:
+          type: string
+          enum:
+            - IN_PERSON
+            - ONLINE
+            - TBD
+        location:
+          type: string
+          example: Regents Park Courts
+        locationLat:
+          type: number
+          example: 51.5313
+        locationLng:
+          type: number
+          example: -0.1569
+        cost:
+          type: string
+          enum:
+            - FREE
+            - PAID
+        costAmount:
+          type: number
+          example: 12.5
+        costDetails:
+          type: string
+          example: Court booking split between the group
+        completedAt:
+          format: date-time
+          type: string
+          example: 2026-05-01T21:00:00.000Z
+          nullable: true
+        cancelledAt:
+          format: date-time
+          type: string
+          example: 2026-04-29T11:00:00.000Z
+          nullable: true
+        createdAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        updatedAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        groupId:
+          type: string
+          example: clx1group123
+        group:
+          $ref: '#/components/schemas/PlanGroupEntity'
+      required:
+        - id
+        - title
+        - category
+        - status
+        - locationMode
+        - cost
+        - createdAt
+        - updatedAt
+        - groupId
+        - group
+    UpdatePlanDto:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Friday evening basketball
+        description:
+          type: string
+          example: Casual run at the local courts
+        category:
+          type: string
+          enum:
+            - TECH
+            - SPORTS
+            - ARTS
+            - SOCIAL
+            - OUTDOORS
+            - LEARNING
+            - MUSIC
+            - FOOD
+            - GAMING
+            - WELLNESS
+            - TRAVEL
+            - OTHER
+        dateTime:
+          type: string
+          example: 2026-04-30T18:30:00.000Z
+        locationMode:
+          type: string
+          enum:
+            - IN_PERSON
+            - ONLINE
+            - TBD
+        location:
+          type: string
+          example: Regents Park Courts
+        locationLat:
+          type: number
+          example: 51.5313
+        locationLng:
+          type: number
+          example: -0.1569
+        cost:
+          type: string
+          enum:
+            - FREE
+            - PAID
+        costAmount:
+          type: number
+          example: 12.5
+        costDetails:
+          type: string
+          example: Court booking split between the group
+    ProposalAuthorEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1user123
+        name:
+          type: string
+          example: John Doe
+        avatar:
+          type: string
+          example: https://example.com/avatar.png
+      required:
+        - id
+        - name
+    ProposalVoteEntity:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: clx1user123
+        vote:
+          type: string
+          enum:
+            - APPROVE
+            - REJECT
+        createdAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+      required:
+        - userId
+        - vote
+        - createdAt
+    PlanProposalEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1proposal123
+        field:
+          type: string
+          enum:
+            - TITLE
+            - DESCRIPTION
+            - DATE_TIME
+            - LOCATION
+            - COST
+            - CATEGORY
+        currentValue:
+          type: string
+          example: Old value
+          nullable: true
+        proposedValue:
+          type: string
+          example: New value
+        status:
+          type: string
+          enum:
+            - PENDING
+            - APPROVED
+            - REJECTED
+            - WITHDRAWN
+        createdAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        resolvedAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T18:00:00.000Z
+          nullable: true
+        planId:
+          type: string
+          example: clx1plan123
+        proposerId:
+          type: string
+          example: clx1user123
+        proposer:
+          $ref: '#/components/schemas/ProposalAuthorEntity'
+        votes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProposalVoteEntity'
+      required:
+        - id
+        - field
+        - proposedValue
+        - status
+        - createdAt
+        - planId
+        - proposerId
+        - proposer
+        - votes
+    CreatePlanProposalDto:
+      type: object
+      properties:
+        field:
+          type: string
+          enum:
+            - TITLE
+            - DESCRIPTION
+            - DATE_TIME
+            - LOCATION
+            - COST
+            - CATEGORY
+        proposedValue:
+          type: string
+          example: 2026-05-01T18:30:00.000Z
+          description:
+            String value interpreted by field. For COST, send either FREE/PAID
+            or a JSON string like
+            {"cost":"PAID","costAmount":12.5,"costDetails":"Court booking"}.
+      required:
+        - field
+        - proposedValue
+    VotePlanProposalDto:
+      type: object
+      properties:
+        vote:
+          type: string
+          enum:
+            - APPROVE
+            - REJECT
+      required:
+        - vote
+    NotificationEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1notification123
+        type:
+          type: string
+          enum:
+            - FRIEND_REQUEST
+            - FRIEND_ACCEPTED
+            - GROUP_FORMED
+            - GROUP_INVITE
+            - GROUP_JOIN_REQUEST
+            - GROUP_JOIN_APPROVED
+            - GROUP_MEMBER_LEFT
+            - GROUP_DISBANDED
+            - PLAN_CREATED
+            - PLAN_CONFIRMED
+            - PLAN_UPDATED
+            - PLAN_PROPOSAL
+            - PLAN_STARTING_SOON
+            - PLAN_COMPLETED
+            - PLAN_CANCELLED
+            - NEW_MESSAGE
+            - MESSAGE_MENTION
+            - RATING_REQUEST
+            - RATING_RECEIVED
+            - SYSTEM_ANNOUNCEMENT
+            - ACCOUNT_SECURITY
+        title:
+          type: string
+          example: Group formed
+        message:
+          type: string
+          example: You have been matched with a new group
+        link:
+          type: string
+          example: /groups/clx1group123
+          nullable: true
+        avatarUrl:
+          type: string
+          example: https://example.com/group-avatar.png
+          nullable: true
+        isRead:
+          type: boolean
+          example: false
+        createdAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        entityType:
+          type: string
+          enum:
+            - USER
+            - GROUP
+            - PLAN
+            - ACTIVITY
+            - MESSAGE
+            - INVITE
+            - PROJECT
+          nullable: true
+        entityId:
+          type: string
+          example: clx1group123
+          nullable: true
+        receiverId:
+          type: string
+          example: clx1user123
+      required:
+        - id
+        - type
+        - title
+        - message
+        - isRead
+        - createdAt
+        - receiverId
+    PaginatedNotifications:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationEntity'
+      required:
+        - meta
+        - items
+    NotificationUnreadCountEntity:
+      type: object
+      properties:
+        unreadCount:
+          type: number
+          example: 5
+      required:
+        - unreadCount
+    RatingUserEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1user123
+        name:
+          type: string
+          example: John Doe
+        avatar:
+          type: string
+          example: https://example.com/avatar.png
+          nullable: true
+        personalityType:
+          type: string
+          example: ENTJ
+          nullable: true
+        trustScore:
+          type: number
+          example: 0.74
+      required:
+        - id
+        - name
+        - trustScore
+    RatingEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1rating123
+        score:
+          type: number
+          example: 5
+        comment:
+          type: string
+          example: Easy to coordinate with and showed up on time.
+          nullable: true
+        createdAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        raterId:
+          type: string
+          example: clx1user123
+        rateeId:
+          type: string
+          example: clx1user456
+        groupId:
+          type: string
+          example: clx1group123
+        rater:
+          $ref: '#/components/schemas/RatingUserEntity'
+        ratee:
+          $ref: '#/components/schemas/RatingUserEntity'
+      required:
+        - id
+        - score
+        - createdAt
+        - raterId
+        - rateeId
+        - groupId
+        - rater
+        - ratee
+    PaginatedRatings:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RatingEntity'
+      required:
+        - meta
+        - items
+    CreateRatingDto:
+      type: object
+      properties:
+        groupId:
+          type: string
+          example: clx1group123
+        rateeId:
+          type: string
+          example: clx1user456
+        score:
+          type: number
+          example: 5
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+          example: Easy to coordinate with and showed up on time.
+      required:
+        - groupId
+        - rateeId
+        - score
+    TrustScoreLogEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1trustlog123
+        score:
+          type: number
+          example: 0.68
+        change:
+          type: number
+          example: 0.03
+        reason:
+          type: string
+          example: Received a 5/5 rating from John Doe in group Friday Basketball Crew
+          nullable: true
+        createdAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        userId:
+          type: string
+          example: clx1user456
+      required:
+        - id
+        - score
+        - change
+        - createdAt
+        - userId
+    CreateRatingResultEntity:
+      type: object
+      properties:
+        rating:
+          $ref: '#/components/schemas/RatingEntity'
+        trustScoreLog:
+          $ref: '#/components/schemas/TrustScoreLogEntity'
+        updatedTrustScore:
+          type: number
+          example: 0.68
+      required:
+        - rating
+        - trustScoreLog
+        - updatedTrustScore
+security:
+  - bearer: []

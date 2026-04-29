@@ -54,7 +54,7 @@ export function StepCredentials({ onNext }: StepCredentialsProps) {
       {/* Full name */}
       <FormField
         control={control}
-        name="fullName"
+        name="name"
         render={({ field }) => (
           <FormItem className="space-y-0">
             <FormLabel className="font-sans text-sm font-semibold text-ink">

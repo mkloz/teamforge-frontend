@@ -1,8 +1,12 @@
 import { IdentityCard } from "./identity-card";
 import { ForgeCTA } from "./forge-cta";
-import { MOCK_USER } from "../data/mock-explore";
+import { useExploreIdentity } from "../hooks/use-explore-identity";
+import { AuthQueries } from "@/features/auth/api/auth.queries";
 
 export function ExploreLeftSection() {
+  const identity = useExploreIdentity();
+  const { data: currentUser, isLoading } = AuthQueries.useCurrentUser();
+
   return (
     <aside className="flex flex-col gap-5">
       <div className="hidden md:block space-y-0.5 px-1">
@@ -16,11 +20,26 @@ export function ExploreLeftSection() {
       </div>
 
       {/* 1. Identity & Algorithm Context */}
-      <IdentityCard
-        mbti={MOCK_USER.mbti}
-        trustScore={MOCK_USER.trustScore}
-        oceanScores={MOCK_USER.oceanScores}
-      />
+      {identity ? (
+        <IdentityCard
+          mbti={identity.mbti}
+          trustScore={identity.trustScore}
+          oceanScores={identity.oceanScores}
+        />
+      ) : isLoading ? (
+        <div className="rounded-3xl border-2 border-border bg-canvas/40 p-4 text-sm font-medium text-slate-muted">
+          Loading your compatibility profile.
+        </div>
+      ) : currentUser ? (
+        <div className="rounded-3xl border-2 border-border bg-canvas/40 p-4 text-sm font-medium text-slate-muted">
+          Complete your personality profile to unlock compatibility insights
+          here.
+        </div>
+      ) : (
+        <div className="rounded-3xl border-2 border-border bg-canvas/40 p-4 text-sm font-medium text-slate-muted">
+          Sign in to see your compatibility profile.
+        </div>
+      )}
 
       {/* 2. Action / CTA */}
       <div className="px-1">

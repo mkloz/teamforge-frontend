@@ -1,13 +1,13 @@
 import { CalendarClock, Gift, Laptop, Route, Ticket } from "lucide-react";
-
-import type { Plan } from "@/shared/schemas";
+import type { ExploreGroup } from "@/shared/schemas";
 
 interface CardMetaProps {
-  plan?: Plan;
+  group: ExploreGroup;
   distance?: string;
 }
 
-export function CardMeta({ plan, distance }: CardMetaProps) {
+export function CardMeta({ group, distance }: CardMetaProps) {
+  const plan = group.plan;
   const dateStr = plan?.dateTime || "";
   const locationMode = plan?.locationMode || "TBD";
   const cost = plan?.cost || "FREE";
@@ -47,7 +47,7 @@ export function CardMeta({ plan, distance }: CardMetaProps) {
             <Route className="w-4 h-4 shrink-0" strokeWidth={2} />
           )}
           <span className="truncate">
-            {isOnline ? "Online Stream" : distance || "Nearby"}
+            {isOnline ? "Online Stream" : distance || "Location pending"}
           </span>
         </div>
         <div className="w-1 h-1 rounded-full bg-border" /> {/* Separator */}

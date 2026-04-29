@@ -64,7 +64,7 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
 
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-sm sm:text-base text-slate-500 mb-8 leading-relaxed font-medium text-center"
+        className="font-sans text-sm sm:text-base text-muted-foreground mb-8 leading-relaxed font-medium text-center"
       >
         It can be hard to find your actual personality underneath all the layers
         of expectations. To get the best results:
@@ -84,7 +84,7 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
               <span className="font-sans text-sm font-bold text-ink leading-tight">
                 {title}
               </span>
-              <p className="font-sans text-sm text-slate-500 font-medium leading-relaxed max-w-sm">
+              <p className="font-sans text-sm text-muted-foreground font-medium leading-relaxed max-w-sm">
                 {text}
               </p>
             </div>

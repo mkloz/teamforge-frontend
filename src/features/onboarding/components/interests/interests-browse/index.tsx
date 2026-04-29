@@ -1,15 +1,12 @@
+import type { Interest } from "@/shared/schemas";
 export { InterestsBrowseHeader } from "./interests-browse-header";
 import { Accordion } from "@/shared/components/ui/accordion";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Activity } from "react";
-import { INTEREST_CATEGORIES } from "../../../data/interests-data";
-import type {
-  LeafTag,
-  SearchResults as SearchResultsType,
-} from "../../../data/interests-types";
 import type { PersonalityType } from "@/shared/schemas/enums";
+import type { InterestSearchResults } from "../../../utils/interest-logic";
 import { BalanceNudge } from "./balance-nudge";
 import { CategorySection } from "./category-section";
 import { PageTitle } from "./page-title";
@@ -19,12 +16,14 @@ import { SuggestionsSection } from "./suggestions-section";
 import { YouMightAlsoLikeSection } from "./you-might-also-like-section";
 
 interface InterestsBrowseProps {
+  categories: Interest[];
+  leafById: Record<string, Interest>;
   selectedIds: Set<string>;
   searchQuery: string;
-  searchResults: SearchResultsType;
+  searchResults: InterestSearchResults;
   personalityType: PersonalityType | null;
-  suggestedTags: LeafTag[];
-  youMightAlsoLike: LeafTag[];
+  suggestedTags: Interest[];
+  youMightAlsoLike: Interest[];
   showBalanceNudge: boolean;
   isAtMax: boolean;
   collapsedCategories: Set<string>;
@@ -38,6 +37,8 @@ interface InterestsBrowseProps {
 }
 
 export function InterestsBrowse({
+  categories,
+  leafById,
   selectedIds,
   searchQuery,
   searchResults,
@@ -55,16 +56,18 @@ export function InterestsBrowse({
 }: Omit<InterestsBrowseProps, "onSetSearch" | "onExpandCategoryOnly">) {
   const isSearching = searchQuery.trim().length >= 2;
 
-  const openCategories = INTEREST_CATEGORIES.map((c) => c.id).filter(
-    (id) => !collapsedCategories.has(id),
-  );
+  const openCategories = categories
+    .map((category) => category.id)
+    .filter((id) => !collapsedCategories.has(id));
 
   function handleAccordionChange(newValues: string[]) {
-    const toggled = INTEREST_CATEGORIES.map((c) => c.id).find((id) => {
-      const wasOpen = openCategories.includes(id);
-      const isOpenNow = newValues.includes(id);
-      return wasOpen !== isOpenNow;
-    });
+    const toggled = categories
+      .map((category) => category.id)
+      .find((id) => {
+        const wasOpen = openCategories.includes(id);
+        const isOpenNow = newValues.includes(id);
+        return wasOpen !== isOpenNow;
+      });
     if (toggled) onToggleCategory(toggled);
   }
 
@@ -114,10 +117,10 @@ export function InterestsBrowse({
                 value={openCategories}
                 onValueChange={handleAccordionChange}
               >
-                {INTEREST_CATEGORIES.map((cat) => (
+                {categories.map((category) => (
                   <CategorySection
-                    key={cat.id}
-                    category={cat}
+                    key={category.id}
+                    category={category}
                     selectedIds={selectedIds}
                     expandedSubcategories={expandedSubcategories}
                     isAtMax={isAtMax}
@@ -156,6 +159,7 @@ export function InterestsBrowse({
         {/* Dynamic Selection/Suggestions Shelf */}
         <SelectionShelf
           isSearching={isSearching}
+          leafById={leafById}
           selectedIds={selectedIds}
           youMightAlsoLike={youMightAlsoLike}
           isAtMax={isAtMax}

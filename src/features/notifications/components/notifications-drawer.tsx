@@ -1,7 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 import { X } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
-import { useState } from "react";
 import { useNotifications } from "../hooks/use-notifications";
 import { NotificationItem } from "./notification-item";
 import {
@@ -21,16 +20,9 @@ export function NotificationsDrawer({
   open,
   onClose,
 }: NotificationsDrawerProps) {
-  const { items, markRead, markAllRead } = useNotifications();
+  const { items, today, earlier, markRead, markAllRead, isMarkingAllRead } =
+    useNotifications();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
-
-  // Freeze time during render to avoid impurity warnings
-  const [now] = useState(() => Date.now());
-
-  const today = items.filter((n) => now - n.timestamp.getTime() < 86_400_000);
-  const earlier = items.filter(
-    (n) => now - n.timestamp.getTime() >= 86_400_000,
-  );
 
   return (
     <Drawer
@@ -52,7 +44,7 @@ export function NotificationsDrawer({
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 h-16 border-b border-border shrink-0">
-          <h2 className="font-bold text-lg text-white tracking-tight">
+          <h2 className="font-bold text-lg text-ink tracking-tight">
             Notifications
           </h2>
           <div className="flex items-center gap-1.5">
@@ -60,9 +52,10 @@ export function NotificationsDrawer({
               variant="link"
               size="sm"
               onClick={markAllRead}
+              disabled={items.length === 0 || isMarkingAllRead}
               className="text-[12px] text-forge-teal hover:text-forge-teal/80 font-bold h-auto p-0"
             >
-              Mark all read
+              {isMarkingAllRead ? "Marking..." : "Mark all read"}
             </Button>
             <Button
               variant="ghost"

@@ -7,8 +7,10 @@ import {
   Pin,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-import type { Plan } from "@/features/activity/types/groups.types";
-import type { UnifiedMessage } from "@/features/activity/types/chat.types";
+import type {
+  Plan,
+  UnifiedMessage,
+} from "@/features/activity/lib/activity-contract";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { formatChatFullDate } from "../../lib/chat-utils";
 import { AnimatePresence, motion } from "framer-motion";

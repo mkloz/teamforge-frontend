@@ -40,7 +40,8 @@ export function TagPill({
       disabled={disabled && !selected}
       className={cn(
         "rounded-full h-auto py-1.5 px-3",
-        !selected && "bg-white text-slate-muted",
+        !selected &&
+          "bg-card text-slate-muted dark:border-white/10 dark:bg-card dark:text-slate-300",
       )}
     >
       <TagWrapper

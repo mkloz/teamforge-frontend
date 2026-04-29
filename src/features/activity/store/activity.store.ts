@@ -1,8 +1,10 @@
 import { create } from "zustand";
-import type { FilterChip } from "../types/unified-conversation.types";
-import type { GroupsPageState } from "../types/groups.types";
-import type { DirectChatsState } from "../types/direct-chats.types";
-import type { UnifiedMessage } from "../types/chat.types";
+import type {
+  DirectChatsState,
+  FilterChip,
+  GroupsPageState,
+  UnifiedMessage,
+} from "../lib/activity-contract";
 
 interface ActivityState {
   // Unified List UI

@@ -1,4 +1,5 @@
-import type { CognitiveFunction, DimensionScore } from "../types/profile.types";
+import type { DimensionScore } from "@/shared/types/psychometrics";
+import type { CognitiveFunction } from "./profile-contract";
 
 // Dominant function narrative templates
 const DOMINANT_NARRATIVES: Record<string, string> = {

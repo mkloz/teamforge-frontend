@@ -1,6 +1,6 @@
 import { Crown, Sparkles } from "lucide-react";
 import { Badge } from "@/shared/components/ui/badge";
-import type { GroupMember } from "../../../types/groups.types";
+import type { GroupMember } from "../../../lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 
 interface MemberCardProps {
@@ -27,7 +27,7 @@ export function MemberCard({ member, onShowProfile }: MemberCardProps) {
         >
           <img
             src={member.user?.avatar || ""}
-            alt={member.user?.fullName || "User"}
+            alt={member.user?.name || "User"}
             className="w-full h-full object-cover transition-transform duration-500 group-hover/member:scale-110"
             loading="lazy"
           />
@@ -46,7 +46,7 @@ export function MemberCard({ member, onShowProfile }: MemberCardProps) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-0.5">
           <p className="text-sm font-semibold text-foreground truncate">
-            {member.user?.fullName}
+            {member.user?.name}
           </p>
           <Badge
             variant="mbti"

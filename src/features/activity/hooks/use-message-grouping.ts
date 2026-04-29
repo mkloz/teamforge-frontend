@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { UnifiedMessage } from "../types/chat.types";
+import type { UnifiedMessage } from "../lib/activity-contract";
 import {
   shouldShowDateSeparator,
   shouldShowSenderAnchor,

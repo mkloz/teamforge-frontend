@@ -2,7 +2,7 @@ import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { LayoutList, Rows } from "lucide-react";
 import { memo } from "react";
-import type { FilterChip } from "../../types/unified-conversation.types";
+import type { FilterChip } from "../../lib/activity-contract";
 import { FilterChipItem } from "./filter-chip-item";
 
 interface FilterHeaderProps {

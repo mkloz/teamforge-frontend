@@ -16,3 +16,11 @@ export const notificationSchema = z.object({
 });
 
 export type Notification = z.infer<typeof notificationSchema>;
+
+export const notificationUnreadCountSchema = z.object({
+  unreadCount: z.number(),
+});
+
+export type NotificationUnreadCount = z.infer<
+  typeof notificationUnreadCountSchema
+>;
