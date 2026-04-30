@@ -11,6 +11,12 @@ import { LoginForm } from "./components/login-form";
 import { RegisterForm } from "./components/register-form";
 import { VoronoiCatalyst } from "./components/voronoi-catalyst";
 import { AUTH_TYPING_EVENT } from "./constants/voronoi.constants";
+import { AuthQueries } from "./api/auth.queries";
+import {
+  buildAuthRouteNavigation,
+  buildPostAuthRedirectNavigation,
+  useAuthReturnState,
+} from "./lib/auth-return";
 
 type AuthView = "login" | "register";
 
@@ -20,12 +26,12 @@ interface AuthPageProps {
 
 export function AuthPage({ defaultView = "login" }: AuthPageProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [view, setView] = useState<AuthView>(defaultView);
   const [authStep, setAuthStep] = useState<number>(1);
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
+  const { returnTo } = useAuthReturnState();
+  const view: AuthView = defaultView;
 
-  // Auto-scroll on view change or step transition
   useScrollToTop([view, authStep], scrollContainerRef);
 
   const handleInput = () => {
@@ -33,9 +39,14 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
     window.dispatchEvent(new CustomEvent(AUTH_TYPING_EVENT));
   };
 
+  const navigateAfterAuth = async () => {
+    setProgress(1);
+    const user = await AuthQueries.ensureCurrentUser();
+    await navigate(buildPostAuthRedirectNavigation(user, returnTo));
+  };
+
   return (
     <div className="h-screen w-full max-h-dvh flex flex-col lg:flex-row relative overflow-hidden">
-      {/* Top Header Strip with Back Link */}
       <div className="absolute top-0 left-0 right-0 h-16 lg:h-24 flex items-center px-4 lg:px-10 z-30 pointer-events-none">
         <Button
           variant="ghost"
@@ -53,12 +64,10 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
         </Button>
       </div>
 
-      {/* Left half screen animation space */}
       <div className="hidden lg:flex flex-1 relative bg-hero-bg border-r border-border items-center justify-center overflow-hidden h-full">
         <VoronoiCatalyst progress={progress} />
       </div>
 
-      {/* Right half (Form Space) */}
       <div className="flex-1 relative flex flex-col h-full overflow-hidden">
         <BackgroundTexture />
 
@@ -73,7 +82,6 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
           />
 
           <div className="flex flex-col items-center justify-start lg:justify-center w-full min-h-full pt-20 pb-10 lg:py-8">
-            {/* Form container: focused desktop width */}
             <div className="relative w-full max-w-sm px-2 sm:px-10 lg:p-0">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -86,25 +94,27 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
                 >
                   {view === "login" ? (
                     <LoginForm
+                      authReturnTo={returnTo}
                       onSwitchToRegister={() => {
                         setAuthStep(1);
-                        setView("register");
+                        void navigate(
+                          buildAuthRouteNavigation("/auth/register", returnTo),
+                        );
                       }}
                       onProgress={setProgress}
-                      onSuccess={() => {
-                        setProgress(1);
-                        navigate({ to: "/onboarding/personality" });
-                      }}
+                      onSuccess={navigateAfterAuth}
                     />
                   ) : (
                     <RegisterForm
-                      onSwitchToLogin={() => setView("login")}
+                      authReturnTo={returnTo}
+                      onSwitchToLogin={() => {
+                        void navigate(
+                          buildAuthRouteNavigation("/auth/login", returnTo),
+                        );
+                      }}
                       onProgress={setProgress}
                       onStepChange={setAuthStep}
-                      onSuccess={() => {
-                        setProgress(1);
-                        navigate({ to: "/onboarding/personality" });
-                      }}
+                      onSuccess={navigateAfterAuth}
                     />
                   )}
                 </motion.div>

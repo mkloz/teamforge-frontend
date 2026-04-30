@@ -9,13 +9,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { AuthQueries } from "@/features/auth/api/auth.queries";
 import { MAX_INTERESTS, MIN_INTERESTS } from "../data/interests-data";
-import type { InterestsScreen } from "../data/interests-types";
+import type { InterestsScreen } from "../data/interests-data";
 import { OnboardingQueries } from "../api/onboarding.queries";
 import { buildLeafInterestMap } from "../lib/interest-catalog";
 import {
   createInitialCollapsedCategories,
   expandCategoryOnly as buildExpandedCategoryState,
-  readMbtiFromSearch,
   toggleCollapsedCategory,
   toggleExpandedSubcategory,
 } from "../lib/interests-browser-state";
@@ -26,14 +25,19 @@ import {
   getSearchResults,
   getShouldShowBalanceNudge,
 } from "../utils/interest-logic";
+import type { PersonalityType } from "@/shared/schemas/enums";
 
 interface UseInterestsOptions {
   onComplete: () => void;
+  personalityTypeHint?: PersonalityType | null;
 }
 
 export type UseInterestsReturn = ReturnType<typeof useInterests>;
 
-export function useInterests({ onComplete }: UseInterestsOptions) {
+export function useInterests({
+  onComplete,
+  personalityTypeHint = null,
+}: UseInterestsOptions) {
   const store = useInterestsStore();
   const queryClient = useQueryClient();
   const [isPending, startTransition] = useTransition();
@@ -66,17 +70,15 @@ export function useInterests({ onComplete }: UseInterestsOptions) {
   >(new Set());
 
   useEffect(() => {
-    const mbti = readMbtiFromSearch(window.location.search);
-
-    if (mbti && !store.personalityType) {
-      store.setPersonalityType(mbti);
+    if (personalityTypeHint && !store.personalityType) {
+      store.setPersonalityType(personalityTypeHint);
       return;
     }
 
     if (currentUser?.personalityType && !store.personalityType) {
       store.setPersonalityType(currentUser.personalityType);
     }
-  }, [currentUser?.personalityType, store]);
+  }, [currentUser?.personalityType, personalityTypeHint, store]);
 
   const leafById = useMemo(
     () => buildLeafInterestMap(categories),
@@ -249,5 +251,6 @@ export function useInterests({ onComplete }: UseInterestsOptions) {
     finalize,
     retryCatalog,
     isPending,
+    reset: store.reset,
   };
 }

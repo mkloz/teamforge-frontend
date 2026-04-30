@@ -8,4 +8,5 @@ export const ApiExceptionSchema = z.object({
   timestamp: z.string(),
   method: z.string(),
   path: z.string().optional(),
+  requestId: z.string().optional(),
 });

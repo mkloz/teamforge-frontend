@@ -1,6 +1,8 @@
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
-import { MessageCircle, UserPlus } from "lucide-react";
+import { buildSettingsNavigation } from "@/shared/lib/settings-route";
+import { Link } from "@tanstack/react-router";
+import { Settings, SlidersHorizontal } from "lucide-react";
 
 export function ProfileActions({ className }: { className?: string }) {
   return (
@@ -10,13 +12,17 @@ export function ProfileActions({ className }: { className?: string }) {
         className,
       )}
     >
-      <Button className="flex-1 sm:w-auto shrink-0">
-        <UserPlus />
-        <span>Connect</span>
+      <Button asChild className="flex-1 sm:w-auto shrink-0">
+        <Link {...buildSettingsNavigation("account")}>
+          <Settings />
+          <span>Edit Profile</span>
+        </Link>
       </Button>
-      <Button variant="outline" className="w-full sm:w-auto border-2">
-        <MessageCircle />
-        <span>Message</span>
+      <Button asChild variant="outline" className="w-full sm:w-auto border-2">
+        <Link {...buildSettingsNavigation("matching")}>
+          <SlidersHorizontal />
+          <span>Update Matching</span>
+        </Link>
       </Button>
     </div>
   );

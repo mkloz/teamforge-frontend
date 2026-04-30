@@ -3,8 +3,10 @@ import { z } from "zod";
 import {
   attachmentTypeSchema,
   chatTypeSchema,
+  groupStatusSchema,
   messageStatusSchema,
   messageTypeSchema,
+  onlineStatusSchema,
 } from "./enums";
 
 export const chatApiSchema = z.object({
@@ -12,6 +14,50 @@ export const chatApiSchema = z.object({
   type: chatTypeSchema,
   createdAt: z.string().datetime(),
   groupId: z.string().nullable(),
+  group: z
+    .object({
+      id: z.string(),
+      name: z.string(),
+      avatar: z.string().nullable(),
+      status: groupStatusSchema,
+      activityId: z.string(),
+    })
+    .nullable()
+    .optional(),
+  participants: z
+    .array(
+      z.object({
+        userId: z.string(),
+        isMuted: z.boolean(),
+        isBlocked: z.boolean(),
+        joinedAt: z.string().datetime(),
+        leftAt: z.string().datetime().nullable(),
+        lastReadMessageId: z.string().nullable(),
+        user: z.object({
+          id: z.string(),
+          name: z.string(),
+          avatar: z.string().nullable(),
+          onlineStatus: onlineStatusSchema.optional(),
+        }),
+      }),
+    )
+    .optional(),
+  counterpart: z
+    .object({
+      id: z.string(),
+      name: z.string(),
+      avatar: z.string().nullable(),
+      onlineStatus: onlineStatusSchema.optional(),
+    })
+    .nullable()
+    .optional(),
+  lastMessage: z
+    .lazy(() => messageApiSchema)
+    .nullable()
+    .optional(),
+  pinnedMessages: z.array(z.lazy(() => messageApiSchema)).optional(),
+  hasUnread: z.boolean().optional(),
+  unreadCount: z.number().optional(),
 });
 
 export type ChatApi = z.infer<typeof chatApiSchema>;
@@ -67,11 +113,13 @@ export const messageApiSchema = z.object({
   isEdited: z.boolean(),
   isPinned: z.boolean(),
   createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
   editedAt: z.string().datetime().nullable(),
   deletedAt: z.string().datetime().nullable(),
   chatId: z.string(),
   senderId: z.string(),
   replyToId: z.string().nullable(),
+  version: z.number(),
   sender: messageSenderSummarySchema.optional(),
   replyTo: messageReplyPreviewSchema.nullable().optional(),
   reactions: z.array(messageReactionApiSchema).optional(),

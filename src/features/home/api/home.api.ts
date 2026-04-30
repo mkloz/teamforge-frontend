@@ -32,6 +32,18 @@ export class HomeApi {
     return createPaginatedSchema(inviteSchema).parse(response).items;
   }
 
+  static async getSentInvitations() {
+    const response = await apiClient
+      .get("invites/sent", {
+        searchParams: {
+          limit: 12,
+        },
+      })
+      .json<unknown>();
+
+    return createPaginatedSchema(inviteSchema).parse(response).items;
+  }
+
   static async getRecommendations() {
     const response = await apiClient
       .get("explore/groups", {

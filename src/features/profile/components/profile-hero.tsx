@@ -1,7 +1,10 @@
 import type { User } from "@/shared/schemas";
+import { buildSettingsNavigation } from "@/shared/lib/settings-route";
+import { Link } from "@tanstack/react-router";
 import { ProfileActions } from "./profile-actions";
 import { ProfileAvatar } from "./profile-avatar";
 import { ProfileIdentity } from "./profile-identity";
+import { Button } from "@/shared/components/ui/button";
 
 interface ProfileHeroProps {
   user: User;
@@ -28,10 +31,15 @@ export function ProfileHero({ user, archetype }: ProfileHeroProps) {
                 {user.bio}
               </p>
             ) : (
-              <p className="relative z-10 text-base text-slate-muted font-medium leading-relaxed text-pretty">
-                No bio yet. Add a short introduction in settings so people know
-                what you are about.
-              </p>
+              <div className="relative z-10 flex flex-col items-start gap-3">
+                <p className="text-base text-slate-muted font-medium leading-relaxed text-pretty">
+                  No bio yet. Add a short introduction in settings so people
+                  know what you are about.
+                </p>
+                <Button asChild variant="outline" size="sm">
+                  <Link {...buildSettingsNavigation("account")}>Add a bio</Link>
+                </Button>
+              </div>
             )}
           </blockquote>
 

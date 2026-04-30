@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ForgeHero } from "./components/forge-hero";
 import { InlineForgeWizard } from "./components/inline-forge-wizard";
 import { WalkthroughStep } from "./components/walkthrough-step";
+import { useForgeRouteState } from "./hooks/use-forge-route-state";
 
 // ─── Data ──────────────────────────────────────────────────────────────────
 
@@ -50,12 +51,10 @@ const BRAND_TIPS = [
   "High-trust groups, low-friction entry.",
 ];
 
-import { useForgeStore } from "./store/forge-store";
-
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export function ForgePage() {
-  const { isWizardActive, setIsWizardActive } = useForgeStore();
+  const { isOpen, openWizard, closeWizard } = useForgeRouteState();
 
   // Tip rotation logic
   const [tipIndex, setTipIndex] = useState(0);
@@ -85,13 +84,13 @@ export function ForgePage() {
     <div
       className={cn(
         "mx-auto flex flex-col md:pb-12 h-full",
-        isWizardActive
+        isOpen
           ? "w-full max-w-none px-0 gap-0"
           : "max-w-4xl gap-10 px-4 md:px-8",
       )}
     >
       <AnimatePresence mode="wait">
-        {!isWizardActive ? (
+        {!isOpen ? (
           <motion.div
             key="forge-hub"
             initial={{ opacity: 0, y: 15 }}
@@ -114,7 +113,7 @@ export function ForgePage() {
               <div className="flex flex-col gap-12">
                 {/* ── Section 1: Hero CTA ── */}
                 <section className="w-full">
-                  <ForgeHero onForgeClick={() => setIsWizardActive(true)} />
+                  <ForgeHero onForgeClick={openWizard} />
                 </section>
 
                 {/* ── Section 2: Walkthrough Timeline ── */}
@@ -202,10 +201,7 @@ export function ForgePage() {
             </div>
           </motion.div>
         ) : (
-          <InlineForgeWizard
-            key="onboarding-wizard"
-            onCancel={() => setIsWizardActive(false)}
-          />
+          <InlineForgeWizard key="onboarding-wizard" onCancel={closeWizard} />
         )}
       </AnimatePresence>
     </div>

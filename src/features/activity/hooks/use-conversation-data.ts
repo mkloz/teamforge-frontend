@@ -5,7 +5,7 @@ import { getStatusText, formatTypingText } from "../lib/chat-utils";
 
 interface BaseProps {
   isTyping?: boolean;
-  typingUsers?: { name: string; avatar: string }[];
+  typingUsers?: { name: string; avatar: string | null }[];
 }
 
 export type UseConversationDataProps =
@@ -55,7 +55,7 @@ export function useConversationData({
   const activeTypingUsers = useMemo(() => {
     if (isGroup) return typingUsers;
     if (isTyping && participant) {
-      return [{ name: participant.name, avatar: participant.avatar || "" }];
+      return [{ name: participant.name, avatar: participant.avatar ?? null }];
     }
     return [];
   }, [isGroup, typingUsers, isTyping, participant]);

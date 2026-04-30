@@ -1,6 +1,6 @@
 import type { Interest } from "@/shared/schemas";
 import type { PersonalityType } from "@/shared/schemas/enums";
-import { MBTI_SUGGESTIONS } from "../data/interests-data";
+import { MBTI_SUGGESTIONS } from "../data/interest-recommendations";
 import { getSubcategories } from "./interest-catalog";
 
 export function createInitialCollapsedCategories(categories: Interest[]) {

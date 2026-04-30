@@ -13,12 +13,16 @@ import { useMediaQuery } from "@/shared/hooks/use-media-query";
 interface GroupDetailPanelProps {
   group: Group;
   isOpen: boolean;
+  focusedPlanId?: string | null;
+  focusedProposalId?: string | null;
   onClose: () => void;
 }
 
 export function GroupDetailPanel({
   group,
   isOpen,
+  focusedPlanId = null,
+  focusedProposalId = null,
   onClose,
 }: GroupDetailPanelProps) {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
@@ -48,7 +52,12 @@ export function GroupDetailPanel({
           isOpen ? "w-80 opacity-100" : "w-0 opacity-0 overflow-hidden",
         )}
       >
-        <GroupPanelContent group={group} onClose={onClose} />
+        <GroupPanelContent
+          group={group}
+          focusedPlanId={focusedPlanId}
+          focusedProposalId={focusedProposalId}
+          onClose={onClose}
+        />
       </aside>
 
       {/* Mobile/Tablet overlay sheet using shadcn Drawer */}
@@ -60,7 +69,13 @@ export function GroupDetailPanel({
           <DrawerHeader className="sr-only">
             <DrawerTitle>{group.name} Details</DrawerTitle>
           </DrawerHeader>
-          <GroupPanelContent group={group} onClose={onClose} isMobile />
+          <GroupPanelContent
+            group={group}
+            focusedPlanId={focusedPlanId}
+            focusedProposalId={focusedProposalId}
+            onClose={onClose}
+            isMobile
+          />
         </DrawerContent>
       </Drawer>
     </>

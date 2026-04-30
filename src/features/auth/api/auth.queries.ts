@@ -4,7 +4,8 @@ import { useSyncExternalStore } from "react";
 import { apiClient, authApi } from "@/shared/api/api";
 import { authSession } from "@/shared/api/auth-session";
 import { appQueryClient } from "@/shared/api/query-client";
-import { fullUserResponseSchema } from "@/shared/schemas";
+import { fullUserResponseSchema, type User } from "@/shared/schemas";
+import { getPostAuthRedirectPath } from "../lib/post-auth-route";
 
 export class AuthQueries {
   static currentUserQueryKey = ["auth", "current-user"] as const;
@@ -71,5 +72,9 @@ export class AuthQueries {
   static clearAuthState() {
     AuthQueries.clearCurrentUserCache();
     authApi.clearSession();
+  }
+
+  static getPostAuthRedirectPath(user: User | null | undefined) {
+    return getPostAuthRedirectPath(user);
   }
 }

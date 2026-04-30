@@ -69,6 +69,8 @@ export const exploreGroupSchema = z.object({
   avatar: z.string().nullable(),
   status: groupStatusSchema,
   maxMembers: z.number(),
+  updatedAt: z.string().datetime(),
+  version: z.number(),
   activeMembersCount: z.number(),
   access: activityAccessSchema,
   activity: exploreActivitySchema,

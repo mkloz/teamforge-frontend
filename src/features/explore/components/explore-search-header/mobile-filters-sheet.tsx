@@ -10,12 +10,12 @@ import {
 } from "@/shared/components/ui/sheet";
 import { cn } from "@/shared/lib/utils";
 import { ListFilter, SlidersHorizontal } from "lucide-react";
-import { useExploreStore } from "../../store/use-explore-store";
+import { useExploreRouteState } from "../../hooks/use-explore-route-state";
 import { ExploreRightFilters } from "../explore-right-filters";
 
 export function MobileFiltersSheet() {
-  const { isAnythingFiltered, resetFilters } = useExploreStore();
-  const filtered = isAnythingFiltered();
+  const { isAnythingFiltered, resetFilters } = useExploreRouteState();
+  const filtered = isAnythingFiltered;
 
   return (
     <Sheet>

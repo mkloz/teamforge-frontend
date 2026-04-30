@@ -6,16 +6,16 @@ import { memo } from "react";
 interface ScrollActionButtonsProps {
   showScrollToBottom: boolean;
   onScrollToBottom: () => void;
-  hasUnvoted: boolean;
-  onScrollToUnvoted: () => void;
+  hasProposalShortcut: boolean;
+  onScrollToProposal: () => void;
 }
 
 export const ScrollActionButtons = memo(
   ({
     showScrollToBottom,
     onScrollToBottom,
-    hasUnvoted,
-    onScrollToUnvoted,
+    hasProposalShortcut,
+    onScrollToProposal,
   }: ScrollActionButtonsProps) => (
     <AnimatePresence mode="popLayout">
       <div className="absolute bottom-6 right-6 flex flex-col gap-3 items-end z-30 pointer-events-none">
@@ -42,7 +42,7 @@ export const ScrollActionButtons = memo(
           </motion.div>
         )}
 
-        {hasUnvoted && (
+        {hasProposalShortcut && (
           <motion.div
             initial={{ opacity: 0, scale: 0.8, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -50,7 +50,7 @@ export const ScrollActionButtons = memo(
             className="pointer-events-auto"
           >
             <Button
-              onClick={onScrollToUnvoted}
+              onClick={onScrollToProposal}
               variant="secondary"
               size="xs"
               className="group flex items-center gap-2 px-2.5 py-1.5 rounded-full border border-spark-amber/20"

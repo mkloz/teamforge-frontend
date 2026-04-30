@@ -91,6 +91,7 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
             <EmptyState
               label={emptyLabel}
               showForgeCta={!searchQuery && activeFilter === "all"}
+              showExploreCta={!searchQuery && activeFilter !== "direct"}
             />
           ) : (
             <AnimatePresence mode="popLayout" initial={false}>

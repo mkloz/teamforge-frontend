@@ -1,7 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
+import { useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useRef, useState } from "react";
+import { resolveOnboardingExitNavigation } from "@/features/auth/lib/auth-navigation";
 import { usePersonalityTest } from "./hooks/use-personality-test";
 
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
@@ -17,6 +19,7 @@ import { QuestionPage } from "./components/personality/question-page";
 import { Theory101 } from "./components/personality/theory-101";
 import { AuthQueries } from "../auth/api/auth.queries";
 import { findFirstUnansweredPage } from "./lib/personality-test-flow";
+import { useOnboardingFlowState } from "./lib/onboarding-flow-state";
 import { getOceanScoresFromVector } from "./lib/personality-results";
 import { OnboardingQueries } from "./api/onboarding.queries";
 import { buildQuestionList, type TestLength } from "./data/ipip-questions";
@@ -26,9 +29,13 @@ const QUESTIONS_PER_PAGE = 3;
 function ScreenRenderer({
   state,
   onSelectionChange,
+  onContinue,
+  continueLabel,
 }: {
   state: ReturnType<typeof usePersonalityTest>;
   onSelectionChange: (length: TestLength) => void;
+  onContinue: () => void;
+  continueLabel: string;
 }) {
   const {
     screen,
@@ -149,8 +156,9 @@ function ScreenRenderer({
         <PersonalityResults
           result={result}
           vector={vector}
-          onContinue={actions.handleContinue}
+          onContinue={onContinue}
           onRetake={actions.handleRetake}
+          continueLabel={continueLabel}
         />
       );
     default:
@@ -161,6 +169,9 @@ function ScreenRenderer({
 export function PersonalityTestPage() {
   const [pendingLength, setPendingLength] = useState<TestLength | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const { isEditMode, returnTo, returnSearch, returnSection } =
+    useOnboardingFlowState();
   const invalidateCurrentUser = AuthQueries.useInvalidateCurrentUser();
   const persistPersonalityMutation = useMutation({
     mutationFn: OnboardingQueries.updatePersonality,
@@ -170,27 +181,49 @@ export function PersonalityTestPage() {
   });
   const testState = usePersonalityTest({
     questionsPerPage: QUESTIONS_PER_PAGE,
-    onContinue: async () => {
-      if (testState.result && testState.vector) {
-        const oceanScores = getOceanScoresFromVector(testState.vector);
-
-        await persistPersonalityMutation.mutateAsync({
-          personalityType: testState.result.type,
-          oceanO: oceanScores.openness,
-          oceanC: oceanScores.conscientiousness,
-          oceanE: oceanScores.extraversion,
-          oceanA: oceanScores.agreeableness,
-          oceanN: oceanScores.neuroticism,
-        });
-      }
-
-      const mbtiType = testState.result?.type ?? "";
-      const destination = mbtiType
-        ? `/onboarding/interests?mbti=${encodeURIComponent(mbtiType)}`
-        : "/onboarding/interests";
-      window.location.assign(destination);
-    },
   });
+
+  async function handleContinueToInterests() {
+    if (testState.result && testState.vector) {
+      const oceanScores = getOceanScoresFromVector(testState.vector);
+
+      await persistPersonalityMutation.mutateAsync({
+        personalityType: testState.result.type,
+        oceanO: oceanScores.openness,
+        oceanC: oceanScores.conscientiousness,
+        oceanE: oceanScores.extraversion,
+        oceanA: oceanScores.agreeableness,
+        oceanN: oceanScores.neuroticism,
+      });
+    }
+
+    testState.actions.reset();
+
+    if (isEditMode) {
+      await navigate(
+        resolveOnboardingExitNavigation(
+          returnTo,
+          returnSearch,
+          returnSection,
+          "settings",
+        ),
+      );
+      return;
+    }
+
+    const mbtiType = testState.result?.type ?? null;
+    const nextSearch = {
+      ...(mbtiType ? { mbti: mbtiType } : {}),
+      ...(returnTo ? { returnTo } : {}),
+      ...(returnSearch ? { returnSearch } : {}),
+      ...(returnSection ? { returnSection } : {}),
+    };
+
+    await navigate({
+      to: "/onboarding/interests",
+      search: Object.keys(nextSearch).length > 0 ? nextSearch : undefined,
+    });
+  }
 
   const displayProgress = useMemo(() => {
     if (testState.screen.id === "length" && pendingLength) {
@@ -245,6 +278,8 @@ export function PersonalityTestPage() {
                   <ScreenRenderer
                     state={testState}
                     onSelectionChange={setPendingLength}
+                    onContinue={handleContinueToInterests}
+                    continueLabel={isEditMode ? "Save Personality" : "Continue"}
                   />
                 </motion.div>
               </AnimatePresence>
@@ -253,7 +288,6 @@ export function PersonalityTestPage() {
         </div>
       </div>
 
-      {/* ── Right half screen animation space ── */}
       <div className="hidden lg:flex flex-1 relative bg-hero-bg border-l border-slate-200 items-center justify-center overflow-hidden h-full">
         <VoronoiCatalyst progress={testState.progress} />
       </div>

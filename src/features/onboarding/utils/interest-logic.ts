@@ -1,7 +1,10 @@
 import { fuzzyMatch } from "@/shared/lib/fuzzy";
 import type { Interest } from "@/shared/schemas";
 import type { PersonalityType } from "@/shared/schemas/enums";
-import { CORRELATED_TAGS, MBTI_SUGGESTIONS } from "../data/interests-data";
+import {
+  CORRELATED_TAGS,
+  MBTI_SUGGESTIONS,
+} from "../data/interest-recommendations";
 import {
   getCategoryLeafIds,
   getLeafInterests,

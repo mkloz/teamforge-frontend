@@ -13,18 +13,16 @@ import {
   usePersonalityTestStore,
   type ScreenState,
 } from "../store/personality-test-store";
+import { evaluatePersonalityVector } from "../lib/personality-evaluation";
 import { calculateVector } from "../utils/score-calculator";
-import { vectorToType } from "../utils/type-translation";
 
 interface UsePersonalityTestProps {
   questionsPerPage: number;
-  onContinue?: () => void;
 }
 export type { ScreenState };
 
 export function usePersonalityTest({
   questionsPerPage,
-  onContinue,
 }: UsePersonalityTestProps) {
   // ── Zustand store ──────────────────────────────────────────────────────────
   const store = usePersonalityTestStore();
@@ -89,7 +87,7 @@ export function usePersonalityTest({
         store.setIsReviewMode(false);
       }
       const vec = calculateVector(questions, answers);
-      const res = vectorToType(vec);
+      const res = evaluatePersonalityVector(vec);
       store.setResultData(res, vec);
       store.setScreen({ id: "calculating" });
     }
@@ -108,7 +106,7 @@ export function usePersonalityTest({
     // If they switched to a shorter test and are now "done"
     if (screen.nextPageIndex > currentTotalPages) {
       const vec = calculateVector(currentQuestions, answers);
-      const res = vectorToType(vec);
+      const res = evaluatePersonalityVector(vec);
       store.setResultData(res, vec);
       store.setScreen({ id: "calculating" });
       return;
@@ -126,10 +124,6 @@ export function usePersonalityTest({
     store.setScreen({ id: "length" });
   }, [store]);
 
-  const handleContinue = useCallback(() => {
-    onContinue?.();
-  }, [onContinue]);
-
   const actions = useMemo(
     () => ({
       setScreen: store.setScreen,
@@ -141,7 +135,7 @@ export function usePersonalityTest({
       handleContinueFromIntermission,
       handleCalculationDone,
       handleRetake,
-      handleContinue,
+      reset: store.reset,
     }),
     [
       store.setScreen,
@@ -153,7 +147,7 @@ export function usePersonalityTest({
       handleContinueFromIntermission,
       handleCalculationDone,
       handleRetake,
-      handleContinue,
+      store.reset,
     ],
   );
 

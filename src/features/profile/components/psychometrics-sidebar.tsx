@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { OceanChart } from "@/shared/components/psychometrics/ocean-chart";
+import { buildPersonalityEditNavigation } from "@/shared/lib/onboarding-route";
 import type { OceanTraitKey } from "@/shared/types/psychometrics";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import type { DimensionScore, OceanScores } from "../lib/profile-contract";
 import { DimensionSpectrum } from "./dimension-spectrum";
 import { SectionTitle } from "./section-title";
+import { Button } from "@/shared/components/ui/button";
 
 interface PsychometricsSidebarProps {
   oceanScores: OceanScores | null;
@@ -32,9 +35,20 @@ export function PsychometricsSidebar({
               onTraitSelect={setSelectedTrait}
             />
           ) : (
-            <p className="text-sm font-medium text-slate-muted">
-              OCEAN scores are not available yet.
-            </p>
+            <div className="flex flex-col items-start gap-3">
+              <p className="text-sm font-medium text-slate-muted">
+                OCEAN scores are not available yet.
+              </p>
+              <Button asChild variant="outline" size="sm">
+                <Link
+                  {...buildPersonalityEditNavigation({
+                    returnTo: "/profile",
+                  })}
+                >
+                  Finish personality setup
+                </Link>
+              </Button>
+            </div>
           )}
         </div>
       </section>

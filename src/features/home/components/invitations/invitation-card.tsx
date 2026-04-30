@@ -3,6 +3,7 @@ import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { Users } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 function formatGroupStatus(status: Invite["group"]["status"]) {
   return status
@@ -48,6 +49,7 @@ interface InvitationCardProps {
   onDecline: (id: string) => void | Promise<void>;
   isAccepting?: boolean;
   isDeclining?: boolean;
+  isFocused?: boolean;
 }
 
 export function InvitationCard({
@@ -57,7 +59,9 @@ export function InvitationCard({
   onDecline,
   isAccepting = false,
   isDeclining = false,
+  isFocused = false,
 }: InvitationCardProps) {
+  const cardRef = useRef<HTMLElement | null>(null);
   const group = invitation.group;
   const statusLabel = formatGroupStatus(group.status);
   const inviterName = invitation.inviter?.name ?? "TeamForge";
@@ -70,8 +74,20 @@ export function InvitationCard({
       .map((part) => part[0]?.toUpperCase())
       .join("") || "TF";
 
+  useEffect(() => {
+    if (!isFocused) {
+      return;
+    }
+
+    cardRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  }, [isFocused]);
+
   return (
     <motion.article
+      ref={cardRef}
       initial={{ opacity: 0, y: 10, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, x: 20, scale: 0.95 }}
@@ -86,6 +102,8 @@ export function InvitationCard({
         "border-forge-teal/20 bg-secondary/50",
         "transition-colors duration-200 cursor-pointer",
         "hover:bg-secondary hover:border-forge-teal/40",
+        isFocused &&
+          "ring-2 ring-forge-teal/40 border-forge-teal/50 bg-forge-teal/5",
       )}
     >
       <div className="flex gap-3">

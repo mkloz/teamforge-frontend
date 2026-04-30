@@ -9,11 +9,13 @@ import {
   groupRoleSchema,
   groupStatusSchema,
   locationModeSchema,
+  onlineStatusSchema,
   personalityTypeSchema,
   planCategorySchema,
   planStatusSchema,
 } from "./enums";
 import { exploreInterestSchema } from "./explore";
+import { messageApiSchema } from "./chat-api";
 
 export const groupActivitySummarySchema = z.object({
   id: z.string(),
@@ -46,6 +48,7 @@ export const groupMemberUserSummarySchema = z.object({
   avatar: z.string().nullable(),
   personalityType: personalityTypeSchema.nullable(),
   trustScore: z.number(),
+  onlineStatus: onlineStatusSchema.optional(),
 });
 
 export type GroupMemberUserSummary = z.infer<
@@ -72,10 +75,18 @@ export const groupApiSchema = z.object({
   maxMembers: z.number(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
+  version: z.number(),
   disbandedAt: z.string().datetime().nullable(),
   activityId: z.string(),
   activity: groupActivitySummarySchema,
   plan: groupPlanSummarySchema.nullable(),
+  chat: z
+    .object({
+      id: z.string(),
+      pinnedMessages: z.array(messageApiSchema).optional(),
+    })
+    .nullable()
+    .optional(),
   members: z.array(groupMemberApiSchema),
 });
 

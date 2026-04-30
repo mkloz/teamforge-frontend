@@ -1,25 +1,90 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
+
+import { getApiErrorMessage } from "@/shared/lib/api-error-message";
+import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
+import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import { ActivityQueries } from "../api/activity.queries";
+import type { ActivitySendMessageInput } from "../lib/activity-contract";
 import { useActivityStore } from "../store/activity.store";
+import { useActivityMessageActions } from "./use-activity-message-actions";
 
 export function useActivityComposer() {
+  const [sendError, setSendError] = useState<string | null>(null);
   const selectedKind = useActivityStore((state) => state.selectedKind);
   const selectedId = useActivityStore((state) => state.selectedId);
   const replyingTo = useActivityStore((state) => state.replyingTo);
+  const { editingMessage, submitEdit } = useActivityMessageActions();
 
   const handleSendMessage = useCallback(
-    (content: string) => {
-      void ActivityQueries.sendMessage(
-        selectedKind,
-        selectedId,
-        content,
-        replyingTo?.id ?? null,
-      );
+    async (input: ActivitySendMessageInput) => {
+      setSendError(null);
+
+      try {
+        if (editingMessage) {
+          const result = await submitEdit(input.content);
+          trackMutationOutcome(
+            trackedMutationNames.activityMessageEdit,
+            "success",
+            {
+              conversationKind: selectedKind ?? "unknown",
+              requestId: result?.requestId ?? null,
+            },
+          );
+          return;
+        }
+
+        const result = await ActivityQueries.sendMessage(
+          selectedKind,
+          selectedId,
+          {
+            ...input,
+            replyTo: replyingTo,
+            replyToId: replyingTo?.id ?? null,
+          },
+        );
+        trackMutationOutcome(
+          trackedMutationNames.activityMessageSend,
+          "success",
+          {
+            conversationKind: selectedKind ?? "unknown",
+            attachmentCount: input.attachments?.length ?? 0,
+            hasReply: Boolean(replyingTo),
+            requestId: result?.requestId ?? null,
+          },
+        );
+      } catch (error) {
+        captureException(trackedMutationNames.activityMessageSend, error, {
+          conversationKind: selectedKind ?? "unknown",
+          isEdit: Boolean(editingMessage),
+          attachmentCount: input.attachments?.length ?? 0,
+          hasReply: Boolean(replyingTo),
+        });
+        trackMutationOutcome(
+          editingMessage
+            ? trackedMutationNames.activityMessageEdit
+            : trackedMutationNames.activityMessageSend,
+          "error",
+          {
+            conversationKind: selectedKind ?? "unknown",
+            attachmentCount: input.attachments?.length ?? 0,
+            hasReply: Boolean(replyingTo),
+          },
+        );
+        setSendError(
+          getApiErrorMessage(
+            error,
+            "We couldn't send that message. Please try again.",
+          ),
+        );
+        throw error;
+      }
     },
-    [replyingTo?.id, selectedId, selectedKind],
+    [editingMessage, replyingTo, selectedId, selectedKind, submitEdit],
   );
 
   return {
     handleSendMessage,
+    sendError,
+    clearSendError: () => setSendError(null),
   };
 }

@@ -1,10 +1,10 @@
 import { cn } from "@/shared/lib/utils";
 import { CATEGORIES } from "../constants/explore.constants";
-import { useExploreStore } from "../store/use-explore-store";
+import { useExploreRouteState } from "../hooks/use-explore-route-state";
 import type { PlanCategory } from "@/shared/schemas/enums";
 
 export function CategoryFilter() {
-  const { selectedCategories, setSelectedCategories } = useExploreStore();
+  const { selectedCategories, setSelectedCategories } = useExploreRouteState();
 
   const toggleCategory = (catId: PlanCategory | "ALL") => {
     if (catId === "ALL") {

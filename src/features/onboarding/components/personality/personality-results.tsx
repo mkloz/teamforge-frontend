@@ -10,18 +10,19 @@ import { motion } from "framer-motion";
 import { ArrowRight, ExternalLink, RefreshCcw } from "lucide-react";
 import { Fragment } from "react";
 import { popDownItem, resultsContainer } from "../../constants/motion";
+import type { PersonalityEvaluation } from "../../lib/personality-evaluation";
 import {
   getDimensionScoresFromVector,
   getOceanScoresFromVector,
 } from "../../lib/personality-results";
 import type { OceanVectorWithMeta } from "../../utils/score-calculator";
-import type { PersonalityResult } from "../../utils/type-translation";
 
 interface PersonalityResultsProps {
-  result: PersonalityResult;
+  result: PersonalityEvaluation;
   vector: OceanVectorWithMeta;
   onContinue: () => void;
   onRetake: () => void;
+  continueLabel?: string;
 }
 
 export function PersonalityResults({
@@ -29,6 +30,7 @@ export function PersonalityResults({
   vector,
   onContinue,
   onRetake,
+  continueLabel = "Continue",
 }: PersonalityResultsProps) {
   const allLetters = [...result.type.split(""), result.variant];
 
@@ -155,7 +157,7 @@ export function PersonalityResults({
 
         <div className="mt-16 pt-8 border-t border-slate-100 dark:border-white/10 flex flex-col sm:flex-row gap-4">
           <Button size="hero" onClick={onContinue} className="flex-1">
-            Continue
+            {continueLabel}
             <ArrowRight size={20} />
           </Button>
           <Button variant="outline" size="hero" onClick={onRetake}>

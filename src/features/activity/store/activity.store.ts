@@ -1,10 +1,13 @@
 import { create } from "zustand";
 import type {
+  ActivityParticipant,
   DirectChatsState,
   FilterChip,
   GroupsPageState,
   UnifiedMessage,
 } from "../lib/activity-contract";
+
+type TypingParticipant = Pick<ActivityParticipant, "id" | "name" | "avatar">;
 
 interface ActivityState {
   // Unified List UI
@@ -21,7 +24,8 @@ interface ActivityState {
   direct: DirectChatsState;
 
   replyingTo: UnifiedMessage | null;
-  pinnedMessages: UnifiedMessage[];
+  editingMessage: UnifiedMessage | null;
+  typingByChatId: Record<string, TypingParticipant[]>;
 
   // Actions
   setSearchQuery: (query: string) => void;
@@ -29,16 +33,23 @@ interface ActivityState {
   setSidebarDensity: (density: "default" | "compact") => void;
   selectConversation: (id: string | null, kind: "group" | "dm" | null) => void;
   setReplyingTo: (message: UnifiedMessage | null) => void;
-  pinMessage: (message: UnifiedMessage) => void;
-  unpinMessage: (messageId: string) => void;
+  setEditingMessage: (message: UnifiedMessage | null) => void;
+  setChatTypingState: (
+    chatId: string,
+    participant: TypingParticipant,
+    isTyping: boolean,
+  ) => void;
+  clearChatTypingState: (chatId: string) => void;
 
   // Group Actions
   toggleGroupDetail: () => void;
+  setGroupDetailOpen: (open: boolean) => void;
   closeGroupDetail: () => void;
   setGroupDraft: (groupId: string, content: string) => void;
 
   // Direct Action
   toggleProfilePanel: () => void;
+  setProfilePanelOpen: (open: boolean) => void;
   closeProfilePanel: () => void;
   setDirectDraft: (chatId: string, content: string) => void;
 
@@ -54,7 +65,8 @@ export const useActivityStore = create<ActivityState>((set) => ({
   selectedKind: null,
 
   replyingTo: null,
-  pinnedMessages: [],
+  editingMessage: null,
+  typingByChatId: {},
 
   groups: {
     selectedGroupId: null,
@@ -104,6 +116,14 @@ export const useActivityStore = create<ActivityState>((set) => ({
       },
     })),
 
+  setGroupDetailOpen: (open) =>
+    set((state) => ({
+      groups: {
+        ...state.groups,
+        isDetailPanelOpen: open,
+      },
+    })),
+
   closeGroupDetail: () =>
     set((state) => ({
       groups: { ...state.groups, isDetailPanelOpen: false },
@@ -125,6 +145,14 @@ export const useActivityStore = create<ActivityState>((set) => ({
       },
     })),
 
+  setProfilePanelOpen: (open) =>
+    set((state) => ({
+      direct: {
+        ...state.direct,
+        isProfilePanelOpen: open,
+      },
+    })),
+
   closeProfilePanel: () =>
     set((state) => ({
       direct: { ...state.direct, isProfilePanelOpen: false },
@@ -139,15 +167,29 @@ export const useActivityStore = create<ActivityState>((set) => ({
     })),
 
   setReplyingTo: (message) => set({ replyingTo: message }),
+  setEditingMessage: (message) => set({ editingMessage: message }),
+  setChatTypingState: (chatId, participant, isTyping) =>
+    set((state) => {
+      const current = state.typingByChatId[chatId] ?? [];
+      const next = isTyping
+        ? current.some((item) => item.id === participant.id)
+          ? current
+          : [...current, participant]
+        : current.filter((item) => item.id !== participant.id);
 
-  pinMessage: (message) =>
+      return {
+        typingByChatId: {
+          ...state.typingByChatId,
+          [chatId]: next,
+        },
+      };
+    }),
+  clearChatTypingState: (chatId) =>
     set((state) => ({
-      pinnedMessages: [...state.pinnedMessages, message],
-    })),
-
-  unpinMessage: (messageId) =>
-    set((state) => ({
-      pinnedMessages: state.pinnedMessages.filter((m) => m.id !== messageId),
+      typingByChatId: {
+        ...state.typingByChatId,
+        [chatId]: [],
+      },
     })),
 
   resetSelection: () =>
@@ -155,7 +197,8 @@ export const useActivityStore = create<ActivityState>((set) => ({
       selectedId: null,
       selectedKind: null,
       replyingTo: null,
-      pinnedMessages: [],
+      editingMessage: null,
+      typingByChatId: {},
       groups: {
         ...state.groups,
         selectedGroupId: null,

@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/shared/components/ui/button";
+import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { cn } from "@/shared/lib/utils";
 
 import { ActivityApi } from "@/features/activity/api/activity.api";
@@ -87,8 +88,13 @@ export function CreatePlanProposalForm({ plan }: CreatePlanProposalFormProps) {
         queryKey: ["activity-selection", "group", plan.groupId],
       });
     },
-    onError: () => {
-      setError("We couldn't submit that proposal. Please try again.");
+    onError: (error) => {
+      setError(
+        getApiErrorMessage(
+          error,
+          "We couldn't submit that proposal. Please try again.",
+        ),
+      );
     },
   });
 

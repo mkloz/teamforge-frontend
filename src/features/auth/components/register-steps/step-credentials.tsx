@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
@@ -13,6 +14,9 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
+import { FormLevelError } from "../login-form/form-level-error";
+import { useGoogleAuth } from "../../hooks/use-google-auth";
+import { buildAuthRouteNavigation } from "../../lib/auth-return";
 import type { RegisterValues } from "../../schemas/auth-schemas";
 
 const STRENGTH_LEVELS = [
@@ -36,12 +40,26 @@ function getPasswordStrength(password: string): {
 }
 
 interface StepCredentialsProps {
+  authReturnTo?: string | null;
   onNext: () => void;
+  onGoogleSuccess?: () => void | Promise<void>;
 }
 
-export function StepCredentials({ onNext }: StepCredentialsProps) {
+export function StepCredentials({
+  authReturnTo,
+  onNext,
+  onGoogleSuccess,
+}: StepCredentialsProps) {
   const { control } = useFormContext<RegisterValues>();
   const [showPassword, setShowPassword] = useState(false);
+  const {
+    loading: googleLoading,
+    rootError: googleError,
+    startGoogleAuth,
+  } = useGoogleAuth({
+    intent: "register",
+    onSuccess: onGoogleSuccess,
+  });
 
   const passwordValue = useWatch({
     control,
@@ -163,6 +181,15 @@ export function StepCredentials({ onNext }: StepCredentialsProps) {
         <ArrowRightAnimated />
       </Button>
 
+      <div className="flex justify-end">
+        <Link
+          {...buildAuthRouteNavigation("/auth/login", authReturnTo)}
+          className="font-sans text-xs font-medium text-forge-teal hover:underline transition-colors"
+        >
+          Already have an account?
+        </Link>
+      </div>
+
       <div className="flex items-center gap-3">
         <div className="flex-1 h-px bg-border" />
         <span className="font-sans text-xs text-slate-muted font-medium">
@@ -171,10 +198,19 @@ export function StepCredentials({ onNext }: StepCredentialsProps) {
         <div className="flex-1 h-px bg-border" />
       </div>
 
-      <Button type="button" variant="outline" size="lg" className="w-full">
+      <Button
+        type="button"
+        variant="outline"
+        size="lg"
+        className="w-full"
+        onClick={startGoogleAuth}
+        disabled={googleLoading}
+      >
         <GoogleIcon />
-        Continue with Google
+        {googleLoading ? "Connecting to Google..." : "Continue with Google"}
       </Button>
+
+      {googleError ? <FormLevelError message={googleError} /> : null}
     </div>
   );
 }

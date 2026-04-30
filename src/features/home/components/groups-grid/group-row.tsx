@@ -1,4 +1,5 @@
 import type { GroupApi } from "@/shared/schemas";
+import { buildActivityGroupHubNavigation } from "@/shared/lib/activity-route";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
@@ -60,7 +61,7 @@ export function GroupRow({ group, index }: GroupRowProps) {
       role="listitem"
     >
       <Link
-        to="/activity"
+        {...buildActivityGroupHubNavigation(group.id)}
         aria-label={`${group.name}. Last active ${lastActivity}.`}
         className={cn(
           "group flex items-center gap-3 rounded-2xl border px-3 py-2.5",

@@ -7,6 +7,7 @@ export function useHomeData() {
   const plansQuery = useQuery(HomeQueries.plans());
   const groupsQuery = useQuery(HomeQueries.groups());
   const invitationsQuery = useQuery(HomeQueries.invitations());
+  const sentInvitationsQuery = useQuery(HomeQueries.sentInvitations());
   const recommendationsQuery = useQuery(HomeQueries.recommendations());
 
   return {
@@ -14,24 +15,28 @@ export function useHomeData() {
     plans: plansQuery.data ?? [],
     groups: groupsQuery.data ?? [],
     invitations: invitationsQuery.data ?? [],
+    sentInvitations: sentInvitationsQuery.data ?? [],
     recommendations: recommendationsQuery.data ?? [],
     isLoading:
       statsQuery.isLoading ||
       plansQuery.isLoading ||
       groupsQuery.isLoading ||
       invitationsQuery.isLoading ||
+      sentInvitationsQuery.isLoading ||
       recommendationsQuery.isLoading,
     isError:
       statsQuery.isError ||
       plansQuery.isError ||
       groupsQuery.isError ||
       invitationsQuery.isError ||
+      sentInvitationsQuery.isError ||
       recommendationsQuery.isError,
     refetchAll: () => {
       statsQuery.refetch();
       plansQuery.refetch();
       groupsQuery.refetch();
       invitationsQuery.refetch();
+      sentInvitationsQuery.refetch();
       recommendationsQuery.refetch();
     },
   };

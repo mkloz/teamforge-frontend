@@ -1,32 +1,9 @@
 import { cn } from "@/shared/lib/utils";
+import { appBottomNavigation } from "@/shared/lib/app-navigation";
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import type { LucideIcon } from "lucide-react";
-import { Compass, Flame, Home, MessageSquare, User } from "lucide-react";
 import { useActiveRoute } from "../hooks/use-active-route";
-
-interface NavItem {
-  id: string;
-  to?: string;
-  icon: LucideIcon;
-  label: string;
-  badge?: number;
-  matchPrefix?: boolean;
-}
-
-const TABS: NavItem[] = [
-  { id: "home", to: "/home", icon: Home, label: "Home" },
-  { id: "explore", to: "/explore", icon: Compass, label: "Explore" },
-  { id: "forge", to: "/forge", icon: Flame, label: "Forge" },
-  {
-    id: "activity",
-    to: "/activity",
-    icon: MessageSquare,
-    label: "Activity",
-    matchPrefix: true,
-  },
-  { id: "profile", to: "/profile", icon: User, label: "Profile" },
-];
+import type { AppNavigationItem } from "@/shared/lib/app-navigation";
 
 function ActiveSlidingWaves({
   label,
@@ -90,19 +67,19 @@ function ActiveSlidingWaves({
 }
 
 interface TabButtonProps {
-  item: NavItem;
+  item: AppNavigationItem;
 }
 
 function TabButton({ item }: TabButtonProps) {
   const { isActive, startsWith } = useActiveRoute();
+  const ItemIcon = item.icon;
 
   const isForge = item.id === "forge";
 
-  const active = item.to
-    ? item.matchPrefix
-      ? startsWith(item.to)
-      : isActive(item.to)
-    : false;
+  const active =
+    item.matchMode === "prefix"
+      ? startsWith(item.navigation.to)
+      : isActive(item.navigation.to);
 
   const activeColorText = isForge
     ? "text-accent stroke-[2.5]"
@@ -132,7 +109,7 @@ function TabButton({ item }: TabButtonProps) {
               : "w-9 h-9 rounded-full bg-transparent shadow-none",
           )}
         >
-          <item.icon
+          <ItemIcon
             size={active ? 20 : 18}
             aria-hidden="true"
             className={cn(
@@ -174,12 +151,9 @@ function TabButton({ item }: TabButtonProps) {
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset rounded-2xl",
   );
 
-  // Fallback missing `to` gracefully
-  if (!item.to) return null;
-
   return (
     <Link
-      to={item.to}
+      {...item.navigation}
       aria-current={active ? "page" : undefined}
       aria-label={item.label}
       className={buttonClasses}
@@ -206,7 +180,7 @@ export function AppBottomNav({ className }: AppBottomNavProps) {
       )}
     >
       <div className="flex w-full items-center justify-around px-2 z-10 h-full">
-        {TABS.map((tab) => (
+        {appBottomNavigation.map((tab) => (
           <TabButton key={tab.id} item={tab} />
         ))}
       </div>

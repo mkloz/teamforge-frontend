@@ -3,7 +3,11 @@ import { memo } from "react";
 import { UnifiedTypingIndicator } from "../unified-typing-indicator";
 
 export const TypingPresence = memo(
-  ({ typingUsers }: { typingUsers: { name: string; avatar: string }[] }) => (
+  ({
+    typingUsers,
+  }: {
+    typingUsers: { name: string; avatar: string | null }[];
+  }) => (
     <AnimatePresence>
       {typingUsers.length > 0 && (
         <motion.div
@@ -15,14 +19,23 @@ export const TypingPresence = memo(
           style={{ originX: 0 }}
         >
           <div className="flex -space-x-1.5 shrink-0 self-center">
-            {typingUsers.slice(0, 3).map((user) => (
-              <img
-                key={user.name}
-                src={user.avatar}
-                alt={user.name}
-                className="w-5 h-5 rounded-full ring-2 ring-canvas object-cover shadow-sm bg-muted"
-              />
-            ))}
+            {typingUsers.slice(0, 3).map((user) =>
+              user.avatar ? (
+                <img
+                  key={user.name}
+                  src={user.avatar}
+                  alt={user.name}
+                  className="w-5 h-5 rounded-full ring-2 ring-canvas object-cover shadow-sm bg-muted"
+                />
+              ) : (
+                <div
+                  key={user.name}
+                  className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[9px] font-bold text-muted-foreground ring-2 ring-canvas shadow-sm"
+                >
+                  {user.name.slice(0, 1).toUpperCase()}
+                </div>
+              ),
+            )}
           </div>
           <span className="text-micro font-bold tracking-tight text-slate-muted/80 truncate">
             {typingUsers.length === 1

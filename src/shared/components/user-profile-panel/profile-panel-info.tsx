@@ -1,5 +1,6 @@
 import { OceanDiagram } from "@/shared/components/psychometrics/ocean-chart";
 import { Button } from "@/shared/components/ui/button";
+import { buildProfileNavigation } from "@/shared/lib/app-route";
 import { cn } from "@/shared/lib/utils";
 import type { OnlineStatus } from "@/shared/schemas/enums";
 import type { OceanScores } from "@/shared/types/psychometrics";
@@ -108,7 +109,7 @@ export function ProfilePanelInfo({
           )}
 
           <Link
-            to="/profile"
+            {...buildProfileNavigation()}
             className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-full"
           >
             <Button

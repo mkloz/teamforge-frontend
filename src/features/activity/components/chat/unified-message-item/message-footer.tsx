@@ -14,6 +14,7 @@ interface MessageFooterProps {
   status: UnifiedMessage["status"];
   isReadByOthers: boolean;
   isEdited?: boolean;
+  onToggleReaction?: (emoji: string) => void;
 }
 
 export const MessageFooter = memo(
@@ -26,6 +27,7 @@ export const MessageFooter = memo(
     status,
     isReadByOthers,
     isEdited,
+    onToggleReaction,
   }: MessageFooterProps) => {
     // If we show as part of media gallery (only image content), we don't render footer here
     const hasOnlyImageMedia =
@@ -48,7 +50,11 @@ export const MessageFooter = memo(
             "absolute bottom-1.75 right-2",
         )}
       >
-        <MessageReactions reactions={reactionGroups} isOwn={isOwn} />
+        <MessageReactions
+          reactions={reactionGroups}
+          isOwn={isOwn}
+          onToggleReaction={onToggleReaction}
+        />
 
         <div className="flex items-center gap-1 opacity-70 shrink-0">
           {isEdited && (

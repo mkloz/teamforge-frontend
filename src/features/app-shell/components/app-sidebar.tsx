@@ -2,35 +2,18 @@ import { TeamForgeLogo } from "@/assets/logo";
 import { NotificationsBellTrigger } from "@/features/notifications/components/notifications-bell-trigger";
 import { Button } from "@/shared/components/ui/button";
 import {
+  appSidebarNavigation,
+  getAppNavigationItem,
+} from "@/shared/lib/app-navigation";
+import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
-import {
-  Compass,
-  Home,
-  MessageSquare,
-  Settings,
-  Flame,
-  User,
-} from "lucide-react";
 import { useActiveRoute } from "../hooks/use-active-route";
 import { NavItem } from "./nav-item";
-import { useForgeStore } from "../../forge/store/forge-store";
-
-const NAV_ITEMS = [
-  { to: "/home", icon: Home, label: "Home" },
-  { to: "/explore", icon: Compass, label: "Explore" },
-  {
-    to: "/activity",
-    icon: MessageSquare,
-    label: "Activity",
-    matchPrefix: true,
-  },
-  { to: "/profile", icon: User, label: "Profile" },
-] as const;
 
 interface AppSidebarProps {
   className?: string;
@@ -42,15 +25,10 @@ export function AppSidebar({
   onNotificationsOpen,
 }: AppSidebarProps) {
   const { isActive } = useActiveRoute();
+  const forgeItem = getAppNavigationItem("forge");
+  const settingsItem = getAppNavigationItem("settings");
+  const ForgeIcon = forgeItem.icon;
   const isForgeActive = isActive("/forge");
-  const { openWizard } = useForgeStore();
-
-  const handleForgeClick = (e: React.MouseEvent) => {
-    if (isForgeActive) {
-      e.preventDefault();
-      openWizard();
-    }
-  };
 
   return (
     <aside
@@ -82,15 +60,8 @@ export function AppSidebar({
         className="flex flex-col items-center gap-1 px-1.5 pt-3 pb-2 flex-1"
         aria-label="App navigation"
       >
-        {NAV_ITEMS.map((item) => (
-          <NavItem
-            key={item.to}
-            to={item.to}
-            icon={item.icon}
-            label={item.label}
-            badge={"badge" in item ? (item.badge as number) : undefined}
-            matchPrefix={"matchPrefix" in item ? item.matchPrefix : false}
-          />
+        {appSidebarNavigation.map((item) => (
+          <NavItem key={item.id} item={item} />
         ))}
       </nav>
 
@@ -103,7 +74,7 @@ export function AppSidebar({
           onClick={onNotificationsOpen ?? (() => undefined)}
         />
 
-        <NavItem to="/settings" icon={Settings} label="Settings" />
+        <NavItem item={settingsItem} />
 
         {/* Forge button — icon only */}
         <Tooltip>
@@ -119,11 +90,7 @@ export function AppSidebar({
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
-              <Link
-                to="/forge"
-                onClick={handleForgeClick}
-                aria-label="Forge my group"
-              >
+              <Link {...forgeItem.navigation} aria-label="Forge my group">
                 {/* Active indicator */}
                 {isForgeActive && (
                   <span
@@ -132,7 +99,7 @@ export function AppSidebar({
                   />
                 )}
 
-                <Flame
+                <ForgeIcon
                   className={cn(
                     "size-5 transition-transform duration-300",
                     isForgeActive && "scale-110",

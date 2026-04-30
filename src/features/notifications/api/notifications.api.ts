@@ -29,7 +29,10 @@ export class NotificationsApi {
   }
 
   static async markRead(id: string) {
-    await apiClient.post(`notifications/${id}/read`);
+    const response = await apiClient
+      .post(`notifications/${id}/read`)
+      .json<unknown>();
+    return notificationSchema.parse(response);
   }
 
   static async markAllRead() {

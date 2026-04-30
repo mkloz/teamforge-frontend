@@ -1,7 +1,7 @@
 import { animate, motion, useAnimation } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TeamForgeLogo } from "../../../../assets/logo";
-import { OCEAN_LABELS } from "../../data/type-descriptions";
+import { OCEAN_DIMENSION_LABELS } from "../../data/personality-metadata";
 import {
   toDisplayPercent,
   type OceanVectorWithMeta,
@@ -122,7 +122,7 @@ export function CalculatingScreen({ vector, onDone }: CalculatingScreenProps) {
 
       <div className="flex flex-col gap-6 w-full max-w-sm">
         {DIMS.map((dim, i) => {
-          const labels = OCEAN_LABELS[dim];
+          const labels = OCEAN_DIMENSION_LABELS[dim];
           const targetValue = barWidths[i];
 
           return (

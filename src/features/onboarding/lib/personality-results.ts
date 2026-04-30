@@ -1,11 +1,11 @@
 import type { DimensionScore, OceanScores } from "@/shared/types/psychometrics";
+import type { PersonalityEvaluation } from "./personality-evaluation";
 import type { OceanVectorWithMeta } from "../utils/score-calculator";
-import type { PersonalityResult } from "../utils/type-translation";
 
 const SOFT_BOUNDARY_THRESHOLD = 0.167;
 
 export function getDimensionScoresFromVector(
-  result: PersonalityResult,
+  result: PersonalityEvaluation,
   vector: OceanVectorWithMeta,
 ): DimensionScore[] {
   return [

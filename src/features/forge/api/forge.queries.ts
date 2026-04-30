@@ -35,6 +35,10 @@ export interface ForgeExecutionResult {
   groupId: string | null;
   chatId: string | null;
   planId: string | null;
+  requestIds: {
+    createActivity: string | null;
+    forgeActivity: string | null;
+  };
 }
 
 export interface AutoForgeExecutionInput {
@@ -164,6 +168,7 @@ function selectInterestIds(user: User, selectedActivity: string | null) {
 function buildCreateActivityInput(
   user: User,
   input: AutoForgeExecutionInput,
+  forgeMode: "AUTO" | "MANUAL",
 ): CreateActivityInput {
   const title = input.selectedActivity?.trim() || input.planName.trim();
 
@@ -175,7 +180,7 @@ function buildCreateActivityInput(
     locationLng: null,
     visibility: input.visibility,
     access: resolveActivityAccess(input.visibility),
-    forgeMode: "AUTO",
+    forgeMode,
     interestIds: selectInterestIds(user, input.selectedActivity),
   };
 }
@@ -226,10 +231,12 @@ function mapGroupMemberToParticipant(
   };
 }
 
-function mapGroupToParticipants(group: GroupApi): ForgeParticipant[] {
-  return group.members.map((member, index) =>
-    mapGroupMemberToParticipant(group.id, member, index),
-  );
+function mapGroupToParticipants(group: GroupApi, currentUserId: string) {
+  return group.members
+    .filter((member) => member.userId !== currentUserId)
+    .map((member, index) =>
+      mapGroupMemberToParticipant(group.id, member, index),
+    );
 }
 
 async function getCurrentUser() {
@@ -253,22 +260,15 @@ export class ForgeQueries {
     return normalizeFixedGroupSize(value);
   }
 
-  static async executeManualForge(): Promise<ForgeExecutionResult> {
-    return {
-      forgeResult: "FAILED",
-      participants: [],
-      activityId: null,
-      groupId: null,
-      chatId: null,
-      planId: null,
-    };
-  }
-
-  static async executeAutoForge(
+  static async executeManualForge(
     input: AutoForgeExecutionInput,
   ): Promise<ForgeExecutionResult> {
     const currentUser = await getCurrentUser();
-    const createActivityInput = buildCreateActivityInput(currentUser, input);
+    const createActivityInput = buildCreateActivityInput(
+      currentUser,
+      input,
+      "MANUAL",
+    );
 
     if (createActivityInput.interestIds.length === 0) {
       return {
@@ -278,23 +278,77 @@ export class ForgeQueries {
         groupId: null,
         chatId: null,
         planId: null,
+        requestIds: {
+          createActivity: null,
+          forgeActivity: null,
+        },
       };
     }
 
-    const activity = await ForgeApi.createActivity(createActivityInput);
+    const activityResult = await ForgeApi.createActivity(createActivityInput);
     const forgeResult = await ForgeApi.forgeActivity(
-      activity.id,
+      activityResult.data.id,
       buildForgeActivityInput(input),
     );
-    const group = await ForgeApi.getGroup(forgeResult.group.id);
+    const group = await ForgeApi.getGroup(forgeResult.data.group.id);
 
     return {
       forgeResult: "SUCCESS",
-      participants: mapGroupToParticipants(group),
-      activityId: forgeResult.activityId,
+      participants: mapGroupToParticipants(group, currentUser.id),
+      activityId: forgeResult.data.activityId,
       groupId: group.id,
-      chatId: forgeResult.chat.id,
-      planId: forgeResult.plan.id,
+      chatId: forgeResult.data.chat.id,
+      planId: forgeResult.data.plan.id,
+      requestIds: {
+        createActivity: activityResult.requestId,
+        forgeActivity: forgeResult.requestId,
+      },
+    };
+  }
+
+  static async executeAutoForge(
+    input: AutoForgeExecutionInput,
+  ): Promise<ForgeExecutionResult> {
+    const currentUser = await getCurrentUser();
+    const createActivityInput = buildCreateActivityInput(
+      currentUser,
+      input,
+      "AUTO",
+    );
+
+    if (createActivityInput.interestIds.length === 0) {
+      return {
+        forgeResult: "FAILED",
+        participants: [],
+        activityId: null,
+        groupId: null,
+        chatId: null,
+        planId: null,
+        requestIds: {
+          createActivity: null,
+          forgeActivity: null,
+        },
+      };
+    }
+
+    const activityResult = await ForgeApi.createActivity(createActivityInput);
+    const forgeResult = await ForgeApi.forgeActivity(
+      activityResult.data.id,
+      buildForgeActivityInput(input),
+    );
+    const group = await ForgeApi.getGroup(forgeResult.data.group.id);
+
+    return {
+      forgeResult: "SUCCESS",
+      participants: mapGroupToParticipants(group, currentUser.id),
+      activityId: forgeResult.data.activityId,
+      groupId: group.id,
+      chatId: forgeResult.data.chat.id,
+      planId: forgeResult.data.plan.id,
+      requestIds: {
+        createActivity: activityResult.requestId,
+        forgeActivity: forgeResult.requestId,
+      },
     };
   }
 

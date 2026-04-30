@@ -5,12 +5,16 @@ import type {
   MemberRole,
 } from "@/features/activity/lib/activity-contract";
 import { buildMemberProfileChat } from "@/features/activity/lib/activity-projections";
+import { useActivityGroupActions } from "@/features/activity/hooks/use-activity-group-actions";
+import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
+import { ActivityQueries } from "@/features/activity/api/activity.queries";
 import { UserProfilePanel } from "@/shared/components/user-profile-panel/user-profile-panel";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { Pencil, X } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { ActionsSection } from "./actions-section";
 import { GroupIdentitySection } from "./group-identity-section";
 import { MembersSection } from "./members-section";
@@ -20,6 +24,8 @@ import { PinnedMessagesSection } from "./pinned-messages-section";
 
 interface GroupPanelContentProps {
   group: Group;
+  focusedPlanId?: string | null;
+  focusedProposalId?: string | null;
   onClose: () => void;
   isMobile?: boolean;
 }
@@ -42,30 +48,89 @@ const itemVariants = {
 
 export function GroupPanelContent({
   group,
+  focusedPlanId = null,
+  focusedProposalId = null,
   onClose,
   isMobile = false,
 }: GroupPanelContentProps) {
   const [selectedMember, setSelectedMember] = useState<GroupMember | null>(
     null,
   );
+  const {
+    currentUserId,
+    disbandGroup,
+    inviteMember,
+    isDisbanding,
+    isLeaving,
+    invitingMemberId,
+    leaveGroup,
+    removeMember,
+    removingMemberId,
+  } = useActivityGroupActions(group.id);
+  const { unpinMessage } = useActivityMessageActions();
+  const friendshipsQuery = useQuery(ActivityQueries.friendships());
 
-  // Memoize current user's role (derive from group data)
-  // In production, this would likely come from an Auth Context
   const currentUserRole: MemberRole = useMemo(() => {
-    const isAdmin = group.members?.some((m: GroupMember) => m.role === "ADMIN");
-    return isAdmin ? "ADMIN" : "MEMBER";
-  }, [group.members]);
+    const currentMember = group.members?.find(
+      (member: GroupMember) =>
+        member.userId === currentUserId && member.leftAt === null,
+    );
+
+    return currentMember?.role ?? "MEMBER";
+  }, [currentUserId, group.members]);
+  const members = useMemo(() => group.members ?? [], [group.members]);
 
   // Performance: memoize member count to avoid recalculation if not needed
-  const memberCount = useMemo(
-    () => group.members?.length || 0,
-    [group.members?.length],
-  );
+  const memberCount = members.length;
 
   // Build a backend-shaped chat projection for the shared profile panel.
   const memberChat: DirectChat | null = useMemo(() => {
     return buildMemberProfileChat(selectedMember, group);
   }, [selectedMember, group]);
+
+  const inviteCandidates = useMemo(() => {
+    const memberIds = new Set(members.map((member) => member.userId));
+
+    return (friendshipsQuery.data ?? [])
+      .filter((friendship) => friendship.status === "ACCEPTED")
+      .map((friendship) => friendship.counterpart)
+      .filter((counterpart) => !memberIds.has(counterpart.id))
+      .map((counterpart) => ({
+        id: counterpart.id,
+        name: counterpart.name,
+        avatar: counterpart.avatar,
+        city: counterpart.city ?? null,
+        personalityType: counterpart.personalityType,
+        onlineStatus: counterpart.onlineStatus,
+        trustScore:
+          counterpart.trustScore > 0 && counterpart.trustScore <= 1
+            ? Math.round(counterpart.trustScore * 100)
+            : Math.round(counterpart.trustScore),
+      }));
+  }, [friendshipsQuery.data, members]);
+
+  const jumpToPinnedMessage = (messageId: string) => {
+    const scroll = () => {
+      const element = document.getElementById(`msg-${messageId}`);
+      if (!element) {
+        return;
+      }
+
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
+      element.classList.add("ring-2", "ring-forge-teal/40", "rounded-xl");
+      window.setTimeout(() => {
+        element.classList.remove("ring-2", "ring-forge-teal/40", "rounded-xl");
+      }, 1400);
+    };
+
+    if (isMobile) {
+      onClose();
+      window.setTimeout(scroll, 220);
+      return;
+    }
+
+    scroll();
+  };
 
   if (selectedMember && memberChat) {
     return (
@@ -177,7 +242,11 @@ export function GroupPanelContent({
           {/* Current Active Plan — closely related to identity, tighter gap */}
           {group.plan && (
             <motion.div variants={itemVariants} className="mt-5">
-              <PlanSection plan={group.plan} />
+              <PlanSection
+                plan={group.plan}
+                isFocused={focusedPlanId === group.plan.id}
+                focusedProposalId={focusedProposalId}
+              />
             </motion.div>
           )}
 
@@ -186,6 +255,8 @@ export function GroupPanelContent({
             group.chat.pinnedMessages.length > 0 && (
               <motion.div variants={itemVariants} className="mt-6">
                 <PinnedMessagesSection
+                  onJumpToMessage={jumpToPinnedMessage}
+                  onUnpinMessage={unpinMessage}
                   pinnedMessages={group.chat.pinnedMessages}
                 />
               </motion.div>
@@ -195,12 +266,19 @@ export function GroupPanelContent({
           <div className="border-t border-border/50 my-6" />
 
           {/* Members List Section */}
-          {group.members && (
+          {members.length > 0 && (
             <motion.div variants={itemVariants}>
               <MembersSection
-                members={group.members}
+                members={members}
                 maxMembers={group.maxMembers}
+                currentUserId={currentUserId}
+                currentUserRole={currentUserRole}
+                inviteCandidates={inviteCandidates}
+                invitingMemberId={invitingMemberId}
+                onInviteMember={inviteMember}
+                onRemoveMember={removeMember}
                 onShowProfile={(m) => setSelectedMember(m)}
+                removingMemberId={removingMemberId}
               />
             </motion.div>
           )}
@@ -215,7 +293,14 @@ export function GroupPanelContent({
 
           {/* Critical Group Actions — maximum separation, danger zone */}
           <motion.div variants={itemVariants} className="mt-8">
-            <ActionsSection groupId={group.id} groupStatus={group.status} />
+            <ActionsSection
+              currentUserRole={currentUserRole}
+              groupStatus={group.status}
+              isDisbanding={isDisbanding}
+              isLeaving={isLeaving}
+              onDisbandGroup={disbandGroup}
+              onLeaveGroup={leaveGroup}
+            />
           </motion.div>
         </motion.div>
       </div>

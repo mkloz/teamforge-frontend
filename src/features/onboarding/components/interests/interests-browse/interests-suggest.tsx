@@ -1,14 +1,14 @@
 import { Button } from "@/shared/components/ui/button";
+import type { Interest } from "@/shared/schemas";
+import type { PersonalityType } from "@/shared/schemas/enums";
 import { motion } from "framer-motion";
 import { ArrowRight, Fingerprint, Zap } from "lucide-react";
 import { fadeUpItem, staggerContainer } from "../../../constants/motion";
-import type { LeafTag } from "../../../data/interests-types";
 import { InterestTag } from "./interest-tag";
-import type { PersonalityType } from "@/shared/schemas/enums";
 
 interface InterestsSuggestProps {
   personalityType: PersonalityType;
-  suggestedTags: LeafTag[];
+  suggestedTags: Interest[];
   selectedIds: Set<string>;
   onToggle: (id: string) => void;
   onContinue: () => void;

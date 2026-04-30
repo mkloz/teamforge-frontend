@@ -1,0 +1,75 @@
+import type { LucideIcon } from "lucide-react";
+import {
+  Activity,
+  Beer,
+  BookOpen,
+  Brain,
+  Coffee,
+  Dog,
+  Dumbbell,
+  Gamepad2,
+  Hammer,
+  Headphones,
+  Heart,
+  Laptop,
+  Music,
+  Palette,
+  Pizza,
+  Plane,
+  Popcorn,
+  Scale,
+  Scissors,
+  Sofa,
+  Stethoscope,
+  Tent,
+  TrendingUp,
+  Trophy,
+  Users,
+} from "lucide-react";
+
+export const DEFAULT_CATEGORY_COLOR = "bg-slate-muted/30";
+
+export const categoryColorById: Record<string, string> = {
+  careers: "bg-blue-500",
+  lifestyle: "bg-emerald-500",
+  entertainment: "bg-violet-500",
+  sports_outdoors: "bg-orange-500",
+  hobbies_creating: "bg-pink-500",
+};
+
+export const categoryShortLabelById: Record<string, string> = {
+  careers: "Career",
+  lifestyle: "Lifestyle",
+  entertainment: "Entertainment",
+  sports_outdoors: "Sports & Outdoors",
+  hobbies_creating: "Hobbies",
+};
+
+export const subcategoryIconById: Record<string, LucideIcon> = {
+  healthcare: Stethoscope,
+  education: BookOpen,
+  trades: Hammer,
+  business: TrendingUp,
+  public_service: Scale,
+  tech_science: Laptop,
+  service_hospitality: Coffee,
+  media_arts: Palette,
+  pets: Dog,
+  food_drink: Pizza,
+  home_decor: Sofa,
+  travel: Plane,
+  life_values: Users,
+  music_tv: Headphones,
+  gaming: Gamepad2,
+  social: Beer,
+  fitness_sport: Dumbbell,
+  outdoors: Tent,
+  wellness: Heart,
+  visual_arts: Scissors,
+  music_performance: Music,
+  tech_science_play: Brain,
+  general: Activity,
+  movies_tv: Popcorn,
+  books_learning: BookOpen,
+  team_sports: Trophy,
+};

@@ -1,23 +1,50 @@
-import { UserPlus } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
+import type {
+  ActivityParticipant,
+  MemberRole,
+} from "@/features/activity/lib/activity-contract";
 import type { GroupMember } from "@/features/activity/lib/activity-contract";
 import { MemberCard } from "./member-card";
 import { useMemo } from "react";
+import { InviteMembersDialog } from "./invite-members-dialog";
 
 interface MembersSectionProps {
+  inviteCandidates?: ActivityParticipant[];
+  invitingMemberId?: string | null;
   members: GroupMember[];
   maxMembers: number;
+  currentUserId: string | null;
+  currentUserRole: MemberRole;
+  onInviteMember?: (memberId: string) => Promise<void> | void;
+  removingMemberId?: string | null;
+  onRemoveMember?: (memberId: string) => Promise<void> | void;
   onShowProfile?: (member: GroupMember) => void;
 }
 
 export function MembersSection({
+  inviteCandidates = [],
+  invitingMemberId = null,
   members,
   maxMembers,
+  currentUserId,
+  currentUserRole,
+  onInviteMember,
+  removingMemberId = null,
+  onRemoveMember,
   onShowProfile,
 }: MembersSectionProps) {
   const canInvite = useMemo(
-    () => members.length < maxMembers,
-    [members.length, maxMembers],
+    () =>
+      members.length < maxMembers &&
+      inviteCandidates.length > 0 &&
+      currentUserRole !== "MEMBER" &&
+      onInviteMember !== undefined,
+    [
+      currentUserRole,
+      inviteCandidates.length,
+      maxMembers,
+      members.length,
+      onInviteMember,
+    ],
   );
 
   const memberCountString = useMemo(
@@ -37,24 +64,28 @@ export function MembersSection({
             {memberCountString}
           </span>
         </h3>
-        {canInvite && (
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 text-[11px] font-bold uppercase tracking-wider border-primary/20 hover:border-primary/40 hover:bg-primary/5 text-primary rounded-lg shadow-xs transition-all duration-300"
-          >
-            <UserPlus size={13} className="mr-1" />
-            Invite
-          </Button>
-        )}
+        {canInvite ? (
+          <InviteMembersDialog
+            candidates={inviteCandidates}
+            invitingMemberId={invitingMemberId}
+            onInvite={(memberId) => onInviteMember?.(memberId)}
+          />
+        ) : null}
       </div>
 
       <div className="space-y-3">
         {members.map((member) => (
           <MemberCard
             key={member.userId}
+            canRemove={
+              currentUserRole === "ADMIN" &&
+              currentUserId !== null &&
+              member.userId !== currentUserId
+            }
             member={member}
+            onRemove={onRemoveMember}
             onShowProfile={onShowProfile}
+            removing={removingMemberId === member.userId}
           />
         ))}
       </div>

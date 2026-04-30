@@ -68,26 +68,31 @@ function getTypeConfig(type: Notification["type"]) {
 
 interface NotificationItemProps {
   item: Notification;
-  onRead: (id: string) => void;
+  onSelect: (item: Notification) => void;
+  isPending?: boolean;
 }
 
-export function NotificationItem({ item, onRead }: NotificationItemProps) {
+export function NotificationItem({
+  item,
+  onSelect,
+  isPending = false,
+}: NotificationItemProps) {
   const config = getTypeConfig(item.type);
   const Icon = config.icon;
 
   return (
     <Button
       variant="ghost"
-      asChild
-      onClick={() => onRead(item.id)}
+      onClick={() => onSelect(item)}
+      disabled={isPending}
       className={cn(
         "w-full h-auto p-0 rounded-none border-none hover:bg-muted/50 focus-visible:ring-inset",
         !item.isRead && "bg-secondary/20",
       )}
     >
-      <div
+      <span
         className={cn(
-          "w-full flex items-start gap-4 px-4 py-3.5 border-l-4 transition-all duration-200 cursor-pointer",
+          "w-full flex items-start gap-4 px-4 py-3.5 border-l-4 transition-all duration-200 cursor-pointer text-left",
           config.borderClass,
         )}
         aria-label={`${item.title}: ${item.message}`}
@@ -115,12 +120,17 @@ export function NotificationItem({ item, onRead }: NotificationItemProps) {
             <p className="text-[10px] font-bold text-slate-muted/50 uppercase tracking-widest">
               {relativeTime(item.createdAt)}
             </p>
+            {isPending && (
+              <span className="text-[10px] font-bold uppercase tracking-widest text-forge-teal">
+                Opening...
+              </span>
+            )}
             {!item.isRead && (
               <span className="h-1.5 w-1.5 rounded-full bg-forge-teal shadow-[0_0_8px_rgba(13,148,136,0.3)]" />
             )}
           </div>
         </div>
-      </div>
+      </span>
     </Button>
   );
 }

@@ -1,4 +1,4 @@
-import { apiClient } from "@/shared/api/api";
+import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
 import {
   activitySchema,
   createActivityInputSchema,
@@ -25,23 +25,23 @@ export class ForgeApi {
   }
 
   static async createActivity(payload: unknown) {
-    const response = await apiClient
-      .post("activities", {
-        json: createActivityInputSchema.parse(payload),
-      })
-      .json<unknown>();
+    const response = await apiClient.post("activities", {
+      json: createActivityInputSchema.parse(payload),
+    });
 
-    return activitySchema.parse(response);
+    return parseJsonWithRequestId(response, (value) =>
+      activitySchema.parse(value),
+    );
   }
 
   static async forgeActivity(activityId: string, payload: unknown) {
-    const response = await apiClient
-      .post(`activities/${activityId}/forge`, {
-        json: forgeActivityInputSchema.parse(payload),
-      })
-      .json<unknown>();
+    const response = await apiClient.post(`activities/${activityId}/forge`, {
+      json: forgeActivityInputSchema.parse(payload),
+    });
 
-    return forgeActivityResultSchema.parse(response);
+    return parseJsonWithRequestId(response, (value) =>
+      forgeActivityResultSchema.parse(value),
+    );
   }
 
   static async getGroup(groupId: string) {

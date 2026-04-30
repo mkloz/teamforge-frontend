@@ -14,9 +14,9 @@ export function Step4Failed({ forgeMode }: Step4FailedProps) {
           "This activity or time slot has fewer people active right now.",
         ]
       : [
-          "Manual group creation is not exposed by the current backend yet.",
-          "This screen can collect manual preferences, but the API only supports AUTO forging today.",
-          "Switch to Algorithmic mode if you want to create a real group right now.",
+          "Your profile may still be missing enough interests for this activity.",
+          "The plan details may need a clearer activity signal for manual coordination.",
+          "The group could not be created with the current inputs.",
         ];
 
   const suggestions =
@@ -27,9 +27,9 @@ export function Step4Failed({ forgeMode }: Step4FailedProps) {
           "Set privacy to Public",
         ]
       : [
-          "Switch to Algorithmic mode",
-          "Keep the plan details and try AUTO forging",
-          "Return later when manual group creation is supported by the API",
+          "Add a few more matching interests to your profile",
+          "Adjust the activity or plan details and try again",
+          "Switch to Algorithmic mode if you want TeamForge to fill the group automatically",
         ];
 
   return (
@@ -49,7 +49,7 @@ export function Step4Failed({ forgeMode }: Step4FailedProps) {
           <p className="text-sm text-slate-muted mt-1.5 leading-relaxed">
             {forgeMode === "AUTO"
               ? "Our algorithm analyzed the current pool but couldn&apos;t find a perfectly compatible match for your settings."
-              : "This frontend flow can capture manual preferences, but the current backend contract does not support creating manual groups yet."}
+              : "We tried to create your manual group, but the request could not be completed with the current inputs."}
           </p>
         </div>
       </div>

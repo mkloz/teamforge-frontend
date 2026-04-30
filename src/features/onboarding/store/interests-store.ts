@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { MBTI_SUGGESTIONS } from "../data/interests-data";
-import type { InterestsScreen } from "../data/interests-types";
+import { MBTI_SUGGESTIONS } from "../data/interest-recommendations";
+import type { InterestsScreen } from "../data/interests-data";
 import type { PersonalityType } from "@/shared/schemas/enums";
 
 // ─── Store state ──────────────────────────────────────────────────────────────
@@ -20,7 +20,6 @@ interface InterestsState extends InterestsSnapshot {
   toggleReject: (id: string) => void;
   setScreen: (screen: InterestsScreen) => void;
   setPersonalityType: (type: PersonalityType | string | null) => void;
-  addIds: (ids: string[], maxInterests: number) => void;
   replaceSelected: (ids: string[], maxInterests: number) => void;
   reset: () => void;
 }
@@ -64,23 +63,6 @@ export const useInterestsStore = create<InterestsState>()((set) => ({
       }
 
       return { rejectedIds: [...current] };
-    }),
-
-  addIds: (ids, maxInterests) =>
-    set((state) => {
-      const current = new Set(state.selectedIds);
-      const rejected = new Set(state.rejectedIds);
-
-      for (const id of ids) {
-        if (current.size >= maxInterests) break;
-        current.add(id);
-        rejected.delete(id);
-      }
-
-      return {
-        selectedIds: [...current],
-        rejectedIds: [...rejected],
-      };
     }),
 
   replaceSelected: (ids, maxInterests) =>

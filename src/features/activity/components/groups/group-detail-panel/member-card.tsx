@@ -1,16 +1,38 @@
-import { Crown, Sparkles } from "lucide-react";
+import { Crown, Sparkles, UserMinus } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/shared/components/ui/alert-dialog";
 import { Badge } from "@/shared/components/ui/badge";
 import type { GroupMember } from "../../../lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
+import { Button } from "@/shared/components/ui/button";
 
 interface MemberCardProps {
+  canRemove?: boolean;
   member: GroupMember;
+  onRemove?: (memberId: string) => Promise<void> | void;
   onShowProfile?: (member: GroupMember) => void;
+  removing?: boolean;
 }
 
-export function MemberCard({ member, onShowProfile }: MemberCardProps) {
+export function MemberCard({
+  canRemove = false,
+  member,
+  onRemove,
+  onShowProfile,
+  removing = false,
+}: MemberCardProps) {
   const isAdmin = member.role === "ADMIN";
   const isHighCompatibility = (member.compatibilityScore || 0) > 90;
+  const onlineStatus = member.user?.onlineStatus;
 
   return (
     <button
@@ -32,6 +54,18 @@ export function MemberCard({ member, onShowProfile }: MemberCardProps) {
             loading="lazy"
           />
         </div>
+        {onlineStatus && (
+          <span
+            className={cn(
+              "absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-canvas shadow-sm",
+              onlineStatus === "ONLINE"
+                ? "bg-forge-teal"
+                : onlineStatus === "AWAY"
+                  ? "bg-spark-amber"
+                  : "bg-slate-muted/40",
+            )}
+          />
+        )}
         {isAdmin && (
           <div
             className="absolute -top-1 -left-1 flex items-center justify-center w-5 h-5 rounded-md bg-amber-500 shadow-md text-white border-2 border-canvas"
@@ -77,7 +111,46 @@ export function MemberCard({ member, onShowProfile }: MemberCardProps) {
       </div>
 
       {/* Subtle interaction indicator */}
-      <div className="w-1.5 h-1.5 rounded-full bg-border opacity-0 group-hover/member:opacity-100 transition-opacity" />
+      {canRemove && onRemove ? (
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              type="button"
+              disabled={removing}
+              onClick={(event) => {
+                event.stopPropagation();
+              }}
+              className="shrink-0 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              aria-label={`Remove ${member.user?.name ?? "member"} from group`}
+            >
+              <UserMinus size={14} />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent onClick={(event) => event.stopPropagation()}>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Remove member?</AlertDialogTitle>
+              <AlertDialogDescription>
+                {member.user?.name ?? "This member"} will lose access to the
+                group chat and planning workspace.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  void onRemove(member.userId);
+                }}
+              >
+                {removing ? "Removing..." : "Remove Member"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      ) : (
+        <div className="w-1.5 h-1.5 rounded-full bg-border opacity-0 group-hover/member:opacity-100 transition-opacity" />
+      )}
     </button>
   );
 }

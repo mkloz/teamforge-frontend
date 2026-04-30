@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 
 import { AuthQueries } from "@/features/auth/api/auth.queries";
 import { appQueryClient } from "@/shared/api/query-client";
-import type { ExploreGroup, GroupApi, User } from "@/shared/schemas";
+import type { ExploreGroup, GroupApi, Invite, User } from "@/shared/schemas";
 
 import { HomeApi } from "./home.api";
 
@@ -17,6 +17,32 @@ export interface UserStats {
 export interface HomeViewer {
   firstName: string;
   mbti: User["personalityType"] | null;
+  nextStep:
+    | {
+        kind: "security";
+        title: string;
+        body: string;
+        label: string;
+      }
+    | {
+        kind: "account";
+        title: string;
+        body: string;
+        label: string;
+      }
+    | {
+        kind: "personality";
+        title: string;
+        body: string;
+        label: string;
+      }
+    | {
+        kind: "interests";
+        title: string;
+        body: string;
+        label: string;
+      }
+    | null;
 }
 
 export type PlannedGroup = GroupApi & {
@@ -25,6 +51,10 @@ export type PlannedGroup = GroupApi & {
 
 export const HOME_GROUPS_QUERY_KEY = ["home", "groups"] as const;
 export const HOME_INVITATIONS_QUERY_KEY = ["home", "invitations"] as const;
+export const HOME_SENT_INVITATIONS_QUERY_KEY = [
+  "home",
+  "sent-invitations",
+] as const;
 export const HOME_RECOMMENDATIONS_QUERY_KEY = [
   "home",
   "recommendations",
@@ -59,6 +89,16 @@ function getProfileCompleteness(user: User) {
   return Math.round((fields.filter(Boolean).length / fields.length) * 100);
 }
 
+function hasCompleteOceanProfile(user: User) {
+  return (
+    user.oceanO !== null &&
+    user.oceanC !== null &&
+    user.oceanE !== null &&
+    user.oceanA !== null &&
+    user.oceanN !== null
+  );
+}
+
 function countUniqueConnections(groups: GroupApi[], currentUserId: string) {
   const connectionIds = new Set<string>();
 
@@ -81,11 +121,62 @@ function isActivePlan(group: PlannedGroup) {
   return group.plan.status !== "COMPLETED" && group.plan.status !== "CANCELLED";
 }
 
+function getInviteVersion(invite: Invite) {
+  return invite.version ?? new Date(invite.updatedAt).getTime();
+}
+
+function mergeInviteLists(current: Invite[] | undefined, incoming: Invite) {
+  const existing = current?.find((item) => item.id === incoming.id);
+  const nextInvite =
+    existing && getInviteVersion(existing) > getInviteVersion(incoming)
+      ? existing
+      : incoming;
+  const withoutExisting =
+    current?.filter((item) => item.id !== incoming.id) ?? [];
+
+  return [nextInvite, ...withoutExisting].sort(
+    (left, right) => getInviteVersion(right) - getInviteVersion(left),
+  );
+}
+
 export class HomeQueries {
   static getViewer(user?: User | null): HomeViewer {
+    const nextStep = user
+      ? !user.emailVerified
+        ? {
+            kind: "security" as const,
+            title: "Secure your account",
+            body: "Check your verification and recovery settings before you start building new groups.",
+            label: "Open security",
+          }
+        : !user.bio || !user.city || user.age === null
+          ? {
+              kind: "account" as const,
+              title: "Finish your public profile",
+              body: "Add the missing basics people rely on when they open your profile.",
+              label: "Complete profile",
+            }
+          : !user.personalityType || !hasCompleteOceanProfile(user)
+            ? {
+                kind: "personality" as const,
+                title: "Complete your personality profile",
+                body: "Your forge results get sharper once your personality data is fully calibrated.",
+                label: "Update personality",
+              }
+            : !(user.interests?.length ?? 0)
+              ? {
+                  kind: "interests" as const,
+                  title: "Add your interests",
+                  body: "Interests help TeamForge connect you with groups that actually fit your energy.",
+                  label: "Choose interests",
+                }
+              : null
+      : null;
+
     return {
       firstName: user?.name.trim().split(/\s+/)[0] ?? "there",
       mbti: user?.personalityType ?? null,
+      nextStep,
     };
   }
 
@@ -115,6 +206,14 @@ export class HomeQueries {
           (left, right) => right.compatibility.total - left.compatibility.total,
         );
       },
+      staleTime: 60_000,
+    });
+  }
+
+  static sentInvitationsSource() {
+    return queryOptions({
+      queryKey: HOME_SENT_INVITATIONS_QUERY_KEY,
+      queryFn: () => HomeApi.getSentInvitations(),
       staleTime: 60_000,
     });
   }
@@ -179,11 +278,44 @@ export class HomeQueries {
     return HomeQueries.recommendationsSource();
   }
 
+  static sentInvitations() {
+    return HomeQueries.sentInvitationsSource();
+  }
+
   static acceptInvitation(inviteId: string) {
-    return HomeApi.acceptInvitation(inviteId);
+    return HomeApi.acceptInvitation(inviteId).then(async (invite) => {
+      this.applyInvitationUpdate(invite);
+
+      await Promise.all([
+        appQueryClient.invalidateQueries({ queryKey: HOME_GROUPS_QUERY_KEY }),
+        appQueryClient.invalidateQueries({ queryKey: ["home", "plans"] }),
+        appQueryClient.invalidateQueries({ queryKey: ["home", "stats"] }),
+        appQueryClient.invalidateQueries({ queryKey: ["explore-groups"] }),
+      ]);
+
+      return invite;
+    });
   }
 
   static declineInvitation(inviteId: string) {
-    return HomeApi.declineInvitation(inviteId);
+    return HomeApi.declineInvitation(inviteId).then((invite) => {
+      this.applyInvitationUpdate(invite);
+      return invite;
+    });
+  }
+
+  static applyInvitationUpdate(invite: Invite) {
+    appQueryClient.setQueryData<Invite[] | undefined>(
+      HOME_INVITATIONS_QUERY_KEY,
+      (current) => {
+        const merged = mergeInviteLists(current, invite);
+        return merged.filter((item) => item.status === "PENDING");
+      },
+    );
+
+    appQueryClient.setQueryData<Invite[] | undefined>(
+      HOME_SENT_INVITATIONS_QUERY_KEY,
+      (current) => mergeInviteLists(current, invite),
+    );
   }
 }

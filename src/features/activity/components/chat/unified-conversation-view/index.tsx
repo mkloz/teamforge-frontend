@@ -1,6 +1,7 @@
 import { useConversationData } from "@/features/activity/hooks/use-conversation-data";
-import { useActivityStore } from "@/features/activity/store/activity.store";
+import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import type {
+  ActivitySendMessageInput,
   DirectChat,
   Group,
   UnifiedMessage,
@@ -19,12 +20,18 @@ type UnifiedConversationViewProps =
 
 interface BaseConversationProps {
   messages: UnifiedMessage[];
+  hasOlderMessages?: boolean;
   isTyping?: boolean;
-  typingUsers?: { name: string; avatar: string }[];
+  isLoadingOlderMessages?: boolean;
+  typingUsers?: { name: string; avatar: string | null }[];
   isActionOpen?: boolean;
+  focusedMessageId?: string | null;
+  sendError?: string | null;
   onBack: () => void;
+  onClearSendError?: () => void;
+  onLoadOlderMessages?: () => Promise<void> | void;
   onToggleAction: () => void;
-  onSendMessage: (content: string) => void;
+  onSendMessage: (input: ActivitySendMessageInput) => Promise<void> | void;
 }
 
 /**
@@ -39,7 +46,13 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     isTyping = false,
     typingUsers = [],
     isActionOpen = false,
+    focusedMessageId,
+    sendError = null,
+    hasOlderMessages = false,
+    isLoadingOlderMessages = false,
     onBack,
+    onClearSendError,
+    onLoadOlderMessages,
     onToggleAction,
     onSendMessage,
   } = props;
@@ -48,8 +61,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  const storePinnedMessages = useActivityStore((state) => state.pinnedMessages);
-  const unpinMessage = useActivityStore((state) => state.unpinMessage);
+  const { unpinMessage } = useActivityMessageActions();
   const isMobile = useIsMobile();
 
   const conversationData = useConversationData(
@@ -64,20 +76,12 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
   const pinnedMessagesFromData =
     kind === "group" ? data.chat?.pinnedMessages : data.pinnedMessages;
 
-  const dataPinnedMessages: UnifiedMessage[] = (
+  const allPinnedMessages: UnifiedMessage[] = (
     pinnedMessagesFromData || []
   ).map((msg: UnifiedMessage) => ({
     ...msg,
-    isOwn: false, // Default for pinned messages from others or system
+    isOwn: false,
   }));
-
-  const allPinnedMessages = [
-    ...dataPinnedMessages,
-    ...storePinnedMessages.filter(
-      (storeMsg) =>
-        !dataPinnedMessages.some((dataMsg) => dataMsg.id === storeMsg.id),
-    ),
-  ];
 
   return (
     <div className="flex flex-col h-full bg-canvas/40 animate-in fade-in duration-300">
@@ -99,7 +103,17 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
         plan={kind === "group" ? (data.plan ?? undefined) : undefined}
         pinnedMessages={allPinnedMessages}
         onViewDetails={onToggleAction}
-        onUnpinPinnedMessage={unpinMessage}
+        onUnpinPinnedMessage={(messageId) => {
+          const targetMessage = allPinnedMessages.find(
+            (message) => message.id === messageId,
+          );
+
+          if (!targetMessage) {
+            return;
+          }
+
+          void unpinMessage(targetMessage);
+        }}
         scrollContainerRef={messagesContainerRef}
       />
 
@@ -108,8 +122,12 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
         <UnifiedMessageList
           messages={messages}
           kind={kind}
+          focusedMessageId={focusedMessageId}
+          hasOlderMessages={hasOlderMessages}
+          isLoadingOlderMessages={isLoadingOlderMessages}
           messagesEndRef={messagesEndRef}
           containerRef={messagesContainerRef}
+          onLoadOlderMessages={onLoadOlderMessages}
           typingUsers={activeTypingUsers}
           onToggleAction={onToggleAction}
         />
@@ -119,7 +137,12 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
       {isCompleted && kind === "group" && data.plan ? (
         <CompletedBanner groupName={data.plan.title} />
       ) : (
-        <UnifiedMessageInput onSend={onSendMessage} />
+        <UnifiedMessageInput
+          chatId={kind === "group" ? (data.chat?.id ?? null) : data.id}
+          errorMessage={sendError}
+          onSend={onSendMessage}
+          onClearError={onClearSendError}
+        />
       )}
     </div>
   );

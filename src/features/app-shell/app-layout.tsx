@@ -3,6 +3,7 @@ import { useUiStore } from "@/shared/store/ui.store";
 import { Outlet } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { NotificationsDrawer } from "../notifications/components/notifications-drawer";
+import { useNotificationsDrawerState } from "../notifications/hooks/use-notifications-drawer-state";
 import { AppBottomNav } from "./components/app-bottom-nav";
 import { AppSidebar } from "./components/app-sidebar";
 
@@ -18,8 +19,8 @@ function PageSkeleton() {
 }
 
 export function AppLayout() {
-  const { notificationsOpen, bottomNavHidden, setNotificationsOpen } =
-    useUiStore();
+  const { bottomNavHidden } = useUiStore();
+  const { open, openDrawer, closeDrawer } = useNotificationsDrawerState();
 
   return (
     <TooltipProvider>
@@ -35,7 +36,7 @@ export function AppLayout() {
         {/* Persistent top bar removed for desktop per user request */}
 
         {/* Desktop sidebar */}
-        <AppSidebar onNotificationsOpen={() => setNotificationsOpen(true)} />
+        <AppSidebar onNotificationsOpen={() => void openDrawer()} />
 
         {/* Main content area */}
         <main
@@ -55,10 +56,7 @@ export function AppLayout() {
         {!bottomNavHidden && <AppBottomNav />}
 
         {/* Overlays */}
-        <NotificationsDrawer
-          open={notificationsOpen}
-          onClose={() => setNotificationsOpen(false)}
-        />
+        <NotificationsDrawer open={open} onClose={() => void closeDrawer()} />
       </div>
     </TooltipProvider>
   );

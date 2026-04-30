@@ -18,7 +18,9 @@ const planProposalData = {
   proposedValue: z.string(),
   status: planProposalStatusSchema,
   createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
   resolvedAt: z.string().datetime().nullable(),
+  version: z.number(),
   planId: z.string(),
   proposerId: z.string(),
   proposer: z.object({
@@ -73,6 +75,7 @@ const planData = {
   cancelledAt: z.string().datetime().nullable(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
+  version: z.number(),
   groupId: z.string(),
 };
 

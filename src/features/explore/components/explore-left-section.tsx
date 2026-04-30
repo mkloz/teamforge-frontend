@@ -2,6 +2,25 @@ import { IdentityCard } from "./identity-card";
 import { ForgeCTA } from "./forge-cta";
 import { useExploreIdentity } from "../hooks/use-explore-identity";
 import { AuthQueries } from "@/features/auth/api/auth.queries";
+import {
+  buildInterestsEditNavigation,
+  buildPersonalityEditNavigation,
+} from "@/shared/lib/onboarding-route";
+import { buildSettingsNavigation } from "@/shared/lib/settings-route";
+import { Link } from "@tanstack/react-router";
+import { Button } from "@/shared/components/ui/button";
+
+function hasCompleteOceanProfile(
+  user: NonNullable<ReturnType<typeof AuthQueries.useCurrentUser>["data"]>,
+) {
+  return (
+    user.oceanO !== null &&
+    user.oceanC !== null &&
+    user.oceanE !== null &&
+    user.oceanA !== null &&
+    user.oceanN !== null
+  );
+}
 
 export function ExploreLeftSection() {
   const identity = useExploreIdentity();
@@ -30,10 +49,53 @@ export function ExploreLeftSection() {
         <div className="rounded-3xl border-2 border-border bg-canvas/40 p-4 text-sm font-medium text-slate-muted">
           Loading your compatibility profile.
         </div>
+      ) : currentUser && !currentUser.emailVerified ? (
+        <div className="rounded-3xl border-2 border-border bg-canvas/40 p-4 text-sm font-medium text-slate-muted">
+          <p className="leading-relaxed">
+            Verify your account to keep your explore signals and recovery
+            settings in good shape.
+          </p>
+          <Button asChild variant="outline" size="sm" className="mt-4">
+            <Link {...buildSettingsNavigation("security")}>Open security</Link>
+          </Button>
+        </div>
+      ) : currentUser &&
+        (!currentUser.personalityType ||
+          !hasCompleteOceanProfile(currentUser)) ? (
+        <div className="rounded-3xl border-2 border-border bg-canvas/40 p-4 text-sm font-medium text-slate-muted">
+          <p className="leading-relaxed">
+            Complete your personality profile to unlock compatibility insights
+            here.
+          </p>
+          <Button asChild variant="outline" size="sm" className="mt-4">
+            <Link
+              {...buildPersonalityEditNavigation({
+                returnTo: "/explore",
+              })}
+            >
+              Update personality
+            </Link>
+          </Button>
+        </div>
+      ) : currentUser && !(currentUser.interests?.length ?? 0) ? (
+        <div className="rounded-3xl border-2 border-border bg-canvas/40 p-4 text-sm font-medium text-slate-muted">
+          <p className="leading-relaxed">
+            Add your interests so explore can rank groups around what you
+            actually want to do.
+          </p>
+          <Button asChild variant="outline" size="sm" className="mt-4">
+            <Link
+              {...buildInterestsEditNavigation({
+                returnTo: "/explore",
+              })}
+            >
+              Add interests
+            </Link>
+          </Button>
+        </div>
       ) : currentUser ? (
         <div className="rounded-3xl border-2 border-border bg-canvas/40 p-4 text-sm font-medium text-slate-muted">
-          Complete your personality profile to unlock compatibility insights
-          here.
+          Your compatibility profile is still syncing.
         </div>
       ) : (
         <div className="rounded-3xl border-2 border-border bg-canvas/40 p-4 text-sm font-medium text-slate-muted">

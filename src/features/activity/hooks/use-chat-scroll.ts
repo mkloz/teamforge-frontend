@@ -53,6 +53,7 @@ export function useChatScroll(
   return {
     showScrollToBottom,
     handleScroll,
+    isNearBottom,
     scrollToBottom,
   };
 }

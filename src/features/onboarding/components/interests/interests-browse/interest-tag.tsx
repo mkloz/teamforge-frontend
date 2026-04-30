@@ -1,11 +1,11 @@
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
+import type { Interest } from "@/shared/schemas";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
-import type { LeafTag } from "../../../data/interests-types";
 
 interface InterestTagProps {
-  tag: LeafTag;
+  tag: Interest;
   selected: boolean;
   onToggle: () => void;
   disabled?: boolean;
@@ -62,7 +62,7 @@ export function InterestTag({
             />
           </div>
 
-          <span className="shrink-0">{tag.label}</span>
+          <span className="shrink-0">{tag.name}</span>
         </div>
       </motion.button>
     </Button>

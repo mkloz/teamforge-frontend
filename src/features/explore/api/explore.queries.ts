@@ -1,11 +1,23 @@
 import { queryOptions } from "@tanstack/react-query";
 
 import { getUserOceanScores } from "@/features/profile/lib/profile-utils";
-import type { ExploreGroup, User } from "@/shared/schemas";
+import type { ApiResponseWithRequestId } from "@/shared/api/api";
+import { appQueryClient } from "@/shared/api/query-client";
+import type {
+  ExploreGroup,
+  ExploreJoinResult,
+  FriendshipApi,
+  User,
+} from "@/shared/schemas";
 import type { OceanScores } from "@/shared/types/psychometrics";
 
 import { ExploreApi } from "./explore.api";
 import type { ExploreFilters } from "../schemas/explore-filters.schema";
+
+export const EXPLORE_FRIEND_REQUESTS_QUERY_KEY = [
+  "explore",
+  "friend-requests",
+] as const;
 
 export interface ExploreIdentity {
   mbti: string;
@@ -21,7 +33,13 @@ function normalizeScore(score: number) {
   return Math.round(score);
 }
 
-function filterExploreGroups(groups: ExploreGroup[], filters: ExploreFilters) {
+function filterExploreGroups(
+  groups: ExploreGroup[],
+  filters: ExploreFilters,
+  searchQuery: string,
+) {
+  const normalizedSearch = searchQuery.trim().toLowerCase();
+
   return groups.filter((group) => {
     const plan = group.plan;
     const groupCategory = plan?.category || "OTHER";
@@ -39,8 +57,15 @@ function filterExploreGroups(groups: ExploreGroup[], filters: ExploreFilters) {
     const sizeMatch =
       group.activeMembersCount >= filters.sizeRange[0] &&
       group.maxMembers <= filters.sizeRange[1];
+    const textMatch =
+      normalizedSearch.length === 0 ||
+      [group.name, group.description, group.activity.title, plan?.title]
+        .filter(Boolean)
+        .some((value) => value?.toLowerCase().includes(normalizedSearch));
 
-    return categoryMatch && locationMatch && accessMatch && sizeMatch;
+    return (
+      categoryMatch && locationMatch && accessMatch && sizeMatch && textMatch
+    );
   });
 }
 
@@ -82,6 +107,37 @@ function getServerCategory(
   return categories.length === 1 ? categories[0] : undefined;
 }
 
+function getFriendshipVersion(friendship: FriendshipApi) {
+  return friendship.version ?? new Date(friendship.updatedAt).getTime();
+}
+
+function mergeFriendships(
+  current: FriendshipApi[] | undefined,
+  incoming: FriendshipApi,
+) {
+  const existing = current?.find(
+    (item) =>
+      item.requesterId === incoming.requesterId &&
+      item.receiverId === incoming.receiverId,
+  );
+  const nextFriendship =
+    existing && getFriendshipVersion(existing) > getFriendshipVersion(incoming)
+      ? existing
+      : incoming;
+  const withoutExisting =
+    current?.filter(
+      (item) =>
+        !(
+          item.requesterId === incoming.requesterId &&
+          item.receiverId === incoming.receiverId
+        ),
+    ) ?? [];
+
+  return [nextFriendship, ...withoutExisting].sort(
+    (left, right) => getFriendshipVersion(right) - getFriendshipVersion(left),
+  );
+}
+
 export class ExploreQueries {
   static getIdentity(user?: User | null): ExploreIdentity | null {
     if (!user) {
@@ -105,10 +161,11 @@ export class ExploreQueries {
     };
   }
 
-  static groups(filters: ExploreFilters) {
+  static groups(filters: ExploreFilters, searchQuery: string) {
     return queryOptions({
       queryKey: [
         "explore-groups",
+        searchQuery,
         filters.selectedCategories,
         filters.sizeRange,
         filters.distance,
@@ -130,8 +187,16 @@ export class ExploreQueries {
           searchParams.set("access", filters.access);
         }
 
+        if (searchQuery.trim()) {
+          searchParams.set("search", searchQuery.trim());
+        }
+
         const groups = await ExploreApi.getGroups(searchParams);
-        const filteredGroups = filterExploreGroups(groups, filters);
+        const filteredGroups = filterExploreGroups(
+          groups,
+          filters,
+          searchQuery,
+        );
 
         return sortExploreGroups(filteredGroups, filters.sortBy);
       },
@@ -140,6 +205,94 @@ export class ExploreQueries {
   }
 
   static joinGroup(groupId: string) {
-    return ExploreApi.joinGroup(groupId);
+    return ExploreApi.joinGroup(groupId).then(async (result) => {
+      this.applyJoinGroupResult(result.data);
+
+      await Promise.all([
+        appQueryClient.invalidateQueries({ queryKey: ["home", "groups"] }),
+        appQueryClient.invalidateQueries({ queryKey: ["home", "plans"] }),
+        appQueryClient.invalidateQueries({ queryKey: ["home", "stats"] }),
+      ]);
+
+      return result;
+    });
+  }
+
+  static friendRequests() {
+    return queryOptions({
+      queryKey: EXPLORE_FRIEND_REQUESTS_QUERY_KEY,
+      queryFn: () => ExploreApi.getIncomingFriendRequests(),
+      staleTime: 30_000,
+    });
+  }
+
+  static async acceptFriendRequest(requesterId: string) {
+    const friendship = await ExploreApi.acceptFriendRequest(requesterId);
+
+    this.applyFriendRequestUpdate(friendship.data);
+
+    void Promise.all([
+      appQueryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      }),
+      appQueryClient.invalidateQueries({
+        queryKey: ["notifications", "unread-count"],
+      }),
+    ]);
+
+    return friendship;
+  }
+
+  static async declineFriendRequest(requesterId: string) {
+    const friendship = await ExploreApi.declineFriendRequest(requesterId);
+
+    this.applyFriendRequestUpdate(friendship.data);
+
+    void Promise.all([
+      appQueryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      }),
+      appQueryClient.invalidateQueries({
+        queryKey: ["notifications", "unread-count"],
+      }),
+    ]);
+
+    return friendship;
+  }
+
+  static applyFriendRequestUpdate(friendship: FriendshipApi) {
+    appQueryClient.setQueryData<FriendshipApi[] | undefined>(
+      EXPLORE_FRIEND_REQUESTS_QUERY_KEY,
+      (current) => {
+        const merged = mergeFriendships(current, friendship);
+        return merged.filter((item) => item.status === "PENDING");
+      },
+    );
+
+    appQueryClient.setQueryData<FriendshipApi[] | undefined>(
+      ["activity", "friendships"],
+      (current) => mergeFriendships(current, friendship),
+    );
+  }
+
+  static applyJoinGroupResult(
+    result: ExploreJoinResult | ApiResponseWithRequestId<ExploreJoinResult>,
+  ) {
+    const nextResult = "data" in result ? result.data : result;
+
+    for (const [queryKey, groups] of appQueryClient.getQueriesData<
+      ExploreGroup[]
+    >({
+      queryKey: ["explore-groups"],
+    })) {
+      if (!groups) {
+        continue;
+      }
+
+      appQueryClient.setQueryData<ExploreGroup[]>(
+        queryKey,
+        groups.filter((group) => group.id !== nextResult.groupId),
+      );
+    }
   }
 }

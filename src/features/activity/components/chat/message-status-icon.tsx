@@ -1,5 +1,5 @@
 import { cn } from "@/shared/lib/utils";
-import { Check, CheckCheck, Clock } from "lucide-react";
+import { Check, CheckCheck, Clock, OctagonAlert } from "lucide-react";
 import { memo } from "react";
 import type { MessageStatus } from "../../lib/activity-contract";
 
@@ -41,6 +41,9 @@ export const MessageStatusIcon = memo(function MessageStatusIcon({
           )}
           strokeWidth={2.5}
         />
+      )}
+      {status === "FAILED" && (
+        <OctagonAlert size={10} className="text-destructive/80" />
       )}
     </div>
   );

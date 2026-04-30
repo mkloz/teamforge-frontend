@@ -1,11 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
+import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import { AuthApi } from "../api/auth.api";
 import { loginSchema, type LoginValues } from "../schemas/auth-schemas";
 
 interface UseLoginFormOptions {
-  onSuccess?: () => void;
+  onSuccess?: () => void | Promise<void>;
   onProgress?: (progress: number) => void;
 }
 
@@ -41,9 +43,18 @@ export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
       setRootError(null);
       setLoading(true);
       try {
-        await AuthApi.loginWithEmail(values);
-        onSuccess?.();
+        const result = await AuthApi.loginWithEmail(values);
+        trackMutationOutcome(trackedMutationNames.authLoginEmail, "success", {
+          requestId: result.requestId,
+        });
+        await onSuccess?.();
       } catch (error) {
+        captureException(trackedMutationNames.authLoginEmail, error, {
+          emailDomain: values.email.split("@")[1] ?? "unknown",
+        });
+        trackMutationOutcome(trackedMutationNames.authLoginEmail, "error", {
+          emailDomain: values.email.split("@")[1] ?? "unknown",
+        });
         setRootError(
           AuthApi.getAuthErrorMessage(
             error,

@@ -14,6 +14,7 @@
     "lint:fix": "eslint --fix ."
   },
   "dependencies": {
+    "@chenglou/pretext": "^0.0.6",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
@@ -48,6 +49,7 @@
     "react-icons": "^5.5.0",
     "react-use": "^17.6.0",
     "recharts": "^3.8.0",
+    "socket.io-client": "^4.8.3",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "tailwind-scrollbar": "^4.0.2",

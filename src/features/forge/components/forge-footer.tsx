@@ -12,7 +12,6 @@ import type { ForgeWizardState } from "../hooks/use-forge-wizard";
 
 interface ForgeFooterProps {
   fw: ForgeWizardState;
-  onCancel: () => void;
 }
 
 // Helper to render the hint text with animation — readable size, no all-caps, sentence-case
@@ -33,7 +32,7 @@ declare global {
   }
 }
 
-export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
+export function ForgeFooter({ fw }: ForgeFooterProps) {
   // Pulse the Continue button once when an activity is first selected
   const [continuePulse, setContinuePulse] = useState(false);
   const prevActivity = useRef<string | null>(null);
@@ -240,7 +239,7 @@ export function ForgeFooter({ fw, onCancel }: ForgeFooterProps) {
                       <PrimaryButton
                         label="Enter the group hub"
                         icon={<Check size={18} />}
-                        onClick={onCancel}
+                        onClick={() => void fw.handleEnterGroupHub()}
                       />
                     )}
                   </motion.div>

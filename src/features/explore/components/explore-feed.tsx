@@ -1,12 +1,18 @@
 "use client";
 
+import { buildForgeLaunchNavigation } from "@/shared/lib/forge-route";
+import { Button } from "@/shared/components/ui/button";
+import { Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { GroupPlanCard } from "./group-plan-card";
 import { useExploreGroups } from "../hooks/use-explore-groups";
+import { useExploreRouteState } from "../hooks/use-explore-route-state";
 import { Loader2, SearchX } from "lucide-react";
 
 export function ExploreFeed() {
   const { data: groups, isLoading, isError } = useExploreGroups();
+  const { isAnythingFiltered, resetFilters, searchQuery } =
+    useExploreRouteState();
 
   if (isLoading) {
     return (
@@ -47,8 +53,20 @@ export function ExploreFeed() {
             No groups found
           </h3>
           <p className="text-sm text-muted-foreground max-w-70">
-            Try adjusting your filters or search terms to find more results.
+            {isAnythingFiltered || searchQuery
+              ? "Try adjusting your filters or search terms to find more results."
+              : "No groups are available right now. You can come back later or start your own."}
           </p>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          {(isAnythingFiltered || searchQuery) && (
+            <Button variant="outline" size="sm" onClick={resetFilters}>
+              Clear filters
+            </Button>
+          )}
+          <Button asChild variant="primary" size="sm">
+            <Link {...buildForgeLaunchNavigation()}>Forge a group</Link>
+          </Button>
         </div>
       </motion.div>
     );

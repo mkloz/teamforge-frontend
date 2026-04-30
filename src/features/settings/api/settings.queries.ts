@@ -1,4 +1,8 @@
-import { SettingsApi, type UpdateSettingsProfileDto } from "./settings.api";
+import {
+  SettingsApi,
+  type UpdateNotificationPreferencesDto,
+  type UpdateSettingsProfileDto,
+} from "./settings.api";
 
 export class SettingsQueries {
   static updateProfile(payload: UpdateSettingsProfileDto) {
@@ -7,5 +11,27 @@ export class SettingsQueries {
 
   static uploadAvatar(file: File) {
     return SettingsApi.uploadAvatar(file);
+  }
+
+  static getNotificationPreferences() {
+    return SettingsApi.getNotificationPreferences();
+  }
+
+  static updateNotificationPreferences(
+    payload: UpdateNotificationPreferencesDto,
+  ) {
+    return SettingsApi.updateNotificationPreferences(payload);
+  }
+
+  static getSessions() {
+    return SettingsApi.getSessions();
+  }
+
+  static revokeSession(sessionId: string) {
+    return SettingsApi.revokeSession(sessionId);
+  }
+
+  static revokeOtherSessions() {
+    return SettingsApi.revokeOtherSessions();
   }
 }

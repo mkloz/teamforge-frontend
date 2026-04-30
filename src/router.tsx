@@ -6,14 +6,28 @@ import {
   Outlet,
   redirect,
 } from "@tanstack/react-router";
+import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
 import { lazy, Suspense } from "react";
 import { AppLayout } from "./features/app-shell/app-layout";
 import { AuthQueries } from "./features/auth/api/auth.queries";
+import { ActivateAccountPage } from "./features/auth/activate-account-page";
 import { AuthPage } from "./features/auth/auth-page";
+import {
+  buildAuthRouteNavigation,
+  buildPostAuthRedirectNavigation,
+  buildRouteLocationHref,
+  parseAuthReturnSearch,
+} from "./features/auth/lib/auth-return";
+import { getPostAuthRedirectPath } from "./features/auth/lib/post-auth-route";
+import { ForgotPasswordPage } from "./features/auth/forgot-password-page";
+import { ResetPasswordPage } from "./features/auth/reset-password-page";
 import { LandingPage } from "./features/landing/landing-page";
+import { parseOnboardingFlowSearch } from "./features/onboarding/lib/onboarding-flow-state";
 import { InterestsPage } from "./features/onboarding/interests-page";
 import { PersonalityTestPage } from "./features/onboarding/personality-test-page";
 import { authSession } from "./shared/api/auth-session";
+import { RouteErrorState } from "./shared/components/route-error-state";
+import { routeErrorScopes } from "./shared/lib/telemetry-contract";
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -68,7 +82,11 @@ function LazyPage({
   );
 }
 
-async function redirectAuthenticatedUser() {
+async function redirectAuthenticatedUser({
+  location,
+}: {
+  location: { searchStr: string };
+}) {
   if (!authSession.hasTokens()) {
     return;
   }
@@ -79,13 +97,54 @@ async function redirectAuthenticatedUser() {
     return;
   }
 
-  throw redirect({ to: "/home" });
+  const { returnTo } = parseAuthReturnSearch(location.searchStr);
+
+  throw redirect(buildPostAuthRedirectNavigation(currentUser, returnTo));
+}
+
+async function requireAuthenticatedUser(location?: {
+  pathname: string;
+  searchStr: string;
+}) {
+  const returnHref = buildRouteLocationHref(location);
+
+  if (!authSession.hasTokens()) {
+    throw redirect(buildAuthRouteNavigation("/auth/login", returnHref));
+  }
+
+  try {
+    const currentUser = await AuthQueries.ensureCurrentUser();
+
+    if (!currentUser) {
+      throw redirect(buildAuthRouteNavigation("/auth/login", returnHref));
+    }
+
+    return currentUser;
+  } catch {
+    throw redirect(buildAuthRouteNavigation("/auth/login", returnHref));
+  }
 }
 
 // ─── Root route ──────────────────────────────────────────────────────────────
 
 const rootRoute = createRootRoute({
-  component: () => <Outlet />,
+  component: () => (
+    <NuqsAdapter>
+      <Outlet />
+    </NuqsAdapter>
+  ),
+  errorComponent: ({ error, reset }) => (
+    <RouteErrorState
+      error={error}
+      scope={routeErrorScopes.root}
+      fullPage
+      title="Something went wrong in TeamForge"
+      description="The app hit an unexpected issue while loading this screen."
+      fallbackTo="/"
+      fallbackLabel="Back home"
+      onRetry={reset}
+    />
+  ),
 });
 
 // ─── Public routes (no app shell) ────────────────────────────────────────────
@@ -101,6 +160,18 @@ const loginRoute = createRoute({
   path: "/auth/login",
   beforeLoad: redirectAuthenticatedUser,
   component: () => <AuthPage defaultView="login" />,
+  errorComponent: ({ error, reset }) => (
+    <RouteErrorState
+      error={error}
+      scope={routeErrorScopes.authLogin}
+      fullPage
+      title="We hit a sign-in problem"
+      description="TeamForge couldn't finish loading the login flow right now."
+      fallbackTo="/"
+      fallbackLabel="Back home"
+      onRetry={reset}
+    />
+  ),
 });
 
 const registerRoute = createRoute({
@@ -108,17 +179,118 @@ const registerRoute = createRoute({
   path: "/auth/register",
   beforeLoad: redirectAuthenticatedUser,
   component: () => <AuthPage defaultView="register" />,
+  errorComponent: ({ error, reset }) => (
+    <RouteErrorState
+      error={error}
+      scope={routeErrorScopes.authRegister}
+      fullPage
+      title="We hit a sign-up problem"
+      description="TeamForge couldn't finish loading registration right now."
+      fallbackTo="/"
+      fallbackLabel="Back home"
+      onRetry={reset}
+    />
+  ),
+});
+
+const forgotPasswordRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/auth/forgot-password",
+  beforeLoad: redirectAuthenticatedUser,
+  component: ForgotPasswordPage,
+  errorComponent: ({ error, reset }) => (
+    <RouteErrorState
+      error={error}
+      scope={routeErrorScopes.authForgotPassword}
+      fullPage
+      title="We hit a recovery problem"
+      description="The password reset screen couldn't finish loading right now."
+      fallbackTo="/auth/login"
+      fallbackLabel="Back to login"
+      onRetry={reset}
+    />
+  ),
+});
+
+const resetPasswordRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/auth/reset-password/$token",
+  component: ResetPasswordPage,
+  errorComponent: ({ error, reset }) => (
+    <RouteErrorState
+      error={error}
+      scope={routeErrorScopes.authResetPassword}
+      fullPage
+      title="We couldn't open this reset flow"
+      description="The password reset experience hit an unexpected issue."
+      fallbackTo="/auth/login"
+      fallbackLabel="Back to login"
+      onRetry={reset}
+    />
+  ),
+});
+
+const activateAccountRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/auth/activate/$token",
+  component: ActivateAccountPage,
+  errorComponent: ({ error, reset }) => (
+    <RouteErrorState
+      error={error}
+      scope={routeErrorScopes.authActivateAccount}
+      fullPage
+      title="We couldn't finish activation"
+      description="The activation flow ran into an unexpected problem."
+      fallbackTo="/auth/register"
+      fallbackLabel="Back to sign up"
+      onRetry={reset}
+    />
+  ),
 });
 
 const personalityRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/onboarding/personality",
+  beforeLoad: async ({ location }) => {
+    const currentUser = await requireAuthenticatedUser(location);
+    const { isEditMode } = parseOnboardingFlowSearch(location.searchStr);
+    const canonicalDestination = getPostAuthRedirectPath(currentUser);
+
+    if (isEditMode) {
+      if (canonicalDestination !== "/home") {
+        throw redirect({ to: canonicalDestination });
+      }
+
+      return;
+    }
+
+    if (canonicalDestination !== "/onboarding/personality") {
+      throw redirect({ to: canonicalDestination });
+    }
+  },
   component: PersonalityTestPage,
 });
 
 const interestsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/onboarding/interests",
+  beforeLoad: async ({ location }) => {
+    const currentUser = await requireAuthenticatedUser(location);
+    const { isEditMode } = parseOnboardingFlowSearch(location.searchStr);
+    const canonicalDestination = getPostAuthRedirectPath(currentUser);
+
+    if (isEditMode) {
+      if (canonicalDestination !== "/home") {
+        throw redirect({ to: canonicalDestination });
+      }
+
+      return;
+    }
+
+    if (canonicalDestination !== "/onboarding/interests") {
+      throw redirect({ to: canonicalDestination });
+    }
+  },
   component: InterestsPage,
 });
 
@@ -127,15 +299,12 @@ const interestsRoute = createRoute({
 const appShellRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "app-shell",
-  beforeLoad: async () => {
-    if (!authSession.hasTokens()) {
-      throw redirect({ to: "/auth/login" });
-    }
+  beforeLoad: async ({ location }) => {
+    const currentUser = await requireAuthenticatedUser(location);
+    const canonicalDestination = getPostAuthRedirectPath(currentUser);
 
-    try {
-      await AuthQueries.ensureCurrentUser();
-    } catch {
-      throw redirect({ to: "/auth/login" });
+    if (canonicalDestination !== "/home") {
+      throw redirect({ to: canonicalDestination });
     }
   },
   component: AppLayout,
@@ -159,6 +328,17 @@ const activityRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/activity",
   component: () => <LazyPage component={ActivityPage} />,
+  errorComponent: ({ error, reset }) => (
+    <RouteErrorState
+      error={error}
+      scope={routeErrorScopes.activity}
+      title="The activity workspace hit a snag"
+      description="Your conversations and planning space couldn't finish rendering cleanly."
+      fallbackTo="/home"
+      fallbackLabel="Back to home"
+      onRetry={reset}
+    />
+  ),
 });
 
 const profileRoute = createRoute({
@@ -177,6 +357,17 @@ const forgeRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/forge",
   component: () => <LazyPage component={ForgePage} />,
+  errorComponent: ({ error, reset }) => (
+    <RouteErrorState
+      error={error}
+      scope={routeErrorScopes.forge}
+      title="Forge hit an unexpected issue"
+      description="We couldn't finish loading the group-forging flow right now."
+      fallbackTo="/home"
+      fallbackLabel="Back to home"
+      onRetry={reset}
+    />
+  ),
 });
 
 const designSystemRoute = createRoute({
@@ -191,6 +382,9 @@ const routeTree = rootRoute.addChildren([
   landingRoute,
   loginRoute,
   registerRoute,
+  forgotPasswordRoute,
+  resetPasswordRoute,
+  activateAccountRoute,
   personalityRoute,
   interestsRoute,
   designSystemRoute,

@@ -1,4 +1,6 @@
 import { Button } from "@/shared/components/ui/button";
+import { buildForgeLaunchNavigation } from "@/shared/lib/forge-route";
+import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 
@@ -21,9 +23,14 @@ export function ForgeCTA() {
         </div>
 
         <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
-          <Button className="w-full h-11 group text-xs font-bold rounded-2xl bg-forge-teal hover:bg-forge-teal/90 text-white border-none shadow-button-primary active:shadow-none active:translate-y-0.5 transition-all">
-            <Plus className="size-4 mr-2 transition-transform group-hover:rotate-90" />
-            Forge My Group
+          <Button
+            asChild
+            className="w-full h-11 group text-xs font-bold rounded-2xl bg-forge-teal hover:bg-forge-teal/90 text-white border-none shadow-button-primary active:shadow-none active:translate-y-0.5 transition-all"
+          >
+            <Link {...buildForgeLaunchNavigation()}>
+              <Plus className="size-4 mr-2 transition-transform group-hover:rotate-90" />
+              Forge My Group
+            </Link>
           </Button>
         </motion.div>
       </div>

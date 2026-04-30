@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { cn } from "@/shared/lib/utils";
 import { X } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
@@ -10,6 +11,9 @@ import {
   DrawerTitle,
 } from "@/shared/components/ui/drawer";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
+import { useState } from "react";
+import type { Notification } from "@/shared/schemas";
+import { resolveNotificationDestination } from "@/shared/lib/notification-destination";
 
 interface NotificationsDrawerProps {
   open: boolean;
@@ -20,9 +24,33 @@ export function NotificationsDrawer({
   open,
   onClose,
 }: NotificationsDrawerProps) {
-  const { items, today, earlier, markRead, markAllRead, isMarkingAllRead } =
-    useNotifications();
+  const {
+    items,
+    today,
+    earlier,
+    markReadAsync,
+    markAllRead,
+    isMarkingAllRead,
+  } = useNotifications();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const navigate = useNavigate();
+  const [pendingNotificationId, setPendingNotificationId] = useState<
+    string | null
+  >(null);
+
+  async function handleSelectNotification(notification: Notification) {
+    setPendingNotificationId(notification.id);
+
+    try {
+      await markReadAsync(notification.id);
+      const destination = await resolveNotificationDestination(notification);
+
+      onClose();
+      await navigate(destination);
+    } finally {
+      setPendingNotificationId(null);
+    }
+  }
 
   return (
     <Drawer
@@ -85,7 +113,12 @@ export function NotificationsDrawer({
                     </p>
                   </div>
                   {today.map((n) => (
-                    <NotificationItem key={n.id} item={n} onRead={markRead} />
+                    <NotificationItem
+                      key={n.id}
+                      item={n}
+                      onSelect={handleSelectNotification}
+                      isPending={pendingNotificationId === n.id}
+                    />
                   ))}
                 </section>
               )}
@@ -97,7 +130,12 @@ export function NotificationsDrawer({
                     </p>
                   </div>
                   {earlier.map((n) => (
-                    <NotificationItem key={n.id} item={n} onRead={markRead} />
+                    <NotificationItem
+                      key={n.id}
+                      item={n}
+                      onSelect={handleSelectNotification}
+                      isPending={pendingNotificationId === n.id}
+                    />
                   ))}
                 </section>
               )}

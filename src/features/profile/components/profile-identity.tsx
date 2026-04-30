@@ -1,7 +1,10 @@
 import { MapPin } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import type { User } from "@/shared/schemas";
+import { buildSettingsNavigation } from "@/shared/lib/settings-route";
 import { ProfileActions } from "./profile-actions";
 import { ProfileBadges } from "./profile-badges";
+import { Button } from "@/shared/components/ui/button";
 
 interface ProfileIdentityProps {
   user: User;
@@ -35,9 +38,16 @@ export function ProfileIdentity({ user, archetype }: ProfileIdentityProps) {
           </div>
         ) : null}
         {!hasAge && !hasCity ? (
-          <span className="text-sm">
-            Profile details are still being filled in.
-          </span>
+          <div className="flex flex-col items-center gap-2 sm:items-start">
+            <span className="text-sm">
+              Profile details are still being filled in.
+            </span>
+            <Button asChild variant="outline" size="sm">
+              <Link {...buildSettingsNavigation("account")}>
+                Finish account details
+              </Link>
+            </Button>
+          </div>
         ) : null}
       </div>
 

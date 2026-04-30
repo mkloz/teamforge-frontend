@@ -1,9 +1,19 @@
+import { AuthQueries } from "@/features/auth/api/auth.queries";
 import { Button } from "@/shared/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ChevronDown } from "lucide-react";
+import { getLandingPrimaryAction } from "../../lib/landing-auth";
 import { ForgeOrb } from "./forge-orb";
 
 export function HeroSection() {
+  const { isAuthenticated } = AuthQueries.useAuthSessionState();
+  const { data: currentUser } = AuthQueries.useCurrentUser();
+  const primaryAction = getLandingPrimaryAction(
+    isAuthenticated,
+    currentUser,
+    "Get Started - Free",
+  );
+
   return (
     <section
       id="hero"
@@ -34,8 +44,8 @@ export function HeroSection() {
                 size="hero"
                 className="w-full sm:w-auto hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none"
               >
-                <Link to="/auth/register">
-                  Get Started – Free
+                <Link {...primaryAction.navigation}>
+                  {primaryAction.label}
                   <ArrowRight
                     size={20}
                     className="ml-2 group-hover:translate-x-0.5 transition-transform"

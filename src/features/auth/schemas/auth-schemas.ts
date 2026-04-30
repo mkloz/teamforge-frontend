@@ -27,3 +27,26 @@ export const registerSchema = z.object({
 });
 
 export type RegisterValues = z.infer<typeof registerSchema>;
+
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Don't forget your email.")
+    .email("Check that email again—it looks a bit off."),
+});
+
+export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
+
+export const resetPasswordSchema = z
+  .object({
+    password: z.string().min(6, "Make it at least 6 characters for safety."),
+    confirmPassword: z
+      .string()
+      .min(6, "Repeat the new password to confirm it."),
+  })
+  .refine((values) => values.password === values.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Those passwords don't match yet.",
+  });
+
+export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;

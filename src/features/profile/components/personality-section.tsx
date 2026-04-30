@@ -1,4 +1,6 @@
 import { cn } from "@/shared/lib/utils";
+import { buildPersonalityEditNavigation } from "@/shared/lib/onboarding-route";
+import { Link } from "@tanstack/react-router";
 import { Check } from "lucide-react";
 import {
   generateDetailedDescription,
@@ -6,6 +8,7 @@ import {
 } from "../lib/ocean-traits";
 import type { OceanScores } from "../lib/profile-contract";
 import { SectionTitle } from "./section-title";
+import { Button } from "@/shared/components/ui/button";
 
 interface PersonalitySectionProps {
   oceanScores?: OceanScores;
@@ -28,6 +31,15 @@ export function PersonalitySection({
               We do not have a complete OCEAN profile for this account yet, so
               these narrative insights are not available.
             </p>
+            <Button asChild variant="outline" size="sm">
+              <Link
+                {...buildPersonalityEditNavigation({
+                  returnTo: "/profile",
+                })}
+              >
+                Complete personality profile
+              </Link>
+            </Button>
           </div>
         </div>
       </div>

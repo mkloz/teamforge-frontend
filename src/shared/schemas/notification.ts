@@ -10,6 +10,8 @@ export const notificationSchema = z.object({
   avatarUrl: z.string().nullable(),
   isRead: z.boolean(),
   createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+  version: z.number(),
   entityType: entityTypeSchema.nullable(),
   entityId: z.string().nullable(),
   receiverId: z.string(),

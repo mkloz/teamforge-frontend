@@ -17,6 +17,7 @@ import {
   onlineStatusSchema,
   personalityTypeSchema,
   planCategorySchema,
+  planProposalVoteSchema,
   planStatusSchema,
 } from "@/shared/schemas/enums";
 import { planProposalSchema } from "@/shared/schemas/plan";
@@ -94,11 +95,13 @@ export const unifiedMessageSchema: z.ZodType<{
   isEdited: boolean;
   isPinned: boolean;
   createdAt: string;
+  updatedAt: string;
   editedAt: string | null;
   deletedAt: string | null;
   chatId: string;
   senderId: string;
   replyToId: string | null;
+  version: number;
   pinnedInChatId?: string | null;
   sender?: ActivityParticipant;
   replyTo?: UnifiedMessage;
@@ -107,6 +110,14 @@ export const unifiedMessageSchema: z.ZodType<{
   isOwn: boolean;
   hasVoted?: boolean;
   isSystem?: boolean;
+  proposal?: z.infer<typeof planProposalSchema>;
+  proposalEligibleVoterCount?: number;
+  proposalVoters?: Array<{
+    id: string;
+    name: string;
+    avatar: string | null;
+    vote: z.infer<typeof planProposalVoteSchema>;
+  }>;
 }> = z.lazy(() =>
   z.object({
     id: z.string(),
@@ -116,11 +127,13 @@ export const unifiedMessageSchema: z.ZodType<{
     isEdited: z.boolean(),
     isPinned: z.boolean(),
     createdAt: z.string(),
+    updatedAt: z.string(),
     editedAt: z.string().nullable(),
     deletedAt: z.string().nullable(),
     chatId: z.string(),
     senderId: z.string(),
     replyToId: z.string().nullable(),
+    version: z.number(),
     pinnedInChatId: z.string().nullable().optional(),
     sender: activityParticipantSchema.optional(),
     replyTo: unifiedMessageSchema.optional(),
@@ -129,6 +142,18 @@ export const unifiedMessageSchema: z.ZodType<{
     isOwn: z.boolean(),
     hasVoted: z.boolean().optional(),
     isSystem: z.boolean().optional(),
+    proposal: planProposalSchema.optional(),
+    proposalEligibleVoterCount: z.number().optional(),
+    proposalVoters: z
+      .array(
+        z.object({
+          id: z.string(),
+          name: z.string(),
+          avatar: z.string().nullable(),
+          vote: planProposalVoteSchema,
+        }),
+      )
+      .optional(),
   }),
 );
 
@@ -177,6 +202,7 @@ export const planSchema = z.object({
   cancelledAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  version: z.number(),
   groupId: z.string(),
   proposals: z.array(planProposalSchema).optional(),
 });
@@ -217,6 +243,7 @@ export const groupSchema = z.object({
   maxMembers: z.number(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  version: z.number(),
   disbandedAt: z.string().nullable(),
   activityId: z.string(),
   activity: activitySummarySchema.optional(),

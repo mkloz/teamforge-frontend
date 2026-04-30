@@ -2,12 +2,12 @@ import { cn } from "@/shared/lib/utils";
 import * as RadixSlider from "@radix-ui/react-slider";
 import { Globe, Laptop, MapPin, Route } from "lucide-react";
 import { FILTER_BOUNDARIES } from "../../constants/explore.constants";
-import { useExploreStore } from "../../store/use-explore-store";
+import { useExploreRouteState } from "../../hooks/use-explore-route-state";
 import type { ExploreLocationMode } from "../../schemas/explore-filters.schema";
 
 export function LocationFilter() {
   const { locationMode, setLocationMode, distance, setDistance } =
-    useExploreStore();
+    useExploreRouteState();
 
   return (
     <section className="space-y-2">

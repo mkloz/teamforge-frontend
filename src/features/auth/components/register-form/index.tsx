@@ -10,6 +10,7 @@ import { StepHeader } from "./step-header";
 import { SwitchViewPrompt } from "./switch-view-prompt";
 
 interface RegisterFormProps {
+  authReturnTo?: string | null;
   onSwitchToLogin: () => void;
   onSuccess?: () => void;
   onProgress?: (progress: number) => void;
@@ -39,6 +40,7 @@ const variants = {
  * Orchestrates step transitions, validation, and real-time progress feedback.
  */
 export function RegisterForm({
+  authReturnTo,
   onSwitchToLogin,
   onSuccess,
   onProgress,
@@ -49,12 +51,15 @@ export function RegisterForm({
     step,
     direction,
     loading,
+    resendLoading,
     rootError,
+    otpMessage,
     goToStep2,
     goToStep3,
     goBackToStep1,
     goBackToStep2,
     onSubmit,
+    resendOtp,
   } = useRegisterForm({ onSuccess, onProgress });
 
   // Handle step change for scroll-to-top actions
@@ -81,12 +86,25 @@ export function RegisterForm({
               transition={{ duration: 0.25, ease: "easeOut" }}
               className="w-full"
             >
-              {step === 1 && <StepCredentials onNext={goToStep2} />}
+              {step === 1 && (
+                <StepCredentials
+                  authReturnTo={authReturnTo}
+                  onNext={goToStep2}
+                  onGoogleSuccess={onSuccess}
+                />
+              )}
               {step === 2 && (
                 <StepProfile onNext={goToStep3} onBack={goBackToStep1} />
               )}
               {step === 3 && (
-                <StepOtp onBack={goBackToStep2} loading={loading} />
+                <StepOtp
+                  onBack={goBackToStep2}
+                  loading={loading}
+                  resendLoading={resendLoading}
+                  email={form.getValues("email")}
+                  otpMessage={otpMessage}
+                  onResend={resendOtp}
+                />
               )}
             </motion.div>
           </AnimatePresence>

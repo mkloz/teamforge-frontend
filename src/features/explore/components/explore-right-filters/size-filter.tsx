@@ -1,9 +1,9 @@
 import * as RadixSlider from "@radix-ui/react-slider";
 import { FILTER_BOUNDARIES } from "../../constants/explore.constants";
-import { useExploreStore } from "../../store/use-explore-store";
+import { useExploreRouteState } from "../../hooks/use-explore-route-state";
 
 export function SizeFilter() {
-  const { sizeRange, setSizeRange } = useExploreStore();
+  const { sizeRange, setSizeRange } = useExploreRouteState();
 
   return (
     <section className="space-y-3">

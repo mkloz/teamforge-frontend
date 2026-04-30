@@ -1,3 +1,4 @@
+import { buildActivityNavigation } from "@/shared/lib/activity-route";
 import { Link } from "@tanstack/react-router";
 import { CalendarDays } from "lucide-react";
 import { useHomeData } from "../../hooks/use-home-data";
@@ -56,7 +57,7 @@ export function UpcomingPlans() {
           Coming Up
         </h2>
         <Link
-          to="/activity"
+          {...buildActivityNavigation()}
           className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
         >
           View all

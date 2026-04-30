@@ -1,4 +1,7 @@
 import { useMemo } from "react";
+
+import { AuthQueries } from "@/features/auth/api/auth.queries";
+
 import { cn } from "@/shared/lib/utils";
 import type { UnifiedMessage } from "../lib/activity-contract";
 
@@ -12,6 +15,7 @@ interface UseMessageLayoutProps {
  */
 export function useMessageLayout({ message, isOwn }: UseMessageLayoutProps) {
   const { attachments, content, replyTo, reactions } = message;
+  const { data: currentUser } = AuthQueries.useCurrentUser();
 
   const reactionGroups = useMemo(() => {
     if (!reactions || !Array.isArray(reactions)) return [];
@@ -22,8 +26,7 @@ export function useMessageLayout({ message, isOwn }: UseMessageLayoutProps) {
         groups[r.emoji] = { count: 0, isActive: false };
       }
       groups[r.emoji].count++;
-      if (r.userId === "user-current") {
-        // TODO: Wire to actual auth user ID
+      if (currentUser?.id && r.userId === currentUser.id) {
         groups[r.emoji].isActive = true;
       }
     });
@@ -33,7 +36,7 @@ export function useMessageLayout({ message, isOwn }: UseMessageLayoutProps) {
       count: data.count,
       isActive: data.isActive,
     }));
-  }, [reactions]);
+  }, [currentUser, reactions]);
 
   const galleryRounding = useMemo(() => {
     if (!attachments?.some((a) => a.type === "IMAGE")) return "";

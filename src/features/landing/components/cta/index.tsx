@@ -1,11 +1,20 @@
+import { AuthQueries } from "@/features/auth/api/auth.queries";
 import { Button } from "@/shared/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { getLandingPrimaryAction } from "../../lib/landing-auth";
 import { useMouseGlow } from "../../hooks/use-mouse-glow";
 
 export function CtaSection() {
   const { sectionRef, glowRef } = useMouseGlow();
+  const { isAuthenticated } = AuthQueries.useAuthSessionState();
+  const { data: currentUser } = AuthQueries.useCurrentUser();
+  const primaryAction = getLandingPrimaryAction(
+    isAuthenticated,
+    currentUser,
+    "Create Free Account",
+  );
 
   return (
     <section
@@ -58,10 +67,10 @@ export function CtaSection() {
             className="w-full sm:w-auto hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none"
           >
             <Link
-              to="/auth/register"
-              aria-label="Create your free TeamForge account"
+              {...primaryAction.navigation}
+              aria-label={primaryAction.label}
             >
-              Create Free Account
+              {primaryAction.label}
               <ArrowRight
                 size={20}
                 className="ml-2 transition-transform duration-200 group-hover:translate-x-1"
@@ -72,11 +81,15 @@ export function CtaSection() {
 
           <Button
             variant="outline"
-            asChild
             size="hero"
             className="w-full sm:w-auto hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none"
+            onClick={() =>
+              document
+                .querySelector("#how-it-works")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" })
+            }
           >
-            <Link to="/auth/login">See how it works</Link>
+            See how it works
           </Button>
         </motion.div>
         <motion.p

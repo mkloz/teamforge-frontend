@@ -1,18 +1,17 @@
 import { AuthQueries } from "@/features/auth/api/auth.queries";
 import { ActivityApi } from "@/features/activity/api/activity.api";
+import {
+  formatProposalDate,
+  PROPOSAL_FIELD_LABELS,
+  PROPOSAL_STATUS_LABELS,
+} from "@/features/activity/lib/proposal-language";
 import { Button } from "@/shared/components/ui/button";
+import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { cn } from "@/shared/lib/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { PlanProposal } from "@/shared/schemas/plan";
-
-const FIELD_LABELS: Record<PlanProposal["field"], string> = {
-  TITLE: "Title",
-  DESCRIPTION: "Description",
-  DATE_TIME: "Date & Time",
-  LOCATION: "Location",
-  COST: "Cost",
-  CATEGORY: "Category",
-};
+import { useEffect, useRef } from "react";
+import { toast } from "sonner";
 
 const STATUS_STYLES: Record<PlanProposal["status"], string> = {
   PENDING: "bg-spark-amber/10 text-spark-amber",
@@ -21,15 +20,6 @@ const STATUS_STYLES: Record<PlanProposal["status"], string> = {
   WITHDRAWN: "bg-muted text-muted-foreground",
 };
 
-function formatProposalDate(value: string) {
-  return new Date(value).toLocaleString("en-GB", {
-    day: "numeric",
-    month: "short",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
 function countVotes(proposal: PlanProposal, vote: "APPROVE" | "REJECT") {
   return proposal.votes.filter((item) => item.vote === vote).length;
 }
@@ -37,14 +27,17 @@ function countVotes(proposal: PlanProposal, vote: "APPROVE" | "REJECT") {
 interface PlanProposalsSectionProps {
   groupId: string;
   proposals: PlanProposal[];
+  focusedProposalId?: string | null;
 }
 
 export function PlanProposalsSection({
   groupId,
   proposals,
+  focusedProposalId = null,
 }: PlanProposalsSectionProps) {
   const queryClient = useQueryClient();
   const { data: currentUser } = AuthQueries.useCurrentUser();
+  const proposalRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const voteMutation = useMutation({
     mutationKey: ["activity", "proposal", "vote"],
@@ -55,10 +48,20 @@ export function PlanProposalsSection({
       proposalId: string;
       vote: "APPROVE" | "REJECT";
     }) => ActivityApi.votePlanProposal(proposalId, { vote }),
-    onSuccess: async () => {
+    onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({
         queryKey: ["activity-selection", "group", groupId],
       });
+      toast.success(
+        variables.vote === "APPROVE"
+          ? "Proposal approved."
+          : "Proposal rejected.",
+      );
+    },
+    onError: (error) => {
+      toast.error(
+        getApiErrorMessage(error, "We couldn't submit your vote right now."),
+      );
     },
   });
 
@@ -70,8 +73,40 @@ export function PlanProposalsSection({
       await queryClient.invalidateQueries({
         queryKey: ["activity-selection", "group", groupId],
       });
+      toast.success("Proposal withdrawn.");
+    },
+    onError: (error) => {
+      toast.error(
+        getApiErrorMessage(
+          error,
+          "We couldn't withdraw that proposal right now.",
+        ),
+      );
     },
   });
+
+  useEffect(() => {
+    if (!focusedProposalId) {
+      return;
+    }
+
+    const target = proposalRefs.current[focusedProposalId];
+
+    if (!target) {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+    };
+  }, [focusedProposalId, proposals]);
 
   if (proposals.length === 0) {
     return null;
@@ -104,12 +139,19 @@ export function PlanProposalsSection({
           return (
             <div
               key={proposal.id}
-              className="rounded-2xl border border-border/60 bg-card/70 px-3 py-3 space-y-2"
+              ref={(element) => {
+                proposalRefs.current[proposal.id] = element;
+              }}
+              className={cn(
+                "rounded-2xl border border-border/60 bg-card/70 px-3 py-3 space-y-2 transition-[background-color,box-shadow,border-color] duration-500",
+                focusedProposalId === proposal.id &&
+                  "border-forge-teal/35 bg-forge-teal/6 shadow-[0_0_0_1px_rgba(13,148,136,0.18)]",
+              )}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-0.5 min-w-0">
                   <p className="text-xs font-bold text-foreground">
-                    {FIELD_LABELS[proposal.field]}
+                    {PROPOSAL_FIELD_LABELS[proposal.field]}
                   </p>
                   <p className="text-[11px] text-muted-foreground">
                     Proposed by {proposal.proposer.name}
@@ -121,7 +163,7 @@ export function PlanProposalsSection({
                     STATUS_STYLES[proposal.status],
                   )}
                 >
-                  {proposal.status}
+                  {PROPOSAL_STATUS_LABELS[proposal.status]}
                 </span>
               </div>
 

@@ -1,7 +1,7 @@
 import { Calendar, MapPin } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import type { Plan } from "@/features/activity/lib/activity-contract";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import {
   categoryColors,
   statusColors,
@@ -13,9 +13,16 @@ import { PlanProposalsSection } from "./plan-proposals-section";
 
 interface PlanSectionProps {
   plan: Plan;
+  isFocused?: boolean;
+  focusedProposalId?: string | null;
 }
 
-export function PlanSection({ plan }: PlanSectionProps) {
+export function PlanSection({
+  plan,
+  isFocused = false,
+  focusedProposalId = null,
+}: PlanSectionProps) {
+  const sectionRef = useRef<HTMLDivElement | null>(null);
   // Memoize date/time formatting for performance
   const formattedDate = useMemo(
     () => (plan.dateTime ? formatDate(plan.dateTime) : "Date TBD"),
@@ -26,8 +33,26 @@ export function PlanSection({ plan }: PlanSectionProps) {
     [plan.dateTime],
   );
 
+  useEffect(() => {
+    if (!isFocused) {
+      return;
+    }
+
+    sectionRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, [isFocused]);
+
   return (
-    <div className="space-y-0" aria-labelledby="current-plan-title">
+    <div
+      ref={sectionRef}
+      className={cn(
+        "space-y-0 rounded-2xl transition-[background-color,box-shadow] duration-500",
+        isFocused && "bg-forge-teal/6 shadow-[0_0_0_1px_rgba(13,148,136,0.18)]",
+      )}
+      aria-labelledby="current-plan-title"
+    >
       {/* Eyebrow label */}
       <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-2">
         Current Plan
@@ -123,6 +148,7 @@ export function PlanSection({ plan }: PlanSectionProps) {
       <PlanProposalsSection
         groupId={plan.groupId}
         proposals={plan.proposals ?? []}
+        focusedProposalId={focusedProposalId}
       />
     </div>
   );

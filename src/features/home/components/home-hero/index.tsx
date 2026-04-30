@@ -1,10 +1,17 @@
+import { homeQuickActions } from "@/shared/lib/app-navigation";
 import { Button } from "@/shared/components/ui/button";
+import { buildForgeLaunchNavigation } from "@/shared/lib/forge-route";
+import {
+  buildInterestsEditNavigation,
+  buildPersonalityEditNavigation,
+} from "@/shared/lib/onboarding-route";
+import { buildSettingsNavigation } from "@/shared/lib/settings-route";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
-import { Bell, Compass, MessageCircle, Plus, User } from "lucide-react";
+import { Bell, Plus } from "lucide-react";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
-import { useUiStore } from "@/shared/store/ui.store";
+import { useNotificationsDrawerState } from "@/features/notifications/hooks/use-notifications-drawer-state";
 import { useHomeViewer } from "../../hooks/use-home-viewer";
 import { ForgeOrbScene } from "./forge-orb-scene";
 
@@ -27,12 +34,6 @@ function getGreeting(firstName: string): { greeting: string; sub: string } {
   };
 }
 
-const QUICK_ACTIONS = [
-  { label: "Browse Groups", icon: Compass, to: "/explore" },
-  { label: "Start a Chat", icon: MessageCircle, to: "/activity" },
-  { label: "View Profile", icon: User, to: "/profile" },
-] as const;
-
 /* ─── Animation variants ───────────────────────────────────────────── */
 const containerVariants: Variants = {
   hidden: {},
@@ -52,13 +53,11 @@ const itemVariants: Variants = {
  * HomeHero section with personalized greeting, CTA, and animated Forge Orb.
  */
 export function HomeHero() {
-  const { firstName } = useHomeViewer();
+  const { firstName, nextStep } = useHomeViewer();
   const { count: unreadNotifications } = useNotifications();
   const { greeting, sub } = getGreeting(firstName);
   const reduced = useReducedMotion() ?? false;
-  const setNotificationsOpen = useUiStore(
-    (state) => state.setNotificationsOpen,
-  );
+  const { openDrawer } = useNotificationsDrawerState();
 
   return (
     <section aria-labelledby="home-hero-heading" className="w-full">
@@ -88,7 +87,7 @@ export function HomeHero() {
           {/* Notification bell */}
           <button
             type="button"
-            onClick={() => setNotificationsOpen(true)}
+            onClick={() => void openDrawer()}
             aria-label={
               unreadNotifications > 0
                 ? `View notifications (${unreadNotifications} unread)`
@@ -143,7 +142,7 @@ export function HomeHero() {
                 </div>
 
                 <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
-                  <Link to="/forge" className="w-full">
+                  <Link {...buildForgeLaunchNavigation()} className="w-full">
                     <Button
                       variant="primary"
                       className="w-full h-11 group/btn"
@@ -157,6 +156,64 @@ export function HomeHero() {
                     </Button>
                   </Link>
                 </motion.div>
+
+                {nextStep && (
+                  <div className="rounded-2xl border border-border/70 bg-canvas/80 p-4">
+                    <div className="flex flex-col gap-1.5">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-muted">
+                        Next up
+                      </p>
+                      <h3 className="text-sm font-semibold text-foreground">
+                        {nextStep.title}
+                      </h3>
+                      <p className="text-xs text-slate-muted leading-relaxed">
+                        {nextStep.body}
+                      </p>
+                    </div>
+
+                    <div className="mt-4">
+                      {nextStep.kind === "security" && (
+                        <Button asChild variant="outline" size="sm">
+                          <Link {...buildSettingsNavigation("security")}>
+                            {nextStep.label}
+                          </Link>
+                        </Button>
+                      )}
+
+                      {nextStep.kind === "account" && (
+                        <Button asChild variant="outline" size="sm">
+                          <Link {...buildSettingsNavigation("account")}>
+                            {nextStep.label}
+                          </Link>
+                        </Button>
+                      )}
+
+                      {nextStep.kind === "personality" && (
+                        <Button asChild variant="outline" size="sm">
+                          <Link
+                            {...buildPersonalityEditNavigation({
+                              returnTo: "/home",
+                            })}
+                          >
+                            {nextStep.label}
+                          </Link>
+                        </Button>
+                      )}
+
+                      {nextStep.kind === "interests" && (
+                        <Button asChild variant="outline" size="sm">
+                          <Link
+                            {...buildInterestsEditNavigation({
+                              returnTo: "/home",
+                            })}
+                          >
+                            {nextStep.label}
+                          </Link>
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </motion.div>
 
@@ -166,10 +223,10 @@ export function HomeHero() {
               aria-label="Quick actions"
               className="flex flex-wrap gap-2"
             >
-              {QUICK_ACTIONS.map(({ label, icon: Icon, to }) => (
+              {homeQuickActions.map(({ id, label, icon: Icon, navigation }) => (
                 <Link
-                  key={label}
-                  to={to}
+                  key={id}
+                  {...navigation}
                   className={cn(
                     "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full",
                     "text-xs font-semibold text-slate-muted",

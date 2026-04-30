@@ -1,18 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { ExploreQueries } from "../api/explore.queries";
-import { useExploreStore } from "../store/use-explore-store";
+import { useExploreRouteState } from "./use-explore-route-state";
 
 export function useExploreGroups() {
-  const store = useExploreStore();
+  const state = useExploreRouteState();
 
   return useQuery(
-    ExploreQueries.groups({
-      selectedCategories: store.selectedCategories,
-      sizeRange: store.sizeRange,
-      distance: store.distance,
-      locationMode: store.locationMode,
-      access: store.access,
-      sortBy: store.sortBy,
-    }),
+    ExploreQueries.groups(
+      {
+        selectedCategories: state.selectedCategories,
+        sizeRange: state.sizeRange,
+        distance: state.distance,
+        locationMode: state.locationMode,
+        access: state.access,
+        sortBy: state.sortBy,
+      },
+      state.searchQuery,
+    ),
   );
 }

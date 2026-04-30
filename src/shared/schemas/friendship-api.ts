@@ -33,6 +33,7 @@ export const friendshipApiSchema = z.object({
   status: friendshipStatusSchema,
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
+  version: z.number(),
   requesterId: z.string(),
   receiverId: z.string(),
   privateChatId: z.string().nullable(),

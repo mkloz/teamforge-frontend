@@ -40,6 +40,9 @@ export function useNotifications() {
         previousCount,
       };
     },
+    onSuccess: (notification) => {
+      NotificationsQueries.applyNotificationUpdate(notification);
+    },
     onError: (_error, _id, context) => {
       if (context?.previousItems) {
         queryClient.setQueryData(
@@ -90,6 +93,9 @@ export function useNotifications() {
         previousCount,
       };
     },
+    onSuccess: () => {
+      queryClient.setQueryData(NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY, 0);
+    },
     onError: (_error, _variables, context) => {
       if (context?.previousItems) {
         queryClient.setQueryData(
@@ -133,6 +139,7 @@ export function useNotifications() {
     isLoading: unreadCountQuery.isLoading && items.length === 0,
     isMarkingAllRead: markAllReadMutation.isPending,
     markRead: (id: string) => markReadMutation.mutate(id),
+    markReadAsync: (id: string) => markReadMutation.mutateAsync(id),
     markAllRead: () => markAllReadMutation.mutate(),
   };
 }

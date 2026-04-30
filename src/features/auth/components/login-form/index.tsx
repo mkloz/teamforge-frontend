@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { Eye, EyeOff } from "lucide-react";
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { Button } from "@/shared/components/ui/button";
@@ -16,8 +17,11 @@ import { FormLevelError } from "./form-level-error";
 import { SocialLoginDivider } from "./social-login-divider";
 import { GoogleAuthButton } from "./google-auth-button";
 import { SwitchViewPrompt } from "./switch-view-prompt";
+import { useGoogleAuth } from "../../hooks/use-google-auth";
+import { buildAuthRouteNavigation } from "../../lib/auth-return";
 
 interface LoginFormProps {
+  authReturnTo?: string | null;
   onSwitchToRegister: () => void;
   onSuccess?: () => void;
   onProgress?: (progress: number) => void;
@@ -29,6 +33,7 @@ interface LoginFormProps {
  * Optimized with hook-based logic and premium micro-interactions.
  */
 export function LoginForm({
+  authReturnTo,
   onSwitchToRegister,
   onSuccess,
   onProgress,
@@ -41,12 +46,18 @@ export function LoginForm({
     onSubmit,
     togglePasswordVisibility,
   } = useLoginForm({ onSuccess, onProgress });
+  const {
+    loading: googleLoading,
+    rootError: googleError,
+    startGoogleAuth,
+  } = useGoogleAuth({ intent: "login", onSuccess });
+  const currentRootError = rootError ?? googleError;
 
   return (
     <div className="flex flex-col w-full">
       <FormHeader />
 
-      {rootError && <FormLevelError message={rootError} />}
+      {currentRootError ? <FormLevelError message={currentRootError} /> : null}
 
       <Form {...form}>
         <form
@@ -84,12 +95,15 @@ export function LoginForm({
                   <FormLabel className="font-sans text-sm font-semibold text-ink">
                     Password
                   </FormLabel>
-                  <a
-                    href="/auth/forgot-password"
+                  <Link
+                    {...buildAuthRouteNavigation(
+                      "/auth/forgot-password",
+                      authReturnTo,
+                    )}
                     className="font-sans text-xs font-medium text-forge-teal hover:underline transition-colors focus:ring-2 focus:ring-forge-teal/20 outline-hidden"
                   >
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
                 <FormControl>
                   <div className="relative">
@@ -131,7 +145,10 @@ export function LoginForm({
           </Button>
 
           <SocialLoginDivider />
-          <GoogleAuthButton loading={loading} />
+          <GoogleAuthButton
+            loading={loading || googleLoading}
+            onClick={startGoogleAuth}
+          />
         </form>
       </Form>
 

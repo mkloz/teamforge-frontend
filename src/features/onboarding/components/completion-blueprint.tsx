@@ -1,4 +1,5 @@
 import { Button } from "@/shared/components/ui/button";
+import { PERSONALITY_INFO_BY_TYPE } from "../data/personality-metadata";
 import { motion } from "framer-motion";
 import { ArrowRight, Database, Fingerprint } from "lucide-react";
 import { VoronoiCatalyst } from "../../auth/components/voronoi-catalyst";
@@ -9,25 +10,6 @@ interface CompletionBlueprintProps {
   interestCount: number;
   onEnter: () => void;
 }
-
-const PERSONALITY_NICKNAMES: Record<PersonalityType, string> = {
-  INTJ: "The Architect",
-  INTP: "The Logician",
-  ENTJ: "The Commander",
-  ENTP: "The Debater",
-  INFJ: "The Advocate",
-  INFP: "The Mediator",
-  ENFJ: "The Protagonist",
-  ENFP: "The Campaigner",
-  ISTJ: "The Logistician",
-  ISFJ: "The Defender",
-  ESTJ: "The Executive",
-  ESFJ: "The Consul",
-  ISTP: "The Virtuoso",
-  ISFP: "The Adventurer",
-  ESTP: "The Entrepreneur",
-  ESFP: "The Entertainer",
-};
 
 const fadeUp = {
   initial: { opacity: 0, y: 30 },
@@ -49,7 +31,7 @@ export function CompletionBlueprint({
   onEnter,
 }: CompletionBlueprintProps) {
   const nickname = personalityType
-    ? PERSONALITY_NICKNAMES[personalityType]
+    ? PERSONALITY_INFO_BY_TYPE[personalityType]?.name
     : "The Forge Explorer";
 
   return (

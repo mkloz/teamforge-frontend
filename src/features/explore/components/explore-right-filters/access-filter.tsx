@@ -1,10 +1,10 @@
 import { cn } from "@/shared/lib/utils";
 import { Handshake, Unlock, Users } from "lucide-react";
-import { useExploreStore } from "../../store/use-explore-store";
+import { useExploreRouteState } from "../../hooks/use-explore-route-state";
 import type { ExploreAccessMode } from "../../schemas/explore-filters.schema";
 
 export function AccessFilter() {
-  const { access, setAccess } = useExploreStore();
+  const { access, setAccess } = useExploreRouteState();
 
   return (
     <section className="space-y-2">

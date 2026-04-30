@@ -1,5 +1,7 @@
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
+import { buildActivityGroupHubNavigation } from "@/shared/lib/activity-route";
+import { Link } from "@tanstack/react-router";
 import type { ExploreGroup } from "@/shared/schemas";
 import { useJoinExploreGroup } from "../../hooks/use-join-explore-group";
 
@@ -21,7 +23,7 @@ export function CardFooter({
   const title = group.plan?.title || group.activity.title || "Activity";
   const joinMutation = useJoinExploreGroup(group.id);
   const isPending = joinMutation.isPending;
-  const joinResult = joinMutation.data?.status;
+  const joinResult = joinMutation.data?.data.status;
   const spotsLeft = capacity > 0 ? Math.max(0, capacity - currentSize) : null;
   const actionLabel = isFull
     ? "Full"
@@ -118,18 +120,30 @@ export function CardFooter({
         className="contents"
         onClick={(e) => e.stopPropagation()}
       >
-        <Button
-          variant={isFull ? "outline" : "primary"}
-          size={isCompact ? "sm" : "default"}
-          disabled={isFull || isPending || joinResult !== undefined}
-          onClick={() => joinMutation.mutate()}
-          className={cn(
-            "shrink-0 z-20 shadow-sm",
-            isFull && "opacity-50 pointer-events-none hidden md:inline-flex",
-          )}
-        >
-          {actionLabel}
-        </Button>
+        {joinResult === "JOINED" && joinMutation.data?.data.groupId ? (
+          <Button asChild variant="primary" size={isCompact ? "sm" : "default"}>
+            <Link
+              {...buildActivityGroupHubNavigation(
+                joinMutation.data.data.groupId,
+              )}
+            >
+              Open group
+            </Link>
+          </Button>
+        ) : (
+          <Button
+            variant={isFull ? "outline" : "primary"}
+            size={isCompact ? "sm" : "default"}
+            disabled={isFull || isPending || joinResult !== undefined}
+            onClick={() => joinMutation.mutate()}
+            className={cn(
+              "shrink-0 z-20 shadow-sm",
+              isFull && "opacity-50 pointer-events-none hidden md:inline-flex",
+            )}
+          >
+            {actionLabel}
+          </Button>
+        )}
       </button>
     </div>
   );

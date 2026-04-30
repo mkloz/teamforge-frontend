@@ -1,4 +1,5 @@
 import { ExploreFeed } from "./components/explore-feed";
+import { FriendRequestReview } from "./components/friend-request-review";
 import { ExploreLeftSection } from "./components/explore-left-section";
 import { ExploreRightFilters } from "./components/explore-right-filters";
 import { ExploreSearchHeader } from "./components/explore-search-header";
@@ -17,6 +18,7 @@ export function ExplorePage() {
         {/* CENTER FEED: Search & Results - Always the reference height for sidebars */}
         <main className="col-span-1 lg:col-span-8 xl:col-span-6 flex flex-col min-w-0 min-h-[120vh] pb-32">
           <ExploreSearchHeader />
+          <FriendRequestReview />
           <ExploreFeed />
         </main>
 

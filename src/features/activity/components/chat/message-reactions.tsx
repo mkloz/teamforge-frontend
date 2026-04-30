@@ -18,12 +18,14 @@ interface MessageReactionsProps {
   reactions?: ReactionGroup[];
   isOwn?: boolean;
   className?: string;
+  onToggleReaction?: (emoji: string) => void;
 }
 
 export const MessageReactions = memo(function MessageReactions({
   reactions,
   isOwn,
   className,
+  onToggleReaction,
 }: MessageReactionsProps) {
   if (!reactions || reactions.length === 0) return null;
 
@@ -48,6 +50,7 @@ export const MessageReactions = memo(function MessageReactions({
                     ? "bg-forge-teal/10 border-forge-teal/20 text-forge-teal shadow-[0_2px_8px_-2px_rgba(13,148,136,0.2)]"
                     : "border-transparent",
                 )}
+                onClick={() => onToggleReaction?.(reaction.emoji)}
               >
                 <span className="text-xs leading-none">{reaction.emoji}</span>
                 {reaction.count > 1 && (

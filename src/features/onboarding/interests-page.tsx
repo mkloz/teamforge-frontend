@@ -3,13 +3,15 @@ import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { Button } from "@/shared/components/ui/button";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 import { cn } from "@/shared/lib/utils";
+import { useNavigate } from "@tanstack/react-router";
+import { resolveOnboardingExitNavigation } from "@/features/auth/lib/auth-navigation";
 import {
   AnimatePresence,
   motion,
   useScroll,
   useTransform,
 } from "framer-motion";
-import { useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { VoronoiCatalyst } from "../auth/components/voronoi-catalyst";
 import { CompletionBlueprint } from "./components/completion-blueprint";
 import {
@@ -24,31 +26,62 @@ import {
   InterestsReviewHeader,
 } from "./components/interests/interests-review";
 import { MIN_INTERESTS } from "./data/interests-data";
+import { useOnboardingFlowState } from "./lib/onboarding-flow-state";
 import { useInterests, type UseInterestsReturn } from "./hooks/use-interests";
 
 export function InterestsPage() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isDone, setIsDone] = useState(false);
+  const [didFinishEdit, setDidFinishEdit] = useState(false);
+  const navigate = useNavigate();
+  const { isEditMode, mbti, returnTo, returnSearch, returnSection } =
+    useOnboardingFlowState();
 
   const state = useInterests({
+    personalityTypeHint: mbti,
     onComplete: () => {
+      if (isEditMode) {
+        setDidFinishEdit(true);
+        return;
+      }
+
       setIsDone(true);
     },
   });
+  const { reset, screen, setScreen } = state;
 
-  // Auto-scroll on screen change
+  useEffect(() => {
+    if (isEditMode && screen === "intro") {
+      setScreen("browse");
+    }
+  }, [isEditMode, screen, setScreen]);
+
+  useEffect(() => {
+    if (!didFinishEdit) {
+      return;
+    }
+
+    reset();
+    void navigate(
+      resolveOnboardingExitNavigation(
+        returnTo,
+        returnSearch,
+        returnSection,
+        "settings",
+      ),
+    );
+  }, [didFinishEdit, navigate, reset, returnSearch, returnSection, returnTo]);
+
   useScrollToTop([state.screen], scrollContainerRef);
 
   const progress = Math.min(state.selectedCount / MIN_INTERESTS, 1);
 
   return (
     <div className="h-screen w-full max-h-dvh flex flex-col lg:flex-row relative overflow-hidden">
-      {/* ── Left – Visual Sidebar (Voronoi) ── */}
       <aside className="hidden lg:flex flex-1 relative bg-hero-bg border-r border-slate-muted/10 items-center justify-center overflow-hidden h-full">
         <VoronoiCatalyst progress={progress} />
       </aside>
 
-      {/* ── Right – Interactive Form Pane ── */}
       <main className="flex-1 flex flex-col h-full overflow-hidden relative bg-canvas">
         <BackgroundTexture />
 
@@ -150,17 +183,24 @@ export function InterestsPage() {
           </div>
         </div>
 
-        <InterestsFooter state={state} />
+        <InterestsFooter state={state} isEditMode={isEditMode} />
       </main>
 
-      {/* ── Success Overlay (Blueprint) ── */}
       <AnimatePresence>
         {isDone && (
           <CompletionBlueprint
             personalityType={state.personalityType}
             interestCount={state.selectedCount}
             onEnter={() => {
-              window.location.href = "/home";
+              state.reset();
+              void navigate(
+                resolveOnboardingExitNavigation(
+                  returnTo,
+                  returnSearch,
+                  returnSection,
+                  "home",
+                ),
+              );
             }}
           />
         )}
@@ -168,8 +208,6 @@ export function InterestsPage() {
     </div>
   );
 }
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
 
 export function Decorations({ progress }: { progress: number }) {
   return (
@@ -205,7 +243,6 @@ function PersistentHeader({
       <div className="max-w-xl mx-auto lg:px-0 px-4 sm:px-5">
         {state.screen === "browse" && (
           <div className="flex flex-col mb-1">
-            {/* Tier 1: Pills */}
             <motion.div style={{ opacity: headerOpacity }}>
               <InterestsBrowseHeader
                 categories={state.categories}
@@ -216,7 +253,6 @@ function PersistentHeader({
               />
             </motion.div>
 
-            {/* Tier 2: Search */}
             <InterestsBrowseHeader
               categories={state.categories}
               searchQuery={state.searchQuery}
@@ -235,7 +271,13 @@ function PersistentHeader({
   );
 }
 
-function InterestsFooter({ state }: { state: UseInterestsReturn }) {
+function InterestsFooter({
+  state,
+  isEditMode,
+}: {
+  state: UseInterestsReturn;
+  isEditMode: boolean;
+}) {
   return (
     <div className="shrink-0 w-full relative z-30 bg-canvas border-t border-slate-muted/10">
       <div className="max-w-xl mx-auto lg:px-0 px-4 sm:px-5 w-full">
@@ -256,6 +298,7 @@ function InterestsFooter({ state }: { state: UseInterestsReturn }) {
             canConfirm={state.canContinue}
             onBack={state.goToBrowse}
             isSaving={state.isSaving}
+            confirmLabel={isEditMode ? "Save Interests" : "Confirm & Finish"}
           />
         )}
       </div>

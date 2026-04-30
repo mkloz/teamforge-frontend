@@ -9,7 +9,9 @@ import type {
 } from "../schemas/explore-filters.schema";
 
 interface ExploreState extends ExploreFilters {
+  searchQuery: string;
   // Actions
+  setSearchQuery: (query: string) => void;
   setSelectedCategories: (categories: (PlanCategory | "ALL")[]) => void;
   setSizeRange: (range: [number, number]) => void;
   setDistance: (distance: number) => void;
@@ -25,7 +27,9 @@ interface ExploreState extends ExploreFilters {
 
 export const useExploreStore = create<ExploreState>((set, get) => ({
   ...DEFAULT_FILTERS,
+  searchQuery: "",
 
+  setSearchQuery: (searchQuery) => set({ searchQuery }),
   setSelectedCategories: (selectedCategories) => set({ selectedCategories }),
   setSizeRange: (sizeRange) => set({ sizeRange }),
   setDistance: (distance) => set({ distance }),
@@ -35,6 +39,7 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
 
   resetFilters: () =>
     set({
+      searchQuery: "",
       selectedCategories: DEFAULT_FILTERS.selectedCategories,
       sizeRange: DEFAULT_FILTERS.sizeRange,
       distance: DEFAULT_FILTERS.distance,

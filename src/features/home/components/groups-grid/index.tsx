@@ -1,3 +1,5 @@
+import { buildActivityNavigation } from "@/shared/lib/activity-route";
+import { buildExploreNavigation } from "@/shared/lib/explore-route";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
@@ -35,7 +37,7 @@ export function GroupsGrid() {
         </h2>
 
         <Link
-          to="/activity"
+          {...buildActivityNavigation()}
           className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
         >
           View all
@@ -69,7 +71,7 @@ export function GroupsGrid() {
         transition={{ delay: groups.length * 0.05 + 0.1 }}
       >
         <Link
-          to="/explore"
+          {...buildExploreNavigation()}
           className={cn(
             "mt-3 flex items-center justify-center gap-1.5 w-full py-2.5 rounded-2xl",
             "border border-dashed border-border",

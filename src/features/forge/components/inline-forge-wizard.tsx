@@ -5,6 +5,7 @@ import { Check, ChevronLeft, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ForgeLoadingAnvil } from "./loading/forge-loading-anvil";
 import { useForgeWizard } from "../hooks/use-forge-wizard";
+import { useForgeRouteState } from "../hooks/use-forge-route-state";
 
 import { Step1Activity } from "./steps/step1-activity";
 import { Step2Plan } from "./steps/step2-plan";
@@ -34,7 +35,18 @@ interface InlineForgeWizardProps {
 }
 
 export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
-  const fw = useForgeWizard(onCancel);
+  const routeState = useForgeRouteState();
+  const fw = useForgeWizard({
+    onClose: onCancel,
+    routeStep: routeState.step,
+    routeMode: routeState.forgeMode,
+    routeActivityId: routeState.activityId,
+    routeGroupId: routeState.groupId,
+    syncStep: routeState.setStep,
+    syncMode: routeState.setForgeMode,
+    syncTargets: routeState.setForgeTargets,
+    enterGroupHub: routeState.enterGroupHub,
+  });
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const hasProgress = fw.step > 1 || fw.selectedActivity !== null;
 
@@ -112,10 +124,10 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
           <Button
             variant="primary"
             size="lg"
-            onClick={fw.close}
+            onClick={() => void fw.handleEnterGroupHub()}
             className="w-full rounded-2xl text-base font-bold"
           >
-            Done
+            Open group hub
           </Button>
         </motion.div>
       </motion.div>
@@ -348,7 +360,7 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
       </div>
 
       {/* ── Unified Footer Component ── */}
-      <ForgeFooter fw={fw} onCancel={onCancel} />
+      <ForgeFooter fw={fw} />
     </motion.div>
   );
 }

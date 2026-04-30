@@ -4,11 +4,11 @@ import {
   IPIP_QUESTIONS,
   type TestLength,
 } from "../data/ipip-questions";
+import type { PersonalityEvaluation } from "../lib/personality-evaluation";
 import type {
   OceanVectorWithMeta,
   RawAnswers,
 } from "../utils/score-calculator";
-import type { PersonalityResult } from "../utils/type-translation";
 
 // ─── Screen state ─────────────────────────────────────────────────────────────
 
@@ -29,7 +29,7 @@ interface PersonalityTestSnapshot {
   testLength: TestLength;
   questionIds: number[];
   answers: RawAnswers;
-  result: PersonalityResult | null;
+  result: PersonalityEvaluation | null;
   vector: OceanVectorWithMeta | null;
   previousScreen: ScreenState | null;
   isReviewMode: boolean;
@@ -40,11 +40,10 @@ interface PersonalityTestSnapshot {
 interface PersonalityTestState extends PersonalityTestSnapshot {
   // Actions
   setScreen: (screen: ScreenState) => void;
-  setTestLength: (length: TestLength) => void;
   beginTest: (length: TestLength, questionIds: number[]) => void;
   setAnswer: (questionId: number, val: 1 | 2 | 3 | 4 | 5) => void;
   setResultData: (
-    result: PersonalityResult,
+    result: PersonalityEvaluation,
     vector: OceanVectorWithMeta,
   ) => void;
   updateTestLength: (length: TestLength) => void;
@@ -74,8 +73,6 @@ export const usePersonalityTestStore = create<PersonalityTestState>()(
       })),
 
     setIsReviewMode: (isReviewMode: boolean) => set({ isReviewMode }),
-
-    setTestLength: (testLength) => set({ testLength }),
 
     beginTest: (testLength, questionIds) =>
       set({

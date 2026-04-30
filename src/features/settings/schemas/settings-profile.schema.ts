@@ -3,6 +3,7 @@ import { z } from "zod";
 import { genderSchema } from "@/shared/schemas/enums";
 
 const agePattern = /^\d+$/;
+export const unspecifiedGenderValue = "UNSPECIFIED" as const;
 
 export const settingsProfileSchema = z.object({
   name: z
@@ -25,7 +26,11 @@ export const settingsProfileSchema = z.object({
       const age = Number(value);
       return age >= 18 && age <= 99;
     }, "Age must be between 18 and 99."),
-  gender: z.union([genderSchema, z.literal("")]),
+  gender: z.union([
+    genderSchema,
+    z.literal(""),
+    z.literal(unspecifiedGenderValue),
+  ]),
   city: z.string().trim().max(120, "Keep your city under 120 characters."),
   bio: z.string().trim().max(280, "Keep your bio under 280 characters."),
 });

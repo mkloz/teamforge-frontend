@@ -13,6 +13,9 @@ interface InputRowProps {
   textareaRef: React.RefObject<HTMLTextAreaElement | null>;
   placeholder: string;
   disabled: boolean;
+  canAttach?: boolean;
+  onSelectImages: (files: File[]) => void;
+  onSelectFiles: (files: File[]) => void;
 }
 
 export const InputRow = memo(
@@ -25,6 +28,9 @@ export const InputRow = memo(
     textareaRef,
     placeholder,
     disabled,
+    canAttach = true,
+    onSelectImages,
+    onSelectFiles,
   }: InputRowProps) => (
     <>
       <div className="shrink-0 flex items-end pb-1 pl-2">
@@ -60,9 +66,15 @@ export const InputRow = memo(
         />
       </div>
 
-      <div className="shrink-0 flex items-end pb-1 pr-2">
-        <AttachmentMenu disabled={disabled} />
-      </div>
+      {canAttach && (
+        <div className="shrink-0 flex items-end pb-1 pr-2">
+          <AttachmentMenu
+            disabled={disabled}
+            onSelectImages={onSelectImages}
+            onSelectFiles={onSelectFiles}
+          />
+        </div>
+      )}
     </>
   ),
 );

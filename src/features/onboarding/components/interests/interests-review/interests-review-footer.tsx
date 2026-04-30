@@ -6,6 +6,7 @@ interface InterestsReviewFooterProps {
   canConfirm: boolean;
   onBack: () => void;
   isSaving?: boolean;
+  confirmLabel?: string;
 }
 
 export function InterestsReviewFooter({
@@ -13,6 +14,7 @@ export function InterestsReviewFooter({
   canConfirm,
   onBack,
   isSaving = false,
+  confirmLabel = "Confirm & Finish",
 }: InterestsReviewFooterProps) {
   return (
     <div className="w-full flex items-center gap-3 pt-4 pb-6 sm:pb-5">
@@ -26,7 +28,7 @@ export function InterestsReviewFooter({
         disabled={!canConfirm || isSaving}
         className="flex-1"
       >
-        {isSaving ? "Saving…" : "Confirm & Finish"}
+        {isSaving ? "Saving…" : confirmLabel}
         <CheckCircle2 size={18} />
       </Button>
     </div>

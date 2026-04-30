@@ -15,6 +15,7 @@ interface VoiceNoteProps {
  * VoiceNote - Refined, interactive voice message component.
  */
 export const VoiceNote = memo(function VoiceNote({
+  url,
   duration = 120, // Default to 2 mins for demo
   isOwn = false,
 }: VoiceNoteProps) {
@@ -24,17 +25,20 @@ export const VoiceNote = memo(function VoiceNote({
     playbackSpeed,
     bars,
     barCount,
+    durationSeconds,
     togglePlay,
     seek,
     toggleSpeed,
     formatTime,
-  } = useAudioPlayer();
+  } = useAudioPlayer(url);
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     seek(x / rect.width);
   };
+
+  const totalDuration = durationSeconds > 0 ? durationSeconds : duration;
 
   return (
     <div
@@ -157,8 +161,10 @@ export const VoiceNote = memo(function VoiceNote({
             : "text-slate-muted flex-row",
         )}
       >
-        <span className="tabular-nums">{formatTime(duration * progress)}</span>
-        <span className="tabular-nums">{formatTime(duration)}</span>
+        <span className="tabular-nums">
+          {formatTime(totalDuration * progress)}
+        </span>
+        <span className="tabular-nums">{formatTime(totalDuration)}</span>
       </div>
     </div>
   );

@@ -3,37 +3,29 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
+import type { AppNavigationItem } from "@/shared/lib/app-navigation";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
-import type { LucideIcon } from "lucide-react";
 import { useActiveRoute } from "../hooks/use-active-route";
 
 interface NavItemProps {
-  to: string;
-  icon: LucideIcon;
-  label: string;
-  badge?: number;
-  /** Match on prefix instead of exact path (e.g. /activity matches /activity/groups/123) */
-  matchPrefix?: boolean;
+  item: AppNavigationItem;
 }
 
-export function NavItem({
-  to,
-  icon: Icon,
-  label,
-  badge,
-  matchPrefix = false,
-}: NavItemProps) {
+export function NavItem({ item }: NavItemProps) {
   const { isActive, startsWith } = useActiveRoute();
-  const active = matchPrefix ? startsWith(to) : isActive(to);
+  const Icon = item.icon;
+  const activePath = item.navigation.to;
+  const active =
+    item.matchMode === "prefix" ? startsWith(activePath) : isActive(activePath);
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <Link
-          to={to}
+          {...item.navigation}
           aria-current={active ? "page" : undefined}
-          aria-label={label}
+          aria-label={item.label}
           className={cn(
             "group relative flex items-center rounded-xl transition-colors duration-150",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
@@ -65,21 +57,21 @@ export function NavItem({
               aria-hidden="true"
             />
 
-            {badge != null && badge > 0 && (
+            {item.badge != null && item.badge > 0 && (
               <span
                 className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground shadow-sm border-2 border-sidebar"
-                aria-label={`${badge} unread`}
+                aria-label={`${item.badge} unread`}
               >
-                {badge > 9 ? "9+" : badge}
+                {item.badge > 9 ? "9+" : item.badge}
               </span>
             )}
           </div>
-          <span className="sr-only">{label}</span>
+          <span className="sr-only">{item.label}</span>
         </Link>
       </TooltipTrigger>
       <TooltipContent side="right">
-        {label}
-        {badge != null && badge > 0 && ` (${badge})`}
+        {item.label}
+        {item.badge != null && item.badge > 0 && ` (${item.badge})`}
       </TooltipContent>
     </Tooltip>
   );

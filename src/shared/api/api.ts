@@ -9,8 +9,14 @@ interface ApiRequestContext {
   retryOnUnauthorized?: boolean;
 }
 
+export interface ApiResponseWithRequestId<T> {
+  data: T;
+  requestId: string | null;
+}
+
 const AUTH_REFRESH_PATH = "auth/refresh";
 const AUTH_LOGOUT_PATH = "auth/logout";
+export const REQUEST_ID_HEADER = "x-request-id";
 
 let refreshPromise: Promise<AuthTokens | null> | null = null;
 
@@ -84,8 +90,21 @@ async function parseApiError(error: HTTPError) {
     .then((value) => value as ApiException)
     .catch(() => null);
 
+  const requestId = error.response.headers.get(REQUEST_ID_HEADER);
+
   if (!payload) {
+    if (requestId) {
+      Object.defineProperty(error, "cause", {
+        value: { requestId },
+        configurable: true,
+      });
+    }
+
     return error;
+  }
+
+  if (requestId && !payload.requestId) {
+    payload.requestId = requestId;
   }
 
   if (payload.message && payload.message.trim().length > 0) {
@@ -168,6 +187,22 @@ export const authApi = {
     authSession.setTokens(tokens);
   },
 };
+
+export function getResponseRequestId(response: Response) {
+  return response.headers.get(REQUEST_ID_HEADER);
+}
+
+export async function parseJsonWithRequestId<T>(
+  response: Response,
+  parse: (value: unknown) => T,
+): Promise<ApiResponseWithRequestId<T>> {
+  const payload = (await response.json()) as unknown;
+
+  return {
+    data: parse(payload),
+    requestId: getResponseRequestId(response),
+  };
+}
 
 export const apiClient = ky.create({
   prefixUrl: config.apiUrl,

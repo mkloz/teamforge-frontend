@@ -21,16 +21,35 @@ import type { RegisterValues } from "../../schemas/auth-schemas";
 interface StepOtpProps {
   onBack: () => void;
   loading: boolean;
+  resendLoading: boolean;
+  email: string;
+  otpMessage?: string | null;
+  onResend: () => void;
 }
 
 const OTP_SLOT_CLASS =
   "h-12 w-10 sm:w-12 max-w-[48px] rounded-xl border border-border bg-white font-mono text-lg hover:border-forge-teal/40 transition-all duration-200 focus-within:border-forge-teal focus-within:ring-2 focus-within:ring-forge-teal/15";
 
-export function StepOtp({ onBack, loading }: StepOtpProps) {
+export function StepOtp({
+  onBack,
+  loading,
+  resendLoading,
+  email,
+  otpMessage,
+  onResend,
+}: StepOtpProps) {
   const { control } = useFormContext<RegisterValues>();
 
   return (
     <div className="flex flex-col gap-4">
+      <div className="rounded-2xl border border-border bg-card px-4 py-3 text-sm text-foreground">
+        <p className="font-medium text-foreground">Check your inbox</p>
+        <p className="mt-1 text-slate-muted">
+          {otpMessage ??
+            `We sent a 6-digit code to ${email}. Enter it below to finish your account.`}
+        </p>
+      </div>
+
       <FormField
         control={control}
         name="otp"
@@ -84,8 +103,19 @@ export function StepOtp({ onBack, loading }: StepOtpProps) {
 
       <Button
         type="button"
+        variant="outline"
+        disabled={loading || resendLoading}
+        onClick={onResend}
+        size="sm"
+        className="w-full"
+      >
+        {resendLoading ? "Sending a fresh code..." : "Resend code"}
+      </Button>
+
+      <Button
+        type="button"
         variant="ghost"
-        disabled={loading}
+        disabled={loading || resendLoading}
         onClick={onBack}
         size="sm"
         className="mt-2 text-slate-muted hover:text-ink hover:bg-transparent"

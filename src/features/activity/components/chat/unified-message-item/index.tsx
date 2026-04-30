@@ -1,7 +1,9 @@
 import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
+import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 import { memo } from "react";
+import { MessageActionsMenu } from "./message-actions-menu";
 import { MessageContent } from "./message-content";
 import { MessageFooter } from "./message-footer";
 import { MessageMedia } from "./message-media";
@@ -39,6 +41,15 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
     message,
     isOwn,
   });
+  const {
+    deleteMessage,
+    pinMessage,
+    retryMessage,
+    startEdit,
+    startReply,
+    toggleReaction,
+    unpinMessage,
+  } = useActivityMessageActions();
 
   return (
     <div className="relative group overflow-hidden">
@@ -70,6 +81,25 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
                 !content && "min-w-30",
               )}
             >
+              <div
+                className={cn(
+                  "absolute top-1.5 z-20 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100",
+                  isOwn ? "left-1.5" : "right-1.5",
+                  status === "FAILED" && "opacity-100",
+                )}
+              >
+                <MessageActionsMenu
+                  message={message}
+                  onDelete={deleteMessage}
+                  onPin={pinMessage}
+                  onReply={startReply}
+                  onRetry={retryMessage}
+                  onStartEdit={startEdit}
+                  onToggleReaction={toggleReaction}
+                  onUnpin={unpinMessage}
+                />
+              </div>
+
               <ReplyReference replyTo={replyTo} isOwn={isOwn} />
 
               <MessageMedia
@@ -99,6 +129,9 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
                 status={status}
                 isReadByOthers={isReadByOthers}
                 isEdited={message.isEdited}
+                onToggleReaction={(emoji) => {
+                  void toggleReaction(message, emoji);
+                }}
               />
             </div>
           </div>

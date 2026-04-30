@@ -1,9 +1,15 @@
 import { AuthApi } from "@/features/auth/api/auth.api";
 import { AuthQueries } from "@/features/auth/api/auth.queries";
+import {
+  buildAuthRouteNavigation,
+  buildRouteLocationHref,
+} from "@/features/auth/lib/auth-return";
+import { buildProfileNavigation } from "@/shared/lib/app-route";
 import { Button } from "@/shared/components/ui/button";
+import { buildSettingsNavigation } from "@/shared/lib/settings-route";
 import { cn } from "@/shared/lib/utils";
 import { Theme, useTheme } from "@/shared/store/theme.store";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { LogOut, Moon, Settings, Sun, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useUserMenu } from "../hooks/use-user-menu";
@@ -27,6 +33,9 @@ export function UserMenu() {
   const { open, toggle, close } = useUserMenu();
   const { theme, setTheme, isDark } = useTheme();
   const { data: currentUser } = AuthQueries.useCurrentUser();
+  const currentLocation = useRouterState({
+    select: (state) => state.location,
+  });
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -63,11 +72,12 @@ export function UserMenu() {
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
+    const returnHref = buildRouteLocationHref(currentLocation);
 
     try {
       await AuthApi.logoutUser();
       close();
-      await navigate({ to: "/" });
+      await navigate(buildAuthRouteNavigation("/auth/login", returnHref));
     } finally {
       setIsSigningOut(false);
     }
@@ -165,7 +175,7 @@ export function UserMenu() {
 
           {/* Profile */}
           <Link
-            to="/profile"
+            {...buildProfileNavigation()}
             role="menuitem"
             onClick={close}
             className={cn(
@@ -184,7 +194,7 @@ export function UserMenu() {
 
           {/* Settings */}
           <Link
-            to="/settings"
+            {...buildSettingsNavigation()}
             role="menuitem"
             onClick={close}
             className={cn(

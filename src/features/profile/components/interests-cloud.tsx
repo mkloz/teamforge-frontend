@@ -11,9 +11,12 @@ import {
   Mountain,
   Coffee,
 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { buildInterestsEditNavigation } from "@/shared/lib/onboarding-route";
 import { cn } from "@/shared/lib/utils";
 import type { Interest as SharedInterest } from "@/shared/schemas";
 import { SectionTitle } from "./section-title";
+import { Button } from "@/shared/components/ui/button";
 
 interface InterestsCloudProps {
   interests: SharedInterest[];
@@ -45,9 +48,20 @@ export function InterestsCloud({ interests }: InterestsCloudProps) {
           ))}
         </div>
       ) : (
-        <p className="text-sm font-medium text-slate-muted">
-          No interests have been saved yet.
-        </p>
+        <div className="flex flex-col items-start gap-3">
+          <p className="text-sm font-medium text-slate-muted">
+            No interests have been saved yet.
+          </p>
+          <Button asChild variant="outline" size="sm">
+            <Link
+              {...buildInterestsEditNavigation({
+                returnTo: "/profile",
+              })}
+            >
+              Add interests
+            </Link>
+          </Button>
+        </div>
       )}
     </div>
   );

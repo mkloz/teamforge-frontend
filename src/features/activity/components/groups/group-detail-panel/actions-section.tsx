@@ -1,53 +1,84 @@
-import { CalendarPlus, Share2, BellOff, LogOut, Flag } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
+import { BellOff, Flag, LogOut, ShieldAlert } from "lucide-react";
+
+import type {
+  GroupStatus,
+  MemberRole,
+} from "@/features/activity/lib/activity-contract";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/shared/components/ui/alert-dialog";
 import { Button } from "@/shared/components/ui/button";
-import type { GroupStatus } from "@/features/activity/lib/activity-contract";
+import { cn } from "@/shared/lib/utils";
 
 interface ActionsSectionProps {
-  groupId: string;
+  currentUserRole: MemberRole;
   groupStatus: GroupStatus;
+  isDisbanding?: boolean;
+  isLeaving?: boolean;
+  onDisbandGroup: () => Promise<void> | void;
+  onLeaveGroup: () => Promise<void> | void;
 }
 
-export function ActionsSection({ groupStatus }: ActionsSectionProps) {
+export function ActionsSection({
+  currentUserRole,
+  groupStatus,
+  isDisbanding = false,
+  isLeaving = false,
+  onDisbandGroup,
+  onLeaveGroup,
+}: ActionsSectionProps) {
   const isCompleted =
     groupStatus === "COMPLETED" || groupStatus === "DISBANDED";
+  const canDisband = currentUserRole === "ADMIN" && !isCompleted;
 
   return (
     <section className="space-y-2">
-      <h3 className="text-sm font-bold text-foreground uppercase tracking-widest mb-3">
+      <h3 className="mb-3 text-sm font-bold uppercase tracking-widest text-foreground">
         Actions
       </h3>
 
-      {/* Primary actions */}
-      {!isCompleted && (
-        <>
-          <ActionButton
-            icon={<CalendarPlus size={16} />}
-            label="Add to Calendar"
-            onClick={() => console.log("Add to calendar")}
-          />
-          <ActionButton
-            icon={<Share2 size={16} />}
-            label="Share Group"
-            onClick={() => console.log("Share group")}
-          />
-          <ActionButton
-            icon={<BellOff size={16} />}
-            label="Mute Notifications"
-            onClick={() => console.log("Mute notifications")}
-          />
-        </>
-      )}
-
-      {/* Separator */}
-      <div className="border-t border-border my-2.5" />
-
-      {/* Destructive actions */}
       {!isCompleted && (
         <ActionButton
+          icon={<BellOff size={16} />}
+          label="Mute Notifications"
+          onClick={() => {
+            // Kept as a visible future affordance until notification preferences land.
+          }}
+        />
+      )}
+
+      <div className="my-2.5 border-t border-border" />
+
+      {!isCompleted && (
+        <ConfirmActionButton
+          confirmActionLabel={isLeaving ? "Leaving..." : "Leave Group"}
+          confirmDescription="You’ll leave this group and lose access to its chat and planning workspace."
+          confirmTitle="Leave this group?"
+          disabled={isLeaving || isDisbanding}
           icon={<LogOut size={16} />}
-          label="Leave Group"
-          onClick={() => console.log("Leave group")}
+          label={isLeaving ? "Leaving..." : "Leave Group"}
+          onConfirm={onLeaveGroup}
+          variant="destructive"
+        />
+      )}
+
+      {canDisband && (
+        <ConfirmActionButton
+          confirmActionLabel={isDisbanding ? "Disbanding..." : "Disband Group"}
+          confirmDescription="This will close the group for everyone, cancel unfinished plans, and remove access to the shared workspace."
+          confirmTitle="Disband this group?"
+          disabled={isDisbanding || isLeaving}
+          icon={<ShieldAlert size={16} />}
+          label={isDisbanding ? "Disbanding..." : "Disband Group"}
+          onConfirm={onDisbandGroup}
           variant="destructive"
         />
       )}
@@ -55,7 +86,9 @@ export function ActionsSection({ groupStatus }: ActionsSectionProps) {
       <ActionButton
         icon={<Flag size={16} />}
         label="Report Group"
-        onClick={() => console.log("Report group")}
+        onClick={() => {
+          // TODO: wire report flow when moderation endpoints exist.
+        }}
         variant="muted"
       />
     </section>
@@ -63,6 +96,7 @@ export function ActionsSection({ groupStatus }: ActionsSectionProps) {
 }
 
 interface ActionButtonProps {
+  disabled?: boolean;
   icon: React.ReactNode;
   label: string;
   onClick: () => void;
@@ -70,6 +104,7 @@ interface ActionButtonProps {
 }
 
 function ActionButton({
+  disabled = false,
   icon,
   label,
   onClick,
@@ -78,18 +113,19 @@ function ActionButton({
   return (
     <Button
       variant="ghost"
+      disabled={disabled}
       onClick={onClick}
       className={cn(
-        "w-full h-auto flex items-center justify-start gap-4 px-3 py-2.5 rounded-xl border border-transparent shadow-none transition-all duration-200 group",
+        "h-auto w-full justify-start gap-4 rounded-xl border border-transparent px-3 py-2.5 shadow-none transition-all duration-200 group",
         variant === "default" && "text-ink hover:bg-muted/80",
         variant === "destructive" &&
-          "text-red-500 hover:bg-red-500/10 hover:border-red-500/20",
+          "text-red-500 hover:border-red-500/20 hover:bg-red-500/10",
         variant === "muted" && "text-slate-muted hover:bg-muted hover:text-ink",
       )}
     >
       <span
         className={cn(
-          "shrink-0 p-2 rounded-lg transition-colors",
+          "shrink-0 rounded-lg p-2 transition-colors",
           variant === "default" &&
             "bg-muted group-hover:bg-ink group-hover:text-white",
           variant === "destructive" &&
@@ -102,5 +138,66 @@ function ActionButton({
       </span>
       <span className="text-sm font-bold tracking-tight">{label}</span>
     </Button>
+  );
+}
+
+interface ConfirmActionButtonProps extends Omit<ActionButtonProps, "onClick"> {
+  confirmActionLabel: string;
+  confirmDescription: string;
+  confirmTitle: string;
+  onConfirm: () => Promise<void> | void;
+}
+
+function ConfirmActionButton({
+  confirmActionLabel,
+  confirmDescription,
+  confirmTitle,
+  disabled = false,
+  icon,
+  label,
+  onConfirm,
+  variant = "default",
+}: ConfirmActionButtonProps) {
+  if (disabled) {
+    return (
+      <ActionButton
+        disabled
+        icon={icon}
+        label={label}
+        onClick={() => {}}
+        variant={variant}
+      />
+    );
+  }
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <div className="w-full">
+          <ActionButton
+            icon={icon}
+            label={label}
+            onClick={() => {}}
+            variant={variant}
+          />
+        </div>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{confirmTitle}</AlertDialogTitle>
+          <AlertDialogDescription>{confirmDescription}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => {
+              void onConfirm();
+            }}
+          >
+            {confirmActionLabel}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

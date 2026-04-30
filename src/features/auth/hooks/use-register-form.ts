@@ -1,11 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
+import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import { AuthApi } from "../api/auth.api";
 import { registerSchema, type RegisterValues } from "../schemas/auth-schemas";
 
 interface UseRegisterFormOptions {
-  onSuccess?: () => void;
+  onSuccess?: () => void | Promise<void>;
   onProgress?: (progress: number) => void;
 }
 
@@ -21,7 +23,9 @@ export function useRegisterForm({
   const [step, setStep] = useState<Step>(1);
   const [direction, setDirection] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
   const [rootError, setRootError] = useState<string | null>(null);
+  const [otpMessage, setOtpMessage] = useState<string | null>(null);
 
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -72,9 +76,35 @@ export function useRegisterForm({
   const goToStep3 = useCallback(async () => {
     setRootError(null);
     const isValid = await form.trigger(["age", "city", "gender"]);
-    if (isValid) {
+    if (!isValid) {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const result = await AuthApi.registerWithEmail(form.getValues());
+      trackMutationOutcome(trackedMutationNames.authRegisterEmail, "success", {
+        requestId: result.requestId,
+      });
+      setOtpMessage(
+        `We sent a 6-digit verification code to ${form.getValues("email")}.`,
+      );
       setDirection(1);
       setStep(3);
+    } catch (error) {
+      captureException(trackedMutationNames.authRegisterEmail, error, {
+        emailDomain: form.getValues("email").split("@")[1] ?? "unknown",
+      });
+      trackMutationOutcome(trackedMutationNames.authRegisterEmail, "error");
+      setRootError(
+        AuthApi.getAuthErrorMessage(
+          error,
+          "We couldn't start your verification step. Please try again.",
+        ),
+      );
+    } finally {
+      setLoading(false);
     }
   }, [form]);
 
@@ -98,13 +128,22 @@ export function useRegisterForm({
       setRootError(null);
       setLoading(true);
       try {
-        await AuthApi.registerWithEmail(formValues);
-        onSuccess?.();
+        const result = await AuthApi.verifyEmailOtp(formValues);
+        trackMutationOutcome(
+          trackedMutationNames.authVerifyEmailOtp,
+          "success",
+          {
+            requestId: result.requestId,
+          },
+        );
+        await onSuccess?.();
       } catch (error) {
+        captureException(trackedMutationNames.authVerifyEmailOtp, error);
+        trackMutationOutcome(trackedMutationNames.authVerifyEmailOtp, "error");
         setRootError(
           AuthApi.getAuthErrorMessage(
             error,
-            "We couldn't finish creating your account. Please try again.",
+            "We couldn't verify that code. Please try again.",
           ),
         );
       } finally {
@@ -114,16 +153,48 @@ export function useRegisterForm({
     [form, onSuccess],
   );
 
+  const resendOtp = useCallback(async () => {
+    const email = form.getValues("email");
+
+    setRootError(null);
+    setOtpMessage(null);
+    setResendLoading(true);
+
+    try {
+      const result = await AuthApi.resendEmailOtp(email);
+      trackMutationOutcome(trackedMutationNames.authResendEmailOtp, "success", {
+        requestId: result.requestId,
+      });
+      setOtpMessage(`A fresh verification code is on its way to ${email}.`);
+    } catch (error) {
+      captureException(trackedMutationNames.authResendEmailOtp, error, {
+        emailDomain: email.split("@")[1] ?? "unknown",
+      });
+      trackMutationOutcome(trackedMutationNames.authResendEmailOtp, "error");
+      setRootError(
+        AuthApi.getAuthErrorMessage(
+          error,
+          "We couldn't resend the verification code. Please try again.",
+        ),
+      );
+    } finally {
+      setResendLoading(false);
+    }
+  }, [form]);
+
   return {
     form,
     step,
     direction,
     loading,
+    resendLoading,
     rootError,
+    otpMessage,
     goToStep2,
     goToStep3,
     goBackToStep1,
     goBackToStep2,
     onSubmit,
+    resendOtp,
   };
 }

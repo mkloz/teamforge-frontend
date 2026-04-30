@@ -44,6 +44,12 @@ export function ActivityPage() {
     selectedDirectMessages,
     isTyping,
     typingUsers,
+    hasOlderMessages,
+    isLoadingOlderMessages,
+    loadOlderMessages,
+    focusedPlanId,
+    focusedProposalId,
+    focusedMessageId,
 
     // Actions
     setSearchQuery,
@@ -55,6 +61,8 @@ export function ActivityPage() {
     toggleProfilePanel,
     closeProfilePanel,
     handleSendMessage,
+    sendError,
+    clearSendError,
     sidebarDensity,
     setSidebarDensity,
   } = useActivity();
@@ -115,15 +123,23 @@ export function ActivityPage() {
                   data={selectedGroup}
                   messages={selectedGroupMessages}
                   typingUsers={typingUsers}
+                  focusedMessageId={focusedMessageId}
+                  hasOlderMessages={hasOlderMessages}
+                  isLoadingOlderMessages={isLoadingOlderMessages}
                   isActionOpen={groups.isDetailPanelOpen}
                   onBack={handleBack}
+                  onLoadOlderMessages={loadOlderMessages}
                   onToggleAction={toggleGroupDetail}
                   onSendMessage={handleSendMessage}
+                  sendError={sendError}
+                  onClearSendError={clearSendError}
                 />
               </div>
               <GroupDetailPanel
                 group={selectedGroup}
                 isOpen={groups.isDetailPanelOpen}
+                focusedPlanId={focusedPlanId}
+                focusedProposalId={focusedProposalId}
                 onClose={closeGroupDetail}
               />
             </motion.div>
@@ -142,10 +158,16 @@ export function ActivityPage() {
                   data={selectedChat}
                   messages={selectedDirectMessages}
                   isTyping={isTyping}
+                  focusedMessageId={focusedMessageId}
+                  hasOlderMessages={hasOlderMessages}
+                  isLoadingOlderMessages={isLoadingOlderMessages}
                   isActionOpen={direct.isProfilePanelOpen}
                   onBack={handleBack}
+                  onLoadOlderMessages={loadOlderMessages}
                   onToggleAction={toggleProfilePanel}
                   onSendMessage={handleSendMessage}
+                  sendError={sendError}
+                  onClearSendError={clearSendError}
                 />
               </div>
               <ProfilePanel

@@ -72,6 +72,7 @@ export type ForgeWizardField =
 
 export type ForgeWizardAction =
   | { type: "reset" }
+  | { type: "set-step"; step: Step; navDirection: NavDirection }
   | { type: "go-next" }
   | { type: "go-back" }
   | {
@@ -133,6 +134,12 @@ export function forgeWizardReducer(
   switch (action.type) {
     case "reset":
       return createInitialForgeWizardState();
+    case "set-step":
+      return {
+        ...state,
+        navDirection: action.navDirection,
+        step: action.step,
+      };
     case "go-next":
       return {
         ...state,
@@ -211,3 +218,5 @@ function getPreviousStep(step: Step): Step {
   if (step === 6) return 5;
   return step;
 }
+
+export { getNextStep, getPreviousStep };

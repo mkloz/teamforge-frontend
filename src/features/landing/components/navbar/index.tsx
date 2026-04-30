@@ -1,4 +1,9 @@
+import { AuthQueries } from "@/features/auth/api/auth.queries";
 import { useWindowScroll } from "../../hooks/use-window-scroll";
+import {
+  getLandingPrimaryAction,
+  getLandingSecondaryAction,
+} from "../../lib/landing-auth";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
@@ -17,6 +22,14 @@ export function Navbar() {
   const scrolled = useWindowScroll(60);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { isAuthenticated } = AuthQueries.useAuthSessionState();
+  const { data: currentUser } = AuthQueries.useCurrentUser();
+  const primaryAction = getLandingPrimaryAction(
+    isAuthenticated,
+    currentUser,
+    "Get Started",
+  );
+  const secondaryAction = getLandingSecondaryAction(isAuthenticated, "Log In");
 
   // Focus trap and body scroll lock
   useEffect(() => {
@@ -134,7 +147,9 @@ export function Navbar() {
               size="sm"
               className="hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none"
             >
-              <Link to="/auth/login">Log In</Link>
+              <Link {...secondaryAction.navigation}>
+                {secondaryAction.label}
+              </Link>
             </Button>
             <Button
               variant="primary"
@@ -142,7 +157,7 @@ export function Navbar() {
               size="sm"
               className="hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none"
             >
-              <Link to="/auth/register">Get Started</Link>
+              <Link {...primaryAction.navigation}>{primaryAction.label}</Link>
             </Button>
           </div>
 
@@ -206,8 +221,11 @@ export function Navbar() {
                 : "opacity-0 translate-y-4",
             )}
           >
-            <Link to="/auth/login" onClick={() => setMenuOpen(false)}>
-              Log In
+            <Link
+              {...secondaryAction.navigation}
+              onClick={() => setMenuOpen(false)}
+            >
+              {secondaryAction.label}
             </Link>
           </Button>
           <Button
@@ -222,8 +240,11 @@ export function Navbar() {
                 : "opacity-0 translate-y-4",
             )}
           >
-            <Link to="/auth/register" onClick={() => setMenuOpen(false)}>
-              Get Started
+            <Link
+              {...primaryAction.navigation}
+              onClick={() => setMenuOpen(false)}
+            >
+              {primaryAction.label}
             </Link>
           </Button>
         </div>
