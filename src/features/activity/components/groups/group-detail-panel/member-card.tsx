@@ -14,6 +14,7 @@ import { Badge } from "@/shared/components/ui/badge";
 import type { GroupMember } from "../../../lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
+import { Avatar } from "@/shared/components/common/avatar";
 
 interface MemberCardProps {
   canRemove?: boolean;
@@ -34,26 +35,38 @@ export function MemberCard({
   const isHighCompatibility = (member.compatibilityScore || 0) > 90;
   const onlineStatus = member.user?.onlineStatus;
 
+  const handleShowProfile = () => {
+    onShowProfile?.(member);
+  };
+
   return (
-    <button
-      onClick={() => onShowProfile?.(member)}
+    <div
+      role={onShowProfile ? "button" : undefined}
+      tabIndex={onShowProfile ? 0 : undefined}
+      onClick={onShowProfile ? handleShowProfile : undefined}
+      onKeyDown={
+        onShowProfile
+          ? (event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                handleShowProfile();
+              }
+            }
+          : undefined
+      }
       className="w-full flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-border/50 hover:bg-muted/30 transition-all duration-300 group/member text-left"
     >
       {/* Avatar Container */}
       <div className="relative shrink-0">
-        <div
+        <Avatar
+          src={member.user?.avatar}
+          name={member.user?.name}
           className={cn(
-            "w-10 h-10 rounded-full overflow-hidden ring-1 ring-border/20 group-hover/member:ring-border/40 transition-all",
+            "h-10 w-10 ring-1 ring-border/20 transition-all group-hover/member:ring-border/40",
             isHighCompatibility && "ring-forge-teal/30 ring-2",
           )}
-        >
-          <img
-            src={member.user?.avatar || ""}
-            alt={member.user?.name || "User"}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover/member:scale-110"
-            loading="lazy"
-          />
-        </div>
+          imageClassName="transition-transform duration-500 group-hover/member:scale-110"
+        />
         {onlineStatus && (
           <span
             className={cn(
@@ -151,6 +164,6 @@ export function MemberCard({
       ) : (
         <div className="w-1.5 h-1.5 rounded-full bg-border opacity-0 group-hover/member:opacity-100 transition-opacity" />
       )}
-    </button>
+    </div>
   );
 }

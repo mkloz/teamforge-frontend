@@ -46,6 +46,8 @@ const userData = {
   age: z.number().nullable(),
   gender: genderSchema.nullable(),
   city: z.string().nullable(),
+  locationLat: z.number().nullable().optional(),
+  locationLng: z.number().nullable().optional(),
   personalityType: personalityTypeSchema.nullable(),
   oceanO: z.number().nullable(),
   oceanC: z.number().nullable(),

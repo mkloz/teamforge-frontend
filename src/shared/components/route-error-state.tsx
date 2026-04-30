@@ -1,10 +1,14 @@
-import { Link } from "@tanstack/react-router";
-import { AlertTriangle } from "lucide-react";
-import { useEffect } from "react";
+import { useQueryErrorResetBoundary } from "@tanstack/react-query";
+import { Link, useRouter } from "@tanstack/react-router";
+import { AlertTriangle, RefreshCw } from "lucide-react";
+import { useEffect, useState } from "react";
 
-import { captureException } from "@/shared/lib/telemetry";
+import { captureException, trackEvent } from "@/shared/lib/telemetry";
 import type { RouteErrorScope } from "@/shared/lib/telemetry-contract";
-import { telemetryErrorScopes } from "@/shared/lib/telemetry-contract";
+import {
+  telemetryErrorScopes,
+  trackedEventNames,
+} from "@/shared/lib/telemetry-contract";
 import { Button } from "@/shared/components/ui/button";
 
 interface RouteErrorStateProps {
@@ -30,11 +34,48 @@ export function RouteErrorState({
   fullPage = false,
   onRetry,
 }: RouteErrorStateProps) {
+  const router = useRouter();
+  const queryErrorResetBoundary = useQueryErrorResetBoundary();
+  const [isRetrying, setIsRetrying] = useState(false);
+
   useEffect(() => {
     captureException(telemetryErrorScopes.routeError, error, {
       routeScope: scope,
     });
   }, [error, scope]);
+
+  async function handleRetry() {
+    if (!onRetry || isRetrying) {
+      return;
+    }
+
+    setIsRetrying(true);
+    trackEvent(trackedEventNames.routeErrorRecovery, {
+      routeScope: scope,
+      status: "started",
+    });
+
+    try {
+      queryErrorResetBoundary.reset();
+      onRetry();
+      await router.invalidate();
+      trackEvent(trackedEventNames.routeErrorRecovery, {
+        routeScope: scope,
+        status: "success",
+      });
+    } catch (retryError) {
+      captureException(telemetryErrorScopes.routeError, retryError, {
+        routeScope: scope,
+        recovery: "retry",
+      });
+      trackEvent(trackedEventNames.routeErrorRecovery, {
+        routeScope: scope,
+        status: "error",
+      });
+    } finally {
+      setIsRetrying(false);
+    }
+  }
 
   return (
     <div
@@ -55,7 +96,12 @@ export function RouteErrorState({
         </p>
 
         <div className="mt-5 flex flex-wrap gap-3">
-          {onRetry ? <Button onClick={onRetry}>{retryLabel}</Button> : null}
+          {onRetry ? (
+            <Button onClick={() => void handleRetry()} loading={isRetrying}>
+              <RefreshCw size={16} />
+              {retryLabel}
+            </Button>
+          ) : null}
 
           <Button asChild variant="outline">
             <Link to={fallbackTo}>{fallbackLabel}</Link>

@@ -1,6 +1,8 @@
 import { memo } from "react";
 import { CheckCheck } from "lucide-react";
 
+import { Avatar } from "@/shared/components/common/avatar";
+
 interface Reader {
   id: string;
   name: string;
@@ -34,10 +36,10 @@ export const GroupReadReceipts = memo(function GroupReadReceipts({
             key={reader.id}
             className="flex items-center gap-3 p-2 rounded-xl hover:bg-muted/40 transition-colors group"
           >
-            <img
+            <Avatar
               src={reader.avatarUrl}
-              alt={reader.name}
-              className="w-9 h-9 rounded-full object-cover ring-1 ring-border/20 group-hover:ring-forge-teal/40 transition-colors"
+              name={reader.name}
+              className="h-9 w-9 ring-1 ring-border/20 transition-colors group-hover:ring-forge-teal/40"
             />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-ink truncate group-hover:text-forge-teal transition-colors">

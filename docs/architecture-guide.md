@@ -146,6 +146,8 @@ src/features/<feature-name>/
 - The authenticated app shell is protected through the `app-shell` route `beforeLoad`.
 - Conversation and group UI currently live inside `src/features/activity/` rather than standalone `direct-chats/` or `groups/` feature folders.
 - Canonical backend-aligned domain models live in `src/shared/schemas/`, while features layer UI-specific projections on top.
+- Social safety UI is split between Activity direct-chat panels and Settings Safety. Activity uses `/friends` plus `/friends/blocked`; Settings uses `/friends/blocked` for blocked-user management.
+- Global realtime currently handles `notification.new` and `group.updated` in `src/shared/providers/app-providers.tsx`; Activity handles subscribed chat and plan events locally.
 
 ---
 
@@ -183,6 +185,19 @@ const mutation = useMutation({
   },
 });
 ```
+
+### Social Cache Contract
+
+Social mutations update more than one route surface. Keep these query-key groups in sync when changing related behavior:
+
+| Flow | Caches to refresh |
+|------|-------------------|
+| Accept group invite or join open group | Home groups, home plans, home stats, explore groups, Activity groups, Activity chats, group selection |
+| Send group invite | Home sent invitations, home received invitations, notifications, unread count |
+| Group leave, removal, disband, or `group.updated` realtime | Activity groups, Activity chats, group selection, home groups, home plans, home stats |
+| Accept friend request or receive `FRIEND_ACCEPTED` notification | Explore friend requests, Activity friendships, Activity chats, direct selection |
+| Block or unblock user | Settings blocked users, Activity friendships, Activity chats, direct selection |
+| Submit group rating | Activity ratings for that group |
 
 ### Zustand Store Pattern
 

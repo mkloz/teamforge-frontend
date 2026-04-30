@@ -1,4 +1,5 @@
 import type { Invite } from "@/shared/schemas";
+import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
@@ -111,20 +112,13 @@ export function InvitationCard({
           <div className="size-14 rounded-lg overflow-hidden border border-border/50 bg-forge-teal/10 flex items-center justify-center text-sm font-black text-forge-teal">
             {groupInitials}
           </div>
-          <div className="absolute -bottom-1.5 -right-1.5 size-6 rounded-full overflow-hidden border-2 border-card bg-canvas z-10 flex items-center justify-center">
-            {group.avatar ? (
-              <img
-                src={group.avatar}
-                alt={`${group.name} logo`}
-                className="size-full object-cover"
-                loading="lazy"
-              />
-            ) : (
-              <span className="text-[9px] font-black text-forge-teal">
-                {groupInitials}
-              </span>
-            )}
-          </div>
+          <Avatar
+            src={group.avatar}
+            name={group.name}
+            alt={`${group.name} logo`}
+            className="absolute -bottom-1.5 -right-1.5 z-10 size-6 border-2 border-card bg-canvas"
+            fallbackClassName="text-[9px]"
+          />
         </div>
 
         <div className="flex flex-col flex-1 min-w-0 pt-0.5">

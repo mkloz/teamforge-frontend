@@ -11,6 +11,11 @@ export const notificationPreferencesSchema = z.object({
   emailGroupActivity: z.boolean(),
   emailMessages: z.boolean(),
   emailAccount: z.boolean(),
+  autoMatchingEnabled: z.boolean(),
+  minCompatibilityScore: z.number().int().min(0).max(100),
+  showAgeOnProfile: z.boolean(),
+  showGenderOnProfile: z.boolean(),
+  showCityOnProfile: z.boolean(),
 });
 
 export type NotificationPreferences = z.infer<

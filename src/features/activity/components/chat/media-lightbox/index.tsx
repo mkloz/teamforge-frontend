@@ -8,8 +8,9 @@ import {
   ImageOff,
   Loader2,
 } from "lucide-react";
-import { memo } from "react";
+import { memo, useState } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
+import { Image } from "@/shared/components/common/image";
 import { useImageState } from "@/shared/hooks/use-image-state";
 import { NavButton } from "./nav-button";
 import { ThumbnailStrip } from "./thumbnail-strip";
@@ -20,6 +21,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
+import { cacheMediaIntrinsicSize } from "@/features/activity/lib/media-intrinsic-size";
 
 interface MediaLightboxProps {
   isOpen: boolean;
@@ -66,16 +68,85 @@ const LightboxImage = memo(function LightboxImage({
       )}
 
       {/* Image — fades in once loaded */}
-      <img
+      <Image
         src={media.url}
         alt={media.name || "Shared image"}
-        onLoad={onLoad}
+        onLoad={(event) => {
+          cacheMediaIntrinsicSize(
+            media.id,
+            event.currentTarget.naturalWidth,
+            event.currentTarget.naturalHeight,
+          );
+          onLoad();
+        }}
         onError={onError}
+        wrapperClassName="flex h-full w-full items-center justify-center overflow-visible"
         className={cn(
           "max-w-full max-h-full object-contain select-none",
           "shadow-[0_30px_60px_-15px_rgba(0,0,0,1)] ring-1 ring-white/5",
           "transition-opacity duration-300",
           state === "loaded" ? "opacity-100" : "opacity-0",
+        )}
+        loading="eager"
+        loadingComponent={null}
+        fallbackComponent={null}
+        showNoImage={false}
+      />
+    </div>
+  );
+});
+
+const LightboxVideo = memo(function LightboxVideo({
+  media,
+}: {
+  media: UnifiedAttachment;
+}) {
+  const [hasMetadata, setHasMetadata] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  return (
+    <div className="relative w-full h-full flex items-center justify-center">
+      {!hasMetadata && !hasError && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Loader2
+            size={36}
+            strokeWidth={1.5}
+            className="text-white/40 animate-spin"
+          />
+        </div>
+      )}
+
+      {hasError && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+          <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+            <ImageOff size={28} strokeWidth={1} className="text-white/30" />
+          </div>
+          <p className="text-white/40 text-xs font-medium uppercase tracking-widest">
+            Video unavailable
+          </p>
+        </div>
+      )}
+
+      <video
+        src={media.url}
+        poster={media.thumbnailUrl || undefined}
+        controls
+        playsInline
+        preload="metadata"
+        onLoadedMetadata={(event) => {
+          cacheMediaIntrinsicSize(
+            media.id,
+            event.currentTarget.videoWidth,
+            event.currentTarget.videoHeight,
+          );
+          setHasMetadata(true);
+        }}
+        onError={() => setHasError(true)}
+        className={cn(
+          "max-w-full max-h-full select-none",
+          "shadow-[0_30px_60px_-15px_rgba(0,0,0,1)] ring-1 ring-white/5",
+          "transition-opacity duration-300",
+          hasMetadata ? "opacity-100" : "opacity-0",
         )}
       />
     </div>
@@ -134,18 +205,32 @@ export const MediaLightbox = memo(function MediaLightbox({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
+                        asChild
                         variant="ghost"
                         size="icon"
                         className="text-white/60 hover:text-white hover:bg-white/10 rounded-full transition active:scale-90 pointer-events-auto"
                       >
-                        <Download size={20} />
+                        <a
+                          href={currentMedia?.url ?? "#"}
+                          download={currentMedia?.name || true}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label="Download media"
+                          onClick={(event) => {
+                            if (!currentMedia) {
+                              event.preventDefault();
+                            }
+                          }}
+                        >
+                          <Download size={20} />
+                        </a>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent
                       side="bottom"
                       className="bg-white/10 backdrop-blur-md border-white/10 text-white font-bold text-xs"
                     >
-                      Download Image
+                      Download file
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -184,7 +269,11 @@ export const MediaLightbox = memo(function MediaLightbox({
                     }}
                     className="relative w-full h-full flex items-center justify-center"
                   >
-                    <LightboxImage media={currentMedia} />
+                    {currentMedia.type === "VIDEO" ? (
+                      <LightboxVideo media={currentMedia} />
+                    ) : (
+                      <LightboxImage media={currentMedia} />
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>

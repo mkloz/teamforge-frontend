@@ -60,7 +60,9 @@ export default defineConfig({
             id.includes("/@radix-ui/") ||
             id.includes("/radix-ui/") ||
             id.includes("/vaul/") ||
-            id.includes("/embla-carousel-react/")
+            id.includes("/embla-carousel-react/") ||
+            id.includes("/input-otp/") ||
+            id.includes("/sonner/")
           ) {
             return "ui-vendor";
           }
@@ -70,6 +72,36 @@ export default defineConfig({
             id.includes("/react-icons/")
           ) {
             return "icons";
+          }
+
+          if (
+            id.includes("/@react-oauth/google/") ||
+            id.includes("/@vercel/analytics/") ||
+            id.includes("/socket.io-client/") ||
+            id.includes("/socket.io-parser/") ||
+            id.includes("/engine.io-client/") ||
+            id.includes("/engine.io-parser/") ||
+            id.includes("/ky/")
+          ) {
+            return "app-integrations";
+          }
+
+          if (id.includes("/nuqs/") || id.includes("/zustand/")) {
+            return "state-routing";
+          }
+
+          if (id.includes("/@chenglou/pretext/")) {
+            return "text-layout";
+          }
+
+          if (
+            id.includes("/class-variance-authority/") ||
+            id.includes("/clsx/") ||
+            id.includes("/dayjs/") ||
+            id.includes("/tailwind-merge/") ||
+            id.includes("/uuid/")
+          ) {
+            return "utilities";
           }
 
           return undefined;

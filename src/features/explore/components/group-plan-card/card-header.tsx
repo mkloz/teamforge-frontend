@@ -1,3 +1,4 @@
+import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import type { ExploreGroup } from "@/shared/schemas";
 import { Handshake } from "lucide-react";
@@ -11,14 +12,6 @@ export function CardHeader({ group, variant = "default" }: CardHeaderProps) {
   const isCompact = variant === "compact";
   const groupName = group.name;
   const access = group.access;
-  const initials =
-    groupName
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase())
-      .join("") || "TF";
-
   return (
     <div
       className={cn(
@@ -27,24 +20,15 @@ export function CardHeader({ group, variant = "default" }: CardHeaderProps) {
       )}
     >
       <div className="flex items-center gap-2.5">
-        <div
+        <Avatar
+          src={group.avatar}
+          name={groupName}
           className={cn(
-            "rounded-full overflow-hidden bg-muted border border-border shrink-0 flex items-center justify-center",
+            "border border-border bg-muted",
             isCompact ? "size-5" : "size-6",
           )}
-        >
-          {group.avatar ? (
-            <img
-              src={group.avatar}
-              alt={groupName}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <span className="text-[10px] font-black text-forge-teal">
-              {initials}
-            </span>
-          )}
-        </div>
+          fallbackClassName="text-[10px]"
+        />
         <span
           className={cn(
             "font-semibold text-muted-foreground tracking-tight group-hover:text-foreground transition-colors truncate",

@@ -32,6 +32,8 @@ export const settingsProfileSchema = z.object({
     z.literal(unspecifiedGenderValue),
   ]),
   city: z.string().trim().max(120, "Keep your city under 120 characters."),
+  locationLat: z.number().nullable(),
+  locationLng: z.number().nullable(),
   bio: z.string().trim().max(280, "Keep your bio under 280 characters."),
 });
 

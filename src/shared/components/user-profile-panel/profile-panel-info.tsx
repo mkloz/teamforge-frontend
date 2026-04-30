@@ -1,6 +1,7 @@
 import { OceanDiagram } from "@/shared/components/psychometrics/ocean-chart";
 import { Button } from "@/shared/components/ui/button";
 import { buildProfileNavigation } from "@/shared/lib/app-route";
+import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import type { OnlineStatus } from "@/shared/schemas/enums";
 import type { OceanScores } from "@/shared/types/psychometrics";
@@ -131,11 +132,11 @@ export function ProfilePanelInfo({
           transition={{ duration: 0.4, ease: "easeOut" }}
           className="relative group"
         >
-          <img
-            src={participant.avatar || ""}
-            alt={participant.name}
+          <Avatar
+            src={participant.avatar}
+            name={participant.name}
             className={cn(
-              "rounded-full object-cover bg-card ring-4 ring-canvas shadow-sm transition-all duration-300",
+              "bg-card ring-4 ring-canvas shadow-sm transition-all duration-300",
               isMobile ? "w-20 h-20" : "w-24 h-24",
             )}
           />

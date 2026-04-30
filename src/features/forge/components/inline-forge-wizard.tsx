@@ -100,18 +100,24 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
           transition={{ delay: 0.3, duration: 0.45 }}
         >
           <p className="text-xs font-bold tracking-widest text-forge-teal uppercase">
-            Invitations sent
+            {fw.forgeMode === "MANUAL" ? "Invitations sent" : "Group saved"}
           </p>
           <h3 className="text-2xl font-black text-foreground tracking-tight">
             Your group is live!
           </h3>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            {fw.activeParticipants.length} invitation
-            {fw.activeParticipants.length !== 1 ? "s" : ""} sent for{" "}
+            {fw.forgeMode === "MANUAL"
+              ? `${fw.manualInviteeIds.length} invitation${
+                  fw.manualInviteeIds.length !== 1 ? "s" : ""
+                } sent for `
+              : "Everything is ready for "}
             <span className="font-semibold text-foreground">
               &ldquo;{fw.planName}&rdquo;
             </span>
-            . You&apos;ll be notified as each member joins.
+            .{" "}
+            {fw.forgeMode === "MANUAL"
+              ? "You'll be notified as each member joins."
+              : "You can start coordinating with members now."}
           </p>
         </motion.div>
 
@@ -281,14 +287,25 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
               <Step2Plan
                 planName={fw.planName}
                 onPlanNameChange={fw.setPlanName}
+                planDescription={fw.planDescription}
+                onPlanDescriptionChange={fw.setPlanDescription}
                 planDate={fw.planDate}
                 onPlanDateChange={fw.setPlanDate}
                 planTime={fw.planTime}
                 onPlanTimeChange={fw.setPlanTime}
                 planLocation={fw.planLocation}
                 onPlanLocationChange={fw.setPlanLocation}
+                planLocationLat={fw.planLocationLat}
+                planLocationLng={fw.planLocationLng}
+                onPlanLocationCoordinatesChange={fw.setPlanLocationCoordinates}
                 locationType={fw.locationType}
                 onLocationTypeChange={fw.setLocationType}
+                planCost={fw.planCost}
+                onPlanCostChange={fw.setPlanCost}
+                planCostAmount={fw.planCostAmount}
+                onPlanCostAmountChange={fw.setPlanCostAmount}
+                planCostDetails={fw.planCostDetails}
+                onPlanCostDetailsChange={fw.setPlanCostDetails}
               />
             )}
             {fw.step === 3 && (
@@ -313,6 +330,8 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
                 onGroupNameChange={fw.setGroupName}
                 groupDescription={fw.groupDescription}
                 onGroupDescriptionChange={fw.setGroupDescription}
+                manualInviteeIds={fw.manualInviteeIds}
+                onManualInviteeToggle={fw.toggleManualInvitee}
                 selectedActivity={fw.selectedActivity}
               />
             )}
@@ -349,7 +368,17 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
                 planDate={fw.planDate}
                 planLocation={fw.planLocation}
                 activityTitle={fw.selectedActivity || ""}
-                participantCount={fw.activeParticipants.length + 1}
+                participantCount={
+                  fw.forgeMode === "MANUAL"
+                    ? fw.manualInviteeIds.length + 1
+                    : fw.activeParticipants.length + 1
+                }
+                inviteeCount={
+                  fw.forgeMode === "MANUAL"
+                    ? fw.manualInviteeIds.length
+                    : fw.activeParticipants.length
+                }
+                forgeMode={fw.forgeMode}
                 coverImage={fw.coverImage}
                 inviteCopied={fw.inviteCopied}
                 onCopyLink={fw.handleCopyLink}

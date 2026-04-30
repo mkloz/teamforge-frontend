@@ -1,144 +1,158 @@
-"use client";
-
 import { Loader2 } from "lucide-react";
-import React from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ImgHTMLAttributes,
+  type ReactNode,
+  type Ref,
+  type SyntheticEvent,
+} from "react";
 
 import { cn } from "@/shared/lib/utils";
 
 import { ImagePlaceholder } from "./image-placeholder";
 
-export interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+export interface ImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   src?: string;
   fallbackSrc?: string;
   alt: string;
-  className?: string;
+  ref?: Ref<HTMLImageElement>;
   blurAmount?: string;
   loadingClassName?: string;
-  loadingComponent?: React.ReactNode;
-  noImageComponent?: React.ReactNode;
-  fallbackComponent?: React.ReactNode;
+  loadingComponent?: ReactNode;
+  noImageComponent?: ReactNode;
+  fallbackComponent?: ReactNode;
   wrapperClassName?: string;
-  showLoader?: boolean;
   showNoImage?: boolean;
 }
 
 const DefaultLoader = () => (
-  <div className="bg-background/80 rounded-full p-1 shadow-sm aspect-square max-w-1/6 max-h-1/6">
-    <Loader2 className="size-full animate-spin text-primary aspect-square" />
+  <div className="flex size-8 items-center justify-center rounded-full bg-background/80 p-1 shadow-sm">
+    <Loader2 className="size-4 animate-spin text-forge-teal" />
   </div>
 );
 
-export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
-  (
-    {
-      src,
-      fallbackSrc,
-      alt,
-      className,
-      blurAmount = "0.5rem",
-      loadingComponent = <DefaultLoader />,
-      noImageComponent = <ImagePlaceholder />,
-      fallbackComponent = <ImagePlaceholder />,
-      wrapperClassName,
-      showNoImage = true,
-      style,
-      ...props
-    },
-    ref,
-  ) => {
-    const [isLoading, setIsLoading] = React.useState(false);
-    const [error, setError] = React.useState(false);
-    const imageRef = React.useRef<HTMLImageElement | null>(null);
-    const [fallbackFailed, setFallbackFailed] = React.useState(false);
+export function Image({
+  src,
+  fallbackSrc,
+  alt,
+  ref,
+  className,
+  blurAmount = "0.5rem",
+  loadingComponent = <DefaultLoader />,
+  noImageComponent = <ImagePlaceholder />,
+  fallbackComponent = <ImagePlaceholder />,
+  wrapperClassName,
+  showNoImage = true,
+  style,
+  loading = "lazy",
+  decoding = "async",
+  onLoad,
+  onError,
+  ...props
+}: ImageProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [fallbackFailed, setFallbackFailed] = useState(false);
+  const imageRef = useRef<HTMLImageElement | null>(null);
+  const isSrcProvided = Boolean(src?.trim());
+  const actualSrc = error && fallbackSrc ? fallbackSrc : src;
 
-    const isSrcProvided = Boolean(src && src !== "");
+  useEffect(() => {
+    setError(false);
+    setFallbackFailed(false);
+    setIsLoading(isSrcProvided);
+  }, [isSrcProvided, src]);
 
-    const actualSrc = error && fallbackSrc ? fallbackSrc : src;
+  useEffect(() => {
+    if (!isSrcProvided || !imageRef.current) {
+      return;
+    }
 
-    React.useEffect(() => {
-      if (!isSrcProvided) return;
-
-      if (imageRef.current) {
-        if (!imageRef.current.complete) {
-          setIsLoading(true);
-        }
-      }
-    }, [isSrcProvided, actualSrc]);
-
-    const handleLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
+    if (imageRef.current.complete) {
       setIsLoading(false);
-      props.onLoad?.(event);
-    };
+    }
+  }, [actualSrc, isSrcProvided]);
 
-    const handleError = (event: React.SyntheticEvent<HTMLImageElement>) => {
-      if (fallbackSrc && src !== fallbackSrc && !error) {
-        setError(true);
-      } else {
-        setFallbackFailed(true);
-      }
-      props.onError?.(event);
-    };
+  const handleLoad = (event: SyntheticEvent<HTMLImageElement>) => {
+    setIsLoading(false);
+    onLoad?.(event);
+  };
 
-    const imageStyle = {
-      ...style,
-      filter: isLoading ? `blur(${blurAmount})` : "none",
-      transition: "filter 0.3s ease-in-out",
-    };
+  const handleError = (event: SyntheticEvent<HTMLImageElement>) => {
+    setIsLoading(false);
 
-    return (
-      <div className={cn("relative w-full h-full", wrapperClassName)}>
-        {!fallbackFailed && (
-          <img
-            ref={(node) => {
-              imageRef.current = node;
-              if (typeof ref === "function") ref(node);
-              else if (ref) ref.current = node;
-            }}
-            src={actualSrc}
-            alt={alt}
-            style={imageStyle}
-            className={cn(className, "object-cover w-full h-full")}
-            onLoad={handleLoad}
-            onError={handleError}
-            {...props}
-          />
-        )}
+    if (fallbackSrc && actualSrc !== fallbackSrc) {
+      setError(true);
+    } else {
+      setFallbackFailed(true);
+    }
 
-        {fallbackFailed && (
-          <div
-            className={cn(
-              "absolute inset-0 flex items-center justify-center",
-              className,
-            )}
-          >
-            {fallbackComponent}
-          </div>
-        )}
+    onError?.(event);
+  };
 
-        {!isSrcProvided && showNoImage && (
-          <div
-            className={cn(
-              "absolute inset-0 flex items-center justify-center",
-              className,
-            )}
-          >
-            {noImageComponent}
-          </div>
-        )}
+  const imageStyle = {
+    ...style,
+    filter: isLoading ? `blur(${blurAmount})` : "none",
+    transition: "filter 0.3s ease-in-out, opacity 0.2s ease-in-out",
+  };
 
-        {isLoading && isSrcProvided && !fallbackFailed && (
-          <div
-            className={cn(
-              "absolute inset-0 flex items-center justify-center",
-              className,
-            )}
-          >
-            {loadingComponent}
-          </div>
-        )}
-      </div>
-    );
-  },
-);
+  const showFallback = fallbackFailed || !isSrcProvided;
+
+  return (
+    <div
+      className={cn("relative h-full w-full overflow-hidden", wrapperClassName)}
+    >
+      {isSrcProvided && !fallbackFailed ? (
+        <img
+          ref={(node) => {
+            imageRef.current = node;
+            if (typeof ref === "function") {
+              ref(node);
+            } else if (ref) {
+              ref.current = node;
+            }
+          }}
+          src={actualSrc}
+          alt={alt}
+          style={imageStyle}
+          className={cn("h-full w-full object-cover", className)}
+          loading={loading}
+          decoding={decoding}
+          onLoad={handleLoad}
+          onError={handleError}
+          {...props}
+        />
+      ) : null}
+
+      {showFallback ? (
+        <div
+          className={cn(
+            "absolute inset-0 flex items-center justify-center",
+            className,
+          )}
+        >
+          {fallbackFailed
+            ? fallbackComponent
+            : showNoImage
+              ? noImageComponent
+              : null}
+        </div>
+      ) : null}
+
+      {isLoading && isSrcProvided && !fallbackFailed ? (
+        <div
+          className={cn(
+            "absolute inset-0 flex items-center justify-center bg-background/20",
+            className,
+          )}
+        >
+          {loadingComponent}
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 Image.displayName = "Image";

@@ -1,6 +1,7 @@
 import { cn } from "@/shared/lib/utils";
 import { useCallback, useEffect } from "react";
 import type { DirectChat } from "@/features/activity/lib/activity-contract";
+import { useDirectChatSafetyActions } from "@/features/activity/hooks/use-direct-chat-safety-actions";
 import { ProfilePanelHeader } from "./profile-panel-header";
 import { UserProfilePanel as ProfilePanelContent } from "@/shared/components/user-profile-panel/user-profile-panel";
 import {
@@ -21,6 +22,8 @@ interface ProfilePanelProps {
  * Features a slide-in animation and unified content.
  */
 export function ProfilePanel({ chat, isOpen, onClose }: ProfilePanelProps) {
+  const safetyActions = useDirectChatSafetyActions(chat);
+
   // Close on escape key
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -44,7 +47,12 @@ export function ProfilePanel({ chat, isOpen, onClose }: ProfilePanelProps) {
       )}
     >
       <ProfilePanelHeader onClose={onClose} />
-      <ProfilePanelContent chat={chat} />
+      <ProfilePanelContent
+        chat={chat}
+        blockActionDisabled={!safetyActions.canToggleBlock}
+        isBlockActionPending={safetyActions.isBlockActionPending}
+        onToggleBlock={safetyActions.toggleBlock}
+      />
     </aside>
   );
 }
@@ -58,6 +66,8 @@ export function ProfilePanelMobile({
   isOpen,
   onClose,
 }: ProfilePanelProps) {
+  const safetyActions = useDirectChatSafetyActions(chat);
+
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DrawerContent className="bg-canvas border-t rounded-t-3xl h-[90vh]">
@@ -65,7 +75,13 @@ export function ProfilePanelMobile({
           <DrawerTitle>User Profile</DrawerTitle>
         </DrawerHeader>
         <div className="flex-1 overflow-y-auto min-h-0 pb-10 scrollbar-hide">
-          <ProfilePanelContent chat={chat} isMobile={true} />
+          <ProfilePanelContent
+            chat={chat}
+            isMobile={true}
+            blockActionDisabled={!safetyActions.canToggleBlock}
+            isBlockActionPending={safetyActions.isBlockActionPending}
+            onToggleBlock={safetyActions.toggleBlock}
+          />
         </div>
       </DrawerContent>
     </Drawer>

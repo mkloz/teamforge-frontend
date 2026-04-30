@@ -3,6 +3,7 @@ import {
   parseJsonWithRequestId,
   type ApiResponseWithRequestId,
 } from "@/shared/api/api";
+import { FileUploadApi } from "@/shared/api/file-upload";
 import {
   chatApiSchema,
   createPaginatedSchema,
@@ -13,7 +14,12 @@ import {
   messageApiSchema,
   attachmentTypeSchema,
   messageTypeSchema,
+  planSchema,
   planProposalSchema,
+  createRatingPayloadSchema,
+  createRatingResultSchema,
+  ratingEntitySchema,
+  type CreateRatingPayload,
 } from "@/shared/schemas";
 import { z } from "zod";
 
@@ -25,9 +31,7 @@ const paginatedChatsSchema = createPaginatedSchema(chatApiSchema);
 const paginatedFriendshipsSchema = createPaginatedSchema(friendshipApiSchema);
 const paginatedMessagesSchema = createPaginatedSchema(messageApiSchema);
 const planProposalsSchema = z.array(planProposalSchema);
-const uploadedFileUrlSchema = z.object({
-  url: z.string().url(),
-});
+const paginatedRatingsSchema = createPaginatedSchema(ratingEntitySchema);
 const createInvitePayloadSchema = z.object({
   groupId: z.string().min(1),
   inviteeId: z.string().min(1),
@@ -57,6 +61,14 @@ const updateMessagePayloadSchema = z.object({
 const createReactionPayloadSchema = z.object({
   emoji: z.string().trim().min(1),
 });
+const updateGroupPayloadSchema = z.object({
+  name: z.string().trim().min(1).max(120).optional(),
+  description: z.string().trim().max(1000).nullable().optional(),
+  avatar: z.string().trim().max(2048).nullable().optional(),
+});
+const updatePlanPayloadSchema = z.object({
+  coverImage: z.string().trim().max(2048).nullable().optional(),
+});
 
 export interface CreatePlanProposalDto {
   field: "TITLE" | "DESCRIPTION" | "DATE_TIME" | "LOCATION";
@@ -71,6 +83,8 @@ export type SendMessagePayload = z.infer<typeof sendMessagePayloadSchema>;
 export type UpdateMessagePayload = z.infer<typeof updateMessagePayloadSchema>;
 export type PaginatedMessagesResponse = z.infer<typeof paginatedMessagesSchema>;
 export type CreateInvitePayload = z.infer<typeof createInvitePayloadSchema>;
+export type UpdateGroupPayload = z.infer<typeof updateGroupPayloadSchema>;
+export type UpdatePlanPayload = z.infer<typeof updatePlanPayloadSchema>;
 export interface GetChatMessagesParams {
   limit?: number;
   page?: number;
@@ -78,6 +92,21 @@ export interface GetChatMessagesParams {
 
 export type MessageMutationResult = ApiResponseWithRequestId<
   z.infer<typeof messageApiSchema>
+>;
+export type CreateRatingMutationResult = ApiResponseWithRequestId<
+  z.infer<typeof createRatingResultSchema>
+>;
+export type GroupMutationResult = ApiResponseWithRequestId<
+  z.infer<typeof groupApiSchema>
+>;
+export type InviteMutationResult = ApiResponseWithRequestId<
+  z.infer<typeof inviteSchema>
+>;
+export type FriendshipMutationResult = ApiResponseWithRequestId<
+  z.infer<typeof friendshipApiSchema>
+>;
+export type PlanMutationResult = ApiResponseWithRequestId<
+  z.infer<typeof planSchema>
 >;
 
 export class ActivityApi {
@@ -99,6 +128,30 @@ export class ActivityApi {
     return groupApiSchema.parse(response);
   }
 
+  static async updateGroup(
+    groupId: string,
+    payload: UpdateGroupPayload,
+  ): Promise<GroupMutationResult> {
+    const response = await apiClient.patch(`groups/${groupId}`, {
+      json: updateGroupPayloadSchema.parse(payload),
+    });
+
+    return parseJsonWithRequestId(response, (value) =>
+      groupApiSchema.parse(value),
+    );
+  }
+
+  static async updatePlan(
+    planId: string,
+    payload: UpdatePlanPayload,
+  ): Promise<PlanMutationResult> {
+    const response = await apiClient.patch(`plans/${planId}`, {
+      json: updatePlanPayloadSchema.parse(payload),
+    });
+
+    return parseJsonWithRequestId(response, (value) => planSchema.parse(value));
+  }
+
   static async getChats() {
     const response = await apiClient
       .get("chats", {
@@ -112,15 +165,29 @@ export class ActivityApi {
   }
 
   static async getFriendships() {
-    const response = await apiClient
-      .get("friends", {
-        searchParams: {
-          limit: DEFAULT_LIMIT,
-        },
-      })
-      .json<unknown>();
+    const [friendsResponse, blockedResponse] = await Promise.all([
+      apiClient
+        .get("friends", {
+          searchParams: {
+            limit: DEFAULT_LIMIT,
+          },
+        })
+        .json<unknown>(),
+      apiClient
+        .get("friends/blocked", {
+          searchParams: {
+            limit: DEFAULT_LIMIT,
+          },
+        })
+        .json<unknown>(),
+    ]);
 
-    return paginatedFriendshipsSchema.parse(response).items;
+    const friends = paginatedFriendshipsSchema.parse(friendsResponse).items;
+    const blocked = paginatedFriendshipsSchema.parse(blockedResponse).items;
+
+    return [...friends, ...blocked].sort(
+      (left, right) => right.version - left.version,
+    );
   }
 
   static async getChatMessages(
@@ -228,16 +295,7 @@ export class ActivityApi {
   }
 
   static async uploadChatAttachment(file: File) {
-    const body = new FormData();
-    body.set("file", file);
-
-    const response = await apiClient
-      .post("file-upload/chat-attachment", {
-        body,
-      })
-      .json<unknown>();
-
-    return uploadedFileUrlSchema.parse(response);
+    return FileUploadApi.uploadChatAttachment(file);
   }
 
   static async getLinkPreview(url: string) {
@@ -294,39 +352,77 @@ export class ActivityApi {
     return planProposalSchema.parse(response);
   }
 
-  static async leaveGroup(groupId: string) {
+  static async getGroupRatings(groupId: string) {
     const response = await apiClient
-      .post(`groups/${groupId}/leave`)
+      .get(`ratings/groups/${groupId}`, {
+        searchParams: {
+          limit: DEFAULT_LIMIT,
+        },
+      })
       .json<unknown>();
 
-    return groupApiSchema.parse(response);
+    return paginatedRatingsSchema.parse(response).items;
+  }
+
+  static async createRating(payload: CreateRatingPayload) {
+    const response = await apiClient.post("ratings", {
+      json: createRatingPayloadSchema.parse(payload),
+    });
+
+    return parseJsonWithRequestId(response, (value) =>
+      createRatingResultSchema.parse(value),
+    );
+  }
+
+  static async leaveGroup(groupId: string) {
+    const response = await apiClient.post(`groups/${groupId}/leave`);
+
+    return parseJsonWithRequestId(response, (value) =>
+      groupApiSchema.parse(value),
+    );
   }
 
   static async removeGroupMember(groupId: string, memberId: string) {
-    const response = await apiClient
-      .post(`groups/${groupId}/remove-member`, {
-        json: { memberId },
-      })
-      .json<unknown>();
+    const response = await apiClient.post(`groups/${groupId}/remove-member`, {
+      json: { memberId },
+    });
 
-    return groupApiSchema.parse(response);
+    return parseJsonWithRequestId(response, (value) =>
+      groupApiSchema.parse(value),
+    );
   }
 
   static async disbandGroup(groupId: string) {
-    const response = await apiClient
-      .post(`groups/${groupId}/disband`)
-      .json<unknown>();
+    const response = await apiClient.post(`groups/${groupId}/disband`);
 
-    return groupApiSchema.parse(response);
+    return parseJsonWithRequestId(response, (value) =>
+      groupApiSchema.parse(value),
+    );
   }
 
   static async createInvite(payload: CreateInvitePayload) {
-    const response = await apiClient
-      .post("invites", {
-        json: createInvitePayloadSchema.parse(payload),
-      })
-      .json<unknown>();
+    const response = await apiClient.post("invites", {
+      json: createInvitePayloadSchema.parse(payload),
+    });
 
-    return inviteSchema.parse(response);
+    return parseJsonWithRequestId(response, (value) =>
+      inviteSchema.parse(value),
+    );
+  }
+
+  static async blockUser(userId: string) {
+    const response = await apiClient.post(`friends/${userId}/block`);
+
+    return parseJsonWithRequestId(response, (value) =>
+      friendshipApiSchema.parse(value),
+    );
+  }
+
+  static async unblockUser(userId: string) {
+    const response = await apiClient.delete(`friends/${userId}/block`);
+
+    return parseJsonWithRequestId(response, (value) =>
+      friendshipApiSchema.parse(value),
+    );
   }
 }

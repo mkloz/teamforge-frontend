@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Search, UserPlus } from "lucide-react";
 
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
+import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
@@ -105,22 +106,15 @@ export function InviteMembersDialog({
                     key={candidate.id}
                     className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background/80 px-3 py-3"
                   >
-                    <div
+                    <Avatar
+                      src={candidate.avatar}
+                      name={candidate.name}
+                      fallback={candidate.name.slice(0, 1).toUpperCase()}
                       className={cn(
-                        "flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted text-sm font-semibold text-foreground",
+                        "h-11 w-11 bg-muted text-sm font-semibold text-foreground",
                         candidate.avatar && "bg-transparent",
                       )}
-                    >
-                      {candidate.avatar ? (
-                        <img
-                          src={candidate.avatar}
-                          alt={candidate.name}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        candidate.name.slice(0, 1).toUpperCase()
-                      )}
-                    </div>
+                    />
 
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold text-foreground">

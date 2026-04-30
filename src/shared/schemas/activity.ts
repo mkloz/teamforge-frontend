@@ -50,8 +50,8 @@ export const createActivityInputSchema = z.object({
   title: z.string().min(1),
   description: z.string().nullable().optional(),
   city: z.string().nullable().optional(),
-  locationLat: z.number().nullable().optional(),
-  locationLng: z.number().nullable().optional(),
+  locationLat: z.number().optional(),
+  locationLng: z.number().optional(),
   visibility: activityVisibilitySchema,
   access: activityAccessSchema,
   forgeMode: forgeModeSchema,
@@ -63,12 +63,13 @@ export type CreateActivityInput = z.infer<typeof createActivityInputSchema>;
 export const forgePlanInputSchema = z.object({
   title: z.string().min(1),
   description: z.string().nullable().optional(),
+  coverImage: z.string().nullable().optional(),
   category: planCategorySchema,
   dateTime: z.string().datetime().nullable().optional(),
   locationMode: locationModeSchema,
   location: z.string().nullable().optional(),
-  locationLat: z.number().nullable().optional(),
-  locationLng: z.number().nullable().optional(),
+  locationLat: z.number().optional(),
+  locationLng: z.number().optional(),
   cost: costTypeSchema,
   costAmount: z.number().nullable().optional(),
   costDetails: z.string().nullable().optional(),
@@ -78,6 +79,9 @@ export type ForgePlanInput = z.infer<typeof forgePlanInputSchema>;
 
 export const forgeActivityInputSchema = z.object({
   groupSize: z.number().int().min(2).max(8),
+  groupName: z.string().nullable().optional(),
+  groupDescription: z.string().nullable().optional(),
+  groupAvatar: z.string().nullable().optional(),
   plan: forgePlanInputSchema,
 });
 
@@ -111,6 +115,7 @@ export type ForgedGroup = z.infer<typeof forgedGroupSchema>;
 export const forgedPlanSchema = z.object({
   id: z.string(),
   title: z.string(),
+  coverImage: z.string().nullable(),
   category: planCategorySchema,
   status: planStatusSchema,
   locationMode: locationModeSchema,

@@ -4,6 +4,7 @@ import { useVirtualizedMessageBlocks } from "@/features/activity/hooks/use-virtu
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { UserProfilePanel } from "@/shared/components/user-profile-panel/user-profile-panel";
 import { Button } from "@/shared/components/ui/button";
+import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import React, {
   memo,
@@ -38,6 +39,11 @@ interface UnifiedMessageListProps {
   onLoadOlderMessages?: () => Promise<void> | void;
   typingUsers?: { name: string; avatar: string | null }[];
   onToggleAction?: () => void;
+}
+
+interface ViewportAnchorSnapshot {
+  key: string;
+  offsetTop: number;
 }
 
 function getParticipantDisplayName(participant?: ActivityParticipant | null) {
@@ -77,14 +83,12 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
     string | null
   >(null);
   const prependAnchorRef = useRef<{
+    anchor: ViewportAnchorSnapshot | null;
     previousHeight: number;
     previousScrollTop: number;
   } | null>(null);
-  const viewportAnchorRef = useRef<{
-    key: string;
-    scrollTop: number;
-    start: number;
-  } | null>(null);
+  const viewportAnchorRef = useRef<ViewportAnchorSnapshot | null>(null);
+  const previousTotalHeightRef = useRef(0);
 
   const handleAvatarClick = useCallback(
     (sender: ActivityParticipant) => {
@@ -118,11 +122,105 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
       ),
     [groupedMessages],
   );
-  const { setScrollTop, totalHeight, virtualizedBlocks, visibleBlocks } =
-    useVirtualizedMessageBlocks({
-      blocks,
-      containerRef,
-    });
+  const {
+    getBlockRef,
+    setScrollTop,
+    totalHeight,
+    virtualizedBlocks,
+    visibleBlocks,
+  } = useVirtualizedMessageBlocks({
+    blocks,
+    containerRef,
+  });
+
+  const getBlockElement = useCallback(
+    (key: string) => {
+      const viewport = containerRef?.current;
+
+      if (!viewport) {
+        return null;
+      }
+
+      return viewport.querySelector<HTMLDivElement>(
+        `[data-message-block-key="${CSS.escape(key)}"]`,
+      );
+    },
+    [containerRef],
+  );
+
+  const captureViewportAnchor =
+    useCallback((): ViewportAnchorSnapshot | null => {
+      const viewport = containerRef?.current;
+
+      if (!viewport) {
+        return null;
+      }
+
+      const viewportTop = viewport.getBoundingClientRect().top;
+
+      for (const block of visibleBlocks) {
+        const node = getBlockElement(block.key);
+
+        if (!node) {
+          continue;
+        }
+
+        const rect = node.getBoundingClientRect();
+        const offsetTop = rect.top - viewportTop;
+        const offsetBottom = rect.bottom - viewportTop;
+
+        if (offsetBottom > 0) {
+          return {
+            key: block.key,
+            offsetTop,
+          };
+        }
+      }
+
+      const fallbackBlock = visibleBlocks[0];
+      const fallbackNode = fallbackBlock
+        ? getBlockElement(fallbackBlock.key)
+        : null;
+
+      if (!fallbackBlock || !fallbackNode) {
+        return null;
+      }
+
+      return {
+        key: fallbackBlock.key,
+        offsetTop: fallbackNode.getBoundingClientRect().top - viewportTop,
+      };
+    }, [containerRef, getBlockElement, visibleBlocks]);
+
+  const restoreViewportAnchor = useCallback(
+    (anchor: ViewportAnchorSnapshot | null) => {
+      const viewport = containerRef?.current;
+
+      if (!viewport || !anchor) {
+        return false;
+      }
+
+      const node = getBlockElement(anchor.key);
+
+      if (!node) {
+        return false;
+      }
+
+      const currentOffsetTop =
+        node.getBoundingClientRect().top - viewport.getBoundingClientRect().top;
+      const delta = currentOffsetTop - anchor.offsetTop;
+
+      if (Math.abs(delta) > 0.5) {
+        viewport.scrollTo({
+          behavior: "instant",
+          top: Math.max(viewport.scrollTop + delta, 0),
+        });
+      }
+
+      return true;
+    },
+    [containerRef, getBlockElement],
+  );
 
   useEffect(() => {
     if (
@@ -133,46 +231,60 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
       return;
     }
 
-    const { previousHeight, previousScrollTop } = prependAnchorRef.current;
-    const delta = totalHeight - previousHeight;
-    containerRef.current.scrollTop = previousScrollTop + delta;
+    const { anchor, previousHeight, previousScrollTop } =
+      prependAnchorRef.current;
+    const restored = restoreViewportAnchor(anchor);
+
+    if (!restored) {
+      const delta = totalHeight - previousHeight;
+      containerRef.current.scrollTop = previousScrollTop + delta;
+    }
+
     prependAnchorRef.current = null;
-  }, [containerRef, isLoadingOlderMessages, totalHeight]);
+  }, [
+    containerRef,
+    isLoadingOlderMessages,
+    restoreViewportAnchor,
+    totalHeight,
+  ]);
 
   useLayoutEffect(() => {
     const viewport = containerRef?.current;
-    const currentAnchor = visibleBlocks[0];
+    const currentAnchor = captureViewportAnchor();
 
     if (!viewport || !currentAnchor) {
       viewportAnchorRef.current = null;
+      previousTotalHeightRef.current = totalHeight;
       return;
     }
+
+    const previousTotalHeight = previousTotalHeightRef.current;
+    const totalHeightChanged = previousTotalHeight !== totalHeight;
 
     if (
       !isNearBottom &&
       !isLoadingOlderMessages &&
       !prependAnchorRef.current &&
+      totalHeightChanged &&
       viewportAnchorRef.current?.key === currentAnchor.key
     ) {
-      const delta = currentAnchor.start - viewportAnchorRef.current.start;
-
-      if (delta !== 0) {
-        viewport.scrollTo({
-          behavior: "instant",
-          top: viewportAnchorRef.current.scrollTop + delta,
-        });
-      }
+      restoreViewportAnchor(viewportAnchorRef.current);
+      viewportAnchorRef.current = {
+        key: currentAnchor.key,
+        offsetTop: viewportAnchorRef.current.offsetTop,
+      };
+      previousTotalHeightRef.current = totalHeight;
+      return;
     }
 
-    viewportAnchorRef.current = {
-      key: currentAnchor.key,
-      scrollTop: viewport.scrollTop,
-      start: currentAnchor.start,
-    };
+    viewportAnchorRef.current = currentAnchor;
+    previousTotalHeightRef.current = totalHeight;
   }, [
+    captureViewportAnchor,
     containerRef,
     isLoadingOlderMessages,
     isNearBottom,
+    restoreViewportAnchor,
     totalHeight,
     visibleBlocks,
   ]);
@@ -299,7 +411,10 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
         !isLoadingOlderMessages &&
         onLoadOlderMessages
       ) {
+        const anchor = captureViewportAnchor();
+
         prependAnchorRef.current = {
+          anchor,
           previousHeight: totalHeight,
           previousScrollTop: event.currentTarget.scrollTop,
         };
@@ -307,6 +422,7 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
       }
     },
     [
+      captureViewportAnchor,
       handleScroll,
       hasOlderMessages,
       isLoadingOlderMessages,
@@ -336,9 +452,14 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
           {visibleBlocks.map((block) => (
             <div
               key={block.key}
+              ref={getBlockRef(block.key)}
+              data-message-block-key={block.key}
               className="absolute left-0 right-0 flex flex-col gap-0.5"
               style={{
-                minHeight: `${block.estimatedHeight}px`,
+                minHeight:
+                  block.measuredHeight === null
+                    ? `${block.height}px`
+                    : undefined,
                 top: `${block.start}px`,
               }}
             >
@@ -363,19 +484,17 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
                         className="rounded-full h-8 w-8 p-0"
                         aria-label={`View ${getParticipantDisplayName(block.senderGroup.sender)}'s profile`}
                       >
-                        {block.senderGroup.sender?.avatar ? (
-                          <img
-                            src={block.senderGroup.sender.avatar}
-                            alt={getParticipantDisplayName(
-                              block.senderGroup.sender,
-                            )}
-                            className="w-8 h-8 rounded-full object-cover ring-1 ring-border shadow-sm"
-                          />
-                        ) : (
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-[10px] font-bold text-muted-foreground ring-1 ring-border shadow-sm">
-                            {getParticipantInitials(block.senderGroup.sender)}
-                          </div>
-                        )}
+                        <Avatar
+                          src={block.senderGroup.sender?.avatar}
+                          name={getParticipantDisplayName(
+                            block.senderGroup.sender,
+                          )}
+                          fallback={getParticipantInitials(
+                            block.senderGroup.sender,
+                          )}
+                          className="h-8 w-8 bg-muted text-[10px] text-muted-foreground ring-1 ring-border shadow-sm"
+                          fallbackClassName="text-muted-foreground"
+                        />
                       </Button>
                     </div>
                   </div>

@@ -1,18 +1,10 @@
 "use client";
 
 import { cn } from "@/shared/lib/utils";
+import { getPlanCoverPreset } from "@/shared/lib/plan-cover";
+import { Image } from "@/shared/components/common/image";
 import { Check, Copy, Calendar, MapPin, Users, Zap } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
-
-// Mirror the preset gradient map from step5 so the cover thumbnail renders correctly
-const PRESET_GRADIENTS: Record<string, string> = {
-  teal: "from-teal-500 to-teal-700",
-  ember: "from-amber-400 to-orange-500",
-  forest: "from-emerald-500 to-green-700",
-  rose: "from-rose-400 to-rose-600",
-  midnight: "from-slate-700 to-slate-900",
-  sky: "from-sky-400 to-blue-600",
-};
 
 export interface Step6InviteProps {
   planTitle: string;
@@ -20,6 +12,8 @@ export interface Step6InviteProps {
   planLocation: string;
   activityTitle: string;
   participantCount: number;
+  inviteeCount: number;
+  forgeMode: "AUTO" | "MANUAL";
   coverImage: string | null;
   inviteCopied: boolean;
   onCopyLink: () => void;
@@ -31,27 +25,36 @@ export function Step6Invite({
   planLocation,
   activityTitle,
   participantCount,
+  inviteeCount,
+  forgeMode,
   coverImage,
   inviteCopied,
   onCopyLink,
 }: Step6InviteProps) {
-  const gradientClass = coverImage ? PRESET_GRADIENTS[coverImage] : null;
+  const coverPreset = getPlanCoverPreset(coverImage);
+  const coverIsImage = Boolean(
+    coverImage?.match(/^(https?:\/\/|data:image\/|blob:|\/)/i),
+  );
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
       {/* ── Group summary card ── */}
       <div className="rounded-2xl border border-border/50 bg-card overflow-hidden shadow-sm">
         {/* Cover strip */}
-        <div
-          className={cn(
-            "h-20 w-full transition-colors duration-300",
-            coverImage === "uploaded"
-              ? "bg-primary/20"
-              : gradientClass
-                ? `bg-linear-to-br ${gradientClass}`
-                : "bg-linear-to-br from-muted/60 to-muted/20",
+        <div className="h-20 w-full overflow-hidden">
+          {coverIsImage ? (
+            <Image src={coverImage ?? undefined} alt="" />
+          ) : (
+            <div
+              className={cn(
+                "h-full w-full transition-colors duration-300",
+                coverPreset
+                  ? `bg-linear-to-br ${coverPreset.gradient}`
+                  : "bg-linear-to-br from-muted/60 to-muted/20",
+              )}
+            />
           )}
-        />
+        </div>
 
         {/* Body */}
         <div className="px-4 pb-4">
@@ -60,11 +63,9 @@ export function Step6Invite({
             <div
               className={cn(
                 "w-14 h-14 rounded-xl border-4 border-card shrink-0 shadow-md flex items-center justify-center",
-                coverImage === "uploaded"
-                  ? "bg-primary/15"
-                  : gradientClass
-                    ? `bg-linear-to-br ${gradientClass}`
-                    : "bg-muted",
+                coverPreset
+                  ? `bg-linear-to-br ${coverPreset.gradient}`
+                  : "bg-muted",
               )}
             >
               <Zap size={20} className="text-white/80" />
@@ -195,12 +196,11 @@ export function Step6Invite({
             Sending invitations
           </p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Tapping{" "}
-            <span className="font-semibold text-foreground">
-              Confirm &amp; send
-            </span>{" "}
-            below will notify all {participantCount - 1} matched member
-            {participantCount - 1 !== 1 ? "s" : ""} and create your group.
+            {forgeMode === "MANUAL"
+              ? `Finishing will send ${inviteeCount} invitation${
+                  inviteeCount !== 1 ? "s" : ""
+                } and leave the group ready for replies.`
+              : "The group is formed already. Finishing keeps everything saved and takes you to the group hub."}
           </p>
         </div>
       </div>

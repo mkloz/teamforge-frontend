@@ -47,8 +47,15 @@ These are the current named route fallback scopes:
 - `auth.forgot-password`
 - `auth.reset-password`
 - `auth.activate-account`
+- `onboarding.personality`
+- `onboarding.interests`
+- `home`
+- `explore`
 - `activity`
+- `profile`
+- `settings`
 - `forge`
+- `design-system`
 
 These are wired in:
 
@@ -73,11 +80,33 @@ These are the explicit mutation outcomes currently tracked:
 
 - `activity.message.send`
 - `activity.message.edit`
+- `activity.group.invite`
+- `activity.group.leave`
+- `activity.group.remove-member`
+- `activity.group.disband`
+- `activity.user.block`
+- `activity.user.unblock`
+- `activity.group-rating.submit`
 
 ### Forge
 
 - `forge.auto`
 - `forge.manual`
+
+### Explore
+
+- `explore.join-group`
+- `explore.accept-friend-request`
+- `explore.decline-friend-request`
+
+### Settings
+
+- `settings.update-profile`
+- `settings.upload-avatar`
+- `settings.notification-preferences`
+- `settings.revoke-session`
+- `settings.revoke-other-sessions`
+- `settings.user.unblock`
 
 These are currently emitted from:
 
@@ -88,6 +117,13 @@ These are currently emitted from:
 - [`src/features/auth/reset-password-page.tsx`](/C:/Users/micha/Documents/petproject/teamforge-frontend/src/features/auth/reset-password-page.tsx:1)
 - [`src/features/auth/activate-account-page.tsx`](/C:/Users/micha/Documents/petproject/teamforge-frontend/src/features/auth/activate-account-page.tsx:1)
 - [`src/features/activity/hooks/use-activity-composer.ts`](/C:/Users/micha/Documents/petproject/teamforge-frontend/src/features/activity/hooks/use-activity-composer.ts:1)
+- [`src/features/activity/hooks/use-activity-group-actions.ts`](/C:/Users/micha/Documents/petproject/teamforge-frontend/src/features/activity/hooks/use-activity-group-actions.ts:1)
+- [`src/features/activity/hooks/use-direct-chat-safety-actions.ts`](/C:/Users/micha/Documents/petproject/teamforge-frontend/src/features/activity/hooks/use-direct-chat-safety-actions.ts:1)
+- [`src/features/activity/hooks/use-group-ratings.ts`](/C:/Users/micha/Documents/petproject/teamforge-frontend/src/features/activity/hooks/use-group-ratings.ts:1)
+- [`src/features/explore/hooks/use-join-explore-group.ts`](/C:/Users/micha/Documents/petproject/teamforge-frontend/src/features/explore/hooks/use-join-explore-group.ts:1)
+- [`src/features/explore/hooks/use-explore-friend-requests.ts`](/C:/Users/micha/Documents/petproject/teamforge-frontend/src/features/explore/hooks/use-explore-friend-requests.ts:1)
+- [`src/features/settings/hooks/use-settings-profile-form.ts`](/C:/Users/micha/Documents/petproject/teamforge-frontend/src/features/settings/hooks/use-settings-profile-form.ts:1)
+- [`src/features/settings/hooks/use-settings-blocked-users.ts`](/C:/Users/micha/Documents/petproject/teamforge-frontend/src/features/settings/hooks/use-settings-blocked-users.ts:1)
 - [`src/features/forge/hooks/use-forge-wizard.ts`](/C:/Users/micha/Documents/petproject/teamforge-frontend/src/features/forge/hooks/use-forge-wizard.ts:1)
 
 ## Event Shapes
@@ -96,6 +132,7 @@ The current analytics event names are:
 
 - `client_error`
 - `mutation_outcome`
+- `route_error_recovery`
 
 ### `client_error`
 
@@ -116,6 +153,23 @@ Expected fields:
 - `status`
 - `requestId` when the successful mutation returned a backend request ID
 - optional contextual fields like `intent`, `result`, `attachmentCount`, `hasReply`, `conversationKind`, `emailDomain`
+
+Major success paths that currently propagate backend request IDs include auth,
+settings account changes, forge activity creation, explore joins and friend
+request decisions, activity message sends/edits, group invites, group lifecycle
+actions, direct-chat block/unblock, and group rating submissions.
+
+### `route_error_recovery`
+
+Expected fields:
+
+- `routeScope`
+- `status`: `started`, `success`, or `error`
+
+The shared route fallback emits this when a user retries a failed route. The
+retry action resets React Query error boundaries, calls the TanStack route
+reset callback, and invalidates the router so loaders and guards can rerun
+without a full page reload.
 
 ## Current Failure Surfaces
 
@@ -146,9 +200,6 @@ Do not add silent failures, raw `console.error` calls, or one-off analytics even
 
 The diagnostics model is useful now, but it is not complete.
 
-The next likely additions are:
+The next likely addition is:
 
-- explicit telemetry names for high-value `settings` mutations
-- explicit telemetry names for `explore` joins and friend-request decisions
-- route fallbacks for `home`, `explore`, and `settings` if those screens become more mutation-heavy
-- backend request IDs propagated into every major success path too, not just error responses
+- formal frontend test or smoke automation once a frontend test strategy is approved

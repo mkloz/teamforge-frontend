@@ -10,6 +10,7 @@ import { useActivityMessageActions } from "@/features/activity/hooks/use-activit
 import { ActivityQueries } from "@/features/activity/api/activity.queries";
 import { UserProfilePanel } from "@/shared/components/user-profile-panel/user-profile-panel";
 import { Button } from "@/shared/components/ui/button";
+import { PlanCover } from "@/shared/components/common/plan-cover";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { Pencil, X } from "lucide-react";
@@ -21,6 +22,7 @@ import { MembersSection } from "./members-section";
 import { PlanHistorySection } from "./plan-history-section";
 import { PlanSection } from "./plan-section";
 import { PinnedMessagesSection } from "./pinned-messages-section";
+import { EditGroupIdentityDialog } from "./edit-group-identity-dialog";
 
 interface GroupPanelContentProps {
   group: Group;
@@ -56,6 +58,7 @@ export function GroupPanelContent({
   const [selectedMember, setSelectedMember] = useState<GroupMember | null>(
     null,
   );
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const {
     currentUserId,
     disbandGroup,
@@ -179,15 +182,19 @@ export function GroupPanelContent({
         <header className="relative">
           {/* Cover image area with entrance scale animation */}
           <div className={cn("relative w-full", isMobile ? "h-44" : "h-36")}>
-            <motion.img
+            <motion.div
               initial={{ scale: 1.1 }}
               animate={{ scale: 1 }}
               transition={{ duration: 0.6 }}
-              src={group.plan?.coverImage || undefined}
-              alt=""
-              className="w-full h-full object-cover"
-              loading="eager" // Hero image
-            />
+              className="h-full w-full"
+            >
+              <PlanCover
+                value={group.plan?.coverImage}
+                alt={`${group.name} cover`}
+                imageClassName="transition-transform duration-700 group-hover:scale-105"
+                loading="eager"
+              />
+            </motion.div>
             {/* Gradient: stronger pull-down so avatar reads cleanly on top */}
             <div className="absolute inset-0 bg-linear-to-t from-canvas/90 via-canvas/10 to-transparent" />
 
@@ -202,6 +209,7 @@ export function GroupPanelContent({
                   "bg-black/20 hover:bg-black/40 backdrop-blur-sm text-white border-0 rounded-full",
                 )}
                 aria-label="Edit group settings"
+                onClick={() => setIsEditOpen(true)}
               >
                 <Pencil size={isMobile ? 18 : 16} />
               </Button>
@@ -304,6 +312,13 @@ export function GroupPanelContent({
           </motion.div>
         </motion.div>
       </div>
+      {currentUserRole === "ADMIN" && (
+        <EditGroupIdentityDialog
+          group={group}
+          open={isEditOpen}
+          onOpenChange={setIsEditOpen}
+        />
+      )}
     </div>
   );
 }

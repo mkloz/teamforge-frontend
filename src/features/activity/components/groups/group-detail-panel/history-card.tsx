@@ -1,5 +1,6 @@
 import { Calendar, RotateCcw, Star, MapPin } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import { PlanCover } from "@/shared/components/common/plan-cover";
 import { cn } from "@/shared/lib/utils";
 import type { PlanHistoryItem } from "../../../lib/activity-contract";
 import { categoryColors } from "./lib/constants";
@@ -13,11 +14,10 @@ export function HistoryCard({ item }: HistoryCardProps) {
     <div className="flex gap-3.5 p-2 rounded-xl bg-muted/20 hover:bg-muted/40 border border-transparent hover:border-border/50 transition-all duration-300 group">
       {/* Thumbnail with hover zoom */}
       <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 shadow-xs">
-        <img
-          src={item.coverImage || undefined}
+        <PlanCover
+          value={item.coverImage}
           alt={item.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          loading="lazy"
+          imageClassName="transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
       </div>

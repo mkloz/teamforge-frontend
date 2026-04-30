@@ -41,22 +41,33 @@ export const inviteUserSchema = z.object({
 
 export type InviteUser = z.infer<typeof inviteUserSchema>;
 
-export const inviteSchema = z.object({
-  id: z.string(),
-  type: inviteTypeSchema,
-  status: inviteStatusSchema,
-  message: z.string().nullable(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  expiresAt: z.string().datetime().nullable(),
-  respondedAt: z.string().datetime().nullable(),
-  version: z.number(),
-  groupId: z.string(),
-  inviteeId: z.string(),
-  inviterId: z.string().nullable(),
-  group: inviteGroupSchema,
-  invitee: inviteUserSchema,
-  inviter: inviteUserSchema.nullable(),
-});
+export const inviteSchema = z
+  .object({
+    id: z.string(),
+    type: inviteTypeSchema,
+    status: inviteStatusSchema,
+    message: z.string().nullable(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime().optional(),
+    expiresAt: z.string().datetime().nullable(),
+    respondedAt: z.string().datetime().nullable(),
+    version: z.number().optional(),
+    groupId: z.string(),
+    inviteeId: z.string(),
+    inviterId: z.string().nullable(),
+    group: inviteGroupSchema,
+    invitee: inviteUserSchema,
+    inviter: inviteUserSchema.nullable(),
+  })
+  .transform((invite) => {
+    const updatedAt =
+      invite.updatedAt ?? invite.respondedAt ?? invite.createdAt;
+
+    return {
+      ...invite,
+      updatedAt,
+      version: invite.version ?? Date.parse(updatedAt),
+    };
+  });
 
 export type Invite = z.infer<typeof inviteSchema>;

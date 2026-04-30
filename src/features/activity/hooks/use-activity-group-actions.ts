@@ -7,10 +7,21 @@ import {
   activityKindValues,
   activityPanelValues,
 } from "@/shared/lib/activity-route";
+import { trackMutationOutcome } from "@/shared/lib/telemetry";
+import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
 import { ActivityQueries } from "../api/activity.queries";
 
 type PendingAction = "disband" | "leave" | null;
+
+function trackGroupAction(
+  mutation: string,
+  status: "success" | "error",
+  groupId: string,
+  requestId?: string | null,
+) {
+  trackMutationOutcome(mutation, status, { groupId, requestId });
+}
 
 export function useActivityGroupActions(groupId: string) {
   const queryClient = useQueryClient();
@@ -40,7 +51,10 @@ export function useActivityGroupActions(groupId: string) {
     setPendingAction("leave");
 
     try {
-      await ActivityQueries.leaveGroup(groupId, currentUserQuery.data.id);
+      const result = await ActivityQueries.leaveGroup(
+        groupId,
+        currentUserQuery.data.id,
+      );
       await queryClient.invalidateQueries({
         queryKey: ["activity-selection", "group", groupId],
       });
@@ -52,6 +66,19 @@ export function useActivityGroupActions(groupId: string) {
         plan: null,
         proposal: null,
       });
+      trackGroupAction(
+        trackedMutationNames.activityGroupLeave,
+        "success",
+        groupId,
+        result.requestId,
+      );
+    } catch (error) {
+      trackGroupAction(
+        trackedMutationNames.activityGroupLeave,
+        "error",
+        groupId,
+      );
+      throw error;
     } finally {
       setPendingAction(null);
     }
@@ -65,7 +92,10 @@ export function useActivityGroupActions(groupId: string) {
     setPendingAction("disband");
 
     try {
-      await ActivityQueries.disbandGroup(groupId, currentUserQuery.data.id);
+      const result = await ActivityQueries.disbandGroup(
+        groupId,
+        currentUserQuery.data.id,
+      );
       await queryClient.invalidateQueries({
         queryKey: ["activity-selection", "group", groupId],
       });
@@ -77,6 +107,19 @@ export function useActivityGroupActions(groupId: string) {
         plan: null,
         proposal: null,
       });
+      trackGroupAction(
+        trackedMutationNames.activityGroupDisband,
+        "success",
+        groupId,
+        result.requestId,
+      );
+    } catch (error) {
+      trackGroupAction(
+        trackedMutationNames.activityGroupDisband,
+        "error",
+        groupId,
+      );
+      throw error;
     } finally {
       setPendingAction(null);
     }
@@ -90,11 +133,28 @@ export function useActivityGroupActions(groupId: string) {
     setRemovingMemberId(memberId);
 
     try {
-      await ActivityQueries.removeGroupMember(
+      const result = await ActivityQueries.removeGroupMember(
         groupId,
         memberId,
         currentUserQuery.data.id,
       );
+      trackMutationOutcome(
+        trackedMutationNames.activityGroupRemoveMember,
+        "success",
+        {
+          groupId,
+          requestId: result.requestId,
+        },
+      );
+    } catch (error) {
+      trackMutationOutcome(
+        trackedMutationNames.activityGroupRemoveMember,
+        "error",
+        {
+          groupId,
+        },
+      );
+      throw error;
     } finally {
       setRemovingMemberId(null);
     }
@@ -104,7 +164,20 @@ export function useActivityGroupActions(groupId: string) {
     setInvitingMemberId(inviteeId);
 
     try {
-      await ActivityQueries.sendGroupInvite(groupId, inviteeId);
+      const result = await ActivityQueries.sendGroupInvite(groupId, inviteeId);
+      trackMutationOutcome(
+        trackedMutationNames.activityGroupInvite,
+        "success",
+        {
+          groupId,
+          requestId: result.requestId,
+        },
+      );
+    } catch (error) {
+      trackMutationOutcome(trackedMutationNames.activityGroupInvite, "error", {
+        groupId,
+      });
+      throw error;
     } finally {
       setInvitingMemberId(null);
     }

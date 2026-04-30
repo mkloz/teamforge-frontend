@@ -26,6 +26,7 @@ import {
   getShouldShowBalanceNudge,
 } from "../utils/interest-logic";
 import type { PersonalityType } from "@/shared/schemas/enums";
+import type { User } from "@/shared/schemas";
 
 interface UseInterestsOptions {
   onComplete: () => void;
@@ -52,7 +53,17 @@ export function useInterests({
 
   const { mutateAsync: saveInterests, isPending: isSaving } = useMutation({
     mutationFn: OnboardingQueries.setInterests,
-    onSuccess: async () => {
+    onSuccess: async (result) => {
+      queryClient.setQueryData<User | undefined>(
+        AuthQueries.currentUserQueryKey,
+        (user) =>
+          user
+            ? {
+                ...user,
+                interests: result.interests,
+              }
+            : user,
+      );
       await queryClient.invalidateQueries({
         queryKey: AuthQueries.currentUserQueryKey,
       });

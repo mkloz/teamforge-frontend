@@ -1,6 +1,11 @@
 import { queryOptions } from "@tanstack/react-query";
 
 import { AuthQueries } from "@/features/auth/api/auth.queries";
+import {
+  ACTIVITY_CHATS_QUERY_KEY,
+  ACTIVITY_GROUP_SELECTION_QUERY_KEY,
+  ACTIVITY_GROUPS_QUERY_KEY,
+} from "@/features/activity/api/activity-query-keys";
 import { appQueryClient } from "@/shared/api/query-client";
 import type { ExploreGroup, GroupApi, Invite, User } from "@/shared/schemas";
 
@@ -291,6 +296,15 @@ export class HomeQueries {
         appQueryClient.invalidateQueries({ queryKey: ["home", "plans"] }),
         appQueryClient.invalidateQueries({ queryKey: ["home", "stats"] }),
         appQueryClient.invalidateQueries({ queryKey: ["explore-groups"] }),
+        appQueryClient.invalidateQueries({
+          queryKey: ACTIVITY_GROUPS_QUERY_KEY,
+        }),
+        appQueryClient.invalidateQueries({
+          queryKey: ACTIVITY_CHATS_QUERY_KEY,
+        }),
+        appQueryClient.invalidateQueries({
+          queryKey: ACTIVITY_GROUP_SELECTION_QUERY_KEY,
+        }),
       ]);
 
       return invite;

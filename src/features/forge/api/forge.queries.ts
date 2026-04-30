@@ -44,16 +44,25 @@ export interface ForgeExecutionResult {
 export interface AutoForgeExecutionInput {
   selectedActivity: string | null;
   planName: string;
+  planDescription: string;
   planDate: string;
   planTime: string;
   planLocation: string;
+  planLocationLat: number | null;
+  planLocationLng: number | null;
+  coverImage: string | null;
   locationType: LocationMode;
+  planCost: "FREE" | "PAID";
+  planCostAmount: string;
+  planCostDetails: string;
   groupSizeMode: GroupSizeMode;
   fixedSize: FixedGroupSize;
   autoMinSize: number;
   autoMaxSize: number;
   visibility: Visibility;
+  groupName: string;
   groupDescription: string;
+  avatarImage: string | null;
 }
 
 function normalizeTrustScore(score: number) {
@@ -135,6 +144,27 @@ function buildDateTime(planDate: string, planTime: string) {
   return Number.isNaN(timestamp.getTime()) ? null : timestamp.toISOString();
 }
 
+function getCoordinatePair(
+  lat: number | null | undefined,
+  lng: number | null | undefined,
+) {
+  return typeof lat === "number" &&
+    Number.isFinite(lat) &&
+    typeof lng === "number" &&
+    Number.isFinite(lng)
+    ? { lat, lng }
+    : null;
+}
+
+function parseCostAmount(input: AutoForgeExecutionInput) {
+  if (input.planCost !== "PAID") {
+    return null;
+  }
+
+  const amount = Number(input.planCostAmount);
+  return Number.isFinite(amount) && amount > 0 ? amount : null;
+}
+
 function selectInterestIds(user: User, selectedActivity: string | null) {
   const interests = user.interests ?? [];
 
@@ -171,13 +201,19 @@ function buildCreateActivityInput(
   forgeMode: "AUTO" | "MANUAL",
 ): CreateActivityInput {
   const title = input.selectedActivity?.trim() || input.planName.trim();
+  const planCoordinates =
+    input.locationType === "IN_PERSON"
+      ? getCoordinatePair(input.planLocationLat, input.planLocationLng)
+      : null;
+  const userCoordinates = getCoordinatePair(user.locationLat, user.locationLng);
+  const coordinates = planCoordinates ?? userCoordinates;
 
   return {
     title,
     description: input.groupDescription.trim() || input.planName.trim() || null,
     city: user.city ?? null,
-    locationLat: null,
-    locationLng: null,
+    locationLat: coordinates?.lat,
+    locationLng: coordinates?.lng,
     visibility: input.visibility,
     access: resolveActivityAccess(input.visibility),
     forgeMode,
@@ -188,11 +224,20 @@ function buildCreateActivityInput(
 function buildForgeActivityInput(
   input: AutoForgeExecutionInput,
 ): ForgeActivityInput {
+  const planCoordinates =
+    input.locationType === "IN_PERSON"
+      ? getCoordinatePair(input.planLocationLat, input.planLocationLng)
+      : null;
+
   return {
     groupSize: resolveGroupSize(input),
+    groupName: input.groupName.trim() || null,
+    groupDescription: input.groupDescription.trim() || null,
+    groupAvatar: input.avatarImage,
     plan: {
       title: input.planName.trim(),
-      description: null,
+      description: input.planDescription.trim() || null,
+      coverImage: input.coverImage,
       category: resolvePlanCategory(input.selectedActivity),
       dateTime: buildDateTime(input.planDate, input.planTime),
       locationMode: input.locationType,
@@ -200,11 +245,11 @@ function buildForgeActivityInput(
         input.locationType === "IN_PERSON"
           ? input.planLocation.trim() || null
           : null,
-      locationLat: null,
-      locationLng: null,
-      cost: "FREE",
-      costAmount: null,
-      costDetails: null,
+      locationLat: planCoordinates?.lat,
+      locationLng: planCoordinates?.lng,
+      cost: input.planCost,
+      costAmount: parseCostAmount(input),
+      costDetails: input.planCostDetails.trim() || null,
     },
   };
 }
@@ -288,7 +333,10 @@ export class ForgeQueries {
     const activityResult = await ForgeApi.createActivity(createActivityInput);
     const forgeResult = await ForgeApi.forgeActivity(
       activityResult.data.id,
-      buildForgeActivityInput(input),
+      buildForgeActivityInput({
+        ...input,
+        groupSizeMode: "FIXED",
+      }),
     );
     const group = await ForgeApi.getGroup(forgeResult.data.group.id);
 
@@ -354,5 +402,61 @@ export class ForgeQueries {
 
   static getDefaultGroupSize() {
     return DEFAULT_GROUP_SIZE;
+  }
+
+  static async saveForgedIdentity(input: {
+    groupId: string | null;
+    planId: string | null;
+    groupName: string;
+    groupDescription: string;
+    avatarImage: string | null;
+    coverImage: string | null;
+  }) {
+    const requests: Promise<unknown>[] = [];
+
+    if (input.groupId) {
+      requests.push(
+        ForgeApi.updateGroup(input.groupId, {
+          name: input.groupName.trim() || undefined,
+          description: input.groupDescription.trim() || null,
+          avatar: input.avatarImage,
+        }),
+      );
+    }
+
+    if (input.planId) {
+      requests.push(
+        ForgeApi.updatePlan(input.planId, {
+          coverImage: input.coverImage,
+        }),
+      );
+    }
+
+    await Promise.all(requests);
+  }
+
+  static async sendManualInvites(input: {
+    groupId: string | null;
+    inviteeIds: string[];
+    planName: string;
+  }) {
+    if (!input.groupId || input.inviteeIds.length === 0) {
+      return;
+    }
+
+    const message = input.planName.trim()
+      ? `I'd like you to join ${input.planName.trim()}.`
+      : undefined;
+
+    await Promise.all(
+      [...new Set(input.inviteeIds)].map((inviteeId) =>
+        ForgeApi.createInvite({
+          groupId: input.groupId,
+          inviteeId,
+          type: "FRIEND_INVITE",
+          message,
+        }),
+      ),
+    );
   }
 }

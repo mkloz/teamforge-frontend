@@ -1,4 +1,5 @@
 import type { GroupApi } from "@/shared/schemas";
+import { Avatar } from "@/shared/components/common/avatar";
 import { buildActivityGroupHubNavigation } from "@/shared/lib/activity-route";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
@@ -41,14 +42,6 @@ function formatRelativeTime(value: string) {
 
 export function GroupRow({ group, index }: GroupRowProps) {
   const lastActivity = formatRelativeTime(group.updatedAt);
-  const initials =
-    group.name
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase())
-      .join("") || "TF";
-
   return (
     <motion.div
       initial={{ opacity: 0, x: -8 }}
@@ -72,20 +65,12 @@ export function GroupRow({ group, index }: GroupRowProps) {
         )}
       >
         <div className="relative shrink-0">
-          <div className="size-9 rounded-full overflow-hidden border-2 border-border transition-colors duration-150 group-hover:border-forge-teal/30 bg-canvas flex items-center justify-center">
-            {group.avatar ? (
-              <img
-                src={group.avatar}
-                alt={group.name}
-                className="size-full object-cover"
-                loading="lazy"
-              />
-            ) : (
-              <span className="text-xs font-black text-forge-teal">
-                {initials}
-              </span>
-            )}
-          </div>
+          <Avatar
+            src={group.avatar}
+            name={group.name}
+            className="size-9 border-2 border-border bg-canvas transition-colors duration-150 group-hover:border-forge-teal/30"
+            fallbackClassName="text-xs"
+          />
         </div>
 
         <div className="flex flex-col gap-0 flex-1 min-w-0">

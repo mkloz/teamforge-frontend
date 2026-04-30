@@ -1,3 +1,4 @@
+import { Avatar } from "@/shared/components/common/avatar";
 import { MapPin } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -69,16 +70,13 @@ export const STEPS: Step[] = [
     accent: (
       <div className="flex -space-x-4">
         {[1, 2, 3, 4].map((i) => (
-          <div
+          <Avatar
             key={i}
+            src={`/avatars/avatar-${i}.jpg`}
+            name="Group member"
             className="w-10 h-10 rounded-full border-2 border-canvas bg-slate-200 overflow-hidden shadow-sm"
-          >
-            <img
-              src={`/avatars/avatar-${i}.jpg`}
-              alt="Group member"
-              className="w-full h-full object-cover"
-            />
-          </div>
+            loading="lazy"
+          />
         ))}
         <div className="w-10 h-10 rounded-full border-2 border-canvas bg-forge-teal flex items-center justify-center text-white text-[10px] font-bold shadow-sm">
           +2

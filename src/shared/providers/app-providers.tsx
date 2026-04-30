@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { Toaster } from "sonner";
 
 import { config } from "@/config/config";
+import { ActivityQueries } from "@/features/activity/api/activity.queries";
 import { AuthQueries } from "@/features/auth/api/auth.queries";
 import { NotificationsQueries } from "@/features/notifications/api/notifications.queries";
 import {
@@ -17,7 +18,10 @@ import { realtimeClient } from "@/shared/api/realtime-client";
 import { authSession } from "@/shared/api/auth-session";
 import { appQueryClient } from "@/shared/api/query-client";
 import { shouldApplyRealtimeEvent } from "@/shared/lib/realtime-event-registry";
-import { realtimeNotificationPayloadSchema } from "@/shared/schemas";
+import {
+  realtimeGroupUpdatedPayloadSchema,
+  realtimeNotificationPayloadSchema,
+} from "@/shared/schemas";
 import { useInitializeTheme } from "@/shared/store/theme.store";
 import { captureException } from "@/shared/lib/telemetry";
 import { telemetryErrorScopes } from "@/shared/lib/telemetry-contract";
@@ -88,8 +92,30 @@ export function AppProviders() {
         NotificationsQueries.addIncomingNotification(parsed.notification);
       },
     );
+    const unsubscribeGroupUpdate = realtimeClient.on(
+      "group.updated",
+      (payload) => {
+        const parsed = realtimeGroupUpdatedPayloadSchema.parse(payload);
+
+        if (!shouldApplyRealtimeEvent(parsed)) {
+          return;
+        }
+
+        const currentUser = appQueryClient.getQueryData(
+          AuthQueries.currentUser().queryKey,
+        );
+
+        if (!currentUser) {
+          void ActivityQueries.invalidateGroupSurfaces();
+          return;
+        }
+
+        ActivityQueries.applyRealtimeGroupUpdate(currentUser.id, parsed.group);
+      },
+    );
 
     return () => {
+      unsubscribeGroupUpdate();
       unsubscribeNotification();
       unsubscribeSession();
       realtimeClient.syncSession(null);

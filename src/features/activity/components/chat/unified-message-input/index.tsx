@@ -6,11 +6,15 @@ import type {
   ActivityOutgoingAttachment,
   ActivitySendMessageInput,
 } from "@/features/activity/lib/activity-contract";
+import {
+  FileDropzone,
+  FilePreviewList,
+} from "@/shared/components/common/file-dropzone";
 import { useActivityStore } from "@/features/activity/store/activity.store";
 import { Button } from "@/shared/components/ui/button";
 import { useAutoResize } from "@/shared/hooks/use-auto-resize";
 import { cn } from "@/shared/lib/utils";
-import { FileText, Image as ImageIcon, PencilLine, X } from "lucide-react";
+import { PencilLine } from "lucide-react";
 
 import { ActionTarget } from "./action-target";
 import { InputRow } from "./input-row";
@@ -48,42 +52,6 @@ function dedupeAttachments(nextAttachments: ActivityOutgoingAttachment[]) {
   });
 }
 
-function AttachmentChip({
-  attachment,
-  onRemove,
-}: {
-  attachment: ActivityOutgoingAttachment;
-  onRemove: () => void;
-}) {
-  const Icon = attachment.file.type.startsWith("image/") ? ImageIcon : FileText;
-
-  return (
-    <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-muted/40 px-2.5 py-2">
-      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-card text-forge-teal">
-        <Icon size={15} />
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-xs font-semibold text-ink">
-          {attachment.file.name}
-        </p>
-        <p className="text-[10px] text-slate-muted">
-          {Math.max(1, Math.round(attachment.file.size / 1024))} KB
-        </p>
-      </div>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-sm"
-        className="rounded-full text-slate-muted hover:text-ink"
-        onClick={onRemove}
-        aria-label={`Remove ${attachment.file.name}`}
-      >
-        <X size={14} />
-      </Button>
-    </div>
-  );
-}
-
 export const UnifiedMessageInput = memo(function UnifiedMessageInput({
   chatId = null,
   errorMessage = null,
@@ -94,6 +62,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
 }: UnifiedMessageInputProps) {
   const [value, setValue] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [isDraggingFiles, setIsDraggingFiles] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pendingAttachments, setPendingAttachments] = useState<
     ActivityOutgoingAttachment[]
@@ -277,22 +246,61 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
     () =>
       pendingAttachments.length > 0 ? (
         <div className="grid gap-2 px-3 pt-3">
-          {pendingAttachments.map((attachment, index) => (
-            <AttachmentChip
-              key={`${attachment.file.name}-${attachment.file.size}-${attachment.file.lastModified}`}
-              attachment={attachment}
-              onRemove={() => removeAttachment(index)}
-            />
-          ))}
+          <FilePreviewList
+            files={pendingAttachments.map((attachment) => attachment.file)}
+            onRemove={removeAttachment}
+          />
+          <FileDropzone
+            variant="inline"
+            multiple
+            maxFiles={10}
+            title="Add more attachments"
+            description="Drop photos or documents here before sending."
+            helper="Multiple files supported"
+            actionLabel="Browse"
+            disabled={isDisabled || isEditing}
+            onFiles={appendAttachments}
+          />
         </div>
       ) : null,
-    [pendingAttachments, removeAttachment],
+    [
+      appendAttachments,
+      isDisabled,
+      isEditing,
+      pendingAttachments,
+      removeAttachment,
+    ],
   );
 
   return (
     <div className="shrink-0 px-3 pt-2 pb-2.5 border-t border-border/60 bg-canvas/90 backdrop-blur-xl safe-area-inset-bottom z-30 isolate overflow-visible min-h-16">
       <div className="flex items-end gap-2.5 w-full mx-auto">
-        <div className={containerClasses}>
+        <div
+          className={containerClasses}
+          onDragOver={(event) => {
+            if (isDisabled || isEditing) {
+              return;
+            }
+
+            event.preventDefault();
+            setIsDraggingFiles(true);
+          }}
+          onDragLeave={() => setIsDraggingFiles(false)}
+          onDrop={(event) => {
+            if (isDisabled || isEditing) {
+              return;
+            }
+
+            event.preventDefault();
+            setIsDraggingFiles(false);
+            appendAttachments(Array.from(event.dataTransfer.files));
+          }}
+        >
+          {isDraggingFiles && (
+            <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-3xl border-2 border-dashed border-forge-teal bg-forge-teal/10 text-sm font-semibold text-forge-teal">
+              Drop files to attach
+            </div>
+          )}
           <ReplyPreview
             replyingTo={isEditing ? null : replyingTo}
             onClear={() => setReplyingTo(null)}

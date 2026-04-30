@@ -494,6 +494,7 @@ FORMING → PENDING → ACTIVE → PLANNING → COMPLETED
 - As a user, I can update my profile information
 - As a user, I can change my password
 - As a user, I can manage notification preferences
+- As a user, I can review and unblock people I have blocked
 - As a user, I can delete my account
 - As a user, I can log out
 
@@ -501,11 +502,11 @@ FORMING → PENDING → ACTIVE → PLANNING → COMPLETED
 
 | Section | Options |
 |---------|---------|
-| **Profile** | Name, bio, avatar, location |
-| **Account** | Email, password, linked accounts |
-| **Notifications** | Push, email, in-app preferences |
-| **Privacy** | Profile visibility, search status |
-| **Data** | Export data, delete account |
+| **Account** | Name, bio, avatar, location, profile summary |
+| **Matching** | Personality and interests shortcuts |
+| **Security** | Password recovery and active sessions |
+| **Safety** | Blocked users and unblock actions |
+| **Notifications** | In-app and email preferences |
 
 #### Components
 

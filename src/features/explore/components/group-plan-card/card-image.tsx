@@ -1,3 +1,4 @@
+import { Image } from "@/shared/components/common/image";
 import { cn } from "@/shared/lib/utils";
 import type { ExploreGroup } from "@/shared/schemas";
 import { Target } from "lucide-react";
@@ -34,25 +35,36 @@ export function CardImage({
           : "h-56 md:h-auto md:w-2/5 border-b-2 md:border-b-0 md:border-r-2",
       )}
     >
-      {group.avatar ? (
-        <img
-          src={group.avatar}
-          alt={title}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-          loading="lazy"
-        />
-      ) : (
-        <div className="absolute inset-0 flex flex-col justify-between bg-linear-to-br from-forge-teal/18 via-canvas to-spark-amber/18 p-5">
-          <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-muted">
-            Artwork pending
-          </span>
-          <div className="max-w-52">
-            <p className="text-lg font-black leading-tight text-ink line-clamp-3">
-              {title}
-            </p>
+      <Image
+        src={group.avatar ?? undefined}
+        alt={title}
+        wrapperClassName="absolute inset-0"
+        className="transition-transform duration-700 ease-out group-hover:scale-105"
+        noImageComponent={
+          <div className="flex h-full w-full flex-col justify-between bg-linear-to-br from-forge-teal/18 via-canvas to-spark-amber/18 p-5">
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-muted">
+              Artwork pending
+            </span>
+            <div className="max-w-52">
+              <p className="text-lg font-black leading-tight text-ink line-clamp-3">
+                {title}
+              </p>
+            </div>
           </div>
-        </div>
-      )}
+        }
+        fallbackComponent={
+          <div className="flex h-full w-full flex-col justify-between bg-linear-to-br from-forge-teal/18 via-canvas to-spark-amber/18 p-5">
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-muted">
+              Artwork unavailable
+            </span>
+            <div className="max-w-52">
+              <p className="text-lg font-black leading-tight text-ink line-clamp-3">
+                {title}
+              </p>
+            </div>
+          </div>
+        }
+      />
 
       <div className="absolute inset-0 bg-linear-to-b from-black/20 via-transparent to-black/70 pointer-events-none" />
 

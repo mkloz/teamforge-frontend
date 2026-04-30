@@ -1,8 +1,11 @@
 import { cn } from "@/shared/lib/utils";
+import { AddressAutocomplete } from "@/shared/components/maps/address-autocomplete";
 import {
   AlertCircle,
+  AlignLeft,
   Calendar,
   Clock,
+  DollarSign,
   Globe,
   Home,
   MapPin,
@@ -13,14 +16,28 @@ import {
 export interface Step2PlanProps {
   planName: string;
   onPlanNameChange: (v: string) => void;
+  planDescription: string;
+  onPlanDescriptionChange: (v: string) => void;
   planDate: string;
   onPlanDateChange: (v: string) => void;
   planTime: string;
   onPlanTimeChange: (v: string) => void;
   planLocation: string;
   onPlanLocationChange: (v: string) => void;
+  planLocationLat: number | null;
+  planLocationLng: number | null;
+  onPlanLocationCoordinatesChange: (
+    lat: number | null,
+    lng: number | null,
+  ) => void;
   locationType: "IN_PERSON" | "ONLINE" | "TBD";
   onLocationTypeChange: (v: "IN_PERSON" | "ONLINE" | "TBD") => void;
+  planCost: "FREE" | "PAID";
+  onPlanCostChange: (v: "FREE" | "PAID") => void;
+  planCostAmount: string;
+  onPlanCostAmountChange: (v: string) => void;
+  planCostDetails: string;
+  onPlanCostDetailsChange: (v: string) => void;
 }
 
 // ── Shared primitives ──────────────────────────────────────────────────────
@@ -141,14 +158,25 @@ function InputField({
 export function Step2Plan({
   planName,
   onPlanNameChange,
+  planDescription,
+  onPlanDescriptionChange,
   planDate,
   onPlanDateChange,
   planTime,
   onPlanTimeChange,
   planLocation,
   onPlanLocationChange,
+  planLocationLat,
+  planLocationLng,
+  onPlanLocationCoordinatesChange,
   locationType,
   onLocationTypeChange,
+  planCost,
+  onPlanCostChange,
+  planCostAmount,
+  onPlanCostAmountChange,
+  planCostDetails,
+  onPlanCostDetailsChange,
 }: Step2PlanProps) {
   const trimmed = planName.trim();
   const isNameError = planName.length > 0 && trimmed.length < 3;
@@ -244,6 +272,32 @@ export function Step2Plan({
               </p>
             </div>
           )}
+        </div>
+      </SectionCard>
+
+      {/* ── Section 1b: Details ── */}
+      <SectionCard>
+        <SectionHeader
+          icon={<AlignLeft size={14} />}
+          title="Plan details"
+          description="Add the context people need before they say yes."
+        />
+
+        <div className="space-y-2">
+          <FieldLabel htmlFor="plan-description" hint="Optional">
+            Description
+          </FieldLabel>
+          <div className="rounded-xl border border-border/60 bg-background/60 focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/12">
+            <textarea
+              id="plan-description"
+              value={planDescription}
+              onChange={(event) => onPlanDescriptionChange(event.target.value)}
+              placeholder="What should members know before joining?"
+              maxLength={500}
+              rows={3}
+              className="w-full resize-none rounded-xl bg-transparent px-3 py-3 text-sm font-medium text-foreground placeholder:text-muted-foreground/35 focus:outline-none"
+            />
+          </div>
         </div>
       </SectionCard>
 
@@ -364,17 +418,30 @@ export function Step2Plan({
         {/* Address input — only for in-person */}
         {showAddress && (
           <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
-            <FieldLabel htmlFor="plan-location">Address or venue</FieldLabel>
-            <InputField icon={<MapPin size={13} />}>
-              <input
-                id="plan-location"
-                type="text"
-                value={planLocation}
-                onChange={(e) => onPlanLocationChange(e.target.value)}
-                placeholder="Search address or venue name..."
-                className="w-full h-11 pl-8 pr-4 bg-transparent text-sm font-medium placeholder:text-muted-foreground/35 focus:outline-none rounded-xl"
-              />
-            </InputField>
+            <AddressAutocomplete
+              label="Address or venue"
+              badge="Plan location"
+              hint="Venue coordinates help suggest nearby people. Members will see the plan location after the group is formed."
+              placeholder="Search address or venue name..."
+              value={
+                planLocation
+                  ? {
+                      address: planLocation,
+                      city: planLocation,
+                      lat: planLocationLat,
+                      lng: planLocationLng,
+                    }
+                  : null
+              }
+              onLocationSelect={(location) => {
+                onPlanLocationChange(location?.address ?? "");
+                onPlanLocationCoordinatesChange(
+                  location?.lat ?? null,
+                  location?.lng ?? null,
+                );
+              }}
+              className="[&_label]:text-xs [&_label]:font-semibold [&_label]:text-muted-foreground"
+            />
           </div>
         )}
 
@@ -395,6 +462,95 @@ export function Step2Plan({
             <p className="text-xs text-muted-foreground/70">
               Location will be confirmed with members once the group is formed.
             </p>
+          </div>
+        )}
+      </SectionCard>
+
+      {/* ── Section 4: Cost ── */}
+      <SectionCard>
+        <SectionHeader
+          icon={<DollarSign size={14} />}
+          title="Cost"
+          description="Be clear if members should expect to pay anything."
+        />
+
+        <div
+          className="grid grid-cols-2 gap-2"
+          role="radiogroup"
+          aria-label="Plan cost"
+        >
+          {(["FREE", "PAID"] as const).map((value) => {
+            const active = planCost === value;
+            return (
+              <button
+                key={value}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => onPlanCostChange(value)}
+                className={cn(
+                  "rounded-xl border px-3 py-3 text-left transition-colors duration-150",
+                  active
+                    ? "border-primary/30 bg-primary/8 ring-1 ring-primary/20"
+                    : "border-border/50 bg-background/40 hover:border-primary/20 hover:bg-primary/4",
+                )}
+              >
+                <p
+                  className={cn(
+                    "text-xs font-semibold",
+                    active ? "text-primary" : "text-foreground",
+                  )}
+                >
+                  {value === "FREE" ? "Free" : "Paid"}
+                </p>
+                <p className="mt-0.5 text-micro text-muted-foreground/60">
+                  {value === "FREE" ? "No expected spend" : "Set an estimate"}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+
+        {planCost === "PAID" && (
+          <div className="grid gap-3 sm:grid-cols-[10rem_1fr] animate-in fade-in slide-in-from-top-1 duration-200">
+            <div className="space-y-2">
+              <FieldLabel htmlFor="plan-cost-amount" required>
+                Estimate
+              </FieldLabel>
+              <InputField icon={<DollarSign size={13} />}>
+                <input
+                  id="plan-cost-amount"
+                  type="number"
+                  inputMode="decimal"
+                  min="0"
+                  step="0.01"
+                  value={planCostAmount}
+                  onChange={(event) =>
+                    onPlanCostAmountChange(event.target.value)
+                  }
+                  placeholder="12.50"
+                  className="w-full h-11 pl-8 pr-3 bg-transparent text-sm font-medium text-foreground placeholder:text-muted-foreground/35 focus:outline-none rounded-xl"
+                />
+              </InputField>
+            </div>
+            <div className="space-y-2">
+              <FieldLabel htmlFor="plan-cost-details" hint="Optional">
+                Details
+              </FieldLabel>
+              <InputField>
+                <input
+                  id="plan-cost-details"
+                  type="text"
+                  value={planCostDetails}
+                  onChange={(event) =>
+                    onPlanCostDetailsChange(event.target.value)
+                  }
+                  placeholder="Tickets, split bill, entry fee..."
+                  maxLength={160}
+                  className="w-full h-11 px-3 bg-transparent text-sm font-medium text-foreground placeholder:text-muted-foreground/35 focus:outline-none rounded-xl"
+                />
+              </InputField>
+            </div>
           </div>
         )}
       </SectionCard>

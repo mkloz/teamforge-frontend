@@ -72,11 +72,14 @@ export const MessageMedia = memo(
           </div>
         )}
 
-        {/* Images / Gallery */}
-        {attachments.some((a: UnifiedAttachment) => a.type === "IMAGE") && (
+        {/* Visual media / Gallery */}
+        {attachments.some(
+          (a: UnifiedAttachment) => a.type === "IMAGE" || a.type === "VIDEO",
+        ) && (
           <MediaGallery
             attachments={attachments.filter(
-              (a: UnifiedAttachment) => a.type === "IMAGE",
+              (a: UnifiedAttachment) =>
+                a.type === "IMAGE" || a.type === "VIDEO",
             )}
             isOwn={isOwn}
             rounding={galleryRounding}

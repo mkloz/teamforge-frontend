@@ -1,3 +1,4 @@
+import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import { memo } from "react";
 import type { UnifiedConversation } from "../../lib/activity-contract";
@@ -26,29 +27,25 @@ export const AvatarSection = memo(
 
     return (
       <div className="relative shrink-0">
-        <div
+        <Avatar
+          src={avatarUrl}
+          name={title}
+          shape={isGroup ? "rounded" : "circle"}
           className={cn(
-            "relative",
-            isGroup ? "rounded-md" : "rounded-full",
-            "overflow-hidden ring-1 ring-border/50 group-hover/item:ring-forge-teal/30 transition-colors duration-200 shadow-sm",
+            "ring-1 ring-border/50 shadow-sm transition-colors duration-200 group-hover/item:ring-forge-teal/30",
+            isGroup && "rounded-md",
+            isCompact ? "w-9 h-9" : "w-11 h-11",
           )}
-        >
-          <img
-            src={avatarUrl || undefined}
-            alt={title}
-            className={cn(
-              "object-cover bg-muted",
-              isCompact ? "w-9 h-9" : "w-11 h-11",
-            )}
-          />
-        </div>
+        />
 
         {isGroup && secondaryAvatar && !isCompact && (
           <div className="absolute -bottom-0.5 -right-0.5 ring-2 ring-background rounded-lg overflow-hidden shadow-sm">
-            <img
+            <Avatar
               src={secondaryAvatar}
               alt=""
-              className="w-3 h-3 object-cover"
+              shape="rounded"
+              className="w-3 h-3 rounded-lg"
+              fallback=""
             />
           </div>
         )}

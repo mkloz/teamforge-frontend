@@ -105,26 +105,36 @@ export const messageAttachmentApiSchema = z.object({
 
 export type MessageAttachmentApi = z.infer<typeof messageAttachmentApiSchema>;
 
-export const messageApiSchema = z.object({
-  id: z.string(),
-  type: messageTypeSchema,
-  content: z.string(),
-  status: messageStatusSchema,
-  isEdited: z.boolean(),
-  isPinned: z.boolean(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  editedAt: z.string().datetime().nullable(),
-  deletedAt: z.string().datetime().nullable(),
-  chatId: z.string(),
-  senderId: z.string(),
-  replyToId: z.string().nullable(),
-  version: z.number(),
-  sender: messageSenderSummarySchema.optional(),
-  replyTo: messageReplyPreviewSchema.nullable().optional(),
-  reactions: z.array(messageReactionApiSchema).optional(),
-  attachments: z.array(messageAttachmentApiSchema).optional(),
-});
+export const messageApiSchema = z
+  .object({
+    id: z.string(),
+    type: messageTypeSchema,
+    content: z.string(),
+    status: messageStatusSchema,
+    isEdited: z.boolean(),
+    isPinned: z.boolean(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime().optional(),
+    editedAt: z.string().datetime().nullable(),
+    deletedAt: z.string().datetime().nullable(),
+    chatId: z.string(),
+    senderId: z.string(),
+    replyToId: z.string().nullable(),
+    version: z.number().optional(),
+    sender: messageSenderSummarySchema.optional(),
+    replyTo: messageReplyPreviewSchema.nullable().optional(),
+    reactions: z.array(messageReactionApiSchema).optional(),
+    attachments: z.array(messageAttachmentApiSchema).optional(),
+  })
+  .transform((message) => {
+    const updatedAt = message.updatedAt ?? message.createdAt;
+
+    return {
+      ...message,
+      updatedAt,
+      version: message.version ?? Date.parse(updatedAt),
+    };
+  });
 
 export type MessageApi = z.infer<typeof messageApiSchema>;
 

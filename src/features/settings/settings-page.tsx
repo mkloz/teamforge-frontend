@@ -1,6 +1,7 @@
-import { Button } from "@/shared/components/ui/button";
+import { PageErrorState } from "@/shared/components/page-error-state";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { SettingsProfileForm } from "./components/settings-profile-form";
+import { useSettingsBlockedUsers } from "./hooks/use-settings-blocked-users";
 import { useSettingsProfileForm } from "./hooks/use-settings-profile-form";
 import { useSettingsRouteState } from "./hooks/use-settings-route-state";
 import type { SettingsSection } from "@/shared/lib/settings-route";
@@ -21,9 +22,19 @@ const SETTINGS_SECTIONS: Array<{
     description: "Personality and interests that shape your group results.",
   },
   {
+    id: "privacy",
+    label: "Privacy",
+    description: "Control the personal details people can see.",
+  },
+  {
     id: "security",
     label: "Security",
     description: "Sign-in provider, verification, and password safety.",
+  },
+  {
+    id: "safety",
+    label: "Safety",
+    description: "People you have blocked and access controls.",
   },
   {
     id: "notifications",
@@ -76,8 +87,20 @@ export function SettingsPage() {
     notificationPreferencesError,
     notificationPreferencesMessage,
     updateNotificationPreference,
+    updateMatchingPreference,
+    updatePrivacyPreference,
     isSavingNotificationPreferences,
+    deleteAccount,
+    isDeletingAccount,
+    deleteAccountError,
   } = useSettingsProfileForm();
+  const {
+    blockedUsers,
+    isLoadingBlockedUsers,
+    blockedUsersError,
+    unblockBlockedUser,
+    unblockingBlockedUserId,
+  } = useSettingsBlockedUsers(Boolean(currentUser));
 
   if (isLoading) {
     return <SettingsSkeleton />;
@@ -85,15 +108,12 @@ export function SettingsPage() {
 
   if (isError) {
     return (
-      <div className="rounded-2xl border border-border bg-card p-6">
-        <h1 className="text-2xl font-bold text-ink">Settings</h1>
-        <p className="mt-3 text-sm text-slate-muted">
-          We couldn't load your settings right now.
-        </p>
-        <Button className="mt-5" variant="primary" onClick={() => refetch()}>
-          Try Again
-        </Button>
-      </div>
+      <PageErrorState
+        className="mx-auto w-full max-w-5xl"
+        title="Settings could not load"
+        description="Your account settings could not be refreshed right now."
+        onRetry={() => refetch()}
+      />
     );
   }
 
@@ -160,12 +180,22 @@ export function SettingsPage() {
         revokingSessionId={revokingSessionId}
         onRevokeOtherSessions={revokeOtherSessions}
         isRevokingOtherSessions={isRevokingOtherSessions}
+        blockedUsers={blockedUsers}
+        isLoadingBlockedUsers={isLoadingBlockedUsers}
+        blockedUsersError={blockedUsersError}
+        onUnblockUser={unblockBlockedUser}
+        unblockingUserId={unblockingBlockedUserId}
         notificationPreferences={notificationPreferences}
         isLoadingNotificationPreferences={isLoadingNotificationPreferences}
         notificationPreferencesError={notificationPreferencesError}
         notificationPreferencesMessage={notificationPreferencesMessage}
         onNotificationPreferenceChange={updateNotificationPreference}
+        onMatchingPreferenceChange={updateMatchingPreference}
+        onPrivacyPreferenceChange={updatePrivacyPreference}
         isSavingNotificationPreferences={isSavingNotificationPreferences}
+        onDeleteAccount={deleteAccount}
+        isDeletingAccount={isDeletingAccount}
+        deleteAccountError={deleteAccountError}
       />
     </div>
   );

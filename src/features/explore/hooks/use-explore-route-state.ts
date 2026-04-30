@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import {
   createParser,
   parseAsArrayOf,
@@ -248,7 +248,7 @@ export function useExploreRouteState() {
     updateSelectedCategories(next.length ? next : ["ALL"]);
   }
 
-  function clearFocusedFriendRequest() {
+  const clearFocusedFriendRequest = useCallback(() => {
     void setRouteState(
       {
         panel: null,
@@ -256,7 +256,7 @@ export function useExploreRouteState() {
       },
       { history: "replace" },
     );
-  }
+  }, [setRouteState]);
 
   return {
     searchQuery,

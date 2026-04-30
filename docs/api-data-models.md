@@ -8,6 +8,8 @@
 
 This document defines the data models (based on the Prisma schema) and the expected REST API contract between the frontend and backend. The Prisma schema is located at `prisma/schema.prisma`.
 
+`docs/open-api.yaml` is the generated endpoint/schema contract. When the handwritten notes here disagree with OpenAPI, treat OpenAPI as the source of truth and update this guide.
+
 ---
 
 ## 1. Core Domain Models
@@ -750,21 +752,43 @@ interface GetMessagesResponse {
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `GET` | `/friends` | List friends |
-| `GET` | `/friends/requests` | List pending requests |
-| `POST` | `/friends/request` | Send friend request |
-| `POST` | `/friends/:id/accept` | Accept request |
-| `POST` | `/friends/:id/decline` | Decline request |
+| `GET` | `/friends/requests/incoming` | List incoming pending requests |
+| `GET` | `/friends/requests/outgoing` | List outgoing pending requests |
+| `GET` | `/friends/blocked` | List users blocked by the current user |
+| `POST` | `/friends/requests` | Send friend request |
+| `POST` | `/friends/requests/:id/accept` | Accept incoming request by requester user ID |
+| `POST` | `/friends/requests/:id/decline` | Decline incoming request by requester user ID |
 | `DELETE` | `/friends/:id` | Remove friend |
 | `POST` | `/friends/:id/block` | Block user |
+| `DELETE` | `/friends/:id/block` | Unblock user |
 
 #### Send Friend Request
 
 ```typescript
-// POST /friends/request
+// POST /friends/requests
 interface FriendRequestRequest {
   userId: string;
 }
 ```
+
+#### Blocked Users
+
+```typescript
+// GET /friends/blocked?page=1&limit=100
+interface BlockedUsersResponse {
+  items: Friendship[];
+  meta: PaginationMeta;
+}
+
+// DELETE /friends/:id/block
+interface UnblockUserResponse extends Friendship {}
+```
+
+Frontend notes:
+
+- Activity combines `/friends` and `/friends/blocked` so blocked direct chats remain visible for unblock.
+- Settings uses `/friends/blocked` as the management surface for users blocked outside an active direct chat.
+- Block/unblock must invalidate Activity friendship, chat, and direct-selection caches.
 
 ---
 
@@ -772,19 +796,25 @@ interface FriendRequestRequest {
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/groups/:id/ratings` | Get ratings for group |
-| `POST` | `/groups/:id/ratings` | Submit rating |
+| `GET` | `/ratings/groups/:id` | Get ratings for a completed group |
+| `POST` | `/ratings` | Submit rating |
 
 #### Submit Rating
 
 ```typescript
-// POST /groups/:id/ratings
+// POST /ratings
 interface SubmitRatingRequest {
+  groupId: string;
   rateeId: string;
   score: number; // 1-5
   comment?: string;
 }
 ```
+
+Frontend notes:
+
+- The completed group banner reads `/ratings/groups/:id` to avoid duplicate ratings per ratee.
+- Successful submission should invalidate `["activity-ratings", groupId]` and refresh the local rating state.
 
 ---
 
@@ -792,20 +822,28 @@ interface SubmitRatingRequest {
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/invites` | List received invites |
-| `POST` | `/groups/:id/invite` | Send invite |
+| `GET` | `/invites/received` | List received invites |
+| `GET` | `/invites/sent` | List sent invites |
+| `POST` | `/invites` | Send invite |
 | `POST` | `/invites/:id/accept` | Accept invite |
 | `POST` | `/invites/:id/decline` | Decline invite |
 
 #### Send Invite
 
 ```typescript
-// POST /groups/:id/invite
+// POST /invites
 interface SendInviteRequest {
-  userId: string;
+  groupId: string;
+  inviteeId: string;
+  type?: "FRIEND_INVITE" | "DIRECT_INVITE";
   message?: string;
 }
 ```
+
+Frontend notes:
+
+- Accepted invites must refresh home groups, plans, stats, explore groups, Activity groups/chats, and group-selection caches.
+- Sent invites must update the sent-invitations cache as well as notification/unread surfaces.
 
 ---
 
@@ -897,10 +935,17 @@ ws://api.teamforge.app/ws?token=<accessToken>
 | `message.deleted` | { messageId } | Message deleted |
 | `message.reaction` | Reaction | Reaction added/removed |
 | `notification.new` | Notification | New notification |
-| `group.updated` | Group | Group details changed |
+| `group.updated` | `{ group, reason, eventId?, occurredAt? }` | Group details, membership, removal, or disband changes |
 | `plan.updated` | Plan | Plan details changed |
 | `typing.start` | { chatId, userId } | User started typing |
 | `typing.stop` | { chatId, userId } | User stopped typing |
+
+Frontend cache notes:
+
+- `notification.new` is handled globally and refreshes notification list/count plus related home, explore, and Activity caches for social notification types.
+- `group.updated` is handled globally as well as by the Activity page. Event IDs are deduped client-side.
+- Group mutations and realtime updates should refresh Activity groups, Activity chats, group-selection, home groups, home plans, and home stats.
+- Friend-request acceptance should refresh incoming requests, Activity friendships, Activity chats, and direct-selection caches.
 
 ---
 

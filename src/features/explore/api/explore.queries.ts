@@ -1,5 +1,12 @@
 import { queryOptions } from "@tanstack/react-query";
 
+import {
+  ACTIVITY_CHATS_QUERY_KEY,
+  ACTIVITY_DIRECT_SELECTION_QUERY_KEY,
+  ACTIVITY_FRIENDSHIPS_QUERY_KEY,
+  ACTIVITY_GROUP_SELECTION_QUERY_KEY,
+  ACTIVITY_GROUPS_QUERY_KEY,
+} from "@/features/activity/api/activity-query-keys";
 import { getUserOceanScores } from "@/features/profile/lib/profile-utils";
 import type { ApiResponseWithRequestId } from "@/shared/api/api";
 import { appQueryClient } from "@/shared/api/query-client";
@@ -12,12 +19,8 @@ import type {
 import type { OceanScores } from "@/shared/types/psychometrics";
 
 import { ExploreApi } from "./explore.api";
+import { EXPLORE_FRIEND_REQUESTS_QUERY_KEY } from "./explore-query-keys";
 import type { ExploreFilters } from "../schemas/explore-filters.schema";
-
-export const EXPLORE_FRIEND_REQUESTS_QUERY_KEY = [
-  "explore",
-  "friend-requests",
-] as const;
 
 export interface ExploreIdentity {
   mbti: string;
@@ -212,6 +215,15 @@ export class ExploreQueries {
         appQueryClient.invalidateQueries({ queryKey: ["home", "groups"] }),
         appQueryClient.invalidateQueries({ queryKey: ["home", "plans"] }),
         appQueryClient.invalidateQueries({ queryKey: ["home", "stats"] }),
+        appQueryClient.invalidateQueries({
+          queryKey: ACTIVITY_GROUPS_QUERY_KEY,
+        }),
+        appQueryClient.invalidateQueries({
+          queryKey: ACTIVITY_CHATS_QUERY_KEY,
+        }),
+        appQueryClient.invalidateQueries({
+          queryKey: ACTIVITY_GROUP_SELECTION_QUERY_KEY,
+        }),
       ]);
 
       return result;
@@ -237,6 +249,15 @@ export class ExploreQueries {
       }),
       appQueryClient.invalidateQueries({
         queryKey: ["notifications", "unread-count"],
+      }),
+      appQueryClient.invalidateQueries({
+        queryKey: ACTIVITY_FRIENDSHIPS_QUERY_KEY,
+      }),
+      appQueryClient.invalidateQueries({
+        queryKey: ACTIVITY_CHATS_QUERY_KEY,
+      }),
+      appQueryClient.invalidateQueries({
+        queryKey: ACTIVITY_DIRECT_SELECTION_QUERY_KEY,
       }),
     ]);
 
@@ -270,7 +291,7 @@ export class ExploreQueries {
     );
 
     appQueryClient.setQueryData<FriendshipApi[] | undefined>(
-      ["activity", "friendships"],
+      ACTIVITY_FRIENDSHIPS_QUERY_KEY,
       (current) => mergeFriendships(current, friendship),
     );
   }

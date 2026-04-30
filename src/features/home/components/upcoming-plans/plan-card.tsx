@@ -1,4 +1,5 @@
 import type { PlanStatus } from "@/shared/schemas";
+import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { Calendar, CheckCircle2, Clock, MessageCircle } from "lucide-react";
@@ -129,28 +130,13 @@ export function PlanCard({ group, index }: PlanCardProps) {
           aria-label={`${memberPreviews.length} members`}
         >
           {memberPreviews.slice(0, 3).map((member) => (
-            <div
+            <Avatar
               key={member.id}
-              className="size-8 rounded-full border-2 border-card bg-muted overflow-hidden shadow-xs flex items-center justify-center"
-            >
-              {member.avatar ? (
-                <img
-                  src={member.avatar}
-                  alt={member.name}
-                  className="size-full object-cover"
-                  loading="lazy"
-                />
-              ) : (
-                <span className="text-[10px] font-black text-forge-teal">
-                  {member.name
-                    .split(/\s+/)
-                    .filter(Boolean)
-                    .slice(0, 2)
-                    .map((part) => part[0]?.toUpperCase())
-                    .join("") || "TF"}
-                </span>
-              )}
-            </div>
+              src={member.avatar}
+              name={member.name}
+              className="size-8 border-2 border-card bg-muted shadow-xs"
+              fallbackClassName="text-[10px]"
+            />
           ))}
           {memberPreviews.length > 3 && (
             <div className="size-8 rounded-full border-2 border-card bg-muted flex items-center justify-center text-xs font-extrabold text-muted-foreground shadow-xs">

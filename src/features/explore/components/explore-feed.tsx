@@ -8,9 +8,10 @@ import { GroupPlanCard } from "./group-plan-card";
 import { useExploreGroups } from "../hooks/use-explore-groups";
 import { useExploreRouteState } from "../hooks/use-explore-route-state";
 import { Loader2, SearchX } from "lucide-react";
+import { PageErrorState } from "@/shared/components/page-error-state";
 
 export function ExploreFeed() {
-  const { data: groups, isLoading, isError } = useExploreGroups();
+  const { data: groups, isLoading, isError, refetch } = useExploreGroups();
   const { isAnythingFiltered, resetFilters, searchQuery } =
     useExploreRouteState();
 
@@ -27,14 +28,14 @@ export function ExploreFeed() {
 
   if (isError) {
     return (
-      <div className="bg-destructive/5 border border-destructive/10 rounded-3xl p-8 text-center space-y-2">
-        <p className="text-sm font-bold text-destructive">
-          Failed to load groups
-        </p>
-        <p className="text-xs text-muted-foreground">
-          Please try again later or adjust your filters.
-        </p>
-      </div>
+      <PageErrorState
+        title="Groups could not load"
+        description="TeamForge could not refresh the available groups for these filters."
+        retryLabel="Refresh groups"
+        onRetry={() => {
+          void refetch();
+        }}
+      />
     );
   }
 

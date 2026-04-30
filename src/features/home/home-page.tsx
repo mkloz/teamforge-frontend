@@ -7,11 +7,12 @@ import { Invitations } from "./components/invitations";
 import { SentInvitationsReview } from "./components/invitations/sent-invitations-review";
 import { RecommendedGroups } from "./components/recommended-groups";
 import { UpcomingPlans } from "./components/upcoming-plans";
+import { PageErrorState } from "@/shared/components/page-error-state";
 import { useHomeRouteState } from "./hooks/use-home-route-state";
 import { useHomeData } from "./hooks/use-home-data";
 
 export function HomePage() {
-  const { sentInvitations } = useHomeData();
+  const { sentInvitations, isError, refetchAll } = useHomeData();
   const {
     focusedInviteId,
     focusedPanel,
@@ -30,6 +31,21 @@ export function HomePage() {
       block: "start",
     });
   }, [focusedPanel]);
+
+  if (isError) {
+    return (
+      <main
+        id="main-content"
+        className="mx-auto w-full max-w-screen-2xl px-4 pt-2 pb-8 md:pt-6 lg:px-6"
+      >
+        <PageErrorState
+          title="Home could not load"
+          description="Your plans, groups, and invitations could not be refreshed right now."
+          onRetry={refetchAll}
+        />
+      </main>
+    );
+  }
 
   return (
     <div className="w-full max-w-screen-2xl mx-auto px-4 lg:px-6 pt-2 md:pt-6 pb-8">

@@ -1,9 +1,18 @@
 "use client";
 
 import { GroupIdentityFields } from "@/features/forge/components/group-identity-fields";
+import { FileUploadApi } from "@/shared/api/file-upload";
+import { Avatar } from "@/shared/components/common/avatar";
+import { FileDropzone } from "@/shared/components/common/file-dropzone";
+import { Image } from "@/shared/components/common/image";
+import {
+  getPlanCoverPreset,
+  PLAN_COVER_PRESETS,
+} from "@/shared/lib/plan-cover";
+import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { cn } from "@/shared/lib/utils";
-import { Check, ImagePlus, Upload, X } from "lucide-react";
-import { useRef } from "react";
+import { Check, X } from "lucide-react";
+import { useRef, useState } from "react";
 
 export interface Step5IdentityProps {
   planTitle: string;
@@ -17,53 +26,6 @@ export interface Step5IdentityProps {
   groupDescription?: string;
   onGroupDescriptionChange?: (v: string) => void;
 }
-
-// Refined presets — harmonious palette built on brand tokens:
-// Teal family, Amber family, Slate, Rose, Forest, and Midnight.
-// Each has a light-mode accessible label color.
-const PRESET_COVERS: {
-  id: string;
-  gradient: string;
-  label: string;
-  labelColor: string;
-}[] = [
-  {
-    id: "teal",
-    gradient: "from-teal-500 to-teal-700",
-    label: "Teal",
-    labelColor: "text-teal-700",
-  },
-  {
-    id: "ember",
-    gradient: "from-amber-400 to-orange-500",
-    label: "Ember",
-    labelColor: "text-orange-700",
-  },
-  {
-    id: "forest",
-    gradient: "from-emerald-500 to-green-700",
-    label: "Forest",
-    labelColor: "text-emerald-700",
-  },
-  {
-    id: "rose",
-    gradient: "from-rose-400 to-rose-600",
-    label: "Rose",
-    labelColor: "text-rose-700",
-  },
-  {
-    id: "midnight",
-    gradient: "from-slate-700 to-slate-900",
-    label: "Midnight",
-    labelColor: "text-slate-600",
-  },
-  {
-    id: "sky",
-    gradient: "from-sky-400 to-blue-600",
-    label: "Sky",
-    labelColor: "text-blue-700",
-  },
-];
 
 export function Step5Identity({
   planTitle,
@@ -79,22 +41,65 @@ export function Step5Identity({
 }: Step5IdentityProps) {
   const coverInputRef = useRef<HTMLInputElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [coverUploadError, setCoverUploadError] = useState<string | null>(null);
+  const [avatarUploadError, setAvatarUploadError] = useState<string | null>(
+    null,
+  );
+  const [isCoverUploading, setIsCoverUploading] = useState(false);
+  const [isAvatarUploading, setIsAvatarUploading] = useState(false);
 
-  const activePreset = PRESET_COVERS.find((c) => c.id === coverImage);
-  const isUploadedCover = coverImage === "uploaded";
-  const isUploadedAvatar = avatarImage === "uploaded";
+  const activePreset = getPlanCoverPreset(coverImage);
+  const isImageCover = Boolean(
+    coverImage?.match(/^(https?:\/\/|data:image\/|blob:|\/)/i),
+  );
+  const isImageAvatar = Boolean(
+    avatarImage?.match(/^(https?:\/\/|data:image\/|blob:|\/)/i),
+  );
 
-  const handleCoverFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.length) onCoverImageChange("uploaded");
+  const uploadImage = async (
+    file: File,
+    onChange: (url: string | null) => void,
+    setUploading: (value: boolean) => void,
+    setError: (value: string | null) => void,
+  ) => {
+    setUploading(true);
+    setError(null);
+
+    try {
+      const uploaded = await FileUploadApi.uploadImage(file);
+      onChange(uploaded.url);
+    } catch (error) {
+      setError(
+        getApiErrorMessage(error, "We couldn't upload that image. Try again."),
+      );
+    } finally {
+      setUploading(false);
+    }
   };
-  const handleAvatarFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.length) onAvatarImageChange("uploaded");
-  };
 
-  // Drag-and-drop for avatar
-  const handleAvatarDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    if (e.dataTransfer.files?.length) onAvatarImageChange("uploaded");
+  const handleCoverFiles = (files: File[]) => {
+    const file = files[0];
+
+    if (file) {
+      void uploadImage(
+        file,
+        onCoverImageChange,
+        setIsCoverUploading,
+        setCoverUploadError,
+      );
+    }
+  };
+  const handleAvatarFiles = (files: File[]) => {
+    const file = files[0];
+
+    if (file) {
+      void uploadImage(
+        file,
+        onAvatarImageChange,
+        setIsAvatarUploading,
+        setAvatarUploadError,
+      );
+    }
   };
 
   return (
@@ -120,86 +125,52 @@ export function Step5Identity({
           </p>
         </div>
 
-        {/* Cover preview tile — click to upload */}
-        <button
-          type="button"
-          onClick={() => coverInputRef.current?.click()}
-          className={cn(
-            "group relative w-full h-40 rounded-2xl overflow-hidden border-2 transition-colors duration-200 flex items-center justify-center",
-            isUploadedCover
-              ? "border-primary/40"
-              : coverImage
-                ? "border-transparent"
-                : "border-dashed border-border/60 bg-muted/30 hover:border-primary/40 hover:bg-primary/3",
-          )}
-        >
-          {/* Gradient background when preset selected */}
-          {!isUploadedCover && coverImage && (
-            <div
-              className={cn(
-                "absolute inset-0 bg-linear-to-br transition-colors duration-500",
-                activePreset?.gradient,
-              )}
-            />
-          )}
-
-          {/* Uploaded state overlay */}
-          {isUploadedCover && (
-            <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-              <ImagePlus size={28} className="text-primary/50" />
-            </div>
-          )}
-
-          {/* Empty / hover state */}
-          {!coverImage && (
-            <div className="flex flex-col items-center gap-2 pointer-events-none">
-              <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
-                <Upload
-                  size={18}
-                  className="text-muted-foreground group-hover:text-primary/70 transition-colors"
-                />
-              </div>
-              <p className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
-                Upload plan photo
-              </p>
-            </div>
-          )}
-
-          {/* Edit overlay on hover when something is set */}
-          {coverImage && (
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 flex items-center justify-center">
-              <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-foreground text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
-                Change photo
-              </span>
-            </div>
-          )}
-
-          {/* Clear button */}
+        <div className="relative">
+          <FileDropzone
+            inputRef={coverInputRef}
+            variant="cover"
+            accept="image/*"
+            title={coverImage ? "Change plan photo" : "Upload plan photo"}
+            description="Drop a landscape image here or browse from your device."
+            helper="PNG, JPG, WEBP up to 5 MB"
+            actionLabel="Browse"
+            isUploading={isCoverUploading}
+            error={coverUploadError}
+            onFiles={handleCoverFiles}
+            preview={
+              coverImage ? (
+                isImageCover ? (
+                  <Image
+                    src={coverImage}
+                    alt=""
+                    className="transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div
+                    className={cn(
+                      "h-full w-full bg-linear-to-br",
+                      activePreset?.gradient ?? "from-muted/60 to-muted/20",
+                    )}
+                  />
+                )
+              ) : null
+            }
+          />
           {coverImage && (
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onCoverImageChange(null);
-              }}
-              className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/40 hover:bg-black/60 flex items-center justify-center transition-colors z-10"
+              onClick={() => onCoverImageChange(null)}
+              className="absolute right-2 top-2 z-20 flex size-7 items-center justify-center rounded-full bg-black/45 text-white transition-colors hover:bg-black/65"
               aria-label="Remove cover"
             >
-              <X size={12} className="text-white" />
+              <X size={13} />
             </button>
           )}
-        </button>
-        <input
-          ref={coverInputRef}
-          type="file"
-          accept="image/*"
-          className="sr-only"
-          onChange={handleCoverFile}
-        />
+        </div>
 
         {/* Color presets — refined palette, 3 cols on mobile → 6 on sm */}
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-          {PRESET_COVERS.map(({ id, gradient, label }) => {
+          {PLAN_COVER_PRESETS.map(({ id, gradient, label }) => {
             const selected = coverImage === id;
             return (
               <button
@@ -241,81 +212,38 @@ export function Step5Identity({
           </p>
         </div>
 
-        <div className="flex items-start gap-4">
-          {/* Avatar preview circle */}
-          <div
-            className={cn(
-              "relative w-20 h-20 rounded-2xl border-2 shrink-0 overflow-hidden flex items-center justify-center transition-colors duration-200",
-              isUploadedAvatar
-                ? "border-primary/40 bg-primary/10"
-                : "border-dashed border-border/60 bg-muted/40",
-            )}
-          >
-            {isUploadedAvatar ? (
-              <>
-                <div className="w-8 h-8 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <Check size={16} className="text-primary" strokeWidth={2.5} />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => onAvatarImageChange(null)}
-                  className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/40 hover:bg-black/60 flex items-center justify-center"
-                  aria-label="Remove avatar"
-                >
-                  <X size={10} className="text-white" />
-                </button>
-              </>
-            ) : (
-              <ImagePlus size={20} className="text-muted-foreground/50" />
+        <div className="grid gap-3 sm:grid-cols-[6rem_1fr]">
+          <div className="relative size-24 overflow-hidden rounded-2xl border border-border bg-muted">
+            <Avatar
+              src={avatarImage}
+              name={groupName || planTitle}
+              shape="rounded"
+              className="size-full rounded-2xl text-lg"
+            />
+            {avatarImage && (
+              <button
+                type="button"
+                onClick={() => onAvatarImageChange(null)}
+                className="absolute right-1.5 top-1.5 z-20 flex size-6 items-center justify-center rounded-full bg-black/45 text-white transition-colors hover:bg-black/65"
+                aria-label="Remove avatar"
+              >
+                <X size={12} />
+              </button>
             )}
           </div>
-
-          {/* Drop zone */}
-          <button
-            type="button"
-            onClick={() => avatarInputRef.current?.click()}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={handleAvatarDrop}
-            className={cn(
-              "group flex-1 min-h-20 rounded-2xl border-dashed border-2 flex flex-col items-center justify-center gap-1.5 transition-colors duration-200 p-4",
-              isUploadedAvatar
-                ? "border-primary/30 bg-primary/5"
-                : "border-border/50 bg-card hover:border-primary/40 hover:bg-primary/3",
-            )}
-          >
-            <Upload
-              size={16}
-              className={cn(
-                "transition-colors",
-                isUploadedAvatar
-                  ? "text-primary/60"
-                  : "text-muted-foreground/50 group-hover:text-primary/60",
-              )}
-            />
-            <p
-              className={cn(
-                "text-xs font-medium text-center transition-colors",
-                isUploadedAvatar
-                  ? "text-primary"
-                  : "text-muted-foreground group-hover:text-foreground",
-              )}
-            >
-              {isUploadedAvatar
-                ? "Avatar selected — tap to change"
-                : "Drag & drop or tap to upload"}
-            </p>
-            <p className="text-micro text-muted-foreground/50">
-              PNG, JPG, WEBP up to 5 MB
-            </p>
-          </button>
+          <FileDropzone
+            inputRef={avatarInputRef}
+            variant="avatar"
+            accept="image/*"
+            title={avatarImage ? "Replace avatar" : "Upload group avatar"}
+            description="Drop a square image here or tap to browse."
+            helper="PNG, JPG, WEBP up to 5 MB"
+            actionLabel="Browse"
+            isUploading={isAvatarUploading}
+            error={avatarUploadError}
+            onFiles={handleAvatarFiles}
+          />
         </div>
-        <input
-          ref={avatarInputRef}
-          type="file"
-          accept="image/*"
-          className="sr-only"
-          onChange={handleAvatarFile}
-        />
       </div>
 
       {/* ── Live preview card ── */}
@@ -326,9 +254,9 @@ export function Step5Identity({
           <div
             className={cn(
               "h-24 w-full transition-colors duration-500",
-              isUploadedCover
+              isImageCover
                 ? "bg-primary/15"
-                : coverImage
+                : activePreset
                   ? `bg-linear-to-br ${activePreset?.gradient}`
                   : "bg-muted/40",
             )}
@@ -338,15 +266,19 @@ export function Step5Identity({
             <div
               className={cn(
                 "w-14 h-14 rounded-xl border-4 border-card -mt-7 shrink-0 shadow-md flex items-center justify-center transition-colors duration-300",
-                isUploadedAvatar
+                isImageAvatar
                   ? "bg-primary/20"
-                  : coverImage
+                  : activePreset
                     ? `bg-linear-to-br ${activePreset?.gradient}`
                     : "bg-muted",
               )}
             >
-              {isUploadedAvatar && (
-                <Check size={18} className="text-primary" strokeWidth={2.5} />
+              {isImageAvatar && (
+                <Image
+                  src={avatarImage ?? undefined}
+                  alt=""
+                  className="rounded-lg"
+                />
               )}
             </div>
             <div className="min-w-0 pt-2">

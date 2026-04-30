@@ -13,9 +13,12 @@ interface UserProfilePanelProps {
   mutualGroups?: MutualGroup[];
   isMuted?: boolean;
   isBlocked?: boolean;
+  blockActionDisabled?: boolean;
+  isBlockActionPending?: boolean;
   isMobile?: boolean;
   isDirectChat?: boolean;
   onBack?: () => void;
+  onToggleBlock?: () => void;
 }
 
 export function UserProfilePanel({
@@ -24,9 +27,12 @@ export function UserProfilePanel({
   mutualGroups: propMutualGroups,
   isMuted: propIsMuted,
   isBlocked: propIsBlocked,
+  blockActionDisabled = false,
+  isBlockActionPending = false,
   isMobile = false,
   isDirectChat = true,
   onBack,
+  onToggleBlock,
 }: UserProfilePanelProps) {
   const participant =
     propParticipant ||
@@ -70,7 +76,10 @@ export function UserProfilePanel({
           <ProfilePanelSettings
             isMuted={isMuted}
             isBlocked={isBlocked}
+            blockActionDisabled={blockActionDisabled}
+            isBlockActionPending={isBlockActionPending}
             isMobile={isMobile}
+            onToggleBlock={onToggleBlock}
           />
         )}
       </div>

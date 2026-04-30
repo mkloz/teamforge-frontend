@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 
 import {
@@ -17,7 +18,7 @@ export function useHomeRouteState() {
     },
   );
 
-  function clearInvitationFocus() {
+  const clearInvitationFocus = useCallback(() => {
     void setRouteState(
       {
         panel: null,
@@ -26,7 +27,7 @@ export function useHomeRouteState() {
       },
       { history: "replace" },
     );
-  }
+  }, [setRouteState]);
 
   return {
     focusedPanel: routeState.panel ?? null,

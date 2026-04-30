@@ -12,6 +12,7 @@ const authReturnTargets = [
   "/profile",
   "/settings",
   "/forge",
+  "/onboarding/profile",
   "/onboarding/personality",
   "/onboarding/interests",
 ] as const;

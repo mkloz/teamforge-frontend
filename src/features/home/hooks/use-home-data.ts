@@ -2,6 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 
 import { EMPTY_HOME_STATS, HomeQueries } from "../api/home.queries";
 
+const EMPTY_PLANS: never[] = [];
+const EMPTY_GROUPS: never[] = [];
+const EMPTY_INVITATIONS: never[] = [];
+const EMPTY_RECOMMENDATIONS: never[] = [];
+
 export function useHomeData() {
   const statsQuery = useQuery(HomeQueries.stats());
   const plansQuery = useQuery(HomeQueries.plans());
@@ -12,11 +17,11 @@ export function useHomeData() {
 
   return {
     stats: statsQuery.data ?? EMPTY_HOME_STATS,
-    plans: plansQuery.data ?? [],
-    groups: groupsQuery.data ?? [],
-    invitations: invitationsQuery.data ?? [],
-    sentInvitations: sentInvitationsQuery.data ?? [],
-    recommendations: recommendationsQuery.data ?? [],
+    plans: plansQuery.data ?? EMPTY_PLANS,
+    groups: groupsQuery.data ?? EMPTY_GROUPS,
+    invitations: invitationsQuery.data ?? EMPTY_INVITATIONS,
+    sentInvitations: sentInvitationsQuery.data ?? EMPTY_INVITATIONS,
+    recommendations: recommendationsQuery.data ?? EMPTY_RECOMMENDATIONS,
     isLoading:
       statsQuery.isLoading ||
       plansQuery.isLoading ||

@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { Users } from "lucide-react";
 
+import { Avatar } from "@/shared/components/common/avatar";
+
 interface GroupIdentitySectionProps {
   name: string;
   description: string | null;
@@ -28,12 +30,15 @@ export function GroupIdentitySection({
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-20 h-20 rounded-xl overflow-hidden bg-muted ring-2 ring-border/30 shadow-lg flex items-center justify-center group pointer-events-auto"
+              className="group pointer-events-auto"
             >
-              <img
-                src={avatar || undefined}
+              <Avatar
+                src={avatar}
+                name={name}
                 alt={`${name} avatar`}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                shape="rounded"
+                className="h-20 w-20 rounded-xl bg-muted ring-2 ring-border/30 shadow-lg"
+                imageClassName="transition-transform duration-500 group-hover:scale-105"
               />
             </motion.div>
           </div>

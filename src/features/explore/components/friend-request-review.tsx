@@ -1,3 +1,4 @@
+import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
@@ -145,17 +146,14 @@ export function FriendRequestReview() {
                 )}
               >
                 <div className="flex items-start gap-3">
-                  <div className="flex size-12 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-muted/40">
-                    {counterpart.avatar ? (
-                      <img
-                        src={counterpart.avatar}
-                        alt={counterpart.name}
-                        className="size-full object-cover"
-                      />
-                    ) : (
+                  <Avatar
+                    src={counterpart.avatar}
+                    name={counterpart.name}
+                    fallback={
                       <UserPlus className="size-5 text-muted-foreground" />
-                    )}
-                  </div>
+                    }
+                    className="size-12 border border-border/60 bg-muted/40"
+                  />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <h3 className="truncate text-sm font-black text-foreground">

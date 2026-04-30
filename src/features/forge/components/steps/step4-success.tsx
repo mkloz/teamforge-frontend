@@ -1,3 +1,4 @@
+import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import { Check, RefreshCw, UserMinus, UserPlus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
@@ -141,17 +142,14 @@ export function Step4Success({
                       : "bg-accent/10 group-hover:bg-accent/15",
                   )}
                 >
-                  {p.user?.avatar ? (
-                    <img
-                      src={p.user.avatar}
-                      alt={getParticipantName(p)}
-                      className="h-full w-full rounded-xl object-cover"
-                    />
-                  ) : (
-                    <span className="text-xs font-bold text-foreground/80">
-                      {getParticipantInitials(p)}
-                    </span>
-                  )}
+                  <Avatar
+                    src={p.user?.avatar}
+                    name={getParticipantName(p)}
+                    fallback={getParticipantInitials(p)}
+                    shape="rounded"
+                    className="h-full w-full rounded-xl bg-transparent"
+                    fallbackClassName="bg-transparent text-xs text-foreground/80"
+                  />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p

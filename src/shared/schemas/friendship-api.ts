@@ -29,18 +29,23 @@ export type FriendshipPrivateChatApi = z.infer<
   typeof friendshipPrivateChatApiSchema
 >;
 
-export const friendshipApiSchema = z.object({
-  status: friendshipStatusSchema,
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  version: z.number(),
-  requesterId: z.string(),
-  receiverId: z.string(),
-  privateChatId: z.string().nullable(),
-  requester: friendshipUserApiSchema,
-  receiver: friendshipUserApiSchema,
-  counterpart: friendshipUserApiSchema,
-  privateChat: friendshipPrivateChatApiSchema.nullable().optional(),
-});
+export const friendshipApiSchema = z
+  .object({
+    status: friendshipStatusSchema,
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    version: z.number().optional(),
+    requesterId: z.string(),
+    receiverId: z.string(),
+    privateChatId: z.string().nullable(),
+    requester: friendshipUserApiSchema,
+    receiver: friendshipUserApiSchema,
+    counterpart: friendshipUserApiSchema,
+    privateChat: friendshipPrivateChatApiSchema.nullable().optional(),
+  })
+  .transform((friendship) => ({
+    ...friendship,
+    version: friendship.version ?? Date.parse(friendship.updatedAt),
+  }));
 
 export type FriendshipApi = z.infer<typeof friendshipApiSchema>;

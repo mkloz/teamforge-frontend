@@ -4,6 +4,7 @@ import {
   buildAuthRouteNavigation,
   buildRouteLocationHref,
 } from "@/features/auth/lib/auth-return";
+import { Avatar } from "@/shared/components/common/avatar";
 import { buildProfileNavigation } from "@/shared/lib/app-route";
 import { Button } from "@/shared/components/ui/button";
 import { buildSettingsNavigation } from "@/shared/lib/settings-route";
@@ -13,21 +14,6 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { LogOut, Moon, Settings, Sun, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useUserMenu } from "../hooks/use-user-menu";
-
-function getUserInitials(name?: string | null) {
-  if (!name) {
-    return "TF";
-  }
-
-  const initials = name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
-
-  return initials || "TF";
-}
 
 export function UserMenu() {
   const { open, toggle, close } = useUserMenu();
@@ -39,7 +25,6 @@ export function UserMenu() {
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [isSigningOut, setIsSigningOut] = useState(false);
-  const userInitials = getUserInitials(currentUser?.name);
 
   // Close on outside click
   useEffect(() => {
@@ -95,24 +80,13 @@ export function UserMenu() {
         aria-haspopup="menu"
         aria-label="Open user menu"
       >
-        <span
-          className={cn(
-            "flex h-8 w-8 items-center justify-center rounded-full",
-            "bg-primary/10 text-primary border border-primary/20",
-          )}
-        >
-          {currentUser?.avatar ? (
-            <img
-              src={currentUser.avatar}
-              alt={currentUser.name}
-              className="h-full w-full rounded-full object-cover"
-            />
-          ) : (
-            <span className="text-[11px] font-bold tracking-wide">
-              {userInitials}
-            </span>
-          )}
-        </span>
+        <Avatar
+          src={currentUser?.avatar}
+          name={currentUser?.name}
+          className="h-8 w-8 border border-primary/20 bg-primary/10 text-primary"
+          fallbackClassName="bg-primary/10 text-[11px] tracking-wide text-primary"
+          loading="eager"
+        />
       </Button>
 
       {/* Dropdown */}

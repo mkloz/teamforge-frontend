@@ -32,6 +32,11 @@ const SETTINGS_NOTIFICATION_PREFERENCES_QUERY_KEY = [
 
 const SETTINGS_SESSIONS_QUERY_KEY = ["settings", "sessions"] as const;
 
+type BooleanSettingsPreferenceKey = Exclude<
+  keyof NotificationPreferences,
+  "minCompatibilityScore"
+>;
+
 function removeSessionFromList(
   sessions: AuthSession[] | undefined,
   sessionId: string,
@@ -81,6 +86,9 @@ export function useSettingsProfileForm() {
     null,
   );
   const [preferencesError, setPreferencesError] = useState<string | null>(null);
+  const [deleteAccountError, setDeleteAccountError] = useState<string | null>(
+    null,
+  );
   const [revokingSessionId, setRevokingSessionId] = useState<string | null>(
     null,
   );
@@ -93,6 +101,8 @@ export function useSettingsProfileForm() {
       age: "",
       gender: "",
       city: "",
+      locationLat: null,
+      locationLng: null,
       bio: "",
     },
   });
@@ -107,6 +117,8 @@ export function useSettingsProfileForm() {
       age: currentUser.age ? String(currentUser.age) : "",
       gender: currentUser.gender ?? "",
       city: currentUser.city ?? "",
+      locationLat: currentUser.locationLat ?? null,
+      locationLng: currentUser.locationLng ?? null,
       bio: currentUser.bio ?? "",
     });
   }, [currentUser, form]);
@@ -263,6 +275,33 @@ export function useSettingsProfileForm() {
     },
   });
 
+  const deleteAccountMutation = useMutation({
+    meta: {
+      telemetryName: trackedMutationNames.settingsDeleteAccount,
+    },
+    mutationFn: SettingsQueries.deleteAccount,
+    onSuccess: async (result) => {
+      trackMutationOutcome(
+        trackedMutationNames.settingsDeleteAccount,
+        "success",
+        {
+          requestId: result.requestId,
+        },
+      );
+      AuthQueries.clearAuthState();
+      await navigate(buildAuthRouteNavigation("/auth/login", null));
+    },
+    onError: (error) => {
+      setDeleteAccountError(
+        getApiErrorMessage(
+          error,
+          "We couldn't delete your account right now. Please try again.",
+        ),
+      );
+      trackMutationOutcome(trackedMutationNames.settingsDeleteAccount, "error");
+    },
+  });
+
   const onSubmit = form.handleSubmit(async (values) => {
     setSaveMessage(null);
     setSaveError(null);
@@ -273,6 +312,8 @@ export function useSettingsProfileForm() {
       age: toNullableAge(values.age),
       gender: toNullableGender(values.gender),
       city: toNullableText(values.city),
+      locationLat: values.locationLat,
+      locationLng: values.locationLng,
     });
   });
 
@@ -306,7 +347,7 @@ export function useSettingsProfileForm() {
   }, [currentUser]);
 
   async function updateNotificationPreference(
-    key: keyof NotificationPreferences,
+    key: BooleanSettingsPreferenceKey,
     value: boolean,
   ) {
     const currentPreferences = notificationPreferencesQuery.data;
@@ -321,6 +362,48 @@ export function useSettingsProfileForm() {
     await preferencesMutation.mutateAsync({
       ...currentPreferences,
       [key]: value,
+    });
+  }
+
+  async function updateMatchingPreference(
+    values: Pick<
+      NotificationPreferences,
+      "autoMatchingEnabled" | "minCompatibilityScore"
+    >,
+  ) {
+    const currentPreferences = notificationPreferencesQuery.data;
+
+    if (!currentPreferences) {
+      return;
+    }
+
+    setPreferencesMessage(null);
+    setPreferencesError(null);
+
+    await preferencesMutation.mutateAsync({
+      ...currentPreferences,
+      ...values,
+    });
+  }
+
+  async function updatePrivacyPreference(
+    values: Pick<
+      NotificationPreferences,
+      "showAgeOnProfile" | "showGenderOnProfile" | "showCityOnProfile"
+    >,
+  ) {
+    const currentPreferences = notificationPreferencesQuery.data;
+
+    if (!currentPreferences) {
+      return;
+    }
+
+    setPreferencesMessage(null);
+    setPreferencesError(null);
+
+    await preferencesMutation.mutateAsync({
+      ...currentPreferences,
+      ...values,
     });
   }
 
@@ -441,6 +524,14 @@ export function useSettingsProfileForm() {
         : null),
     notificationPreferencesMessage: preferencesMessage,
     updateNotificationPreference,
+    updateMatchingPreference,
+    updatePrivacyPreference,
     isSavingNotificationPreferences: preferencesMutation.isPending,
+    deleteAccount: async () => {
+      setDeleteAccountError(null);
+      await deleteAccountMutation.mutateAsync();
+    },
+    isDeletingAccount: deleteAccountMutation.isPending,
+    deleteAccountError,
   };
 }

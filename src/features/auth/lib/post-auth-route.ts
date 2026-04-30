@@ -5,6 +5,13 @@ export function getPostAuthRedirectPath(user: User | null | undefined) {
     return "/auth/login" as const;
   }
 
+  const missingProfileBasics =
+    user.age === null || user.gender === null || !user.city?.trim();
+
+  if (missingProfileBasics) {
+    return "/onboarding/profile" as const;
+  }
+
   const missingPersonality =
     !user.personalityType ||
     [user.oceanO, user.oceanC, user.oceanE, user.oceanA, user.oceanN].some(

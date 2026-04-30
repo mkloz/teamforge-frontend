@@ -66,28 +66,33 @@ export const groupMemberApiSchema = z.object({
 
 export type GroupMemberApi = z.infer<typeof groupMemberApiSchema>;
 
-export const groupApiSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string().nullable(),
-  avatar: z.string().nullable(),
-  status: groupStatusSchema,
-  maxMembers: z.number(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-  version: z.number(),
-  disbandedAt: z.string().datetime().nullable(),
-  activityId: z.string(),
-  activity: groupActivitySummarySchema,
-  plan: groupPlanSummarySchema.nullable(),
-  chat: z
-    .object({
-      id: z.string(),
-      pinnedMessages: z.array(messageApiSchema).optional(),
-    })
-    .nullable()
-    .optional(),
-  members: z.array(groupMemberApiSchema),
-});
+export const groupApiSchema = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    description: z.string().nullable(),
+    avatar: z.string().nullable(),
+    status: groupStatusSchema,
+    maxMembers: z.number(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    version: z.number().optional(),
+    disbandedAt: z.string().datetime().nullable(),
+    activityId: z.string(),
+    activity: groupActivitySummarySchema,
+    plan: groupPlanSummarySchema.nullable(),
+    chat: z
+      .object({
+        id: z.string(),
+        pinnedMessages: z.array(messageApiSchema).optional(),
+      })
+      .nullable()
+      .optional(),
+    members: z.array(groupMemberApiSchema),
+  })
+  .transform((group) => ({
+    ...group,
+    version: group.version ?? Date.parse(group.updatedAt),
+  }));
 
 export type GroupApi = z.infer<typeof groupApiSchema>;

@@ -1,11 +1,12 @@
 import { memo } from "react";
+import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatTypingText } from "../../lib/chat-utils";
 
 interface TypingUser {
   name: string;
-  avatar: string;
+  avatar: string | null;
 }
 
 interface UnifiedTypingIndicatorProps {
@@ -46,15 +47,19 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
           <div className="flex -space-x-2">
             <AnimatePresence mode="popLayout">
               {users.slice(0, 3).map((user) => (
-                <motion.img
+                <motion.div
                   key={user.name}
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0 }}
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-5.5 h-5.5 rounded-full object-cover ring-2 ring-canvas shadow-sm"
-                />
+                >
+                  <Avatar
+                    src={user.avatar}
+                    name={user.name}
+                    className="h-5.5 w-5.5 shadow-sm ring-2 ring-canvas"
+                    fallbackClassName="text-[9px]"
+                  />
+                </motion.div>
               ))}
             </AnimatePresence>
           </div>
@@ -76,13 +81,17 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
       animate={{ opacity: 1, x: 0 }}
       className="flex items-end gap-2.5 px-3 mb-4 group/typing"
     >
-      <motion.img
+      <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        src={users[0]?.avatar}
-        alt={users[0]?.name}
-        className="w-8 h-8 rounded-full object-cover shrink-0 ring-1 ring-border/20 shadow-sm"
-      />
+        className="shrink-0"
+      >
+        <Avatar
+          src={users[0]?.avatar}
+          name={users[0]?.name}
+          className="h-8 w-8 shadow-sm ring-1 ring-border/20"
+        />
+      </motion.div>
       <div
         className={cn(
           "bg-card border border-border/60 px-4 py-3 rounded-xl rounded-bl-none shadow-xs relative",

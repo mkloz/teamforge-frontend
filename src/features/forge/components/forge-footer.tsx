@@ -216,7 +216,8 @@ export function ForgeFooter({ fw }: ForgeFooterProps) {
                           : "I'll set this later"
                       }
                       icon={<ChevronRight size={16} />}
-                      onClick={fw.goNext}
+                      onClick={() => void fw.handleSaveIdentityAndContinue()}
+                      disabled={fw.isSavingIdentity}
                     />
                   </motion.div>
                 )}
@@ -231,9 +232,17 @@ export function ForgeFooter({ fw }: ForgeFooterProps) {
                   >
                     {!fw.invitesSent ? (
                       <PrimaryButton
-                        label="Send invitations"
+                        label={
+                          fw.isSendingInvites
+                            ? "Sending..."
+                            : fw.forgeMode === "AUTO" ||
+                                fw.manualInviteeIds.length === 0
+                              ? "Finish group"
+                              : "Send invitations"
+                        }
                         icon={<UserPlus size={16} />}
-                        onClick={() => fw.setInvitesSent(true)}
+                        onClick={() => void fw.handleSendInvites()}
+                        disabled={fw.isSendingInvites}
                       />
                     ) : (
                       <PrimaryButton
@@ -261,6 +270,21 @@ export function ForgeFooter({ fw }: ForgeFooterProps) {
                 >
                   <p className="text-xs text-muted-foreground/80 font-medium pl-3 border-l-2 border-primary/40">
                     Event title needs at least 3 characters to continue
+                  </p>
+                </motion.div>
+              )}
+            {fw.step === 2 &&
+              fw.planCost === "PAID" &&
+              !fw.canAdvanceStep2 &&
+              fw.planName.trim().length >= 3 && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <p className="text-xs text-muted-foreground/80 font-medium pl-3 border-l-2 border-primary/40">
+                    Add a positive cost estimate, or mark the plan as free
                   </p>
                 </motion.div>
               )}

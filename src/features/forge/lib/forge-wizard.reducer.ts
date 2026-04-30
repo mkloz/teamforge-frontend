@@ -17,10 +17,16 @@ export interface ForgeWizardData {
   navDirection: NavDirection;
   selectedActivity: string | null;
   planName: string;
+  planDescription: string;
   planDate: string;
   planTime: string;
   planLocation: string;
+  planLocationLat: number | null;
+  planLocationLng: number | null;
   locationType: LocationType;
+  planCost: "FREE" | "PAID";
+  planCostAmount: string;
+  planCostDetails: string;
   forgeMode: ForgeMode;
   fixedSize: FixedGroupSize;
   groupSizeMode: GroupSizeMode;
@@ -34,6 +40,7 @@ export interface ForgeWizardData {
   removedIds: Set<string>;
   groupName: string;
   groupDescription: string;
+  manualInviteeIds: string[];
   coverImage: string | null;
   avatarImage: string | null;
   activityId: string | null;
@@ -47,10 +54,16 @@ export interface ForgeWizardData {
 export type ForgeWizardField =
   | "selectedActivity"
   | "planName"
+  | "planDescription"
   | "planDate"
   | "planTime"
   | "planLocation"
+  | "planLocationLat"
+  | "planLocationLng"
   | "locationType"
+  | "planCost"
+  | "planCostAmount"
+  | "planCostDetails"
   | "forgeMode"
   | "fixedSize"
   | "groupSizeMode"
@@ -61,6 +74,7 @@ export type ForgeWizardField =
   | "visibility"
   | "groupName"
   | "groupDescription"
+  | "manualInviteeIds"
   | "coverImage"
   | "avatarImage"
   | "activityId"
@@ -99,10 +113,16 @@ export function createInitialForgeWizardState(): ForgeWizardData {
     navDirection: "forward",
     selectedActivity: null,
     planName: "",
+    planDescription: "",
     planDate: "",
     planTime: "",
     planLocation: "",
+    planLocationLat: null,
+    planLocationLng: null,
     locationType: "TBD",
+    planCost: "FREE",
+    planCostAmount: "",
+    planCostDetails: "",
     forgeMode: "AUTO",
     fixedSize: 6,
     groupSizeMode: "RANGE",
@@ -116,6 +136,7 @@ export function createInitialForgeWizardState(): ForgeWizardData {
     removedIds: new Set(),
     groupName: "",
     groupDescription: "",
+    manualInviteeIds: [],
     coverImage: null,
     avatarImage: null,
     activityId: null,
@@ -191,6 +212,7 @@ export function forgeWizardReducer(
         step: 3,
         forgeResult: "IDLE",
         participants: [],
+        manualInviteeIds: [],
         activityId: null,
         groupId: null,
         chatId: null,

@@ -3,12 +3,18 @@ import {
   getResponseRequestId,
   parseJsonWithRequestId,
 } from "@/shared/api/api";
+import { buildFileUploadBody } from "@/shared/api/file-upload";
 import {
   authSessionListSchema,
+  createPaginatedSchema,
   fullUserResponseSchema,
+  friendshipApiSchema,
   notificationPreferencesSchema,
 } from "@/shared/schemas";
 import type { NotificationPreferences } from "@/shared/schemas";
+
+const DEFAULT_LIMIT = "100";
+const paginatedFriendshipsSchema = createPaginatedSchema(friendshipApiSchema);
 
 export interface UpdateSettingsProfileDto {
   name: string;
@@ -16,6 +22,8 @@ export interface UpdateSettingsProfileDto {
   age: number | null;
   gender: import("@/shared/schemas").Gender | null;
   city: string | null;
+  locationLat: number | null;
+  locationLng: number | null;
 }
 
 export type UpdateNotificationPreferencesDto = NotificationPreferences;
@@ -32,11 +40,8 @@ export class SettingsApi {
   }
 
   static async uploadAvatar(file: File) {
-    const body = new FormData();
-    body.set("avatar", file);
-
     const response = await apiClient.patch("users/me/avatar", {
-      body,
+      body: buildFileUploadBody(file, "avatar"),
     });
 
     return parseJsonWithRequestId(response, (value) =>
@@ -68,6 +73,26 @@ export class SettingsApi {
     return authSessionListSchema.parse(response).items;
   }
 
+  static async getBlockedUsers() {
+    const response = await apiClient
+      .get("friends/blocked", {
+        searchParams: {
+          limit: DEFAULT_LIMIT,
+        },
+      })
+      .json<unknown>();
+
+    return paginatedFriendshipsSchema.parse(response).items;
+  }
+
+  static async unblockUser(userId: string) {
+    const response = await apiClient.delete(`friends/${userId}/block`);
+
+    return parseJsonWithRequestId(response, (value) =>
+      friendshipApiSchema.parse(value),
+    );
+  }
+
   static async revokeSession(sessionId: string) {
     const response = await apiClient.post(`auth/sessions/${sessionId}/revoke`);
 
@@ -78,6 +103,14 @@ export class SettingsApi {
 
   static async revokeOtherSessions() {
     const response = await apiClient.post("auth/sessions/revoke-others");
+
+    return {
+      requestId: getResponseRequestId(response),
+    };
+  }
+
+  static async deleteAccount() {
+    const response = await apiClient.delete("users/me");
 
     return {
       requestId: getResponseRequestId(response),

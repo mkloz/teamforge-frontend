@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { Avatar } from "@/shared/components/common/avatar";
 import type { DisplayNode, Phase } from "./algorithm-types";
 
 function MatchScoreDisplay({
@@ -183,15 +184,20 @@ export function AlgoNode({
             strokeWidth={node.type === "selected" || isHovered ? 2.5 : 1}
             transition={{ duration: 0.4 }}
           />
-          <image
-            href={node.avatar}
+          <foreignObject
             x={-ns.r}
             y={-ns.r}
             width={ns.r * 2}
             height={ns.r * 2}
             clipPath={`url(#clip-${node.id})`}
-            preserveAspectRatio="xMidYMid slice"
-          />
+          >
+            <Avatar
+              src={node.avatar}
+              name={node.label}
+              className="h-full w-full bg-[#111]"
+              loading="lazy"
+            />
+          </foreignObject>
         </>
       ) : (
         <>

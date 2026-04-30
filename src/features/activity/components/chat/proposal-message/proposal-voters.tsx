@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { memo } from "react";
 
+import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 
 interface ProposalVoter {
@@ -16,17 +17,6 @@ interface ProposalVotersProps {
   voters: ProposalVoter[];
 }
 
-function getInitials(name: string) {
-  const initials = name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
-
-  return initials || "TF";
-}
-
 export const ProposalVoters = memo(function ProposalVoters({
   progress,
   score,
@@ -36,35 +26,26 @@ export const ProposalVoters = memo(function ProposalVoters({
     <>
       <div className="flex items-center justify-between">
         <div className="flex -space-x-1.5 pt-0.5">
-          {voters.map((voter) =>
-            voter.avatar ? (
-              <img
-                key={voter.id}
-                src={voter.avatar}
-                className={cn(
-                  "h-5 w-5 rounded-full object-cover ring-2 transition-transform hover:z-10 hover:scale-110",
-                  voter.vote === "APPROVE"
-                    ? "ring-forge-teal"
-                    : "ring-destructive",
-                )}
-                title={`${voter.name} (${voter.vote.toLowerCase()})`}
-                alt={voter.name}
-              />
-            ) : (
-              <div
-                key={voter.id}
-                className={cn(
-                  "flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[9px] font-bold ring-2 transition-transform hover:z-10 hover:scale-110",
-                  voter.vote === "APPROVE"
-                    ? "ring-forge-teal text-forge-teal"
-                    : "ring-destructive text-destructive",
-                )}
-                title={`${voter.name} (${voter.vote.toLowerCase()})`}
-              >
-                {getInitials(voter.name)}
-              </div>
-            ),
-          )}
+          {voters.map((voter) => (
+            <Avatar
+              key={voter.id}
+              src={voter.avatar}
+              name={voter.name}
+              className={cn(
+                "h-5 w-5 ring-2 transition-transform hover:z-10 hover:scale-110",
+                voter.vote === "APPROVE"
+                  ? "ring-forge-teal"
+                  : "ring-destructive",
+              )}
+              fallbackClassName={cn(
+                "text-[9px]",
+                voter.vote === "APPROVE"
+                  ? "text-forge-teal"
+                  : "text-destructive",
+              )}
+              title={`${voter.name} (${voter.vote.toLowerCase()})`}
+            />
+          ))}
         </div>
         <span className="text-micro font-black uppercase tracking-widest text-muted-foreground">
           {score}

@@ -1,4 +1,5 @@
 import type { OnlineStatus } from "@/features/activity/lib/activity-contract";
+import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
@@ -15,17 +16,6 @@ interface HeaderInfoProps {
   isTyping?: boolean;
   typingText?: string;
   onToggle: () => void;
-}
-
-function getTitleInitials(title: string) {
-  const initials = title
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
-
-  return initials || "TF";
 }
 
 export const HeaderInfo = memo(
@@ -49,33 +39,30 @@ export const HeaderInfo = memo(
     >
       {/* Avatar Section - Premium Rounded Squares for Groups, Circles for Users */}
       <div className="relative shrink-0 flex items-center justify-center">
-        <div
+        <Avatar
+          src={avatarUrl}
+          name={title}
+          shape={isGroup ? "rounded" : "circle"}
           className={cn(
-            "relative overflow-hidden transition-all duration-300 group-hover/header-info:shadow-sm",
-            isGroup ? "w-10 h-10 rounded-md" : "w-10 h-10 rounded-full",
+            "relative transition-all duration-300 group-hover/header-info:shadow-sm",
+            isGroup ? "w-10 h-10 rounded-md" : "w-10 h-10",
           )}
+          imageClassName="transition-transform duration-700 ease-out group-hover/header-info:scale-110"
+          fallbackClassName="bg-muted text-[10px] text-muted-foreground"
+          loading="eager"
         >
-          {avatarUrl ? (
-            <img
-              src={avatarUrl}
-              alt={title}
-              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/header-info:scale-110"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-muted text-[10px] font-bold text-muted-foreground">
-              {getTitleInitials(title)}
-            </div>
-          )}
           <div className="absolute inset-0 bg-ink/0 group-hover/header-info:bg-ink/5 transition-colors" />
-        </div>
+        </Avatar>
 
         {/* Secondary indicator (Group member or Online Status) */}
         {isGroup && secondaryAvatar ? (
           <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-lg overflow-hidden z-10 transition-transform duration-300 group-hover/header-info:translate-x-0.5 group-hover/header-info:translate-y-0.5 shadow-sm">
-            <img
+            <Avatar
               src={secondaryAvatar}
               alt=""
-              className="w-full h-full object-cover"
+              fallback=""
+              shape="rounded"
+              className="h-full w-full rounded-lg"
             />
           </div>
         ) : !isGroup && onlineStatus ? (

@@ -1,11 +1,26 @@
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 
+import { Avatar } from "@/shared/components/common/avatar";
+import { FileDropzone } from "@/shared/components/common/file-dropzone";
+import { AddressAutocomplete } from "@/shared/components/maps/address-autocomplete";
 import { buildProfileNavigation } from "@/shared/lib/app-route";
 import {
   buildInterestsEditNavigation,
   buildPersonalityEditNavigation,
 } from "@/shared/lib/onboarding-route";
 import type { SettingsSection } from "@/shared/lib/settings-route";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/shared/components/ui/alert-dialog";
 import { Button } from "@/shared/components/ui/button";
 import {
   Form,
@@ -25,16 +40,24 @@ import {
 } from "@/shared/components/ui/select";
 import type {
   AuthSession,
+  FriendshipApi,
   NotificationPreferences,
   User,
 } from "@/shared/schemas";
 import { cn } from "@/shared/lib/utils";
-import { LaptopMinimal, LogOut, Shield, Smartphone } from "lucide-react";
+import {
+  LaptopMinimal,
+  LogOut,
+  Shield,
+  Smartphone,
+  Trash2,
+} from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
 import {
   unspecifiedGenderValue,
   type SettingsProfileValues,
 } from "../schemas/settings-profile.schema";
+import { BlockedUsersSection } from "./blocked-users-section";
 
 const GENDER_OPTIONS = [
   { value: "MALE", label: "Male" },
@@ -43,8 +66,13 @@ const GENDER_OPTIONS = [
   { value: "OTHER", label: "Other" },
 ] as const;
 
+type BooleanSettingsPreferenceKey = Exclude<
+  keyof NotificationPreferences,
+  "minCompatibilityScore"
+>;
+
 const NOTIFICATION_PREFERENCE_ITEMS: Array<{
-  key: keyof NotificationPreferences;
+  key: BooleanSettingsPreferenceKey;
   title: string;
   description: string;
 }> = [
@@ -76,7 +104,7 @@ const NOTIFICATION_PREFERENCE_ITEMS: Array<{
 ] as const;
 
 const EMAIL_PREFERENCE_ITEMS: Array<{
-  key: keyof NotificationPreferences;
+  key: BooleanSettingsPreferenceKey;
   title: string;
   description: string;
 }> = [
@@ -148,17 +176,33 @@ interface SettingsProfileFormProps {
   onSendPasswordResetLink: () => Promise<unknown>;
   onRevokeSession: (session: AuthSession) => Promise<void>;
   onRevokeOtherSessions: () => Promise<void>;
+  onUnblockUser: (userId: string) => Promise<unknown>;
   onNotificationPreferenceChange: (
-    key: keyof NotificationPreferences,
+    key: BooleanSettingsPreferenceKey,
     value: boolean,
   ) => Promise<void>;
+  onMatchingPreferenceChange: (
+    values: Pick<
+      NotificationPreferences,
+      "autoMatchingEnabled" | "minCompatibilityScore"
+    >,
+  ) => Promise<void>;
+  onPrivacyPreferenceChange: (
+    values: Pick<
+      NotificationPreferences,
+      "showAgeOnProfile" | "showGenderOnProfile" | "showCityOnProfile"
+    >,
+  ) => Promise<void>;
+  onDeleteAccount: () => Promise<void>;
   isSaving: boolean;
   isUploadingAvatar: boolean;
   isSendingPasswordResetLink: boolean;
   isRevokingOtherSessions: boolean;
   isLoadingSessions: boolean;
+  isLoadingBlockedUsers: boolean;
   isLoadingNotificationPreferences: boolean;
   isSavingNotificationPreferences: boolean;
+  isDeletingAccount: boolean;
   revokingSessionId: string | null;
   saveMessage: string | null;
   saveError: string | null;
@@ -168,9 +212,13 @@ interface SettingsProfileFormProps {
   securityError: string | null;
   notificationPreferencesMessage: string | null;
   notificationPreferencesError: string | null;
+  deleteAccountError: string | null;
   sessionsError: string | null;
+  blockedUsersError: string | null;
   profileSummary: Array<{ label: string; value: string }>;
   sessions: AuthSession[];
+  blockedUsers: FriendshipApi[];
+  unblockingUserId: string | null;
   notificationPreferences: NotificationPreferences | null;
 }
 
@@ -315,6 +363,152 @@ function NotificationPreferenceRow({
   );
 }
 
+function MatchingThresholdControl({
+  value,
+  disabled,
+  onChange,
+}: {
+  value: number;
+  disabled: boolean;
+  onChange: (value: number) => void;
+}) {
+  const valueLabel = value === 0 ? "Open" : `${value}%`;
+
+  return (
+    <div className="rounded-2xl border border-border/70 bg-canvas p-4">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold text-ink">
+            Minimum compatibility
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-slate-muted">
+            Raise this to make automatic matches stricter. Very high limits can
+            slow down group formation.
+          </p>
+        </div>
+        <div className="rounded-full border border-forge-teal/20 bg-forge-teal/8 px-3 py-1 text-sm font-bold text-forge-teal">
+          {valueLabel}
+        </div>
+      </div>
+
+      <input
+        type="range"
+        min={0}
+        max={95}
+        step={5}
+        value={value}
+        disabled={disabled}
+        aria-label="Minimum compatibility score"
+        onChange={(event) => onChange(Number(event.target.value))}
+        className="mt-5 h-2 w-full accent-forge-teal disabled:opacity-60"
+      />
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        {[0, 70, 80, 90].map((preset) => (
+          <Button
+            key={preset}
+            type="button"
+            variant={value === preset ? "primary" : "outline"}
+            size="sm"
+            disabled={disabled}
+            onClick={() => onChange(preset)}
+          >
+            {preset === 0
+              ? "Open"
+              : preset === 70
+                ? "Balanced"
+                : preset === 80
+                  ? "Strong"
+                  : "Strict"}{" "}
+            {preset > 0 ? `${preset}%` : ""}
+          </Button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DeleteAccountSection({
+  currentUser,
+  isDeleting,
+  error,
+  onDelete,
+}: {
+  currentUser: User | undefined;
+  isDeleting: boolean;
+  error: string | null;
+  onDelete: () => Promise<void>;
+}) {
+  const [confirmation, setConfirmation] = useState("");
+  const canDelete = confirmation === "DELETE";
+
+  return (
+    <section className="rounded-2xl border border-destructive/30 bg-card p-6">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <div>
+          <h3 className="text-base font-semibold text-ink">Delete account</h3>
+          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-slate-muted">
+            This signs you out, disables automatic matching, removes active
+            sessions, and anonymizes your sign-in identifiers. Your existing
+            group history may remain where other members need context.
+          </p>
+          {error ? (
+            <p className="mt-3 text-sm font-medium text-destructive">{error}</p>
+          ) : null}
+        </div>
+
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="border-destructive/40 text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 size={14} />
+              Delete account
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Delete your TeamForge account?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                This cannot be undone from the app. Type DELETE to confirm
+                deletion for {currentUser?.email ?? "this account"}.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <Input
+              value={confirmation}
+              onChange={(event) => setConfirmation(event.target.value)}
+              placeholder="DELETE"
+              aria-label="Type DELETE to confirm account deletion"
+            />
+
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                disabled={!canDelete || isDeleting}
+                className="border-destructive/40 text-destructive hover:bg-destructive/10"
+                onClick={(event) => {
+                  event.preventDefault();
+                  if (!canDelete || isDeleting) {
+                    return;
+                  }
+                  void onDelete();
+                }}
+              >
+                {isDeleting ? "Deleting..." : "Delete account"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </section>
+  );
+}
+
 export function SettingsProfileForm({
   activeSection,
   currentUser,
@@ -324,14 +518,20 @@ export function SettingsProfileForm({
   onSendPasswordResetLink,
   onRevokeSession,
   onRevokeOtherSessions,
+  onUnblockUser,
   onNotificationPreferenceChange,
+  onMatchingPreferenceChange,
+  onPrivacyPreferenceChange,
+  onDeleteAccount,
   isSaving,
   isUploadingAvatar,
   isSendingPasswordResetLink,
   isRevokingOtherSessions,
   isLoadingSessions,
+  isLoadingBlockedUsers,
   isLoadingNotificationPreferences,
   isSavingNotificationPreferences,
+  isDeletingAccount,
   revokingSessionId,
   saveMessage,
   saveError,
@@ -341,11 +541,18 @@ export function SettingsProfileForm({
   securityError,
   notificationPreferencesMessage,
   notificationPreferencesError,
+  deleteAccountError,
   sessionsError,
+  blockedUsersError,
   profileSummary,
   sessions,
+  blockedUsers,
+  unblockingUserId,
   notificationPreferences,
 }: SettingsProfileFormProps) {
+  const locationLat = form.watch("locationLat");
+  const locationLng = form.watch("locationLng");
+
   return (
     <div className="flex flex-col gap-6">
       {activeSection === "account" && (
@@ -353,22 +560,12 @@ export function SettingsProfileForm({
           <section className="rounded-2xl border border-border bg-card p-6">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex items-center gap-4">
-                <div className="flex h-18 w-18 items-center justify-center overflow-hidden rounded-full border border-border bg-canvas text-lg font-bold text-forge-teal">
-                  {currentUser?.avatar ? (
-                    <img
-                      src={currentUser.avatar}
-                      alt={currentUser.name}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    currentUser?.name
-                      .split(" ")
-                      .filter(Boolean)
-                      .slice(0, 2)
-                      .map((part) => part[0]?.toUpperCase())
-                      .join("") || "TF"
-                  )}
-                </div>
+                <Avatar
+                  src={currentUser?.avatar}
+                  name={currentUser?.name}
+                  className="h-18 w-18 border border-border bg-canvas text-lg"
+                  loading="eager"
+                />
 
                 <div>
                   <h2 className="text-xl font-bold text-ink">
@@ -381,33 +578,28 @@ export function SettingsProfileForm({
                 </div>
               </div>
 
-              <label className="flex flex-col gap-2 text-sm font-medium text-ink">
-                Update photo
-                <Input
-                  type="file"
-                  accept="image/*"
-                  className="max-w-72 cursor-pointer"
-                  disabled={isUploadingAvatar}
-                  onChange={(event) => {
-                    const file = event.target.files?.[0];
-                    if (!file) {
-                      return;
-                    }
-
-                    void onAvatarSelect(file).finally(() => {
-                      event.target.value = "";
-                    });
-                  }}
-                />
-              </label>
+              <FileDropzone
+                variant="inline"
+                accept="image/*"
+                title="Update photo"
+                description="Drop a new profile image here."
+                helper="PNG, JPG, WEBP up to 5 MB"
+                actionLabel="Browse"
+                disabled={isUploadingAvatar}
+                isUploading={isUploadingAvatar}
+                error={avatarError}
+                className="w-full lg:max-w-80"
+                onFiles={(files) => {
+                  const file = files[0];
+                  if (file) {
+                    void onAvatarSelect(file);
+                  }
+                }}
+              />
             </div>
 
-            {(avatarMessage || avatarError) && (
-              <p
-                className={`mt-4 text-sm ${avatarError ? "text-destructive" : "text-forge-teal"}`}
-              >
-                {avatarError ?? avatarMessage}
-              </p>
+            {avatarMessage && !avatarError && (
+              <p className="mt-4 text-sm text-forge-teal">{avatarMessage}</p>
             )}
 
             <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
@@ -515,12 +707,57 @@ export function SettingsProfileForm({
                     name="city"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>City</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="London" />
+                          <AddressAutocomplete
+                            label="City"
+                            placeholder="Search your city or area..."
+                            value={
+                              field.value
+                                ? {
+                                    address: field.value,
+                                    city: field.value,
+                                    lat: locationLat,
+                                    lng: locationLng,
+                                  }
+                                : null
+                            }
+                            onLocationSelect={(location) => {
+                              field.onChange(location?.city ?? "");
+                              form.setValue(
+                                "locationLat",
+                                location?.lat ?? null,
+                                {
+                                  shouldDirty: true,
+                                  shouldValidate: true,
+                                },
+                              );
+                              form.setValue(
+                                "locationLng",
+                                location?.lng ?? null,
+                                {
+                                  shouldDirty: true,
+                                  shouldValidate: true,
+                                },
+                              );
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="locationLat"
+                    render={({ field }) => (
+                      <input type="hidden" value={field.value ?? ""} readOnly />
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="locationLng"
+                    render={({ field }) => (
+                      <input type="hidden" value={field.value ?? ""} readOnly />
                     )}
                   />
                 </div>
@@ -601,6 +838,59 @@ export function SettingsProfileForm({
             </div>
           </div>
 
+          <div className="mt-6 grid gap-3 lg:grid-cols-[1fr_1.3fr]">
+            <NotificationPreferenceRow
+              checked={notificationPreferences?.autoMatchingEnabled ?? true}
+              title="Automatic matching"
+              description="Allow TeamForge to include you when someone else forges an automatic group."
+              disabled={
+                isLoadingNotificationPreferences ||
+                isSavingNotificationPreferences ||
+                !notificationPreferences
+              }
+              onToggle={() => {
+                if (!notificationPreferences) {
+                  return;
+                }
+
+                void onMatchingPreferenceChange({
+                  autoMatchingEnabled:
+                    !notificationPreferences.autoMatchingEnabled,
+                  minCompatibilityScore:
+                    notificationPreferences.minCompatibilityScore,
+                });
+              }}
+            />
+
+            <MatchingThresholdControl
+              value={notificationPreferences?.minCompatibilityScore ?? 0}
+              disabled={
+                isLoadingNotificationPreferences ||
+                isSavingNotificationPreferences ||
+                !notificationPreferences
+              }
+              onChange={(value) => {
+                if (!notificationPreferences) {
+                  return;
+                }
+
+                void onMatchingPreferenceChange({
+                  autoMatchingEnabled:
+                    notificationPreferences.autoMatchingEnabled,
+                  minCompatibilityScore: value,
+                });
+              }}
+            />
+          </div>
+
+          {(notificationPreferencesMessage || notificationPreferencesError) && (
+            <p
+              className={`mt-4 text-sm ${notificationPreferencesError ? "text-destructive" : "text-forge-teal"}`}
+            >
+              {notificationPreferencesError ?? notificationPreferencesMessage}
+            </p>
+          )}
+
           <div className="mt-6">
             <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-muted">
               Interests
@@ -651,6 +941,105 @@ export function SettingsProfileForm({
               </Button>
             </div>
           </div>
+        </section>
+      )}
+
+      {activeSection === "privacy" && (
+        <section className="rounded-2xl border border-border bg-card p-6">
+          <div className="flex flex-col gap-2">
+            <h2 className="text-xl font-bold text-ink">Profile Privacy</h2>
+            <p className="text-sm leading-relaxed text-slate-muted">
+              Choose which personal details appear on your public profile. These
+              signals can still be used privately for compatibility.
+            </p>
+          </div>
+
+          <div className="mt-6 grid gap-3 lg:grid-cols-3">
+            <NotificationPreferenceRow
+              checked={notificationPreferences?.showAgeOnProfile ?? true}
+              title="Show age"
+              description="Display your exact age on public profile surfaces."
+              disabled={
+                isLoadingNotificationPreferences ||
+                isSavingNotificationPreferences ||
+                !notificationPreferences
+              }
+              onToggle={() => {
+                if (!notificationPreferences) {
+                  return;
+                }
+
+                void onPrivacyPreferenceChange({
+                  showAgeOnProfile: !notificationPreferences.showAgeOnProfile,
+                  showGenderOnProfile:
+                    notificationPreferences.showGenderOnProfile,
+                  showCityOnProfile: notificationPreferences.showCityOnProfile,
+                });
+              }}
+            />
+
+            <NotificationPreferenceRow
+              checked={notificationPreferences?.showGenderOnProfile ?? true}
+              title="Show gender"
+              description="Display gender on your public profile."
+              disabled={
+                isLoadingNotificationPreferences ||
+                isSavingNotificationPreferences ||
+                !notificationPreferences
+              }
+              onToggle={() => {
+                if (!notificationPreferences) {
+                  return;
+                }
+
+                void onPrivacyPreferenceChange({
+                  showAgeOnProfile: notificationPreferences.showAgeOnProfile,
+                  showGenderOnProfile:
+                    !notificationPreferences.showGenderOnProfile,
+                  showCityOnProfile: notificationPreferences.showCityOnProfile,
+                });
+              }}
+            />
+
+            <NotificationPreferenceRow
+              checked={notificationPreferences?.showCityOnProfile ?? true}
+              title="Show city"
+              description="Display your city to other people."
+              disabled={
+                isLoadingNotificationPreferences ||
+                isSavingNotificationPreferences ||
+                !notificationPreferences
+              }
+              onToggle={() => {
+                if (!notificationPreferences) {
+                  return;
+                }
+
+                void onPrivacyPreferenceChange({
+                  showAgeOnProfile: notificationPreferences.showAgeOnProfile,
+                  showGenderOnProfile:
+                    notificationPreferences.showGenderOnProfile,
+                  showCityOnProfile: !notificationPreferences.showCityOnProfile,
+                });
+              }}
+            />
+          </div>
+
+          <div className="mt-6 rounded-2xl border border-forge-teal/15 bg-forge-teal/5 p-4">
+            <p className="text-sm leading-relaxed text-slate-muted">
+              Exact location is never shown on public profiles. TeamForge stores
+              private coordinates only for matching and uses city as the public
+              fallback.
+            </p>
+          </div>
+
+          {(notificationPreferencesMessage || notificationPreferencesError) && (
+            <p
+              className={`mt-4 text-sm ${notificationPreferencesError ? "text-destructive" : "text-forge-teal"}`}
+            >
+              {notificationPreferencesError ?? notificationPreferencesMessage}
+            </p>
+          )}
         </section>
       )}
 
@@ -780,7 +1169,24 @@ export function SettingsProfileForm({
               )}
             </div>
           </section>
+
+          <DeleteAccountSection
+            currentUser={currentUser}
+            isDeleting={isDeletingAccount}
+            error={deleteAccountError}
+            onDelete={onDeleteAccount}
+          />
         </div>
+      )}
+
+      {activeSection === "safety" && (
+        <BlockedUsersSection
+          blockedUsers={blockedUsers}
+          errorMessage={blockedUsersError}
+          isLoading={isLoadingBlockedUsers}
+          unblockingUserId={unblockingUserId}
+          onUnblockUser={onUnblockUser}
+        />
       )}
 
       {activeSection === "notifications" && (

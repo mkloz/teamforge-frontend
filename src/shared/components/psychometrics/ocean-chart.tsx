@@ -1,5 +1,5 @@
 import { cn } from "@/shared/lib/utils";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   PolarAngleAxis,
   PolarGrid,
@@ -48,12 +48,49 @@ export function OceanDiagram({
   selectedTrait,
   interactive = true,
 }: OceanDiagramProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [containerSize, setContainerSize] = useState({
+    width: 0,
+    height: 0,
+  });
+
   const chartData = OCEAN_TRAITS.map((trait) => ({
     trait: trait.label,
     key: trait.key,
     value: scores[trait.key],
     fullMark: 100,
   }));
+
+  useEffect(() => {
+    const element = containerRef.current;
+
+    if (!element) {
+      return;
+    }
+
+    const updateSize = () => {
+      setContainerSize({
+        width: element.clientWidth,
+        height: element.clientHeight,
+      });
+    };
+
+    updateSize();
+
+    if (typeof ResizeObserver === "undefined") {
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      updateSize();
+    });
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   const handleTraitClick = (label: string) => {
     if (!interactive || !onTraitSelect) return;
@@ -65,49 +102,54 @@ export function OceanDiagram({
   };
 
   return (
-    <div className="w-full h-full [&_svg]:outline-none [&_svg:focus]:outline-none [&_*:focus]:outline-none">
-      <ResponsiveContainer width="100%" height="100%">
-        <RadarChart
-          data={chartData}
-          margin={{ top: 25, right: 35, bottom: 25, left: 35 }}
-        >
-          <PolarGrid
-            stroke="var(--border)"
-            strokeWidth={1}
-            gridType="polygon"
-          />
-          <PolarAngleAxis
-            dataKey="trait"
-            tick={(props: ChartTickProps) => (
-              <ChartTick
-                {...props}
-                interactive={interactive}
-                selected={selectedTrait}
-                onTraitClick={handleTraitClick}
-                scores={scores}
-              />
-            )}
-            tickLine={false}
-          />
-          <Radar
-            name="Personality"
-            dataKey="value"
-            stroke="var(--primary)"
-            strokeWidth={2.5}
-            fill="var(--secondary)"
-            fillOpacity={1}
-            dot={(props: ChartDotProps) => (
-              <ChartDot
-                {...props}
-                interactive={interactive}
-                selected={selectedTrait}
-                onTraitClick={handleTraitClick}
-              />
-            )}
-            isAnimationActive={false}
-          />
-        </RadarChart>
-      </ResponsiveContainer>
+    <div
+      ref={containerRef}
+      className="w-full h-full min-h-56 [&_svg]:outline-none [&_svg:focus]:outline-none [&_*:focus]:outline-none"
+    >
+      {containerSize.width > 0 && containerSize.height > 0 ? (
+        <ResponsiveContainer width="100%" height="100%">
+          <RadarChart
+            data={chartData}
+            margin={{ top: 25, right: 35, bottom: 25, left: 35 }}
+          >
+            <PolarGrid
+              stroke="var(--border)"
+              strokeWidth={1}
+              gridType="polygon"
+            />
+            <PolarAngleAxis
+              dataKey="trait"
+              tick={(props: ChartTickProps) => (
+                <ChartTick
+                  {...props}
+                  interactive={interactive}
+                  selected={selectedTrait}
+                  onTraitClick={handleTraitClick}
+                  scores={scores}
+                />
+              )}
+              tickLine={false}
+            />
+            <Radar
+              name="Personality"
+              dataKey="value"
+              stroke="var(--primary)"
+              strokeWidth={2.5}
+              fill="var(--secondary)"
+              fillOpacity={1}
+              dot={(props: ChartDotProps) => (
+                <ChartDot
+                  {...props}
+                  interactive={interactive}
+                  selected={selectedTrait}
+                  onTraitClick={handleTraitClick}
+                />
+              )}
+              isAnimationActive={false}
+            />
+          </RadarChart>
+        </ResponsiveContainer>
+      ) : null}
     </div>
   );
 }

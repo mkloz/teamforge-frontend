@@ -25,7 +25,9 @@ import { LandingPage } from "./features/landing/landing-page";
 import { parseOnboardingFlowSearch } from "./features/onboarding/lib/onboarding-flow-state";
 import { InterestsPage } from "./features/onboarding/interests-page";
 import { PersonalityTestPage } from "./features/onboarding/personality-test-page";
+import { ProfileBasicsPage } from "./features/onboarding/profile-basics-page";
 import { authSession } from "./shared/api/auth-session";
+import { NotFoundState } from "./shared/components/not-found-state";
 import { RouteErrorState } from "./shared/components/route-error-state";
 import { routeErrorScopes } from "./shared/lib/telemetry-contract";
 
@@ -64,12 +66,6 @@ const ForgePage = lazy(() =>
     default: m.ForgePage,
   })),
 );
-const DesignSystemPage = lazy(() =>
-  import("./features/design-system/design-system-page").then((m) => ({
-    default: m.DesignSystemPage,
-  })),
-);
-
 function LazyPage({
   component: Component,
 }: {
@@ -145,6 +141,7 @@ const rootRoute = createRootRoute({
       onRetry={reset}
     />
   ),
+  notFoundComponent: () => <NotFoundState fullPage />,
 });
 
 // ─── Public routes (no app shell) ────────────────────────────────────────────
@@ -248,6 +245,32 @@ const activateAccountRoute = createRoute({
   ),
 });
 
+const profileBasicsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/onboarding/profile",
+  beforeLoad: async ({ location }) => {
+    const currentUser = await requireAuthenticatedUser(location);
+    const canonicalDestination = getPostAuthRedirectPath(currentUser);
+
+    if (canonicalDestination !== "/onboarding/profile") {
+      throw redirect({ to: canonicalDestination });
+    }
+  },
+  component: ProfileBasicsPage,
+  errorComponent: ({ error, reset }) => (
+    <RouteErrorState
+      error={error}
+      scope={routeErrorScopes.onboardingProfile}
+      fullPage
+      title="We couldn't load your profile step"
+      description="The profile basics step hit an unexpected issue before it could settle."
+      fallbackTo="/home"
+      fallbackLabel="Back to home"
+      onRetry={reset}
+    />
+  ),
+});
+
 const personalityRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/onboarding/personality",
@@ -269,6 +292,18 @@ const personalityRoute = createRoute({
     }
   },
   component: PersonalityTestPage,
+  errorComponent: ({ error, reset }) => (
+    <RouteErrorState
+      error={error}
+      scope={routeErrorScopes.onboardingPersonality}
+      fullPage
+      title="We couldn't load the personality step"
+      description="The personality questionnaire hit an unexpected issue before it could settle."
+      fallbackTo="/home"
+      fallbackLabel="Back to home"
+      onRetry={reset}
+    />
+  ),
 });
 
 const interestsRoute = createRoute({
@@ -292,6 +327,18 @@ const interestsRoute = createRoute({
     }
   },
   component: InterestsPage,
+  errorComponent: ({ error, reset }) => (
+    <RouteErrorState
+      error={error}
+      scope={routeErrorScopes.onboardingInterests}
+      fullPage
+      title="We couldn't load your interests"
+      description="The interests step ran into an unexpected issue while preparing your options."
+      fallbackTo="/home"
+      fallbackLabel="Back to home"
+      onRetry={reset}
+    />
+  ),
 });
 
 // ─── App shell layout route (authenticated) ───────────────────────────────────
@@ -316,12 +363,34 @@ const homeRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/home",
   component: () => <LazyPage component={HomePage} />,
+  errorComponent: ({ error, reset }) => (
+    <RouteErrorState
+      error={error}
+      scope={routeErrorScopes.home}
+      title="Home could not finish loading"
+      description="Your dashboard hit an unexpected issue while refreshing groups, plans, or recommendations."
+      fallbackTo="/activity"
+      fallbackLabel="Open activity"
+      onRetry={reset}
+    />
+  ),
 });
 
 const exploreRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/explore",
   component: () => <LazyPage component={ExplorePage} />,
+  errorComponent: ({ error, reset }) => (
+    <RouteErrorState
+      error={error}
+      scope={routeErrorScopes.explore}
+      title="Explore could not finish loading"
+      description="Group discovery ran into an unexpected issue while loading people, requests, or group options."
+      fallbackTo="/home"
+      fallbackLabel="Back to home"
+      onRetry={reset}
+    />
+  ),
 });
 
 const activityRoute = createRoute({
@@ -345,12 +414,34 @@ const profileRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/profile",
   component: () => <LazyPage component={ProfilePage} />,
+  errorComponent: ({ error, reset }) => (
+    <RouteErrorState
+      error={error}
+      scope={routeErrorScopes.profile}
+      title="Profile could not finish loading"
+      description="Your profile hit an unexpected issue while loading personality details, interests, or trust history."
+      fallbackTo="/home"
+      fallbackLabel="Back to home"
+      onRetry={reset}
+    />
+  ),
 });
 
 const settingsRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/settings",
   component: () => <LazyPage component={SettingsPage} />,
+  errorComponent: ({ error, reset }) => (
+    <RouteErrorState
+      error={error}
+      scope={routeErrorScopes.settings}
+      title="Settings could not finish loading"
+      description="Your account settings hit an unexpected issue before the page could render cleanly."
+      fallbackTo="/home"
+      fallbackLabel="Back to home"
+      onRetry={reset}
+    />
+  ),
 });
 
 const forgeRoute = createRoute({
@@ -370,11 +461,35 @@ const forgeRoute = createRoute({
   ),
 });
 
-const designSystemRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/design-system",
-  component: () => <LazyPage component={DesignSystemPage} />,
-});
+const designSystemRoute = (() => {
+  if (!import.meta.env.DEV) {
+    return null;
+  }
+
+  const DesignSystemPage = lazy(() =>
+    import("./features/design-system/design-system-page").then((m) => ({
+      default: m.DesignSystemPage,
+    })),
+  );
+
+  return createRoute({
+    getParentRoute: () => rootRoute,
+    path: "/design-system",
+    component: () => <LazyPage component={DesignSystemPage} />,
+    errorComponent: ({ error, reset }) => (
+      <RouteErrorState
+        error={error}
+        scope={routeErrorScopes.designSystem}
+        fullPage
+        title="Design system could not finish loading"
+        description="The internal visual QA surface hit an unexpected issue while loading components or examples."
+        fallbackTo="/home"
+        fallbackLabel="Back to home"
+        onRetry={reset}
+      />
+    ),
+  });
+})();
 
 // ─── Route tree ───────────────────────────────────────────────────────────────
 
@@ -385,9 +500,10 @@ const routeTree = rootRoute.addChildren([
   forgotPasswordRoute,
   resetPasswordRoute,
   activateAccountRoute,
+  profileBasicsRoute,
   personalityRoute,
   interestsRoute,
-  designSystemRoute,
+  ...(designSystemRoute ? [designSystemRoute] : []),
   appShellRoute.addChildren([
     homeRoute,
     exploreRoute,

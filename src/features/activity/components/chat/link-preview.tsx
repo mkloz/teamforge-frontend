@@ -1,4 +1,5 @@
 import { useLinkPreview } from "@/features/activity/hooks/use-link-preview";
+import { Image } from "@/shared/components/common/image";
 import { cn } from "@/shared/lib/utils";
 import { ExternalLink, Globe } from "lucide-react";
 import { memo } from "react";
@@ -112,18 +113,10 @@ export const LinkPreview = memo(function LinkPreview({
       {/* ── Thumbnail ── */}
       {hasImage && (
         <div className="relative w-full aspect-[2.4/1] overflow-hidden bg-muted/40">
-          <img
+          <Image
             src={data.image}
             alt={data.title ?? ""}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-            loading="lazy"
-            onError={(e) => {
-              // Hide the whole image container if it fails
-              const parent = e.currentTarget.parentElement;
-              if (parent instanceof HTMLElement) {
-                parent.style.display = "none";
-              }
-            }}
+            className="transition-transform duration-500 group-hover:scale-[1.03]"
           />
         </div>
       )}
@@ -132,14 +125,14 @@ export const LinkPreview = memo(function LinkPreview({
       <div className={cn("flex gap-2.5 px-2.5 py-2", !hasImage && "py-2.5")}>
         {/* Favicon */}
         {data.favicon && !hasImage && (
-          <img
+          <Image
             src={data.favicon}
             alt=""
-            className="w-5 h-5 rounded object-contain shrink-0 mt-0.5 opacity-80"
-            loading="lazy"
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-            }}
+            wrapperClassName="mt-0.5 h-5 w-5 shrink-0 rounded"
+            className="object-contain opacity-80"
+            loadingComponent={null}
+            fallbackComponent={null}
+            showNoImage={false}
           />
         )}
 

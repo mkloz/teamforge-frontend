@@ -1,3 +1,4 @@
+import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 
@@ -36,17 +37,13 @@ export function GroupCard() {
       </div>
       <div className="flex -space-x-2 mb-3">
         {members.map((m, i) => (
-          <div
+          <Avatar
             key={i}
+            src={m.avatar}
+            name="Member"
             className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center ring-2 ring-hero-bg bg-[#111]"
             style={{ zIndex: members.length - i }}
-          >
-            <img
-              src={m.avatar}
-              alt="Member"
-              className="w-full h-full object-cover"
-            />
-          </div>
+          />
         ))}
       </div>
       <div className="flex items-center gap-1.5">

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import { useForgeAnimation } from "./use-forge-animation";
@@ -55,6 +55,8 @@ export function useForgeWizard({
     undefined,
     createInitialForgeWizardState,
   );
+  const [isSavingIdentity, setIsSavingIdentity] = useState(false);
+  const [isSendingInvites, setIsSendingInvites] = useState(false);
   const { isForging, forgingProgress, runForgeAnimation } = useForgeAnimation();
   const stepRef = useRef(state.step);
   const modeRef = useRef(state.forgeMode);
@@ -189,6 +191,10 @@ export function useForgeWizard({
     (value: string) => setField("planName", value),
     [setField],
   );
+  const setPlanDescription = useCallback(
+    (value: string) => setField("planDescription", value),
+    [setField],
+  );
   const setGroupName = useCallback(
     (value: string) => setField("groupName", value),
     [setField],
@@ -209,8 +215,32 @@ export function useForgeWizard({
     (value: string) => setField("planLocation", value),
     [setField],
   );
+  const setPlanLocationCoordinates = useCallback(
+    (lat: number | null, lng: number | null) => {
+      setField("planLocationLat", lat);
+      setField("planLocationLng", lng);
+    },
+    [setField],
+  );
   const setLocationType = useCallback(
     (value: LocationType) => setField("locationType", value),
+    [setField],
+  );
+  const setPlanCost = useCallback(
+    (value: "FREE" | "PAID") => {
+      setField("planCost", value);
+      if (value === "FREE") {
+        setField("planCostAmount", "");
+      }
+    },
+    [setField],
+  );
+  const setPlanCostAmount = useCallback(
+    (value: string) => setField("planCostAmount", value),
+    [setField],
+  );
+  const setPlanCostDetails = useCallback(
+    (value: string) => setField("planCostDetails", value),
     [setField],
   );
   const setForgeMode = useCallback(
@@ -222,9 +252,17 @@ export function useForgeWizard({
   );
   const setFixedSize = useCallback(
     (value: number) => {
-      setField("fixedSize", ForgeQueries.normalizeFixedGroupSize(value));
+      const nextSize = ForgeQueries.normalizeFixedGroupSize(value);
+      setField("fixedSize", nextSize);
+
+      if (state.manualInviteeIds.length > nextSize - 1) {
+        setField(
+          "manualInviteeIds",
+          state.manualInviteeIds.slice(0, nextSize - 1),
+        );
+      }
     },
-    [setField],
+    [setField, state.manualInviteeIds],
   );
   const setGroupSizeMode = useCallback(
     (value: GroupSizeMode) => setField("groupSizeMode", value),
@@ -264,6 +302,19 @@ export function useForgeWizard({
     (value: boolean) => setField("invitesSent", value),
     [setField],
   );
+  const toggleManualInvitee = useCallback(
+    (inviteeId: string) => {
+      const alreadySelected = state.manualInviteeIds.includes(inviteeId);
+      const nextInviteeIds = alreadySelected
+        ? state.manualInviteeIds.filter((id) => id !== inviteeId)
+        : state.manualInviteeIds.length < state.fixedSize - 1
+          ? [...state.manualInviteeIds, inviteeId]
+          : state.manualInviteeIds;
+
+      setField("manualInviteeIds", nextInviteeIds);
+    },
+    [setField, state.fixedSize, state.manualInviteeIds],
+  );
 
   const handleManualForge = useCallback(() => {
     runForgeAnimation(async () => {
@@ -271,16 +322,25 @@ export function useForgeWizard({
         const result = await ForgeQueries.executeManualForge({
           selectedActivity: state.selectedActivity,
           planName: state.planName,
+          planDescription: state.planDescription,
           planDate: state.planDate,
           planTime: state.planTime,
           planLocation: state.planLocation,
+          planLocationLat: state.planLocationLat,
+          planLocationLng: state.planLocationLng,
+          coverImage: state.coverImage,
           locationType: state.locationType,
+          planCost: state.planCost,
+          planCostAmount: state.planCostAmount,
+          planCostDetails: state.planCostDetails,
           groupSizeMode: state.groupSizeMode,
           fixedSize: state.fixedSize,
           autoMinSize: state.autoMinSize,
           autoMaxSize: state.autoMaxSize,
           visibility: state.visibility,
+          groupName: state.groupName,
           groupDescription: state.groupDescription,
+          avatarImage: state.avatarImage,
         });
         dispatch({
           type: "apply-forge-result",
@@ -332,12 +392,21 @@ export function useForgeWizard({
     runForgeAnimation,
     state.autoMaxSize,
     state.autoMinSize,
+    state.avatarImage,
+    state.coverImage,
     state.fixedSize,
+    state.groupName,
     state.groupSizeMode,
     state.groupDescription,
     state.locationType,
+    state.planCost,
+    state.planCostAmount,
+    state.planCostDetails,
     state.planDate,
+    state.planDescription,
     state.planLocation,
+    state.planLocationLat,
+    state.planLocationLng,
     state.planName,
     state.planTime,
     state.selectedActivity,
@@ -352,16 +421,25 @@ export function useForgeWizard({
         const result = await ForgeQueries.executeAutoForge({
           selectedActivity: state.selectedActivity,
           planName: state.planName,
+          planDescription: state.planDescription,
           planDate: state.planDate,
           planTime: state.planTime,
           planLocation: state.planLocation,
+          planLocationLat: state.planLocationLat,
+          planLocationLng: state.planLocationLng,
+          coverImage: state.coverImage,
           locationType: state.locationType,
+          planCost: state.planCost,
+          planCostAmount: state.planCostAmount,
+          planCostDetails: state.planCostDetails,
           groupSizeMode: state.groupSizeMode,
           fixedSize: state.fixedSize,
           autoMinSize: state.autoMinSize,
           autoMaxSize: state.autoMaxSize,
           visibility: state.visibility,
+          groupName: state.groupName,
           groupDescription: state.groupDescription,
+          avatarImage: state.avatarImage,
         });
 
         dispatch({
@@ -414,12 +492,21 @@ export function useForgeWizard({
     runForgeAnimation,
     state.autoMaxSize,
     state.autoMinSize,
+    state.avatarImage,
+    state.coverImage,
     state.fixedSize,
+    state.groupName,
     state.groupSizeMode,
     state.groupDescription,
     state.locationType,
+    state.planCost,
+    state.planCostAmount,
+    state.planCostDetails,
     state.planDate,
+    state.planDescription,
     state.planLocation,
+    state.planLocationLat,
+    state.planLocationLng,
     state.planName,
     state.planTime,
     state.selectedActivity,
@@ -452,6 +539,64 @@ export function useForgeWizard({
     }, 2000);
   }, []);
 
+  const handleSaveIdentityAndContinue = useCallback(async () => {
+    setIsSavingIdentity(true);
+
+    try {
+      await ForgeQueries.saveForgedIdentity({
+        groupId: state.groupId,
+        planId: state.planId,
+        groupName: state.groupName,
+        groupDescription: state.groupDescription,
+        avatarImage: state.avatarImage,
+        coverImage: state.coverImage,
+      });
+      goNext();
+    } catch (error) {
+      captureException("forge.saveIdentity", error, {
+        groupId: state.groupId ?? "missing",
+      });
+      goNext();
+    } finally {
+      setIsSavingIdentity(false);
+    }
+  }, [
+    goNext,
+    state.avatarImage,
+    state.coverImage,
+    state.groupDescription,
+    state.groupId,
+    state.groupName,
+    state.planId,
+  ]);
+
+  const handleSendInvites = useCallback(async () => {
+    setIsSendingInvites(true);
+
+    try {
+      if (state.forgeMode === "MANUAL") {
+        await ForgeQueries.sendManualInvites({
+          groupId: state.groupId,
+          inviteeIds: state.manualInviteeIds,
+          planName: state.planName,
+        });
+      }
+      setField("invitesSent", true);
+    } catch (error) {
+      captureException("forge.sendInvites", error, {
+        groupId: state.groupId ?? "missing",
+      });
+    } finally {
+      setIsSendingInvites(false);
+    }
+  }, [
+    setField,
+    state.forgeMode,
+    state.groupId,
+    state.manualInviteeIds,
+    state.planName,
+  ]);
+
   const handleEnterGroupHub = useCallback(async () => {
     if (!state.groupId) {
       close();
@@ -465,7 +610,11 @@ export function useForgeWizard({
     (participant) => !state.removedIds.has(participant.userId),
   );
   const canAdvanceStep1 = !!state.selectedActivity;
-  const canAdvanceStep2 = state.planName.trim().length >= 3;
+  const paidAmount = Number(state.planCostAmount);
+  const canAdvanceStep2 =
+    state.planName.trim().length >= 3 &&
+    (state.planCost === "FREE" ||
+      (Number.isFinite(paidAmount) && paidAmount > 0));
   const isPreForge = state.step <= 3;
   const canGoBack =
     (state.step > 1 && state.step <= 3) || state.step === 5 || state.step === 6;
@@ -473,6 +622,8 @@ export function useForgeWizard({
   return {
     ...state,
     isForging,
+    isSavingIdentity,
+    isSendingInvites,
     forgingProgress,
     activeParticipants,
     canAdvanceStep1,
@@ -481,12 +632,17 @@ export function useForgeWizard({
     canGoBack,
     setSelectedActivity,
     setPlanName,
+    setPlanDescription,
     setGroupName,
     setGroupDescription,
     setPlanDate,
     setPlanTime,
     setPlanLocation,
+    setPlanLocationCoordinates,
     setLocationType,
+    setPlanCost,
+    setPlanCostAmount,
+    setPlanCostDetails,
     setForgeMode,
     setFixedSize,
     setGroupSizeMode,
@@ -498,6 +654,7 @@ export function useForgeWizard({
     setCoverImage,
     setAvatarImage,
     setInvitesSent,
+    toggleManualInvitee,
     goNext,
     goBack,
     close,
@@ -507,6 +664,8 @@ export function useForgeWizard({
     handleRestoreParticipant,
     handleReforge,
     handleCopyLink,
+    handleSaveIdentityAndContinue,
+    handleSendInvites,
     handleEnterGroupHub,
   };
 }

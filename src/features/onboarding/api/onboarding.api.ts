@@ -1,6 +1,6 @@
 import { apiClient } from "@/shared/api/api";
 import { fullUserResponseSchema, interestSchema } from "@/shared/schemas";
-import type { PersonalityType } from "@/shared/schemas/enums";
+import type { Gender, PersonalityType } from "@/shared/schemas/enums";
 import { z } from "zod";
 
 const interestTreeResponseSchema = z.array(interestSchema);
@@ -17,6 +17,14 @@ export interface UpdateOnboardingPersonalityDto {
   oceanN: number;
 }
 
+export interface UpdateProfileBasicsDto {
+  age: number;
+  gender: Gender;
+  city: string;
+  locationLat: number | null;
+  locationLng: number | null;
+}
+
 export interface SetOnboardingInterestsDto {
   interestIds: string[];
 }
@@ -29,6 +37,16 @@ export class OnboardingApi {
   }
 
   static async updatePersonality(payload: UpdateOnboardingPersonalityDto) {
+    const response = await apiClient
+      .patch("users/me", {
+        json: payload,
+      })
+      .json<unknown>();
+
+    return fullUserResponseSchema.parse(response);
+  }
+
+  static async updateProfileBasics(payload: UpdateProfileBasicsDto) {
     const response = await apiClient
       .patch("users/me", {
         json: payload,

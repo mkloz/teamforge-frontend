@@ -1,4 +1,4 @@
-import { Button } from "@/shared/components/ui/button";
+import { PageErrorState } from "@/shared/components/page-error-state";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { InterestsCloud } from "./components/interests-cloud";
 import { PersonalitySection } from "./components/personality-section";
@@ -34,24 +34,15 @@ export function ProfilePage() {
 
   if (error || !profile) {
     return (
-      <main className="min-h-full flex items-center justify-center bg-canvas">
-        <div className="text-center space-y-4">
-          <h2 className="text-2xl font-bold text-ink">
-            Failed to load profile
-          </h2>
-          <p className="text-slate-muted">
-            Something went wrong. Please try again.
-          </p>
-          <Button
-            variant="outline"
-            onClick={() => {
-              void refetch();
-            }}
-            className="mt-2"
-          >
-            Retry
-          </Button>
-        </div>
+      <main className="min-h-full bg-canvas px-4 py-10 md:px-8">
+        <PageErrorState
+          className="mx-auto max-w-3xl"
+          title="Profile could not load"
+          description="Your profile data could not be refreshed right now."
+          onRetry={() => {
+            void refetch();
+          }}
+        />
       </main>
     );
   }

@@ -63,6 +63,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
 
   const { unpinMessage } = useActivityMessageActions();
   const isMobile = useIsMobile();
+  const isBlockedDirectChat = kind === "dm" && Boolean(data.isBlocked);
 
   const conversationData = useConversationData(
     kind === "group"
@@ -135,13 +136,19 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
 
       {/* Input area */}
       {isCompleted && kind === "group" && data.plan ? (
-        <CompletedBanner groupName={data.plan.title} />
+        <CompletedBanner group={data} />
       ) : (
         <UnifiedMessageInput
           chatId={kind === "group" ? (data.chat?.id ?? null) : data.id}
           errorMessage={sendError}
+          disabled={isBlockedDirectChat}
           onSend={onSendMessage}
           onClearError={onClearSendError}
+          placeholder={
+            isBlockedDirectChat
+              ? "Unblock this user to send messages"
+              : undefined
+          }
         />
       )}
     </div>

@@ -14,6 +14,8 @@ interface SerializedError {
   stack?: string;
 }
 
+const MAX_TELEMETRY_ERROR_MESSAGE_LENGTH = 255;
+
 function readApiException(error: Error) {
   if (!("cause" in error)) {
     return null;
@@ -102,11 +104,15 @@ export function captureException(
   context: TelemetryContext = {},
 ) {
   const serialized = serializeError(error);
+  const errorMessage =
+    serialized.message.length > MAX_TELEMETRY_ERROR_MESSAGE_LENGTH
+      ? `${serialized.message.slice(0, MAX_TELEMETRY_ERROR_MESSAGE_LENGTH - 1)}…`
+      : serialized.message;
   const details = {
     scope,
     ...sanitizeContext(context),
     errorName: serialized.name,
-    errorMessage: serialized.message,
+    errorMessage,
     errorStatus: serialized.status,
     requestId: serialized.requestId,
   };

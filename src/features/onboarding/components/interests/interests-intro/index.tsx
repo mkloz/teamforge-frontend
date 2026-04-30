@@ -38,13 +38,6 @@ export function InterestsIntro({ onStart }: InterestsIntroProps) {
         />
       </motion.div>
 
-      <motion.p
-        variants={fadeUpItem}
-        className="font-sans text-xs font-bold uppercase tracking-[0.2em] mb-3 text-forge-teal"
-      >
-        Step 2 of 2 · Interests
-      </motion.p>
-
       <motion.h1
         variants={fadeUpItem}
         className="font-sans text-2xl sm:text-display-lg font-extrabold leading-tight text-balance mb-4 text-ink"

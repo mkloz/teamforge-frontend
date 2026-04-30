@@ -1,39 +1,15 @@
-import {
-  Users,
-  Palette,
-  Trophy,
-  Utensils,
-  Music,
-  BookOpen,
-  Gamepad2,
-  Sparkle,
-  type LucideIcon,
-  Mountain,
-  Coffee,
-} from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { createElement } from "react";
 import { buildInterestsEditNavigation } from "@/shared/lib/onboarding-route";
 import { cn } from "@/shared/lib/utils";
 import type { Interest as SharedInterest } from "@/shared/schemas";
 import { SectionTitle } from "./section-title";
 import { Button } from "@/shared/components/ui/button";
+import { getInterestIcon } from "@/shared/lib/interest-icons";
 
 interface InterestsCloudProps {
   interests: SharedInterest[];
 }
-
-// Map icon names from schema to components
-const ICON_MAP: Record<string, LucideIcon> = {
-  Mountain: Mountain,
-  Users: Users,
-  Palette: Palette,
-  Trophy: Trophy,
-  Utensils: Utensils,
-  Music: Music,
-  BookOpen: BookOpen,
-  Gamepad2: Gamepad2,
-  Coffee: Coffee,
-};
 
 export function InterestsCloud({ interests }: InterestsCloudProps) {
   return (
@@ -68,8 +44,6 @@ export function InterestsCloud({ interests }: InterestsCloudProps) {
 }
 
 function InterestTag({ interest }: { interest: SharedInterest }) {
-  const Icon = (interest.icon && ICON_MAP[interest.icon]) || Sparkle;
-
   return (
     <span
       className={cn(
@@ -78,7 +52,10 @@ function InterestTag({ interest }: { interest: SharedInterest }) {
         "dark:bg-primary/10 dark:text-primary dark:border-primary/30",
       )}
     >
-      <Icon size={14} className="shrink-0 opacity-85" />
+      {createElement(getInterestIcon(interest), {
+        size: 14,
+        className: "shrink-0 opacity-85",
+      })}
       {interest.name}
     </span>
   );

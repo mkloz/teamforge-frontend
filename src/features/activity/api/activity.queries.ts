@@ -9,6 +9,8 @@ import { buildProposalTimelineContent } from "@/features/activity/lib/proposal-l
 import {
   HOME_GROUPS_QUERY_KEY,
   HOME_INVITATIONS_QUERY_KEY,
+  HOME_SENT_INVITATIONS_QUERY_KEY,
+  HomeQueries,
 } from "@/features/home/api/home.queries";
 import { appQueryClient } from "@/shared/api/query-client";
 import type {
@@ -30,6 +32,13 @@ import type {
 } from "@/shared/schemas";
 
 import { ActivityApi, type SendMessagePayload } from "./activity.api";
+import {
+  ACTIVITY_CHATS_QUERY_KEY,
+  ACTIVITY_DIRECT_SELECTION_QUERY_KEY,
+  ACTIVITY_FRIENDSHIPS_QUERY_KEY,
+  ACTIVITY_GROUP_SELECTION_QUERY_KEY,
+  ACTIVITY_GROUPS_QUERY_KEY,
+} from "./activity-query-keys";
 import { applyFilter, sortByRecency } from "../lib/unify-conversations";
 import type {
   ActivityParticipant,
@@ -77,9 +86,6 @@ interface ApplyRealtimeMessageOptions {
   activeChatId?: string | null;
 }
 
-const ACTIVITY_GROUPS_QUERY_KEY = ["activity", "groups"] as const;
-const ACTIVITY_CHATS_QUERY_KEY = ["activity", "chats"] as const;
-const ACTIVITY_FRIENDSHIPS_QUERY_KEY = ["activity", "friendships"] as const;
 const DEFAULT_MESSAGE_LIMIT = 50;
 const retryableMessageInputs = new Map<
   string,
@@ -96,6 +102,31 @@ type ActivityMessagesInfiniteData = InfiniteData<
 >;
 
 export class ActivityQueries {
+  static invalidateGroupSurfaces() {
+    return Promise.all([
+      appQueryClient.invalidateQueries({ queryKey: ACTIVITY_GROUPS_QUERY_KEY }),
+      appQueryClient.invalidateQueries({ queryKey: ACTIVITY_CHATS_QUERY_KEY }),
+      appQueryClient.invalidateQueries({
+        queryKey: ACTIVITY_GROUP_SELECTION_QUERY_KEY,
+      }),
+      appQueryClient.invalidateQueries({ queryKey: HOME_GROUPS_QUERY_KEY }),
+      appQueryClient.invalidateQueries({ queryKey: ["home", "plans"] }),
+      appQueryClient.invalidateQueries({ queryKey: ["home", "stats"] }),
+    ]);
+  }
+
+  static invalidateFriendshipSurfaces() {
+    return Promise.all([
+      appQueryClient.invalidateQueries({
+        queryKey: ACTIVITY_FRIENDSHIPS_QUERY_KEY,
+      }),
+      appQueryClient.invalidateQueries({ queryKey: ACTIVITY_CHATS_QUERY_KEY }),
+      appQueryClient.invalidateQueries({
+        queryKey: ACTIVITY_DIRECT_SELECTION_QUERY_KEY,
+      }),
+    ]);
+  }
+
   static groups() {
     return queryOptions({
       queryKey: ACTIVITY_GROUPS_QUERY_KEY,
@@ -612,15 +643,20 @@ export class ActivityQueries {
   }
 
   static async sendGroupInvite(groupId: string, inviteeId: string) {
-    const invite = await ActivityApi.createInvite({
+    const inviteResult = await ActivityApi.createInvite({
       groupId,
       inviteeId,
       type: "FRIEND_INVITE",
     });
 
+    HomeQueries.applyInvitationUpdate(inviteResult.data);
+
     await Promise.all([
       appQueryClient.invalidateQueries({
         queryKey: HOME_INVITATIONS_QUERY_KEY,
+      }),
+      appQueryClient.invalidateQueries({
+        queryKey: HOME_SENT_INVITATIONS_QUERY_KEY,
       }),
       appQueryClient.invalidateQueries({
         queryKey: ["notifications", "unread-count"],
@@ -628,13 +664,33 @@ export class ActivityQueries {
       appQueryClient.invalidateQueries({ queryKey: ["notifications"] }),
     ]);
 
-    return invite;
+    return inviteResult;
+  }
+
+  static async blockUser(userId: string) {
+    const friendshipResult = await ActivityApi.blockUser(userId);
+
+    this.applyFriendshipUpdate(friendshipResult.data);
+
+    await this.invalidateFriendshipSurfaces();
+
+    return friendshipResult;
+  }
+
+  static async unblockUser(userId: string) {
+    const friendshipResult = await ActivityApi.unblockUser(userId);
+
+    this.removeFriendshipFromActivity(friendshipResult.data);
+
+    await this.invalidateFriendshipSurfaces();
+
+    return friendshipResult;
   }
 
   static async leaveGroup(groupId: string, currentUserId: string) {
-    const group = await ActivityApi.leaveGroup(groupId);
-    this.applyRealtimeGroupUpdate(currentUserId, group);
-    return group;
+    const groupResult = await ActivityApi.leaveGroup(groupId);
+    this.applyRealtimeGroupUpdate(currentUserId, groupResult.data);
+    return groupResult;
   }
 
   static async removeGroupMember(
@@ -642,15 +698,15 @@ export class ActivityQueries {
     memberId: string,
     currentUserId: string,
   ) {
-    const group = await ActivityApi.removeGroupMember(groupId, memberId);
-    this.applyRealtimeGroupUpdate(currentUserId, group);
-    return group;
+    const groupResult = await ActivityApi.removeGroupMember(groupId, memberId);
+    this.applyRealtimeGroupUpdate(currentUserId, groupResult.data);
+    return groupResult;
   }
 
   static async disbandGroup(groupId: string, currentUserId: string) {
-    const group = await ActivityApi.disbandGroup(groupId);
-    this.applyRealtimeGroupUpdate(currentUserId, group);
-    return group;
+    const groupResult = await ActivityApi.disbandGroup(groupId);
+    this.applyRealtimeGroupUpdate(currentUserId, groupResult.data);
+    return groupResult;
   }
 
   static async applyRealtimeMessage(
@@ -867,6 +923,88 @@ export class ActivityQueries {
         },
       });
     }
+  }
+
+  static applyFriendshipUpdate(friendship: FriendshipApi) {
+    const isBlocked = friendship.status === "BLOCKED";
+    const chatId = friendship.privateChat?.id ?? friendship.privateChatId;
+
+    appQueryClient.setQueryData<FriendshipApi[] | undefined>(
+      ACTIVITY_FRIENDSHIPS_QUERY_KEY,
+      (current) => this.mergeFriendshipList(current, friendship),
+    );
+
+    if (!chatId) {
+      return;
+    }
+
+    appQueryClient.setQueryData<ChatApi[] | undefined>(
+      ACTIVITY_CHATS_QUERY_KEY,
+      (current) =>
+        current?.map((chat) =>
+          chat.id === chatId
+            ? {
+                ...chat,
+                participants: chat.participants?.map((participant) => ({
+                  ...participant,
+                  isBlocked,
+                })),
+              }
+            : chat,
+        ),
+    );
+
+    appQueryClient.setQueryData<ActivityDirectSelectionData | undefined>(
+      ["activity-selection", "dm", chatId],
+      (current) =>
+        current?.chat
+          ? {
+              ...current,
+              chat: {
+                ...current.chat,
+                isBlocked,
+              },
+            }
+          : current,
+    );
+  }
+
+  static removeFriendshipFromActivity(friendship: FriendshipApi) {
+    const chatId = friendship.privateChat?.id ?? friendship.privateChatId;
+
+    appQueryClient.setQueryData<FriendshipApi[] | undefined>(
+      ACTIVITY_FRIENDSHIPS_QUERY_KEY,
+      (current) =>
+        current?.filter(
+          (item) =>
+            !this.isSameFriendshipPair(
+              item.requesterId,
+              item.receiverId,
+              friendship,
+            ),
+        ),
+    );
+
+    if (!chatId) {
+      return;
+    }
+
+    appQueryClient.setQueryData<ChatApi[] | undefined>(
+      ACTIVITY_CHATS_QUERY_KEY,
+      (current) => current?.filter((chat) => chat.id !== chatId),
+    );
+
+    appQueryClient.setQueryData<ActivityDirectSelectionData | undefined>(
+      ["activity-selection", "dm", chatId],
+      (current) =>
+        current
+          ? {
+              ...current,
+              chat: null,
+              isTyping: false,
+            }
+          : current,
+    );
   }
 
   static applyRealtimeGroupUpdate(currentUserId: string, group: GroupApi) {
@@ -2310,6 +2448,47 @@ export class ActivityQueries {
     );
   }
 
+  private static mergeFriendshipList(
+    current: FriendshipApi[] | undefined,
+    incoming: FriendshipApi,
+  ) {
+    const existing = current?.find((item) =>
+      this.isSameFriendshipPair(item.requesterId, item.receiverId, incoming),
+    );
+    const nextFriendship =
+      existing &&
+      this.getFriendshipVersion(existing) > this.getFriendshipVersion(incoming)
+        ? existing
+        : incoming;
+    const withoutExisting =
+      current?.filter(
+        (item) =>
+          !this.isSameFriendshipPair(
+            item.requesterId,
+            item.receiverId,
+            incoming,
+          ),
+      ) ?? [];
+
+    return [nextFriendship, ...withoutExisting].sort(
+      (left, right) =>
+        this.getFriendshipVersion(right) - this.getFriendshipVersion(left),
+    );
+  }
+
+  private static isSameFriendshipPair(
+    requesterId: string,
+    receiverId: string,
+    friendship: Pick<FriendshipApi, "requesterId" | "receiverId">,
+  ) {
+    return (
+      (requesterId === friendship.requesterId &&
+        receiverId === friendship.receiverId) ||
+      (requesterId === friendship.receiverId &&
+        receiverId === friendship.requesterId)
+    );
+  }
+
   private static getMessageVersion(
     message:
       | Pick<MessageApi, "createdAt" | "updatedAt" | "version">
@@ -2327,6 +2506,10 @@ export class ActivityQueries {
       | Pick<Group, "updatedAt" | "version">,
   ) {
     return group.version ?? new Date(group.updatedAt).getTime();
+  }
+
+  private static getFriendshipVersion(friendship: FriendshipApi) {
+    return friendship.version ?? new Date(friendship.updatedAt).getTime();
   }
 
   private static getPlanVersion(

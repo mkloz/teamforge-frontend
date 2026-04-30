@@ -27,6 +27,9 @@ export function useJoinExploreGroup(groupId: string) {
       );
     },
     onError: (error) => {
+      trackMutationOutcome(trackedMutationNames.exploreJoinGroup, "error", {
+        groupId,
+      });
       toast.error(
         getApiErrorMessage(error, "We couldn't join that group right now."),
       );

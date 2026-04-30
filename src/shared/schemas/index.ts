@@ -16,3 +16,4 @@ export * from "./explore";
 export * from "./pagination";
 export * from "./user-response";
 export * from "./realtime";
+export * from "./rating-api";

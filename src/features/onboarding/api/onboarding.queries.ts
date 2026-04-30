@@ -3,6 +3,7 @@ import { queryOptions } from "@tanstack/react-query";
 import {
   OnboardingApi,
   type SetOnboardingInterestsDto,
+  type UpdateProfileBasicsDto,
   type UpdateOnboardingPersonalityDto,
 } from "./onboarding.api";
 
@@ -17,6 +18,10 @@ export class OnboardingQueries {
 
   static updatePersonality(payload: UpdateOnboardingPersonalityDto) {
     return OnboardingApi.updatePersonality(payload);
+  }
+
+  static updateProfileBasics(payload: UpdateProfileBasicsDto) {
+    return OnboardingApi.updateProfileBasics(payload);
   }
 
   static setInterests(payload: SetOnboardingInterestsDto) {

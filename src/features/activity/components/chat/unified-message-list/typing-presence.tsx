@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
+import { Avatar } from "@/shared/components/common/avatar";
 import { UnifiedTypingIndicator } from "../unified-typing-indicator";
 
 export const TypingPresence = memo(
@@ -19,23 +20,16 @@ export const TypingPresence = memo(
           style={{ originX: 0 }}
         >
           <div className="flex -space-x-1.5 shrink-0 self-center">
-            {typingUsers.slice(0, 3).map((user) =>
-              user.avatar ? (
-                <img
-                  key={user.name}
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-5 h-5 rounded-full ring-2 ring-canvas object-cover shadow-sm bg-muted"
-                />
-              ) : (
-                <div
-                  key={user.name}
-                  className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[9px] font-bold text-muted-foreground ring-2 ring-canvas shadow-sm"
-                >
-                  {user.name.slice(0, 1).toUpperCase()}
-                </div>
-              ),
-            )}
+            {typingUsers.slice(0, 3).map((user) => (
+              <Avatar
+                key={user.name}
+                src={user.avatar}
+                name={user.name}
+                fallback={user.name.slice(0, 1).toUpperCase()}
+                className="h-5 w-5 bg-muted shadow-sm ring-2 ring-canvas"
+                fallbackClassName="text-[9px] text-muted-foreground"
+              />
+            ))}
           </div>
           <span className="text-micro font-bold tracking-tight text-slate-muted/80 truncate">
             {typingUsers.length === 1

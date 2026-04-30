@@ -25,6 +25,10 @@ export function useExploreFriendRequests() {
       toast.success("Friend request accepted.");
     },
     onError: (error) => {
+      trackMutationOutcome(
+        trackedMutationNames.exploreAcceptFriendRequest,
+        "error",
+      );
       toast.error(
         getApiErrorMessage(
           error,
@@ -50,6 +54,10 @@ export function useExploreFriendRequests() {
       toast.success("Friend request declined.");
     },
     onError: (error) => {
+      trackMutationOutcome(
+        trackedMutationNames.exploreDeclineFriendRequest,
+        "error",
+      );
       toast.error(
         getApiErrorMessage(
           error,

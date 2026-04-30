@@ -1,8 +1,10 @@
+import { Image } from "@/shared/components/common/image";
 import { cn } from "@/shared/lib/utils";
 import { useImageState } from "@/shared/hooks/use-image-state";
-import { ImageOff } from "lucide-react";
+import { ImageOff, Play } from "lucide-react";
 import { memo } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
+import { cacheMediaIntrinsicSize } from "@/features/activity/lib/media-intrinsic-size";
 
 interface ThumbnailStripProps {
   attachments: UnifiedAttachment[];
@@ -23,10 +25,14 @@ function ThumbnailItem({
 
   return (
     <button
+      type="button"
       onClick={onSelect}
+      aria-label={`Open ${media.type === "VIDEO" ? "video" : "image"} thumbnail`}
+      aria-current={isSelected ? "true" : undefined}
       className={cn(
         "w-12 h-12 rounded-lg overflow-hidden shrink-0 relative",
         "transition-[opacity,transform,filter] duration-200",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/50",
         isSelected
           ? "ring-2 ring-forge-teal scale-110 opacity-100 z-10"
           : "opacity-40 grayscale-50 hover:opacity-100 hover:grayscale-0",
@@ -44,17 +50,57 @@ function ThumbnailItem({
         </div>
       )}
 
-      <img
-        src={media.thumbnailUrl || media.url}
-        alt=""
-        loading="lazy"
-        onLoad={onLoad}
-        onError={onError}
-        className={cn(
-          "w-full h-full object-cover transition-opacity duration-200",
-          state === "loaded" ? "opacity-100" : "opacity-0",
-        )}
-      />
+      {media.type === "VIDEO" ? (
+        <>
+          <video
+            src={media.url}
+            poster={media.thumbnailUrl || undefined}
+            preload="metadata"
+            muted
+            playsInline
+            onLoadedMetadata={(event) => {
+              cacheMediaIntrinsicSize(
+                media.id,
+                event.currentTarget.videoWidth,
+                event.currentTarget.videoHeight,
+              );
+              onLoad();
+            }}
+            onError={onError}
+            className={cn(
+              "w-full h-full object-cover transition-opacity duration-200",
+              state === "loaded" ? "opacity-100" : "opacity-0",
+            )}
+          />
+          {state === "loaded" && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/20">
+              <Play size={14} className="fill-white text-white/90" />
+            </div>
+          )}
+        </>
+      ) : (
+        <Image
+          src={media.thumbnailUrl || media.url}
+          alt=""
+          onLoad={(event) => {
+            cacheMediaIntrinsicSize(
+              media.id,
+              event.currentTarget.naturalWidth,
+              event.currentTarget.naturalHeight,
+            );
+            onLoad();
+          }}
+          onError={onError}
+          wrapperClassName="absolute inset-0"
+          className={cn(
+            "transition-opacity duration-200",
+            state === "loaded" ? "opacity-100" : "opacity-0",
+          )}
+          loadingComponent={null}
+          fallbackComponent={null}
+          showNoImage={false}
+        />
+      )}
     </button>
   );
 }

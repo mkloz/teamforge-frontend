@@ -58,12 +58,12 @@ export function CompletionBlueprint({
       >
         {/* Meta Header */}
         <motion.div variants={fadeUp} className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-forge-teal/10 border border-forge-teal/20 text-forge-teal text-[10px] font-bold uppercase tracking-[0.3em] mb-4">
-            <Database size={12} />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-canvas/10 border border-canvas/30 text-canvas text-[10px] font-bold uppercase tracking-[0.3em] mb-4">
+            <Database size={12} aria-hidden="true" />
             Profile Created
           </div>
-          <h1 className="font-sans text-4xl font-extrabold text-white tracking-tight leading-tight">
-            Welcome to <span className="text-forge-teal">TeamForge</span>
+          <h1 className="font-sans text-4xl font-extrabold text-canvas tracking-tight leading-tight">
+            Welcome to <span className="text-spark-amber">TeamForge</span>
           </h1>
         </motion.div>
 
@@ -80,12 +80,16 @@ export function CompletionBlueprint({
             {/* Top Section: Personality Branding */}
             <div className="p-8 pb-4 flex flex-col gap-1">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-forge-teal/60">
+                <span className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-canvas/80">
                   Social Identity
                 </span>
-                <Fingerprint size={16} className="text-forge-teal/40" />
+                <Fingerprint
+                  size={16}
+                  className="text-spark-amber"
+                  aria-hidden="true"
+                />
               </div>
-              <h2 className="font-sans text-5xl font-black text-white tracking-tight">
+              <h2 className="font-sans text-5xl font-black text-canvas tracking-tight">
                 {personalityType || "????"}
               </h2>
               <p className="font-sans text-lg font-medium text-spark-amber">
@@ -102,23 +106,23 @@ export function CompletionBlueprint({
             <div className="flex-1 p-8 pt-4 flex flex-col gap-8">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <p className="font-sans text-[9px] font-bold uppercase tracking-widest text-white/50">
+                  <p className="font-sans text-[9px] font-bold uppercase tracking-widest text-canvas/80">
                     Interests Map
                   </p>
-                  <p className="font-sans text-2xl font-bold text-white">
+                  <p className="font-sans text-2xl font-bold text-canvas">
                     {interestCount}{" "}
-                    <span className="text-xs font-normal text-white/40">
+                    <span className="text-xs font-normal text-canvas/80">
                       nodes
                     </span>
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="font-sans text-[9px] font-bold uppercase tracking-widest text-white/50">
+                  <p className="font-sans text-[9px] font-bold uppercase tracking-widest text-canvas/80">
                     Trust Rating
                   </p>
                   <div className="flex items-center gap-1.5 pt-1">
                     <div className="h-1.5 w-1.5 rounded-full bg-spark-amber shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
-                    <p className="font-sans text-xs font-bold text-white/80">
+                    <p className="font-sans text-xs font-bold text-canvas">
                       Pending Validation
                     </p>
                   </div>
@@ -149,7 +153,7 @@ export function CompletionBlueprint({
             />
           </Button>
 
-          <p className="mt-6 font-sans text-[10px] text-white/30 font-medium uppercase tracking-widest text-center max-w-50 leading-relaxed">
+          <p className="mt-6 font-sans text-[10px] text-canvas/80 font-medium uppercase tracking-widest text-center max-w-50 leading-relaxed">
             Finding your people, intelligently.
           </p>
         </motion.div>

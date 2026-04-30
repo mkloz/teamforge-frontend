@@ -1,3 +1,4 @@
+import { Avatar } from "@/shared/components/common/avatar";
 import { motion } from "framer-motion";
 
 /**
@@ -174,7 +175,7 @@ export function ForgeOrbScene({ firstName, reduced }: ForgeOrbSceneProps) {
 
       {/* ── Core orb (User Avatar) ───────────────────────────────── */}
       <motion.div
-        className="absolute flex items-center justify-center rounded-full bg-card overflow-hidden z-20 ring-2 ring-forge-teal ring-offset-2 ring-offset-background shadow-sm"
+        className="absolute z-20"
         style={{
           width: 64,
           height: 64,
@@ -185,10 +186,12 @@ export function ForgeOrbScene({ firstName, reduced }: ForgeOrbSceneProps) {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1], delay: 0.15 }}
       >
-        <img
+        <Avatar
           src={`https://api.dicebear.com/7.x/notionists/svg?seed=${firstName}`}
+          name={firstName}
           alt="Your avatar"
-          className="size-full object-cover"
+          className="size-16 bg-card ring-2 ring-forge-teal ring-offset-2 ring-offset-background shadow-sm"
+          loading="eager"
         />
       </motion.div>
 

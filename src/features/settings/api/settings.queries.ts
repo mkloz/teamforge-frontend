@@ -27,11 +27,23 @@ export class SettingsQueries {
     return SettingsApi.getSessions();
   }
 
+  static getBlockedUsers() {
+    return SettingsApi.getBlockedUsers();
+  }
+
+  static unblockUser(userId: string) {
+    return SettingsApi.unblockUser(userId);
+  }
+
   static revokeSession(sessionId: string) {
     return SettingsApi.revokeSession(sessionId);
   }
 
   static revokeOtherSessions() {
     return SettingsApi.revokeOtherSessions();
+  }
+
+  static deleteAccount() {
+    return SettingsApi.deleteAccount();
   }
 }

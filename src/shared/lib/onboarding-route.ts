@@ -1,6 +1,7 @@
 import type { SettingsSection } from "@/shared/lib/settings-route";
 
 export const onboardingRoutePaths = [
+  "/onboarding/profile",
   "/onboarding/personality",
   "/onboarding/interests",
 ] as const;

@@ -1,7 +1,9 @@
 export const settingsSectionValues = [
   "account",
   "matching",
+  "privacy",
   "security",
+  "safety",
   "notifications",
 ] as const;
 

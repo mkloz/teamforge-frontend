@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 import { useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
@@ -172,10 +172,12 @@ export function PersonalityTestPage() {
   const navigate = useNavigate();
   const { isEditMode, returnTo, returnSearch, returnSection } =
     useOnboardingFlowState();
+  const queryClient = useQueryClient();
   const invalidateCurrentUser = AuthQueries.useInvalidateCurrentUser();
   const persistPersonalityMutation = useMutation({
     mutationFn: OnboardingQueries.updatePersonality,
-    onSuccess: async () => {
+    onSuccess: async (updatedUser) => {
+      queryClient.setQueryData(AuthQueries.currentUserQueryKey, updatedUser);
       await invalidateCurrentUser();
     },
   });

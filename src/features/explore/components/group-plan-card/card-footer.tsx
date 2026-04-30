@@ -1,3 +1,4 @@
+import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
 import { buildActivityGroupHubNavigation } from "@/shared/lib/activity-route";
@@ -51,33 +52,19 @@ export function CardFooter({
         {/* Avatar Stack */}
         <div className="flex -space-x-2 shrink-0">
           {group.members.slice(0, 4).map((member, i) => (
-            <div
+            <Avatar
               key={`${group.id}-${i}`}
+              src={member.avatar}
+              name={member.name}
+              fallback={
+                member.name ? undefined : title[0]?.toUpperCase() || "T"
+              }
               className={cn(
-                "rounded-full border-thin border-canvas bg-canvas flex items-center justify-center overflow-hidden transition-transform duration-300 hover:-translate-y-1 hover:z-20 relative",
+                "border-thin border-canvas bg-canvas transition-transform duration-300 hover:-translate-y-1 hover:z-20",
                 isCompact ? "size-6" : "w-7 h-7",
               )}
-            >
-              {member.avatar ? (
-                <img
-                  src={member.avatar}
-                  alt={member.name}
-                  className="w-full h-full object-cover bg-muted"
-                  loading="lazy"
-                />
-              ) : (
-                <span className="text-[10px] font-black text-forge-teal">
-                  {member.name
-                    .split(/\s+/)
-                    .filter(Boolean)
-                    .slice(0, 2)
-                    .map((part) => part[0]?.toUpperCase())
-                    .join("") ||
-                    title[0]?.toUpperCase() ||
-                    "T"}
-                </span>
-              )}
-            </div>
+              fallbackClassName="text-[10px]"
+            />
           ))}
 
           {/* Remainder Badge */}

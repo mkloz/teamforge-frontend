@@ -1,3 +1,4 @@
+import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 
 export interface MutualGroup {
@@ -29,10 +30,10 @@ export function MutualGroupsSection({ groups }: MutualGroupsSectionProps) {
             )}
           >
             <div className="relative shrink-0">
-              <img
-                src={group.avatar || ""}
-                alt={group.name}
-                className="w-11 h-11 rounded-full object-cover bg-canvas ring-2 ring-card shadow-xs transition-transform duration-500 group-hover:scale-105"
+              <Avatar
+                src={group.avatar}
+                name={group.name}
+                className="h-11 w-11 bg-canvas ring-2 ring-card shadow-xs transition-transform duration-500 group-hover:scale-105"
               />
             </div>
 
