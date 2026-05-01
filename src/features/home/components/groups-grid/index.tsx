@@ -4,8 +4,9 @@ import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { useHomeData } from "../../hooks/use-home-data";
-import { GroupRow } from "./group-row";
+
+import { GroupRow } from "@/features/home/components/groups-grid/group-row";
+import { useHomeData } from "@/features/home/hooks/use-home-data";
 
 export function GroupsGrid() {
   const { groups, isLoading } = useHomeData();

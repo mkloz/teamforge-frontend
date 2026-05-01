@@ -1,7 +1,8 @@
 import { cn } from "@/shared/lib/utils";
 import { Bell } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
-import { useNotifications } from "../hooks/use-notifications";
+
+import { useNotifications } from "@/features/notifications/hooks/use-notifications";
 
 interface NotificationsBellTriggerProps {
   onClick: () => void;

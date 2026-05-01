@@ -5,7 +5,7 @@ import { invalidateNotificationSurfaces } from "@/shared/api/query-invalidation"
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-import { ExploreQueries } from "../api/explore.queries";
+import { ExploreCommands } from "@/features/explore/api/explore-commands";
 
 export function useJoinExploreGroup(groupId: string) {
   return useMutation({
@@ -13,7 +13,7 @@ export function useJoinExploreGroup(groupId: string) {
       telemetryName: trackedMutationNames.exploreJoinGroup,
     },
     mutationKey: ["explore", "join-group", groupId],
-    mutationFn: () => ExploreQueries.joinGroup(groupId),
+    mutationFn: () => ExploreCommands.joinGroup(groupId),
     onSuccess: (result) => {
       trackMutationOutcome(trackedMutationNames.exploreJoinGroup, "success", {
         requestId: result.requestId,

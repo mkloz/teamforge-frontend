@@ -1,8 +1,8 @@
+import { useInView } from "@/features/landing/hooks/use-in-view";
 import { Particles } from "@/shared/components/ui/particles";
 import { cn } from "@/shared/lib/utils";
-import { useInView } from "../../hooks/use-in-view";
-import { AlgorithmStats } from "./algorithm-stats";
-import { AlgorithmViz } from "./algorithm-viz";
+import { AlgorithmStats } from "@/features/landing/components/algorithm/algorithm-stats";
+import { AlgorithmViz } from "@/features/landing/components/algorithm/algorithm-viz";
 
 export function AlgorithmSection() {
   const { ref, inView } = useInView(0.15);

@@ -1,6 +1,13 @@
 import type { User } from "@/shared/schemas";
-import type { DimensionScore, OceanScores } from "./profile-contract";
-import { getArchetype } from "./archetypes";
+import { getArchetype } from "@/features/profile/lib/archetypes";
+import type {
+  DimensionScore,
+  OceanScores,
+} from "@/features/profile/lib/profile-contract";
+import {
+  getUserOceanScores as getSharedUserOceanScores,
+  normalizeTrustScore as normalizeSharedTrustScore,
+} from "@/shared/lib/user-psychometrics";
 
 /**
  * Determines the MBTI letter from a score (0-100)
@@ -62,38 +69,11 @@ export function createDimensionScores(
 }
 
 export function normalizeTrustScore(score: number): number {
-  if (score > 0 && score <= 1) {
-    return Math.round(score * 100);
-  }
-
-  return Math.round(score);
+  return normalizeSharedTrustScore(score);
 }
 
 export function getUserOceanScores(user: User): OceanScores | null {
-  const { oceanO, oceanC, oceanE, oceanA, oceanN } = user;
-
-  if (
-    oceanO === null ||
-    oceanO === undefined ||
-    oceanC === null ||
-    oceanC === undefined ||
-    oceanE === null ||
-    oceanE === undefined ||
-    oceanA === null ||
-    oceanA === undefined ||
-    oceanN === null ||
-    oceanN === undefined
-  ) {
-    return null;
-  }
-
-  return {
-    openness: oceanO,
-    conscientiousness: oceanC,
-    extraversion: oceanE,
-    agreeableness: oceanA,
-    neuroticism: oceanN,
-  };
+  return getSharedUserOceanScores(user);
 }
 
 export function getUserDimensionScores(user: User): DimensionScore[] | null {

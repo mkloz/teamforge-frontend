@@ -3,7 +3,8 @@ import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { Calendar, CheckCircle2, Clock, MessageCircle } from "lucide-react";
-import type { PlannedGroup } from "../../api/home.queries";
+
+import type { PlannedGroup } from "@/features/home/types/home.types";
 
 const STATUS_CONFIG: Record<
   PlanStatus,

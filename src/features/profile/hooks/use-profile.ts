@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AuthQueries } from "@/features/auth/api/auth.queries";
+import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import type { User } from "@/shared/schemas";
-import { ProfileQueries } from "../api/profile.queries";
+import { publicProfileQueryOptions } from "@/features/profile/api/profile-query-options";
 
 export function useProfile(userId?: string) {
-  const currentUserQuery = AuthQueries.useCurrentUser();
+  const currentUserQuery = useCurrentUserQuery();
   const publicProfileQuery = useQuery({
-    ...ProfileQueries.profile(userId ?? ""),
+    ...publicProfileQueryOptions(userId ?? ""),
     enabled: !!userId,
   });
 

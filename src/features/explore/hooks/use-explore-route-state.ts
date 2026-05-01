@@ -9,14 +9,17 @@ import {
 } from "nuqs";
 
 import { explorePanelValues } from "@/shared/lib/explore-route";
-import { CATEGORIES, DEFAULT_FILTERS } from "../constants/explore.constants";
-import { useExploreStore } from "../store/use-explore-store";
+import {
+  CATEGORIES,
+  DEFAULT_FILTERS,
+} from "@/features/explore/constants/explore.constants";
+import { useExploreStore } from "@/features/explore/store/use-explore-store";
 import type {
   ExploreAccessMode,
   ExploreCategory,
   ExploreLocationMode,
   ExploreSortOption,
-} from "../schemas/explore-filters.schema";
+} from "@/features/explore/schemas/explore-filters.schema";
 
 const categoryValues = CATEGORIES.map((category) => category.id);
 const locationValues = ["ALL", "IN_PERSON", "ONLINE", "TBD"] as const;

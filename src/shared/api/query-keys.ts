@@ -37,4 +37,18 @@ export const APP_QUERY_KEYS = {
     list: ["notifications"] as const,
     unreadCount: ["notifications", "unread-count"] as const,
   },
+  settings: {
+    notificationPreferences: ["settings", "notification-preferences"] as const,
+    sessions: ["settings", "sessions"] as const,
+    blockedUsers: ["settings", "blocked-users"] as const,
+  },
+  forge: {
+    friends: ["forge", "friends"] as const,
+  },
+  onboarding: {
+    interestTree: ["onboarding", "interests", "tree"] as const,
+  },
+  profile: {
+    byId: (userId: string) => ["profile", userId] as const,
+  },
 } as const;

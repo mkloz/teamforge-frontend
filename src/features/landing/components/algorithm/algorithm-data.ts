@@ -1,4 +1,4 @@
-import type { Phase } from "./algorithm-types";
+import type { Phase } from "@/features/landing/components/algorithm/algorithm-types";
 
 export const CANDIDATES = [
   {

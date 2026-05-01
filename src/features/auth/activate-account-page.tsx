@@ -4,15 +4,15 @@ import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
 import { Button } from "@/shared/components/ui/button";
-
-import { AuthApi } from "./api/auth.api";
-import { AuthQueries } from "./api/auth.queries";
-import { AuthSupportShell } from "./components/auth-support-shell";
+import { ensureCurrentUser } from "@/shared/api/current-user-query";
 import {
   buildAuthRouteNavigation,
   buildPostAuthRedirectNavigation,
   useAuthReturnState,
-} from "./lib/auth-return";
+} from "@/shared/lib/auth-route";
+
+import { AuthCommands } from "@/features/auth/api/auth-commands";
+import { AuthSupportShell } from "@/features/auth/components/auth-support-shell";
 
 export function ActivateAccountPage() {
   const { token } = useParams({ from: "/auth/activate/$token" });
@@ -31,8 +31,8 @@ export function ActivateAccountPage() {
       setErrorMessage(null);
 
       try {
-        const activationResult = await AuthApi.activateAccount(token);
-        const user = await AuthQueries.ensureCurrentUser();
+        const activationResult = await AuthCommands.activateAccount(token);
+        const user = await ensureCurrentUser();
 
         if (!active) {
           return;
@@ -55,7 +55,7 @@ export function ActivateAccountPage() {
         captureException(trackedMutationNames.authActivateAccount, error);
         trackMutationOutcome(trackedMutationNames.authActivateAccount, "error");
         setErrorMessage(
-          AuthApi.getAuthErrorMessage(
+          AuthCommands.getAuthErrorMessage(
             error,
             "This activation link is no longer valid. Request a fresh verification code and try again.",
           ),

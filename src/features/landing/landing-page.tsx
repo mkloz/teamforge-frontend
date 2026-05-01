@@ -1,12 +1,12 @@
-import { useLandingSEO } from "./hooks/use-landing-seo";
-import { AboutSection } from "./components/about";
-import { AlgorithmSection } from "./components/algorithm";
-import { CtaSection } from "./components/cta";
-import { Footer } from "./components/footer";
-import { HeroSection } from "./components/hero";
-import { HowItWorksSection } from "./components/how-it-works";
-import { Navbar } from "./components/navbar";
-import { SideNav } from "./components/side-nav";
+import { AboutSection } from "@/features/landing/components/about";
+import { AlgorithmSection } from "@/features/landing/components/algorithm";
+import { CtaSection } from "@/features/landing/components/cta";
+import { Footer } from "@/features/landing/components/footer";
+import { HeroSection } from "@/features/landing/components/hero";
+import { HowItWorksSection } from "@/features/landing/components/how-it-works";
+import { Navbar } from "@/features/landing/components/navbar";
+import { SideNav } from "@/features/landing/components/side-nav";
+import { useLandingSEO } from "@/features/landing/hooks/use-landing-seo";
 
 export function LandingPage() {
   useLandingSEO();

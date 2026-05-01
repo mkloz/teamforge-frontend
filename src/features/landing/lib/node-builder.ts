@@ -1,8 +1,8 @@
 import {
   CANDIDATES,
   SELECTED_IDS,
-} from "../components/algorithm/algorithm-data";
-import type { DisplayNode } from "../components/algorithm/algorithm-types";
+} from "@/features/landing/components/algorithm/algorithm-data";
+import type { DisplayNode } from "@/features/landing/components/algorithm/algorithm-types";
 
 export function buildNodes(
   cx: number,

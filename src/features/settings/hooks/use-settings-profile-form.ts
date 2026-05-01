@@ -1,71 +1,39 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { AuthApi } from "@/features/auth/api/auth.api";
-import { AuthQueries } from "@/features/auth/api/auth.queries";
 import {
-  buildAuthRouteNavigation,
-  buildRouteLocationHref,
-} from "@/features/auth/lib/auth-return";
+  useCurrentUserQuery,
+  useInvalidateCurrentUser,
+} from "@/shared/api/current-user-query";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-import type {
-  AuthSession,
-  Gender,
-  NotificationPreferences,
-} from "@/shared/schemas";
-import { SettingsQueries } from "../api/settings.queries";
+import type { AuthSession, NotificationPreferences } from "@/shared/schemas";
+
+import { SettingsCache } from "@/features/settings/api/settings-cache";
+import { SettingsCommands } from "@/features/settings/api/settings-commands";
+import { SettingsQueryFactory } from "@/features/settings/api/settings-query-factory";
+import { buildSettingsLoginNavigation } from "@/features/settings/lib/settings-auth-navigation";
+import {
+  buildProfileSummary,
+  buildSettingsProfileFormValues,
+  buildSettingsProfilePayload,
+} from "@/features/settings/lib/settings-profile-mappers";
 import {
   settingsProfileSchema,
   type SettingsProfileValues,
-  unspecifiedGenderValue,
-} from "../schemas/settings-profile.schema";
-
-const SETTINGS_NOTIFICATION_PREFERENCES_QUERY_KEY = [
-  "settings",
-  "notification-preferences",
-] as const;
-
-const SETTINGS_SESSIONS_QUERY_KEY = ["settings", "sessions"] as const;
+} from "@/features/settings/schemas/settings-profile.schema";
 
 type BooleanSettingsPreferenceKey = Exclude<
   keyof NotificationPreferences,
   "minCompatibilityScore"
 >;
 
-function removeSessionFromList(
-  sessions: AuthSession[] | undefined,
-  sessionId: string,
-) {
-  return sessions?.filter((session) => session.id !== sessionId) ?? [];
-}
-
-function toNullableText(value: string) {
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : null;
-}
-
-function toNullableAge(value: string) {
-  if (!value.trim()) {
-    return null;
-  }
-
-  return Number(value);
-}
-
-function toNullableGender(
-  value: SettingsProfileValues["gender"],
-): Gender | null {
-  return value && value !== unspecifiedGenderValue ? value : null;
-}
-
 export function useSettingsProfileForm() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const currentLocation = useRouterState({
     select: (state) => state.location,
   });
@@ -74,8 +42,8 @@ export function useSettingsProfileForm() {
     isLoading,
     isError,
     refetch,
-  } = AuthQueries.useCurrentUser();
-  const invalidateCurrentUser = AuthQueries.useInvalidateCurrentUser();
+  } = useCurrentUserQuery();
+  const invalidateCurrentUser = useInvalidateCurrentUser();
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [avatarMessage, setAvatarMessage] = useState<string | null>(null);
@@ -112,36 +80,24 @@ export function useSettingsProfileForm() {
       return;
     }
 
-    form.reset({
-      name: currentUser.name,
-      age: currentUser.age ? String(currentUser.age) : "",
-      gender: currentUser.gender ?? "",
-      city: currentUser.city ?? "",
-      locationLat: currentUser.locationLat ?? null,
-      locationLng: currentUser.locationLng ?? null,
-      bio: currentUser.bio ?? "",
-    });
+    form.reset(buildSettingsProfileFormValues(currentUser));
   }, [currentUser, form]);
 
   const notificationPreferencesQuery = useQuery({
-    queryKey: SETTINGS_NOTIFICATION_PREFERENCES_QUERY_KEY,
-    queryFn: SettingsQueries.getNotificationPreferences,
+    ...SettingsQueryFactory.notificationPreferences(),
     enabled: Boolean(currentUser),
-    staleTime: 60_000,
   });
 
   const sessionsQuery = useQuery({
-    queryKey: SETTINGS_SESSIONS_QUERY_KEY,
-    queryFn: SettingsQueries.getSessions,
+    ...SettingsQueryFactory.sessions(),
     enabled: Boolean(currentUser),
-    staleTime: 30_000,
   });
 
   const profileMutation = useMutation({
     meta: {
       telemetryName: trackedMutationNames.settingsUpdateProfile,
     },
-    mutationFn: SettingsQueries.updateProfile,
+    mutationFn: SettingsCommands.updateProfile,
     onSuccess: async (result) => {
       await invalidateCurrentUser();
       setSaveError(null);
@@ -169,7 +125,7 @@ export function useSettingsProfileForm() {
     meta: {
       telemetryName: trackedMutationNames.settingsUploadAvatar,
     },
-    mutationFn: SettingsQueries.uploadAvatar,
+    mutationFn: SettingsCommands.uploadAvatar,
     onSuccess: async (result) => {
       await invalidateCurrentUser();
       setAvatarError(null);
@@ -194,7 +150,7 @@ export function useSettingsProfileForm() {
   });
 
   const passwordResetMutation = useMutation({
-    mutationFn: (email: string) => AuthApi.sendResetPasswordLink(email),
+    mutationFn: SettingsCommands.sendResetPasswordLink,
     onSuccess: () => {
       setSecurityError(null);
       setSecurityMessage("Password reset link sent to your email.");
@@ -211,12 +167,9 @@ export function useSettingsProfileForm() {
     meta: {
       telemetryName: trackedMutationNames.settingsNotificationPreferences,
     },
-    mutationFn: SettingsQueries.updateNotificationPreferences,
-    onSuccess: async (result) => {
-      await queryClient.setQueryData(
-        SETTINGS_NOTIFICATION_PREFERENCES_QUERY_KEY,
-        result.data,
-      );
+    mutationFn: SettingsCommands.updateNotificationPreferences,
+    onSuccess: (result) => {
+      SettingsCache.setNotificationPreferences(result.data);
       setPreferencesError(null);
       setPreferencesMessage("Notification preferences updated.");
       trackMutationOutcome(
@@ -242,18 +195,16 @@ export function useSettingsProfileForm() {
     meta: {
       telemetryName: trackedMutationNames.settingsRevokeSession,
     },
-    mutationFn: SettingsQueries.revokeSession,
+    mutationFn: SettingsCommands.revokeSession,
   });
 
   const revokeOtherSessionsMutation = useMutation({
     meta: {
       telemetryName: trackedMutationNames.settingsRevokeOtherSessions,
     },
-    mutationFn: SettingsQueries.revokeOtherSessions,
+    mutationFn: SettingsCommands.revokeOtherSessions,
     onSuccess: async (result) => {
-      await queryClient.invalidateQueries({
-        queryKey: SETTINGS_SESSIONS_QUERY_KEY,
-      });
+      await SettingsCache.invalidateSessions();
       setSecurityError(null);
       setSecurityMessage("Other devices were signed out.");
       trackMutationOutcome(
@@ -279,7 +230,7 @@ export function useSettingsProfileForm() {
     meta: {
       telemetryName: trackedMutationNames.settingsDeleteAccount,
     },
-    mutationFn: SettingsQueries.deleteAccount,
+    mutationFn: SettingsCommands.deleteAccount,
     onSuccess: async (result) => {
       trackMutationOutcome(
         trackedMutationNames.settingsDeleteAccount,
@@ -288,8 +239,8 @@ export function useSettingsProfileForm() {
           requestId: result.requestId,
         },
       );
-      AuthQueries.clearAuthState();
-      await navigate(buildAuthRouteNavigation("/auth/login", null));
+      SettingsCommands.clearAuthState();
+      await navigate({ to: "/auth/login" });
     },
     onError: (error) => {
       setDeleteAccountError(
@@ -306,15 +257,7 @@ export function useSettingsProfileForm() {
     setSaveMessage(null);
     setSaveError(null);
 
-    await profileMutation.mutateAsync({
-      name: values.name.trim(),
-      bio: toNullableText(values.bio),
-      age: toNullableAge(values.age),
-      gender: toNullableGender(values.gender),
-      city: toNullableText(values.city),
-      locationLat: values.locationLat,
-      locationLng: values.locationLng,
-    });
+    await profileMutation.mutateAsync(buildSettingsProfilePayload(values));
   });
 
   const profileSummary = useMemo(() => {
@@ -322,28 +265,7 @@ export function useSettingsProfileForm() {
       return [];
     }
 
-    return [
-      {
-        label: "Email",
-        value: currentUser.email,
-      },
-      {
-        label: "Provider",
-        value: currentUser.authProvider === "GOOGLE" ? "Google" : "Email",
-      },
-      {
-        label: "Verification",
-        value: currentUser.emailVerified ? "Verified" : "Pending",
-      },
-      {
-        label: "Member Since",
-        value: new Date(currentUser.createdAt).toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        }),
-      },
-    ];
+    return buildProfileSummary(currentUser);
   }, [currentUser]);
 
   async function updateNotificationPreference(
@@ -411,25 +333,15 @@ export function useSettingsProfileForm() {
     setSecurityMessage(null);
     setSecurityError(null);
     setRevokingSessionId(session.id);
-    const previousSessions =
-      queryClient.getQueryData<AuthSession[]>(SETTINGS_SESSIONS_QUERY_KEY) ??
-      [];
-    queryClient.setQueryData<AuthSession[]>(
-      SETTINGS_SESSIONS_QUERY_KEY,
-      removeSessionFromList(previousSessions, session.id),
-    );
+    const previousSessions = SettingsCache.getSessionsSnapshot() ?? [];
+    SettingsCache.removeSession(session.id);
 
     try {
       const result = await revokeSessionMutation.mutateAsync(session.id);
 
       if (session.isCurrent) {
-        AuthQueries.clearAuthState();
-        await navigate(
-          buildAuthRouteNavigation(
-            "/auth/login",
-            buildRouteLocationHref(currentLocation),
-          ),
-        );
+        SettingsCommands.clearAuthState();
+        await navigate(buildSettingsLoginNavigation(currentLocation));
         return;
       }
 
@@ -442,10 +354,7 @@ export function useSettingsProfileForm() {
         },
       );
     } catch (error) {
-      queryClient.setQueryData<AuthSession[]>(
-        SETTINGS_SESSIONS_QUERY_KEY,
-        previousSessions,
-      );
+      SettingsCache.restoreSessions(previousSessions);
       setSecurityMessage(null);
       setSecurityError(
         getApiErrorMessage(error, "We couldn't revoke that session right now."),
@@ -496,21 +405,13 @@ export function useSettingsProfileForm() {
     revokeOtherSessions: async () => {
       setSecurityMessage(null);
       setSecurityError(null);
-      const previousSessions =
-        queryClient.getQueryData<AuthSession[]>(SETTINGS_SESSIONS_QUERY_KEY) ??
-        [];
-      queryClient.setQueryData<AuthSession[]>(
-        SETTINGS_SESSIONS_QUERY_KEY,
-        previousSessions.filter((session) => session.isCurrent),
-      );
+      const previousSessions = SettingsCache.getSessionsSnapshot() ?? [];
+      SettingsCache.keepOnlyCurrentSession();
 
       try {
         await revokeOtherSessionsMutation.mutateAsync();
       } catch (error) {
-        queryClient.setQueryData<AuthSession[]>(
-          SETTINGS_SESSIONS_QUERY_KEY,
-          previousSessions,
-        );
+        SettingsCache.restoreSessions(previousSessions);
         throw error;
       }
     },

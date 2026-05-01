@@ -4,8 +4,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { Button } from "@/shared/components/ui/button";
-
-import { VoronoiCatalyst } from "./voronoi-catalyst";
+import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
 
 interface AuthSupportShellProps {
   title: string;

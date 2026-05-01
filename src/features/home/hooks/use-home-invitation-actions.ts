@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
-import { invalidateNotificationSurfaces } from "@/shared/api/query-invalidation";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
-import { HomeQueries } from "../api/home.queries";
+
+import { HomeCommands } from "@/features/home/api/home-commands";
 
 export function useHomeInvitationActions() {
   const [actionError, setActionError] = useState<string | null>(null);
@@ -14,10 +14,7 @@ export function useHomeInvitationActions() {
     variables: acceptingInviteId,
   } = useMutation({
     mutationKey: ["home", "invitation", "accept"],
-    mutationFn: HomeQueries.acceptInvitation,
-    onSettled: async () => {
-      await invalidateNotificationSurfaces();
-    },
+    mutationFn: HomeCommands.acceptInvitation,
   });
 
   const {
@@ -26,10 +23,7 @@ export function useHomeInvitationActions() {
     variables: decliningInviteId,
   } = useMutation({
     mutationKey: ["home", "invitation", "decline"],
-    mutationFn: HomeQueries.declineInvitation,
-    onSettled: async () => {
-      await invalidateNotificationSurfaces();
-    },
+    mutationFn: HomeCommands.declineInvitation,
   });
 
   const acceptInvitation = useCallback(

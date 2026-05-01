@@ -4,16 +4,22 @@ import { buildForgeLaunchNavigation } from "@/shared/lib/forge-route";
 import { Button } from "@/shared/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { GroupPlanCard } from "./group-plan-card";
-import { useExploreGroups } from "../hooks/use-explore-groups";
-import { useExploreRouteState } from "../hooks/use-explore-route-state";
+import { ExploreGroupPlanCard } from "@/features/explore/components/explore-group-plan-card";
+import { useExploreFeed } from "@/features/explore/hooks/use-explore-feed";
 import { Loader2, SearchX } from "lucide-react";
 import { PageErrorState } from "@/shared/components/page-error-state";
 
 export function ExploreFeed() {
-  const { data: groups, isLoading, isError, refetch } = useExploreGroups();
-  const { isAnythingFiltered, resetFilters, searchQuery } =
-    useExploreRouteState();
+  const {
+    groups,
+    hasGroups,
+    isAnythingFiltered,
+    isError,
+    isLoading,
+    refetch,
+    resetFilters,
+    searchQuery,
+  } = useExploreFeed();
 
   if (isLoading) {
     return (
@@ -39,7 +45,7 @@ export function ExploreFeed() {
     );
   }
 
-  if (!groups || groups.length === 0) {
+  if (!hasGroups) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -89,7 +95,7 @@ export function ExploreFeed() {
             }}
             layout
           >
-            <GroupPlanCard group={group} />
+            <ExploreGroupPlanCard group={group} />
           </motion.div>
         ))}
       </AnimatePresence>

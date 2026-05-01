@@ -1,9 +1,15 @@
-import { authApi, apiClient, getResponseRequestId } from "@/shared/api/api";
-import type { AuthTokens } from "@/shared/api/auth-session";
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
+import {
+  apiClient,
+  getResponseRequestId,
+  parseJsonWithRequestId,
+} from "@/shared/api/api";
 
-import type { LoginValues, RegisterValues } from "../schemas/auth-schemas";
-import { AuthQueries } from "./auth.queries";
+import {
+  authResultSchema,
+  authTokensSchema,
+  type LoginValues,
+  type RegisterValues,
+} from "@/features/auth/schemas/auth-schemas";
 import type { GoogleAuthIntent } from "./auth.types";
 
 interface RegisterDto {
@@ -18,10 +24,6 @@ interface RegisterDto {
 interface VerifyEmailOtpDto {
   email: string;
   code: string;
-}
-
-interface AuthResultDto extends AuthTokens {
-  isNewUser: boolean;
 }
 
 interface AuthMutationResult<T> {
@@ -51,10 +53,6 @@ function normalizeGender(
 }
 
 export class AuthApi {
-  static getAuthErrorMessage(error: unknown, fallbackMessage: string) {
-    return getApiErrorMessage(error, fallbackMessage);
-  }
-
   static async loginWithEmail(values: Pick<LoginValues, "email" | "password">) {
     const response = await apiClient.post("auth/login", {
       json: values,
@@ -63,15 +61,10 @@ export class AuthApi {
         retryOnUnauthorized: false,
       },
     });
-    const tokens = await response.json<AuthTokens>();
 
-    authApi.setTokens(tokens);
-    AuthQueries.clearCurrentUserCache();
-
-    return {
-      data: tokens,
-      requestId: getResponseRequestId(response),
-    } satisfies AuthMutationResult<AuthTokens>;
+    return parseJsonWithRequestId(response, (payload) =>
+      authTokensSchema.parse(payload),
+    );
   }
 
   static async registerWithEmail(values: RegisterValues) {
@@ -111,15 +104,10 @@ export class AuthApi {
         retryOnUnauthorized: false,
       },
     });
-    const tokens = await response.json<AuthTokens>();
 
-    authApi.setTokens(tokens);
-    AuthQueries.clearCurrentUserCache();
-
-    return {
-      data: tokens,
-      requestId: getResponseRequestId(response),
-    } satisfies AuthMutationResult<AuthTokens>;
+    return parseJsonWithRequestId(response, (payload) =>
+      authTokensSchema.parse(payload),
+    );
   }
 
   static async resendEmailOtp(email: string) {
@@ -144,15 +132,10 @@ export class AuthApi {
         retryOnUnauthorized: false,
       },
     });
-    const tokens = await response.json<AuthTokens>();
 
-    authApi.setTokens(tokens);
-    AuthQueries.clearCurrentUserCache();
-
-    return {
-      data: tokens,
-      requestId: getResponseRequestId(response),
-    } satisfies AuthMutationResult<AuthTokens>;
+    return parseJsonWithRequestId(response, (payload) =>
+      authTokensSchema.parse(payload),
+    );
   }
 
   static async sendResetPasswordLink(email: string) {
@@ -193,31 +176,9 @@ export class AuthApi {
         retryOnUnauthorized: false,
       },
     });
-    const result = await response.json<AuthResultDto>();
 
-    authApi.setTokens({
-      accessToken: result.accessToken,
-      refreshToken: result.refreshToken,
-    });
-    AuthQueries.clearCurrentUserCache();
-
-    return {
-      data: result,
-      requestId: getResponseRequestId(response),
-    } satisfies AuthMutationResult<AuthResultDto>;
-  }
-
-  static async logoutUser() {
-    try {
-      await apiClient.post("auth/logout", {
-        context: {
-          auth: "refresh",
-          retryOnUnauthorized: false,
-        },
-      });
-    } finally {
-      AuthQueries.clearCurrentUserCache();
-      authApi.clearSession();
-    }
+    return parseJsonWithRequestId(response, (payload) =>
+      authResultSchema.parse(payload),
+    );
   }
 }

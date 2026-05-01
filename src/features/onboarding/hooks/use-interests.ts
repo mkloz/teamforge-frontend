@@ -7,26 +7,30 @@ import {
 } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { AuthQueries } from "@/features/auth/api/auth.queries";
-import { MAX_INTERESTS, MIN_INTERESTS } from "../data/interests-data";
-import type { InterestsScreen } from "../data/interests-data";
-import { OnboardingQueries } from "../api/onboarding.queries";
-import { buildLeafInterestMap } from "../lib/interest-catalog";
+import { useCurrentUserQuery } from "@/shared/api/current-user-query";
+import { OnboardingCache } from "@/features/onboarding/api/onboarding-cache";
+import { OnboardingCommands } from "@/features/onboarding/api/onboarding-commands";
+import { onboardingInterestTreeQueryOptions } from "@/features/onboarding/api/onboarding-query-options";
+import {
+  MAX_INTERESTS,
+  MIN_INTERESTS,
+} from "@/features/onboarding/data/interests-data";
+import type { InterestsScreen } from "@/features/onboarding/data/interests-data";
+import { buildLeafInterestMap } from "@/features/onboarding/lib/interest-catalog";
 import {
   createInitialCollapsedCategories,
   expandCategoryOnly as buildExpandedCategoryState,
   toggleCollapsedCategory,
   toggleExpandedSubcategory,
-} from "../lib/interests-browser-state";
-import { useInterestsStore } from "../store/interests-store";
+} from "@/features/onboarding/lib/interests-browser-state";
+import { useInterestsStore } from "@/features/onboarding/store/interests-store";
 import {
   getCorrelatedSuggestions,
   getMbtiSuggestions,
   getSearchResults,
   getShouldShowBalanceNudge,
-} from "../utils/interest-logic";
+} from "@/features/onboarding/utils/interest-logic";
 import type { PersonalityType } from "@/shared/schemas/enums";
-import type { User } from "@/shared/schemas";
 
 interface UseInterestsOptions {
   onComplete: () => void;
@@ -42,31 +46,20 @@ export function useInterests({
   const store = useInterestsStore();
   const queryClient = useQueryClient();
   const [isPending, startTransition] = useTransition();
-  const { data: currentUser } = AuthQueries.useCurrentUser();
+  const { data: currentUser } = useCurrentUserQuery();
 
   const {
     data: categories = [],
     error: catalogError,
     isLoading: isCatalogLoading,
     refetch: retryCatalog,
-  } = useQuery(OnboardingQueries.interestTree());
+  } = useQuery(onboardingInterestTreeQueryOptions());
 
   const { mutateAsync: saveInterests, isPending: isSaving } = useMutation({
-    mutationFn: OnboardingQueries.setInterests,
+    mutationFn: OnboardingCommands.setInterests,
     onSuccess: async (result) => {
-      queryClient.setQueryData<User | undefined>(
-        AuthQueries.currentUserQueryKey,
-        (user) =>
-          user
-            ? {
-                ...user,
-                interests: result.interests,
-              }
-            : user,
-      );
-      await queryClient.invalidateQueries({
-        queryKey: AuthQueries.currentUserQueryKey,
-      });
+      OnboardingCache.applySavedInterests(queryClient, result.interests);
+      await OnboardingCache.invalidateCurrentUser(queryClient);
     },
   });
 

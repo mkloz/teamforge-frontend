@@ -9,8 +9,8 @@ import {
 } from "@/shared/components/ui/dropdown-menu";
 import { cn } from "@/shared/lib/utils";
 import { ArrowDownWideNarrow } from "lucide-react";
-import { SORTS } from "../../constants/explore.constants";
-import { useExploreRouteState } from "../../hooks/use-explore-route-state";
+import { SORTS } from "@/features/explore/constants/explore.constants";
+import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 
 export function SortDropdown() {
   const { sortBy, setSortBy } = useExploreRouteState();

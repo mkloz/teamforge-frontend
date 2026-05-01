@@ -1,9 +1,11 @@
-import { AuthQueries } from "@/features/auth/api/auth.queries";
+import { useQuery } from "@tanstack/react-query";
 
-import { HomeQueries } from "../api/home.queries";
+import { currentUserQueryOptions } from "@/shared/api/current-user-query";
+
+import { getHomeViewer } from "@/features/home/lib/home-viewer";
 
 export function useHomeViewer() {
-  const { data: currentUser } = AuthQueries.useCurrentUser();
+  const { data: currentUser } = useQuery(currentUserQueryOptions());
 
-  return HomeQueries.getViewer(currentUser);
+  return getHomeViewer(currentUser);
 }

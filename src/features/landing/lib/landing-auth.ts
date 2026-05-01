@@ -1,7 +1,7 @@
 import {
   buildAuthRouteNavigation,
   buildPostAuthRedirectNavigation,
-} from "@/features/auth/lib/auth-return";
+} from "@/shared/lib/auth-route";
 import { buildHomeNavigation } from "@/shared/lib/app-route";
 import type { User } from "@/shared/schemas";
 

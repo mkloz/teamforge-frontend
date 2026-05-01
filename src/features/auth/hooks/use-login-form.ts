@@ -3,8 +3,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-import { AuthApi } from "../api/auth.api";
-import { loginSchema, type LoginValues } from "../schemas/auth-schemas";
+import { AuthCommands } from "@/features/auth/api/auth-commands";
+import {
+  loginSchema,
+  type LoginValues,
+} from "@/features/auth/schemas/auth-schemas";
 
 interface UseLoginFormOptions {
   onSuccess?: () => void | Promise<void>;
@@ -43,7 +46,7 @@ export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
       setRootError(null);
       setLoading(true);
       try {
-        const result = await AuthApi.loginWithEmail(values);
+        const result = await AuthCommands.loginWithEmail(values);
         trackMutationOutcome(trackedMutationNames.authLoginEmail, "success", {
           requestId: result.requestId,
         });
@@ -56,7 +59,7 @@ export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
           emailDomain: values.email.split("@")[1] ?? "unknown",
         });
         setRootError(
-          AuthApi.getAuthErrorMessage(
+          AuthCommands.getAuthErrorMessage(
             error,
             "Invalid email or password. Please try again.",
           ),

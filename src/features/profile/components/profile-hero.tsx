@@ -1,9 +1,9 @@
 import type { User } from "@/shared/schemas";
 import { buildSettingsNavigation } from "@/shared/lib/settings-route";
 import { Link } from "@tanstack/react-router";
-import { ProfileActions } from "./profile-actions";
-import { ProfileAvatar } from "./profile-avatar";
-import { ProfileIdentity } from "./profile-identity";
+import { ProfileActions } from "@/features/profile/components/profile-actions";
+import { ProfileAvatar } from "@/features/profile/components/profile-avatar";
+import { ProfileIdentity } from "@/features/profile/components/profile-identity";
 import { Button } from "@/shared/components/ui/button";
 
 interface ProfileHeroProps {

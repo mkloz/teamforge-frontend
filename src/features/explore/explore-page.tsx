@@ -1,8 +1,8 @@
-import { ExploreFeed } from "./components/explore-feed";
-import { FriendRequestReview } from "./components/friend-request-review";
-import { ExploreLeftSection } from "./components/explore-left-section";
-import { ExploreRightFilters } from "./components/explore-right-filters";
-import { ExploreSearchHeader } from "./components/explore-search-header";
+import { ExploreFeed } from "@/features/explore/components/explore-feed";
+import { FriendRequestReview } from "@/features/explore/components/friend-request-review";
+import { ExploreLeftSection } from "@/features/explore/components/explore-left-section";
+import { ExploreRightFilters } from "@/features/explore/components/explore-right-filters";
+import { ExploreSearchHeader } from "@/features/explore/components/explore-search-header";
 
 export function ExplorePage() {
   return (

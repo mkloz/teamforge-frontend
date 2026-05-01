@@ -17,18 +17,18 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
-
-import { AuthApi } from "./api/auth.api";
-import { AuthSupportShell } from "./components/auth-support-shell";
-import { FormLevelError } from "./components/login-form/form-level-error";
 import {
   buildAuthRouteNavigation,
   useAuthReturnState,
-} from "./lib/auth-return";
+} from "@/shared/lib/auth-route";
+
+import { AuthCommands } from "@/features/auth/api/auth-commands";
+import { AuthSupportShell } from "@/features/auth/components/auth-support-shell";
+import { FormLevelError } from "@/features/auth/components/login-form/form-level-error";
 import {
   resetPasswordSchema,
   type ResetPasswordValues,
-} from "./schemas/auth-schemas";
+} from "@/features/auth/schemas/auth-schemas";
 
 export function ResetPasswordPage() {
   const { token } = useParams({ from: "/auth/reset-password/$token" });
@@ -53,7 +53,7 @@ export function ResetPasswordPage() {
     setLoading(true);
 
     try {
-      const result = await AuthApi.resetPassword(token, values.password);
+      const result = await AuthCommands.resetPassword(token, values.password);
       trackMutationOutcome(trackedMutationNames.authResetPassword, "success", {
         requestId: result.requestId,
       });
@@ -62,7 +62,7 @@ export function ResetPasswordPage() {
       captureException(trackedMutationNames.authResetPassword, error);
       trackMutationOutcome(trackedMutationNames.authResetPassword, "error");
       setRootError(
-        AuthApi.getAuthErrorMessage(
+        AuthCommands.getAuthErrorMessage(
           error,
           "We couldn't reset your password. Your link may have expired.",
         ),

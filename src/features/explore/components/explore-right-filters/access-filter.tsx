@@ -1,7 +1,6 @@
 import { cn } from "@/shared/lib/utils";
-import { Handshake, Unlock, Users } from "lucide-react";
-import { useExploreRouteState } from "../../hooks/use-explore-route-state";
-import type { ExploreAccessMode } from "../../schemas/explore-filters.schema";
+import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
+import { ACCESS_FILTER_OPTIONS } from "@/features/explore/constants/explore.constants";
 
 export function AccessFilter() {
   const { access, setAccess } = useExploreRouteState();
@@ -12,19 +11,14 @@ export function AccessFilter() {
         Access Mode
       </h4>
       <div className="flex p-1 bg-muted/20 rounded-xl border border-border/40 relative gap-1">
-        {(
-          [
-            { id: "ALL", label: "Any", icon: Users },
-            { id: "OPEN", label: "Open", icon: Unlock },
-            { id: "BY_REQUEST", label: "Req", icon: Handshake },
-          ] as const
-        ).map((opt) => {
+        {ACCESS_FILTER_OPTIONS.map((opt) => {
           const active = access === opt.id;
           const Icon = opt.icon;
           return (
             <button
               key={opt.id}
-              onClick={() => setAccess(opt.id as ExploreAccessMode)}
+              type="button"
+              onClick={() => setAccess(opt.id)}
               className={cn(
                 "relative z-10 flex-1 flex flex-row items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
                 active

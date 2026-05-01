@@ -1,7 +1,9 @@
-import { IdentityCard } from "./identity-card";
-import { ForgeCTA } from "./forge-cta";
-import { useExploreIdentity } from "../hooks/use-explore-identity";
-import { AuthQueries } from "@/features/auth/api/auth.queries";
+import { IdentityCard } from "@/features/explore/components/identity-card";
+import { ForgeCTA } from "@/features/explore/components/forge-cta";
+import { useExploreIdentity } from "@/features/explore/hooks/use-explore-identity";
+import { useQuery } from "@tanstack/react-query";
+import { currentUserQueryOptions } from "@/shared/api/current-user-query";
+import type { User } from "@/shared/schemas";
 import {
   buildInterestsEditNavigation,
   buildPersonalityEditNavigation,
@@ -10,9 +12,7 @@ import { buildSettingsNavigation } from "@/shared/lib/settings-route";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/shared/components/ui/button";
 
-function hasCompleteOceanProfile(
-  user: NonNullable<ReturnType<typeof AuthQueries.useCurrentUser>["data"]>,
-) {
+function hasCompleteOceanProfile(user: User) {
   return (
     user.oceanO !== null &&
     user.oceanC !== null &&
@@ -24,7 +24,7 @@ function hasCompleteOceanProfile(
 
 export function ExploreLeftSection() {
   const identity = useExploreIdentity();
-  const { data: currentUser, isLoading } = AuthQueries.useCurrentUser();
+  const { data: currentUser, isLoading } = useQuery(currentUserQueryOptions());
 
   return (
     <aside className="flex flex-col gap-5">

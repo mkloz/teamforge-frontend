@@ -4,7 +4,7 @@ import { Button } from "@/shared/components/ui/button";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 import { cn } from "@/shared/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
-import { resolveOnboardingExitNavigation } from "@/features/auth/lib/auth-navigation";
+import { resolveOnboardingExitNavigation } from "@/shared/lib/onboarding-exit-route";
 import {
   AnimatePresence,
   motion,
@@ -12,7 +12,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { VoronoiCatalyst } from "../auth/components/voronoi-catalyst";
+import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
 import { CompletionBlueprint } from "./components/completion-blueprint";
 import {
   InterestsBrowse,

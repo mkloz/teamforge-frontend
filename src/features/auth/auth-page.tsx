@@ -4,19 +4,19 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { useRef, useState } from "react";
 
+import { ensureCurrentUser } from "@/shared/api/current-user-query";
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { Button } from "@/shared/components/ui/button";
-import { LoginForm } from "./components/login-form";
-import { RegisterForm } from "./components/register-form";
-import { VoronoiCatalyst } from "./components/voronoi-catalyst";
-import { AUTH_TYPING_EVENT } from "./constants/voronoi.constants";
-import { AuthQueries } from "./api/auth.queries";
 import {
   buildAuthRouteNavigation,
   buildPostAuthRedirectNavigation,
   useAuthReturnState,
-} from "./lib/auth-return";
+} from "@/shared/lib/auth-route";
+import { LoginForm } from "@/features/auth/components/login-form";
+import { RegisterForm } from "@/features/auth/components/register-form";
+import { AUTH_TYPING_EVENT } from "@/shared/constants/voronoi.constants";
+import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
 
 type AuthView = "login" | "register";
 
@@ -41,7 +41,7 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
 
   const navigateAfterAuth = async () => {
     setProgress(1);
-    const user = await AuthQueries.ensureCurrentUser();
+    const user = await ensureCurrentUser();
     await navigate(buildPostAuthRedirectNavigation(user, returnTo));
   };
 

@@ -1,15 +1,20 @@
-import { AuthQueries } from "@/features/auth/api/auth.queries";
+import {
+  useAuthSessionState,
+  useCurrentUserQuery,
+} from "@/shared/api/current-user-query";
+import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
+import { useMouseGlow } from "@/features/landing/hooks/use-mouse-glow";
+import { getLandingPrimaryAction } from "@/features/landing/lib/landing-auth";
+import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
 import { Button } from "@/shared/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { getLandingPrimaryAction } from "../../lib/landing-auth";
-import { useMouseGlow } from "../../hooks/use-mouse-glow";
 
 export function CtaSection() {
   const { sectionRef, glowRef } = useMouseGlow();
-  const { isAuthenticated } = AuthQueries.useAuthSessionState();
-  const { data: currentUser } = AuthQueries.useCurrentUser();
+  const { isAuthenticated } = useAuthSessionState();
+  const { data: currentUser } = useCurrentUserQuery();
   const primaryAction = getLandingPrimaryAction(
     isAuthenticated,
     currentUser,
@@ -33,12 +38,6 @@ export function CtaSection() {
         }}
       />
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.7 }}
-        ></motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -84,9 +83,7 @@ export function CtaSection() {
             size="hero"
             className="w-full sm:w-auto hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none"
             onClick={() =>
-              document
-                .querySelector("#how-it-works")
-                ?.scrollIntoView({ behavior: "smooth", block: "start" })
+              scrollToLandingSection(LANDING_SECTION_IDS.howItWorks)
             }
           >
             See how it works

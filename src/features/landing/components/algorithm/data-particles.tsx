@@ -1,5 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
-import type { DisplayNode, Phase } from "./algorithm-types";
+import type {
+  DisplayNode,
+  Phase,
+} from "@/features/landing/components/algorithm/algorithm-types";
 
 const PARTICLE_RANDOMS = (() => {
   const map = new Map<number, { duration: number; delay: number }>();

@@ -1,0 +1,91 @@
+import { Target } from "lucide-react";
+
+import { Image } from "@/shared/components/common/image";
+import { cn } from "@/shared/lib/utils";
+import type { ExploreGroup } from "@/shared/schemas";
+
+interface CardImageProps {
+  group: ExploreGroup;
+  matchScore: number;
+  variant?: "default" | "compact";
+}
+
+export function CardImage({
+  group,
+  matchScore,
+  variant = "default",
+}: CardImageProps) {
+  const isHighMatch = matchScore >= 90;
+  const isCompact = variant === "compact";
+  const plan = group.plan;
+  const title = plan?.title || group.activity.title || "Unnamed Activity";
+  const category = plan?.category || "OTHER";
+  const categoryLabel =
+    category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden shrink-0 transition-colors duration-150 border-border group-hover:border-ink dark:group-hover:border-white",
+        isCompact
+          ? "w-full aspect-video border-b-2"
+          : "h-56 md:h-auto md:w-2/5 border-b-2 md:border-b-0 md:border-r-2",
+      )}
+    >
+      <Image
+        src={group.avatar ?? undefined}
+        alt={title}
+        wrapperClassName="absolute inset-0"
+        className="transition-transform duration-700 ease-out group-hover:scale-105"
+        noImageComponent={
+          <div className="flex h-full w-full flex-col justify-between bg-linear-to-br from-forge-teal/18 via-canvas to-spark-amber/18 p-5">
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-muted">
+              Artwork pending
+            </span>
+            <div className="max-w-52">
+              <p className="text-lg font-black leading-tight text-ink line-clamp-3">
+                {title}
+              </p>
+            </div>
+          </div>
+        }
+        fallbackComponent={
+          <div className="flex h-full w-full flex-col justify-between bg-linear-to-br from-forge-teal/18 via-canvas to-spark-amber/18 p-5">
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-muted">
+              Artwork unavailable
+            </span>
+            <div className="max-w-52">
+              <p className="text-lg font-black leading-tight text-ink line-clamp-3">
+                {title}
+              </p>
+            </div>
+          </div>
+        }
+      />
+
+      <div className="absolute inset-0 bg-linear-to-b from-black/20 via-transparent to-black/70 pointer-events-none" />
+
+      <div className="absolute top-4 right-4 z-20">
+        <div
+          className={`flex items-center gap-1 px-2.5 py-1 rounded-full font-extrabold text-[11px] tracking-tight shadow-md backdrop-blur-md transition-all ${
+            isHighMatch
+              ? "bg-accent/90 border border-accent/40 text-accent-foreground group-hover:bg-accent"
+              : "bg-black/60 border border-white/20 text-white"
+          }`}
+        >
+          <Target
+            className={`w-3.5 h-3.5 ${isHighMatch ? "animate-pulse-glow stroke-[2.5]" : "text-white/80"}`}
+            aria-hidden="true"
+          />
+          {matchScore}%
+        </div>
+      </div>
+
+      <div className="absolute bottom-4 left-5">
+        <span className="px-3 py-1.5 bg-black/40 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-sm">
+          {categoryLabel}
+        </span>
+      </div>
+    </div>
+  );
+}

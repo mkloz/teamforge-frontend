@@ -1,56 +1,30 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { invalidateFriendshipSurfaces } from "@/shared/api/query-invalidation";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-import type { FriendshipApi } from "@/shared/schemas";
 
-import { SettingsQueries } from "../api/settings.queries";
-
-const SETTINGS_BLOCKED_USERS_QUERY_KEY = ["settings", "blocked-users"] as const;
-
-function removeBlockedUser(
-  blockedUsers: FriendshipApi[] | undefined,
-  userId: string,
-) {
-  return (
-    blockedUsers?.filter(
-      (friendship) =>
-        friendship.counterpart.id !== userId &&
-        friendship.receiverId !== userId,
-    ) ?? []
-  );
-}
+import { SettingsCache } from "@/features/settings/api/settings-cache";
+import { SettingsCommands } from "@/features/settings/api/settings-commands";
+import { SettingsQueryFactory } from "@/features/settings/api/settings-query-factory";
 
 export function useSettingsBlockedUsers(enabled: boolean) {
-  const queryClient = useQueryClient();
   const blockedUsersQuery = useQuery({
-    queryKey: SETTINGS_BLOCKED_USERS_QUERY_KEY,
-    queryFn: SettingsQueries.getBlockedUsers,
+    ...SettingsQueryFactory.blockedUsers(),
     enabled,
-    staleTime: 30_000,
   });
 
   const unblockMutation = useMutation({
     meta: {
       telemetryName: trackedMutationNames.settingsUnblockUser,
     },
-    mutationFn: SettingsQueries.unblockUser,
+    mutationFn: SettingsCommands.unblockUser,
     onMutate: async (userId) => {
-      await queryClient.cancelQueries({
-        queryKey: SETTINGS_BLOCKED_USERS_QUERY_KEY,
-      });
+      await SettingsCache.cancelBlockedUsers();
 
-      const previousBlockedUsers = queryClient.getQueryData<FriendshipApi[]>(
-        SETTINGS_BLOCKED_USERS_QUERY_KEY,
-      );
-
-      queryClient.setQueryData<FriendshipApi[]>(
-        SETTINGS_BLOCKED_USERS_QUERY_KEY,
-        removeBlockedUser(previousBlockedUsers, userId),
-      );
+      const previousBlockedUsers = SettingsCache.getBlockedUsersSnapshot();
+      SettingsCache.removeBlockedUser(userId);
 
       return { previousBlockedUsers };
     },
@@ -64,19 +38,11 @@ export function useSettingsBlockedUsers(enabled: boolean) {
       );
       toast.success("User unblocked.");
 
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: SETTINGS_BLOCKED_USERS_QUERY_KEY,
-        }),
-        invalidateFriendshipSurfaces(),
-      ]);
+      await SettingsCache.invalidateBlockedUserSurfaces();
     },
     onError: (error, _userId, context) => {
       trackMutationOutcome(trackedMutationNames.settingsUnblockUser, "error");
-      queryClient.setQueryData(
-        SETTINGS_BLOCKED_USERS_QUERY_KEY,
-        context?.previousBlockedUsers,
-      );
+      SettingsCache.restoreBlockedUsers(context?.previousBlockedUsers);
       toast.error(
         getApiErrorMessage(error, "We couldn't unblock that user right now."),
       );

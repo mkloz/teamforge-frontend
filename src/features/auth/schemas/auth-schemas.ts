@@ -1,5 +1,18 @@
 import { z } from "zod";
 
+export const authTokensSchema = z.object({
+  accessToken: z.string().min(1),
+  refreshToken: z.string().min(1),
+});
+
+export type AuthTokensPayload = z.infer<typeof authTokensSchema>;
+
+export const authResultSchema = authTokensSchema.extend({
+  isNewUser: z.boolean(),
+});
+
+export type AuthResult = z.infer<typeof authResultSchema>;
+
 export const loginSchema = z.object({
   email: z
     .string()

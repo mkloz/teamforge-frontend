@@ -24,9 +24,9 @@ paths:
       tags:
         - App
       security: []
-  /api/v1/file-upload:
+  /api/v1/file-upload/image:
     post:
-      operationId: FileUploadController_uploadShare
+      operationId: FileUploadController_uploadImage
       parameters: []
       requestBody:
         required: true
@@ -47,10 +47,9 @@ paths:
                 $ref: "#/components/schemas/UrlResponse"
         "429":
           description: Too many requests
-      summary: Upload a public file and return its accessible URL
+      summary: Upload an image and return its accessible URL
       tags: &a1
         - FileUpload
-      security: []
   /api/v1/file-upload/chat-attachment:
     post:
       operationId: FileUploadController_uploadChatAttachment
@@ -373,6 +372,21 @@ paths:
       summary: Get the authenticated user profile
       tags: &a10
         - Users
+    delete:
+      operationId: UserController_deleteMe
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+        "429":
+          description: Too many requests
+      security: *a9
+      summary: Delete the authenticated user account
+      tags: *a10
     patch:
       operationId: UserController_update
       parameters: []
@@ -2558,6 +2572,14 @@ components:
         city:
           type: string
           example: London
+        locationLat:
+          type: number
+          example: 51.5074
+          nullable: true
+        locationLng:
+          type: number
+          example: -0.1278
+          nullable: true
         personalityType:
           type: string
           example: ENTJ
@@ -2602,6 +2624,14 @@ components:
         - searchStatus
         - trustScore
         - profileComplete
+    Success:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+      required:
+        - success
     PublicUserEntity:
       type: object
       properties:
@@ -2686,6 +2716,14 @@ components:
         city:
           type: string
           example: London
+        locationLat:
+          type: number
+          example: 51.5074
+          nullable: true
+        locationLng:
+          type: number
+          example: -0.1278
+          nullable: true
         personalityType:
           type: string
           example: ENTJ
@@ -2749,6 +2787,14 @@ components:
         city:
           type: string
           example: London
+        locationLat:
+          type: number
+          example: 51.5074
+          nullable: true
+        locationLng:
+          type: number
+          example: -0.1278
+          nullable: true
         gender:
           type: string
           enum:
@@ -2781,14 +2827,6 @@ components:
           example: example@example.com
       required:
         - email
-    Success:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: true
-      required:
-        - success
     AuthSessionEntity:
       type: object
       properties:
@@ -2872,6 +2910,23 @@ components:
         emailAccount:
           type: boolean
           example: true
+        autoMatchingEnabled:
+          type: boolean
+          example: true
+        minCompatibilityScore:
+          type: number
+          example: 80
+          minimum: 0
+          maximum: 100
+        showAgeOnProfile:
+          type: boolean
+          example: true
+        showGenderOnProfile:
+          type: boolean
+          example: true
+        showCityOnProfile:
+          type: boolean
+          example: true
       required:
         - notifyFriendRequests
         - notifyGroupInvites
@@ -2883,6 +2938,11 @@ components:
         - emailGroupActivity
         - emailMessages
         - emailAccount
+        - autoMatchingEnabled
+        - minCompatibilityScore
+        - showAgeOnProfile
+        - showGenderOnProfile
+        - showCityOnProfile
     UpdateUserSettingsDto:
       type: object
       properties:
@@ -2916,6 +2976,23 @@ components:
         emailAccount:
           type: boolean
           example: true
+        autoMatchingEnabled:
+          type: boolean
+          example: true
+        minCompatibilityScore:
+          type: number
+          example: 80
+          minimum: 0
+          maximum: 100
+        showAgeOnProfile:
+          type: boolean
+          example: true
+        showGenderOnProfile:
+          type: boolean
+          example: true
+        showCityOnProfile:
+          type: boolean
+          example: true
       required:
         - notifyFriendRequests
         - notifyGroupInvites
@@ -2927,6 +3004,11 @@ components:
         - emailGroupActivity
         - emailMessages
         - emailAccount
+        - autoMatchingEnabled
+        - minCompatibilityScore
+        - showAgeOnProfile
+        - showGenderOnProfile
+        - showCityOnProfile
     AuthGoogleLoginDto:
       type: object
       properties:
@@ -3146,6 +3228,9 @@ components:
         description:
           type: string
           example: Casual run at the local courts
+        coverImage:
+          type: string
+          example: teal-grid
         category:
           type: string
           enum:
@@ -3203,6 +3288,15 @@ components:
           example: 4
           minimum: 2
           maximum: 8
+        groupName:
+          type: string
+          example: Friday Basketball Crew
+        groupDescription:
+          type: string
+          example: Weekly pickup group for after-work games
+        groupAvatar:
+          type: string
+          example: https://example.com/group-avatar.png
         plan:
           $ref: "#/components/schemas/ForgePlanDto"
       required:
@@ -3282,6 +3376,10 @@ components:
         title:
           type: string
           example: Friday evening basketball
+        coverImage:
+          type: string
+          example: teal-grid
+          nullable: true
         category:
           type: string
           enum:
@@ -3320,6 +3418,7 @@ components:
       required:
         - id
         - title
+        - coverImage
         - category
         - status
         - locationMode
@@ -4597,6 +4696,9 @@ components:
         description:
           type: string
           example: Casual run at the local courts
+        coverImage:
+          type: string
+          example: teal-grid
         category:
           type: string
           enum:
@@ -4839,7 +4941,6 @@ components:
             - ACTIVITY
             - MESSAGE
             - INVITE
-            - PROJECT
           nullable: true
         entityId:
           type: string

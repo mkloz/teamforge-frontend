@@ -5,9 +5,9 @@ import { Check } from "lucide-react";
 import {
   generateDetailedDescription,
   type PersonalityProfile,
-} from "../lib/ocean-traits";
-import type { OceanScores } from "../lib/profile-contract";
-import { SectionTitle } from "./section-title";
+} from "@/features/profile/lib/ocean-traits";
+import type { OceanScores } from "@/features/profile/lib/profile-contract";
+import { SectionTitle } from "@/features/profile/components/section-title";
 import { Button } from "@/shared/components/ui/button";
 
 interface PersonalitySectionProps {

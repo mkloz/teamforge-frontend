@@ -1,29 +1,37 @@
-import { AuthQueries } from "@/features/auth/api/auth.queries";
-import { useWindowScroll } from "../../hooks/use-window-scroll";
+import {
+  useAuthSessionState,
+  useCurrentUserQuery,
+} from "@/shared/api/current-user-query";
+import { TeamForgeLogo } from "@/assets/logo";
+import { LANDING_NAV_LINKS } from "@/features/landing/constants/landing-sections";
+import { useWindowScroll } from "@/features/landing/hooks/use-window-scroll";
 import {
   getLandingPrimaryAction,
   getLandingSecondaryAction,
-} from "../../lib/landing-auth";
+} from "@/features/landing/lib/landing-auth";
+import {
+  scrollToLandingSection,
+  scrollToLandingTop,
+} from "@/features/landing/lib/landing-scroll";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { TeamForgeLogo } from "../../../../assets/logo";
+import type { MouseEvent } from "react";
+import { useMobileNavDialog } from "@/features/landing/components/navbar/use-mobile-nav-dialog";
 
-const NAV_LINKS = [
-  { label: "Home", href: "#hero" },
-  { label: "How It Works", href: "#how-it-works" },
-  { label: "The Algorithm", href: "#algorithm" },
-  { label: "About", href: "#about" },
+const MOBILE_NAV_LINK_DELAYS = [
+  "delay-0",
+  "delay-100",
+  "delay-200",
+  "delay-300",
 ];
 
 export function Navbar() {
   const scrolled = useWindowScroll(60);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const { isAuthenticated } = AuthQueries.useAuthSessionState();
-  const { data: currentUser } = AuthQueries.useCurrentUser();
+  const { closeMenu, menuOpen, menuRef, toggleMenu } = useMobileNavDialog();
+  const { isAuthenticated } = useAuthSessionState();
+  const { data: currentUser } = useCurrentUserQuery();
   const primaryAction = getLandingPrimaryAction(
     isAuthenticated,
     currentUser,
@@ -31,69 +39,13 @@ export function Navbar() {
   );
   const secondaryAction = getLandingSecondaryAction(isAuthenticated, "Log In");
 
-  // Focus trap and body scroll lock
-  useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = "hidden";
-
-      const handleTab = (e: KeyboardEvent) => {
-        if (e.key !== "Tab" || !menuRef.current) return;
-
-        const focusable = menuRef.current.querySelectorAll(
-          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
-        );
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-
-        if (!(first instanceof HTMLElement) || !(last instanceof HTMLElement))
-          return;
-
-        if (e.shiftKey) {
-          if (document.activeElement === first) {
-            last.focus();
-            e.preventDefault();
-          }
-        } else {
-          if (document.activeElement === last) {
-            first.focus();
-            e.preventDefault();
-          }
-        }
-      };
-
-      const handleEsc = (e: KeyboardEvent) => {
-        if (e.key === "Escape") setMenuOpen(false);
-      };
-
-      document.addEventListener("keydown", handleTab);
-      document.addEventListener("keydown", handleEsc);
-
-      // Auto focus first link when menu opens
-      if (menuRef.current) {
-        const firstLink = menuRef.current.querySelector("a");
-        if (firstLink instanceof HTMLElement) {
-          firstLink.focus();
-        }
-      }
-
-      return () => {
-        document.body.style.overflow = "";
-        document.removeEventListener("keydown", handleTab);
-        document.removeEventListener("keydown", handleEsc);
-      };
-    }
-  }, [menuOpen]);
-
   const handleNavClick = (
-    e: React.MouseEvent<HTMLAnchorElement>,
-    href: string,
+    event: MouseEvent<HTMLAnchorElement>,
+    id: (typeof LANDING_NAV_LINKS)[number]["id"],
   ) => {
-    e.preventDefault();
-    setMenuOpen(false);
-    const target = document.querySelector(href);
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    event.preventDefault();
+    closeMenu();
+    scrollToLandingSection(id);
   };
 
   return (
@@ -111,7 +63,7 @@ export function Navbar() {
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              window.scrollTo({ top: 0, behavior: "smooth" });
+              scrollToLandingTop();
             }}
             className="flex items-center gap-2 select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-hero-bg rounded-lg px-2 -ml-2 transition-all"
             aria-label="TeamForge home"
@@ -127,11 +79,11 @@ export function Navbar() {
             className="hidden md:flex items-center gap-8"
             aria-label="Main navigation"
           >
-            {NAV_LINKS.map((link) => (
+            {LANDING_NAV_LINKS.map((link) => (
               <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleNavClick(e, link.href)}
+                key={link.id}
+                href={`#${link.id}`}
+                onClick={(e) => handleNavClick(e, link.id)}
                 className="font-sans text-sm font-medium text-text-dark-secondary hover:text-white transition-colors duration-200 relative group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-sm"
               >
                 {link.label}
@@ -165,9 +117,10 @@ export function Navbar() {
             variant="ghost"
             size="icon"
             className="md:hidden text-text-dark-secondary hover:text-white"
-            onClick={() => setMenuOpen((v) => !v)}
+            onClick={toggleMenu}
+            aria-controls="landing-mobile-navigation"
             aria-expanded={menuOpen}
-            aria-label="Toggle menu"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
           >
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </Button>
@@ -175,6 +128,7 @@ export function Navbar() {
       </header>
 
       <div
+        id="landing-mobile-navigation"
         ref={menuRef}
         className={cn(
           "fixed inset-0 z-40 bg-hero-bg/98 backdrop-blur-lg flex flex-col items-center justify-center gap-8 transition-opacity duration-150 dark",
@@ -183,6 +137,7 @@ export function Navbar() {
             : "opacity-0 pointer-events-none",
         )}
         aria-hidden={!menuOpen}
+        inert={!menuOpen}
         role="dialog"
         aria-modal="true"
         aria-label="Mobile Navigation Menu"
@@ -191,18 +146,18 @@ export function Navbar() {
           className="flex flex-col items-center gap-6"
           aria-label="Mobile navigation links"
         >
-          {NAV_LINKS.map((link, i) => (
+          {LANDING_NAV_LINKS.map((link, i) => (
             <a
-              key={link.href}
-              href={link.href}
-              onClick={(e) => handleNavClick(e, link.href)}
+              key={link.id}
+              href={`#${link.id}`}
+              onClick={(e) => handleNavClick(e, link.id)}
               className={cn(
                 "font-sans text-2xl font-semibold text-text-dark-secondary hover:text-white transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-4 rounded-md px-4 py-2",
                 menuOpen
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-4",
+                MOBILE_NAV_LINK_DELAYS[i],
               )}
-              style={{ transitionDelay: `${i * 100}ms` }}
             >
               {link.label}
             </a>
@@ -221,10 +176,7 @@ export function Navbar() {
                 : "opacity-0 translate-y-4",
             )}
           >
-            <Link
-              {...secondaryAction.navigation}
-              onClick={() => setMenuOpen(false)}
-            >
+            <Link {...secondaryAction.navigation} onClick={closeMenu}>
               {secondaryAction.label}
             </Link>
           </Button>
@@ -240,10 +192,7 @@ export function Navbar() {
                 : "opacity-0 translate-y-4",
             )}
           >
-            <Link
-              {...primaryAction.navigation}
-              onClick={() => setMenuOpen(false)}
-            >
+            <Link {...primaryAction.navigation} onClick={closeMenu}>
               {primaryAction.label}
             </Link>
           </Button>

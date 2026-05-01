@@ -49,6 +49,21 @@ export class SettingsApi {
     );
   }
 
+  static async sendResetPasswordLink(email: string) {
+    const response = await apiClient.post("auth/send-reset-password-link", {
+      json: { email },
+      context: {
+        auth: "none",
+        retryOnUnauthorized: false,
+      },
+    });
+
+    return {
+      data: null,
+      requestId: getResponseRequestId(response),
+    };
+  }
+
   static async getNotificationPreferences() {
     const response = await apiClient.get("settings/me").json<unknown>();
 

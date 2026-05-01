@@ -4,16 +4,17 @@ import { toast } from "sonner";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-import { ExploreQueries } from "../api/explore.queries";
+import { ExploreCommands } from "@/features/explore/api/explore-commands";
+import { ExploreQueryFactory } from "@/features/explore/api/explore-query-factory";
 
 export function useExploreFriendRequests() {
-  const requestsQuery = useQuery(ExploreQueries.friendRequests());
+  const requestsQuery = useQuery(ExploreQueryFactory.friendRequests());
   const acceptMutation = useMutation({
     meta: {
       telemetryName: trackedMutationNames.exploreAcceptFriendRequest,
     },
     mutationKey: ["explore", "friend-request", "accept"],
-    mutationFn: ExploreQueries.acceptFriendRequest,
+    mutationFn: ExploreCommands.acceptFriendRequest,
     onSuccess: (result) => {
       trackMutationOutcome(
         trackedMutationNames.exploreAcceptFriendRequest,
@@ -42,7 +43,7 @@ export function useExploreFriendRequests() {
       telemetryName: trackedMutationNames.exploreDeclineFriendRequest,
     },
     mutationKey: ["explore", "friend-request", "decline"],
-    mutationFn: ExploreQueries.declineFriendRequest,
+    mutationFn: ExploreCommands.declineFriendRequest,
     onSuccess: (result) => {
       trackMutationOutcome(
         trackedMutationNames.exploreDeclineFriendRequest,

@@ -1,8 +1,8 @@
 import { motion, MotionValue, useTransform } from "framer-motion";
-import { PsychometricMarker } from "./psychometric-marker";
-import { SocialConnectionLine } from "./social-connection-line";
-import { PulsingRing } from "./pulsing-ring";
-import { LogoSegment } from "./logo-segment";
+import { LogoSegment } from "@/features/landing/components/how-it-works/logo-segment";
+import { PsychometricMarker } from "@/features/landing/components/how-it-works/psychometric-marker";
+import { PulsingRing } from "@/features/landing/components/how-it-works/pulsing-ring";
+import { SocialConnectionLine } from "@/features/landing/components/how-it-works/social-connection-line";
 
 interface VoronoiLogoProps {
   smoothProgress: MotionValue<number>;

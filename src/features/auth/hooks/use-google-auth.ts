@@ -5,8 +5,8 @@ import { config } from "@/config/config";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
-import { AuthApi } from "../api/auth.api";
-import type { GoogleAuthIntent } from "../api/auth.types";
+import { AuthCommands } from "@/features/auth/api/auth-commands";
+import type { GoogleAuthIntent } from "@/features/auth/api/auth.types";
 
 interface UseGoogleAuthOptions {
   intent: GoogleAuthIntent;
@@ -24,7 +24,7 @@ export function useGoogleAuth({ intent, onSuccess }: UseGoogleAuthOptions) {
       setLoading(true);
 
       try {
-        const result = await AuthApi.loginWithGoogle(code, intent);
+        const result = await AuthCommands.loginWithGoogle(code, intent);
         trackMutationOutcome(trackedMutationNames.authGoogle, "success", {
           intent,
           requestId: result.requestId,
@@ -36,7 +36,7 @@ export function useGoogleAuth({ intent, onSuccess }: UseGoogleAuthOptions) {
           intent,
         });
         setRootError(
-          AuthApi.getAuthErrorMessage(
+          AuthCommands.getAuthErrorMessage(
             error,
             "We couldn't finish Google sign-in. Please try again.",
           ),

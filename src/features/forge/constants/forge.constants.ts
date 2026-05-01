@@ -1,4 +1,4 @@
-import type { FixedGroupSize } from "../lib/forge-contract";
+import type { FixedGroupSize } from "@/features/forge/lib/forge-contract";
 
 export const ALGORITHM_GROUP_SIZES: {
   value: FixedGroupSize;

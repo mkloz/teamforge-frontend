@@ -1,10 +1,11 @@
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { SettingsProfileForm } from "./components/settings-profile-form";
-import { useSettingsBlockedUsers } from "./hooks/use-settings-blocked-users";
-import { useSettingsProfileForm } from "./hooks/use-settings-profile-form";
-import { useSettingsRouteState } from "./hooks/use-settings-route-state";
 import type { SettingsSection } from "@/shared/lib/settings-route";
+
+import { SettingsProfileForm } from "@/features/settings/components/settings-profile-form";
+import { useSettingsBlockedUsers } from "@/features/settings/hooks/use-settings-blocked-users";
+import { useSettingsProfileForm } from "@/features/settings/hooks/use-settings-profile-form";
+import { useSettingsRouteState } from "@/features/settings/hooks/use-settings-route-state";
 
 const SETTINGS_SECTIONS: Array<{
   id: SettingsSection;

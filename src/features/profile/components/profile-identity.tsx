@@ -2,8 +2,8 @@ import { MapPin } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { User } from "@/shared/schemas";
 import { buildSettingsNavigation } from "@/shared/lib/settings-route";
-import { ProfileActions } from "./profile-actions";
-import { ProfileBadges } from "./profile-badges";
+import { ProfileActions } from "@/features/profile/components/profile-actions";
+import { ProfileBadges } from "@/features/profile/components/profile-badges";
 import { Button } from "@/shared/components/ui/button";
 
 interface ProfileIdentityProps {

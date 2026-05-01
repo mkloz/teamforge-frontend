@@ -1,9 +1,10 @@
-import { AuthQueries } from "@/features/auth/api/auth.queries";
+import { useQuery } from "@tanstack/react-query";
 
-import { ExploreQueries } from "../api/explore.queries";
+import { currentUserQueryOptions } from "@/shared/api/current-user-query";
+import { getExploreIdentity } from "@/features/explore/lib/explore-presenters";
 
 export function useExploreIdentity() {
-  const { data: currentUser } = AuthQueries.useCurrentUser();
+  const { data: currentUser } = useQuery(currentUserQueryOptions());
 
-  return ExploreQueries.getIdentity(currentUser);
+  return getExploreIdentity(currentUser);
 }

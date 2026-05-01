@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select";
-import type { RegisterValues } from "../../schemas/auth-schemas";
+import type { RegisterValues } from "@/features/auth/schemas/auth-schemas";
 
 const GENDER_OPTIONS = [
   { value: "MALE", label: "Male" },

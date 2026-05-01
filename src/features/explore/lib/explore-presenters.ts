@@ -1,23 +1,41 @@
-import type { ExploreGroup } from "@/shared/schemas";
+import type { User } from "@/shared/schemas";
+import {
+  getExploreGroupDistanceLabel,
+  getExploreGroupMatchScore,
+  isExploreGroupFull,
+} from "@/shared/lib/explore-group-presenters";
+import {
+  getUserOceanScores,
+  normalizeTrustScore,
+} from "@/shared/lib/user-psychometrics";
+import type { OceanScores } from "@/shared/types/psychometrics";
 
-export function getExploreGroupMatchScore(group: ExploreGroup) {
-  const score = group.compatibility.total;
+export interface ExploreIdentity {
+  mbti: string;
+  trustScore: number;
+  oceanScores: OceanScores;
+}
 
-  if (score > 0 && score <= 1) {
-    return Math.round(score * 100);
+export function getExploreIdentity(user?: User | null): ExploreIdentity | null {
+  if (!user?.personalityType) {
+    return null;
   }
 
-  return Math.round(score);
-}
+  const oceanScores = getUserOceanScores(user);
 
-export function getExploreGroupDistanceLabel(group: ExploreGroup) {
-  if (group.plan?.locationMode === "ONLINE") {
-    return "Online";
+  if (!oceanScores) {
+    return null;
   }
 
-  return group.activity.city || "Location pending";
+  return {
+    mbti: user.personalityType,
+    trustScore: normalizeTrustScore(user.trustScore),
+    oceanScores,
+  };
 }
 
-export function isExploreGroupFull(group: ExploreGroup) {
-  return group.maxMembers > 0 && group.activeMembersCount >= group.maxMembers;
-}
+export {
+  getExploreGroupDistanceLabel,
+  getExploreGroupMatchScore,
+  isExploreGroupFull,
+};

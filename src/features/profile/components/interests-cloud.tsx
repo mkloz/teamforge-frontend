@@ -3,7 +3,7 @@ import { createElement } from "react";
 import { buildInterestsEditNavigation } from "@/shared/lib/onboarding-route";
 import { cn } from "@/shared/lib/utils";
 import type { Interest as SharedInterest } from "@/shared/schemas";
-import { SectionTitle } from "./section-title";
+import { SectionTitle } from "@/features/profile/components/section-title";
 import { Button } from "@/shared/components/ui/button";
 import { getInterestIcon } from "@/shared/lib/interest-icons";
 

@@ -4,9 +4,12 @@ import { OceanChart } from "@/shared/components/psychometrics/ocean-chart";
 import { buildPersonalityEditNavigation } from "@/shared/lib/onboarding-route";
 import type { OceanTraitKey } from "@/shared/types/psychometrics";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
-import type { DimensionScore, OceanScores } from "../lib/profile-contract";
-import { DimensionSpectrum } from "./dimension-spectrum";
-import { SectionTitle } from "./section-title";
+import { DimensionSpectrum } from "@/features/profile/components/dimension-spectrum";
+import { SectionTitle } from "@/features/profile/components/section-title";
+import type {
+  DimensionScore,
+  OceanScores,
+} from "@/features/profile/lib/profile-contract";
 import { Button } from "@/shared/components/ui/button";
 
 interface PsychometricsSidebarProps {

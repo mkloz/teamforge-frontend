@@ -1,16 +1,16 @@
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { InterestsCloud } from "./components/interests-cloud";
-import { PersonalitySection } from "./components/personality-section";
-import { ProfileHero } from "./components/profile-hero";
-import { PsychometricsSidebar } from "./components/psychometrics-sidebar";
-import { useProfile } from "./hooks/use-profile";
-import { UserMenu } from "@/features/user-menu/components/user-menu";
+import { InterestsCloud } from "@/features/profile/components/interests-cloud";
+import { PersonalitySection } from "@/features/profile/components/personality-section";
+import { ProfileHero } from "@/features/profile/components/profile-hero";
+import { PsychometricsSidebar } from "@/features/profile/components/psychometrics-sidebar";
+import { useProfile } from "@/features/profile/hooks/use-profile";
+import { UserMenu } from "@/shared/components/user-menu/user-menu";
 import {
   getUserArchetype,
   getUserDimensionScores,
   getUserOceanScores,
-} from "./lib/profile-utils";
+} from "@/features/profile/lib/profile-utils";
 
 export function ProfilePage() {
   const { profile, isLoading, error, refetch } = useProfile();

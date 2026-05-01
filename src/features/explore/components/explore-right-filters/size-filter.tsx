@@ -1,6 +1,6 @@
 import * as RadixSlider from "@radix-ui/react-slider";
-import { FILTER_BOUNDARIES } from "../../constants/explore.constants";
-import { useExploreRouteState } from "../../hooks/use-explore-route-state";
+import { FILTER_BOUNDARIES } from "@/features/explore/constants/explore.constants";
+import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 
 export function SizeFilter() {
   const { sizeRange, setSizeRange } = useExploreRouteState();

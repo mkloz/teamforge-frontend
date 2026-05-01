@@ -14,10 +14,10 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
+import { buildAuthRouteNavigation } from "@/shared/lib/auth-route";
+import type { RegisterValues } from "@/features/auth/schemas/auth-schemas";
 import { FormLevelError } from "../login-form/form-level-error";
 import { useGoogleAuth } from "../../hooks/use-google-auth";
-import { buildAuthRouteNavigation } from "../../lib/auth-return";
-import type { RegisterValues } from "../../schemas/auth-schemas";
 
 const STRENGTH_LEVELS = [
   { score: 0 as const, label: "", color: "" },

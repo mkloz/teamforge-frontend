@@ -1,8 +1,8 @@
 import { Button } from "@/shared/components/ui/button";
+import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
 import { PERSONALITY_INFO_BY_TYPE } from "../data/personality-metadata";
 import { motion } from "framer-motion";
 import { ArrowRight, Database, Fingerprint } from "lucide-react";
-import { VoronoiCatalyst } from "../../auth/components/voronoi-catalyst";
 import type { PersonalityType } from "@/shared/schemas/enums";
 
 interface CompletionBlueprintProps {

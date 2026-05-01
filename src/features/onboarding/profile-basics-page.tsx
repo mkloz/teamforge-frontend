@@ -1,13 +1,7 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ShieldCheck, UserRound } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useRef } from "react";
 
-import { AuthQueries } from "@/features/auth/api/auth.queries";
-import { getPostAuthRedirectPath } from "@/features/auth/lib/post-auth-route";
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { AddressAutocomplete } from "@/shared/components/maps/address-autocomplete";
@@ -28,14 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select";
+import { useProfileBasicsForm } from "@/features/onboarding/hooks/use-profile-basics-form";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
-import { OnboardingQueries } from "./api/onboarding.queries";
-import { useOnboardingFlowState } from "./lib/onboarding-flow-state";
-import {
-  profileBasicsSchema,
-  type ProfileBasicsValues,
-} from "./schemas/profile-basics.schema";
 
 const GENDER_OPTIONS = [
   { value: "MALE", label: "Male" },
@@ -44,106 +32,12 @@ const GENDER_OPTIONS = [
   { value: "OTHER", label: "Prefer not to say" },
 ] as const;
 
-function buildFlowSearch({
-  returnTo,
-  returnSearch,
-  returnSection,
-}: ReturnType<typeof useOnboardingFlowState>) {
-  return {
-    ...(returnTo ? { returnTo } : {}),
-    ...(returnSearch ? { returnSearch } : {}),
-    ...(returnSection ? { returnSection } : {}),
-  };
-}
-
 export function ProfileBasicsPage() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const flowState = useOnboardingFlowState();
-  const { data: currentUser } = AuthQueries.useCurrentUser();
-  const [saveError, setSaveError] = useState<string | null>(null);
-
-  const form = useForm<ProfileBasicsValues>({
-    resolver: zodResolver(profileBasicsSchema),
-    mode: "onBlur",
-    defaultValues: {
-      age: "",
-      gender: "",
-      city: "",
-      locationLat: null,
-      locationLng: null,
-    },
-  });
-  const watchedValues = useWatch({ control: form.control });
-
-  useEffect(() => {
-    if (!currentUser) {
-      return;
-    }
-
-    form.reset({
-      age: currentUser.age ? String(currentUser.age) : "",
-      gender: currentUser.gender ?? "",
-      city: currentUser.city ?? "",
-      locationLat: currentUser.locationLat ?? null,
-      locationLng: currentUser.locationLng ?? null,
-    });
-  }, [currentUser, form]);
-
-  const profileBasicsMutation = useMutation({
-    mutationFn: OnboardingQueries.updateProfileBasics,
-    onSuccess: (updatedUser) => {
-      queryClient.setQueryData(AuthQueries.currentUserQueryKey, updatedUser);
-    },
-  });
-
-  const progress = useMemo(() => {
-    const filled = [
-      watchedValues.age?.trim().length ? true : false,
-      Boolean(watchedValues.gender),
-      watchedValues.city?.trim().length ? true : false,
-    ].filter(Boolean).length;
-
-    return filled / 3;
-  }, [watchedValues.age, watchedValues.city, watchedValues.gender]);
+  const { form, watchedValues, progress, saveError, isSaving, onSubmit } =
+    useProfileBasicsForm();
 
   useScrollToTop(["profile-basics"], scrollContainerRef);
-
-  const onSubmit = form.handleSubmit(async (values) => {
-    setSaveError(null);
-
-    if (!values.gender) {
-      return;
-    }
-
-    try {
-      const updatedUser = await profileBasicsMutation.mutateAsync({
-        age: Number(values.age),
-        gender: values.gender,
-        city: values.city.trim(),
-        locationLat: values.locationLat,
-        locationLng: values.locationLng,
-      });
-      const nextDestination = getPostAuthRedirectPath(updatedUser);
-      const nextSearch = buildFlowSearch(flowState);
-
-      await navigate({
-        to:
-          nextDestination === "/onboarding/profile"
-            ? "/onboarding/personality"
-            : nextDestination,
-        search: Object.keys(nextSearch).length > 0 ? nextSearch : undefined,
-      });
-    } catch (error) {
-      setSaveError(
-        getApiErrorMessage(
-          error,
-          "We couldn't save those details. Please try again.",
-        ),
-      );
-    }
-  });
 
   return (
     <div className="h-screen w-full max-h-dvh flex flex-col lg:flex-row relative overflow-hidden">
@@ -325,7 +219,7 @@ export function ProfileBasicsPage() {
                     type="submit"
                     size="lg"
                     className="w-full"
-                    loading={profileBasicsMutation.isPending}
+                    loading={isSaving}
                   >
                     Continue
                   </Button>

@@ -12,8 +12,9 @@ import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { Bell, Plus } from "lucide-react";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
 import { useNotificationsDrawerState } from "@/features/notifications/hooks/use-notifications-drawer-state";
-import { useHomeViewer } from "../../hooks/use-home-viewer";
-import { ForgeOrbScene } from "./forge-orb-scene";
+
+import { ForgeOrbScene } from "@/features/home/components/home-hero/forge-orb-scene";
+import { useHomeViewer } from "@/features/home/hooks/use-home-viewer";
 
 /* ─── Greeting helper ──────────────────────────────────────────────── */
 function getGreeting(firstName: string): { greeting: string; sub: string } {

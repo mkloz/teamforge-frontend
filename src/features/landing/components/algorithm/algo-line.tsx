@@ -1,5 +1,8 @@
 import { motion } from "framer-motion";
-import type { DisplayNode, Phase } from "./algorithm-types";
+import type {
+  DisplayNode,
+  Phase,
+} from "@/features/landing/components/algorithm/algorithm-types";
 
 interface AlgoLineProps {
   node: DisplayNode;

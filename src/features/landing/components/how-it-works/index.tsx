@@ -1,19 +1,22 @@
 import {
-  useScroll,
-  useTransform,
-  useReducedMotion,
-  useSpring,
-  motion,
   AnimatePresence,
+  motion,
   useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
 } from "framer-motion";
-import { useRef, useState, useEffect, useCallback } from "react";
 import { ChevronDown } from "lucide-react";
+import type { MouseEvent } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
+import { ContentStep } from "@/features/landing/components/how-it-works/content-step";
+import { ProgressBarStep } from "@/features/landing/components/how-it-works/progress-bar-step";
+import { STEPS } from "@/features/landing/components/how-it-works/how-it-works-data";
+import { VoronoiLogo } from "@/features/landing/components/how-it-works/voronoi-logo";
+import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
 import { Button } from "@/shared/components/ui/button";
-import { STEPS } from "./how-it-works-data";
-import { ContentStep } from "./content-step";
-import { VoronoiLogo } from "./voronoi-logo";
-import { ProgressBarStep } from "./progress-bar-step";
 
 export function HowItWorksSection() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -40,7 +43,7 @@ export function HowItWorksSection() {
 
   // Interactive Tilt Logic for Phase 4
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!visualRef.current) return;
     const rect = visualRef.current.getBoundingClientRect();
     setMousePos({
@@ -158,9 +161,7 @@ export function HowItWorksSection() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
                   onClick={() =>
-                    document
-                      .getElementById("algorithm")
-                      ?.scrollIntoView({ behavior: "smooth" })
+                    scrollToLandingSection(LANDING_SECTION_IDS.algorithm)
                   }
                 >
                   Skip Section

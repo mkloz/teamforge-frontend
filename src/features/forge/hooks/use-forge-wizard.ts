@@ -1,25 +1,26 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-import { useForgeAnimation } from "./use-forge-animation";
+import { ForgeCommands } from "@/features/forge/api/forge-commands";
+import { normalizeFixedGroupSize } from "@/features/forge/lib/forge-size";
+import { useForgeAnimation } from "@/features/forge/hooks/use-forge-animation";
 import {
   createInitialForgeWizardState,
   forgeWizardReducer,
   getNextStep,
   getPreviousStep,
-} from "../lib/forge-wizard.reducer";
-import { ForgeQueries } from "../api/forge.queries";
+} from "@/features/forge/lib/forge-wizard.reducer";
 import type {
   ForgeMode,
   GroupSizeMode,
   LocationType,
   Visibility,
-} from "../lib/forge-contract";
+} from "@/features/forge/lib/forge-contract";
 import type {
   ForgeWizardData,
   ForgeWizardField,
   Step,
-} from "../lib/forge-wizard.reducer";
+} from "@/features/forge/lib/forge-wizard.reducer";
 
 interface UseForgeWizardOptions {
   onClose: () => void;
@@ -252,7 +253,7 @@ export function useForgeWizard({
   );
   const setFixedSize = useCallback(
     (value: number) => {
-      const nextSize = ForgeQueries.normalizeFixedGroupSize(value);
+      const nextSize = normalizeFixedGroupSize(value);
       setField("fixedSize", nextSize);
 
       if (state.manualInviteeIds.length > nextSize - 1) {
@@ -269,13 +270,11 @@ export function useForgeWizard({
     [setField],
   );
   const setAutoMinSize = useCallback(
-    (value: number) =>
-      setField("autoMinSize", ForgeQueries.normalizeFixedGroupSize(value)),
+    (value: number) => setField("autoMinSize", normalizeFixedGroupSize(value)),
     [setField],
   );
   const setAutoMaxSize = useCallback(
-    (value: number) =>
-      setField("autoMaxSize", ForgeQueries.normalizeFixedGroupSize(value)),
+    (value: number) => setField("autoMaxSize", normalizeFixedGroupSize(value)),
     [setField],
   );
   const setCompatibilityWeight = useCallback(
@@ -319,7 +318,7 @@ export function useForgeWizard({
   const handleManualForge = useCallback(() => {
     runForgeAnimation(async () => {
       try {
-        const result = await ForgeQueries.executeManualForge({
+        const result = await ForgeCommands.executeManualForge({
           selectedActivity: state.selectedActivity,
           planName: state.planName,
           planDescription: state.planDescription,
@@ -418,7 +417,7 @@ export function useForgeWizard({
   const handleAutoForge = useCallback(() => {
     runForgeAnimation(async () => {
       try {
-        const result = await ForgeQueries.executeAutoForge({
+        const result = await ForgeCommands.executeAutoForge({
           selectedActivity: state.selectedActivity,
           planName: state.planName,
           planDescription: state.planDescription,
@@ -543,7 +542,7 @@ export function useForgeWizard({
     setIsSavingIdentity(true);
 
     try {
-      await ForgeQueries.saveForgedIdentity({
+      await ForgeCommands.saveForgedIdentity({
         groupId: state.groupId,
         planId: state.planId,
         groupName: state.groupName,
@@ -575,7 +574,7 @@ export function useForgeWizard({
 
     try {
       if (state.forgeMode === "MANUAL") {
-        await ForgeQueries.sendManualInvites({
+        await ForgeCommands.sendManualInvites({
           groupId: state.groupId,
           inviteeIds: state.manualInviteeIds,
           planName: state.planName,
@@ -670,5 +669,5 @@ export function useForgeWizard({
   };
 }
 
-export type { Step } from "../lib/forge-wizard.reducer";
+export type { Step } from "@/features/forge/lib/forge-wizard.reducer";
 export type ForgeWizardState = ReturnType<typeof useForgeWizard>;

@@ -1,7 +1,7 @@
 "use client";
 
 import { GroupIdentityFields } from "@/features/forge/components/group-identity-fields";
-import { ForgeQueries } from "@/features/forge/api/forge.queries";
+import { forgeFriendCandidatesQueryOptions } from "@/features/forge/api/forge-query-options";
 import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import * as RadixSlider from "@radix-ui/react-slider";
@@ -25,7 +25,7 @@ import type {
   ForgeMode,
   GroupSizeMode,
   Visibility,
-} from "../../lib/forge-contract";
+} from "@/features/forge/lib/forge-contract";
 
 const VISIBILITY_OPTIONS: Array<{
   value: Visibility;
@@ -114,7 +114,7 @@ export function Step3Group({
   // Algorithm tuning collapsed by default
   const [algorithmsExpanded, setAlgorithmsExpanded] = useState(false);
   const { data: friends = [], isLoading: isLoadingFriends } = useQuery(
-    ForgeQueries.friendCandidates(),
+    forgeFriendCandidatesQueryOptions(),
   );
   const inviteLimit = Math.max(0, fixedSize - 1);
   const selectedInviteeCount = manualInviteeIds.length;

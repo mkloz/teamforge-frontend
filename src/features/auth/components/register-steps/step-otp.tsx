@@ -16,7 +16,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/shared/components/ui/input-otp";
-import type { RegisterValues } from "../../schemas/auth-schemas";
+import type { RegisterValues } from "@/features/auth/schemas/auth-schemas";
 
 interface StepOtpProps {
   onBack: () => void;

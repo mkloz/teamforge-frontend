@@ -1,8 +1,9 @@
 import { buildActivityNavigation } from "@/shared/lib/activity-route";
 import { Link } from "@tanstack/react-router";
 import { CalendarDays } from "lucide-react";
-import { useHomeData } from "../../hooks/use-home-data";
-import { PlanCard } from "./plan-card";
+
+import { useHomeData } from "@/features/home/hooks/use-home-data";
+import { PlanCard } from "@/features/home/components/upcoming-plans/plan-card";
 
 function EmptyPlans() {
   return (

@@ -9,7 +9,7 @@ import { cn } from "@/shared/lib/utils";
 import { Shield, Sparkles, UserPlus, type LucideIcon } from "lucide-react";
 import { AnimatedCircularProgressBar } from "@/shared/components/ui/animated-circular-progress-bar";
 import type { User } from "@/shared/schemas";
-import { normalizeTrustScore } from "../lib/profile-utils";
+import { normalizeTrustScore } from "@/features/profile/lib/profile-utils";
 
 interface ProfileBadgesProps {
   user: User;

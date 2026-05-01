@@ -1,128 +1,61 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
-import {
-  NOTIFICATIONS_QUERY_KEY,
-  NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY,
-  NotificationsQueries,
-} from "../api/notifications.queries";
-import type { Notification } from "@/shared/schemas";
+import { NotificationsCache } from "@/features/notifications/api/notifications-cache";
+import { NotificationsCommands } from "@/features/notifications/api/notifications-commands";
+import { NotificationsQueryFactory } from "@/features/notifications/api/notifications-query-factory";
 
 export function useNotifications() {
-  const queryClient = useQueryClient();
-  const { data } = useQuery(NotificationsQueries.list());
-  const unreadCountQuery = useQuery(NotificationsQueries.unreadCount());
+  const { data } = useQuery(NotificationsQueryFactory.list());
+  const unreadCountQuery = useQuery(NotificationsQueryFactory.unreadCount());
   const items = data ?? [];
   const [referenceTime] = useState(() => Date.now());
 
   const markReadMutation = useMutation({
     mutationKey: ["notifications", "mark-read"],
-    mutationFn: NotificationsQueries.markRead,
+    mutationFn: NotificationsCommands.markRead,
     onMutate: async (id) => {
-      await Promise.all([
-        queryClient.cancelQueries({ queryKey: NOTIFICATIONS_QUERY_KEY }),
-        queryClient.cancelQueries({
-          queryKey: NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY,
-        }),
-      ]);
+      await NotificationsCache.cancelQueries();
 
-      const previousItems = queryClient.getQueryData<Notification[]>(
-        NOTIFICATIONS_QUERY_KEY,
-      );
-      const previousCount = queryClient.getQueryData<number>(
-        NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY,
-      );
+      const snapshot = NotificationsCache.snapshot();
+      NotificationsCache.optimisticallyMarkRead(id);
 
-      NotificationsQueries.optimisticallyMarkRead(id);
-
-      return {
-        previousItems,
-        previousCount,
-      };
+      return snapshot;
     },
     onSuccess: (notification) => {
-      NotificationsQueries.applyNotificationUpdate(notification);
+      NotificationsCache.applyNotificationUpdate(notification);
     },
-    onError: (_error, _id, context) => {
-      if (context?.previousItems) {
-        queryClient.setQueryData(
-          NOTIFICATIONS_QUERY_KEY,
-          context.previousItems,
-        );
-      }
-
-      if (typeof context?.previousCount === "number") {
-        queryClient.setQueryData(
-          NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY,
-          context.previousCount,
-        );
-      }
+    onError: (_error, _id, snapshot) => {
+      NotificationsCache.restore(snapshot);
     },
     onSettled: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_QUERY_KEY }),
-        queryClient.invalidateQueries({
-          queryKey: NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY,
-        }),
-      ]);
+      await NotificationsCache.invalidateQueries();
     },
   });
 
   const markAllReadMutation = useMutation({
     mutationKey: ["notifications", "mark-all-read"],
-    mutationFn: NotificationsQueries.markAllRead,
+    mutationFn: NotificationsCommands.markAllRead,
     onMutate: async () => {
-      await Promise.all([
-        queryClient.cancelQueries({ queryKey: NOTIFICATIONS_QUERY_KEY }),
-        queryClient.cancelQueries({
-          queryKey: NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY,
-        }),
-      ]);
+      await NotificationsCache.cancelQueries();
 
-      const previousItems = queryClient.getQueryData<Notification[]>(
-        NOTIFICATIONS_QUERY_KEY,
-      );
-      const previousCount = queryClient.getQueryData<number>(
-        NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY,
-      );
+      const snapshot = NotificationsCache.snapshot();
+      NotificationsCache.optimisticallyMarkAllRead();
 
-      NotificationsQueries.optimisticallyMarkAllRead();
-
-      return {
-        previousItems,
-        previousCount,
-      };
+      return snapshot;
     },
     onSuccess: () => {
-      queryClient.setQueryData(NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY, 0);
+      NotificationsCache.setUnreadCount(0);
     },
-    onError: (_error, _variables, context) => {
-      if (context?.previousItems) {
-        queryClient.setQueryData(
-          NOTIFICATIONS_QUERY_KEY,
-          context.previousItems,
-        );
-      }
-
-      if (typeof context?.previousCount === "number") {
-        queryClient.setQueryData(
-          NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY,
-          context.previousCount,
-        );
-      }
+    onError: (_error, _variables, snapshot) => {
+      NotificationsCache.restore(snapshot);
     },
     onSettled: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_QUERY_KEY }),
-        queryClient.invalidateQueries({
-          queryKey: NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY,
-        }),
-      ]);
+      await NotificationsCache.invalidateQueries();
     },
   });
 
-  const count =
-    unreadCountQuery.data ?? NotificationsQueries.countUnread(items);
+  const count = unreadCountQuery.data ?? NotificationsCache.countUnread(items);
 
   const today = items.filter(
     (item) => referenceTime - new Date(item.createdAt).getTime() < 86_400_000,

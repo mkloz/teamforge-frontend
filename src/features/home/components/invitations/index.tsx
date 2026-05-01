@@ -3,9 +3,10 @@ import type { Invite } from "@/shared/schemas";
 import { AnimatePresence, motion } from "framer-motion";
 import { Mail } from "lucide-react";
 import { useEffect, type RefObject, useState } from "react";
-import { useHomeData } from "../../hooks/use-home-data";
-import { useHomeInvitationActions } from "../../hooks/use-home-invitation-actions";
-import { InvitationCard } from "./invitation-card";
+
+import { InvitationCard } from "@/features/home/components/invitations/invitation-card";
+import { useHomeData } from "@/features/home/hooks/use-home-data";
+import { useHomeInvitationActions } from "@/features/home/hooks/use-home-invitation-actions";
 
 interface InvitationsProps {
   focusedInviteId?: string | null;

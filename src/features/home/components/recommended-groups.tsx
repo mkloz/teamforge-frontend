@@ -3,8 +3,9 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/shared/components/ui/carousel";
-import { GroupPlanCard } from "../../explore/components/group-plan-card";
-import { useHomeData } from "../hooks/use-home-data";
+
+import { RecommendedGroupCard } from "@/features/home/components/recommended-group-card";
+import { useHomeData } from "@/features/home/hooks/use-home-data";
 
 export function RecommendedGroups() {
   const { recommendations, isLoading } = useHomeData();
@@ -65,7 +66,10 @@ export function RecommendedGroups() {
                     className="pl-4 basis-70"
                   >
                     <div className="flex justify-center w-full">
-                      <GroupPlanCard group={recommendation} variant="compact" />
+                      <RecommendedGroupCard
+                        group={recommendation}
+                        variant="compact"
+                      />
                     </div>
                   </CarouselItem>
                 ))}
@@ -82,7 +86,10 @@ export function RecommendedGroups() {
                 key={recommendation.id}
                 className="w-full flex justify-center"
               >
-                <GroupPlanCard group={recommendation} variant="compact" />
+                <RecommendedGroupCard
+                  group={recommendation}
+                  variant="compact"
+                />
               </div>
             ))}
           </div>

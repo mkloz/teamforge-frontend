@@ -7,8 +7,8 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
-import { getTypeTitle } from "../lib/archetypes";
-import { getBorderlineExplanation } from "../lib/narrative-generator";
+import { getTypeTitle } from "@/features/profile/lib/archetypes";
+import { getBorderlineExplanation } from "@/features/profile/lib/narrative-generator";
 
 interface TypeHeaderProps {
   type: PersonalityType;

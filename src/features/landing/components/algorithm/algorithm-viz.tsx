@@ -1,33 +1,22 @@
+import { buildNodes } from "@/features/landing/lib/node-builder";
 import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, useState, useMemo } from "react";
-import { PHASE_LABELS } from "./algorithm-data";
-import { useAlgorithmSequence } from "./use-algorithm-sequence";
-import { buildNodes } from "../../lib/node-builder";
-import { OrbitalRings } from "./orbital-rings";
-import { AlgoLine } from "./algo-line";
-import { AlgoNode } from "./algo-node";
-import { DataParticles } from "./data-particles";
+import { useMemo, useState } from "react";
+import { AlgoLine } from "@/features/landing/components/algorithm/algo-line";
+import { AlgoNode } from "@/features/landing/components/algorithm/algo-node";
+import { DataParticles } from "@/features/landing/components/algorithm/data-particles";
+import { OrbitalRings } from "@/features/landing/components/algorithm/orbital-rings";
+import { PHASE_LABELS } from "@/features/landing/components/algorithm/algorithm-data";
+import { useAlgorithmSequence } from "@/features/landing/components/algorithm/use-algorithm-sequence";
+import { useAlgorithmVizSize } from "@/features/landing/components/algorithm/use-algorithm-viz-size";
 
 interface AlgorithmVizProps {
   inView: boolean;
 }
 
 export function AlgorithmViz({ inView }: AlgorithmVizProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState(380);
+  const { containerRef, size } = useAlgorithmVizSize();
   const [hoveredNodeId, setHoveredNodeId] = useState<number | null>(null);
-
-  useEffect(() => {
-    const update = () => {
-      if (containerRef.current) {
-        setSize(Math.min(containerRef.current.offsetWidth, 420));
-      }
-    };
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
 
   const cx = size / 2;
   const cy = size / 2;

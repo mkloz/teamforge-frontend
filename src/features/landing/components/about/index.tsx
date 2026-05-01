@@ -6,9 +6,11 @@ import {
 } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useRef, useState } from "react";
+import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
+import { ABOUT_CARDS } from "@/features/landing/components/about/about-data";
+import { StackCard } from "@/features/landing/components/about/stack-card";
+import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
 import { Button } from "@/shared/components/ui/button";
-import { ABOUT_CARDS } from "./about-data";
-import { StackCard } from "./stack-card";
 
 export function AboutSection() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -27,11 +29,8 @@ export function AboutSection() {
     <section
       id="about"
       ref={containerRef}
-      className="relative bg-canvas w-full"
+      className="relative bg-canvas w-full h-[400vh]"
       aria-labelledby="about-heading"
-      style={{
-        height: "400vh",
-      }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center">
         <div className="max-w-7xl mx-auto w-full px-6">
@@ -97,9 +96,7 @@ export function AboutSection() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
                   onClick={() =>
-                    document
-                      .getElementById("cta")
-                      ?.scrollIntoView({ behavior: "smooth" })
+                    scrollToLandingSection(LANDING_SECTION_IDS.cta)
                   }
                 >
                   Skip Section

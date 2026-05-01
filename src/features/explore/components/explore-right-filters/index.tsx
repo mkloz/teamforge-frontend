@@ -1,8 +1,8 @@
 import { Filter } from "lucide-react";
-import { CategoryFilter } from "../category-filter";
-import { LocationFilter } from "./location-filter";
-import { SizeFilter } from "./size-filter";
-import { AccessFilter } from "./access-filter";
+import { CategoryFilter } from "@/features/explore/components/category-filter";
+import { LocationFilter } from "@/features/explore/components/explore-right-filters/location-filter";
+import { SizeFilter } from "@/features/explore/components/explore-right-filters/size-filter";
+import { AccessFilter } from "@/features/explore/components/explore-right-filters/access-filter";
 
 interface ExploreRightFiltersProps {
   hideHeader?: boolean;

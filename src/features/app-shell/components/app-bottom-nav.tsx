@@ -2,7 +2,7 @@ import { cn } from "@/shared/lib/utils";
 import { appBottomNavigation } from "@/shared/lib/app-navigation";
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { useActiveRoute } from "../hooks/use-active-route";
+import { useActiveRoute } from "@/features/app-shell/hooks/use-active-route";
 import type { AppNavigationItem } from "@/shared/lib/app-navigation";
 
 function ActiveSlidingWaves({

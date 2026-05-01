@@ -3,26 +3,30 @@ import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 import { useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useRef, useState } from "react";
-import { resolveOnboardingExitNavigation } from "@/features/auth/lib/auth-navigation";
-import { usePersonalityTest } from "./hooks/use-personality-test";
+import { useInvalidateCurrentUser } from "@/shared/api/current-user-query";
+import { OnboardingCache } from "@/features/onboarding/api/onboarding-cache";
+import { OnboardingCommands } from "@/features/onboarding/api/onboarding-commands";
+import { resolveOnboardingExitNavigation } from "@/shared/lib/onboarding-exit-route";
+import { usePersonalityTest } from "@/features/onboarding/hooks/use-personality-test";
 
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
-import { VoronoiCatalyst } from "../auth/components/voronoi-catalyst";
-import { CalculatingScreen } from "./components/personality/calculating-screen";
-import { IntermissionPage } from "./components/personality/intermission-page";
-import { KeepInMind } from "./components/personality/keep-in-mind";
-import { LengthSelector } from "./components/personality/length-selector";
-import { PersonalityIntro } from "./components/personality/personality-intro";
-import { PersonalityResults } from "./components/personality/personality-results";
-import { QuestionPage } from "./components/personality/question-page";
-import { Theory101 } from "./components/personality/theory-101";
-import { AuthQueries } from "../auth/api/auth.queries";
-import { findFirstUnansweredPage } from "./lib/personality-test-flow";
-import { useOnboardingFlowState } from "./lib/onboarding-flow-state";
-import { getOceanScoresFromVector } from "./lib/personality-results";
-import { OnboardingQueries } from "./api/onboarding.queries";
-import { buildQuestionList, type TestLength } from "./data/ipip-questions";
+import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
+import { CalculatingScreen } from "@/features/onboarding/components/personality/calculating-screen";
+import { IntermissionPage } from "@/features/onboarding/components/personality/intermission-page";
+import { KeepInMind } from "@/features/onboarding/components/personality/keep-in-mind";
+import { LengthSelector } from "@/features/onboarding/components/personality/length-selector";
+import { PersonalityIntro } from "@/features/onboarding/components/personality/personality-intro";
+import { PersonalityResults } from "@/features/onboarding/components/personality/personality-results";
+import { QuestionPage } from "@/features/onboarding/components/personality/question-page";
+import { Theory101 } from "@/features/onboarding/components/personality/theory-101";
+import {
+  buildQuestionList,
+  type TestLength,
+} from "@/features/onboarding/data/ipip-questions";
+import { useOnboardingFlowState } from "@/features/onboarding/lib/onboarding-flow-state";
+import { getOceanScoresFromVector } from "@/features/onboarding/lib/personality-results";
+import { findFirstUnansweredPage } from "@/features/onboarding/lib/personality-test-flow";
 
 const QUESTIONS_PER_PAGE = 3;
 
@@ -173,11 +177,11 @@ export function PersonalityTestPage() {
   const { isEditMode, returnTo, returnSearch, returnSection } =
     useOnboardingFlowState();
   const queryClient = useQueryClient();
-  const invalidateCurrentUser = AuthQueries.useInvalidateCurrentUser();
+  const invalidateCurrentUser = useInvalidateCurrentUser();
   const persistPersonalityMutation = useMutation({
-    mutationFn: OnboardingQueries.updatePersonality,
+    mutationFn: OnboardingCommands.updatePersonality,
     onSuccess: async (updatedUser) => {
-      queryClient.setQueryData(AuthQueries.currentUserQueryKey, updatedUser);
+      OnboardingCache.setCurrentUser(queryClient, updatedUser);
       await invalidateCurrentUser();
     },
   });

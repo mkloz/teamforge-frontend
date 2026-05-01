@@ -1,35 +1,30 @@
-/* eslint-disable react-refresh/only-export-components */
 import {
   createRootRoute,
   createRoute,
   createRouter,
   Outlet,
-  redirect,
 } from "@tanstack/react-router";
 import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
-import { lazy, Suspense } from "react";
-import { AppLayout } from "./features/app-shell/app-layout";
-import { AuthQueries } from "./features/auth/api/auth.queries";
-import { ActivateAccountPage } from "./features/auth/activate-account-page";
-import { AuthPage } from "./features/auth/auth-page";
+import { lazy } from "react";
+import { AppShellWithNotifications } from "@/app/router/app-shell-with-notifications";
+import { LazyPage } from "@/app/router/lazy-page";
 import {
-  buildAuthRouteNavigation,
-  buildPostAuthRedirectNavigation,
-  buildRouteLocationHref,
-  parseAuthReturnSearch,
-} from "./features/auth/lib/auth-return";
-import { getPostAuthRedirectPath } from "./features/auth/lib/post-auth-route";
-import { ForgotPasswordPage } from "./features/auth/forgot-password-page";
-import { ResetPasswordPage } from "./features/auth/reset-password-page";
-import { LandingPage } from "./features/landing/landing-page";
-import { parseOnboardingFlowSearch } from "./features/onboarding/lib/onboarding-flow-state";
-import { InterestsPage } from "./features/onboarding/interests-page";
-import { PersonalityTestPage } from "./features/onboarding/personality-test-page";
-import { ProfileBasicsPage } from "./features/onboarding/profile-basics-page";
-import { authSession } from "./shared/api/auth-session";
-import { NotFoundState } from "./shared/components/not-found-state";
-import { RouteErrorState } from "./shared/components/route-error-state";
-import { routeErrorScopes } from "./shared/lib/telemetry-contract";
+  redirectAuthenticatedUser,
+  requireCanonicalAppRoute,
+  requireCanonicalOnboardingRoute,
+  requireEditableOnboardingRoute,
+} from "@/app/router/route-guards";
+import { ActivateAccountPage } from "@/features/auth/activate-account-page";
+import { AuthPage } from "@/features/auth/auth-page";
+import { ForgotPasswordPage } from "@/features/auth/forgot-password-page";
+import { ResetPasswordPage } from "@/features/auth/reset-password-page";
+import { LandingPage } from "@/features/landing/landing-page";
+import { InterestsPage } from "@/features/onboarding/interests-page";
+import { PersonalityTestPage } from "@/features/onboarding/personality-test-page";
+import { ProfileBasicsPage } from "@/features/onboarding/profile-basics-page";
+import { NotFoundState } from "@/shared/components/not-found-state";
+import { RouteErrorState } from "@/shared/components/route-error-state";
+import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -39,87 +34,33 @@ declare module "@tanstack/react-router" {
 
 // Lazy-load all app pages for optimal initial bundle size
 const HomePage = lazy(() =>
-  import("./features/home/home-page").then((m) => ({ default: m.HomePage })),
+  import("@/features/home/home-page").then((m) => ({ default: m.HomePage })),
 );
 const ExplorePage = lazy(() =>
-  import("./features/explore/explore-page").then((m) => ({
+  import("@/features/explore/explore-page").then((m) => ({
     default: m.ExplorePage,
   })),
 );
 const ActivityPage = lazy(() =>
-  import("./features/activity/activity-page").then((m) => ({
+  import("@/features/activity/activity-page").then((m) => ({
     default: m.ActivityPage,
   })),
 );
 const ProfilePage = lazy(() =>
-  import("./features/profile/profile-page").then((m) => ({
+  import("@/features/profile/profile-page").then((m) => ({
     default: m.ProfilePage,
   })),
 );
 const SettingsPage = lazy(() =>
-  import("./features/settings/settings-page").then((m) => ({
+  import("@/features/settings/settings-page").then((m) => ({
     default: m.SettingsPage,
   })),
 );
 const ForgePage = lazy(() =>
-  import("./features/forge/forge-page").then((m) => ({
+  import("@/features/forge/forge-page").then((m) => ({
     default: m.ForgePage,
   })),
 );
-function LazyPage({
-  component: Component,
-}: {
-  component: React.ComponentType;
-}) {
-  return (
-    <Suspense fallback={null}>
-      <Component />
-    </Suspense>
-  );
-}
-
-async function redirectAuthenticatedUser({
-  location,
-}: {
-  location: { searchStr: string };
-}) {
-  if (!authSession.hasTokens()) {
-    return;
-  }
-
-  const currentUser = await AuthQueries.ensureCurrentUser().catch(() => null);
-
-  if (!currentUser) {
-    return;
-  }
-
-  const { returnTo } = parseAuthReturnSearch(location.searchStr);
-
-  throw redirect(buildPostAuthRedirectNavigation(currentUser, returnTo));
-}
-
-async function requireAuthenticatedUser(location?: {
-  pathname: string;
-  searchStr: string;
-}) {
-  const returnHref = buildRouteLocationHref(location);
-
-  if (!authSession.hasTokens()) {
-    throw redirect(buildAuthRouteNavigation("/auth/login", returnHref));
-  }
-
-  try {
-    const currentUser = await AuthQueries.ensureCurrentUser();
-
-    if (!currentUser) {
-      throw redirect(buildAuthRouteNavigation("/auth/login", returnHref));
-    }
-
-    return currentUser;
-  } catch {
-    throw redirect(buildAuthRouteNavigation("/auth/login", returnHref));
-  }
-}
 
 // ─── Root route ──────────────────────────────────────────────────────────────
 
@@ -248,14 +189,8 @@ const activateAccountRoute = createRoute({
 const profileBasicsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/onboarding/profile",
-  beforeLoad: async ({ location }) => {
-    const currentUser = await requireAuthenticatedUser(location);
-    const canonicalDestination = getPostAuthRedirectPath(currentUser);
-
-    if (canonicalDestination !== "/onboarding/profile") {
-      throw redirect({ to: canonicalDestination });
-    }
-  },
+  beforeLoad: ({ location }) =>
+    requireCanonicalOnboardingRoute(location, "/onboarding/profile"),
   component: ProfileBasicsPage,
   errorComponent: ({ error, reset }) => (
     <RouteErrorState
@@ -274,23 +209,8 @@ const profileBasicsRoute = createRoute({
 const personalityRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/onboarding/personality",
-  beforeLoad: async ({ location }) => {
-    const currentUser = await requireAuthenticatedUser(location);
-    const { isEditMode } = parseOnboardingFlowSearch(location.searchStr);
-    const canonicalDestination = getPostAuthRedirectPath(currentUser);
-
-    if (isEditMode) {
-      if (canonicalDestination !== "/home") {
-        throw redirect({ to: canonicalDestination });
-      }
-
-      return;
-    }
-
-    if (canonicalDestination !== "/onboarding/personality") {
-      throw redirect({ to: canonicalDestination });
-    }
-  },
+  beforeLoad: ({ location }) =>
+    requireEditableOnboardingRoute(location, "/onboarding/personality"),
   component: PersonalityTestPage,
   errorComponent: ({ error, reset }) => (
     <RouteErrorState
@@ -309,23 +229,8 @@ const personalityRoute = createRoute({
 const interestsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/onboarding/interests",
-  beforeLoad: async ({ location }) => {
-    const currentUser = await requireAuthenticatedUser(location);
-    const { isEditMode } = parseOnboardingFlowSearch(location.searchStr);
-    const canonicalDestination = getPostAuthRedirectPath(currentUser);
-
-    if (isEditMode) {
-      if (canonicalDestination !== "/home") {
-        throw redirect({ to: canonicalDestination });
-      }
-
-      return;
-    }
-
-    if (canonicalDestination !== "/onboarding/interests") {
-      throw redirect({ to: canonicalDestination });
-    }
-  },
+  beforeLoad: ({ location }) =>
+    requireEditableOnboardingRoute(location, "/onboarding/interests"),
   component: InterestsPage,
   errorComponent: ({ error, reset }) => (
     <RouteErrorState
@@ -346,15 +251,8 @@ const interestsRoute = createRoute({
 const appShellRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "app-shell",
-  beforeLoad: async ({ location }) => {
-    const currentUser = await requireAuthenticatedUser(location);
-    const canonicalDestination = getPostAuthRedirectPath(currentUser);
-
-    if (canonicalDestination !== "/home") {
-      throw redirect({ to: canonicalDestination });
-    }
-  },
-  component: AppLayout,
+  beforeLoad: ({ location }) => requireCanonicalAppRoute(location),
+  component: AppShellWithNotifications,
 });
 
 // ─── App page routes (children of app shell) ─────────────────────────────────
@@ -467,7 +365,7 @@ const designSystemRoute = (() => {
   }
 
   const DesignSystemPage = lazy(() =>
-    import("./features/design-system/design-system-page").then((m) => ({
+    import("@/features/design-system/design-system-page").then((m) => ({
       default: m.DesignSystemPage,
     })),
   );

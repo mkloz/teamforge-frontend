@@ -1,17 +1,22 @@
+import {
+  LANDING_SECTIONS,
+  type LandingSectionId,
+} from "@/features/landing/constants/landing-sections";
+import {
+  scrollToLandingSection,
+  scrollToLandingTop,
+} from "@/features/landing/lib/landing-scroll";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
+import { ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const SECTIONS = [
-  { id: "hero", label: "Home" },
-  { id: "how-it-works", label: "How It Works" },
-  { id: "algorithm", label: "The Algorithm" },
-  { id: "about", label: "About" },
-  { id: "cta", label: "Get Started" },
-];
+function isLandingSectionId(id: string): id is LandingSectionId {
+  return LANDING_SECTIONS.some((section) => section.id === id);
+}
 
 export function SideNav() {
-  const [activeSection, setActiveSection] = useState("hero");
+  const [activeSection, setActiveSection] = useState<LandingSectionId>("hero");
 
   useEffect(() => {
     const observerOptions = {
@@ -23,7 +28,7 @@ export function SideNav() {
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
       // Find the entry that has crossed the threshold most recently or is most prominent
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && isLandingSectionId(entry.target.id)) {
           setActiveSection(entry.target.id);
         }
       });
@@ -34,7 +39,7 @@ export function SideNav() {
       observerOptions,
     );
 
-    SECTIONS.forEach((section) => {
+    LANDING_SECTIONS.forEach((section) => {
       const element = document.getElementById(section.id);
       if (element) observer.observe(element);
     });
@@ -42,12 +47,9 @@ export function SideNav() {
     const handleKeyDown = (e: KeyboardEvent) => {
       // 1-5 keys for jumping to sections
       const key = parseInt(e.key);
-      if (key >= 1 && key <= SECTIONS.length) {
-        const section = SECTIONS[key - 1];
-        const element = document.getElementById(section.id);
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
-        }
+      if (key >= 1 && key <= LANDING_SECTIONS.length) {
+        const section = LANDING_SECTIONS[key - 1];
+        scrollToLandingSection(section.id);
       }
     };
 
@@ -59,29 +61,22 @@ export function SideNav() {
     };
   }, []);
 
-  const scrollTo = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   return (
     <div className="fixed left-6 top-1/2 -translate-y-1/2 z-100 hidden lg:flex flex-col items-center">
       <nav
         className="flex flex-col gap-5 items-center"
         aria-label="Page navigation"
       >
-        {SECTIONS.map((section) => {
+        {LANDING_SECTIONS.map((section) => {
           const isActive = activeSection === section.id;
 
           return (
             <button
               key={section.id}
-              onClick={() => scrollTo(section.id)}
+              onClick={() => scrollToLandingSection(section.id)}
               className="group relative flex items-center justify-center w-6 h-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal rounded-full"
               aria-label={`Go to ${section.label}`}
-              aria-current={isActive ? "true" : "false"}
+              aria-current={isActive ? "location" : undefined}
             >
               {/* Central Dot */}
               <div
@@ -107,23 +102,11 @@ export function SideNav() {
         <motion.button
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          onClick={scrollToLandingTop}
           className="mt-8 p-1.5 text-slate-muted hover:text-forge-teal transition-colors"
           aria-label="Scroll to top"
         >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 15l7-7 7 7"
-            />
-          </svg>
+          <ChevronUp className="h-4 w-4" aria-hidden="true" />
         </motion.button>
       )}
     </div>

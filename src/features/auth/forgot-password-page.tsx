@@ -16,18 +16,18 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
-
-import { AuthApi } from "./api/auth.api";
-import { AuthSupportShell } from "./components/auth-support-shell";
-import { FormLevelError } from "./components/login-form/form-level-error";
 import {
   buildAuthRouteNavigation,
   useAuthReturnState,
-} from "./lib/auth-return";
+} from "@/shared/lib/auth-route";
+
+import { AuthCommands } from "@/features/auth/api/auth-commands";
+import { AuthSupportShell } from "@/features/auth/components/auth-support-shell";
+import { FormLevelError } from "@/features/auth/components/login-form/form-level-error";
 import {
   forgotPasswordSchema,
   type ForgotPasswordValues,
-} from "./schemas/auth-schemas";
+} from "@/features/auth/schemas/auth-schemas";
 
 export function ForgotPasswordPage() {
   const { returnTo } = useAuthReturnState();
@@ -49,7 +49,7 @@ export function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      const result = await AuthApi.sendResetPasswordLink(values.email);
+      const result = await AuthCommands.sendResetPasswordLink(values.email);
       trackMutationOutcome(trackedMutationNames.authForgotPassword, "success", {
         emailDomain: values.email.split("@")[1] ?? "unknown",
         requestId: result.requestId,
@@ -65,7 +65,7 @@ export function ForgotPasswordPage() {
         emailDomain: values.email.split("@")[1] ?? "unknown",
       });
       setRootError(
-        AuthApi.getAuthErrorMessage(
+        AuthCommands.getAuthErrorMessage(
           error,
           "We couldn't send a reset link right now. Please try again.",
         ),

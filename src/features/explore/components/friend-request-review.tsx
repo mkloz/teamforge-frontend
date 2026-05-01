@@ -3,10 +3,8 @@ import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { BellRing, Check, UserPlus, X } from "lucide-react";
-import { useEffect, useState } from "react";
 
-import { useExploreFriendRequests } from "../hooks/use-explore-friend-requests";
-import { useExploreRouteState } from "../hooks/use-explore-route-state";
+import { useFriendRequestReview } from "@/features/explore/hooks/use-friend-request-review";
 
 function getCounterpartName(name: string) {
   return name.trim().split(/\s+/)[0] ?? name;
@@ -14,82 +12,23 @@ function getCounterpartName(name: string) {
 
 export function FriendRequestReview() {
   const {
-    requests,
-    isLoading,
     acceptRequest,
     declineRequest,
     acceptingRequestId,
-    decliningRequestId,
-    isAccepting,
-    isDeclining,
-  } = useExploreFriendRequests();
-  const { focusedPanel, focusedRequestId, clearFocusedFriendRequest } =
-    useExploreRouteState();
-  const [hiddenRequestIds, setHiddenRequestIds] = useState<string[]>([]);
-
-  const visibleRequests = requests.filter(
-    (request) => !hiddenRequestIds.includes(request.requesterId),
-  );
-  const shouldRender = focusedPanel === "friends" || visibleRequests.length > 0;
-
-  useEffect(() => {
-    if (focusedPanel !== "friends" || !focusedRequestId) {
-      return;
-    }
-
-    if (
-      visibleRequests.some(
-        (request) => request.requesterId === focusedRequestId,
-      )
-    ) {
-      return;
-    }
-
-    clearFocusedFriendRequest();
-  }, [
     clearFocusedFriendRequest,
+    decliningRequestId,
     focusedPanel,
     focusedRequestId,
+    isAccepting,
+    isDeclining,
+    isLoading,
+    shouldRender,
     visibleRequests,
-  ]);
+  } = useFriendRequestReview();
 
   if (!shouldRender) {
     return null;
   }
-
-  const handleAccept = async (requesterId: string) => {
-    setHiddenRequestIds((current) =>
-      current.includes(requesterId) ? current : [...current, requesterId],
-    );
-
-    try {
-      await acceptRequest(requesterId);
-      if (focusedRequestId === requesterId) {
-        clearFocusedFriendRequest();
-      }
-    } catch {
-      setHiddenRequestIds((current) =>
-        current.filter((id) => id !== requesterId),
-      );
-    }
-  };
-
-  const handleDecline = async (requesterId: string) => {
-    setHiddenRequestIds((current) =>
-      current.includes(requesterId) ? current : [...current, requesterId],
-    );
-
-    try {
-      await declineRequest(requesterId);
-      if (focusedRequestId === requesterId) {
-        clearFocusedFriendRequest();
-      }
-    } catch {
-      setHiddenRequestIds((current) =>
-        current.filter((id) => id !== requesterId),
-      );
-    }
-  };
 
   return (
     <section className="mb-6 rounded-3xl border border-border bg-card/90 p-4 shadow-sm">
@@ -174,7 +113,7 @@ export function FriendRequestReview() {
                         size="sm"
                         className="rounded-xl"
                         disabled={isAccepting || isDeclining}
-                        onClick={() => void handleAccept(request.requesterId)}
+                        onClick={() => void acceptRequest(request.requesterId)}
                       >
                         <Check className="size-4" />
                         {acceptingRequestId === request.requesterId
@@ -186,7 +125,7 @@ export function FriendRequestReview() {
                         size="sm"
                         className="rounded-xl"
                         disabled={isAccepting || isDeclining}
-                        onClick={() => void handleDecline(request.requesterId)}
+                        onClick={() => void declineRequest(request.requesterId)}
                       >
                         <X className="size-4" />
                         {decliningRequestId === request.requesterId

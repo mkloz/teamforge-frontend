@@ -1,13 +1,18 @@
-import { AuthQueries } from "@/features/auth/api/auth.queries";
+import {
+  useAuthSessionState,
+  useCurrentUserQuery,
+} from "@/shared/api/current-user-query";
+import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
+import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
 import { Button } from "@/shared/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ChevronDown } from "lucide-react";
-import { getLandingPrimaryAction } from "../../lib/landing-auth";
-import { ForgeOrb } from "./forge-orb";
+import { getLandingPrimaryAction } from "@/features/landing/lib/landing-auth";
+import { ForgeOrb } from "@/features/landing/components/hero/forge-orb";
 
 export function HeroSection() {
-  const { isAuthenticated } = AuthQueries.useAuthSessionState();
-  const { data: currentUser } = AuthQueries.useCurrentUser();
+  const { isAuthenticated } = useAuthSessionState();
+  const { data: currentUser } = useCurrentUserQuery();
   const primaryAction = getLandingPrimaryAction(
     isAuthenticated,
     currentUser,
@@ -58,9 +63,7 @@ export function HeroSection() {
                 size="hero"
                 className="w-full sm:w-auto"
                 onClick={() =>
-                  document
-                    .querySelector("#how-it-works")
-                    ?.scrollIntoView({ behavior: "smooth" })
+                  scrollToLandingSection(LANDING_SECTION_IDS.howItWorks)
                 }
               >
                 See How It Works
@@ -77,11 +80,7 @@ export function HeroSection() {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() =>
-          document
-            .querySelector("#how-it-works")
-            ?.scrollIntoView({ behavior: "smooth" })
-        }
+        onClick={() => scrollToLandingSection(LANDING_SECTION_IDS.howItWorks)}
         className="absolute bottom-7 left-1/2 -translate-x-1/2 text-text-dark-muted hover:text-text-dark-secondary z-10 rounded-full"
         aria-label="Scroll to next section"
       >

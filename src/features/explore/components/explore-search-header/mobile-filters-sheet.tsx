@@ -10,8 +10,8 @@ import {
 } from "@/shared/components/ui/sheet";
 import { cn } from "@/shared/lib/utils";
 import { ListFilter, SlidersHorizontal } from "lucide-react";
-import { useExploreRouteState } from "../../hooks/use-explore-route-state";
-import { ExploreRightFilters } from "../explore-right-filters";
+import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
+import { ExploreRightFilters } from "@/features/explore/components/explore-right-filters";
 
 export function MobileFiltersSheet() {
   const { isAnythingFiltered, resetFilters } = useExploreRouteState();
@@ -58,6 +58,7 @@ export function MobileFiltersSheet() {
             </SheetClose>
             <SheetClose asChild>
               <button
+                type="button"
                 onClick={resetFilters}
                 className="w-full py-2 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
               >

@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
+import { buildAuthRouteNavigation } from "@/shared/lib/auth-route";
 import { useLoginForm } from "../../hooks/use-login-form";
 import { FormHeader } from "./form-header";
 import { FormLevelError } from "./form-level-error";
@@ -18,7 +19,6 @@ import { SocialLoginDivider } from "./social-login-divider";
 import { GoogleAuthButton } from "./google-auth-button";
 import { SwitchViewPrompt } from "./switch-view-prompt";
 import { useGoogleAuth } from "../../hooks/use-google-auth";
-import { buildAuthRouteNavigation } from "../../lib/auth-return";
 
 interface LoginFormProps {
   authReturnTo?: string | null;

@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
 
-import { useExploreRouteState } from "../../hooks/use-explore-route-state";
+import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 
 export function SearchInput() {
   const { searchQuery, setSearchQuery } = useExploreRouteState();

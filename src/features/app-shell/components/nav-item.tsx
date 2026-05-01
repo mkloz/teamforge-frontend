@@ -6,7 +6,7 @@ import {
 import type { AppNavigationItem } from "@/shared/lib/app-navigation";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
-import { useActiveRoute } from "../hooks/use-active-route";
+import { useActiveRoute } from "@/features/app-shell/hooks/use-active-route";
 
 interface NavItemProps {
   item: AppNavigationItem;

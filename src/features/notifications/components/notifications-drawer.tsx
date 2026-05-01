@@ -2,8 +2,6 @@ import { useNavigate } from "@tanstack/react-router";
 import { cn } from "@/shared/lib/utils";
 import { X } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
-import { useNotifications } from "../hooks/use-notifications";
-import { NotificationItem } from "./notification-item";
 import {
   Drawer,
   DrawerContent,
@@ -14,6 +12,9 @@ import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { useState } from "react";
 import type { Notification } from "@/shared/schemas";
 import { resolveNotificationDestination } from "@/shared/lib/notification-destination";
+
+import { NotificationItem } from "@/features/notifications/components/notification-item";
+import { useNotifications } from "@/features/notifications/hooks/use-notifications";
 
 interface NotificationsDrawerProps {
   open: boolean;

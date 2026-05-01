@@ -1,8 +1,9 @@
-import { motion, MotionValue, useTransform } from "framer-motion";
+import { motion, useTransform } from "framer-motion";
+import type { MotionValue } from "framer-motion";
 import { useRef } from "react";
 import { cn } from "@/shared/lib/utils";
 import { Card, CardContent } from "@/shared/components/ui/card";
-import type { AboutCard } from "./about-data";
+import type { AboutCard } from "@/features/landing/components/about/about-data";
 
 interface StackCardProps {
   card: AboutCard;

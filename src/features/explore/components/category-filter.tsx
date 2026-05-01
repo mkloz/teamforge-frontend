@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib/utils";
-import { CATEGORIES } from "../constants/explore.constants";
-import { useExploreRouteState } from "../hooks/use-explore-route-state";
+import { CATEGORIES } from "@/features/explore/constants/explore.constants";
+import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 import type { PlanCategory } from "@/shared/schemas/enums";
 
 export function CategoryFilter() {

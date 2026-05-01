@@ -1,5 +1,4 @@
 import { TeamForgeLogo } from "@/assets/logo";
-import { NotificationsBellTrigger } from "@/features/notifications/components/notifications-bell-trigger";
 import { Button } from "@/shared/components/ui/button";
 import {
   appSidebarNavigation,
@@ -12,17 +11,18 @@ import {
 } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
-import { useActiveRoute } from "../hooks/use-active-route";
-import { NavItem } from "./nav-item";
+import type { ReactNode } from "react";
+import { useActiveRoute } from "@/features/app-shell/hooks/use-active-route";
+import { NavItem } from "@/features/app-shell/components/nav-item";
 
 interface AppSidebarProps {
   className?: string;
-  onNotificationsOpen?: () => void;
+  notificationTrigger?: ReactNode;
 }
 
 export function AppSidebar({
   className,
-  onNotificationsOpen,
+  notificationTrigger,
 }: AppSidebarProps) {
   const { isActive } = useActiveRoute();
   const forgeItem = getAppNavigationItem("forge");
@@ -70,9 +70,7 @@ export function AppSidebar({
 
       {/* Bottom section: notifications, settings + forge */}
       <div className="px-1.5 py-4 flex flex-col items-center gap-3">
-        <NotificationsBellTrigger
-          onClick={onNotificationsOpen ?? (() => undefined)}
-        />
+        {notificationTrigger}
 
         <NavItem item={settingsItem} />
 

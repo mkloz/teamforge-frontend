@@ -2,7 +2,7 @@ import type { PersonalityType } from "@/shared/schemas/enums";
 import type {
   CognitiveFunction,
   CognitiveFunctionCode,
-} from "./profile-contract";
+} from "@/features/profile/lib/profile-contract";
 
 // Full function descriptions
 export const FUNCTION_INFO: Record<

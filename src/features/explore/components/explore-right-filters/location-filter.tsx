@@ -1,9 +1,11 @@
 import { cn } from "@/shared/lib/utils";
 import * as RadixSlider from "@radix-ui/react-slider";
-import { Globe, Laptop, MapPin, Route } from "lucide-react";
-import { FILTER_BOUNDARIES } from "../../constants/explore.constants";
-import { useExploreRouteState } from "../../hooks/use-explore-route-state";
-import type { ExploreLocationMode } from "../../schemas/explore-filters.schema";
+import { Route } from "lucide-react";
+import {
+  FILTER_BOUNDARIES,
+  LOCATION_FILTER_OPTIONS,
+} from "@/features/explore/constants/explore.constants";
+import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 
 export function LocationFilter() {
   const { locationMode, setLocationMode, distance, setDistance } =
@@ -15,19 +17,14 @@ export function LocationFilter() {
         Location
       </h4>
       <div className="flex p-1 bg-muted/20 rounded-xl border border-border/40 relative gap-1">
-        {(
-          [
-            { id: "ALL", label: "Any", icon: Globe },
-            { id: "IN_PERSON", label: "Local", icon: MapPin },
-            { id: "ONLINE", label: "Online", icon: Laptop },
-          ] as const
-        ).map((opt) => {
+        {LOCATION_FILTER_OPTIONS.map((opt) => {
           const active = locationMode === opt.id;
           const Icon = opt.icon;
           return (
             <button
               key={opt.id}
-              onClick={() => setLocationMode(opt.id as ExploreLocationMode)}
+              type="button"
+              onClick={() => setLocationMode(opt.id)}
               className={cn(
                 "relative z-10 flex-1 flex flex-row items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
                 active

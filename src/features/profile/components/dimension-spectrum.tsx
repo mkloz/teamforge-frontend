@@ -4,7 +4,7 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
-import { getBorderlineExplanation } from "../lib/narrative-generator";
+import { getBorderlineExplanation } from "@/features/profile/lib/narrative-generator";
 import type { DimensionScore } from "@/shared/types/psychometrics";
 
 interface DimensionSpectrumProps {

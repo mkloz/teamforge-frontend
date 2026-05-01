@@ -1,7 +1,8 @@
-import { apiClient } from "@/shared/api/api";
+import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
 import {
   createPaginatedSchema,
   exploreGroupSchema,
+  exploreJoinResultSchema,
   groupApiSchema,
   inviteSchema,
 } from "@/shared/schemas";
@@ -70,5 +71,13 @@ export class HomeApi {
       .json<unknown>();
 
     return inviteSchema.parse(response);
+  }
+
+  static async joinRecommendedGroup(groupId: string) {
+    const response = await apiClient.post(`explore/groups/${groupId}/join`);
+
+    return parseJsonWithRequestId(response, (value) =>
+      exploreJoinResultSchema.parse(value),
+    );
   }
 }

@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { ExploreQueries } from "../api/explore.queries";
-import { useExploreRouteState } from "./use-explore-route-state";
+import { ExploreQueryFactory } from "@/features/explore/api/explore-query-factory";
+import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 
 export function useExploreGroups() {
   const state = useExploreRouteState();
 
   return useQuery(
-    ExploreQueries.groups(
+    ExploreQueryFactory.groups(
       {
         selectedCategories: state.selectedCategories,
         sizeRange: state.sizeRange,

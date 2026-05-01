@@ -1,11 +1,10 @@
 import { TeamForgeLogo } from "@/assets/logo";
+import type { CSSProperties } from "react";
 import { useEffect, useRef } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { GroupCard } from "./group-card";
-import { MbtiCard } from "./mbti-card";
-import { TrustCard } from "./trust-card";
-
-// We no longer need AVATARS here
+import { GroupCard } from "@/features/landing/components/hero/group-card";
+import { MbtiCard } from "@/features/landing/components/hero/mbti-card";
+import { TrustCard } from "@/features/landing/components/hero/trust-card";
 
 export function ForgeOrb() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -170,7 +169,7 @@ export function ForgeOrb() {
 
         {/* The 4 MBTI Data Vectors (Comet Tails) */}
         {[0, 1, 2, 3].map((i) => {
-          const tailStyle: React.CSSProperties & Record<string, string> = {
+          const tailStyle: CSSProperties & Record<string, string> = {
             "--tail-color-end": "rgba(13,148,136,0.85)",
             "--tail-color-start": "rgba(13,148,136,0.15)",
           };
@@ -194,7 +193,7 @@ export function ForgeOrb() {
 
         {/* The 4 MBTI Data Vectors (Dots) */}
         {[0, 1, 2, 3].map((i) => {
-          const dotStyle: React.CSSProperties & Record<string, string> = {
+          const dotStyle: CSSProperties & Record<string, string> = {
             "--dot-color": "rgba(13,148,136,1)",
             "--glow-color": "rgba(13,148,136,0.5)",
             "--glow-size": "12px",

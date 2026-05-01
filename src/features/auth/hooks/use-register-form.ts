@@ -3,8 +3,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-import { AuthApi } from "../api/auth.api";
-import { registerSchema, type RegisterValues } from "../schemas/auth-schemas";
+import { AuthCommands } from "@/features/auth/api/auth-commands";
+import {
+  registerSchema,
+  type RegisterValues,
+} from "@/features/auth/schemas/auth-schemas";
 
 interface UseRegisterFormOptions {
   onSuccess?: () => void | Promise<void>;
@@ -83,7 +86,7 @@ export function useRegisterForm({
     setLoading(true);
 
     try {
-      const result = await AuthApi.registerWithEmail(form.getValues());
+      const result = await AuthCommands.registerWithEmail(form.getValues());
       trackMutationOutcome(trackedMutationNames.authRegisterEmail, "success", {
         requestId: result.requestId,
       });
@@ -98,7 +101,7 @@ export function useRegisterForm({
       });
       trackMutationOutcome(trackedMutationNames.authRegisterEmail, "error");
       setRootError(
-        AuthApi.getAuthErrorMessage(
+        AuthCommands.getAuthErrorMessage(
           error,
           "We couldn't start your verification step. Please try again.",
         ),
@@ -128,7 +131,7 @@ export function useRegisterForm({
       setRootError(null);
       setLoading(true);
       try {
-        const result = await AuthApi.verifyEmailOtp(formValues);
+        const result = await AuthCommands.verifyEmailOtp(formValues);
         trackMutationOutcome(
           trackedMutationNames.authVerifyEmailOtp,
           "success",
@@ -141,7 +144,7 @@ export function useRegisterForm({
         captureException(trackedMutationNames.authVerifyEmailOtp, error);
         trackMutationOutcome(trackedMutationNames.authVerifyEmailOtp, "error");
         setRootError(
-          AuthApi.getAuthErrorMessage(
+          AuthCommands.getAuthErrorMessage(
             error,
             "We couldn't verify that code. Please try again.",
           ),
@@ -161,7 +164,7 @@ export function useRegisterForm({
     setResendLoading(true);
 
     try {
-      const result = await AuthApi.resendEmailOtp(email);
+      const result = await AuthCommands.resendEmailOtp(email);
       trackMutationOutcome(trackedMutationNames.authResendEmailOtp, "success", {
         requestId: result.requestId,
       });
@@ -172,7 +175,7 @@ export function useRegisterForm({
       });
       trackMutationOutcome(trackedMutationNames.authResendEmailOtp, "error");
       setRootError(
-        AuthApi.getAuthErrorMessage(
+        AuthCommands.getAuthErrorMessage(
           error,
           "We couldn't resend the verification code. Please try again.",
         ),

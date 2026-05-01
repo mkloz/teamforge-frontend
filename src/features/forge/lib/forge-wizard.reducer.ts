@@ -1,4 +1,3 @@
-import { ForgeQueries } from "../api/forge.queries";
 import type {
   FixedGroupSize,
   ForgeMode,
@@ -7,7 +6,7 @@ import type {
   GroupSizeMode,
   LocationType,
   Visibility,
-} from "./forge-contract";
+} from "@/features/forge/lib/forge-contract";
 
 export type Step = 1 | 2 | 3 | 4 | 5 | 6;
 export type NavDirection = "forward" | "back";
@@ -132,7 +131,7 @@ export function createInitialForgeWizardState(): ForgeWizardData {
     diversityWeight: 50,
     visibility: "FRIENDS_ONLY",
     forgeResult: "IDLE",
-    participants: ForgeQueries.getInitialParticipants(),
+    participants: [],
     removedIds: new Set(),
     groupName: "",
     groupDescription: "",

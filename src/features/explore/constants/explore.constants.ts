@@ -1,9 +1,21 @@
-import { Activity, Clock, Target } from "lucide-react";
+import {
+  Activity,
+  Clock,
+  Globe,
+  Handshake,
+  Laptop,
+  MapPin,
+  Target,
+  Unlock,
+  Users,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type {
+  ExploreAccessMode,
   ExploreFilters,
+  ExploreLocationMode,
   ExploreSortOption,
-} from "../schemas/explore-filters.schema";
+} from "@/features/explore/schemas/explore-filters.schema";
 
 export const SORTS: {
   id: ExploreSortOption;
@@ -30,6 +42,26 @@ export const CATEGORIES = [
   { id: "TRAVEL", label: "Travel" },
   { id: "OTHER", label: "Other" },
 ] as const;
+
+export const LOCATION_FILTER_OPTIONS: {
+  id: ExploreLocationMode;
+  label: string;
+  icon: LucideIcon;
+}[] = [
+  { id: "ALL", label: "Any", icon: Globe },
+  { id: "IN_PERSON", label: "Local", icon: MapPin },
+  { id: "ONLINE", label: "Online", icon: Laptop },
+];
+
+export const ACCESS_FILTER_OPTIONS: {
+  id: ExploreAccessMode;
+  label: string;
+  icon: LucideIcon;
+}[] = [
+  { id: "ALL", label: "Any", icon: Users },
+  { id: "OPEN", label: "Open", icon: Unlock },
+  { id: "BY_REQUEST", label: "Req", icon: Handshake },
+];
 
 export const FILTER_BOUNDARIES = {
   distance: { min: 2, max: 50, default: 15 },

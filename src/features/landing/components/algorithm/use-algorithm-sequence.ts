@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
-import type { DisplayNode, Phase } from "./algorithm-types";
-import { SELECTED_IDS } from "./algorithm-data";
+import { SELECTED_IDS } from "@/features/landing/components/algorithm/algorithm-data";
+import type {
+  DisplayNode,
+  Phase,
+} from "@/features/landing/components/algorithm/algorithm-types";
 
 export function useAlgorithmSequence(
   inView: boolean,

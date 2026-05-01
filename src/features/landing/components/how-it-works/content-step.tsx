@@ -5,7 +5,7 @@ import {
   useMotionValueEvent,
 } from "framer-motion";
 import { useState } from "react";
-import type { Step } from "./how-it-works-data";
+import type { Step } from "@/features/landing/components/how-it-works/how-it-works-data";
 
 interface ContentStepProps {
   step: Step;
