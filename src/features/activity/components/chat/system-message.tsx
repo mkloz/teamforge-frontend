@@ -2,7 +2,7 @@ import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 import { Info, Sparkles, UserPlus } from "lucide-react";
 import { memo, useMemo } from "react";
-import { getSystemMessageConfig } from "../../lib/chat-utils";
+import { getSystemMessageConfig } from "@/features/activity/lib/chat-utils";
 
 interface SystemMessageProps {
   message: UnifiedMessage;

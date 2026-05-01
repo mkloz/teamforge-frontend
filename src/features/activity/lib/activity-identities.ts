@@ -1,5 +1,5 @@
-import { AuthQueries } from "@/features/auth/api/auth.queries";
 import { appQueryClient } from "@/shared/api/query-client";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import type { User } from "@/shared/schemas";
 
 const LEGACY_ACTIVITY_CURRENT_USER_ID = "current-user";
@@ -7,7 +7,7 @@ const LEGACY_ACTIVITY_CURRENT_USER_ID_ALT = "user-current";
 
 export function getActivityCurrentUser() {
   return (
-    appQueryClient.getQueryData<User>(AuthQueries.currentUserQueryKey) ?? null
+    appQueryClient.getQueryData<User>(APP_QUERY_KEYS.auth.currentUser) ?? null
   );
 }
 

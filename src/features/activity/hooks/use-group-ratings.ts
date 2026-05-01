@@ -1,32 +1,26 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { toast } from "sonner";
 
-import { AuthQueries } from "@/features/auth/api/auth.queries";
+import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import type { CreateRatingPayload } from "@/shared/schemas";
-import { ActivityApi } from "../api/activity.api";
-import { ActivityQueries } from "../api/activity.queries";
+import { ActivityCommands } from "@/features/activity/api/activity-commands";
+import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 
 export function useGroupRatings(groupId: string) {
-  const queryClient = useQueryClient();
-  const { data: currentUser } = AuthQueries.useCurrentUser();
-  const ratingsQuery = useQuery({
-    queryKey: ["activity-ratings", groupId],
-    queryFn: () => ActivityApi.getGroupRatings(groupId),
-    enabled: groupId.length > 0,
-    staleTime: 30_000,
-  });
+  const { data: currentUser } = useCurrentUserQuery();
+  const ratingsQuery = useQuery(ActivityQueryFactory.groupRatings(groupId));
 
   const createRatingMutation = useMutation({
     meta: {
       telemetryName: trackedMutationNames.activityGroupRatingSubmit,
     },
     mutationFn: (payload: CreateRatingPayload) =>
-      ActivityApi.createRating(payload),
-    onSuccess: async (result, payload) => {
+      ActivityCommands.createGroupRating(groupId, payload),
+    onSuccess: (result, payload) => {
       trackMutationOutcome(
         trackedMutationNames.activityGroupRatingSubmit,
         "success",
@@ -40,18 +34,6 @@ export function useGroupRatings(groupId: string) {
       toast.success(
         `Thanks. ${result.data.rating.ratee.name}'s trust score updated.`,
       );
-
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: ["activity-ratings", groupId],
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ActivityQueries.groupSelection(groupId).queryKey,
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ActivityQueries.groups().queryKey,
-        }),
-      ]);
     },
     onError: (error, payload) => {
       trackMutationOutcome(

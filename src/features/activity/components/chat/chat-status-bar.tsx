@@ -11,8 +11,8 @@ import type {
   Plan,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { formatChatFullDate } from "../../lib/chat-utils";
+import { memo, useCallback, useMemo, useState } from "react";
+import { formatChatFullDate } from "@/features/activity/lib/chat-utils";
 import { AnimatePresence, motion } from "framer-motion";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -144,7 +144,6 @@ export const ChatStatusBar = memo(function ChatStatusBar({
 }: ChatStatusBarProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
-  const prevCountRef = useRef(0);
 
   // Build ordered entry list (plan first)
   const entries = useMemo<PinnedEntry[]>(() => {
@@ -180,26 +179,19 @@ export const ChatStatusBar = memo(function ChatStatusBar({
   }, [plan, pinnedMessages]);
 
   const total = entries.length;
-
-  // Keep index in bounds when entries are removed
-  useEffect(() => {
-    if (total > 0 && activeIndex >= total) setActiveIndex(total - 1);
-  }, [total, activeIndex]);
-
-  // Jump to newest entry when one is added
-  useEffect(() => {
-    if (total > prevCountRef.current && prevCountRef.current > 0) {
-      setDirection(1);
-      setActiveIndex(total - 1);
-    }
-    prevCountRef.current = total;
-  }, [total]);
+  const safeActiveIndex =
+    total > 0 ? Math.min(activeIndex, total - 1) : activeIndex;
 
   // Scroll to a pinned message and give it a brief ring highlight
   const scrollToMessage = useCallback(
     (messageId: string) => {
-      const el = document.getElementById(`msg-${messageId}`);
+      const el =
+        scrollContainerRef?.current?.querySelector<HTMLElement>(
+          `#msg-${CSS.escape(messageId)}`,
+        ) ?? document.getElementById(`msg-${messageId}`);
+
       if (!el) return;
+
       el.scrollIntoView({ behavior: "smooth", block: "center" });
       el.classList.add("ring-2", "ring-forge-teal/40", "rounded-xl");
       setTimeout(
@@ -207,15 +199,13 @@ export const ChatStatusBar = memo(function ChatStatusBar({
         1400,
       );
     },
-    // scrollContainerRef reserved for future imperative scroll fallback
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [scrollContainerRef],
   );
 
   // Click → cycle → act
   const handleBarClick = useCallback(() => {
     if (total === 0) return;
-    const current = entries[activeIndex];
+    const current = entries[safeActiveIndex];
 
     if (total === 1) {
       if (current.isPlan) onViewDetails?.();
@@ -223,7 +213,7 @@ export const ChatStatusBar = memo(function ChatStatusBar({
       return;
     }
 
-    const next = (activeIndex + 1) % total;
+    const next = (safeActiveIndex + 1) % total;
     setDirection(1);
     setActiveIndex(next);
 
@@ -231,108 +221,102 @@ export const ChatStatusBar = memo(function ChatStatusBar({
     if (!nextEntry.isPlan && nextEntry.messageId)
       scrollToMessage(nextEntry.messageId);
     else if (nextEntry.isPlan) onViewDetails?.();
-  }, [total, activeIndex, entries, onViewDetails, scrollToMessage]);
+  }, [total, safeActiveIndex, entries, onViewDetails, scrollToMessage]);
 
   // Unpin current non-plan entry
   const handleUnpin = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      const active = entries[activeIndex];
+      const active = entries[safeActiveIndex];
       if (!active.messageId) return;
       const newTotal = total - 1;
-      if (newTotal > 0 && activeIndex >= newTotal) {
+      if (newTotal > 0 && safeActiveIndex >= newTotal) {
         setDirection(-1);
         setActiveIndex(newTotal - 1);
       }
       onUnpinPinnedMessage?.(active.messageId);
     },
-    [entries, activeIndex, total, onUnpinPinnedMessage],
+    [entries, safeActiveIndex, total, onUnpinPinnedMessage],
   );
 
   if (total === 0) return null;
 
-  const active = entries[activeIndex];
+  const active = entries[safeActiveIndex];
   const Icon = active.icon;
 
   return (
     <div
-      role="button"
-      tabIndex={0}
-      aria-label={`${active.label}: ${active.body}. Click to cycle.`}
-      onClick={handleBarClick}
-      onKeyDown={(e) => e.key === "Enter" && handleBarClick()}
       className={cn(
-        // Single-row, compact but consistent height
-        // pl-4 reserves space for the dot indicator column (w-3.5 absolute)
         "relative flex items-center gap-2 pl-4 pr-2 py-1.5 min-h-0",
         "w-full shrink-0 z-90",
         "border-b border-border/50",
         "bg-canvas dark:bg-canvas",
-        "cursor-pointer select-none group",
-        "hover:bg-muted/50 transition-colors duration-150",
-        "focus-visible:outline-none focus-visible:ring-inset focus-visible:ring-2 focus-visible:ring-forge-teal/40",
       )}
     >
-      {/* Left-edge pager dots */}
       <PagerDots
         total={total}
-        activeIndex={activeIndex}
+        activeIndex={safeActiveIndex}
         accentClass={active.accentClass}
       />
 
-      {/* Icon — small, consistent with label weight */}
-      <Icon
-        size={13}
-        strokeWidth={2}
-        className={cn("shrink-0 opacity-90", active.colorClass)}
-        aria-hidden
-      />
-
-      {/* Animated text area — single line, label + separator + body */}
-      <div className="flex-1 min-w-0 overflow-hidden">
-        <AnimatePresence mode="popLayout" initial={false} custom={direction}>
-          <motion.div
-            key={active.id}
-            custom={direction}
-            variants={{
-              enter: (d: number) => ({ opacity: 0, y: d * 6 }),
-              center: { opacity: 1, y: 0 },
-              exit: (d: number) => ({ opacity: 0, y: d * -6 }),
-            }}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 0.14, ease: [0.22, 1, 0.36, 1] }}
-            className="flex items-baseline gap-1.5 min-w-0"
-          >
-            {/* Compact label */}
-            <span
-              className={cn(
-                "shrink-0 text-[10px] font-semibold uppercase tracking-widest leading-none",
-                active.colorClass,
-              )}
-            >
-              {active.label}
-            </span>
-
-            {/* Separator dot */}
-            <span className="shrink-0 text-slate-muted/50 text-[10px] leading-none">
-              ·
-            </span>
-
-            {/* Body content — truncates freely */}
-            <span className="text-xs font-medium text-ink/75 dark:text-ink/65 truncate leading-none">
-              {active.body}
-            </span>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      {/* Trailing action */}
-      <div
-        className="shrink-0 flex items-center"
-        onClick={(e) => e.stopPropagation()}
+      <button
+        type="button"
+        aria-label={`${active.label}: ${active.body}. ${
+          total > 1 ? "Show next pinned item." : "Open pinned item."
+        }`}
+        onClick={handleBarClick}
+        className={cn(
+          "group flex min-w-0 flex-1 items-center gap-2 text-left",
+          "cursor-pointer select-none rounded-md",
+          "transition-colors duration-150",
+          "focus-visible:outline-none focus-visible:ring-inset focus-visible:ring-2 focus-visible:ring-forge-teal/40",
+        )}
       >
+        <Icon
+          size={13}
+          strokeWidth={2}
+          className={cn("shrink-0 opacity-90", active.colorClass)}
+          aria-hidden
+        />
+
+        <span className="min-w-0 flex-1 overflow-hidden">
+          <AnimatePresence mode="popLayout" initial={false} custom={direction}>
+            <motion.span
+              key={active.id}
+              custom={direction}
+              variants={{
+                enter: (d: number) => ({ opacity: 0, y: d * 6 }),
+                center: { opacity: 1, y: 0 },
+                exit: (d: number) => ({ opacity: 0, y: d * -6 }),
+              }}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.14, ease: [0.22, 1, 0.36, 1] }}
+              className="flex min-w-0 items-baseline gap-1.5"
+            >
+              <span
+                className={cn(
+                  "shrink-0 text-[10px] font-semibold uppercase tracking-widest leading-none",
+                  active.colorClass,
+                )}
+              >
+                {active.label}
+              </span>
+
+              <span className="shrink-0 text-slate-muted/50 text-[10px] leading-none">
+                ·
+              </span>
+
+              <span className="truncate text-xs font-medium leading-none text-ink/75 dark:text-ink/65">
+                {active.body}
+              </span>
+            </motion.span>
+          </AnimatePresence>
+        </span>
+      </button>
+
+      <div className="shrink-0 flex items-center">
         {active.isPlan ? (
           // Wrap in same w-6 h-6 as the unpin button so both branches
           // produce identical height, preventing the plan entry being shorter.

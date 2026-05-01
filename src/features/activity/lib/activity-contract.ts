@@ -29,7 +29,7 @@ export type {
   UnifiedAttachment,
   UnifiedMessage,
   UnifiedReaction as UnifiedMessageReaction,
-} from "../schemas/activity.schemas";
+} from "@/features/activity/schemas/activity.schemas";
 
 export type UnifiedParticipant =
   import("../schemas/activity.schemas").ActivityParticipant;

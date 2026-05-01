@@ -1,15 +1,14 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import {
-  ACTIVITY_CHATS_QUERY_KEY,
-  ACTIVITY_DIRECT_SELECTION_QUERY_KEY,
-  ACTIVITY_FRIENDSHIPS_QUERY_KEY,
-  ACTIVITY_GROUP_SELECTION_QUERY_KEY,
-  ACTIVITY_GROUPS_QUERY_KEY,
-} from "@/features/activity/api/activity-query-keys";
 import { getUserOceanScores } from "@/features/profile/lib/profile-utils";
 import type { ApiResponseWithRequestId } from "@/shared/api/api";
 import { appQueryClient } from "@/shared/api/query-client";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import {
+  invalidateFriendshipSurfaces,
+  invalidateGroupMembershipSurfaces,
+  invalidateNotificationSurfaces,
+} from "@/shared/api/query-invalidation";
 import type {
   ExploreGroup,
   ExploreJoinResult,
@@ -166,16 +165,7 @@ export class ExploreQueries {
 
   static groups(filters: ExploreFilters, searchQuery: string) {
     return queryOptions({
-      queryKey: [
-        "explore-groups",
-        searchQuery,
-        filters.selectedCategories,
-        filters.sizeRange,
-        filters.distance,
-        filters.locationMode,
-        filters.access,
-        filters.sortBy,
-      ],
+      queryKey: APP_QUERY_KEYS.explore.groupsWithFilters(searchQuery, filters),
       queryFn: async (): Promise<ExploreGroup[]> => {
         const searchParams = new URLSearchParams();
         const serverCategory = getServerCategory(filters.selectedCategories);
@@ -211,20 +201,7 @@ export class ExploreQueries {
     return ExploreApi.joinGroup(groupId).then(async (result) => {
       this.applyJoinGroupResult(result.data);
 
-      await Promise.all([
-        appQueryClient.invalidateQueries({ queryKey: ["home", "groups"] }),
-        appQueryClient.invalidateQueries({ queryKey: ["home", "plans"] }),
-        appQueryClient.invalidateQueries({ queryKey: ["home", "stats"] }),
-        appQueryClient.invalidateQueries({
-          queryKey: ACTIVITY_GROUPS_QUERY_KEY,
-        }),
-        appQueryClient.invalidateQueries({
-          queryKey: ACTIVITY_CHATS_QUERY_KEY,
-        }),
-        appQueryClient.invalidateQueries({
-          queryKey: ACTIVITY_GROUP_SELECTION_QUERY_KEY,
-        }),
-      ]);
+      await invalidateGroupMembershipSurfaces();
 
       return result;
     });
@@ -244,21 +221,8 @@ export class ExploreQueries {
     this.applyFriendRequestUpdate(friendship.data);
 
     void Promise.all([
-      appQueryClient.invalidateQueries({
-        queryKey: ["notifications"],
-      }),
-      appQueryClient.invalidateQueries({
-        queryKey: ["notifications", "unread-count"],
-      }),
-      appQueryClient.invalidateQueries({
-        queryKey: ACTIVITY_FRIENDSHIPS_QUERY_KEY,
-      }),
-      appQueryClient.invalidateQueries({
-        queryKey: ACTIVITY_CHATS_QUERY_KEY,
-      }),
-      appQueryClient.invalidateQueries({
-        queryKey: ACTIVITY_DIRECT_SELECTION_QUERY_KEY,
-      }),
+      invalidateNotificationSurfaces(),
+      invalidateFriendshipSurfaces(),
     ]);
 
     return friendship;
@@ -269,14 +233,7 @@ export class ExploreQueries {
 
     this.applyFriendRequestUpdate(friendship.data);
 
-    void Promise.all([
-      appQueryClient.invalidateQueries({
-        queryKey: ["notifications"],
-      }),
-      appQueryClient.invalidateQueries({
-        queryKey: ["notifications", "unread-count"],
-      }),
-    ]);
+    void invalidateNotificationSurfaces();
 
     return friendship;
   }
@@ -291,7 +248,7 @@ export class ExploreQueries {
     );
 
     appQueryClient.setQueryData<FriendshipApi[] | undefined>(
-      ACTIVITY_FRIENDSHIPS_QUERY_KEY,
+      APP_QUERY_KEYS.activity.friendships,
       (current) => mergeFriendships(current, friendship),
     );
   }
@@ -304,7 +261,7 @@ export class ExploreQueries {
     for (const [queryKey, groups] of appQueryClient.getQueriesData<
       ExploreGroup[]
     >({
-      queryKey: ["explore-groups"],
+      queryKey: APP_QUERY_KEYS.explore.groups,
     })) {
       if (!groups) {
         continue;

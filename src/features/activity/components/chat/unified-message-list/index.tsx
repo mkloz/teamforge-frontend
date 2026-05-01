@@ -15,7 +15,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { ChatBackground } from "../chat-background";
+import { ChatBackground } from "@/features/activity/components/chat/chat-background";
 import { DateSeparator } from "./date-separator";
 import { MessageRenderer } from "./message-renderer";
 import { ScrollActionButtons } from "./scroll-action-buttons";

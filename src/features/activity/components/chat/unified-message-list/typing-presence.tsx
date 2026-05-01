@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
 import { Avatar } from "@/shared/components/common/avatar";
-import { UnifiedTypingIndicator } from "../unified-typing-indicator";
+import { UnifiedTypingIndicator } from "@/features/activity/components/chat/unified-typing-indicator";
 
 export const TypingPresence = memo(
   ({

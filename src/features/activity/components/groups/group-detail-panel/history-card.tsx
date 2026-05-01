@@ -2,7 +2,7 @@ import { Calendar, RotateCcw, Star, MapPin } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { PlanCover } from "@/shared/components/common/plan-cover";
 import { cn } from "@/shared/lib/utils";
-import type { PlanHistoryItem } from "../../../lib/activity-contract";
+import type { PlanHistoryItem } from "@/features/activity/lib/activity-contract";
 import { categoryColors } from "./lib/constants";
 
 interface HistoryCardProps {

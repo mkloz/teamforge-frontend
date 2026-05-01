@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { AuthQueries } from "@/features/auth/api/auth.queries";
+import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 
 import { useActivityComposer } from "./use-activity-composer";
 import { useActivityFeed } from "./use-activity-feed";
@@ -10,7 +10,7 @@ import { useActivityRouteState } from "./use-activity-route-state";
 import { useActivitySelection } from "./use-activity-selection";
 
 export function useActivity() {
-  const currentUserQuery = useQuery(AuthQueries.currentUser());
+  const currentUserQuery = useQuery(currentUserQueryOptions());
   const routeState = useActivityRouteState();
   const feed = useActivityFeed();
   const selection = useActivitySelection();

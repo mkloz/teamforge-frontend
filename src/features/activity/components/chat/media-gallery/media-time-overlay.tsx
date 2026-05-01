@@ -1,7 +1,7 @@
 import { memo } from "react";
-import type { UnifiedMessage } from "../../../lib/activity-contract";
-import { formatChatTime } from "../../../lib/chat-utils";
-import { MessageStatusIcon } from "../message-status-icon";
+import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { formatChatTime } from "@/features/activity/lib/chat-utils";
+import { MessageStatusIcon } from "@/features/activity/components/chat/message-status-icon";
 
 interface MediaTimeOverlayProps {
   timestamp: string;

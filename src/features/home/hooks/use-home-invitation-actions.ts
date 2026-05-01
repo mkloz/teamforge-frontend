@@ -1,32 +1,34 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
+import { invalidateNotificationSurfaces } from "@/shared/api/query-invalidation";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { HomeQueries } from "../api/home.queries";
 
 export function useHomeInvitationActions() {
-  const queryClient = useQueryClient();
   const [actionError, setActionError] = useState<string | null>(null);
 
-  const acceptMutation = useMutation({
+  const {
+    mutateAsync: acceptInvite,
+    isPending: isAccepting,
+    variables: acceptingInviteId,
+  } = useMutation({
     mutationKey: ["home", "invitation", "accept"],
     mutationFn: HomeQueries.acceptInvitation,
     onSettled: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      await queryClient.invalidateQueries({
-        queryKey: ["notifications", "unread-count"],
-      });
+      await invalidateNotificationSurfaces();
     },
   });
 
-  const declineMutation = useMutation({
+  const {
+    mutateAsync: declineInvite,
+    isPending: isDeclining,
+    variables: decliningInviteId,
+  } = useMutation({
     mutationKey: ["home", "invitation", "decline"],
     mutationFn: HomeQueries.declineInvitation,
     onSettled: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      await queryClient.invalidateQueries({
-        queryKey: ["notifications", "unread-count"],
-      });
+      await invalidateNotificationSurfaces();
     },
   });
 
@@ -35,7 +37,7 @@ export function useHomeInvitationActions() {
       setActionError(null);
 
       try {
-        return await acceptMutation.mutateAsync(inviteId);
+        return await acceptInvite(inviteId);
       } catch (error) {
         setActionError(
           getApiErrorMessage(
@@ -46,7 +48,7 @@ export function useHomeInvitationActions() {
         throw error;
       }
     },
-    [acceptMutation],
+    [acceptInvite],
   );
 
   const declineInvitation = useCallback(
@@ -54,7 +56,7 @@ export function useHomeInvitationActions() {
       setActionError(null);
 
       try {
-        return await declineMutation.mutateAsync(inviteId);
+        return await declineInvite(inviteId);
       } catch (error) {
         setActionError(
           getApiErrorMessage(
@@ -65,16 +67,16 @@ export function useHomeInvitationActions() {
         throw error;
       }
     },
-    [declineMutation],
+    [declineInvite],
   );
 
   return {
     acceptInvitation,
     declineInvitation,
-    isAccepting: acceptMutation.isPending,
-    isDeclining: declineMutation.isPending,
-    acceptingInviteId: acceptMutation.variables ?? null,
-    decliningInviteId: declineMutation.variables ?? null,
+    isAccepting,
+    isDeclining,
+    acceptingInviteId: acceptingInviteId ?? null,
+    decliningInviteId: decliningInviteId ?? null,
     actionError,
     clearActionError: () => setActionError(null),
   };

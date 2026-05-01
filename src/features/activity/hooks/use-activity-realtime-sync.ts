@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 
-import { ActivityQueries } from "../api/activity.queries";
-import { useActivityStore } from "../store/activity.store";
+import { ActivityCommands } from "@/features/activity/api/activity-commands";
+import { ActivityRealtimeHandlers } from "@/features/activity/api/activity-realtime-handlers";
+import { useActivityStore } from "@/features/activity/store/activity.store";
 import { realtimeClient } from "@/shared/api/realtime-client";
 import { shouldApplyRealtimeEvent } from "@/shared/lib/realtime-event-registry";
 import {
@@ -73,7 +74,7 @@ export function useActivityRealtimeSync({
         return;
       }
 
-      await ActivityQueries.applyRealtimeMessage(
+      await ActivityRealtimeHandlers.applyMessage(
         parsed.chatId,
         parsed.message,
         {
@@ -85,7 +86,7 @@ export function useActivityRealtimeSync({
         activeChatId === parsed.chatId &&
         parsed.message.senderId !== currentUser.id
       ) {
-        await ActivityQueries.markChatRead(parsed.chatId, parsed.message.id);
+        await ActivityCommands.markChatRead(parsed.chatId, parsed.message.id);
       }
     });
 
@@ -98,7 +99,7 @@ export function useActivityRealtimeSync({
           return;
         }
 
-        await ActivityQueries.applyRealtimeMessage(
+        await ActivityRealtimeHandlers.applyMessage(
           parsed.chatId,
           parsed.message,
           {
@@ -115,7 +116,7 @@ export function useActivityRealtimeSync({
         return;
       }
 
-      ActivityQueries.applyRealtimeChatRead(parsed.chat);
+      ActivityRealtimeHandlers.applyChatRead(parsed.chat);
     });
 
     const offChatTyping = realtimeClient.on("chat.typing", (payload) => {
@@ -149,7 +150,7 @@ export function useActivityRealtimeSync({
       (payload) => {
         const parsed = realtimePresenceChangedPayloadSchema.parse(payload);
 
-        ActivityQueries.applyPresenceChanged(
+        ActivityRealtimeHandlers.applyPresenceChanged(
           parsed.user.id,
           parsed.onlineStatus,
         );
@@ -169,7 +170,7 @@ export function useActivityRealtimeSync({
           return;
         }
 
-        ActivityQueries.applyRealtimePlanUpdate(
+        ActivityRealtimeHandlers.applyPlanUpdate(
           parsed.groupId,
           parsed.plan,
           parsed.proposal,
@@ -185,7 +186,7 @@ export function useActivityRealtimeSync({
         return;
       }
 
-      ActivityQueries.applyRealtimeGroupUpdate(currentUser.id, parsed.group);
+      ActivityRealtimeHandlers.applyGroupUpdate(currentUser.id, parsed.group);
     });
 
     return () => {

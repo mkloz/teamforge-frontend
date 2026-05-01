@@ -1,7 +1,13 @@
 import { useMemo } from "react";
-import { getOtherChatParticipant } from "../lib/activity-projections";
-import type { DirectChat, Group } from "../lib/activity-contract";
-import { getStatusText, formatTypingText } from "../lib/chat-utils";
+import { getOtherChatParticipant } from "@/features/activity/lib/activity-projections";
+import type {
+  DirectChat,
+  Group,
+} from "@/features/activity/lib/activity-contract";
+import {
+  getStatusText,
+  formatTypingText,
+} from "@/features/activity/lib/chat-utils";
 
 interface BaseProps {
   isTyping?: boolean;

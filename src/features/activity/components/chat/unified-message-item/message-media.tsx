@@ -4,9 +4,9 @@ import type {
   UnifiedMessage,
   UnifiedAttachment,
 } from "@/features/activity/lib/activity-contract";
-import { DocumentMessage } from "../document-message";
-import { MediaGallery } from "../media-gallery";
-import { VoiceNote } from "../voice-note";
+import { DocumentMessage } from "@/features/activity/components/chat/document-message";
+import { MediaGallery } from "@/features/activity/components/chat/media-gallery";
+import { VoiceNote } from "@/features/activity/components/chat/voice-note";
 
 interface MessageMediaProps {
   attachments: UnifiedMessage["attachments"];

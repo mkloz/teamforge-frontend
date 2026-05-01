@@ -1,9 +1,8 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Reply, ThumbsUp } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 
-import { AuthQueries } from "@/features/auth/api/auth.queries";
+import { usePlanProposalActions } from "@/features/activity/hooks/use-plan-proposal-actions";
 import { useSwipeToReply } from "@/features/activity/hooks/use-swipe-to-reply";
 import { formatChatTime } from "@/features/activity/lib/chat-utils";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
@@ -12,10 +11,8 @@ import {
   formatProposalDate,
   formatProposalValue,
 } from "@/features/activity/lib/proposal-language";
-import { ActivityApi } from "@/features/activity/api/activity.api";
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
+import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { cn } from "@/shared/lib/utils";
-import { toast } from "sonner";
 import { ProposalActions } from "./proposal-actions";
 import { ProposalComparison } from "./proposal-comparison";
 import { ProposalHeader } from "./proposal-header";
@@ -33,12 +30,14 @@ export const ProposalMessage = memo(function ProposalMessage({
 }: ProposalMessageProps) {
   const proposal = message.proposal ?? null;
   const [isExpanded, setIsExpanded] = useState(false);
-  const queryClient = useQueryClient();
-  const { data: currentUser } = AuthQueries.useCurrentUser();
+  const { data: currentUser } = useCurrentUserQuery();
   const { x, opacity, scale, handleDragEnd } = useSwipeToReply(
     message,
     message.isOwn,
   );
+  const proposalActions = usePlanProposalActions({
+    mutationKeyScope: `message-${proposal?.id ?? "missing"}`,
+  });
 
   const approveCount =
     proposal?.votes.filter((vote) => vote.vote === "APPROVE").length ?? 0;
@@ -66,66 +65,6 @@ export const ProposalMessage = memo(function ProposalMessage({
     () => (proposal ? buildProposalSummaryText(proposal) : ""),
     [proposal],
   );
-
-  const invalidateProposalViews = async () => {
-    await Promise.all([
-      queryClient.invalidateQueries({
-        queryKey: ["activity-selection"],
-      }),
-      queryClient.invalidateQueries({
-        queryKey: ["activity-feed"],
-      }),
-    ]);
-  };
-
-  const voteMutation = useMutation({
-    mutationKey: [
-      "activity",
-      "proposal",
-      "message-vote",
-      proposal?.id ?? "missing",
-    ],
-    mutationFn: (vote: "APPROVE" | "REJECT") =>
-      proposal
-        ? ActivityApi.votePlanProposal(proposal.id, { vote })
-        : Promise.reject(new Error("Missing proposal context")),
-    onSuccess: async (_, vote) => {
-      await invalidateProposalViews();
-      toast.success(
-        vote === "APPROVE" ? "Proposal approved." : "Proposal rejected.",
-      );
-    },
-    onError: (error) => {
-      toast.error(
-        getApiErrorMessage(error, "We couldn't submit your vote right now."),
-      );
-    },
-  });
-
-  const withdrawMutation = useMutation({
-    mutationKey: [
-      "activity",
-      "proposal",
-      "message-withdraw",
-      proposal?.id ?? "missing",
-    ],
-    mutationFn: () =>
-      proposal
-        ? ActivityApi.withdrawPlanProposal(proposal.id)
-        : Promise.reject(new Error("Missing proposal context")),
-    onSuccess: async () => {
-      await invalidateProposalViews();
-      toast.success("Proposal withdrawn.");
-    },
-    onError: (error) => {
-      toast.error(
-        getApiErrorMessage(
-          error,
-          "We couldn't withdraw that proposal right now.",
-        ),
-      );
-    },
-  });
 
   if (!proposal) {
     return null;
@@ -218,17 +157,15 @@ export const ProposalMessage = memo(function ProposalMessage({
                         hasVoted={hasVoted}
                         isPending={isPending}
                         isProposer={isProposer}
-                        isSubmitting={
-                          voteMutation.isPending || withdrawMutation.isPending
-                        }
+                        isSubmitting={proposalActions.isSubmitting}
                         onApprove={() => {
-                          void voteMutation.mutateAsync("APPROVE");
+                          void proposalActions.approveProposal(proposal.id);
                         }}
                         onReject={() => {
-                          void voteMutation.mutateAsync("REJECT");
+                          void proposalActions.rejectProposal(proposal.id);
                         }}
                         onWithdraw={() => {
-                          void withdrawMutation.mutateAsync();
+                          void proposalActions.withdrawProposal(proposal.id);
                         }}
                       />
                     </div>

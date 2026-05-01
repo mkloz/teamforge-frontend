@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react";
-import { useActivityStore } from "../store/activity.store";
+import { useActivityStore } from "@/features/activity/store/activity.store";
 import { useUiStore } from "@/shared/store/ui.store";
 
 export function useActivityPanels() {

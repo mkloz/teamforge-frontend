@@ -1,28 +1,19 @@
 import { queryOptions } from "@tanstack/react-query";
 
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import {
-  ACTIVITY_CHATS_QUERY_KEY,
-  ACTIVITY_DIRECT_SELECTION_QUERY_KEY,
-  ACTIVITY_FRIENDSHIPS_QUERY_KEY,
-  ACTIVITY_GROUP_SELECTION_QUERY_KEY,
-  ACTIVITY_GROUPS_QUERY_KEY,
-} from "@/features/activity/api/activity-query-keys";
-import { EXPLORE_FRIEND_REQUESTS_QUERY_KEY } from "@/features/explore/api/explore-query-keys";
-import {
-  HOME_GROUPS_QUERY_KEY,
-  HOME_INVITATIONS_QUERY_KEY,
-  HOME_SENT_INVITATIONS_QUERY_KEY,
-} from "@/features/home/api/home.queries";
+  invalidateExploreFriendRequestSurfaces,
+  invalidateFriendshipSurfaces,
+  invalidateGroupMembershipSurfaces,
+} from "@/shared/api/query-invalidation";
 import { appQueryClient } from "@/shared/api/query-client";
 import type { Notification } from "@/shared/schemas";
 
 import { NotificationsApi } from "./notifications.api";
-
-export const NOTIFICATIONS_QUERY_KEY = ["notifications"] as const;
-export const NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY = [
-  "notifications",
-  "unread-count",
-] as const;
+import {
+  NOTIFICATIONS_QUERY_KEY,
+  NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY,
+} from "./notifications-query-keys";
 
 function updateNotificationsQuery(
   updater: (items: Notification[]) => Notification[],
@@ -173,10 +164,10 @@ export class NotificationsQueries {
     if (notification.type === "GROUP_INVITE") {
       void Promise.all([
         appQueryClient.invalidateQueries({
-          queryKey: HOME_INVITATIONS_QUERY_KEY,
+          queryKey: APP_QUERY_KEYS.home.invitations,
         }),
         appQueryClient.invalidateQueries({
-          queryKey: HOME_SENT_INVITATIONS_QUERY_KEY,
+          queryKey: APP_QUERY_KEYS.home.sentInvitations,
         }),
       ]);
     }
@@ -186,43 +177,20 @@ export class NotificationsQueries {
       notification.type === "GROUP_MEMBER_LEFT" ||
       notification.type === "GROUP_DISBANDED"
     ) {
-      void Promise.all([
-        appQueryClient.invalidateQueries({ queryKey: HOME_GROUPS_QUERY_KEY }),
-        appQueryClient.invalidateQueries({ queryKey: ["home", "plans"] }),
-        appQueryClient.invalidateQueries({ queryKey: ["home", "stats"] }),
-        appQueryClient.invalidateQueries({
-          queryKey: ACTIVITY_GROUPS_QUERY_KEY,
-        }),
-        appQueryClient.invalidateQueries({
-          queryKey: ACTIVITY_CHATS_QUERY_KEY,
-        }),
-        appQueryClient.invalidateQueries({
-          queryKey: ACTIVITY_GROUP_SELECTION_QUERY_KEY,
-        }),
-      ]);
+      void invalidateGroupMembershipSurfaces();
     }
 
     if (notification.type === "FRIEND_REQUEST") {
-      void appQueryClient.invalidateQueries({
-        queryKey: EXPLORE_FRIEND_REQUESTS_QUERY_KEY,
-      });
+      void invalidateExploreFriendRequestSurfaces();
     }
 
     if (notification.type === "FRIEND_ACCEPTED") {
       void Promise.all([
-        appQueryClient.invalidateQueries({
-          queryKey: EXPLORE_FRIEND_REQUESTS_QUERY_KEY,
-        }),
-        appQueryClient.invalidateQueries({
-          queryKey: ACTIVITY_FRIENDSHIPS_QUERY_KEY,
-        }),
-        appQueryClient.invalidateQueries({
-          queryKey: ACTIVITY_CHATS_QUERY_KEY,
-        }),
-        appQueryClient.invalidateQueries({
-          queryKey: ACTIVITY_DIRECT_SELECTION_QUERY_KEY,
-        }),
+        invalidateExploreFriendRequestSurfaces(),
+        invalidateFriendshipSurfaces(),
       ]);
     }
   }
 }
+
+export { NOTIFICATIONS_QUERY_KEY, NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY };

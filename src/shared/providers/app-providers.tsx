@@ -6,7 +6,8 @@ import { useEffect } from "react";
 import { Toaster } from "sonner";
 
 import { config } from "@/config/config";
-import { ActivityQueries } from "@/features/activity/api/activity.queries";
+import { ActivityCommands } from "@/features/activity/api/activity-commands";
+import { ActivityRealtimeHandlers } from "@/features/activity/api/activity-realtime-handlers";
 import { AuthQueries } from "@/features/auth/api/auth.queries";
 import { NotificationsQueries } from "@/features/notifications/api/notifications.queries";
 import {
@@ -106,11 +107,11 @@ export function AppProviders() {
         );
 
         if (!currentUser) {
-          void ActivityQueries.invalidateGroupSurfaces();
+          void ActivityCommands.invalidateGroupSurfaces();
           return;
         }
 
-        ActivityQueries.applyRealtimeGroupUpdate(currentUser.id, parsed.group);
+        ActivityRealtimeHandlers.applyGroupUpdate(currentUser.id, parsed.group);
       },
     );
 

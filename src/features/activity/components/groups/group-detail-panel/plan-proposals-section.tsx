@@ -1,17 +1,14 @@
-import { AuthQueries } from "@/features/auth/api/auth.queries";
-import { ActivityApi } from "@/features/activity/api/activity.api";
+import { usePlanProposalActions } from "@/features/activity/hooks/use-plan-proposal-actions";
 import {
   formatProposalDate,
   PROPOSAL_FIELD_LABELS,
   PROPOSAL_STATUS_LABELS,
 } from "@/features/activity/lib/proposal-language";
 import { Button } from "@/shared/components/ui/button";
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
+import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { cn } from "@/shared/lib/utils";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { PlanProposal } from "@/shared/schemas/plan";
 import { useEffect, useRef } from "react";
-import { toast } from "sonner";
 
 const STATUS_STYLES: Record<PlanProposal["status"], string> = {
   PENDING: "bg-spark-amber/10 text-spark-amber",
@@ -35,54 +32,11 @@ export function PlanProposalsSection({
   proposals,
   focusedProposalId = null,
 }: PlanProposalsSectionProps) {
-  const queryClient = useQueryClient();
-  const { data: currentUser } = AuthQueries.useCurrentUser();
+  const { data: currentUser } = useCurrentUserQuery();
   const proposalRefs = useRef<Record<string, HTMLDivElement | null>>({});
-
-  const voteMutation = useMutation({
-    mutationKey: ["activity", "proposal", "vote"],
-    mutationFn: ({
-      proposalId,
-      vote,
-    }: {
-      proposalId: string;
-      vote: "APPROVE" | "REJECT";
-    }) => ActivityApi.votePlanProposal(proposalId, { vote }),
-    onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({
-        queryKey: ["activity-selection", "group", groupId],
-      });
-      toast.success(
-        variables.vote === "APPROVE"
-          ? "Proposal approved."
-          : "Proposal rejected.",
-      );
-    },
-    onError: (error) => {
-      toast.error(
-        getApiErrorMessage(error, "We couldn't submit your vote right now."),
-      );
-    },
-  });
-
-  const withdrawMutation = useMutation({
-    mutationKey: ["activity", "proposal", "withdraw"],
-    mutationFn: (proposalId: string) =>
-      ActivityApi.withdrawPlanProposal(proposalId),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ["activity-selection", "group", groupId],
-      });
-      toast.success("Proposal withdrawn.");
-    },
-    onError: (error) => {
-      toast.error(
-        getApiErrorMessage(
-          error,
-          "We couldn't withdraw that proposal right now.",
-        ),
-      );
-    },
+  const proposalActions = usePlanProposalActions({
+    groupId,
+    mutationKeyScope: `group-${groupId}`,
   });
 
   useEffect(() => {
@@ -199,13 +153,13 @@ export function PlanProposalsSection({
                     <Button
                       variant="outline"
                       size="sm"
-                      disabled={withdrawMutation.isPending}
+                      disabled={proposalActions.isWithdrawing}
                       onClick={() =>
-                        void withdrawMutation.mutateAsync(proposal.id)
+                        void proposalActions.withdrawProposal(proposal.id)
                       }
                       className="rounded-xl"
                     >
-                      {withdrawMutation.isPending
+                      {proposalActions.isWithdrawing
                         ? "Withdrawing..."
                         : "Withdraw"}
                     </Button>
@@ -218,26 +172,20 @@ export function PlanProposalsSection({
                       <Button
                         variant="primary"
                         size="sm"
-                        disabled={voteMutation.isPending}
+                        disabled={proposalActions.isVoting}
                         onClick={() =>
-                          void voteMutation.mutateAsync({
-                            proposalId: proposal.id,
-                            vote: "APPROVE",
-                          })
+                          void proposalActions.approveProposal(proposal.id)
                         }
                         className="rounded-xl"
                       >
-                        {voteMutation.isPending ? "Submitting..." : "Approve"}
+                        {proposalActions.isVoting ? "Submitting..." : "Approve"}
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
-                        disabled={voteMutation.isPending}
+                        disabled={proposalActions.isVoting}
                         onClick={() =>
-                          void voteMutation.mutateAsync({
-                            proposalId: proposal.id,
-                            vote: "REJECT",
-                          })
+                          void proposalActions.rejectProposal(proposal.id)
                         }
                         className="rounded-xl"
                       >

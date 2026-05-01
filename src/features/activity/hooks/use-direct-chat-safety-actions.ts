@@ -1,19 +1,15 @@
 import { useMemo } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 import { toast } from "sonner";
 
-import { AuthQueries } from "@/features/auth/api/auth.queries";
-import {
-  activityKindValues,
-  activityPanelValues,
-} from "@/shared/lib/activity-route";
+import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
-import { ActivityQueries } from "../api/activity.queries";
-import type { DirectChat } from "../lib/activity-contract";
+import { ActivityCommands } from "@/features/activity/api/activity-commands";
+import type { DirectChat } from "@/features/activity/lib/activity-contract";
+import { useClearActivityRouteSelection } from "./use-clear-activity-route-selection";
 
 type DirectChatSafetyAction = "block" | "unblock";
 
@@ -29,20 +25,8 @@ function getSafetyMutationName(action: DirectChatSafetyAction) {
 }
 
 export function useDirectChatSafetyActions(chat: DirectChat) {
-  const currentUserQuery = useQuery(AuthQueries.currentUser());
-  const [, setRouteState] = useQueryStates(
-    {
-      kind: parseAsStringLiteral(activityKindValues),
-      id: parseAsString,
-      panel: parseAsStringLiteral(activityPanelValues),
-      plan: parseAsString,
-      proposal: parseAsString,
-      message: parseAsString,
-    },
-    {
-      history: "replace",
-    },
-  );
+  const currentUserQuery = useQuery(currentUserQueryOptions());
+  const clearRouteSelection = useClearActivityRouteSelection();
 
   const targetUser = useMemo(() => {
     if (!currentUserQuery.data) {
@@ -59,8 +43,8 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
   const mutation = useMutation({
     mutationFn: ({ action, targetUserId }: DirectChatSafetyMutationInput) =>
       action === "block"
-        ? ActivityQueries.blockUser(targetUserId)
-        : ActivityQueries.unblockUser(targetUserId),
+        ? ActivityCommands.blockUser(targetUserId)
+        : ActivityCommands.unblockUser(targetUserId),
     onSuccess: async (result, { action }) => {
       trackMutationOutcome(getSafetyMutationName(action), "success", {
         chatId: chat.id,
@@ -73,14 +57,7 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
       }
 
       toast.success("User unblocked.");
-      await setRouteState({
-        id: null,
-        kind: null,
-        message: null,
-        panel: null,
-        plan: null,
-        proposal: null,
-      });
+      await clearRouteSelection();
     },
     onError: (error, { action }) => {
       trackMutationOutcome(getSafetyMutationName(action), "error", {

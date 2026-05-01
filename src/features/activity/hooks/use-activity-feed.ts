@@ -1,8 +1,8 @@
 import { useDeferredValue, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { AuthQueries } from "@/features/auth/api/auth.queries";
-import { ActivityQueries } from "../api/activity.queries";
-import { useActivityStore } from "../store/activity.store";
+import { currentUserQueryOptions } from "@/shared/api/current-user-query";
+import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
+import { useActivityStore } from "@/features/activity/store/activity.store";
 
 export function useActivityFeed() {
   const searchQuery = useActivityStore((state) => state.searchQuery);
@@ -16,10 +16,10 @@ export function useActivityFeed() {
   );
 
   const deferredSearchQuery = useDeferredValue(searchQuery);
-  const currentUserQuery = useQuery(AuthQueries.currentUser());
-  const groupsQuery = useQuery(ActivityQueries.groups());
-  const chatsQuery = useQuery(ActivityQueries.chats());
-  const friendshipsQuery = useQuery(ActivityQueries.friendships());
+  const currentUserQuery = useQuery(currentUserQueryOptions());
+  const groupsQuery = useQuery(ActivityQueryFactory.groups());
+  const chatsQuery = useQuery(ActivityQueryFactory.chats());
+  const friendshipsQuery = useQuery(ActivityQueryFactory.friendships());
 
   const feedData = useMemo(() => {
     if (
@@ -31,7 +31,7 @@ export function useActivityFeed() {
       return null;
     }
 
-    return ActivityQueries.deriveFeedData(
+    return ActivityQueryFactory.deriveFeedData(
       activeFilter,
       deferredSearchQuery,
       groupsQuery.data,

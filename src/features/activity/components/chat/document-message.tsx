@@ -1,8 +1,8 @@
 import { memo } from "react";
 import { FileText, Download } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-import type { UnifiedAttachment } from "../../lib/activity-contract";
-import { formatFileSize } from "../../lib/chat-utils";
+import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
+import { formatFileSize } from "@/features/activity/lib/chat-utils";
 
 interface DocumentMessageProps {
   attachment: UnifiedAttachment;

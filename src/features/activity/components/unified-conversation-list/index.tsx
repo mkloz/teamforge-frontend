@@ -1,11 +1,11 @@
 import { memo, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
-import { useSearchHeaderFade } from "../../hooks/use-search-header-fade";
+import { useSearchHeaderFade } from "@/features/activity/hooks/use-search-header-fade";
 import type {
   FilterChip,
   UnifiedConversation,
-} from "../../lib/activity-contract";
-import { UnifiedConversationListItem } from "../unified-conversation-list-item";
+} from "@/features/activity/lib/activity-contract";
+import { UnifiedConversationListItem } from "@/features/activity/components/unified-conversation-list-item";
 import { EmptyState } from "./empty-state";
 import { FilterHeader } from "./filter-header";
 import { SearchHeader } from "./search-header";

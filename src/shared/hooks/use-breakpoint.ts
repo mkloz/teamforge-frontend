@@ -1,4 +1,4 @@
-import { useMediaQuery } from "usehooks-ts";
+import { useMediaQuery } from "@/shared/hooks/use-media-query";
 
 export const Breakpoint = {
   MOBILE: "mobile",

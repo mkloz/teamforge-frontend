@@ -1,12 +1,9 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 
-import { Button } from "@/shared/components/ui/button";
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
-import { cn } from "@/shared/lib/utils";
-
-import { ActivityApi } from "@/features/activity/api/activity.api";
+import { useCreatePlanProposal } from "@/features/activity/hooks/use-create-plan-proposal";
 import type { Plan } from "@/features/activity/lib/activity-contract";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 
 const FIELD_OPTIONS = [
   { value: "TITLE", label: "Title" },
@@ -63,40 +60,25 @@ interface CreatePlanProposalFormProps {
 }
 
 export function CreatePlanProposalForm({ plan }: CreatePlanProposalFormProps) {
-  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const [field, setField] = useState<ProposalField>("TITLE");
   const [value, setValue] = useState(plan.title);
-  const [error, setError] = useState<string | null>(null);
+  const { createProposal, error, isCreating, setError } = useCreatePlanProposal(
+    plan,
+    {
+      onCreated: () => {
+        setIsOpen(false);
+        setField("TITLE");
+        setValue(plan.title);
+      },
+    },
+  );
 
   const currentValue = useMemo(
     () => getCurrentValue(plan, field),
     [field, plan],
   );
   const isDateField = field === "DATE_TIME";
-
-  const createMutation = useMutation({
-    mutationKey: ["activity", "proposal", "create", plan.id],
-    mutationFn: (payload: { field: ProposalField; proposedValue: string }) =>
-      ActivityApi.createPlanProposal(plan.id, payload),
-    onSuccess: async () => {
-      setError(null);
-      setIsOpen(false);
-      setField("TITLE");
-      setValue(plan.title);
-      await queryClient.invalidateQueries({
-        queryKey: ["activity-selection", "group", plan.groupId],
-      });
-    },
-    onError: (error) => {
-      setError(
-        getApiErrorMessage(
-          error,
-          "We couldn't submit that proposal. Please try again.",
-        ),
-      );
-    },
-  });
 
   const handleFieldChange = (nextField: ProposalField) => {
     setField(nextField);
@@ -116,7 +98,7 @@ export function CreatePlanProposalForm({ plan }: CreatePlanProposalFormProps) {
     }
 
     setError(null);
-    await createMutation.mutateAsync({
+    await createProposal({
       field,
       proposedValue,
     });
@@ -211,10 +193,10 @@ export function CreatePlanProposalForm({ plan }: CreatePlanProposalFormProps) {
           variant="primary"
           size="sm"
           onClick={() => void handleSubmit()}
-          disabled={createMutation.isPending}
-          className={cn("rounded-xl", createMutation.isPending && "opacity-80")}
+          disabled={isCreating}
+          className={cn("rounded-xl", isCreating && "opacity-80")}
         >
-          {createMutation.isPending ? "Sending..." : "Send Proposal"}
+          {isCreating ? "Sending..." : "Send Proposal"}
         </Button>
       </div>
     </div>

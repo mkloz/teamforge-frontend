@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 
-import { ActivityQueries } from "../api/activity.queries";
-import type { UnifiedMessage } from "../lib/activity-contract";
-import { useActivityStore } from "../store/activity.store";
+import { ActivityCommands } from "@/features/activity/api/activity-commands";
+import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { useActivityStore } from "@/features/activity/store/activity.store";
 
 export function useActivityMessageActions() {
   const selectedKind = useActivityStore((state) => state.selectedKind);
@@ -36,7 +36,11 @@ export function useActivityMessageActions() {
 
   const deleteMessage = useCallback(
     async (message: UnifiedMessage) => {
-      await ActivityQueries.deleteMessage(selectedKind, selectedId, message.id);
+      await ActivityCommands.deleteMessage(
+        selectedKind,
+        selectedId,
+        message.id,
+      );
 
       if (replyingTo?.id === message.id) {
         setReplyingTo(null);
@@ -58,14 +62,14 @@ export function useActivityMessageActions() {
 
   const retryMessage = useCallback(
     async (message: UnifiedMessage) => {
-      await ActivityQueries.retryMessage(selectedKind, selectedId, message);
+      await ActivityCommands.retryMessage(selectedKind, selectedId, message);
     },
     [selectedId, selectedKind],
   );
 
   const toggleReaction = useCallback(
     async (message: UnifiedMessage, emoji: string) => {
-      await ActivityQueries.toggleReaction(
+      await ActivityCommands.toggleReaction(
         selectedKind,
         selectedId,
         message,
@@ -77,14 +81,14 @@ export function useActivityMessageActions() {
 
   const pinMessage = useCallback(
     async (message: UnifiedMessage) => {
-      await ActivityQueries.pinMessage(selectedKind, selectedId, message);
+      await ActivityCommands.pinMessage(selectedKind, selectedId, message);
     },
     [selectedId, selectedKind],
   );
 
   const unpinMessage = useCallback(
     async (message: UnifiedMessage) => {
-      await ActivityQueries.unpinMessage(selectedKind, selectedId, message);
+      await ActivityCommands.unpinMessage(selectedKind, selectedId, message);
     },
     [selectedId, selectedKind],
   );
@@ -95,7 +99,7 @@ export function useActivityMessageActions() {
         return null;
       }
 
-      const updated = await ActivityQueries.updateMessage(
+      const updated = await ActivityCommands.updateMessage(
         selectedKind,
         selectedId,
         editingMessage.id,

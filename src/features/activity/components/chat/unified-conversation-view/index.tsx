@@ -8,11 +8,11 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 import { useIsMobile } from "@/shared/hooks/use-breakpoint";
 import { memo, useRef } from "react";
-import { ChatStatusBar } from "../chat-status-bar";
-import { CompletedBanner } from "../completed-banner";
-import { UnifiedChatHeader } from "../unified-chat-header";
-import { UnifiedMessageInput } from "../unified-message-input";
-import { UnifiedMessageList } from "../unified-message-list/index";
+import { ChatStatusBar } from "@/features/activity/components/chat/chat-status-bar";
+import { CompletedBanner } from "@/features/activity/components/chat/completed-banner";
+import { UnifiedChatHeader } from "@/features/activity/components/chat/unified-chat-header";
+import { UnifiedMessageInput } from "@/features/activity/components/chat/unified-message-input";
+import { UnifiedMessageList } from "@/features/activity/components/chat/unified-message-list/index";
 
 type UnifiedConversationViewProps =
   | (BaseConversationProps & { kind: "dm"; data: DirectChat })

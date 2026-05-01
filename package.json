@@ -8,8 +8,11 @@
     "preview": "vite preview",
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "typecheck": "tsc -b",
+    "check": "npm run lint && npm run typecheck",
     "prepare": "husky",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx}\"",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
   },
@@ -55,8 +58,6 @@
     "tailwind-scrollbar": "^4.0.2",
     "tailwindcss": "^4.2.1",
     "tailwindcss-animate": "^1.0.7",
-    "usehooks-ts": "^3.1.1",
-    "uuid": "^13.0.0",
     "vaul": "^1.1.2",
     "zod": "^4.3.6",
     "zustand": "^5.0.11"

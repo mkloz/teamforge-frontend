@@ -98,8 +98,7 @@ export default defineConfig({
             id.includes("/class-variance-authority/") ||
             id.includes("/clsx/") ||
             id.includes("/dayjs/") ||
-            id.includes("/tailwind-merge/") ||
-            id.includes("/uuid/")
+            id.includes("/tailwind-merge/")
           ) {
             return "utilities";
           }

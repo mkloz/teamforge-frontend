@@ -1,16 +1,12 @@
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
+import { useQuery } from "@tanstack/react-query";
 
-import { AuthQueries } from "@/features/auth/api/auth.queries";
-import {
-  activityKindValues,
-  activityPanelValues,
-} from "@/shared/lib/activity-route";
+import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
-import { ActivityQueries } from "../api/activity.queries";
+import { ActivityCommands } from "@/features/activity/api/activity-commands";
+import { useClearActivityRouteSelection } from "./use-clear-activity-route-selection";
 
 type PendingAction = "disband" | "leave" | null;
 
@@ -24,24 +20,11 @@ function trackGroupAction(
 }
 
 export function useActivityGroupActions(groupId: string) {
-  const queryClient = useQueryClient();
-  const currentUserQuery = useQuery(AuthQueries.currentUser());
+  const currentUserQuery = useQuery(currentUserQueryOptions());
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
   const [invitingMemberId, setInvitingMemberId] = useState<string | null>(null);
   const [removingMemberId, setRemovingMemberId] = useState<string | null>(null);
-  const [, setRouteState] = useQueryStates(
-    {
-      kind: parseAsStringLiteral(activityKindValues),
-      id: parseAsString,
-      panel: parseAsStringLiteral(activityPanelValues),
-      plan: parseAsString,
-      proposal: parseAsString,
-      message: parseAsString,
-    },
-    {
-      history: "replace",
-    },
-  );
+  const clearRouteSelection = useClearActivityRouteSelection();
 
   async function leaveGroup() {
     if (!currentUserQuery.data) {
@@ -51,21 +34,11 @@ export function useActivityGroupActions(groupId: string) {
     setPendingAction("leave");
 
     try {
-      const result = await ActivityQueries.leaveGroup(
+      const result = await ActivityCommands.leaveGroup(
         groupId,
         currentUserQuery.data.id,
       );
-      await queryClient.invalidateQueries({
-        queryKey: ["activity-selection", "group", groupId],
-      });
-      await setRouteState({
-        id: null,
-        kind: null,
-        message: null,
-        panel: null,
-        plan: null,
-        proposal: null,
-      });
+      await clearRouteSelection();
       trackGroupAction(
         trackedMutationNames.activityGroupLeave,
         "success",
@@ -92,21 +65,11 @@ export function useActivityGroupActions(groupId: string) {
     setPendingAction("disband");
 
     try {
-      const result = await ActivityQueries.disbandGroup(
+      const result = await ActivityCommands.disbandGroup(
         groupId,
         currentUserQuery.data.id,
       );
-      await queryClient.invalidateQueries({
-        queryKey: ["activity-selection", "group", groupId],
-      });
-      await setRouteState({
-        id: null,
-        kind: null,
-        message: null,
-        panel: null,
-        plan: null,
-        proposal: null,
-      });
+      await clearRouteSelection();
       trackGroupAction(
         trackedMutationNames.activityGroupDisband,
         "success",
@@ -133,7 +96,7 @@ export function useActivityGroupActions(groupId: string) {
     setRemovingMemberId(memberId);
 
     try {
-      const result = await ActivityQueries.removeGroupMember(
+      const result = await ActivityCommands.removeGroupMember(
         groupId,
         memberId,
         currentUserQuery.data.id,
@@ -164,7 +127,7 @@ export function useActivityGroupActions(groupId: string) {
     setInvitingMemberId(inviteeId);
 
     try {
-      const result = await ActivityQueries.sendGroupInvite(groupId, inviteeId);
+      const result = await ActivityCommands.sendGroupInvite(groupId, inviteeId);
       trackMutationOutcome(
         trackedMutationNames.activityGroupInvite,
         "success",

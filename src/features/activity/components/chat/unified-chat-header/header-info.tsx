@@ -4,7 +4,7 @@ import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { memo } from "react";
-import { UnifiedTypingIndicator } from "../unified-typing-indicator";
+import { UnifiedTypingIndicator } from "@/features/activity/components/chat/unified-typing-indicator";
 
 interface HeaderInfoProps {
   title: string;

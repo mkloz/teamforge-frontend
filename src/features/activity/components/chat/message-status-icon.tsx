@@ -1,7 +1,7 @@
 import { cn } from "@/shared/lib/utils";
 import { Check, CheckCheck, Clock, OctagonAlert } from "lucide-react";
 import { memo } from "react";
-import type { MessageStatus } from "../../lib/activity-contract";
+import type { MessageStatus } from "@/features/activity/lib/activity-contract";
 
 interface MessageStatusIconProps {
   status?: MessageStatus;

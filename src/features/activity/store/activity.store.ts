@@ -5,7 +5,7 @@ import type {
   FilterChip,
   GroupsPageState,
   UnifiedMessage,
-} from "../lib/activity-contract";
+} from "@/features/activity/lib/activity-contract";
 
 type TypingParticipant = Pick<ActivityParticipant, "id" | "name" | "avatar">;
 

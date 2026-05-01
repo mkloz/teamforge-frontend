@@ -1,11 +1,8 @@
-import { useMutation } from "@tanstack/react-query";
 import { Check, X } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 
-import { ActivityApi } from "@/features/activity/api/activity.api";
-import { ActivityQueries } from "@/features/activity/api/activity.queries";
+import { useEditGroupIdentity } from "@/features/activity/hooks/use-edit-group-identity";
 import type { Group } from "@/features/activity/lib/activity-contract";
-import { FileUploadApi } from "@/shared/api/file-upload";
 import { Avatar } from "@/shared/components/common/avatar";
 import { FileDropzone } from "@/shared/components/common/file-dropzone";
 import { PlanCover } from "@/shared/components/common/plan-cover";
@@ -18,7 +15,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog";
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import {
   getPlanCoverPreset,
   PLAN_COVER_PRESETS,
@@ -29,12 +25,6 @@ interface EditGroupIdentityDialogProps {
   group: Group;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
-
-function normalizeOptionalText(value: string) {
-  const trimmed = value.trim();
-
-  return trimmed.length > 0 ? trimmed : null;
 }
 
 export function EditGroupIdentityDialog({
@@ -63,121 +53,16 @@ function EditGroupIdentityDialogContent({
   group,
   onOpenChange,
 }: EditGroupIdentityDialogContentProps) {
-  const [name, setName] = useState(group.name);
-  const [description, setDescription] = useState(group.description ?? "");
-  const [avatar, setAvatar] = useState(group.avatar ?? "");
-  const [coverImage, setCoverImage] = useState(group.plan?.coverImage ?? null);
-  const [error, setError] = useState<string | null>(null);
-  const [avatarUploadError, setAvatarUploadError] = useState<string | null>(
-    null,
-  );
-  const [coverUploadError, setCoverUploadError] = useState<string | null>(null);
-  const [isAvatarUploading, setIsAvatarUploading] = useState(false);
-  const [isCoverUploading, setIsCoverUploading] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
-
-  const activeCoverPreset = useMemo(
-    () => getPlanCoverPreset(coverImage),
-    [coverImage],
-  );
-
-  const uploadImage = async (
-    file: File,
-    onUploaded: (url: string) => void,
-    setUploading: (value: boolean) => void,
-    setUploadError: (value: string | null) => void,
-  ) => {
-    setUploading(true);
-    setUploadError(null);
-
-    try {
-      const uploaded = await FileUploadApi.uploadImage(file);
-      onUploaded(uploaded.url);
-    } catch (error) {
-      setUploadError(
-        getApiErrorMessage(error, "We couldn't upload that image. Try again."),
-      );
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleAvatarFiles = (files: File[]) => {
-    const file = files[0];
-
-    if (file) {
-      void uploadImage(
-        file,
-        setAvatar,
-        setIsAvatarUploading,
-        setAvatarUploadError,
-      );
-    }
-  };
-
-  const handleCoverFiles = (files: File[]) => {
-    const file = files[0];
-
-    if (file) {
-      void uploadImage(
-        file,
-        setCoverImage,
-        setIsCoverUploading,
-        setCoverUploadError,
-      );
-    }
-  };
-
-  const mutation = useMutation({
-    mutationKey: ["activity", "group-identity", "update", group.id],
-    mutationFn: async () => {
-      const groupPayload = {
-        name: name.trim(),
-        description: normalizeOptionalText(description),
-        avatar: normalizeOptionalText(avatar),
-      };
-      const requests: Array<Promise<unknown>> = [];
-
-      if (
-        groupPayload.name !== group.name ||
-        groupPayload.description !== group.description ||
-        groupPayload.avatar !== group.avatar
-      ) {
-        requests.push(ActivityApi.updateGroup(group.id, groupPayload));
-      }
-
-      if (group.plan && coverImage !== group.plan.coverImage) {
-        requests.push(
-          ActivityApi.updatePlan(group.plan.id, {
-            coverImage,
-          }),
-        );
-      }
-
-      await Promise.all(requests);
-    },
-    onSuccess: async () => {
-      setError(null);
-      onOpenChange(false);
-      await ActivityQueries.invalidateGroupSurfaces();
-    },
-    onError: (error) => {
-      setError(
-        getApiErrorMessage(
-          error,
-          "We couldn't save those changes. Please try again.",
-        ),
-      );
-    },
+  const editor = useEditGroupIdentity(group, {
+    onSaved: () => onOpenChange(false),
   });
 
-  const isNameValid = name.trim().length > 0;
-  const hasChanges =
-    name.trim() !== group.name ||
-    normalizeOptionalText(description) !== group.description ||
-    normalizeOptionalText(avatar) !== group.avatar ||
-    coverImage !== (group.plan?.coverImage ?? null);
+  const activeCoverPreset = useMemo(
+    () => getPlanCoverPreset(editor.coverImage),
+    [editor.coverImage],
+  );
 
   return (
     <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
@@ -198,8 +83,8 @@ function EditGroupIdentityDialogContent({
           </label>
           <input
             id="group-name"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
+            value={editor.name}
+            onChange={(event) => editor.setName(event.target.value)}
             maxLength={120}
             className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-forge-teal"
           />
@@ -214,8 +99,8 @@ function EditGroupIdentityDialogContent({
           </label>
           <textarea
             id="group-description"
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
+            value={editor.description}
+            onChange={(event) => editor.setDescription(event.target.value)}
             maxLength={1000}
             rows={3}
             className="w-full resize-none rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-forge-teal"
@@ -228,8 +113,8 @@ function EditGroupIdentityDialogContent({
           </p>
           <div className="grid gap-3 sm:grid-cols-[4.5rem_1fr]">
             <Avatar
-              src={avatar || null}
-              name={name}
+              src={editor.avatar || null}
+              name={editor.name}
               shape="rounded"
               className="size-18 rounded-xl border border-border bg-muted"
             />
@@ -238,21 +123,21 @@ function EditGroupIdentityDialogContent({
                 inputRef={avatarInputRef}
                 variant="inline"
                 accept="image/*"
-                title={avatar ? "Replace avatar" : "Upload avatar"}
+                title={editor.avatar ? "Replace avatar" : "Upload avatar"}
                 description="Drop a square group image here."
                 helper="PNG, JPG, WEBP up to 5 MB"
                 actionLabel="Browse"
-                isUploading={isAvatarUploading}
-                error={avatarUploadError}
-                onFiles={handleAvatarFiles}
+                isUploading={editor.isAvatarUploading}
+                error={editor.avatarUploadError}
+                onFiles={editor.handleAvatarFiles}
               />
-              {avatar && (
+              {editor.avatar && (
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   className="self-start"
-                  onClick={() => setAvatar("")}
+                  onClick={() => editor.setAvatar("")}
                 >
                   <X className="size-4" aria-hidden="true" />
                   Remove avatar
@@ -272,30 +157,30 @@ function EditGroupIdentityDialogContent({
                 inputRef={coverInputRef}
                 variant="cover"
                 accept="image/*"
-                title={coverImage ? "Change cover" : "Upload cover"}
+                title={editor.coverImage ? "Change cover" : "Upload cover"}
                 description="Drop a plan image here or browse from your device."
                 helper="PNG, JPG, WEBP up to 5 MB"
                 actionLabel="Browse"
-                isUploading={isCoverUploading}
-                error={coverUploadError}
-                onFiles={handleCoverFiles}
+                isUploading={editor.isCoverUploading}
+                error={editor.coverUploadError}
+                onFiles={editor.handleCoverFiles}
                 preview={
                   <div className="h-full w-full">
                     <PlanCover
-                      value={coverImage}
+                      value={editor.coverImage}
                       alt={`${group.name} cover preview`}
                       imageClassName="transition-transform duration-500"
                     />
                   </div>
                 }
               />
-              {coverImage && (
+              {editor.coverImage && (
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon-sm"
                   className="absolute right-2 top-2 z-20 rounded-full bg-black/45 text-white hover:bg-black/65 hover:text-white"
-                  onClick={() => setCoverImage(null)}
+                  onClick={() => editor.setCoverImage(null)}
                   aria-label="Remove cover"
                 >
                   <X className="size-4" aria-hidden="true" />
@@ -304,13 +189,13 @@ function EditGroupIdentityDialogContent({
             </div>
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
               {PLAN_COVER_PRESETS.map(({ id, gradient, label }) => {
-                const selected = coverImage === id;
+                const selected = editor.coverImage === id;
 
                 return (
                   <button
                     key={id}
                     type="button"
-                    onClick={() => setCoverImage(selected ? null : id)}
+                    onClick={() => editor.setCoverImage(selected ? null : id)}
                     aria-pressed={selected}
                     className={cn(
                       "group relative h-14 overflow-hidden rounded-xl border-2 bg-linear-to-br transition duration-200",
@@ -344,8 +229,8 @@ function EditGroupIdentityDialogContent({
           </div>
         )}
 
-        {error && (
-          <p className="text-sm font-medium text-destructive">{error}</p>
+        {editor.error && (
+          <p className="text-sm font-medium text-destructive">{editor.error}</p>
         )}
       </div>
 
@@ -361,15 +246,15 @@ function EditGroupIdentityDialogContent({
           type="button"
           variant="primary"
           disabled={
-            !isNameValid ||
-            !hasChanges ||
-            mutation.isPending ||
-            isAvatarUploading ||
-            isCoverUploading
+            !editor.isNameValid ||
+            !editor.hasChanges ||
+            editor.isSaving ||
+            editor.isAvatarUploading ||
+            editor.isCoverUploading
           }
-          onClick={() => void mutation.mutateAsync()}
+          onClick={() => void editor.save()}
         >
-          {mutation.isPending ? "Saving..." : "Save"}
+          {editor.isSaving ? "Saving..." : "Save"}
         </Button>
       </DialogFooter>
     </DialogContent>

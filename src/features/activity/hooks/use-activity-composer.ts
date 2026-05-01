@@ -3,9 +3,9 @@ import { useCallback, useState } from "react";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-import { ActivityQueries } from "../api/activity.queries";
-import type { ActivitySendMessageInput } from "../lib/activity-contract";
-import { useActivityStore } from "../store/activity.store";
+import { ActivityCommands } from "@/features/activity/api/activity-commands";
+import type { ActivitySendMessageInput } from "@/features/activity/lib/activity-contract";
+import { useActivityStore } from "@/features/activity/store/activity.store";
 import { useActivityMessageActions } from "./use-activity-message-actions";
 
 export function useActivityComposer() {
@@ -33,7 +33,7 @@ export function useActivityComposer() {
           return;
         }
 
-        const result = await ActivityQueries.sendMessage(
+        const result = await ActivityCommands.sendMessage(
           selectedKind,
           selectedId,
           {

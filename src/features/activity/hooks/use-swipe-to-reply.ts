@@ -1,6 +1,6 @@
 import { type PanInfo, useMotionValue, useTransform } from "framer-motion";
-import { useActivityStore } from "../store/activity.store";
-import type { UnifiedMessage } from "../lib/activity-contract";
+import { useActivityStore } from "@/features/activity/store/activity.store";
+import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 
 /**
  * useSwipeToReply - Encapsulates logic for swipe-to-reply gesture.

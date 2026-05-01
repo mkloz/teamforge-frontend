@@ -1,16 +1,19 @@
 import { cn } from "@/shared/lib/utils";
 import { BellOff } from "lucide-react";
 import { memo } from "react";
-import type { UnifiedConversation } from "../../lib/activity-contract";
-import { formatRelativeTime, formatCountdown } from "../../lib/chat-utils";
+import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
+import {
+  formatRelativeTime,
+  formatCountdown,
+} from "@/features/activity/lib/chat-utils";
 import {
   getConversationIsMuted,
   getConversationPlanDateTime,
   getConversationPlanStatus,
   getConversationSubtitle,
   getConversationTitle,
-} from "../../lib/unify-conversations";
-import { UnifiedTypingIndicator } from "../chat/unified-typing-indicator";
+} from "@/features/activity/lib/unify-conversations";
+import { UnifiedTypingIndicator } from "@/features/activity/components/chat/unified-typing-indicator";
 import { MsgStatusIcon } from "./msg-status-icon";
 import { SubtitleIcon } from "./subtitle-icon";
 import { UnreadBadge } from "./unread-badge";

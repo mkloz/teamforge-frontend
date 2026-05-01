@@ -1,11 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import {
-  ACTIVITY_CHATS_QUERY_KEY,
-  ACTIVITY_DIRECT_SELECTION_QUERY_KEY,
-  ACTIVITY_FRIENDSHIPS_QUERY_KEY,
-} from "@/features/activity/api/activity-query-keys";
+import { invalidateFriendshipSurfaces } from "@/shared/api/query-invalidation";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
@@ -72,15 +68,7 @@ export function useSettingsBlockedUsers(enabled: boolean) {
         queryClient.invalidateQueries({
           queryKey: SETTINGS_BLOCKED_USERS_QUERY_KEY,
         }),
-        queryClient.invalidateQueries({
-          queryKey: ACTIVITY_FRIENDSHIPS_QUERY_KEY,
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ACTIVITY_CHATS_QUERY_KEY,
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ACTIVITY_DIRECT_SELECTION_QUERY_KEY,
-        }),
+        invalidateFriendshipSurfaces(),
       ]);
     },
     onError: (error, _userId, context) => {

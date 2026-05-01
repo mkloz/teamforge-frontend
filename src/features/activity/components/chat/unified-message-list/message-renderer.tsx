@@ -1,8 +1,8 @@
 import { memo } from "react";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
-import { ProposalMessage } from "../proposal-message";
-import { SystemMessage } from "../system-message";
-import { UnifiedMessageItem } from "../unified-message-item";
+import { ProposalMessage } from "@/features/activity/components/chat/proposal-message";
+import { SystemMessage } from "@/features/activity/components/chat/system-message";
+import { UnifiedMessageItem } from "@/features/activity/components/chat/unified-message-item";
 
 interface MessageRendererProps {
   message: UnifiedMessage;

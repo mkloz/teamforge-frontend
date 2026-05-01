@@ -5,9 +5,9 @@ import type {
   MemberRole,
 } from "@/features/activity/lib/activity-contract";
 import { buildMemberProfileChat } from "@/features/activity/lib/activity-projections";
+import { useActivityFriendships } from "@/features/activity/hooks/use-activity-friendships";
 import { useActivityGroupActions } from "@/features/activity/hooks/use-activity-group-actions";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
-import { ActivityQueries } from "@/features/activity/api/activity.queries";
 import { UserProfilePanel } from "@/shared/components/user-profile-panel/user-profile-panel";
 import { Button } from "@/shared/components/ui/button";
 import { PlanCover } from "@/shared/components/common/plan-cover";
@@ -15,7 +15,6 @@ import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { Pencil, X } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { ActionsSection } from "./actions-section";
 import { GroupIdentitySection } from "./group-identity-section";
 import { MembersSection } from "./members-section";
@@ -71,7 +70,7 @@ export function GroupPanelContent({
     removingMemberId,
   } = useActivityGroupActions(group.id);
   const { unpinMessage } = useActivityMessageActions();
-  const friendshipsQuery = useQuery(ActivityQueries.friendships());
+  const friendshipsQuery = useActivityFriendships();
 
   const currentUserRole: MemberRole = useMemo(() => {
     const currentMember = group.members?.find(

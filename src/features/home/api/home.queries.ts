@@ -1,15 +1,19 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { AuthQueries } from "@/features/auth/api/auth.queries";
-import {
-  ACTIVITY_CHATS_QUERY_KEY,
-  ACTIVITY_GROUP_SELECTION_QUERY_KEY,
-  ACTIVITY_GROUPS_QUERY_KEY,
-} from "@/features/activity/api/activity-query-keys";
+import { applyHomeInvitationUpdate } from "@/shared/api/query-cache-updaters";
+import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { appQueryClient } from "@/shared/api/query-client";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import { invalidateGroupMembershipSurfaces } from "@/shared/api/query-invalidation";
 import type { ExploreGroup, GroupApi, Invite, User } from "@/shared/schemas";
 
 import { HomeApi } from "./home.api";
+import {
+  HOME_GROUPS_QUERY_KEY,
+  HOME_INVITATIONS_QUERY_KEY,
+  HOME_RECOMMENDATIONS_QUERY_KEY,
+  HOME_SENT_INVITATIONS_QUERY_KEY,
+} from "./home-query-keys";
 
 export interface UserStats {
   trustScore: number;
@@ -53,17 +57,6 @@ export interface HomeViewer {
 export type PlannedGroup = GroupApi & {
   plan: NonNullable<GroupApi["plan"]>;
 };
-
-export const HOME_GROUPS_QUERY_KEY = ["home", "groups"] as const;
-export const HOME_INVITATIONS_QUERY_KEY = ["home", "invitations"] as const;
-export const HOME_SENT_INVITATIONS_QUERY_KEY = [
-  "home",
-  "sent-invitations",
-] as const;
-export const HOME_RECOMMENDATIONS_QUERY_KEY = [
-  "home",
-  "recommendations",
-] as const;
 
 export const EMPTY_HOME_STATS: UserStats = {
   trustScore: 0,
@@ -124,24 +117,6 @@ function hasPlan(group: GroupApi): group is PlannedGroup {
 
 function isActivePlan(group: PlannedGroup) {
   return group.plan.status !== "COMPLETED" && group.plan.status !== "CANCELLED";
-}
-
-function getInviteVersion(invite: Invite) {
-  return invite.version ?? new Date(invite.updatedAt).getTime();
-}
-
-function mergeInviteLists(current: Invite[] | undefined, incoming: Invite) {
-  const existing = current?.find((item) => item.id === incoming.id);
-  const nextInvite =
-    existing && getInviteVersion(existing) > getInviteVersion(incoming)
-      ? existing
-      : incoming;
-  const withoutExisting =
-    current?.filter((item) => item.id !== incoming.id) ?? [];
-
-  return [nextInvite, ...withoutExisting].sort(
-    (left, right) => getInviteVersion(right) - getInviteVersion(left),
-  );
 }
 
 export class HomeQueries {
@@ -225,10 +200,10 @@ export class HomeQueries {
 
   static stats() {
     return queryOptions({
-      queryKey: ["home", "stats"],
+      queryKey: APP_QUERY_KEYS.home.stats,
       queryFn: async (): Promise<UserStats> => {
         const [currentUser, groups] = await Promise.all([
-          appQueryClient.ensureQueryData(AuthQueries.currentUser()),
+          appQueryClient.ensureQueryData(currentUserQueryOptions()),
           appQueryClient.ensureQueryData(HomeQueries.groupsSource()),
         ]);
 
@@ -247,7 +222,7 @@ export class HomeQueries {
 
   static plans() {
     return queryOptions({
-      queryKey: ["home", "plans"],
+      queryKey: APP_QUERY_KEYS.home.plans,
       queryFn: async (): Promise<PlannedGroup[]> => {
         const groups = await appQueryClient.ensureQueryData(
           HomeQueries.groupsSource(),
@@ -291,21 +266,7 @@ export class HomeQueries {
     return HomeApi.acceptInvitation(inviteId).then(async (invite) => {
       this.applyInvitationUpdate(invite);
 
-      await Promise.all([
-        appQueryClient.invalidateQueries({ queryKey: HOME_GROUPS_QUERY_KEY }),
-        appQueryClient.invalidateQueries({ queryKey: ["home", "plans"] }),
-        appQueryClient.invalidateQueries({ queryKey: ["home", "stats"] }),
-        appQueryClient.invalidateQueries({ queryKey: ["explore-groups"] }),
-        appQueryClient.invalidateQueries({
-          queryKey: ACTIVITY_GROUPS_QUERY_KEY,
-        }),
-        appQueryClient.invalidateQueries({
-          queryKey: ACTIVITY_CHATS_QUERY_KEY,
-        }),
-        appQueryClient.invalidateQueries({
-          queryKey: ACTIVITY_GROUP_SELECTION_QUERY_KEY,
-        }),
-      ]);
+      await invalidateGroupMembershipSurfaces();
 
       return invite;
     });
@@ -319,17 +280,13 @@ export class HomeQueries {
   }
 
   static applyInvitationUpdate(invite: Invite) {
-    appQueryClient.setQueryData<Invite[] | undefined>(
-      HOME_INVITATIONS_QUERY_KEY,
-      (current) => {
-        const merged = mergeInviteLists(current, invite);
-        return merged.filter((item) => item.status === "PENDING");
-      },
-    );
-
-    appQueryClient.setQueryData<Invite[] | undefined>(
-      HOME_SENT_INVITATIONS_QUERY_KEY,
-      (current) => mergeInviteLists(current, invite),
-    );
+    applyHomeInvitationUpdate(invite);
   }
 }
+
+export {
+  HOME_GROUPS_QUERY_KEY,
+  HOME_INVITATIONS_QUERY_KEY,
+  HOME_RECOMMENDATIONS_QUERY_KEY,
+  HOME_SENT_INVITATIONS_QUERY_KEY,
+};

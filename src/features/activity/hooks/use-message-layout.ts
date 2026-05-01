@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 
-import { AuthQueries } from "@/features/auth/api/auth.queries";
+import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 
 import { cn } from "@/shared/lib/utils";
-import type { UnifiedMessage } from "../lib/activity-contract";
+import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 
 interface UseMessageLayoutProps {
   message: UnifiedMessage;
@@ -15,7 +15,7 @@ interface UseMessageLayoutProps {
  */
 export function useMessageLayout({ message, isOwn }: UseMessageLayoutProps) {
   const { attachments, content, replyTo, reactions } = message;
-  const { data: currentUser } = AuthQueries.useCurrentUser();
+  const { data: currentUser } = useCurrentUserQuery();
 
   const reactionGroups = useMemo(() => {
     if (!reactions || !Array.isArray(reactions)) return [];

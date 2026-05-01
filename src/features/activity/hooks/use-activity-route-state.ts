@@ -9,7 +9,7 @@ import {
   activityPanelValues,
 } from "@/shared/lib/activity-route";
 
-import { useActivityStore } from "../store/activity.store";
+import { useActivityStore } from "@/features/activity/store/activity.store";
 
 export function useActivityRouteState() {
   const isDesktop = useMediaQuery("(min-width: 1024px)");

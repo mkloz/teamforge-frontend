@@ -2,7 +2,7 @@ import { memo } from "react";
 import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { formatTypingText } from "../../lib/chat-utils";
+import { formatTypingText } from "@/features/activity/lib/chat-utils";
 
 interface TypingUser {
   name: string;

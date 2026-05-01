@@ -281,6 +281,15 @@ All visual design follows the specifications in `docs/visual-style-guide.md`. Th
 
 ---
 
+## Agent Artifacts
+
+- Put generated audits, reviews, implementation notes, migration plans, and other agent-written reports in `reports/`.
+- Put scratch files, temporary scripts, one-off command outputs, and other disposable working files in `temp/`.
+- Do not put agent-generated reports or temporary work files in `docs/`. The `docs/` folder is only for durable project documentation intended to be maintained by humans.
+- `reports/` and `temp/` are ignored by git and should remain untracked.
+
+---
+
 ## What Not To Do
 
 - Do not use `localStorage` or `sessionStorage` for any data that needs to persist.

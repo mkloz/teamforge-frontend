@@ -3,7 +3,7 @@ import { Play, Pause } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
-import { useAudioPlayer } from "../../hooks/use-audio-player";
+import { useAudioPlayer } from "@/features/activity/hooks/use-audio-player";
 
 interface VoiceNoteProps {
   url: string;

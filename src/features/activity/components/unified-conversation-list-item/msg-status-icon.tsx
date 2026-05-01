@@ -1,7 +1,7 @@
 import { Check, CheckCheck } from "lucide-react";
 import { memo } from "react";
 import { cn } from "@/shared/lib/utils";
-import type { MessageStatus } from "../../lib/activity-contract";
+import type { MessageStatus } from "@/features/activity/lib/activity-contract";
 
 export const MsgStatusIcon = memo(
   ({
