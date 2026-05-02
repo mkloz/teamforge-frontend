@@ -1,6 +1,6 @@
 import type { GroupApi } from "@/shared/schemas";
 import { Avatar } from "@/shared/components/common/avatar";
-import { buildActivityGroupHubNavigation } from "@/shared/lib/activity-route";
+import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";

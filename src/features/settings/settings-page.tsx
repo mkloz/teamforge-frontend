@@ -1,6 +1,6 @@
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import type { SettingsSection } from "@/shared/lib/settings-route";
+import type { SettingsSection } from "@/features/settings/lib/settings-route";
 
 import { SettingsProfileForm } from "@/features/settings/components/settings-profile-form";
 import { useSettingsBlockedUsers } from "@/features/settings/hooks/use-settings-blocked-users";

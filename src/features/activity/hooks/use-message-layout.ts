@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 
 import { cn } from "@/shared/lib/utils";
@@ -17,46 +15,77 @@ export function useMessageLayout({ message, isOwn }: UseMessageLayoutProps) {
   const { attachments, content, replyTo, reactions } = message;
   const { data: currentUser } = useCurrentUserQuery();
 
-  const reactionGroups = useMemo(() => {
-    if (!reactions || !Array.isArray(reactions)) return [];
-
-    const groups: Record<string, { count: number; isActive: boolean }> = {};
-    reactions.forEach((r) => {
-      if (!groups[r.emoji]) {
-        groups[r.emoji] = { count: 0, isActive: false };
-      }
-      groups[r.emoji].count++;
-      if (currentUser?.id && r.userId === currentUser.id) {
-        groups[r.emoji].isActive = true;
-      }
-    });
-
-    return Object.entries(groups).map(([emoji, data]) => ({
-      emoji,
-      count: data.count,
-      isActive: data.isActive,
-    }));
-  }, [currentUser, reactions]);
-
-  const galleryRounding = useMemo(() => {
-    if (!attachments?.some((a) => a.type === "IMAGE")) return "";
-
-    const hasAbove =
-      !!replyTo ||
-      attachments.some((a) => a.type === "FILE" || a.type === "AUDIO");
-    const hasBelow = !!content || reactionGroups.length > 0;
-    const isOnlyContent = !hasAbove && !hasBelow;
-
-    return cn(
-      !hasAbove ? "rounded-t-xl" : "rounded-t-none",
-      !hasBelow ? "rounded-b-xl" : "rounded-b-none",
-      isOnlyContent && (isOwn ? "rounded-br-none" : "rounded-bl-none"),
-    );
-  }, [attachments, replyTo, content, reactionGroups.length, isOwn]);
+  const reactionGroups = buildReactionGroups(reactions, currentUser?.id);
+  const galleryRounding = getGalleryRounding({
+    attachments,
+    content,
+    isOwn,
+    reactionCount: reactionGroups.length,
+    replyTo,
+  });
 
   return {
     reactionGroups,
     galleryRounding,
     isReadByOthers: message.status === "READ",
   };
+}
+
+function buildReactionGroups(
+  reactions: UnifiedMessage["reactions"],
+  currentUserId?: string,
+) {
+  if (!reactions || !Array.isArray(reactions)) return [];
+
+  const groups: Record<string, { count: number; isActive: boolean }> = {};
+  reactions.forEach((reaction) => {
+    if (!groups[reaction.emoji]) {
+      groups[reaction.emoji] = { count: 0, isActive: false };
+    }
+
+    groups[reaction.emoji].count++;
+    if (currentUserId && reaction.userId === currentUserId) {
+      groups[reaction.emoji].isActive = true;
+    }
+  });
+
+  return Object.entries(groups).map(([emoji, data]) => ({
+    emoji,
+    count: data.count,
+    isActive: data.isActive,
+  }));
+}
+
+interface GalleryRoundingInput {
+  attachments: UnifiedMessage["attachments"];
+  content: UnifiedMessage["content"];
+  isOwn: boolean;
+  reactionCount: number;
+  replyTo: UnifiedMessage["replyTo"];
+}
+
+function getGalleryRounding({
+  attachments,
+  content,
+  isOwn,
+  reactionCount,
+  replyTo,
+}: GalleryRoundingInput) {
+  if (!attachments?.some((attachment) => attachment.type === "IMAGE")) {
+    return "";
+  }
+
+  const hasAbove =
+    !!replyTo ||
+    attachments.some(
+      (attachment) => attachment.type === "FILE" || attachment.type === "AUDIO",
+    );
+  const hasBelow = !!content || reactionCount > 0;
+  const isOnlyContent = !hasAbove && !hasBelow;
+
+  return cn(
+    !hasAbove ? "rounded-t-xl" : "rounded-t-none",
+    !hasBelow ? "rounded-b-xl" : "rounded-b-none",
+    isOnlyContent && (isOwn ? "rounded-br-none" : "rounded-bl-none"),
+  );
 }

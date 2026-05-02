@@ -1,6 +1,7 @@
-import { cn } from "@/shared/lib/utils";
 import { useReducedMotion, useScroll, useSpring } from "framer-motion";
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import { useEffect, useEffectEvent, useRef } from "react";
+
+import { cn } from "@/shared/lib/utils";
 
 interface ParticlesProps {
   className?: string;
@@ -34,7 +35,7 @@ function hexToRgb(hex: string): number[] {
   return [red, green, blue];
 }
 
-export const Particles: React.FC<ParticlesProps> = ({
+export function Particles({
   className = "",
   quantity = 80,
   color = "#0D9488",
@@ -42,7 +43,7 @@ export const Particles: React.FC<ParticlesProps> = ({
   vy = 0,
   lineOpacity = 0.28,
   lineDistance = 220,
-}) => {
+}: ParticlesProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const context = useRef<CanvasRenderingContext2D | null>(null);
@@ -53,8 +54,7 @@ export const Particles: React.FC<ParticlesProps> = ({
   const isVisible = useRef<boolean>(true);
   const lastTime = useRef<number>(0);
 
-  // Caching RGBA base string to avoid GC pressure
-  const rgbBase = useMemo(() => hexToRgb(color).join(","), [color]);
+  const rgbBase = hexToRgb(color).join(",");
 
   // Framer Motion scroll tracking
   const { scrollYProgress } = useScroll();
@@ -71,7 +71,7 @@ export const Particles: React.FC<ParticlesProps> = ({
     });
   }, [smoothScroll]);
 
-  const circleParams = useCallback((): Circle => {
+  const circleParams = useEffectEvent((): Circle => {
     const x = Math.floor(Math.random() * canvasSize.current.w);
     const y = Math.floor(Math.random() * canvasSize.current.h);
     const size = Math.random() * 2.1 + 1.7;
@@ -91,9 +91,9 @@ export const Particles: React.FC<ParticlesProps> = ({
       dy,
       magnetism,
     };
-  }, []);
+  });
 
-  const resizeCanvas = useCallback(() => {
+  const resizeCanvas = useEffectEvent(() => {
     if (canvasContainerRef.current && canvasRef.current && context.current) {
       circles.current.length = 0;
       const w = canvasContainerRef.current.clientWidth;
@@ -112,9 +112,9 @@ export const Particles: React.FC<ParticlesProps> = ({
         circles.current.push(circleParams());
       }
     }
-  }, [quantity, dpr, circleParams]);
+  });
 
-  const drawLines = useCallback(() => {
+  const drawLines = useEffectEvent(() => {
     if (!context.current || circles.current.length === 0) return;
     const ctx = context.current;
     const points = circles.current;
@@ -153,9 +153,9 @@ export const Particles: React.FC<ParticlesProps> = ({
         }
       }
     }
-  }, [lineDistance, lineOpacity, rgbBase]);
+  });
 
-  const updateParticles = useCallback(() => {
+  const updateParticles = useEffectEvent(() => {
     if (!context.current || !isVisible.current) return;
     const ctx = context.current;
     ctx.clearRect(0, 0, canvasSize.current.w, canvasSize.current.h);
@@ -190,29 +190,27 @@ export const Particles: React.FC<ParticlesProps> = ({
     });
 
     drawLines();
-  }, [vx, vy, rgbBase, drawLines]);
+  });
 
-  const animate = useCallback(
-    (time: number) => {
-      const run = (currentTime: number) => {
-        if (!isVisible.current) {
-          animationFrameId.current = window.requestAnimationFrame(run);
-          return;
-        }
-
-        if (currentTime - lastTime.current < 20) {
-          animationFrameId.current = window.requestAnimationFrame(run);
-          return;
-        }
-
-        lastTime.current = currentTime;
-        updateParticles();
+  const animate = useEffectEvent((time: number) => {
+    const run = (currentTime: number) => {
+      if (!isVisible.current) {
         animationFrameId.current = window.requestAnimationFrame(run);
-      };
-      run(time);
-    },
-    [updateParticles],
-  );
+        return;
+      }
+
+      if (currentTime - lastTime.current < 20) {
+        animationFrameId.current = window.requestAnimationFrame(run);
+        return;
+      }
+
+      lastTime.current = currentTime;
+      updateParticles();
+      animationFrameId.current = window.requestAnimationFrame(run);
+    };
+
+    run(time);
+  });
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -248,7 +246,7 @@ export const Particles: React.FC<ParticlesProps> = ({
         window.cancelAnimationFrame(animationFrameId.current);
       }
     };
-  }, [resizeCanvas, animate, shouldReduceMotion, updateParticles]);
+  }, [shouldReduceMotion]);
 
   return (
     <div
@@ -261,4 +259,4 @@ export const Particles: React.FC<ParticlesProps> = ({
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
     </div>
   );
-};
+}

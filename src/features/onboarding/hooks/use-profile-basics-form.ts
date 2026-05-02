@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
 import { OnboardingCache } from "@/features/onboarding/api/onboarding-cache";
@@ -68,15 +68,13 @@ export function useProfileBasicsForm() {
     },
   });
 
-  const progress = useMemo(() => {
-    const filled = [
-      watchedValues.age?.trim().length ? true : false,
-      Boolean(watchedValues.gender),
-      watchedValues.city?.trim().length ? true : false,
-    ].filter(Boolean).length;
+  const filledProfileFields = [
+    watchedValues.age?.trim().length ? true : false,
+    Boolean(watchedValues.gender),
+    watchedValues.city?.trim().length ? true : false,
+  ].filter(Boolean).length;
 
-    return filled / 3;
-  }, [watchedValues.age, watchedValues.city, watchedValues.gender]);
+  const progress = filledProfileFields / 3;
 
   const onSubmit = form.handleSubmit(async (values) => {
     setSaveError(null);

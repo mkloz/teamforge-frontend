@@ -1,7 +1,7 @@
 import {
   useState,
-  useCallback,
   useEffect,
+  useEffectEvent,
   useLayoutEffect,
   useRef,
 } from "react";
@@ -21,34 +21,37 @@ export function useChatScroll(
   const [isNearBottom, setIsNearBottom] = useState(true);
   const isInitialRender = useRef(true);
 
+  const scrollMessagesEndIntoView = useEffectEvent(
+    (behavior: ScrollBehavior) => {
+      messagesEndRef.current?.scrollIntoView({ behavior });
+    },
+  );
+
   // Scroll to bottom on initial load or conversation switch
   useLayoutEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+    scrollMessagesEndIntoView("instant");
     isInitialRender.current = false;
-  }, [conversationId, messagesEndRef]);
+  }, [conversationId]);
 
   // Scroll on new messages if we're already near bottom
   useEffect(() => {
     if (!isInitialRender.current && isNearBottom) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      scrollMessagesEndIntoView("smooth");
     }
-  }, [messageCount, isNearBottom, messagesEndRef]);
+  }, [messageCount, isNearBottom]);
 
-  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+  function handleScroll(e: React.UIEvent<HTMLDivElement>) {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
     const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
     const nearBottom = distanceFromBottom < 100;
 
     setIsNearBottom(nearBottom);
     setShowScrollToBottom(!nearBottom);
-  }, []);
+  }
 
-  const scrollToBottom = useCallback(
-    (behavior: ScrollBehavior = "smooth") => {
-      messagesEndRef.current?.scrollIntoView({ behavior });
-    },
-    [messagesEndRef],
-  );
+  function scrollToBottom(behavior: ScrollBehavior = "smooth") {
+    messagesEndRef.current?.scrollIntoView({ behavior });
+  }
 
   return {
     showScrollToBottom,

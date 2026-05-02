@@ -33,20 +33,26 @@ function useChart() {
   return context;
 }
 
-const ChartContainer = React.forwardRef<
-  HTMLDivElement,
-  React.ComponentProps<"div"> & {
-    config: ChartConfig;
-    children: React.ComponentProps<
-      typeof import("recharts").ResponsiveContainer
-    >["children"];
-  }
->(({ id, className, children, config, ...props }, ref) => {
+type ChartContainerProps = React.ComponentProps<"div"> & {
+  config: ChartConfig;
+  children: React.ComponentProps<
+    typeof import("recharts").ResponsiveContainer
+  >["children"];
+};
+
+function ChartContainer({
+  id,
+  className,
+  children,
+  config,
+  ref,
+  ...props
+}: ChartContainerProps) {
   const uniqueId = React.useId();
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
 
   return (
-    <ChartContext.Provider value={{ config }}>
+    <ChartContext value={{ config }}>
       <div
         data-chart={chartId}
         ref={ref}
@@ -59,10 +65,9 @@ const ChartContainer = React.forwardRef<
         <ChartStyle id={chartId} config={config} />
         {children}
       </div>
-    </ChartContext.Provider>
+    </ChartContext>
   );
-});
-ChartContainer.displayName = "Chart";
+}
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(

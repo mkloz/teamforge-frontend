@@ -1,5 +1,11 @@
 import { toast } from "sonner";
 
+import {
+  copyTextToClipboard,
+  getCurrentBrowserUrl,
+  shareBrowserData,
+} from "@/shared/lib/browser-capabilities";
+
 interface Data {
   title: string;
   text: string;
@@ -11,7 +17,7 @@ export const useShare = () => {
   const handleShare = async ({
     title,
     text,
-    url = window.location.href,
+    url = getCurrentBrowserUrl(),
     message = "URL has been copied to the clipboard.",
   }: Data) => {
     const shareData = {
@@ -20,12 +26,18 @@ export const useShare = () => {
       url,
     };
 
-    if (window.navigator.canShare?.(shareData)) {
-      return await window.navigator.share(shareData);
+    const shareResult = await shareBrowserData(shareData);
+
+    if (shareResult === "shared" || shareResult === "dismissed") {
+      return;
     }
 
-    await window.navigator.clipboard.writeText(url);
-    toast(message);
+    if (await copyTextToClipboard(url)) {
+      toast(message);
+      return;
+    }
+
+    toast.error("Sharing is unavailable in this browser.");
   };
 
   return handleShare;

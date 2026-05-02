@@ -20,6 +20,10 @@ export const REQUEST_ID_HEADER = "x-request-id";
 
 let refreshPromise: Promise<AuthTokens | null> | null = null;
 
+interface RefreshTokensOptions {
+  allowCookieRefresh?: boolean;
+}
+
 function readContext(options?: Options): Required<ApiRequestContext> {
   const context = options?.context;
 
@@ -119,8 +123,10 @@ async function parseApiError(error: HTTPError) {
   return error;
 }
 
-async function refreshTokens() {
-  if (!authSession.getRefreshToken()) {
+async function refreshTokens(options: RefreshTokensOptions = {}) {
+  const refreshToken = authSession.getRefreshToken();
+
+  if (!refreshToken && !options.allowCookieRefresh) {
     return null;
   }
 
@@ -128,7 +134,7 @@ async function refreshTokens() {
     refreshPromise = rawApiClient
       .post(AUTH_REFRESH_PATH, {
         context: {
-          auth: "refresh",
+          auth: refreshToken ? "refresh" : "none",
           retryOnUnauthorized: false,
         },
       })
@@ -172,6 +178,7 @@ const sharedHooks = {
 
 const rawApiClient = ky.create({
   prefixUrl: config.apiUrl,
+  credentials: "include",
   timeout: 15_000,
   hooks: sharedHooks,
 });
@@ -204,8 +211,13 @@ export async function parseJsonWithRequestId<T>(
   };
 }
 
+export function refreshAuthSession() {
+  return refreshTokens({ allowCookieRefresh: true });
+}
+
 export const apiClient = ky.create({
   prefixUrl: config.apiUrl,
+  credentials: "include",
   timeout: 15_000,
   hooks: {
     ...sharedHooks,

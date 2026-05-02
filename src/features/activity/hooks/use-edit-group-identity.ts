@@ -3,14 +3,15 @@ import { useState } from "react";
 
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import type { Group } from "@/features/activity/lib/activity-contract";
-import { FileUploadApi } from "@/shared/api/file-upload";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
-
-function normalizeOptionalText(value: string) {
-  const trimmed = value.trim();
-
-  return trimmed.length > 0 ? trimmed : null;
-}
+import {
+  buildGroupIdentityUpdateInput,
+  getInitialGroupIdentityValues,
+  hasGroupIdentityChanges,
+  isGroupIdentityNameValid,
+  type GroupIdentityFormValues,
+} from "./group-identity/group-identity-form-state";
+import { useImageUploadField } from "./group-identity/use-image-upload-field";
 
 interface UseEditGroupIdentityOptions {
   onSaved?: () => void;
@@ -20,44 +21,27 @@ export function useEditGroupIdentity(
   group: Group,
   { onSaved }: UseEditGroupIdentityOptions = {},
 ) {
-  const [name, setName] = useState(group.name);
-  const [description, setDescription] = useState(group.description ?? "");
-  const [avatar, setAvatar] = useState(group.avatar ?? "");
-  const [coverImage, setCoverImage] = useState(group.plan?.coverImage ?? null);
+  const initialValues = getInitialGroupIdentityValues(group);
+  const [name, setName] = useState(initialValues.name);
+  const [description, setDescription] = useState(initialValues.description);
+  const [avatar, setAvatar] = useState(initialValues.avatar);
+  const [coverImage, setCoverImage] = useState(initialValues.coverImage);
   const [error, setError] = useState<string | null>(null);
-  const [avatarUploadError, setAvatarUploadError] = useState<string | null>(
-    null,
-  );
-  const [coverUploadError, setCoverUploadError] = useState<string | null>(null);
-  const [isAvatarUploading, setIsAvatarUploading] = useState(false);
-  const [isCoverUploading, setIsCoverUploading] = useState(false);
+  const avatarUpload = useImageUploadField(setAvatar);
+  const coverUpload = useImageUploadField(setCoverImage);
+  const values: GroupIdentityFormValues = {
+    avatar,
+    coverImage,
+    description,
+    name,
+  };
 
   const mutation = useMutation({
     mutationKey: ["activity", "group-identity", "update", group.id],
-    mutationFn: async () => {
-      const groupPayload = {
-        name: name.trim(),
-        description: normalizeOptionalText(description),
-        avatar: normalizeOptionalText(avatar),
-      };
-      const nextGroupPayload =
-        groupPayload.name !== group.name ||
-        groupPayload.description !== group.description ||
-        groupPayload.avatar !== group.avatar
-          ? groupPayload
-          : undefined;
-      const nextPlanPayload =
-        group.plan && coverImage !== group.plan.coverImage
-          ? { coverImage }
-          : undefined;
-
-      await ActivityCommands.updateGroupIdentity({
-        groupId: group.id,
-        groupPayload: nextGroupPayload,
-        planId: nextPlanPayload ? group.plan?.id : undefined,
-        planPayload: nextPlanPayload,
-      });
-    },
+    mutationFn: (nextValues: GroupIdentityFormValues) =>
+      ActivityCommands.updateGroupIdentity(
+        buildGroupIdentityUpdateInput(group, nextValues),
+      ),
     onSuccess: () => {
       setError(null);
       onSaved?.();
@@ -72,76 +56,30 @@ export function useEditGroupIdentity(
     },
   });
 
-  const uploadImage = async (
-    file: File,
-    onUploaded: (url: string) => void,
-    setUploading: (value: boolean) => void,
-    setUploadError: (value: string | null) => void,
-  ) => {
-    setUploading(true);
-    setUploadError(null);
+  const isNameValid = isGroupIdentityNameValid(name);
+  const hasChanges = hasGroupIdentityChanges(group, values);
 
-    try {
-      const uploaded = await FileUploadApi.uploadImage(file);
-      onUploaded(uploaded.url);
-    } catch (error) {
-      setUploadError(
-        getApiErrorMessage(error, "We couldn't upload that image. Try again."),
-      );
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleAvatarFiles = (files: File[]) => {
-    const file = files[0];
-
-    if (file) {
-      void uploadImage(
-        file,
-        setAvatar,
-        setIsAvatarUploading,
-        setAvatarUploadError,
-      );
-    }
-  };
-
-  const handleCoverFiles = (files: File[]) => {
-    const file = files[0];
-
-    if (file) {
-      void uploadImage(
-        file,
-        setCoverImage,
-        setIsCoverUploading,
-        setCoverUploadError,
-      );
-    }
-  };
-
-  const isNameValid = name.trim().length > 0;
-  const hasChanges =
-    name.trim() !== group.name ||
-    normalizeOptionalText(description) !== group.description ||
-    normalizeOptionalText(avatar) !== group.avatar ||
-    coverImage !== (group.plan?.coverImage ?? null);
+  function save() {
+    setError(null);
+    void mutation.mutateAsync(values);
+  }
 
   return {
     avatar,
-    avatarUploadError,
+    avatarUploadError: avatarUpload.error,
     coverImage,
-    coverUploadError,
+    coverUploadError: coverUpload.error,
     description,
     error,
-    handleAvatarFiles,
-    handleCoverFiles,
+    handleAvatarFiles: avatarUpload.handleFiles,
+    handleCoverFiles: coverUpload.handleFiles,
     hasChanges,
-    isAvatarUploading,
-    isCoverUploading,
+    isAvatarUploading: avatarUpload.isUploading,
+    isCoverUploading: coverUpload.isUploading,
     isNameValid,
     isSaving: mutation.isPending,
     name,
-    save: mutation.mutateAsync,
+    save,
     setAvatar,
     setCoverImage,
     setDescription,

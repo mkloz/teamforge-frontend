@@ -71,7 +71,7 @@ export function useGroupRatings(groupId: string) {
     isLoading: ratingsQuery.isLoading,
     isError: ratingsQuery.isError,
     refetch: ratingsQuery.refetch,
-    submitRating: createRatingMutation.mutate,
+    submitRating: createRatingMutation.mutateAsync,
     isSubmitting: createRatingMutation.isPending,
   };
 }

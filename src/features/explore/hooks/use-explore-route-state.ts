@@ -1,59 +1,32 @@
-import { useCallback, useEffect } from "react";
-import {
-  createParser,
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsString,
-  parseAsStringLiteral,
-  useQueryStates,
-} from "nuqs";
+import { useQueryStates } from "nuqs";
 
-import { explorePanelValues } from "@/shared/lib/explore-route";
+import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
+import { exploreRouteParsers } from "@/features/explore/hooks/explore-route-state/explore-route-parsers";
+import type {
+  ExploreRouteState,
+  SetExploreRouteState,
+} from "@/features/explore/hooks/explore-route-state/explore-route-state.types";
 import {
-  CATEGORIES,
-  DEFAULT_FILTERS,
-} from "@/features/explore/constants/explore.constants";
-import { useExploreStore } from "@/features/explore/store/use-explore-store";
+  CLEAR_EXPLORE_FILTER_ROUTE,
+  CLEAR_FOCUSED_FRIEND_REQUEST_ROUTE,
+  getAccessRoutePatch,
+  getCategoryRoutePatch,
+  getDistanceRoutePatch,
+  getLocationRoutePatch,
+  getSearchRoutePatch,
+  getSizeRoutePatch,
+  getSortRoutePatch,
+  normalizeCategories,
+  resolveExploreRouteState,
+} from "@/features/explore/hooks/explore-route-state/explore-route-utils";
+import { useExploreRouteSync } from "@/features/explore/hooks/explore-route-state/use-explore-route-sync";
 import type {
   ExploreAccessMode,
   ExploreCategory,
   ExploreLocationMode,
   ExploreSortOption,
 } from "@/features/explore/schemas/explore-filters.schema";
-
-const categoryValues = CATEGORIES.map((category) => category.id);
-const locationValues = ["ALL", "IN_PERSON", "ONLINE", "TBD"] as const;
-const accessValues = ["ALL", "OPEN", "BY_REQUEST"] as const;
-const sortValues = ["MATCH", "SOONEST", "NEWEST"] as const;
-
-const parseAsSizeRange = createParser({
-  parse(value) {
-    const [min, max] = value.split("-").map((part) => Number(part));
-
-    if (!Number.isInteger(min) || !Number.isInteger(max) || min > max) {
-      return null;
-    }
-
-    return [min, max] as [number, number];
-  },
-  serialize(value) {
-    return `${value[0]}-${value[1]}`;
-  },
-});
-
-function normalizeCategories(categories: ExploreCategory[] | null | undefined) {
-  if (!categories?.length) {
-    return DEFAULT_FILTERS.selectedCategories;
-  }
-
-  const unique = Array.from(new Set(categories));
-
-  if (unique.includes("ALL")) {
-    return ["ALL"] as ExploreCategory[];
-  }
-
-  return unique;
-}
+import { useExploreStore } from "@/features/explore/store/use-explore-store";
 
 export function useExploreRouteState() {
   const searchQuery = useExploreStore((state) => state.searchQuery);
@@ -78,188 +51,100 @@ export function useExploreRouteState() {
   const getIsAnythingFiltered = useExploreStore(
     (state) => state.isAnythingFiltered,
   );
-  const [routeState, setRouteState] = useQueryStates(
-    {
-      q: parseAsString,
-      category: parseAsArrayOf(parseAsStringLiteral(categoryValues)),
-      size: parseAsSizeRange,
-      distance: parseAsInteger,
-      location: parseAsStringLiteral(locationValues),
-      access: parseAsStringLiteral(accessValues),
-      sort: parseAsStringLiteral(sortValues),
-      panel: parseAsStringLiteral(explorePanelValues),
-      request: parseAsString,
-    },
-    {
-      history: "replace",
-    },
-  );
+  const [routeState, setRouteState] = useQueryStates(exploreRouteParsers, {
+    history: "replace",
+  });
+  const route = resolveExploreRouteState(routeState as ExploreRouteState);
+  const setExploreRouteState = setRouteState as SetExploreRouteState;
 
-  const routeSearchQuery = routeState.q ?? "";
-  const routeCategories = normalizeCategories(routeState.category);
-  const routeSizeRange = routeState.size ?? DEFAULT_FILTERS.sizeRange;
-  const routeDistance = routeState.distance ?? DEFAULT_FILTERS.distance;
-  const routeLocation = routeState.location ?? DEFAULT_FILTERS.locationMode;
-  const routeAccess = routeState.access ?? DEFAULT_FILTERS.access;
-  const routeSort = routeState.sort ?? DEFAULT_FILTERS.sortBy;
-
-  useEffect(() => {
-    if (searchQuery !== routeSearchQuery) {
-      setSearchQuery(routeSearchQuery);
-    }
-  }, [routeSearchQuery, searchQuery, setSearchQuery]);
-
-  useEffect(() => {
-    if (selectedCategories.join("|") !== routeCategories.join("|")) {
-      setSelectedCategories(routeCategories);
-    }
-  }, [routeCategories, selectedCategories, setSelectedCategories]);
-
-  useEffect(() => {
-    if (
-      sizeRange[0] !== routeSizeRange[0] ||
-      sizeRange[1] !== routeSizeRange[1]
-    ) {
-      setSizeRange(routeSizeRange);
-    }
-  }, [routeSizeRange, setSizeRange, sizeRange]);
-
-  useEffect(() => {
-    if (distance !== routeDistance) {
-      setDistance(routeDistance);
-    }
-  }, [distance, routeDistance, setDistance]);
-
-  useEffect(() => {
-    if (locationMode !== routeLocation) {
-      setLocationMode(routeLocation);
-    }
-  }, [locationMode, routeLocation, setLocationMode]);
-
-  useEffect(() => {
-    if (access !== routeAccess) {
-      setAccess(routeAccess);
-    }
-  }, [access, routeAccess, setAccess]);
-
-  useEffect(() => {
-    if (sortBy !== routeSort) {
-      setSortBy(routeSort);
-    }
-  }, [routeSort, setSortBy, sortBy]);
+  useExploreRouteSync({
+    access,
+    distance,
+    locationMode,
+    route,
+    searchQuery,
+    selectedCategories,
+    setAccess,
+    setDistance,
+    setLocationMode,
+    setSearchQuery,
+    setSelectedCategories,
+    setSizeRange,
+    setSortBy,
+    sizeRange,
+    sortBy,
+  });
 
   function updateSearchQuery(nextQuery: string) {
     setSearchQuery(nextQuery);
-    void setRouteState(
-      {
-        q: nextQuery.trim() ? nextQuery : null,
-      },
-      { history: "replace" },
-    );
+    void setExploreRouteState(getSearchRoutePatch(nextQuery), {
+      history: "replace",
+    });
   }
 
   function updateSelectedCategories(nextCategories: ExploreCategory[]) {
     const normalized = normalizeCategories(nextCategories);
 
     setSelectedCategories(normalized);
-    void setRouteState(
-      {
-        category:
-          normalized.length === 1 && normalized[0] === "ALL"
-            ? null
-            : normalized,
-      },
-      { history: "push" },
-    );
+    void setExploreRouteState(getCategoryRoutePatch(normalized), {
+      history: "push",
+    });
   }
 
   function updateSizeRange(nextRange: [number, number]) {
     setSizeRange(nextRange);
-    void setRouteState(
-      {
-        size:
-          nextRange[0] === DEFAULT_FILTERS.sizeRange[0] &&
-          nextRange[1] === DEFAULT_FILTERS.sizeRange[1]
-            ? null
-            : nextRange,
-      },
-      { history: "push" },
-    );
+    void setExploreRouteState(getSizeRoutePatch(nextRange), {
+      history: "push",
+    });
   }
 
   function updateDistance(nextDistance: number) {
     setDistance(nextDistance);
-    void setRouteState(
-      {
-        distance:
-          nextDistance === DEFAULT_FILTERS.distance ? null : nextDistance,
-      },
-      { history: "push" },
-    );
+    void setExploreRouteState(getDistanceRoutePatch(nextDistance), {
+      history: "push",
+    });
   }
 
   function updateLocationMode(nextLocationMode: ExploreLocationMode) {
     setLocationMode(nextLocationMode);
-    void setRouteState(
-      {
-        location:
-          nextLocationMode === DEFAULT_FILTERS.locationMode
-            ? null
-            : nextLocationMode,
-      },
-      { history: "push" },
-    );
+    void setExploreRouteState(getLocationRoutePatch(nextLocationMode), {
+      history: "push",
+    });
   }
 
   function updateAccess(nextAccess: ExploreAccessMode) {
     setAccess(nextAccess);
-    void setRouteState(
-      {
-        access: nextAccess === DEFAULT_FILTERS.access ? null : nextAccess,
-      },
-      { history: "push" },
-    );
+    void setExploreRouteState(getAccessRoutePatch(nextAccess), {
+      history: "push",
+    });
   }
 
   function updateSortBy(nextSort: ExploreSortOption) {
     setSortBy(nextSort);
-    void setRouteState(
-      {
-        sort: nextSort === DEFAULT_FILTERS.sortBy ? null : nextSort,
-      },
-      { history: "push" },
-    );
+    void setExploreRouteState(getSortRoutePatch(nextSort), {
+      history: "push",
+    });
   }
 
   function clearAllFilters() {
     resetFilters();
-    void setRouteState(
-      {
-        category: null,
-        size: null,
-        distance: null,
-        location: null,
-        access: null,
-        sort: null,
-      },
-      { history: "push" },
-    );
+    void setExploreRouteState(CLEAR_EXPLORE_FILTER_ROUTE, {
+      history: "push",
+    });
   }
 
   function removeSelectedCategory(category: ExploreCategory) {
     const next = selectedCategories.filter((value) => value !== category);
-    updateSelectedCategories(next.length ? next : ["ALL"]);
+    updateSelectedCategories(
+      next.length ? next : DEFAULT_FILTERS.selectedCategories,
+    );
   }
 
-  const clearFocusedFriendRequest = useCallback(() => {
-    void setRouteState(
-      {
-        panel: null,
-        request: null,
-      },
-      { history: "replace" },
-    );
-  }, [setRouteState]);
+  function clearFocusedFriendRequest() {
+    void setExploreRouteState(CLEAR_FOCUSED_FRIEND_REQUEST_ROUTE, {
+      history: "replace",
+    });
+  }
 
   return {
     searchQuery,
@@ -279,8 +164,8 @@ export function useExploreRouteState() {
     resetFilters: clearAllFilters,
     isAnythingFiltered: getIsAnythingFiltered(),
     removeCategory: removeSelectedCategory,
-    focusedPanel: routeState.panel ?? null,
-    focusedRequestId: routeState.request ?? null,
+    focusedPanel: route.focusedPanel,
+    focusedRequestId: route.focusedRequestId,
     clearFocusedFriendRequest,
   };
 }

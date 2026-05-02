@@ -1,14 +1,12 @@
-import React from "react";
-
 interface TeamForgeVoronoiProps {
   className?: string;
   showBackground?: boolean;
 }
 
-export const TeamForgeLogo: React.FC<TeamForgeVoronoiProps> = ({
+export function TeamForgeLogo({
   className = "w-12 h-12",
   showBackground = true,
-}) => {
+}: TeamForgeVoronoiProps) {
   return (
     <svg
       viewBox="0 0 120 120"
@@ -74,4 +72,4 @@ export const TeamForgeLogo: React.FC<TeamForgeVoronoiProps> = ({
       />
     </svg>
   );
-};
+}

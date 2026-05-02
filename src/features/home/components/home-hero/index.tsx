@@ -1,11 +1,11 @@
-import { homeQuickActions } from "@/shared/lib/app-navigation";
+import { homeQuickActions } from "@/features/app-shell/lib/app-navigation";
 import { Button } from "@/shared/components/ui/button";
-import { buildForgeLaunchNavigation } from "@/shared/lib/forge-route";
+import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
 import {
   buildInterestsEditNavigation,
   buildPersonalityEditNavigation,
-} from "@/shared/lib/onboarding-route";
-import { buildSettingsNavigation } from "@/shared/lib/settings-route";
+} from "@/features/onboarding/lib/onboarding-route";
+import { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
@@ -13,7 +13,7 @@ import { Bell, Plus } from "lucide-react";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
 import { useNotificationsDrawerState } from "@/features/notifications/hooks/use-notifications-drawer-state";
 
-import { ForgeOrbScene } from "@/features/home/components/home-hero/forge-orb-scene";
+import { ForgeOrbScene } from "./forge-orb-scene";
 import { useHomeViewer } from "@/features/home/hooks/use-home-viewer";
 
 /* ─── Greeting helper ──────────────────────────────────────────────── */

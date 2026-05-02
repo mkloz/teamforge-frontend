@@ -1,11 +1,15 @@
+import { Link } from "@tanstack/react-router";
+
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { InterestsCloud } from "@/features/profile/components/interests-cloud";
-import { PersonalitySection } from "@/features/profile/components/personality-section";
+import { PersonalitySection } from "@/shared/components/psychometrics/personality-section";
 import { ProfileHero } from "@/features/profile/components/profile-hero";
 import { PsychometricsSidebar } from "@/features/profile/components/psychometrics-sidebar";
 import { useProfile } from "@/features/profile/hooks/use-profile";
-import { UserMenu } from "@/shared/components/user-menu/user-menu";
+import { UserMenu } from "@/features/user-menu/components/user-menu";
+import { Button } from "@/shared/components/ui/button";
+import { buildPersonalityEditNavigation } from "@/features/onboarding/lib/onboarding-route";
 import {
   getUserArchetype,
   getUserDimensionScores,
@@ -98,7 +102,20 @@ export function ProfilePage() {
 
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
           <div className="flex flex-col gap-8 flex-2 min-w-0">
-            <PersonalitySection oceanScores={oceanScores ?? undefined} />
+            <PersonalitySection
+              oceanScores={oceanScores ?? undefined}
+              missingProfileAction={
+                <Button asChild variant="outline" size="sm">
+                  <Link
+                    {...buildPersonalityEditNavigation({
+                      returnTo: "/profile",
+                    })}
+                  >
+                    Complete personality profile
+                  </Link>
+                </Button>
+              }
+            />
             <InterestsCloud interests={profile.interests ?? []} />
           </div>
 

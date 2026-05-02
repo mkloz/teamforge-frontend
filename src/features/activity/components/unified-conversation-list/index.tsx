@@ -1,11 +1,11 @@
-import { memo, useMemo } from "react";
+import { memo } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useSearchHeaderFade } from "@/features/activity/hooks/use-search-header-fade";
 import type {
   FilterChip,
   UnifiedConversation,
 } from "@/features/activity/lib/activity-contract";
-import { UnifiedConversationListItem } from "@/features/activity/components/unified-conversation-list-item";
+import { UnifiedConversationListItem } from "./unified-conversation-list-item";
 import { EmptyState } from "./empty-state";
 import { FilterHeader } from "./filter-header";
 import { SearchHeader } from "./search-header";
@@ -53,13 +53,16 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
       headerHeight: SEARCH_H,
     });
 
-  const emptyLabel = useMemo(() => {
-    if (activeFilter === "groups") return "No groups found";
-    if (activeFilter === "direct") return "No direct messages found";
-    if (activeFilter === "unread") return "No unread conversations";
-    if (searchQuery) return "No conversations match your search";
-    return "No conversations yet";
-  }, [activeFilter, searchQuery]);
+  const emptyLabel =
+    activeFilter === "groups"
+      ? "No groups found"
+      : activeFilter === "direct"
+        ? "No direct messages found"
+        : activeFilter === "unread"
+          ? "No unread conversations"
+          : searchQuery
+            ? "No conversations match your search"
+            : "No conversations yet";
 
   return (
     <div className="flex flex-col h-full overflow-hidden">

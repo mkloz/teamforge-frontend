@@ -1,16 +1,18 @@
 import { Form } from "@/shared/components/ui/form";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
-import { useRegisterForm, type Step } from "../../hooks/use-register-form";
-import { FormLevelError } from "../login-form/form-level-error";
-import { StepCredentials } from "../register-steps/step-credentials";
-import { StepOtp } from "../register-steps/step-otp";
-import { StepProfile } from "../register-steps/step-profile";
+import { FormLevelError } from "@/features/auth/components/form-level-error";
+import {
+  useRegisterForm,
+  type Step,
+} from "@/features/auth/hooks/use-register-form";
+import { StepCredentials } from "./step-credentials";
 import { StepHeader } from "./step-header";
+import { StepOtp } from "./step-otp";
+import { StepProfile } from "./step-profile";
 import { SwitchViewPrompt } from "./switch-view-prompt";
 
 interface RegisterFormProps {
-  authReturnTo?: string | null;
   onSwitchToLogin: () => void;
   onSuccess?: () => void;
   onProgress?: (progress: number) => void;
@@ -40,7 +42,6 @@ const variants = {
  * Orchestrates step transitions, validation, and real-time progress feedback.
  */
 export function RegisterForm({
-  authReturnTo,
   onSwitchToLogin,
   onSuccess,
   onProgress,
@@ -88,7 +89,6 @@ export function RegisterForm({
             >
               {step === 1 && (
                 <StepCredentials
-                  authReturnTo={authReturnTo}
                   onNext={goToStep2}
                   onGoogleSuccess={onSuccess}
                 />

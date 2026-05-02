@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 
 interface UseAutoResizeProps {
   value: string;
@@ -11,7 +11,7 @@ interface UseAutoResizeProps {
 export function useAutoResize({ value, maxHeight = 120 }: UseAutoResizeProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const textarea = textareaRef.current;
     if (textarea) {
       textarea.style.height = "auto";

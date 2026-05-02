@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * useHeaderSearch - Manages search state, focus, and cleanup for the chat header.
@@ -18,12 +18,12 @@ export function useHeaderSearch() {
     }
   }, [isSearching]);
 
-  const toggleSearch = useCallback((state: boolean) => {
+  function toggleSearch(state: boolean) {
     setIsSearching(state);
     if (!state) {
       setSearchQuery("");
     }
-  }, []);
+  }
 
   return {
     isSearching,

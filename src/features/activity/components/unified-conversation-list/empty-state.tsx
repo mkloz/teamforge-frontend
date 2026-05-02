@@ -2,8 +2,8 @@ import { MessageSquare, Zap } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { memo } from "react";
 import { Button } from "@/shared/components/ui/button";
-import { buildExploreNavigation } from "@/shared/lib/explore-route";
-import { buildForgeLaunchNavigation } from "@/shared/lib/forge-route";
+import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
+import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
 
 interface EmptyStateProps {
   label: string;

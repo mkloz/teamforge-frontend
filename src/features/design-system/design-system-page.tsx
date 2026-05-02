@@ -25,16 +25,16 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-import {
-  AddressAutocomplete,
-  type LocationValue,
-} from "@/shared/components/maps/address-autocomplete";
 import { Avatar } from "@/shared/components/common/avatar";
 import {
   FileDropzone,
   FilePreviewList,
 } from "@/shared/components/common/file-dropzone";
 import { Image } from "@/shared/components/common/image";
+import {
+  AddressAutocomplete,
+  type LocationValue,
+} from "@/shared/components/maps/address-autocomplete";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -1373,14 +1373,14 @@ export function DesignSystemPage() {
                       className="h-full w-full object-cover"
                     />
                   </div>
-                  <div className="aspect-[3/1] overflow-hidden rounded-xl border border-dashed border-border bg-muted">
+                  <div className="aspect-3/1 overflow-hidden rounded-xl border border-dashed border-border bg-muted">
                     <Image
                       src=""
                       alt="Missing plan cover placeholder"
                       className="h-full w-full object-cover"
                     />
                   </div>
-                  <div className="aspect-[3/1] overflow-hidden rounded-xl border border-destructive/30 bg-destructive/5">
+                  <div className="aspect-3/1 overflow-hidden rounded-xl border border-destructive/30 bg-destructive/5">
                     <Image
                       src="https://teamforge.invalid/missing-cover.jpg"
                       alt="Failed plan cover"

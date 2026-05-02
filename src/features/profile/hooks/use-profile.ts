@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import type { User } from "@/shared/schemas";
@@ -11,13 +10,9 @@ export function useProfile(userId?: string) {
     enabled: !!userId,
   });
 
-  const profile = useMemo<User | null>(() => {
-    if (userId) {
-      return publicProfileQuery.data ?? null;
-    }
-
-    return currentUserQuery.data ?? null;
-  }, [currentUserQuery.data, publicProfileQuery.data, userId]);
+  const profile: User | null = userId
+    ? (publicProfileQuery.data ?? null)
+    : (currentUserQuery.data ?? null);
 
   return {
     profile,

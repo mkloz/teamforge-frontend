@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import { Button } from "@/shared/components/ui/button";
-import { buildProfileNavigation } from "@/shared/lib/app-route";
+import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import type { AuthSession, User } from "@/shared/schemas";
 import {
   DeleteAccountSection,

@@ -98,12 +98,13 @@ function Carousel({
     api.on("select", onSelect);
 
     return () => {
+      api?.off("reInit", onSelect);
       api?.off("select", onSelect);
     };
   }, [api, onSelect]);
 
   return (
-    <CarouselContext.Provider
+    <CarouselContext
       value={{
         carouselRef,
         api: api,
@@ -126,7 +127,7 @@ function Carousel({
       >
         {children}
       </div>
-    </CarouselContext.Provider>
+    </CarouselContext>
   );
 }
 

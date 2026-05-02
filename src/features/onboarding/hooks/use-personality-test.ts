@@ -1,4 +1,3 @@
-import { useCallback, useMemo } from "react";
 import { buildQuestionList, type TestLength } from "../data/ipip-questions";
 import {
   calculatePersonalityProgress,
@@ -39,25 +38,19 @@ export function usePersonalityTest({
 
   // ── Actions ────────────────────────────────────────────────────────────────
 
-  const handleAnswer = useCallback(
-    (questionId: number, val: 1 | 2 | 3 | 4 | 5) => {
-      store.setAnswer(questionId, val);
-    },
-    [store],
-  );
+  function handleAnswer(questionId: number, val: 1 | 2 | 3 | 4 | 5) {
+    store.setAnswer(questionId, val);
+  }
 
-  const handleBegin = useCallback(
-    (length: TestLength) => {
-      const qs = buildQuestionList(length);
-      store.beginTest(
-        length,
-        qs.map((q) => q.id),
-      );
-    },
-    [store],
-  );
+  function handleBegin(length: TestLength) {
+    const qs = buildQuestionList(length);
+    store.beginTest(
+      length,
+      qs.map((q) => q.id),
+    );
+  }
 
-  const handleNextPage = useCallback(() => {
+  function handleNextPage() {
     if (screen.id !== "questions") return;
 
     const isFinalPage = screen.currentPage === totalPages;
@@ -91,9 +84,9 @@ export function usePersonalityTest({
       store.setResultData(res, vec);
       store.setScreen({ id: "calculating" });
     }
-  }, [screen, testLength, totalPages, questions, answers, store]);
+  }
 
-  const handleContinueFromIntermission = useCallback(() => {
+  function handleContinueFromIntermission() {
     if (screen.id !== "intermission") return;
 
     // Recalculate based on store state to avoid stale closure if updateTestLength was just called
@@ -113,43 +106,29 @@ export function usePersonalityTest({
     }
 
     store.setScreen({ id: "questions", currentPage: screen.nextPageIndex });
-  }, [screen, store, questionsPerPage, answers]);
+  }
 
-  const handleCalculationDone = useCallback(() => {
+  function handleCalculationDone() {
     store.setScreen({ id: "results" });
-  }, [store]);
+  }
 
-  const handleRetake = useCallback(() => {
+  function handleRetake() {
     store.reset();
     store.setScreen({ id: "length" });
-  }, [store]);
+  }
 
-  const actions = useMemo(
-    () => ({
-      setScreen: store.setScreen,
-      handleAnswer,
-      handleBegin,
-      updateTestLength: store.updateTestLength,
-      setIsReviewMode: store.setIsReviewMode,
-      handleNextPage,
-      handleContinueFromIntermission,
-      handleCalculationDone,
-      handleRetake,
-      reset: store.reset,
-    }),
-    [
-      store.setScreen,
-      handleAnswer,
-      handleBegin,
-      store.updateTestLength,
-      store.setIsReviewMode,
-      handleNextPage,
-      handleContinueFromIntermission,
-      handleCalculationDone,
-      handleRetake,
-      store.reset,
-    ],
-  );
+  const actions = {
+    setScreen: store.setScreen,
+    handleAnswer,
+    handleBegin,
+    updateTestLength: store.updateTestLength,
+    setIsReviewMode: store.setIsReviewMode,
+    handleNextPage,
+    handleContinueFromIntermission,
+    handleCalculationDone,
+    handleRetake,
+    reset: store.reset,
+  };
 
   // ── Derived ────────────────────────────────────────────────────────────────
 
@@ -160,9 +139,7 @@ export function usePersonalityTest({
     questionsPerPage,
   );
 
-  const answeredInPoolCount = useMemo(() => {
-    return countAnsweredQuestions(questions, answers);
-  }, [questions, answers]);
+  const answeredInPoolCount = countAnsweredQuestions(questions, answers);
 
   const progress = calculatePersonalityProgress(
     screen.id,

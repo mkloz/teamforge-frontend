@@ -1,11 +1,10 @@
-import type React from "react";
 import { useEffect, useState } from "react";
 import { FaCube } from "react-icons/fa6";
 
 import { config } from "../../../config/config";
 import { Toggle } from "../ui/toggle";
 
-export const BoxBordersSwitch: React.FC = () => {
+export function BoxBordersSwitch() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -42,4 +41,4 @@ export const BoxBordersSwitch: React.FC = () => {
       <FaCube />
     </Toggle>
   );
-};
+}

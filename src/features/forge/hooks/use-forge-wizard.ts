@@ -1,26 +1,18 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from "react";
-import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
-import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-import { ForgeCommands } from "@/features/forge/api/forge-commands";
-import { normalizeFixedGroupSize } from "@/features/forge/lib/forge-size";
+import { useCallback, useEffect, useReducer, useRef } from "react";
+
 import { useForgeAnimation } from "@/features/forge/hooks/use-forge-animation";
+import { useForgeWizardDerivedState } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-derived-state";
+import { useForgeWizardFieldActions } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-field-actions";
+import { useForgeWizardRouteSync } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-route-sync";
+import { useForgeWizardSubmitActions } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-submit-actions";
+import type { ForgeMode } from "@/features/forge/lib/forge-contract";
 import {
   createInitialForgeWizardState,
   forgeWizardReducer,
   getNextStep,
   getPreviousStep,
-} from "@/features/forge/lib/forge-wizard.reducer";
-import type {
-  ForgeMode,
-  GroupSizeMode,
-  LocationType,
-  Visibility,
-} from "@/features/forge/lib/forge-contract";
-import type {
-  ForgeWizardData,
-  ForgeWizardField,
-  Step,
-} from "@/features/forge/lib/forge-wizard.reducer";
+} from "@/features/forge/lib/forge-wizard";
+import type { Step } from "@/features/forge/lib/forge-wizard";
 
 interface UseForgeWizardOptions {
   onClose: () => void;
@@ -56,102 +48,42 @@ export function useForgeWizard({
     undefined,
     createInitialForgeWizardState,
   );
-  const [isSavingIdentity, setIsSavingIdentity] = useState(false);
-  const [isSendingInvites, setIsSendingInvites] = useState(false);
   const { isForging, forgingProgress, runForgeAnimation } = useForgeAnimation();
-  const stepRef = useRef(state.step);
-  const modeRef = useRef(state.forgeMode);
-  const activityIdRef = useRef(state.activityId);
-  const groupIdRef = useRef(state.groupId);
-  const forgeReadyRef = useRef({
-    forgeResult: state.forgeResult,
-    participantsLength: state.participants.length,
+  const closeResetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const inviteCopiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+
+  const { stepRef } = useForgeWizardRouteSync({
+    dispatch,
+    routeActivityId,
+    routeGroupId,
+    routeMode,
+    routeStep,
+    state,
+    syncStep,
+    syncTargets,
+  });
+
+  const { setField, ...fieldActions } = useForgeWizardFieldActions({
+    dispatch,
+    state,
+    syncMode,
   });
 
   useEffect(() => {
-    stepRef.current = state.step;
-  }, [state.step]);
+    return () => {
+      if (closeResetTimeoutRef.current) {
+        clearTimeout(closeResetTimeoutRef.current);
+      }
 
-  useEffect(() => {
-    modeRef.current = state.forgeMode;
-  }, [state.forgeMode]);
-
-  useEffect(() => {
-    activityIdRef.current = state.activityId;
-  }, [state.activityId]);
-
-  useEffect(() => {
-    groupIdRef.current = state.groupId;
-  }, [state.groupId]);
-
-  useEffect(() => {
-    forgeReadyRef.current = {
-      forgeResult: state.forgeResult,
-      participantsLength: state.participants.length,
+      if (inviteCopiedTimeoutRef.current) {
+        clearTimeout(inviteCopiedTimeoutRef.current);
+      }
     };
-  }, [state.forgeResult, state.participants.length]);
-
-  useEffect(() => {
-    if (modeRef.current !== routeMode) {
-      dispatch({
-        type: "set-field",
-        field: "forgeMode",
-        value: routeMode,
-      });
-    }
-  }, [routeMode]);
-
-  useEffect(() => {
-    const hasLiveForgeState =
-      forgeReadyRef.current.forgeResult !== "IDLE" ||
-      forgeReadyRef.current.participantsLength > 0;
-    const nextStep = routeStep > 3 && !hasLiveForgeState ? 3 : routeStep;
-
-    if (routeStep > 3 && !hasLiveForgeState) {
-      syncStep(3, { history: "replace" });
-      syncTargets({
-        activityId: null,
-        groupId: null,
-      });
-    }
-
-    if (stepRef.current !== nextStep) {
-      dispatch({
-        type: "set-step",
-        step: nextStep,
-        navDirection: nextStep > stepRef.current ? "forward" : "back",
-      });
-    }
-  }, [routeStep, syncStep, syncTargets]);
-
-  useEffect(() => {
-    if (routeActivityId !== activityIdRef.current) {
-      dispatch({
-        type: "set-field",
-        field: "activityId",
-        value: routeActivityId,
-      });
-    }
-
-    if (routeGroupId !== groupIdRef.current) {
-      dispatch({
-        type: "set-field",
-        field: "groupId",
-        value: routeGroupId,
-      });
-    }
-  }, [routeActivityId, routeGroupId]);
-
-  const setField = useCallback(
-    (field: ForgeWizardField, value: ForgeWizardData[ForgeWizardField]) => {
-      dispatch({
-        type: "set-field",
-        field,
-        value,
-      });
-    },
-    [],
-  );
+  }, []);
 
   const reset = useCallback(() => {
     dispatch({ type: "reset" });
@@ -159,7 +91,14 @@ export function useForgeWizard({
 
   const close = useCallback(() => {
     onClose();
-    setTimeout(reset, 300);
+    if (closeResetTimeoutRef.current) {
+      clearTimeout(closeResetTimeoutRef.current);
+    }
+
+    closeResetTimeoutRef.current = setTimeout(() => {
+      reset();
+      closeResetTimeoutRef.current = null;
+    }, 300);
   }, [onClose, reset]);
 
   const goNext = useCallback(() => {
@@ -171,7 +110,7 @@ export function useForgeWizard({
       navDirection: "forward",
     });
     syncStep(nextStep, { history: "push" });
-  }, [syncStep]);
+  }, [stepRef, syncStep]);
 
   const goBack = useCallback(() => {
     const previousStep = getPreviousStep(stepRef.current);
@@ -182,337 +121,7 @@ export function useForgeWizard({
       navDirection: "back",
     });
     syncStep(previousStep, { history: "push" });
-  }, [syncStep]);
-
-  const setSelectedActivity = useCallback(
-    (value: string | null) => setField("selectedActivity", value),
-    [setField],
-  );
-  const setPlanName = useCallback(
-    (value: string) => setField("planName", value),
-    [setField],
-  );
-  const setPlanDescription = useCallback(
-    (value: string) => setField("planDescription", value),
-    [setField],
-  );
-  const setGroupName = useCallback(
-    (value: string) => setField("groupName", value),
-    [setField],
-  );
-  const setGroupDescription = useCallback(
-    (value: string) => setField("groupDescription", value),
-    [setField],
-  );
-  const setPlanDate = useCallback(
-    (value: string) => setField("planDate", value),
-    [setField],
-  );
-  const setPlanTime = useCallback(
-    (value: string) => setField("planTime", value),
-    [setField],
-  );
-  const setPlanLocation = useCallback(
-    (value: string) => setField("planLocation", value),
-    [setField],
-  );
-  const setPlanLocationCoordinates = useCallback(
-    (lat: number | null, lng: number | null) => {
-      setField("planLocationLat", lat);
-      setField("planLocationLng", lng);
-    },
-    [setField],
-  );
-  const setLocationType = useCallback(
-    (value: LocationType) => setField("locationType", value),
-    [setField],
-  );
-  const setPlanCost = useCallback(
-    (value: "FREE" | "PAID") => {
-      setField("planCost", value);
-      if (value === "FREE") {
-        setField("planCostAmount", "");
-      }
-    },
-    [setField],
-  );
-  const setPlanCostAmount = useCallback(
-    (value: string) => setField("planCostAmount", value),
-    [setField],
-  );
-  const setPlanCostDetails = useCallback(
-    (value: string) => setField("planCostDetails", value),
-    [setField],
-  );
-  const setForgeMode = useCallback(
-    (value: ForgeMode) => {
-      setField("forgeMode", value);
-      syncMode(value, { history: "replace" });
-    },
-    [setField, syncMode],
-  );
-  const setFixedSize = useCallback(
-    (value: number) => {
-      const nextSize = normalizeFixedGroupSize(value);
-      setField("fixedSize", nextSize);
-
-      if (state.manualInviteeIds.length > nextSize - 1) {
-        setField(
-          "manualInviteeIds",
-          state.manualInviteeIds.slice(0, nextSize - 1),
-        );
-      }
-    },
-    [setField, state.manualInviteeIds],
-  );
-  const setGroupSizeMode = useCallback(
-    (value: GroupSizeMode) => setField("groupSizeMode", value),
-    [setField],
-  );
-  const setAutoMinSize = useCallback(
-    (value: number) => setField("autoMinSize", normalizeFixedGroupSize(value)),
-    [setField],
-  );
-  const setAutoMaxSize = useCallback(
-    (value: number) => setField("autoMaxSize", normalizeFixedGroupSize(value)),
-    [setField],
-  );
-  const setCompatibilityWeight = useCallback(
-    (value: number) => setField("compatibilityWeight", value),
-    [setField],
-  );
-  const setDiversityWeight = useCallback(
-    (value: number) => setField("diversityWeight", value),
-    [setField],
-  );
-  const setVisibility = useCallback(
-    (value: Visibility) => setField("visibility", value),
-    [setField],
-  );
-  const setCoverImage = useCallback(
-    (value: string | null) => setField("coverImage", value),
-    [setField],
-  );
-  const setAvatarImage = useCallback(
-    (value: string | null) => setField("avatarImage", value),
-    [setField],
-  );
-  const setInvitesSent = useCallback(
-    (value: boolean) => setField("invitesSent", value),
-    [setField],
-  );
-  const toggleManualInvitee = useCallback(
-    (inviteeId: string) => {
-      const alreadySelected = state.manualInviteeIds.includes(inviteeId);
-      const nextInviteeIds = alreadySelected
-        ? state.manualInviteeIds.filter((id) => id !== inviteeId)
-        : state.manualInviteeIds.length < state.fixedSize - 1
-          ? [...state.manualInviteeIds, inviteeId]
-          : state.manualInviteeIds;
-
-      setField("manualInviteeIds", nextInviteeIds);
-    },
-    [setField, state.fixedSize, state.manualInviteeIds],
-  );
-
-  const handleManualForge = useCallback(() => {
-    runForgeAnimation(async () => {
-      try {
-        const result = await ForgeCommands.executeManualForge({
-          selectedActivity: state.selectedActivity,
-          planName: state.planName,
-          planDescription: state.planDescription,
-          planDate: state.planDate,
-          planTime: state.planTime,
-          planLocation: state.planLocation,
-          planLocationLat: state.planLocationLat,
-          planLocationLng: state.planLocationLng,
-          coverImage: state.coverImage,
-          locationType: state.locationType,
-          planCost: state.planCost,
-          planCostAmount: state.planCostAmount,
-          planCostDetails: state.planCostDetails,
-          groupSizeMode: state.groupSizeMode,
-          fixedSize: state.fixedSize,
-          autoMinSize: state.autoMinSize,
-          autoMaxSize: state.autoMaxSize,
-          visibility: state.visibility,
-          groupName: state.groupName,
-          groupDescription: state.groupDescription,
-          avatarImage: state.avatarImage,
-        });
-        dispatch({
-          type: "apply-forge-result",
-          result: result.forgeResult,
-          participants: result.participants,
-          activityId: result.activityId,
-          groupId: result.groupId,
-          chatId: result.chatId,
-          planId: result.planId,
-        });
-        syncTargets({
-          activityId: result.activityId,
-          groupId: result.groupId,
-        });
-        syncStep(4, { history: "push" });
-        trackMutationOutcome(
-          trackedMutationNames.forgeManual,
-          result.forgeResult === "SUCCESS" ? "success" : "error",
-          {
-            result: result.forgeResult,
-            createActivityRequestId: result.requestIds.createActivity,
-            forgeActivityRequestId: result.requestIds.forgeActivity,
-          },
-        );
-      } catch (error) {
-        captureException(trackedMutationNames.forgeManual, error, {
-          selectedActivity: state.selectedActivity ?? "missing",
-        });
-        trackMutationOutcome(trackedMutationNames.forgeManual, "error", {
-          result: "exception",
-        });
-        dispatch({
-          type: "apply-forge-result",
-          result: "FAILED",
-          participants: [],
-          activityId: null,
-          groupId: null,
-          chatId: null,
-          planId: null,
-        });
-        syncTargets({
-          activityId: null,
-          groupId: null,
-        });
-        syncStep(4, { history: "push" });
-      }
-    });
-  }, [
-    runForgeAnimation,
-    state.autoMaxSize,
-    state.autoMinSize,
-    state.avatarImage,
-    state.coverImage,
-    state.fixedSize,
-    state.groupName,
-    state.groupSizeMode,
-    state.groupDescription,
-    state.locationType,
-    state.planCost,
-    state.planCostAmount,
-    state.planCostDetails,
-    state.planDate,
-    state.planDescription,
-    state.planLocation,
-    state.planLocationLat,
-    state.planLocationLng,
-    state.planName,
-    state.planTime,
-    state.selectedActivity,
-    state.visibility,
-    syncStep,
-    syncTargets,
-  ]);
-
-  const handleAutoForge = useCallback(() => {
-    runForgeAnimation(async () => {
-      try {
-        const result = await ForgeCommands.executeAutoForge({
-          selectedActivity: state.selectedActivity,
-          planName: state.planName,
-          planDescription: state.planDescription,
-          planDate: state.planDate,
-          planTime: state.planTime,
-          planLocation: state.planLocation,
-          planLocationLat: state.planLocationLat,
-          planLocationLng: state.planLocationLng,
-          coverImage: state.coverImage,
-          locationType: state.locationType,
-          planCost: state.planCost,
-          planCostAmount: state.planCostAmount,
-          planCostDetails: state.planCostDetails,
-          groupSizeMode: state.groupSizeMode,
-          fixedSize: state.fixedSize,
-          autoMinSize: state.autoMinSize,
-          autoMaxSize: state.autoMaxSize,
-          visibility: state.visibility,
-          groupName: state.groupName,
-          groupDescription: state.groupDescription,
-          avatarImage: state.avatarImage,
-        });
-
-        dispatch({
-          type: "apply-forge-result",
-          result: result.forgeResult,
-          participants: result.participants,
-          activityId: result.activityId,
-          groupId: result.groupId,
-          chatId: result.chatId,
-          planId: result.planId,
-        });
-        syncTargets({
-          activityId: result.activityId,
-          groupId: result.groupId,
-        });
-        syncStep(4, { history: "push" });
-        trackMutationOutcome(
-          trackedMutationNames.forgeAuto,
-          result.forgeResult === "SUCCESS" ? "success" : "error",
-          {
-            result: result.forgeResult,
-            createActivityRequestId: result.requestIds.createActivity,
-            forgeActivityRequestId: result.requestIds.forgeActivity,
-          },
-        );
-      } catch (error) {
-        captureException(trackedMutationNames.forgeAuto, error, {
-          selectedActivity: state.selectedActivity ?? "missing",
-        });
-        trackMutationOutcome(trackedMutationNames.forgeAuto, "error", {
-          result: "exception",
-        });
-        dispatch({
-          type: "apply-forge-result",
-          result: "FAILED",
-          participants: [],
-          activityId: null,
-          groupId: null,
-          chatId: null,
-          planId: null,
-        });
-        syncTargets({
-          activityId: null,
-          groupId: null,
-        });
-        syncStep(4, { history: "push" });
-      }
-    });
-  }, [
-    runForgeAnimation,
-    state.autoMaxSize,
-    state.autoMinSize,
-    state.avatarImage,
-    state.coverImage,
-    state.fixedSize,
-    state.groupName,
-    state.groupSizeMode,
-    state.groupDescription,
-    state.locationType,
-    state.planCost,
-    state.planCostAmount,
-    state.planCostDetails,
-    state.planDate,
-    state.planDescription,
-    state.planLocation,
-    state.planLocationLat,
-    state.planLocationLng,
-    state.planName,
-    state.planTime,
-    state.selectedActivity,
-    state.visibility,
-    syncStep,
-    syncTargets,
-  ]);
+  }, [stepRef, syncStep]);
 
   const handleRemoveParticipant = useCallback((id: string) => {
     dispatch({ type: "remove-participant", userId: id });
@@ -532,142 +141,46 @@ export function useForgeWizard({
   }, [syncStep, syncTargets]);
 
   const handleCopyLink = useCallback(() => {
-    dispatch({ type: "set-field", field: "inviteCopied", value: true });
-    setTimeout(() => {
-      dispatch({ type: "set-field", field: "inviteCopied", value: false });
+    setField("inviteCopied", true);
+    if (inviteCopiedTimeoutRef.current) {
+      clearTimeout(inviteCopiedTimeoutRef.current);
+    }
+
+    inviteCopiedTimeoutRef.current = setTimeout(() => {
+      setField("inviteCopied", false);
+      inviteCopiedTimeoutRef.current = null;
     }, 2000);
-  }, []);
+  }, [setField]);
 
-  const handleSaveIdentityAndContinue = useCallback(async () => {
-    setIsSavingIdentity(true);
-
-    try {
-      await ForgeCommands.saveForgedIdentity({
-        groupId: state.groupId,
-        planId: state.planId,
-        groupName: state.groupName,
-        groupDescription: state.groupDescription,
-        avatarImage: state.avatarImage,
-        coverImage: state.coverImage,
-      });
-      goNext();
-    } catch (error) {
-      captureException("forge.saveIdentity", error, {
-        groupId: state.groupId ?? "missing",
-      });
-      goNext();
-    } finally {
-      setIsSavingIdentity(false);
-    }
-  }, [
+  const submitActions = useForgeWizardSubmitActions({
+    close,
+    dispatch,
+    enterGroupHub,
     goNext,
-    state.avatarImage,
-    state.coverImage,
-    state.groupDescription,
-    state.groupId,
-    state.groupName,
-    state.planId,
-  ]);
-
-  const handleSendInvites = useCallback(async () => {
-    setIsSendingInvites(true);
-
-    try {
-      if (state.forgeMode === "MANUAL") {
-        await ForgeCommands.sendManualInvites({
-          groupId: state.groupId,
-          inviteeIds: state.manualInviteeIds,
-          planName: state.planName,
-        });
-      }
-      setField("invitesSent", true);
-    } catch (error) {
-      captureException("forge.sendInvites", error, {
-        groupId: state.groupId ?? "missing",
-      });
-    } finally {
-      setIsSendingInvites(false);
-    }
-  }, [
+    runForgeAnimation,
     setField,
-    state.forgeMode,
-    state.groupId,
-    state.manualInviteeIds,
-    state.planName,
-  ]);
-
-  const handleEnterGroupHub = useCallback(async () => {
-    if (!state.groupId) {
-      close();
-      return;
-    }
-
-    await enterGroupHub(state.groupId);
-  }, [close, enterGroupHub, state.groupId]);
-
-  const activeParticipants = state.participants.filter(
-    (participant) => !state.removedIds.has(participant.userId),
-  );
-  const canAdvanceStep1 = !!state.selectedActivity;
-  const paidAmount = Number(state.planCostAmount);
-  const canAdvanceStep2 =
-    state.planName.trim().length >= 3 &&
-    (state.planCost === "FREE" ||
-      (Number.isFinite(paidAmount) && paidAmount > 0));
-  const isPreForge = state.step <= 3;
-  const canGoBack =
-    (state.step > 1 && state.step <= 3) || state.step === 5 || state.step === 6;
+    state,
+    syncStep,
+    syncTargets,
+  });
+  const derivedState = useForgeWizardDerivedState(state);
 
   return {
     ...state,
+    ...derivedState,
+    ...fieldActions,
+    ...submitActions,
     isForging,
-    isSavingIdentity,
-    isSendingInvites,
     forgingProgress,
-    activeParticipants,
-    canAdvanceStep1,
-    canAdvanceStep2,
-    isPreForge,
-    canGoBack,
-    setSelectedActivity,
-    setPlanName,
-    setPlanDescription,
-    setGroupName,
-    setGroupDescription,
-    setPlanDate,
-    setPlanTime,
-    setPlanLocation,
-    setPlanLocationCoordinates,
-    setLocationType,
-    setPlanCost,
-    setPlanCostAmount,
-    setPlanCostDetails,
-    setForgeMode,
-    setFixedSize,
-    setGroupSizeMode,
-    setAutoMinSize,
-    setAutoMaxSize,
-    setCompatibilityWeight,
-    setDiversityWeight,
-    setVisibility,
-    setCoverImage,
-    setAvatarImage,
-    setInvitesSent,
-    toggleManualInvitee,
     goNext,
     goBack,
     close,
-    handleManualForge,
-    handleAutoForge,
     handleRemoveParticipant,
     handleRestoreParticipant,
     handleReforge,
     handleCopyLink,
-    handleSaveIdentityAndContinue,
-    handleSendInvites,
-    handleEnterGroupHub,
   };
 }
 
-export type { Step } from "@/features/forge/lib/forge-wizard.reducer";
+export type { Step } from "@/features/forge/lib/forge-wizard";
 export type ForgeWizardState = ReturnType<typeof useForgeWizard>;

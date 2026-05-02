@@ -1,4 +1,4 @@
-import type { SettingsSection } from "@/shared/lib/settings-route";
+import type { SettingsSection } from "@/features/settings/lib/settings-route";
 import type {
   AuthSession,
   FriendshipApi,

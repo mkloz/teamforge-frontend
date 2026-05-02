@@ -1,75 +1,24 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
-function getFocusableElements(container: HTMLElement) {
-  return Array.from(
-    container.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
-    ),
-  ).filter((element) => !element.hasAttribute("disabled"));
-}
+import { useBodyScrollLock } from "@/shared/hooks/use-body-scroll-lock";
+import { useEscapeKey } from "@/shared/hooks/use-escape-key";
+import { useFocusTrap } from "@/shared/hooks/use-focus-trap";
 
 export function useMobileNavDialog() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
 
-  const closeMenu = useCallback(() => setMenuOpen(false), []);
-  const toggleMenu = useCallback(() => setMenuOpen((open) => !open), []);
+  function closeMenu() {
+    setMenuOpen(false);
+  }
 
-  useEffect(() => {
-    if (!menuOpen) return;
+  function toggleMenu() {
+    setMenuOpen((open) => !open);
+  }
 
-    const previousBodyOverflow = document.body.style.overflow;
-    const activeElement = document.activeElement;
-
-    previouslyFocusedElementRef.current =
-      activeElement instanceof HTMLElement ? activeElement : null;
-    document.body.style.overflow = "hidden";
-
-    const focusFirstMenuItem = () => {
-      const menu = menuRef.current;
-      if (!menu) return;
-
-      getFocusableElements(menu)[0]?.focus();
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const menu = menuRef.current;
-
-      if (event.key === "Escape") {
-        closeMenu();
-        return;
-      }
-
-      if (event.key !== "Tab" || !menu) return;
-
-      const focusableElements = getFocusableElements(menu);
-      const first = focusableElements[0];
-      const last = focusableElements[focusableElements.length - 1];
-
-      if (!first || !last) return;
-
-      if (event.shiftKey && document.activeElement === first) {
-        last.focus();
-        event.preventDefault();
-        return;
-      }
-
-      if (!event.shiftKey && document.activeElement === last) {
-        first.focus();
-        event.preventDefault();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    queueMicrotask(focusFirstMenuItem);
-
-    return () => {
-      document.body.style.overflow = previousBodyOverflow;
-      document.removeEventListener("keydown", handleKeyDown);
-      previouslyFocusedElementRef.current?.focus();
-    };
-  }, [closeMenu, menuOpen]);
+  useBodyScrollLock({ locked: menuOpen });
+  useEscapeKey({ enabled: menuOpen, onEscape: closeMenu });
+  useFocusTrap({ enabled: menuOpen, ref: menuRef });
 
   return {
     closeMenu,

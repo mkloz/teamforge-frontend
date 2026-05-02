@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 
 import { useExploreFriendRequests } from "@/features/explore/hooks/use-explore-friend-requests";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
@@ -18,35 +18,28 @@ export function useFriendRequestReview() {
     useExploreRouteState();
   const [hiddenRequestIds, setHiddenRequestIds] = useState<string[]>([]);
 
-  const visibleRequests = useMemo(
-    () =>
-      requests.filter(
-        (request) => !hiddenRequestIds.includes(request.requesterId),
-      ),
-    [hiddenRequestIds, requests],
+  const visibleRequests = requests.filter(
+    (request) => !hiddenRequestIds.includes(request.requesterId),
   );
   const shouldRender = focusedPanel === "friends" || visibleRequests.length > 0;
+  const hasFocusedRequest = visibleRequests.some(
+    (request) => request.requesterId === focusedRequestId,
+  );
+  const clearFocusedRequestFromEffect = useEffectEvent(() => {
+    clearFocusedFriendRequest();
+  });
 
   useEffect(() => {
     if (focusedPanel !== "friends" || !focusedRequestId) {
       return;
     }
 
-    if (
-      visibleRequests.some(
-        (request) => request.requesterId === focusedRequestId,
-      )
-    ) {
+    if (hasFocusedRequest) {
       return;
     }
 
-    clearFocusedFriendRequest();
-  }, [
-    clearFocusedFriendRequest,
-    focusedPanel,
-    focusedRequestId,
-    visibleRequests,
-  ]);
+    clearFocusedRequestFromEffect();
+  }, [focusedPanel, focusedRequestId, hasFocusedRequest]);
 
   const hideRequest = (requesterId: string) => {
     setHiddenRequestIds((current) =>

@@ -8,7 +8,7 @@ import {
   ACTIVITY_CHATS_QUERY_KEY,
   ACTIVITY_GROUPS_QUERY_KEY,
 } from "@/features/activity/api/activity-query-keys";
-import { toMessageApi } from "@/features/activity/api/activity-message-cache";
+import { toMessageApi } from "@/features/activity/api/messages/message-mappers";
 import type { Group } from "@/features/activity/lib/activity-contract";
 
 interface RealtimeGroupUpdateOptions {

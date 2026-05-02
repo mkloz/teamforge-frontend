@@ -1,4 +1,8 @@
 import type { LandingSectionId } from "@/features/landing/constants/landing-sections";
+import {
+  scrollElementIntoViewById,
+  scrollToPageTop,
+} from "@/shared/lib/browser-scroll";
 
 const DEFAULT_SCROLL_OPTIONS = {
   behavior: "smooth",
@@ -9,9 +13,9 @@ export function scrollToLandingSection(
   id: LandingSectionId,
   options: ScrollIntoViewOptions = DEFAULT_SCROLL_OPTIONS,
 ) {
-  document.getElementById(id)?.scrollIntoView(options);
+  scrollElementIntoViewById(id, options);
 }
 
 export function scrollToLandingTop() {
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollToPageTop();
 }

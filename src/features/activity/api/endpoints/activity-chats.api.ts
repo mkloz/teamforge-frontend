@@ -1,0 +1,153 @@
+import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
+import { FileUploadApi } from "@/shared/api/file-upload";
+import { chatApiSchema, linkPreviewSchema } from "@/shared/schemas";
+
+import {
+  DEFAULT_ACTIVITY_API_LIMIT,
+  DEFAULT_ACTIVITY_API_MESSAGE_LIMIT,
+  createReactionPayloadSchema,
+  paginatedChatsSchema,
+  paginatedMessagesSchema,
+  sendMessagePayloadSchema,
+  updateMessagePayloadSchema,
+  type GetChatMessagesParams,
+  type SendMessagePayload,
+  type UpdateMessagePayload,
+} from "@/features/activity/api/activity-api-contracts";
+import { messageApiSchema } from "@/shared/schemas";
+
+export async function getChats() {
+  const response = await apiClient
+    .get("chats", {
+      searchParams: {
+        limit: DEFAULT_ACTIVITY_API_LIMIT,
+      },
+    })
+    .json<unknown>();
+
+  return paginatedChatsSchema.parse(response).items;
+}
+
+export async function getChatMessages(
+  chatId: string,
+  {
+    limit = Number(DEFAULT_ACTIVITY_API_MESSAGE_LIMIT),
+    page = 1,
+  }: GetChatMessagesParams = {},
+) {
+  const response = await apiClient
+    .get(`chats/${chatId}/messages`, {
+      searchParams: {
+        limit: String(limit),
+        page: String(page),
+      },
+    })
+    .json<unknown>();
+
+  return paginatedMessagesSchema.parse(response);
+}
+
+export async function sendMessage(chatId: string, payload: SendMessagePayload) {
+  const response = await apiClient.post(`chats/${chatId}/messages`, {
+    json: sendMessagePayloadSchema.parse(payload),
+  });
+
+  return parseJsonWithRequestId(response, (value) =>
+    messageApiSchema.parse(value),
+  );
+}
+
+export async function updateMessage(
+  chatId: string,
+  messageId: string,
+  payload: UpdateMessagePayload,
+) {
+  const response = await apiClient.patch(
+    `chats/${chatId}/messages/${messageId}`,
+    {
+      json: updateMessagePayloadSchema.parse(payload),
+    },
+  );
+
+  return parseJsonWithRequestId(response, (value) =>
+    messageApiSchema.parse(value),
+  );
+}
+
+export async function deleteMessage(chatId: string, messageId: string) {
+  const response = await apiClient
+    .delete(`chats/${chatId}/messages/${messageId}`)
+    .json<unknown>();
+
+  return messageApiSchema.parse(response);
+}
+
+export async function pinMessage(chatId: string, messageId: string) {
+  const response = await apiClient
+    .post(`chats/${chatId}/messages/${messageId}/pin`)
+    .json<unknown>();
+
+  return messageApiSchema.parse(response);
+}
+
+export async function unpinMessage(chatId: string, messageId: string) {
+  const response = await apiClient
+    .delete(`chats/${chatId}/messages/${messageId}/pin`)
+    .json<unknown>();
+
+  return messageApiSchema.parse(response);
+}
+
+export async function addReaction(
+  chatId: string,
+  messageId: string,
+  emoji: string,
+) {
+  const response = await apiClient
+    .post(`chats/${chatId}/messages/${messageId}/reactions`, {
+      json: createReactionPayloadSchema.parse({ emoji }),
+    })
+    .json<unknown>();
+
+  return messageApiSchema.parse(response);
+}
+
+export async function removeReaction(
+  chatId: string,
+  messageId: string,
+  emoji: string,
+) {
+  const response = await apiClient
+    .delete(`chats/${chatId}/messages/${messageId}/reactions`, {
+      searchParams: { emoji },
+    })
+    .json<unknown>();
+
+  return messageApiSchema.parse(response);
+}
+
+export async function markChatRead(chatId: string, messageId?: string | null) {
+  const response = await apiClient
+    .post(`chats/${chatId}/read`, {
+      json: messageId ? { messageId } : {},
+    })
+    .json<unknown>();
+
+  return chatApiSchema.parse(response);
+}
+
+export async function uploadChatAttachment(file: File) {
+  return FileUploadApi.uploadChatAttachment(file);
+}
+
+export async function getLinkPreview(url: string) {
+  const response = await apiClient
+    .get("chats/link-preview", {
+      searchParams: {
+        url,
+      },
+    })
+    .json<unknown>();
+
+  return linkPreviewSchema.parse(response);
+}

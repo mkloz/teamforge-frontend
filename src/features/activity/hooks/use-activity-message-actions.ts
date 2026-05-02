@@ -1,5 +1,3 @@
-import { useCallback } from "react";
-
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { useActivityStore } from "@/features/activity/store/activity.store";
@@ -14,102 +12,67 @@ export function useActivityMessageActions() {
     (state) => state.setEditingMessage,
   );
 
-  const startReply = useCallback(
-    (message: UnifiedMessage) => {
-      setEditingMessage(null);
-      setReplyingTo(message);
-    },
-    [setEditingMessage, setReplyingTo],
-  );
-
-  const startEdit = useCallback(
-    (message: UnifiedMessage) => {
-      setReplyingTo(null);
-      setEditingMessage(message);
-    },
-    [setEditingMessage, setReplyingTo],
-  );
-
-  const cancelEdit = useCallback(() => {
+  function startReply(message: UnifiedMessage) {
     setEditingMessage(null);
-  }, [setEditingMessage]);
+    setReplyingTo(message);
+  }
 
-  const deleteMessage = useCallback(
-    async (message: UnifiedMessage) => {
-      await ActivityCommands.deleteMessage(
-        selectedKind,
-        selectedId,
-        message.id,
-      );
+  function startEdit(message: UnifiedMessage) {
+    setReplyingTo(null);
+    setEditingMessage(message);
+  }
 
-      if (replyingTo?.id === message.id) {
-        setReplyingTo(null);
-      }
+  function cancelEdit() {
+    setEditingMessage(null);
+  }
 
-      if (editingMessage?.id === message.id) {
-        setEditingMessage(null);
-      }
-    },
-    [
-      editingMessage?.id,
-      replyingTo?.id,
-      selectedId,
-      selectedKind,
-      setEditingMessage,
-      setReplyingTo,
-    ],
-  );
+  async function deleteMessage(message: UnifiedMessage) {
+    await ActivityCommands.deleteMessage(selectedKind, selectedId, message.id);
 
-  const retryMessage = useCallback(
-    async (message: UnifiedMessage) => {
-      await ActivityCommands.retryMessage(selectedKind, selectedId, message);
-    },
-    [selectedId, selectedKind],
-  );
+    if (replyingTo?.id === message.id) {
+      setReplyingTo(null);
+    }
 
-  const toggleReaction = useCallback(
-    async (message: UnifiedMessage, emoji: string) => {
-      await ActivityCommands.toggleReaction(
-        selectedKind,
-        selectedId,
-        message,
-        emoji,
-      );
-    },
-    [selectedId, selectedKind],
-  );
-
-  const pinMessage = useCallback(
-    async (message: UnifiedMessage) => {
-      await ActivityCommands.pinMessage(selectedKind, selectedId, message);
-    },
-    [selectedId, selectedKind],
-  );
-
-  const unpinMessage = useCallback(
-    async (message: UnifiedMessage) => {
-      await ActivityCommands.unpinMessage(selectedKind, selectedId, message);
-    },
-    [selectedId, selectedKind],
-  );
-
-  const submitEdit = useCallback(
-    async (content: string) => {
-      if (!editingMessage) {
-        return null;
-      }
-
-      const updated = await ActivityCommands.updateMessage(
-        selectedKind,
-        selectedId,
-        editingMessage.id,
-        content.trim(),
-      );
+    if (editingMessage?.id === message.id) {
       setEditingMessage(null);
-      return updated;
-    },
-    [editingMessage, selectedId, selectedKind, setEditingMessage],
-  );
+    }
+  }
+
+  async function retryMessage(message: UnifiedMessage) {
+    await ActivityCommands.retryMessage(selectedKind, selectedId, message);
+  }
+
+  async function toggleReaction(message: UnifiedMessage, emoji: string) {
+    await ActivityCommands.toggleReaction(
+      selectedKind,
+      selectedId,
+      message,
+      emoji,
+    );
+  }
+
+  async function pinMessage(message: UnifiedMessage) {
+    await ActivityCommands.pinMessage(selectedKind, selectedId, message);
+  }
+
+  async function unpinMessage(message: UnifiedMessage) {
+    await ActivityCommands.unpinMessage(selectedKind, selectedId, message);
+  }
+
+  async function submitEdit(content: string) {
+    if (!editingMessage) {
+      return null;
+    }
+
+    const updated = await ActivityCommands.updateMessage(
+      selectedKind,
+      selectedId,
+      editingMessage.id,
+      content.trim(),
+    );
+    setEditingMessage(null);
+    return updated;
+  }
 
   return {
     editingMessage,

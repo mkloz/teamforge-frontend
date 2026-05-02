@@ -1,14 +1,13 @@
 import { useVoronoiAnimation } from "@/shared/hooks/use-voronoi-animation";
 import type { VoronoiCatalystProps } from "@/shared/lib/voronoi/voronoi-contract";
+import { useImperativeHandle } from "react";
 
 /**
  * VoronoiCatalyst Component
  * Provides a high-performance, depth-layered Voronoi visualization
  * that reacts to authentication progress and user input.
  */
-export function VoronoiCatalyst({
-  progress = 0,
-}: Omit<VoronoiCatalystProps, "isTyping">) {
+export function VoronoiCatalyst({ ref, progress = 0 }: VoronoiCatalystProps) {
   const {
     containerRef,
     canvasRef,
@@ -16,7 +15,10 @@ export function VoronoiCatalyst({
     handleMouseMove,
     handleMouseEnter,
     handleMouseLeave,
+    pulseTyping,
   } = useVoronoiAnimation({ progress });
+
+  useImperativeHandle(ref, () => ({ pulseTyping }), [pulseTyping]);
 
   const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
 

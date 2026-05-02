@@ -9,7 +9,7 @@ import {
 } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import type { MouseEvent } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
 import { ContentStep } from "@/features/landing/components/how-it-works/content-step";
 import { ProgressBarStep } from "@/features/landing/components/how-it-works/progress-bar-step";
@@ -17,6 +17,7 @@ import { STEPS } from "@/features/landing/components/how-it-works/how-it-works-d
 import { VoronoiLogo } from "@/features/landing/components/how-it-works/voronoi-logo";
 import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
 import { Button } from "@/shared/components/ui/button";
+import { scrollToElementProgress } from "@/shared/lib/browser-scroll";
 
 export function HowItWorksSection() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -43,31 +44,33 @@ export function HowItWorksSection() {
 
   // Interactive Tilt Logic for Phase 4
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const handleMouseMove = useCallback((e: MouseEvent) => {
+  function handleMouseMove(e: MouseEvent) {
     if (!visualRef.current) return;
     const rect = visualRef.current.getBoundingClientRect();
     setMousePos({
       x: (e.clientX - rect.left) / rect.width - 0.5,
       y: (e.clientY - rect.top) / rect.height - 0.5,
     });
-  }, []);
+  }
 
   const tiltX = useSpring(0, { stiffness: 150, damping: 20 });
   const tiltY = useSpring(0, { stiffness: 150, damping: 20 });
+  const updateTiltFromScroll = useEffectEvent((progress: number) => {
+    if (progress > 0.8 && !shouldReduceMotion) {
+      tiltX.set(mousePos.y * 20);
+      tiltY.set(mousePos.x * 20);
+      return;
+    }
+
+    tiltX.set(0);
+    tiltY.set(0);
+  });
 
   useEffect(() => {
     // Only apply tilt during the final convergence phase (progress > 0.8) and if motion is NOT reduced
-    const unsubscribe = scrollYProgress.on("change", (p) => {
-      if (p > 0.8 && !shouldReduceMotion) {
-        tiltX.set(mousePos.y * 20);
-        tiltY.set(mousePos.x * 20);
-      } else {
-        tiltX.set(0);
-        tiltY.set(0);
-      }
-    });
+    const unsubscribe = scrollYProgress.on("change", updateTiltFromScroll);
     return () => unsubscribe();
-  }, [mousePos, scrollYProgress, tiltX, tiltY, shouldReduceMotion]);
+  }, [scrollYProgress]);
 
   // Scale up the logo container as we progress
   const logoScale = useTransform(
@@ -128,12 +131,10 @@ export function HowItWorksSection() {
                 smoothProgress={smoothProgress}
                 onClick={() => {
                   if (containerRef.current) {
-                    const sectionTop = containerRef.current.offsetTop;
-                    const sectionHeight = containerRef.current.offsetHeight;
-                    const targetScroll =
-                      sectionTop +
-                      (i / STEPS.length) * (sectionHeight - window.innerHeight);
-                    window.scrollTo({ top: targetScroll, behavior: "smooth" });
+                    scrollToElementProgress(
+                      containerRef.current,
+                      i / STEPS.length,
+                    );
                   }
                 }}
               />

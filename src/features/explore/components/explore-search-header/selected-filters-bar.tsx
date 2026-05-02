@@ -5,7 +5,7 @@ import {
   DEFAULT_FILTERS,
 } from "@/features/explore/constants/explore.constants";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
-import { FilterTag } from "@/features/explore/components/filter-tag";
+import { FilterTag } from "./filter-tag";
 
 export function SelectedFiltersBar() {
   const {

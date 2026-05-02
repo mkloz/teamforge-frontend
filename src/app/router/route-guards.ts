@@ -1,6 +1,7 @@
 import { redirect } from "@tanstack/react-router";
 
 import { parseOnboardingFlowSearch } from "@/features/onboarding/lib/onboarding-flow-state";
+import { refreshAuthSession } from "@/shared/api/api";
 import { authSession } from "@/shared/api/auth-session";
 import { ensureCurrentUser } from "@/shared/api/current-user-query";
 import {
@@ -26,6 +27,10 @@ export async function redirectAuthenticatedUser({
   location,
 }: PublicAuthRouteLoadContext) {
   if (!authSession.hasTokens()) {
+    await refreshAuthSession().catch(() => null);
+  }
+
+  if (!authSession.hasTokens()) {
     return;
   }
 
@@ -42,6 +47,10 @@ export async function redirectAuthenticatedUser({
 
 export async function requireAuthenticatedUser(location?: RouteLocationLike) {
   const returnHref = buildRouteLocationHref(location);
+
+  if (!authSession.hasTokens()) {
+    await refreshAuthSession().catch(() => null);
+  }
 
   if (!authSession.hasTokens()) {
     throw redirect(buildAuthRouteNavigation("/auth/login", returnHref));

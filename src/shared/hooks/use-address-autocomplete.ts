@@ -1,0 +1,279 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { ChangeEvent, KeyboardEvent } from "react";
+
+import { useGoogleMapsStatus } from "@/shared/hooks/use-google-maps-status";
+import { useOutsideDismiss } from "@/shared/hooks/use-outside-dismiss";
+import {
+  getCurrentCoordinates,
+  isGeolocationAvailable,
+} from "@/shared/lib/maps/browser-geolocation";
+import {
+  getPlacePredictions,
+  resolvePlacePrediction,
+  reverseGeocodeCoordinates,
+} from "@/shared/lib/maps/google-places-service";
+import type { LocationValue } from "@/shared/lib/maps/location.types";
+
+interface UseAddressAutocompleteOptions {
+  value: LocationValue | null;
+  onLocationSelect: (value: LocationValue | null) => void;
+}
+
+export function useAddressAutocomplete({
+  value,
+  onLocationSelect,
+}: UseAddressAutocompleteOptions) {
+  const externalInputValue = value?.address ?? "";
+  const [draftInput, setDraftInput] = useState<{
+    baseValue: string;
+    value: string;
+  } | null>(null);
+  const [suggestions, setSuggestions] = useState<
+    GoogleAutocompletePrediction[]
+  >([]);
+  const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
+  const [isResolvingPlace, setIsResolvingPlace] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { mapsStatus, mapsReady } = useGoogleMapsStatus();
+
+  const inputValue =
+    draftInput && draftInput.baseValue === externalInputValue
+      ? draftInput.value
+      : externalInputValue;
+
+  const visibleSuggestions = useMemo(
+    () => (mapsReady && inputValue.trim().length >= 3 ? suggestions : []),
+    [inputValue, mapsReady, suggestions],
+  );
+
+  useOutsideDismiss({
+    ref: containerRef,
+    enabled: isSuggestionsOpen,
+    onDismiss: closeSuggestions,
+  });
+
+  useEffect(() => {
+    setActiveSuggestionIndex((currentIndex) => {
+      if (!isSuggestionsOpen || visibleSuggestions.length === 0) {
+        return -1;
+      }
+
+      return Math.min(currentIndex, visibleSuggestions.length - 1);
+    });
+  }, [isSuggestionsOpen, visibleSuggestions.length]);
+
+  useEffect(() => {
+    if (!mapsReady || inputValue.trim().length < 3) {
+      return;
+    }
+
+    let active = true;
+    const handle = setTimeout(() => {
+      getPlacePredictions(inputValue.trim())
+        .then((nextSuggestions) => {
+          if (!active) {
+            return;
+          }
+
+          setSuggestions(nextSuggestions);
+          setIsSuggestionsOpen(Boolean(nextSuggestions.length));
+          setActiveSuggestionIndex(-1);
+        })
+        .catch(() => {
+          if (!active) {
+            return;
+          }
+
+          setSuggestions([]);
+          setIsSuggestionsOpen(false);
+          setActiveSuggestionIndex(-1);
+        });
+    }, 250);
+
+    return () => {
+      active = false;
+      clearTimeout(handle);
+    };
+  }, [inputValue, mapsReady]);
+
+  function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
+    const nextValue = event.target.value;
+
+    setDraftInput({ baseValue: externalInputValue, value: nextValue });
+    setMessage(null);
+    if (nextValue.trim().length < 3) {
+      setSuggestions([]);
+      setIsSuggestionsOpen(false);
+      setActiveSuggestionIndex(-1);
+    }
+    onLocationSelect({
+      address: nextValue,
+      city: nextValue,
+      lat: null,
+      lng: null,
+      placeId: null,
+    });
+  }
+
+  function clearLocation() {
+    setDraftInput(null);
+    setSuggestions([]);
+    setIsSuggestionsOpen(false);
+    setActiveSuggestionIndex(-1);
+    setMessage(null);
+    onLocationSelect(null);
+  }
+
+  function closeSuggestions() {
+    setIsSuggestionsOpen(false);
+    setActiveSuggestionIndex(-1);
+  }
+
+  function openSuggestions() {
+    if (visibleSuggestions.length === 0) {
+      return;
+    }
+
+    setIsSuggestionsOpen(true);
+  }
+
+  function handleInputFocus() {
+    openSuggestions();
+  }
+
+  function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Escape") {
+      closeSuggestions();
+      return;
+    }
+
+    if (event.key === "Tab") {
+      closeSuggestions();
+      return;
+    }
+
+    if (visibleSuggestions.length === 0) {
+      return;
+    }
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setIsSuggestionsOpen(true);
+      setActiveSuggestionIndex((currentIndex) =>
+        currentIndex < visibleSuggestions.length - 1 ? currentIndex + 1 : 0,
+      );
+      return;
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setIsSuggestionsOpen(true);
+      setActiveSuggestionIndex((currentIndex) =>
+        currentIndex > 0 ? currentIndex - 1 : visibleSuggestions.length - 1,
+      );
+      return;
+    }
+
+    if (
+      event.key === "Enter" &&
+      isSuggestionsOpen &&
+      activeSuggestionIndex >= 0
+    ) {
+      const suggestion = visibleSuggestions[activeSuggestionIndex];
+
+      if (!suggestion) {
+        return;
+      }
+
+      event.preventDefault();
+      void selectPrediction(suggestion);
+    }
+  }
+
+  async function selectPrediction(prediction: GoogleAutocompletePrediction) {
+    if (!mapsReady) {
+      return;
+    }
+
+    setIsResolvingPlace(true);
+    setMessage(null);
+
+    try {
+      const nextLocation = await resolvePlacePrediction(prediction);
+
+      setDraftInput({
+        baseValue: externalInputValue,
+        value: nextLocation.address,
+      });
+      setSuggestions([]);
+      setActiveSuggestionIndex(-1);
+      onLocationSelect(nextLocation);
+    } catch {
+      setMessage("We couldn't read that location. Try another result.");
+    } finally {
+      setIsResolvingPlace(false);
+      closeSuggestions();
+    }
+  }
+
+  async function useCurrentArea() {
+    if (!mapsReady || !isGeolocationAvailable()) {
+      setMessage("Location access is unavailable in this browser.");
+      return;
+    }
+
+    setIsLocating(true);
+    setMessage(null);
+
+    try {
+      const coordinates = await getCurrentCoordinates();
+      const nextLocation = await reverseGeocodeCoordinates(coordinates);
+
+      if (!nextLocation) {
+        setMessage("We found your area, but couldn't label it.");
+        onLocationSelect({
+          address: "Current area",
+          city: "Current area",
+          lat: coordinates.lat,
+          lng: coordinates.lng,
+          placeId: null,
+        });
+        return;
+      }
+
+      onLocationSelect({
+        ...nextLocation,
+        lat: coordinates.lat,
+        lng: coordinates.lng,
+      });
+      setDraftInput(null);
+    } catch {
+      setMessage("Allow location access or search manually.");
+    } finally {
+      setIsLocating(false);
+    }
+  }
+
+  return {
+    containerRef,
+    inputValue,
+    mapsStatus,
+    mapsReady,
+    suggestions: visibleSuggestions,
+    isSuggestionsOpen,
+    activeSuggestionIndex,
+    isResolvingPlace,
+    isLocating,
+    message,
+    setActiveSuggestionIndex,
+    handleInputFocus,
+    handleInputChange,
+    handleInputKeyDown,
+    clearLocation,
+    selectPrediction,
+    useCurrentArea,
+  };
+}

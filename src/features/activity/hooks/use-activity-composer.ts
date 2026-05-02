@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
@@ -15,72 +15,69 @@ export function useActivityComposer() {
   const replyingTo = useActivityStore((state) => state.replyingTo);
   const { editingMessage, submitEdit } = useActivityMessageActions();
 
-  const handleSendMessage = useCallback(
-    async (input: ActivitySendMessageInput) => {
-      setSendError(null);
+  async function handleSendMessage(input: ActivitySendMessageInput) {
+    setSendError(null);
 
-      try {
-        if (editingMessage) {
-          const result = await submitEdit(input.content);
-          trackMutationOutcome(
-            trackedMutationNames.activityMessageEdit,
-            "success",
-            {
-              conversationKind: selectedKind ?? "unknown",
-              requestId: result?.requestId ?? null,
-            },
-          );
-          return;
-        }
-
-        const result = await ActivityCommands.sendMessage(
-          selectedKind,
-          selectedId,
-          {
-            ...input,
-            replyTo: replyingTo,
-            replyToId: replyingTo?.id ?? null,
-          },
-        );
+    try {
+      if (editingMessage) {
+        const result = await submitEdit(input.content);
         trackMutationOutcome(
-          trackedMutationNames.activityMessageSend,
+          trackedMutationNames.activityMessageEdit,
           "success",
           {
             conversationKind: selectedKind ?? "unknown",
-            attachmentCount: input.attachments?.length ?? 0,
-            hasReply: Boolean(replyingTo),
             requestId: result?.requestId ?? null,
           },
         );
-      } catch (error) {
-        captureException(trackedMutationNames.activityMessageSend, error, {
+        return;
+      }
+
+      const result = await ActivityCommands.sendMessage(
+        selectedKind,
+        selectedId,
+        {
+          ...input,
+          replyTo: replyingTo,
+          replyToId: replyingTo?.id ?? null,
+        },
+      );
+      trackMutationOutcome(
+        trackedMutationNames.activityMessageSend,
+        "success",
+        {
           conversationKind: selectedKind ?? "unknown",
-          isEdit: Boolean(editingMessage),
           attachmentCount: input.attachments?.length ?? 0,
           hasReply: Boolean(replyingTo),
-        });
-        trackMutationOutcome(
-          editingMessage
-            ? trackedMutationNames.activityMessageEdit
-            : trackedMutationNames.activityMessageSend,
-          "error",
-          {
-            conversationKind: selectedKind ?? "unknown",
-            attachmentCount: input.attachments?.length ?? 0,
-            hasReply: Boolean(replyingTo),
-          },
-        );
-        setSendError(
-          getApiErrorMessage(
-            error,
-            "We couldn't send that message. Please try again.",
-          ),
-        );
-        throw error;
-      }
-    },
-    [editingMessage, replyingTo, selectedId, selectedKind, submitEdit],
-  );
+          requestId: result?.requestId ?? null,
+        },
+      );
+    } catch (error) {
+      captureException(trackedMutationNames.activityMessageSend, error, {
+        conversationKind: selectedKind ?? "unknown",
+        isEdit: Boolean(editingMessage),
+        attachmentCount: input.attachments?.length ?? 0,
+        hasReply: Boolean(replyingTo),
+      });
+      trackMutationOutcome(
+        editingMessage
+          ? trackedMutationNames.activityMessageEdit
+          : trackedMutationNames.activityMessageSend,
+        "error",
+        {
+          conversationKind: selectedKind ?? "unknown",
+          attachmentCount: input.attachments?.length ?? 0,
+          hasReply: Boolean(replyingTo),
+        },
+      );
+      setSendError(
+        getApiErrorMessage(
+          error,
+          "We couldn't send that message. Please try again.",
+        ),
+      );
+      throw error;
+    }
+  }
 
   return {
     handleSendMessage,

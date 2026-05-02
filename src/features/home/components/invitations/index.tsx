@@ -1,10 +1,15 @@
-import type { HomeInvitationView } from "@/shared/lib/home-route";
-import type { Invite } from "@/shared/schemas";
+import type { HomeInvitationView } from "@/features/home/lib/home-route";
 import { AnimatePresence, motion } from "framer-motion";
 import { Mail } from "lucide-react";
-import { useEffect, type RefObject, useState } from "react";
+import {
+  startTransition,
+  useEffect,
+  useEffectEvent,
+  useOptimistic,
+  type RefObject,
+} from "react";
 
-import { InvitationCard } from "@/features/home/components/invitations/invitation-card";
+import { InvitationCard } from "./invitation-card";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { useHomeInvitationActions } from "@/features/home/hooks/use-home-invitation-actions";
 
@@ -22,7 +27,11 @@ export function Invitations({
   onClearFocus,
 }: InvitationsProps) {
   const { invitations } = useHomeData();
-  const [pending, setPending] = useState<Invite[]>(invitations);
+  const [pending, removePendingInvitation] = useOptimistic(
+    invitations,
+    (currentInvitations, inviteId: string) =>
+      currentInvitations.filter((invite) => invite.id !== inviteId),
+  );
   const {
     acceptInvitation,
     declineInvitation,
@@ -33,10 +42,9 @@ export function Invitations({
     actionError,
     clearActionError,
   } = useHomeInvitationActions();
-
-  useEffect(() => {
-    setPending(invitations);
-  }, [invitations]);
+  const clearFocusedInvitation = useEffectEvent(() => {
+    onClearFocus?.();
+  });
 
   useEffect(() => {
     if (focusedView !== "received") {
@@ -51,52 +59,42 @@ export function Invitations({
       return;
     }
 
-    onClearFocus?.();
-  }, [focusedInviteId, focusedView, onClearFocus, pending]);
+    clearFocusedInvitation();
+  }, [focusedInviteId, focusedView, pending]);
 
-  const handleAccept = async (id: string) => {
+  function handleAccept(id: string) {
     clearActionError();
-    setPending((prev) => prev.filter((inv) => inv.id !== id));
 
-    try {
-      await acceptInvitation(id);
-      if (focusedInviteId === id) {
-        onClearFocus?.();
-      }
-    } catch {
-      setPending((prev) => {
-        const restoredInvite = invitations.find((inv) => inv.id === id);
+    startTransition(async () => {
+      removePendingInvitation(id);
 
-        if (!restoredInvite || prev.some((inv) => inv.id === id)) {
-          return prev;
+      try {
+        await acceptInvitation(id);
+        if (focusedInviteId === id) {
+          onClearFocus?.();
         }
+      } catch {
+        // useOptimistic restores the base invitation list when the Action ends.
+      }
+    });
+  }
 
-        return [restoredInvite, ...prev];
-      });
-    }
-  };
-
-  const handleDecline = async (id: string) => {
+  function handleDecline(id: string) {
     clearActionError();
-    setPending((prev) => prev.filter((inv) => inv.id !== id));
 
-    try {
-      await declineInvitation(id);
-      if (focusedInviteId === id) {
-        onClearFocus?.();
-      }
-    } catch {
-      setPending((prev) => {
-        const restoredInvite = invitations.find((inv) => inv.id === id);
+    startTransition(async () => {
+      removePendingInvitation(id);
 
-        if (!restoredInvite || prev.some((inv) => inv.id === id)) {
-          return prev;
+      try {
+        await declineInvitation(id);
+        if (focusedInviteId === id) {
+          onClearFocus?.();
         }
-
-        return [restoredInvite, ...prev];
-      });
-    }
-  };
+      } catch {
+        // useOptimistic restores the base invitation list when the Action ends.
+      }
+    });
+  }
 
   if (focusedView !== "received" || pending.length === 0) return null;
 

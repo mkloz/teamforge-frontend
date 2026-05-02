@@ -1,5 +1,5 @@
 import { useGoogleLogin } from "@react-oauth/google";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 import { config } from "@/config/config";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
@@ -54,7 +54,7 @@ export function useGoogleAuth({ intent, onSuccess }: UseGoogleAuthOptions) {
     },
   });
 
-  const startGoogleAuth = useCallback(() => {
+  function startGoogleAuth() {
     setRootError(null);
 
     if (!config.googleClientId) {
@@ -63,7 +63,7 @@ export function useGoogleAuth({ intent, onSuccess }: UseGoogleAuthOptions) {
     }
 
     login();
-  }, [login]);
+  }
 
   return {
     loading,

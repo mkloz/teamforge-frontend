@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 import { motion, useSpring, useTransform } from "framer-motion";
-import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
 
 export interface AnimatedCircularProgressBarProps {
   max: number;
@@ -19,16 +19,10 @@ export function AnimatedCircularProgressBar({
   gaugeSecondaryColor,
   className,
 }: AnimatedCircularProgressBarProps) {
-  const [currentValue, setCurrentValue] = useState(value);
-
-  useEffect(() => {
-    setCurrentValue(value);
-  }, [value]);
-
   const circumference = 2 * Math.PI * 45;
   const percentPx = circumference / 100;
 
-  const springValue = useSpring(currentValue, {
+  const springValue = useSpring(value, {
     stiffness: 40,
     damping: 10,
   });
@@ -37,14 +31,13 @@ export function AnimatedCircularProgressBar({
     return `${Math.round(latest)}`;
   });
 
-  const containerStyle: React.CSSProperties & Record<string, string | number> =
-    {
-      "--circle-size": "100px",
-      "--circumference": `${circumference}px`,
-      "--percent-to-px": `${percentPx}px`,
-    };
+  const containerStyle: CSSProperties & Record<string, string | number> = {
+    "--circle-size": "100px",
+    "--circumference": `${circumference}px`,
+    "--percent-to-px": `${percentPx}px`,
+  };
 
-  const circleStyle: React.CSSProperties & Record<string, string | number> = {
+  const circleStyle: CSSProperties & Record<string, string | number> = {
     stroke: gaugeSecondaryColor,
     "--stroke-percent": 90,
   };
@@ -83,15 +76,14 @@ export function AnimatedCircularProgressBar({
           initial={{ strokeDashoffset: circumference }}
           animate={{
             strokeDashoffset:
-              circumference -
-              ((currentValue - min) / (max - min)) * circumference,
+              circumference - ((value - min) / (max - min)) * circumference,
           }}
           transition={{ duration: 1, ease: "easeOut" }}
           className="opacity-100"
         />
       </svg>
       <motion.span
-        data-current-value={currentValue}
+        data-current-value={value}
         className="duration-[unset] absolute inset-0 m-auto mx-auto flex items-center justify-center text-center transition-none"
       >
         {labelText}

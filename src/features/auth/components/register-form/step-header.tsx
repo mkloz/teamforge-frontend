@@ -1,4 +1,4 @@
-import { type Step } from "../../hooks/use-register-form";
+import type { Step } from "@/features/auth/hooks/use-register-form";
 
 interface StepHeaderProps {
   step: Step;

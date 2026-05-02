@@ -6,7 +6,11 @@ import { defineConfig } from "vite";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      babel: {
+        plugins: ["babel-plugin-react-compiler"],
+      },
+    }),
     tailwindcss(),
   ],
   server: {
@@ -67,10 +71,7 @@ export default defineConfig({
             return "ui-vendor";
           }
 
-          if (
-            id.includes("/lucide-react/") ||
-            id.includes("/react-icons/")
-          ) {
+          if (id.includes("/lucide-react/") || id.includes("/react-icons/")) {
             return "icons";
           }
 

@@ -8,11 +8,13 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 import { useIsMobile } from "@/shared/hooks/use-breakpoint";
 import { memo, useRef } from "react";
-import { ChatStatusBar } from "@/features/activity/components/chat/chat-status-bar";
-import { CompletedBanner } from "@/features/activity/components/chat/completed-banner";
-import { UnifiedChatHeader } from "@/features/activity/components/chat/unified-chat-header";
-import { UnifiedMessageInput } from "@/features/activity/components/chat/unified-message-input";
-import { UnifiedMessageList } from "@/features/activity/components/chat/unified-message-list/index";
+import type { RefObject } from "react";
+import { ChatStatusBar } from "./chat-status-bar";
+import { CompletedBanner } from "./completed-banner";
+import { UnifiedChatHeader } from "./unified-chat-header";
+import { UnifiedMessageInput } from "./unified-message-input";
+import { UnifiedMessageList } from "./unified-message-list";
+import type { MessageScrollHandle } from "./unified-message-list/message-scroll.types";
 
 type UnifiedConversationViewProps =
   | (BaseConversationProps & { kind: "dm"; data: DirectChat })
@@ -26,6 +28,7 @@ interface BaseConversationProps {
   typingUsers?: { name: string; avatar: string | null }[];
   isActionOpen?: boolean;
   focusedMessageId?: string | null;
+  messageScrollHandleRef?: RefObject<MessageScrollHandle | null>;
   sendError?: string | null;
   onBack: () => void;
   onClearSendError?: () => void;
@@ -47,6 +50,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     typingUsers = [],
     isActionOpen = false,
     focusedMessageId,
+    messageScrollHandleRef,
     sendError = null,
     hasOlderMessages = false,
     isLoadingOlderMessages = false,
@@ -60,6 +64,11 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const internalMessageScrollHandleRef = useRef<MessageScrollHandle | null>(
+    null,
+  );
+  const activeMessageScrollHandleRef =
+    messageScrollHandleRef ?? internalMessageScrollHandleRef;
 
   const { unpinMessage } = useActivityMessageActions();
   const isMobile = useIsMobile();
@@ -115,7 +124,11 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
 
           void unpinMessage(targetMessage);
         }}
-        scrollContainerRef={messagesContainerRef}
+        onActivatePinnedMessage={(messageId) =>
+          activeMessageScrollHandleRef.current?.scrollToMessage(messageId, {
+            highlight: true,
+          })
+        }
       />
 
       {/* Message area */}
@@ -128,6 +141,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
           isLoadingOlderMessages={isLoadingOlderMessages}
           messagesEndRef={messagesEndRef}
           containerRef={messagesContainerRef}
+          messageScrollHandleRef={activeMessageScrollHandleRef}
           onLoadOlderMessages={onLoadOlderMessages}
           typingUsers={activeTypingUsers}
           onToggleAction={onToggleAction}

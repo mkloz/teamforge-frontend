@@ -67,7 +67,7 @@ export function ForgeLoadingAnvil({
   const [labelIdx, setLabelIdx] = useState(0);
 
   useEffect(() => {
-    if (shouldReduceMotion) return;
+    if (shouldReduceMotion || label) return;
 
     // Fire exactly at the first impact then every full cycle thereafter.
     // We use a timeout to align the first tick to the impact moment,
@@ -85,7 +85,7 @@ export function ForgeLoadingAnvil({
       clearTimeout(firstHit);
       if (interval !== null) clearInterval(interval);
     };
-  }, [shouldReduceMotion]);
+  }, [label, shouldReduceMotion]);
 
   const displayLabel = label ?? FORGE_LABELS[labelIdx];
 

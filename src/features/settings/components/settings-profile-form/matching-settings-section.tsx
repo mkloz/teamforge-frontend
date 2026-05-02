@@ -4,7 +4,7 @@ import { Button } from "@/shared/components/ui/button";
 import {
   buildInterestsEditNavigation,
   buildPersonalityEditNavigation,
-} from "@/shared/lib/onboarding-route";
+} from "@/features/onboarding/lib/onboarding-route";
 import type { NotificationPreferences, User } from "@/shared/schemas";
 import {
   MatchingThresholdControl,

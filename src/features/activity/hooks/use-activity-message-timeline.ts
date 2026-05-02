@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
@@ -30,29 +30,21 @@ export function useActivityMessageTimeline({
       !!chatId && selectedParticipants.length > 0 && currentUserId !== null,
   });
 
-  const flattenedApiMessages = useMemo(
-    () => ActivityQueryFactory.flattenMessagePages(messagesQuery.data),
-    [messagesQuery.data],
+  const flattenedApiMessages = ActivityQueryFactory.flattenMessagePages(
+    messagesQuery.data,
   );
-  const flattenedMessages = useMemo(
-    () =>
-      ActivityQueryFactory.mapMessages(
-        flattenedApiMessages,
-        selectedParticipants,
-        currentUserId,
-      ),
-    [currentUserId, flattenedApiMessages, selectedParticipants],
+  const flattenedMessages = ActivityQueryFactory.mapMessages(
+    flattenedApiMessages,
+    selectedParticipants,
+    currentUserId,
   );
-  const selectedGroupMessages = useMemo(
-    () =>
-      selectedKind === "group"
-        ? ActivityQueryFactory.buildConversationTimeline(
-            flattenedMessages,
-            proposalMessages,
-          )
-        : [],
-    [flattenedMessages, proposalMessages, selectedKind],
-  );
+  const selectedGroupMessages =
+    selectedKind === "group"
+      ? ActivityQueryFactory.buildConversationTimeline(
+          flattenedMessages,
+          proposalMessages,
+        )
+      : [];
   const selectedDirectMessages = selectedKind === "dm" ? flattenedMessages : [];
 
   const latestReadableMessageId =
@@ -78,15 +70,17 @@ export function useActivityMessageTimeline({
     void ActivityCommands.markChatRead(chatId, latestReadableMessageId);
   }, [chatId, chatsQuery.data, latestReadableMessageId]);
 
+  async function loadOlderMessages() {
+    if (messagesQuery.hasNextPage && !messagesQuery.isFetchingNextPage) {
+      await messagesQuery.fetchNextPage();
+    }
+  }
+
   return {
     selectedGroupMessages,
     selectedDirectMessages,
     hasOlderMessages: messagesQuery.hasNextPage,
     isLoadingOlderMessages: messagesQuery.isFetchingNextPage,
-    loadOlderMessages: async () => {
-      if (messagesQuery.hasNextPage && !messagesQuery.isFetchingNextPage) {
-        await messagesQuery.fetchNextPage();
-      }
-    },
+    loadOlderMessages,
   };
 }

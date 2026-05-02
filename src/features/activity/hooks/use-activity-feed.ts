@@ -1,4 +1,4 @@
-import { useDeferredValue, useMemo } from "react";
+import { useDeferredValue } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
@@ -21,34 +21,21 @@ export function useActivityFeed() {
   const chatsQuery = useQuery(ActivityQueryFactory.chats());
   const friendshipsQuery = useQuery(ActivityQueryFactory.friendships());
 
-  const feedData = useMemo(() => {
-    if (
-      !currentUserQuery.data ||
-      !groupsQuery.data ||
-      !chatsQuery.data ||
-      !friendshipsQuery.data
-    ) {
-      return null;
-    }
-
-    return ActivityQueryFactory.deriveFeedData(
-      activeFilter,
-      deferredSearchQuery,
-      groupsQuery.data,
-      chatsQuery.data,
-      friendshipsQuery.data,
-      currentUserQuery.data,
-      typingByChatId,
-    );
-  }, [
-    activeFilter,
-    chatsQuery.data,
-    currentUserQuery.data,
-    deferredSearchQuery,
-    friendshipsQuery.data,
-    groupsQuery.data,
-    typingByChatId,
-  ]);
+  const feedData =
+    currentUserQuery.data &&
+    groupsQuery.data &&
+    chatsQuery.data &&
+    friendshipsQuery.data
+      ? ActivityQueryFactory.deriveFeedData(
+          activeFilter,
+          deferredSearchQuery,
+          groupsQuery.data,
+          chatsQuery.data,
+          friendshipsQuery.data,
+          currentUserQuery.data,
+          typingByChatId,
+        )
+      : null;
 
   return {
     searchQuery,

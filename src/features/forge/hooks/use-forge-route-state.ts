@@ -6,11 +6,11 @@ import {
   parseAsStringLiteral,
   useQueryStates,
 } from "nuqs";
-import { buildActivityGroupHubNavigation } from "@/shared/lib/activity-route";
-import { forgeSearchModeValues } from "@/shared/lib/forge-route";
+import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
+import { forgeSearchModeValues } from "@/features/forge/lib/forge-route";
 
 import type { ForgeMode } from "../lib/forge-contract";
-import type { Step } from "../lib/forge-wizard.reducer";
+import type { Step } from "../lib/forge-wizard";
 
 function mapModeToSearch(mode: ForgeMode) {
   return mode === "MANUAL" ? "manual" : "auto";

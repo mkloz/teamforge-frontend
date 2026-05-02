@@ -1,3 +1,5 @@
+import type { Ref } from "react";
+
 export interface Point {
   x: number;
   y: number;
@@ -9,9 +11,13 @@ export interface Point {
 }
 
 export interface VoronoiCatalystProps {
-  isTyping?: boolean;
+  ref?: Ref<VoronoiCatalystHandle>;
   progress?: number;
   className?: string;
+}
+
+export interface VoronoiCatalystHandle {
+  pulseTyping: () => void;
 }
 
 export interface Dimensions {

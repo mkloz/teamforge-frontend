@@ -15,8 +15,8 @@ import {
 } from "@/shared/lib/auth-route";
 import { LoginForm } from "@/features/auth/components/login-form";
 import { RegisterForm } from "@/features/auth/components/register-form";
-import { AUTH_TYPING_EVENT } from "@/shared/constants/voronoi.constants";
 import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
+import type { VoronoiCatalystHandle } from "@/shared/lib/voronoi/voronoi-contract";
 
 type AuthView = "login" | "register";
 
@@ -26,6 +26,7 @@ interface AuthPageProps {
 
 export function AuthPage({ defaultView = "login" }: AuthPageProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const catalystRef = useRef<VoronoiCatalystHandle>(null);
   const [authStep, setAuthStep] = useState<number>(1);
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
@@ -35,8 +36,7 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
   useScrollToTop([view, authStep], scrollContainerRef);
 
   const handleInput = () => {
-    // Dispatch custom event to update animation without re-rendering the whole page tree
-    window.dispatchEvent(new CustomEvent(AUTH_TYPING_EVENT));
+    catalystRef.current?.pulseTyping();
   };
 
   const navigateAfterAuth = async () => {
@@ -65,7 +65,7 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
       </div>
 
       <div className="hidden lg:flex flex-1 relative bg-hero-bg border-r border-border items-center justify-center overflow-hidden h-full">
-        <VoronoiCatalyst progress={progress} />
+        <VoronoiCatalyst ref={catalystRef} progress={progress} />
       </div>
 
       <div className="flex-1 relative flex flex-col h-full overflow-hidden">
@@ -106,7 +106,6 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
                     />
                   ) : (
                     <RegisterForm
-                      authReturnTo={returnTo}
                       onSwitchToLogin={() => {
                         void navigate(
                           buildAuthRouteNavigation("/auth/login", returnTo),

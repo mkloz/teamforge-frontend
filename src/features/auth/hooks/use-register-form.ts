@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
@@ -67,16 +67,16 @@ export function useRegisterForm({
   }, [values, onProgress]);
 
   // Step transitions
-  const goToStep2 = useCallback(async () => {
+  async function goToStep2() {
     setRootError(null);
     const isValid = await form.trigger(["name", "email", "password"]);
     if (isValid) {
       setDirection(1);
       setStep(2);
     }
-  }, [form]);
+  }
 
-  const goToStep3 = useCallback(async () => {
+  async function goToStep3() {
     setRootError(null);
     const isValid = await form.trigger(["age", "city", "gender"]);
     if (!isValid) {
@@ -109,54 +109,47 @@ export function useRegisterForm({
     } finally {
       setLoading(false);
     }
-  }, [form]);
+  }
 
-  const goBackToStep1 = useCallback(() => {
+  function goBackToStep1() {
     setRootError(null);
     setDirection(-1);
     setStep(1);
-  }, []);
+  }
 
-  const goBackToStep2 = useCallback(() => {
+  function goBackToStep2() {
     setRootError(null);
     setDirection(-1);
     setStep(2);
-  }, []);
+  }
 
-  const onSubmit = useCallback(
-    async (formValues: RegisterValues) => {
-      const isValid = await form.trigger(["otp"]);
-      if (!isValid) return;
+  async function onSubmit(formValues: RegisterValues) {
+    const isValid = await form.trigger(["otp"]);
+    if (!isValid) return;
 
-      setRootError(null);
-      setLoading(true);
-      try {
-        const result = await AuthCommands.verifyEmailOtp(formValues);
-        trackMutationOutcome(
-          trackedMutationNames.authVerifyEmailOtp,
-          "success",
-          {
-            requestId: result.requestId,
-          },
-        );
-        await onSuccess?.();
-      } catch (error) {
-        captureException(trackedMutationNames.authVerifyEmailOtp, error);
-        trackMutationOutcome(trackedMutationNames.authVerifyEmailOtp, "error");
-        setRootError(
-          AuthCommands.getAuthErrorMessage(
-            error,
-            "We couldn't verify that code. Please try again.",
-          ),
-        );
-      } finally {
-        setLoading(false);
-      }
-    },
-    [form, onSuccess],
-  );
+    setRootError(null);
+    setLoading(true);
+    try {
+      const result = await AuthCommands.verifyEmailOtp(formValues);
+      trackMutationOutcome(trackedMutationNames.authVerifyEmailOtp, "success", {
+        requestId: result.requestId,
+      });
+      await onSuccess?.();
+    } catch (error) {
+      captureException(trackedMutationNames.authVerifyEmailOtp, error);
+      trackMutationOutcome(trackedMutationNames.authVerifyEmailOtp, "error");
+      setRootError(
+        AuthCommands.getAuthErrorMessage(
+          error,
+          "We couldn't verify that code. Please try again.",
+        ),
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 
-  const resendOtp = useCallback(async () => {
+  async function resendOtp() {
     const email = form.getValues("email");
 
     setRootError(null);
@@ -183,7 +176,7 @@ export function useRegisterForm({
     } finally {
       setResendLoading(false);
     }
-  }, [form]);
+  }
 
   return {
     form,

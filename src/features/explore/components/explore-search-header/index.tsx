@@ -1,7 +1,7 @@
-import { SearchInput } from "@/features/explore/components/explore-search-header/search-input";
-import { SortDropdown } from "@/features/explore/components/explore-search-header/sort-dropdown";
-import { MobileFiltersSheet } from "@/features/explore/components/explore-search-header/mobile-filters-sheet";
-import { SelectedFiltersBar } from "@/features/explore/components/explore-search-header/selected-filters-bar";
+import { SearchInput } from "./search-input";
+import { SortDropdown } from "./sort-dropdown";
+import { MobileFiltersSheet } from "./mobile-filters-sheet";
+import { SelectedFiltersBar } from "./selected-filters-bar";
 
 export function ExploreSearchHeader() {
   return (

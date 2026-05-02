@@ -1,7 +1,7 @@
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import { useUiStore } from "@/shared/store/ui.store";
 import { Outlet } from "@tanstack/react-router";
-import { Suspense, type ReactNode } from "react";
+import { Activity, Suspense, type ReactNode } from "react";
 import { AppBottomNav } from "@/features/app-shell/components/app-bottom-nav";
 import { AppSidebar } from "@/features/app-shell/components/app-sidebar";
 
@@ -58,7 +58,9 @@ export function AppLayout({
         </main>
 
         {/* Mobile bottom navigation */}
-        {!bottomNavHidden && <AppBottomNav />}
+        <Activity mode={bottomNavHidden ? "hidden" : "visible"}>
+          <AppBottomNav />
+        </Activity>
 
         {/* Overlays */}
         {notificationDrawer}

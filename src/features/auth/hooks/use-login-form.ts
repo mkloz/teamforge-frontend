@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
@@ -41,39 +41,37 @@ export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
     onProgress(p);
   }, [emailValue, passwordValue, onProgress]);
 
-  const onSubmit = useCallback(
-    async (values: LoginValues) => {
-      setRootError(null);
-      setLoading(true);
-      try {
-        const result = await AuthCommands.loginWithEmail(values);
-        trackMutationOutcome(trackedMutationNames.authLoginEmail, "success", {
-          requestId: result.requestId,
-        });
-        await onSuccess?.();
-      } catch (error) {
-        captureException(trackedMutationNames.authLoginEmail, error, {
-          emailDomain: values.email.split("@")[1] ?? "unknown",
-        });
-        trackMutationOutcome(trackedMutationNames.authLoginEmail, "error", {
-          emailDomain: values.email.split("@")[1] ?? "unknown",
-        });
-        setRootError(
-          AuthCommands.getAuthErrorMessage(
-            error,
-            "Invalid email or password. Please try again.",
-          ),
-        );
-      } finally {
-        setLoading(false);
-      }
-    },
-    [onSuccess],
-  );
+  async function onSubmit(values: LoginValues) {
+    setRootError(null);
+    setLoading(true);
 
-  const togglePasswordVisibility = useCallback(() => {
+    try {
+      const result = await AuthCommands.loginWithEmail(values);
+      trackMutationOutcome(trackedMutationNames.authLoginEmail, "success", {
+        requestId: result.requestId,
+      });
+      await onSuccess?.();
+    } catch (error) {
+      captureException(trackedMutationNames.authLoginEmail, error, {
+        emailDomain: values.email.split("@")[1] ?? "unknown",
+      });
+      trackMutationOutcome(trackedMutationNames.authLoginEmail, "error", {
+        emailDomain: values.email.split("@")[1] ?? "unknown",
+      });
+      setRootError(
+        AuthCommands.getAuthErrorMessage(
+          error,
+          "Invalid email or password. Please try again.",
+        ),
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function togglePasswordVisibility() {
     setShowPassword((v) => !v);
-  }, []);
+  }
 
   return {
     form,

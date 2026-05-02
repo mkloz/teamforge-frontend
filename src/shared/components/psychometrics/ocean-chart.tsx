@@ -69,9 +69,15 @@ export function OceanDiagram({
     }
 
     const updateSize = () => {
-      setContainerSize({
-        width: element.clientWidth,
-        height: element.clientHeight,
+      const width = element.clientWidth;
+      const height = element.clientHeight;
+
+      setContainerSize((current) => {
+        if (current.width === width && current.height === height) {
+          return current;
+        }
+
+        return { width, height };
       });
     };
 

@@ -1,8 +1,11 @@
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useActivityStore } from "@/features/activity/store/activity.store";
 import { useUiStore } from "@/shared/store/ui.store";
+import { useMediaQuery } from "@/shared/hooks/use-media-query";
 
 export function useActivityPanels() {
+  const isBottomNavViewport = useMediaQuery("(max-width: 767px)");
+  const isDesktopPanelViewport = useMediaQuery("(min-width: 1024px)");
   const selectedId = useActivityStore((state) => state.selectedId);
   const groups = useActivityStore((state) => state.groups);
   const direct = useActivityStore((state) => state.direct);
@@ -25,29 +28,22 @@ export function useActivityPanels() {
   const hasSelection = !!selectedId;
 
   useEffect(() => {
-    const handleResize = () => {
-      setBottomNavHidden(hasSelection && window.innerWidth < 768);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
+    setBottomNavHidden(hasSelection && isBottomNavViewport);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
       setBottomNavHidden(false);
     };
-  }, [hasSelection, setBottomNavHidden]);
+  }, [hasSelection, isBottomNavViewport, setBottomNavHidden]);
 
-  const handleSelectItem = useCallback(
-    (id: string, kind: "group" | "dm") => {
-      selectConversation(id, kind);
-    },
-    [selectConversation],
-  );
+  function handleSelectItem(id: string, kind: "group" | "dm") {
+    selectConversation(id, kind, {
+      shouldOpenSidePanel: isDesktopPanelViewport,
+    });
+  }
 
-  const handleBack = useCallback(() => {
+  function handleBack() {
     resetSelection();
-  }, [resetSelection]);
+  }
 
   return {
     groups,

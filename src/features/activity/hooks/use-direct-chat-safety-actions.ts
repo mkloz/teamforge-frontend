@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -28,17 +27,11 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
   const currentUserQuery = useQuery(currentUserQueryOptions());
   const clearRouteSelection = useClearActivityRouteSelection();
 
-  const targetUser = useMemo(() => {
-    if (!currentUserQuery.data) {
-      return null;
-    }
-
-    return (
-      chat.participants?.find(
+  const targetUser = currentUserQuery.data
+    ? (chat.participants?.find(
         (participant) => participant.userId !== currentUserQuery.data.id,
-      )?.user ?? null
-    );
-  }, [chat.participants, currentUserQuery.data]);
+      )?.user ?? null)
+    : null;
 
   const mutation = useMutation({
     mutationFn: ({ action, targetUserId }: DirectChatSafetyMutationInput) =>

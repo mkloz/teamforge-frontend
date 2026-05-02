@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { HomeQueryFactory } from "@/features/home/api/home-query-factory";
 import { EMPTY_HOME_STATS } from "@/features/home/lib/home-stats";
 
@@ -9,6 +10,7 @@ const EMPTY_INVITATIONS: never[] = [];
 const EMPTY_RECOMMENDATIONS: never[] = [];
 
 export function useHomeData() {
+  const queryClient = useQueryClient();
   const statsQuery = useQuery(HomeQueryFactory.stats());
   const plansQuery = useQuery(HomeQueryFactory.plans());
   const groupsQuery = useQuery(HomeQueryFactory.groups());
@@ -37,13 +39,10 @@ export function useHomeData() {
       invitationsQuery.isError ||
       sentInvitationsQuery.isError ||
       recommendationsQuery.isError,
-    refetchAll: () => {
-      statsQuery.refetch();
-      plansQuery.refetch();
-      groupsQuery.refetch();
-      invitationsQuery.refetch();
-      sentInvitationsQuery.refetch();
-      recommendationsQuery.refetch();
-    },
+    refetchAll: () =>
+      queryClient.refetchQueries({
+        queryKey: APP_QUERY_KEYS.home.all,
+        type: "active",
+      }),
   };
 }

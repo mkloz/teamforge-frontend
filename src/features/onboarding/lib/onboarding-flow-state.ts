@@ -3,12 +3,12 @@ import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 import {
   normalizeSettingsSection,
   settingsSectionValues,
-} from "@/shared/lib/settings-route";
+} from "@/features/settings/lib/settings-route";
 import {
   onboardingModeValues,
   onboardingReturnTargets,
   type OnboardingReturnTarget,
-} from "@/shared/lib/onboarding-route";
+} from "@/features/onboarding/lib/onboarding-route";
 import { personalityTypeSchema, type PersonalityType } from "@/shared/schemas";
 
 const onboardingFlowParsers = {

@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select";
-import { buildProfileNavigation } from "@/shared/lib/app-route";
+import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import type { User } from "@/shared/schemas";
 import { StatPill } from "@/features/settings/components/settings-profile-form/settings-form-controls";
 import { unspecifiedGenderValue } from "@/features/settings/schemas/settings-profile.schema";

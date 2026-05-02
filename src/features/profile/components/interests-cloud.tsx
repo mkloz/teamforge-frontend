@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { createElement } from "react";
-import { buildInterestsEditNavigation } from "@/shared/lib/onboarding-route";
+import { buildInterestsEditNavigation } from "@/features/onboarding/lib/onboarding-route";
 import { cn } from "@/shared/lib/utils";
 import type { Interest as SharedInterest } from "@/shared/schemas";
-import { SectionTitle } from "@/features/profile/components/section-title";
+import { SectionTitle } from "@/shared/components/psychometrics/section-title";
 import { Button } from "@/shared/components/ui/button";
 import { getInterestIcon } from "@/shared/lib/interest-icons";
 

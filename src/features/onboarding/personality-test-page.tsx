@@ -1,262 +1,21 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
-import { useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { useMemo, useRef, useState } from "react";
-import { useInvalidateCurrentUser } from "@/shared/api/current-user-query";
-import { OnboardingCache } from "@/features/onboarding/api/onboarding-cache";
-import { OnboardingCommands } from "@/features/onboarding/api/onboarding-commands";
-import { resolveOnboardingExitNavigation } from "@/shared/lib/onboarding-exit-route";
-import { usePersonalityTest } from "@/features/onboarding/hooks/use-personality-test";
 
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
-import { CalculatingScreen } from "@/features/onboarding/components/personality/calculating-screen";
-import { IntermissionPage } from "@/features/onboarding/components/personality/intermission-page";
-import { KeepInMind } from "@/features/onboarding/components/personality/keep-in-mind";
-import { LengthSelector } from "@/features/onboarding/components/personality/length-selector";
-import { PersonalityIntro } from "@/features/onboarding/components/personality/personality-intro";
-import { PersonalityResults } from "@/features/onboarding/components/personality/personality-results";
-import { QuestionPage } from "@/features/onboarding/components/personality/question-page";
-import { Theory101 } from "@/features/onboarding/components/personality/theory-101";
-import {
-  buildQuestionList,
-  type TestLength,
-} from "@/features/onboarding/data/ipip-questions";
-import { useOnboardingFlowState } from "@/features/onboarding/lib/onboarding-flow-state";
-import { getOceanScoresFromVector } from "@/features/onboarding/lib/personality-results";
-import { findFirstUnansweredPage } from "@/features/onboarding/lib/personality-test-flow";
-
-const QUESTIONS_PER_PAGE = 3;
-
-function ScreenRenderer({
-  state,
-  onSelectionChange,
-  onContinue,
-  continueLabel,
-}: {
-  state: ReturnType<typeof usePersonalityTest>;
-  onSelectionChange: (length: TestLength) => void;
-  onContinue: () => void;
-  continueLabel: string;
-}) {
-  const {
-    screen,
-    questions,
-    answers,
-    result,
-    vector,
-    totalPages,
-    currentPage,
-    pageStart,
-    pageQuestions,
-    actions,
-  } = state;
-
-  switch (screen.id) {
-    case "intro":
-      return (
-        <PersonalityIntro onStart={() => actions.setScreen({ id: "theory" })} />
-      );
-    case "theory":
-      return (
-        <Theory101
-          onBack={() => actions.setScreen({ id: "intro" })}
-          onNext={() => actions.setScreen({ id: "guidelines" })}
-        />
-      );
-    case "guidelines":
-      return (
-        <KeepInMind
-          onBack={() => actions.setScreen({ id: "theory" })}
-          onNext={() => actions.setScreen({ id: "length" })}
-        />
-      );
-    case "length": {
-      const isAdjusting = Object.keys(answers).length > 0;
-
-      return (
-        <LengthSelector
-          onBack={() => {
-            if (state.previousScreen?.id === "intermission") {
-              actions.setScreen(state.previousScreen);
-            } else if (isAdjusting) {
-              const resumePage = findFirstUnansweredPage(
-                state.testLength,
-                answers,
-                QUESTIONS_PER_PAGE,
-              );
-              actions.setScreen({ id: "questions", currentPage: resumePage });
-            } else {
-              actions.setScreen({ id: "guidelines" });
-            }
-          }}
-          onBegin={(length) => {
-            if (isAdjusting) {
-              actions.updateTestLength(length);
-              const resumePage = findFirstUnansweredPage(
-                length,
-                answers,
-                QUESTIONS_PER_PAGE,
-              );
-              actions.setScreen({ id: "questions", currentPage: resumePage });
-            } else {
-              actions.handleBegin(length);
-            }
-          }}
-          mode={isAdjusting ? "adjust" : "begin"}
-          initialLength={state.testLength}
-          answers={answers}
-          onSelectionChange={onSelectionChange}
-        />
-      );
-    }
-    case "questions":
-      return (
-        <QuestionPage
-          pageQuestions={pageQuestions}
-          startIndex={pageStart + 1}
-          pageNumber={currentPage}
-          totalPages={totalPages}
-          totalQuestions={questions.length}
-          answers={answers}
-          onAnswer={actions.handleAnswer}
-          onNext={actions.handleNextPage}
-          onReview={() => {
-            actions.setIsReviewMode(true);
-            actions.setScreen({ id: "questions", currentPage: 1 });
-          }}
-        />
-      );
-    case "intermission":
-      return (
-        <IntermissionPage
-          milestoneIndex={screen.type}
-          answeredCount={state.answeredInPoolCount}
-          totalQuestions={questions.length}
-          onAdjustLength={() => {
-            actions.setIsReviewMode(false);
-            actions.setScreen({ id: "length" });
-          }}
-          onExtend={(len) => {
-            actions.setIsReviewMode(false);
-            actions.updateTestLength(len);
-            actions.handleContinueFromIntermission();
-          }}
-          onContinue={actions.handleContinueFromIntermission}
-        />
-      );
-    case "calculating":
-      return (
-        <CalculatingScreen
-          vector={vector!}
-          onDone={actions.handleCalculationDone}
-        />
-      );
-    case "results":
-      if (!result || !vector) return null;
-      return (
-        <PersonalityResults
-          result={result}
-          vector={vector}
-          onContinue={onContinue}
-          onRetake={actions.handleRetake}
-          continueLabel={continueLabel}
-        />
-      );
-    default:
-      return null;
-  }
-}
+import { PersonalityScreenRenderer } from "@/features/onboarding/components/personality/personality-screen-renderer";
+import { usePersonalityTestPageFlow } from "@/features/onboarding/hooks/use-personality-test-page-flow";
+import { QUESTIONS_PER_PAGE } from "@/features/onboarding/lib/personality-test-page-constants";
 
 export function PersonalityTestPage() {
-  const [pendingLength, setPendingLength] = useState<TestLength | null>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
-  const { isEditMode, returnTo, returnSearch, returnSection } =
-    useOnboardingFlowState();
-  const queryClient = useQueryClient();
-  const invalidateCurrentUser = useInvalidateCurrentUser();
-  const persistPersonalityMutation = useMutation({
-    mutationFn: OnboardingCommands.updatePersonality,
-    onSuccess: async (updatedUser) => {
-      OnboardingCache.setCurrentUser(queryClient, updatedUser);
-      await invalidateCurrentUser();
-    },
-  });
-  const testState = usePersonalityTest({
-    questionsPerPage: QUESTIONS_PER_PAGE,
-  });
-
-  async function handleContinueToInterests() {
-    if (testState.result && testState.vector) {
-      const oceanScores = getOceanScoresFromVector(testState.vector);
-
-      await persistPersonalityMutation.mutateAsync({
-        personalityType: testState.result.type,
-        oceanO: oceanScores.openness,
-        oceanC: oceanScores.conscientiousness,
-        oceanE: oceanScores.extraversion,
-        oceanA: oceanScores.agreeableness,
-        oceanN: oceanScores.neuroticism,
-      });
-    }
-
-    testState.actions.reset();
-
-    if (isEditMode) {
-      await navigate(
-        resolveOnboardingExitNavigation(
-          returnTo,
-          returnSearch,
-          returnSection,
-          "settings",
-        ),
-      );
-      return;
-    }
-
-    const mbtiType = testState.result?.type ?? null;
-    const nextSearch = {
-      ...(mbtiType ? { mbti: mbtiType } : {}),
-      ...(returnTo ? { returnTo } : {}),
-      ...(returnSearch ? { returnSearch } : {}),
-      ...(returnSection ? { returnSection } : {}),
-    };
-
-    await navigate({
-      to: "/onboarding/interests",
-      search: Object.keys(nextSearch).length > 0 ? nextSearch : undefined,
-    });
-  }
-
-  const displayProgress = useMemo(() => {
-    if (testState.screen.id === "length" && pendingLength) {
-      const pool = buildQuestionList(pendingLength);
-      const answeredInPool = pool.filter(
-        (q) => testState.answers[q.id] !== undefined,
-      ).length;
-      return pool.length === 0 ? 0 : answeredInPool / pool.length;
-    }
-    return testState.progress;
-  }, [
-    testState.screen.id,
-    pendingLength,
-    testState.answers,
-    testState.progress,
-  ]);
-
-  useScrollToTop(
-    [
-      testState.screen.id,
-      "currentPage" in testState.screen
-        ? testState.screen.currentPage
-        : undefined,
-      "type" in testState.screen ? testState.screen.type : undefined,
-    ],
+  const {
+    continueLabel,
+    continueToInterests,
+    displayProgress,
     scrollContainerRef,
-  );
+    setPendingLength,
+    testState,
+  } = usePersonalityTestPageFlow();
 
   return (
     <div className="h-screen w-full max-h-dvh flex flex-col lg:flex-row relative overflow-hidden">
@@ -281,11 +40,12 @@ export function PersonalityTestPage() {
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <ScreenRenderer
+                  <PersonalityScreenRenderer
                     state={testState}
                     onSelectionChange={setPendingLength}
-                    onContinue={handleContinueToInterests}
-                    continueLabel={isEditMode ? "Save Personality" : "Continue"}
+                    onContinue={continueToInterests}
+                    continueLabel={continueLabel}
+                    questionsPerPage={QUESTIONS_PER_PAGE}
                   />
                 </motion.div>
               </AnimatePresence>

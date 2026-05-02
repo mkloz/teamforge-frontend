@@ -22,23 +22,26 @@ The platform uses a multi-factor scoring system combining:
 
 ## Tech Stack
 
-| Layer         | Technology                                                         |
-| ------------- | ------------------------------------------------------------------ |
-| Framework     | React 19.2 + TypeScript 5.9                                        |
-| Build tool    | Vite 7                                                             |
-| Routing       | TanStack Router v1 (manually defined route tree in `src/router.tsx`) |
-| Server state  | TanStack Query v5                                                  |
-| Client state  | Zustand v5                                                         |
-| Forms         | React Hook Form v7 + Zod v4                                        |
-| Styling       | Tailwind CSS v4                                                    |
-| UI primitives | shadcn/ui + Radix UI                                               |
-| HTTP client   | ky (with auto token refresh)                                       |
-| Animations    | Framer Motion v12                                                  |
-| Data viz      | Recharts + D3 (color, delaunay, voronoi, ease, interpolate, timer) |
-| Icons         | Lucide React (primary), React Icons (fallback)                     |
-| Linting       | ESLint 9 + typescript-eslint                                       |
-| Formatting    | Prettier 3.8                                                       |
-| Git hooks     | Husky + lint-staged                                                |
+| Layer         | Technology                                                               |
+| ------------- | ------------------------------------------------------------------------ |
+| Framework     | React 19.2 + TypeScript 5.9                                              |
+| Build tool    | Vite 7.3                                                                 |
+| Routing       | TanStack Router v1.162 (manually defined route tree in `src/router.tsx`) |
+| URL state     | nuqs v2 with the TanStack Router adapter                                 |
+| Server state  | TanStack Query v5.90                                                     |
+| Client state  | Zustand v5                                                               |
+| Forms         | React Hook Form v7.71 + Zod v4.3                                         |
+| Styling       | Tailwind CSS v4.2                                                        |
+| UI primitives | shadcn/ui + Radix UI                                                     |
+| HTTP client   | ky v1.14 (with auto token refresh)                                       |
+| Realtime      | Socket.IO client v4                                                      |
+| Animations    | Framer Motion v12.34                                                     |
+| Data viz      | Recharts v3 + D3 (color, delaunay, voronoi, ease, interpolate, timer)    |
+| Icons         | Lucide React (primary), React Icons (fallback)                           |
+| Analytics     | Vercel Analytics                                                         |
+| Linting       | ESLint 9 + typescript-eslint + TanStack Query ESLint plugin              |
+| Formatting    | Prettier 3.8                                                             |
+| Git hooks     | Husky + lint-staged                                                      |
 
 ---
 
@@ -46,13 +49,17 @@ The platform uses a multi-factor scoring system combining:
 
 ```
 src/
+├── app/                 # App composition, runtime side effects, route helpers
+│   ├── router/          # App-shell route wrappers, lazy-page helper, guards
+│   ├── runtime/         # Global listeners, realtime sync, auth redirects
+│   └── app.tsx          # Providers + RouterProvider composition
 ├── assets/              # Static assets (logo SVG component)
 ├── config/              # App-wide runtime config (env vars)
-│   └── config.ts        # VITE_API_URL, VITE_GOOGLE_CLIENT_ID
+│   └── config.ts        # VITE_API_URL, VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_MAPS_API_KEY
 ├── features/            # All product features, co-located by domain
 │   ├── activity/        # Unified conversation feed, direct chats, group detail panels
 │   ├── app-shell/       # Persistent layout: sidebar and bottom nav
-│   ├── auth/            # Login + multi-step registration (OTP, profile)
+│   ├── auth/            # Login, registration, activation, password recovery
 │   ├── design-system/   # Internal component showcase / visual QA route
 │   ├── explore/         # User/group discovery
 │   ├── forge/           # The core "Forge my group" wizard
@@ -66,11 +73,16 @@ src/
 ├── shared/
 │   ├── api/             # Configured ky API client, session, and query client
 │   ├── components/      # Generic reusable UI components
+│   ├── constants/       # Shared constants
 │   ├── hooks/           # Shared hooks
 │   ├── lib/             # Shared utilities and mappers
 │   ├── providers/       # App-wide providers
 │   ├── schemas/         # Canonical backend-aligned domain schemas
-│   └── store/           # Shared UI stores
+│   ├── store/           # Shared UI stores
+│   ├── types/           # Shared TypeScript contracts
+│   ├── utils/           # Low-level shared helpers
+│   └── validators/      # Reusable validation helpers
+├── styles/              # Tailwind theme, base, utilities, and animation CSS
 ├── index.css            # Tailwind v4 directives + CSS custom properties
 ├── main.tsx             # React app entry point
 └── router.tsx           # Full TanStack Router tree
@@ -88,6 +100,10 @@ Routes are defined manually in `src/router.tsx`. There are two main route groups
 | `/` | `LandingPage` |
 | `/auth/login` | `AuthPage` (login view) |
 | `/auth/register` | `AuthPage` (register view) |
+| `/auth/forgot-password` | `ForgotPasswordPage` |
+| `/auth/reset-password/$token` | `ResetPasswordPage` |
+| `/auth/activate/$token` | `ActivateAccountPage` |
+| `/onboarding/profile` | `ProfileBasicsPage` |
 | `/onboarding/personality` | `PersonalityTestPage` |
 | `/onboarding/interests` | `InterestsPage` |
 
@@ -106,36 +122,53 @@ Routes are defined manually in `src/router.tsx`. There are two main route groups
 |---|---|
 | `/design-system` | `DesignSystemPage` |
 
-Authenticated routes are protected through the `app-shell` route `beforeLoad`, and app pages are lazy-loaded via `React.lazy` + `Suspense` for bundle splitting.
+The design-system route is registered only in development. Authenticated routes are protected through the `app-shell` route `beforeLoad`, onboarding routes use canonical onboarding guards, and app pages are lazy-loaded through `React.lazy` + the shared `LazyPage` wrapper for bundle splitting and loading states.
 
 ---
 
 ## Feature Architecture Pattern
 
-Features are co-located and should stay structurally consistent, but not every feature needs every folder.
+Features are co-located and should stay structurally consistent, but not every feature needs every folder. Prefer the smallest structure that keeps the feature readable. Add folders when there is a real module group, not as ceremony.
 
 ```
 src/features/<feature-name>/
-├── <feature-name>-page.tsx       # Top-level page component (route target)
-├── components/                   # Feature-specific components
-│   └── <sub-feature>/
-│       └── component.tsx
-├── api/                          # Feature-local services, adapters, query factories
-├── hooks/                        # Custom hooks (data fetching, UI state)
-├── store/                        # Zustand stores (client state only)
-├── types/                        # TypeScript interfaces and type unions
-├── schemas/                      # Zod validation schemas
-├── constants/                    # Static data, config constants
-├── data/                         # Mock data (temporary, until API is wired)
-└── lib/                          # Pure utility functions
+├── <feature-name>-page.tsx          # Top-level route component; thin orchestration only
+├── api/                             # Backend-facing feature modules
+│   ├── <feature-name>.api.ts        # Raw API adapter functions using apiClient
+│   ├── <feature-name>-commands.ts   # Mutating commands and command DTO mapping
+│   ├── <feature-name>-query-keys.ts # Stable TanStack Query key factories
+│   ├── <feature-name>-query-options.ts
+│   ├── <feature-name>-query-factory.ts
+│   └── cache/                       # Query cache update helpers, when needed
+├── components/                      # Feature-specific UI, grouped by owner/surface
+│   ├── standalone-component.tsx     # Single-file component: keep it as a file
+│   └── grouped-component/           # Multi-file component group only
+│       ├── index.tsx                # Main component for this folder
+│       ├── subcomponent.tsx         # Private subcomponent used by index.tsx
+│       ├── use-local-behavior.ts    # Private hook used by index.tsx
+│       └── component-helpers.ts     # Private helpers used by this group
+├── hooks/                           # Feature hooks that compose state, query, and UI behavior
+├── store/                           # Zustand stores for feature client state only
+├── schemas/                         # Feature-local Zod schemas and inferred form/input types
+├── constants/                       # Static options, labels, and feature configuration
+├── data/                            # Temporary mock/static data only
+├── lib/                             # Feature contracts, projections, reducers, and pure domain helpers
+└── types/                           # Feature-only type aliases when they do not belong beside schemas/lib
 ```
 
 **Rules:**
 
 - Keep all feature code co-located. Never import one feature's internals into another feature.
 - Cross-feature shared code belongs in `src/shared/`.
-- Page components are thin orchestrators — business logic goes in hooks.
-- Prefer feature-local `api/` modules for backend-facing data seams and query builders.
+- Page components are thin orchestrators. Business logic belongs in hooks, reducers, API modules, or pure `lib/` modules.
+- Use feature-local `api/` modules for backend-facing data seams: raw API adapters, command functions, query keys/options, query factories, and cache helpers.
+- TanStack Query remains the source of truth for server state. Do not replace query/mutation flows with React `useActionState`; React 19 actions are only for isolated local form workflows where they do not duplicate server-state ownership.
+- `api/` modules must not contain UI state or React component logic. Query hooks live in `hooks/` or page orchestration; query keys/options and cache update helpers live in `api/`.
+- `lib/*-contract.ts` is the preferred home for feature-facing domain contracts and projections when those contracts are shared across that feature.
+- Use `schemas/` for backend-aligned validation and form input schemas. Infer types from schemas instead of duplicating them.
+- Component grouping rule: do not create a folder just to hold a single `index.tsx`. A component folder is justified only when the main component has private subcomponents/hooks/helpers. In that case `index.tsx` is the main component and all private files live alongside it in the same folder.
+- Keep parent `components/` folders clean: major surfaces and standalone components may live there, but private children of a decomposed component stay inside that component's folder.
+- Avoid barrel re-exports for feature internals. Import the concrete module directly unless the feature intentionally owns a public `index.ts`.
 - Mock data files (`data/mock-*.ts`) are temporary scaffolding. Replace with TanStack Query hooks when the backend is ready.
 
 ---
@@ -169,28 +202,31 @@ import { apiClient } from "@/shared/api/api";
 
 **Do not use `localStorage` for persistence.** All persistent state must go through the API layer.
 
+React 19 is enabled, including `useOptimistic`, `useEffectEvent`, `Activity`, and ref-as-prop support. Use these where they simplify code, but keep TanStack Query as the canonical server-state layer.
+
 ---
 
 ## Key Domain Types
 
-### User Profile (`src/features/profile/types/profile.types.ts`)
+### User Profile (`src/features/profile/lib/profile-contract.ts`, `src/shared/schemas/user.ts`)
 
 - `UserProfile` — full user entity with personality type, interests, trust score
 - `PersonalityType` — 4-letter personality type code (e.g., "INFP", "ESTJ")
 
-### Conversations & Groups (`src/shared/schemas/group.ts`, `src/shared/schemas/chat.ts`, `src/features/activity/types/*.ts`)
+### Conversations & Groups (`src/shared/schemas/group.ts`, `src/shared/schemas/chat.ts`, `src/features/activity/schemas/activity.schemas.ts`, `src/features/activity/lib/activity-contract.ts`)
 
 - Canonical backend-aligned group, plan, message, and chat models live in `src/shared/schemas/`.
-- `src/features/activity/types/groups.types.ts` contains activity-specific group projections like `GroupPreview` and `PlanHistoryItem`.
-- `src/features/activity/types/direct-chats.types.ts` contains DM-specific preview/state types layered on top of the shared chat schema.
+- `src/features/activity/schemas/activity.schemas.ts` contains activity-specific validated projections for groups, direct chats, participants, messages, and attachments.
+- `src/features/activity/lib/activity-contract.ts` re-exports the feature-facing activity contracts used by activity hooks and components.
 - Current group and direct-chat UI both live inside the `activity` feature rather than standalone `groups/` or `direct-chats/` feature folders.
 
-### Forge (`src/features/forge/types/forge.types.ts`)
+### Forge (`src/features/forge/lib/forge-contract.ts`, `src/features/forge/schemas/forge.schemas.ts`)
 
-- `ForgeMode` — `"auto"` (algorithm picks group) | `"manual"` (user selects members)
-- `GroupSize` — `2-8` members
-- `Visibility` — `"public" | "friends" | "invite"`
-- `ForgeResult` — `"idle" | "success" | "failed"`
+- `ForgeMode` — backend-aligned forge mode from shared enum schemas
+- `FixedGroupSize` — `2-8` members
+- `GroupSizeMode` — `"RANGE" | "FIXED"`
+- `Visibility` — activity visibility from shared enum schemas
+- `ForgeResult` — `"IDLE" | "SUCCESS" | "FAILED"`
 
 ---
 
@@ -213,21 +249,23 @@ The wizard state is managed by `src/features/forge/hooks/use-forge-wizard.ts`. T
 
 ## Onboarding Flow
 
-New users complete two onboarding steps before accessing the app:
+New users complete three onboarding steps before accessing the app:
 
-1. **Personality test** (`/onboarding/personality`) — a questionnaire that determines the user's 4-letter personality type code. Questions are in `src/features/onboarding/data/ipip-questions.ts`. Score calculation lives in `src/features/onboarding/utils/score-calculator.ts`, with flow/result orchestration helpers in `src/features/onboarding/lib/`.
-2. **Interests selection** (`/onboarding/interests`) — users browse and select interest tags across categories. Core selection logic is in `src/features/onboarding/utils/interest-logic.ts`, with browse-state helpers in `src/features/onboarding/lib/interests-browser-state.ts`.
+1. **Profile basics** (`/onboarding/profile`) — users add profile basics through `src/features/onboarding/components/profile-basics/`, `src/features/onboarding/hooks/use-profile-basics-form.ts`, and `src/features/onboarding/schemas/profile-basics.schema.ts`.
+2. **Personality test** (`/onboarding/personality`) — a questionnaire that determines the user's 4-letter personality type code. Questions are in `src/features/onboarding/data/ipip-questions.ts`. Score calculation lives in `src/features/onboarding/utils/score-calculator.ts`, with flow/result orchestration helpers in `src/features/onboarding/lib/`.
+3. **Interests selection** (`/onboarding/interests`) — users browse and select interest tags across categories. Core selection logic is in `src/features/onboarding/utils/interest-logic.ts`, with browse-state helpers in `src/features/onboarding/lib/interests-browser-state.ts`.
 
-Both steps store their state via Zustand stores in `src/features/onboarding/store/`.
+Onboarding flow state lives in `src/features/onboarding/store/`, while submission logic goes through feature API commands/hooks.
 
 ---
 
 ## Environment Variables
 
-| Variable                | Required | Description                                                           |
-| ----------------------- | -------- | --------------------------------------------------------------------- |
-| `VITE_API_URL`          | Yes      | Base URL for the backend REST API (e.g., `https://api.teamforge.app`) |
-| `VITE_GOOGLE_CLIENT_ID` | Yes      | Google OAuth client ID for social login                               |
+| Variable                   | Required | Description                                                           |
+| -------------------------- | -------- | --------------------------------------------------------------------- |
+| `VITE_API_URL`             | Yes      | Base URL for the backend REST API (e.g., `https://api.teamforge.app`) |
+| `VITE_GOOGLE_CLIENT_ID`    | Yes      | Google OAuth client ID for social login                               |
+| `VITE_GOOGLE_MAPS_API_KEY` | Yes      | Google Maps API key for address autocomplete                          |
 
 Set these in `.env.local` for local development. Never commit `.env.local` to version control.
 
@@ -273,11 +311,22 @@ All visual design follows the specifications in `docs/visual-style-guide.md`. Th
 
 - **Path alias:** `@/` maps to `src/`. Always use it instead of relative `../../` imports.
 - **Component exports:** Use named exports (`export function MyComponent`), not default exports, except at the route/page level.
+- **Component file layout:** Do not create a folder just to hold a single `index.tsx`. If an extracted component is a single file, keep it as `<component-name>.tsx` beside related files. Use a component folder with `index.tsx` only when the component has multiple private subcomponents/helpers; in that case, keep those private files alongside `index.tsx` inside the same folder.
 - **Type imports:** Use `import type { Foo }` when importing only types to prevent accidental runtime imports.
 - **No barrel re-exports** unless a feature explicitly has an `index.ts` file.
 - **Zod schemas** live in `schemas/` directories adjacent to the forms that use them. Infer types from schemas (`z.infer<typeof schema>`) — do not duplicate type definitions.
 - **No inline styles.** Use Tailwind utility classes. Avoid arbitrary values (`px-[13px]`) — prefer the 4px-base Tailwind scale.
 - **Spacing:** Use `gap-*` for spacing between flex/grid children. Never use `space-*` classes or mix `margin` with `gap` on the same element.
+- **React 19 cleanup:** Do not add `useMemo`/`useCallback` by default. Use them only for stable dependency boundaries, external subscriptions, expensive derived values, or referential APIs that truly require stability.
+- **Effect cleanup:** Timers, subscriptions, animation frames, observers, and DOM listeners must clean themselves up.
+
+---
+
+## Validation Policy
+
+- The frontend currently does not have an automated test suite by product decision.
+- For code changes, validate with `npm run typecheck`, `npm run lint`, `npm run format:check`, and `npm run build` unless the user explicitly asks for a narrower check.
+- Do not add frontend tests unless the user explicitly asks for tests.
 
 ---
 
@@ -308,14 +357,14 @@ All visual design follows the specifications in `docs/visual-style-guide.md`. Th
 
 TeamForge speaks like a knowledgeable peer, never a corporation.
 
-| Context           | Tone                 | Example                                                     |
-| ----------------- | -------------------- | ----------------------------------------------------------- |
-| Headline / CTA    | Confident, direct    | "Find your people, intelligently."                          |
-| Onboarding        | Encouraging, curious | "Let's find out how you tick."                              |
-| Personality result| Affirming, warm      | "You're an ENTJ — a natural organiser with bold ideas."     |
-| Group formed      | Celebratory          | "Your group is ready. Here's why they're perfect for you."  |
-| Empty state       | Gentle, activating   | "No groups yet. Let's forge your first one."                |
-| Error / limit     | Honest, constructive | "You've used your 3 searches today. Fresh starts tomorrow." |
+| Context            | Tone                 | Example                                                     |
+| ------------------ | -------------------- | ----------------------------------------------------------- |
+| Headline / CTA     | Confident, direct    | "Find your people, intelligently."                          |
+| Onboarding         | Encouraging, curious | "Let's find out how you tick."                              |
+| Personality result | Affirming, warm      | "You're an ENTJ — a natural organiser with bold ideas."     |
+| Group formed       | Celebratory          | "Your group is ready. Here's why they're perfect for you."  |
+| Empty state        | Gentle, activating   | "No groups yet. Let's forge your first one."                |
+| Error / limit      | Honest, constructive | "You've used your 3 searches today. Fresh starts tomorrow." |
 
 Primary slogan: **"Find your people, intelligently."**
 

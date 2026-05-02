@@ -43,3 +43,5 @@ export function useActivity() {
     ...routeState,
   };
 }
+
+export type ActivityWorkspace = ReturnType<typeof useActivity>;

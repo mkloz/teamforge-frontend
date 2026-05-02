@@ -1,10 +1,9 @@
-import { useCallback } from "react";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
 
 import {
   homeInvitationViewValues,
   homePanelValues,
-} from "@/shared/lib/home-route";
+} from "@/features/home/lib/home-route";
 
 export function useHomeRouteState() {
   const [routeState, setRouteState] = useQueryStates(
@@ -18,7 +17,7 @@ export function useHomeRouteState() {
     },
   );
 
-  const clearInvitationFocus = useCallback(() => {
+  function clearInvitationFocus() {
     void setRouteState(
       {
         panel: null,
@@ -27,7 +26,7 @@ export function useHomeRouteState() {
       },
       { history: "replace" },
     );
-  }, [setRouteState]);
+  }
 
   return {
     focusedPanel: routeState.panel ?? null,

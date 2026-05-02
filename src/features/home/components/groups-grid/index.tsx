@@ -1,11 +1,11 @@
-import { buildActivityNavigation } from "@/shared/lib/activity-route";
-import { buildExploreNavigation } from "@/shared/lib/explore-route";
+import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
+import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
-import { GroupRow } from "@/features/home/components/groups-grid/group-row";
+import { GroupRow } from "./group-row";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 
 export function GroupsGrid() {

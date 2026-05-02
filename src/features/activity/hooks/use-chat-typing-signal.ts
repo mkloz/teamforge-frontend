@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useEffectEvent, useRef } from "react";
 
 import { realtimeClient } from "@/shared/api/realtime-client";
 
@@ -11,6 +11,13 @@ interface UseChatTypingSignalInput {
 
 const TYPING_STOP_DELAY_MS = 1800;
 
+function emitTypingStatus(chatId: string, isTyping: boolean) {
+  realtimeClient.emit("chat.typing", {
+    chatId,
+    isTyping,
+  });
+}
+
 export function useChatTypingSignal({
   chatId,
   isFocused,
@@ -20,57 +27,48 @@ export function useChatTypingSignal({
   const isTypingRef = useRef(false);
   const stopTimerRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    return () => {
-      if (stopTimerRef.current !== null) {
-        window.clearTimeout(stopTimerRef.current);
-      }
-
-      if (chatId && isTypingRef.current) {
-        realtimeClient.emit("chat.typing", {
-          chatId,
-          isTyping: false,
-        });
-      }
-    };
-  }, [chatId]);
-
-  useEffect(() => {
+  const clearStopTimer = useEffectEvent(() => {
     if (stopTimerRef.current !== null) {
       window.clearTimeout(stopTimerRef.current);
       stopTimerRef.current = null;
     }
+  });
+
+  const stopTyping = useEffectEvent(
+    (targetChatId: string | null | undefined) => {
+      clearStopTimer();
+
+      if (targetChatId && isTypingRef.current) {
+        isTypingRef.current = false;
+        emitTypingStatus(targetChatId, false);
+      }
+    },
+  );
+
+  useEffect(() => {
+    return () => {
+      stopTyping(chatId);
+    };
+  }, [chatId]);
+
+  useEffect(() => {
+    clearStopTimer();
 
     const shouldType =
       !!chatId && isFocused && !isPaused && text.trim().length > 0;
 
     if (!shouldType) {
-      if (chatId && isTypingRef.current) {
-        isTypingRef.current = false;
-        realtimeClient.emit("chat.typing", {
-          chatId,
-          isTyping: false,
-        });
-      }
+      stopTyping(chatId);
       return;
     }
 
     if (!isTypingRef.current) {
       isTypingRef.current = true;
-      realtimeClient.emit("chat.typing", {
-        chatId,
-        isTyping: true,
-      });
+      emitTypingStatus(chatId, true);
     }
 
     stopTimerRef.current = window.setTimeout(() => {
-      if (chatId && isTypingRef.current) {
-        isTypingRef.current = false;
-        realtimeClient.emit("chat.typing", {
-          chatId,
-          isTyping: false,
-        });
-      }
+      stopTyping(chatId);
     }, TYPING_STOP_DELAY_MS);
   }, [chatId, isFocused, isPaused, text]);
 }

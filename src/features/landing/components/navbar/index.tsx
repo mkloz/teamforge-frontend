@@ -4,7 +4,7 @@ import {
 } from "@/shared/api/current-user-query";
 import { TeamForgeLogo } from "@/assets/logo";
 import { LANDING_NAV_LINKS } from "@/features/landing/constants/landing-sections";
-import { useWindowScroll } from "@/features/landing/hooks/use-window-scroll";
+import { useWindowScrollThreshold } from "@/shared/hooks/use-window-scroll-threshold";
 import {
   getLandingPrimaryAction,
   getLandingSecondaryAction,
@@ -28,7 +28,7 @@ const MOBILE_NAV_LINK_DELAYS = [
 ];
 
 export function Navbar() {
-  const scrolled = useWindowScroll(60);
+  const scrolled = useWindowScrollThreshold(60);
   const { closeMenu, menuOpen, menuRef, toggleMenu } = useMobileNavDialog();
   const { isAuthenticated } = useAuthSessionState();
   const { data: currentUser } = useCurrentUserQuery();

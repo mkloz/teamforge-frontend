@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+
+const BAR_COUNT = 38;
 
 export function useAudioPlayer(url: string) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -7,35 +9,42 @@ export function useAudioPlayer(url: string) {
   const [playbackSpeed, setPlaybackSpeed] = useState<1 | 1.5 | 2>(1);
   const [durationSeconds, setDurationSeconds] = useState(0);
 
+  const syncProgress = useEffectEvent((audio: HTMLAudioElement) => {
+    const safeDuration = Number.isFinite(audio.duration) ? audio.duration : 0;
+    setDurationSeconds(safeDuration);
+    setProgress(safeDuration > 0 ? audio.currentTime / safeDuration : 0);
+  });
+
+  const handleEnded = useEffectEvent(() => {
+    setIsPlaying(false);
+    setProgress(1);
+  });
+
+  const handlePause = useEffectEvent(() => {
+    setIsPlaying(false);
+  });
+
+  const handlePlay = useEffectEvent(() => {
+    setIsPlaying(true);
+  });
+
   useEffect(() => {
     const audio = new Audio(url);
     audio.preload = "metadata";
     audioRef.current = audio;
 
-    const syncProgress = () => {
-      const safeDuration = Number.isFinite(audio.duration) ? audio.duration : 0;
-      setDurationSeconds(safeDuration);
-      setProgress(safeDuration > 0 ? audio.currentTime / safeDuration : 0);
-    };
+    const syncAudioProgress = () => syncProgress(audio);
 
-    const handleEnded = () => {
-      setIsPlaying(false);
-      setProgress(1);
-    };
-
-    const handlePause = () => setIsPlaying(false);
-    const handlePlay = () => setIsPlaying(true);
-
-    audio.addEventListener("timeupdate", syncProgress);
-    audio.addEventListener("loadedmetadata", syncProgress);
+    audio.addEventListener("timeupdate", syncAudioProgress);
+    audio.addEventListener("loadedmetadata", syncAudioProgress);
     audio.addEventListener("ended", handleEnded);
     audio.addEventListener("pause", handlePause);
     audio.addEventListener("play", handlePlay);
 
     return () => {
       audio.pause();
-      audio.removeEventListener("timeupdate", syncProgress);
-      audio.removeEventListener("loadedmetadata", syncProgress);
+      audio.removeEventListener("timeupdate", syncAudioProgress);
+      audio.removeEventListener("loadedmetadata", syncAudioProgress);
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("pause", handlePause);
       audio.removeEventListener("play", handlePlay);
@@ -49,7 +58,7 @@ export function useAudioPlayer(url: string) {
     }
   }, [playbackSpeed]);
 
-  const togglePlay = useCallback(() => {
+  function togglePlay() {
     const audio = audioRef.current;
     if (!audio) {
       return;
@@ -66,9 +75,9 @@ export function useAudioPlayer(url: string) {
     }
 
     audio.pause();
-  }, [progress]);
+  }
 
-  const seek = useCallback((newProgress: number) => {
+  function seek(newProgress: number) {
     const audio = audioRef.current;
     if (!audio) {
       return;
@@ -78,36 +87,35 @@ export function useAudioPlayer(url: string) {
     const nextProgress = Math.max(0, Math.min(1, newProgress));
     audio.currentTime = safeDuration * nextProgress;
     setProgress(nextProgress);
-  }, []);
+  }
 
-  const toggleSpeed = useCallback(() => {
+  function toggleSpeed() {
     setPlaybackSpeed((previous) => {
       if (previous === 1) return 1.5;
       if (previous === 1.5) return 2;
       return 1;
     });
-  }, []);
+  }
 
-  const formatTime = useCallback((seconds: number) => {
+  function formatTime(seconds: number) {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, "0")}`;
-  }, []);
+  }
 
-  const barCount = 38;
   const bars = useMemo(
     () =>
-      Array.from({ length: barCount }, (_, i) => {
-        const mid = barCount / 2;
+      Array.from({ length: BAR_COUNT }, (_, i) => {
+        const mid = BAR_COUNT / 2;
         const distFromMid = Math.abs(i - mid);
         const envelope = Math.exp(
-          -Math.pow(distFromMid, 2) / (2 * Math.pow(barCount / 4, 2)),
+          -Math.pow(distFromMid, 2) / (2 * Math.pow(BAR_COUNT / 4, 2)),
         );
         const noise = 0.4 + Math.abs(Math.sin(i * 12.9898 + 78.233)) * 0.4;
         const height = (20 + envelope * 60) * noise;
         return { height: Math.min(Math.max(height, 15), 100) };
       }),
-    [barCount],
+    [],
   );
 
   return {
@@ -115,7 +123,7 @@ export function useAudioPlayer(url: string) {
     progress,
     playbackSpeed,
     bars,
-    barCount,
+    barCount: BAR_COUNT,
     durationSeconds,
     togglePlay,
     seek,

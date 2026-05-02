@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { getOtherChatParticipant } from "@/features/activity/lib/activity-projections";
 import type {
   DirectChat,
@@ -31,45 +30,22 @@ export function useConversationData({
   const group = isGroup ? data : null;
   const chat = !isGroup ? data : null;
 
-  const participant = useMemo(() => {
-    if (isGroup || !chat) return null;
-    return getOtherChatParticipant(chat);
-  }, [isGroup, chat]);
+  const participant = isGroup || !chat ? null : getOtherChatParticipant(chat);
 
-  const headerProps = useMemo(() => {
-    if (isGroup && group) {
-      return {
-        title: group.name,
-        subtitle: `${group.members?.length || 0} members`,
-        avatarUrl: group.avatar,
-        secondaryAvatar: group.plan?.coverImage,
-      };
-    } else if (chat && participant) {
-      return {
-        title: participant.name,
-        subtitle: getStatusText(
-          participant.onlineStatus || "OFFLINE",
-          undefined, // lastSeen not in schema yet
-        ),
-        avatarUrl: participant.avatar,
-        onlineStatus: participant.onlineStatus,
-      };
-    }
-    return { title: "", avatarUrl: "" };
-  }, [isGroup, group, chat, participant]);
+  const headerProps = getConversationHeaderProps({
+    chat,
+    group,
+    isGroup,
+    participant,
+  });
 
-  const activeTypingUsers = useMemo(() => {
-    if (isGroup) return typingUsers;
-    if (isTyping && participant) {
-      return [{ name: participant.name, avatar: participant.avatar ?? null }];
-    }
-    return [];
-  }, [isGroup, typingUsers, isTyping, participant]);
-
-  const typingText = useMemo(
-    () => formatTypingText(activeTypingUsers, isGroup),
-    [activeTypingUsers, isGroup],
-  );
+  const activeTypingUsers = getActiveTypingUsers({
+    isGroup,
+    isTyping,
+    participant,
+    typingUsers,
+  });
+  const typingText = formatTypingText(activeTypingUsers, isGroup);
 
   return {
     isGroup,
@@ -80,4 +56,61 @@ export function useConversationData({
     typingText,
     isCompleted: isGroup && group?.status === "COMPLETED",
   };
+}
+
+interface ConversationHeaderPropsInput {
+  chat: DirectChat | null;
+  group: Group | null;
+  isGroup: boolean;
+  participant: ReturnType<typeof getOtherChatParticipant> | null;
+}
+
+function getConversationHeaderProps({
+  chat,
+  group,
+  isGroup,
+  participant,
+}: ConversationHeaderPropsInput) {
+  if (isGroup && group) {
+    return {
+      title: group.name,
+      subtitle: `${group.members?.length || 0} members`,
+      avatarUrl: group.avatar,
+      secondaryAvatar: group.plan?.coverImage,
+    };
+  }
+
+  if (chat && participant) {
+    return {
+      title: participant.name,
+      subtitle: getStatusText(
+        participant.onlineStatus || "OFFLINE",
+        undefined, // lastSeen not in schema yet
+      ),
+      avatarUrl: participant.avatar,
+      onlineStatus: participant.onlineStatus,
+    };
+  }
+
+  return { title: "", avatarUrl: "" };
+}
+
+interface ActiveTypingUsersInput {
+  isGroup: boolean;
+  isTyping?: boolean;
+  participant: ReturnType<typeof getOtherChatParticipant> | null;
+  typingUsers: { name: string; avatar: string | null }[];
+}
+
+function getActiveTypingUsers({
+  isGroup,
+  isTyping,
+  participant,
+  typingUsers,
+}: ActiveTypingUsersInput) {
+  if (isGroup) return typingUsers;
+  if (isTyping && participant) {
+    return [{ name: participant.name, avatar: participant.avatar ?? null }];
+  }
+  return [];
 }

@@ -1,10 +1,10 @@
 import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowDown, Brain, Handshake, Sparkles, Target } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ForgeHero } from "./components/forge-hero";
-import { InlineForgeWizard } from "./components/inline-forge-wizard";
+import { InlineForgeWizard } from "./components/inline-forge-wizard/index";
 import { WalkthroughStep } from "./components/walkthrough-step";
 import { useForgeRouteState } from "./hooks/use-forge-route-state";
 
@@ -64,14 +64,12 @@ export function ForgePage() {
     {},
   );
 
-  const maxInView = useMemo(() => {
-    return Math.max(
-      ...Object.entries(visibleIndices)
-        .filter(([, isIn]) => isIn)
-        .map(([idx]) => parseInt(idx)),
-      -1,
-    );
-  }, [visibleIndices]);
+  const maxInView = Math.max(
+    ...Object.entries(visibleIndices)
+      .filter(([, isIn]) => isIn)
+      .map(([idx]) => parseInt(idx)),
+    -1,
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {

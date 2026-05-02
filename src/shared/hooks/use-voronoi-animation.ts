@@ -2,7 +2,6 @@ import { Delaunay } from "d3-delaunay";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ANIMATION_CONFIG,
-  AUTH_TYPING_EVENT,
   GUARD_OFFSETS,
   NUM_CORE,
   NUM_GUARD,
@@ -62,22 +61,19 @@ export function useVoronoiAnimation({ progress }: UseVoronoiOptions) {
     progressRef.current = progress;
   }, [progress]);
 
-  // Handle typing events via CustomEvent to avoid re-renders
-  useEffect(() => {
-    const handleTyping = () => {
-      isTypingRef.current = true;
-      if (typingTimerRef.current !== null) {
-        window.clearTimeout(typingTimerRef.current);
-      }
-      typingTimerRef.current = window.setTimeout(() => {
-        isTypingRef.current = false;
-        typingTimerRef.current = null;
-      }, 800);
-    };
+  const pulseTyping = useCallback(() => {
+    isTypingRef.current = true;
+    if (typingTimerRef.current !== null) {
+      window.clearTimeout(typingTimerRef.current);
+    }
+    typingTimerRef.current = window.setTimeout(() => {
+      isTypingRef.current = false;
+      typingTimerRef.current = null;
+    }, 800);
+  }, []);
 
-    window.addEventListener(AUTH_TYPING_EVENT, handleTyping);
+  useEffect(() => {
     return () => {
-      window.removeEventListener(AUTH_TYPING_EVENT, handleTyping);
       if (typingTimerRef.current !== null) {
         window.clearTimeout(typingTimerRef.current);
       }
@@ -305,23 +301,23 @@ export function useVoronoiAnimation({ progress }: UseVoronoiOptions) {
     return () => cancelAnimationFrame(requestRef.current);
   }, [dimensions]);
 
-  const handleMouseMove = useCallback((clientX: number, clientY: number) => {
+  function handleMouseMove(clientX: number, clientY: number) {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     targetMouseRef.current = { x: clientX - rect.left, y: clientY - rect.top };
     mouseActiveRef.current = true;
-  }, []);
+  }
 
-  const handleMouseLeave = useCallback(() => {
+  function handleMouseLeave() {
     mouseActiveRef.current = false;
     // We do NOT reset targetMouse here. Instead, let the animate loop
     // handle the fallback to center while mouseActive is false.
     // This prevents the glow from 'snapping' back to center while fading.
-  }, []);
+  }
 
-  const handleMouseEnter = useCallback(() => {
+  function handleMouseEnter() {
     // We wait for the first move event to snap the mouse position
-  }, []);
+  }
 
   return {
     containerRef,
@@ -330,5 +326,6 @@ export function useVoronoiAnimation({ progress }: UseVoronoiOptions) {
     handleMouseMove,
     handleMouseEnter,
     handleMouseLeave,
+    pulseTyping,
   };
 }

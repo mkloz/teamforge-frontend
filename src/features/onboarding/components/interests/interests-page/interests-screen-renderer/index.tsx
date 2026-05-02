@@ -1,0 +1,117 @@
+import { AnimatePresence, motion } from "framer-motion";
+
+import { InterestsBrowse } from "@/features/onboarding/components/interests/interests-browse";
+import { InterestsReview } from "@/features/onboarding/components/interests/interests-review";
+import type { UseInterestsReturn } from "@/features/onboarding/hooks/use-interests";
+import { Button } from "@/shared/components/ui/button";
+
+import { InterestsCatalogState } from "./interests-catalog-state";
+import { InterestsIntro } from "./interests-intro";
+
+interface InterestsScreenRendererProps {
+  state: UseInterestsReturn;
+}
+
+export function InterestsScreenRenderer({
+  state,
+}: InterestsScreenRendererProps) {
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      {state.screen === "intro" && (
+        <motion.div
+          key="intro"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <InterestsIntro onStart={() => state.setScreen("browse")} />
+        </motion.div>
+      )}
+
+      {state.screen === "browse" && (
+        <motion.div
+          key="browse"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
+        >
+          <InterestsBrowseScreen state={state} />
+        </motion.div>
+      )}
+
+      {state.screen === "review" && (
+        <motion.div
+          key="review"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
+        >
+          <InterestsReview
+            categories={state.categories}
+            leafById={state.leafById}
+            selectedIds={state.selectedIds}
+            onRemove={state.toggle}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+interface InterestsBrowseScreenProps {
+  state: UseInterestsReturn;
+}
+
+function InterestsBrowseScreen({ state }: InterestsBrowseScreenProps) {
+  if (state.isCatalogLoading) {
+    return (
+      <InterestsCatalogState
+        title="Loading interests"
+        body="Pulling the latest interest catalog from TeamForge."
+      />
+    );
+  }
+
+  if (state.catalogError) {
+    return (
+      <InterestsCatalogState
+        title="Couldn’t load interests"
+        body="The interest catalog didn’t come through. Try again."
+        action={
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => {
+              void state.retryCatalog();
+            }}
+          >
+            Retry
+          </Button>
+        }
+      />
+    );
+  }
+
+  return (
+    <InterestsBrowse
+      categories={state.categories}
+      leafById={state.leafById}
+      selectedIds={state.selectedIds}
+      searchQuery={state.searchQuery}
+      searchResults={state.searchResults}
+      personalityType={state.personalityType}
+      suggestedTags={state.suggestedTags}
+      youMightAlsoLike={state.youMightAlsoLike}
+      showBalanceNudge={state.showBalanceNudge}
+      isAtMax={state.isAtMax}
+      collapsedCategories={state.collapsedCategories}
+      expandedSubcategories={state.expandedSubcategories}
+      onToggle={state.toggle}
+      onReject={state.reject}
+      onToggleCategory={state.toggleCategory}
+      onToggleSubcategory={state.toggleSubcategory}
+    />
+  );
+}

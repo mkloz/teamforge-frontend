@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { OceanChart } from "@/shared/components/psychometrics/ocean-chart";
-import { buildPersonalityEditNavigation } from "@/shared/lib/onboarding-route";
+import { DimensionSpectrum } from "@/shared/components/psychometrics/dimension-spectrum";
+import { SectionTitle } from "@/shared/components/psychometrics/section-title";
+import { buildPersonalityEditNavigation } from "@/features/onboarding/lib/onboarding-route";
 import type { OceanTraitKey } from "@/shared/types/psychometrics";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
-import { DimensionSpectrum } from "@/features/profile/components/dimension-spectrum";
-import { SectionTitle } from "@/features/profile/components/section-title";
 import type {
   DimensionScore,
   OceanScores,

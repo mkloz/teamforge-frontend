@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { useMediaQuery as useHooksMediaQuery } from "usehooks-ts";
 
 /**
  * Custom hook to track the state of a media query.
@@ -6,13 +6,5 @@ import { useSyncExternalStore } from "react";
  * @returns boolean indicating if the query matches.
  */
 export function useMediaQuery(query: string): boolean {
-  return useSyncExternalStore(
-    (callback) => {
-      const media = window.matchMedia(query);
-      media.addEventListener("change", callback);
-      return () => media.removeEventListener("change", callback);
-    },
-    () => window.matchMedia(query).matches,
-    () => false, // SSR fallback
-  );
+  return useHooksMediaQuery(query);
 }

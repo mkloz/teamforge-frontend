@@ -26,6 +26,7 @@ export const APP_QUERY_KEYS = {
     friendRequests: ["explore", "friend-requests"] as const,
   },
   home: {
+    all: ["home"] as const,
     groups: ["home", "groups"] as const,
     invitations: ["home", "invitations"] as const,
     sentInvitations: ["home", "sent-invitations"] as const,
