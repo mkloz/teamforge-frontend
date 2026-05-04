@@ -152,10 +152,11 @@ Create a `.env.local` file at the project root. **Never commit this file.**
 | `npm run build` | Type-check and build for production (`dist/`) |
 | `npm run preview` | Preview the production build locally |
 | `npm run lint` | Run ESLint across the entire codebase |
-| `npm run lint:fix` | Auto-fix lint errors where possible |
+| `npm run typecheck` | Run TypeScript project checks |
+| `npm run check` | Run linting and type-checking together |
 | `npm run format` | Format all `src/` files with Prettier |
 
-Pre-commit hooks (via Husky + lint-staged) automatically run `lint:fix` and `format` on staged `src/` files before every commit.
+Pre-commit hooks (via Husky + lint-staged) automatically run ESLint fixes and Prettier on staged `src/` files before every commit.
 
 ---
 

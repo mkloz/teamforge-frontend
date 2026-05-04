@@ -14,6 +14,18 @@ import { QUESTIONS_PER_PAGE } from "../lib/personality-test-page-constants";
 import { useOnboardingFlowState } from "../lib/onboarding-flow-state";
 import { usePersonalityTest } from "./use-personality-test";
 
+function buildFlowSearch({
+  returnTo,
+  returnSearch,
+  returnSection,
+}: ReturnType<typeof useOnboardingFlowState>) {
+  return {
+    ...(returnTo ? { returnTo } : {}),
+    ...(returnSearch ? { returnSearch } : {}),
+    ...(returnSection ? { returnSection } : {}),
+  };
+}
+
 export function usePersonalityTestPageFlow() {
   const [pendingLength, setPendingLength] = useState<TestLength | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -75,6 +87,36 @@ export function usePersonalityTestPageFlow() {
     });
   }
 
+  async function goBack() {
+    if (isEditMode) {
+      testState.actions.reset();
+      await navigate(
+        resolveOnboardingExitNavigation(
+          returnTo,
+          returnSearch,
+          returnSection,
+          "settings",
+        ),
+      );
+      return;
+    }
+
+    const previousSearch = buildFlowSearch({
+      mode: null,
+      isEditMode,
+      returnTo,
+      returnSearch,
+      returnSection,
+      mbti: null,
+    });
+
+    await navigate({
+      to: "/onboarding/profile",
+      search:
+        Object.keys(previousSearch).length > 0 ? previousSearch : undefined,
+    });
+  }
+
   const displayProgress = (() => {
     if (testState.screen.id !== "length" || !pendingLength) {
       return testState.progress;
@@ -103,6 +145,8 @@ export function usePersonalityTestPageFlow() {
     continueLabel: isEditMode ? "Save Personality" : "Continue",
     continueToInterests,
     displayProgress,
+    goBack,
+    isEditMode,
     scrollContainerRef,
     setPendingLength,
     testState,

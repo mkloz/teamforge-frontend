@@ -23,32 +23,29 @@ export function AlgorithmTuningSection({
   onDiversityWeightChange,
 }: AlgorithmTuningSectionProps) {
   return (
-    <div className="rounded-xl border overflow-hidden">
+    <div className="overflow-hidden rounded-lg border border-border/35 bg-card/65">
       <Button
         variant="ghost"
-        asChild
-        className="w-full h-auto flex items-center justify-between px-4 py-3 rounded-none hover:bg-muted/10 transition-colors"
+        type="button"
+        onClick={() => onAlgorithmsExpandedChange(!algorithmsExpanded)}
+        className="w-full h-auto flex items-center justify-between rounded-none px-3 py-3 hover:bg-forge-teal/5 transition-colors"
+        contentClassName="justify-between"
       >
-        <button
-          type="button"
-          onClick={() => onAlgorithmsExpandedChange(!algorithmsExpanded)}
-        >
-          <div className="text-left space-y-0.5">
-            <p className="text-xs font-semibold text-foreground">
-              Algorithm tuning
-            </p>
-            <p className="text-xs text-muted-foreground/70">
-              Match: {compatibilityWeight}% · Diversity: {diversityWeight}%
-            </p>
-          </div>
-          <ChevronDown
-            size={15}
-            className={cn(
-              "text-muted-foreground/40 transition-transform duration-300",
-              algorithmsExpanded ? "rotate-180" : "",
-            )}
-          />
-        </button>
+        <div className="text-left space-y-0.5">
+          <p className="text-xs font-semibold text-foreground">
+            Algorithm tuning
+          </p>
+          <p className="text-xs text-muted-foreground/70">
+            Match: {compatibilityWeight}% · Diversity: {diversityWeight}%
+          </p>
+        </div>
+        <ChevronDown
+          size={15}
+          className={cn(
+            "text-muted-foreground/40 transition-transform duration-300",
+            algorithmsExpanded ? "rotate-180" : "",
+          )}
+        />
       </Button>
 
       {algorithmsExpanded && (

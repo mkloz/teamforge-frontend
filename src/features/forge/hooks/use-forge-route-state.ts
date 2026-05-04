@@ -23,7 +23,7 @@ function mapSearchToMode(
 }
 
 function normalizeStep(step: number | null | undefined): Step {
-  if (!step || step < 1 || step > 6) {
+  if (!step || step < 1 || step > 7) {
     return 1;
   }
 

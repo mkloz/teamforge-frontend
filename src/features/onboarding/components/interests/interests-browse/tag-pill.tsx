@@ -102,20 +102,22 @@ export function TagPill({
             )}
           >
             {onReject && !selected && (
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon-xs"
                 onClick={(e) => {
                   e.stopPropagation();
                   onReject();
                 }}
-                className="ml-1 p-0.5 rounded-full hover:bg-slate-muted/10 transition-colors group/dismiss"
+                className="group/dismiss ml-1 size-5 rounded-full p-0.5 hover:bg-slate-muted/10"
               >
                 <X
                   size={14}
                   className="text-slate-muted/60 group-hover/dismiss:text-slate-muted transition-colors"
                   strokeWidth={3}
                 />
-              </button>
+              </Button>
             )}
           </div>
         </div>

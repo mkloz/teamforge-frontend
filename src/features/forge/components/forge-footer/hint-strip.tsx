@@ -25,22 +25,21 @@ export function HintStrip({ fw }: ForgeFooterChildProps) {
             <HintText key="h1-empty">Select a category to continue</HintText>
           )}
           {fw.step === 1 && fw.selectedActivity && (
-            <HintText key="h1-selected">
-              Next: define date, time, and location
-            </HintText>
+            <HintText key="h1-selected">Next: add the plan details</HintText>
           )}
           {fw.step === 2 && (
-            <HintText key="h2">
-              Almost there — configure your matching algorithm next
+            <HintText key="h2">Choose a starting point for this plan</HintText>
+          )}
+          {fw.step === 3 && (
+            <HintText key="h3">Next: tune who should find this group</HintText>
+          )}
+          {fw.step === 5 && fw.forgeResult === "SUCCESS" && (
+            <HintText key="h5-success">
+              Group formed — give it an identity next
             </HintText>
           )}
-          {fw.step === 4 && fw.forgeResult === "SUCCESS" && (
-            <HintText key="h4">
-              Group matched — give it an identity next
-            </HintText>
-          )}
-          {fw.step === 5 && (
-            <HintText key="h5">Final step — send your invitations</HintText>
+          {fw.step === 7 && (
+            <HintText key="h7">Final step — send your invitations</HintText>
           )}
         </AnimatePresence>
       </div>

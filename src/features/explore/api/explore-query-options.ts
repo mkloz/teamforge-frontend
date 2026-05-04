@@ -43,6 +43,7 @@ export const ExploreQueryOptions = {
 
         return sortExploreGroups(filteredGroups, filters.sortBy);
       },
+      placeholderData: (previousData) => previousData,
       staleTime: 60_000,
     });
   },

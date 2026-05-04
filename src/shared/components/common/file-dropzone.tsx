@@ -2,6 +2,7 @@ import {
   FileText,
   Image as ImageIcon,
   Loader2,
+  MousePointerClick,
   UploadCloud,
   X,
 } from "lucide-react";
@@ -55,7 +56,7 @@ function getVariantClasses(variant: FileDropzoneVariant) {
   }
 
   if (variant === "avatar") {
-    return "min-h-24 rounded-2xl";
+    return "min-h-18 rounded-2xl sm:min-h-24";
   }
 
   if (variant === "inline") {
@@ -67,6 +68,18 @@ function getVariantClasses(variant: FileDropzoneVariant) {
 
 function getFiles(fileList: FileList | null, maxFiles: number) {
   return fileList ? Array.from(fileList).slice(0, maxFiles) : [];
+}
+
+function getDropHint(variant: FileDropzoneVariant, multiple: boolean) {
+  if (variant === "avatar") {
+    return "Square image";
+  }
+
+  if (variant === "cover") {
+    return "Landscape image";
+  }
+
+  return multiple ? "Files ready" : "Single file";
 }
 
 export function FileDropzone({
@@ -100,7 +113,7 @@ export function FileDropzone({
     }
   };
 
-  const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
+  const handleDragOver = (event: DragEvent<HTMLButtonElement>) => {
     if (isInactive) {
       return;
     }
@@ -109,7 +122,7 @@ export function FileDropzone({
     setIsDragging(true);
   };
 
-  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
+  const handleDrop = (event: DragEvent<HTMLButtonElement>) => {
     if (isInactive) {
       return;
     }
@@ -121,26 +134,18 @@ export function FileDropzone({
 
   return (
     <div className={cn("space-y-2", className)}>
-      <div
-        role="button"
-        tabIndex={isInactive ? -1 : 0}
-        aria-disabled={isInactive}
+      <Button
+        type="button"
+        variant="ghost"
+        disabled={isInactive}
         onClick={() => {
-          if (!isInactive) {
-            resolvedInputRef.current?.click();
-          }
-        }}
-        onKeyDown={(event) => {
-          if (!isInactive && (event.key === "Enter" || event.key === " ")) {
-            event.preventDefault();
-            resolvedInputRef.current?.click();
-          }
+          resolvedInputRef.current?.click();
         }}
         onDragOver={handleDragOver}
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
         className={cn(
-          "group relative flex cursor-pointer overflow-hidden border-2 border-dashed bg-card text-left transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-offset-2",
+          "group relative flex h-auto w-full cursor-pointer overflow-hidden border-2 border-dashed bg-card p-0 text-left whitespace-normal transition-colors duration-150 focus-visible:ring-forge-teal/35",
           getVariantClasses(variant),
           isDragging
             ? "border-forge-teal bg-forge-teal/8"
@@ -148,89 +153,134 @@ export function FileDropzone({
           error && "border-destructive/50 bg-destructive/5",
           isInactive && "cursor-not-allowed opacity-70",
         )}
+        contentClassName="block h-full w-full"
       >
         {preview ? <div className="absolute inset-0">{preview}</div> : null}
 
         <div
           className={cn(
-            "relative z-10 flex w-full items-center gap-3 p-4",
+            "relative z-10 flex w-full gap-3 p-4",
             variant === "cover" &&
-              "items-end bg-linear-to-t from-black/50 to-transparent text-white",
-            variant === "avatar" && "justify-center text-center",
+              "min-h-40 items-end bg-linear-to-t from-black/55 via-black/20 to-transparent text-white",
+            variant === "avatar" && "min-h-18 items-center sm:min-h-24",
+            variant !== "cover" && variant !== "avatar" && "items-center",
           )}
         >
           <div
             className={cn(
-              "flex size-10 shrink-0 items-center justify-center rounded-xl border bg-background/85 text-forge-teal shadow-sm",
-              variant === "avatar" && "size-11",
-              variant === "cover" && "border-white/25 bg-white/90",
+              "flex min-w-0 flex-1 items-center gap-3",
+              variant === "cover" && "pb-0.5",
             )}
           >
-            {isUploading ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <UploadCloud className="size-5" />
-            )}
-          </div>
-
-          <div className="min-w-0 flex-1">
-            <p
+            <div
               className={cn(
-                "text-sm font-semibold",
-                variant === "cover" ? "text-white" : "text-ink",
+                "flex shrink-0 items-center justify-center self-stretch text-forge-teal",
+                variant === "cover" ? "w-7 text-white" : "w-7",
               )}
             >
-              {isUploading ? "Uploading..." : title}
-            </p>
-            {description ? (
-              <p
-                className={cn(
-                  "mt-0.5 text-xs leading-snug",
-                  variant === "cover" ? "text-white/80" : "text-slate-muted",
-                )}
-              >
-                {description}
-              </p>
-            ) : null}
-            {helper ? (
-              <p
-                className={cn(
-                  "mt-1 text-[11px] font-medium",
-                  variant === "cover" ? "text-white/70" : "text-slate-muted/75",
-                )}
-              >
-                {helper}
-              </p>
-            ) : null}
+              {isUploading ? (
+                <Loader2 className="size-5 animate-spin" />
+              ) : (
+                <UploadCloud className="size-7" strokeWidth={2} />
+              )}
+            </div>
+
+            <div
+              className={cn(
+                "flex min-w-0 flex-1 flex-col",
+                variant === "avatar" ? "items-start text-left" : "",
+              )}
+            >
+              <div className="flex min-w-0 items-center gap-2">
+                <p
+                  className={cn(
+                    "min-w-0 truncate text-sm font-semibold leading-tight",
+                    variant === "cover" ? "text-white" : "text-ink",
+                  )}
+                >
+                  {isUploading ? "Uploading..." : title}
+                </p>
+                {isDragging ? (
+                  <span
+                    className={cn(
+                      "hidden shrink-0 rounded-full px-2 py-0.5 text-micro font-semibold sm:inline-flex",
+                      variant === "cover"
+                        ? "bg-white/18 text-white"
+                        : "bg-forge-teal/12 text-forge-teal",
+                    )}
+                  >
+                    Drop now
+                  </span>
+                ) : null}
+              </div>
+
+              {description ? (
+                <p
+                  className={cn(
+                    "mt-1 line-clamp-1 text-xs leading-snug",
+                    variant === "cover" ? "text-white/82" : "text-slate-muted",
+                  )}
+                >
+                  {description}
+                </p>
+              ) : null}
+
+              <div className="mt-2.5 hidden min-w-0 flex-wrap items-center gap-2 sm:flex">
+                <span
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold leading-none",
+                    variant === "cover"
+                      ? "bg-white/14 text-white/88"
+                      : "bg-muted text-slate-muted",
+                  )}
+                >
+                  <MousePointerClick size={11} />
+                  {getDropHint(variant, multiple)}
+                </span>
+                {helper ? (
+                  <span
+                    className={cn(
+                      "inline-flex min-w-0 max-w-full truncate rounded-full px-2.5 py-1 text-[11px] font-semibold leading-none",
+                      variant === "cover"
+                        ? "bg-white/10 text-white/72"
+                        : "bg-background/70 text-slate-muted/75",
+                    )}
+                  >
+                    {helper}
+                  </span>
+                ) : null}
+              </div>
+            </div>
           </div>
 
           {actionLabel ? (
             <span
               className={cn(
-                "hidden shrink-0 rounded-full border px-3 py-1 text-xs font-semibold sm:inline-flex",
+                "ml-auto hidden shrink-0 items-center rounded-full border px-3 py-1 text-xs font-semibold transition-colors duration-200 sm:inline-flex",
                 variant === "cover"
-                  ? "border-white/30 bg-white/15 text-white"
-                  : "border-forge-teal/20 bg-forge-teal/8 text-forge-teal",
+                  ? "border-white/28 bg-white/14 text-white group-hover:bg-white/20"
+                  : "border-forge-teal/20 bg-forge-teal/8 text-forge-teal group-hover:bg-forge-teal/12",
               )}
             >
               {actionLabel}
             </span>
           ) : null}
         </div>
+      </Button>
 
-        <input
-          ref={resolvedInputRef}
-          type="file"
-          accept={accept}
-          multiple={multiple}
-          disabled={isInactive}
-          className="sr-only"
-          onChange={(event) => {
-            selectFiles(event.currentTarget.files);
-            event.currentTarget.value = "";
-          }}
-        />
-      </div>
+      <input
+        ref={resolvedInputRef}
+        type="file"
+        accept={accept}
+        multiple={multiple}
+        disabled={isInactive}
+        tabIndex={-1}
+        className="sr-only"
+        onChange={(event) => {
+          selectFiles(event.currentTarget.files);
+          event.currentTarget.value = "";
+        }}
+      />
 
       {error ? (
         <p className="text-xs font-medium text-destructive">{error}</p>

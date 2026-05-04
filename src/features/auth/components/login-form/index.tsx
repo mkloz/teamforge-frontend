@@ -74,7 +74,6 @@ export function LoginForm({
                 </FormLabel>
                 <FormControl>
                   <Input
-                    className="h-11 px-3.5 rounded-xl border border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 transition-all duration-200"
                     placeholder="you@example.com"
                     type="email"
                     autoComplete="email"
@@ -106,28 +105,31 @@ export function LoginForm({
                   </Link>
                 </div>
                 <FormControl>
-                  <div className="relative">
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      className="h-11 pl-3.5 pr-10 rounded-xl border border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 transition-all duration-200"
-                      placeholder="••••••••"
-                      autoComplete="current-password"
-                      aria-invalid={!!form.formState.errors.password}
-                      {...field}
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      type="button"
-                      aria-label={
-                        showPassword ? "Hide password" : "Show password"
-                      }
-                      onClick={togglePasswordVisibility}
-                      className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-9 text-slate-muted hover:text-forge-teal"
-                    >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </Button>
-                  </div>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                    aria-invalid={!!form.formState.errors.password}
+                    rightIcon={
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        type="button"
+                        aria-label={
+                          showPassword ? "Hide password" : "Show password"
+                        }
+                        onClick={togglePasswordVisibility}
+                        className="size-8 rounded-md text-slate-muted hover:text-forge-teal"
+                      >
+                        {showPassword ? (
+                          <EyeOff size={16} />
+                        ) : (
+                          <Eye size={16} />
+                        )}
+                      </Button>
+                    }
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage className="text-xs font-medium text-destructive mt-1" />
               </FormItem>

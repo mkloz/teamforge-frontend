@@ -1,5 +1,6 @@
 import type { Interest } from "@/shared/schemas";
 import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
 import { cn } from "@/shared/lib/utils";
 import { Search, X } from "lucide-react";
 import {
@@ -60,31 +61,28 @@ export function InterestsBrowseHeader({
   }
 
   return (
-    <div className="relative group w-full mt-2">
-      <Search
-        size={14}
-        className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-muted/60 group-focus-within:text-forge-teal transition-colors"
-        strokeWidth={2.5}
-      />
-      <input
+    <div className="w-full mt-2">
+      <Input
         type="text"
         value={searchQuery}
         onChange={(e) => onSetSearch(e.target.value)}
         placeholder="Search interests…"
         aria-label="Search interests"
-        className="w-full pl-10 pr-10 h-10 bg-card border border-slate-muted/15 dark:border-white/10 rounded-xl text-sm font-sans text-ink placeholder:text-slate-muted/50 focus:bg-card focus:outline-none focus:ring-thick focus:ring-forge-teal/15 focus:border-forge-teal transition-all shadow-[0_2px_10px_rgba(0,0,0,0.02)] dark:shadow-[0_8px_24px_rgba(0,0,0,0.14)]"
+        leftIcon={<Search size={14} strokeWidth={2.5} />}
+        rightIcon={
+          searchQuery ? (
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={() => onSetSearch("")}
+              className="size-8 rounded-full text-slate-muted hover:text-forge-teal"
+              aria-label="Clear search"
+            >
+              <X size={16} strokeWidth={2.5} />
+            </Button>
+          ) : null
+        }
       />
-      {searchQuery && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onSetSearch("")}
-          className="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full active:translate-y-[-50%]!"
-          aria-label="Clear search"
-        >
-          <X size={16} className="text-slate-muted/50" strokeWidth={2.5} />
-        </Button>
-      )}
     </div>
   );
 }

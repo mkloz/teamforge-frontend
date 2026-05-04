@@ -1,6 +1,6 @@
-import * as RadixSlider from "@radix-ui/react-slider";
 import { AlertCircle } from "lucide-react";
 
+import { Slider } from "@/shared/components/ui/slider";
 import { cn } from "@/shared/lib/utils";
 
 import type { WeightSliderProps } from "./types";
@@ -45,32 +45,15 @@ export function WeightSlider({
         </div>
       </div>
 
-      <RadixSlider.Root
-        className="relative flex items-center select-none touch-none w-full h-5"
+      <Slider
+        className="h-5"
         value={[value]}
-        onValueChange={([v]) => onChange(v)}
+        onValueChange={(nextValue) => onChange(nextValue[0] ?? value)}
         min={min}
         max={max}
         step={step}
-      >
-        <RadixSlider.Track className="bg-muted relative grow rounded-full h-1.5">
-          <RadixSlider.Range
-            className={cn(
-              "absolute rounded-full h-full",
-              isHighDiversity ? "bg-spark-amber" : "bg-forge-teal",
-            )}
-          />
-        </RadixSlider.Track>
-        <RadixSlider.Thumb
-          className={cn(
-            "block w-5 h-5 bg-background border-2 rounded-full shadow-md hover:scale-110 active:scale-95 transition-transform outline-none cursor-grab active:cursor-grabbing",
-            isHighDiversity
-              ? "border-spark-amber shadow-spark-amber/20 focus-visible:ring-spark-amber/50"
-              : "border-forge-teal shadow-forge-teal/20 focus-visible:ring-forge-teal/50",
-          )}
-          aria-label={label}
-        />
-      </RadixSlider.Root>
+        aria-label={label}
+      />
 
       <div className="flex justify-between items-center gap-1 px-0.5 -mt-1.5">
         {Array.from({ length: 15 }).map((_, i) => {

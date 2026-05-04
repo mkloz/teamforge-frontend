@@ -37,6 +37,9 @@ export const groupPlanSummarySchema = z.object({
   status: planStatusSchema,
   dateTime: z.string().datetime().nullable(),
   locationMode: locationModeSchema,
+  location: z.string().nullable(),
+  locationLat: z.number().nullable(),
+  locationLng: z.number().nullable(),
   cost: costTypeSchema,
 });
 

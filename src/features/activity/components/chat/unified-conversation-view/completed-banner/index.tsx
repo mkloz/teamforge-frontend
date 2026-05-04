@@ -1,5 +1,6 @@
 import { CheckCircle, Loader2, Star } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import { Textarea } from "@/shared/components/ui/textarea";
 import { memo } from "react";
 import type { Group } from "@/features/activity/lib/activity-contract";
 import { MemberRatingPicker } from "./member-rating-picker";
@@ -92,14 +93,14 @@ export const CompletedBanner = memo(function CompletedBanner({
               score={rating.score}
             />
 
-            <textarea
+            <Textarea
               value={rating.comment}
               disabled={rating.isSubmitting}
               maxLength={500}
               rows={2}
               placeholder="Optional note"
               onChange={(event) => rating.setComment(event.target.value)}
-              className="min-h-16 resize-none rounded-2xl border border-border bg-card px-3 py-2 text-xs text-ink outline-none transition-colors placeholder:text-slate-muted/70 focus:border-forge-teal/40 disabled:cursor-not-allowed disabled:opacity-60"
+              className="resize-none rounded-2xl border-border bg-card text-xs text-ink placeholder:text-slate-muted/70 focus-visible:border-forge-teal/40"
             />
 
             <Button

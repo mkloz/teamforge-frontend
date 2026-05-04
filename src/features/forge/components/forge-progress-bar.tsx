@@ -1,30 +1,42 @@
 import { cn } from "@/shared/lib/utils";
+import type { ForgeMode } from "@/features/forge/lib/forge-contract";
 import type { Step } from "../hooks/use-forge-wizard";
 
 interface ForgeProgressBarProps {
   step: Step;
   isPreForge: boolean;
   forgeResult: string;
+  forgeMode: ForgeMode;
   className?: string;
 }
 
 export function ForgeProgressBar({
+  forgeMode,
   step,
   isPreForge,
   className,
 }: ForgeProgressBarProps) {
   const preSteps = [
     { s: 1, label: "Activity" },
-    { s: 2, label: "Plan" },
-    { s: 3, label: "Group" },
+    { s: 2, label: "Template" },
+    { s: 3, label: "Plan" },
+    { s: 4, label: "Group" },
   ];
   const postSteps = [
-    { s: 4, label: "Result" },
-    { s: 5, label: "Identity" },
-    { s: 6, label: "Invite" },
+    { s: 5, label: "Result" },
+    { s: 6, label: "Identity" },
+    { s: 7, label: "Invite" },
+  ];
+  const manualPostSteps = [
+    { s: 6, label: "Identity" },
+    { s: 7, label: "Invite" },
   ];
 
-  const steps = isPreForge ? preSteps : postSteps;
+  const steps = isPreForge
+    ? preSteps
+    : forgeMode === "MANUAL"
+      ? manualPostSteps
+      : postSteps;
   const activeColor = isPreForge ? "bg-accent" : "bg-primary";
   const activeTextColor = isPreForge ? "text-accent" : "text-primary";
 

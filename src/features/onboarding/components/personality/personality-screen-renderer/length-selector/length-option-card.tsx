@@ -1,4 +1,4 @@
-import { Card } from "@/shared/components/ui/card";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
@@ -35,24 +35,19 @@ export const LengthOptionCard = memo(function LengthOptionCard({
   const resolutionSegmentCount = getResolutionSegmentCount(length);
 
   return (
-    <Card
-      role="button"
-      tabIndex={0}
+    <Button
+      type="button"
+      variant="ghost"
       onClick={() => onSelect(length)}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          onSelect(length);
-        }
-      }}
       className={cn(
-        "relative overflow-hidden w-full text-left p-5 transition-all duration-300 cursor-pointer border-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/20 bg-card text-card-foreground",
+        "relative h-auto w-full overflow-hidden rounded-2xl p-5 text-left transition-all duration-300 border-2 focus-visible:ring-forge-teal/20 bg-card text-card-foreground",
         isSelected
           ? "border-forge-teal/30 bg-card shadow-[0_8px_308px_rgba(13,148,136,0.08)] dark:shadow-[0_8px_32px_rgba(20,184,166,0.12)]"
           : isRecommended
             ? "border-forge-teal/10 bg-card shadow-xs hover:border-forge-teal/20 dark:border-forge-teal/20"
             : "border-border bg-card shadow-none hover:shadow-sm hover:border-slate-200 dark:hover:border-white/15",
       )}
+      contentClassName="block h-auto w-full"
     >
       {isSelected && (
         <motion.div
@@ -143,6 +138,6 @@ export const LengthOptionCard = memo(function LengthOptionCard({
           </div>
         </div>
       </div>
-    </Card>
+    </Button>
   );
 });

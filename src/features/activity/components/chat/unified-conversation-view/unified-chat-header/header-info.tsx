@@ -1,5 +1,6 @@
 import type { OnlineStatus } from "@/features/activity/lib/activity-contract";
 import { Avatar } from "@/shared/components/common/avatar";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
@@ -30,10 +31,12 @@ export const HeaderInfo = memo(
     typingText,
     onToggle,
   }: HeaderInfoProps) => (
-    <button
+    <Button
+      type="button"
+      variant="ghost"
       onClick={onToggle}
       className={cn(
-        "flex items-center gap-3 flex-1 min-w-0 rounded-lg p-1 -m-1 transition-all duration-300 text-left group/header-info outline-none",
+        "group/header-info -m-1 h-auto min-w-0 flex-1 justify-start gap-3 rounded-lg p-1 text-left transition-all duration-300",
         "bg-transparent hover:bg-muted/30 active:scale-[0.985]",
       )}
     >
@@ -126,6 +129,6 @@ export const HeaderInfo = memo(
           ) : null}
         </AnimatePresence>
       </div>
-    </button>
+    </Button>
   ),
 );

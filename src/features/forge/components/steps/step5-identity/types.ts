@@ -43,6 +43,8 @@ export interface IdentityPreviewCardProps {
   >;
   activityTitle: string;
   avatarImage: string | null;
+  coverImage: string | null;
+  groupName: string;
   isImageAvatar: boolean;
   isImageCover: boolean;
   planTitle: string;

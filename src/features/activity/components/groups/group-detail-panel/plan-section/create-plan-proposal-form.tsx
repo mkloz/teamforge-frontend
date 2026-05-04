@@ -1,5 +1,17 @@
 import type { Plan } from "@/features/activity/lib/activity-contract";
+import { LOCATION_MODE_LABELS } from "@/features/activity/lib/plan-location";
 import { Button } from "@/shared/components/ui/button";
+import { DateTimeInput } from "@/shared/components/ui/datetime-input";
+import { Input } from "@/shared/components/ui/input";
+import { Label } from "@/shared/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/components/ui/select";
+import { Textarea } from "@/shared/components/ui/textarea";
 import { cn } from "@/shared/lib/utils";
 
 import {
@@ -34,60 +46,101 @@ export function CreatePlanProposalForm({ plan }: CreatePlanProposalFormProps) {
     <div className="mt-5 rounded-2xl border border-border/60 bg-card/70 p-3 space-y-3">
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs font-bold text-foreground">New Proposal</p>
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="xs"
           onClick={form.closeForm}
-          className="text-[11px] font-semibold text-muted-foreground hover:text-foreground transition-colors"
+          className="h-7 px-2 text-[11px] text-muted-foreground hover:text-foreground"
         >
           Cancel
-        </button>
+        </Button>
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <Label className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
           Field
-        </label>
-        <select
+        </Label>
+        <Select
           value={form.field}
-          onChange={(event) =>
-            form.handleFieldChange(event.target.value as ProposalField)
+          onValueChange={(value) =>
+            form.handleFieldChange(value as ProposalField)
           }
-          className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-forge-teal"
         >
-          {PLAN_PROPOSAL_FIELD_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {PLAN_PROPOSAL_FIELD_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <Label className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
           Current
-        </label>
+        </Label>
         <div className="rounded-xl bg-muted/50 px-3 py-2 text-sm text-foreground/70">
           {form.currentValue || "Not set"}
         </div>
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <Label className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
           Proposed
-        </label>
+        </Label>
         {form.isDateField ? (
-          <input
-            type="datetime-local"
-            value={form.value}
-            onChange={(event) => form.setValue(event.target.value)}
-            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-forge-teal"
-          />
+          <DateTimeInput value={form.value} onValueChange={form.setValue} />
+        ) : form.isLocationField ? (
+          <div className="space-y-2">
+            <Select
+              value={form.locationValue.locationMode}
+              onValueChange={(locationMode) =>
+                form.setLocationValue((current) => ({
+                  ...current,
+                  locationMode: locationMode as Plan["locationMode"],
+                  location: locationMode === "TBD" ? "" : current.location,
+                }))
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(LOCATION_MODE_LABELS).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {form.locationValue.locationMode !== "TBD" && (
+              <Input
+                value={form.locationValue.location}
+                onChange={(event) =>
+                  form.setLocationValue((current) => ({
+                    ...current,
+                    location: event.target.value,
+                  }))
+                }
+                placeholder={
+                  form.locationValue.locationMode === "ONLINE"
+                    ? "Meeting link or platform"
+                    : "Place or address"
+                }
+              />
+            )}
+          </div>
         ) : (
-          <textarea
+          <Textarea
             value={form.value}
             onChange={(event) => form.setValue(event.target.value)}
             rows={form.field === "DESCRIPTION" ? 3 : 2}
-            className="w-full resize-none rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-forge-teal"
+            className="resize-none rounded-xl bg-background"
           />
         )}
       </div>

@@ -8,96 +8,142 @@ import {
   getParticipantInitials,
   getParticipantMeta,
   getParticipantName,
+  getParticipantScorePercent,
 } from "./participant-utils";
 import type { ParticipantRowProps } from "./types";
 
 export function ParticipantRow({
   participant,
   removed,
+  highlight = false,
   onRemoveParticipant,
   onRestoreParticipant,
 }: ParticipantRowProps) {
   const participantMeta = getParticipantMeta(participant);
   const participantName = getParticipantName(participant);
+  const scorePercent = getParticipantScorePercent(participant);
 
   return (
     <div
       className={cn(
-        "group flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition duration-200",
+        "group flex min-h-[104px] flex-col justify-between gap-3 rounded-lg border p-3 transition-[background-color,border-color,opacity] duration-200",
         removed
           ? "opacity-40 bg-muted/30 border-border/30 border-dashed"
-          : "bg-card border-border/40 hover:border-accent/30",
+          : highlight
+            ? "border-spark-amber/45 bg-spark-amber/8 ring-1 ring-spark-amber/15 hover:border-spark-amber/60"
+            : "border-border/40 bg-card/70 hover:border-forge-teal/30 hover:bg-forge-teal/5",
       )}
     >
-      <div
-        className={cn(
-          "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-lg transition-colors duration-200",
-          removed
-            ? "bg-muted text-muted-foreground"
-            : "bg-accent/10 group-hover:bg-accent/15",
-        )}
-      >
-        <Avatar
-          src={participant.user?.avatar}
-          name={participantName}
-          fallback={getParticipantInitials(participant)}
-          shape="rounded"
-          className="h-full w-full rounded-xl bg-transparent"
-          fallbackClassName="bg-transparent text-xs text-foreground/80"
-        />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p
+      <div className="flex items-start gap-3">
+        <div
           className={cn(
-            "text-sm font-semibold leading-tight transition-colors",
-            removed ? "text-muted-foreground line-through" : "text-foreground",
+            "flex size-10 shrink-0 items-center justify-center rounded-lg text-lg transition-colors duration-200",
+            removed
+              ? "bg-muted text-muted-foreground"
+              : highlight
+                ? "bg-spark-amber text-ink shadow-sm shadow-spark-amber/20"
+                : "border border-border/35 bg-muted/35 group-hover:bg-forge-teal/10",
           )}
         >
-          {participantName}
-        </p>
-        <div className="flex items-center gap-2 mt-0.5">
-          {removed ? (
-            <p className="text-xs text-muted-foreground">
-              Removed from session
-            </p>
-          ) : (
-            <>
-              <p className="text-xs text-muted-foreground">
-                {participantMeta.label}
+          <Avatar
+            src={participant.user?.avatar}
+            name={participantName}
+            fallback={getParticipantInitials(participant)}
+            shape="rounded"
+            className="h-full w-full rounded-lg bg-transparent"
+            fallbackClassName={cn(
+              "bg-transparent text-xs font-bold",
+              highlight ? "text-ink" : "text-foreground/80",
+            )}
+          />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p
+                className={cn(
+                  "truncate text-sm font-semibold leading-tight transition-colors",
+                  removed
+                    ? "text-muted-foreground line-through"
+                    : highlight
+                      ? "text-spark-amber"
+                      : "text-foreground",
+                )}
+              >
+                {participantName}
               </p>
+              <p className="mt-1 text-xs leading-snug text-muted-foreground">
+                {removed ? "Removed from session" : "Suggested member"}
+              </p>
+            </div>
+
+            {!removed && (
               <span
                 className={cn(
-                  "text-xs font-semibold px-1.5 py-0.5 rounded-md",
-                  participantMeta.className,
+                  "shrink-0 rounded-full border px-2 py-0.5 text-micro font-bold tabular-nums",
+                  highlight
+                    ? "border-spark-amber/30 bg-spark-amber/12 text-spark-amber"
+                    : "border-border/40 bg-muted/35 text-muted-foreground",
                 )}
               >
                 {participantMeta.value}
               </span>
-            </>
-          )}
+            )}
+          </div>
         </div>
       </div>
-      {removed ? (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onRestoreParticipant(participant.userId)}
-          aria-label={`Restore ${participantName}`}
-          className="size-8 rounded-xl text-forge-teal bg-forge-teal/10 md:opacity-0 md:group-hover:opacity-100 hover:bg-forge-teal/10 hover:text-forge-teal transition-opacity"
-        >
-          <UserPlus size={14} />
-        </Button>
-      ) : (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onRemoveParticipant(participant.userId)}
-          aria-label={`Remove ${participantName}`}
-          className="size-8 rounded-xl text-destructive/60 bg-destructive/8 md:opacity-0 md:group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-opacity"
-        >
-          <UserMinus size={14} />
-        </Button>
-      )}
+
+      <div className="flex items-center gap-3">
+        {!removed && scorePercent !== null ? (
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2 text-micro font-semibold uppercase tracking-wide">
+              <span className="text-muted-foreground">
+                {participantMeta.label}
+              </span>
+              {highlight && <span className="text-spark-amber">Best fit</span>}
+            </div>
+            <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-muted/55">
+              <div
+                className={cn(
+                  "h-full rounded-full transition-[width] duration-500",
+                  highlight ? "bg-spark-amber" : "bg-forge-teal",
+                )}
+                style={{ width: `${Math.min(scorePercent, 100)}%` }}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="min-w-0 flex-1" />
+        )}
+
+        {!removed && scorePercent !== null && (
+          <span className="sr-only">
+            {participantName} has a {scorePercent}% compatibility score.
+          </span>
+        )}
+
+        {removed ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onRestoreParticipant(participant.userId)}
+            aria-label={`Restore ${participantName}`}
+            className="size-8 rounded-lg text-forge-teal opacity-100 hover:bg-forge-teal/10 hover:text-forge-teal md:opacity-0 md:group-hover:opacity-100"
+          >
+            <UserPlus size={14} />
+          </Button>
+        ) : (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onRemoveParticipant(participant.userId)}
+            aria-label={`Remove ${participantName}`}
+            className="size-8 rounded-lg text-muted-foreground opacity-100 hover:bg-destructive/10 hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
+          >
+            <UserMinus size={14} />
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

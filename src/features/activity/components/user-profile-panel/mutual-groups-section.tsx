@@ -1,4 +1,5 @@
 import { Avatar } from "@/shared/components/common/avatar";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 export interface MutualGroup {
@@ -22,10 +23,12 @@ export function MutualGroupsSection({ groups }: MutualGroupsSectionProps) {
 
       <div className="grid grid-cols-1 gap-3">
         {groups.map((group) => (
-          <button
+          <Button
             key={group.id}
+            type="button"
+            variant="ghost"
             className={cn(
-              "flex items-center gap-4 w-full p-3 rounded-xl transition-all duration-300",
+              "h-auto w-full justify-start gap-4 rounded-xl p-3 transition-all duration-300",
               "bg-card border border-border shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:border-forge-teal/30 hover:shadow-md group text-left",
             )}
           >
@@ -45,7 +48,7 @@ export function MutualGroupsSection({ groups }: MutualGroupsSectionProps) {
                 Peer Group
               </p>
             </div>
-          </button>
+          </Button>
         ))}
       </div>
     </div>

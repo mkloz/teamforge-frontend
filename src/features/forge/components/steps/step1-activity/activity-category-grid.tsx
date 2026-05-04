@@ -1,14 +1,31 @@
-import { Activity } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Check } from "lucide-react";
 
 import { ACTIVITIES } from "@/features/forge/constants/forge.constants";
+import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { cn } from "@/shared/lib/utils";
 
 import { ICON_MAP } from "./activity-icon-map";
+import { buildCategoryFitHighlights } from "@/features/forge/lib/forge-template-suggestions";
 
 interface ActivityCategoryGridProps {
   selectedActivity: string | null;
   shaking: boolean;
-  onSelect: (activity: string) => void;
+  onSelect: (activity: string | null) => void;
+}
+
+function ActivityLabel({ label }: { label: string }) {
+  const [lead, tail] = label.split(" & ");
+
+  if (!tail) {
+    return label;
+  }
+
+  return (
+    <>
+      {lead} <span className="whitespace-nowrap">&amp; {tail}</span>
+    </>
+  );
 }
 
 export function ActivityCategoryGrid({
@@ -16,79 +33,93 @@ export function ActivityCategoryGrid({
   shaking,
   onSelect,
 }: ActivityCategoryGridProps) {
+  const { data: currentUser } = useQuery(currentUserQueryOptions());
+  const fitHighlights = buildCategoryFitHighlights(currentUser);
+  const fitRankByCategory = new Map(
+    fitHighlights.map((fit, index) => [fit.categoryId, index + 1]),
+  );
+
   return (
     <div className="space-y-2.5">
-      <div>
-        <p className="text-xs font-semibold text-muted-foreground">
-          Choose a category
-        </p>
-        <p className="text-xs text-muted-foreground/60 mt-0.5 leading-relaxed">
-          Pick the style that fits your plan and we&apos;ll find the right
-          people.
+      <div className="flex items-center justify-between gap-3 px-0.5">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold leading-none text-muted-foreground">
+            Choose a category
+          </p>
+          <p className="mt-1 text-micro leading-none text-muted-foreground/55">
+            Pick a style and we&apos;ll find the right people.
+          </p>
+        </div>
+        <p className="shrink-0 text-micro font-semibold leading-none text-muted-foreground/50">
+          {ACTIVITIES.length} options
         </p>
       </div>
 
       <div
         className={cn(
-          "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 transition-transform",
+          "grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 transition-transform",
           shaking && "animate-[shake_0.45s_ease-in-out]",
         )}
       >
         {ACTIVITIES.map(({ id, label, description }) => {
-          const Icon = ICON_MAP[id] || Activity;
+          const Icon = ICON_MAP[id] || ICON_MAP.fallback;
           const selected = selectedActivity === label;
+          const personalised = fitRankByCategory.has(id);
 
           return (
             <button
               key={id}
               type="button"
-              onClick={() => onSelect(label)}
+              onClick={() => onSelect(selected ? null : label)}
               aria-pressed={selected}
               className={cn(
-                "group relative flex flex-col items-start gap-3 p-4 rounded-2xl border text-left transition duration-200 min-h-25 active:scale-[0.97]",
+                "group relative flex min-h-20 min-w-0 flex-col gap-2 whitespace-normal rounded-lg border px-3 py-2.5 text-left transition duration-200 active:scale-[0.98]",
                 selected
-                  ? "border-accent bg-accent/8 ring-1 ring-accent/25 shadow-sm"
-                  : "border-border/40 bg-card hover:border-accent/30 hover:bg-accent/5",
+                  ? "border-spark-amber/65 bg-spark-amber/10 ring-1 ring-spark-amber/20 shadow-sm"
+                  : personalised
+                    ? "border-forge-teal/35 bg-forge-teal/5 hover:border-forge-teal/50 hover:bg-forge-teal/10"
+                    : "border-border/40 bg-card/80 hover:border-forge-teal/30 hover:bg-forge-teal/5",
               )}
             >
-              {selected && (
-                <span className="absolute top-2.5 right-2.5 w-4 h-4 rounded-full bg-accent flex items-center justify-center">
-                  <svg width="8" height="7" viewBox="0 0 8 7" fill="none">
-                    <path
-                      d="M1 3.5L3 5.5L7 1.5"
-                      stroke="white"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </span>
-              )}
+              <div className="flex min-w-0 items-center justify-between gap-2">
+                <div className="flex min-w-0 flex-1 items-center gap-2">
+                  <span
+                    className={cn(
+                      "flex size-7 shrink-0 items-center justify-center rounded-lg transition-colors duration-200",
+                      selected
+                        ? "bg-spark-amber text-ink shadow-sm shadow-spark-amber/25"
+                        : personalised
+                          ? "bg-forge-teal/10 text-forge-teal group-hover:bg-forge-teal/15"
+                          : "bg-muted text-muted-foreground group-hover:bg-forge-teal/10 group-hover:text-forge-teal",
+                    )}
+                  >
+                    <Icon size={15} />
+                  </span>
+                  <p
+                    className={cn(
+                      "min-w-0 text-pretty font-semibold leading-[1.1]",
+                      label.length > 18
+                        ? "text-[12.5px]"
+                        : label.length > 13
+                          ? "text-[13px]"
+                          : "text-sm",
+                      selected ? "text-spark-amber" : "text-foreground",
+                    )}
+                  >
+                    <ActivityLabel label={label} />
+                  </p>
+                </div>
 
-              <div
-                className={cn(
-                  "w-10 h-10 rounded-xl flex items-center justify-center transition-colors duration-200",
-                  selected
-                    ? "bg-accent text-accent-foreground shadow-sm shadow-accent/25"
-                    : "bg-muted text-muted-foreground group-hover:bg-accent/15 group-hover:text-accent",
+                {selected && (
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-spark-amber text-ink">
+                    <Check size={12} strokeWidth={3} />
+                  </span>
                 )}
-              >
-                <Icon size={17} />
               </div>
 
-              <div className="space-y-0.5">
-                <p
-                  className={cn(
-                    "text-sm font-semibold leading-tight",
-                    selected ? "text-accent" : "text-foreground",
-                  )}
-                >
-                  {label}
-                </p>
-                <p className="text-xs text-muted-foreground leading-snug line-clamp-2">
-                  {description}
-                </p>
-              </div>
+              <p className="min-w-0 text-wrap line-clamp-2 text-xs leading-snug text-muted-foreground">
+                {description}
+              </p>
             </button>
           );
         })}

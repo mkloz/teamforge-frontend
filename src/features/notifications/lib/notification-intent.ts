@@ -1,4 +1,3 @@
-import type { ExploreRouteSearch } from "@/features/explore/lib/explore-route";
 import type { HomeRouteSearch } from "@/features/home/lib/home-route";
 import type { Notification } from "@/shared/schemas";
 
@@ -73,7 +72,7 @@ export function resolveInviteIntent(
 export function resolveFriendRequestIntent(
   pathname: string,
   searchParams: URLSearchParams,
-): ExploreRouteSearch | null {
+): HomeRouteSearch | null {
   if (pathname !== "/friends" && pathname !== "/friends/requests/incoming") {
     return null;
   }

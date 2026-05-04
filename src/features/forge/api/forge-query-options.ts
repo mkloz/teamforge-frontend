@@ -11,3 +11,11 @@ export function forgeFriendCandidatesQueryOptions() {
     staleTime: 60_000,
   });
 }
+
+export function forgeRecentActivitiesQueryOptions() {
+  return queryOptions({
+    queryKey: APP_QUERY_KEYS.forge.recentActivities,
+    queryFn: () => ForgeApi.getRecentActivities(),
+    staleTime: 30_000,
+  });
+}

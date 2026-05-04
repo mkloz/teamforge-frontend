@@ -1,3 +1,4 @@
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 import type { ModeButtonProps } from "./types";
@@ -11,47 +12,49 @@ export function ModeButton({
   activeColor,
 }: ModeButtonProps) {
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
       onClick={onClick}
       className={cn(
-        "group relative flex flex-col items-start gap-2.5 p-3.5 rounded-xl border text-left transition-colors duration-300 overflow-hidden",
+        "group relative h-auto min-w-0 justify-start flex-col items-start gap-2 overflow-hidden whitespace-normal rounded-lg border p-3 text-left transition-colors duration-200",
         active
           ? activeColor === "primary"
-            ? "border-primary bg-primary text-primary-foreground shadow-md"
-            : "border-accent bg-accent text-accent-foreground shadow-md"
-          : "border-border bg-background/50 hover:border-border hover:bg-background shadow-xs",
+            ? "border-forge-teal/55 bg-forge-teal/10 text-forge-teal ring-1 ring-forge-teal/20 shadow-sm"
+            : "border-spark-amber/55 bg-spark-amber/10 text-spark-amber ring-1 ring-spark-amber/20 shadow-sm"
+          : "border-border/45 bg-card/70 hover:border-forge-teal/25 hover:bg-forge-teal/5 shadow-xs",
       )}
+      contentClassName="min-w-0 flex-col items-start justify-start gap-2 whitespace-normal"
     >
-      <div className="flex items-center gap-2">
+      <div className="flex min-w-0 items-center gap-2">
         <div
           className={cn(
             "p-1.5 rounded-lg transition-colors",
-            active ? "bg-white/20" : "bg-muted text-muted-foreground",
+            active
+              ? activeColor === "primary"
+                ? "bg-forge-teal text-white shadow-sm shadow-forge-teal/25"
+                : "bg-spark-amber text-ink shadow-sm shadow-spark-amber/25"
+              : "bg-muted text-muted-foreground",
           )}
         >
           {icon}
         </div>
         <span
           className={cn(
-            "text-xs font-black tracking-tight",
-            active ? "text-inherit" : "text-foreground",
+            "min-w-0 text-wrap text-xs font-black tracking-tight",
+            active
+              ? activeColor === "primary"
+                ? "text-forge-teal"
+                : "text-spark-amber"
+              : "text-foreground",
           )}
         >
           {title}
         </span>
       </div>
-      <p
-        className={cn(
-          "text-micro leading-snug font-semibold opacity-90 pr-2",
-          active ? "text-inherit/80" : "text-muted-foreground",
-        )}
-      >
+      <p className="min-w-0 text-wrap pr-2 text-micro leading-snug font-semibold text-muted-foreground">
         {description}
       </p>
-      {active && (
-        <div className="absolute top-0 right-0 w-16 h-16 bg-white/5 -mr-8 -mt-8 rounded-full blur-xl pointer-events-none" />
-      )}
-    </button>
+    </Button>
   );
 }

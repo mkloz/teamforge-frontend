@@ -3,7 +3,7 @@ import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
-import { Users } from "lucide-react";
+import { Check, Users, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 function formatGroupStatus(status: Invite["group"]["status"]) {
@@ -148,38 +148,39 @@ export function InvitationCard({
               {statusLabel}
             </span>
           </div>
-        </div>
-      </div>
 
-      <div className="flex items-center gap-2 mt-1">
-        <Button
-          variant="primary"
-          size="sm"
-          disabled={isAccepting || isDeclining}
-          className="flex-1 rounded-xl h-8 text-xs shadow-none"
-          onClick={(e) => {
-            e.stopPropagation();
-            void onAccept(invitation.id);
-          }}
-        >
-          {isAccepting ? "Joining..." : "Join Group"}
-        </Button>
-        <button
-          disabled={isAccepting || isDeclining}
-          onClick={(e) => {
-            e.stopPropagation();
-            void onDecline(invitation.id);
-          }}
-          className={cn(
-            "flex-1 h-8 rounded-xl text-xs font-bold",
-            "text-muted-foreground bg-muted/50 border border-border/50",
-            "hover:text-destructive hover:bg-destructive/10 hover:border-destructive/30",
-            "transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-            "disabled:opacity-60 disabled:pointer-events-none",
-          )}
-        >
-          {isDeclining ? "Declining..." : "Decline"}
-        </button>
+          <div className="mt-3 flex items-center justify-end gap-1.5">
+            <Button
+              variant="primary"
+              size="xs"
+              loading={isAccepting}
+              disabled={isAccepting || isDeclining}
+              className="h-7 rounded-full px-2.5 text-[11px] shadow-none"
+              onClick={(e) => {
+                e.stopPropagation();
+                void onAccept(invitation.id);
+              }}
+            >
+              <Check className="size-3" />
+              Join
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-xs"
+              loading={isDeclining}
+              disabled={isAccepting || isDeclining}
+              onClick={(e) => {
+                e.stopPropagation();
+                void onDecline(invitation.id);
+              }}
+              className="size-7 rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+              aria-label={`Decline invitation to ${group.name}`}
+            >
+              <X className="size-3.5" />
+            </Button>
+          </div>
+        </div>
       </div>
     </motion.article>
   );

@@ -2,6 +2,7 @@ import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
 import { planProposalSchema, planSchema } from "@/shared/schemas";
 
 import {
+  createPlanProposalPayloadSchema,
   planProposalsSchema,
   updatePlanPayloadSchema,
   type CreatePlanProposalDto,
@@ -35,7 +36,7 @@ export async function createPlanProposal(
 ) {
   const response = await apiClient
     .post(`plans/${planId}/proposals`, {
-      json: payload,
+      json: createPlanProposalPayloadSchema.parse(payload),
     })
     .json<unknown>();
 

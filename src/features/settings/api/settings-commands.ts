@@ -16,6 +16,10 @@ export const SettingsCommands = {
     return SettingsApi.uploadAvatar(file);
   },
 
+  deleteAvatar() {
+    return SettingsApi.deleteAvatar();
+  },
+
   sendResetPasswordLink(email: string) {
     return SettingsApi.sendResetPasswordLink(email);
   },

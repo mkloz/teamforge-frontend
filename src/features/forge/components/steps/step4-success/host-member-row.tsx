@@ -1,18 +1,28 @@
 export function HostMemberRow() {
   return (
-    <div className="flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-primary/5 border border-primary/20">
-      <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm shadow-primary/20">
-        <span className="text-micro font-bold text-primary-foreground">
+    <div className="flex min-h-[104px] flex-col justify-between gap-3 rounded-lg border border-forge-teal/35 bg-forge-teal/5 p-3 transition-colors duration-200">
+      <div className="flex items-start gap-3">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-forge-teal text-micro font-bold text-primary-foreground shadow-sm shadow-forge-teal/20">
           You
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold leading-tight text-foreground">
+            You
+          </p>
+          <p className="mt-1 text-xs leading-snug text-muted-foreground">
+            Host and organizer
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-micro font-semibold uppercase tracking-wide text-forge-teal">
+          Group owner
+        </span>
+        <span className="rounded-full border border-forge-teal/25 bg-forge-teal/10 px-2 py-0.5 text-micro font-bold text-forge-teal">
+          Host
         </span>
       </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-foreground">You (Host)</p>
-        <p className="text-xs text-muted-foreground mt-0.5">Group lead</p>
-      </div>
-      <span className="px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
-        Host
-      </span>
     </div>
   );
 }

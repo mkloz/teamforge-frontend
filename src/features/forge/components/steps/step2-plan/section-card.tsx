@@ -11,16 +11,14 @@ export function SectionCard({ children, accent = false }: SectionCardProps) {
   return (
     <div
       className={cn(
-        "relative rounded-2xl border bg-card overflow-hidden",
-        accent
-          ? "border-primary/20 shadow-sm shadow-primary/5"
-          : "border-border/50",
+        "relative border-b border-border/25 pb-4 last:border-b-0",
+        accent && "border-forge-teal/25",
       )}
     >
       {accent && (
-        <div className="absolute left-0 top-3 bottom-3 w-0.75 bg-primary/70 rounded-r-full" />
+        <div className="absolute -left-1 top-0 h-8 w-0.75 rounded-full bg-forge-teal/70" />
       )}
-      <div className="px-4 py-4 space-y-4">{children}</div>
+      <div className="space-y-3">{children}</div>
     </div>
   );
 }

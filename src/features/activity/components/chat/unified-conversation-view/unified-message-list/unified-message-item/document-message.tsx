@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { FileText, Download } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import { formatFileSize } from "@/features/activity/lib/chat-utils";
@@ -81,18 +82,20 @@ export const DocumentMessage = memo(function DocumentMessage({
         </div>
       </div>
 
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="icon-xs"
         onClick={() => openExternalUrl(attachment.url)}
         className={cn(
-          "w-8 h-8 rounded-lg flex items-center justify-center transition active:scale-90",
+          "h-8 w-8 rounded-lg transition",
           isOwn
             ? "bg-white/10 text-white hover:bg-white/20"
             : "bg-forge-teal/5 text-forge-teal hover:bg-forge-teal/10",
         )}
       >
         <Download size={15} />
-      </button>
+      </Button>
     </div>
   );
 });

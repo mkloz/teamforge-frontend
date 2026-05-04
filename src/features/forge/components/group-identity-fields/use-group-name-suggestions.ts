@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 
-import { getPoolForActivity, pickRandom } from "./group-identity-utils";
+import {
+  buildGroupNameSuggestions,
+  filterAvailableGroupNames,
+  getPoolForActivity,
+  pickRandom,
+} from "@/features/forge/lib/group-identity/group-name-suggestions";
+
+const GROUP_NAME_SUGGESTION_COUNT = 5;
 
 interface UseGroupNameSuggestionsParams {
   existingGroupNames: string[];
@@ -19,7 +26,10 @@ export function useGroupNameSuggestions({
   const groupNameRef = useRef(groupName);
   const onGroupNameChangeRef = useRef(onGroupNameChange);
   const [suggestions, setSuggestions] = useState<string[]>(() =>
-    pickRandom(getPoolForActivity(selectedActivity), 5),
+    pickRandom(
+      getPoolForActivity(selectedActivity),
+      GROUP_NAME_SUGGESTION_COUNT,
+    ),
   );
   const existingGroupNamesKey = existingGroupNames.join("\u0000");
 
@@ -30,14 +40,11 @@ export function useGroupNameSuggestions({
   }, [existingGroupNames, groupName, onGroupNameChange]);
 
   useEffect(() => {
-    const pool = getPoolForActivity(selectedActivity);
-    const taken = existingGroupNamesRef.current.map((name) =>
-      name.toLowerCase(),
+    const picked = buildGroupNameSuggestions(
+      selectedActivity,
+      existingGroupNamesRef.current,
+      GROUP_NAME_SUGGESTION_COUNT,
     );
-    const available = pool.filter(
-      (name) => !taken.includes(name.toLowerCase()),
-    );
-    const picked = pickRandom(available, 5);
 
     setSuggestions(picked);
 
@@ -46,8 +53,5 @@ export function useGroupNameSuggestions({
     }
   }, [existingGroupNamesKey, selectedActivity]);
 
-  return suggestions.filter((name) => {
-    const taken = existingGroupNames.map((existing) => existing.toLowerCase());
-    return !taken.includes(name.toLowerCase());
-  });
+  return filterAvailableGroupNames(suggestions, existingGroupNames);
 }

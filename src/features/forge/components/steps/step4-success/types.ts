@@ -12,6 +12,7 @@ export interface Step4SuccessProps {
 export interface ParticipantRowProps {
   participant: ForgeParticipant;
   removed: boolean;
+  highlight?: boolean;
   onRemoveParticipant: (id: string) => void;
   onRestoreParticipant: (id: string) => void;
 }

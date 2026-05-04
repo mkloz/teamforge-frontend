@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { X, Sprout } from "lucide-react";
 import { useState } from "react";
 
+import { Button } from "@/shared/components/ui/button";
+
 export function BalanceNudge() {
   const [dismissed, setDismissed] = useState(false);
   if (dismissed) return null;
@@ -20,14 +22,16 @@ export function BalanceNudge() {
         Great depth in one area! Adding interests from other categories helps us
         find better team matches for you.
       </p>
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="icon-xs"
         onClick={() => setDismissed(true)}
-        className="text-spark-amber/50 hover:text-spark-amber shrink-0 mt-0.5 transition-colors"
+        className="mt-0.5 shrink-0 text-spark-amber/50 hover:text-spark-amber"
         aria-label="Dismiss"
       >
         <X size={14} strokeWidth={2.5} />
-      </button>
+      </Button>
     </motion.div>
   );
 }

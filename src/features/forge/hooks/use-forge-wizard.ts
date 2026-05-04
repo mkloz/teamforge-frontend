@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useReducer, useRef } from "react";
 
 import { useForgeAnimation } from "@/features/forge/hooks/use-forge-animation";
+import { useForgeWizardFieldActions } from "@/features/forge/hooks/forge-wizard/field-actions";
 import { useForgeWizardDerivedState } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-derived-state";
-import { useForgeWizardFieldActions } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-field-actions";
 import { useForgeWizardRouteSync } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-route-sync";
 import { useForgeWizardSubmitActions } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-submit-actions";
 import type { ForgeMode } from "@/features/forge/lib/forge-contract";
@@ -48,7 +48,8 @@ export function useForgeWizard({
     undefined,
     createInitialForgeWizardState,
   );
-  const { isForging, forgingProgress, runForgeAnimation } = useForgeAnimation();
+  const { forgeStrikeCount, isForging, forgingProgress, runForgeAnimation } =
+    useForgeAnimation();
   const closeResetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
@@ -113,7 +114,12 @@ export function useForgeWizard({
   }, [stepRef, syncStep]);
 
   const goBack = useCallback(() => {
-    const previousStep = getPreviousStep(stepRef.current);
+    const previousStep =
+      state.forgeMode === "MANUAL" &&
+      stepRef.current === 6 &&
+      state.forgeResult === "SUCCESS"
+        ? 4
+        : getPreviousStep(stepRef.current);
 
     dispatch({
       type: "set-step",
@@ -121,7 +127,19 @@ export function useForgeWizard({
       navDirection: "back",
     });
     syncStep(previousStep, { history: "push" });
-  }, [stepRef, syncStep]);
+  }, [state.forgeMode, state.forgeResult, stepRef, syncStep]);
+
+  const goToStep = useCallback(
+    (step: Step) => {
+      dispatch({
+        type: "set-step",
+        step,
+        navDirection: step > stepRef.current ? "forward" : "back",
+      });
+      syncStep(step, { history: "push" });
+    },
+    [stepRef, syncStep],
+  );
 
   const handleRemoveParticipant = useCallback((id: string) => {
     dispatch({ type: "remove-participant", userId: id });
@@ -137,7 +155,7 @@ export function useForgeWizard({
       activityId: null,
       groupId: null,
     });
-    syncStep(3, { history: "push" });
+    syncStep(4, { history: "push" });
   }, [syncStep, syncTargets]);
 
   const handleCopyLink = useCallback(() => {
@@ -170,10 +188,12 @@ export function useForgeWizard({
     ...derivedState,
     ...fieldActions,
     ...submitActions,
+    forgeStrikeCount,
     isForging,
     forgingProgress,
     goNext,
     goBack,
+    goToStep,
     close,
     handleRemoveParticipant,
     handleRestoreParticipant,

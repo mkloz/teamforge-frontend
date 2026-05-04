@@ -4,6 +4,7 @@ import { ChevronDown, Fingerprint, Zap } from "lucide-react";
 import { useState } from "react";
 import type { PersonalityType } from "@/shared/schemas/enums";
 import type { Interest } from "@/shared/schemas";
+import { Button } from "@/shared/components/ui/button";
 import { TagPill } from "./tag-pill";
 
 export function SuggestionsSection({
@@ -31,10 +32,11 @@ export function SuggestionsSection({
       className="mb-5 rounded-2xl border border-slate-muted/10 bg-canvas overflow-hidden p-0.5"
     >
       {/* Collapsible header */}
-      <button
+      <Button
         type="button"
+        variant="ghost"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-2 px-4 py-3 group text-left rounded-[14px]"
+        className="group h-auto w-full justify-start gap-2 rounded-[14px] px-4 py-3 text-left"
       >
         <Zap className="text-spark-amber fill-spark-amber size-3" />
         <span className="font-sans text-xs font-bold text-slate-muted uppercase tracking-wider group-hover:text-spark-amber transition-colors">
@@ -63,7 +65,7 @@ export function SuggestionsSection({
             <ChevronDown size={14} strokeWidth={2} />
           </motion.span>
         </div>
-      </button>
+      </Button>
 
       {/* Collapsible body */}
       <div

@@ -238,7 +238,7 @@ export const apiClient = ky.create({
           return response;
         }
 
-        const nextTokens = await refreshTokens();
+        const nextTokens = await refreshTokens({ allowCookieRefresh: true });
 
         if (!nextTokens) {
           authSession.handleUnauthorized();

@@ -1,9 +1,9 @@
 import { AlertCircle, Pencil } from "lucide-react";
 
+import { Input } from "@/shared/components/ui/input";
 import { cn } from "@/shared/lib/utils";
 
 import { FieldLabel } from "./field-label";
-import { InputField } from "./input-field";
 import { SectionCard } from "./section-card";
 import { SectionHeader } from "./section-header";
 
@@ -26,11 +26,11 @@ export function EventTitleSection({
     <SectionCard accent={isNameValid}>
       <SectionHeader
         icon={<Pencil size={14} />}
-        title="Event title"
-        description="Give your group gathering a name people will recognise."
+        title="Plan name"
+        description="Name the specific hangout you want to organise."
       />
 
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         <FieldLabel
           htmlFor="plan-name"
           required
@@ -45,29 +45,25 @@ export function EventTitleSection({
           <span
             className={cn(
               "transition-colors",
-              isNameValid ? "text-primary" : "",
+              isNameValid ? "text-forge-teal" : "",
             )}
           >
-            {isNameValid ? "Title" : "Title"}
+            Title
           </span>
         </FieldLabel>
 
-        <InputField
-          icon={<span className="text-sm font-bold text-primary/30">#</span>}
-          error={isNameError}
-        >
-          <input
-            id="plan-name"
-            type="text"
-            value={planName}
-            onChange={(event) => onPlanNameChange(event.target.value)}
-            placeholder="e.g. Wednesday Basketball"
-            autoComplete="off"
-            maxLength={60}
-            aria-describedby={isNameError ? "name-error" : undefined}
-            className="w-full h-12 pl-9 pr-4 bg-transparent text-sm font-medium placeholder:text-muted-foreground/35 focus:outline-none rounded-xl"
-          />
-        </InputField>
+        <Input
+          id="plan-name"
+          type="text"
+          value={planName}
+          onChange={(event) => onPlanNameChange(event.target.value)}
+          placeholder="e.g. Wednesday Basketball"
+          autoComplete="off"
+          maxLength={60}
+          aria-invalid={isNameError}
+          aria-describedby={isNameError ? "name-error" : undefined}
+          className="bg-background/60"
+        />
 
         {isNameError && (
           <div

@@ -325,7 +325,7 @@ All visual design follows the specifications in `docs/visual-style-guide.md`. Th
 ## Validation Policy
 
 - The frontend currently does not have an automated test suite by product decision.
-- For code changes, validate with `npm run typecheck`, `npm run lint`, `npm run format:check`, and `npm run build` unless the user explicitly asks for a narrower check.
+- For code changes, validate with `npm run typecheck`, `npm run lint`, `npm run format`, and `npm run build` unless the user explicitly asks for a narrower check.
 - Do not add frontend tests unless the user explicitly asks for tests.
 
 ---

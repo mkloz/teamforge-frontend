@@ -13,57 +13,88 @@ export type BooleanSettingsPreferenceKey = Exclude<
   "minCompatibilityScore"
 >;
 
-export interface SettingsProfileFormProps {
-  activeSection: SettingsSection;
+export interface AccountSettingsState {
   currentUser: User | undefined;
   form: UseFormReturn<SettingsProfileValues>;
   onSubmit: () => void;
   onAvatarSelect: (file: File) => Promise<unknown>;
-  onSendPasswordResetLink: () => Promise<unknown>;
-  onRevokeSession: (session: AuthSession) => Promise<void>;
-  onRevokeOtherSessions: () => Promise<void>;
-  onUnblockUser: (userId: string) => Promise<unknown>;
-  onNotificationPreferenceChange: (
-    key: BooleanSettingsPreferenceKey,
-    value: boolean,
-  ) => Promise<void>;
-  onMatchingPreferenceChange: (
+  onAvatarDelete: () => Promise<unknown>;
+  isSaving: boolean;
+  isUploadingAvatar: boolean;
+  isDeletingAvatar: boolean;
+  saveMessage: string | null;
+  saveError: string | null;
+  avatarMessage: string | null;
+  avatarError: string | null;
+  profileSummary: Array<{ label: string; value: string }>;
+}
+
+interface NotificationPreferenceState {
+  notificationPreferences: NotificationPreferences | null;
+  isLoadingNotificationPreferences: boolean;
+  isSavingNotificationPreferences: boolean;
+  message: string | null;
+  error: string | null;
+}
+
+export interface MatchingSettingsState extends NotificationPreferenceState {
+  currentUser: User | undefined;
+  onChange: (
     values: Pick<
       NotificationPreferences,
       "autoMatchingEnabled" | "minCompatibilityScore"
     >,
   ) => Promise<void>;
-  onPrivacyPreferenceChange: (
+}
+
+export interface PrivacySettingsState extends NotificationPreferenceState {
+  onChange: (
     values: Pick<
       NotificationPreferences,
       "showAgeOnProfile" | "showGenderOnProfile" | "showCityOnProfile"
     >,
   ) => Promise<void>;
-  onDeleteAccount: () => Promise<void>;
-  isSaving: boolean;
-  isUploadingAvatar: boolean;
+}
+
+export interface NotificationSettingsState extends NotificationPreferenceState {
+  onChange: (
+    key: BooleanSettingsPreferenceKey,
+    value: boolean,
+  ) => Promise<void>;
+}
+
+export interface SecuritySettingsState {
+  currentUser: User | undefined;
+  sessions: AuthSession[];
+  isLoadingSessions: boolean;
   isSendingPasswordResetLink: boolean;
   isRevokingOtherSessions: boolean;
-  isLoadingSessions: boolean;
-  isLoadingBlockedUsers: boolean;
-  isLoadingNotificationPreferences: boolean;
-  isSavingNotificationPreferences: boolean;
   isDeletingAccount: boolean;
   revokingSessionId: string | null;
-  saveMessage: string | null;
-  saveError: string | null;
-  avatarMessage: string | null;
-  avatarError: string | null;
   securityMessage: string | null;
   securityError: string | null;
-  notificationPreferencesMessage: string | null;
-  notificationPreferencesError: string | null;
-  deleteAccountError: string | null;
   sessionsError: string | null;
-  blockedUsersError: string | null;
-  profileSummary: Array<{ label: string; value: string }>;
-  sessions: AuthSession[];
+  deleteAccountError: string | null;
+  onSendPasswordResetLink: () => Promise<unknown>;
+  onRevokeSession: (session: AuthSession) => Promise<void>;
+  onRevokeOtherSessions: () => Promise<void>;
+  onDeleteAccount: () => Promise<void>;
+}
+
+export interface SafetySettingsState {
   blockedUsers: FriendshipApi[];
+  isLoadingBlockedUsers: boolean;
+  blockedUsersError: string | null;
   unblockingUserId: string | null;
-  notificationPreferences: NotificationPreferences | null;
+  onUnblockUser: (userId: string) => Promise<unknown>;
+}
+
+export interface SettingsProfileFormProps {
+  activeSection: SettingsSection;
+  account: AccountSettingsState;
+  matching: MatchingSettingsState;
+  privacy: PrivacySettingsState;
+  security: SecuritySettingsState;
+  safety: SafetySettingsState;
+  notifications: NotificationSettingsState;
 }

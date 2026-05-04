@@ -4,7 +4,7 @@ import type {
   User,
 } from "@/shared/schemas";
 
-import type { AutoForgeExecutionInput } from "@/features/forge/api/forge-types";
+import type { AutoForgeExecutionInput } from "@/features/forge/lib/forge-execution-schema";
 
 import {
   resolveActivityAccess,
@@ -34,7 +34,7 @@ export function buildCreateActivityInput(
   return {
     title,
     description: input.groupDescription.trim() || input.planName.trim() || null,
-    city: user.city ?? null,
+    city: user.city?.trim() || null,
     locationLat: coordinates?.lat,
     locationLng: coordinates?.lng,
     visibility: input.visibility,
@@ -65,7 +65,7 @@ export function buildForgeActivityInput(
       dateTime: buildDateTime(input.planDate, input.planTime),
       locationMode: input.locationType,
       location:
-        input.locationType === "IN_PERSON"
+        input.locationType === "IN_PERSON" || input.locationType === "ONLINE"
           ? input.planLocation.trim() || null
           : null,
       locationLat: planCoordinates?.lat,

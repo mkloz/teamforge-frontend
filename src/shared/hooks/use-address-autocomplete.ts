@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent, KeyboardEvent } from "react";
 
 import { useGoogleMapsStatus } from "@/shared/hooks/use-google-maps-status";
-import { useOutsideDismiss } from "@/shared/hooks/use-outside-dismiss";
 import {
   getCurrentCoordinates,
   isGeolocationAvailable,
@@ -37,6 +36,8 @@ export function useAddressAutocomplete({
   const [message, setMessage] = useState<string | null>(null);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const hasTypedInSessionRef = useRef(false);
+  const skipPredictionsForValueRef = useRef<string | null>(null);
   const { mapsStatus, mapsReady } = useGoogleMapsStatus();
 
   const inputValue =
@@ -48,12 +49,10 @@ export function useAddressAutocomplete({
     () => (mapsReady && inputValue.trim().length >= 3 ? suggestions : []),
     [inputValue, mapsReady, suggestions],
   );
-
-  useOutsideDismiss({
-    ref: containerRef,
-    enabled: isSuggestionsOpen,
-    onDismiss: closeSuggestions,
-  });
+  const isSettledResolvedValue =
+    Boolean(value?.address) &&
+    inputValue === value?.address &&
+    (Boolean(value?.placeId) || value?.lat != null || value?.lng != null);
 
   useEffect(() => {
     setActiveSuggestionIndex((currentIndex) => {
@@ -66,7 +65,22 @@ export function useAddressAutocomplete({
   }, [isSuggestionsOpen, visibleSuggestions.length]);
 
   useEffect(() => {
-    if (!mapsReady || inputValue.trim().length < 3) {
+    if (
+      !mapsReady ||
+      !hasTypedInSessionRef.current ||
+      inputValue.trim().length < 3 ||
+      isSettledResolvedValue ||
+      skipPredictionsForValueRef.current !== null
+    ) {
+      if (
+        isSettledResolvedValue ||
+        skipPredictionsForValueRef.current !== null
+      ) {
+        setSuggestions([]);
+        setIsSuggestionsOpen(false);
+        setActiveSuggestionIndex(-1);
+      }
+
       return;
     }
 
@@ -74,16 +88,18 @@ export function useAddressAutocomplete({
     const handle = setTimeout(() => {
       getPlacePredictions(inputValue.trim())
         .then((nextSuggestions) => {
-          if (!active) {
+          if (!active || skipPredictionsForValueRef.current !== null) {
             return;
           }
 
           setSuggestions(nextSuggestions);
-          setIsSuggestionsOpen(Boolean(nextSuggestions.length));
+          setIsSuggestionsOpen(
+            hasTypedInSessionRef.current && Boolean(nextSuggestions.length),
+          );
           setActiveSuggestionIndex(-1);
         })
         .catch(() => {
-          if (!active) {
+          if (!active || skipPredictionsForValueRef.current !== null) {
             return;
           }
 
@@ -97,11 +113,13 @@ export function useAddressAutocomplete({
       active = false;
       clearTimeout(handle);
     };
-  }, [inputValue, mapsReady]);
+  }, [inputValue, isSettledResolvedValue, mapsReady]);
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
     const nextValue = event.target.value;
 
+    hasTypedInSessionRef.current = true;
+    skipPredictionsForValueRef.current = null;
     setDraftInput({ baseValue: externalInputValue, value: nextValue });
     setMessage(null);
     if (nextValue.trim().length < 3) {
@@ -119,6 +137,8 @@ export function useAddressAutocomplete({
   }
 
   function clearLocation() {
+    hasTypedInSessionRef.current = false;
+    skipPredictionsForValueRef.current = null;
     setDraftInput(null);
     setSuggestions([]);
     setIsSuggestionsOpen(false);
@@ -133,6 +153,10 @@ export function useAddressAutocomplete({
   }
 
   function openSuggestions() {
+    if (!hasTypedInSessionRef.current) {
+      return;
+    }
+
     if (visibleSuggestions.length === 0) {
       return;
     }
@@ -156,6 +180,10 @@ export function useAddressAutocomplete({
     }
 
     if (visibleSuggestions.length === 0) {
+      return;
+    }
+
+    if (!hasTypedInSessionRef.current) {
       return;
     }
 
@@ -200,6 +228,11 @@ export function useAddressAutocomplete({
 
     setIsResolvingPlace(true);
     setMessage(null);
+    hasTypedInSessionRef.current = false;
+    skipPredictionsForValueRef.current = prediction.description;
+    setSuggestions([]);
+    setIsSuggestionsOpen(false);
+    setActiveSuggestionIndex(-1);
 
     try {
       const nextLocation = await resolvePlacePrediction(prediction);
@@ -208,14 +241,16 @@ export function useAddressAutocomplete({
         baseValue: externalInputValue,
         value: nextLocation.address,
       });
+      skipPredictionsForValueRef.current = nextLocation.address;
       setSuggestions([]);
+      setIsSuggestionsOpen(false);
       setActiveSuggestionIndex(-1);
       onLocationSelect(nextLocation);
     } catch {
       setMessage("We couldn't read that location. Try another result.");
+      closeSuggestions();
     } finally {
       setIsResolvingPlace(false);
-      closeSuggestions();
     }
   }
 
@@ -227,6 +262,9 @@ export function useAddressAutocomplete({
 
     setIsLocating(true);
     setMessage(null);
+    hasTypedInSessionRef.current = false;
+    setSuggestions([]);
+    closeSuggestions();
 
     try {
       const coordinates = await getCurrentCoordinates();
@@ -234,6 +272,7 @@ export function useAddressAutocomplete({
 
       if (!nextLocation) {
         setMessage("We found your area, but couldn't label it.");
+        skipPredictionsForValueRef.current = "Current area";
         onLocationSelect({
           address: "Current area",
           city: "Current area",
@@ -244,6 +283,7 @@ export function useAddressAutocomplete({
         return;
       }
 
+      skipPredictionsForValueRef.current = nextLocation.address;
       onLocationSelect({
         ...nextLocation,
         lat: coordinates.lat,
@@ -272,6 +312,7 @@ export function useAddressAutocomplete({
     handleInputFocus,
     handleInputChange,
     handleInputKeyDown,
+    closeSuggestions,
     clearLocation,
     selectPrediction,
     useCurrentArea,

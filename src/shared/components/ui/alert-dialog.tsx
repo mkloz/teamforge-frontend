@@ -5,7 +5,7 @@
  */
 import { cn } from "@/shared/lib/utils";
 import React from "react";
-import { buttonVariants } from "./button-variants";
+import { Button } from "./button";
 import {
   Dialog,
   DialogClose,
@@ -64,11 +64,7 @@ const AlertDialogAction = React.forwardRef<
   React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ className, ...props }, ref) => (
   <DialogClose asChild>
-    <button
-      ref={ref}
-      className={cn(buttonVariants({ variant: "primary" }), className)}
-      {...props}
-    />
+    <Button ref={ref} variant="primary" className={className} {...props} />
   </DialogClose>
 ));
 AlertDialogAction.displayName = "AlertDialogAction";
@@ -78,11 +74,7 @@ const AlertDialogCancel = React.forwardRef<
   React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ className, ...props }, ref) => (
   <DialogClose asChild>
-    <button
-      ref={ref}
-      className={cn(buttonVariants({ variant: "outline" }), className)}
-      {...props}
-    />
+    <Button ref={ref} variant="outline" className={className} {...props} />
   </DialogClose>
 ));
 AlertDialogCancel.displayName = "AlertDialogCancel";

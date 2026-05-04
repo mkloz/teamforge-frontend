@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
+import { AddressAutocomplete } from "@/shared/components/maps/address-autocomplete";
 import { Button } from "@/shared/components/ui/button";
 import {
   FormControl,
@@ -10,7 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/shared/components/ui/form";
-import { Input } from "@/shared/components/ui/input";
+import { NumberInput } from "@/shared/components/ui/number-input";
 import {
   Select,
   SelectContent,
@@ -50,19 +51,12 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
                   Age
                 </FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    className="h-11 px-3.5 rounded-xl border border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 transition-all duration-200"
+                  <NumberInput
                     placeholder="22"
-                    {...field}
                     value={field.value ?? ""}
-                    onChange={(e) =>
-                      field.onChange(
-                        e.target.value === ""
-                          ? undefined
-                          : Number(e.target.value),
-                      )
-                    }
+                    min={16}
+                    max={99}
+                    onNumberChange={field.onChange}
                   />
                 </FormControl>
                 <FormMessage className="text-xs font-medium text-destructive" />
@@ -86,20 +80,13 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="w-full h-11 px-3.5 rounded-xl border border-border bg-white font-sans text-sm hover:border-forge-teal/40 outline-none focus:border-forge-teal focus:ring-2 focus:ring-forge-teal/15 aria-invalid:border-destructive transition-all duration-200">
+                    <SelectTrigger>
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent
-                    position="popper"
-                    className="w-full min-w-(--radix-select-trigger-width) rounded-xl border-border shadow-lg shadow-black/5 bg-white"
-                  >
+                  <SelectContent>
                     {GENDER_OPTIONS.map((option) => (
-                      <SelectItem
-                        key={option.value}
-                        value={option.value}
-                        className="rounded-lg cursor-pointer font-sans text-sm hover:bg-slate-50 transition-colors"
-                      >
+                      <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
                     ))}
@@ -122,14 +109,26 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
         name="city"
         render={({ field }) => (
           <FormItem className="space-y-0">
-            <FormLabel className="font-sans text-sm font-semibold text-ink">
-              City
-            </FormLabel>
             <FormControl>
-              <Input
-                className="h-11 px-3.5 rounded-xl border border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 transition-all duration-200"
-                placeholder="Kyiv"
-                {...field}
+              <AddressAutocomplete
+                label="City"
+                required
+                hint="Exact point is used for matching only. Other members see your city."
+                placeholder="Search your city or area..."
+                value={
+                  field.value
+                    ? {
+                        address: field.value,
+                        city: field.value,
+                        lat: null,
+                        lng: null,
+                        placeId: null,
+                      }
+                    : null
+                }
+                onLocationSelect={(location) => {
+                  field.onChange(location?.city ?? "");
+                }}
               />
             </FormControl>
             <FormMessage className="text-xs font-medium text-destructive" />

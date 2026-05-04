@@ -14,11 +14,11 @@ export function MethodSection({
   onForgeModeChange,
 }: MethodSectionProps) {
   return (
-    <section className="space-y-2.5 pt-2 border-t border-muted/20">
+    <section className="space-y-2.5 border-t border-border/25 pt-4">
       <p className="text-xs md:text-sm font-semibold text-muted-foreground px-0.5">
         Choose your method
       </p>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2">
         <ModeButton
           active={forgeMode === "AUTO"}
           onClick={() => onForgeModeChange("AUTO")}

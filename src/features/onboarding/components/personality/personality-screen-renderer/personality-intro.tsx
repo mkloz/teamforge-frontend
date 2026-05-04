@@ -1,6 +1,6 @@
 import { Button } from "@/shared/components/ui/button";
 import { motion } from "framer-motion";
-import { ArrowRight, Brain, Lock, RefreshCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, Brain, Lock, RefreshCcw } from "lucide-react";
 import { TeamForgeLogo } from "@/assets/logo";
 import {
   fadeUpItem,
@@ -8,6 +8,7 @@ import {
 } from "@/features/onboarding/constants/motion";
 
 interface PersonalityIntroProps {
+  onBack: () => void;
   onStart: () => void;
 }
 
@@ -26,7 +27,7 @@ const BENEFITS = [
   },
 ];
 
-export function PersonalityIntro({ onStart }: PersonalityIntroProps) {
+export function PersonalityIntro({ onBack, onStart }: PersonalityIntroProps) {
   return (
     <motion.div
       variants={staggerContainer}
@@ -34,6 +35,18 @@ export function PersonalityIntro({ onStart }: PersonalityIntroProps) {
       animate="visible"
       className="flex flex-col max-w-md mx-auto w-full gap-0 pt-4 sm:pt-0 h-full justify-start sm:justify-center lg:h-auto"
     >
+      <motion.div variants={fadeUpItem} className="mb-5 self-start">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onBack}
+          className="px-0 text-muted-foreground hover:bg-transparent hover:text-foreground"
+        >
+          <ArrowLeft size={14} strokeWidth={2.5} />
+          Back
+        </Button>
+      </motion.div>
+
       {/* Logo */}
       <motion.div variants={fadeUpItem}>
         <TeamForgeLogo

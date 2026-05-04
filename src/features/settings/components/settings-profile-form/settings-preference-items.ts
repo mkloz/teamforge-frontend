@@ -1,6 +1,6 @@
 import type { BooleanSettingsPreferenceKey } from "@/features/settings/components/settings-profile-form/settings-form-types";
 
-export const NOTIFICATION_PREFERENCE_ITEMS: Array<{
+export const NOTIFICATION_PREFERENCE_ITEMS: ReadonlyArray<{
   key: BooleanSettingsPreferenceKey;
   title: string;
   description: string;
@@ -32,7 +32,7 @@ export const NOTIFICATION_PREFERENCE_ITEMS: Array<{
   },
 ] as const;
 
-export const EMAIL_PREFERENCE_ITEMS: Array<{
+export const EMAIL_PREFERENCE_ITEMS: ReadonlyArray<{
   key: BooleanSettingsPreferenceKey;
   title: string;
   description: string;

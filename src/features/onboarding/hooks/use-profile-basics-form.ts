@@ -36,7 +36,8 @@ export function useProfileBasicsForm() {
 
   const form = useForm<ProfileBasicsValues>({
     resolver: zodResolver(profileBasicsSchema),
-    mode: "onBlur",
+    mode: "onChange",
+    reValidateMode: "onChange",
     defaultValues: {
       age: "",
       gender: "",

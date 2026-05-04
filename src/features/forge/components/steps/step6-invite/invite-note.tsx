@@ -1,22 +1,126 @@
+import type { ReactNode } from "react";
+
+import { Bell, MessageSquare, Send, UsersRound } from "lucide-react";
+
+import { cn } from "@/shared/lib/utils";
+
 interface InviteNoteProps {
   forgeMode: "AUTO" | "MANUAL";
   inviteeCount: number;
 }
 
 export function InviteNote({ forgeMode, inviteeCount }: InviteNoteProps) {
+  const manual = forgeMode === "MANUAL";
+  const inviteText =
+    inviteeCount === 1
+      ? "1 selected friend"
+      : `${inviteeCount} selected friends`;
+
   return (
-    <div className="flex gap-3 p-4 rounded-2xl border border-border/40 bg-card">
-      <div className="rounded-full bg-primary/20 w-2 h-2 mt-1.5 shrink-0" />
-      <div className="space-y-1">
-        <p className="text-xs font-semibold text-primary/80">
-          Sending invitations
+    <section className="space-y-3 border-t border-border/25 pt-4">
+      <div className="flex items-center justify-between gap-3 px-0.5">
+        <div className="min-w-0">
+          <p className="text-sm font-semibold leading-none text-foreground">
+            What happens next
+          </p>
+          <p className="mt-1 text-micro leading-none text-muted-foreground/55">
+            A short handoff before the group opens.
+          </p>
+        </div>
+        <span
+          className={cn(
+            "shrink-0 rounded-full border px-2.5 py-1 text-xs font-bold",
+            manual
+              ? "border-spark-amber/25 bg-spark-amber/10 text-spark-amber"
+              : "border-forge-teal/25 bg-forge-teal/10 text-forge-teal",
+          )}
+        >
+          {manual ? inviteText : "Ready now"}
+        </span>
+      </div>
+
+      <div className="border-t border-border/25">
+        <NextStepItem
+          active
+          icon={manual ? <Send size={15} /> : <UsersRound size={15} />}
+          title={manual ? "Invites go out" : "Group opens"}
+          text={
+            manual
+              ? "Selected people receive the group invitation."
+              : "The matched members land in the same group space."
+          }
+          tone={manual ? "amber" : "teal"}
+        />
+        <NextStepItem
+          icon={<Bell size={15} />}
+          title={manual ? "Replies arrive" : "Members are notified"}
+          text={
+            manual
+              ? "Accepted invites appear from the group hub."
+              : "Everyone can pick up the plan from the hub."
+          }
+        />
+        <NextStepItem
+          icon={<MessageSquare size={15} />}
+          title="Chat is ready"
+          text="Use the group chat to settle details and keep the plan moving."
+          last
+        />
+      </div>
+    </section>
+  );
+}
+
+interface NextStepItemProps {
+  active?: boolean;
+  icon: ReactNode;
+  last?: boolean;
+  title: string;
+  text: string;
+  tone?: "teal" | "amber";
+}
+
+function NextStepItem({
+  active = false,
+  icon,
+  last = false,
+  title,
+  text,
+  tone = "teal",
+}: NextStepItemProps) {
+  const amber = tone === "amber";
+
+  return (
+    <div
+      className={cn("flex gap-3 py-3", !last && "border-b border-border/25")}
+    >
+      <div
+        className={cn(
+          "flex size-8 shrink-0 items-center justify-center rounded-lg",
+          active
+            ? amber
+              ? "bg-spark-amber text-ink"
+              : "bg-forge-teal text-primary-foreground"
+            : "bg-muted text-muted-foreground",
+        )}
+      >
+        {icon}
+      </div>
+      <div className="min-w-0">
+        <p
+          className={cn(
+            "text-sm font-semibold leading-tight",
+            active
+              ? amber
+                ? "text-spark-amber"
+                : "text-forge-teal"
+              : "text-foreground",
+          )}
+        >
+          {title}
         </p>
-        <p className="text-xs text-muted-foreground leading-relaxed">
-          {forgeMode === "MANUAL"
-            ? `Finishing will send ${inviteeCount} invitation${
-                inviteeCount !== 1 ? "s" : ""
-              } and leave the group ready for replies.`
-            : "The group is formed already. Finishing keeps everything saved and takes you to the group hub."}
+        <p className="mt-1 text-xs leading-snug text-muted-foreground">
+          {text}
         </p>
       </div>
     </div>

@@ -4,10 +4,15 @@ import type { ForgeMode } from "@/features/forge/lib/forge-contract";
 import type {
   ForgeWizardAction,
   ForgeWizardData,
+  ForgeWizardField,
   Step,
 } from "@/features/forge/lib/forge-wizard";
 
 export type ForgeWizardDispatch = Dispatch<ForgeWizardAction>;
+export type SetForgeWizardField = <Field extends ForgeWizardField>(
+  field: Field,
+  value: ForgeWizardData[Field],
+) => void;
 
 export interface ForgeWizardRouteSyncOptions {
   dispatch: ForgeWizardDispatch;

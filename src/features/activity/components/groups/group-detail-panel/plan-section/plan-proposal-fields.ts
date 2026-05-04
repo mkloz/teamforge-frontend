@@ -1,4 +1,10 @@
 import type { Plan } from "@/features/activity/lib/activity-contract";
+import {
+  formatPlanLocation,
+  serializePlanLocationValue,
+  type PlanLocationValue,
+} from "@/features/activity/lib/plan-location";
+import type { LocationMode } from "@/shared/schemas/enums";
 
 export const PLAN_PROPOSAL_FIELD_OPTIONS = [
   { value: "TITLE", label: "Title" },
@@ -37,7 +43,7 @@ export function getCurrentProposalValue(plan: Plan, field: ProposalField) {
     case "DATE_TIME":
       return toDateTimeLocalValue(plan.dateTime);
     case "LOCATION":
-      return plan.location ?? "";
+      return formatPlanLocation(plan);
   }
 }
 
@@ -49,4 +55,38 @@ export function normalizeProposedValue(field: ProposalField, value: string) {
   }
 
   return value.trim();
+}
+
+export function getCurrentLocationProposalValue(plan: Plan): PlanLocationValue {
+  return {
+    locationMode: plan.locationMode,
+    location: plan.location,
+    locationLat: plan.locationLat,
+    locationLng: plan.locationLng,
+  };
+}
+
+export function getLocationProposalInput(plan: Plan) {
+  const current = getCurrentLocationProposalValue(plan);
+
+  return {
+    locationMode: current.locationMode,
+    location: current.location ?? "",
+  };
+}
+
+export function buildLocationProposalValue(input: {
+  location: string;
+  locationMode: LocationMode;
+}) {
+  return serializePlanLocationValue({
+    locationMode: input.locationMode,
+    location: input.location,
+    locationLat: null,
+    locationLng: null,
+  });
+}
+
+export function getCurrentSerializedLocationProposalValue(plan: Plan) {
+  return serializePlanLocationValue(getCurrentLocationProposalValue(plan));
 }

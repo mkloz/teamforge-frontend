@@ -110,6 +110,7 @@ export function InlineForgeHeader({
         step={fw.step}
         isPreForge={fw.isPreForge}
         forgeResult={fw.forgeResult}
+        forgeMode={fw.forgeMode}
       />
     </div>
   );

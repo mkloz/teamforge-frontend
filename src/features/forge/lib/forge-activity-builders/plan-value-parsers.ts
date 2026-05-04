@@ -1,13 +1,13 @@
-import type { AutoForgeExecutionInput } from "@/features/forge/api/forge-types";
+import type { AutoForgeExecutionInput } from "@/features/forge/lib/forge-execution-schema";
 
 export function buildDateTime(planDate: string, planTime: string) {
-  if (!planDate || !planTime) {
-    return null;
-  }
-
   const timestamp = new Date(`${planDate}T${planTime}`);
 
-  return Number.isNaN(timestamp.getTime()) ? null : timestamp.toISOString();
+  if (Number.isNaN(timestamp.getTime())) {
+    throw new Error("Invalid forge plan date-time");
+  }
+
+  return timestamp.toISOString();
 }
 
 export function getCoordinatePair(

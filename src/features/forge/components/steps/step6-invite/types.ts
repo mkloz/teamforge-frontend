@@ -3,10 +3,13 @@ export interface Step6InviteProps {
   planDate: string;
   planLocation: string;
   activityTitle: string;
+  groupName: string;
+  groupDescription: string;
   participantCount: number;
   inviteeCount: number;
   forgeMode: "AUTO" | "MANUAL";
   coverImage: string | null;
+  avatarImage: string | null;
   inviteCopied: boolean;
   onCopyLink: () => void;
 }

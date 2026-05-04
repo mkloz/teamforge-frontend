@@ -9,8 +9,15 @@ import { InterestsScreenRenderer } from "@/features/onboarding/components/intere
 import { useInterestsPageFlow } from "@/features/onboarding/hooks/use-interests-page-flow";
 
 export function InterestsPage() {
-  const { enterApp, isDone, isEditMode, progress, scrollContainerRef, state } =
-    useInterestsPageFlow();
+  const {
+    enterApp,
+    goBack,
+    isDone,
+    isEditMode,
+    progress,
+    scrollContainerRef,
+    state,
+  } = useInterestsPageFlow();
 
   return (
     <div className="h-screen w-full max-h-dvh flex flex-col lg:flex-row relative overflow-hidden">
@@ -34,13 +41,21 @@ export function InterestsPage() {
           <div className="flex flex-col items-center justify-start w-full min-h-full py-6 sm:py-0">
             <div className="relative w-full max-w-xl lg:px-0 px-4 sm:px-5">
               <div className="relative w-full">
-                <InterestsScreenRenderer state={state} />
+                <InterestsScreenRenderer
+                  state={state}
+                  onBack={goBack}
+                  isEditMode={isEditMode}
+                />
               </div>
             </div>
           </div>
         </div>
 
-        <InterestsFooter state={state} isEditMode={isEditMode} />
+        <InterestsFooter
+          state={state}
+          isEditMode={isEditMode}
+          onBack={goBack}
+        />
       </main>
 
       <AnimatePresence>

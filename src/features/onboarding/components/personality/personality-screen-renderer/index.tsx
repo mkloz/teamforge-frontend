@@ -12,6 +12,7 @@ import type { usePersonalityTest } from "@/features/onboarding/hooks/use-persona
 
 interface PersonalityScreenRendererProps {
   continueLabel: string;
+  onBack: () => void;
   onContinue: () => void;
   onSelectionChange: (length: TestLength) => void;
   questionsPerPage: number;
@@ -20,6 +21,7 @@ interface PersonalityScreenRendererProps {
 
 export function PersonalityScreenRenderer({
   continueLabel,
+  onBack,
   onContinue,
   onSelectionChange,
   questionsPerPage,
@@ -41,7 +43,10 @@ export function PersonalityScreenRenderer({
   switch (screen.id) {
     case "intro":
       return (
-        <PersonalityIntro onStart={() => actions.setScreen({ id: "theory" })} />
+        <PersonalityIntro
+          onBack={onBack}
+          onStart={() => actions.setScreen({ id: "theory" })}
+        />
       );
     case "theory":
       return (

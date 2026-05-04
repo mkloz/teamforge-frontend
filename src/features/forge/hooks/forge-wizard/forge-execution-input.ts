@@ -1,9 +1,10 @@
-import type { AutoForgeExecutionInput } from "@/features/forge/api/forge-types";
+import {
+  forgeExecutionInputSchema,
+  type AutoForgeExecutionInput,
+} from "@/features/forge/lib/forge-execution-schema";
 import type { ForgeWizardData } from "@/features/forge/lib/forge-wizard";
 
-export function buildForgeExecutionInput(
-  state: ForgeWizardData,
-): AutoForgeExecutionInput {
+function buildRawForgeExecutionInput(state: ForgeWizardData) {
   return {
     selectedActivity: state.selectedActivity,
     planName: state.planName,
@@ -27,4 +28,43 @@ export function buildForgeExecutionInput(
     groupDescription: state.groupDescription,
     avatarImage: state.avatarImage,
   };
+}
+
+export interface ForgeExecutionValidation {
+  canSubmit: boolean;
+  message: string | null;
+}
+
+export function buildForgeExecutionInput(
+  state: ForgeWizardData,
+): AutoForgeExecutionInput {
+  return forgeExecutionInputSchema.parse(buildRawForgeExecutionInput(state));
+}
+
+export function getForgeExecutionValidation(
+  state: ForgeWizardData,
+): ForgeExecutionValidation {
+  const result = forgeExecutionInputSchema.safeParse(
+    buildRawForgeExecutionInput(state),
+  );
+
+  if (result.success) {
+    return {
+      canSubmit: true,
+      message: null,
+    };
+  }
+
+  return {
+    canSubmit: false,
+    message: result.error.issues[0]?.message ?? "Check the plan details.",
+  };
+}
+
+export function canSubmitForgeExecutionInput(state: ForgeWizardData) {
+  return getForgeExecutionValidation(state).canSubmit;
+}
+
+export function getForgeExecutionValidationMessage(state: ForgeWizardData) {
+  return getForgeExecutionValidation(state).message;
 }

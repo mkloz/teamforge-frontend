@@ -6,6 +6,7 @@ import type {
   Plan,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 import { buildPinnedEntries } from "./chat-status-entries";
@@ -67,17 +68,18 @@ export const ChatStatusBar = memo(function ChatStatusBar({
         accentClass={activeEntry.accentClass}
       />
 
-      <button
+      <Button
         type="button"
+        variant="ghost"
         aria-label={`${activeEntry.label}: ${activeEntry.body}. ${
           total > 1 ? "Show next pinned item." : "Open pinned item."
         }`}
         onClick={handleBarClick}
         className={cn(
-          "group flex min-w-0 flex-1 items-center gap-2 text-left",
-          "cursor-pointer select-none rounded-md",
+          "group h-auto min-w-0 flex-1 justify-start gap-2 p-0 text-left",
+          "select-none rounded-md",
           "transition-colors duration-150",
-          "focus-visible:outline-none focus-visible:ring-inset focus-visible:ring-2 focus-visible:ring-forge-teal/40",
+          "focus-visible:ring-inset focus-visible:ring-forge-teal/40",
         )}
       >
         <Icon
@@ -122,7 +124,7 @@ export const ChatStatusBar = memo(function ChatStatusBar({
             </motion.span>
           </AnimatePresence>
         </span>
-      </button>
+      </Button>
 
       <div className="shrink-0 flex items-center">
         {activeEntry.isPlan ? (
@@ -138,20 +140,22 @@ export const ChatStatusBar = memo(function ChatStatusBar({
           </div>
         ) : (
           activeEntry.messageId && (
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon-xs"
               aria-label="Unpin message"
               onClick={handleUnpin}
               className={cn(
-                "flex items-center justify-center w-6 h-6 rounded-full",
+                "h-6 w-6 rounded-full",
                 "text-slate-muted/60",
                 "hover:text-ink hover:bg-muted/80",
                 "transition-colors duration-150",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40",
+                "focus-visible:ring-forge-teal/40",
               )}
             >
               <X size={12} strokeWidth={2} />
-            </button>
+            </Button>
           )
         )}
       </div>

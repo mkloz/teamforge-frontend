@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { Label } from "@/shared/components/ui/label";
+
 interface FieldLabelProps {
   htmlFor?: string;
   children: ReactNode;
@@ -15,7 +17,7 @@ export function FieldLabel({
 }: FieldLabelProps) {
   return (
     <div className="flex items-baseline justify-between gap-2">
-      <label
+      <Label
         htmlFor={htmlFor}
         className="block text-xs font-semibold text-muted-foreground"
       >
@@ -25,7 +27,7 @@ export function FieldLabel({
             *
           </span>
         )}
-      </label>
+      </Label>
       {hint && (
         <span className="text-micro text-muted-foreground/50">{hint}</span>
       )}

@@ -457,6 +457,21 @@ paths:
       security: *a9
       summary: Upload or replace the authenticated user avatar
       tags: *a10
+    delete:
+      operationId: UserController_deleteAvatar
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserEntity"
+        "429":
+          description: Too many requests
+      security: *a9
+      summary: Delete the authenticated user avatar
+      tags: *a10
   /api/v1/auth/login:
     post:
       operationId: AuthController_login
@@ -702,45 +717,6 @@ paths:
       summary: Reset a password with a valid reset token
       tags: *a11
       security: []
-  /api/v1/settings/me:
-    get:
-      operationId: SettingsController_getMySettings
-      parameters: []
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserSettingsEntity"
-        "429":
-          description: Too many requests
-      security: &a12
-        - bearer: []
-      summary: Get your saved user settings
-      tags: &a13
-        - Settings
-    patch:
-      operationId: SettingsController_updateMySettings
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpdateUserSettingsDto"
-      responses:
-        "200":
-          description: ""
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserSettingsEntity"
-        "429":
-          description: Too many requests
-      security: *a12
-      summary: Update your saved user settings
-      tags: *a13
   /api/v1/auth/google/login:
     post:
       operationId: AuthGoogleController_login
@@ -780,7 +756,7 @@ paths:
         "429":
           description: Too many requests
       summary: Get the full hierarchical interest tree
-      tags: &a14
+      tags: &a12
         - Interests
       security: []
   /api/v1/interests/categories:
@@ -799,7 +775,7 @@ paths:
         "429":
           description: Too many requests
       summary: Get top-level interest categories
-      tags: *a14
+      tags: *a12
       security: []
   /api/v1/interests/search:
     get:
@@ -835,7 +811,7 @@ paths:
         "429":
           description: Too many requests
       summary: Search interests by name, slug, or description
-      tags: *a14
+      tags: *a12
       security: []
   /api/v1/users/me/interests:
     post:
@@ -880,11 +856,39 @@ paths:
                 $ref: "#/components/schemas/ActivityEntity"
         "400":
           description: Profile incomplete or invalid interest IDs
-      security: &a15
+      security: &a13
         - bearer: []
       summary: Create a new activity for forging or manual coordination
-      tags: &a16
+      tags: &a14
         - Activities
+    get:
+      operationId: ActivitiesController_getMany
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedActivities"
+        "429":
+          description: Too many requests
+      security: *a13
+      summary: List your recent activities
+      tags: *a14
   /api/v1/activities/{id}:
     get:
       operationId: ActivitiesController_getById
@@ -907,9 +911,9 @@ paths:
           description: You do not have access to this activity
         "404":
           description: Activity not found
-      security: *a15
+      security: *a13
       summary: Get one of your activities by ID
-      tags: *a16
+      tags: *a14
     delete:
       operationId: ActivitiesController_remove
       parameters:
@@ -933,9 +937,9 @@ paths:
           description: You do not have access to this activity
         "404":
           description: Activity not found
-      security: *a15
+      security: *a13
       summary: Cancel one of your activities
-      tags: *a16
+      tags: *a14
   /api/v1/activities/{id}/forge:
     post:
       operationId: ActivitiesController_forge
@@ -966,10 +970,101 @@ paths:
           description: You do not have access to this activity
         "404":
           description: Activity not found
-      security: *a15
+      security: *a13
       summary: Forge a compatible group from an AUTO activity and create its initial
         plan and chat
-      tags: *a16
+      tags: *a14
+  /api/v1/activities/{id}/keep-searching:
+    post:
+      operationId: ActivitiesController_keepSearching
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Activity ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgeActivityDto"
+      responses:
+        "200":
+          description: Activity marked as matching
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityEntity"
+        "400":
+          description: Activity is not AUTO mode, already matched, cancelled, or cannot
+            keep searching
+        "403":
+          description: You do not have access to this activity
+        "404":
+          description: Activity not found
+      security: *a13
+      summary: Keep an AUTO activity open for future matching after an unsuccessful
+        forge
+      tags: *a14
+  /api/v1/activities/{id}/stop-searching:
+    post:
+      operationId: ActivitiesController_stopSearching
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Activity ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        "200":
+          description: Activity removed from pending matching
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityEntity"
+        "400":
+          description: Activity is not AUTO mode, already matched, cancelled, or cannot
+            stop searching
+        "403":
+          description: You do not have access to this activity
+        "404":
+          description: Activity not found
+      security: *a13
+      summary: Stop a pending AUTO activity from future matching checks
+      tags: *a14
+  /api/v1/activities/{id}/forge-pending:
+    post:
+      operationId: ActivitiesController_forgePending
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Activity ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        "201":
+          description: Pending activity successfully forged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForgeActivityResultEntity"
+        "400":
+          description: Activity is not pending matching, has no saved forge payload, or no
+            longer has enough matches
+        "403":
+          description: You do not have access to this activity
+        "404":
+          description: Activity not found
+      security: *a13
+      summary: Forge a group from a pending AUTO activity after matches become available
+      tags: *a14
   /api/v1/chats/link-preview:
     get:
       operationId: ChatController_getLinkPreview
@@ -989,10 +1084,10 @@ paths:
                 $ref: "#/components/schemas/LinkPreviewEntity"
         "429":
           description: Too many requests
-      security: &a17
+      security: &a15
         - bearer: []
       summary: Fetch a server-side link preview for a URL
-      tags: &a18
+      tags: &a16
         - Chat
   /api/v1/chats:
     get:
@@ -1028,9 +1123,9 @@ paths:
                 $ref: "#/components/schemas/PaginatedChats"
         "429":
           description: Too many requests
-      security: *a17
+      security: *a15
       summary: List chats for the current user
-      tags: *a18
+      tags: *a16
   /api/v1/chats/{id}:
     get:
       operationId: ChatController_getById
@@ -1053,9 +1148,9 @@ paths:
           description: You do not have access to this chat
         "404":
           description: Chat not found
-      security: *a17
+      security: *a15
       summary: Get a single chat
-      tags: *a18
+      tags: *a16
   /api/v1/chats/{id}/messages:
     get:
       operationId: ChatController_getMessages
@@ -1091,9 +1186,9 @@ paths:
           description: You do not have access to this chat
         "404":
           description: Chat not found
-      security: *a17
+      security: *a15
       summary: List messages in a chat
-      tags: *a18
+      tags: *a16
     post:
       operationId: ChatController_sendMessage
       parameters:
@@ -1123,9 +1218,9 @@ paths:
           description: You are blocked or do not have access to this chat
         "404":
           description: Chat or reply target not found
-      security: *a17
+      security: *a15
       summary: Send a message to a chat
-      tags: *a18
+      tags: *a16
   /api/v1/chats/{id}/messages/{messageId}:
     patch:
       operationId: ChatController_updateMessage
@@ -1161,9 +1256,9 @@ paths:
           description: You can only edit your own text messages
         "404":
           description: Chat or message not found
-      security: *a17
+      security: *a15
       summary: Edit one of your messages
-      tags: *a18
+      tags: *a16
     delete:
       operationId: ChatController_deleteMessage
       parameters:
@@ -1192,9 +1287,9 @@ paths:
           description: You can only delete your own messages
         "404":
           description: Chat or message not found
-      security: *a17
+      security: *a15
       summary: Soft-delete one of your messages
-      tags: *a18
+      tags: *a16
   /api/v1/chats/{id}/messages/{messageId}/pin:
     post:
       operationId: ChatController_pinMessage
@@ -1224,9 +1319,9 @@ paths:
           description: You are blocked or do not have access to this chat
         "404":
           description: Chat or message not found
-      security: *a17
+      security: *a15
       summary: Pin a message in a chat
-      tags: *a18
+      tags: *a16
     delete:
       operationId: ChatController_unpinMessage
       parameters:
@@ -1255,9 +1350,9 @@ paths:
           description: You are blocked or do not have access to this chat
         "404":
           description: Chat or message not found
-      security: *a17
+      security: *a15
       summary: Unpin a message in a chat
-      tags: *a18
+      tags: *a16
   /api/v1/chats/{id}/messages/{messageId}/reactions:
     post:
       operationId: ChatController_reactToMessage
@@ -1293,9 +1388,9 @@ paths:
           description: You are blocked or do not have access to this chat
         "404":
           description: Chat or message not found
-      security: *a17
+      security: *a15
       summary: Add a reaction to a message
-      tags: *a18
+      tags: *a16
     delete:
       operationId: ChatController_removeReaction
       parameters:
@@ -1331,9 +1426,9 @@ paths:
           description: You are blocked or do not have access to this chat
         "404":
           description: Chat or message not found
-      security: *a17
+      security: *a15
       summary: Remove one of your reactions from a message
-      tags: *a18
+      tags: *a16
   /api/v1/chats/{id}/read:
     post:
       operationId: ChatController_markRead
@@ -1362,9 +1457,9 @@ paths:
           description: You do not have access to this chat
         "404":
           description: Chat not found
-      security: *a17
+      security: *a15
       summary: Mark a chat as read
-      tags: *a18
+      tags: *a16
   /api/v1/friends:
     get:
       operationId: FriendshipsController_getManyFriends
@@ -1391,10 +1486,10 @@ paths:
                 $ref: "#/components/schemas/PaginatedFriendships"
         "429":
           description: Too many requests
-      security: &a19
+      security: &a17
         - bearer: []
       summary: List accepted friends for the current user
-      tags: &a20
+      tags: &a18
         - Friendships
   /api/v1/friends/requests/incoming:
     get:
@@ -1422,9 +1517,9 @@ paths:
                 $ref: "#/components/schemas/PaginatedFriendships"
         "429":
           description: Too many requests
-      security: *a19
+      security: *a17
       summary: List incoming friend requests
-      tags: *a20
+      tags: *a18
   /api/v1/friends/requests/outgoing:
     get:
       operationId: FriendshipsController_getOutgoingRequests
@@ -1451,9 +1546,9 @@ paths:
                 $ref: "#/components/schemas/PaginatedFriendships"
         "429":
           description: Too many requests
-      security: *a19
+      security: *a17
       summary: List outgoing friend requests
-      tags: *a20
+      tags: *a18
   /api/v1/friends/blocked:
     get:
       operationId: FriendshipsController_getBlockedUsers
@@ -1480,9 +1575,9 @@ paths:
                 $ref: "#/components/schemas/PaginatedFriendships"
         "429":
           description: Too many requests
-      security: *a19
+      security: *a17
       summary: List users blocked by the current user
-      tags: *a20
+      tags: *a18
   /api/v1/friends/requests:
     post:
       operationId: FriendshipsController_createRequest
@@ -1502,9 +1597,9 @@ paths:
                 $ref: "#/components/schemas/FriendshipEntity"
         "429":
           description: Too many requests
-      security: *a19
+      security: *a17
       summary: Send a friend request
-      tags: *a20
+      tags: *a18
   /api/v1/friends/requests/{id}/accept:
     post:
       operationId: FriendshipsController_acceptRequest
@@ -1525,9 +1620,9 @@ paths:
                 $ref: "#/components/schemas/FriendshipEntity"
         "429":
           description: Too many requests
-      security: *a19
+      security: *a17
       summary: Accept an incoming friend request
-      tags: *a20
+      tags: *a18
   /api/v1/friends/requests/{id}/decline:
     post:
       operationId: FriendshipsController_declineRequest
@@ -1548,9 +1643,9 @@ paths:
                 $ref: "#/components/schemas/FriendshipEntity"
         "429":
           description: Too many requests
-      security: *a19
+      security: *a17
       summary: Decline an incoming friend request
-      tags: *a20
+      tags: *a18
   /api/v1/friends/{id}:
     delete:
       operationId: FriendshipsController_removeFriend
@@ -1571,9 +1666,9 @@ paths:
                 $ref: "#/components/schemas/FriendshipEntity"
         "429":
           description: Too many requests
-      security: *a19
+      security: *a17
       summary: Remove an existing friend
-      tags: *a20
+      tags: *a18
   /api/v1/friends/{id}/block:
     post:
       operationId: FriendshipsController_blockUser
@@ -1594,9 +1689,9 @@ paths:
                 $ref: "#/components/schemas/FriendshipEntity"
         "429":
           description: Too many requests
-      security: *a19
+      security: *a17
       summary: Block a user
-      tags: *a20
+      tags: *a18
     delete:
       operationId: FriendshipsController_unblockUser
       parameters:
@@ -1616,9 +1711,9 @@ paths:
                 $ref: "#/components/schemas/FriendshipEntity"
         "429":
           description: Too many requests
-      security: *a19
+      security: *a17
       summary: Unblock a user you previously blocked
-      tags: *a20
+      tags: *a18
   /api/v1/explore/groups:
     get:
       operationId: ExploreController_getGroups
@@ -1684,10 +1779,10 @@ paths:
                 $ref: "#/components/schemas/PaginatedExploreGroups"
         "429":
           description: Too many requests
-      security: &a21
+      security: &a19
         - bearer: []
       summary: Browse groups available in explore
-      tags: &a22
+      tags: &a20
         - Explore
   /api/v1/explore/groups/{id}/join:
     post:
@@ -1709,9 +1804,9 @@ paths:
                 $ref: "#/components/schemas/ExploreJoinResultEntity"
         "429":
           description: Too many requests
-      security: *a21
+      security: *a19
       summary: Join or request to join an explore group
-      tags: *a22
+      tags: *a20
   /api/v1/groups:
     get:
       operationId: GroupsController_getMany
@@ -1750,10 +1845,10 @@ paths:
                 $ref: "#/components/schemas/PaginatedGroups"
         "429":
           description: Too many requests
-      security: &a23
+      security: &a21
         - bearer: []
       summary: List groups for the current user
-      tags: &a24
+      tags: &a22
         - Groups
   /api/v1/groups/{id}:
     get:
@@ -1775,9 +1870,9 @@ paths:
                 $ref: "#/components/schemas/GroupEntity"
         "429":
           description: Too many requests
-      security: *a23
+      security: *a21
       summary: Get a single group
-      tags: *a24
+      tags: *a22
     patch:
       operationId: GroupsController_update
       parameters:
@@ -1803,9 +1898,9 @@ paths:
                 $ref: "#/components/schemas/GroupEntity"
         "429":
           description: Too many requests
-      security: *a23
+      security: *a21
       summary: Update a group as an admin
-      tags: *a24
+      tags: *a22
   /api/v1/groups/{id}/leave:
     post:
       operationId: GroupsController_leave
@@ -1826,9 +1921,9 @@ paths:
                 $ref: "#/components/schemas/GroupEntity"
         "429":
           description: Too many requests
-      security: *a23
+      security: *a21
       summary: Leave a group
-      tags: *a24
+      tags: *a22
   /api/v1/groups/{id}/remove-member:
     post:
       operationId: GroupsController_removeMember
@@ -1855,9 +1950,9 @@ paths:
                 $ref: "#/components/schemas/GroupEntity"
         "429":
           description: Too many requests
-      security: *a23
+      security: *a21
       summary: Remove a member from a group as an admin
-      tags: *a24
+      tags: *a22
   /api/v1/groups/{id}/disband:
     post:
       operationId: GroupsController_disband
@@ -1878,9 +1973,9 @@ paths:
                 $ref: "#/components/schemas/GroupEntity"
         "429":
           description: Too many requests
-      security: *a23
+      security: *a21
       summary: Disband a group as an admin
-      tags: *a24
+      tags: *a22
   /api/v1/invites/received:
     get:
       operationId: InvitesController_getReceived
@@ -1918,10 +2013,10 @@ paths:
                 $ref: "#/components/schemas/PaginatedInvites"
         "429":
           description: Too many requests
-      security: &a25
+      security: &a23
         - bearer: []
       summary: List invites received by the current user
-      tags: &a26
+      tags: &a24
         - Invites
   /api/v1/invites/sent:
     get:
@@ -1960,9 +2055,9 @@ paths:
                 $ref: "#/components/schemas/PaginatedInvites"
         "429":
           description: Too many requests
-      security: *a25
+      security: *a23
       summary: List invites sent by the current user
-      tags: *a26
+      tags: *a24
   /api/v1/invites:
     post:
       operationId: InvitesController_create
@@ -1982,9 +2077,9 @@ paths:
                 $ref: "#/components/schemas/InviteEntity"
         "429":
           description: Too many requests
-      security: *a25
+      security: *a23
       summary: Send or resend a group invite
-      tags: *a26
+      tags: *a24
   /api/v1/invites/{id}/accept:
     post:
       operationId: InvitesController_accept
@@ -2005,9 +2100,9 @@ paths:
                 $ref: "#/components/schemas/InviteEntity"
         "429":
           description: Too many requests
-      security: *a25
+      security: *a23
       summary: Accept a group invite
-      tags: *a26
+      tags: *a24
   /api/v1/invites/{id}/decline:
     post:
       operationId: InvitesController_decline
@@ -2028,9 +2123,9 @@ paths:
                 $ref: "#/components/schemas/InviteEntity"
         "429":
           description: Too many requests
-      security: *a25
+      security: *a23
       summary: Decline a group invite
-      tags: *a26
+      tags: *a24
   /api/v1/plans/{id}:
     get:
       operationId: PlansController_getById
@@ -2051,10 +2146,10 @@ paths:
                 $ref: "#/components/schemas/PlanEntity"
         "429":
           description: Too many requests
-      security: &a27
+      security: &a25
         - bearer: []
       summary: Get a plan for a group you belong to
-      tags: &a28
+      tags: &a26
         - Plans
     patch:
       operationId: PlansController_update
@@ -2081,9 +2176,9 @@ paths:
                 $ref: "#/components/schemas/PlanEntity"
         "429":
           description: Too many requests
-      security: *a27
+      security: *a25
       summary: Update a group plan as a group admin
-      tags: *a28
+      tags: *a26
   /api/v1/plans/{id}/confirm:
     post:
       operationId: PlansController_confirm
@@ -2104,9 +2199,9 @@ paths:
                 $ref: "#/components/schemas/PlanEntity"
         "429":
           description: Too many requests
-      security: *a27
+      security: *a25
       summary: Confirm a draft or planning-stage group plan
-      tags: *a28
+      tags: *a26
   /api/v1/plans/{id}/complete:
     post:
       operationId: PlansController_complete
@@ -2127,9 +2222,9 @@ paths:
                 $ref: "#/components/schemas/PlanEntity"
         "429":
           description: Too many requests
-      security: *a27
+      security: *a25
       summary: Mark a group plan as completed
-      tags: *a28
+      tags: *a26
   /api/v1/plans/{id}/cancel:
     post:
       operationId: PlansController_cancel
@@ -2150,9 +2245,9 @@ paths:
                 $ref: "#/components/schemas/PlanEntity"
         "429":
           description: Too many requests
-      security: *a27
+      security: *a25
       summary: Cancel a group plan and reopen planning for the group
-      tags: *a28
+      tags: *a26
   /api/v1/plans/{id}/proposals:
     get:
       operationId: PlanProposalsController_getMany
@@ -2175,10 +2270,10 @@ paths:
                   $ref: "#/components/schemas/PlanProposalEntity"
         "429":
           description: Too many requests
-      security: &a29
+      security: &a27
         - bearer: []
       summary: List proposals for a plan in your group
-      tags: &a30
+      tags: &a28
         - Plan Proposals
     post:
       operationId: PlanProposalsController_create
@@ -2205,9 +2300,9 @@ paths:
                 $ref: "#/components/schemas/PlanProposalEntity"
         "429":
           description: Too many requests
-      security: *a29
+      security: *a27
       summary: Create a new proposal for a group plan
-      tags: *a30
+      tags: *a28
   /api/v1/proposals/{id}/vote:
     post:
       operationId: PlanProposalsController_vote
@@ -2234,9 +2329,9 @@ paths:
                 $ref: "#/components/schemas/PlanProposalEntity"
         "429":
           description: Too many requests
-      security: *a29
+      security: *a27
       summary: Vote on a pending plan proposal
-      tags: *a30
+      tags: *a28
   /api/v1/proposals/{id}:
     delete:
       operationId: PlanProposalsController_withdraw
@@ -2257,9 +2352,9 @@ paths:
                 $ref: "#/components/schemas/PlanProposalEntity"
         "429":
           description: Too many requests
-      security: *a29
+      security: *a27
       summary: Withdraw one of your pending plan proposals
-      tags: *a30
+      tags: *a28
   /api/v1/notifications:
     get:
       operationId: NotificationsController_getMany
@@ -2320,10 +2415,10 @@ paths:
                 $ref: "#/components/schemas/PaginatedNotifications"
         "429":
           description: Too many requests
-      security: &a31
+      security: &a29
         - bearer: []
       summary: List your notifications
-      tags: &a32
+      tags: &a30
         - Notifications
   /api/v1/notifications/unread-count:
     get:
@@ -2338,9 +2433,9 @@ paths:
                 $ref: "#/components/schemas/NotificationUnreadCountEntity"
         "429":
           description: Too many requests
-      security: *a31
+      security: *a29
       summary: Get your unread notification count
-      tags: *a32
+      tags: *a30
   /api/v1/notifications/{id}/read:
     post:
       operationId: NotificationsController_markRead
@@ -2361,9 +2456,9 @@ paths:
                 $ref: "#/components/schemas/NotificationEntity"
         "429":
           description: Too many requests
-      security: *a31
+      security: *a29
       summary: Mark one notification as read
-      tags: *a32
+      tags: *a30
   /api/v1/notifications/read-all:
     post:
       operationId: NotificationsController_markAllRead
@@ -2377,9 +2472,9 @@ paths:
                 $ref: "#/components/schemas/NotificationUnreadCountEntity"
         "429":
           description: Too many requests
-      security: *a31
+      security: *a29
       summary: Mark all of your notifications as read
-      tags: *a32
+      tags: *a30
   /api/v1/ratings/groups/{id}:
     get:
       operationId: RatingsController_getGroupRatings
@@ -2419,10 +2514,10 @@ paths:
                 $ref: "#/components/schemas/PaginatedRatings"
         "429":
           description: Too many requests
-      security: &a33
+      security: &a31
         - bearer: []
       summary: List ratings for a completed group you participated in
-      tags: &a34
+      tags: &a32
         - Ratings
   /api/v1/ratings:
     post:
@@ -2443,8 +2538,47 @@ paths:
                 $ref: "#/components/schemas/CreateRatingResultEntity"
         "429":
           description: Too many requests
-      security: *a33
+      security: *a31
       summary: Submit ratings for your group experience
+      tags: *a32
+  /api/v1/settings/me:
+    get:
+      operationId: SettingsController_getMySettings
+      parameters: []
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSettingsEntity"
+        "429":
+          description: Too many requests
+      security: &a33
+        - bearer: []
+      summary: Get your saved user settings
+      tags: &a34
+        - Settings
+    patch:
+      operationId: SettingsController_updateMySettings
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserSettingsDto"
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSettingsEntity"
+        "429":
+          description: Too many requests
+      security: *a33
+      summary: Update your saved user settings
       tags: *a34
 info:
   title: TeamForge API
@@ -2877,138 +3011,6 @@ components:
       required:
         - password
         - token
-    UserSettingsEntity:
-      type: object
-      properties:
-        notifyFriendRequests:
-          type: boolean
-          example: true
-        notifyGroupInvites:
-          type: boolean
-          example: true
-        notifyGroupActivity:
-          type: boolean
-          example: true
-        notifyMessages:
-          type: boolean
-          example: true
-        notifyAccount:
-          type: boolean
-          example: true
-        emailFriendRequests:
-          type: boolean
-          example: false
-        emailGroupInvites:
-          type: boolean
-          example: true
-        emailGroupActivity:
-          type: boolean
-          example: false
-        emailMessages:
-          type: boolean
-          example: false
-        emailAccount:
-          type: boolean
-          example: true
-        autoMatchingEnabled:
-          type: boolean
-          example: true
-        minCompatibilityScore:
-          type: number
-          example: 80
-          minimum: 0
-          maximum: 100
-        showAgeOnProfile:
-          type: boolean
-          example: true
-        showGenderOnProfile:
-          type: boolean
-          example: true
-        showCityOnProfile:
-          type: boolean
-          example: true
-      required:
-        - notifyFriendRequests
-        - notifyGroupInvites
-        - notifyGroupActivity
-        - notifyMessages
-        - notifyAccount
-        - emailFriendRequests
-        - emailGroupInvites
-        - emailGroupActivity
-        - emailMessages
-        - emailAccount
-        - autoMatchingEnabled
-        - minCompatibilityScore
-        - showAgeOnProfile
-        - showGenderOnProfile
-        - showCityOnProfile
-    UpdateUserSettingsDto:
-      type: object
-      properties:
-        notifyFriendRequests:
-          type: boolean
-          example: true
-        notifyGroupInvites:
-          type: boolean
-          example: true
-        notifyGroupActivity:
-          type: boolean
-          example: true
-        notifyMessages:
-          type: boolean
-          example: true
-        notifyAccount:
-          type: boolean
-          example: true
-        emailFriendRequests:
-          type: boolean
-          example: false
-        emailGroupInvites:
-          type: boolean
-          example: true
-        emailGroupActivity:
-          type: boolean
-          example: false
-        emailMessages:
-          type: boolean
-          example: false
-        emailAccount:
-          type: boolean
-          example: true
-        autoMatchingEnabled:
-          type: boolean
-          example: true
-        minCompatibilityScore:
-          type: number
-          example: 80
-          minimum: 0
-          maximum: 100
-        showAgeOnProfile:
-          type: boolean
-          example: true
-        showGenderOnProfile:
-          type: boolean
-          example: true
-        showCityOnProfile:
-          type: boolean
-          example: true
-      required:
-        - notifyFriendRequests
-        - notifyGroupInvites
-        - notifyGroupActivity
-        - notifyMessages
-        - notifyAccount
-        - emailFriendRequests
-        - emailGroupInvites
-        - emailGroupActivity
-        - emailMessages
-        - emailAccount
-        - autoMatchingEnabled
-        - minCompatibilityScore
-        - showAgeOnProfile
-        - showGenderOnProfile
-        - showCityOnProfile
     AuthGoogleLoginDto:
       type: object
       properties:
@@ -3148,6 +3150,177 @@ components:
       required:
         - title
         - interestIds
+    ActivityPlanTemplateEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1plan123
+        title:
+          type: string
+          example: Friday evening basketball
+        description:
+          type: string
+          example: Casual pickup game with room for beginners
+          nullable: true
+        category:
+          type: string
+          enum:
+            - TECH
+            - SPORTS
+            - ARTS
+            - SOCIAL
+            - OUTDOORS
+            - LEARNING
+            - MUSIC
+            - FOOD
+            - GAMING
+            - WELLNESS
+            - TRAVEL
+            - OTHER
+        coverImage:
+          type: string
+          example: https://example.com/plan-cover.png
+          nullable: true
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - PROPOSED
+            - CONFIRMED
+            - IN_PROGRESS
+            - COMPLETED
+            - CANCELLED
+        dateTime:
+          format: date-time
+          type: string
+          example: 2026-04-30T18:30:00.000Z
+          nullable: true
+        locationMode:
+          type: string
+          enum:
+            - IN_PERSON
+            - ONLINE
+            - TBD
+        location:
+          type: string
+          example: Riverside Courts
+          nullable: true
+        locationLat:
+          type: number
+          example: 51.5072
+          nullable: true
+        locationLng:
+          type: number
+          example: -0.1276
+          nullable: true
+        cost:
+          type: string
+          enum:
+            - FREE
+            - PAID
+        costAmount:
+          type: number
+          example: 12.5
+          nullable: true
+        costDetails:
+          type: string
+          example: Court split between members
+          nullable: true
+        completedAt:
+          format: date-time
+          type: string
+          example: null
+          nullable: true
+        cancelledAt:
+          format: date-time
+          type: string
+          example: null
+          nullable: true
+        startingSoonSentAt:
+          format: date-time
+          type: string
+          example: null
+          nullable: true
+        createdAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        updatedAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        groupId:
+          type: string
+          example: clx1group123
+      required:
+        - id
+        - title
+        - category
+        - status
+        - locationMode
+        - cost
+        - createdAt
+        - updatedAt
+        - groupId
+    ActivityGroupTemplateEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clx1group123
+        name:
+          type: string
+          example: Friday Basketball Crew
+        description:
+          type: string
+          example: Weekly pickup group for after-work games
+          nullable: true
+        avatar:
+          type: string
+          example: https://example.com/group-avatar.png
+          nullable: true
+        status:
+          type: string
+          enum:
+            - FORMING
+            - PENDING
+            - ACTIVE
+            - PLANNING
+            - COMPLETED
+            - DISBANDED
+        maxMembers:
+          type: number
+          example: 4
+        createdAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        updatedAt:
+          format: date-time
+          type: string
+          example: 2026-04-27T16:00:00.000Z
+        disbandedAt:
+          format: date-time
+          type: string
+          example: null
+          nullable: true
+        activityId:
+          type: string
+          example: clx1activity123
+        plan:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: "#/components/schemas/ActivityPlanTemplateEntity"
+      required:
+        - id
+        - name
+        - status
+        - maxMembers
+        - createdAt
+        - updatedAt
+        - activityId
     ActivityEntity:
       type: object
       properties:
@@ -3193,6 +3366,25 @@ components:
             - MATCHED
             - CLOSED
             - CANCELLED
+        pendingForgeInput:
+          type: object
+          additionalProperties: true
+          nullable: true
+        matchingStartedAt:
+          format: date-time
+          type: string
+          example: 2026-05-03T12:00:00.000Z
+          nullable: true
+        matchingLastAttemptAt:
+          format: date-time
+          type: string
+          example: 2026-05-03T12:05:00.000Z
+          nullable: true
+        matchingReadyNotifiedAt:
+          format: date-time
+          type: string
+          example: 2026-05-03T12:10:00.000Z
+          nullable: true
         createdAt:
           format: date-time
           type: string
@@ -3208,6 +3400,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/InterestEntity"
+        group:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: "#/components/schemas/ActivityGroupTemplateEntity"
       required:
         - id
         - title
@@ -3219,6 +3416,18 @@ components:
         - updatedAt
         - creatorId
         - interests
+    PaginatedActivities:
+      type: object
+      properties:
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityEntity"
+      required:
+        - meta
+        - items
     ForgePlanDto:
       type: object
       properties:
@@ -5121,5 +5330,137 @@ components:
         - rating
         - trustScoreLog
         - updatedTrustScore
+    UserSettingsEntity:
+      type: object
+      properties:
+        notifyFriendRequests:
+          type: boolean
+          example: true
+        notifyGroupInvites:
+          type: boolean
+          example: true
+        notifyGroupActivity:
+          type: boolean
+          example: true
+        notifyMessages:
+          type: boolean
+          example: true
+        notifyAccount:
+          type: boolean
+          example: true
+        emailFriendRequests:
+          type: boolean
+          example: false
+        emailGroupInvites:
+          type: boolean
+          example: true
+        emailGroupActivity:
+          type: boolean
+          example: false
+        emailMessages:
+          type: boolean
+          example: false
+        emailAccount:
+          type: boolean
+          example: true
+        autoMatchingEnabled:
+          type: boolean
+          example: true
+        minCompatibilityScore:
+          type: number
+          example: 80
+          minimum: 0
+          maximum: 100
+        showAgeOnProfile:
+          type: boolean
+          example: true
+        showGenderOnProfile:
+          type: boolean
+          example: true
+        showCityOnProfile:
+          type: boolean
+          example: true
+      required:
+        - notifyFriendRequests
+        - notifyGroupInvites
+        - notifyGroupActivity
+        - notifyMessages
+        - notifyAccount
+        - emailFriendRequests
+        - emailGroupInvites
+        - emailGroupActivity
+        - emailMessages
+        - emailAccount
+        - autoMatchingEnabled
+        - minCompatibilityScore
+        - showAgeOnProfile
+        - showGenderOnProfile
+        - showCityOnProfile
+    UpdateUserSettingsDto:
+      type: object
+      properties:
+        notifyFriendRequests:
+          type: boolean
+          example: true
+        notifyGroupInvites:
+          type: boolean
+          example: true
+        notifyGroupActivity:
+          type: boolean
+          example: true
+        notifyMessages:
+          type: boolean
+          example: true
+        notifyAccount:
+          type: boolean
+          example: true
+        emailFriendRequests:
+          type: boolean
+          example: false
+        emailGroupInvites:
+          type: boolean
+          example: true
+        emailGroupActivity:
+          type: boolean
+          example: false
+        emailMessages:
+          type: boolean
+          example: false
+        emailAccount:
+          type: boolean
+          example: true
+        autoMatchingEnabled:
+          type: boolean
+          example: true
+        minCompatibilityScore:
+          type: number
+          example: 80
+          minimum: 0
+          maximum: 100
+        showAgeOnProfile:
+          type: boolean
+          example: true
+        showGenderOnProfile:
+          type: boolean
+          example: true
+        showCityOnProfile:
+          type: boolean
+          example: true
+      required:
+        - notifyFriendRequests
+        - notifyGroupInvites
+        - notifyGroupActivity
+        - notifyMessages
+        - notifyAccount
+        - emailFriendRequests
+        - emailGroupInvites
+        - emailGroupActivity
+        - emailMessages
+        - emailAccount
+        - autoMatchingEnabled
+        - minCompatibilityScore
+        - showAgeOnProfile
+        - showGenderOnProfile
+        - showCityOnProfile
 security:
   - bearer: []

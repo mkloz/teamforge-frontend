@@ -219,7 +219,7 @@ Use this order for each large feature:
 7. Extract cache writers.
 8. Refactor hooks so components call hooks, not transport/facade methods.
 9. Refactor oversized components by change reason.
-10. Run `npm run typecheck`, `npm run lint`, `npm run format:check`, and `npm run build`.
+10. Run `npm run typecheck`, `npm run lint`, `npm run format`, and `npm run build`.
 
 ## Done Criteria
 

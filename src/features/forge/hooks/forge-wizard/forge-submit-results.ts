@@ -11,6 +11,7 @@ type ForgeMutationName =
 interface ForgeResultSideEffectOptions {
   dispatch: ForgeWizardDispatch;
   mutationName: ForgeMutationName;
+  successStep?: Step;
   syncStep: (step: Step, options?: { history?: "push" | "replace" }) => void;
   syncTargets: (targets: {
     activityId?: string | null;
@@ -23,10 +24,13 @@ export function applyForgeExecutionResult(
   {
     dispatch,
     mutationName,
+    successStep = 5,
     syncStep,
     syncTargets,
   }: ForgeResultSideEffectOptions,
 ) {
+  const targetStep = result.forgeResult === "SUCCESS" ? successStep : 5;
+
   dispatch({
     type: "apply-forge-result",
     result: result.forgeResult,
@@ -35,12 +39,13 @@ export function applyForgeExecutionResult(
     groupId: result.groupId,
     chatId: result.chatId,
     planId: result.planId,
+    step: targetStep,
   });
   syncTargets({
     activityId: result.activityId,
     groupId: result.groupId,
   });
-  syncStep(4, { history: "push" });
+  syncStep(targetStep, { history: "push" });
   trackMutationOutcome(
     mutationName,
     result.forgeResult === "SUCCESS" ? "success" : "error",
@@ -81,5 +86,5 @@ export function applyForgeExecutionFailure(
     activityId: null,
     groupId: null,
   });
-  syncStep(4, { history: "push" });
+  syncStep(5, { history: "push" });
 }

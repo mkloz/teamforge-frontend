@@ -1,4 +1,5 @@
 import { Image } from "@/shared/components/common/image";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { useImageState } from "@/shared/hooks/use-image-state";
 import { ImageOff, Play } from "lucide-react";
@@ -24,15 +25,16 @@ function ThumbnailItem({
   const { state, onLoad, onError } = useImageState();
 
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
       onClick={onSelect}
       aria-label={`Open ${media.type === "VIDEO" ? "video" : "image"} thumbnail`}
       aria-current={isSelected ? "true" : undefined}
       className={cn(
-        "w-12 h-12 rounded-lg overflow-hidden shrink-0 relative",
+        "relative h-12 w-12 shrink-0 overflow-hidden rounded-lg p-0",
         "transition-[opacity,transform,filter] duration-200",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/50",
+        "focus-visible:ring-forge-teal/50",
         isSelected
           ? "ring-2 ring-forge-teal scale-110 opacity-100 z-10"
           : "opacity-40 grayscale-50 hover:opacity-100 hover:grayscale-0",
@@ -101,7 +103,7 @@ function ThumbnailItem({
           showNoImage={false}
         />
       )}
-    </button>
+    </Button>
   );
 }
 

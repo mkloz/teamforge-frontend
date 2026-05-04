@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ChevronDown, Compass } from "lucide-react";
 import { useState } from "react";
 import type { Interest } from "@/shared/schemas";
+import { Button } from "@/shared/components/ui/button";
 import { TagPill } from "./tag-pill";
 
 export function YouMightAlsoLikeSection({
@@ -28,10 +29,11 @@ export function YouMightAlsoLikeSection({
       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
       className="mb-4 rounded-2xl border border-forge-teal/15 overflow-hidden p-0.5 group/section transition-colors duration-300 hover:border-forge-teal/30"
     >
-      <button
+      <Button
         type="button"
+        variant="ghost"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-2 px-4 py-3 group text-left rounded-[14px] hover:bg-forge-teal/5 transition-colors duration-200"
+        className="group h-auto w-full justify-start gap-2 rounded-[14px] px-4 py-3 text-left hover:bg-forge-teal/5"
       >
         <Compass className="size-3 text-forge-teal transition-transform duration-500 group-hover:rotate-45" />
         <span
@@ -55,7 +57,7 @@ export function YouMightAlsoLikeSection({
         >
           <ChevronDown size={14} strokeWidth={2} />
         </motion.span>
-      </button>
+      </Button>
       <div
         inert={!open}
         className={cn(

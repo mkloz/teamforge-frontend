@@ -86,8 +86,10 @@ export function HomeHero() {
           </div>
 
           {/* Notification bell */}
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => void openDrawer()}
             aria-label={
               unreadNotifications > 0
@@ -95,11 +97,9 @@ export function HomeHero() {
                 : "View notifications"
             }
             className={cn(
-              "relative shrink-0 flex items-center justify-center size-10 rounded-2xl",
+              "relative mt-0.5 size-10 shrink-0 rounded-2xl",
               "border border-border bg-card",
               "text-slate-muted hover:text-foreground hover:border-forge-teal/30 hover:bg-secondary",
-              "transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              "mt-0.5",
             )}
           >
             <Bell className="size-[18px]" aria-hidden="true" />
@@ -119,7 +119,7 @@ export function HomeHero() {
                 {unreadNotifications}
               </motion.span>
             )}
-          </button>
+          </Button>
         </motion.div>
 
         {/* ── Bottom section: CTA + Orb split ──────────────────────── */}

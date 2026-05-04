@@ -103,12 +103,13 @@ function PlanCoverPresetButton({
   selected,
 }: PlanCoverPresetButtonProps) {
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
       onClick={onToggle}
       aria-pressed={selected}
       className={cn(
-        "group relative h-14 overflow-hidden rounded-xl border-2 bg-linear-to-br transition duration-200",
+        "group relative h-14 overflow-hidden rounded-xl border-2 bg-linear-to-br p-0 transition duration-200",
         gradient,
         selected
           ? "border-forge-teal shadow-md shadow-forge-teal/20"
@@ -123,6 +124,6 @@ function PlanCoverPresetButton({
           <Check size={9} className="text-forge-teal" strokeWidth={3} />
         </span>
       )}
-    </button>
+    </Button>
   );
 }

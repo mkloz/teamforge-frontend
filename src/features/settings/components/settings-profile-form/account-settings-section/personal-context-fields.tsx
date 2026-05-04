@@ -1,0 +1,77 @@
+import { GENDER_OPTIONS } from "./account-settings-constants";
+import type { SettingsProfileValues } from "@/features/settings/schemas/settings-profile.schema";
+import { unspecifiedGenderValue } from "@/features/settings/schemas/settings-profile.schema";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/shared/components/ui/form";
+import { NumberInput } from "@/shared/components/ui/number-input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/components/ui/select";
+import type { UseFormReturn } from "react-hook-form";
+
+interface PersonalContextFieldsProps {
+  form: UseFormReturn<SettingsProfileValues>;
+}
+
+export function PersonalContextFields({ form }: PersonalContextFieldsProps) {
+  return (
+    <div className="grid gap-5 md:grid-cols-3">
+      <FormField
+        control={form.control}
+        name="age"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Age</FormLabel>
+            <FormControl>
+              <NumberInput
+                value={field.value ?? ""}
+                min={18}
+                max={99}
+                placeholder="24"
+                onValueChange={field.onChange}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="gender"
+        render={({ field }) => (
+          <FormItem className="flex flex-col">
+            <FormLabel>Gender</FormLabel>
+            <Select value={field.value} onValueChange={field.onChange}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select gender" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value={unspecifiedGenderValue}>
+                  Prefer not to say
+                </SelectItem>
+                {GENDER_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
+  );
+}

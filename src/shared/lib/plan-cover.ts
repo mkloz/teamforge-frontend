@@ -1,33 +1,33 @@
 export const PLAN_COVER_PRESETS = [
   {
     id: "teal",
-    gradient: "from-teal-500 to-teal-700",
-    label: "Teal",
+    gradient: "from-forge-teal via-forge-teal/75 to-ink",
+    label: "Forge",
   },
   {
     id: "ember",
-    gradient: "from-amber-400 to-orange-500",
+    gradient: "from-spark-amber via-spark-amber/75 to-ink",
     label: "Ember",
   },
   {
     id: "forest",
-    gradient: "from-emerald-500 to-green-700",
-    label: "Forest",
+    gradient: "from-forge-teal/70 via-slate-muted/45 to-ink",
+    label: "Deep",
   },
   {
     id: "rose",
-    gradient: "from-rose-400 to-rose-600",
-    label: "Rose",
+    gradient: "from-spark-amber/70 via-forge-teal/55 to-ink",
+    label: "Signal",
   },
   {
     id: "midnight",
-    gradient: "from-slate-700 to-slate-900",
-    label: "Midnight",
+    gradient: "from-slate-muted via-ink to-ink",
+    label: "Graphite",
   },
   {
     id: "sky",
-    gradient: "from-sky-400 to-blue-600",
-    label: "Sky",
+    gradient: "from-canvas via-forge-teal/25 to-spark-amber/50",
+    label: "Canvas",
   },
 ] as const;
 

@@ -1,7 +1,7 @@
-import { cn } from "@/shared/lib/utils";
 import { CATEGORIES } from "@/features/explore/constants/explore.constants";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 import type { PlanCategory } from "@/shared/schemas/enums";
+import { CategoryFilterChip } from "@/shared/components/ui/category-filter-chip";
 
 export function CategoryFilter() {
   const { selectedCategories, setSelectedCategories } = useExploreRouteState();
@@ -30,19 +30,12 @@ export function CategoryFilter() {
       {CATEGORIES.map((cat) => {
         const active = selectedCategories.includes(cat.id);
         return (
-          <button
+          <CategoryFilterChip
             key={cat.id}
-            type="button"
+            label={cat.label}
+            selected={active}
             onClick={() => toggleCategory(cat.id)}
-            className={cn(
-              "px-3 py-1 rounded-full text-[10px] font-bold transition-all duration-150 active:scale-95",
-              active
-                ? "bg-forge-teal text-white border-2 border-button-primary-border shadow-button-primary -translate-y-0.5"
-                : "bg-background border-2 border-border text-muted-foreground hover:border-forge-teal/50 hover:text-foreground",
-            )}
-          >
-            {cat.label}
-          </button>
+          />
         );
       })}
     </div>

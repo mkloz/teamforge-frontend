@@ -23,7 +23,8 @@ export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
-    mode: "onBlur",
+    mode: "onChange",
+    reValidateMode: "onChange",
     defaultValues: {
       email: "",
       password: "",

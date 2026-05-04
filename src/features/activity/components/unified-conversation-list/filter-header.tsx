@@ -1,4 +1,5 @@
 import { Button } from "@/shared/components/ui/button";
+import { RadioGroup } from "@/shared/components/ui/radio-group";
 import { cn } from "@/shared/lib/utils";
 import { LayoutList, Rows } from "lucide-react";
 import { memo } from "react";
@@ -30,27 +31,6 @@ export const FilterHeader = memo(function FilterHeader({
     (f) => f.key !== "unread" || counts.unreadCount > 0,
   );
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    const currentIndex = visibleFilters.findIndex(
-      (f) => f.key === activeFilter,
-    );
-    if (currentIndex === -1) return;
-
-    let nextIndex = currentIndex;
-    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-      nextIndex = (currentIndex + 1) % visibleFilters.length;
-      e.preventDefault();
-    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-      nextIndex =
-        (currentIndex - 1 + visibleFilters.length) % visibleFilters.length;
-      e.preventDefault();
-    }
-
-    if (nextIndex !== currentIndex) {
-      onFilterChange(visibleFilters[nextIndex].key);
-    }
-  };
-
   return (
     <nav
       className={cn(
@@ -58,23 +38,22 @@ export const FilterHeader = memo(function FilterHeader({
         "bg-canvas/80 backdrop-blur-md flex items-center justify-between",
       )}
     >
-      <div
-        role="radiogroup"
+      <RadioGroup
+        value={activeFilter}
+        onValueChange={(value) => onFilterChange(value as FilterChip)}
         aria-label="Filter conversations"
         className="flex gap-1.5 overflow-x-auto scrollbar-hide px-0.5 py-1.5 outline-none flex-1"
-        onKeyDown={handleKeyDown}
-        tabIndex={0}
       >
         {visibleFilters.map(({ key, label }) => (
           <FilterChipItem
             key={key}
             label={label}
             isActive={activeFilter === key}
-            onClick={() => onFilterChange(key)}
+            value={key}
             badge={getBadgeCount(key, counts)}
           />
         ))}
-      </div>
+      </RadioGroup>
 
       <div className="flex items-center ml-2 border-l border-border/40 pl-2">
         <Button

@@ -1,4 +1,5 @@
 import { cn } from "@/shared/lib/utils";
+import { Button } from "@/shared/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import {
   PolarAngleAxis,
@@ -11,6 +12,7 @@ import { OCEAN_TRAITS, getExtendedTraitInfo } from "@/shared/lib/ocean-traits";
 import type { OceanScores, OceanTraitKey } from "@/shared/types/psychometrics";
 
 interface OceanDiagramProps {
+  className?: string;
   scores: OceanScores;
   onTraitSelect?: (key: OceanTraitKey | null) => void;
   selectedTrait?: OceanTraitKey | null;
@@ -43,6 +45,7 @@ interface ChartTickProps {
 }
 
 export function OceanDiagram({
+  className,
   scores,
   onTraitSelect,
   selectedTrait,
@@ -110,7 +113,10 @@ export function OceanDiagram({
   return (
     <div
       ref={containerRef}
-      className="w-full h-full min-h-56 [&_svg]:outline-none [&_svg:focus]:outline-none [&_*:focus]:outline-none"
+      className={cn(
+        "w-full h-full min-h-56 [&_svg]:outline-none [&_svg:focus]:outline-none [&_*:focus]:outline-none",
+        className,
+      )}
     >
       {containerSize.width > 0 && containerSize.height > 0 ? (
         <ResponsiveContainer width="100%" height="100%">
@@ -325,12 +331,15 @@ export function OceanChart({
                       {selectedInfo.level} ({selectedInfo.score}%)
                     </span>
                   </div>
-                  <button
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="xs"
                     onClick={() => setSelected(null)}
-                    className="text-[10px] font-black text-forge-teal uppercase tracking-widest hover:opacity-70 transition-opacity"
+                    className="h-auto p-0 text-[10px] uppercase tracking-widest hover:opacity-70"
                   >
                     Close
-                  </button>
+                  </Button>
                 </div>
                 <p className="text-xs text-ink/80 leading-relaxed font-medium">
                   {selectedInfo.description}

@@ -8,6 +8,20 @@ import { MIN_INTERESTS } from "../data/interests-data";
 import { useInterests } from "./use-interests";
 import { useOnboardingFlowState } from "../lib/onboarding-flow-state";
 
+function buildFlowSearch({
+  returnTo,
+  returnSearch,
+  returnSection,
+  mbti,
+}: ReturnType<typeof useOnboardingFlowState>) {
+  return {
+    ...(returnTo ? { returnTo } : {}),
+    ...(returnSearch ? { returnSearch } : {}),
+    ...(returnSection ? { returnSection } : {}),
+    ...(mbti ? { mbti } : {}),
+  };
+}
+
 export function useInterestsPageFlow() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isDone, setIsDone] = useState(false);
@@ -67,8 +81,39 @@ export function useInterestsPageFlow() {
     );
   }
 
+  function goBack() {
+    if (isEditMode) {
+      state.reset();
+      void navigate(
+        resolveOnboardingExitNavigation(
+          returnTo,
+          returnSearch,
+          returnSection,
+          "settings",
+        ),
+      );
+      return;
+    }
+
+    const previousSearch = buildFlowSearch({
+      mode: null,
+      isEditMode,
+      returnTo,
+      returnSearch,
+      returnSection,
+      mbti,
+    });
+
+    void navigate({
+      to: "/onboarding/personality",
+      search:
+        Object.keys(previousSearch).length > 0 ? previousSearch : undefined,
+    });
+  }
+
   return {
     enterApp,
+    goBack,
     isDone,
     isEditMode,
     progress,

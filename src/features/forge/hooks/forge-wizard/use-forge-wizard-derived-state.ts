@@ -1,23 +1,24 @@
 import type { ForgeWizardData } from "@/features/forge/lib/forge-wizard";
 
+import { getForgeExecutionValidation } from "./forge-execution-input";
+
 export function useForgeWizardDerivedState(state: ForgeWizardData) {
   const activeParticipants = state.participants.filter(
     (participant) => !state.removedIds.has(participant.userId),
   );
+  const forgeExecutionValidation = getForgeExecutionValidation(state);
   const canAdvanceStep1 = !!state.selectedActivity;
-  const paidAmount = Number(state.planCostAmount);
-  const canAdvanceStep2 =
-    state.planName.trim().length >= 3 &&
-    (state.planCost === "FREE" ||
-      (Number.isFinite(paidAmount) && paidAmount > 0));
-  const isPreForge = state.step <= 3;
+  const canAdvanceStep2 = forgeExecutionValidation.canSubmit;
+  const forgeValidationMessage = forgeExecutionValidation.message;
+  const isPreForge = state.step <= 4;
   const canGoBack =
-    (state.step > 1 && state.step <= 3) || state.step === 5 || state.step === 6;
+    (state.step > 1 && state.step <= 4) || state.step === 6 || state.step === 7;
 
   return {
     activeParticipants,
     canAdvanceStep1,
     canAdvanceStep2,
+    forgeValidationMessage,
     isPreForge,
     canGoBack,
   };

@@ -5,6 +5,7 @@ export type {
   ForgeWizardAction,
   ForgeWizardData,
   ForgeWizardField,
+  ForgeWizardSetFieldAction,
   NavDirection,
   Step,
 } from "./types";

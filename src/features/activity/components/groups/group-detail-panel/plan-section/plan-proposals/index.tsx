@@ -1,6 +1,7 @@
 import type { usePlanProposalActions } from "@/features/activity/hooks/use-plan-proposal-actions";
 import {
   formatProposalDate,
+  formatProposalValue,
   PROPOSAL_FIELD_LABELS,
   PROPOSAL_STATUS_LABELS,
 } from "@/features/activity/lib/proposal-language";
@@ -71,14 +72,16 @@ export function PlanProposalCard({
             Current
           </p>
           <p className="text-sm text-foreground/70">
-            {proposal.currentValue ?? "Not set"}
+            {formatProposalValue(proposal.field, proposal.currentValue)}
           </p>
         </div>
         <div className="rounded-xl bg-forge-teal/5 px-2.5 py-2 border border-forge-teal/10">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-forge-teal">
             Proposed
           </p>
-          <p className="text-sm text-foreground">{proposal.proposedValue}</p>
+          <p className="text-sm text-foreground">
+            {formatProposalValue(proposal.field, proposal.proposedValue)}
+          </p>
         </div>
       </div>
 

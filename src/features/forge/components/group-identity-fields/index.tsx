@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
+import { useId, useRef } from "react";
 
 import { GroupDescriptionField } from "./group-description-field";
 import { GroupNameField } from "./group-name-field";
@@ -25,7 +25,6 @@ export function GroupIdentityFields({
   existingGroupNames = [],
   subtitle = "Optional — you can always update this later.",
 }: GroupIdentityFieldsProps) {
-  const [nameFocused, setNameFocused] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const nameId = useId();
   const descId = useId();
@@ -37,7 +36,7 @@ export function GroupIdentityFields({
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3.5">
       <div className="px-0.5">
         <p className="text-xs md:text-sm font-semibold text-foreground">
           Group identity
@@ -50,9 +49,7 @@ export function GroupIdentityFields({
       <GroupNameField
         groupName={groupName}
         inputRef={nameInputRef}
-        nameFocused={nameFocused}
         nameId={nameId}
-        onFocusChange={setNameFocused}
         onGroupNameChange={onGroupNameChange}
         suggestions={visibleSuggestions}
       />

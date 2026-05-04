@@ -4,7 +4,10 @@ import { useCreatePlanProposal } from "@/features/activity/hooks/use-create-plan
 import type { Plan } from "@/features/activity/lib/activity-contract";
 
 import {
+  buildLocationProposalValue,
+  getCurrentSerializedLocationProposalValue,
   getCurrentProposalValue,
+  getLocationProposalInput,
   normalizeProposedValue,
   type ProposalField,
 } from "./plan-proposal-fields";
@@ -13,6 +16,9 @@ export function usePlanProposalForm(plan: Plan) {
   const [isOpen, setIsOpen] = useState(false);
   const [field, setField] = useState<ProposalField>("TITLE");
   const [value, setValue] = useState(plan.title);
+  const [locationValue, setLocationValue] = useState(() =>
+    getLocationProposalInput(plan),
+  );
   const { createProposal, error, isCreating, setError } = useCreatePlanProposal(
     plan,
     {
@@ -20,6 +26,7 @@ export function usePlanProposalForm(plan: Plan) {
         setIsOpen(false);
         setField("TITLE");
         setValue(plan.title);
+        setLocationValue(getLocationProposalInput(plan));
       },
     },
   );
@@ -32,6 +39,7 @@ export function usePlanProposalForm(plan: Plan) {
   const handleFieldChange = (nextField: ProposalField) => {
     setField(nextField);
     setValue(getCurrentProposalValue(plan, nextField));
+    setLocationValue(getLocationProposalInput(plan));
     setError(null);
   };
 
@@ -41,12 +49,28 @@ export function usePlanProposalForm(plan: Plan) {
   };
 
   const handleSubmit = async () => {
-    const proposedValue = normalizeProposedValue(field, value);
+    let proposedValue: string;
+    let currentComparableValue: string;
 
-    if (
-      !proposedValue ||
-      proposedValue === normalizeProposedValue(field, currentValue)
-    ) {
+    try {
+      proposedValue =
+        field === "LOCATION"
+          ? buildLocationProposalValue(locationValue)
+          : normalizeProposedValue(field, value);
+      currentComparableValue =
+        field === "LOCATION"
+          ? getCurrentSerializedLocationProposalValue(plan)
+          : normalizeProposedValue(field, currentValue);
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Check the proposal value and try again.",
+      );
+      return;
+    }
+
+    if (!proposedValue || proposedValue === currentComparableValue) {
       setError("Add a new value before sending a proposal.");
       return;
     }
@@ -67,8 +91,11 @@ export function usePlanProposalForm(plan: Plan) {
     handleSubmit,
     isCreating,
     isDateField: field === "DATE_TIME",
+    isLocationField: field === "LOCATION",
     isOpen,
+    locationValue,
     openForm: () => setIsOpen(true),
+    setLocationValue,
     setValue,
     value,
   };

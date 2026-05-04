@@ -10,6 +10,7 @@ export function useHomeRouteState() {
     {
       panel: parseAsStringLiteral(homePanelValues),
       invite: parseAsString,
+      request: parseAsString,
       view: parseAsStringLiteral(homeInvitationViewValues),
     },
     {
@@ -22,7 +23,18 @@ export function useHomeRouteState() {
       {
         panel: null,
         invite: null,
+        request: null,
         view: null,
+      },
+      { history: "replace" },
+    );
+  }
+
+  function clearFriendRequestFocus() {
+    void setRouteState(
+      {
+        panel: null,
+        request: null,
       },
       { history: "replace" },
     );
@@ -31,7 +43,9 @@ export function useHomeRouteState() {
   return {
     focusedPanel: routeState.panel ?? null,
     focusedInviteId: routeState.invite ?? null,
+    focusedRequestId: routeState.request ?? null,
     invitationView: routeState.view ?? "received",
+    clearFriendRequestFocus,
     clearInvitationFocus,
   };
 }

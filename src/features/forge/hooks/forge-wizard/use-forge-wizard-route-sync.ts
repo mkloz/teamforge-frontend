@@ -61,10 +61,10 @@ export function useForgeWizardRouteSync({
     const hasLiveForgeState =
       forgeReadyRef.current.forgeResult !== "IDLE" ||
       forgeReadyRef.current.participantsLength > 0;
-    const nextStep = routeStep > 3 && !hasLiveForgeState ? 3 : routeStep;
+    const nextStep = routeStep > 4 && !hasLiveForgeState ? 4 : routeStep;
 
-    if (routeStep > 3 && !hasLiveForgeState) {
-      syncStep(3, { history: "replace" });
+    if (routeStep > 4 && !hasLiveForgeState) {
+      syncStep(4, { history: "replace" });
       syncTargets({
         activityId: null,
         groupId: null,

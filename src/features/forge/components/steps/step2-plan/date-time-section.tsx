@@ -1,7 +1,9 @@
 import { Calendar, Clock } from "lucide-react";
 
+import { DateInput } from "@/shared/components/ui/date-input";
+import { TimeInput } from "@/shared/components/ui/time-input";
+
 import { FieldLabel } from "./field-label";
-import { InputField } from "./input-field";
 import { SectionCard } from "./section-card";
 import { SectionHeader } from "./section-header";
 import { formatPlanDateSummary } from "./step2-plan.utils";
@@ -11,6 +13,14 @@ interface DateTimeSectionProps {
   onPlanTimeChange: (value: string) => void;
   planDate: string;
   planTime: string;
+}
+
+function getTodayDateValue() {
+  const today = new Date();
+  const month = `${today.getMonth() + 1}`.padStart(2, "0");
+  const day = `${today.getDate()}`.padStart(2, "0");
+
+  return `${today.getFullYear()}-${month}-${day}`;
 }
 
 export function DateTimeSection({
@@ -23,42 +33,35 @@ export function DateTimeSection({
     <SectionCard>
       <SectionHeader
         icon={<Calendar size={14} />}
-        title="Date & time"
-        description="When are you planning to meet up?"
+        title="Timing"
+        description="Choose when this group should meet."
       />
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-2">
-          <FieldLabel htmlFor="plan-date">Date</FieldLabel>
-          <InputField icon={<Calendar size={13} />}>
-            <input
-              id="plan-date"
-              type="date"
-              value={planDate}
-              onChange={(event) => onPlanDateChange(event.target.value)}
-              className="w-full h-11 pl-8 pr-2 bg-transparent text-sm font-medium text-foreground focus:outline-none rounded-xl cursor-pointer"
-            />
-          </InputField>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="space-y-2.5">
+          <FieldLabel htmlFor="plan-date">Date required</FieldLabel>
+          <DateInput
+            id="plan-date"
+            min={getTodayDateValue()}
+            value={planDate}
+            onValueChange={onPlanDateChange}
+          />
         </div>
 
-        <div className="space-y-2">
-          <FieldLabel htmlFor="plan-time">Time</FieldLabel>
-          <InputField icon={<Clock size={13} />}>
-            <input
-              id="plan-time"
-              type="time"
-              value={planTime}
-              onChange={(event) => onPlanTimeChange(event.target.value)}
-              className="w-full h-11 pl-8 pr-2 bg-transparent text-sm font-medium text-foreground focus:outline-none rounded-xl cursor-pointer"
-            />
-          </InputField>
+        <div className="space-y-2.5">
+          <FieldLabel htmlFor="plan-time">Time required</FieldLabel>
+          <TimeInput
+            id="plan-time"
+            value={planTime}
+            onValueChange={onPlanTimeChange}
+          />
         </div>
       </div>
 
       {(planDate || planTime) && (
-        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary/5 border border-primary/10 animate-in fade-in duration-200">
-          <Clock size={12} className="text-primary/60 shrink-0" />
-          <p className="text-xs font-medium text-primary/80">
+        <div className="inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-forge-teal/15 bg-forge-teal/5 px-3 py-2 animate-in fade-in duration-200">
+          <Clock size={12} className="text-forge-teal/70 shrink-0" />
+          <p className="truncate text-xs font-medium text-forge-teal">
             {planDate ? formatPlanDateSummary(planDate) : "Date TBD"}
             {planTime && ` at ${planTime}`}
           </p>

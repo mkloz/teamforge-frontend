@@ -57,13 +57,14 @@ export function MobileFiltersSheet() {
               </Button>
             </SheetClose>
             <SheetClose asChild>
-              <button
+              <Button
                 type="button"
+                variant="ghost"
                 onClick={resetFilters}
-                className="w-full py-2 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
+                className="w-full py-2 text-xs text-muted-foreground hover:text-foreground"
               >
                 Reset all filters
-              </button>
+              </Button>
             </SheetClose>
           </div>
         </div>

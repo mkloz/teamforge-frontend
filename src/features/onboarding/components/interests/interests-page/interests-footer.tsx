@@ -4,10 +4,15 @@ import type { UseInterestsReturn } from "@/features/onboarding/hooks/use-interes
 
 interface InterestsFooterProps {
   isEditMode: boolean;
+  onBack: () => void;
   state: UseInterestsReturn;
 }
 
-export function InterestsFooter({ isEditMode, state }: InterestsFooterProps) {
+export function InterestsFooter({
+  isEditMode,
+  onBack,
+  state,
+}: InterestsFooterProps) {
   return (
     <div className="shrink-0 w-full relative z-30 bg-canvas border-t border-slate-muted/10">
       <div className="max-w-xl mx-auto lg:px-0 px-4 sm:px-5 w-full">
@@ -16,6 +21,7 @@ export function InterestsFooter({ isEditMode, state }: InterestsFooterProps) {
             selectedCount={state.selectedCount}
             canContinue={state.canContinue}
             isAtMax={state.isAtMax}
+            onBack={onBack}
             onContinue={state.goToReview}
           />
         )}

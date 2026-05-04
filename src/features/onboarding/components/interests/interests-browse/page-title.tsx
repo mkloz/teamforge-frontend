@@ -1,10 +1,14 @@
 import { AnimatePresence, motion } from "framer-motion";
 
 interface PageTitleProps {
+  hideContextLabel?: boolean;
   isSearching: boolean;
 }
 
-export function PageTitle({ isSearching }: PageTitleProps) {
+export function PageTitle({
+  hideContextLabel = false,
+  isSearching,
+}: PageTitleProps) {
   return (
     <AnimatePresence initial={false}>
       {!isSearching && (
@@ -15,9 +19,11 @@ export function PageTitle({ isSearching }: PageTitleProps) {
           transition={{ duration: 0.2, ease: "easeInOut" }}
           className="mb-6 overflow-hidden pt-4"
         >
-          <p className="font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-forge-teal mb-2">
-            Step 2 of 2 · Interests
-          </p>
+          {!hideContextLabel && (
+            <p className="font-sans text-[11px] font-bold uppercase tracking-[0.2em] text-forge-teal mb-2">
+              Step 2 of 2 · Interests
+            </p>
+          )}
           <h1 className="font-sans text-3xl font-extrabold tracking-tight text-ink">
             What do you love doing?
           </h1>

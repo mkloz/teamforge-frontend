@@ -9,10 +9,14 @@ import { InterestsCatalogState } from "./interests-catalog-state";
 import { InterestsIntro } from "./interests-intro";
 
 interface InterestsScreenRendererProps {
+  isEditMode: boolean;
+  onBack: () => void;
   state: UseInterestsReturn;
 }
 
 export function InterestsScreenRenderer({
+  isEditMode,
+  onBack,
   state,
 }: InterestsScreenRendererProps) {
   return (
@@ -24,7 +28,10 @@ export function InterestsScreenRenderer({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          <InterestsIntro onStart={() => state.setScreen("browse")} />
+          <InterestsIntro
+            onBack={onBack}
+            onStart={() => state.setScreen("browse")}
+          />
         </motion.div>
       )}
 
@@ -36,7 +43,7 @@ export function InterestsScreenRenderer({
           exit={{ opacity: 0, y: 10 }}
           transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
         >
-          <InterestsBrowseScreen state={state} />
+          <InterestsBrowseScreen state={state} isEditMode={isEditMode} />
         </motion.div>
       )}
 
@@ -61,10 +68,14 @@ export function InterestsScreenRenderer({
 }
 
 interface InterestsBrowseScreenProps {
+  isEditMode: boolean;
   state: UseInterestsReturn;
 }
 
-function InterestsBrowseScreen({ state }: InterestsBrowseScreenProps) {
+function InterestsBrowseScreen({
+  isEditMode,
+  state,
+}: InterestsBrowseScreenProps) {
   if (state.isCatalogLoading) {
     return (
       <InterestsCatalogState
@@ -112,6 +123,7 @@ function InterestsBrowseScreen({ state }: InterestsBrowseScreenProps) {
       onReject={state.reject}
       onToggleCategory={state.toggleCategory}
       onToggleSubcategory={state.toggleSubcategory}
+      hideContextLabel={isEditMode}
     />
   );
 }

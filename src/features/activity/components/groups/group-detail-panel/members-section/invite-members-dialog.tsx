@@ -79,16 +79,12 @@ export function InviteMembersDialog({
         </DialogHeader>
 
         <div className="space-y-4 px-6 py-5">
-          <div className="relative">
-            <Search
-              size={14}
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-muted"
-            />
+          <div>
             <Input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search friends by name, city, or personality"
-              className="h-10 rounded-xl border-border/60 bg-background/70 pl-9"
+              leftIcon={<Search size={14} />}
             />
           </div>
 

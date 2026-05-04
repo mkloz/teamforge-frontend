@@ -3,6 +3,7 @@ import type {
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
 import { formatChatFullDate } from "@/features/activity/lib/chat-utils";
+import { formatPlanLocation } from "@/features/activity/lib/plan-location";
 
 import {
   PINNED_MESSAGE_CONFIG,
@@ -23,7 +24,7 @@ export function buildPinnedEntries(
       label: config.label,
       body: `${plan.title} · ${
         plan.dateTime ? formatChatFullDate(plan.dateTime) : "Date TBD"
-      } · ${plan.location || "Location TBD"}`,
+      } · ${formatPlanLocation(plan)}`,
       accentClass: config.accentClass,
       colorClass: config.colorClass,
       icon: config.icon,

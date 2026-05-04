@@ -1,4 +1,5 @@
 import { motion, MotionValue, useTransform } from "framer-motion";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 interface ProgressBarStepProps {
@@ -27,9 +28,12 @@ export function ProgressBarStep({
   );
 
   return (
-    <button
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon-xs"
       onClick={onClick}
-      className="group focus:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-8 focus-visible:ring-offset-transparent rounded-full"
+      className="group rounded-full focus-visible:ring-forge-teal focus-visible:ring-offset-8 focus-visible:ring-offset-transparent"
       aria-label={`Go to step ${index + 1}`}
     >
       <motion.div
@@ -39,6 +43,6 @@ export function ProgressBarStep({
           "shadow-[0_0_8px_rgba(13,148,136,0.3)] group-hover:shadow-[0_0_12px_rgba(13,148,136,0.5)]",
         )}
       />
-    </button>
+    </Button>
   );
 }

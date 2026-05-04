@@ -93,6 +93,8 @@ export function Step5Identity({
         activePreset={activePreset}
         activityTitle={activityTitle}
         avatarImage={avatarImage}
+        coverImage={coverImage}
+        groupName={groupName}
         isImageAvatar={isImageAvatar}
         isImageCover={isImageCover}
         planTitle={planTitle}

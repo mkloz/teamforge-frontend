@@ -1,6 +1,6 @@
-import * as RadixSlider from "@radix-ui/react-slider";
 import { FILTER_BOUNDARIES } from "@/features/explore/constants/explore.constants";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
+import { Slider } from "@/shared/components/ui/slider";
 
 export function SizeFilter() {
   const { sizeRange, setSizeRange } = useExploreRouteState();
@@ -15,21 +15,16 @@ export function SizeFilter() {
       </div>
 
       <div className="px-1 pt-1">
-        <RadixSlider.Root
-          className="relative flex items-center select-none touch-none w-full h-5"
+        <Slider
+          className="h-5"
           value={sizeRange}
           onValueChange={(val) => setSizeRange(val as [number, number])}
           max={FILTER_BOUNDARIES.size.max}
           min={FILTER_BOUNDARIES.size.min}
           step={1}
           minStepsBetweenThumbs={1}
-        >
-          <RadixSlider.Track className="bg-muted/60 relative grow rounded-full h-2 ring-1 ring-border/10 ring-inset overflow-hidden">
-            <RadixSlider.Range className="absolute bg-accent rounded-full h-full" />
-          </RadixSlider.Track>
-          <RadixSlider.Thumb className="block w-5 h-5 bg-background border-thick border-accent rounded-full shadow-sm ring-offset-background transition-transform hover:scale-110 active:scale-95 outline-none focus-visible:ring-thick focus-visible:ring-accent cursor-grab active:cursor-grabbing" />
-          <RadixSlider.Thumb className="block w-5 h-5 bg-background border-thick border-accent rounded-full shadow-sm ring-offset-background transition-transform hover:scale-110 active:scale-95 outline-none focus-visible:ring-thick focus-visible:ring-accent cursor-grab active:cursor-grabbing" />
-        </RadixSlider.Root>
+          aria-label="Group size range"
+        />
         <div className="flex justify-between text-[10px] font-bold text-muted-foreground/50 mt-3 uppercase tracking-widest">
           <span>Intimate</span>
           <span>Massive</span>

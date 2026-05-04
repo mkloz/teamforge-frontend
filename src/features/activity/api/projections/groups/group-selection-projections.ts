@@ -34,6 +34,9 @@ export function mapApiGroupFromSelection(group: Group): GroupApi {
           status: group.plan.status,
           dateTime: group.plan.dateTime,
           locationMode: group.plan.locationMode,
+          location: group.plan.location,
+          locationLat: group.plan.locationLat,
+          locationLng: group.plan.locationLng,
           cost: group.plan.cost,
         }
       : null,

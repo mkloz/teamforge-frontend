@@ -96,9 +96,12 @@ export function FriendsInvitation() {
               <span className="flex-1 text-[11px] font-bold text-muted-foreground truncate select-all">
                 {inviteLink}
               </span>
-              <button
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
                 onClick={handleCopy}
-                className="size-7 flex items-center justify-center rounded-lg hover:bg-background hover:shadow-sm transition-all active:scale-95"
+                className="size-7 rounded-lg hover:bg-background hover:shadow-sm"
                 title="Copy link"
               >
                 {copied ? (
@@ -106,7 +109,7 @@ export function FriendsInvitation() {
                 ) : (
                   <Copy className="size-3.5 text-muted-foreground" />
                 )}
-              </button>
+              </Button>
             </div>
 
             {/* Share Button */}

@@ -1,3 +1,4 @@
+import { Avatar } from "@/shared/components/common/avatar";
 import { Image } from "@/shared/components/common/image";
 import { cn } from "@/shared/lib/utils";
 
@@ -7,49 +8,66 @@ export function IdentityPreviewCard({
   activePreset,
   activityTitle,
   avatarImage,
+  coverImage,
+  groupName,
   isImageAvatar,
   isImageCover,
   planTitle,
 }: IdentityPreviewCardProps) {
+  const displayGroupName = groupName.trim() || planTitle || "Untitled group";
+  const displayPlanTitle = planTitle || activityTitle || "Untitled plan";
+
   return (
     <div className="space-y-2.5">
       <p className="text-xs font-semibold text-muted-foreground">Preview</p>
-      <div className="rounded-2xl border border-border/50 bg-card overflow-hidden shadow-sm">
+      <div className="group overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm">
         <div
           className={cn(
-            "h-24 w-full transition-colors duration-500",
-            isImageCover
-              ? "bg-primary/15"
-              : activePreset
-                ? `bg-linear-to-br ${activePreset?.gradient}`
-                : "bg-muted/40",
+            "relative h-28 w-full overflow-hidden transition-colors duration-500",
+            !isImageCover &&
+              !activePreset &&
+              "bg-linear-to-br from-forge-teal/18 via-canvas to-spark-amber/18",
+            !isImageCover &&
+              activePreset &&
+              `bg-linear-to-br ${activePreset.gradient}`,
           )}
-        />
-        <div className="px-4 pb-4 pt-0 flex items-start gap-3">
+        >
+          {isImageCover ? (
+            <Image
+              src={coverImage ?? undefined}
+              alt=""
+              className="h-full w-full object-cover group-hover:scale-105"
+            />
+          ) : (
+            <div className="flex h-full w-full flex-col justify-between p-4">
+              <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-muted">
+                Artwork pending
+              </span>
+              <p className="max-w-64 text-lg font-black leading-tight text-foreground line-clamp-2">
+                {displayPlanTitle}
+              </p>
+            </div>
+          )}
           <div
-            className={cn(
-              "w-14 h-14 rounded-xl border-4 border-card -mt-7 shrink-0 shadow-md flex items-center justify-center transition-colors duration-300",
-              isImageAvatar
-                ? "bg-primary/20"
-                : activePreset
-                  ? `bg-linear-to-br ${activePreset?.gradient}`
-                  : "bg-muted",
-            )}
-          >
-            {isImageAvatar && (
-              <Image
-                src={avatarImage ?? undefined}
-                alt=""
-                className="rounded-lg"
-              />
-            )}
-          </div>
-          <div className="min-w-0 pt-2">
-            <h3 className="text-sm font-bold text-foreground truncate">
-              {planTitle || "Untitled Group"}
+            className="absolute inset-0 bg-linear-to-b from-black/10 via-transparent to-black/45"
+            aria-hidden
+          />
+        </div>
+
+        <div className="flex items-center gap-3 px-4 py-3">
+          <Avatar
+            src={isImageAvatar ? avatarImage : null}
+            name={displayGroupName}
+            shape="rounded"
+            className="size-11 rounded-xl border border-border bg-muted text-sm"
+            fallbackClassName="text-[11px]"
+          />
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate text-sm font-bold text-foreground">
+              {displayGroupName}
             </h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {activityTitle || "Activity not set"}
+            <p className="mt-0.5 truncate text-xs text-muted-foreground">
+              {displayPlanTitle}
             </p>
           </div>
         </div>

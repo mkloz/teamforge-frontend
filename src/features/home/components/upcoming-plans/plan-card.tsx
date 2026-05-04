@@ -1,5 +1,6 @@
 import type { PlanStatus } from "@/shared/schemas";
 import { Avatar } from "@/shared/components/common/avatar";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { Calendar, CheckCircle2, Clock, MessageCircle } from "lucide-react";
@@ -146,20 +147,21 @@ export function PlanCard({ group, index }: PlanCardProps) {
           )}
         </div>
 
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="xs"
           aria-label={`Open chat for ${plan.title}`}
           className={cn(
-            "flex items-center gap-1 px-2.5 py-1 rounded-xl",
-            "text-xs font-bold text-muted-foreground",
+            "h-auto gap-1 rounded-xl px-2.5 py-1",
+            "text-xs text-muted-foreground",
             "border border-border bg-background",
             "hover:border-forge-teal/50 hover:text-forge-teal hover:bg-secondary",
-            "transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           )}
         >
           <MessageCircle className="size-3" aria-hidden="true" />
           Chat
-        </button>
+        </Button>
       </div>
     </motion.div>
   );

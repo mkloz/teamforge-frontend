@@ -34,6 +34,7 @@ interface InterestsBrowseProps {
   onToggleSubcategory: (id: string) => void;
   onSetSearch: (q: string) => void;
   onReject: (id: string) => void;
+  hideContextLabel?: boolean;
 }
 
 export function InterestsBrowse({
@@ -53,6 +54,7 @@ export function InterestsBrowse({
   onReject,
   onToggleCategory,
   onToggleSubcategory,
+  hideContextLabel = false,
 }: Omit<InterestsBrowseProps, "onSetSearch" | "onExpandCategoryOnly">) {
   const isSearching = searchQuery.trim().length >= 2;
 
@@ -74,7 +76,10 @@ export function InterestsBrowse({
   return (
     <TooltipProvider>
       <div className="flex flex-col w-full max-w-xl mx-auto pb-8">
-        <PageTitle isSearching={isSearching} />
+        <PageTitle
+          isSearching={isSearching}
+          hideContextLabel={hideContextLabel}
+        />
 
         <div className="relative w-full">
           <Activity mode={isSearching ? "hidden" : "visible"}>

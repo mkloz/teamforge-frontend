@@ -2,6 +2,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { memo } from "react";
 
 import type { PlanProposalStatus } from "@/shared/schemas/enums";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 import { FIELD_ICON_COMPONENTS, FIELD_LABELS } from "./proposal-constants";
@@ -29,9 +30,10 @@ export const ProposalHeader = memo(function ProposalHeader({
   const Icon = FIELD_ICON_COMPONENTS[field];
 
   return (
-    <button
+    <Button
       type="button"
-      className="flex w-full items-center justify-between px-3 py-2 text-left"
+      variant="ghost"
+      className="h-auto w-full justify-between px-3 py-2 text-left"
       onClick={onToggle}
     >
       <div className="flex items-center gap-3">
@@ -63,6 +65,6 @@ export const ProposalHeader = memo(function ProposalHeader({
           <ChevronDown size={16} className="text-muted-foreground" />
         )}
       </div>
-    </button>
+    </Button>
   );
 });

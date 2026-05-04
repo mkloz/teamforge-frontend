@@ -1,6 +1,6 @@
 import { Button } from "@/shared/components/ui/button";
 import { motion } from "framer-motion";
-import { ArrowRight, Lock, Sparkles, Users } from "lucide-react";
+import { ArrowLeft, ArrowRight, Lock, Sparkles, Users } from "lucide-react";
 import { TeamForgeLogo } from "@/assets/logo";
 import {
   fadeUpItem,
@@ -8,6 +8,7 @@ import {
 } from "@/features/onboarding/constants/motion";
 
 interface InterestsIntroProps {
+  onBack: () => void;
   onStart: () => void;
 }
 
@@ -26,7 +27,7 @@ const BENEFITS = [
   },
 ];
 
-export function InterestsIntro({ onStart }: InterestsIntroProps) {
+export function InterestsIntro({ onBack, onStart }: InterestsIntroProps) {
   return (
     <motion.div
       variants={staggerContainer}
@@ -34,6 +35,18 @@ export function InterestsIntro({ onStart }: InterestsIntroProps) {
       animate="visible"
       className="flex flex-col items-center text-center max-w-md mx-auto w-full gap-0 pt-4 sm:pt-0"
     >
+      <motion.div variants={fadeUpItem} className="mb-5 w-full text-left">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onBack}
+          className="px-0 text-muted-foreground hover:bg-transparent hover:text-foreground"
+        >
+          <ArrowLeft size={14} strokeWidth={2.5} />
+          Back
+        </Button>
+      </motion.div>
+
       <motion.div variants={fadeUpItem}>
         <TeamForgeLogo
           className="w-10 h-10 mb-5 sm:mb-6 mx-auto"

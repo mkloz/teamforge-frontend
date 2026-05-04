@@ -1,5 +1,6 @@
 import { AlignLeft } from "lucide-react";
 
+import { Textarea } from "@/shared/components/ui/textarea";
 import { cn } from "@/shared/lib/utils";
 
 import { FieldLabel } from "./field-label";
@@ -19,16 +20,16 @@ export function PlanDetailsSection({
     <SectionCard>
       <SectionHeader
         icon={<AlignLeft size={14} />}
-        title="Plan details"
-        description="Add the context people need before they say yes."
+        title="Context"
+        description="Add anything people should know before joining."
       />
 
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         <FieldLabel htmlFor="plan-description" hint="Optional">
           Description
         </FieldLabel>
-        <div className="rounded-xl border border-border/60 bg-background/60 focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/12">
-          <textarea
+        <div className="rounded-lg border border-border/50 bg-background/50 transition-colors focus-within:border-forge-teal/50 focus-within:ring-2 focus-within:ring-forge-teal/10">
+          <Textarea
             id="plan-description"
             value={planDescription}
             onChange={(event) => onPlanDescriptionChange(event.target.value)}
@@ -36,8 +37,8 @@ export function PlanDetailsSection({
             maxLength={500}
             rows={3}
             className={cn(
-              "w-full resize-none rounded-xl bg-transparent px-3 py-3 text-sm font-medium text-foreground",
-              "placeholder:text-muted-foreground/35 focus:outline-none",
+              "resize-none rounded-xl border-0 bg-transparent px-3 py-3 text-sm font-medium text-foreground shadow-none",
+              "placeholder:text-muted-foreground/35 focus-visible:ring-0",
             )}
           />
         </div>

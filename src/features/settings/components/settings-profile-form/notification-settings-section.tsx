@@ -1,6 +1,10 @@
 import type { NotificationPreferences } from "@/shared/schemas";
-import { NotificationPreferenceRow } from "@/features/settings/components/settings-profile-form/settings-form-controls";
 import type { BooleanSettingsPreferenceKey } from "@/features/settings/components/settings-profile-form/settings-form-types";
+import {
+  PreferenceGroup,
+  PreferenceStatusMessage,
+  SectionHeading,
+} from "@/features/settings/components/settings-profile-form/preference-section-parts";
 import {
   EMAIL_PREFERENCE_ITEMS,
   NOTIFICATION_PREFERENCE_ITEMS,
@@ -26,83 +30,39 @@ export function NotificationSettingsSection({
   error,
   onChange,
 }: NotificationSettingsSectionProps) {
+  const shouldShowEmailDelivery =
+    !isLoadingNotificationPreferences && notificationPreferences;
+
   return (
-    <section className="rounded-2xl border border-border bg-card p-6">
-      <div className="flex flex-col gap-2">
-        <h2 className="text-xl font-bold text-ink">Notification Preferences</h2>
-        <p className="text-sm text-slate-muted">
-          Choose which updates stay inside TeamForge and which ones should also
-          land in your inbox.
-        </p>
-      </div>
+    <section className="flex flex-col gap-8">
+      <SectionHeading
+        title="Notification preferences"
+        description="Choose which updates stay inside TeamForge and which ones should also land in your inbox."
+      />
 
-      {(message || error) && (
-        <p
-          className={`mt-4 text-sm ${error ? "text-destructive" : "text-forge-teal"}`}
-        >
-          {error ?? message}
-        </p>
-      )}
+      <PreferenceStatusMessage message={message} error={error} />
 
-      <div className="mt-6">
-        <h3 className="text-base font-semibold text-ink">
-          In-app notifications
-        </h3>
-        <p className="mt-1 text-sm text-slate-muted">
-          These control the bell, drawer, badges, and in-app activity surfaces.
-        </p>
-      </div>
+      <PreferenceGroup
+        title="In-app notifications"
+        description="These control the bell, drawer, badges, and in-app activity surfaces."
+        items={NOTIFICATION_PREFERENCE_ITEMS}
+        notificationPreferences={notificationPreferences}
+        isLoading={isLoadingNotificationPreferences}
+        isSaving={isSavingNotificationPreferences}
+        emptyMessage="We couldn't load your notification preferences right now."
+        onChange={onChange}
+      />
 
-      <div className="mt-4 flex flex-col gap-3">
-        {isLoadingNotificationPreferences ? (
-          <p className="text-sm text-slate-muted">
-            Loading notification preferences...
-          </p>
-        ) : notificationPreferences ? (
-          NOTIFICATION_PREFERENCE_ITEMS.map((item) => (
-            <NotificationPreferenceRow
-              key={item.key}
-              checked={notificationPreferences[item.key]}
-              title={item.title}
-              description={item.description}
-              disabled={isSavingNotificationPreferences}
-              onToggle={() => {
-                void onChange(item.key, !notificationPreferences[item.key]);
-              }}
-            />
-          ))
-        ) : (
-          <p className="text-sm text-slate-muted">
-            We couldn't load your notification preferences right now.
-          </p>
-        )}
-      </div>
-
-      {!isLoadingNotificationPreferences && notificationPreferences && (
-        <>
-          <div className="mt-8">
-            <h3 className="text-base font-semibold text-ink">Email delivery</h3>
-            <p className="mt-1 text-sm text-slate-muted">
-              These control which alerts TeamForge is allowed to send to your
-              inbox.
-            </p>
-          </div>
-
-          <div className="mt-4 flex flex-col gap-3">
-            {EMAIL_PREFERENCE_ITEMS.map((item) => (
-              <NotificationPreferenceRow
-                key={item.key}
-                checked={notificationPreferences[item.key]}
-                title={item.title}
-                description={item.description}
-                disabled={isSavingNotificationPreferences}
-                onToggle={() => {
-                  void onChange(item.key, !notificationPreferences[item.key]);
-                }}
-              />
-            ))}
-          </div>
-        </>
+      {shouldShowEmailDelivery && (
+        <PreferenceGroup
+          title="Email delivery"
+          description="These control which alerts TeamForge is allowed to send to your inbox."
+          items={EMAIL_PREFERENCE_ITEMS}
+          notificationPreferences={notificationPreferences}
+          isSaving={isSavingNotificationPreferences}
+          emptyMessage="We couldn't load your email preferences right now."
+          onChange={onChange}
+        />
       )}
     </section>
   );

@@ -7,14 +7,16 @@ import type {
   LocationType,
   Visibility,
 } from "@/features/forge/lib/forge-contract";
+import type { ForgePlanTemplate } from "@/features/forge/lib/forge-template";
 
-export type Step = 1 | 2 | 3 | 4 | 5 | 6;
+export type Step = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export type NavDirection = "forward" | "back";
 
 export interface ForgeWizardData {
   step: Step;
   navDirection: NavDirection;
   selectedActivity: string | null;
+  appliedTemplateId: string | null;
   planName: string;
   planDescription: string;
   planDate: string;
@@ -52,6 +54,7 @@ export interface ForgeWizardData {
 
 export type ForgeWizardField =
   | "selectedActivity"
+  | "appliedTemplateId"
   | "planName"
   | "planDescription"
   | "planDate"
@@ -83,16 +86,27 @@ export type ForgeWizardField =
   | "inviteCopied"
   | "invitesSent";
 
+export type ForgeWizardSetFieldAction = {
+  [Field in ForgeWizardField]: {
+    type: "set-field";
+    field: Field;
+    value: ForgeWizardData[Field];
+  };
+}[ForgeWizardField];
+
 export type ForgeWizardAction =
   | { type: "reset" }
+  | { type: "select-activity"; activity: string | null }
+  | {
+      type: "apply-activity-template";
+      template: ForgePlanTemplate;
+      templateId: string;
+    }
+  | { type: "clear-activity-template" }
   | { type: "set-step"; step: Step; navDirection: NavDirection }
   | { type: "go-next" }
   | { type: "go-back" }
-  | {
-      type: "set-field";
-      field: ForgeWizardField;
-      value: ForgeWizardData[ForgeWizardField];
-    }
+  | ForgeWizardSetFieldAction
   | {
       type: "apply-forge-result";
       result: ForgeResult;
@@ -101,6 +115,7 @@ export type ForgeWizardAction =
       groupId: string | null;
       chatId: string | null;
       planId: string | null;
+      step?: Step;
     }
   | { type: "remove-participant"; userId: string }
   | { type: "restore-participant"; userId: string }

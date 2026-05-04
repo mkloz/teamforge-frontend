@@ -7,6 +7,10 @@ import {
 } from "@/features/onboarding/lib/onboarding-route";
 import type { NotificationPreferences, User } from "@/shared/schemas";
 import {
+  PreferenceStatusMessage,
+  SectionHeading,
+} from "@/features/settings/components/settings-profile-form/preference-section-parts";
+import {
   MatchingThresholdControl,
   NotificationPreferenceRow,
   StatPill,
@@ -43,24 +47,20 @@ export function MatchingSettingsSection({
     !notificationPreferences;
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-ink">
-            Matching Preferences Snapshot
-          </h2>
-          <p className="mt-1 text-sm text-slate-muted">
-            This reflects what the compatibility engine already knows about you.
-          </p>
-        </div>
+    <section className="flex flex-col gap-8">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+        <SectionHeading
+          title="Group forming"
+          description="Decide how openly TeamForge can include you when compatible groups are being formed."
+        />
 
-        <div className="flex flex-wrap gap-3">
+        <div className="grid gap-5 sm:grid-cols-2">
           <StatPill
-            label="Personality Type"
+            label="Personality type"
             value={currentUser?.personalityType ?? "Not set"}
           />
           <StatPill
-            label="Trust Score"
+            label="Trust score"
             value={
               currentUser
                 ? `${normalizeTrustScore(currentUser.trustScore)}%`
@@ -70,10 +70,10 @@ export function MatchingSettingsSection({
         </div>
       </div>
 
-      <div className="mt-6 grid gap-3 lg:grid-cols-[1fr_1.3fr]">
+      <div className="grid gap-0 border-t border-border lg:grid-cols-[1fr_1.4fr] lg:gap-8">
         <NotificationPreferenceRow
           checked={notificationPreferences?.autoMatchingEnabled ?? true}
-          title="Automatic matching"
+          title="Automatic group forming"
           description="Allow TeamForge to include you when someone else forges an automatic group."
           disabled={isDisabled}
           onToggle={() => {
@@ -105,16 +105,10 @@ export function MatchingSettingsSection({
         />
       </div>
 
-      {(message || error) && (
-        <p
-          className={`mt-4 text-sm ${error ? "text-destructive" : "text-forge-teal"}`}
-        >
-          {error ?? message}
-        </p>
-      )}
+      <PreferenceStatusMessage message={message} error={error} />
 
-      <div className="mt-6">
-        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-muted">
+      <div className="border-t border-border pt-6">
+        <p className="text-xs font-semibold uppercase tracking-widest text-slate-muted">
           Interests
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -135,30 +129,30 @@ export function MatchingSettingsSection({
         </div>
       </div>
 
-      <div className="mt-6 flex flex-col gap-3 border-t border-border/70 pt-5 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-3 border-t border-border pt-5 md:flex-row md:items-center md:justify-between">
         <p className="text-sm text-slate-muted">
-          Update the signals TeamForge uses when forming your groups.
+          Update your answers and interests when your preferences shift.
         </p>
 
-        <div className="flex flex-wrap gap-3">
-          <Button asChild variant="outline">
+        <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(min(100%,8rem),1fr))] gap-3 md:max-w-[23rem]">
+          <Button asChild variant="outline" className="min-w-0 px-3">
             <Link
               {...buildPersonalityEditNavigation({
                 returnTo: "/settings",
                 returnSection: "matching",
               })}
             >
-              Update Personality
+              Update personality
             </Link>
           </Button>
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" className="min-w-0 px-3">
             <Link
               {...buildInterestsEditNavigation({
                 returnTo: "/settings",
                 returnSection: "matching",
               })}
             >
-              Update Interests
+              Update interests
             </Link>
           </Button>
         </div>

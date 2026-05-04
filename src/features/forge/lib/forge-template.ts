@@ -1,0 +1,26 @@
+import type {
+  ActivityVisibility,
+  CostType,
+  ForgeMode,
+  LocationMode,
+} from "@/shared/schemas";
+
+export interface ForgePlanTemplate {
+  selectedActivity: string;
+  planName: string;
+  planDescription: string;
+  planLocation: string;
+  planLocationLat: number | null;
+  planLocationLng: number | null;
+  locationType: LocationMode;
+  planCost: CostType;
+  planCostAmount: string;
+  planCostDetails: string;
+  forgeMode: ForgeMode;
+  fixedSize: number | null;
+  visibility: ActivityVisibility;
+  groupName: string;
+  groupDescription: string;
+  coverImage: string | null;
+  avatarImage: string | null;
+}

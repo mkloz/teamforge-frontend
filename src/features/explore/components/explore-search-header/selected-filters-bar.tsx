@@ -5,6 +5,7 @@ import {
   DEFAULT_FILTERS,
 } from "@/features/explore/constants/explore.constants";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
+import { Button } from "@/shared/components/ui/button";
 import { FilterTag } from "./filter-tag";
 
 export function SelectedFiltersBar() {
@@ -35,14 +36,16 @@ export function SelectedFiltersBar() {
         exit={{ opacity: 0, height: 0 }}
         className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1"
       >
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="xs"
           onClick={resetFilters}
-          className="shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-micro font-bold hover:bg-primary/20 active:scale-95 transition-all duration-150"
+          className="h-auto shrink-0 gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-micro text-primary hover:bg-primary/20"
         >
           <X className="size-3" strokeWidth={2.5} />
           Clear all
-        </button>
+        </Button>
 
         <div className="w-px h-4 bg-border/50 shrink-0" />
 

@@ -49,6 +49,14 @@ export class SettingsApi {
     );
   }
 
+  static async deleteAvatar() {
+    const response = await apiClient.delete("users/me/avatar");
+
+    return parseJsonWithRequestId(response, (value) =>
+      fullUserResponseSchema.parse(value),
+    );
+  }
+
   static async sendResetPasswordLink(email: string) {
     const response = await apiClient.post("auth/send-reset-password-link", {
       json: { email },

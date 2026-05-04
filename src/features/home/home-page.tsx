@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 
 import { PageErrorState } from "@/shared/components/page-error-state";
 
+import { FriendRequestReview } from "@/features/home/components/friend-request-review";
 import { FriendsInvitation } from "@/features/home/components/friends-invitation";
 import { GroupsGrid } from "@/features/home/components/groups-grid";
 import { HomeHero } from "@/features/home/components/home-hero";
@@ -17,7 +18,9 @@ export function HomePage() {
   const {
     focusedInviteId,
     focusedPanel,
+    focusedRequestId,
     invitationView,
+    clearFriendRequestFocus,
     clearInvitationFocus,
   } = useHomeRouteState();
   const invitationsRef = useRef<HTMLElement | null>(null);
@@ -81,6 +84,11 @@ export function HomePage() {
               focusedView={invitationView}
               focusRef={invitationsRef}
               onClearFocus={clearInvitationFocus}
+            />
+            <FriendRequestReview
+              focusedPanel={focusedPanel}
+              focusedRequestId={focusedRequestId}
+              onClearFocus={clearFriendRequestFocus}
             />
             <GroupsGrid />
             <div className="h-px w-full bg-border/30" aria-hidden="true" />

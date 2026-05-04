@@ -1,5 +1,21 @@
 import type { ForgeParticipant } from "@/features/forge/lib/forge-contract";
 
+function formatPercent(value: number) {
+  return `${Math.round(value <= 1 ? value * 100 : value)}%`;
+}
+
+function normalizePercent(value: number) {
+  return value <= 1 ? value * 100 : value;
+}
+
+export function getParticipantScorePercent(participant: ForgeParticipant) {
+  if (participant.compatibilityScore === null) {
+    return null;
+  }
+
+  return Math.round(normalizePercent(participant.compatibilityScore));
+}
+
 export function getParticipantName(participant: ForgeParticipant) {
   return participant.user?.name?.trim() || "Group member";
 }
@@ -18,27 +34,27 @@ export function getParticipantInitials(participant: ForgeParticipant) {
 
 export function getParticipantMeta(participant: ForgeParticipant) {
   if (participant.compatibilityScore !== null) {
+    const normalizedScore = getParticipantScorePercent(participant) ?? 0;
+
     return {
-      label: "Compatibility",
-      value: `${participant.compatibilityScore}%`,
+      label: "Match",
+      value: formatPercent(participant.compatibilityScore),
       className:
-        participant.compatibilityScore >= 90
-          ? "bg-forge-teal/10 text-forge-teal"
-          : "bg-accent/10 text-accent",
+        normalizedScore >= 90 ? "text-forge-teal" : "text-muted-foreground",
     };
   }
 
   if (typeof participant.user?.trustScore === "number") {
     return {
       label: "Trust",
-      value: `${participant.user.trustScore}%`,
-      className: "bg-spark-amber/10 text-spark-amber",
+      value: formatPercent(participant.user.trustScore),
+      className: "text-muted-foreground",
     };
   }
 
   return {
     label: "Status",
     value: "Candidate",
-    className: "bg-muted text-muted-foreground",
+    className: "text-muted-foreground",
   };
 }

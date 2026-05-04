@@ -12,8 +12,12 @@ export function Step4Success({
   onReforge,
 }: Step4SuccessProps) {
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
-      <SuccessHero planTitle={planTitle} />
+    <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
+      <SuccessHero
+        planTitle={planTitle}
+        participants={participants}
+        removedIds={removedIds}
+      />
       <ParticipantsSection
         participants={participants}
         removedIds={removedIds}

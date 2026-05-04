@@ -5,6 +5,7 @@ export function createInitialForgeWizardState(): ForgeWizardData {
     step: 1,
     navDirection: "forward",
     selectedActivity: null,
+    appliedTemplateId: null,
     planName: "",
     planDescription: "",
     planDate: "",

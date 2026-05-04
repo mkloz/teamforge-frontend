@@ -1,6 +1,7 @@
 import { Calendar, MapPin } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
 import type { Plan } from "@/features/activity/lib/activity-contract";
+import { formatPlanLocation } from "@/features/activity/lib/plan-location";
+import { cn } from "@/shared/lib/utils";
 import { useEffect, useRef } from "react";
 import {
   categoryColors,
@@ -25,6 +26,7 @@ export function PlanSection({
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const formattedDate = plan.dateTime ? formatDate(plan.dateTime) : "Date TBD";
   const formattedTime = plan.dateTime ? formatTime(plan.dateTime) : "Time TBD";
+  const formattedLocation = formatPlanLocation(plan);
 
   useEffect(() => {
     if (!isFocused) {
@@ -121,18 +123,20 @@ export function PlanSection({
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-bold text-foreground text-sm truncate">
-              {plan.location}
+              {formattedLocation}
             </p>
-            {plan.locationLat !== null && plan.locationLng !== null && (
-              <a
-                href={`https://maps.google.com/?q=${plan.locationLat},${plan.locationLng}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center text-[11px] text-primary font-semibold hover:underline gap-1 group-hover/item:translate-x-1 transition-transform"
-              >
-                Open in Maps
-              </a>
-            )}
+            {plan.locationMode === "IN_PERSON" &&
+              plan.locationLat !== null &&
+              plan.locationLng !== null && (
+                <a
+                  href={`https://maps.google.com/?q=${plan.locationLat},${plan.locationLng}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center text-[11px] text-primary font-semibold hover:underline gap-1 group-hover/item:translate-x-1 transition-transform"
+                >
+                  Open in Maps
+                </a>
+              )}
           </div>
         </div>
       </div>

@@ -12,6 +12,7 @@ import { buttonVariants, type ButtonVariants } from "./button-variants";
 export interface ButtonV2Props
   extends Omit<ComponentPropsWithoutRef<"button">, "disabled">, ButtonVariants {
   asChild?: boolean;
+  contentClassName?: string;
   loading?: boolean;
   ref?: Ref<HTMLButtonElement>;
 }
@@ -25,6 +26,7 @@ function ButtonComponent({
   variant,
   size,
   asChild = false,
+  contentClassName,
   loading = false,
   children,
   disabled = false,
@@ -109,6 +111,7 @@ function ButtonComponent({
                   : finalClasses.includes("justify-between")
                     ? "justify-between"
                     : "justify-center",
+              contentClassName,
             )}
           >
             {children}

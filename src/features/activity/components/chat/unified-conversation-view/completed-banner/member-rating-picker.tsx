@@ -1,4 +1,5 @@
 import type { GroupMember } from "@/features/activity/lib/activity-contract";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 interface MemberRatingPickerProps {
@@ -23,14 +24,16 @@ export function MemberRatingPicker({
         const isSelected = activeUserId === member.userId;
 
         return (
-          <button
+          <Button
             key={member.userId}
             type="button"
+            variant="ghost"
+            size="xs"
             disabled={isRated || disabled}
             onClick={() => onSelect(member)}
             className={cn(
-              "shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40",
+              "h-auto shrink-0 rounded-full border px-3 py-1.5 text-xs transition-colors",
+              "focus-visible:ring-forge-teal/40",
               isSelected
                 ? "border-forge-teal/40 bg-forge-teal/10 text-forge-teal"
                 : "border-border bg-card text-ink hover:border-forge-teal/30",
@@ -39,7 +42,7 @@ export function MemberRatingPicker({
           >
             {member.user?.name ?? "Teammate"}
             {isRated ? " rated" : ""}
-          </button>
+          </Button>
         );
       })}
     </div>

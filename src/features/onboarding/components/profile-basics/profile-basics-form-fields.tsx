@@ -6,7 +6,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/shared/components/ui/form";
-import { Input } from "@/shared/components/ui/input";
+import { NumberInput } from "@/shared/components/ui/number-input";
 import {
   Select,
   SelectContent,
@@ -40,12 +40,12 @@ export function ProfileBasicsFormFields({
                 Age
               </FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  inputMode="numeric"
+                <NumberInput
                   placeholder="22"
-                  className="h-11 rounded-xl bg-white"
-                  {...field}
+                  value={field.value ?? ""}
+                  min={16}
+                  max={99}
+                  onValueChange={field.onChange}
                 />
               </FormControl>
               <FormMessage className="text-xs font-medium" />
@@ -63,20 +63,13 @@ export function ProfileBasicsFormFields({
               </FormLabel>
               <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
-                  <SelectTrigger className="h-11 rounded-xl bg-white">
+                  <SelectTrigger>
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent
-                  position="popper"
-                  className="rounded-xl border-border bg-white shadow-lg shadow-black/5"
-                >
+                <SelectContent>
                   {GENDER_OPTIONS.map((option) => (
-                    <SelectItem
-                      key={option.value}
-                      value={option.value}
-                      className="rounded-lg"
-                    >
+                    <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>
                   ))}

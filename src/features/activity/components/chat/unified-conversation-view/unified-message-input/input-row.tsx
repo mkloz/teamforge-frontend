@@ -3,6 +3,7 @@ import { Smile } from "lucide-react";
 import React, { memo } from "react";
 import { AttachmentMenu } from "./attachment-menu";
 import { Button } from "@/shared/components/ui/button";
+import { Textarea } from "@/shared/components/ui/textarea";
 
 interface InputRowProps {
   value: string;
@@ -46,7 +47,7 @@ export const InputRow = memo(
       </div>
 
       <div className="flex-1 relative flex items-center min-h-11 py-2.75 px-2.5">
-        <textarea
+        <Textarea
           ref={textareaRef}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -57,9 +58,9 @@ export const InputRow = memo(
           rows={1}
           disabled={disabled}
           className={cn(
-            "w-full resize-none bg-transparent",
+            "min-h-0 resize-none border-0 bg-transparent p-0 shadow-none",
             "text-base leading-snug font-medium text-ink placeholder:text-slate-muted/60 caret-forge-teal",
-            "focus-visible:outline-none scrollbar-hide max-h-30",
+            "focus-visible:ring-0 scrollbar-hide max-h-30",
             "disabled:opacity-50 transition-colors",
           )}
           aria-label="Type a message"

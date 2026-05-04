@@ -1,8 +1,12 @@
 import { Globe, MapPin, Monitor } from "lucide-react";
 
 import { AddressAutocomplete } from "@/shared/components/maps/address-autocomplete";
+import { Input } from "@/shared/components/ui/input";
+import { Label } from "@/shared/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
 import { cn } from "@/shared/lib/utils";
 
+import { FieldLabel } from "./field-label";
 import { SectionCard } from "./section-card";
 import { SectionHeader } from "./section-header";
 import { LOCATION_TYPES } from "./step2-plan.constants";
@@ -31,71 +35,72 @@ export function LocationSection({
   planLocationLng,
 }: LocationSectionProps) {
   const showAddress = locationType === "IN_PERSON";
+  const showOnlineLocation = locationType === "ONLINE";
 
   return (
     <SectionCard>
       <SectionHeader
         icon={<MapPin size={14} />}
-        title="Location"
-        description="Choose where the group will meet."
+        title="Place"
+        description="Add a venue, meeting link, or leave the place for later."
       />
 
-      <div
-        className="grid grid-cols-3 gap-2"
-        role="radiogroup"
+      <RadioGroup
+        value={locationType}
+        onValueChange={(value) => onLocationTypeChange(value as LocationType)}
+        className="grid grid-cols-1 gap-2 sm:grid-cols-3"
         aria-label="Location type"
       >
         {LOCATION_TYPES.map(({ id, label, sub, Icon }) => {
           const active = locationType === id;
+          const itemId = `location-type-${id.toLowerCase()}`;
 
           return (
-            <button
+            <Label
               key={id}
-              type="button"
-              role="radio"
-              aria-checked={active}
-              onClick={() => onLocationTypeChange(id)}
+              htmlFor={itemId}
               className={cn(
-                "group flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl border text-center transition duration-150 active:scale-[0.97]",
+                "group flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-left transition duration-150 active:scale-[0.98]",
                 active
-                  ? "border-primary/30 bg-primary/8 ring-1 ring-primary/20 shadow-sm"
-                  : "border-border/50 bg-background/40 hover:border-primary/20 hover:bg-primary/4",
+                  ? "border-forge-teal/35 bg-forge-teal/10 ring-1 ring-forge-teal/20"
+                  : "border-border/50 bg-background/40 hover:border-forge-teal/25 hover:bg-forge-teal/5",
               )}
             >
+              <RadioGroupItem id={itemId} value={id} className="sr-only" />
               <div
                 className={cn(
-                  "w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-150",
+                  "flex size-7 shrink-0 items-center justify-center rounded-lg transition-colors duration-150",
                   active
-                    ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
-                    : "bg-muted/60 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary",
+                    ? "bg-forge-teal text-white"
+                    : "bg-muted/60 text-muted-foreground group-hover:bg-forge-teal/10 group-hover:text-forge-teal",
                 )}
               >
-                <Icon size={15} />
+                <Icon size={14} />
               </div>
-              <div>
+              <div className="min-w-0">
                 <p
                   className={cn(
-                    "text-xs font-semibold leading-tight",
-                    active ? "text-primary" : "text-foreground",
+                    "truncate text-xs font-semibold leading-tight",
+                    active ? "text-forge-teal" : "text-foreground",
                   )}
                 >
                   {label}
                 </p>
-                <p className="text-micro text-muted-foreground/60 leading-tight mt-0.5">
+                <p className="mt-0.5 truncate text-micro leading-tight text-muted-foreground/60">
                   {sub}
                 </p>
               </div>
-            </button>
+            </Label>
           );
         })}
-      </div>
+      </RadioGroup>
 
       {showAddress && (
         <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
           <AddressAutocomplete
             label="Address or venue"
             badge="Plan location"
-            hint="Venue coordinates help suggest nearby people. Members will see the plan location after the group is formed."
+            hint="Members will see this after the group is formed."
             placeholder="Search address or venue name..."
             value={
               planLocation
@@ -120,18 +125,25 @@ export function LocationSection({
       )}
 
       {locationType === "ONLINE" && (
-        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-muted/40 border border-border/40 animate-in fade-in duration-200">
-          <Monitor size={12} className="text-muted-foreground/50 shrink-0" />
-          <p className="text-xs text-muted-foreground/70">
-            A meeting link can be shared with members after the group is forged.
-          </p>
+        <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
+          <FieldLabel htmlFor="plan-online-location">
+            Meeting link or platform
+          </FieldLabel>
+          <Input
+            id="plan-online-location"
+            value={showOnlineLocation ? planLocation : ""}
+            onChange={(event) => onPlanLocationChange(event.target.value)}
+            placeholder="https://meet.example.com/friday or Discord"
+            leftIcon={<Monitor size={15} />}
+            maxLength={200}
+          />
         </div>
       )}
 
       {locationType === "TBD" && (
-        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-muted/40 border border-border/40 animate-in fade-in duration-200">
+        <div className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/40 px-3 py-2 animate-in fade-in duration-200">
           <Globe size={12} className="text-muted-foreground/50 shrink-0" />
-          <p className="text-xs text-muted-foreground/70">
+          <p className="text-xs leading-snug text-muted-foreground/70">
             Location will be confirmed with members once the group is formed.
           </p>
         </div>

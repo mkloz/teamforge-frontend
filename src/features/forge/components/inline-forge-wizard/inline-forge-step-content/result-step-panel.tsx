@@ -1,0 +1,37 @@
+import { Step4Failed } from "@/features/forge/components/steps/step4-failed";
+import { Step4Success } from "@/features/forge/components/steps/step4-success";
+
+import type { CurrentForgeStepProps } from "./types";
+
+type ResultStepPanelProps = Pick<CurrentForgeStepProps, "actions" | "fw">;
+
+export function ResultStepPanel({ actions, fw }: ResultStepPanelProps) {
+  if (fw.forgeResult === "SUCCESS") {
+    return (
+      <Step4Success
+        planTitle={fw.planName}
+        participants={fw.participants}
+        removedIds={fw.removedIds}
+        onRemoveParticipant={fw.handleRemoveParticipant}
+        onRestoreParticipant={fw.handleRestoreParticipant}
+        onReforge={fw.handleReforge}
+      />
+    );
+  }
+
+  if (fw.forgeResult === "FAILED") {
+    return (
+      <Step4Failed
+        forgeMode={fw.forgeMode}
+        isKeepSearchingEnabled={fw.isSearchKept}
+        isKeepingSearch={fw.isKeepingSearch}
+        onKeepSearchingChange={
+          fw.activityId ? fw.handleKeepSearchingChange : undefined
+        }
+        onSwitchToManual={actions.switchFailedForgeToManual}
+      />
+    );
+  }
+
+  return null;
+}

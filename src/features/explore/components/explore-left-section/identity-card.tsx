@@ -1,5 +1,7 @@
 import { ShieldCheck } from "lucide-react";
+
 import { OceanDiagram } from "@/shared/components/psychometrics/ocean-chart";
+import { OCEAN_TRAITS } from "@/shared/lib/ocean-traits";
 import type { OceanScores } from "@/shared/types/psychometrics";
 
 interface IdentityCardProps {
@@ -13,38 +15,84 @@ export function IdentityCard({
   oceanScores,
   trustScore,
 }: IdentityCardProps) {
+  const strongestTraits = [...OCEAN_TRAITS]
+    .sort((left, right) => oceanScores[right.key] - oceanScores[left.key])
+    .slice(0, 2);
+
   return (
-    <div className="group relative bg-canvas/40 backdrop-blur-sm border-2 border-border p-4 rounded-3xl transition-all duration-300 hover:border-forge-teal/40 hover:bg-canvas hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-forge-teal text-background flex items-center justify-center font-black text-sm shadow-sm ring-1 ring-forge-teal/20">
-            {mbti}
-          </div>
-          <div className="space-y-0.5">
-            <h4 className="text-xs font-black text-foreground uppercase tracking-wider">
-              Match Identity
-            </h4>
-            <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-80 flex items-center gap-1">
-              Verified
-            </span>
-          </div>
+    <section aria-labelledby="match-identity-heading" className="px-1 py-1">
+      <div className="flex items-center gap-2.5">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-forge-teal text-sm font-black text-background shadow-sm">
+          {mbti}
+        </span>
+
+        <div className="min-w-0 flex-1">
+          <h2
+            id="match-identity-heading"
+            className="text-sm font-black leading-tight tracking-tight text-foreground"
+          >
+            Match identity
+          </h2>
+          <p className="mt-0.5 flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground">
+            <ShieldCheck
+              className="size-3.5 text-forge-teal"
+              strokeWidth={2.4}
+              aria-hidden
+            />
+            Verified personality profile
+          </p>
         </div>
-        <div className="flex flex-col items-end">
-          <div className="flex items-center gap-1 text-spark-amber">
-            <ShieldCheck className="size-4" strokeWidth={2.5} />
-            <span className="text-sm font-black tabular-nums tracking-tighter">
-              {trustScore}
-            </span>
-          </div>
-          <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">
-            Trust Score
+
+        <div className="shrink-0 text-right leading-none">
+          <span className="text-sm font-black tabular-nums text-spark-amber">
+            {trustScore}
           </span>
+          <p className="mt-1 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+            Trust
+          </p>
         </div>
       </div>
 
-      <div className="w-full aspect-5/4 max-w-70 mx-auto -my-4 flex items-center justify-center">
-        <OceanDiagram scores={oceanScores} interactive={false} />
+      <div className="my-3 h-px w-full bg-border/45" aria-hidden />
+
+      <div className="relative mx-auto flex h-56 w-full max-w-60 items-center justify-center">
+        <OceanDiagram
+          scores={oceanScores}
+          interactive={false}
+          className="min-h-0"
+        />
       </div>
-    </div>
+
+      <div className="mt-1 space-y-2">
+        <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+          Strongest signals
+        </p>
+
+        <div className="space-y-1.5">
+          {strongestTraits.map((trait) => {
+            const score = oceanScores[trait.key];
+
+            return (
+              <div key={trait.key}>
+                <div className="mb-0.5 flex items-center justify-between gap-3">
+                  <span className="truncate text-xs font-bold text-foreground">
+                    {trait.label}
+                  </span>
+                  <span className="text-xs font-black tabular-nums text-forge-teal">
+                    {score}
+                  </span>
+                </div>
+                <div className="h-1 overflow-hidden rounded-full bg-muted/50">
+                  <div
+                    className="h-full rounded-full bg-forge-teal"
+                    style={{ width: `${score}%` }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
   );
 }

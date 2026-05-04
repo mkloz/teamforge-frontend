@@ -1,5 +1,34 @@
 import type { NotificationPreferences } from "@/shared/schemas";
+import {
+  PreferenceStatusMessage,
+  SectionHeading,
+} from "@/features/settings/components/settings-profile-form/preference-section-parts";
 import { NotificationPreferenceRow } from "@/features/settings/components/settings-profile-form/settings-form-controls";
+
+const PRIVACY_TOGGLE_ITEMS = [
+  {
+    key: "showAgeOnProfile",
+    title: "Show age",
+    description: "Display your exact age on public profile surfaces.",
+  },
+  {
+    key: "showGenderOnProfile",
+    title: "Show gender",
+    description: "Display gender on your public profile.",
+  },
+  {
+    key: "showCityOnProfile",
+    title: "Show city",
+    description: "Display your city to other people.",
+  },
+] as const satisfies ReadonlyArray<{
+  key: keyof Pick<
+    NotificationPreferences,
+    "showAgeOnProfile" | "showGenderOnProfile" | "showCityOnProfile"
+  >;
+  title: string;
+  description: string;
+}>;
 
 interface PrivacySettingsSectionProps {
   notificationPreferences: NotificationPreferences | null;
@@ -29,86 +58,45 @@ export function PrivacySettingsSection({
     !notificationPreferences;
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-6">
-      <div className="flex flex-col gap-2">
-        <h2 className="text-xl font-bold text-ink">Profile Privacy</h2>
+    <section className="flex flex-col gap-6">
+      <SectionHeading
+        title="Profile privacy"
+        description="Choose which personal details appear on your public profile. These details can still quietly help TeamForge place you in better groups."
+      />
+
+      <div className="grid gap-0 border-t border-border lg:grid-cols-3 lg:gap-8">
+        {PRIVACY_TOGGLE_ITEMS.map((item) => (
+          <NotificationPreferenceRow
+            key={item.key}
+            checked={notificationPreferences?.[item.key] ?? true}
+            title={item.title}
+            description={item.description}
+            disabled={isDisabled}
+            onToggle={() => {
+              if (!notificationPreferences) {
+                return;
+              }
+
+              void onChange({
+                showAgeOnProfile: notificationPreferences.showAgeOnProfile,
+                showGenderOnProfile:
+                  notificationPreferences.showGenderOnProfile,
+                showCityOnProfile: notificationPreferences.showCityOnProfile,
+                [item.key]: !notificationPreferences[item.key],
+              });
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="border-l border-forge-teal/35 pl-4">
         <p className="text-sm leading-relaxed text-slate-muted">
-          Choose which personal details appear on your public profile. These
-          signals can still be used privately for compatibility.
+          Exact location is never shown on public profiles. People only see your
+          city when you allow it.
         </p>
       </div>
 
-      <div className="mt-6 grid gap-3 lg:grid-cols-3">
-        <NotificationPreferenceRow
-          checked={notificationPreferences?.showAgeOnProfile ?? true}
-          title="Show age"
-          description="Display your exact age on public profile surfaces."
-          disabled={isDisabled}
-          onToggle={() => {
-            if (!notificationPreferences) {
-              return;
-            }
-
-            void onChange({
-              showAgeOnProfile: !notificationPreferences.showAgeOnProfile,
-              showGenderOnProfile: notificationPreferences.showGenderOnProfile,
-              showCityOnProfile: notificationPreferences.showCityOnProfile,
-            });
-          }}
-        />
-
-        <NotificationPreferenceRow
-          checked={notificationPreferences?.showGenderOnProfile ?? true}
-          title="Show gender"
-          description="Display gender on your public profile."
-          disabled={isDisabled}
-          onToggle={() => {
-            if (!notificationPreferences) {
-              return;
-            }
-
-            void onChange({
-              showAgeOnProfile: notificationPreferences.showAgeOnProfile,
-              showGenderOnProfile: !notificationPreferences.showGenderOnProfile,
-              showCityOnProfile: notificationPreferences.showCityOnProfile,
-            });
-          }}
-        />
-
-        <NotificationPreferenceRow
-          checked={notificationPreferences?.showCityOnProfile ?? true}
-          title="Show city"
-          description="Display your city to other people."
-          disabled={isDisabled}
-          onToggle={() => {
-            if (!notificationPreferences) {
-              return;
-            }
-
-            void onChange({
-              showAgeOnProfile: notificationPreferences.showAgeOnProfile,
-              showGenderOnProfile: notificationPreferences.showGenderOnProfile,
-              showCityOnProfile: !notificationPreferences.showCityOnProfile,
-            });
-          }}
-        />
-      </div>
-
-      <div className="mt-6 rounded-2xl border border-forge-teal/15 bg-forge-teal/5 p-4">
-        <p className="text-sm leading-relaxed text-slate-muted">
-          Exact location is never shown on public profiles. TeamForge stores
-          private coordinates only for matching and uses city as the public
-          fallback.
-        </p>
-      </div>
-
-      {(message || error) && (
-        <p
-          className={`mt-4 text-sm ${error ? "text-destructive" : "text-forge-teal"}`}
-        >
-          {error ?? message}
-        </p>
-      )}
+      <PreferenceStatusMessage message={message} error={error} />
     </section>
   );
 }

@@ -19,67 +19,62 @@ export interface ActivityOption {
 export const ACTIVITIES: ActivityOption[] = [
   {
     id: "SPORTS",
-    label: "Sports & Fitness",
-    description: "Team sports, gym, running",
+    label: "Sport & Movement",
+    description: "Games, workouts, runs, climbing",
   },
   {
     id: "GAMING",
-    label: "Gaming & Tech",
-    description: "E-sports, board games, VR",
+    label: "Games & Play",
+    description: "Board games, video games, arcades",
   },
   {
     id: "SOCIAL",
-    label: "Social & Networking",
-    description: "Coffee, drinks, meetups",
+    label: "Social & Nightlife",
+    description: "Coffee, drinks, brunch, meetups",
   },
   {
     id: "ARTS",
     label: "Arts & Culture",
-    description: "Museums, painting, cinema",
+    description: "Museums, galleries, film, making",
   },
   {
     id: "MUSIC",
-    label: "Music & Performance",
-    description: "Concerts, jam sessions, DJ",
+    label: "Music & Shows",
+    description: "Concerts, gigs, karaoke, jams",
   },
   {
     id: "OUTDOORS",
     label: "Outdoors & Nature",
-    description: "Hiking, camping, beach",
+    description: "Hikes, parks, cycling, fresh air",
   },
   {
     id: "LEARNING",
-    label: "Learning & Workshops",
-    description: "Coding, photography, design",
+    label: "Study & Skills",
+    description: "Study groups, workshops, practice",
   },
   {
     id: "FOOD",
-    label: "Food & Dining",
-    description: "Dinner, brunch, cooking",
+    label: "Food & Drink",
+    description: "Dinner, markets, cooking, cafes",
   },
   {
     id: "TECH",
-    label: "Tech & Innovation",
-    description: "Coding, hackathons, AI",
+    label: "Tech & Build",
+    description: "Coding, startups, demos, AI",
   },
   {
     id: "WELLNESS",
-    label: "Wellness & Health",
-    description: "Yoga, meditation, spa",
+    label: "Wellness & Reset",
+    description: "Yoga, meditation, recovery, habits",
   },
   {
     id: "TRAVEL",
-    label: "Travel & Adventure",
-    description: "Backpacking, road trips, culture",
+    label: "Day Trips & Discovery",
+    description: "City breaks, routes, local gems",
   },
   {
     id: "OTHER",
-    label: "Something Else",
-    description: "Unique activities, special projects",
+    label: "Projects & Wildcards",
+    description: "Volunteering, swaps, niche ideas",
   },
-];
-
-export const RECENT = [
-  { id: "SPORTS", label: "Tennis at Riverside", count: 3 },
-  { id: "SOCIAL", label: "Product Brainstorming", count: 2 },
 ];

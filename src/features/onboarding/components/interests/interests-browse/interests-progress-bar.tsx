@@ -1,11 +1,13 @@
 import { Button } from "@/shared/components/ui/button";
 import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
 import { MAX_INTERESTS, MIN_INTERESTS } from "../../../data/interests-data";
 
 interface ProgressBarProps {
   selectedCount: number;
   canContinue: boolean;
   isAtMax: boolean;
+  onBack: () => void;
   onContinue: () => void;
 }
 
@@ -13,6 +15,7 @@ export function InterestsProgressBar({
   selectedCount,
   canContinue,
   isAtMax,
+  onBack,
   onContinue,
 }: ProgressBarProps) {
   const pct = Math.min((selectedCount / MAX_INTERESTS) * 100, 100);
@@ -64,27 +67,37 @@ export function InterestsProgressBar({
             {progressText}
           </p>
         </div>
-        <Button
-          onClick={canContinue ? onContinue : undefined}
-          disabled={!canContinue}
-          aria-label={
-            canContinue
-              ? "Review your selected interests"
-              : "Select more interests to continue"
-          }
-          className="shrink-0"
-        >
-          Review picks
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path
-              d="M3 7h8M7.5 3.5L11 7l-3.5 3.5"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </Button>
+        <div className="flex shrink-0 items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onBack}
+            className="px-2 text-muted-foreground hover:bg-transparent hover:text-foreground"
+          >
+            <ArrowLeft size={14} strokeWidth={2.5} />
+            Back
+          </Button>
+          <Button
+            onClick={canContinue ? onContinue : undefined}
+            disabled={!canContinue}
+            aria-label={
+              canContinue
+                ? "Review your selected interests"
+                : "Select more interests to continue"
+            }
+          >
+            Review picks
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path
+                d="M3 7h8M7.5 3.5L11 7l-3.5 3.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </Button>
+        </div>
       </div>
     </div>
   );

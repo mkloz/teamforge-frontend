@@ -1,3 +1,4 @@
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import type { Visibility } from "@/features/forge/lib/forge-contract";
 
@@ -13,7 +14,7 @@ export function PrivacySection({
   onVisibilityChange,
 }: PrivacySectionProps) {
   return (
-    <section className="space-y-3 pt-2 border-t border-muted/20">
+    <section className="space-y-3 border-t border-border/25 pt-4">
       <div className="px-0.5">
         <p className="text-xs md:text-sm font-semibold text-muted-foreground">
           Who can find this group?
@@ -23,58 +24,62 @@ export function PrivacySection({
         </p>
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         {VISIBILITY_OPTIONS.map(({ value, label, description, Icon }) => {
           const active = visibility === value;
 
           return (
-            <button
+            <Button
               key={value}
               type="button"
+              variant="ghost"
               role="radio"
               aria-checked={active}
               onClick={() => onVisibilityChange(value)}
               className={cn(
-                "group w-full flex items-start gap-4 p-4 rounded-2xl border text-left transition-colors duration-200",
+                "group h-auto w-full min-w-0 items-start justify-start whitespace-normal rounded-lg border p-3 text-left transition-colors duration-200",
                 active
-                  ? "border-primary bg-primary/5 ring-1 ring-primary/20 shadow-sm"
-                  : "border-border/40 bg-card hover:border-primary/30 hover:bg-primary/3",
+                  ? "border-forge-teal/55 bg-forge-teal/10 ring-1 ring-forge-teal/20 shadow-sm"
+                  : "border-border/40 bg-card hover:border-forge-teal/30 hover:bg-forge-teal/5",
               )}
+              contentClassName="min-w-0 items-start justify-start gap-3 whitespace-normal sm:grid sm:w-full sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:gap-x-3 sm:gap-y-0"
             >
               <div
                 className={cn(
-                  "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors duration-200 mt-0.5",
+                  "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-200 sm:col-start-1 sm:row-start-1",
                   active
-                    ? "bg-primary text-primary-foreground shadow-sm shadow-primary/25"
-                    : "bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary",
+                    ? "bg-forge-teal text-white shadow-sm shadow-forge-teal/25"
+                    : "bg-muted text-muted-foreground group-hover:bg-forge-teal/10 group-hover:text-forge-teal",
                 )}
               >
-                <Icon size={17} />
+                <Icon size={15} />
               </div>
-              <div className="flex-1 min-w-0 space-y-0.5">
+              <div className="min-w-0 flex-1 space-y-1 sm:contents">
                 <p
                   className={cn(
-                    "text-sm font-semibold leading-tight",
-                    active ? "text-primary" : "text-foreground",
+                    "min-w-0 text-pretty text-[13px] font-semibold leading-tight sm:col-start-2 sm:row-start-1 sm:self-center",
+                    active ? "text-forge-teal" : "text-foreground",
                   )}
                 >
                   {label}
                 </p>
-                <p className="text-xs text-muted-foreground leading-snug">
+                <p className="min-w-0 text-pretty text-[11px] leading-snug text-muted-foreground sm:col-span-3 sm:col-start-1 sm:row-start-2 sm:pt-2">
                   {description}
                 </p>
               </div>
               <div
                 className={cn(
-                  "w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center mt-1 transition-colors duration-200",
-                  active ? "border-primary bg-primary" : "border-border/50",
+                  "w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center mt-1 transition-colors duration-200 sm:col-start-3 sm:row-start-1",
+                  active
+                    ? "border-forge-teal bg-forge-teal"
+                    : "border-border/50",
                 )}
               >
                 {active && (
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary-foreground" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-white" />
                 )}
               </div>
-            </button>
+            </Button>
           );
         })}
       </div>

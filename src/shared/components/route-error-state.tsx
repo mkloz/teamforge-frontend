@@ -11,6 +11,9 @@ import {
 } from "@/shared/lib/telemetry-contract";
 import { Button } from "@/shared/components/ui/button";
 
+const DYNAMIC_IMPORT_RELOAD_KEY = "teamforge:dynamic-import-reload";
+const DYNAMIC_IMPORT_RELOAD_COOLDOWN_MS = 30_000;
+
 interface RouteErrorStateProps {
   error: unknown;
   scope: RouteErrorScope;
@@ -21,6 +24,35 @@ interface RouteErrorStateProps {
   fallbackLabel?: string;
   fullPage?: boolean;
   onRetry?: () => void;
+}
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function isDynamicImportFetchError(error: unknown) {
+  const message = getErrorMessage(error);
+
+  return (
+    message.includes("Failed to fetch dynamically imported module") ||
+    message.includes("Importing a module script failed")
+  );
+}
+
+function recoverDynamicImportError() {
+  const lastReload = Number(
+    window.sessionStorage.getItem(DYNAMIC_IMPORT_RELOAD_KEY) ?? 0,
+  );
+  const now = Date.now();
+
+  if (now - lastReload < DYNAMIC_IMPORT_RELOAD_COOLDOWN_MS) {
+    return false;
+  }
+
+  window.sessionStorage.setItem(DYNAMIC_IMPORT_RELOAD_KEY, String(now));
+  window.location.reload();
+
+  return true;
 }
 
 export function RouteErrorState({
@@ -39,6 +71,14 @@ export function RouteErrorState({
   const [isRetrying, setIsRetrying] = useState(false);
 
   useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      isDynamicImportFetchError(error) &&
+      recoverDynamicImportError()
+    ) {
+      return;
+    }
+
     captureException(telemetryErrorScopes.routeError, error, {
       routeScope: scope,
     });

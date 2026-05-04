@@ -1,16 +1,15 @@
 export function RemovalNote() {
   return (
-    <div className="flex gap-3 p-4 rounded-2xl border border-border/40 bg-card">
-      <div className="rounded-full bg-primary/20 w-2 h-2 mt-1.5 shrink-0" />
+    <div className="flex gap-3 rounded-lg border border-border/35 bg-muted/20 p-3.5">
+      <div className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-muted-foreground/35" />
       <div className="space-y-1">
-        <p className="text-xs font-semibold text-primary/80">
-          How removal works
-        </p>
+        <p className="text-xs font-semibold text-foreground">Removing people</p>
         <p className="text-xs text-muted-foreground leading-relaxed">
-          Removing a participant queues them for future matching rather than
-          blocking them. Use{" "}
-          <span className="font-semibold text-accent">Recalculate</span> if the
-          remaining balance feels off.
+          Removed people are skipped for this group only. Use{" "}
+          <span className="font-semibold text-spark-amber">
+            Try another set
+          </span>{" "}
+          if you want a different lineup.
         </p>
       </div>
     </div>

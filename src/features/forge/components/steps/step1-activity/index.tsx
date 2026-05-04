@@ -4,8 +4,10 @@ import type { Step1ActivityProps } from "./types";
 import { useActivityGridShake } from "./use-activity-grid-shake";
 
 export function Step1Activity({
+  appliedTemplateId,
   selectedActivity,
   onSelect,
+  onTemplateToggle,
   shakeRequestId = 0,
 }: Step1ActivityProps) {
   const shaking = useActivityGridShake(shakeRequestId);
@@ -13,8 +15,9 @@ export function Step1Activity({
   return (
     <div className="space-y-5 animate-in fade-in duration-300">
       <RecentActivityRow
+        appliedTemplateId={appliedTemplateId}
         selectedActivity={selectedActivity}
-        onSelect={onSelect}
+        onTemplateToggle={onTemplateToggle}
       />
       <ActivityCategoryGrid
         selectedActivity={selectedActivity}

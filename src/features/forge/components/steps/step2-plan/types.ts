@@ -1,5 +1,4 @@
 export type LocationType = "IN_PERSON" | "ONLINE" | "TBD";
-export type PlanCost = "FREE" | "PAID";
 
 export interface Step2PlanProps {
   planName: string;
@@ -20,10 +19,4 @@ export interface Step2PlanProps {
   ) => void;
   locationType: LocationType;
   onLocationTypeChange: (v: LocationType) => void;
-  planCost: PlanCost;
-  onPlanCostChange: (v: PlanCost) => void;
-  planCostAmount: string;
-  onPlanCostAmountChange: (v: string) => void;
-  planCostDetails: string;
-  onPlanCostDetailsChange: (v: string) => void;
 }

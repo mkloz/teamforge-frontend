@@ -10,18 +10,25 @@ export function Step6Invite({
   planDate,
   planLocation,
   activityTitle,
+  groupName,
+  groupDescription,
   participantCount,
   inviteeCount,
   forgeMode,
   coverImage,
+  avatarImage,
   inviteCopied,
   onCopyLink,
 }: Step6InviteProps) {
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
+    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
       <GroupSummaryCard
         activityTitle={activityTitle}
+        avatarImage={avatarImage}
         coverImage={coverImage}
+        forgeMode={forgeMode}
+        groupDescription={groupDescription}
+        groupName={groupName}
         participantCount={participantCount}
         planDate={planDate}
         planLocation={planLocation}

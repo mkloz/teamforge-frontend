@@ -2,6 +2,7 @@ import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { fadeUpItem } from "@/features/onboarding/constants/motion";
+import { Button } from "@/shared/components/ui/button";
 import {
   TEST_LENGTH_CONFIG,
   type TestLength,
@@ -46,11 +47,13 @@ export function ExtensionSection({
               )?.estimatedMinutes || 0;
 
             return (
-              <button
+              <Button
                 key={numLen}
+                type="button"
+                variant="ghost"
                 onClick={() => onSelect(isSelected ? null : numLen)}
                 className={cn(
-                  "w-full flex items-center justify-between py-3 px-4 rounded-xl transition-all cursor-pointer group/btn relative border active:scale-[0.98]",
+                  "group/btn relative h-auto w-full justify-between rounded-xl border px-4 py-3 transition-all",
                   isSelected
                     ? "border-forge-teal bg-forge-teal/5 shadow-sm shadow-forge-teal/10"
                     : "border-slate-200/60 dark:border-white/10 bg-card hover:border-slate-300 dark:hover:border-white/16 hover:shadow-xs",
@@ -96,7 +99,7 @@ export function ExtensionSection({
                     )}
                   </div>
                 </div>
-              </button>
+              </Button>
             );
           })}
       </div>

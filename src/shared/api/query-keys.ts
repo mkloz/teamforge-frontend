@@ -45,6 +45,7 @@ export const APP_QUERY_KEYS = {
   },
   forge: {
     friends: ["forge", "friends"] as const,
+    recentActivities: ["forge", "recent-activities"] as const,
   },
   onboarding: {
     interestTree: ["onboarding", "interests", "tree"] as const,

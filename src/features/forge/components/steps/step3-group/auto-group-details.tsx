@@ -1,5 +1,5 @@
-import * as RadixSlider from "@radix-ui/react-slider";
-
+import { Button } from "@/shared/components/ui/button";
+import { Slider } from "@/shared/components/ui/slider";
 import { cn } from "@/shared/lib/utils";
 
 import { AlgorithmTuningSection } from "./algorithm-tuning-section";
@@ -22,13 +22,13 @@ export function AutoGroupDetails({
   onGroupSizeModeChange,
 }: AutoGroupDetailsProps) {
   return (
-    <div className="space-y-5 animate-in fade-in zoom-in-95 duration-500">
-      <div className="px-0.5 space-y-3">
+    <div className="space-y-4 animate-in fade-in zoom-in-95 duration-300">
+      <div className="space-y-3 rounded-lg border border-border/35 bg-card/65 px-3 py-3">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-muted-foreground/50 tracking-wide">
             Capacity
           </span>
-          <div className="flex items-center gap-0 p-0.5 rounded-lg bg-muted/30 border border-border/40">
+          <div className="flex items-center gap-0 p-0.5 rounded-lg bg-background/60 border border-border/40">
             {(["range", "fixed"] as const).map((mode) => {
               const nextMode = mode === "range" ? "RANGE" : "FIXED";
               const active = groupSizeMode === nextMode;
@@ -38,14 +38,16 @@ export function AutoGroupDetails({
                   : `${fixedSize}`;
 
               return (
-                <button
+                <Button
                   key={mode}
                   type="button"
+                  variant="ghost"
+                  size="xs"
                   onClick={() => onGroupSizeModeChange(nextMode)}
                   className={cn(
-                    "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-micro font-bold transition-colors duration-200 min-w-16 justify-center",
+                    "h-auto min-w-16 rounded-md px-2.5 py-1 text-micro transition-colors duration-200",
                     active
-                      ? "bg-background text-foreground shadow-sm"
+                      ? "bg-card text-foreground shadow-sm"
                       : "text-muted-foreground/50 hover:text-muted-foreground",
                   )}
                 >
@@ -55,14 +57,14 @@ export function AutoGroupDetails({
                       "tabular-nums font-black transition-colors",
                       active
                         ? mode === "range"
-                          ? "text-primary"
-                          : "text-accent"
+                          ? "text-forge-teal"
+                          : "text-spark-amber"
                         : "text-muted-foreground/30",
                     )}
                   >
                     {badge}
                   </span>
-                </button>
+                </Button>
               );
             })}
           </div>
@@ -72,30 +74,19 @@ export function AutoGroupDetails({
           {groupSizeMode === "RANGE" ? (
             <div className="space-y-1 animate-in fade-in duration-200">
               <div className="py-1">
-                <RadixSlider.Root
-                  className="relative flex items-center select-none touch-none w-full h-10"
+                <Slider
+                  className="h-10"
                   value={[autoMinSize, autoMaxSize]}
-                  onValueChange={([min, max]) => {
-                    onAutoMinSizeChange(min);
-                    onAutoMaxSizeChange(max);
+                  onValueChange={(value) => {
+                    onAutoMinSizeChange(value[0] ?? autoMinSize);
+                    onAutoMaxSizeChange(value[1] ?? autoMaxSize);
                   }}
                   min={2}
                   max={8}
                   step={1}
                   minStepsBetweenThumbs={1}
-                >
-                  <RadixSlider.Track className="bg-muted relative grow rounded-full h-1.5">
-                    <RadixSlider.Range className="absolute bg-primary rounded-full h-full" />
-                  </RadixSlider.Track>
-                  <RadixSlider.Thumb
-                    className="block w-6 h-6 bg-background border-2 border-primary rounded-full shadow-md shadow-primary/20 hover:scale-110 active:scale-95 transition-transform outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 cursor-grab active:cursor-grabbing"
-                    aria-label="Minimum members"
-                  />
-                  <RadixSlider.Thumb
-                    className="block w-6 h-6 bg-background border-2 border-primary rounded-full shadow-md shadow-primary/20 hover:scale-110 active:scale-95 transition-transform outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 cursor-grab active:cursor-grabbing"
-                    aria-label="Maximum members"
-                  />
-                </RadixSlider.Root>
+                  aria-label="Group size range"
+                />
               </div>
               <div className="flex justify-between px-0.5">
                 <span className="text-micro text-muted-foreground/40">
@@ -109,22 +100,17 @@ export function AutoGroupDetails({
           ) : (
             <div className="space-y-1 animate-in fade-in duration-200">
               <div className="py-1">
-                <RadixSlider.Root
-                  className="relative flex items-center select-none touch-none w-full h-10"
+                <Slider
+                  className="h-10"
                   value={[fixedSize]}
-                  onValueChange={([v]) => onFixedSizeChange(v)}
+                  onValueChange={(value) =>
+                    onFixedSizeChange(value[0] ?? fixedSize)
+                  }
                   min={2}
                   max={8}
                   step={1}
-                >
-                  <RadixSlider.Track className="bg-muted relative grow rounded-full h-1.5">
-                    <RadixSlider.Range className="absolute bg-accent rounded-full h-full" />
-                  </RadixSlider.Track>
-                  <RadixSlider.Thumb
-                    className="block w-6 h-6 bg-background border-2 border-accent rounded-full shadow-md shadow-accent/20 hover:scale-110 active:scale-95 transition-transform outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 cursor-grab active:cursor-grabbing"
-                    aria-label="Fixed capacity"
-                  />
-                </RadixSlider.Root>
+                  aria-label="Fixed capacity"
+                />
               </div>
               <div className="flex justify-between px-0.5">
                 <span className="text-micro text-muted-foreground/40">

@@ -48,8 +48,8 @@ export const ProposalMessageDetails = memo(function ProposalMessageDetails({
       <p className="mb-3 text-xs text-muted-foreground">{summaryText}</p>
 
       <ProposalComparison
-        current={formatProposalValue(proposal.currentValue)}
-        proposed={formatProposalValue(proposal.proposedValue)}
+        current={formatProposalValue(proposal.field, proposal.currentValue)}
+        proposed={formatProposalValue(proposal.field, proposal.proposedValue)}
       />
 
       <div className="mt-4 space-y-2">

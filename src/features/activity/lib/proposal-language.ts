@@ -1,4 +1,5 @@
 import type { PlanProposal } from "@/shared/schemas/plan";
+import { formatPlanLocationProposalValue } from "@/features/activity/lib/plan-location";
 
 export const PROPOSAL_FIELD_LABELS: Record<PlanProposal["field"], string> = {
   TITLE: "Title",
@@ -31,9 +32,16 @@ export function formatProposalDate(value: string) {
   });
 }
 
-export function formatProposalValue(value: string | null) {
+export function formatProposalValue(
+  field: PlanProposal["field"],
+  value: string | null,
+) {
   if (!value) {
     return "Not set";
+  }
+
+  if (field === "LOCATION") {
+    return formatPlanLocationProposalValue(value);
   }
 
   const date = new Date(value);
@@ -56,5 +64,5 @@ export function buildProposalTimelineContent(proposal: PlanProposal) {
 }
 
 export function buildProposalSummaryText(proposal: PlanProposal) {
-  return `${PROPOSAL_FIELD_LABELS[proposal.field]} proposed: ${formatProposalValue(proposal.proposedValue)}`;
+  return `${PROPOSAL_FIELD_LABELS[proposal.field]} proposed: ${formatProposalValue(proposal.field, proposal.proposedValue)}`;
 }

@@ -2,9 +2,18 @@ import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { appQueryClient } from "@/shared/api/query-client";
 
 import { ForgeApi } from "@/features/forge/api/forge.api";
+import {
+  invalidateForgeSearchState,
+  invalidateRecentForgeActivities,
+} from "@/features/forge/api/forge-cache";
+import {
+  buildFailedForgeResult,
+  buildSuccessfulForgeResult,
+} from "@/features/forge/api/forge-result-mappers";
 import type {
   AutoForgeExecutionInput,
   ForgeExecutionResult,
+  KeepSearchingInput,
   SaveForgedIdentityInput,
   SendManualInvitesInput,
 } from "@/features/forge/api/forge-types";
@@ -12,25 +21,35 @@ import {
   buildCreateActivityInput,
   buildForgeActivityInput,
 } from "@/features/forge/lib/forge-activity-builders";
-import { mapGroupToParticipants } from "@/features/forge/lib/forge-participant-mappers";
-
-function buildFailedForgeResult(): ForgeExecutionResult {
-  return {
-    forgeResult: "FAILED",
-    participants: [],
-    activityId: null,
-    groupId: null,
-    chatId: null,
-    planId: null,
-    requestIds: {
-      createActivity: null,
-      forgeActivity: null,
-    },
-  };
-}
 
 async function getCurrentUser() {
   return appQueryClient.ensureQueryData(currentUserQueryOptions());
+}
+
+function buildModeForgeInput(
+  input: AutoForgeExecutionInput,
+  forgeMode: "AUTO" | "MANUAL",
+) {
+  return buildForgeActivityInput(
+    forgeMode === "MANUAL"
+      ? {
+          ...input,
+          groupSizeMode: "FIXED",
+        }
+      : input,
+  );
+}
+
+async function keepAutoSearchOpen(
+  activityId: string,
+  forgeInput: ReturnType<typeof buildForgeActivityInput>,
+) {
+  try {
+    await ForgeApi.keepSearching(activityId, forgeInput);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 async function executeForge(
@@ -49,31 +68,52 @@ async function executeForge(
   }
 
   const activityResult = await ForgeApi.createActivity(createActivityInput);
-  const forgeResult = await ForgeApi.forgeActivity(
-    activityResult.data.id,
-    buildForgeActivityInput(
-      forgeMode === "MANUAL"
-        ? {
-            ...input,
-            groupSizeMode: "FIXED",
-          }
-        : input,
-    ),
-  );
+
+  void invalidateRecentForgeActivities();
+
+  const activityId = activityResult.data.id;
+  const forgeInput = buildModeForgeInput(input, forgeMode);
+
+  let forgeResult: Awaited<ReturnType<typeof ForgeApi.forgeActivity>>;
+
+  try {
+    forgeResult = await ForgeApi.forgeActivity(activityId, forgeInput);
+  } catch {
+    if (forgeMode === "AUTO") {
+      const searchKept = await keepAutoSearchOpen(activityId, forgeInput);
+
+      return buildFailedForgeResult({
+        activityId,
+        searchKept,
+        requestIds: {
+          createActivity: activityResult.requestId,
+          forgeActivity: null,
+        },
+      });
+    }
+
+    return buildFailedForgeResult({
+      activityId,
+      requestIds: {
+        createActivity: activityResult.requestId,
+        forgeActivity: null,
+      },
+    });
+  }
+
   const group = await ForgeApi.getGroup(forgeResult.data.group.id);
 
-  return {
-    forgeResult: "SUCCESS",
-    participants: mapGroupToParticipants(group, currentUser.id),
+  return buildSuccessfulForgeResult({
     activityId: forgeResult.data.activityId,
-    groupId: group.id,
     chatId: forgeResult.data.chat.id,
+    currentUserId: currentUser.id,
+    group,
     planId: forgeResult.data.plan.id,
     requestIds: {
       createActivity: activityResult.requestId,
       forgeActivity: forgeResult.requestId,
     },
-  };
+  });
 }
 
 export class ForgeCommands {
@@ -83,6 +123,26 @@ export class ForgeCommands {
 
   static async executeAutoForge(input: AutoForgeExecutionInput) {
     return executeForge(input, "AUTO");
+  }
+
+  static async executePendingAutoForge(
+    activityId: string,
+  ): Promise<ForgeExecutionResult> {
+    const currentUser = await getCurrentUser();
+    const forgeResult = await ForgeApi.forgePendingActivity(activityId);
+    const group = await ForgeApi.getGroup(forgeResult.data.group.id);
+
+    return buildSuccessfulForgeResult({
+      activityId: forgeResult.data.activityId,
+      chatId: forgeResult.data.chat.id,
+      currentUserId: currentUser.id,
+      group,
+      planId: forgeResult.data.plan.id,
+      requestIds: {
+        createActivity: null,
+        forgeActivity: forgeResult.requestId,
+      },
+    });
   }
 
   static async saveForgedIdentity(input: SaveForgedIdentityInput) {
@@ -107,6 +167,21 @@ export class ForgeCommands {
     }
 
     await Promise.all(requests);
+  }
+
+  static async keepSearching(input: KeepSearchingInput) {
+    await ForgeApi.keepSearching(
+      input.activityId,
+      buildForgeActivityInput(input.forgeInput),
+    );
+
+    await invalidateForgeSearchState();
+  }
+
+  static async stopSearching(activityId: string) {
+    await ForgeApi.stopSearching(activityId);
+
+    await invalidateForgeSearchState();
   }
 
   static async sendManualInvites(input: SendManualInvitesInput) {

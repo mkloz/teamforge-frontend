@@ -95,7 +95,8 @@ export function Image({
   const imageStyle = {
     ...style,
     filter: isLoading ? `blur(${blurAmount})` : "none",
-    transition: "filter 0.3s ease-in-out, opacity 0.2s ease-in-out",
+    transition:
+      "filter 0.3s ease-in-out, opacity 0.2s ease-in-out, transform 0.7s ease-out",
   };
 
   const showFallback = fallbackFailed || !isSrcProvided;

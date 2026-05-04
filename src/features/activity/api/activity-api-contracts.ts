@@ -8,8 +8,10 @@ import {
   friendshipApiSchema,
   groupApiSchema,
   inviteSchema,
+  locationModeSchema,
   messageApiSchema,
   messageTypeSchema,
+  planProposalFieldSchema,
   planProposalSchema,
   planSchema,
   ratingEntitySchema,
@@ -67,14 +69,61 @@ export const updateGroupPayloadSchema = z.object({
   avatar: z.string().trim().max(2048).nullable().optional(),
 });
 
-export const updatePlanPayloadSchema = z.object({
-  coverImage: z.string().trim().max(2048).nullable().optional(),
-});
+export const updatePlanPayloadSchema = z
+  .object({
+    coverImage: z.string().trim().max(2048).nullable().optional(),
+    locationMode: locationModeSchema.optional(),
+    location: z.string().trim().max(200).nullable().optional(),
+    locationLat: z.number().finite().min(-90).max(90).nullable().optional(),
+    locationLng: z.number().finite().min(-180).max(180).nullable().optional(),
+  })
+  .superRefine((input, context) => {
+    const hasLat =
+      input.locationLat !== undefined && input.locationLat !== null;
+    const hasLng =
+      input.locationLng !== undefined && input.locationLng !== null;
 
-export interface CreatePlanProposalDto {
-  field: "TITLE" | "DESCRIPTION" | "DATE_TIME" | "LOCATION";
-  proposedValue: string;
-}
+    if (input.locationMode === "TBD" && input.location) {
+      context.addIssue({
+        code: "custom",
+        message: "TBD plans cannot include a location.",
+        path: ["location"],
+      });
+    }
+
+    if (input.locationMode && input.locationMode !== "TBD" && !input.location) {
+      context.addIssue({
+        code: "custom",
+        message: "A location is required unless the plan is TBD.",
+        path: ["location"],
+      });
+    }
+
+    if (
+      input.locationMode &&
+      input.locationMode !== "IN_PERSON" &&
+      (hasLat || hasLng)
+    ) {
+      context.addIssue({
+        code: "custom",
+        message: "Coordinates are only allowed for in-person plans.",
+        path: hasLat ? ["locationLat"] : ["locationLng"],
+      });
+    }
+
+    if (hasLat !== hasLng) {
+      context.addIssue({
+        code: "custom",
+        message: "Latitude and longitude must be provided together.",
+        path: hasLat ? ["locationLng"] : ["locationLat"],
+      });
+    }
+  });
+
+export const createPlanProposalPayloadSchema = z.object({
+  field: planProposalFieldSchema,
+  proposedValue: z.string().trim().min(1),
+});
 
 export interface VotePlanProposalDto {
   vote: "APPROVE" | "REJECT";
@@ -91,6 +140,9 @@ export type PaginatedMessagesResponse = z.infer<typeof paginatedMessagesSchema>;
 export type CreateInvitePayload = z.infer<typeof createInvitePayloadSchema>;
 export type UpdateGroupPayload = z.infer<typeof updateGroupPayloadSchema>;
 export type UpdatePlanPayload = z.infer<typeof updatePlanPayloadSchema>;
+export type CreatePlanProposalDto = z.infer<
+  typeof createPlanProposalPayloadSchema
+>;
 export type { CreateRatingPayload };
 
 export type MessageMutationResult = ApiResponseWithRequestId<

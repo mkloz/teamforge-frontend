@@ -9,6 +9,11 @@ import {
   type ExploreRouteSearch,
 } from "@/features/explore/lib/explore-route";
 import {
+  buildForgeNavigation,
+  forgeSearchModeValues,
+  type ForgeRouteSearch,
+} from "@/features/forge/lib/forge-route";
+import {
   buildHomeNavigation,
   type HomeRouteSearch,
 } from "@/features/home/lib/home-route";
@@ -40,6 +45,7 @@ export type NotificationDestination =
   | { to: "/activity"; search?: ActivityRouteSearch }
   | { to: "/home"; search?: HomeRouteSearch }
   | { to: "/explore"; search?: ExploreRouteSearch }
+  | { to: "/forge"; search?: ForgeRouteSearch }
   | { to: "/settings"; search?: { section?: SettingsSection } };
 
 function toGroupDestination(
@@ -75,6 +81,20 @@ function toDirectMessageDestination(
   return buildActivityDmNavigation(chatId, {
     message: messageId,
   });
+}
+
+function resolveForgeSearch(searchParams: URLSearchParams): ForgeRouteSearch {
+  const step = Number(searchParams.get("step"));
+  const mode = searchParams.get("mode");
+  const forgeMode = forgeSearchModeValues.find((value) => value === mode);
+
+  return {
+    activityId: searchParams.get("activityId") ?? undefined,
+    groupId: searchParams.get("groupId") ?? undefined,
+    mode: forgeMode,
+    open: true,
+    step: Number.isInteger(step) && step > 0 ? step : undefined,
+  };
 }
 
 async function resolveGroupIdByPlanId(planId: string) {
@@ -114,6 +134,10 @@ async function resolveFromLegacyLink(
   const parsedLink = new URL(normalizedLink, "https://teamforge.local");
   const pathname = parsedLink.pathname;
   const proposalId = extractProposalId(parsedLink.searchParams);
+
+  if (pathname === "/forge") {
+    return buildForgeNavigation(resolveForgeSearch(parsedLink.searchParams));
+  }
 
   const groupId = matchLegacyGroupPath(pathname);
 
@@ -193,7 +217,7 @@ async function resolveFromLegacyLink(
   );
 
   if (friendRequestIntent) {
-    return buildExploreNavigation(friendRequestIntent);
+    return buildHomeNavigation(friendRequestIntent);
   }
 
   return null;
@@ -231,12 +255,19 @@ export async function resolveNotificationDestination(
     }
   }
 
+  if (notification.entityType === "ACTIVITY" && notification.entityId) {
+    return buildForgeNavigation({
+      activityId: notification.entityId,
+      open: true,
+    });
+  }
+
   switch (notification.type) {
     case "NEW_MESSAGE":
     case "MESSAGE_MENTION":
       return { to: "/activity" };
     case "FRIEND_REQUEST":
-      return buildExploreNavigation({
+      return buildHomeNavigation({
         panel: "friends",
         request: notification.entityId ?? undefined,
       });

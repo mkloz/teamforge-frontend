@@ -1,4 +1,3 @@
-import * as RadixSlider from "@radix-ui/react-slider";
 import {
   AlertCircle,
   Bell,
@@ -44,8 +43,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
+import { DateInput } from "@/shared/components/ui/date-input";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
+import { NumberInput } from "@/shared/components/ui/number-input";
 import { Progress } from "@/shared/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
 import {
@@ -55,7 +56,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select";
+import { Slider } from "@/shared/components/ui/slider";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { Switch } from "@/shared/components/ui/switch";
+import { TimeInput } from "@/shared/components/ui/time-input";
+import { Textarea } from "@/shared/components/ui/textarea";
 import { Toggle } from "@/shared/components/ui/toggle";
 import {
   Tooltip,
@@ -343,34 +348,6 @@ function PrimitiveContract() {
   );
 }
 
-function FieldShell({
-  icon: Icon,
-  state = "default",
-  children,
-}: {
-  icon?: LucideIcon;
-  state?: "default" | "success" | "error";
-  children: React.ReactNode;
-}) {
-  return (
-    <div
-      className={cn(
-        "group relative flex min-h-11 items-center rounded-lg border bg-background/60 transition-colors duration-150",
-        state === "error"
-          ? "border-destructive/40 ring-1 ring-destructive/15"
-          : state === "success"
-            ? "border-forge-teal/35 ring-1 ring-forge-teal/15"
-            : "border-border/60 focus-within:border-forge-teal/60 focus-within:bg-background focus-within:ring-2 focus-within:ring-forge-teal/12",
-      )}
-    >
-      {Icon ? (
-        <Icon className="pointer-events-none absolute left-3 size-4 text-slate-muted/55 transition-colors group-focus-within:text-forge-teal" />
-      ) : null}
-      {children}
-    </div>
-  );
-}
-
 function IconTile({
   icon: Icon,
   label,
@@ -381,7 +358,7 @@ function IconTile({
   active?: boolean;
 }) {
   return (
-    <button
+    <Button
       type="button"
       aria-current={active ? "page" : undefined}
       className={cn(
@@ -393,7 +370,7 @@ function IconTile({
     >
       <Icon size={17} strokeWidth={1.8} />
       <span>{label}</span>
-    </button>
+    </Button>
   );
 }
 
@@ -409,11 +386,12 @@ function LocationChoiceCard({
   selected: boolean;
 }) {
   return (
-    <button
+    <Button
       type="button"
       aria-pressed={selected}
+      variant="ghost"
       className={cn(
-        "group flex items-center gap-3 rounded-lg border px-3 py-3 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35",
+        "group h-auto justify-start gap-3 rounded-lg border px-3 py-3 text-left transition-colors duration-150 focus-visible:ring-forge-teal/35",
         selected
           ? "border-forge-teal/30 bg-forge-teal/8 ring-1 ring-forge-teal/20"
           : "border-border/50 bg-background/40 hover:border-forge-teal/20 hover:bg-forge-teal/4",
@@ -442,23 +420,25 @@ function LocationChoiceCard({
           {sub}
         </span>
       </span>
-    </button>
+    </Button>
   );
 }
 
 function CategoryChip({ label, active }: { label: string; active?: boolean }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
+      size="xs"
       className={cn(
-        "rounded-full border-2 px-3 py-1 text-[10px] font-bold transition-[transform,border-color,background-color,color,box-shadow] duration-150 active:scale-95",
+        "h-auto rounded-full border-2 px-3 py-1 text-[10px] transition-[transform,border-color,background-color,color,box-shadow] duration-150",
         active
           ? "border-button-primary-border bg-forge-teal text-white shadow-button-primary -translate-y-0.5"
           : "border-border bg-background text-slate-muted hover:border-forge-teal/50 hover:text-ink",
       )}
     >
       {label}
-    </button>
+    </Button>
   );
 }
 
@@ -474,11 +454,12 @@ function SegmentedFilter({
   return (
     <div className="flex gap-1 rounded-xl border border-border/40 bg-muted/20 p-1">
       {items.map(({ label, icon: Icon, active }) => (
-        <button
+        <Button
           key={label}
           type="button"
+          variant="ghost"
           className={cn(
-            "relative flex flex-1 items-center justify-center gap-2 rounded-lg py-2 text-xs font-bold transition-[transform,background-color,color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/45",
+            "relative h-auto flex-1 gap-2 rounded-lg py-2 text-xs transition-[transform,background-color,color,box-shadow] duration-200 focus-visible:ring-forge-teal/45",
             active
               ? "bg-background text-ink shadow-sm ring-1 ring-border/20"
               : "text-slate-muted/70 hover:bg-muted/40 hover:text-ink active:scale-95",
@@ -491,7 +472,7 @@ function SegmentedFilter({
             )}
           />
           <span className="whitespace-nowrap tracking-tight">{label}</span>
-        </button>
+        </Button>
       ))}
     </div>
   );
@@ -507,9 +488,7 @@ function SwitchRow({
   checked: boolean;
 }) {
   return (
-    <button
-      type="button"
-      aria-pressed={checked}
+    <div
       className={cn(
         "flex w-full items-center justify-between gap-4 rounded-xl border px-4 py-4 text-left transition-colors",
         checked
@@ -523,22 +502,8 @@ function SwitchRow({
           {description}
         </span>
       </span>
-      <span
-        className={cn(
-          "relative h-7 w-12 shrink-0 rounded-full border transition-colors",
-          checked
-            ? "border-forge-teal/30 bg-forge-teal"
-            : "border-border bg-card",
-        )}
-      >
-        <span
-          className={cn(
-            "absolute top-0.5 size-5.5 rounded-full bg-white shadow-sm transition-transform",
-            checked ? "translate-x-6" : "translate-x-0.5",
-          )}
-        />
-      </span>
-    </button>
+      <Switch checked={checked} aria-label={title} />
+    </div>
   );
 }
 
@@ -549,50 +514,20 @@ function SliderExample({
   accent?: "teal" | "amber";
   range?: boolean;
 }) {
-  const colorClasses =
-    accent === "amber"
-      ? {
-          track: "bg-spark-amber/15",
-          range: "bg-spark-amber",
-          thumb:
-            "border-spark-amber shadow-spark-amber/20 focus-visible:ring-spark-amber/50",
-        }
-      : {
-          track: "bg-forge-teal/15",
-          range: "bg-forge-teal",
-          thumb:
-            "border-forge-teal shadow-forge-teal/20 focus-visible:ring-forge-teal/50",
-        };
-
   return (
-    <RadixSlider.Root
-      className="relative flex h-10 w-full touch-none select-none items-center"
+    <Slider
+      className={cn(
+        "h-10",
+        accent === "amber" &&
+          "[&_[data-slot=slider-range]]:bg-spark-amber [&_[data-slot=slider-thumb]]:border-spark-amber",
+      )}
       defaultValue={range ? [3, 7] : [5]}
       min={2}
       max={8}
       step={1}
       minStepsBetweenThumbs={range ? 1 : undefined}
-    >
-      <RadixSlider.Track
-        className={cn("relative h-1.5 grow rounded-full", colorClasses.track)}
-      >
-        <RadixSlider.Range
-          className={cn("absolute h-full rounded-full", colorClasses.range)}
-        />
-      </RadixSlider.Track>
-      {(range ? ["Minimum members", "Maximum members"] : ["Group size"]).map(
-        (label) => (
-          <RadixSlider.Thumb
-            key={label}
-            className={cn(
-              "block size-6 cursor-grab rounded-full border-2 bg-background shadow-md outline-none transition-transform hover:scale-110 active:scale-95 active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-offset-2",
-              colorClasses.thumb,
-            )}
-            aria-label={label}
-          />
-        ),
-      )}
-    </RadixSlider.Root>
+      aria-label={range ? "Group size range" : "Group size"}
+    />
   );
 }
 
@@ -642,6 +577,9 @@ function StatusCallout({
 export function DesignSystemPage() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [demoLocation, setDemoLocation] = useState<LocationValue | null>(null);
+  const [demoCost, setDemoCost] = useState("12.50");
+  const [demoDate, setDemoDate] = useState("2026-03-14");
+  const [demoTime, setDemoTime] = useState("18:30");
 
   return (
     <div className="min-h-screen bg-canvas text-ink selection:bg-forge-teal/20">
@@ -845,11 +783,7 @@ export function DesignSystemPage() {
                 <div className="grid gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="ds-title">Plan title</Label>
-                    <Input
-                      id="ds-title"
-                      className="h-11 rounded-lg"
-                      placeholder="Wednesday basketball"
-                    />
+                    <Input id="ds-title" placeholder="Wednesday basketball" />
                     <p className="text-xs font-medium text-slate-muted">
                       Same label, height, placeholder, focus, and disabled
                       treatment across Auth, Forge, Settings, and dialogs.
@@ -857,10 +791,13 @@ export function DesignSystemPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="ds-cost">Cost estimate</Label>
-                    <Input
+                    <NumberInput
                       id="ds-cost"
-                      className="h-11 rounded-lg"
-                      inputMode="decimal"
+                      allowDecimal
+                      min={0}
+                      step={0.01}
+                      value={demoCost}
+                      onValueChange={setDemoCost}
                       placeholder="12.50"
                     />
                   </div>
@@ -874,20 +811,18 @@ export function DesignSystemPage() {
                 <div className="grid gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="ds-search">Search</Label>
-                    <FieldShell icon={Search}>
-                      <Input
-                        id="ds-search"
-                        className="h-10 rounded-lg border-0 bg-transparent pl-9 shadow-none focus-visible:ring-0"
-                        placeholder="Find your next group activity..."
-                      />
-                    </FieldShell>
+                    <Input
+                      id="ds-search"
+                      leftIcon={<Search className="size-4" />}
+                      placeholder="Find your next group activity..."
+                    />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="ds-description">Description</Label>
                     <div className="rounded-lg border border-border/60 bg-background/60 transition-colors duration-150 focus-within:border-forge-teal/60 focus-within:ring-2 focus-within:ring-forge-teal/12">
-                      <textarea
+                      <Textarea
                         id="ds-description"
-                        className="min-h-24 w-full resize-none rounded-lg bg-transparent px-3 py-3 text-sm font-medium text-ink outline-none placeholder:text-slate-muted/55"
+                        className="min-h-24 resize-none rounded-lg border-0 bg-transparent px-3 py-3 text-sm font-medium text-ink shadow-none placeholder:text-slate-muted/55 focus-visible:ring-0"
                         placeholder="Add context people need before joining."
                       />
                     </div>
@@ -902,14 +837,12 @@ export function DesignSystemPage() {
                 <div className="grid gap-3">
                   <div className="grid gap-2">
                     <Label htmlFor="ds-location">Location</Label>
-                    <FieldShell icon={MapPin} state="error">
-                      <Input
-                        id="ds-location"
-                        aria-invalid
-                        className="h-11 rounded-lg border-0 bg-transparent pl-9 shadow-none focus-visible:ring-0"
-                        placeholder="Search venue or city"
-                      />
-                    </FieldShell>
+                    <Input
+                      id="ds-location"
+                      aria-invalid
+                      leftIcon={<MapPin className="size-4" />}
+                      placeholder="Search venue or city"
+                    />
                     <p className="flex items-center gap-2 text-xs font-medium text-destructive">
                       <AlertCircle className="size-3.5" />
                       Choose a result or keep location as TBD.
@@ -941,13 +874,10 @@ export function DesignSystemPage() {
                 description="Use shared input behavior with the compact Explore chrome for search-heavy views."
               >
                 <div className="grid gap-4">
-                  <div className="group/search relative">
-                    <Search className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-slate-muted/70 transition-colors duration-200 group-focus-within/search:text-forge-teal" />
-                    <Input
-                      className="h-10 rounded-lg border-border/60 bg-canvas pl-9 pr-4 text-xs font-medium placeholder:text-slate-muted/60 focus-visible:border-forge-teal/50 focus-visible:ring-forge-teal/10"
-                      placeholder="Find your next group activity..."
-                    />
-                  </div>
+                  <Input
+                    leftIcon={<Search className="size-3.5" />}
+                    placeholder="Find your next group activity..."
+                  />
                   <div className="flex flex-wrap gap-x-1.5 gap-y-2">
                     {categoryFilters.map((category) => (
                       <CategoryChip
@@ -1007,10 +937,10 @@ export function DesignSystemPage() {
                 <div className="grid max-w-sm gap-2">
                   <Label>Activity category</Label>
                   <Select defaultValue="gaming">
-                    <SelectTrigger className="h-11 rounded-lg bg-background">
+                    <SelectTrigger>
                       <SelectValue placeholder="Activity" />
                     </SelectTrigger>
-                    <SelectContent position="popper" className="rounded-lg">
+                    <SelectContent>
                       <SelectItem value="gaming">Gaming and tech</SelectItem>
                       <SelectItem value="sports">Sports</SelectItem>
                       <SelectItem value="coffee">Coffee meetup</SelectItem>
@@ -1031,7 +961,7 @@ export function DesignSystemPage() {
                     ["friends", "Friends", "Known network first"],
                     ["invite", "Invite", "Private group"],
                   ].map(([value, label, helper]) => (
-                    <label
+                    <Label
                       key={value}
                       className="flex items-start gap-3 rounded-xl border border-border/70 bg-card p-3"
                     >
@@ -1044,7 +974,7 @@ export function DesignSystemPage() {
                           {helper}
                         </span>
                       </span>
-                    </label>
+                    </Label>
                   ))}
                 </RadioGroup>
               </ComponentFrame>
@@ -1191,20 +1121,8 @@ export function DesignSystemPage() {
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                      <FieldShell icon={Calendar}>
-                        <input
-                          className="h-11 w-full rounded-lg bg-transparent pl-9 pr-2 text-sm font-medium text-ink outline-none"
-                          defaultValue="2026-03-14"
-                          type="date"
-                        />
-                      </FieldShell>
-                      <FieldShell icon={Clock}>
-                        <input
-                          className="h-11 w-full rounded-lg bg-transparent pl-9 pr-2 text-sm font-medium text-ink outline-none"
-                          defaultValue="18:30"
-                          type="time"
-                        />
-                      </FieldShell>
+                      <DateInput value={demoDate} onValueChange={setDemoDate} />
+                      <TimeInput value={demoTime} onValueChange={setDemoTime} />
                     </div>
                   </div>
                 </div>
@@ -1255,14 +1173,15 @@ export function DesignSystemPage() {
                     ["Forge Crew", "Sam sent a plan update", true],
                     ["Direct chat", "Nora: sounds good to me", false],
                   ].map(([title, message, active]) => (
-                    <button
+                    <Button
                       key={title as string}
                       type="button"
                       aria-selected={Boolean(active)}
                       className={cn(
-                        "relative flex w-full items-center gap-3.5 px-4 py-3.5 text-left transition-colors duration-200",
+                        "relative h-auto w-full justify-start gap-3.5 px-4 py-3.5 text-left transition-colors duration-200",
                         active ? "bg-forge-teal/8" : "hover:bg-muted/30",
                       )}
+                      contentClassName="items-center justify-start gap-3.5"
                     >
                       <Avatar
                         name={title as string}
@@ -1276,7 +1195,7 @@ export function DesignSystemPage() {
                           {message as string}
                         </span>
                       </span>
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </ComponentFrame>

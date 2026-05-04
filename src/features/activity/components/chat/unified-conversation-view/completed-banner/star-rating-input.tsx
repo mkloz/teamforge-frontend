@@ -1,3 +1,4 @@
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { Star } from "lucide-react";
 
@@ -24,15 +25,17 @@ export function StarRatingInput({
         const isActive = star <= score;
 
         return (
-          <button
+          <Button
             key={star}
             type="button"
+            variant="ghost"
+            size="icon-xs"
             disabled={disabled}
             role="radio"
             aria-checked={score === star}
             aria-label={`Rate ${star} stars`}
             onClick={() => onChange(star)}
-            className="rounded-full p-1 transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-spark-amber/40 disabled:cursor-not-allowed"
+            className="rounded-full p-1 transition-transform hover:scale-110 focus-visible:ring-spark-amber/40"
           >
             <Star
               size={22}
@@ -43,7 +46,7 @@ export function StarRatingInput({
                   : "text-slate-muted/35 hover:text-spark-amber",
               )}
             />
-          </button>
+          </Button>
         );
       })}
     </div>

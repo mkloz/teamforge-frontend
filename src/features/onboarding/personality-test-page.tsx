@@ -12,6 +12,7 @@ export function PersonalityTestPage() {
     continueLabel,
     continueToInterests,
     displayProgress,
+    goBack,
     scrollContainerRef,
     setPendingLength,
     testState,
@@ -42,6 +43,7 @@ export function PersonalityTestPage() {
                 >
                   <PersonalityScreenRenderer
                     state={testState}
+                    onBack={goBack}
                     onSelectionChange={setPendingLength}
                     onContinue={continueToInterests}
                     continueLabel={continueLabel}

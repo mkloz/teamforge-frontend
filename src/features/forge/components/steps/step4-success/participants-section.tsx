@@ -1,9 +1,10 @@
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Users } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
 
 import { HostMemberRow } from "./host-member-row";
 import { ParticipantRow } from "./participant-row";
+import { getParticipantScorePercent } from "./participant-utils";
 import type { Step4SuccessProps } from "./types";
 
 export function ParticipantsSection({
@@ -16,22 +17,49 @@ export function ParticipantsSection({
   const activeCount =
     participants.filter((participant) => !removedIds.has(participant.userId))
       .length + 1;
+  const topParticipantId = participants.reduce<{
+    id: string;
+    score: number;
+  } | null>((best, participant) => {
+    if (removedIds.has(participant.userId)) {
+      return best;
+    }
+
+    const score = getParticipantScorePercent(participant);
+
+    if (score === null) {
+      return best;
+    }
+
+    return !best || score > best.score
+      ? { id: participant.userId, score }
+      : best;
+  }, null)?.id;
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold text-muted-foreground">
-          Group members
-        </p>
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-forge-teal/10 border border-forge-teal/15">
-          <span className="w-1.5 h-1.5 rounded-full bg-forge-teal" />
-          <span className="text-xs font-semibold text-forge-teal">
+    <section className="space-y-3 border-t border-border/25 pt-4">
+      <div className="flex items-center justify-between gap-3 px-0.5">
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10 text-forge-teal">
+            <Users size={14} />
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold leading-none text-foreground">
+              Matched people
+            </p>
+            <p className="mt-1 text-micro leading-none text-muted-foreground/55">
+              Review the list before continuing.
+            </p>
+          </div>
+        </div>
+        <span className="inline-flex shrink-0 rounded-full border border-border/45 bg-muted/40 px-2.5 py-1">
+          <span className="text-xs font-semibold text-muted-foreground">
             {activeCount} people
           </span>
         </span>
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <HostMemberRow />
 
         {participants.map((participant) => (
@@ -39,6 +67,7 @@ export function ParticipantsSection({
             key={participant.userId}
             participant={participant}
             removed={removedIds.has(participant.userId)}
+            highlight={topParticipantId === participant.userId}
             onRemoveParticipant={onRemoveParticipant}
             onRestoreParticipant={onRestoreParticipant}
           />
@@ -49,12 +78,12 @@ export function ParticipantsSection({
         <Button
           variant="outline"
           onClick={onReforge}
-          className="w-full py-6 rounded-2xl border-dashed border-accent/30 bg-accent/5 text-accent font-semibold hover:bg-accent/10 shadow-none hover:shadow-none animate-in zoom-in-95"
+          className="w-full rounded-lg border-spark-amber/35 bg-spark-amber/8 py-5 font-semibold text-spark-amber shadow-none hover:bg-spark-amber/10 hover:shadow-none animate-in zoom-in-95"
         >
           <RefreshCw size={15} />
-          Recalculate optimal balance
+          Try another set
         </Button>
       )}
-    </div>
+    </section>
   );
 }

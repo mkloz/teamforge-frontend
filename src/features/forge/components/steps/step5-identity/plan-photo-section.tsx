@@ -1,7 +1,8 @@
-import { Check, X } from "lucide-react";
+import { Check, Palette, X } from "lucide-react";
 
 import { FileDropzone } from "@/shared/components/common/file-dropzone";
 import { Image } from "@/shared/components/common/image";
+import { Button } from "@/shared/components/ui/button";
 import { PLAN_COVER_PRESETS } from "@/shared/lib/plan-cover";
 import { cn } from "@/shared/lib/utils";
 
@@ -41,63 +42,85 @@ export function PlanPhotoSection({
           error={coverUploadError}
           onFiles={onCoverFiles}
           preview={
-            coverImage ? (
-              isImageCover ? (
-                <Image
-                  src={coverImage}
-                  alt=""
-                  className="transition-transform duration-500 group-hover:scale-105"
-                />
-              ) : (
-                <div
-                  className={cn(
-                    "h-full w-full bg-linear-to-br",
-                    activePreset?.gradient ?? "from-muted/60 to-muted/20",
-                  )}
-                />
-              )
-            ) : null
+            coverImage && isImageCover ? (
+              <Image
+                src={coverImage}
+                alt=""
+                className="transition-transform duration-700 ease-out group-hover:scale-105"
+              />
+            ) : (
+              <div
+                className={cn(
+                  "h-full w-full bg-linear-to-br",
+                  activePreset?.gradient ??
+                    "from-forge-teal/18 via-canvas to-spark-amber/18",
+                )}
+              />
+            )
           }
         />
         {coverImage && (
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon-xs"
             onClick={() => onCoverImageChange(null)}
-            className="absolute right-2 top-2 z-20 flex size-7 items-center justify-center rounded-full bg-black/45 text-white transition-colors hover:bg-black/65"
+            className="absolute right-2 top-2 z-20 size-7 rounded-full bg-black/45 text-white hover:bg-black/65 hover:text-white"
             aria-label="Remove cover"
           >
             <X size={13} />
-          </button>
+          </Button>
         )}
       </div>
 
-      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {PLAN_COVER_PRESETS.map(({ id, gradient, label }) => {
           const selected = coverImage === id;
 
           return (
-            <button
+            <Button
               key={id}
               type="button"
+              variant="ghost"
               onClick={() => onCoverImageChange(selected ? null : id)}
               aria-pressed={selected}
               className={cn(
-                "group relative h-14 rounded-xl bg-linear-to-br transition duration-200 overflow-hidden border-2",
-                gradient,
+                "group h-10 justify-start gap-2 rounded-lg border bg-card px-2.5 text-xs font-bold text-foreground shadow-none transition-[border-color,background-color,box-shadow,transform] duration-200 hover:bg-card active:scale-[0.98]",
                 selected
-                  ? "border-primary shadow-md shadow-primary/20 scale-[1.04]"
-                  : "border-transparent hover:scale-[1.03] hover:shadow-sm",
+                  ? "border-forge-teal/75 bg-forge-teal/8 text-forge-teal ring-1 ring-forge-teal/20"
+                  : "border-border/45 hover:border-forge-teal/35 hover:bg-forge-teal/5",
               )}
             >
-              <span className="absolute bottom-1 left-1.5 text-micro font-bold text-white/85 drop-shadow-sm">
-                {label}
-              </span>
-              {selected && (
-                <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-white/95 flex items-center justify-center shadow-sm">
-                  <Check size={9} className="text-primary" strokeWidth={3} />
-                </div>
-              )}
-            </button>
+              <div
+                className={cn(
+                  "relative flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-md bg-linear-to-br ring-1 ring-white/15",
+                  gradient,
+                )}
+                aria-hidden="true"
+              >
+                <div className="absolute inset-0 bg-linear-to-b from-white/15 to-black/20" />
+                {!selected && (
+                  <Palette
+                    size={10}
+                    className="relative z-10 text-white/85 opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+                  />
+                )}
+                {selected && (
+                  <Check
+                    size={11}
+                    className="relative z-10 text-white"
+                    strokeWidth={3}
+                  />
+                )}
+              </div>
+              <span className="truncate">{label}</span>
+              <div
+                className={cn(
+                  "ml-auto size-1.5 rounded-full transition-colors duration-150",
+                  selected ? "bg-forge-teal" : "bg-border/70",
+                )}
+              />
+            </Button>
           );
         })}
       </div>

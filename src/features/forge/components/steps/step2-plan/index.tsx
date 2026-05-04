@@ -1,4 +1,3 @@
-import { CostSection } from "./cost-section";
 import { DateTimeSection } from "./date-time-section";
 import { EventTitleSection } from "./event-title-section";
 import { LocationSection } from "./location-section";
@@ -21,12 +20,6 @@ export function Step2Plan({
   onPlanLocationCoordinatesChange,
   locationType,
   onLocationTypeChange,
-  planCost,
-  onPlanCostChange,
-  planCostAmount,
-  onPlanCostAmountChange,
-  planCostDetails,
-  onPlanCostDetailsChange,
 }: Step2PlanProps) {
   const trimmed = planName.trim();
   const isNameError = planName.length > 0 && trimmed.length < 3;
@@ -34,7 +27,7 @@ export function Step2Plan({
   const charCount = trimmed.length;
 
   return (
-    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300 pb-6">
+    <div className="space-y-4 pb-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
       <EventTitleSection
         charCount={charCount}
         isNameError={isNameError}
@@ -63,15 +56,6 @@ export function Step2Plan({
         planLocation={planLocation}
         planLocationLat={planLocationLat}
         planLocationLng={planLocationLng}
-      />
-
-      <CostSection
-        onPlanCostAmountChange={onPlanCostAmountChange}
-        onPlanCostChange={onPlanCostChange}
-        onPlanCostDetailsChange={onPlanCostDetailsChange}
-        planCost={planCost}
-        planCostAmount={planCostAmount}
-        planCostDetails={planCostDetails}
       />
     </div>
   );

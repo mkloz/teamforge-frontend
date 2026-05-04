@@ -39,24 +39,8 @@ export function MemberCard({
     onShowProfile?.(member);
   };
 
-  return (
-    <div
-      role={onShowProfile ? "button" : undefined}
-      tabIndex={onShowProfile ? 0 : undefined}
-      onClick={onShowProfile ? handleShowProfile : undefined}
-      onKeyDown={
-        onShowProfile
-          ? (event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                handleShowProfile();
-              }
-            }
-          : undefined
-      }
-      className="w-full flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-border/50 hover:bg-muted/30 transition-all duration-300 group/member text-left"
-    >
-      {/* Avatar Container */}
+  const memberSummary = (
+    <>
       <div className="relative shrink-0">
         <Avatar
           src={member.user?.avatar}
@@ -122,6 +106,27 @@ export function MemberCard({
           </span>
         </div>
       </div>
+    </>
+  );
+
+  return (
+    <div className="w-full flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-border/50 hover:bg-muted/30 transition-all duration-300 group/member text-left">
+      {onShowProfile ? (
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={handleShowProfile}
+          className="h-auto min-w-0 flex-1 justify-start rounded-lg border-0 bg-transparent p-0 text-left shadow-none hover:bg-transparent focus-visible:ring-forge-teal/30"
+          contentClassName="min-w-0 justify-start gap-3"
+          aria-label={`View ${member.user?.name ?? "member"} profile`}
+        >
+          {memberSummary}
+        </Button>
+      ) : (
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          {memberSummary}
+        </div>
+      )}
 
       {/* Subtle interaction indicator */}
       {canRemove && onRemove ? (
