@@ -1,0 +1,42 @@
+import type { SettingsSection } from "@/features/settings/lib/settings-route";
+import { resolveOnboardingExitNavigation } from "@/features/onboarding/lib/onboarding-exit-route";
+import type { OnboardingReturnTarget } from "@/features/onboarding/lib/onboarding-route";
+import { MIN_INTERESTS } from "@/features/onboarding/data/interests-data";
+import type { PersonalityType } from "@/shared/schemas";
+
+interface InterestsFlowSearchParams {
+  returnTo: OnboardingReturnTarget | null;
+  returnSearch: string | null;
+  returnSection: SettingsSection | null;
+  mbti: PersonalityType | null;
+}
+
+export function buildInterestsFlowSearch({
+  returnTo,
+  returnSearch,
+  returnSection,
+  mbti,
+}: InterestsFlowSearchParams) {
+  return {
+    ...(returnTo ? { returnTo } : {}),
+    ...(returnSearch ? { returnSearch } : {}),
+    ...(returnSection ? { returnSection } : {}),
+    ...(mbti ? { mbti } : {}),
+  };
+}
+
+export function getInterestsProgress(selectedCount: number) {
+  return Math.min(selectedCount / MIN_INTERESTS, 1);
+}
+
+export function resolveInterestsExitNavigation(
+  flowSearch: Omit<InterestsFlowSearchParams, "mbti">,
+  fallback: "home" | "settings",
+) {
+  return resolveOnboardingExitNavigation(
+    flowSearch.returnTo,
+    flowSearch.returnSearch,
+    flowSearch.returnSection,
+    fallback,
+  );
+}

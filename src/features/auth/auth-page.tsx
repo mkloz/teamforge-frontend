@@ -49,10 +49,10 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
     <div className="h-screen w-full max-h-dvh flex flex-col lg:flex-row relative overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-16 lg:h-24 flex items-center px-4 lg:px-10 z-30 pointer-events-none">
         <Button
-          variant="ghost"
+          variant="inverseGhost"
           asChild
           size="sm"
-          className="pointer-events-auto rounded-full bg-canvas/10 backdrop-blur-sm border border-ink/5 text-primary-foreground hover:text-ink hover:bg-white hover:border-ink/10 hover:shadow-sm h-9 px-4 transition-all group"
+          className="pointer-events-auto h-9 rounded-full px-4"
         >
           <Link to="/" className="flex items-center gap-2">
             <ArrowLeft

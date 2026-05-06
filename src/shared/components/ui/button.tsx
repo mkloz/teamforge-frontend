@@ -102,6 +102,7 @@ function ButtonComponent({
           <span
             className={cn(
               "flex items-center gap-2 transition-opacity duration-150 h-full w-full",
+              "min-w-0 [&>span]:min-w-0",
               loading ? "opacity-0" : "opacity-100",
               // Respect justification from the outer button
               finalClasses.includes("justify-start")

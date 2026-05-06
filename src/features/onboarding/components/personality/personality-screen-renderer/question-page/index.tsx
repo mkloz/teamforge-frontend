@@ -1,14 +1,14 @@
-import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
-import { motion } from "framer-motion";
-import { ArrowRight, RotateCcw } from "lucide-react";
-import {
-  fadeUpItem,
-  staggerContainer,
-} from "@/features/onboarding/constants/motion";
 import type { IpipQuestion } from "@/features/onboarding/data/ipip-questions";
 import type { RawAnswers } from "@/features/onboarding/utils/score-calculator";
-import { QuestionCard } from "./question-card";
+import { TeamForgeLogo } from "@/assets/logo";
+import { Button } from "@/shared/components/ui/button";
+import { Link } from "@tanstack/react-router";
+
+import { QuestionList } from "./question-list";
+import { QuestionPageActions } from "./question-page-actions";
+import { QuestionPageDots } from "./question-page-dots";
+import { QuestionPageHeader } from "./question-page-header";
+import { getQuestionPageProgress } from "./question-page-progress";
 
 interface QuestionPageProps {
   pageQuestions: IpipQuestion[];
@@ -22,15 +22,6 @@ interface QuestionPageProps {
   onReview: () => void;
 }
 
-// Estimate ~5 seconds per question
-function formatTimeLeft(pagesLeft: number, perPage: number): string {
-  const qs = pagesLeft * perPage;
-  const secs = qs * 5;
-  if (secs < 60) return `~${secs}s left`;
-  const mins = Math.ceil(secs / 60);
-  return `~${mins} min left`;
-}
-
 export function QuestionPage({
   pageQuestions,
   startIndex,
@@ -42,84 +33,54 @@ export function QuestionPage({
   onNext,
   onReview,
 }: QuestionPageProps) {
-  const pagesLeft = totalPages - pageNumber;
-
-  const answeredOnPage = pageQuestions.filter(
-    (q) => answers[q.id] !== undefined,
-  ).length;
-  const allAnswered = answeredOnPage === pageQuestions.length;
+  const progress = getQuestionPageProgress({
+    answers,
+    pageNumber,
+    pageQuestions,
+    totalPages,
+  });
 
   return (
-    <div className="flex flex-col w-full max-w-xl mx-auto px-0 sm:px-0">
-      {/* Page counter + time estimate */}
-      <div className="flex justify-between items-center mb-2">
-        <span className="font-sans text-xs font-bold uppercase tracking-widest text-muted-foreground">
-          Page {pageNumber} of {totalPages}
-        </span>
-        {pagesLeft > 0 && (
-          <span className="font-sans text-xs font-medium text-muted-foreground/80">
-            {formatTimeLeft(pagesLeft, pageQuestions.length)}
-          </span>
-        )}
-      </div>
+    <div className="mx-auto flex min-h-[calc(100dvh-3rem)] w-full max-w-xl flex-col px-0 sm:min-h-[calc(100dvh-4rem)] sm:px-0">
+      <div className="mb-6 flex items-center gap-3">
+        <div className="min-w-0 flex-1">
+          <QuestionPageHeader
+            pageNumber={pageNumber}
+            totalPages={totalPages}
+            timeLeftLabel={progress.timeLeftLabel}
+          />
+          <QuestionPageDots
+            answeredCount={progress.answeredCount}
+            answeredQuestionIds={progress.answeredQuestionIds}
+            pageQuestions={pageQuestions}
+          />
+        </div>
 
-      {/* Per-page micro-progress dots */}
-      <div className="flex items-center gap-1.5 mb-6">
-        {pageQuestions.map((q) => {
-          const done = answers[q.id] !== undefined;
-          return (
-            <div
-              key={q.id}
-              className={cn(
-                "flex-1 h-0.75 rounded-full transition-colors duration-300",
-                done ? "bg-forge-teal" : "bg-slate-500/15",
-              )}
-            />
-          );
-        })}
-        <span className="font-sans text-xs font-black ml-1 shrink-0 text-muted-foreground/80 leading-none">
-          {answeredOnPage}/{pageQuestions.length}
-        </span>
-      </div>
-
-      {/* Question cards */}
-      <motion.div
-        key={pageNumber}
-        initial="hidden"
-        animate="visible"
-        variants={staggerContainer}
-        className="flex flex-col gap-3 mb-7"
-      >
-        {pageQuestions.map((q, i) => (
-          <motion.div key={q.id} variants={fadeUpItem}>
-            <QuestionCard
-              question={q}
-              index={startIndex + i}
-              totalQuestions={totalQuestions}
-              value={answers[q.id]}
-              onChange={onAnswer}
-            />
-          </motion.div>
-        ))}
-      </motion.div>
-
-      <div className="flex items-center gap-4">
-        {pageNumber === totalPages && (
-          <Button variant="outline" onClick={onReview}>
-            <RotateCcw size={16} />
-            Review
-          </Button>
-        )}
         <Button
-          variant="primary"
-          onClick={onNext}
-          disabled={!allAnswered}
-          className="flex-1"
+          asChild
+          variant="ghost"
+          size="icon"
+          className="h-10 w-10 shrink-0 rounded-lg p-0 text-white/80 hover:bg-white/5 hover:text-white focus-visible:ring-forge-teal focus-visible:ring-offset-hero-bg"
         >
-          {pageNumber === totalPages ? "See results" : "Next page"}
-          <ArrowRight size={18} />
+          <Link to="/" aria-label="Back to TeamForge home">
+            <TeamForgeLogo className="size-10" showBackground={false} />
+          </Link>
         </Button>
       </div>
+      <QuestionList
+        answers={answers}
+        onAnswer={onAnswer}
+        pageNumber={pageNumber}
+        pageQuestions={pageQuestions}
+        startIndex={startIndex}
+        totalQuestions={totalQuestions}
+      />
+      <QuestionPageActions
+        allAnswered={progress.allAnswered}
+        isFinalPage={progress.isFinalPage}
+        onNext={onNext}
+        onReview={onReview}
+      />
     </div>
   );
 }

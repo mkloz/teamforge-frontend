@@ -1,12 +1,11 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { staggerContainer } from "@/features/onboarding/constants/motion";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
-import { INTERMISSION_CONTENT } from "./constants";
 import { IntermissionHeader } from "./header";
 import { InsightSection } from "./insight-section";
 import { ExtensionSection } from "./extension-section";
 import { ActionSection } from "./action-section";
+import { useIntermissionPage } from "./use-intermission-page";
 
 interface IntermissionPageProps {
   milestoneIndex: number;
@@ -25,50 +24,55 @@ export function IntermissionPage({
   onExtend,
   onContinue,
 }: IntermissionPageProps) {
-  const [selectedUpgrade, setSelectedUpgrade] = useState<TestLength | null>(
-    null,
-  );
-
-  // Safe indexing modulo array length
-  const validIndex = Math.max(0, milestoneIndex - 1);
-  const content =
-    INTERMISSION_CONTENT[validIndex % INTERMISSION_CONTENT.length];
-  const isDone = answeredCount >= totalQuestions;
+  const {
+    content,
+    handleContinue,
+    isDone,
+    selectedUpgrade,
+    setSelectedUpgrade,
+    shouldShowExtension,
+  } = useIntermissionPage({
+    answeredCount,
+    milestoneIndex,
+    onContinue,
+    onExtend,
+    totalQuestions,
+  });
 
   return (
     <motion.div
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="flex flex-col max-w-lg mx-auto w-full gap-0 h-full justify-start pt-2 sm:pt-0 sm:justify-center lg:h-auto px-6 text-center"
+      className="mx-auto flex min-h-[calc(100dvh-6rem)] w-full max-w-xl flex-col justify-start gap-0 pt-6 text-center sm:min-h-[calc(100dvh-5rem)] sm:pt-0 lg:min-h-0"
     >
-      <IntermissionHeader
-        totalQuestions={totalQuestions}
-        answeredCount={answeredCount}
-        Icon={content.icon}
-      />
-
-      <InsightSection
-        title={content.title}
-        description={content.description}
-        factTitle={content.factTitle}
-        fact={content.fact}
-      />
-
-      {isDone && totalQuestions < 150 && (
-        <ExtensionSection
+      <div className="flex min-h-0 flex-1 flex-col justify-center">
+        <IntermissionHeader
           totalQuestions={totalQuestions}
-          selectedUpgrade={selectedUpgrade}
-          onSelect={setSelectedUpgrade}
+          answeredCount={answeredCount}
+          Icon={content.icon}
         />
-      )}
+
+        <InsightSection
+          title={content.title}
+          description={content.description}
+          factTitle={content.factTitle}
+          fact={content.fact}
+        />
+
+        {shouldShowExtension && (
+          <ExtensionSection
+            totalQuestions={totalQuestions}
+            selectedUpgrade={selectedUpgrade}
+            onSelect={setSelectedUpgrade}
+          />
+        )}
+      </div>
 
       <ActionSection
         isDone={isDone}
         selectedUpgrade={selectedUpgrade}
-        onContinue={
-          selectedUpgrade ? () => onExtend(selectedUpgrade) : onContinue
-        }
+        onContinue={handleContinue}
         onAdjustLength={onAdjustLength}
       />
     </motion.div>

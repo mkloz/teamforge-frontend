@@ -36,7 +36,7 @@ export function MutualGroupsSection({ groups }: MutualGroupsSectionProps) {
               <Avatar
                 src={group.avatar}
                 name={group.name}
-                className="h-11 w-11 bg-canvas ring-2 ring-card shadow-xs transition-transform duration-500 group-hover:scale-105"
+                className="h-11 w-11 bg-canvas ring-2 ring-card shadow-xs transition-[scale,transform] duration-500 group-hover:scale-105"
               />
             </div>
 

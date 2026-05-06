@@ -1,4 +1,4 @@
-import { Crown, Sparkles, UserMinus } from "lucide-react";
+import { BadgeCheck, Crown, UserMinus } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,7 +49,7 @@ export function MemberCard({
             "h-10 w-10 ring-1 ring-border/20 transition-all group-hover/member:ring-border/40",
             isHighCompatibility && "ring-forge-teal/30 ring-2",
           )}
-          imageClassName="transition-transform duration-500 group-hover/member:scale-110"
+          imageClassName="transition-[scale,transform] duration-500 group-hover/member:scale-110"
         />
         {onlineStatus && (
           <span
@@ -86,7 +86,7 @@ export function MemberCard({
             {member.user?.personalityType}
           </Badge>
           {isHighCompatibility && (
-            <Sparkles size={12} className="text-forge-teal animate-pulse" />
+            <BadgeCheck size={12} className="text-forge-teal" />
           )}
         </div>
         <div className="flex items-center gap-2.5">
@@ -116,7 +116,7 @@ export function MemberCard({
           type="button"
           variant="ghost"
           onClick={handleShowProfile}
-          className="h-auto min-w-0 flex-1 justify-start rounded-lg border-0 bg-transparent p-0 text-left shadow-none hover:bg-transparent focus-visible:ring-forge-teal/30"
+          className="h-auto min-w-0 flex-1 justify-start rounded-lg border-0 bg-transparent p-0 text-left hover:bg-transparent focus-visible:ring-forge-teal/30"
           contentClassName="min-w-0 justify-start gap-3"
           aria-label={`View ${member.user?.name ?? "member"} profile`}
         >
@@ -133,14 +133,14 @@ export function MemberCard({
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button
-              variant="ghost"
+              variant="destructive"
               size="icon-xs"
               type="button"
               disabled={removing}
               onClick={(event) => {
                 event.stopPropagation();
               }}
-              className="shrink-0 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              className="shrink-0"
               aria-label={`Remove ${member.user?.name ?? "member"} from group`}
             >
               <UserMinus size={14} />
@@ -157,6 +157,7 @@ export function MemberCard({
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
+                variant="destructive"
                 onClick={() => {
                   void onRemove(member.userId);
                 }}

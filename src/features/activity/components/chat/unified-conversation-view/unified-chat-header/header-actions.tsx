@@ -25,10 +25,10 @@ export const HeaderActions = memo(
           animate={{ scale: 1, opacity: 1 }}
         >
           <Button
-            variant="ghost"
+            variant="accentGhost"
             size="icon-sm"
             onClick={() => onToggleSearch(false)}
-            className="text-slate-muted hover:text-ink shrink-0"
+            className="shrink-0"
             aria-label="Cancel search"
           >
             <X size={18} strokeWidth={2.5} />
@@ -37,10 +37,10 @@ export const HeaderActions = memo(
       ) : (
         <>
           <Button
-            variant="ghost"
+            variant="accentGhost"
             size="icon-sm"
             onClick={() => onToggleSearch(true)}
-            className="text-slate-muted hover:text-forge-teal hover:bg-forge-teal/10 group/search shrink-0"
+            className="group/search shrink-0"
             aria-label="Search conversation"
           >
             <Search
@@ -50,10 +50,10 @@ export const HeaderActions = memo(
             />
           </Button>
           <Button
-            variant="ghost"
+            variant="accentGhost"
             size="icon-sm"
             onClick={onToggleAction}
-            className="text-slate-muted hover:text-foreground shrink-0 group/more"
+            className="group/more shrink-0"
             aria-label="More options"
           >
             <MoreVertical

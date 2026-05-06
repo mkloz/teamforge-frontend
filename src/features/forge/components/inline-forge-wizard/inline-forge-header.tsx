@@ -1,4 +1,4 @@
-import { ChevronLeft, Zap } from "lucide-react";
+import { ChevronLeft, Network } from "lucide-react";
 
 import {
   AlertDialog,
@@ -49,7 +49,7 @@ export function InlineForgeHeader({
             </Button>
           ) : (
             <div className="size-8 rounded-full flex items-center justify-center bg-accent/10 shrink-0">
-              <Zap size={14} className="text-accent fill-current" />
+              <Network size={14} className="text-accent" />
             </div>
           )}
           <div className="flex items-baseline overflow-hidden">
@@ -67,7 +67,7 @@ export function InlineForgeHeader({
             >
               <AlertDialogTrigger asChild>
                 <Button
-                  variant="ghost"
+                  variant="destructive"
                   size="sm"
                   onClick={() => {
                     if (!hasProgress) {
@@ -76,7 +76,7 @@ export function InlineForgeHeader({
                       onCancelDialogChange(true);
                     }
                   }}
-                  className="h-8 px-3 rounded-lg text-[10px] font-black uppercase tracking-widest text-red-500/50 hover:text-red-500 hover:bg-red-500/5 transition-colors"
+                  className="h-8 px-3 text-[10px] font-black uppercase tracking-widest"
                 >
                   Cancel
                 </Button>
@@ -94,8 +94,9 @@ export function InlineForgeHeader({
                     Keep editing
                   </AlertDialogCancel>
                   <AlertDialogAction
+                    variant="destructive"
                     onClick={onCancel}
-                    className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    className="rounded-xl"
                   >
                     Discard &amp; exit
                   </AlertDialogAction>

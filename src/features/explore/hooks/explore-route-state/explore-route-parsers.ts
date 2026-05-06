@@ -1,16 +1,18 @@
 import {
   createParser,
   parseAsArrayOf,
-  parseAsInteger,
   parseAsString,
   parseAsStringLiteral,
 } from "nuqs";
 
 import { explorePanelValues } from "@/features/explore/lib/explore-route";
-import { CATEGORIES } from "@/features/explore/constants/explore.constants";
+import {
+  CATEGORIES,
+  FILTER_BOUNDARIES,
+} from "@/features/explore/constants/explore.constants";
 
 const categoryValues = CATEGORIES.map((category) => category.id);
-const locationValues = ["ALL", "IN_PERSON", "ONLINE", "TBD"] as const;
+const locationValues = ["ALL", "IN_PERSON", "ONLINE"] as const;
 const accessValues = ["ALL", "OPEN", "BY_REQUEST"] as const;
 const sortValues = ["MATCH", "SOONEST", "NEWEST"] as const;
 
@@ -18,7 +20,13 @@ const parseAsSizeRange = createParser({
   parse(value) {
     const [min, max] = value.split("-").map((part) => Number(part));
 
-    if (!Number.isInteger(min) || !Number.isInteger(max) || min > max) {
+    if (
+      !Number.isInteger(min) ||
+      !Number.isInteger(max) ||
+      min > max ||
+      min < FILTER_BOUNDARIES.size.min ||
+      max > FILTER_BOUNDARIES.size.max
+    ) {
       return null;
     }
 
@@ -29,10 +37,29 @@ const parseAsSizeRange = createParser({
   },
 });
 
+const parseAsDistance = createParser({
+  parse(value) {
+    const distance = Number(value);
+
+    if (
+      !Number.isInteger(distance) ||
+      distance < FILTER_BOUNDARIES.distance.min ||
+      distance > FILTER_BOUNDARIES.distance.max
+    ) {
+      return null;
+    }
+
+    return distance;
+  },
+  serialize(value) {
+    return String(value);
+  },
+});
+
 export const exploreRouteParsers = {
   access: parseAsStringLiteral(accessValues),
   category: parseAsArrayOf(parseAsStringLiteral(categoryValues)),
-  distance: parseAsInteger,
+  distance: parseAsDistance,
   location: parseAsStringLiteral(locationValues),
   panel: parseAsStringLiteral(explorePanelValues),
   q: parseAsString,

@@ -46,7 +46,7 @@ export function PlanPhotoSection({
               <Image
                 src={coverImage}
                 alt=""
-                className="transition-transform duration-700 ease-out group-hover:scale-105"
+                className="transition-[scale,transform] duration-700 ease-out group-hover:scale-105"
               />
             ) : (
               <div

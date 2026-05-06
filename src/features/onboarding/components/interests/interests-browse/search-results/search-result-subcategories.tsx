@@ -2,15 +2,15 @@ import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
-import { createElement } from "react";
 
-import {
-  getLeafInterests,
-  getSubcategoryIcon,
-} from "@/features/onboarding/lib/interest-catalog";
 import type { InterestSearchResults } from "@/features/onboarding/utils/interest-logic";
 
 import { TagPill } from "../tag-pill";
+import { SearchResultSubcategoryIcon } from "./search-result-subcategory-icon";
+import {
+  getSearchResultSubcategorySelectedCount,
+  getSearchResultSubcategoryTags,
+} from "./search-result-subcategories-model";
 
 interface SearchResultSubcategoriesProps {
   expandedSubcategories: Set<string>;
@@ -73,27 +73,28 @@ function SearchResultSubcategoryItem({
   selectedIds,
   subcategory,
 }: SearchResultSubcategoryItemProps) {
-  const leafInterests = getLeafInterests(subcategory);
-  const selectedCount = leafInterests.filter((interest) =>
-    selectedIds.has(interest.id),
-  ).length;
+  const tags = getSearchResultSubcategoryTags(subcategory);
+  const selectedCount = getSearchResultSubcategorySelectedCount(
+    subcategory,
+    selectedIds,
+  );
 
   return (
     <div className="rounded-xl border border-slate-muted/15 overflow-hidden transition-colors">
       <Button
         variant="ghost"
         onClick={onToggleExpanded}
-        className="w-full h-auto justify-start flex items-center gap-2 px-3 py-2.5 rounded-none text-left group"
+        className="group flex h-auto w-full min-w-0 items-center justify-start gap-2 rounded-none px-3 py-2.5 text-left"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2">
           <span className="text-slate-muted/60">
-            {renderSubcategoryIcon(subcategory.id)}
+            <SearchResultSubcategoryIcon subcategoryId={subcategory.id} />
           </span>
-          <div className="flex flex-col">
-            <span className="font-sans text-xs font-bold text-ink">
+          <div className="flex min-w-0 flex-col">
+            <span className="truncate font-sans text-xs font-bold text-ink">
               {subcategory.name}
             </span>
-            <span className="font-sans text-[10px] font-bold uppercase tracking-wider text-slate-muted/50 leading-none">
+            <span className="truncate font-sans text-[10px] font-bold uppercase tracking-wider text-slate-muted/50 leading-none">
               {categoryName}
             </span>
           </div>
@@ -128,7 +129,7 @@ function SearchResultSubcategoryItem({
             className="overflow-hidden"
           >
             <div className="flex flex-wrap gap-1.5 p-3 pt-4">
-              {leafInterests.map((tag) => (
+              {tags.map((tag) => (
                 <TagPill
                   key={tag.id}
                   label={tag.name}
@@ -144,11 +145,4 @@ function SearchResultSubcategoryItem({
       </AnimatePresence>
     </div>
   );
-}
-
-function renderSubcategoryIcon(subcategoryId: string) {
-  return createElement(getSubcategoryIcon(subcategoryId), {
-    className: "w-5 h-5",
-    strokeWidth: 1.5,
-  });
 }

@@ -2,6 +2,7 @@ import {
   useAuthSessionState,
   useCurrentUserQuery,
 } from "@/shared/api/current-user-query";
+import { logoutCurrentSession } from "@/shared/api/auth-session-commands";
 import { TeamForgeLogo } from "@/assets/logo";
 import { LANDING_NAV_LINKS } from "@/features/landing/constants/landing-sections";
 import { useWindowScrollThreshold } from "@/shared/hooks/use-window-scroll-threshold";
@@ -18,6 +19,7 @@ import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import type { MouseEvent } from "react";
+import { useState } from "react";
 import { useMobileNavDialog } from "@/features/landing/components/navbar/use-mobile-nav-dialog";
 
 const MOBILE_NAV_LINK_DELAYS = [
@@ -32,6 +34,7 @@ export function Navbar() {
   const { closeMenu, menuOpen, menuRef, toggleMenu } = useMobileNavDialog();
   const { isAuthenticated } = useAuthSessionState();
   const { data: currentUser } = useCurrentUserQuery();
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const primaryAction = getLandingPrimaryAction(
     isAuthenticated,
     currentUser,
@@ -47,6 +50,17 @@ export function Navbar() {
     closeMenu();
     scrollToLandingSection(id);
   };
+
+  async function handleSignOut() {
+    setIsSigningOut(true);
+
+    try {
+      closeMenu();
+      await logoutCurrentSession();
+    } finally {
+      setIsSigningOut(false);
+    }
+  }
 
   return (
     <>
@@ -93,16 +107,28 @@ export function Navbar() {
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <Button
-              variant="outline"
-              asChild
-              size="sm"
-              className="hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none"
-            >
-              <Link {...secondaryAction.navigation}>
-                {secondaryAction.label}
-              </Link>
-            </Button>
+            {isAuthenticated ? (
+              <Button
+                variant="outline"
+                size="sm"
+                loading={isSigningOut}
+                onClick={handleSignOut}
+                className="hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none"
+              >
+                {isSigningOut ? "Signing out" : "Sign out"}
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                asChild
+                size="sm"
+                className="hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none"
+              >
+                <Link {...secondaryAction.navigation}>
+                  {secondaryAction.label}
+                </Link>
+              </Button>
+            )}
             <Button
               variant="primary"
               asChild
@@ -164,22 +190,40 @@ export function Navbar() {
           ))}
         </nav>
         <div className="flex flex-col items-center gap-4 w-48">
-          <Button
-            variant="outline"
-            asChild
-            size="lg"
-            className={cn(
-              "w-full bg-transparent transition-all duration-300 delay-300",
-              "hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none",
-              menuOpen
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4",
-            )}
-          >
-            <Link {...secondaryAction.navigation} onClick={closeMenu}>
-              {secondaryAction.label}
-            </Link>
-          </Button>
+          {isAuthenticated ? (
+            <Button
+              variant="outline"
+              size="lg"
+              loading={isSigningOut}
+              onClick={handleSignOut}
+              className={cn(
+                "w-full bg-transparent transition-all duration-300 delay-300",
+                "hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none",
+                menuOpen
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4",
+              )}
+            >
+              {isSigningOut ? "Signing out" : "Sign out"}
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              asChild
+              size="lg"
+              className={cn(
+                "w-full bg-transparent transition-all duration-300 delay-300",
+                "hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none",
+                menuOpen
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-4",
+              )}
+            >
+              <Link {...secondaryAction.navigation} onClick={closeMenu}>
+                {secondaryAction.label}
+              </Link>
+            </Button>
+          )}
           <Button
             variant="primary"
             asChild

@@ -68,6 +68,7 @@ export function AnimatedCircularProgressBar({
           cx="50"
           cy="50"
           r="45"
+          transform="rotate(-90 50 50)"
           strokeWidth="10"
           strokeLinecap="round"
           strokeLinejoin="round"

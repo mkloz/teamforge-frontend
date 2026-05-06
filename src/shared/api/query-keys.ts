@@ -36,6 +36,7 @@ export const APP_QUERY_KEYS = {
   },
   notifications: {
     list: ["notifications"] as const,
+    unreadList: ["notifications", "unread"] as const,
     unreadCount: ["notifications", "unread-count"] as const,
   },
   settings: {

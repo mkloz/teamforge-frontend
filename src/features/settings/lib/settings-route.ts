@@ -1,5 +1,6 @@
 export const settingsSectionValues = [
   "account",
+  "appearance",
   "matching",
   "privacy",
   "security",

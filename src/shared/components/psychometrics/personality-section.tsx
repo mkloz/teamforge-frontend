@@ -24,7 +24,7 @@ export function PersonalitySection({
     return (
       <div className="flex flex-col gap-6 w-full">
         <div className={cn("flex flex-col", hideHeaders ? "gap-6" : "gap-10")}>
-          <div className="space-y-4">
+          <div className="flex flex-col gap-4">
             <h4 className="text-2xl md:text-3xl font-bold text-ink tracking-tight">
               Personality profile still calibrating
             </h4>
@@ -57,7 +57,7 @@ export function PersonalitySection({
 
 function PersonalitySummary({ profile }: { profile: PersonalityProfile }) {
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       <h4 className="text-2xl md:text-3xl font-bold text-ink tracking-tight">
         {profile.title}
       </h4>
@@ -71,7 +71,7 @@ function PersonalitySummary({ profile }: { profile: PersonalityProfile }) {
 
 function PersonalityStrengths({ strengths }: { strengths: string[] }) {
   return (
-    <div className="space-y-5">
+    <div className="flex flex-col gap-5">
       <SectionTitle dotColor="bg-forge-teal">Key Strengths</SectionTitle>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
@@ -92,7 +92,7 @@ function PersonalityStrengths({ strengths }: { strengths: string[] }) {
 
 function GroupDynamics({ inGroups }: { inGroups: string }) {
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       <SectionTitle dotColor="bg-spark-amber">Group Dynamics</SectionTitle>
       <div className="pl-4 border-l-2 border-border/50">
         <p className="text-base text-ink/80 leading-relaxed font-medium italic">

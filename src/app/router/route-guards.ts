@@ -110,6 +110,14 @@ export async function requireEditableOnboardingRoute(
   }
 
   if (canonicalDestination !== expectedDestination) {
+    const isReturningFromInterestsToPersonality =
+      expectedDestination === "/onboarding/personality" &&
+      canonicalDestination === "/onboarding/interests";
+
+    if (isReturningFromInterestsToPersonality) {
+      return;
+    }
+
     throw redirect({ to: canonicalDestination });
   }
 }

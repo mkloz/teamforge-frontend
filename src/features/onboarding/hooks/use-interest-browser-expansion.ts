@@ -1,4 +1,4 @@
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 
 import type { Interest } from "@/shared/schemas";
 import {
@@ -10,6 +10,7 @@ import {
 
 export function useInterestBrowserExpansion(categories: Interest[]) {
   const [isPending, startTransition] = useTransition();
+  const categoryElementsRef = useRef(new Map<string, HTMLElement>());
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(
     new Set(),
   );
@@ -39,6 +40,28 @@ export function useInterestBrowserExpansion(categories: Interest[]) {
     );
   }
 
+  function jumpToCategory(categoryId: string) {
+    expandCategoryOnly(categoryId);
+
+    requestAnimationFrame(() => {
+      categoryElementsRef.current.get(categoryId)?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  }
+
+  function registerCategoryElement(
+    categoryId: string,
+    element: HTMLElement | null,
+  ) {
+    if (element) {
+      categoryElementsRef.current.set(categoryId, element);
+    } else {
+      categoryElementsRef.current.delete(categoryId);
+    }
+  }
+
   function toggleSubcategory(subcategoryId: string) {
     startTransition(() => {
       setExpandedSubcategories((prev) =>
@@ -52,6 +75,8 @@ export function useInterestBrowserExpansion(categories: Interest[]) {
     expandedSubcategories,
     expandCategoryOnly,
     isPending,
+    jumpToCategory,
+    registerCategoryElement,
     toggleCategory,
     toggleSubcategory,
   };

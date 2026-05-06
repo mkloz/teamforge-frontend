@@ -7,7 +7,10 @@ import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { HomeQueryOptions } from "@/features/home/api/home-query-options";
 import { getActivePlannedGroups } from "@/features/home/lib/home-plans";
 import { buildHomeStats } from "@/features/home/lib/home-stats";
-import type { PlannedGroup, UserStats } from "@/features/home/types/home.types";
+import type {
+  PlannedGroup,
+  UserStats,
+} from "@/features/home/lib/home-contract";
 
 export const HomeQueryFactory = {
   groups: HomeQueryOptions.groups,

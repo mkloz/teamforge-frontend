@@ -6,9 +6,9 @@ export function AccessFilter() {
   const { access, setAccess } = useExploreRouteState();
 
   return (
-    <section className="space-y-2">
-      <h4 className="text-sm font-bold text-foreground tracking-tight pl-1">
-        Access Mode
+    <section className="space-y-2.5">
+      <h4 className="pl-1 text-base font-bold tracking-tight text-foreground">
+        Join flow
       </h4>
       <SegmentedFilterTabs
         options={ACCESS_FILTER_OPTIONS}

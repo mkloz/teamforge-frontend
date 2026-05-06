@@ -1,19 +1,19 @@
 import { buildQuestionList, type TestLength } from "../data/ipip-questions";
 import {
   calculatePersonalityProgress,
+  calculatePersonalityResult,
   countAnsweredQuestions,
-  getIntermissionInterval,
+  getIntermissionContinuationStep,
+  getNextQuestionStep,
   getQuestionPageSlice,
+  getTotalQuestionPages,
   resolvePersonalityQuestions,
-  shouldTriggerIntermission,
 } from "../lib/personality-test-flow";
 import {
   hydrateQuestions,
   usePersonalityTestStore,
   type ScreenState,
 } from "../store/personality-test-store";
-import { evaluatePersonalityVector } from "../lib/personality-evaluation";
-import { calculateVector } from "../utils/score-calculator";
 
 interface UsePersonalityTestProps {
   questionsPerPage: number;
@@ -23,20 +23,15 @@ export type { ScreenState };
 export function usePersonalityTest({
   questionsPerPage,
 }: UsePersonalityTestProps) {
-  // ── Zustand store ──────────────────────────────────────────────────────────
   const store = usePersonalityTestStore();
   const { screen, testLength, questionIds, answers, result, vector } = store;
 
-  // Reconstruct full question objects from stored IDs (or build fresh if none)
   const questions = resolvePersonalityQuestions(
     questionIds,
     testLength,
     hydrateQuestions,
   );
-
-  const totalPages = Math.ceil(questions.length / questionsPerPage);
-
-  // ── Actions ────────────────────────────────────────────────────────────────
+  const totalPages = getTotalQuestionPages(questions, questionsPerPage);
 
   function handleAnswer(questionId: number, val: 1 | 2 | 3 | 4 | 5) {
     store.setAnswer(questionId, val);
@@ -53,59 +48,56 @@ export function usePersonalityTest({
   function handleNextPage() {
     if (screen.id !== "questions") return;
 
-    const isFinalPage = screen.currentPage === totalPages;
-    const isNotDeep = testLength < 150;
+    const nextStep = getNextQuestionStep({
+      currentPage: screen.currentPage,
+      isReviewMode: store.isReviewMode,
+      testLength,
+      totalPages,
+    });
 
-    // Skip intermissions entirely if in review mode
-    if (
-      !store.isReviewMode &&
-      (shouldTriggerIntermission(screen.currentPage, testLength, totalPages) ||
-        (isFinalPage && isNotDeep))
-    ) {
-      const interval = getIntermissionInterval(testLength);
-      const milestoneIndex = isFinalPage ? 99 : screen.currentPage / interval;
-      store.setScreen({
-        id: "intermission",
-        type: milestoneIndex,
-        nextPageIndex: screen.currentPage + 1,
-      });
+    if (nextStep.type !== "complete") {
+      store.setScreen(nextStep.screen);
       return;
     }
 
-    if (screen.currentPage < totalPages) {
-      store.setScreen({ id: "questions", currentPage: screen.currentPage + 1 });
-    } else {
-      // If we were in review mode, we're done with it now
-      if (store.isReviewMode) {
-        store.setIsReviewMode(false);
-      }
-      const vec = calculateVector(questions, answers);
-      const res = evaluatePersonalityVector(vec);
-      store.setResultData(res, vec);
-      store.setScreen({ id: "calculating" });
+    if (store.isReviewMode) {
+      store.setIsReviewMode(false);
     }
+    completeAssessment(questions, answers);
   }
 
   function handleContinueFromIntermission() {
     if (screen.id !== "intermission") return;
 
-    // Recalculate based on store state to avoid stale closure if updateTestLength was just called
     const currentStore = usePersonalityTestStore.getState();
     const currentQuestions = hydrateQuestions(currentStore.questionIds);
-    const currentTotalPages = Math.ceil(
-      currentQuestions.length / questionsPerPage,
+    const currentTotalPages = getTotalQuestionPages(
+      currentQuestions,
+      questionsPerPage,
     );
+    const nextStep = getIntermissionContinuationStep({
+      nextPageIndex: screen.nextPageIndex,
+      totalPages: currentTotalPages,
+    });
 
-    // If they switched to a shorter test and are now "done"
-    if (screen.nextPageIndex > currentTotalPages) {
-      const vec = calculateVector(currentQuestions, answers);
-      const res = evaluatePersonalityVector(vec);
-      store.setResultData(res, vec);
-      store.setScreen({ id: "calculating" });
+    if (nextStep.type === "complete") {
+      completeAssessment(currentQuestions, currentStore.answers);
       return;
     }
 
-    store.setScreen({ id: "questions", currentPage: screen.nextPageIndex });
+    store.setScreen(nextStep.screen);
+  }
+
+  function completeAssessment(
+    assessmentQuestions: typeof questions,
+    assessmentAnswers: typeof answers,
+  ) {
+    const nextResult = calculatePersonalityResult(
+      assessmentQuestions,
+      assessmentAnswers,
+    );
+    store.setResultData(nextResult.result, nextResult.vector);
+    store.setScreen({ id: "calculating" });
   }
 
   function handleCalculationDone() {
@@ -129,8 +121,6 @@ export function usePersonalityTest({
     handleRetake,
     reset: store.reset,
   };
-
-  // ── Derived ────────────────────────────────────────────────────────────────
 
   const currentPage = screen.id === "questions" ? screen.currentPage : 1;
   const { pageStart, pageQuestions } = getQuestionPageSlice(

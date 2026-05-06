@@ -1,4 +1,4 @@
-import { Shield, Sparkles, UserPlus } from "lucide-react";
+import { Compass, Shield, UserPlus } from "lucide-react";
 
 import { AnimatedCircularProgressBar } from "@/shared/components/ui/animated-circular-progress-bar";
 import { cn } from "@/shared/lib/utils";
@@ -14,12 +14,13 @@ export function buildProfileBadges(
   const trustScore = normalizeTrustScore(user.trustScore);
   const trustColorClass = getTrustColorClass(trustScore);
   const trustLabel = getTrustLabel(trustScore);
+  const groupMode = archetype.replace(/^The\s+/i, "");
 
   return [
     {
       bgClass: trustColorClass,
       colorClass: trustColorClass,
-      description: `A composite metric of your verifiable contributions and social reliability. Integrity: ${trustScore}%`,
+      description: `A trust signal TeamForge uses when forming groups. Current score: ${trustScore}%.`,
       icon: Shield,
       iconBgClass: "bg-transparent",
       id: "trust",
@@ -31,7 +32,7 @@ export function buildProfileBadges(
     {
       bgClass: "text-ink",
       colorClass: "text-forge-teal",
-      description: `Based on Jungian personality theory, your ${user.personalityType ?? "profile"} type defines how you process information.`,
+      description: `A compact personality signal used alongside interests, age, and trust.`,
       icon: UserPlus,
       iconBgClass: "bg-forge-teal/10",
       id: "personality-type",
@@ -41,12 +42,12 @@ export function buildProfileBadges(
     {
       bgClass: "text-ink",
       colorClass: "text-spark-amber",
-      description: `The ${archetype} archetype identifies your core value proposition in collaborative environments.`,
-      icon: Sparkles,
+      description: `A quick read on how this personality pattern may show up in a small group.`,
+      icon: Compass,
       iconBgClass: "bg-spark-amber/10",
       id: "archetype",
-      label: "Role",
-      value: archetype,
+      label: "Group mode",
+      value: groupMode,
     },
   ];
 }

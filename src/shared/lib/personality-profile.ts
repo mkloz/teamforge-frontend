@@ -1,140 +1,27 @@
 import type { OceanScores, OceanTraitKey } from "@/shared/types/psychometrics";
 
-const PERSONALITY_DESCRIPTIONS: Record<
-  string,
-  { title: string; summary: string; strengths: string[]; inGroups: string }
-> = {
-  "high-openness-high-extraversion": {
-    title: "The Creative Catalyst",
-    summary:
-      "A magnetic personality who combines boundless imagination with infectious social energy. They're the ones suggesting impromptu road trips, organizing themed parties, or rallying friends for that quirky new experience everyone else is too cautious to try. Their enthusiasm is contagious, and they have a gift for making others feel adventurous and alive.",
-    strengths: [
-      "Generates exciting ideas for group activities",
-      "Makes everyone feel included in adventures",
-      "Turns ordinary moments into memorable experiences",
-      "Brings creative solutions to group challenges",
-    ],
-    inGroups:
-      "The spark plug who keeps things interesting. They'll suggest the unconventional restaurant, propose the creative team-building activity, and ensure no gathering ever feels dull or routine.",
-  },
-  "high-openness-low-extraversion": {
-    title: "The Thoughtful Dreamer",
-    summary:
-      "A deeply creative soul with a rich inner world that they share selectively with trusted friends. They bring profound insights and artistic sensibilities to intimate conversations, often seeing connections and possibilities that others miss. While they may not seek the spotlight, their ideas and perspectives are uniquely valuable.",
-    strengths: [
-      "Offers unique, creative perspectives",
-      "Creates meaningful one-on-one connections",
-      "Brings depth to conversations and activities",
-      "Appreciates and enhances aesthetic experiences",
-    ],
-    inGroups:
-      "The quiet visionary who contributes thoughtful ideas. They're most comfortable in smaller gatherings where they can engage deeply, and they often become the creative conscience of their friend groups.",
-  },
-  "high-openness-high-conscientiousness": {
-    title: "The Visionary Builder",
-    summary:
-      "A rare combination of big-picture thinking and follow-through capability. They dream ambitious dreams but also create the plans and put in the work to make them real. Whether it's organizing a complex group trip or launching a creative project, they balance innovation with execution in ways that inspire others.",
-    strengths: [
-      "Turns creative visions into actionable plans",
-      "Balances innovation with reliability",
-      "Excels at complex, creative projects",
-      "Inspires others while delivering results",
-    ],
-    inGroups:
-      "The architect of memorable experiences. They'll not only come up with the brilliant idea for the group adventure but also handle the logistics, bookings, and contingency plans.",
-  },
-  "high-conscientiousness-high-agreeableness": {
-    title: "The Reliable Anchor",
-    summary:
-      "The person everyone knows they can count on, no matter what. They combine genuine care for others with the organizational skills to actually show up and follow through. They remember birthdays, check in during tough times, and make sure group plans actually happen. Their reliability creates a foundation of trust that strengthens every relationship.",
-    strengths: [
-      "Always follows through on commitments",
-      "Remembers important details about friends",
-      "Creates structure that helps groups function",
-      "Balances personal needs with group harmony",
-    ],
-    inGroups:
-      "The backbone of any friend group. They're the one who books the restaurant, sends the reminder texts, and makes sure no one feels left out. Their consistency builds deep, lasting friendships.",
-  },
-  "high-conscientiousness-low-agreeableness": {
-    title: "The Honest Achiever",
-    summary:
-      "A driven personality who values excellence and authenticity over social niceties. They set high standards for themselves and aren't afraid to speak difficult truths that others avoid. While their directness can be challenging, it's ultimately refreshing, and they often help groups make better decisions by cutting through comfortable but unhelpful consensus.",
-    strengths: [
-      "Provides honest, valuable feedback",
-      "Maintains high standards for group activities",
-      "Makes decisions efficiently",
-      "Holds themselves and others accountable",
-    ],
-    inGroups:
-      "The voice of reason who keeps groups honest. They'll point out when plans are unrealistic, ensure commitments are kept, and help groups avoid the pitfalls of groupthink.",
-  },
-  "high-extraversion-high-agreeableness": {
-    title: "The Social Glue",
-    summary:
-      "A natural community builder with the rare ability to make everyone feel seen and valued. They thrive on bringing people together and have an intuitive sense for group dynamics, often introducing strangers who become friends and smoothing over tensions before they escalate. Their warmth and energy create spaces where authentic connection flourishes.",
-    strengths: [
-      "Makes everyone feel welcome and included",
-      "Naturally connects people with shared interests",
-      "Defuses conflicts with grace",
-      "Energizes and unites groups",
-    ],
-    inGroups:
-      "The heart of the social circle. They're constantly expanding the group, introducing people, and ensuring that gatherings have the right mix of energy and inclusion.",
-  },
-  "high-extraversion-low-agreeableness": {
-    title: "The Bold Leader",
-    summary:
-      "A charismatic personality who isn't afraid to take charge and make things happen. They bring confidence and energy to group settings, often stepping up when leadership is needed. While they may challenge others and push boundaries, their assertiveness often drives groups to achieve more than they would otherwise.",
-    strengths: [
-      "Takes initiative in group situations",
-      "Brings energy and momentum",
-      "Makes decisions confidently",
-      "Challenges groups to aim higher",
-    ],
-    inGroups:
-      "The natural leader who steps up when direction is needed. They'll organize the activity, make the tough calls, and keep things moving, even if it means ruffling a few feathers.",
-  },
-  "high-agreeableness-high-sensitivity": {
-    title: "The Empathic Guardian",
-    summary:
-      "A deeply feeling soul with extraordinary emotional intelligence. They sense what others need, often before those people know themselves, and offer compassion and understanding that creates profound trust. While they may need time to process intense experiences, their capacity for emotional connection makes them irreplaceable friends.",
-    strengths: [
-      "Provides deep emotional support",
-      "Senses group moods and needs intuitively",
-      "Creates safe spaces for vulnerability",
-      "Remembers and honors others' feelings",
-    ],
-    inGroups:
-      "The emotional anchor who ensures everyone feels heard. They notice when someone is struggling, create space for difficult conversations, and help groups navigate emotional complexity.",
-  },
-  "high-agreeableness-low-sensitivity": {
-    title: "The Steady Supporter",
-    summary:
-      "A calm, caring presence who remains grounded even in chaos. They combine genuine warmth with emotional stability, making them the person others turn to during crises. Their unflappable nature and consistent kindness create a sense of safety that allows others to take risks and express themselves freely.",
-    strengths: [
-      "Remains calm under pressure",
-      "Offers reliable emotional support",
-      "Creates stability in group dynamics",
-      "Helps others feel safe to be vulnerable",
-    ],
-    inGroups:
-      "The rock that others lean on. When things get stressful or emotions run high, they provide the steady presence that helps groups navigate challenges without falling apart.",
-  },
-  balanced: {
-    title: "The Adaptive Ally",
-    summary:
-      "A versatile personality who reads situations well and adjusts their approach accordingly. They can energize a quiet gathering or calm an intense one, step up to lead or support from behind. This flexibility makes them valuable in any group configuration and allows them to connect authentically with a wide range of personalities.",
-    strengths: [
-      "Adapts to different social situations",
-      "Bridges gaps between different personality types",
-      "Provides balance to group dynamics",
-      "Connects with a wide range of people",
-    ],
-    inGroups:
-      "The versatile member who fills whatever role is needed. They can be the planner, the peacemaker, the energizer, or the supporter, depending on what the group needs most.",
-  },
-};
+type TraitDirection = "high" | "low";
+
+interface TraitSignal {
+  trait: OceanTraitKey;
+  direction: TraitDirection;
+  score: number;
+  strength: number;
+}
+
+interface SignalPair {
+  first: TraitSignal;
+  second: TraitSignal;
+  key: string;
+  strength: number;
+}
+
+interface TraitCopy {
+  summary: string;
+  strengths: string[];
+  socialRead: string;
+  mostYourself: string;
+}
 
 export interface PersonalityProfile {
   title: string;
@@ -143,89 +30,477 @@ export interface PersonalityProfile {
   inGroups: string;
 }
 
-function isOceanTraitKey(key: string): key is OceanTraitKey {
-  return [
-    "openness",
-    "conscientiousness",
-    "extraversion",
-    "agreeableness",
-    "neuroticism",
-  ].includes(key);
-}
+const TRAITS: OceanTraitKey[] = [
+  "openness",
+  "conscientiousness",
+  "extraversion",
+  "agreeableness",
+  "neuroticism",
+];
+
+const SIGNAL_THRESHOLD = 12;
+const STRONG_SIGNAL_THRESHOLD = 22;
+const TERTIARY_SIGNAL_THRESHOLD = 18;
+
+const PAIR_TITLES: Record<string, string> = {
+  "agreeableness:high|conscientiousness:high": "The Reliable Anchor",
+  "agreeableness:high|conscientiousness:low": "The Easygoing Supporter",
+  "agreeableness:high|extraversion:high": "The Social Glue",
+  "agreeableness:high|extraversion:low": "The Gentle Confidant",
+  "agreeableness:high|neuroticism:high": "The Empathic Guardian",
+  "agreeableness:high|neuroticism:low": "The Steady Supporter",
+  "agreeableness:high|openness:high": "The Warm Idealist",
+  "agreeableness:low|conscientiousness:high": "The Honest Achiever",
+  "agreeableness:low|extraversion:high": "The Bold Spark",
+  "agreeableness:low|openness:high": "The Independent Original",
+  "conscientiousness:high|neuroticism:low": "The Composed Planner",
+  "conscientiousness:high|openness:high": "The Visionary Builder",
+  "conscientiousness:low|extraversion:high": "The Spontaneous Starter",
+  "conscientiousness:low|neuroticism:high": "The Restless Improviser",
+  "conscientiousness:low|openness:high": "The Freeform Explorer",
+  "extraversion:high|neuroticism:low": "The Bright Mover",
+  "extraversion:high|openness:high": "The Creative Catalyst",
+  "extraversion:low|neuroticism:high": "The Private Feeler",
+  "extraversion:low|openness:high": "The Thoughtful Dreamer",
+  "neuroticism:high|openness:high": "The Sensitive Imaginist",
+  "neuroticism:low|openness:high": "The Bright Explorer",
+};
+
+const PAIR_DYNAMICS: Partial<Record<string, string>> = {
+  "agreeableness:high|conscientiousness:high":
+    "Your care tends to become practical: remembering details, keeping promises, and making reliability feel personal.",
+  "agreeableness:high|extraversion:high":
+    "Warmth and outward energy meet in you, so connection can feel both lively and emotionally easy.",
+  "agreeableness:high|extraversion:low":
+    "Your warmth is quieter and more selective, often showing up through patience, loyalty, and careful attention.",
+  "agreeableness:high|neuroticism:high":
+    "You are emotionally receptive, which can make you unusually aware of what people are feeling beneath the surface.",
+  "agreeableness:low|conscientiousness:high":
+    "You are often more interested in what is honest and well-made than in keeping everything socially smooth.",
+  "conscientiousness:high|openness:high":
+    "You have both imagination and a need for shape, so ideas feel best when they can become something real.",
+  "conscientiousness:low|openness:high":
+    "Curiosity matters more to you when it can stay loose, experimental, and free from premature definition.",
+  "extraversion:high|neuroticism:low":
+    "Your energy has a relatively steady base, which can make spontaneity feel easy rather than chaotic.",
+  "extraversion:high|openness:high":
+    "Possibility tends to move through you out loud: ideas, invitations, and connections often appear as you talk and explore.",
+  "extraversion:low|neuroticism:high":
+    "You may need more space than people expect because your inner reactions can be vivid even when your outside stays quiet.",
+  "extraversion:low|openness:high":
+    "Your imagination has a private quality; it often deepens before it becomes visible to other people.",
+  "neuroticism:high|openness:high":
+    "Your mind is sensitive to possibility and consequence at the same time, which can make you both imaginative and highly perceptive.",
+  "neuroticism:low|openness:high":
+    "You can follow curiosity without being shaken too easily by ambiguity or a change in direction.",
+};
+
+const FALLBACK_TITLES: Record<OceanTraitKey, Record<TraitDirection, string>> = {
+  openness: {
+    high: "The Curious Original",
+    low: "The Grounded Realist",
+  },
+  conscientiousness: {
+    high: "The Steady Builder",
+    low: "The Flexible Improviser",
+  },
+  extraversion: {
+    high: "The Expressive Connector",
+    low: "The Quiet Observer",
+  },
+  agreeableness: {
+    high: "The Gentle Connector",
+    low: "The Direct Individualist",
+  },
+  neuroticism: {
+    high: "The Sensitive Interpreter",
+    low: "The Even-Keeled Presence",
+  },
+};
+
+const TRAIT_COPY: Record<OceanTraitKey, Record<TraitDirection, TraitCopy>> = {
+  openness: {
+    high: {
+      summary:
+        "You are pulled toward possibility: new ideas, subtle meanings, and the feeling that there is always another angle worth exploring.",
+      strengths: [
+        "Sees connections other people miss",
+        "Follows curiosity into unexpected places",
+        "Keeps imagination close to everyday life",
+      ],
+      socialRead:
+        "you bring curiosity into the room and often notice a more interesting path before anyone names it",
+      mostYourself:
+        "there is room to explore, reinterpret, and make something ordinary feel new",
+    },
+    low: {
+      summary:
+        "You are grounded by what is tangible and tested. You usually prefer a clear reality over an elegant theory.",
+      strengths: [
+        "Keeps attention on what is real and workable",
+        "Cuts through overcomplicated ideas",
+        "Trusts practical evidence over novelty",
+      ],
+      socialRead:
+        "you keep things anchored and help others return to what is actually in front of them",
+      mostYourself:
+        "expectations are clear and the situation feels concrete enough to trust",
+    },
+  },
+  conscientiousness: {
+    high: {
+      summary:
+        "You feel calmer when intentions turn into structure: a plan, a standard, or a promise that is actually kept.",
+      strengths: [
+        "Turns intention into follow-through",
+        "Notices the details that make trust possible",
+        "Brings steadiness without needing a spotlight",
+      ],
+      socialRead:
+        "people often experience you as dependable because your care shows up in what you actually do",
+      mostYourself: "there is enough order to let you relax into the moment",
+    },
+    low: {
+      summary:
+        "You do not need everything locked down before you begin. Flexibility keeps you interested and lets better options appear.",
+      strengths: [
+        "Stays open when the plan changes",
+        "Finds ease in loose, unfinished moments",
+        "Adapts without making everything heavy",
+      ],
+      socialRead:
+        "you can keep things light when others start making the moment too rigid",
+      mostYourself:
+        "you can move naturally without every detail being decided in advance",
+    },
+  },
+  extraversion: {
+    high: {
+      summary:
+        "Your energy tends to move outward. You think well in motion, with people, conversation, and visible momentum around you.",
+      strengths: [
+        "Brings thoughts out into the open quickly",
+        "Makes first moments feel less stiff",
+        "Adds visible energy when things are too quiet",
+      ],
+      socialRead:
+        "you often make your presence felt early, which can help people relax into the exchange",
+      mostYourself:
+        "there is movement, conversation, and something alive to respond to",
+    },
+    low: {
+      summary:
+        "Your energy is more selective. You often need quiet space before your real thoughts and preferences become clear.",
+      strengths: [
+        "Notices details that louder moments can bury",
+        "Chooses words with care",
+        "Builds trust through consistency rather than volume",
+      ],
+      socialRead:
+        "you may take longer to unfold, but your presence becomes clearer when the pace gives you room",
+      mostYourself:
+        "you are not pushed to perform before you have settled into the room",
+    },
+  },
+  agreeableness: {
+    high: {
+      summary:
+        "You are tuned to other people's comfort and emotional weather, sometimes before anything is said directly.",
+      strengths: [
+        "Makes warmth feel natural rather than forced",
+        "Senses when someone needs gentler handling",
+        "Creates ease without demanding attention",
+      ],
+      socialRead:
+        "you soften the emotional edges of a room and make it easier for people to be themselves",
+      mostYourself:
+        "kindness is treated as strength, not as something people take for granted",
+    },
+    low: {
+      summary:
+        "You are not easily swept along by social pressure. You tend to respect honesty more than easy agreement.",
+      strengths: [
+        "Says what others are only circling around",
+        "Keeps your own judgment intact",
+        "Spots false harmony quickly",
+      ],
+      socialRead:
+        "you can be refreshing because people usually know where they stand with you",
+      mostYourself:
+        "directness is welcome and nobody expects you to soften every opinion",
+    },
+  },
+  neuroticism: {
+    high: {
+      summary:
+        "You feel things quickly and notice tension early. That sensitivity can make you perceptive, even when it costs energy.",
+      strengths: [
+        "Reads subtle tension before it becomes obvious",
+        "Takes emotional undercurrents seriously",
+        "Notices what a smoother person might miss",
+      ],
+      socialRead:
+        "you often catch small shifts in tone, mood, or risk before others have words for them",
+      mostYourself:
+        "there is enough emotional honesty that you do not have to pretend everything is fine",
+    },
+    low: {
+      summary:
+        "Your emotional baseline is fairly steady. You are less easily shaken by friction, uncertainty, or a change of plan.",
+      strengths: [
+        "Stays steady when the moment gets messy",
+        "Does not overreact to small uncertainty",
+        "Gives others a calmer point of reference",
+      ],
+      socialRead:
+        "you can make pressure feel more manageable because you do not absorb every ripple around you",
+      mostYourself: "things can be imperfect without becoming dramatic",
+    },
+  },
+};
 
 export function generateDetailedDescription(
   scores: OceanScores,
 ): PersonalityProfile {
-  const highTraits: OceanTraitKey[] = [];
-  const lowTraits: OceanTraitKey[] = [];
+  const signals = getRankedSignals(scores);
 
-  Object.entries(scores).forEach(([key, value]) => {
-    if (isOceanTraitKey(key)) {
-      if (value >= 65) highTraits.push(key);
-      if (value <= 35) lowTraits.push(key);
+  if (signals.length === 0) {
+    return buildBalancedProfile();
+  }
+
+  const primary = signals[0];
+  const selectedPair = getBestPair(primary, signals);
+  const secondary = selectedPair
+    ? getOtherSignal(selectedPair, primary)
+    : signals[1];
+
+  return {
+    title: getProfileTitle(primary, selectedPair),
+    summary: buildSummary(
+      primary,
+      secondary,
+      getTertiarySignal(signals, [primary, secondary]),
+    ),
+    strengths: buildStrengths(signals),
+    inGroups: buildSocialRead(primary, secondary, selectedPair),
+  };
+}
+
+function getRankedSignals(scores: OceanScores): TraitSignal[] {
+  return TRAITS.map((trait) => {
+    const score = scores[trait];
+    const strength = Math.abs(score - 50);
+    const direction: TraitDirection = score >= 50 ? "high" : "low";
+
+    return { trait, direction, score, strength };
+  })
+    .filter((signal) => signal.strength >= SIGNAL_THRESHOLD)
+    .sort((left, right) => right.strength - left.strength);
+}
+
+function getBestPair(
+  primary: TraitSignal,
+  signals: TraitSignal[],
+): SignalPair | null {
+  const candidates: SignalPair[] = [];
+
+  for (let left = 0; left < Math.min(signals.length, 4); left++) {
+    for (let right = left + 1; right < Math.min(signals.length, 4); right++) {
+      const first = signals[left];
+      const second = signals[right];
+      const key = getPairKey(first, second);
+
+      candidates.push({
+        first,
+        second,
+        key,
+        strength: first.strength + second.strength,
+      });
     }
-  });
-
-  if (highTraits.includes("openness") && highTraits.includes("extraversion")) {
-    return PERSONALITY_DESCRIPTIONS["high-openness-high-extraversion"];
   }
 
-  if (highTraits.includes("openness") && lowTraits.includes("extraversion")) {
-    return PERSONALITY_DESCRIPTIONS["high-openness-low-extraversion"];
+  const namedPairs = candidates
+    .filter((pair) => PAIR_TITLES[pair.key])
+    .sort((left, right) => right.strength - left.strength);
+  const primaryPair = namedPairs.find((pair) => pairIncludes(pair, primary));
+
+  return primaryPair ?? namedPairs[0] ?? null;
+}
+
+function getOtherSignal(pair: SignalPair, signal: TraitSignal) {
+  return sameSignal(pair.first, signal) ? pair.second : pair.first;
+}
+
+function pairIncludes(pair: SignalPair, signal: TraitSignal) {
+  return sameSignal(pair.first, signal) || sameSignal(pair.second, signal);
+}
+
+function sameSignal(left: TraitSignal, right: TraitSignal) {
+  return left.trait === right.trait && left.direction === right.direction;
+}
+
+function getProfileTitle(
+  primary: TraitSignal,
+  selectedPair: SignalPair | null,
+) {
+  if (!selectedPair) {
+    return FALLBACK_TITLES[primary.trait][primary.direction];
   }
 
-  if (
-    highTraits.includes("openness") &&
-    highTraits.includes("conscientiousness")
-  ) {
-    return PERSONALITY_DESCRIPTIONS["high-openness-high-conscientiousness"];
+  const pairedTitle = PAIR_TITLES[selectedPair.key];
+
+  return pairedTitle ?? FALLBACK_TITLES[primary.trait][primary.direction];
+}
+
+function getPairKey(first: TraitSignal, second: TraitSignal) {
+  return [first, second]
+    .map((signal) => `${signal.trait}:${signal.direction}`)
+    .sort()
+    .join("|");
+}
+
+function buildSummary(
+  primary: TraitSignal,
+  secondary?: TraitSignal,
+  tertiary?: TraitSignal,
+) {
+  const pairKey = secondary ? getPairKey(primary, secondary) : null;
+  const pairDynamic = pairKey ? PAIR_DYNAMICS[pairKey] : null;
+  const sentences = [
+    TRAIT_COPY[primary.trait][primary.direction].summary,
+    pairDynamic ??
+      (secondary
+        ? TRAIT_COPY[secondary.trait][secondary.direction].summary
+        : null),
+    tertiary && tertiary.strength >= TERTIARY_SIGNAL_THRESHOLD
+      ? getModifierSentence(tertiary)
+      : getBalanceSentence(primary, secondary),
+  ].filter(Boolean);
+
+  return sentences.join(" ");
+}
+
+function getModifierSentence(signal: TraitSignal) {
+  const copy = TRAIT_COPY[signal.trait][signal.direction];
+
+  return signal.strength >= STRONG_SIGNAL_THRESHOLD
+    ? `Another clear part of the pattern is this: ${copy.mostYourself}.`
+    : `A quieter part of the pattern is this: ${copy.mostYourself}.`;
+}
+
+function getBalanceSentence(primary: TraitSignal, secondary?: TraitSignal) {
+  if (!secondary) {
+    return `You tend to feel most like yourself when ${TRAIT_COPY[primary.trait][primary.direction].mostYourself}.`;
   }
 
-  if (
-    highTraits.includes("conscientiousness") &&
-    highTraits.includes("agreeableness")
-  ) {
-    return PERSONALITY_DESCRIPTIONS[
-      "high-conscientiousness-high-agreeableness"
-    ];
+  return `The mix is most visible when ${TRAIT_COPY[primary.trait][primary.direction].mostYourself}, while ${TRAIT_COPY[secondary.trait][secondary.direction].mostYourself}.`;
+}
+
+function buildStrengths(signals: TraitSignal[]) {
+  const strengths: string[] = [];
+
+  addOneStrengthPerSignal(signals, strengths);
+  fillRemainingStrengths(signals, strengths);
+  fillFallbackStrengths(strengths);
+
+  return strengths.slice(0, 4);
+}
+
+function addOneStrengthPerSignal(signals: TraitSignal[], strengths: string[]) {
+  for (const signal of signals.slice(0, 4)) {
+    const candidates = TRAIT_COPY[signal.trait][signal.direction].strengths;
+    const firstUnused = candidates.find(
+      (strength) => !strengths.includes(strength),
+    );
+
+    if (firstUnused) {
+      strengths.push(firstUnused);
+    }
+  }
+}
+
+function fillRemainingStrengths(signals: TraitSignal[], strengths: string[]) {
+  for (const signal of signals) {
+    for (const strength of TRAIT_COPY[signal.trait][signal.direction]
+      .strengths) {
+      if (!strengths.includes(strength)) {
+        strengths.push(strength);
+      }
+    }
+    if (strengths.length === 4) {
+      return;
+    }
+  }
+}
+
+function fillFallbackStrengths(strengths: string[]) {
+  const fallbackStrengths = [
+    "Adapts to different social situations",
+    "Bridges different personalities without losing yourself",
+    "Provides balance when a room has too much of one energy",
+    "Connects with a wide range of people",
+  ];
+
+  for (const strength of fallbackStrengths) {
+    if (!strengths.includes(strength)) {
+      strengths.push(strength);
+    }
+
+    if (strengths.length === 4) {
+      return;
+    }
+  }
+}
+
+function buildSocialRead(
+  primary: TraitSignal,
+  secondary?: TraitSignal,
+  selectedPair?: SignalPair | null,
+) {
+  const primaryRead = TRAIT_COPY[primary.trait][primary.direction].socialRead;
+
+  if (!secondary) {
+    return `Around other people, ${primaryRead}. You tend to feel most natural when ${TRAIT_COPY[primary.trait][primary.direction].mostYourself}.`;
   }
 
-  if (
-    highTraits.includes("conscientiousness") &&
-    lowTraits.includes("agreeableness")
-  ) {
-    return PERSONALITY_DESCRIPTIONS["high-conscientiousness-low-agreeableness"];
+  const pairDynamic = selectedPair ? PAIR_DYNAMICS[selectedPair.key] : null;
+
+  if (pairDynamic) {
+    return `Around other people, ${primaryRead}. ${pairDynamic}`;
   }
 
-  if (
-    highTraits.includes("extraversion") &&
-    highTraits.includes("agreeableness")
-  ) {
-    return PERSONALITY_DESCRIPTIONS["high-extraversion-high-agreeableness"];
-  }
+  return `Around other people, ${primaryRead}. At the same time, ${TRAIT_COPY[secondary.trait][secondary.direction].socialRead}.`;
+}
 
-  if (
-    highTraits.includes("extraversion") &&
-    lowTraits.includes("agreeableness")
-  ) {
-    return PERSONALITY_DESCRIPTIONS["high-extraversion-low-agreeableness"];
-  }
+function getTertiarySignal(
+  signals: TraitSignal[],
+  excludedSignals: Array<TraitSignal | undefined>,
+) {
+  return signals.find(
+    (signal) =>
+      !excludedSignals.some(
+        (excluded) =>
+          excluded &&
+          excluded.trait === signal.trait &&
+          excluded.direction === signal.direction,
+      ),
+  );
+}
 
-  if (
-    highTraits.includes("agreeableness") &&
-    highTraits.includes("neuroticism")
-  ) {
-    return PERSONALITY_DESCRIPTIONS["high-agreeableness-high-sensitivity"];
-  }
-
-  if (
-    highTraits.includes("agreeableness") &&
-    lowTraits.includes("neuroticism")
-  ) {
-    return PERSONALITY_DESCRIPTIONS["high-agreeableness-low-sensitivity"];
-  }
-
-  return PERSONALITY_DESCRIPTIONS["balanced"];
+function buildBalancedProfile(): PersonalityProfile {
+  return {
+    title: "The Adaptive Ally",
+    summary:
+      "You are not pulled too hard toward one extreme, which can make you harder to summarize but easier to recognize in real life. You tend to read the moment, adjust your pace, and become different parts of yourself depending on who is around and what the situation asks for.",
+    strengths: [
+      "Adapts to different social situations",
+      "Bridges different personalities without losing yourself",
+      "Provides balance when a room has too much of one energy",
+      "Connects with a wide range of people",
+    ],
+    inGroups:
+      "Around other people, you are often the one who adjusts without making a performance of it. You can be steady, playful, practical, or reflective depending on what feels true in the moment.",
+  };
 }
 
 export function getBorderlineExplanation(

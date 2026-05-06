@@ -45,8 +45,8 @@ export function SettingsSidebar({
       <div className="mt-5 border-y border-border py-1 lg:border-x-0 lg:border-b-0 lg:border-t lg:py-4">
         <Button
           type="button"
-          variant="ghost"
-          className="h-auto w-full justify-start rounded-none px-1 py-3 text-slate-muted hover:text-destructive lg:rounded-lg lg:px-4"
+          variant="destructive"
+          className="h-auto w-full justify-start rounded-none px-1 py-3 lg:rounded-lg lg:px-4"
           disabled={isSigningOut}
           onClick={() => {
             void onSignOut();
@@ -72,7 +72,7 @@ function SettingsSectionNav({
   return (
     <nav
       aria-label="Settings sections"
-      className="flex flex-col overflow-hidden border-y border-border lg:overflow-visible lg:border-y-0 lg:border-l"
+      className="flex flex-col overflow-hidden"
     >
       {SETTINGS_SECTIONS.map((section) => {
         const isActive = activeSection === section.id;

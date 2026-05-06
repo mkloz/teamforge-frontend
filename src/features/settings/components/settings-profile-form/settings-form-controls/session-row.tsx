@@ -75,13 +75,9 @@ export function SessionRow({ session, isRevoking, onRevoke }: SessionRowProps) {
 
       <Button
         type="button"
-        variant="outline"
+        variant={session.isCurrent ? "destructive" : "outline"}
         size="sm"
-        className={
-          session.isCurrent
-            ? "w-full border-destructive/40 text-destructive hover:bg-destructive/10 md:w-auto"
-            : "w-full md:w-auto"
-        }
+        className="w-full md:w-auto"
         disabled={isRevoking}
         onClick={() => {
           void onRevoke(session);

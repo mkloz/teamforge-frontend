@@ -23,6 +23,8 @@
   --animate-forge-slide-up: forge-slide-up 0.28s cubic-bezier(0.34, 1.1, 0.64, 1) forwards;
   --animate-scroll-hint: scroll-hint 2.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
   --animate-sweep: sweep 0.8s ease-in-out forwards;
+  --animate-collapsible-down: collapsible-down 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-collapsible-up: collapsible-up 0.2s cubic-bezier(0.4, 0, 1, 1);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -111,8 +113,9 @@
   /* TeamForge Mechanical Shadows (Unblurred) */
   --shadow-button-primary: 0 4px 0 #0f5e56;
   --shadow-button-secondary: 0 4px 0 #b45309;
-  --shadow-button-outline: 0 4px 0 #1C1C1A;
-  --shadow-button-outline-dark: 0 4px 0 #FFFFFF;
+  --shadow-button-outline: 0 4px 0 #1c1c1a;
+  --shadow-button-outline-dark: 0 4px 0 #ffffff;
+  --shadow-button-destructive: 0 4px 0 color-mix(in srgb, var(--destructive) 48%, #3f0a0a);
 
   /* Button Border Tokens */
   --color-button-primary-border: #0f766e;
@@ -124,6 +127,28 @@
     }
     100% {
       transform: translateX(200%);
+    }
+  }
+
+  @keyframes collapsible-down {
+    from {
+      height: 0;
+      opacity: 0;
+    }
+    to {
+      height: var(--radix-collapsible-content-height);
+      opacity: 1;
+    }
+  }
+
+  @keyframes collapsible-up {
+    from {
+      height: var(--radix-collapsible-content-height);
+      opacity: 1;
+    }
+    to {
+      height: 0;
+      opacity: 0;
     }
   }
 }

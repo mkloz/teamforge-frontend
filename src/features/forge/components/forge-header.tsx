@@ -1,4 +1,4 @@
-import { X, ChevronLeft, Check, Zap } from "lucide-react";
+import { X, ChevronLeft, Check, Network } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import type { ForgeResult } from "../lib/forge-contract";
@@ -56,7 +56,7 @@ export function ForgeHeader({
             {forgeResult === "SUCCESS" ? (
               <Check size={15} className="text-primary" />
             ) : (
-              <Zap size={15} className="text-accent fill-current" />
+              <Network size={15} className="text-accent" />
             )}
           </div>
         )}

@@ -33,7 +33,7 @@ export function FooterActionArea({
                   variant="outline"
                   size="icon"
                   onClick={fw.goBack}
-                  className="size-14 rounded-2xl border-border/60 text-slate-muted hover:text-ink hover:border-ink shadow-button-outline/10"
+                  className="size-14 rounded-2xl"
                   aria-label="Go back"
                 >
                   <ChevronLeft size={20} />

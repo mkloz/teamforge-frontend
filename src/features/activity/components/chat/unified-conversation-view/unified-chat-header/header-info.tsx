@@ -50,7 +50,7 @@ export const HeaderInfo = memo(
             "relative transition-all duration-300 group-hover/header-info:shadow-sm",
             isGroup ? "w-10 h-10 rounded-md" : "w-10 h-10",
           )}
-          imageClassName="transition-transform duration-700 ease-out group-hover/header-info:scale-110"
+          imageClassName="transition-[scale,transform] duration-700 ease-out group-hover/header-info:scale-110"
           fallbackClassName="bg-muted text-[10px] text-muted-foreground"
           loading="eager"
         >

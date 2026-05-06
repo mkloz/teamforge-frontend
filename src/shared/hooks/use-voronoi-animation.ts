@@ -20,6 +20,7 @@ import type {
 
 interface UseVoronoiOptions {
   progress: number;
+  rotationDegrees?: number;
 }
 
 // Pre-calculate constants outside the hook
@@ -27,7 +28,10 @@ const RAD = 25 * (Math.PI / 180);
 const COS_RAD = Math.cos(RAD);
 const SIN_RAD = Math.sin(RAD);
 
-export function useVoronoiAnimation({ progress }: UseVoronoiOptions) {
+export function useVoronoiAnimation({
+  progress,
+  rotationDegrees = -25,
+}: UseVoronoiOptions) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointsRef = useRef<Point[]>([]);
@@ -291,7 +295,7 @@ export function useVoronoiAnimation({ progress }: UseVoronoiOptions) {
       // FRAME CSS TRANSFORM (Hardware accelerated via will-change applied in JSX)
       const frameX = mdx * ANIMATION_CONFIG.frameParallaxFactor;
       const frameY = mdy * ANIMATION_CONFIG.frameParallaxFactor;
-      canvas.style.transform = `scale(1.25) rotate(-25deg) translate(${frameX}px, ${frameY}px)`;
+      canvas.style.transform = `scale(1.25) rotate(${rotationDegrees}deg) translate(${frameX}px, ${frameY}px)`;
 
       ctx.restore();
       requestRef.current = requestAnimationFrame(animate);
@@ -299,7 +303,7 @@ export function useVoronoiAnimation({ progress }: UseVoronoiOptions) {
 
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
-  }, [dimensions]);
+  }, [dimensions, rotationDegrees]);
 
   function handleMouseMove(clientX: number, clientY: number) {
     if (!containerRef.current) return;

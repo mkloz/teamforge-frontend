@@ -2,25 +2,19 @@ import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
-import { resolveOnboardingExitNavigation } from "@/features/onboarding/lib/onboarding-exit-route";
 
-import { MIN_INTERESTS } from "../data/interests-data";
+import {
+  buildInterestsFlowSearch,
+  getInterestsProgress,
+  resolveInterestsExitNavigation,
+} from "../lib/interests-page-flow";
+import {
+  buildBackToLabel,
+  getOnboardingReturnDestinationLabel,
+} from "../lib/onboarding-navigation-labels";
 import { useInterests } from "./use-interests";
 import { useOnboardingFlowState } from "../lib/onboarding-flow-state";
-
-function buildFlowSearch({
-  returnTo,
-  returnSearch,
-  returnSection,
-  mbti,
-}: ReturnType<typeof useOnboardingFlowState>) {
-  return {
-    ...(returnTo ? { returnTo } : {}),
-    ...(returnSearch ? { returnSearch } : {}),
-    ...(returnSection ? { returnSection } : {}),
-    ...(mbti ? { mbti } : {}),
-  };
-}
+import { usePersonalityTestStore } from "../store/personality-test-store";
 
 export function useInterestsPageFlow() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -56,10 +50,12 @@ export function useInterestsPageFlow() {
 
     reset();
     void navigate(
-      resolveOnboardingExitNavigation(
-        returnTo,
-        returnSearch,
-        returnSection,
+      resolveInterestsExitNavigation(
+        {
+          returnTo,
+          returnSearch,
+          returnSection,
+        },
         "settings",
       ),
     );
@@ -67,15 +63,21 @@ export function useInterestsPageFlow() {
 
   useScrollToTop([state.screen], scrollContainerRef);
 
-  const progress = Math.min(state.selectedCount / MIN_INTERESTS, 1);
+  const progress = getInterestsProgress(state.selectedCount);
+  const backDestination = isEditMode
+    ? getOnboardingReturnDestinationLabel(returnTo, null, "settings")
+    : "personality";
 
   function enterApp() {
     state.reset();
+    usePersonalityTestStore.getState().reset();
     void navigate(
-      resolveOnboardingExitNavigation(
-        returnTo,
-        returnSearch,
-        returnSection,
+      resolveInterestsExitNavigation(
+        {
+          returnTo,
+          returnSearch,
+          returnSection,
+        },
         "home",
       ),
     );
@@ -85,19 +87,19 @@ export function useInterestsPageFlow() {
     if (isEditMode) {
       state.reset();
       void navigate(
-        resolveOnboardingExitNavigation(
-          returnTo,
-          returnSearch,
-          returnSection,
+        resolveInterestsExitNavigation(
+          {
+            returnTo,
+            returnSearch,
+            returnSection,
+          },
           "settings",
         ),
       );
       return;
     }
 
-    const previousSearch = buildFlowSearch({
-      mode: null,
-      isEditMode,
+    const previousSearch = buildInterestsFlowSearch({
       returnTo,
       returnSearch,
       returnSection,
@@ -112,6 +114,7 @@ export function useInterestsPageFlow() {
   }
 
   return {
+    backLabel: buildBackToLabel(backDestination),
     enterApp,
     goBack,
     isDone,

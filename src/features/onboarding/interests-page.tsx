@@ -10,6 +10,7 @@ import { useInterestsPageFlow } from "@/features/onboarding/hooks/use-interests-
 
 export function InterestsPage() {
   const {
+    backLabel,
     enterApp,
     goBack,
     isDone,
@@ -43,6 +44,7 @@ export function InterestsPage() {
               <div className="relative w-full">
                 <InterestsScreenRenderer
                   state={state}
+                  backLabel={backLabel}
                   onBack={goBack}
                   isEditMode={isEditMode}
                 />
@@ -53,6 +55,7 @@ export function InterestsPage() {
 
         <InterestsFooter
           state={state}
+          backLabel={backLabel}
           isEditMode={isEditMode}
           onBack={goBack}
         />

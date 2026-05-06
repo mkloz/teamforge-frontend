@@ -7,8 +7,9 @@ export function useExploreFeed() {
     useExploreRouteState();
 
   return {
-    groups: groupsQuery.data ?? [],
-    hasGroups: (groupsQuery.data?.length ?? 0) > 0,
+    groups: groupsQuery.data?.groups ?? [],
+    hasGroups: (groupsQuery.data?.groups.length ?? 0) > 0,
+    insight: groupsQuery.data?.insight,
     isAnythingFiltered,
     isError: groupsQuery.isError,
     isLoading: groupsQuery.isLoading,

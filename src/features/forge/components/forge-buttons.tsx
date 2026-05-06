@@ -1,5 +1,5 @@
 import { Button } from "@/shared/components/ui/button";
-import { Cpu, RefreshCw, Sparkles, Zap } from "lucide-react";
+import { ArrowRight, Cpu, Network, RefreshCw, UsersRound } from "lucide-react";
 
 interface PrimaryButtonProps {
   label: string;
@@ -20,7 +20,7 @@ export function PrimaryButton({
       disabled={disabled}
       variant="primary"
       size="lg"
-      className="w-full h-14 rounded-2xl font-bold group shadow-button-primary/20"
+      className="h-14 w-full rounded-2xl font-bold"
     >
       <span className="relative z-10 flex items-center gap-2.5">
         {label}
@@ -42,15 +42,15 @@ export function ManualForgeButton({ onClick }: { onClick: () => void }) {
         variant="secondary"
         size="lg"
         aria-label="Forge this group"
-        className="w-full h-14 rounded-2xl font-bold group shadow-button-secondary/30"
+        className="h-14 w-full rounded-2xl font-bold"
       >
-        <Zap
+        <UsersRound
           size={18}
           aria-hidden="true"
-          className="fill-current group-hover:scale-110 transition-transform"
+          className="group-hover:scale-110 transition-transform"
         />
         <span>Forge group</span>
-        <Sparkles size={14} className="opacity-60" />
+        <ArrowRight size={14} className="opacity-70" />
       </Button>
     </div>
   );
@@ -64,7 +64,7 @@ export function AutoForgeButton({ onClick }: { onClick: () => void }) {
         variant="primary"
         size="lg"
         aria-label="Auto-forge with algorithm"
-        className="w-full h-14 rounded-2xl font-bold group shadow-button-primary/20"
+        className="h-14 w-full rounded-2xl font-bold"
       >
         <Cpu
           size={18}
@@ -75,11 +75,7 @@ export function AutoForgeButton({ onClick }: { onClick: () => void }) {
           <span className="sm:hidden">Auto-forge</span>
           <span className="hidden sm:inline">Auto-forge with algorithm</span>
         </span>
-        <Sparkles
-          size={14}
-          aria-hidden="true"
-          className="shrink-0 opacity-80 animate-pulse"
-        />
+        <Network size={14} aria-hidden="true" className="shrink-0 opacity-80" />
       </Button>
     </div>
   );
@@ -91,7 +87,7 @@ export function ReforgeButton({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       variant="secondary"
       size="lg"
-      className="w-full h-14 rounded-2xl font-bold group shadow-button-secondary/30"
+      className="h-14 w-full rounded-2xl font-bold"
     >
       <RefreshCw
         size={15}

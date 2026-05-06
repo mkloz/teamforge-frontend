@@ -12,7 +12,7 @@ export class HomeApi {
     const response = await apiClient
       .get("groups", {
         searchParams: {
-          limit: 24,
+          limit: 100,
         },
       })
       .json<unknown>();

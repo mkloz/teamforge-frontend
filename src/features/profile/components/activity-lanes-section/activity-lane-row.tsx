@@ -1,0 +1,38 @@
+import type { ActivityLane } from "@/features/profile/lib/profile-insights";
+
+import { describeLaneEvidence } from "./activity-lane-formatters";
+import { activityLaneIcons } from "./activity-lane-icons";
+import { InterestChip } from "./interest-chip";
+
+interface ActivityLaneRowProps {
+  lane: ActivityLane;
+}
+
+export function ActivityLaneRow({ lane }: ActivityLaneRowProps) {
+  const Icon = activityLaneIcons[lane.key];
+  const evidenceLabel = describeLaneEvidence(lane);
+
+  return (
+    <div className="grid min-w-0 gap-3 py-5 first:pt-0 last:pb-0 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-4 sm:py-4">
+      <div className="flex items-start gap-3">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
+          <Icon size={18} />
+        </div>
+        <div>
+          <h4 className="text-sm font-extrabold text-ink">{lane.label}</h4>
+          <p className="mt-1 text-xs font-bold uppercase tracking-widest text-slate-muted">
+            {evidenceLabel}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex min-w-0 flex-col gap-3">
+        <div className="flex flex-wrap gap-2">
+          {lane.evidence.map((evidence) => (
+            <InterestChip key={evidence.interest.id} evidence={evidence} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

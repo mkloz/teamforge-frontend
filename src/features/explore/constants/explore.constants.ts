@@ -22,7 +22,7 @@ export const SORTS: {
   label: string;
   icon: LucideIcon;
 }[] = [
-  { id: "MATCH", label: "Top Match", icon: Target },
+  { id: "MATCH", label: "Best fit", icon: Target },
   { id: "SOONEST", label: "Soonest", icon: Clock },
   { id: "NEWEST", label: "Newest", icon: Activity },
 ];
@@ -60,12 +60,12 @@ export const ACCESS_FILTER_OPTIONS: {
 }[] = [
   { id: "ALL", label: "Any", icon: Users },
   { id: "OPEN", label: "Open", icon: Unlock },
-  { id: "BY_REQUEST", label: "Req", icon: Handshake },
+  { id: "BY_REQUEST", label: "Request", icon: Handshake },
 ];
 
 export const FILTER_BOUNDARIES = {
   distance: { min: 2, max: 50, default: 15 },
-  size: { min: 2, max: 20, defaultMin: 3, defaultMax: 8 },
+  size: { min: 2, max: 8, defaultMin: 3, defaultMax: 8 },
 } as const;
 
 export const DEFAULT_FILTERS: ExploreFilters = {

@@ -4,27 +4,23 @@ import { useRef, useState } from "react";
 
 import { useInvalidateCurrentUser } from "@/shared/api/current-user-query";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
-import { resolveOnboardingExitNavigation } from "@/features/onboarding/lib/onboarding-exit-route";
 
 import { OnboardingCache } from "../api/onboarding-cache";
 import { OnboardingCommands } from "../api/onboarding-commands";
 import { buildQuestionList, type TestLength } from "../data/ipip-questions";
+import {
+  buildPersonalityNextSearch,
+  buildPersonalityPreviousSearch,
+  resolvePersonalityExitNavigation,
+} from "../lib/personality-test-page-flow";
+import {
+  buildBackToLabel,
+  getOnboardingReturnDestinationLabel,
+} from "../lib/onboarding-navigation-labels";
 import { getOceanScoresFromVector } from "../lib/personality-results";
 import { QUESTIONS_PER_PAGE } from "../lib/personality-test-page-constants";
 import { useOnboardingFlowState } from "../lib/onboarding-flow-state";
 import { usePersonalityTest } from "./use-personality-test";
-
-function buildFlowSearch({
-  returnTo,
-  returnSearch,
-  returnSection,
-}: ReturnType<typeof useOnboardingFlowState>) {
-  return {
-    ...(returnTo ? { returnTo } : {}),
-    ...(returnSearch ? { returnSearch } : {}),
-    ...(returnSection ? { returnSection } : {}),
-  };
-}
 
 export function usePersonalityTestPageFlow() {
   const [pendingLength, setPendingLength] = useState<TestLength | null>(null);
@@ -59,27 +55,24 @@ export function usePersonalityTestPageFlow() {
       });
     }
 
-    testState.actions.reset();
-
     if (isEditMode) {
+      testState.actions.reset();
       await navigate(
-        resolveOnboardingExitNavigation(
+        resolvePersonalityExitNavigation({
           returnTo,
           returnSearch,
           returnSection,
-          "settings",
-        ),
+        }),
       );
       return;
     }
 
-    const mbtiType = testState.result?.type ?? null;
-    const nextSearch = {
-      ...(mbtiType ? { mbti: mbtiType } : {}),
-      ...(returnTo ? { returnTo } : {}),
-      ...(returnSearch ? { returnSearch } : {}),
-      ...(returnSection ? { returnSection } : {}),
-    };
+    const nextSearch = buildPersonalityNextSearch({
+      mbti: testState.result?.type ?? null,
+      returnTo,
+      returnSearch,
+      returnSection,
+    });
 
     await navigate({
       to: "/onboarding/interests",
@@ -91,23 +84,19 @@ export function usePersonalityTestPageFlow() {
     if (isEditMode) {
       testState.actions.reset();
       await navigate(
-        resolveOnboardingExitNavigation(
+        resolvePersonalityExitNavigation({
           returnTo,
           returnSearch,
           returnSection,
-          "settings",
-        ),
+        }),
       );
       return;
     }
 
-    const previousSearch = buildFlowSearch({
-      mode: null,
-      isEditMode,
+    const previousSearch = buildPersonalityPreviousSearch({
       returnTo,
       returnSearch,
       returnSection,
-      mbti: null,
     });
 
     await navigate({
@@ -141,7 +130,12 @@ export function usePersonalityTestPageFlow() {
     scrollContainerRef,
   );
 
+  const backDestination = isEditMode
+    ? getOnboardingReturnDestinationLabel(returnTo, null, "settings")
+    : "profile";
+
   return {
+    backLabel: buildBackToLabel(backDestination),
     continueLabel: isEditMode ? "Save Personality" : "Continue",
     continueToInterests,
     displayProgress,

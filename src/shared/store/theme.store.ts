@@ -53,13 +53,26 @@ export function useInitializeTheme() {
 
   useEffect(() => {
     const root = document.documentElement;
+    let firstFrame = 0;
+    let secondFrame = 0;
 
     root.classList.add("disable-transitions");
     root.dataset.theme = theme;
     root.classList.remove(Theme.LIGHT, Theme.DARK);
     root.classList.add(theme);
     void window.getComputedStyle(root).opacity;
-    root.classList.remove("disable-transitions");
+
+    firstFrame = window.requestAnimationFrame(() => {
+      secondFrame = window.requestAnimationFrame(() => {
+        root.classList.remove("disable-transitions");
+      });
+    });
+
+    return () => {
+      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(secondFrame);
+      root.classList.remove("disable-transitions");
+    };
   }, [theme]);
 }
 

@@ -8,7 +8,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/shared/components/ui/sheet";
-import { cn } from "@/shared/lib/utils";
 import { ListFilter, SlidersHorizontal } from "lucide-react";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 import { ExploreRightFilters } from "@/features/explore/components/explore-right-filters";
@@ -21,14 +20,12 @@ export function MobileFiltersSheet() {
     <Sheet>
       <SheetTrigger asChild>
         <Button
-          variant="outline"
+          variant={filtered ? "primary" : "outline"}
           size="icon"
-          className={cn(
-            "shrink-0 rounded-xl lg:hidden h-10 w-10 border transition-all duration-200",
-            filtered
-              ? "bg-primary/5 border-primary/20 text-primary hover:bg-primary/10"
-              : "border-border/60 text-muted-foreground hover:text-foreground hover:border-border",
-          )}
+          aria-label={
+            filtered ? "Open filters, filters active" : "Open filters"
+          }
+          className="h-11 w-11 shrink-0 lg:hidden"
         >
           <SlidersHorizontal className="w-3.5 h-3.5" />
         </Button>
@@ -41,31 +38,29 @@ export function MobileFiltersSheet() {
           <SheetHeader className="mb-8">
             <SheetTitle className="text-left flex items-center gap-2 text-xl font-black tracking-tight">
               <ListFilter className="size-5 text-primary" />
-              Filters
+              Refine results
             </SheetTitle>
             <SheetDescription className="text-left text-xs font-medium text-muted-foreground">
-              Refine your search results to find the perfect group.
+              Changes update the feed immediately. Close this panel when the
+              list looks right.
             </SheetDescription>
           </SheetHeader>
 
           <ExploreRightFilters hideHeader />
 
-          <div className="mt-8 pt-6 border-t border-border/10 flex flex-col gap-3">
+          <div className="mt-8 flex flex-col gap-3 border-t border-border/10 pt-6">
             <SheetClose asChild>
-              <Button className="w-full h-12 rounded-2xl font-bold bg-primary text-primary-foreground shadow-teal-glow hover:-translate-y-0.5 active:scale-95 transition-all duration-200">
-                Show Results
-              </Button>
+              <Button className="h-12 w-full font-bold">Show results</Button>
             </SheetClose>
-            <SheetClose asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={resetFilters}
-                className="w-full py-2 text-xs text-muted-foreground hover:text-foreground"
-              >
-                Reset all filters
-              </Button>
-            </SheetClose>
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={!filtered}
+              onClick={resetFilters}
+              className="h-11 w-full text-xs disabled:opacity-40"
+            >
+              Clear filters
+            </Button>
           </div>
         </div>
       </SheetContent>

@@ -1,6 +1,6 @@
 import type { GroupApi, User } from "@/shared/schemas";
 
-import type { UserStats } from "@/features/home/types/home.types";
+import type { UserStats } from "@/features/home/lib/home-contract";
 
 export const EMPTY_HOME_STATS: UserStats = {
   trustScore: 0,

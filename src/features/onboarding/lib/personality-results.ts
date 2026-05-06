@@ -1,8 +1,50 @@
 import type { DimensionScore, OceanScores } from "@/shared/types/psychometrics";
+import { generateDetailedDescription } from "@/shared/lib/personality-profile";
 import type { PersonalityEvaluation } from "./personality-evaluation";
 import type { OceanVectorWithMeta } from "../utils/score-calculator";
 
 const SOFT_BOUNDARY_THRESHOLD = 0.167;
+const GROUP_READ_SENTENCE_COUNT = 2;
+
+const SIXTEEN_PERSONALITIES_SLUGS: Record<
+  PersonalityEvaluation["type"],
+  string
+> = {
+  ENFJ: "protagonist",
+  ENFP: "campaigner",
+  ENTJ: "commander",
+  ENTP: "debater",
+  ESFJ: "consul",
+  ESFP: "entertainer",
+  ESTJ: "executive",
+  ESTP: "entrepreneur",
+  INFJ: "advocate",
+  INFP: "mediator",
+  INTJ: "architect",
+  INTP: "logician",
+  ISFJ: "defender",
+  ISFP: "adventurer",
+  ISTJ: "logistician",
+  ISTP: "virtuoso",
+};
+
+export function getPersonalityResultViewModel(
+  result: PersonalityEvaluation,
+  vector: OceanVectorWithMeta,
+) {
+  const dimensionScores = getDimensionScoresFromVector(result, vector);
+  const oceanScores = getOceanScoresFromVector(vector);
+  const profile = generateDetailedDescription(oceanScores);
+
+  return {
+    dimensionScores,
+    externalProfileUrl: getSixteenPersonalitiesUrl(result.type),
+    groupRead: getCompactText(result.info.inGroups, GROUP_READ_SENTENCE_COUNT),
+    oceanScores,
+    profile,
+    typeLabel: `${result.type}-${result.variant}`,
+  };
+}
 
 export function getDimensionScoresFromVector(
   result: PersonalityEvaluation,
@@ -46,4 +88,16 @@ export function getOceanScoresFromVector(
     agreeableness: Math.round(((vector.A + 1) / 2) * 100),
     neuroticism: Math.round(((vector.N + 1) / 2) * 100),
   };
+}
+
+export function getCompactText(value: string, maxSentences: number) {
+  const sentences = value.match(/[^.!?]+[.!?]+/g) ?? [value];
+
+  return sentences.slice(0, maxSentences).join(" ").trim();
+}
+
+export function getSixteenPersonalitiesUrl(
+  type: PersonalityEvaluation["type"],
+) {
+  return `https://www.16personalities.com/${SIXTEEN_PERSONALITIES_SLUGS[type]}-personality`;
 }

@@ -51,7 +51,7 @@ export function RecentActivityCard({
               src={activity.template.coverImage ?? undefined}
               alt=""
               wrapperClassName="absolute inset-0 h-full w-full"
-              className="transition-transform duration-700 ease-out group-hover:scale-105"
+              className="transition-[scale,transform] duration-700 ease-out group-hover:scale-105"
               showNoImage={false}
             />
             <div

@@ -5,7 +5,7 @@
  */
 import { cn } from "@/shared/lib/utils";
 import React from "react";
-import { Button } from "./button";
+import { Button, type ButtonV2Props } from "./button";
 import {
   Dialog,
   DialogClose,
@@ -61,10 +61,10 @@ AlertDialogDescription.displayName = "AlertDialogDescription";
 
 const AlertDialogAction = React.forwardRef<
   HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ className, ...props }, ref) => (
+  React.ButtonHTMLAttributes<HTMLButtonElement> & Pick<ButtonV2Props, "variant">
+>(({ className, variant = "primary", ...props }, ref) => (
   <DialogClose asChild>
-    <Button ref={ref} variant="primary" className={className} {...props} />
+    <Button ref={ref} variant={variant} className={className} {...props} />
   </DialogClose>
 ));
 AlertDialogAction.displayName = "AlertDialogAction";

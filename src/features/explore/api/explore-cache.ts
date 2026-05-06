@@ -1,12 +1,9 @@
 import type { ApiResponseWithRequestId } from "@/shared/api/api";
 import { appQueryClient } from "@/shared/api/query-client";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-import type {
-  ExploreGroup,
-  ExploreJoinResult,
-  FriendshipApi,
-} from "@/shared/schemas";
+import type { ExploreJoinResult, FriendshipApi } from "@/shared/schemas";
 
+import type { ExploreGroupsQueryData } from "@/features/explore/api/explore-query-options";
 import { EXPLORE_FRIEND_REQUESTS_QUERY_KEY } from "@/features/explore/api/explore-query-keys";
 
 function getFriendshipVersion(friendship: FriendshipApi) {
@@ -65,19 +62,24 @@ export const ExploreCache = {
   ) {
     const nextResult = "data" in result ? result.data : result;
 
-    for (const [queryKey, groups] of appQueryClient.getQueriesData<
-      ExploreGroup[]
-    >({
+    if (nextResult.status !== "JOINED") {
+      return;
+    }
+
+    for (const [
+      queryKey,
+      data,
+    ] of appQueryClient.getQueriesData<ExploreGroupsQueryData>({
       queryKey: APP_QUERY_KEYS.explore.groups,
     })) {
-      if (!groups) {
+      if (!data) {
         continue;
       }
 
-      appQueryClient.setQueryData<ExploreGroup[]>(
-        queryKey,
-        groups.filter((group) => group.id !== nextResult.groupId),
-      );
+      appQueryClient.setQueryData<ExploreGroupsQueryData>(queryKey, {
+        ...data,
+        groups: data.groups.filter((group) => group.id !== nextResult.groupId),
+      });
     }
   },
 };

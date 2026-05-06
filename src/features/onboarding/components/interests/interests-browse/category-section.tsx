@@ -8,18 +8,22 @@ import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import {
   getCategoryColorClass,
-  getLeafInterests,
   getSubcategories,
   getSubcategoryIcon,
-} from "../../../lib/interest-catalog";
+} from "@/features/onboarding/lib/interest-catalog";
+import {
+  getCategorySelectedCount,
+  getSubcategorySelectedCount,
+} from "./category-section-model";
 import { SubcategoryChip } from "./subcategory-chip";
-import { TagPill } from "./tag-pill";
+import { SubcategoryTagGroup } from "./subcategory-tag-group";
 
 interface CategorySectionProps {
   category: Interest;
   selectedIds: Set<string>;
   expandedSubcategories: Set<string>;
   isAtMax: boolean;
+  onRegisterCategory: (id: string, element: HTMLElement | null) => void;
   onToggleSubcategory: (id: string) => void;
   onToggleTag: (id: string) => void;
 }
@@ -29,21 +33,18 @@ export function CategorySection({
   selectedIds,
   expandedSubcategories,
   isAtMax,
+  onRegisterCategory,
   onToggleSubcategory,
   onToggleTag,
 }: CategorySectionProps) {
   const subcategories = getSubcategories(category);
-  const allTagsInCategory = subcategories.flatMap((subcategory) =>
-    getLeafInterests(subcategory),
-  );
-  const selectedInCategory = allTagsInCategory.filter((interest) =>
-    selectedIds.has(interest.id),
-  ).length;
+  const selectedInCategory = getCategorySelectedCount(category, selectedIds);
 
   return (
     <AccordionItem
       value={category.id}
       id={`category-${category.id}`}
+      ref={(element) => onRegisterCategory(category.id, element)}
       className="scroll-m-28 border-none"
     >
       <AccordionTrigger className="hover:no-underline py-4 group  rounded-lg px-2 -mx-2 transition-all focus-visible:underline focus-visible:text-forge-teal">
@@ -71,13 +72,13 @@ export function CategorySection({
 
       <AccordionContent>
         <div className="pb-6 flex flex-col gap-4">
-          {/* Subcategory chips */}
-          <div className="flex flex-wrap gap-2 p-1.5">
+          <div className="flex flex-wrap gap-1.5 px-0 py-1.5 sm:gap-2 sm:p-1.5">
             {subcategories.map((subcategory) => {
               const expanded = expandedSubcategories.has(subcategory.id);
-              const selectedInSubcategory = getLeafInterests(
+              const selectedInSubcategory = getSubcategorySelectedCount(
                 subcategory,
-              ).filter((interest) => selectedIds.has(interest.id)).length;
+                selectedIds,
+              );
 
               return (
                 <SubcategoryChip
@@ -92,41 +93,16 @@ export function CategorySection({
             })}
           </div>
 
-          {/* Tag clouds */}
           {subcategories.map(
             (subcategory) =>
               expandedSubcategories.has(subcategory.id) && (
-                <div
+                <SubcategoryTagGroup
                   key={`tags-${subcategory.id}`}
-                  className="py-2 flex flex-col gap-3"
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-slate-muted/60">
-                      {(() => {
-                        const Icon = getSubcategoryIcon(subcategory.id);
-
-                        return (
-                          <Icon className="w-3.5 h-3.5" strokeWidth={2.5} />
-                        );
-                      })()}
-                    </span>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-muted/40">
-                      {subcategory.name}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-2 p-1.5">
-                    {getLeafInterests(subcategory).map((tag) => (
-                      <TagPill
-                        key={tag.id}
-                        label={tag.name}
-                        selected={selectedIds.has(tag.id)}
-                        disabled={isAtMax}
-                        onToggle={() => onToggleTag(tag.id)}
-                        aliases={tag.aliases}
-                      />
-                    ))}
-                  </div>
-                </div>
+                  subcategory={subcategory}
+                  selectedIds={selectedIds}
+                  isAtMax={isAtMax}
+                  onToggleTag={onToggleTag}
+                />
               ),
           )}
         </div>

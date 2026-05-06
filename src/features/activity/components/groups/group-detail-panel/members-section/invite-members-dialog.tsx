@@ -64,7 +64,7 @@ export function InviteMembersDialog({
           variant="outline"
           size="sm"
           disabled={disabled}
-          className="h-8 text-[11px] font-bold uppercase tracking-wider border-primary/20 hover:border-primary/40 hover:bg-primary/5 text-primary rounded-lg shadow-xs transition-all duration-300"
+          className="h-8 text-[11px] font-bold uppercase tracking-wider"
         >
           <UserPlus size={13} className="mr-1" />
           Invite

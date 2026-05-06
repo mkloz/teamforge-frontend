@@ -285,14 +285,11 @@ export function AddressAutocomplete({
                 {mapsReady ? (
                   <Button
                     type="button"
-                    variant="ghost"
+                    variant="accentGhost"
                     size="icon-xs"
                     onClick={useCurrentArea}
                     disabled={disabled || isLocating}
-                    className={cn(
-                      "size-7 rounded-full text-slate-muted hover:bg-muted/60 hover:text-forge-teal focus-visible:ring-forge-teal/30 active:enabled:translate-y-0 enabled:active:scale-100",
-                      isLocating && "text-forge-teal",
-                    )}
+                    className="size-7 rounded-full"
                     aria-label="Use my current area"
                   >
                     <LocateFixed size={14} />
@@ -308,11 +305,11 @@ export function AddressAutocomplete({
                 {inputValue ? (
                   <Button
                     type="button"
-                    variant="ghost"
+                    variant="accentGhost"
                     size="icon-xs"
                     onClick={clearLocation}
                     disabled={disabled}
-                    className="size-7 rounded-full text-slate-muted hover:bg-muted/60 hover:text-ink focus-visible:ring-forge-teal/30 active:enabled:translate-y-0 enabled:active:scale-100"
+                    className="size-7 rounded-full"
                     aria-label="Clear location"
                   >
                     <X size={14} />

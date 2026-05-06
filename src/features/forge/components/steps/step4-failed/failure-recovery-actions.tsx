@@ -59,7 +59,7 @@ export function FailureRecoveryActions({
           <Button
             variant="outline"
             size="xs"
-            className="h-8 shrink-0 rounded-lg border-forge-teal/35 px-3 text-xs font-bold text-forge-teal hover:border-forge-teal/60 hover:bg-forge-teal/10 hover:text-forge-teal"
+            className="h-8 shrink-0 px-3 text-xs font-bold"
             onClick={onSwitchToManual}
           >
             Invite

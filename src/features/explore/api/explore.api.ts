@@ -3,10 +3,15 @@ import {
   createPaginatedSchema,
   exploreGroupSchema,
   exploreJoinResultSchema,
+  exploreViewInsightSchema,
   friendshipApiSchema,
 } from "@/shared/schemas";
 
-const paginatedExploreGroupsSchema = createPaginatedSchema(exploreGroupSchema);
+const paginatedExploreGroupsSchema = createPaginatedSchema(
+  exploreGroupSchema,
+).extend({
+  insight: exploreViewInsightSchema,
+});
 const paginatedFriendshipsSchema = createPaginatedSchema(friendshipApiSchema);
 
 export class ExploreApi {
@@ -17,7 +22,7 @@ export class ExploreApi {
       })
       .json<unknown>();
 
-    return paginatedExploreGroupsSchema.parse(response).items;
+    return paginatedExploreGroupsSchema.parse(response);
   }
 
   static async joinGroup(groupId: string) {

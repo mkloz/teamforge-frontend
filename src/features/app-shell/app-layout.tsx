@@ -29,7 +29,7 @@ export function AppLayout({
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-canvas text-foreground font-sans">
+      <div className="min-h-screen overflow-x-clip bg-canvas font-sans text-foreground">
         {/* Skip to content link for keyboard / screen-reader users */}
         <a
           href="#main-content"
@@ -46,7 +46,7 @@ export function AppLayout({
         {/* Main content area */}
         <main
           id="main-content"
-          className="md:pl-14 pb-20 md:pb-4 min-h-screen"
+          className="md:pl-14 pb-28 md:pb-4 min-h-screen"
           tabIndex={-1}
         >
           {/* Content wrapper — pages define their own max-width as needed */}

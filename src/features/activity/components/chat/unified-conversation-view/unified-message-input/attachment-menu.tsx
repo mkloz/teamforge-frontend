@@ -55,9 +55,9 @@ export const AttachmentMenu = memo(function AttachmentMenu({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            variant="ghost"
+            variant="accentGhost"
             size="icon-sm"
-            className="text-slate-muted hover:text-forge-teal transition-colors outline-none cursor-pointer rounded-full"
+            className="cursor-pointer rounded-full outline-none"
             aria-label="Add attachment"
             disabled={disabled}
           >

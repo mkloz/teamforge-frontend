@@ -12,9 +12,9 @@ export function LocationFilter() {
     useExploreRouteState();
 
   return (
-    <section className="space-y-2">
-      <h4 className="text-sm font-bold text-foreground tracking-tight pl-1">
-        Location
+    <section className="space-y-2.5">
+      <h4 className="pl-1 text-base font-bold tracking-tight text-foreground">
+        Place
       </h4>
       <SegmentedFilterTabs
         options={LOCATION_FILTER_OPTIONS}
@@ -23,13 +23,13 @@ export function LocationFilter() {
       />
 
       {locationMode !== "ONLINE" && (
-        <div className="space-y-4 pt-2 px-1">
+        <div className="space-y-4 px-1 pt-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-              <Route className="size-3.5" />
-              Max Distance
+            <span className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">
+              <Route className="size-4" aria-hidden="true" />
+              Distance
             </span>
-            <span className="text-xs font-black text-primary tabular-nums tracking-tight">
+            <span className="text-sm font-black tracking-tight text-muted-foreground tabular-nums">
               {distance} km
             </span>
           </div>

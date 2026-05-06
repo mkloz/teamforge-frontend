@@ -5,8 +5,8 @@ import { SelectedFiltersBar } from "./selected-filters-bar";
 
 export function ExploreSearchHeader() {
   return (
-    <div className="sticky top-0 z-30 bg-canvas pt-1 pb-1 mb-6 -mx-4 px-4 md:mx-0 md:px-0 md:pt-0 border-b border-border/5">
-      <div className="flex items-center gap-1.5 mb-1 mt-1">
+    <div className="sticky top-0 z-30 -mx-4 mb-5 border-b border-border/10 bg-canvas/96 px-4 pb-3 pt-2 backdrop-blur md:mx-0 md:mb-6 md:px-0 md:pt-0">
+      <div className="mb-2 mt-1 grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-1.5 sm:gap-2">
         <SearchInput />
         <SortDropdown />
         <MobileFiltersSheet />

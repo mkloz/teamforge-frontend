@@ -1,9 +1,3 @@
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/shared/components/ui/tooltip";
-import { getBorderlineExplanation } from "@/shared/lib/personality-profile";
 import { cn } from "@/shared/lib/utils";
 import type { DimensionScore } from "@/shared/types/psychometrics";
 
@@ -38,7 +32,7 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
             score.isBorderline ? "text-spark-amber" : "text-forge-teal",
           )}
         >
-          {score.score}%
+          {markerPosition}%
         </span>
       </div>
 
@@ -52,42 +46,12 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
           {labels.left}
         </span>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="relative flex-1 h-2 rounded-full bg-slate-muted/10 cursor-help border border-border/10">
-              <div
-                className={cn(
-                  "absolute inset-y-0 left-0 rounded-full transition-colors duration-700 ease-out",
-                  score.isBorderline
-                    ? "bg-linear-to-r from-spark-amber/30 to-spark-amber/60"
-                    : "bg-linear-to-r from-forge-teal/30 to-forge-teal/60",
-                )}
-                style={{ width: `${markerPosition}%` }}
-              />
-
-              <div
-                className={cn(
-                  "absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-white shadow-[0_2px_4px_rgba(0,0,0,0.12)] border-2 z-20 transition duration-700 ease-out",
-                  score.isBorderline
-                    ? "border-spark-amber ring-2 ring-spark-amber/10"
-                    : "border-forge-teal ring-2 ring-forge-teal/10",
-                  "hover:scale-110",
-                )}
-                style={{
-                  left: `calc(${markerPosition}% - 7px)`,
-                }}
-              />
-            </div>
-          </TooltipTrigger>
-          <TooltipContent
-            side="top"
-            className="max-w-70 p-4 bg-popover text-popover-foreground rounded-xl border border-border shadow-2xl z-100"
-          >
-            <p className="text-sm font-medium leading-relaxed">
-              {getBorderlineExplanation(score.dimension, score.score)}
-            </p>
-          </TooltipContent>
-        </Tooltip>
+        <div className="relative flex-1 h-2 rounded-full bg-slate-muted/10 border border-border/10">
+          <SpectrumTrack
+            markerPosition={markerPosition}
+            isBorderline={score.isBorderline}
+          />
+        </div>
 
         <span
           className={cn(
@@ -98,6 +62,36 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
           {labels.right}
         </span>
       </div>
+    </div>
+  );
+}
+
+interface SpectrumTrackProps {
+  isBorderline: boolean;
+  markerPosition: number;
+}
+
+function SpectrumTrack({ isBorderline, markerPosition }: SpectrumTrackProps) {
+  return (
+    <div aria-hidden="true" className="absolute inset-0 overflow-visible">
+      <div
+        className={cn(
+          "h-full rounded-full",
+          isBorderline ? "bg-spark-amber/45" : "bg-forge-teal/45",
+        )}
+        style={{ width: `${markerPosition}%` }}
+      />
+      <span
+        className={cn(
+          "absolute top-1/2 block size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 bg-white",
+          isBorderline
+            ? "border-spark-amber shadow-[0_0_4px_rgba(245,158,11,0.18)]"
+            : "border-forge-teal shadow-[0_0_4px_rgba(13,148,136,0.18)]",
+        )}
+        style={{
+          left: `${markerPosition}%`,
+        }}
+      />
     </div>
   );
 }

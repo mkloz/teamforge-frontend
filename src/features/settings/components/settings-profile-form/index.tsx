@@ -1,5 +1,6 @@
 import { BlockedUsersSection } from "@/features/settings/components/blocked-users-section";
 import { AccountSettingsSection } from "./account-settings-section";
+import { AppearanceSettingsSection } from "./appearance-settings-section";
 import { MatchingSettingsSection } from "./matching-settings-section";
 import { NotificationSettingsSection } from "./notification-settings-section";
 import { PrivacySettingsSection } from "./privacy-settings-section";
@@ -34,6 +35,8 @@ export function SettingsProfileForm({
           profileSummary={account.profileSummary}
         />
       )}
+
+      {activeSection === "appearance" && <AppearanceSettingsSection />}
 
       {activeSection === "matching" && (
         <MatchingSettingsSection

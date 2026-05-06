@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 
 import { Avatar } from "@/shared/components/common/avatar";
+import { getGroupPlanCapacityModel } from "@/shared/components/group-plan-card/group-plan-card-model";
+import { getExploreGroupDisplayTitle } from "@/shared/lib/explore-group-presenters";
 import { cn } from "@/shared/lib/utils";
 import type { ExploreGroup } from "@/shared/schemas";
 
@@ -18,19 +20,17 @@ export function CardFooter({
   variant = "default",
 }: CardFooterProps) {
   const isCompact = variant === "compact";
-  const currentSize = group.activeMembersCount;
-  const capacity = group.maxMembers;
-  const title = group.plan?.title || group.activity.title || "Activity";
-  const spotsLeft = capacity > 0 ? Math.max(0, capacity - currentSize) : null;
+  const { capacity, currentSize, spotsLeft } = getGroupPlanCapacityModel(group);
+  const title = getExploreGroupDisplayTitle(group);
 
   return (
     <div
       className={cn(
-        "flex items-center justify-between mt-auto relative z-20 gap-3",
+        "relative z-20 mt-auto flex min-w-0 flex-wrap items-center justify-between gap-3",
         isCompact ? "pt-1" : "pt-2",
       )}
     >
-      <div className="flex items-center gap-2.5">
+      <div className="flex min-w-0 items-center gap-2.5">
         <div className="flex -space-x-2 shrink-0">
           {group.members.slice(0, 4).map((member, i) => (
             <Avatar
@@ -83,7 +83,7 @@ export function CardFooter({
         </div>
       </div>
 
-      {action}
+      <div className="shrink-0">{action}</div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { CalendarClock, Gift, Laptop, Route, Ticket } from "lucide-react";
 
+import { getGroupPlanMetaModel } from "@/shared/components/group-plan-card/group-plan-card-model";
 import type { ExploreGroup } from "@/shared/schemas";
 
 interface CardMetaProps {
@@ -8,24 +9,8 @@ interface CardMetaProps {
 }
 
 export function CardMeta({ group, distance }: CardMetaProps) {
-  const plan = group.plan;
-  const dateStr = plan?.dateTime || "";
-  const locationMode = plan?.locationMode || "TBD";
-  const cost = plan?.cost || "FREE";
-  const formattedDate = dateStr
-    ? new Date(dateStr)
-        .toLocaleString("en-US", {
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-        })
-        .replace(/,/g, " •")
-    : "Date TBD";
-  const isOnline = locationMode === "ONLINE";
-  const isFree = cost === "FREE";
+  const { formattedDate, isFree, isOnline, locationLabel } =
+    getGroupPlanMetaModel(group, distance);
 
   return (
     <div className="flex flex-col gap-3 mb-4 relative z-10">
@@ -45,9 +30,7 @@ export function CardMeta({ group, distance }: CardMetaProps) {
           ) : (
             <Route className="w-4 h-4 shrink-0" strokeWidth={2} />
           )}
-          <span className="truncate">
-            {isOnline ? "Online Stream" : distance || "Location pending"}
-          </span>
+          <span className="truncate">{locationLabel}</span>
         </div>
         <div className="w-1 h-1 rounded-full bg-border" aria-hidden="true" />
         <div className="flex items-center gap-1.5 group-hover:text-foreground/80 transition-colors">

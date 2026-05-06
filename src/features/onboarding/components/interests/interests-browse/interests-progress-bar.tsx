@@ -1,9 +1,15 @@
 import { Button } from "@/shared/components/ui/button";
 import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
-import { MAX_INTERESTS, MIN_INTERESTS } from "../../../data/interests-data";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+
+import { MAX_INTERESTS } from "@/features/onboarding/data/interests-data";
+import {
+  getInterestsProgressPercent,
+  getInterestsProgressText,
+} from "./interests-progress-model";
 
 interface ProgressBarProps {
+  backLabel?: string;
   selectedCount: number;
   canContinue: boolean;
   isAtMax: boolean;
@@ -12,30 +18,19 @@ interface ProgressBarProps {
 }
 
 export function InterestsProgressBar({
+  backLabel = "Back",
   selectedCount,
   canContinue,
   isAtMax,
   onBack,
   onContinue,
 }: ProgressBarProps) {
-  const pct = Math.min((selectedCount / MAX_INTERESTS) * 100, 100);
-
-  let progressText = "Ready to review";
-  if (!canContinue) {
-    progressText = `${MIN_INTERESTS - selectedCount} more for a complete profile`;
-  } else if (isAtMax) {
-    progressText = "Selection finalized";
-  } else {
-    // Dynamic text
-    const ratio = selectedCount / MAX_INTERESTS;
-    if (ratio >= 0.8) {
-      progressText = "Solid profile foundation";
-    } else if (ratio >= 0.5) {
-      progressText = "Adding more dimensions";
-    } else {
-      progressText = "Defining your interests";
-    }
-  }
+  const pct = getInterestsProgressPercent(selectedCount);
+  const progressText = getInterestsProgressText({
+    selectedCount,
+    canContinue,
+    isAtMax,
+  });
 
   return (
     <div
@@ -54,8 +49,8 @@ export function InterestsProgressBar({
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         />
       </div>
-      <div className="flex items-center justify-between gap-4">
-        <div>
+      <div className="flex flex-col gap-3 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between min-[430px]:gap-4">
+        <div className="min-w-0">
           <span className="font-sans text-sm font-bold text-ink">
             {selectedCount}
             <span className="font-normal text-slate-muted/50">
@@ -67,35 +62,31 @@ export function InterestsProgressBar({
             {progressText}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="grid grid-cols-2 items-center gap-2 min-[430px]:flex min-[430px]:shrink-0">
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={onBack}
-            className="px-2 text-muted-foreground hover:bg-transparent hover:text-foreground"
+            className="min-w-0 shrink-0"
           >
             <ArrowLeft size={14} strokeWidth={2.5} />
-            Back
+            <span className="hidden sm:block">{backLabel}</span>
+            <span className="block sm:hidden">Back</span>
           </Button>
           <Button
+            size="sm"
             onClick={canContinue ? onContinue : undefined}
             disabled={!canContinue}
+            className="min-w-0"
             aria-label={
               canContinue
                 ? "Review your selected interests"
                 : "Select more interests to continue"
             }
           >
-            Review picks
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path
-                d="M3 7h8M7.5 3.5L11 7l-3.5 3.5"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <span className="hidden sm:block">Review picks</span>
+            <span className="block sm:hidden">Continue</span>
+            <ArrowRight size={14} strokeWidth={1.5} />
           </Button>
         </div>
       </div>

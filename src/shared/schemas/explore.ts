@@ -81,6 +81,13 @@ export const exploreGroupSchema = z.object({
 
 export type ExploreGroup = z.infer<typeof exploreGroupSchema>;
 
+export const exploreViewInsightSchema = z.object({
+  summary: z.string(),
+  bullets: z.array(z.string()).min(1),
+});
+
+export type ExploreViewInsight = z.infer<typeof exploreViewInsightSchema>;
+
 export const exploreJoinResultSchema = z.object({
   status: z.enum(["JOINED", "REQUESTED"]),
   groupId: z.string(),

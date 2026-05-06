@@ -1,13 +1,11 @@
 import { Button } from "@/shared/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Brain, Lock, RefreshCcw } from "lucide-react";
-import { TeamForgeLogo } from "@/assets/logo";
-import {
-  fadeUpItem,
-  staggerContainer,
-} from "@/features/onboarding/constants/motion";
+import { fadeUpItem } from "@/features/onboarding/constants/motion";
+import { PersonalityScreenShell } from "./personality-screen-layout";
 
 interface PersonalityIntroProps {
+  backLabel: string;
   onBack: () => void;
   onStart: () => void;
 }
@@ -27,57 +25,33 @@ const BENEFITS = [
   },
 ];
 
-export function PersonalityIntro({ onBack, onStart }: PersonalityIntroProps) {
+export function PersonalityIntro({
+  backLabel,
+  onBack,
+  onStart,
+}: PersonalityIntroProps) {
   return (
-    <motion.div
-      variants={staggerContainer}
-      initial="hidden"
-      animate="visible"
-      className="flex flex-col max-w-md mx-auto w-full gap-0 pt-4 sm:pt-0 h-full justify-start sm:justify-center lg:h-auto"
-    >
-      <motion.div variants={fadeUpItem} className="mb-5 self-start">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onBack}
-          className="px-0 text-muted-foreground hover:bg-transparent hover:text-foreground"
-        >
-          <ArrowLeft size={14} strokeWidth={2.5} />
-          Back
-        </Button>
-      </motion.div>
-
-      {/* Logo */}
-      <motion.div variants={fadeUpItem}>
-        <TeamForgeLogo
-          className="w-10 h-10 mb-5 sm:mb-6 mx-auto"
-          showBackground={false}
-        />
-      </motion.div>
-
-      {/* Overline */}
+    <PersonalityScreenShell className="max-w-md pt-10 sm:pt-12">
       <motion.p
         variants={fadeUpItem}
-        className="font-sans text-xs font-bold uppercase tracking-[0.2em] mb-4 text-forge-teal text-center"
+        className="mb-3 text-center font-sans text-xs font-bold uppercase tracking-[0.18em] text-forge-teal"
       >
         Personality Assessment
       </motion.p>
 
-      {/* Headline */}
       <motion.h1
         variants={fadeUpItem}
-        className="font-sans text-2xl sm:text-display-lg font-extrabold leading-tight text-balance mb-4 text-ink text-center"
+        className="mb-4 text-center font-sans text-2xl font-extrabold leading-tight text-ink text-balance sm:text-display-lg"
       >
         What makes you, you?
       </motion.h1>
 
-      {/* Body */}
       <motion.div variants={fadeUpItem} className="text-left">
-        <p className="font-sans text-sm leading-relaxed text-pretty mb-3 text-muted-foreground font-medium indent-8">
+        <p className="mb-3 font-sans text-sm font-medium leading-relaxed text-muted-foreground text-pretty sm:text-[0.95rem]">
           Before we build your group, we want to understand how your mind works
           – the core of your personality.
         </p>
-        <p className="font-sans text-xs sm:text-sm leading-relaxed text-pretty mb-6 text-muted-foreground indent-8">
+        <p className="mb-6 font-sans text-xs leading-relaxed text-muted-foreground text-pretty sm:text-sm">
           This is the{" "}
           <span className="text-ink font-semibold">IPIP Assessment</span> – a
           scientifically validated framework. The result shapes your group
@@ -85,40 +59,49 @@ export function PersonalityIntro({ onBack, onStart }: PersonalityIntroProps) {
         </p>
       </motion.div>
 
-      {/* Divider */}
       <motion.div
         variants={fadeUpItem}
         className="w-full mb-6 h-px bg-slate-100 dark:bg-white/10"
       />
 
-      {/* Benefits */}
       <motion.div
         variants={fadeUpItem}
-        className="flex flex-col gap-4 w-full mb-8 text-left"
+        className="mb-8 flex w-full flex-col gap-4 text-left"
       >
         {BENEFITS.map(({ icon: Icon, text }) => (
           <div key={text} className="flex items-start gap-3.5">
-            <div className="flex items-center justify-center rounded-xl shrink-0 mt-0.5 w-8 h-8 bg-forge-teal/10">
+            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-forge-teal/10">
               <Icon size={14} strokeWidth={2.5} className="text-forge-teal" />
             </div>
-            <p className="font-sans text-xs sm:text-sm leading-relaxed text-muted-foreground">
+            <p className="font-sans text-xs leading-relaxed text-muted-foreground sm:text-sm">
               {text}
             </p>
           </div>
         ))}
       </motion.div>
 
-      {/* CTA */}
-      <motion.div variants={fadeUpItem} className="w-full">
+      <motion.div
+        variants={fadeUpItem}
+        className="mt-auto flex w-full flex-col-reverse items-stretch gap-3 pt-6 min-[430px]:flex-row min-[430px]:items-center"
+      >
         <Button
-          size="lg"
-          onClick={onStart}
-          className="w-full flex items-center justify-center gap-2"
+          size="md"
+          variant="outline"
+          onClick={onBack}
+          className="w-full min-w-0 px-4 min-[430px]:w-auto min-[430px]:shrink-0"
         >
-          Let's find out
+          <ArrowLeft size={16} strokeWidth={2.5} />
+          <span className="truncate">{backLabel}</span>
+        </Button>
+        <Button
+          size="md"
+          onClick={onStart}
+          className="flex w-full min-w-0 items-center justify-center gap-2 min-[430px]:flex-1"
+        >
+          <span className="truncate">Let's find out</span>
           <ArrowRight size={16} strokeWidth={2.5} />
         </Button>
       </motion.div>
-    </motion.div>
+    </PersonalityScreenShell>
   );
 }

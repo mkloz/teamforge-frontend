@@ -16,7 +16,9 @@ import {
   getSearchRoutePatch,
   getSizeRoutePatch,
   getSortRoutePatch,
+  normalizeDistance,
   normalizeCategories,
+  normalizeSizeRange,
   resolveExploreRouteState,
 } from "@/features/explore/hooks/explore-route-state/explore-route-utils";
 import { useExploreRouteSync } from "@/features/explore/hooks/explore-route-state/use-explore-route-sync";
@@ -92,15 +94,19 @@ export function useExploreRouteState() {
   }
 
   function updateSizeRange(nextRange: [number, number]) {
-    setSizeRange(nextRange);
-    void setExploreRouteState(getSizeRoutePatch(nextRange), {
+    const normalized = normalizeSizeRange(nextRange);
+
+    setSizeRange(normalized);
+    void setExploreRouteState(getSizeRoutePatch(normalized), {
       history: "push",
     });
   }
 
   function updateDistance(nextDistance: number) {
-    setDistance(nextDistance);
-    void setExploreRouteState(getDistanceRoutePatch(nextDistance), {
+    const normalized = normalizeDistance(nextDistance);
+
+    setDistance(normalized);
+    void setExploreRouteState(getDistanceRoutePatch(normalized), {
       history: "push",
     });
   }

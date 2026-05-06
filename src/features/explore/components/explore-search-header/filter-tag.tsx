@@ -9,14 +9,14 @@ interface FilterTagProps {
 
 export function FilterTag({ label, onRemove }: FilterTagProps) {
   return (
-    <div className="shrink-0 group/tag flex items-center gap-1 pl-2.5 pr-1 py-1 rounded-full bg-canvas border border-border/60 text-micro font-semibold text-foreground transition-all duration-150 hover:border-primary/30 hover:bg-primary/5">
+    <div className="group/tag flex shrink-0 items-center gap-1 rounded-full border border-border/60 bg-canvas py-1 pl-2.5 pr-1 text-micro font-semibold text-foreground transition-all duration-150 hover:border-primary/30 hover:bg-primary/5">
       <span>{label}</span>
       <Button
         type="button"
-        variant="ghost"
+        variant="accentGhost"
         size="icon-xs"
         onClick={onRemove}
-        className="h-4 w-4 rounded-full text-muted-foreground/60 hover:bg-primary/10 hover:text-primary"
+        className="h-4 w-4 rounded-full"
         aria-label={`Remove ${label} filter`}
       >
         <X className="size-3" strokeWidth={2} />

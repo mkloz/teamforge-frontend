@@ -28,8 +28,9 @@ export const ScrollActionButtons = memo(
           >
             <Button
               onClick={() => onScrollToBottom()}
+              variant="surface"
               size="icon"
-              className="h-10 w-10 rounded-full bg-canvas/90 backdrop-blur-md border border-border text-forge-teal hover:bg-white hover:scale-105 transition group relative shrink-0"
+              className="relative h-10 w-10 shrink-0 rounded-full"
             >
               <ChevronDown
                 size={22}
@@ -53,7 +54,7 @@ export const ScrollActionButtons = memo(
               onClick={onScrollToProposal}
               variant="secondary"
               size="xs"
-              className="group flex items-center gap-2 px-2.5 py-1.5 rounded-full border border-spark-amber/20"
+              className="rounded-full px-2.5 py-1.5"
             >
               <AlertCircle size={14} className="animate-pulse" />
               <span className="text-micro font-black tracking-wider">Vote</span>

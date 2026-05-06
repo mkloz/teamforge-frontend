@@ -17,7 +17,7 @@ export function HistoryCard({ item }: HistoryCardProps) {
         <PlanCover
           value={item.coverImage}
           alt={item.title}
-          imageClassName="transition-transform duration-500 group-hover:scale-110"
+          imageClassName="transition-[scale,transform] duration-500 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
       </div>

@@ -1,3 +1,11 @@
+import { Link } from "@tanstack/react-router";
+import { Compass } from "lucide-react";
+
+import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
+import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
+import { useHomeData } from "@/features/home/hooks/use-home-data";
+import { getRecommendationPreview } from "@/features/home/lib/home-insights";
+import { Button } from "@/shared/components/ui/button";
 import {
   Carousel,
   CarouselContent,
@@ -5,22 +13,18 @@ import {
 } from "@/shared/components/ui/carousel";
 
 import { RecommendedGroupCard } from "./recommended-group-card";
-import { useHomeData } from "@/features/home/hooks/use-home-data";
 
 export function RecommendedGroups() {
-  const { recommendations, isLoading } = useHomeData();
+  const { recommendations, isRecommendationsLoading } = useHomeData();
+  const visibleRecommendations = getRecommendationPreview(recommendations, 3);
 
-  if (isLoading && recommendations.length === 0) {
+  if (isRecommendationsLoading && recommendations.length === 0) {
     return (
-      <div className="w-full flex flex-col gap-5 animate-pulse">
-        <div className="h-6 w-48 bg-muted rounded self-center" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 overflow-hidden">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="h-64 w-full bg-muted rounded-3xl shrink-0"
-            />
-          ))}
+      <div className="flex w-full flex-col gap-4 animate-pulse">
+        <div className="h-8 w-56 rounded bg-muted" />
+        <div className="grid gap-3 md:grid-cols-2">
+          <div className="h-48 rounded-xl bg-muted" />
+          <div className="h-48 rounded-xl bg-muted/60" />
         </div>
       </div>
     );
@@ -29,47 +33,59 @@ export function RecommendedGroups() {
   return (
     <section
       aria-labelledby="recommended-groups-heading"
-      className="w-full flex flex-col gap-5"
+      className="flex w-full flex-col gap-4"
     >
-      <div className="flex flex-col gap-0.5 items-center text-center">
-        <h2
-          id="recommended-groups-heading"
-          className="text-base font-black tracking-tight text-foreground"
-        >
-          Groups You Might Like
-        </h2>
-      </div>
+      <HomeSectionHeading
+        id="recommended-groups-heading"
+        eyebrow="Discovery"
+        title="Groups worth a look"
+        description="A couple of openings to inspect, not automatic yeses."
+        action={
+          <Button asChild variant="ghost" size="sm">
+            <Link {...buildExploreNavigation()}>Explore</Link>
+          </Button>
+        }
+      />
 
-      {recommendations.length === 0 ? (
-        <div className="rounded-2xl border-2 border-dashed border-border bg-card/50 px-5 py-10 text-center">
-          <p className="text-sm font-bold text-foreground">
-            No recommendations yet
-          </p>
-          <p className="mt-1 text-xs font-medium text-slate-muted">
-            Once more groups match your profile, they will show up here.
-          </p>
+      {visibleRecommendations.length === 0 ? (
+        <div className="flex items-center gap-3 border-y border-dashed border-border/70 bg-card/40 px-1 py-5 sm:px-4">
+          <div
+            className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground"
+            aria-hidden="true"
+          >
+            <Compass className="size-5" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-black text-foreground">
+              No strong openings yet.
+            </p>
+            <p className="mt-1 text-xs font-medium leading-relaxed text-muted-foreground">
+              When a group looks like a good fit, it will show up here.
+            </p>
+          </div>
         </div>
       ) : (
         <>
-          <div className="md:hidden w-full overflow-hidden">
+          <div className="w-full overflow-hidden md:hidden">
             <Carousel
               opts={{
                 align: "center",
-                loop: true,
+                loop: visibleRecommendations.length > 1,
               }}
               className="w-full"
             >
-              <CarouselContent className="-ml-4">
-                {recommendations.map((recommendation) => (
+              <CarouselContent className="-ml-3 pt-1 pb-2">
+                {visibleRecommendations.map((recommendation) => (
                   <CarouselItem
                     key={recommendation.id}
-                    className="pl-4 basis-70"
+                    className={
+                      visibleRecommendations.length > 1
+                        ? "min-w-0 basis-[86%] pl-3"
+                        : "min-w-0 basis-full pl-3"
+                    }
                   >
-                    <div className="flex justify-center w-full">
-                      <RecommendedGroupCard
-                        group={recommendation}
-                        variant="compact"
-                      />
+                    <div className="w-full min-w-0">
+                      <RecommendedGroupCard group={recommendation} />
                     </div>
                   </CarouselItem>
                 ))}
@@ -79,17 +95,11 @@ export function RecommendedGroups() {
 
           <div
             role="list"
-            className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            className="hidden md:grid md:grid-cols-2 md:gap-4 xl:grid-cols-3"
           >
-            {recommendations.slice(0, 3).map((recommendation) => (
-              <div
-                key={recommendation.id}
-                className="w-full flex justify-center"
-              >
-                <RecommendedGroupCard
-                  group={recommendation}
-                  variant="compact"
-                />
+            {visibleRecommendations.map((recommendation) => (
+              <div key={recommendation.id} className="min-w-0">
+                <RecommendedGroupCard group={recommendation} />
               </div>
             ))}
           </div>

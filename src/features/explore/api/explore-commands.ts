@@ -23,7 +23,7 @@ export const ExploreCommands = {
 
     ExploreCache.applyFriendRequestUpdate(friendship.data);
 
-    void Promise.all([
+    await Promise.all([
       invalidateNotificationSurfaces(),
       invalidateFriendshipSurfaces(),
     ]);
@@ -36,7 +36,7 @@ export const ExploreCommands = {
 
     ExploreCache.applyFriendRequestUpdate(friendship.data);
 
-    void invalidateNotificationSurfaces();
+    await invalidateNotificationSurfaces();
 
     return friendship;
   },

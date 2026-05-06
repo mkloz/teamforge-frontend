@@ -57,9 +57,9 @@ export const FilterHeader = memo(function FilterHeader({
 
       <div className="flex items-center ml-2 border-l border-border/40 pl-2">
         <Button
-          variant="ghost"
+          variant="accentGhost"
           size="icon"
-          className="w-8 h-8 rounded-lg text-slate-muted hover:text-forge-teal hover:bg-forge-teal/5 transition-colors"
+          className="h-8 w-8"
           onClick={() =>
             onDensityChange?.(density === "default" ? "compact" : "default")
           }

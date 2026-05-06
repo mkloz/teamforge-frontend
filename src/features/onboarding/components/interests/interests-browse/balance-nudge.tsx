@@ -19,8 +19,8 @@ export function BalanceNudge() {
         <Sprout size={16} strokeWidth={2} />
       </div>
       <p className="font-sans text-xs text-ink leading-snug flex-1">
-        Great depth in one area! Adding interests from other categories helps us
-        find better team matches for you.
+        You have a strong lane here. A few picks from another area can make the
+        profile feel more like the full you.
       </p>
       <Button
         type="button"

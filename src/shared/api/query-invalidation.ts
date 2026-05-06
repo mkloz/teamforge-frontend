@@ -21,6 +21,9 @@ export function invalidateHomeGroupSurfaces() {
     appQueryClient.invalidateQueries({ queryKey: APP_QUERY_KEYS.home.groups }),
     appQueryClient.invalidateQueries({ queryKey: APP_QUERY_KEYS.home.plans }),
     appQueryClient.invalidateQueries({ queryKey: APP_QUERY_KEYS.home.stats }),
+    appQueryClient.invalidateQueries({
+      queryKey: APP_QUERY_KEYS.home.recommendations,
+    }),
   ]);
 }
 
@@ -62,6 +65,9 @@ export function invalidateInvitationSurfaces() {
     appQueryClient.invalidateQueries({
       queryKey: APP_QUERY_KEYS.notifications.list,
     }),
+    appQueryClient.invalidateQueries({
+      queryKey: APP_QUERY_KEYS.notifications.unreadList,
+    }),
   ]);
 }
 
@@ -72,6 +78,9 @@ export function invalidateNotificationSurfaces() {
     }),
     appQueryClient.invalidateQueries({
       queryKey: APP_QUERY_KEYS.notifications.unreadCount,
+    }),
+    appQueryClient.invalidateQueries({
+      queryKey: APP_QUERY_KEYS.notifications.unreadList,
     }),
   ]);
 }

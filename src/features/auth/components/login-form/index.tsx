@@ -112,14 +112,14 @@ export function LoginForm({
                     aria-invalid={!!form.formState.errors.password}
                     rightIcon={
                       <Button
-                        variant="ghost"
+                        variant="accentGhost"
                         size="icon-sm"
                         type="button"
                         aria-label={
                           showPassword ? "Hide password" : "Show password"
                         }
                         onClick={togglePasswordVisibility}
-                        className="size-8 rounded-md text-slate-muted hover:text-forge-teal"
+                        className="size-8 rounded-md"
                       >
                         {showPassword ? (
                           <EyeOff size={16} />

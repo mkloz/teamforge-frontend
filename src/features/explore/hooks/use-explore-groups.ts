@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 import { ExploreQueryFactory } from "@/features/explore/api/explore-query-factory";
+import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 import { useDebouncedValue } from "@/shared/hooks/use-debounced-value";
 
@@ -11,8 +12,11 @@ export function useExploreGroups() {
     () => ({
       selectedCategories: state.selectedCategories,
       sizeRange: state.sizeRange,
-      distance: state.distance,
       locationMode: state.locationMode,
+      distance:
+        state.locationMode === "ONLINE"
+          ? DEFAULT_FILTERS.distance
+          : state.distance,
       access: state.access,
       sortBy: state.sortBy,
     }),

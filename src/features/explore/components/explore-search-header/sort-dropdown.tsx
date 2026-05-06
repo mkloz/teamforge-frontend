@@ -21,7 +21,8 @@ export function SortDropdown() {
         <Button
           variant="outline"
           size="icon"
-          className="shrink-0 rounded-xl h-10 w-10 border border-border/60 text-muted-foreground hover:text-foreground hover:border-border transition-all"
+          aria-label="Sort groups"
+          className="h-11 w-11 shrink-0 rounded-xl border border-border/60 text-muted-foreground transition-all hover:border-border hover:text-foreground"
         >
           <ArrowDownWideNarrow className="w-3.5 h-3.5" />
         </Button>
@@ -30,8 +31,8 @@ export function SortDropdown() {
         align="end"
         className="w-52 rounded-xl p-1.5 bg-background border-border/40 shadow-xl"
       >
-        <DropdownMenuLabel className="text-[9px] uppercase tracking-widest text-muted-foreground font-black px-3 py-1.5">
-          Feed Priority
+        <DropdownMenuLabel className="px-3 py-1.5 text-xs font-semibold text-muted-foreground">
+          Feed priority
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="bg-border/10 mx-1" />
         {SORTS.map(({ id, label, icon: Icon }) => (

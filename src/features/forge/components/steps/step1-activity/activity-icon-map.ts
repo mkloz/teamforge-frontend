@@ -9,7 +9,7 @@ import {
   Music,
   Palette,
   Plane,
-  Sparkles,
+  Shapes,
   Users,
   UtensilsCrossed,
 } from "lucide-react";
@@ -27,6 +27,6 @@ export const ICON_MAP: Record<string, ElementType> = {
   TECH: Cpu,
   WELLNESS: HeartPulse,
   TRAVEL: Plane,
-  OTHER: Sparkles,
+  OTHER: Shapes,
   fallback: Flag,
 };

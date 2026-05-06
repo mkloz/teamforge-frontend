@@ -9,6 +9,10 @@ import {
 } from "@/features/onboarding/data/interests-data";
 import type { InterestsScreen } from "@/features/onboarding/data/interests-data";
 import { buildLeafInterestMap } from "@/features/onboarding/lib/interest-catalog";
+import {
+  getNextInterestPersonalityType,
+  getNextSelectedInterestIds,
+} from "@/features/onboarding/lib/interest-selection-sync";
 import { useInterestsStore } from "@/features/onboarding/store/interests-store";
 import type { PersonalityType } from "@/shared/schemas/enums";
 import { useInterestBrowserExpansion } from "./use-interest-browser-expansion";
@@ -40,13 +44,14 @@ export function useInterests({
   const deferredSearchQuery = useDeferredValue(searchQuery);
 
   useEffect(() => {
-    if (personalityTypeHint && !store.personalityType) {
-      store.setPersonalityType(personalityTypeHint);
-      return;
-    }
+    const nextPersonalityType = getNextInterestPersonalityType(
+      store.personalityType,
+      personalityTypeHint,
+      currentUser?.personalityType,
+    );
 
-    if (currentUser?.personalityType && !store.personalityType) {
-      store.setPersonalityType(currentUser.personalityType);
+    if (nextPersonalityType) {
+      store.setPersonalityType(nextPersonalityType);
     }
   }, [currentUser?.personalityType, personalityTypeHint, store]);
 
@@ -61,19 +66,15 @@ export function useInterests({
       return;
     }
 
-    const validCurrentIds = store.selectedIds.filter((id) => leafById[id]);
-    const userInterestIds =
-      currentUser?.interests
-        ?.map((interest) => interest.id)
-        .filter((id) => leafById[id]) ?? [];
+    const nextSelectedIds = getNextSelectedInterestIds({
+      selectedIds: store.selectedIds,
+      userInterests: currentUser?.interests,
+      leafById,
+      maxInterests: MAX_INTERESTS,
+    });
 
-    if (!store.selectedIds.length && userInterestIds.length) {
-      store.replaceSelected(userInterestIds, MAX_INTERESTS);
-      return;
-    }
-
-    if (validCurrentIds.length !== store.selectedIds.length) {
-      store.replaceSelected(validCurrentIds, MAX_INTERESTS);
+    if (nextSelectedIds) {
+      store.replaceSelected(nextSelectedIds, MAX_INTERESTS);
     }
   }, [categories, currentUser?.interests, leafById, store]);
 
@@ -123,6 +124,8 @@ export function useInterests({
     setSearchQuery,
     toggleCategory: browserExpansion.toggleCategory,
     expandCategoryOnly: browserExpansion.expandCategoryOnly,
+    jumpToCategory: browserExpansion.jumpToCategory,
+    registerCategoryElement: browserExpansion.registerCategoryElement,
     toggleSubcategory: browserExpansion.toggleSubcategory,
     goToReview,
     goToBrowse,

@@ -2,9 +2,7 @@ import { useActiveRoute } from "@/features/app-shell/hooks/use-active-route";
 import type { AppNavigationItem } from "@/features/app-shell/lib/app-navigation";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
-import { AnimatePresence, motion } from "framer-motion";
-
-import { ActiveSlidingWaves } from "./active-sliding-waves";
+import { motion } from "framer-motion";
 
 interface TabButtonProps {
   item: AppNavigationItem;
@@ -34,15 +32,11 @@ export function TabButton({ item }: TabButtonProps) {
       aria-current={active ? "page" : undefined}
       aria-label={item.label}
       className={cn(
-        "relative flex flex-col items-center justify-center flex-1 h-full px-1",
+        "relative flex h-full w-12 flex-none flex-col items-center justify-center px-0 min-[380px]:w-14",
         "min-w-0 transition-colors duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset rounded-2xl",
       )}
     >
-      <AnimatePresence>
-        {active && <ActiveSlidingWaves label={item.label} isForge={isForge} />}
-      </AnimatePresence>
-
       <motion.div
         whileTap={{ scale: 0.85 }}
         transition={{ type: "spring", stiffness: 400, damping: 17 }}

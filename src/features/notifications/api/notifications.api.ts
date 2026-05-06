@@ -7,12 +7,21 @@ import {
 
 const paginatedNotificationsSchema = createPaginatedSchema(notificationSchema);
 
+interface GetNotificationsParams {
+  isRead?: boolean;
+  limit?: number;
+}
+
 export class NotificationsApi {
-  static async getNotifications() {
+  static async getNotifications({
+    isRead,
+    limit = 50,
+  }: GetNotificationsParams = {}) {
     const response = await apiClient
       .get("notifications", {
         searchParams: {
-          limit: 50,
+          limit,
+          ...(isRead === undefined ? {} : { isRead }),
         },
       })
       .json<unknown>();

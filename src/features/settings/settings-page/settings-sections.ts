@@ -2,6 +2,7 @@ import {
   Bell,
   Eye,
   LockKeyhole,
+  Palette,
   Shield,
   SlidersHorizontal,
   UserRound,
@@ -18,6 +19,15 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
     summary:
       "Keep the basics people see before a group starts: name, photo, city, and a short intro.",
     icon: UserRound,
+  },
+  {
+    id: "appearance",
+    label: "Appearance",
+    description: "Theme and display comfort",
+    headline: "Tune how TeamForge looks",
+    summary:
+      "Choose the interface theme that feels easiest to use in your current environment.",
+    icon: Palette,
   },
   {
     id: "matching",

@@ -1,70 +1,20 @@
 import { create } from "zustand";
 import {
-  buildQuestionList,
-  IPIP_QUESTIONS,
-  type TestLength,
-} from "../data/ipip-questions";
-import type { PersonalityEvaluation } from "../lib/personality-evaluation";
+  buildPersonalityQuestionIds,
+  hydrateQuestions,
+  PERSONALITY_TEST_DEFAULT_STATE,
+} from "./personality-test-store-model";
 import type {
-  OceanVectorWithMeta,
-  RawAnswers,
-} from "../utils/score-calculator";
+  PersonalityTestState,
+  ScreenState,
+} from "./personality-test-store.types";
 
-// ─── Screen state ─────────────────────────────────────────────────────────────
-
-export type ScreenState =
-  | { id: "intro" }
-  | { id: "theory" }
-  | { id: "guidelines" }
-  | { id: "length" }
-  | { id: "questions"; currentPage: number }
-  | { id: "intermission"; type: number; nextPageIndex: number }
-  | { id: "calculating" }
-  | { id: "results" };
-
-// ─── Store shape ──────────────────────────────────────────────────────────────
-
-interface PersonalityTestSnapshot {
-  screen: ScreenState;
-  testLength: TestLength;
-  questionIds: number[];
-  answers: RawAnswers;
-  result: PersonalityEvaluation | null;
-  vector: OceanVectorWithMeta | null;
-  previousScreen: ScreenState | null;
-  isReviewMode: boolean;
-}
-
-// ─── Full store ───────────────────────────────────────────────────────────────
-
-interface PersonalityTestState extends PersonalityTestSnapshot {
-  // Actions
-  setScreen: (screen: ScreenState) => void;
-  beginTest: (length: TestLength, questionIds: number[]) => void;
-  setAnswer: (questionId: number, val: 1 | 2 | 3 | 4 | 5) => void;
-  setResultData: (
-    result: PersonalityEvaluation,
-    vector: OceanVectorWithMeta,
-  ) => void;
-  updateTestLength: (length: TestLength) => void;
-  setIsReviewMode: (isReviewMode: boolean) => void;
-  reset: () => void;
-}
-
-const DEFAULT_STATE: PersonalityTestSnapshot = {
-  screen: { id: "intro" },
-  testLength: 50,
-  questionIds: [],
-  answers: {},
-  result: null,
-  vector: null,
-  previousScreen: null,
-  isReviewMode: false,
-};
+export type { ScreenState };
+export { hydrateQuestions };
 
 export const usePersonalityTestStore = create<PersonalityTestState>()(
   (set) => ({
-    ...DEFAULT_STATE,
+    ...PERSONALITY_TEST_DEFAULT_STATE,
 
     setScreen: (screen) =>
       set((state) => ({
@@ -80,12 +30,14 @@ export const usePersonalityTestStore = create<PersonalityTestState>()(
         testLength,
         questionIds,
         answers: {},
+        result: null,
+        vector: null,
+        previousScreen: null,
         screen: { id: "questions", currentPage: 1 },
       }),
 
     updateTestLength: (testLength) => {
-      const questions = buildQuestionList(testLength);
-      const questionIds = questions.map((question) => question.id);
+      const questionIds = buildPersonalityQuestionIds(testLength);
       set({ testLength, questionIds });
     },
 
@@ -96,16 +48,6 @@ export const usePersonalityTestStore = create<PersonalityTestState>()(
 
     setResultData: (result, vector) => set({ result, vector }),
 
-    reset: () => set(DEFAULT_STATE),
+    reset: () => set(PERSONALITY_TEST_DEFAULT_STATE),
   }),
 );
-
-/**
- * Reconstruct the question array from stored IDs.
- * All possible IDs live in IPIP_QUESTIONS (the 150-item master pool).
- */
-export function hydrateQuestions(questionIds: number[]) {
-  if (!questionIds.length) return [];
-  const byId = Object.fromEntries(IPIP_QUESTIONS.map((q) => [q.id, q]));
-  return questionIds.map((id) => byId[id]).filter(Boolean);
-}

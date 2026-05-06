@@ -38,19 +38,19 @@ export function ProfilePanelSettings({
         </Button>
 
         <Button
-          variant="ghost"
-          className="group flex items-center gap-3 w-full justify-start h-auto px-3 py-2 hover:bg-red-500/10"
+          variant="destructive"
+          className="group flex h-auto w-full items-center justify-start gap-3 px-3 py-2"
           disabled={blockActionDisabled || isBlockActionPending}
           onClick={onToggleBlock}
         >
-          <div className="w-9 h-9 shrink-0 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500/40 group-hover:text-red-500 transition-colors">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-destructive/10 text-destructive transition-colors">
             {isBlockActionPending ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (
               <Ban size={16} />
             )}
           </div>
-          <span className="text-sm font-medium text-red-600 dark:text-red-400">
+          <span className="text-sm font-medium">
             {isBlockActionPending
               ? isBlocked
                 ? "Unblocking..."

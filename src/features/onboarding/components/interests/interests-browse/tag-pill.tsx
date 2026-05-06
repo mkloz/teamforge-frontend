@@ -6,9 +6,10 @@ import {
 } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
-import { X } from "lucide-react";
+import { Check, X } from "lucide-react";
 
-// Design system foundations
+import { getTagPillSlotClasses } from "./tag-pill-model";
+
 interface TagPillProps {
   label: string;
   selected: boolean;
@@ -18,8 +19,6 @@ interface TagPillProps {
   aliases?: string[];
   animated?: boolean;
 }
-
-// ─── Component ────────────────────────────────────────────────────────────────
 
 export function TagPill({
   label,
@@ -31,6 +30,10 @@ export function TagPill({
   animated = false,
 }: TagPillProps) {
   const TagWrapper = animated ? motion.button : "button";
+  const slots = getTagPillSlotClasses({
+    selected,
+    hasRejectAction: Boolean(onReject),
+  });
 
   const content = (
     <Button
@@ -39,7 +42,7 @@ export function TagPill({
       asChild
       disabled={disabled && !selected}
       className={cn(
-        "rounded-full h-auto py-1.5 px-3",
+        "h-auto max-w-full rounded-full px-1.5 py-0.75 text-[11px] sm:px-2 sm:py-1 sm:text-xs",
         !selected &&
           "bg-card text-slate-muted dark:border-white/10 dark:bg-card dark:text-slate-300",
       )}
@@ -60,45 +63,35 @@ export function TagPill({
             }
           : {})}
         aria-pressed={selected}
-        className="active:scale-100" // Disable Button's built-in scale to let Framer handle it
+        className="min-w-0 active:scale-100"
       >
-        <div className="flex items-center justify-center">
-          {/* Left Indicator (Checkmark) */}
+        <div className="flex min-w-0 items-center justify-center gap-0 sm:gap-0.5">
           <div
             className={cn(
-              "relative flex items-center justify-start overflow-hidden h-4 duration-200 ease-out",
-              selected ? "w-4" : "w-2",
+              "relative flex h-3.5 items-center justify-center overflow-hidden transition-[width] duration-200 ease-out sm:h-4",
+              slots.left,
             )}
           >
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 8 8"
-              fill="none"
+            <Check
+              strokeWidth={3}
+              aria-hidden="true"
               className={cn(
-                "text-white shrink-0 transition duration-200 ease-out",
+                "size-2.5 shrink-0 text-white transition duration-200 ease-out sm:size-3",
                 selected
                   ? "opacity-100 scale-100 translate-x-0"
                   : "opacity-0 scale-50 -translate-x-2",
               )}
-            >
-              <path
-                d="M1.5 4l2 2L6.5 1.5"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            />
           </div>
 
-          <span className="shrink-0">{label}</span>
+          <span className="flex min-h-3.5 min-w-0 max-w-[8.25rem] items-center justify-center truncate text-center leading-[1.1] sm:min-h-4 sm:max-w-none">
+            {label}
+          </span>
 
-          {/* Right Action (Reject) */}
           <div
             className={cn(
-              "flex items-center justify-center overflow-visible h-6 duration-200 ease-out p-1 -m-1",
-              selected ? "w-0" : onReject ? "w-7" : "w-1",
+              "flex h-3.5 items-center justify-center overflow-visible transition-[width] duration-200 ease-out sm:h-4",
+              slots.right,
             )}
           >
             {onReject && !selected && (
@@ -110,10 +103,9 @@ export function TagPill({
                   e.stopPropagation();
                   onReject();
                 }}
-                className="group/dismiss ml-1 size-5 rounded-full p-0.5 hover:bg-slate-muted/10"
+                className="group/dismiss size-3.5 rounded-full p-0 hover:bg-slate-muted/10 sm:size-4"
               >
                 <X
-                  size={14}
                   className="text-slate-muted/60 group-hover/dismiss:text-slate-muted transition-colors"
                   strokeWidth={3}
                 />

@@ -14,6 +14,14 @@ export function getCurrentBrowserUrl() {
   return window.location.href;
 }
 
+export function getCurrentBrowserOrigin(fallback = "https://teamforge.app") {
+  if (typeof window === "undefined") {
+    return fallback;
+  }
+
+  return window.location.origin;
+}
+
 export function canShareBrowserData(shareData: BrowserShareData) {
   if (typeof navigator.share !== "function") {
     return false;

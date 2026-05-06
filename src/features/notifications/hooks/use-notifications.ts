@@ -7,8 +7,11 @@ import { NotificationsQueryFactory } from "@/features/notifications/api/notifica
 
 export function useNotifications() {
   const { data } = useQuery(NotificationsQueryFactory.list());
+  const unreadItemsQuery = useQuery(NotificationsQueryFactory.unreadList());
   const unreadCountQuery = useQuery(NotificationsQueryFactory.unreadCount());
   const items = data ?? [];
+  const unreadItems =
+    unreadItemsQuery.data ?? items.filter((item) => !item.isRead);
   const [referenceTime] = useState(() => Date.now());
 
   const markReadMutation = useMutation({
@@ -55,7 +58,10 @@ export function useNotifications() {
     },
   });
 
-  const count = unreadCountQuery.data ?? NotificationsCache.countUnread(items);
+  const count =
+    unreadCountQuery.data ??
+    unreadItemsQuery.data?.length ??
+    NotificationsCache.countUnread(items);
 
   const today = items.filter(
     (item) => referenceTime - new Date(item.createdAt).getTime() < 86_400_000,
@@ -66,6 +72,7 @@ export function useNotifications() {
 
   return {
     items,
+    unreadItems,
     today,
     earlier,
     count,

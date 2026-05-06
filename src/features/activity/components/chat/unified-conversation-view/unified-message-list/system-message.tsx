@@ -1,6 +1,6 @@
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
-import { Info, Sparkles, UserPlus } from "lucide-react";
+import { CircleCheck, Info, UserPlus } from "lucide-react";
 import { memo } from "react";
 import { getSystemMessageConfig } from "@/features/activity/lib/chat-utils";
 
@@ -21,7 +21,7 @@ export const SystemMessage = memo(function SystemMessage({
     positive: {
       container:
         "bg-forge-teal/5 border-forge-teal/15 text-forge-teal/90 shadow-sm",
-      icon: Sparkles,
+      icon: CircleCheck,
       iconStroke: 3,
     },
     "user-event": {

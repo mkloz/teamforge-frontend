@@ -1,7 +1,7 @@
 import type { Interest } from "@/shared/schemas";
 import { Button } from "@/shared/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Sparkles } from "lucide-react";
+import { Tags, X } from "lucide-react";
 import { TagPill } from "./tag-pill";
 
 interface SelectionShelfProps {
@@ -42,19 +42,19 @@ export function SelectionShelf({
             {isSearching ? (
               <>
                 <div className="w-5 h-5 rounded-md bg-forge-teal/10 flex items-center justify-center text-forge-teal">
-                  <Sparkles className="h-3 w-3" />
+                  <Tags className="h-3 w-3" />
                 </div>
                 <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-forge-teal">
-                  Suggested from choices ({youMightAlsoLike.length})
+                  Related to your picks ({youMightAlsoLike.length})
                 </p>
               </>
             ) : (
               <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-slate-muted/50">
-                Your Selections ({selectedIds.size})
+                Your picks ({selectedIds.size})
               </p>
             )}
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1 sm:gap-1.5">
             {isSearching
               ? youMightAlsoLike.map((tag) => (
                   <TagPill
@@ -76,12 +76,13 @@ export function SelectionShelf({
                       key={`shelf-${id}`}
                       size="xs"
                       onClick={() => onToggle(id)}
-                      className="rounded-full gap-1.5"
+                      className="h-auto max-w-full rounded-full px-1.5 py-0.75 text-[11px] sm:px-2 sm:py-1 sm:text-xs"
                     >
-                      {tag.name}
+                      <span className="min-w-0 max-w-[8.25rem] truncate leading-none sm:max-w-none">
+                        {tag.name}
+                      </span>
                       <X
-                        size={14}
-                        className="opacity-60 group-hover:opacity-100 transition-opacity"
+                        className="size-3 shrink-0 opacity-60 transition-opacity group-hover:opacity-100 sm:size-3.5"
                         strokeWidth={3}
                       />
                     </Button>

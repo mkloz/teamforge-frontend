@@ -102,7 +102,7 @@ export const GalleryItem = memo(
             }}
             onError={onError}
             className={cn(
-              "w-full h-full object-cover transition-all duration-700 ease-out group-hover/gallery-item:scale-110",
+              "w-full h-full object-cover transition-[opacity,transform] duration-700 ease-out will-change-transform group-hover/gallery-item:scale-110",
               state === "loaded" ? "opacity-100" : "opacity-0",
             )}
           />
@@ -121,7 +121,7 @@ export const GalleryItem = memo(
             onError={onError}
             wrapperClassName="absolute inset-0"
             className={cn(
-              "transition-all duration-700 ease-out group-hover/gallery-item:scale-110",
+              "transition-[opacity,transform] duration-700 ease-out will-change-transform group-hover/gallery-item:scale-110",
               state === "loaded" ? "opacity-100" : "opacity-0",
             )}
             loadingComponent={null}

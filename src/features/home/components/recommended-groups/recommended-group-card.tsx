@@ -1,26 +1,20 @@
 import { Link } from "@tanstack/react-router";
 
+import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
+import { useJoinHomeRecommendedGroup } from "@/features/home/hooks/use-join-home-recommended-group";
 import { GroupPlanCard } from "@/shared/components/group-plan-card";
 import { Button } from "@/shared/components/ui/button";
-import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
+import { isExploreGroupFull } from "@/shared/lib/explore-group-presenters";
 import { cn } from "@/shared/lib/utils";
 import type { ExploreGroup } from "@/shared/schemas";
 
-import { useJoinHomeRecommendedGroup } from "@/features/home/hooks/use-join-home-recommended-group";
-
 interface RecommendedGroupCardProps {
   group: ExploreGroup;
-  variant?: "default" | "compact";
 }
 
-export function RecommendedGroupCard({
-  group,
-  variant = "compact",
-}: RecommendedGroupCardProps) {
+export function RecommendedGroupCard({ group }: RecommendedGroupCardProps) {
   const joinMutation = useJoinHomeRecommendedGroup(group.id);
-  const isCompact = variant === "compact";
-  const isFull =
-    group.maxMembers > 0 && group.activeMembersCount >= group.maxMembers;
+  const isFull = isExploreGroupFull(group);
   const joinResult = joinMutation.data?.data.status;
   const actionLabel = isFull
     ? "Full"
@@ -38,7 +32,7 @@ export function RecommendedGroupCard({
 
   const action =
     joinResult === "JOINED" && joinMutation.data?.data.groupId ? (
-      <Button asChild variant="primary" size={isCompact ? "sm" : "default"}>
+      <Button asChild variant="primary" size="sm" className="shrink-0">
         <Link
           {...buildActivityGroupHubNavigation(joinMutation.data.data.groupId)}
         >
@@ -48,17 +42,14 @@ export function RecommendedGroupCard({
     ) : (
       <Button
         variant={isFull ? "outline" : "primary"}
-        size={isCompact ? "sm" : "default"}
+        size="sm"
         disabled={isFull || joinMutation.isPending || joinResult !== undefined}
         onClick={() => joinMutation.mutate()}
-        className={cn(
-          "shrink-0 z-20 shadow-sm",
-          isFull && "opacity-50 pointer-events-none hidden md:inline-flex",
-        )}
+        className={cn("shrink-0", isFull && "opacity-60")}
       >
         {actionLabel}
       </Button>
     );
 
-  return <GroupPlanCard group={group} variant={variant} action={action} />;
+  return <GroupPlanCard group={group} variant="compact" action={action} />;
 }

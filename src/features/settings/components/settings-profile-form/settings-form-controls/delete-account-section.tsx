@@ -54,11 +54,7 @@ export function DeleteAccountSection({
 
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="border-destructive/40 text-destructive hover:bg-destructive/10"
-            >
+            <Button type="button" variant="destructive">
               <Trash2 size={14} />
               Delete account
             </Button>
@@ -84,8 +80,8 @@ export function DeleteAccountSection({
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
+                variant="destructive"
                 disabled={!canDelete || isDeleting}
-                className="border-destructive/40 text-destructive hover:bg-destructive/10"
                 onClick={(event) => {
                   event.preventDefault();
                   if (!canDelete || isDeleting) {

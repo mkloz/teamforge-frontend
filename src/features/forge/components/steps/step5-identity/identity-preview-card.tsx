@@ -36,7 +36,7 @@ export function IdentityPreviewCard({
             <Image
               src={coverImage ?? undefined}
               alt=""
-              className="h-full w-full object-cover group-hover:scale-105"
+              className="h-full w-full object-cover transition-[scale,transform] duration-700 ease-out group-hover:scale-105"
             />
           ) : (
             <div className="flex h-full w-full flex-col justify-between p-4">

@@ -1,5 +1,5 @@
 import { cn } from "@/shared/lib/utils";
-import { Bell, Star, UserPlus, Users, Zap } from "lucide-react";
+import { Bell, Handshake, Star, UserPlus, Users } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import type { Notification } from "@/shared/schemas";
 
@@ -19,7 +19,7 @@ function getTypeConfig(type: Notification["type"]) {
     case "GROUP_FORMED":
     case "GROUP_INVITE":
       return {
-        icon: Zap,
+        icon: Handshake,
         colorClass: "text-accent bg-accent/10",
         borderClass: "border-l-accent",
       };

@@ -3,11 +3,13 @@ import type { Notification } from "@/shared/schemas";
 
 import {
   NOTIFICATIONS_QUERY_KEY,
+  NOTIFICATIONS_UNREAD_QUERY_KEY,
   NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY,
 } from "@/features/notifications/api/notifications-query-keys";
 
 export interface NotificationsCacheSnapshot {
   previousItems: Notification[] | undefined;
+  previousUnreadItems: Notification[] | undefined;
   previousCount: number | undefined;
 }
 
@@ -59,6 +61,9 @@ export const NotificationsCache = {
     await Promise.all([
       appQueryClient.cancelQueries({ queryKey: NOTIFICATIONS_QUERY_KEY }),
       appQueryClient.cancelQueries({
+        queryKey: NOTIFICATIONS_UNREAD_QUERY_KEY,
+      }),
+      appQueryClient.cancelQueries({
         queryKey: NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY,
       }),
     ]);
@@ -67,6 +72,9 @@ export const NotificationsCache = {
   invalidateQueries() {
     return Promise.all([
       appQueryClient.invalidateQueries({ queryKey: NOTIFICATIONS_QUERY_KEY }),
+      appQueryClient.invalidateQueries({
+        queryKey: NOTIFICATIONS_UNREAD_QUERY_KEY,
+      }),
       appQueryClient.invalidateQueries({
         queryKey: NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY,
       }),
@@ -77,6 +85,9 @@ export const NotificationsCache = {
     return {
       previousItems: appQueryClient.getQueryData<Notification[]>(
         NOTIFICATIONS_QUERY_KEY,
+      ),
+      previousUnreadItems: appQueryClient.getQueryData<Notification[]>(
+        NOTIFICATIONS_UNREAD_QUERY_KEY,
       ),
       previousCount: appQueryClient.getQueryData<number>(
         NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY,
@@ -89,6 +100,13 @@ export const NotificationsCache = {
       appQueryClient.setQueryData(
         NOTIFICATIONS_QUERY_KEY,
         snapshot.previousItems,
+      );
+    }
+
+    if (snapshot?.previousUnreadItems) {
+      appQueryClient.setQueryData(
+        NOTIFICATIONS_UNREAD_QUERY_KEY,
+        snapshot.previousUnreadItems,
       );
     }
 
@@ -118,6 +136,11 @@ export const NotificationsCache = {
       }),
     );
 
+    appQueryClient.setQueryData<Notification[] | undefined>(
+      NOTIFICATIONS_UNREAD_QUERY_KEY,
+      (current) => current?.filter((item) => item.id !== id),
+    );
+
     if (unreadDelta > 0) {
       updateUnreadCountQuery((count) => Math.max(0, count - unreadDelta));
     }
@@ -131,6 +154,7 @@ export const NotificationsCache = {
       })),
     );
 
+    appQueryClient.setQueryData(NOTIFICATIONS_UNREAD_QUERY_KEY, []);
     appQueryClient.setQueryData(NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY, 0);
   },
 
@@ -168,6 +192,17 @@ export const NotificationsCache = {
 
     updateNotificationsQuery((items) =>
       mergeNotifications(items, notification),
+    );
+
+    appQueryClient.setQueryData<Notification[] | undefined>(
+      NOTIFICATIONS_UNREAD_QUERY_KEY,
+      (current) => {
+        if (notification.isRead) {
+          return current?.filter((item) => item.id !== notification.id);
+        }
+
+        return mergeNotifications(current, notification);
+      },
     );
 
     if (didTransitionToRead) {

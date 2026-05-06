@@ -1,6 +1,7 @@
 import { Handshake } from "lucide-react";
 
 import { Avatar } from "@/shared/components/common/avatar";
+import { getExploreGroupDisplayName } from "@/shared/lib/explore-group-presenters";
 import { cn } from "@/shared/lib/utils";
 import type { ExploreGroup } from "@/shared/schemas";
 
@@ -11,6 +12,7 @@ interface CardHeaderProps {
 
 export function CardHeader({ group, variant = "default" }: CardHeaderProps) {
   const isCompact = variant === "compact";
+  const groupName = getExploreGroupDisplayName(group);
 
   return (
     <div
@@ -22,7 +24,7 @@ export function CardHeader({ group, variant = "default" }: CardHeaderProps) {
       <div className="flex items-center gap-2.5">
         <Avatar
           src={group.avatar}
-          name={group.name}
+          name={groupName}
           className={cn(
             "border border-border bg-muted",
             isCompact ? "size-5" : "size-6",
@@ -35,7 +37,7 @@ export function CardHeader({ group, variant = "default" }: CardHeaderProps) {
             isCompact ? "text-xs" : "text-sm",
           )}
         >
-          {group.name}
+          {groupName}
         </span>
       </div>
 

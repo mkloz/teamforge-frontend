@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Sparkles, Tag } from "lucide-react";
+import { LayoutTemplate, Tag } from "lucide-react";
 
 import { buildTemplateSuggestions } from "@/features/forge/lib/forge-template-suggestions";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
@@ -37,7 +37,7 @@ export function Step2Templates({
       <div className="flex items-start justify-between gap-3 px-0.5">
         <div className="flex min-w-0 items-start gap-3">
           <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10 text-forge-teal">
-            <Sparkles size={15} />
+            <LayoutTemplate size={15} />
           </div>
           <div className="min-w-0">
             <div className="flex min-w-0 flex-wrap items-center gap-2">

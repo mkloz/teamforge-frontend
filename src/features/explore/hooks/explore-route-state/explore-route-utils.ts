@@ -1,4 +1,7 @@
-import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
+import {
+  DEFAULT_FILTERS,
+  FILTER_BOUNDARIES,
+} from "@/features/explore/constants/explore.constants";
 import type {
   ExploreAccessMode,
   ExploreCategory,
@@ -47,14 +50,41 @@ export function resolveExploreRouteState(
   return {
     access: routeState.access ?? DEFAULT_FILTERS.access,
     categories: normalizeCategories(routeState.category),
-    distance: routeState.distance ?? DEFAULT_FILTERS.distance,
+    distance: normalizeDistance(routeState.distance),
     focusedPanel: routeState.panel ?? null,
     focusedRequestId: routeState.request ?? null,
     location: routeState.location ?? DEFAULT_FILTERS.locationMode,
     searchQuery: routeState.q ?? "",
-    sizeRange: routeState.size ?? DEFAULT_FILTERS.sizeRange,
+    sizeRange: normalizeSizeRange(routeState.size),
     sort: routeState.sort ?? DEFAULT_FILTERS.sortBy,
   };
+}
+
+export function normalizeDistance(distance: number | null | undefined) {
+  if (typeof distance !== "number") {
+    return DEFAULT_FILTERS.distance;
+  }
+
+  return Math.min(
+    Math.max(distance, FILTER_BOUNDARIES.distance.min),
+    FILTER_BOUNDARIES.distance.max,
+  );
+}
+
+export function normalizeSizeRange(
+  sizeRange: [number, number] | null | undefined,
+) {
+  if (!sizeRange) {
+    return DEFAULT_FILTERS.sizeRange;
+  }
+
+  const min = Math.min(
+    Math.max(sizeRange[0], FILTER_BOUNDARIES.size.min),
+    FILTER_BOUNDARIES.size.max,
+  );
+  const max = Math.min(Math.max(sizeRange[1], min), FILTER_BOUNDARIES.size.max);
+
+  return [min, max] as [number, number];
 }
 
 export function areCategoriesEqual(
@@ -80,18 +110,22 @@ export function getCategoryRoutePatch(categories: ExploreCategory[]) {
 }
 
 export function getSizeRoutePatch(nextRange: [number, number]) {
+  const range = normalizeSizeRange(nextRange);
+
   return {
     size:
-      nextRange[0] === DEFAULT_FILTERS.sizeRange[0] &&
-      nextRange[1] === DEFAULT_FILTERS.sizeRange[1]
+      range[0] === DEFAULT_FILTERS.sizeRange[0] &&
+      range[1] === DEFAULT_FILTERS.sizeRange[1]
         ? null
-        : nextRange,
+        : range,
   };
 }
 
 export function getDistanceRoutePatch(nextDistance: number) {
+  const distance = normalizeDistance(nextDistance);
+
   return {
-    distance: nextDistance === DEFAULT_FILTERS.distance ? null : nextDistance,
+    distance: distance === DEFAULT_FILTERS.distance ? null : distance,
   };
 }
 

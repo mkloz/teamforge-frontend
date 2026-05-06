@@ -15,7 +15,7 @@ export function LinkPreviewMedia({ data }: LinkPreviewMediaProps) {
       <Image
         src={data.image}
         alt={data.title ?? ""}
-        className="transition-transform duration-500 group-hover:scale-[1.03]"
+        className="transition-[scale,transform] duration-500 group-hover:scale-[1.03]"
       />
     </div>
   );

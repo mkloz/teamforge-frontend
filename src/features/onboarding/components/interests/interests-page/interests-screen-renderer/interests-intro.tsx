@@ -1,13 +1,13 @@
 import { Button } from "@/shared/components/ui/button";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Lock, Sparkles, Users } from "lucide-react";
-import { TeamForgeLogo } from "@/assets/logo";
+import { ArrowLeft, ArrowRight, Lock, RefreshCw, Users } from "lucide-react";
 import {
   fadeUpItem,
   staggerContainer,
 } from "@/features/onboarding/constants/motion";
 
 interface InterestsIntroProps {
+  backLabel: string;
   onBack: () => void;
   onStart: () => void;
 }
@@ -15,45 +15,30 @@ interface InterestsIntroProps {
 const BENEFITS = [
   {
     icon: Users,
-    text: "Your interests shape every group recommendation – the more accurate they are, the better your matches.",
+    text: "Pick the things you would actually say yes to. The best profile feels honest, not impressive.",
   },
   {
     icon: Lock,
-    text: "Interest data is used only for matching. It is never sold, shared, or visible to other users.",
+    text: "Your interests are used to shape group ideas. They are not shown as a public checklist.",
   },
   {
-    icon: Sparkles,
-    text: "You can update your interests at any time from your profile – the algorithm adapts immediately.",
+    icon: RefreshCw,
+    text: "You can update this later as your taste changes.",
   },
 ];
 
-export function InterestsIntro({ onBack, onStart }: InterestsIntroProps) {
+export function InterestsIntro({
+  backLabel,
+  onBack,
+  onStart,
+}: InterestsIntroProps) {
   return (
     <motion.div
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="flex flex-col items-center text-center max-w-md mx-auto w-full gap-0 pt-4 sm:pt-0"
+      className="mx-auto flex min-h-[calc(100dvh-6rem)] w-full max-w-md flex-col items-center gap-0 pt-10 text-center sm:min-h-[calc(100dvh-5rem)] sm:pt-12"
     >
-      <motion.div variants={fadeUpItem} className="mb-5 w-full text-left">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onBack}
-          className="px-0 text-muted-foreground hover:bg-transparent hover:text-foreground"
-        >
-          <ArrowLeft size={14} strokeWidth={2.5} />
-          Back
-        </Button>
-      </motion.div>
-
-      <motion.div variants={fadeUpItem}>
-        <TeamForgeLogo
-          className="w-10 h-10 mb-5 sm:mb-6 mx-auto"
-          showBackground={false}
-        />
-      </motion.div>
-
       <motion.h1
         variants={fadeUpItem}
         className="font-sans text-2xl sm:text-display-lg font-extrabold leading-tight text-balance mb-4 text-ink"
@@ -63,13 +48,14 @@ export function InterestsIntro({ onBack, onStart }: InterestsIntroProps) {
 
       <motion.div variants={fadeUpItem}>
         <p className="font-sans text-[13px] sm:text-sm leading-relaxed text-pretty mb-3 text-slate-muted font-medium">
-          Interests are the second dimension of your profile. They power the
-          activities your group gets recommended.
+          This is where your profile starts to feel like your real life: the
+          hobbies, places, games, scenes, and small obsessions you would
+          genuinely make time for.
         </p>
         <p className="font-sans text-[13px] sm:text-sm leading-relaxed text-pretty mb-6 text-slate-muted/80">
           Pick at least{" "}
           <span className="text-ink font-bold border-b border-forge-teal/30">
-            10 interests
+            15 interests
           </span>
           . There are no wrong answers – only honest ones.
         </p>
@@ -96,13 +82,25 @@ export function InterestsIntro({ onBack, onStart }: InterestsIntroProps) {
         ))}
       </motion.div>
 
-      <motion.div variants={fadeUpItem} className="w-full">
+      <motion.div
+        variants={fadeUpItem}
+        className="mt-auto flex w-full flex-col-reverse items-stretch gap-3 pt-6 min-[430px]:flex-row min-[430px]:items-center"
+      >
         <Button
-          size="lg"
-          onClick={onStart}
-          className="w-full flex items-center justify-center gap-2"
+          size="md"
+          variant="outline"
+          onClick={onBack}
+          className="w-full min-w-0 px-4 min-[430px]:w-auto min-[430px]:shrink-0"
         >
-          Let&apos;s pick your interests
+          <ArrowLeft size={16} strokeWidth={2.5} />
+          <span className="truncate">{backLabel}</span>
+        </Button>
+        <Button
+          size="md"
+          onClick={onStart}
+          className="flex w-full min-w-0 items-center justify-center gap-2 min-[430px]:flex-1"
+        >
+          <span className="truncate">Let&apos;s pick your interests</span>
           <ArrowRight size={16} strokeWidth={2.5} />
         </Button>
       </motion.div>

@@ -36,7 +36,7 @@ export function PinnedMessagesSection({
                 type="button"
                 variant="ghost"
                 onClick={() => onJumpToMessage(message.id)}
-                className="h-auto min-w-0 flex-1 justify-start rounded-lg border-0 bg-transparent p-1 text-left shadow-none hover:bg-transparent focus-visible:ring-forge-teal/30"
+                className="h-auto min-w-0 flex-1 justify-start rounded-lg border-0 bg-transparent p-1 text-left hover:bg-transparent focus-visible:ring-forge-teal/30"
                 contentClassName="block h-auto min-w-0"
                 aria-label={`Jump to pinned message from ${message.sender?.name || "System"}`}
               >
@@ -50,10 +50,10 @@ export function PinnedMessagesSection({
 
             {onUnpinMessage ? (
               <Button
-                variant="ghost"
+                variant="accentGhost"
                 size="icon-xs"
                 type="button"
-                className="mt-0.5 h-6 w-6 shrink-0 rounded-full text-slate-muted opacity-0 transition-opacity group-hover:opacity-100 hover:text-ink"
+                className="mt-0.5 h-6 w-6 shrink-0 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
                 onClick={() => {
                   void onUnpinMessage(message);
                 }}

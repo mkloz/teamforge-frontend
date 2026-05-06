@@ -1,25 +1,28 @@
 import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
+import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
+import { getUpcomingPreview } from "@/features/home/lib/home-insights";
+import { useHomeData } from "@/features/home/hooks/use-home-data";
+import { Button } from "@/shared/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { CalendarDays } from "lucide-react";
 
-import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { PlanCard } from "./plan-card";
 
 function EmptyPlans() {
   return (
-    <div className="flex flex-col items-center gap-3 py-10 text-center rounded-2xl border-2 border-dashed border-border bg-card/50">
+    <div className="flex items-center gap-3 border-y border-dashed border-border/70 bg-card/40 px-1 py-5 sm:px-3">
       <div
-        className="size-12 rounded-2xl bg-muted flex items-center justify-center"
+        className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground"
         aria-hidden="true"
       >
-        <CalendarDays className="size-6 text-muted-foreground" />
+        <CalendarDays className="size-5" />
       </div>
-      <div className="flex flex-col gap-1">
-        <p className="text-sm font-bold text-foreground">
-          Your calendar is clear
+      <div className="min-w-0">
+        <p className="text-sm font-black text-foreground">
+          Your calendar is open.
         </p>
-        <p className="text-xs text-muted-foreground max-w-55">
-          Forge a group or join one to get activities on your calendar.
+        <p className="mt-1 text-xs font-medium leading-relaxed text-muted-foreground">
+          Forge a group or join one to get a real plan moving.
         </p>
       </div>
     </div>
@@ -27,19 +30,17 @@ function EmptyPlans() {
 }
 
 export function UpcomingPlans() {
-  const { plans, isLoading } = useHomeData();
+  const { plans, isPlansLoading } = useHomeData();
+  const visiblePlans = getUpcomingPreview(plans, 4);
+  const hiddenCount = Math.max(0, plans.length - visiblePlans.length);
 
-  if (isLoading && plans.length === 0) {
+  if (isPlansLoading && plans.length === 0) {
     return (
-      <div className="w-full flex flex-col gap-5 animate-pulse">
-        <div className="flex items-center justify-between">
-          <div className="h-6 w-32 bg-muted rounded" />
-          <div className="h-4 w-16 bg-muted rounded" />
-        </div>
-        <div className="flex flex-col gap-3">
-          {[1, 2].map((i) => (
-            <div key={i} className="h-24 w-full bg-muted rounded-2xl" />
-          ))}
+      <div className="flex w-full flex-col gap-4 animate-pulse">
+        <div className="h-8 w-48 rounded bg-muted" />
+        <div className="grid gap-2">
+          <div className="h-24 rounded-xl bg-muted" />
+          <div className="h-24 rounded-xl bg-muted/60" />
         </div>
       </div>
     );
@@ -48,32 +49,38 @@ export function UpcomingPlans() {
   return (
     <section
       aria-labelledby="upcoming-plans-heading"
-      className="w-full flex flex-col gap-5"
+      className="flex w-full flex-col gap-4"
     >
-      <div className="flex items-center justify-between">
-        <h2
-          id="upcoming-plans-heading"
-          className="text-base font-black tracking-tight text-foreground"
-        >
-          Coming Up
-        </h2>
-        <Link
-          {...buildActivityNavigation()}
-          className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
-        >
-          View all
-        </Link>
-      </div>
+      <HomeSectionHeading
+        id="upcoming-plans-heading"
+        eyebrow="Next up"
+        title="Plans on the calendar"
+        description="The next few things with a time attached."
+        action={
+          <Button asChild variant="ghost" size="sm">
+            <Link {...buildActivityNavigation()}>View all</Link>
+          </Button>
+        }
+      />
 
-      {plans.length === 0 ? (
+      {visiblePlans.length === 0 ? (
         <EmptyPlans />
       ) : (
-        <div role="list" className="flex flex-col gap-3">
-          {plans.map((plan, i) => (
+        <div
+          role="list"
+          className="relative grid border-y border-border/55 before:absolute before:bottom-4 before:left-4 before:top-4 before:w-px before:bg-border/45"
+        >
+          {visiblePlans.map((plan, i) => (
             <PlanCard key={plan.plan.id} group={plan} index={i} />
           ))}
         </div>
       )}
+
+      {hiddenCount > 0 ? (
+        <p className="text-xs font-medium text-muted-foreground">
+          {hiddenCount} more plan{hiddenCount === 1 ? "" : "s"} in Activity.
+        </p>
+      ) : null}
     </section>
   );
 }

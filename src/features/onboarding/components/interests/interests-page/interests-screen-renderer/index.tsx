@@ -9,12 +9,14 @@ import { InterestsCatalogState } from "./interests-catalog-state";
 import { InterestsIntro } from "./interests-intro";
 
 interface InterestsScreenRendererProps {
+  backLabel: string;
   isEditMode: boolean;
   onBack: () => void;
   state: UseInterestsReturn;
 }
 
 export function InterestsScreenRenderer({
+  backLabel,
   isEditMode,
   onBack,
   state,
@@ -29,6 +31,7 @@ export function InterestsScreenRenderer({
           exit={{ opacity: 0 }}
         >
           <InterestsIntro
+            backLabel={backLabel}
             onBack={onBack}
             onStart={() => state.setScreen("browse")}
           />
@@ -123,6 +126,7 @@ function InterestsBrowseScreen({
       onReject={state.reject}
       onToggleCategory={state.toggleCategory}
       onToggleSubcategory={state.toggleSubcategory}
+      onRegisterCategory={state.registerCategoryElement}
       hideContextLabel={isEditMode}
     />
   );

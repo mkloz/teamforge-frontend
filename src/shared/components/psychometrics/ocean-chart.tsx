@@ -1,5 +1,4 @@
 import { cn } from "@/shared/lib/utils";
-import { Button } from "@/shared/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import {
   PolarAngleAxis,
@@ -8,8 +7,13 @@ import {
   RadarChart,
   ResponsiveContainer,
 } from "recharts";
-import { OCEAN_TRAITS, getExtendedTraitInfo } from "@/shared/lib/ocean-traits";
 import type { OceanScores, OceanTraitKey } from "@/shared/types/psychometrics";
+import {
+  getOceanChartData,
+  getOceanTraitByLabel,
+  getOceanTraitDetails,
+} from "@/shared/components/psychometrics/ocean-chart-model";
+import { OceanTraitDetails } from "@/shared/components/psychometrics/ocean-trait-details";
 
 interface OceanDiagramProps {
   className?: string;
@@ -57,12 +61,7 @@ export function OceanDiagram({
     height: 0,
   });
 
-  const chartData = OCEAN_TRAITS.map((trait) => ({
-    trait: trait.label,
-    key: trait.key,
-    value: scores[trait.key],
-    fullMark: 100,
-  }));
+  const chartData = getOceanChartData(scores);
 
   useEffect(() => {
     const element = containerRef.current;
@@ -104,7 +103,7 @@ export function OceanDiagram({
   const handleTraitClick = (label: string) => {
     if (!interactive || !onTraitSelect) return;
 
-    const trait = OCEAN_TRAITS.find((item) => item.label === label);
+    const trait = getOceanTraitByLabel(label);
     if (trait) {
       onTraitSelect(selectedTrait === trait.key ? null : trait.key);
     }
@@ -176,7 +175,7 @@ function ChartDot({
 }: ChartDotProps) {
   if (cx === undefined || cy === undefined || !payload?.trait) return null;
 
-  const trait = OCEAN_TRAITS.find((item) => item.label === payload.trait);
+  const trait = getOceanTraitByLabel(payload.trait);
   const isSelected = trait && selected === trait.key;
 
   return (
@@ -243,7 +242,7 @@ function ChartTick({
   const newY =
     distance > 0 ? numCy + (dy / distance) * (distance + pushOutOffset) : numY;
 
-  const trait = OCEAN_TRAITS.find((item) => item.label === payload.value);
+  const trait = getOceanTraitByLabel(payload.value);
   const isSelected = trait && selected === trait.key;
   const score = trait && scores ? scores[trait.key] : 0;
 
@@ -290,6 +289,7 @@ export function OceanChart({
   scores,
   onTraitSelect,
   selectedTrait,
+  interactive = true,
   showDetails = true,
 }: OceanChartProps) {
   const [internalSelected, setInternalSelected] =
@@ -298,61 +298,26 @@ export function OceanChart({
   const selected =
     selectedTrait !== undefined ? selectedTrait : internalSelected;
   const setSelected = onTraitSelect || setInternalSelected;
-  const selectedInfo = selected
-    ? getExtendedTraitInfo(selected, scores[selected])
-    : null;
+  const selectedInfo = getOceanTraitDetails(selected, scores);
 
   return (
-    <div className="space-y-4">
+    <div className="flex w-full flex-col gap-4">
       <div className="w-full aspect-square max-w-80 mx-auto">
         <OceanDiagram
           scores={scores}
           selectedTrait={selected}
           onTraitSelect={setSelected}
+          interactive={interactive}
         />
       </div>
 
       {showDetails && (
         <>
           <div className="border-t border-border/40 -mt-2" />
-          {!selected ? (
-            <p className="text-center text-[10px] font-bold text-slate-muted/60 uppercase tracking-widest">
-              Tap any trait to explore
-            </p>
-          ) : (
-            selectedInfo && (
-              <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h5 className="text-sm font-black text-ink">
-                      {selectedInfo.label}
-                    </h5>
-                    <span className="text-[10px] font-bold text-slate-muted uppercase tracking-tight">
-                      {selectedInfo.level} ({selectedInfo.score}%)
-                    </span>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="link"
-                    size="xs"
-                    onClick={() => setSelected(null)}
-                    className="h-auto p-0 text-[10px] uppercase tracking-widest hover:opacity-70"
-                  >
-                    Close
-                  </Button>
-                </div>
-                <p className="text-xs text-ink/80 leading-relaxed font-medium">
-                  {selectedInfo.description}
-                </p>
-                <div className="pt-2 border-t border-border/40">
-                  <p className="text-[10px] text-slate-muted font-medium">
-                    <span className="font-bold text-ink">In activities:</span>{" "}
-                    {selectedInfo.inActivities}
-                  </p>
-                </div>
-              </div>
-            )
-          )}
+          <OceanTraitDetails
+            selectedInfo={selectedInfo}
+            onClear={() => setSelected(null)}
+          />
         </>
       )}
     </div>

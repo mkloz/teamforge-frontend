@@ -1,7 +1,6 @@
 import { formatBlockedDate } from "./blocked-users-formatters";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
 import type { FriendshipApi } from "@/shared/schemas";
 import { Loader2, ShieldOff } from "lucide-react";
 
@@ -41,10 +40,7 @@ export function BlockedUserRow({
         type="button"
         variant="outline"
         disabled={isUnblocking}
-        className={cn(
-          "w-full justify-center md:w-auto",
-          "border-forge-teal/30 text-forge-teal hover:bg-forge-teal/8",
-        )}
+        className="w-full justify-center md:w-auto"
         onClick={() => {
           void onUnblockUser(user.id);
         }}

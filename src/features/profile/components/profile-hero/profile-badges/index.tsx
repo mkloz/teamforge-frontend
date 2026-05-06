@@ -1,15 +1,8 @@
-import { motion } from "framer-motion";
-
-import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import type { User } from "@/shared/schemas";
+import { normalizeTrustScore } from "@/features/profile/lib/profile-utils";
+import { cn } from "@/shared/lib/utils";
 
-import {
-  profileBadgeItemVariants,
-  profileBadgesContainerVariants,
-} from "./profile-badge-animations";
 import { ProfileBadgeDivider } from "./profile-badge-divider";
-import { ProfileBadgeItem } from "./profile-badge-item";
-import { buildProfileBadges } from "./profile-badge-models";
 
 interface ProfileBadgesProps {
   archetype: string;
@@ -17,40 +10,57 @@ interface ProfileBadgesProps {
 }
 
 export function ProfileBadges({ user, archetype }: ProfileBadgesProps) {
-  const badges = buildProfileBadges(user, archetype);
+  const trustScore = normalizeTrustScore(user.trustScore);
+  const trustLabel = getTrustLabel(trustScore);
+  const groupMode = archetype.replace(/^The\s+/i, "");
 
   return (
-    <TooltipProvider delayDuration={200}>
-      <motion.div
-        variants={profileBadgesContainerVariants}
-        initial="hidden"
-        animate="visible"
-        className="flex items-center gap-4 md:gap-5 shrink-0 flex-wrap justify-center md:justify-start"
+    <div className="grid w-full shrink-0 grid-cols-3 items-start gap-3 sm:w-auto sm:flex sm:flex-wrap sm:items-center sm:justify-center md:gap-4 md:justify-start">
+      <ProfileSignal
+        accent="text-forge-teal"
+        label="Trust"
+        value={`${trustScore} ${trustLabel}`}
+      />
+      <ProfileBadgeDivider />
+      <ProfileSignal label="Type" value={user.personalityType || "Open"} />
+      <ProfileBadgeDivider />
+      <ProfileSignal label="Group mode" value={groupMode} />
+    </div>
+  );
+}
+
+interface ProfileSignalProps {
+  accent?: string;
+  label: string;
+  value: string;
+}
+
+function ProfileSignal({
+  accent = "text-ink",
+  label,
+  value,
+}: ProfileSignalProps) {
+  return (
+    <div className="min-w-0 text-center sm:text-left">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-muted sm:text-nano">
+        {label}
+      </p>
+      <p
+        className={cn(
+          "mt-0.5 text-[13px] font-extrabold leading-tight md:text-base",
+          accent,
+        )}
       >
-        {badges.map((badge, index) => (
-          <ProfileBadgeEntry
-            key={badge.id}
-            badge={badge}
-            showDivider={index > 0}
-          />
-        ))}
-      </motion.div>
-    </TooltipProvider>
+        {value}
+      </p>
+    </div>
   );
 }
 
-interface ProfileBadgeEntryProps {
-  badge: ReturnType<typeof buildProfileBadges>[number];
-  showDivider: boolean;
-}
+function getTrustLabel(trustScore: number) {
+  if (trustScore >= 80) {
+    return "High";
+  }
 
-function ProfileBadgeEntry({ badge, showDivider }: ProfileBadgeEntryProps) {
-  return (
-    <>
-      {showDivider && <ProfileBadgeDivider />}
-      <motion.div variants={profileBadgeItemVariants}>
-        <ProfileBadgeItem badge={badge} />
-      </motion.div>
-    </>
-  );
+  return trustScore >= 50 ? "Medium" : "Low";
 }

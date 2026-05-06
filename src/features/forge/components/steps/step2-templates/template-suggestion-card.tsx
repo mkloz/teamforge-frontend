@@ -30,7 +30,7 @@ export function TemplateSuggestionCard({
           src={suggestion.template.coverImage ?? undefined}
           alt=""
           wrapperClassName="h-full w-full"
-          className="transition-transform duration-500 group-hover:scale-105"
+          className="transition-[scale,transform] duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-foreground/10 transition-colors duration-200 group-hover:bg-foreground/0" />
         <div className="absolute left-2 top-2 flex size-7 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm backdrop-blur">

@@ -16,16 +16,23 @@ const LABELS: Record<number, string> = {
   5: "Strongly agree",
 };
 
+const POINT_POSITION_CLASSES: Record<(typeof POINTS)[number], string> = {
+  1: "left-[10%]",
+  2: "left-[30%]",
+  3: "left-1/2",
+  4: "left-[70%]",
+  5: "left-[90%]",
+};
+
 export function LikertScale({ value, onChange }: LikertScaleProps) {
   return (
-    <div className="flex flex-col w-full select-none -mt-3 sm:-mt-4">
+    <div className="flex w-full select-none flex-col gap-1.5">
       <RadioGroup
         value={value ? value.toString() : ""}
         onValueChange={(val) => onChange(Number(val) as 1 | 2 | 3 | 4 | 5)}
-        className="relative grid grid-cols-5 w-full h-14 sm:h-16 items-center focus-visible:outline-none"
+        className="relative h-8 w-full focus-visible:outline-none sm:h-9"
         aria-label="Rate your agreement"
       >
-        {/* Connecting line */}
         <div
           className="pointer-events-none absolute left-[10%] right-[10%] top-1/2 z-0 h-0.5 -translate-y-1/2 bg-slate-100 dark:bg-white/10"
           aria-hidden="true"
@@ -39,7 +46,10 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
               value={point.toString()}
               id={`point-${point}`}
               aria-label={LABELS[point]}
-              className="group/likert relative z-10 flex !h-full !w-full cursor-pointer !appearance-none items-center justify-center !rounded-none !border-0 !bg-transparent !p-0 !text-inherit !shadow-none !outline-none !ring-0 !ring-offset-0 transition-none hover:!bg-transparent focus-visible:!border-transparent focus-visible:!ring-0 focus-visible:!ring-offset-0 data-[state=checked]:!bg-transparent dark:!bg-transparent"
+              className={cn(
+                "group/likert absolute top-1/2 z-10 flex !h-24 !w-[20%] -translate-x-1/2 -translate-y-1/2 cursor-pointer !appearance-none items-center justify-center !rounded-none !border-0 !bg-transparent !p-0 !text-inherit !shadow-none !outline-none !ring-0 !ring-offset-0 transition-none hover:!bg-transparent focus-visible:!border-transparent focus-visible:!ring-0 focus-visible:!ring-offset-0 data-[state=checked]:!bg-transparent dark:!bg-transparent sm:!h-28",
+                POINT_POSITION_CLASSES[point],
+              )}
             >
               <div
                 className={cn(
@@ -58,17 +68,23 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
         })}
       </RadioGroup>
 
-      {/* Per-dot labels */}
-      <div className="grid grid-cols-5 w-full -mt-2 sm:-mt-3">
+      <div className="grid w-full grid-cols-5">
         {POINTS.map((point) => (
           <div
             key={`label-${point}`}
-            className="flex justify-center text-center px-0.5"
+            className={cn(
+              "flex min-h-5 px-0.5 text-center",
+              point === 1
+                ? "justify-start"
+                : point === 5
+                  ? "justify-end"
+                  : "justify-center",
+            )}
           >
             {LABELS[point] && (
               <span
                 className={cn(
-                  "text-xs transition-colors duration-200 max-w-full",
+                  "max-w-full text-[11px] leading-4 transition-colors duration-200 sm:text-xs",
                   value === point
                     ? "text-forge-teal font-bold"
                     : "text-muted-foreground font-semibold",

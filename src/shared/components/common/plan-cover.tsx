@@ -28,7 +28,7 @@ export function PlanCover({
       <div
         aria-label={alt}
         className={cn(
-          "h-full w-full bg-linear-to-br transition-transform duration-500",
+          "h-full w-full bg-linear-to-br transition-[scale,transform] duration-500",
           preset.gradient,
           className,
           imageClassName,

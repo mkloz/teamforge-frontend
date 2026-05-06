@@ -35,7 +35,7 @@ export function GroupCoverHeader({
           <PlanCover
             value={group.plan?.coverImage}
             alt={`${group.name} cover`}
-            imageClassName="transition-transform duration-700 group-hover:scale-105"
+            imageClassName="transition-[scale,transform] duration-700 group-hover:scale-105"
             loading="eager"
           />
         </motion.div>

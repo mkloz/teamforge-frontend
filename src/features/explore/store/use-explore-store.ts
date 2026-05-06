@@ -55,6 +55,7 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
       distance: DEFAULT_FILTERS.distance,
       locationMode: DEFAULT_FILTERS.locationMode,
       access: DEFAULT_FILTERS.access,
+      sortBy: DEFAULT_FILTERS.sortBy,
     }),
 
   isAnythingFiltered: () => {

@@ -51,7 +51,7 @@ export function ProfileBadgeItem({ badge }: ProfileBadgeItemProps) {
         side="bottom"
         className="max-w-xs p-4 bg-popover text-popover-foreground rounded-xl shadow-xl border border-border z-100"
       >
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <Icon size={14} className={badge.colorClass} />
             <p className="text-xs font-bold tracking-tight">

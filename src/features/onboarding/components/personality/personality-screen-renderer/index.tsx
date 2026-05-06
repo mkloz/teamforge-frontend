@@ -6,11 +6,12 @@ import { PersonalityIntro } from "./personality-intro";
 import { PersonalityResults } from "./personality-results";
 import { QuestionPage } from "./question-page";
 import { Theory101 } from "./theory-101";
+import { usePersonalityScreenNavigation } from "./use-personality-screen-navigation";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
-import { findFirstUnansweredPage } from "@/features/onboarding/lib/personality-test-flow";
 import type { usePersonalityTest } from "@/features/onboarding/hooks/use-personality-test";
 
 interface PersonalityScreenRendererProps {
+  backLabel: string;
   continueLabel: string;
   onBack: () => void;
   onContinue: () => void;
@@ -20,6 +21,7 @@ interface PersonalityScreenRendererProps {
 }
 
 export function PersonalityScreenRenderer({
+  backLabel,
   continueLabel,
   onBack,
   onContinue,
@@ -39,68 +41,28 @@ export function PersonalityScreenRenderer({
     pageQuestions,
     actions,
   } = state;
+  const navigation = usePersonalityScreenNavigation({
+    onBack,
+    questionsPerPage,
+    state,
+  });
 
   switch (screen.id) {
     case "intro":
-      return (
-        <PersonalityIntro
-          onBack={onBack}
-          onStart={() => actions.setScreen({ id: "theory" })}
-        />
-      );
+      return <PersonalityIntro {...navigation.intro} backLabel={backLabel} />;
     case "theory":
-      return (
-        <Theory101
-          onBack={() => actions.setScreen({ id: "intro" })}
-          onNext={() => actions.setScreen({ id: "guidelines" })}
-        />
-      );
+      return <Theory101 {...navigation.theory} />;
     case "guidelines":
-      return (
-        <KeepInMind
-          onBack={() => actions.setScreen({ id: "theory" })}
-          onNext={() => actions.setScreen({ id: "length" })}
-        />
-      );
-    case "length": {
-      const isAdjusting = Object.keys(answers).length > 0;
-
+      return <KeepInMind {...navigation.guidelines} />;
+    case "length":
       return (
         <LengthSelector
-          onBack={() => {
-            if (state.previousScreen?.id === "intermission") {
-              actions.setScreen(state.previousScreen);
-            } else if (isAdjusting) {
-              const resumePage = findFirstUnansweredPage(
-                state.testLength,
-                answers,
-                questionsPerPage,
-              );
-              actions.setScreen({ id: "questions", currentPage: resumePage });
-            } else {
-              actions.setScreen({ id: "guidelines" });
-            }
-          }}
-          onBegin={(length) => {
-            if (isAdjusting) {
-              actions.updateTestLength(length);
-              const resumePage = findFirstUnansweredPage(
-                length,
-                answers,
-                questionsPerPage,
-              );
-              actions.setScreen({ id: "questions", currentPage: resumePage });
-            } else {
-              actions.handleBegin(length);
-            }
-          }}
-          mode={isAdjusting ? "adjust" : "begin"}
+          {...navigation.length}
           initialLength={state.testLength}
           answers={answers}
           onSelectionChange={onSelectionChange}
         />
       );
-    }
     case "questions":
       return (
         <QuestionPage
@@ -110,12 +72,7 @@ export function PersonalityScreenRenderer({
           totalPages={totalPages}
           totalQuestions={questions.length}
           answers={answers}
-          onAnswer={actions.handleAnswer}
-          onNext={actions.handleNextPage}
-          onReview={() => {
-            actions.setIsReviewMode(true);
-            actions.setScreen({ id: "questions", currentPage: 1 });
-          }}
+          {...navigation.questions}
         />
       );
     case "intermission":
@@ -124,16 +81,7 @@ export function PersonalityScreenRenderer({
           milestoneIndex={screen.type}
           answeredCount={state.answeredInPoolCount}
           totalQuestions={questions.length}
-          onAdjustLength={() => {
-            actions.setIsReviewMode(false);
-            actions.setScreen({ id: "length" });
-          }}
-          onExtend={(length) => {
-            actions.setIsReviewMode(false);
-            actions.updateTestLength(length);
-            actions.handleContinueFromIntermission();
-          }}
-          onContinue={actions.handleContinueFromIntermission}
+          {...navigation.intermission}
         />
       );
     case "calculating":

@@ -20,11 +20,23 @@ export function SelectedFiltersBar() {
     access,
     setAccess,
     resetFilters,
-    isAnythingFiltered,
     removeCategory,
   } = useExploreRouteState();
 
-  const filtered = isAnythingFiltered;
+  const categoryTags = selectedCategories.filter((c) => c !== "ALL");
+  const isLocationFiltered = locationMode !== DEFAULT_FILTERS.locationMode;
+  const isAccessFiltered = access !== DEFAULT_FILTERS.access;
+  const isDistanceFiltered =
+    distance !== DEFAULT_FILTERS.distance && locationMode !== "ONLINE";
+  const isSizeFiltered =
+    sizeRange[0] !== DEFAULT_FILTERS.sizeRange[0] ||
+    sizeRange[1] !== DEFAULT_FILTERS.sizeRange[1];
+  const filtered =
+    categoryTags.length > 0 ||
+    isLocationFiltered ||
+    isAccessFiltered ||
+    isDistanceFiltered ||
+    isSizeFiltered;
 
   if (!filtered) return null;
 
@@ -34,43 +46,41 @@ export function SelectedFiltersBar() {
         initial={{ opacity: 0, height: 0 }}
         animate={{ opacity: 1, height: "auto" }}
         exit={{ opacity: 0, height: 0 }}
-        className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1"
+        className="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-hide"
       >
         <Button
           type="button"
-          variant="ghost"
+          variant="subtle"
           size="xs"
           onClick={resetFilters}
-          className="h-auto shrink-0 gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-micro text-primary hover:bg-primary/20"
+          className="h-auto shrink-0 gap-1 rounded-full px-2.5 py-1 text-micro"
         >
           <X className="size-3" strokeWidth={2.5} />
           Clear all
         </Button>
 
-        <div className="w-px h-4 bg-border/50 shrink-0" />
+        <div className="h-4 w-px shrink-0 bg-border/50" />
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 pr-1">
           <AnimatePresence mode="popLayout">
-            {selectedCategories
-              .filter((c) => c !== "ALL")
-              .map((catId) => {
-                const catInfo = CATEGORIES.find((c) => c.id === catId);
-                return (
-                  <motion.div
-                    key={catId}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    layout
-                  >
-                    <FilterTag
-                      label={catInfo?.label || catId}
-                      onRemove={() => removeCategory(catId)}
-                    />
-                  </motion.div>
-                );
-              })}
-            {locationMode !== DEFAULT_FILTERS.locationMode && (
+            {categoryTags.map((catId) => {
+              const catInfo = CATEGORIES.find((c) => c.id === catId);
+              return (
+                <motion.div
+                  key={catId}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  layout
+                >
+                  <FilterTag
+                    label={catInfo?.label || catId}
+                    onRemove={() => removeCategory(catId)}
+                  />
+                </motion.div>
+              );
+            })}
+            {isLocationFiltered && (
               <motion.div
                 key="location"
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -79,18 +89,12 @@ export function SelectedFiltersBar() {
                 layout
               >
                 <FilterTag
-                  label={
-                    locationMode === "IN_PERSON"
-                      ? "Local"
-                      : locationMode === "ONLINE"
-                        ? "Online"
-                        : "TBD"
-                  }
+                  label={locationMode === "IN_PERSON" ? "Local" : "Online"}
                   onRemove={() => setLocationMode(DEFAULT_FILTERS.locationMode)}
                 />
               </motion.div>
             )}
-            {access !== DEFAULT_FILTERS.access && (
+            {isAccessFiltered && (
               <motion.div
                 key="access"
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -104,23 +108,21 @@ export function SelectedFiltersBar() {
                 />
               </motion.div>
             )}
-            {distance !== DEFAULT_FILTERS.distance &&
-              locationMode !== "ONLINE" && (
-                <motion.div
-                  key="distance"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  layout
-                >
-                  <FilterTag
-                    label={`Within ${distance} km`}
-                    onRemove={() => setDistance(DEFAULT_FILTERS.distance)}
-                  />
-                </motion.div>
-              )}
-            {(sizeRange[0] !== DEFAULT_FILTERS.sizeRange[0] ||
-              sizeRange[1] !== DEFAULT_FILTERS.sizeRange[1]) && (
+            {isDistanceFiltered && (
+              <motion.div
+                key="distance"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                layout
+              >
+                <FilterTag
+                  label={`Within ${distance} km`}
+                  onRemove={() => setDistance(DEFAULT_FILTERS.distance)}
+                />
+              </motion.div>
+            )}
+            {isSizeFiltered && (
               <motion.div
                 key="size"
                 initial={{ opacity: 0, scale: 0.8 }}

@@ -82,16 +82,16 @@ export function NotificationsDrawer({
               size="sm"
               onClick={markAllRead}
               disabled={items.length === 0 || isMarkingAllRead}
-              className="text-[12px] text-forge-teal hover:text-forge-teal/80 font-bold h-auto p-0"
+              className="h-auto p-0 text-[12px] font-bold"
             >
               {isMarkingAllRead ? "Marking..." : "Mark all read"}
             </Button>
             <Button
-              variant="ghost"
+              variant="accentGhost"
               size="icon-xs"
               onClick={onClose}
               aria-label="Close notifications"
-              className="text-slate-muted hover:text-ink rounded-lg p-0"
+              className="p-0"
             >
               <X size={20} strokeWidth={2.5} aria-hidden="true" />
             </Button>

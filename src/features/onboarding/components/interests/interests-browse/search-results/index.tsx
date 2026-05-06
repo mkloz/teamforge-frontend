@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
 import type { InterestSearchResults } from "@/features/onboarding/utils/interest-logic";
 
 import { SearchEmptyState } from "./search-empty-state";
@@ -9,6 +8,7 @@ import {
 } from "./search-results-count";
 import { SearchResultSubcategories } from "./search-result-subcategories";
 import { SearchResultTags } from "./search-result-tags";
+import { useSearchResultExpansion } from "./use-search-result-expansion";
 
 export function SearchResults({
   query,
@@ -23,18 +23,8 @@ export function SearchResults({
   isAtMax: boolean;
   onToggle: (id: string) => void;
 }) {
-  const [expandedSubs, setExpandedSubs] = useState<Set<string>>(new Set());
-  const toggleSub = (id: string) =>
-    setExpandedSubs((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-
+  const { expandedSubcategories, toggleSubcategory } =
+    useSearchResultExpansion();
   const totalCount = getSearchResultsCount(results);
 
   return (
@@ -52,10 +42,10 @@ export function SearchResults({
             {formatSearchResultCount(totalCount)}
           </p>
           <SearchResultSubcategories
-            expandedSubcategories={expandedSubs}
+            expandedSubcategories={expandedSubcategories}
             isAtMax={isAtMax}
             onToggle={onToggle}
-            onToggleSubcategory={toggleSub}
+            onToggleSubcategory={toggleSubcategory}
             results={results}
             selectedIds={selectedIds}
           />

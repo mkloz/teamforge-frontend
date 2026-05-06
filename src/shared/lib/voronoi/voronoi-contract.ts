@@ -14,6 +14,7 @@ export interface VoronoiCatalystProps {
   ref?: Ref<VoronoiCatalystHandle>;
   progress?: number;
   className?: string;
+  rotationDegrees?: number;
 }
 
 export interface VoronoiCatalystHandle {

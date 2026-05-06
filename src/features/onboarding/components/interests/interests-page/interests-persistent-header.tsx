@@ -1,8 +1,8 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import type { RefObject } from "react";
 
-import { InterestsBrowseHeader } from "@/features/onboarding/components/interests/interests-browse";
-import { InterestsReviewHeader } from "@/features/onboarding/components/interests/interests-review";
+import { InterestsBrowseHeader } from "@/features/onboarding/components/interests/interests-browse/interests-browse-header";
+import { InterestsReviewHeader } from "@/features/onboarding/components/interests/interests-review/interests-review-header";
 import type { UseInterestsReturn } from "@/features/onboarding/hooks/use-interests";
 import { cn } from "@/shared/lib/utils";
 
@@ -38,7 +38,7 @@ export function InterestsPersistentHeader({
                 categories={state.categories}
                 searchQuery={state.searchQuery}
                 onSetSearch={state.setSearchQuery}
-                onExpandCategoryOnly={state.expandCategoryOnly}
+                onQuickJumpCategory={state.jumpToCategory}
                 variant="pills"
               />
             </motion.div>
@@ -47,7 +47,7 @@ export function InterestsPersistentHeader({
               categories={state.categories}
               searchQuery={state.searchQuery}
               onSetSearch={state.setSearchQuery}
-              onExpandCategoryOnly={state.expandCategoryOnly}
+              onQuickJumpCategory={state.jumpToCategory}
               variant="search"
             />
           </div>

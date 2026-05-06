@@ -31,7 +31,6 @@ export function QuestionCard({
           : "hover:shadow-sm sm:hover:shadow-md active:bg-slate-50/50 dark:active:bg-white/5",
       )}
     >
-      {/* Header row: pill + answered badge */}
       <div className="flex items-center justify-between mb-2.5 sm:mb-3 h-5 sm:h-6">
         <span className="inline-flex items-center font-sans text-nano font-bold uppercase tracking-widest rounded-full px-2 py-0.5 sm:px-2.5 sm:py-1 bg-slate-500/10 text-muted-foreground">
           Q {index} of {totalQuestions}
@@ -53,7 +52,6 @@ export function QuestionCard({
         </AnimatePresence>
       </div>
 
-      {/* Statement text */}
       <h3 className="font-sans text-sm sm:text-base font-semibold leading-snug mb-3 sm:mb-5 text-pretty text-ink">
         {question.text}
       </h3>

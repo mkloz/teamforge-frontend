@@ -1,9 +1,10 @@
-import { MessageSquare, Zap } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { MessageSquare, UsersRound } from "lucide-react";
 import { memo } from "react";
-import { Button } from "@/shared/components/ui/button";
+
 import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
 import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
+import { Button } from "@/shared/components/ui/button";
 
 interface EmptyStateProps {
   label: string;
@@ -17,41 +18,78 @@ export const EmptyState = memo(function EmptyState({
   showForgeCta = false,
   showExploreCta = false,
 }: EmptyStateProps) {
+  const description = getEmptyStateDescription({
+    showExploreCta,
+    showForgeCta,
+  });
+
   return (
-    <div className="flex flex-col items-center justify-center gap-5 py-20 px-6 text-center animate-in fade-in slide-in-from-bottom-2">
-      <div className="w-14 h-14 rounded-2xl bg-forge-teal/8 flex items-center justify-center shadow-sm border border-forge-teal/15">
-        <MessageSquare
-          size={22}
-          className="text-forge-teal"
-          strokeWidth={1.5}
-        />
+    <div className="flex flex-col items-center justify-center px-6 py-16 text-center animate-in fade-in slide-in-from-bottom-2">
+      <div className="flex size-13 items-center justify-center rounded-xl border border-forge-teal/20 bg-forge-teal/8 text-forge-teal shadow-[0_0_0_1px_rgba(13,148,136,0.04)]">
+        <MessageSquare size={21} strokeWidth={1.5} aria-hidden="true" />
       </div>
-      <div className="flex flex-col gap-1.5">
-        <p className="text-sm font-semibold text-ink/80">{label}</p>
-        {showForgeCta && (
-          <p className="text-xs text-slate-muted leading-relaxed max-w-45 mx-auto">
-            Let's forge your first one.
+
+      <div className="mt-5 max-w-52">
+        <p className="text-base font-black leading-tight text-foreground">
+          {label}
+        </p>
+        {description ? (
+          <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground">
+            {description}
           </p>
-        )}
+        ) : null}
       </div>
+
       {(showForgeCta || showExploreCta) && (
-        <div className="flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-6 flex w-full max-w-44 flex-col items-stretch gap-2.5">
           {showExploreCta && (
-            <Button asChild variant="outline" size="sm">
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="w-full rounded-lg"
+            >
               <Link {...buildExploreNavigation()}>Browse groups</Link>
             </Button>
           )}
+
           {showForgeCta && (
-            <Link
-              {...buildForgeLaunchNavigation()}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-forge-teal text-white text-xs font-bold tracking-tight shadow-sm hover:bg-forge-teal/90 active:scale-95 transition-all duration-200"
+            <Button
+              asChild
+              variant="primary"
+              size="sm"
+              className="w-full rounded-lg"
             >
-              <Zap size={13} className="fill-current" />
-              Forge a group
-            </Link>
+              <Link {...buildForgeLaunchNavigation()}>
+                <UsersRound size={14} aria-hidden="true" />
+                Forge a group
+              </Link>
+            </Button>
           )}
         </div>
       )}
     </div>
   );
 });
+
+function getEmptyStateDescription({
+  showExploreCta,
+  showForgeCta,
+}: {
+  showExploreCta: boolean;
+  showForgeCta: boolean;
+}) {
+  if (showExploreCta && showForgeCta) {
+    return "Browse open groups or forge one around your own plan.";
+  }
+
+  if (showForgeCta) {
+    return "Forge a group to start your first conversation.";
+  }
+
+  if (showExploreCta) {
+    return "Browse open groups to find a conversation worth joining.";
+  }
+
+  return null;
+}

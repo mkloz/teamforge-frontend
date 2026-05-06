@@ -1,49 +1,43 @@
 import type { User } from "@/shared/schemas";
-import { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
-import { Link } from "@tanstack/react-router";
 import { ProfileActions } from "./profile-actions";
 import { ProfileAvatar } from "./profile-avatar";
 import { ProfileIdentity } from "./profile-identity";
-import { Button } from "@/shared/components/ui/button";
 
 interface ProfileHeroProps {
   user: User;
   archetype: string;
+  socialRead: string;
 }
 
-export function ProfileHero({ user, archetype }: ProfileHeroProps) {
+export function ProfileHero({ user, archetype, socialRead }: ProfileHeroProps) {
+  const hasBio = Boolean(user.bio?.trim());
+
   return (
-    <div className="relative flex flex-col pb-8 sm:pb-12 border-b border-border/50 sm:px-0 z-0 w-full">
-      <div className="flex flex-col gap-6 w-full">
-        {/* Top Header Row */}
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 w-full">
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 min-w-0 flex-1">
+    <div className="relative z-0 flex w-full flex-col pb-4 sm:pb-8 sm:px-0">
+      <div className="flex w-full flex-col gap-5 sm:gap-6">
+        <div className="flex w-full flex-col justify-between gap-5 sm:flex-row sm:items-start sm:gap-6">
+          <div className="relative top-2 flex min-w-0 flex-1 flex-col items-center gap-3 sm:top-1 sm:flex-row sm:items-start sm:gap-6 md:top-5">
             <ProfileAvatar src={user.avatar} name={user.name} />
             <ProfileIdentity user={user} archetype={archetype} />
           </div>
         </div>
 
-        {/* Bottom Section (Quote & Actions) */}
-        <div className="flex flex-col gap-6">
-          <blockquote className="relative max-w-2xl">
-            {user.bio ? (
-              <p className="relative z-10 text-lg md:text-xl text-ink/80 font-medium leading-relaxed text-pretty">
+        <div className="flex flex-col gap-5 sm:gap-6">
+          <blockquote className="relative mx-auto max-w-[34rem] sm:mx-0 sm:max-w-2xl">
+            {hasBio ? (
+              <p className="relative z-10 text-center text-base font-medium leading-relaxed text-ink/82 text-pretty sm:text-left md:text-xl">
                 {user.bio}
               </p>
             ) : (
-              <div className="relative z-10 flex flex-col items-start gap-3">
-                <p className="text-base text-slate-muted font-medium leading-relaxed text-pretty">
-                  No bio yet. Add a short introduction in settings so people
-                  know what you are about.
-                </p>
-                <Button asChild variant="outline" size="sm">
-                  <Link {...buildSettingsNavigation("account")}>Add a bio</Link>
-                </Button>
-              </div>
+              <p className="relative z-10 text-center text-base font-medium leading-relaxed text-ink/82 text-pretty sm:text-left md:text-xl">
+                {socialRead}
+              </p>
             )}
           </blockquote>
 
-          <ProfileActions className="lg:hidden" />
+          <div className="lg:hidden">
+            <ProfileActions />
+          </div>
         </div>
       </div>
     </div>

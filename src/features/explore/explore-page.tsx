@@ -6,22 +6,27 @@ import { ExploreSearchHeader } from "@/features/explore/components/explore-searc
 export function ExplorePage() {
   return (
     <div className="w-full">
-      <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-12 gap-8 w-full max-w-screen-2xl mx-auto px-4 lg:px-6 pt-2 md:pt-6 ">
-        {/* LEFT SIDEBAR: Branding, Identity & Sorting - Stationary Sticky */}
-        <div className="hidden xl:block xl:col-span-3 border-r border-border/40 pr-4 relative">
+      <div className="mx-auto grid w-full max-w-[34rem] grid-cols-1 gap-6 px-4 pt-3 md:max-w-[46rem] md:pt-6 lg:max-w-screen-2xl lg:grid-cols-12 lg:gap-8 lg:px-6 xl:grid-cols-12">
+        <div className="relative hidden pr-6 xl:col-span-3 xl:block">
           <div className="sticky top-6 self-start">
             <ExploreLeftSection />
           </div>
         </div>
 
-        {/* CENTER FEED: Search & Results - Always the reference height for sidebars */}
-        <main className="col-span-1 lg:col-span-8 xl:col-span-6 flex flex-col min-w-0 min-h-[120vh] pb-32">
+        <main className="col-span-1 flex min-h-[120vh] min-w-0 flex-col pb-34 lg:col-span-8 lg:pb-32 xl:col-span-6">
+          <div className="mb-4 xl:hidden">
+            <h1 className="text-2xl font-black leading-tight tracking-tight text-foreground">
+              Explore
+            </h1>
+            <p className="mt-1 max-w-2xl text-sm font-medium leading-relaxed text-muted-foreground">
+              Open groups ranked by fit, timing, and available seats.
+            </p>
+          </div>
           <ExploreSearchHeader />
           <ExploreFeed />
         </main>
 
-        {/* RIGHT SIDEBAR: Filtering - Stationary Sticky */}
-        <div className="hidden lg:block lg:col-span-4 xl:col-span-3 border-l border-border/40 pl-4 relative">
+        <div className="relative hidden pl-6 lg:col-span-4 lg:block xl:col-span-3">
           <div className="sticky top-8 self-start">
             <ExploreRightFilters />
           </div>

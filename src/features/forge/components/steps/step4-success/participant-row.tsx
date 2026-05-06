@@ -124,21 +124,21 @@ export function ParticipantRow({
 
         {removed ? (
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon"
             onClick={() => onRestoreParticipant(participant.userId)}
             aria-label={`Restore ${participantName}`}
-            className="size-8 rounded-lg text-forge-teal opacity-100 hover:bg-forge-teal/10 hover:text-forge-teal md:opacity-0 md:group-hover:opacity-100"
+            className="size-8 opacity-100 md:opacity-0 md:group-hover:opacity-100"
           >
             <UserPlus size={14} />
           </Button>
         ) : (
           <Button
-            variant="ghost"
+            variant="destructive"
             size="icon"
             onClick={() => onRemoveParticipant(participant.userId)}
             aria-label={`Remove ${participantName}`}
-            className="size-8 rounded-lg text-muted-foreground opacity-100 hover:bg-destructive/10 hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
+            className="size-8 opacity-100 md:opacity-0 md:group-hover:opacity-100"
           >
             <UserMinus size={14} />
           </Button>

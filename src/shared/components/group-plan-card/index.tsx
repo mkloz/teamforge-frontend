@@ -5,11 +5,7 @@ import { CardFooter } from "@/shared/components/group-plan-card/card-footer";
 import { CardHeader } from "@/shared/components/group-plan-card/card-header";
 import { CardImage } from "@/shared/components/group-plan-card/card-image";
 import { CardMeta } from "@/shared/components/group-plan-card/card-meta";
-import {
-  getExploreGroupDistanceLabel,
-  getExploreGroupMatchScore,
-  isExploreGroupFull,
-} from "@/shared/lib/explore-group-presenters";
+import { getGroupPlanCardModel } from "@/shared/components/group-plan-card/group-plan-card-model";
 import { cn } from "@/shared/lib/utils";
 import type { ExploreGroup } from "@/shared/schemas";
 
@@ -25,25 +21,21 @@ export function GroupPlanCard({
   variant = "default",
 }: GroupPlanCardProps) {
   const isCompact = variant === "compact";
-  const plan = group.plan;
-  const title = plan?.title || group.activity.title || "Unnamed Activity";
-  const matchScore = getExploreGroupMatchScore(group);
-  const distance = getExploreGroupDistanceLabel(group);
-  const isFull = isExploreGroupFull(group);
+  const { distance, fitReason, isFull, title } = getGroupPlanCardModel(group);
 
   return (
     <div className="group relative list-none outline-none">
       <div
         className={cn(
-          "relative z-10 flex w-full bg-card border-2 border-border rounded-3xl transition-all duration-150 ease-out hover:-translate-y-1 hover:border-ink hover:shadow-button-outline cursor-pointer overflow-hidden dark:hover:border-white dark:hover:shadow-button-outline-dark isolate",
+          "relative z-10 isolate flex w-full cursor-pointer overflow-hidden rounded-3xl border-2 border-border bg-card transition-all duration-150 ease-out hover:-translate-y-1 hover:border-ink hover:shadow-button-outline dark:hover:border-white dark:hover:shadow-button-outline-dark",
           isCompact ? "flex-col max-w-[320px]" : "flex-col md:flex-row",
         )}
       >
-        <CardImage group={group} matchScore={matchScore} variant={variant} />
+        <CardImage group={group} variant={variant} />
 
         <div
           className={cn(
-            "flex flex-col grow overflow-hidden bg-canvas",
+            "flex min-w-0 grow flex-col bg-canvas",
             isCompact ? "p-4" : "p-5 md:p-6",
           )}
         >
@@ -58,6 +50,14 @@ export function GroupPlanCard({
             >
               {title}
             </h3>
+            <p
+              className={cn(
+                "mt-2 max-w-[34rem] font-medium leading-relaxed text-muted-foreground",
+                isCompact ? "text-xs" : "text-sm",
+              )}
+            >
+              {fitReason}
+            </p>
 
             {!isCompact ? (
               <div className="absolute right-0 top-1 text-muted-foreground opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-primary transition-all duration-300 ease-out hidden md:block">

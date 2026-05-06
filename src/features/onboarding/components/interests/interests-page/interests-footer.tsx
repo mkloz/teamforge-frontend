@@ -1,14 +1,16 @@
 import { InterestsProgressBar } from "@/features/onboarding/components/interests/interests-browse/interests-progress-bar";
-import { InterestsReviewFooter } from "@/features/onboarding/components/interests/interests-review";
+import { InterestsReviewFooter } from "@/features/onboarding/components/interests/interests-review/interests-review-footer";
 import type { UseInterestsReturn } from "@/features/onboarding/hooks/use-interests";
 
 interface InterestsFooterProps {
+  backLabel: string;
   isEditMode: boolean;
   onBack: () => void;
   state: UseInterestsReturn;
 }
 
 export function InterestsFooter({
+  backLabel,
   isEditMode,
   onBack,
   state,
@@ -22,6 +24,7 @@ export function InterestsFooter({
             canContinue={state.canContinue}
             isAtMax={state.isAtMax}
             onBack={onBack}
+            backLabel={backLabel}
             onContinue={state.goToReview}
           />
         )}
@@ -33,6 +36,7 @@ export function InterestsFooter({
             onConfirm={state.finalize}
             canConfirm={state.canContinue}
             onBack={state.goToBrowse}
+            backLabel="Back to picks"
             isSaving={state.isSaving}
             confirmLabel={isEditMode ? "Save Interests" : "Confirm & Finish"}
           />

@@ -4,8 +4,16 @@ import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 
 import { getHomeViewer } from "@/features/home/lib/home-viewer";
 
-export function useHomeViewer() {
-  const { data: currentUser } = useQuery(currentUserQueryOptions());
+export function useHomeViewerState() {
+  const query = useQuery(currentUserQueryOptions());
 
-  return getHomeViewer(currentUser);
+  return {
+    viewer: getHomeViewer(query.data),
+    isLoading: query.isLoading,
+    isError: query.isError,
+  };
+}
+
+export function useHomeViewer() {
+  return useHomeViewerState().viewer;
 }

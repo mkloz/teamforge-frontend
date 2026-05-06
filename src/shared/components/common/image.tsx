@@ -96,7 +96,7 @@ export function Image({
     ...style,
     filter: isLoading ? `blur(${blurAmount})` : "none",
     transition:
-      "filter 0.3s ease-in-out, opacity 0.2s ease-in-out, transform 0.7s ease-out",
+      "filter 0.3s ease-in-out, opacity 0.2s ease-in-out, transform 0.7s ease-out, scale 0.7s ease-out",
   };
 
   const showFallback = fallbackFailed || !isSrcProvided;
@@ -118,7 +118,10 @@ export function Image({
           src={actualSrc}
           alt={alt}
           style={imageStyle}
-          className={cn("h-full w-full object-cover", className)}
+          className={cn(
+            "h-full w-full object-cover transition-transform duration-700 ease-out",
+            className,
+          )}
           loading={loading}
           decoding={decoding}
           onLoad={handleLoad}

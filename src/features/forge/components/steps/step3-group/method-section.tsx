@@ -1,4 +1,4 @@
-import { Cpu, Zap } from "lucide-react";
+import { Cpu, UsersRound } from "lucide-react";
 
 import type { ForgeMode } from "@/features/forge/lib/forge-contract";
 
@@ -30,7 +30,7 @@ export function MethodSection({
         <ModeButton
           active={forgeMode === "MANUAL"}
           onClick={() => onForgeModeChange("MANUAL")}
-          icon={<Zap size={16} />}
+          icon={<UsersRound size={16} />}
           title="Manual"
           description="You pick the members and set a fixed size."
           activeColor="accent"

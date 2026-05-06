@@ -1,7 +1,20 @@
 import { buildQuestionList, type TestLength } from "../data/ipip-questions";
 import type { IpipQuestion } from "../data/ipip-questions";
+import { evaluatePersonalityVector } from "./personality-evaluation";
 import type { ScreenState } from "../store/personality-test-store";
-import type { RawAnswers } from "../utils/score-calculator";
+import { calculateVector, type RawAnswers } from "../utils/score-calculator";
+
+interface GetNextQuestionStepParams {
+  currentPage: number;
+  isReviewMode: boolean;
+  testLength: TestLength;
+  totalPages: number;
+}
+
+interface GetIntermissionContinuationParams {
+  nextPageIndex: number;
+  totalPages: number;
+}
 
 export function getIntermissionInterval(length: TestLength) {
   return length === 50 ? 6 : 5;
@@ -14,6 +27,66 @@ export function shouldTriggerIntermission(
 ) {
   const interval = getIntermissionInterval(length);
   return currentPage % interval === 0 && currentPage < totalPages;
+}
+
+export function getNextQuestionStep({
+  currentPage,
+  isReviewMode,
+  testLength,
+  totalPages,
+}: GetNextQuestionStepParams) {
+  const isFinalPage = currentPage === totalPages;
+  const isNotDeep = testLength < 150;
+
+  if (
+    !isReviewMode &&
+    (shouldTriggerIntermission(currentPage, testLength, totalPages) ||
+      (isFinalPage && isNotDeep))
+  ) {
+    return {
+      screen: {
+        id: "intermission",
+        type: isFinalPage
+          ? 99
+          : currentPage / getIntermissionInterval(testLength),
+        nextPageIndex: currentPage + 1,
+      },
+      type: "intermission",
+    } as const;
+  }
+
+  if (currentPage < totalPages) {
+    return {
+      screen: { id: "questions", currentPage: currentPage + 1 },
+      type: "questions",
+    } as const;
+  }
+
+  return { type: "complete" } as const;
+}
+
+export function getIntermissionContinuationStep({
+  nextPageIndex,
+  totalPages,
+}: GetIntermissionContinuationParams) {
+  if (nextPageIndex > totalPages) {
+    return { type: "complete" } as const;
+  }
+
+  return {
+    screen: { id: "questions", currentPage: nextPageIndex },
+    type: "questions",
+  } as const;
+}
+
+export function calculatePersonalityResult(
+  questions: IpipQuestion[],
+  answers: RawAnswers,
+) {
+  const vector = calculateVector(questions, answers);
+  const result = evaluatePersonalityVector(vector);
+
+  return { result, vector };
 }
 
 export function calculatePersonalityProgress(
@@ -85,4 +158,11 @@ export function countAnsweredQuestions(
 ) {
   return questions.filter((question) => answers[question.id] !== undefined)
     .length;
+}
+
+export function getTotalQuestionPages(
+  questions: IpipQuestion[],
+  questionsPerPage: number,
+) {
+  return Math.ceil(questions.length / questionsPerPage);
 }

@@ -7,7 +7,11 @@ import { useImperativeHandle } from "react";
  * Provides a high-performance, depth-layered Voronoi visualization
  * that reacts to authentication progress and user input.
  */
-export function VoronoiCatalyst({ ref, progress = 0 }: VoronoiCatalystProps) {
+export function VoronoiCatalyst({
+  ref,
+  progress = 0,
+  rotationDegrees,
+}: VoronoiCatalystProps) {
   const {
     containerRef,
     canvasRef,
@@ -16,7 +20,7 @@ export function VoronoiCatalyst({ ref, progress = 0 }: VoronoiCatalystProps) {
     handleMouseEnter,
     handleMouseLeave,
     pulseTyping,
-  } = useVoronoiAnimation({ progress });
+  } = useVoronoiAnimation({ progress, rotationDegrees });
 
   useImperativeHandle(ref, () => ({ pulseTyping }), [pulseTyping]);
 

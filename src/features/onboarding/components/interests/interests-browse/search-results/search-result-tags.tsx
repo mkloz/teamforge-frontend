@@ -1,6 +1,10 @@
 import type { InterestSearchResults } from "@/features/onboarding/utils/interest-logic";
 
 import { TagPill } from "../tag-pill";
+import {
+  formatSearchResultTagLabel,
+  getSearchResultTagAliases,
+} from "./search-result-tags-model";
 
 interface SearchResultTagsProps {
   isAtMax: boolean;
@@ -30,35 +34,18 @@ export function SearchResultTags({
         {results.tags.map(({ tag, matchedAlias }) => (
           <TagPill
             key={tag.id}
-            label={formatTagLabel(tag.name, matchedAlias)}
+            label={formatSearchResultTagLabel(tag.name, matchedAlias)}
             selected={selectedIds.has(tag.id)}
             disabled={isAtMax}
             onToggle={() => onToggle(tag.id)}
-            aliases={getTagAliases(tag.name, tag.aliases, matchedAlias)}
+            aliases={getSearchResultTagAliases(
+              tag.name,
+              tag.aliases,
+              matchedAlias,
+            )}
           />
         ))}
       </div>
     </div>
   );
-}
-
-function formatTagLabel(tagName: string, matchedAlias?: string) {
-  return matchedAlias
-    ? matchedAlias.charAt(0).toUpperCase() + matchedAlias.slice(1)
-    : tagName;
-}
-
-function getTagAliases(
-  tagName: string,
-  aliases: string[] | undefined,
-  matchedAlias?: string,
-) {
-  if (!matchedAlias || tagName === matchedAlias) {
-    return aliases;
-  }
-
-  return [
-    tagName,
-    ...(aliases?.filter((alias) => alias !== matchedAlias) ?? []),
-  ];
 }

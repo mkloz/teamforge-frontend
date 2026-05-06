@@ -38,7 +38,7 @@ export const ActionTarget = memo(
             disabled={disabled}
             size="icon"
             variant="primary"
-            className="rounded-full flex-none shadow-teal-glow"
+            className="flex-none rounded-full"
             aria-label="Send message"
           >
             <Send size={18} strokeWidth={2.5} className="ml-0.5" />
@@ -63,10 +63,10 @@ export const ActionTarget = memo(
                 className="overflow-hidden"
               >
                 <Button
-                  variant="outline"
+                  variant="destructive"
                   size="icon"
                   onClick={onCancelRecording}
-                  className="rounded-full text-red-500 hover:text-white border-red-500/20 hover:bg-red-500 bg-card/60"
+                  className="rounded-full"
                   aria-label="Cancel recording"
                 >
                   <Trash2 size={20} />
@@ -86,7 +86,7 @@ export const ActionTarget = memo(
            * context menu from hijacking the hold gesture on iOS / Android.
            */}
           <Button
-            variant="primary"
+            variant={isRecording ? "destructive" : "primary"}
             size="icon"
             // ── Desktop ──────────────────────────────────────────────
             onMouseDown={(e) => {
@@ -116,9 +116,7 @@ export const ActionTarget = memo(
             className={cn(
               "rounded-full transition-all duration-300",
               "touch-none select-none", // touch-none prevents scroll interference
-              isRecording
-                ? "bg-red-500 text-white scale-[1.15] after:hidden shadow-none! border-transparent"
-                : "text-white shadow-none hover:shadow-teal-glow",
+              isRecording && "scale-[1.15] after:hidden",
             )}
             aria-label={
               isRecording ? "Release to send" : "Hold to record voice message"

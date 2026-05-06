@@ -76,9 +76,9 @@ export function ParticipantsSection({
 
       {removedIds.size > 0 && (
         <Button
-          variant="outline"
+          variant="secondary"
           onClick={onReforge}
-          className="w-full rounded-lg border-spark-amber/35 bg-spark-amber/8 py-5 font-semibold text-spark-amber shadow-none hover:bg-spark-amber/10 hover:shadow-none animate-in zoom-in-95"
+          className="w-full py-5 font-semibold animate-in zoom-in-95"
         >
           <RefreshCw size={15} />
           Try another set

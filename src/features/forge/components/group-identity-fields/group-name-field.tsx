@@ -1,4 +1,4 @@
-import { Sparkles, X } from "lucide-react";
+import { PenLine, Type, X } from "lucide-react";
 import type { RefObject } from "react";
 
 import { Button } from "@/shared/components/ui/button";
@@ -38,7 +38,7 @@ export function GroupNameField({
         autoComplete="off"
         placeholder="e.g. Iron Collective"
         onChange={(event) => onGroupNameChange(event.target.value)}
-        leftIcon={<Sparkles size={13} />}
+        leftIcon={<Type size={13} />}
         rightIcon={
           groupName ? (
             <Button
@@ -78,7 +78,7 @@ export function GroupNameField({
                   : "border-border/50 bg-card text-muted-foreground hover:border-forge-teal/30 hover:bg-forge-teal/5 hover:text-foreground",
               )}
             >
-              <Sparkles size={9} className="shrink-0 opacity-60" />
+              <PenLine size={9} className="shrink-0 opacity-60" />
               {name}
             </Button>
           ))}

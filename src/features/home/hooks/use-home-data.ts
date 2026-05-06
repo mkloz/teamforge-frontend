@@ -25,6 +25,12 @@ export function useHomeData() {
     invitations: invitationsQuery.data ?? EMPTY_INVITATIONS,
     sentInvitations: sentInvitationsQuery.data ?? EMPTY_INVITATIONS,
     recommendations: recommendationsQuery.data ?? EMPTY_RECOMMENDATIONS,
+    isStatsLoading: statsQuery.isLoading,
+    isPlansLoading: plansQuery.isLoading,
+    isGroupsLoading: groupsQuery.isLoading,
+    isInvitationsLoading: invitationsQuery.isLoading,
+    isSentInvitationsLoading: sentInvitationsQuery.isLoading,
+    isRecommendationsLoading: recommendationsQuery.isLoading,
     isLoading:
       statsQuery.isLoading ||
       plansQuery.isLoading ||

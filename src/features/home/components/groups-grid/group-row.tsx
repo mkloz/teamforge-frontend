@@ -8,6 +8,7 @@ import { ArrowRight, MessageCircle, Users } from "lucide-react";
 
 interface GroupRowProps {
   group: GroupApi;
+  hasNotification?: boolean;
   index: number;
 }
 
@@ -40,8 +41,13 @@ function formatRelativeTime(value: string) {
   return `${Math.floor(diffDays / 7)}w ago`;
 }
 
-export function GroupRow({ group, index }: GroupRowProps) {
+export function GroupRow({
+  group,
+  hasNotification = false,
+  index,
+}: GroupRowProps) {
   const lastActivity = formatRelativeTime(group.updatedAt);
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -8 }}
@@ -57,28 +63,34 @@ export function GroupRow({ group, index }: GroupRowProps) {
         {...buildActivityGroupHubNavigation(group.id)}
         aria-label={`${group.name}. Last active ${lastActivity}.`}
         className={cn(
-          "group flex items-center gap-3 rounded-2xl border px-3 py-2.5",
-          "transition-all duration-150 cursor-pointer",
+          "group flex h-16 cursor-pointer items-center gap-3 border-b border-border/55 px-1 py-3 sm:px-3",
+          "transition-all duration-150",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          "hover:border-forge-teal/30 hover:bg-secondary",
-          "border-border bg-transparent",
+          hasNotification
+            ? "rounded-xl bg-forge-teal/8 hover:border-forge-teal/20 hover:bg-forge-teal/12"
+            : "bg-transparent hover:bg-card/45",
         )}
       >
         <div className="relative shrink-0">
           <Avatar
             src={group.avatar}
             name={group.name}
-            className="size-9 border-2 border-border bg-canvas transition-colors duration-150 group-hover:border-forge-teal/30"
+            className={cn(
+              "size-9 border-2 bg-canvas transition-colors duration-150",
+              hasNotification
+                ? "border-forge-teal/35 group-hover:border-forge-teal/45"
+                : "border-border group-hover:border-forge-teal/30",
+            )}
             fallbackClassName="text-xs"
           />
         </div>
 
-        <div className="flex flex-col gap-0 flex-1 min-w-0">
-          <span className="text-sm font-bold leading-tight truncate text-foreground transition-colors duration-150 group-hover:text-primary">
+        <div className="flex min-w-0 flex-1 flex-col gap-0">
+          <span className="truncate text-sm font-bold leading-tight text-foreground transition-colors duration-150 group-hover:text-primary">
             {group.name}
           </span>
-          <div className="flex items-center gap-2 mt-0.5">
-            <span className="flex items-center gap-1 text-xs text-muted-foreground font-medium">
+          <div className="mt-0.5 flex items-center gap-2">
+            <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
               <Users className="size-2.5 shrink-0" aria-hidden="true" />
               {group.members.length}
             </span>
@@ -86,17 +98,17 @@ export function GroupRow({ group, index }: GroupRowProps) {
               className="size-0.5 rounded-full bg-border"
               aria-hidden="true"
             />
-            <span className="text-xs text-muted-foreground font-medium truncate">
+            <span className="truncate text-xs font-medium text-muted-foreground">
               {lastActivity}
             </span>
           </div>
         </div>
 
         <div className="shrink-0" aria-hidden="true">
-          {group.plan ? (
-            <MessageCircle className="size-4 text-forge-teal" />
+          {hasNotification ? (
+            <MessageCircle className="size-4 text-forge-teal/85" />
           ) : (
-            <ArrowRight className="size-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
+            <ArrowRight className="size-4 text-muted-foreground opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:opacity-70" />
           )}
         </div>
       </Link>

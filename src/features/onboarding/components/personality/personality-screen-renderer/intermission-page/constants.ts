@@ -1,5 +1,10 @@
 import { Brain, Target, type LucideIcon } from "lucide-react";
 
+import {
+  TEST_LENGTH_CONFIG,
+  type TestLength,
+} from "@/features/onboarding/data/ipip-questions";
+
 export const INTERMISSION_CONTENT: {
   icon: LucideIcon;
   title: string;
@@ -9,82 +14,132 @@ export const INTERMISSION_CONTENT: {
 }[] = [
   {
     icon: Brain,
-    title: "Understanding Trait Interactions",
+    title: "Patterns, not boxes",
     description:
-      "Your psychological profile is a combination of dimensional traits, not isolated data points.",
-    factTitle: "Beyond Individual Metrics",
-    fact: "Traits don't exist in a vacuum. For example, high Openness combined with high Conscientiousness often maps to 'Organized Innovators'. We plot these distinct intersections to form your archetype.",
+      "Your answers are forming a shape across several traits, not locking you into one type.",
+    factTitle: "Why it feels familiar",
+    fact: "A good result usually sounds like something you half-knew already. The value is seeing it clearly enough to use it.",
   },
   {
     icon: Target,
-    title: "Triangulating Precision",
+    title: "Similar questions have a job",
     description:
-      "The system is currently triangulating your position across all five dimensions.",
-    factTitle: "Why the repetition?",
-    fact: "If some questions feel similar, that's intentional. By asking about the same underlying concept from different angles, we cancel out human bias and pinpoint your exact location on the trait spectrum.",
+      "Some items may feel close to each other. That is part of how the read checks for consistency.",
+    factTitle: "Why repeat at all?",
+    fact: "Asking about the same tendency in a few ways helps smooth out mood, context, and the one answer you might overthink.",
   },
   {
     icon: Brain,
-    title: "The Big Five Advantage",
+    title: "The Big Five lens",
     description:
-      "You are contributing to a scientifically validated, high-resolution map of your working style.",
-    factTitle: "Predictive Validity",
-    fact: "Unlike popular 4-letter tests, the Big Five model used here is the gold standard in psychology because it has proven predictive validity for real-world job performance and team dynamics.",
+      "The read looks at five broad traits that show up in everyday choices and social energy.",
+    factTitle: "Why this model",
+    fact: "Big Five is useful because it measures degrees. Most people are not all one thing; they sit somewhere along a few useful scales.",
   },
   {
     icon: Target,
-    title: "Mapping Your Spectrum",
-    description:
-      "We aren't trying to put you in a box. We are plotting your unique coordinates.",
-    factTitle: "The Bell Curve",
-    fact: "Most people aren't entirely extroverted or entirely introverted–they fall somewhere in the middle (ambiverts). By measuring on a continuum, we capture the nuances that binary tests miss completely.",
+    title: "Somewhere in the middle counts",
+    description: "You do not need extreme answers to get a meaningful result.",
+    factTitle: "Ambiverts are normal",
+    fact: "Many people land between introverted and extroverted. The middle can still say a lot about when you open up and when you pull back.",
   },
   {
     icon: Brain,
-    title: "Refining the Details",
+    title: "Sensitivity is information",
     description:
-      "Every answer helps clarify the subtleties of your professional disposition.",
-    factTitle: "Neuroticism vs. Stability",
-    fact: "The emotional stability dimension doesn't measure 'good' vs 'bad'. It measures how sensitive you are to negative emotion. High sensitivity can actually be a superpower in roles requiring vigilance and risk analysis.",
+      "Emotional sensitivity is not treated as good or bad. It is part of how you notice pressure.",
+    factTitle: "Stability vs sensitivity",
+    fact: "Some people stay steady under noise. Others catch small shifts early. Both patterns can be useful in the right setting.",
   },
   {
     icon: Target,
-    title: "The Final Polish",
+    title: "Harmony and honesty",
     description:
-      "You are providing the granular data needed to make highly accurate team matches.",
-    factTitle: "Agreeableness in Teams",
-    fact: "While high agreeableness is great for team harmony, lower agreeableness (acting as a 'challenger') is crucial for avoiding groupthink and driving critical, objective decisions.",
+      "Agreeableness is about how you handle tension, compromise, and directness.",
+    factTitle: "Not always nicer",
+    fact: "High agreement can make groups feel easy. Lower agreement can help people say the thing everyone is avoiding.",
   },
   {
     icon: Brain,
-    title: "Deep Dive Insights",
+    title: "Plans and flexibility",
     description:
-      "Your continued focus ensures the highest possible accuracy for your profile.",
-    factTitle: "Conscientiousness at Work",
-    fact: "Conscientiousness is the single best personality predictor of occupational performance. But those lower in the trait often excel in chaotic, rapidly changing environments that require extreme flexibility.",
+      "Conscientiousness can show whether structure helps you feel free or boxed in.",
+    factTitle: "Different kinds of reliable",
+    fact: "Some people are reliable because they plan. Others are reliable because they adapt quickly when the plan changes.",
   },
   {
     icon: Target,
-    title: "Sharpening the Focus",
+    title: "Curiosity has textures",
     description:
-      "We are finalizing the sub-facets of your primary Big Five traits.",
-    factTitle: "The Facets of Openness",
-    fact: "Openness isn't just about creativity. It includes facets like openness to aesthetics, feelings, and new ideas. You might be highly traditional in your values, but incredibly open to new intellectual concepts.",
+      "Openness is not only creativity. It can show up as taste, ideas, emotion, or appetite for novelty.",
+    factTitle: "More than imagination",
+    fact: "Someone can love new ideas and still prefer familiar routines. The details are what make the result feel personal.",
   },
   {
     icon: Brain,
-    title: "The Comprehensive View",
+    title: "Social energy is situational",
     description:
-      "Your patience in answering these questions results in an incredibly robust profile.",
-    factTitle: "Dynamic Teaming",
-    fact: "TeamForge uses these 5 distinct data points not just to understand you, but to simulate how you will interact with the specific vectors of your future teammates, predicting friction before it happens.",
+      "The read is looking for where your energy tends to rise, not whether you are always outgoing.",
+    factTitle: "Context matters",
+    fact: "A person can be quiet in a crowd and lively in the right small group. The test tries to catch that difference.",
   },
   {
     icon: Target,
-    title: "The Home Stretch",
+    title: "Almost there",
     description:
-      "You are in the final stages of the assessment. Your final coordinates are nearly locked.",
-    factTitle: "Your Unique Signature",
-    fact: "There are millions of possible combinations in the dimensional space we are mapping. Your final result will be uniquely yours, and uniquely actionable for your professional growth.",
+      "The last stretch gives the result more texture, especially around traits that are close together.",
+    factTitle: "Why finish",
+    fact: "A few more answers can turn a vague result into one that feels easier to recognize.",
   },
 ];
+
+export const INTERMISSION_UPGRADE_OPTIONS: TestLength[] = [30, 50, 150];
+
+export function getIntermissionContent(milestoneIndex: number) {
+  const validIndex = Math.max(0, milestoneIndex - 1);
+
+  return INTERMISSION_CONTENT[validIndex % INTERMISSION_CONTENT.length];
+}
+
+export function canExtendIntermission(totalQuestions: number) {
+  return totalQuestions < 150;
+}
+
+export function getIntermissionActionLabel({
+  isDone,
+  selectedUpgrade,
+}: {
+  isDone: boolean;
+  selectedUpgrade: TestLength | null;
+}) {
+  if (selectedUpgrade) {
+    return `Continue with ${TEST_LENGTH_CONFIG[selectedUpgrade].label}`;
+  }
+
+  return isDone ? "Finish assessment" : "Continue assessment";
+}
+
+export function getCurrentEstimatedMinutes(totalQuestions: number) {
+  return (
+    Object.values(TEST_LENGTH_CONFIG).find(
+      (config) => config.itemsPerDimension * 5 === totalQuestions,
+    )?.estimatedMinutes ?? 0
+  );
+}
+
+export function getIntermissionUpgradeOptions(totalQuestions: number) {
+  const currentEstimatedMinutes = getCurrentEstimatedMinutes(totalQuestions);
+
+  return INTERMISSION_UPGRADE_OPTIONS.filter(
+    (length) => length > totalQuestions,
+  ).map((length) => {
+    const config = TEST_LENGTH_CONFIG[length];
+
+    return {
+      config,
+      estimatedMinutesToAdd: config.estimatedMinutes - currentEstimatedMinutes,
+      length,
+      questionsToAdd: config.itemsPerDimension * 5 - totalQuestions,
+    };
+  });
+}

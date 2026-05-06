@@ -45,12 +45,8 @@ export function AvatarActions({
         </Button>
         <Button
           type="button"
-          variant="outline"
-          className={
-            selectedAvatarFile
-              ? "min-w-0 px-3"
-              : "min-w-0 border-destructive/40 px-3 text-destructive hover:bg-destructive/10"
-          }
+          variant={selectedAvatarFile ? "outline" : "destructive"}
+          className="min-w-0 px-3"
           disabled={
             isAvatarBusy || (!selectedAvatarFile && !canDeleteSavedAvatar)
           }

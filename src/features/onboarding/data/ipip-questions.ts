@@ -959,7 +959,7 @@ export const TEST_LENGTH_CONFIG: Record<
   },
   150: {
     label: "Deep",
-    sublabel: "50 pages – for a match that improves with every retake",
+    sublabel: "50 pages – for nearly perfect accuracy",
     estimatedMinutes: 15,
     itemsPerDimension: 30,
     questionsPerPage: 3,

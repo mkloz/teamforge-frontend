@@ -40,10 +40,10 @@ export function ResetPasswordField({ label, name }: ResetPasswordFieldProps) {
               rightIcon={
                 <Button
                   type="button"
-                  variant="ghost"
+                  variant="accentGhost"
                   size="icon-sm"
                   onClick={() => setIsVisible((value) => !value)}
-                  className="size-8 rounded-md text-slate-muted hover:text-forge-teal"
+                  className="size-8 rounded-md"
                   aria-label={
                     isVisible
                       ? isConfirmation

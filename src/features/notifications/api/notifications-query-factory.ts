@@ -2,5 +2,6 @@ import { NotificationsQueryOptions } from "@/features/notifications/api/notifica
 
 export const NotificationsQueryFactory = {
   list: NotificationsQueryOptions.list,
+  unreadList: NotificationsQueryOptions.unreadList,
   unreadCount: NotificationsQueryOptions.unreadCount,
 };

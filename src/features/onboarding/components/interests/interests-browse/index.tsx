@@ -1,18 +1,22 @@
 import type { Interest } from "@/shared/schemas";
-export { InterestsBrowseHeader } from "./interests-browse-header";
 import { Accordion } from "@/shared/components/ui/accordion";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Activity } from "react";
 import type { PersonalityType } from "@/shared/schemas/enums";
-import type { InterestSearchResults } from "../../../utils/interest-logic";
+import type { InterestSearchResults } from "@/features/onboarding/utils/interest-logic";
 import { BalanceNudge } from "./balance-nudge";
 import { CategorySection } from "./category-section";
 import { PageTitle } from "./page-title";
 import { SearchResults } from "./search-results";
 import { SelectionShelf } from "./selection-shelf";
 import { SuggestionsSection } from "./suggestions-section";
+import {
+  getIsInterestSearchActive,
+  getOpenCategoryIds,
+  getToggledAccordionCategoryId,
+} from "./interests-browse-state";
 import { YouMightAlsoLikeSection } from "./you-might-also-like-section";
 
 interface InterestsBrowseProps {
@@ -30,9 +34,8 @@ interface InterestsBrowseProps {
   expandedSubcategories: Set<string>;
   onToggle: (id: string) => void;
   onToggleCategory: (id: string) => void;
-  onExpandCategoryOnly: (id: string) => void;
   onToggleSubcategory: (id: string) => void;
-  onSetSearch: (q: string) => void;
+  onRegisterCategory: (id: string, element: HTMLElement | null) => void;
   onReject: (id: string) => void;
   hideContextLabel?: boolean;
 }
@@ -54,23 +57,22 @@ export function InterestsBrowse({
   onReject,
   onToggleCategory,
   onToggleSubcategory,
+  onRegisterCategory,
   hideContextLabel = false,
-}: Omit<InterestsBrowseProps, "onSetSearch" | "onExpandCategoryOnly">) {
-  const isSearching = searchQuery.trim().length >= 2;
-
-  const openCategories = categories
-    .map((category) => category.id)
-    .filter((id) => !collapsedCategories.has(id));
+}: InterestsBrowseProps) {
+  const isSearching = getIsInterestSearchActive(searchQuery);
+  const openCategories = getOpenCategoryIds(categories, collapsedCategories);
 
   function handleAccordionChange(newValues: string[]) {
-    const toggled = categories
-      .map((category) => category.id)
-      .find((id) => {
-        const wasOpen = openCategories.includes(id);
-        const isOpenNow = newValues.includes(id);
-        return wasOpen !== isOpenNow;
-      });
-    if (toggled) onToggleCategory(toggled);
+    const toggled = getToggledAccordionCategoryId(
+      categories,
+      openCategories,
+      newValues,
+    );
+
+    if (toggled) {
+      onToggleCategory(toggled);
+    }
   }
 
   return (
@@ -88,11 +90,10 @@ export function InterestsBrowse({
               animate={{ opacity: isSearching ? 0 : 1 }}
               transition={{ duration: 0.2 }}
               className={cn(
-                "flex flex-col space-y-2",
+                "flex flex-col gap-2",
                 isSearching && "pointer-events-none",
               )}
             >
-              {/* Contextual Sections */}
               {personalityType && suggestedTags.length > 0 && (
                 <SuggestionsSection
                   personalityType={personalityType}
@@ -106,17 +107,6 @@ export function InterestsBrowse({
 
               {showBalanceNudge && <BalanceNudge />}
 
-              {selectedIds.size > 0 && youMightAlsoLike.length > 0 && (
-                <YouMightAlsoLikeSection
-                  tags={youMightAlsoLike}
-                  selectedIds={selectedIds}
-                  isAtMax={isAtMax}
-                  onToggle={onToggle}
-                  onReject={onReject}
-                />
-              )}
-
-              {/* Main Categories */}
               <Accordion
                 type="multiple"
                 value={openCategories}
@@ -129,39 +119,48 @@ export function InterestsBrowse({
                     selectedIds={selectedIds}
                     expandedSubcategories={expandedSubcategories}
                     isAtMax={isAtMax}
+                    onRegisterCategory={onRegisterCategory}
                     onToggleSubcategory={onToggleSubcategory}
                     onToggleTag={onToggle}
                   />
                 ))}
               </Accordion>
-            </motion.div>
-          </Activity>
 
-          {/* Search Results Layer */}
-          <AnimatePresence>
-            {isSearching && (
-              <>
-                <motion.div
-                  key="search-results"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  className="relative z-20 w-full"
-                >
-                  <SearchResults
-                    query={searchQuery}
-                    results={searchResults}
+              {selectedIds.size > 0 && youMightAlsoLike.length > 0 && (
+                <div className="pt-4">
+                  <YouMightAlsoLikeSection
+                    tags={youMightAlsoLike}
                     selectedIds={selectedIds}
                     isAtMax={isAtMax}
                     onToggle={onToggle}
+                    onReject={onReject}
                   />
-                </motion.div>
-              </>
+                </div>
+              )}
+            </motion.div>
+          </Activity>
+
+          <AnimatePresence>
+            {isSearching && (
+              <motion.div
+                key="search-results"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="relative z-20 w-full"
+              >
+                <SearchResults
+                  query={searchQuery}
+                  results={searchResults}
+                  selectedIds={selectedIds}
+                  isAtMax={isAtMax}
+                  onToggle={onToggle}
+                />
+              </motion.div>
             )}
           </AnimatePresence>
         </div>
 
-        {/* Dynamic Selection/Suggestions Shelf */}
         <SelectionShelf
           isSearching={isSearching}
           leafById={leafById}
