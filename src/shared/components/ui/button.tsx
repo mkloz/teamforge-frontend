@@ -17,6 +17,36 @@ export interface ButtonV2Props
   ref?: Ref<HTMLButtonElement>;
 }
 
+function isSlottedLink(asChild: boolean, children: ButtonV2Props["children"]) {
+  if (!asChild || !isValidElement<{ href?: unknown; to?: unknown }>(children)) {
+    return false;
+  }
+
+  return (
+    children.type === "a" || "href" in children.props || "to" in children.props
+  );
+}
+
+function getSlottedButtonClasses(classes: string, asLink: boolean) {
+  return asLink ? classes.replace(/:enabled/g, "") : classes;
+}
+
+function getContentJustificationClass(classes: string) {
+  if (classes.includes("justify-start")) {
+    return "justify-start";
+  }
+
+  if (classes.includes("justify-end")) {
+    return "justify-end";
+  }
+
+  if (classes.includes("justify-between")) {
+    return "justify-between";
+  }
+
+  return "justify-center";
+}
+
 /**
  * TeamForge Unified Button (V2)
  * High-fidelity, mechanical-first design system component.
@@ -43,20 +73,10 @@ function ButtonComponent({
     className,
   });
 
-  // Heuristic to detect if the child is a link (a tag or component with to/href)
-  const isLink =
-    asChild &&
-    isValidElement(children) &&
-    (children.type === "a" ||
-      (children.props &&
-        typeof children.props === "object" &&
-        ("href" in children.props || "to" in children.props)));
-
-  // CSS :enabled pseudo-class doesn't apply to links.
-  // If we detect a link being used via asChild, we strip :enabled.
-  const finalClasses = isLink
-    ? baseClasses.replace(/:enabled/g, "")
-    : baseClasses;
+  const finalClasses = getSlottedButtonClasses(
+    baseClasses,
+    isSlottedLink(asChild, children),
+  );
 
   return (
     <Comp
@@ -76,14 +96,14 @@ function ButtonComponent({
           {/* Layer 1: Internal sweep effect on solid buttons */}
           {(variant === "primary" || variant === "secondary") &&
             !(disabled || loading) && (
-              <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-[inherit]">
+              <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
                 <span className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/20 to-transparent group-hover:animate-sweep" />
               </div>
             )}
 
           {/* Layer 2: Loading Overlay */}
           {loading && (
-            <div className="absolute inset-0 flex items-center justify-center z-10 rounded-[inherit]">
+            <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[inherit]">
               <Loader2
                 className={cn(
                   "animate-spin text-current",
@@ -101,17 +121,10 @@ function ButtonComponent({
           {/* Layer 3: Content Container - Maintains layout width while loading */}
           <span
             className={cn(
-              "flex items-center gap-2 transition-opacity duration-150 h-full w-full",
+              "flex h-full w-full items-center gap-2 transition-opacity duration-150",
               "min-w-0 [&>span]:min-w-0",
               loading ? "opacity-0" : "opacity-100",
-              // Respect justification from the outer button
-              finalClasses.includes("justify-start")
-                ? "justify-start"
-                : finalClasses.includes("justify-end")
-                  ? "justify-end"
-                  : finalClasses.includes("justify-between")
-                    ? "justify-between"
-                    : "justify-center",
+              getContentJustificationClass(finalClasses),
               contentClassName,
             )}
           >

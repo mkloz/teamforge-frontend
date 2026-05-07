@@ -1,10 +1,12 @@
 import { TeamForgeLogo } from "@/assets/logo";
 import type { CSSProperties } from "react";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { GroupCard } from "./group-card";
 import { MbtiCard } from "./mbti-card";
 import { TrustCard } from "./trust-card";
+import { useForgeOrbAnimation } from "./use-forge-orb-animation";
+import { useForgeOrbTilt } from "./use-forge-orb-tilt";
 
 export function ForgeOrb() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -14,124 +16,22 @@ export function ForgeOrb() {
   const dotRefs = useRef<(HTMLDivElement | null)[]>([]);
   const tailRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  useEffect(() => {
-    if (shouldReduceMotion) return;
-
-    let frame: number;
-    // periods in milliseconds - slightly coprime to prevent syncing
-    const periods = [13000, 16000, 22000, 28000];
-    const baseAngles = [0, 135, 160, 310];
-
-    const animate = (time: number) => {
-      const angles = periods.map(
-        (p, i) => (baseAngles[i] + ((time % p) / p) * 360) % 360,
-      );
-
-      const intensities = angles.map((a1, i) => {
-        let sum = 0;
-        angles.forEach((a2, j) => {
-          if (i === j) return;
-          const diff = Math.abs(a1 - a2);
-          const shortest = Math.min(diff, 360 - diff);
-          if (shortest < 45) {
-            const pop = 1 - shortest / 45;
-            sum += pop * pop; // quadratic falloff makes intersections pop
-          }
-        });
-        return Math.min(1, sum * 1.5);
-      });
-
-      // Instead of relying on React state sorting, we apply z-index directly.
-      // We want items with lower intensity to be on top visually.
-      dotRefs.current.forEach((dot, i) => {
-        if (!dot) return;
-        dot.style.transform = `rotate(${angles[i]}deg)`;
-
-        const intensity = intensities[i];
-
-        // Lower intensity = higher z-index so it paints on top
-        const zIndex = Math.round((1 - intensity) * 100);
-        dot.style.zIndex = zIndex.toString();
-
-        // Teal: 13, 148, 136 -> Amber: 245, 158, 11
-        const r = Math.round(13 + (245 - 13) * intensity);
-        const g = Math.round(148 + (158 - 148) * intensity);
-        const b = Math.round(136 + (11 - 136) * intensity);
-
-        const alphaEnd = 0.85 + 0.15 * intensity;
-        const alphaStart = 0.15 + 0.25 * intensity;
-        const glowAlpha = 0.5 + 0.5 * intensity;
-        const glowSize = 12 + 16 * intensity;
-
-        const color = `rgba(${r}, ${g}, ${b}, 1)`;
-        const glowColor = `rgba(${r}, ${g}, ${b}, ${glowAlpha})`;
-
-        dot.style.setProperty("--dot-color", color);
-        dot.style.setProperty("--glow-color", glowColor);
-        dot.style.setProperty("--glow-size", `${glowSize}px`);
-
-        const tail = tailRefs.current[i];
-        if (tail) {
-          tail.style.zIndex = zIndex.toString();
-          tail.style.transform = `rotate(${angles[i]}deg)`;
-          tail.style.setProperty(
-            "--tail-color-end",
-            `rgba(${r}, ${g}, ${b}, ${alphaEnd})`,
-          );
-          tail.style.setProperty(
-            "--tail-color-start",
-            `rgba(${r}, ${g}, ${b}, ${alphaStart})`,
-          );
-        }
-      });
-
-      frame = requestAnimationFrame(animate);
-    };
-    frame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frame);
-  }, [shouldReduceMotion]);
-
-  useEffect(() => {
-    if (shouldReduceMotion) return;
-    const container = containerRef.current;
-    if (!container) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = container.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 100;
-      const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-      const tiltX = (50 - y) / 5;
-      const tiltY = (x - 50) / 5;
-
-      if (orbContainerRef.current) {
-        orbContainerRef.current.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
-      }
-    };
-
-    const handleMouseLeave = () => {
-      if (orbContainerRef.current) {
-        orbContainerRef.current.style.transform = `rotateX(0deg) rotateY(0deg)`;
-      }
-    };
-
-    container.addEventListener("mousemove", handleMouseMove);
-    container.addEventListener("mouseleave", handleMouseLeave);
-
-    return () => {
-      container.removeEventListener("mousemove", handleMouseMove);
-      container.removeEventListener("mouseleave", handleMouseLeave);
-    };
-  }, [shouldReduceMotion]);
+  useForgeOrbAnimation(dotRefs, tailRefs, shouldReduceMotion);
+  const tiltHandlers = useForgeOrbTilt({
+    containerRef,
+    orbContainerRef,
+    shouldReduceMotion,
+  });
 
   return (
     <div
       ref={containerRef}
-      className="relative flex items-center justify-center cursor-default w-full h-full min-h-90 md:min-h-125 px-10 md:pl-32 xl:pl-47 md:pr-25 md:py-20 xl:pr-37 perspective-orb"
+      {...tiltHandlers}
+      className="relative flex h-full min-h-90 w-full cursor-default items-center justify-center px-10 perspective-orb md:min-h-125 md:py-20 md:pr-25 md:pl-32 xl:pr-37 xl:pl-47"
     >
       <div
         ref={orbContainerRef}
-        className="w-80 h-80 xl:w-95 xl:h-95 relative transition-transform duration-700 ease-out"
+        className="relative h-80 w-80 transition-transform duration-700 ease-out xl:h-95 xl:w-95"
         style={{
           transformStyle: "preserve-3d",
         }}
@@ -143,7 +43,7 @@ export function ForgeOrb() {
               ? { duration: 0 }
               : { duration: 20, repeat: Infinity, ease: "linear" }
           }
-          className="absolute inset-0 rounded-full blur-subtle bg-[conic-gradient(from_0deg,rgba(13,148,136,0.25),rgba(20,184,166,0.08),rgba(13,148,136,0.15),rgba(13,148,136,0.25))]"
+          className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,rgba(13,148,136,0.25),rgba(20,184,166,0.08),rgba(13,148,136,0.15),rgba(13,148,136,0.25))] blur-subtle"
           aria-hidden="true"
         />
 
@@ -163,7 +63,7 @@ export function ForgeOrb() {
         />
 
         <div
-          className="absolute inset-4 rounded-full bg-hero-bg border border-white/5 shadow-[inset_0_0_40px_rgba(13,148,136,0.05)]"
+          className="absolute inset-4 rounded-full border border-white/5 bg-hero-bg shadow-[inset_0_0_40px_rgba(13,148,136,0.05)]"
           aria-hidden="true"
         />
 
@@ -185,7 +85,7 @@ export function ForgeOrb() {
               style={tailStyle}
             >
               <div className="absolute inset-0">
-                <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,transparent_0%,transparent_70%,var(--tail-color-start)_85%,var(--tail-color-end)_100%)] [-webkit-mask-image:radial-gradient(closest-side,transparent_calc(100%-2px),black_calc(100%-1px))] mask-[radial-gradient(closest-side,transparent_calc(100%-2px),black_calc(100%-1px))]" />
+                <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,transparent_0%,transparent_70%,var(--tail-color-start)_85%,var(--tail-color-end)_100%)] mask-[radial-gradient(closest-side,transparent_calc(100%-2px),black_calc(100%-1px))] [-webkit-mask-image:radial-gradient(closest-side,transparent_calc(100%-2px),black_calc(100%-1px))]" />
               </div>
             </div>
           );
@@ -210,30 +110,26 @@ export function ForgeOrb() {
               style={dotStyle}
             >
               <div className="absolute inset-0">
-                <div className="absolute w-2 h-2 rounded-full -top-1 left-1/2 -translate-x-1/2 bg-(--dot-color) shadow-[0_0_var(--glow-size)_2px_var(--glow-color)] transition-[background-color,box-shadow] duration-100 ease-linear" />
+                <div className="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-(--dot-color) shadow-[0_0_var(--glow-size)_2px_var(--glow-color)] transition-[background-color,box-shadow] duration-100 ease-linear" />
               </div>
             </div>
           );
         })}
 
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none transform-[translateZ(30px)]">
-          {" "}
+        <div className="pointer-events-none absolute inset-0 flex transform-[translateZ(30px)] items-center justify-center">
           <TeamForgeLogo
-            className="w-20 h-20 md:w-24 md:h-24 filter drop-shadow-[0_0_16px_rgba(245,158,11,0.25)]"
+            className="h-20 w-20 drop-shadow-[0_0_16px_rgba(245,158,11,0.25)] filter md:h-24 md:w-24"
             showBackground={false}
           />
         </div>
 
-        <div className="absolute -left-10 -top-10 scale-70 sm:scale-85 xl:-left-44 xl:top-4 xl:scale-100 md:-left-30 transform-[translateZ(40px)]">
-          {" "}
+        <div className="absolute -top-10 -left-10 scale-70 transform-[translateZ(40px)] sm:scale-85 md:-left-30 xl:top-4 xl:-left-44 xl:scale-100">
           <MbtiCard />
         </div>
-        <div className="absolute -right-8 -top-12 scale-70 sm:scale-85 xl:-right-30 xl:-top-16 xl:scale-100 md:-right-20 transform-[translateZ(60px)]">
-          {" "}
+        <div className="absolute -top-12 -right-8 scale-70 transform-[translateZ(60px)] sm:scale-85 md:-right-20 xl:-top-16 xl:-right-30 xl:scale-100">
           <GroupCard />
         </div>
-        <div className="absolute right-6 -bottom-8 scale-70 sm:scale-85 xl:-right-20 xl:-bottom-16 xl:scale-100 md:-right-10 transform-[translateZ(50px)]">
-          {" "}
+        <div className="absolute right-6 -bottom-8 scale-70 transform-[translateZ(50px)] sm:scale-85 md:-right-10 xl:-right-20 xl:-bottom-16 xl:scale-100">
           <TrustCard />
         </div>
       </div>

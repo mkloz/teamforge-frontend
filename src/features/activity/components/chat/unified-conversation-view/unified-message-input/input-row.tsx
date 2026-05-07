@@ -34,19 +34,19 @@ export const InputRow = memo(
     onSelectFiles,
   }: InputRowProps) => (
     <>
-      <div className="shrink-0 flex items-end pb-1 pl-2">
+      <div className="flex shrink-0 items-end pb-1 pl-2">
         <Button
           variant="ghost"
           size="icon-sm"
-          className="text-slate-muted hover:text-spark-amber transition-colors outline-none cursor-pointer rounded-full"
+          className="cursor-pointer rounded-full text-slate-muted transition-colors outline-none hover:text-spark-amber"
           aria-label="Add emoji"
           disabled={disabled}
         >
-          <Smile size={22} strokeWidth={2} />
+          <Smile className="size-5" strokeWidth={2} />
         </Button>
       </div>
 
-      <div className="flex-1 relative flex items-center min-h-11 py-2.75 px-2.5">
+      <div className="relative flex min-h-11 flex-1 items-center px-2.5 py-2.75">
         <Textarea
           ref={textareaRef}
           value={value}
@@ -59,16 +59,16 @@ export const InputRow = memo(
           disabled={disabled}
           className={cn(
             "min-h-0 resize-none border-0 bg-transparent p-0 shadow-none",
-            "text-base leading-snug font-medium text-ink placeholder:text-slate-muted/60 caret-forge-teal",
-            "focus-visible:ring-0 scrollbar-hide max-h-30",
-            "disabled:opacity-50 transition-colors",
+            "text-base leading-snug font-medium text-ink caret-forge-teal placeholder:text-slate-muted/60",
+            "scrollbar-hide max-h-30 focus-visible:ring-0",
+            "transition-colors disabled:opacity-50",
           )}
           aria-label="Type a message"
         />
       </div>
 
       {canAttach && (
-        <div className="shrink-0 flex items-end pb-1 pr-2">
+        <div className="flex shrink-0 items-end pr-2 pb-1">
           <AttachmentMenu
             disabled={disabled}
             onSelectImages={onSelectImages}

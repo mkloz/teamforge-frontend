@@ -13,8 +13,7 @@ interface DocumentMessageProps {
 
 const getFileIcon = (isOwn?: boolean) => (
   <FileText
-    className={cn(isOwn ? "text-white" : "text-forge-teal")}
-    size={22}
+    className={cn("size-5", isOwn ? "text-white" : "text-forge-teal")}
   />
 );
 
@@ -30,27 +29,27 @@ export const DocumentMessage = memo(function DocumentMessage({
   return (
     <div
       className={cn(
-        "flex items-center gap-2.5 p-2 rounded-xl border transition-colors group/doc w-full min-w-48",
+        "group/doc flex w-full min-w-48 items-center gap-2.5 rounded-xl border p-2 transition-colors",
         isOwn
-          ? "bg-white/10 border-white/5 hover:bg-white/15"
-          : "bg-muted/30 border-border/40 hover:bg-muted/50",
+          ? "border-white/5 bg-white/10 hover:bg-white/15"
+          : "border-border/40 bg-muted/30 hover:bg-muted/50",
       )}
     >
       <div
         className={cn(
-          "w-10 h-10 rounded-lg flex items-center justify-center shrink-0 shadow-xs transition-transform group-hover/doc:scale-105",
+          "flex size-10 shrink-0 items-center justify-center rounded-lg shadow-xs transition-transform group-hover/doc:scale-105",
           isOwn
             ? "bg-white/10"
-            : "bg-white/60 dark:bg-canvas/10 border border-border/20",
+            : "border border-border/20 bg-white/60 dark:bg-canvas/10",
         )}
       >
         {getFileIcon(isOwn)}
       </div>
 
-      <div className="flex-1 min-w-0 flex flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         <p
           className={cn(
-            "text-sm font-bold truncate tracking-tight",
+            "truncate text-sm font-bold tracking-tight",
             isOwn ? "text-white" : "text-ink",
           )}
         >
@@ -59,7 +58,7 @@ export const DocumentMessage = memo(function DocumentMessage({
         <div className="flex items-center gap-1.5 opacity-60">
           <span
             className={cn(
-              "text-nano font-black uppercase tracking-wider",
+              "text-nano font-black tracking-wider uppercase",
               isOwn ? "text-white/80" : "text-slate-muted",
             )}
           >
@@ -67,13 +66,13 @@ export const DocumentMessage = memo(function DocumentMessage({
           </span>
           <div
             className={cn(
-              "w-0.5 h-0.5 rounded-full",
+              "size-0.5 rounded-full",
               isOwn ? "bg-white/50" : "bg-slate-muted/50",
             )}
           />
           <span
             className={cn(
-              "text-nano font-black uppercase tracking-wider",
+              "text-nano font-black tracking-wider uppercase",
               isOwn ? "text-white/80" : "text-slate-muted",
             )}
           >
@@ -88,13 +87,13 @@ export const DocumentMessage = memo(function DocumentMessage({
         size="icon-xs"
         onClick={() => openExternalUrl(attachment.url)}
         className={cn(
-          "h-8 w-8 rounded-lg transition",
+          "size-8 rounded-lg transition",
           isOwn
             ? "bg-white/10 text-white hover:bg-white/20"
             : "bg-forge-teal/5 text-forge-teal hover:bg-forge-teal/10",
         )}
       >
-        <Download size={15} />
+        <Download className="size-4" />
       </Button>
     </div>
   );

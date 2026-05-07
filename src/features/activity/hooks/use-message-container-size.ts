@@ -1,5 +1,10 @@
 import { useEffect, useEffectEvent, useState, type RefObject } from "react";
 
+import {
+  cancelScheduledAnimationFrame,
+  scheduleAnimationFrame,
+} from "@/shared/lib/browser-scheduling";
+
 interface MessageContainerSize {
   height: number;
   width: number;
@@ -26,7 +31,7 @@ export function useMessageContainerSize(
   useEffect(() => {
     const containerElement = containerRef?.current;
 
-    if (!containerElement) {
+    if (!containerElement || typeof ResizeObserver === "undefined") {
       return;
     }
 
@@ -44,7 +49,7 @@ export function useMessageContainerSize(
     });
 
     observer.observe(containerElement);
-    const frame = window.requestAnimationFrame(() => {
+    const frame = scheduleAnimationFrame(() => {
       updateContainerSize({
         height: containerElement.clientHeight,
         width: containerElement.clientWidth,
@@ -52,7 +57,7 @@ export function useMessageContainerSize(
     });
 
     return () => {
-      window.cancelAnimationFrame(frame);
+      cancelScheduledAnimationFrame(frame);
       observer.disconnect();
     };
   }, [containerRef]);

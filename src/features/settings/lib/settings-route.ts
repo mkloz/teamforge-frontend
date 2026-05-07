@@ -17,9 +17,7 @@ export function normalizeSettingsSection(
     return null;
   }
 
-  return settingsSectionValues.includes(value as SettingsSection)
-    ? (value as SettingsSection)
-    : null;
+  return settingsSectionValues.find((section) => section === value) ?? null;
 }
 
 export function buildSettingsSearch(section?: SettingsSection | null) {

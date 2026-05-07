@@ -21,7 +21,7 @@ export const LightboxStage = memo(function LightboxStage({
   onPrev,
 }: LightboxStageProps) {
   return (
-    <div className="flex-1 relative flex items-center justify-center p-2 sm:p-10 pointer-events-auto overflow-hidden">
+    <div className="pointer-events-auto relative flex flex-1 items-center justify-center overflow-hidden p-2 sm:p-10">
       <AnimatePresence mode="wait" initial={false}>
         {currentMedia && (
           <motion.div
@@ -49,7 +49,7 @@ export const LightboxStage = memo(function LightboxStage({
               ease: [0.16, 1, 0.3, 1],
               filter: { duration: 0.3 },
             }}
-            className="relative w-full h-full flex items-center justify-center"
+            className="relative flex h-full w-full items-center justify-center"
           >
             {currentMedia.type === "VIDEO" ? (
               <LightboxVideo media={currentMedia} />
@@ -61,14 +61,14 @@ export const LightboxStage = memo(function LightboxStage({
       </AnimatePresence>
 
       {count > 1 && (
-        <div className="absolute inset-x-0 hidden sm:flex justify-between px-10 pointer-events-none">
+        <div className="pointer-events-none absolute inset-x-0 hidden justify-between px-10 sm:flex">
           <NavButton
             onClick={onPrev}
-            icon={<ChevronLeft size={28} strokeWidth={2.5} />}
+            icon={<ChevronLeft className="size-7" strokeWidth={2.5} />}
           />
           <NavButton
             onClick={onNext}
-            icon={<ChevronRight size={28} strokeWidth={2.5} />}
+            icon={<ChevronRight className="size-7" strokeWidth={2.5} />}
           />
         </div>
       )}

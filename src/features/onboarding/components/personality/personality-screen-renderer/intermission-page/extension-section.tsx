@@ -22,12 +22,12 @@ export function ExtensionSection({
       variants={fadeUpItem}
       className="mb-5 flex w-full flex-col items-start text-left"
     >
-      <div className="mb-5 h-px w-full bg-slate-200/60 dark:bg-white/10 sm:mb-6" />
+      <div className="mb-5 h-px w-full bg-slate-200/60 sm:mb-6 dark:bg-white/10" />
 
       <h3 className="mb-1.5 flex items-center gap-2 font-sans text-base font-bold text-ink">
         Want a sharper result?
       </h3>
-      <p className="mb-4 font-sans text-sm font-medium leading-relaxed text-muted-foreground sm:mb-5">
+      <p className="mb-4 font-sans text-sm leading-relaxed font-medium text-muted-foreground sm:mb-5">
         You have completed the baseline. You can stop here, or answer a little
         more to make the final read more specific.
       </p>

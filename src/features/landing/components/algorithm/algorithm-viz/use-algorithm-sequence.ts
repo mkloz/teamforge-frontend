@@ -5,6 +5,18 @@ import type {
   Phase,
 } from "@/features/landing/components/algorithm/algorithm-types";
 
+type SequenceStep =
+  | {
+      action?: never;
+      delay: number;
+      phase: Phase;
+    }
+  | {
+      action: () => void;
+      delay: number;
+      phase?: never;
+    };
+
 export function useAlgorithmSequence(
   inView: boolean,
   initialNodes: DisplayNode[],
@@ -46,9 +58,9 @@ export function useAlgorithmSequence(
 
       setPhase("scanning");
 
-      const sequence = [
-        { phase: "evaluating" as Phase, delay: 2000 },
-        { phase: "selecting" as Phase, delay: 5500 },
+      const sequence: SequenceStep[] = [
+        { phase: "evaluating", delay: 2000 },
+        { phase: "selecting", delay: 5500 },
         {
           action: () =>
             setNodes((prev) =>
@@ -63,7 +75,7 @@ export function useAlgorithmSequence(
             ),
           delay: 5900,
         },
-        { phase: "formed" as Phase, delay: 7500 },
+        { phase: "formed", delay: 7500 },
         {
           action: () => {
             setPhase("idle");

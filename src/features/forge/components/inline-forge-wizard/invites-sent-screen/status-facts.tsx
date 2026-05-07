@@ -17,7 +17,7 @@ export function StatusFacts({ facts }: StatusFactsProps) {
 function StatusFact({ label, value }: StatusFactItem) {
   return (
     <div className="min-w-0">
-      <p className="text-micro font-bold uppercase tracking-wide text-muted-foreground/60">
+      <p className="text-micro font-bold tracking-wide text-muted-foreground/60 uppercase">
         {label}
       </p>
       <p className="mt-1 truncate text-sm font-semibold text-foreground">

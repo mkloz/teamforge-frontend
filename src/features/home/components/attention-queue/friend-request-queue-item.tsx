@@ -55,12 +55,12 @@ export function FriendRequestQueueItem({
               {request.counterpart.name}
             </p>
             {request.counterpart.personalityType ? (
-              <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-black text-muted-foreground">
+              <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs font-black text-muted-foreground">
                 {request.counterpart.personalityType}
               </span>
             ) : null}
           </div>
-          <p className="mt-1 line-clamp-2 text-xs font-medium leading-relaxed text-muted-foreground">
+          <p className="mt-1 line-clamp-2 text-xs leading-relaxed font-medium text-muted-foreground">
             {getFirstName(request.counterpart.name)} wants to connect.
           </p>
         </div>
@@ -68,7 +68,7 @@ export function FriendRequestQueueItem({
       <div className="flex shrink-0 items-center gap-1">
         <Button
           size="xs"
-          className="h-11 px-3 text-[11px] sm:h-8"
+          className="h-11 px-3 text-xs sm:h-8"
           loading={acceptingRequestId === request.requesterId}
           disabled={isAccepting || isDeclining}
           onClick={() => void onAccept(request.requesterId)}

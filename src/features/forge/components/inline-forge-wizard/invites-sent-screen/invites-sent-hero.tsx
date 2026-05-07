@@ -16,10 +16,10 @@ export function InvitesSentHero({ facts, summary }: InvitesSentHeroProps) {
           <Check size={22} strokeWidth={2.6} />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-bold uppercase tracking-wide text-forge-teal">
+          <p className="text-xs font-bold tracking-wide text-forge-teal uppercase">
             {summary.isManual ? "Invitations sent" : "Group is live"}
           </p>
-          <h2 className="mt-1 text-3xl font-black leading-tight tracking-tight text-foreground sm:text-4xl">
+          <h2 className="mt-1 text-3xl leading-tight font-black tracking-tight text-foreground sm:text-4xl">
             {summary.displayGroupName} is ready.
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">

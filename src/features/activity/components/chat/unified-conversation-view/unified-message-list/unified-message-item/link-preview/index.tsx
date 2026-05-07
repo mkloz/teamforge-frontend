@@ -31,12 +31,12 @@ export const LinkPreview = memo(function LinkPreview({
       rel="noopener noreferrer"
       onClick={(e) => e.stopPropagation()}
       className={cn(
-        "flex flex-col rounded-xl overflow-hidden group",
+        "group flex flex-col overflow-hidden rounded-xl",
         "border transition-colors duration-150",
-        "hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40",
+        "hover:shadow-sm focus-visible:ring-2 focus-visible:ring-forge-teal/40 focus-visible:outline-none",
         isOwn
-          ? "bg-white/25 dark:bg-black/25 border-primary/10 hover:bg-white/40 dark:hover:bg-black/40"
-          : "bg-card border-border/50 hover:border-border",
+          ? "border-primary/10 bg-white/25 hover:bg-white/40 dark:bg-black/25 dark:hover:bg-black/40"
+          : "border-border/50 bg-card hover:border-border",
       )}
     >
       <LinkPreviewMedia data={data} />

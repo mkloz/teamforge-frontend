@@ -39,7 +39,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
   return (
     <div className="flex flex-col gap-4">
       {/* Age and Gender Row */}
-      <div className="flex flex-row gap-4 w-full">
+      <div className="flex w-full flex-row gap-4">
         {/* Age */}
         <div className="flex-1">
           <FormField
@@ -71,7 +71,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
             control={control}
             name="gender"
             render={({ field }) => (
-              <FormItem className="space-y-0 flex flex-col justify-start">
+              <FormItem className="flex flex-col justify-start space-y-0">
                 <FormLabel className="font-sans text-sm font-semibold text-ink">
                   Gender
                 </FormLabel>
@@ -99,7 +99,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
         </div>
       </div>
 
-      <p className="text-xs text-slate-muted mt-0 text-center">
+      <p className="mt-0 text-center text-xs text-slate-muted">
         We only show this on your profile; it doesn't affect your matching.
       </p>
 
@@ -136,7 +136,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
         )}
       />
 
-      <Button type="button" onClick={onNext} size="lg" className="w-full mt-4">
+      <Button type="button" onClick={onNext} size="lg" className="mt-4 w-full">
         Looks good
         <ArrowRightAnimated />
       </Button>
@@ -146,7 +146,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
         variant="ghost"
         onClick={onBack}
         size="sm"
-        className="text-slate-muted hover:text-ink hover:bg-transparent"
+        className="text-slate-muted hover:bg-transparent hover:text-ink"
       >
         <ArrowLeft size={14} />
         Wait, go back

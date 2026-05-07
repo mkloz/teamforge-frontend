@@ -15,7 +15,7 @@ export function MethodSection({
 }: MethodSectionProps) {
   return (
     <section className="space-y-2.5 border-t border-border/25 pt-4">
-      <p className="text-xs md:text-sm font-semibold text-muted-foreground px-0.5">
+      <p className="px-0.5 text-xs font-semibold text-muted-foreground md:text-sm">
         Choose your method
       </p>
       <div className="grid grid-cols-2 gap-2">

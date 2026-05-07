@@ -35,7 +35,7 @@ export interface AuthReturnLocation {
 }
 
 function isAuthReturnTarget(pathname: string): pathname is AuthReturnTarget {
-  return authReturnTargets.includes(pathname as AuthReturnTarget);
+  return authReturnTargets.some((target) => target === pathname);
 }
 
 function normalizeReturnSearch(

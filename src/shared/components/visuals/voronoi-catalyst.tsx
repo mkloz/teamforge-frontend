@@ -1,4 +1,5 @@
 import { useVoronoiAnimation } from "@/shared/hooks/use-voronoi-animation";
+import { getBrowserDevicePixelRatio } from "@/shared/lib/browser-environment";
 import type { VoronoiCatalystProps } from "@/shared/lib/voronoi/voronoi-contract";
 import { useImperativeHandle } from "react";
 
@@ -24,12 +25,12 @@ export function VoronoiCatalyst({
 
   useImperativeHandle(ref, () => ({ pulseTyping }), [pulseTyping]);
 
-  const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
+  const dpr = getBrowserDevicePixelRatio();
 
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full overflow-hidden bg-transparent shadow-[inset_0_0_120px_rgba(0,0,0,0.2)]"
+      className="relative h-full w-full overflow-hidden bg-transparent shadow-[inset_0_0_120px_rgba(0,0,0,0.2)]"
       onMouseMove={(e) => handleMouseMove(e.clientX, e.clientY)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -38,7 +39,7 @@ export function VoronoiCatalyst({
         ref={canvasRef}
         width={dimensions.width * dpr}
         height={dimensions.height * dpr}
-        className="block min-w-full min-h-full transition-opacity duration-1000 will-change-transform"
+        className="block min-h-full min-w-full transition-opacity duration-1000 will-change-transform"
         style={{
           width: dimensions.width,
           height: dimensions.height,
@@ -47,7 +48,7 @@ export function VoronoiCatalyst({
         }}
       />
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="pointer-events-none absolute inset-0"
         style={{
           background: `
             linear-gradient(to right, rgba(0, 0, 0, 0.50) 0%, transparent 12%, transparent 90%, rgba(0, 0, 0, 0.50) 100%),

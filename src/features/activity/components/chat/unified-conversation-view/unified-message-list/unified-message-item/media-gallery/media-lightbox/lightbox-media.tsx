@@ -14,23 +14,22 @@ export const LightboxImage = memo(function LightboxImage({
   const { state, onLoad, onError } = useImageState();
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center">
+    <div className="relative flex h-full w-full items-center justify-center">
       {state === "loading" && (
         <div className="absolute inset-0 flex items-center justify-center">
           <Loader2
-            size={36}
             strokeWidth={1.5}
-            className="text-white/40 animate-spin"
+            className="size-9 animate-spin text-white/40"
           />
         </div>
       )}
 
       {state === "error" && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-          <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-            <ImageOff size={28} strokeWidth={1} className="text-white/30" />
+          <div className="flex size-16 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+            <ImageOff className="size-7 text-white/30" strokeWidth={1} />
           </div>
-          <p className="text-white/40 text-xs font-medium uppercase tracking-widest">
+          <p className="text-xs font-medium tracking-wider text-white/40 uppercase">
             Image unavailable
           </p>
         </div>
@@ -50,7 +49,7 @@ export const LightboxImage = memo(function LightboxImage({
         onError={onError}
         wrapperClassName="flex h-full w-full items-center justify-center overflow-visible"
         className={cn(
-          "max-w-full max-h-full object-contain select-none",
+          "max-h-full max-w-full object-contain select-none",
           "shadow-[0_30px_60px_-15px_rgba(0,0,0,1)] ring-1 ring-white/5",
           "transition-opacity duration-300",
           state === "loaded" ? "opacity-100" : "opacity-0",
@@ -73,23 +72,22 @@ export const LightboxVideo = memo(function LightboxVideo({
   const [hasError, setHasError] = useState(false);
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center">
+    <div className="relative flex h-full w-full items-center justify-center">
       {!hasMetadata && !hasError && (
         <div className="absolute inset-0 flex items-center justify-center">
           <Loader2
-            size={36}
             strokeWidth={1.5}
-            className="text-white/40 animate-spin"
+            className="size-9 animate-spin text-white/40"
           />
         </div>
       )}
 
       {hasError && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-          <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-            <ImageOff size={28} strokeWidth={1} className="text-white/30" />
+          <div className="flex size-16 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+            <ImageOff className="size-7 text-white/30" strokeWidth={1} />
           </div>
-          <p className="text-white/40 text-xs font-medium uppercase tracking-widest">
+          <p className="text-xs font-medium tracking-wider text-white/40 uppercase">
             Video unavailable
           </p>
         </div>
@@ -111,12 +109,19 @@ export const LightboxVideo = memo(function LightboxVideo({
         }}
         onError={() => setHasError(true)}
         className={cn(
-          "max-w-full max-h-full select-none",
+          "max-h-full max-w-full select-none",
           "shadow-[0_30px_60px_-15px_rgba(0,0,0,1)] ring-1 ring-white/5",
           "transition-opacity duration-300",
           hasMetadata ? "opacity-100" : "opacity-0",
         )}
-      />
+      >
+        <track
+          kind="captions"
+          src="data:text/vtt,WEBVTT"
+          srcLang="en"
+          label="No captions available"
+        />
+      </video>
     </div>
   );
 });

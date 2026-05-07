@@ -1,5 +1,6 @@
 import type { Interest } from "@/shared/schemas";
 import type { PersonalityType } from "@/shared/schemas/enums";
+import { personalityTypeSchema } from "@/shared/schemas/enums";
 import { MBTI_SUGGESTIONS } from "../data/interest-recommendations";
 import { getSubcategories } from "./interest-catalog";
 
@@ -61,7 +62,9 @@ export function readMbtiFromSearch(search: string): PersonalityType | null {
   const value = params.get("mbti");
 
   if (value && value in MBTI_SUGGESTIONS) {
-    return value as PersonalityType;
+    const parsed = personalityTypeSchema.safeParse(value);
+
+    return parsed.success ? parsed.data : null;
   }
 
   return null;

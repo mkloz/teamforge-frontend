@@ -76,6 +76,17 @@ export function getAppNavigationItem(id: AppNavigationItem["id"]) {
   return APP_NAVIGATION[id];
 }
 
+export function isAppNavigationItemActive(
+  item: AppNavigationItem,
+  pathname: string,
+) {
+  const activePath = item.navigation.to;
+
+  return item.matchMode === "prefix"
+    ? pathname.startsWith(activePath)
+    : pathname === activePath;
+}
+
 export const appSidebarNavigation = [
   APP_NAVIGATION.home,
   APP_NAVIGATION.explore,

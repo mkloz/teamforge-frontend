@@ -24,7 +24,7 @@ export function FailureRecoveryActions({
             <Clock3 size={17} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-black leading-tight text-foreground">
+            <p className="text-sm leading-tight font-black text-foreground">
               Keep searching
             </p>
             <p className="mt-1 text-xs leading-snug text-muted-foreground">
@@ -48,7 +48,7 @@ export function FailureRecoveryActions({
             <UserPlus size={17} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-black leading-tight text-foreground">
+            <p className="text-sm leading-tight font-black text-foreground">
               Invite people manually
             </p>
             <p className="mt-1 text-xs leading-snug text-muted-foreground">

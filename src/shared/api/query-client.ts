@@ -4,16 +4,37 @@ import { HTTPError } from "ky";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { telemetryErrorScopes } from "@/shared/lib/telemetry-contract";
 
-function shouldRetry(failureCount: number, error: unknown) {
-  if (error instanceof HTTPError) {
-    const { status } = error.response;
+const DEFAULT_QUERY_STALE_TIME_MS = 60_000;
+const DEFAULT_QUERY_GC_TIME_MS = 5 * 60_000;
+const MAX_QUERY_RETRY_FAILURES = 2;
+const NON_RETRYABLE_HTTP_STATUSES = new Set([401, 403, 404]);
 
-    if (status === 401 || status === 403 || status === 404) {
-      return false;
-    }
+function isNonRetryableHttpError(error: unknown) {
+  return (
+    error instanceof HTTPError &&
+    NON_RETRYABLE_HTTP_STATUSES.has(error.response.status)
+  );
+}
+
+function shouldRetry(failureCount: number, error: unknown) {
+  if (isNonRetryableHttpError(error)) {
+    return false;
   }
 
-  return failureCount < 2;
+  return failureCount < MAX_QUERY_RETRY_FAILURES;
+}
+
+function getMutationTelemetryName(mutationMeta: unknown) {
+  if (
+    mutationMeta &&
+    typeof mutationMeta === "object" &&
+    "telemetryName" in mutationMeta &&
+    typeof mutationMeta.telemetryName === "string"
+  ) {
+    return mutationMeta.telemetryName;
+  }
+
+  return undefined;
 }
 
 export function createAppQueryClient() {
@@ -27,10 +48,7 @@ export function createAppQueryClient() {
     }),
     mutationCache: new MutationCache({
       onError: (error, _variables, _context, mutation) => {
-        const mutationName =
-          typeof mutation.meta?.telemetryName === "string"
-            ? mutation.meta.telemetryName
-            : undefined;
+        const mutationName = getMutationTelemetryName(mutation.meta);
 
         captureException(telemetryErrorScopes.mutationError, error, {
           mutationKey: JSON.stringify(mutation.options.mutationKey ?? []),
@@ -44,8 +62,8 @@ export function createAppQueryClient() {
     }),
     defaultOptions: {
       queries: {
-        staleTime: 60_000,
-        gcTime: 5 * 60_000,
+        staleTime: DEFAULT_QUERY_STALE_TIME_MS,
+        gcTime: DEFAULT_QUERY_GC_TIME_MS,
         retry: shouldRetry,
         refetchOnWindowFocus: false,
       },

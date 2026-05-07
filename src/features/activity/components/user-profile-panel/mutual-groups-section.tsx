@@ -16,8 +16,8 @@ export function MutualGroupsSection({ groups }: MutualGroupsSectionProps) {
   if (!groups.length) return null;
 
   return (
-    <div className="px-6 py-6 border-b border-border/40">
-      <h4 className="text-xs font-semibold text-slate-muted uppercase tracking-widest px-1 mb-4">
+    <div className="border-b border-border/40 px-6 py-6">
+      <h4 className="mb-4 px-1 text-xs font-semibold tracking-widest text-slate-muted uppercase">
         Mutual Groups ({groups.length})
       </h4>
 
@@ -29,22 +29,22 @@ export function MutualGroupsSection({ groups }: MutualGroupsSectionProps) {
             variant="ghost"
             className={cn(
               "h-auto w-full justify-start gap-4 rounded-xl p-3 transition-all duration-300",
-              "bg-card border border-border shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:border-forge-teal/30 hover:shadow-md group text-left",
+              "group border border-border bg-card text-left shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:border-forge-teal/30 hover:shadow-md",
             )}
           >
             <div className="relative shrink-0">
               <Avatar
                 src={group.avatar}
                 name={group.name}
-                className="h-11 w-11 bg-canvas ring-2 ring-card shadow-xs transition-[scale,transform] duration-500 group-hover:scale-105"
+                className="h-11 w-11 bg-canvas shadow-xs ring-2 ring-card transition-[scale,transform] duration-500 group-hover:scale-105"
               />
             </div>
 
-            <div className="flex-1 min-w-0">
-              <span className="block text-sm font-bold text-ink truncate group-hover:text-forge-teal transition-colors">
+            <div className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-bold text-ink transition-colors group-hover:text-forge-teal">
                 {group.name}
               </span>
-              <p className="text-[10px] font-semibold text-slate-muted uppercase tracking-wider opacity-80 mt-0.5">
+              <p className="mt-0.5 text-[10px] font-semibold tracking-wider text-slate-muted uppercase opacity-80">
                 Peer Group
               </p>
             </div>

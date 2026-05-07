@@ -17,7 +17,7 @@ export function StartBlankTemplateButton({
         <FilePlus2 size={16} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold leading-tight text-foreground">
+        <p className="text-sm leading-tight font-semibold text-foreground">
           Start blank
         </p>
         <p className="mt-1 text-xs leading-snug text-muted-foreground">

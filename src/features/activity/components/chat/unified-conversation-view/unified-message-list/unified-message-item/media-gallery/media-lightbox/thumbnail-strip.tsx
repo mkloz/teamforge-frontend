@@ -32,23 +32,23 @@ function ThumbnailItem({
       aria-label={`Open ${media.type === "VIDEO" ? "video" : "image"} thumbnail`}
       aria-current={isSelected ? "true" : undefined}
       className={cn(
-        "relative h-12 w-12 shrink-0 overflow-hidden rounded-lg p-0",
+        "relative size-12 shrink-0 overflow-hidden rounded-lg p-0",
         "transition-[opacity,transform,filter] duration-200",
         "focus-visible:ring-forge-teal/50",
         isSelected
-          ? "ring-2 ring-forge-teal scale-110 opacity-100 z-10"
+          ? "z-10 scale-110 opacity-100 ring-2 ring-forge-teal"
           : "opacity-40 grayscale-50 hover:opacity-100 hover:grayscale-0",
       )}
     >
       {/* Skeleton */}
       {state === "loading" && (
-        <div className="absolute inset-0 bg-white/10 animate-pulse rounded-lg" />
+        <div className="absolute inset-0 animate-pulse rounded-lg bg-white/10" />
       )}
 
       {/* Error */}
       {state === "error" && (
         <div className="absolute inset-0 flex items-center justify-center bg-white/5">
-          <ImageOff size={14} className="text-white/30" />
+          <ImageOff className="size-3.5 text-white/30" />
         </div>
       )}
 
@@ -70,13 +70,13 @@ function ThumbnailItem({
             }}
             onError={onError}
             className={cn(
-              "w-full h-full object-cover transition-opacity duration-200",
+              "h-full w-full object-cover transition-opacity duration-200",
               state === "loaded" ? "opacity-100" : "opacity-0",
             )}
           />
           {state === "loaded" && (
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/20">
-              <Play size={14} className="fill-white text-white/90" />
+              <Play className="size-3.5 fill-white text-white/90" />
             </div>
           )}
         </>
@@ -109,8 +109,8 @@ function ThumbnailItem({
 
 export const ThumbnailStrip = memo(
   ({ attachments, selectedIndex, onSelect }: ThumbnailStripProps) => (
-    <div className="absolute bottom-10 inset-x-0 h-16 flex justify-center items-center px-10 pointer-events-none">
-      <div className="flex gap-2 p-2 bg-black/40 backdrop-blur-2xl rounded-xl border border-white/10 overflow-x-auto scrollbar-none pointer-events-auto">
+    <div className="pointer-events-none absolute inset-x-0 bottom-10 flex h-16 items-center justify-center px-10">
+      <div className="scrollbar-none pointer-events-auto flex gap-2 overflow-x-auto rounded-xl border border-white/10 bg-black/40 p-2 backdrop-blur-2xl">
         {attachments.map((media, i) => (
           <ThumbnailItem
             key={media.id}

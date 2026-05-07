@@ -1,6 +1,9 @@
 import { HTTPError } from "ky";
 
-import type { ApiException } from "@/shared/types/api-error";
+import {
+  ApiExceptionSchema,
+  type ApiException,
+} from "@/shared/types/api-error";
 
 interface ApiErrorMessageOptions {
   badRequestMessage?: string;
@@ -19,13 +22,15 @@ export function readApiException(error: unknown): ApiException | null {
     return null;
   }
 
-  const { cause } = error as HTTPError & { cause?: unknown };
+  const cause = error.cause;
 
   if (!cause || typeof cause !== "object") {
     return null;
   }
 
-  return cause as ApiException;
+  const parsed = ApiExceptionSchema.safeParse(cause);
+
+  return parsed.success ? parsed.data : null;
 }
 
 export function getApiErrorMessage(

@@ -18,7 +18,7 @@ export function Step4Failed({
     isAuto && (onKeepSearchingChange || onSwitchToManual);
 
   return (
-    <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
+    <div className="flex animate-in flex-col gap-5 pb-10 duration-500 fade-in slide-in-from-bottom-2">
       <FailureHero description={content.description} />
       <FailureReasons context={content.context} reasons={content.reasons} />
       <FailureSuggestions suggestions={content.suggestions} />

@@ -30,11 +30,11 @@ export function ProfilePage() {
     <main className="relative min-h-full overflow-x-hidden bg-canvas pb-32 md:pb-0">
       <ProfileCoverBanner personalityType={profile.personalityType} />
 
-      <div className="absolute right-4 top-4 z-50 md:right-8 md:top-6">
+      <div className="absolute top-4 right-4 z-50 md:top-6 md:right-8">
         <UserMenu trigger="settings" />
       </div>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[32rem] flex-col gap-8 px-4 pb-24 pt-14 sm:max-w-6xl sm:px-6 sm:pt-16 md:px-8 md:pt-20 lg:gap-12 lg:pb-16">
+      <div className="relative z-10 mx-auto flex w-full max-w-[32rem] flex-col gap-8 px-4 pt-14 pb-24 sm:max-w-6xl sm:px-6 sm:pt-16 md:px-8 md:pt-20 lg:gap-12 lg:pb-16">
         <ProfileHero
           user={profile}
           archetype={pageModel.archetype}

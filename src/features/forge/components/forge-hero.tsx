@@ -20,13 +20,13 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
     >
       <div className="flex min-w-0 flex-col gap-7">
         <div className="flex flex-col gap-4">
-          <p className="text-sm font-black uppercase text-muted-foreground">
+          <p className="text-sm font-black text-muted-foreground uppercase">
             Forge
           </p>
-          <h1 className="max-w-3xl text-4xl font-black leading-tight text-balance text-foreground md:text-display-lg">
+          <h1 className="max-w-3xl text-4xl leading-tight font-black text-balance text-foreground md:text-display-lg">
             What are you trying to make happen?
           </h1>
-          <p className="max-w-2xl text-base font-medium leading-relaxed text-pretty text-muted-foreground">
+          <p className="max-w-2xl text-base leading-relaxed font-medium text-pretty text-muted-foreground">
             Give Forge a real activity and a few boundaries. It helps form a
             small group around the plan, then moves everyone into chat to sort
             out the final details.
@@ -44,7 +44,7 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
             <Plus size={20} />
             Forge my group
           </Button>
-          <p className="max-w-sm text-sm font-medium leading-relaxed text-muted-foreground">
+          <p className="max-w-sm text-sm leading-relaxed font-medium text-muted-foreground">
             Best when you already have a rough activity, time, or place in mind.
           </p>
         </div>
@@ -52,7 +52,7 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
 
       <aside
         aria-label="Example forge brief"
-        className="rounded-2xl border border-border bg-card"
+        className="rounded-xl border border-border bg-card"
       >
         <div className="flex items-center justify-between gap-4 border-b border-border px-4 py-3">
           <div>
@@ -70,10 +70,10 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
               key={label}
               className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-3 px-4 py-3"
             >
-              <dt className="text-xs font-black uppercase text-muted-foreground">
+              <dt className="text-xs font-black text-muted-foreground uppercase">
                 {label}
               </dt>
-              <dd className="text-sm font-semibold leading-relaxed text-foreground">
+              <dd className="text-sm leading-relaxed font-semibold text-foreground">
                 {value}
               </dd>
             </div>

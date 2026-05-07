@@ -18,7 +18,6 @@ export interface ImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   fallbackSrc?: string;
   alt: string;
   ref?: Ref<HTMLImageElement>;
-  blurAmount?: string;
   loadingClassName?: string;
   loadingComponent?: ReactNode;
   noImageComponent?: ReactNode;
@@ -39,8 +38,8 @@ export function Image({
   alt,
   ref,
   className,
-  blurAmount = "0.5rem",
   loadingComponent = <DefaultLoader />,
+  loadingClassName,
   noImageComponent = <ImagePlaceholder />,
   fallbackComponent = <ImagePlaceholder />,
   wrapperClassName,
@@ -92,13 +91,6 @@ export function Image({
     onError?.(event);
   };
 
-  const imageStyle = {
-    ...style,
-    filter: isLoading ? `blur(${blurAmount})` : "none",
-    transition:
-      "filter 0.3s ease-in-out, opacity 0.2s ease-in-out, transform 0.7s ease-out, scale 0.7s ease-out",
-  };
-
   const showFallback = fallbackFailed || !isSrcProvided;
 
   return (
@@ -117,9 +109,10 @@ export function Image({
           }}
           src={actualSrc}
           alt={alt}
-          style={imageStyle}
+          style={style}
           className={cn(
-            "h-full w-full object-cover transition-transform duration-700 ease-out",
+            "h-full w-full object-cover transition-[filter,opacity,transform,scale] duration-700 ease-out",
+            isLoading ? "blur-sm" : "blur-none",
             className,
           )}
           loading={loading}
@@ -150,6 +143,7 @@ export function Image({
           className={cn(
             "absolute inset-0 flex items-center justify-center bg-background/20",
             className,
+            loadingClassName,
           )}
         >
           {loadingComponent}

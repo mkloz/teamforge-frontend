@@ -1,6 +1,15 @@
 import { useReducedMotion, useScroll, useSpring } from "framer-motion";
-import { useEffect, useEffectEvent, useRef } from "react";
+import { useCallback, useEffect, useEffectEvent, useRef } from "react";
+import { useEventListener } from "usehooks-ts";
 
+import {
+  cancelScheduledAnimationFrame,
+  getCurrentTimeMs,
+  scheduleAnimationFrame,
+} from "@/shared/lib/browser-scheduling";
+import type { ScheduledAnimationFrameHandle } from "@/shared/lib/browser-scheduling";
+import { getBrowserDevicePixelRatio } from "@/shared/lib/browser-environment";
+import { observeElementVisibility } from "@/shared/lib/browser-observers";
 import { cn } from "@/shared/lib/utils";
 
 interface ParticlesProps {
@@ -49,8 +58,7 @@ export function Particles({
   const context = useRef<CanvasRenderingContext2D | null>(null);
   const circles = useRef<Circle[]>([]);
   const canvasSize = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
-  const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1;
-  const animationFrameId = useRef<number | null>(null);
+  const animationFrameId = useRef<ScheduledAnimationFrameHandle | null>(null);
   const isVisible = useRef<boolean>(true);
   const lastTime = useRef<number>(0);
 
@@ -71,7 +79,7 @@ export function Particles({
     });
   }, [smoothScroll]);
 
-  const circleParams = useEffectEvent((): Circle => {
+  const circleParams = useCallback((): Circle => {
     const x = Math.floor(Math.random() * canvasSize.current.w);
     const y = Math.floor(Math.random() * canvasSize.current.h);
     const size = Math.random() * 2.1 + 1.7;
@@ -91,13 +99,15 @@ export function Particles({
       dy,
       magnetism,
     };
-  });
+  }, []);
 
-  const resizeCanvas = useEffectEvent(() => {
+  const resizeCanvas = useCallback(() => {
     if (canvasContainerRef.current && canvasRef.current && context.current) {
       circles.current.length = 0;
       const w = canvasContainerRef.current.clientWidth;
       const h = canvasContainerRef.current.clientHeight;
+      const dpr = getBrowserDevicePixelRatio();
+
       if (w === 0 || h === 0) return;
 
       canvasSize.current.w = w;
@@ -106,13 +116,13 @@ export function Particles({
       canvasRef.current.height = h * dpr;
       canvasRef.current.style.width = `${w}px`;
       canvasRef.current.style.height = `${h}px`;
-      context.current.scale(dpr, dpr);
+      context.current.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       for (let i = 0; i < quantity; i++) {
         circles.current.push(circleParams());
       }
     }
-  });
+  }, [circleParams, quantity]);
 
   const drawLines = useEffectEvent(() => {
     if (!context.current || circles.current.length === 0) return;
@@ -195,18 +205,18 @@ export function Particles({
   const animate = useEffectEvent((time: number) => {
     const run = (currentTime: number) => {
       if (!isVisible.current) {
-        animationFrameId.current = window.requestAnimationFrame(run);
+        animationFrameId.current = scheduleAnimationFrame(run);
         return;
       }
 
       if (currentTime - lastTime.current < 20) {
-        animationFrameId.current = window.requestAnimationFrame(run);
+        animationFrameId.current = scheduleAnimationFrame(run);
         return;
       }
 
       lastTime.current = currentTime;
       updateParticles();
-      animationFrameId.current = window.requestAnimationFrame(run);
+      animationFrameId.current = scheduleAnimationFrame(run);
     };
 
     run(time);
@@ -220,38 +230,35 @@ export function Particles({
       });
     }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isVisible.current = entry.isIntersecting;
+    const disconnectVisibilityObserver = observeElementVisibility(
+      canvasContainerRef.current,
+      (nextIsVisible) => {
+        isVisible.current = nextIsVisible;
       },
       { threshold: 0.05 },
     );
 
-    if (canvasContainerRef.current) {
-      observer.observe(canvasContainerRef.current);
-    }
-
     resizeCanvas();
     if (!shouldReduceMotion) {
-      animate(performance.now());
+      animate(getCurrentTimeMs());
     } else {
       updateParticles();
     }
 
-    window.addEventListener("resize", resizeCanvas);
     return () => {
-      window.removeEventListener("resize", resizeCanvas);
-      observer.disconnect();
+      disconnectVisibilityObserver();
       if (animationFrameId.current) {
-        window.cancelAnimationFrame(animationFrameId.current);
+        cancelScheduledAnimationFrame(animationFrameId.current);
       }
     };
-  }, [shouldReduceMotion]);
+  }, [resizeCanvas, shouldReduceMotion]);
+
+  useEventListener("resize", resizeCanvas);
 
   return (
     <div
       className={cn(
-        "absolute inset-0 h-full w-full pointer-events-none z-0",
+        "pointer-events-none absolute inset-0 z-0 h-full w-full",
         className,
       )}
       ref={canvasContainerRef}

@@ -41,11 +41,11 @@ export const GalleryItem = memo(
         onClick={state === "error" ? undefined : onClick}
         aria-label={`Open ${media.type === "VIDEO" ? "video" : "image"} attachment ${index + 1}`}
         className={cn(
-          "relative block h-full w-full appearance-none overflow-hidden bg-muted/60 text-left group/gallery-item",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40 focus-visible:ring-offset-2",
+          "group/gallery-item relative block h-full w-full appearance-none overflow-hidden bg-muted/60 text-left",
+          "focus-visible:ring-2 focus-visible:ring-forge-teal/40 focus-visible:ring-offset-2 focus-visible:outline-none",
           "disabled:cursor-default",
           state !== "error" && "cursor-zoom-in",
-          count === 1 && "aspect-square sm:aspect-video max-h-120",
+          count === 1 && "aspect-square max-h-120 sm:aspect-video",
           count === 2 && "aspect-3/4",
           count === 3 && index === 2 && "col-span-2 aspect-2/1 sm:aspect-16/7",
           (count >= 4 || (count === 3 && index < 2)) && "aspect-square",
@@ -60,7 +60,7 @@ export const GalleryItem = memo(
               initial={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="absolute inset-0 bg-muted/80 animate-pulse"
+              className="absolute inset-0 animate-pulse bg-muted/80"
             >
               {/* Shimmer stripe */}
               <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.4s_ease-in-out_infinite] bg-linear-to-r from-transparent via-white/10 to-transparent" />
@@ -71,14 +71,10 @@ export const GalleryItem = memo(
         {/* ── Error state ── */}
         {state === "error" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-muted/60">
-            <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center">
-              <ImageOff
-                size={16}
-                strokeWidth={1.5}
-                className="text-slate-muted"
-              />
+            <div className="flex size-9 items-center justify-center rounded-full bg-muted">
+              <ImageOff className="size-4 text-slate-muted" strokeWidth={1.5} />
             </div>
-            <span className="text-[10px] font-medium text-slate-muted/70 uppercase tracking-wide">
+            <span className="text-xs font-medium tracking-wide text-slate-muted/70 uppercase">
               Failed to load
             </span>
           </div>
@@ -102,7 +98,7 @@ export const GalleryItem = memo(
             }}
             onError={onError}
             className={cn(
-              "w-full h-full object-cover transition-[opacity,transform] duration-700 ease-out will-change-transform group-hover/gallery-item:scale-110",
+              "h-full w-full object-cover transition-[opacity,transform] duration-700 ease-out will-change-transform group-hover/gallery-item:scale-110",
               state === "loaded" ? "opacity-100" : "opacity-0",
             )}
           />
@@ -133,18 +129,18 @@ export const GalleryItem = memo(
         {/* ── Hover overlays (only when loaded) ── */}
         {state === "loaded" && (
           <>
-            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-black/40 to-transparent opacity-0 group-hover/gallery-item:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-black/40 to-transparent opacity-0 transition-opacity duration-300 group-hover/gallery-item:opacity-100" />
             {media.type === "VIDEO" ? (
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/35 text-white shadow-lg backdrop-blur-sm">
-                  <Play size={17} className="ml-0.5 fill-current" />
+                <span className="flex size-10 items-center justify-center rounded-full border border-white/20 bg-black/35 text-white shadow-lg backdrop-blur-sm">
+                  <Play className="ml-0.5 size-4 fill-current" />
                 </span>
               </div>
             ) : null}
-            <div className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/20 backdrop-blur-md border border-white/10 opacity-0 group-hover/gallery-item:opacity-100 scale-90 group-hover/gallery-item:scale-100 transition-[opacity,transform] duration-200">
-              <Layers size={14} className="text-white/80" />
+            <div className="absolute top-2 right-2 scale-90 rounded-lg border border-white/10 bg-black/20 p-1.5 opacity-0 backdrop-blur-md transition-[opacity,transform] duration-200 group-hover/gallery-item:scale-100 group-hover/gallery-item:opacity-100">
+              <Layers className="size-3.5 text-white/80" />
             </div>
-            <div className="absolute inset-0 ring-inset ring-0 ring-white/20 group-hover/gallery-item:ring-8 transition-all duration-500 ease-out" />
+            <div className="absolute inset-0 ring-0 ring-white/20 transition-all duration-500 ease-out ring-inset group-hover/gallery-item:ring-8" />
           </>
         )}
 

@@ -31,7 +31,7 @@ export function PsychometricMarker({
       }}
       className="absolute origin-left"
     >
-      <div className="w-2.5 h-2.5 rounded-full bg-forge-teal/40" />
+      <div className="h-2.5 w-2.5 rounded-full bg-forge-teal/40" />
     </motion.div>
   );
 }

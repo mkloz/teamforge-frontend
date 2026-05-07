@@ -15,7 +15,7 @@ export function ActivityPage() {
   return (
     <div
       className={cn(
-        "fixed inset-0 top-0 md:top-0 md:left-14 flex bg-canvas",
+        "fixed inset-0 top-0 flex bg-canvas md:top-0 md:left-14",
         !activity.hasSelection ? "pb-12 md:pb-0" : "pb-0",
       )}
     >
@@ -23,7 +23,7 @@ export function ActivityPage() {
 
       <main
         className={cn(
-          "flex-1 flex min-w-0 duration-300",
+          "flex min-w-0 flex-1 duration-300",
           !activity.hasSelection && "hidden md:flex",
         )}
       >

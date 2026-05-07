@@ -1,5 +1,6 @@
 @keyframes pulse-glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 16px rgba(13, 148, 136, 0.3);
   }
   50% {
@@ -8,7 +9,8 @@
 }
 
 @keyframes pulse-glow-amber {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: var(--shadow-amber-glow);
   }
   50% {
@@ -78,13 +80,28 @@
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  15% { transform: translateX(-6px); }
-  30% { transform: translateX(6px); }
-  45% { transform: translateX(-5px); }
-  60% { transform: translateX(5px); }
-  75% { transform: translateX(-3px); }
-  90% { transform: translateX(3px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-6px);
+  }
+  30% {
+    transform: translateX(6px);
+  }
+  45% {
+    transform: translateX(-5px);
+  }
+  60% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-3px);
+  }
+  90% {
+    transform: translateX(3px);
+  }
 }
 
 @keyframes scroll-hint {
@@ -137,11 +154,14 @@
 @keyframes press-tactile {
   0% {
     transform: translateY(0);
-    box-shadow: 0 8px 0 #D97706, 0 15px 25px rgba(245, 158, 11, 0.35);
+    box-shadow:
+      0 8px 0 #d97706,
+      0 15px 25px rgba(245, 158, 11, 0.35);
   }
   100% {
     transform: translateY(6px);
-    box-shadow: 0 2px 0 #D97706, 0 5px 10px rgba(245, 158, 11, 0.2);
+    box-shadow:
+      0 2px 0 #d97706,
+      0 5px 10px rgba(245, 158, 11, 0.2);
   }
 }
-

@@ -20,7 +20,7 @@ export function SegmentedFilterTabs<TValue extends string>({
 }: SegmentedFilterTabsProps<TValue>) {
   return (
     <div
-      className="grid grid-cols-3 gap-1 rounded-xl border border-border/45 bg-muted/15 p-1"
+      className="grid grid-cols-3 gap-0.5 rounded-lg border border-border/45 bg-muted/15 p-0.5"
       role="tablist"
     >
       {options.map((option) => {
@@ -35,7 +35,7 @@ export function SegmentedFilterTabs<TValue extends string>({
             aria-selected={active}
             onClick={() => onChange(option.id)}
             className={cn(
-              "inline-flex h-9 min-w-0 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-bold outline-none transition-[background-color,color,box-shadow,transform] duration-200 focus-visible:ring-2 focus-visible:ring-primary/30",
+              "inline-flex h-8 min-w-0 items-center justify-center gap-1 rounded-md px-1.5 text-[11px] font-bold transition-[background-color,color,box-shadow,transform] duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
               active
                 ? "bg-card text-foreground shadow-sm"
                 : "text-muted-foreground/70 hover:bg-muted/35 hover:text-foreground active:scale-[0.98]",
@@ -43,7 +43,7 @@ export function SegmentedFilterTabs<TValue extends string>({
           >
             <Icon
               className={cn(
-                "size-3.5 shrink-0",
+                "size-3 shrink-0",
                 active ? "text-forge-teal" : "opacity-60",
               )}
             />

@@ -53,7 +53,7 @@ export function AppearanceSettingsSection() {
                   <span className="block text-sm font-black">
                     {option.label}
                   </span>
-                  <span className="mt-1 block text-xs font-medium leading-relaxed opacity-75">
+                  <span className="mt-1 block text-xs leading-relaxed font-medium opacity-75">
                     {option.description}
                   </span>
                 </span>

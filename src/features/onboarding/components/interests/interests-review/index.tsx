@@ -28,16 +28,16 @@ export function InterestsReview({
   });
 
   return (
-    <div className="flex flex-col max-w-xl mx-auto w-full mt-2 sm:mt-4 px-1 sm:px-0">
+    <div className="mx-auto mt-2 flex w-full max-w-xl flex-col px-1 sm:mt-4 sm:px-0">
       {groups.length > 0 && (
         <motion.div
           variants={fadeUpItem}
           className="mb-7 border-l border-forge-teal/40 pl-4"
         >
-          <p className="font-sans text-[10px] font-bold uppercase tracking-[0.16em] text-forge-teal">
+          <p className="font-sans text-[10px] font-bold tracking-[0.16em] text-forge-teal uppercase">
             Interest shape
           </p>
-          <p className="mt-2 text-sm font-medium leading-relaxed text-ink/82 text-pretty">
+          <p className="mt-2 text-sm leading-relaxed font-medium text-pretty text-ink/82">
             {getInterestShapeSummary(groups, selectedIds.size)}
           </p>
         </motion.div>
@@ -45,7 +45,7 @@ export function InterestsReview({
 
       <motion.div
         variants={fadeUpItem}
-        className="flex flex-col gap-6 sm:gap-5 mb-8"
+        className="mb-8 flex flex-col gap-6 sm:gap-5"
       >
         {groups.map(({ category, tagIds }) => (
           <InterestReviewCategory

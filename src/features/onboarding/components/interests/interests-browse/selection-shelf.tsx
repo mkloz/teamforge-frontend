@@ -36,20 +36,20 @@ export function SelectionShelf({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
           transition={{ duration: 0.2 }}
-          className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-slate-muted/10 bg-canvas/30 -mx-4 px-4 sm:mx-0 sm:px-0"
+          className="-mx-4 mt-8 border-t border-slate-muted/10 bg-canvas/30 px-4 pt-6 sm:mx-0 sm:mt-12 sm:px-0 sm:pt-8"
         >
-          <div className="flex items-center gap-2 mb-4">
+          <div className="mb-4 flex items-center gap-2">
             {isSearching ? (
               <>
-                <div className="w-5 h-5 rounded-md bg-forge-teal/10 flex items-center justify-center text-forge-teal">
+                <div className="flex h-5 w-5 items-center justify-center rounded-md bg-forge-teal/10 text-forge-teal">
                   <Tags className="h-3 w-3" />
                 </div>
-                <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-forge-teal">
+                <p className="font-sans text-[10px] font-bold tracking-widest text-forge-teal uppercase">
                   Related to your picks ({youMightAlsoLike.length})
                 </p>
               </>
             ) : (
-              <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-slate-muted/50">
+              <p className="font-sans text-[10px] font-bold tracking-widest text-slate-muted/50 uppercase">
                 Your picks ({selectedIds.size})
               </p>
             )}
@@ -78,7 +78,7 @@ export function SelectionShelf({
                       onClick={() => onToggle(id)}
                       className="h-auto max-w-full rounded-full px-1.5 py-0.75 text-[11px] sm:px-2 sm:py-1 sm:text-xs"
                     >
-                      <span className="min-w-0 max-w-[8.25rem] truncate leading-none sm:max-w-none">
+                      <span className="max-w-[8.25rem] min-w-0 truncate leading-none sm:max-w-none">
                         {tag.name}
                       </span>
                       <X

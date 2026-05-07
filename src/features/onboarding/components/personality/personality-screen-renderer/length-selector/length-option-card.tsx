@@ -31,7 +31,7 @@ export function LengthOptionCard({
       variant="ghost"
       onClick={() => onSelect(length)}
       className={cn(
-        "relative h-auto w-full overflow-hidden rounded-2xl border-2 bg-card p-4 text-left text-card-foreground shadow-none transition-all duration-300 focus-visible:ring-forge-teal/20 sm:p-4.5",
+        "relative h-auto w-full overflow-hidden rounded-xl border-2 bg-card p-4 text-left text-card-foreground shadow-none transition-all duration-300 focus-visible:ring-forge-teal/20 sm:p-4.5",
         isSelected
           ? "border-forge-teal/30 bg-forge-teal/8"
           : viewModel.isRecommended
@@ -59,7 +59,7 @@ export function LengthOptionCard({
           />
         </div>
 
-        <div className="hidden h-10 w-px bg-slate-100/80 dark:bg-white/8 sm:block" />
+        <div className="hidden h-10 w-px bg-slate-100/80 sm:block dark:bg-white/8" />
 
         <LengthOptionPrecision isAdjust={isAdjust} viewModel={viewModel} />
       </div>

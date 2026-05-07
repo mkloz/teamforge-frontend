@@ -6,7 +6,7 @@ function Card({ className, ref, ...props }: React.ComponentProps<"div">) {
     <div
       ref={ref}
       className={cn(
-        "rounded-2xl border border-border bg-card text-card-foreground shadow-sm hover:shadow-teal-glow transition-shadow duration-150",
+        "rounded-xl border border-border bg-card text-card-foreground shadow-sm transition-shadow duration-150 hover:shadow-teal-glow",
         className,
       )}
       {...props}
@@ -24,16 +24,23 @@ function CardHeader({ className, ref, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-function CardTitle({ className, ref, ...props }: React.ComponentProps<"h3">) {
+function CardTitle({
+  children,
+  className,
+  ref,
+  ...props
+}: React.ComponentProps<"h3">) {
   return (
     <h3
       ref={ref}
       className={cn(
-        "text-xl font-semibold leading-none tracking-tight",
+        "text-xl leading-none font-semibold tracking-tight",
         className,
       )}
       {...props}
-    />
+    >
+      {children}
+    </h3>
   );
 }
 

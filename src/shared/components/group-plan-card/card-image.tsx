@@ -1,29 +1,28 @@
 import { Image } from "@/shared/components/common/image";
-import { getExploreGroupDisplayTitle } from "@/shared/lib/explore-group-presenters";
 import { cn } from "@/shared/lib/utils";
-import type { ExploreGroup } from "@/shared/schemas";
+import type { GroupPlanCardVariant } from "@/shared/components/group-plan-card/group-plan-card-types";
 
 interface CardImageProps {
-  group: ExploreGroup;
-  variant?: "default" | "compact";
+  alt: string;
+  src?: string;
+  variant?: GroupPlanCardVariant;
 }
 
-export function CardImage({ group, variant = "default" }: CardImageProps) {
+export function CardImage({ alt, src, variant = "default" }: CardImageProps) {
   const isCompact = variant === "compact";
-  const title = getExploreGroupDisplayTitle(group);
 
   return (
     <div
       className={cn(
         "relative shrink-0 overflow-hidden border-border transition-colors duration-150 group-hover:border-ink dark:group-hover:border-white",
         isCompact
-          ? "w-full aspect-video border-b-2"
-          : "h-56 md:h-auto md:w-2/5 border-b-2 md:border-b-0 md:border-r-2",
+          ? "aspect-video w-full border-b-2"
+          : "h-42 border-b-2 md:h-auto md:w-[37%] md:border-r-2 md:border-b-0",
       )}
     >
       <Image
-        src={group.avatar ?? undefined}
-        alt={title}
+        src={src}
+        alt={alt}
         wrapperClassName="absolute inset-0"
         className="transition-[scale,transform] duration-700 ease-out will-change-transform group-hover:scale-105"
         noImageComponent={<NoImagePlaceholder />}
@@ -43,7 +42,7 @@ function NoImagePlaceholder() {
       role="img"
     >
       <div
-        className="absolute inset-0 bg-[radial-gradient(circle_at_28%_24%,rgba(13,148,136,0.16),transparent_34%),radial-gradient(circle_at_72%_76%,rgba(245,158,11,0.13),transparent_32%)]"
+        className="group-plan-card-empty-art absolute inset-0"
         aria-hidden="true"
       />
       <div
@@ -55,11 +54,11 @@ function NoImagePlaceholder() {
         aria-hidden="true"
       />
       <span
-        className="absolute left-1/2 top-1/2 size-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-forge-teal/22 bg-forge-teal/[0.07] shadow-[0_0_0_10px_rgba(13,148,136,0.035)] md:size-9"
+        className="group-plan-card-empty-art-core absolute top-1/2 left-1/2 size-10 -translate-x-1/2 -translate-y-1/2 rounded-full border md:size-9"
         aria-hidden="true"
       />
       <span
-        className="absolute left-1/2 top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-spark-amber/75"
+        className="absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-spark-amber/75"
         aria-hidden="true"
       />
       <span
@@ -67,7 +66,7 @@ function NoImagePlaceholder() {
         aria-hidden="true"
       />
       <span
-        className="absolute right-5 top-4 h-8 w-px rotate-45 bg-spark-amber/30 md:left-1/2 md:right-auto md:h-10 md:-translate-x-1/2"
+        className="absolute top-4 right-5 h-8 w-px rotate-45 bg-spark-amber/30 md:right-auto md:left-1/2 md:h-10 md:-translate-x-1/2"
         aria-hidden="true"
       />
     </div>

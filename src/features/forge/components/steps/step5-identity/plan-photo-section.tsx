@@ -24,7 +24,7 @@ export function PlanPhotoSection({
         <p className="text-xs font-semibold text-muted-foreground">
           Plan photo
         </p>
-        <p className="text-xs text-muted-foreground/60 mt-0.5">
+        <p className="mt-0.5 text-xs text-muted-foreground/60">
           This image appears on the plan card visible to all members.
         </p>
       </div>
@@ -65,7 +65,7 @@ export function PlanPhotoSection({
             variant="ghost"
             size="icon-xs"
             onClick={() => onCoverImageChange(null)}
-            className="absolute right-2 top-2 z-20 size-7 rounded-full bg-black/45 text-white hover:bg-black/65 hover:text-white"
+            className="absolute top-2 right-2 z-20 size-7 rounded-full bg-black/45 text-white hover:bg-black/65 hover:text-white"
             aria-label="Remove cover"
           >
             <X size={13} />

@@ -23,16 +23,24 @@ interface PublicAuthRouteLoadContext {
   };
 }
 
-export async function redirectAuthenticatedUser({
-  location,
-}: PublicAuthRouteLoadContext) {
+async function restoreAuthSessionIfNeeded() {
   if (!authSession.hasTokens()) {
     await refreshAuthSession().catch(() => null);
   }
 
-  if (!authSession.hasTokens()) {
-    return;
-  }
+  return authSession.hasTokens();
+}
+
+function redirectToLogin(returnHref: string | null): never {
+  throw redirect(buildAuthRouteNavigation("/auth/login", returnHref));
+}
+
+export async function redirectAuthenticatedUser({
+  location,
+}: PublicAuthRouteLoadContext) {
+  const hasSession = await restoreAuthSessionIfNeeded();
+
+  if (!hasSession) return;
 
   const currentUser = await ensureCurrentUser().catch(() => null);
 
@@ -47,25 +55,20 @@ export async function redirectAuthenticatedUser({
 
 export async function requireAuthenticatedUser(location?: RouteLocationLike) {
   const returnHref = buildRouteLocationHref(location);
+  const hasSession = await restoreAuthSessionIfNeeded();
 
-  if (!authSession.hasTokens()) {
-    await refreshAuthSession().catch(() => null);
-  }
-
-  if (!authSession.hasTokens()) {
-    throw redirect(buildAuthRouteNavigation("/auth/login", returnHref));
-  }
+  if (!hasSession) redirectToLogin(returnHref);
 
   try {
     const currentUser = await ensureCurrentUser();
 
     if (!currentUser) {
-      throw redirect(buildAuthRouteNavigation("/auth/login", returnHref));
+      redirectToLogin(returnHref);
     }
 
     return currentUser;
   } catch {
-    throw redirect(buildAuthRouteNavigation("/auth/login", returnHref));
+    redirectToLogin(returnHref);
   }
 }
 

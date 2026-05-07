@@ -37,7 +37,7 @@ export const MediaGallery = memo(function MediaGallery({
   if (count === 0) return null;
 
   return (
-    <div className="w-full relative">
+    <div className="relative w-full">
       <div
         className={cn(
           "grid gap-1 overflow-hidden transition-colors duration-500",

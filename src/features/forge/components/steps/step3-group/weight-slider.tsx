@@ -30,14 +30,14 @@ export function WeightSlider({
         <div className="space-y-0.5">
           <p className="text-xs font-semibold text-muted-foreground">{label}</p>
           {subLabel && (
-            <p className="text-xs text-muted-foreground/60 leading-snug">
+            <p className="text-xs leading-snug text-muted-foreground/60">
               {subLabel}
             </p>
           )}
         </div>
         <div
           className={cn(
-            "text-sm font-black italic tabular-nums transition-colors duration-300 shrink-0",
+            "shrink-0 text-sm font-black italic tabular-nums transition-colors duration-300",
             isHighDiversity ? "text-spark-amber" : "text-forge-teal",
           )}
         >
@@ -55,7 +55,7 @@ export function WeightSlider({
         aria-label={label}
       />
 
-      <div className="flex justify-between items-center gap-1 px-0.5 -mt-1.5">
+      <div className="-mt-1.5 flex items-center justify-between gap-1 px-0.5">
         {Array.from({ length: 15 }).map((_, i) => {
           const dotPct = (i / 14) * 100;
           const active = pct >= dotPct;
@@ -76,13 +76,13 @@ export function WeightSlider({
         })}
       </div>
 
-      <div className="flex justify-between text-micro font-medium text-muted-foreground/50 -mt-1">
+      <div className="-mt-1 flex justify-between text-micro font-medium text-muted-foreground/50">
         <span>{semanticLabels.min}</span>
         <span>{semanticLabels.max}</span>
       </div>
 
       {warning && (
-        <div className="flex items-center gap-2 px-1 text-micro font-bold text-spark-amber/80 tracking-tight animate-in fade-in slide-in-from-top-1">
+        <div className="flex animate-in items-center gap-2 px-1 text-micro font-bold tracking-tight text-spark-amber/80 fade-in slide-in-from-top-1">
           <AlertCircle size={12} />
           {warning}
         </div>

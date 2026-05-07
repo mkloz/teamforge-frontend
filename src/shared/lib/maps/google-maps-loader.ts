@@ -1,10 +1,18 @@
 import { config } from "@/config/config";
+import {
+  hasBrowserDocument,
+  hasBrowserWindow,
+} from "@/shared/lib/browser-environment";
 
 export function hasGoogleMapsApiKey() {
   return Boolean(config.googleMapsApiKey);
 }
 
 export function isGooglePlacesReady() {
+  if (!hasBrowserWindow()) {
+    return false;
+  }
+
   return Boolean(window.google?.maps?.places);
 }
 
@@ -13,6 +21,10 @@ export function loadGoogleMaps() {
 
   if (!apiKey) {
     return Promise.reject(new Error("Google Maps API key is not configured."));
+  }
+
+  if (!hasBrowserWindow() || !hasBrowserDocument()) {
+    return Promise.reject(new Error("Google Maps requires a browser."));
   }
 
   if (isGooglePlacesReady()) {
@@ -24,13 +36,22 @@ export function loadGoogleMaps() {
   }
 
   window.__teamforgeGoogleMapsPromise = new Promise<void>((resolve, reject) => {
+    const rejectAndReset = (error: Error) => {
+      window.__teamforgeGoogleMapsPromise = undefined;
+      reject(error);
+    };
+
     const existingScript = document.querySelector<HTMLScriptElement>(
       'script[data-teamforge-google-maps="true"]',
     );
 
     if (existingScript) {
       existingScript.addEventListener("load", () => resolve(), { once: true });
-      existingScript.addEventListener("error", () => reject(), { once: true });
+      existingScript.addEventListener(
+        "error",
+        () => rejectAndReset(new Error("Google Maps failed to load.")),
+        { once: true },
+      );
       return;
     }
 
@@ -44,7 +65,7 @@ export function loadGoogleMaps() {
     script.addEventListener("load", () => resolve(), { once: true });
     script.addEventListener(
       "error",
-      () => reject(new Error("Google Maps failed to load.")),
+      () => rejectAndReset(new Error("Google Maps failed to load.")),
       { once: true },
     );
     document.head.appendChild(script);

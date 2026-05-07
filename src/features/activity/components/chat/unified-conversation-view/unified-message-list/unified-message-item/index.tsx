@@ -52,38 +52,38 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
   } = useActivityMessageActions();
 
   return (
-    <div className="relative group overflow-hidden">
+    <div className="group relative overflow-hidden">
       <div
         className={cn(
-          "flex items-end relative z-10 w-full",
+          "relative z-10 flex w-full items-end",
           isOwn ? "justify-end" : "justify-start",
         )}
       >
         <div
           className={cn(
-            "max-w-full sm:max-w-[90%] md:max-w-[85%] flex flex-col",
-            isOwn ? "items-end ml-auto" : "items-start mr-auto",
+            "flex max-w-full flex-col sm:max-w-[90%] md:max-w-[85%]",
+            isOwn ? "ml-auto items-end" : "mr-auto items-start",
           )}
         >
           {!isOwn && kind === "group" && showSender && (
-            <p className="text-micro font-bold text-forge-teal mb-0.5 ml-1.5 tracking-tight opacity-90">
+            <p className="mb-0.5 ml-1.5 text-micro font-bold tracking-tight text-forge-teal opacity-90">
               {message.sender?.name || "Unknown"}
             </p>
           )}
 
-          <div className="flex flex-col gap-1 w-full">
+          <div className="flex w-full flex-col gap-1">
             <div
               className={cn(
-                "px-1 py-1 rounded-xl transition duration-300 flex flex-col relative w-fit shadow-xs",
+                "relative flex w-fit flex-col rounded-xl px-1 py-1 shadow-xs transition duration-300",
                 isOwn
-                  ? "bg-secondary/80 backdrop-blur-md text-primary rounded-br-none"
-                  : "bg-card/20 backdrop-blur-md border border-border text-ink rounded-bl-none shadow-xs",
+                  ? "rounded-br-none bg-secondary/80 text-primary backdrop-blur-md"
+                  : "rounded-bl-none border border-border bg-card/20 text-ink shadow-xs backdrop-blur-md",
                 !content && "min-w-30",
               )}
             >
               <div
                 className={cn(
-                  "absolute top-1.5 z-20 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100",
+                  "absolute top-1.5 z-20 opacity-0 transition-opacity duration-200 group-focus-within:opacity-100 group-hover:opacity-100",
                   isOwn ? "left-1.5" : "right-1.5",
                   status === "FAILED" && "opacity-100",
                 )}

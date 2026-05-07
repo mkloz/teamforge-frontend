@@ -141,7 +141,7 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
   }
 
   return (
-    <div className="relative h-full flex flex-col min-h-0 bg-canvas">
+    <div className="relative flex h-full min-h-0 flex-col bg-canvas">
       <ChatBackground />
       <MessageListViewport
         containerRef={containerRef}

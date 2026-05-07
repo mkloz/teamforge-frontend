@@ -16,7 +16,7 @@ export function SectionCard({ children, accent = false }: SectionCardProps) {
       )}
     >
       {accent && (
-        <div className="absolute -left-1 top-0 h-8 w-0.75 rounded-full bg-forge-teal/70" />
+        <div className="absolute top-0 -left-1 h-8 w-0.75 rounded-full bg-forge-teal/70" />
       )}
       <div className="space-y-3">{children}</div>
     </div>

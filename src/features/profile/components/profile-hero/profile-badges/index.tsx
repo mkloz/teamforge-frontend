@@ -15,7 +15,7 @@ export function ProfileBadges({ user, archetype }: ProfileBadgesProps) {
   const groupMode = archetype.replace(/^The\s+/i, "");
 
   return (
-    <div className="grid w-full shrink-0 grid-cols-3 items-start gap-3 sm:w-auto sm:flex sm:flex-wrap sm:items-center sm:justify-center md:gap-4 md:justify-start">
+    <div className="grid w-full shrink-0 grid-cols-3 items-start gap-3 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:justify-center md:justify-start md:gap-4">
       <ProfileSignal
         accent="text-forge-teal"
         label="Trust"
@@ -42,12 +42,12 @@ function ProfileSignal({
 }: ProfileSignalProps) {
   return (
     <div className="min-w-0 text-center sm:text-left">
-      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-muted sm:text-nano">
+      <p className="text-[10px] font-bold tracking-widest text-slate-muted uppercase sm:text-nano">
         {label}
       </p>
       <p
         className={cn(
-          "mt-0.5 text-[13px] font-extrabold leading-tight md:text-base",
+          "mt-0.5 text-[13px] leading-tight font-extrabold md:text-base",
           accent,
         )}
       >

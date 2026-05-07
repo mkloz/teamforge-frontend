@@ -44,7 +44,7 @@ export function ForgotPasswordForm({
                   {...field}
                 />
               </FormControl>
-              <FormMessage className="text-xs font-medium text-destructive mt-1" />
+              <FormMessage className="mt-1 text-xs font-medium text-destructive" />
             </FormItem>
           )}
         />

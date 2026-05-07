@@ -47,15 +47,15 @@ export function CategorySection({
       ref={(element) => onRegisterCategory(category.id, element)}
       className="scroll-m-28 border-none"
     >
-      <AccordionTrigger className="hover:no-underline py-4 group  rounded-lg px-2 -mx-2 transition-all focus-visible:underline focus-visible:text-forge-teal">
+      <AccordionTrigger className="group -mx-2 rounded-lg px-2 py-4 transition-all hover:no-underline focus-visible:text-forge-teal focus-visible:underline">
         <div className="flex items-center gap-3">
           <div
             className={cn(
-              "w-2 h-2 rounded-full shrink-0 transition-transform duration-300 group-hover:scale-125",
+              "h-2 w-2 shrink-0 rounded-full transition-transform duration-300 group-hover:scale-125",
               getCategoryColorClass(category.id),
             )}
           />
-          <span className="font-sans text-sm font-bold group-hover:text-forge-teal transition-colors">
+          <span className="font-sans text-sm font-bold transition-colors group-hover:text-forge-teal">
             {category.name}
           </span>
         </div>
@@ -63,7 +63,7 @@ export function CategorySection({
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="ml-auto mr-2 shrink-0 flex items-center justify-center min-w-5 h-5 px-1.5 font-sans text-xs font-bold bg-forge-teal text-white rounded-full leading-none shadow-[0_2px_4px_rgba(13,148,136,0.2)]"
+            className="mr-2 ml-auto flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-forge-teal px-1.5 font-sans text-xs leading-none font-bold text-white shadow-[0_2px_4px_rgba(13,148,136,0.2)]"
           >
             {selectedInCategory}
           </motion.span>
@@ -71,7 +71,7 @@ export function CategorySection({
       </AccordionTrigger>
 
       <AccordionContent>
-        <div className="pb-6 flex flex-col gap-4">
+        <div className="flex flex-col gap-4 pb-6">
           <div className="flex flex-wrap gap-1.5 px-0 py-1.5 sm:gap-2 sm:p-1.5">
             {subcategories.map((subcategory) => {
               const expanded = expandedSubcategories.has(subcategory.id);

@@ -19,16 +19,16 @@ export function CompletionBlueprintCard({
   return (
     <motion.div
       variants={completionFadeUp}
-      className="relative w-full perspective-1000"
+      className="perspective-1000 relative w-full"
     >
-      <div className="relative flex w-full flex-col overflow-hidden rounded-3xl border border-border/85 bg-card/70 shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur-lg">
-        <div className="absolute left-4 right-4 top-[55%] h-px border-t border-dashed border-border/90" />
+      <div className="relative flex w-full flex-col overflow-hidden rounded-xl border border-border/85 bg-card/70 shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur-lg">
+        <div className="absolute top-[55%] right-4 left-4 h-px border-t border-dashed border-border/90" />
         <div className="absolute top-[55%] -left-3 h-6 w-6 -translate-y-1/2 rounded-full border border-border/85 bg-hero-bg/30" />
         <div className="absolute top-[55%] -right-3 h-6 w-6 -translate-y-1/2 rounded-full border border-border/85 bg-hero-bg/30" />
 
-        <div className="p-8 pb-4 flex flex-col gap-1">
-          <div className="flex items-center justify-between mb-2">
-            <span className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+        <div className="flex flex-col gap-1 p-8 pb-4">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="font-sans text-[10px] font-bold tracking-[0.2em] text-muted-foreground uppercase">
               Your profile
             </span>
             <Fingerprint
@@ -37,7 +37,7 @@ export function CompletionBlueprintCard({
               aria-hidden="true"
             />
           </div>
-          <h2 className="font-sans text-5xl font-black text-foreground tracking-tight">
+          <h2 className="font-sans text-5xl font-black tracking-tight text-foreground">
             {personalityType || "????"}
           </h2>
           <p className="font-sans text-lg font-medium text-spark-amber">
@@ -45,10 +45,10 @@ export function CompletionBlueprintCard({
           </p>
         </div>
 
-        <div className="flex-1 p-8 pt-10 flex flex-col gap-8">
+        <div className="flex flex-1 flex-col gap-8 p-8 pt-10">
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
-              <p className="font-sans text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+              <p className="font-sans text-[9px] font-bold tracking-widest text-muted-foreground uppercase">
                 Interests
               </p>
               <p className="font-sans text-2xl font-bold text-foreground">
@@ -59,7 +59,7 @@ export function CompletionBlueprintCard({
               </p>
             </div>
             <div className="flex flex-col gap-1">
-              <p className="font-sans text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+              <p className="font-sans text-[9px] font-bold tracking-widest text-muted-foreground uppercase">
                 Status
               </p>
               <div className="flex items-center gap-1.5 pt-1">
@@ -72,7 +72,7 @@ export function CompletionBlueprintCard({
           </div>
         </div>
 
-        <div className="absolute inset-0 bg-noise pointer-events-none opacity-[0.03]" />
+        <div className="bg-noise pointer-events-none absolute inset-0 opacity-[0.03]" />
       </div>
     </motion.div>
   );

@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 export function CtaSection() {
-  const { sectionRef, glowRef } = useMouseGlow();
+  const { sectionRef, glowRef, glowHandlers } = useMouseGlow();
   const { isAuthenticated } = useAuthSessionState();
   const { data: currentUser } = useCurrentUserQuery();
   const primaryAction = getLandingPrimaryAction(
@@ -25,30 +25,31 @@ export function CtaSection() {
     <section
       id="cta"
       ref={sectionRef}
-      className="relative overflow-hidden py-28 md:py-40 bg-hero-bg dark"
+      {...glowHandlers}
+      className="dark relative overflow-hidden bg-hero-bg py-28 md:py-40"
       aria-label="Get started with TeamForge"
     >
       <div
         ref={glowRef}
-        className="absolute inset-0 pointer-events-none transition-opacity duration-500"
+        className="pointer-events-none absolute inset-0 transition-opacity duration-500"
         aria-hidden="true"
         style={{
           opacity: 0,
           background: `radial-gradient(circle at center, rgba(13, 148, 136, 0.15) 0%, transparent 70%)`,
         }}
       />
-      <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+      <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.7, delay: 0.1 }}
         >
-          <h2 className="font-sans font-bold text-white text-balance mb-6 leading-tight text-[clamp(2rem,5.5vw,3.5rem)]">
+          <h2 className="mb-6 font-sans text-[clamp(2rem,5.5vw,3.5rem)] leading-tight font-bold text-balance text-white">
             Stop waiting for the right{" "}
             <span className="text-forge-teal">group</span> to appear.
           </h2>
-          <p className="font-sans text-lg leading-relaxed text-pretty max-w-xl mx-auto mb-12 text-text-dark-secondary">
+          <p className="mx-auto mb-12 max-w-xl font-sans text-lg leading-relaxed text-pretty text-text-dark-secondary">
             Your personality and interests, intelligently assembled into a group
             built to click. All in one button.
           </p>
@@ -58,12 +59,12 @@ export function CtaSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6"
+          className="mb-6 flex flex-col items-center justify-center gap-4 sm:flex-row"
         >
           <Button
             asChild
             size="hero"
-            className="w-full sm:w-auto hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none"
+            className="w-full hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none sm:w-auto"
           >
             <Link
               {...primaryAction.navigation}
@@ -81,7 +82,7 @@ export function CtaSection() {
           <Button
             variant="outline"
             size="hero"
-            className="w-full sm:w-auto hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none"
+            className="w-full hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none sm:w-auto"
             onClick={() =>
               scrollToLandingSection(LANDING_SECTION_IDS.howItWorks)
             }

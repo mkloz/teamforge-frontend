@@ -1,86 +1,50 @@
 import type { ReactNode } from "react";
 
-import { Avatar } from "@/shared/components/common/avatar";
+import { CardCapacitySummary } from "@/shared/components/group-plan-card/card-capacity-summary";
+import { CardMemberStack } from "@/shared/components/group-plan-card/card-member-stack";
+import type { GroupPlanCardVariant } from "@/shared/components/group-plan-card/group-plan-card-types";
 import { getGroupPlanCapacityModel } from "@/shared/components/group-plan-card/group-plan-card-model";
-import { getExploreGroupDisplayTitle } from "@/shared/lib/explore-group-presenters";
 import { cn } from "@/shared/lib/utils";
 import type { ExploreGroup } from "@/shared/schemas";
 
 interface CardFooterProps {
   group: ExploreGroup;
+  fallbackInitial: string;
   isFull: boolean;
   action: ReactNode;
-  variant?: "default" | "compact";
+  variant?: GroupPlanCardVariant;
 }
 
 export function CardFooter({
   group,
+  fallbackInitial,
   isFull,
   action,
   variant = "default",
 }: CardFooterProps) {
   const isCompact = variant === "compact";
   const { capacity, currentSize, spotsLeft } = getGroupPlanCapacityModel(group);
-  const title = getExploreGroupDisplayTitle(group);
 
   return (
     <div
       className={cn(
         "relative z-20 mt-auto flex min-w-0 flex-wrap items-center justify-between gap-3",
-        isCompact ? "pt-1" : "pt-2",
+        isCompact ? "pt-3" : "pt-3",
       )}
     >
       <div className="flex min-w-0 items-center gap-2.5">
-        <div className="flex -space-x-2 shrink-0">
-          {group.members.slice(0, 4).map((member, i) => (
-            <Avatar
-              key={`${group.id}-${i}`}
-              src={member.avatar}
-              name={member.name}
-              fallback={
-                member.name ? undefined : title[0]?.toUpperCase() || "T"
-              }
-              className={cn(
-                "border-thin border-canvas bg-canvas transition-transform duration-300 hover:-translate-y-1 hover:z-20",
-                isCompact ? "size-6" : "w-7 h-7",
-              )}
-              fallbackClassName="text-[10px]"
-            />
-          ))}
-
-          {currentSize > 4 && (
-            <div
-              className={cn(
-                "rounded-full border-thin border-canvas bg-muted flex items-center justify-center text-[10px] font-extrabold text-muted-foreground relative z-10 transition-transform duration-300 hover:-translate-y-1 hover:z-20",
-                isCompact ? "size-6" : "w-7 h-7",
-              )}
-            >
-              +{currentSize - 4}
-            </div>
-          )}
-        </div>
-
-        <div
-          className={cn(
-            "flex flex-col justify-center leading-tight",
-            isCompact ? "text-[10px]" : "text-xs",
-          )}
-        >
-          <span className="font-extrabold text-foreground">
-            {capacity > 0
-              ? `${currentSize}/${capacity}`
-              : `${currentSize} joined`}
-          </span>
-          {spotsLeft !== null && !isFull ? (
-            <span className="font-bold text-accent">{spotsLeft} left</span>
-          ) : null}
-          {spotsLeft === null ? (
-            <span className="font-bold text-slate-muted">Flexible size</span>
-          ) : null}
-          {isFull ? (
-            <span className="font-bold text-destructive">Full</span>
-          ) : null}
-        </div>
+        <CardMemberStack
+          group={group}
+          fallbackInitial={fallbackInitial}
+          variant={variant}
+        />
+        <CardCapacitySummary
+          capacity={capacity}
+          currentSize={currentSize}
+          isFull={isFull}
+          spotsLeft={spotsLeft}
+          variant={variant}
+        />
       </div>
 
       <div className="shrink-0">{action}</div>

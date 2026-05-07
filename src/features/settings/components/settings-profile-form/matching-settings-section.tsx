@@ -108,7 +108,7 @@ export function MatchingSettingsSection({
       <PreferenceStatusMessage message={message} error={error} />
 
       <div className="border-t border-border pt-6">
-        <p className="text-xs font-semibold uppercase tracking-widest text-slate-muted">
+        <p className="text-xs font-semibold tracking-widest text-slate-muted uppercase">
           Interests
         </p>
         <div className="mt-3 flex flex-wrap gap-2">

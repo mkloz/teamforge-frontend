@@ -28,7 +28,7 @@ export function ParticipantRow({
       className={cn(
         "group flex min-h-[104px] flex-col justify-between gap-3 rounded-lg border p-3 transition-[background-color,border-color,opacity] duration-200",
         removed
-          ? "opacity-40 bg-muted/30 border-border/30 border-dashed"
+          ? "border-dashed border-border/30 bg-muted/30 opacity-40"
           : highlight
             ? "border-spark-amber/45 bg-spark-amber/8 ring-1 ring-spark-amber/15 hover:border-spark-amber/60"
             : "border-border/40 bg-card/70 hover:border-forge-teal/30 hover:bg-forge-teal/5",
@@ -62,7 +62,7 @@ export function ParticipantRow({
             <div className="min-w-0">
               <p
                 className={cn(
-                  "truncate text-sm font-semibold leading-tight transition-colors",
+                  "truncate text-sm leading-tight font-semibold transition-colors",
                   removed
                     ? "text-muted-foreground line-through"
                     : highlight
@@ -96,7 +96,7 @@ export function ParticipantRow({
       <div className="flex items-center gap-3">
         {!removed && scorePercent !== null ? (
           <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between gap-2 text-micro font-semibold uppercase tracking-wide">
+            <div className="flex items-center justify-between gap-2 text-micro font-semibold tracking-wide uppercase">
               <span className="text-muted-foreground">
                 {participantMeta.label}
               </span>

@@ -10,9 +10,9 @@ export function SideNav() {
     useLandingSectionNavigation();
 
   return (
-    <div className="fixed left-6 top-1/2 -translate-y-1/2 z-100 hidden lg:flex flex-col items-center">
+    <div className="fixed top-1/2 left-6 z-100 hidden -translate-y-1/2 flex-col items-center lg:flex">
       <nav
-        className="flex flex-col gap-5 items-center"
+        className="flex flex-col items-center gap-5"
         aria-label="Page navigation"
       >
         {LANDING_SECTIONS.map((section) => {
@@ -34,13 +34,13 @@ export function SideNav() {
                 className={cn(
                   "rounded-full transition-all duration-300",
                   isActive
-                    ? "w-2.5 h-2.5 bg-forge-teal shadow-[0_0_10px_rgba(13,148,136,0.4)]"
-                    : "w-1 h-1 bg-slate-muted dark:text-white/40 group-hover:bg-forge-teal/50",
+                    ? "h-2.5 w-2.5 bg-forge-teal shadow-[0_0_10px_rgba(13,148,136,0.4)]"
+                    : "h-1 w-1 bg-slate-muted group-hover:bg-forge-teal/50 dark:text-white/40",
                 )}
               />
 
               {/* Hover Label */}
-              <span className="absolute left-full ml-4 px-2 py-1 rounded-md bg-white dark:bg-zinc-900 border border-ink/5 dark:border-white/10 text-ink dark:text-white text-[10px] font-bold uppercase tracking-wider pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-200 -translate-x-1 group-hover:translate-x-0 whitespace-nowrap shadow-lg">
+              <span className="pointer-events-none absolute left-full ml-4 -translate-x-1 rounded-md border border-ink/5 bg-white px-2 py-1 text-[10px] font-bold tracking-wider whitespace-nowrap text-ink uppercase opacity-0 shadow-lg transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100 dark:border-white/10 dark:bg-zinc-900 dark:text-white">
                 {section.label}
               </span>
             </Button>

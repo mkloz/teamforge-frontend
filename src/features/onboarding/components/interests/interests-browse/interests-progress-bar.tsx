@@ -41,9 +41,9 @@ export function InterestsProgressBar({
       aria-valuemax={MAX_INTERESTS}
       aria-label="Interests selection progress"
     >
-      <div className="h-1 w-full bg-slate-muted/10 rounded-full mb-3 overflow-hidden">
+      <div className="mb-3 h-1 w-full overflow-hidden rounded-full bg-slate-muted/10">
         <motion.div
-          className="h-full w-full bg-forge-teal origin-left"
+          className="h-full w-full origin-left bg-forge-teal"
           initial={{ scaleX: 0 }}
           animate={{ scaleX: pct / 100 }}
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
@@ -58,7 +58,7 @@ export function InterestsProgressBar({
               / {MAX_INTERESTS}
             </span>
           </span>
-          <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-slate-muted/60 leading-none mt-1">
+          <p className="mt-1 font-sans text-[10px] leading-none font-bold tracking-wider text-slate-muted/60 uppercase">
             {progressText}
           </p>
         </div>

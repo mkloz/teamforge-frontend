@@ -42,23 +42,23 @@ export function PlanProposalCard({
         setProposalRef(proposal.id, element);
       }}
       className={cn(
-        "rounded-2xl border border-border/60 bg-card/70 px-3 py-3 space-y-2 transition-[background-color,box-shadow,border-color] duration-500",
+        "flex flex-col gap-2 rounded-xl border border-border/60 bg-card/70 px-3 py-3 transition-[background-color,box-shadow,border-color] duration-500",
         isFocused &&
           "border-forge-teal/35 bg-forge-teal/6 shadow-[0_0_0_1px_rgba(13,148,136,0.18)]",
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="space-y-0.5 min-w-0">
+        <div className="flex min-w-0 flex-col gap-0.5">
           <p className="text-xs font-bold text-foreground">
             {PROPOSAL_FIELD_LABELS[proposal.field]}
           </p>
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             Proposed by {proposal.proposer.name}
           </p>
         </div>
         <span
           className={cn(
-            "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
+            "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold tracking-wider uppercase",
             STATUS_STYLES[proposal.status],
           )}
         >
@@ -66,17 +66,17 @@ export function PlanProposalCard({
         </span>
       </div>
 
-      <div className="space-y-1.5">
+      <div className="flex flex-col gap-1.5">
         <div className="rounded-xl bg-muted/50 px-2.5 py-2">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
             Current
           </p>
           <p className="text-sm text-foreground/70">
             {formatProposalValue(proposal.field, proposal.currentValue)}
           </p>
         </div>
-        <div className="rounded-xl bg-forge-teal/5 px-2.5 py-2 border border-forge-teal/10">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-forge-teal">
+        <div className="rounded-xl border border-forge-teal/10 bg-forge-teal/5 px-2.5 py-2">
+          <p className="text-xs font-semibold tracking-wide text-forge-teal uppercase">
             Proposed
           </p>
           <p className="text-sm text-foreground">
@@ -85,7 +85,7 @@ export function PlanProposalCard({
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
+      <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
         <span>{formatProposalDate(proposal.createdAt)}</span>
         <span className="font-medium">
           {approveCount} approve · {rejectCount} reject

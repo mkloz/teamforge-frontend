@@ -28,12 +28,12 @@ export function AvatarDropzones({
   return (
     <>
       <div className="grid grid-cols-[5.5rem_minmax(0,1fr)] items-stretch gap-3 sm:hidden">
-        <div className="relative min-h-18 overflow-hidden rounded-2xl border border-border bg-muted">
+        <div className="relative min-h-18 overflow-hidden rounded-xl border border-border bg-muted">
           <Avatar
             src={displayedAvatarUrl}
             name={currentUser?.name}
             shape="rounded"
-            className="size-full rounded-2xl text-xl"
+            className="size-full rounded-xl text-xl"
             loading="eager"
           />
         </div>

@@ -30,19 +30,26 @@ export const FilterHeader = memo(function FilterHeader({
   const visibleFilters = filters.filter(
     (f) => f.key !== "unread" || counts.unreadCount > 0,
   );
+  const handleFilterChange = (value: string) => {
+    const selectedFilter = filters.find((filter) => filter.key === value);
+
+    if (selectedFilter) {
+      onFilterChange(selectedFilter.key);
+    }
+  };
 
   return (
     <nav
       className={cn(
-        "sticky top-0 z-20 px-4 py-1 border-b border-border/60",
-        "bg-canvas/80 backdrop-blur-md flex items-center justify-between",
+        "sticky top-0 z-20 border-b border-border/60 px-4 py-1",
+        "flex items-center justify-between bg-canvas/80 backdrop-blur-md",
       )}
     >
       <RadioGroup
         value={activeFilter}
-        onValueChange={(value) => onFilterChange(value as FilterChip)}
+        onValueChange={handleFilterChange}
         aria-label="Filter conversations"
-        className="flex gap-1.5 overflow-x-auto scrollbar-hide px-0.5 py-1.5 outline-none flex-1"
+        className="scrollbar-hide flex flex-1 gap-1.5 overflow-x-auto px-0.5 py-1.5 outline-none"
       >
         {visibleFilters.map(({ key, label }) => (
           <FilterChipItem
@@ -55,20 +62,20 @@ export const FilterHeader = memo(function FilterHeader({
         ))}
       </RadioGroup>
 
-      <div className="flex items-center ml-2 border-l border-border/40 pl-2">
+      <div className="ml-2 flex items-center border-l border-border/40 pl-2">
         <Button
           variant="accentGhost"
           size="icon"
-          className="h-8 w-8"
+          className="size-8"
           onClick={() =>
             onDensityChange?.(density === "default" ? "compact" : "default")
           }
           title={density === "default" ? "Compact view" : "Default view"}
         >
           {density === "default" ? (
-            <LayoutList size={14} />
+            <LayoutList className="size-3.5" />
           ) : (
-            <Rows size={14} />
+            <Rows className="size-3.5" />
           )}
         </Button>
       </div>

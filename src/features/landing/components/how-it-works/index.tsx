@@ -83,22 +83,22 @@ export function HowItWorksSection() {
     <section
       ref={containerRef}
       id="how-it-works"
-      className="relative bg-canvas h-[400vh]"
+      className="relative h-[400vh] bg-canvas"
       aria-labelledby="how-it-works-heading"
     >
       <h2 id="how-it-works-heading" className="sr-only">
         How TeamForge Works
       </h2>
-      <div className="sticky top-0 h-screen w-full flex flex-col md:flex-row items-center overflow-hidden">
+      <div className="sticky top-0 flex h-screen w-full flex-col items-center overflow-hidden md:flex-row">
         {/* Background Decorative Element */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="pointer-events-none absolute inset-0"
           aria-hidden="true"
         />
 
         {/* Left Side: Content Storytelling */}
-        <div className="relative z-10 w-full md:w-1/2 h-[60vh] md:h-full flex items-center justify-center p-6 md:p-24 order-2 md:order-1">
-          <div className="max-w-md w-full relative h-full md:h-100 min-h-75 flex items-center">
+        <div className="relative z-10 order-2 flex h-[60vh] w-full items-center justify-center p-6 md:order-1 md:h-full md:w-1/2 md:p-24">
+          <div className="relative flex h-full min-h-75 w-full max-w-md items-center md:h-100">
             {STEPS.map((step, index) => (
               <ContentStep
                 key={step.number}
@@ -117,11 +117,11 @@ export function HowItWorksSection() {
           ref={visualRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={() => setMousePos({ x: 0, y: 0 })}
-          className="relative w-full md:w-1/2 h-[40vh] md:h-full flex items-center justify-center order-1 md:order-2"
+          className="relative order-1 flex h-[40vh] w-full items-center justify-center md:order-2 md:h-full md:w-1/2"
         >
           {/* Progress Track (Sidebar) */}
           <nav
-            className="absolute right-6 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-4 z-50"
+            className="absolute top-1/2 right-6 z-50 hidden -translate-y-1/2 flex-col gap-4 lg:flex"
             aria-label="Steps progress"
           >
             {STEPS.map((_, i) => (
@@ -155,7 +155,7 @@ export function HowItWorksSection() {
                 asChild
                 variant="ghost"
                 size="sm"
-                className="absolute bottom-8 right-8 z-50 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] h-9 px-4"
+                className="absolute right-8 bottom-8 z-50 h-9 rounded-full px-4 text-[10px] font-bold tracking-[0.2em] uppercase"
               >
                 <motion.button
                   initial={{ opacity: 0, y: 10 }}

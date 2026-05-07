@@ -12,8 +12,8 @@ export function SettingsSkeleton() {
       <div className="flex flex-col gap-5">
         <Skeleton className="h-10 w-44 rounded-xl" />
         <Skeleton className="h-5 w-96 max-w-full rounded-lg" />
-        <Skeleton className="h-24 w-full rounded-2xl" />
-        <Skeleton className="h-80 w-full rounded-2xl" />
+        <Skeleton className="h-24 w-full rounded-xl" />
+        <Skeleton className="h-80 w-full rounded-xl" />
       </div>
     </div>
   );

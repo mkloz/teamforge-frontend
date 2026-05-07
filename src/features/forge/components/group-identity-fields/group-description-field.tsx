@@ -32,11 +32,11 @@ export function GroupDescriptionField({
         className={cn(
           "rounded-xl border-border/60 bg-background/60 px-3.5 py-3 text-sm font-medium",
           "placeholder:text-muted-foreground/35 focus-visible:border-forge-teal/60",
-          "focus:ring-2 focus:ring-forge-teal/10 focus:bg-background transition-colors duration-150 resize-none leading-relaxed",
+          "resize-none leading-relaxed transition-colors duration-150 focus:bg-background focus:ring-2 focus:ring-forge-teal/10",
         )}
       />
       {groupDescription.length > 0 && (
-        <p className="text-micro text-muted-foreground/40 text-right">
+        <p className="text-right text-micro text-muted-foreground/40">
           {groupDescription.length}/200
         </p>
       )}

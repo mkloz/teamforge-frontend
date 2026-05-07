@@ -23,7 +23,7 @@ export function LengthSelectorActions({
       className="mt-auto flex w-full flex-col-reverse items-stretch gap-3 pt-6 min-[430px]:flex-row min-[430px]:items-center"
     >
       <Button
-        size="lg"
+        size="md"
         variant="outline"
         onClick={onBack}
         className="w-full min-w-0 px-4 min-[430px]:w-auto min-[430px]:shrink-0"
@@ -32,7 +32,7 @@ export function LengthSelectorActions({
         <span className="truncate">{backLabel}</span>
       </Button>
       <Button
-        size="lg"
+        size="md"
         onClick={onBegin}
         className="w-full min-w-0 min-[430px]:flex-1"
       >

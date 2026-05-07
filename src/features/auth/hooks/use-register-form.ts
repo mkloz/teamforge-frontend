@@ -4,6 +4,8 @@ import { useForm, useWatch } from "react-hook-form";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import { AuthCommands } from "@/features/auth/api/auth-commands";
+import { calculateRegisterProgress } from "@/features/auth/lib/auth-form-progress";
+import { getEmailDomain } from "@/features/auth/lib/auth-telemetry";
 import {
   registerSchema,
   type RegisterValues,
@@ -15,9 +17,6 @@ interface UseRegisterFormOptions {
 }
 
 export type Step = 1 | 2 | 3;
-
-/** Total required fields for progress calculation. */
-const TOTAL_REQUIRED_FIELDS = 7;
 
 export function useRegisterForm({
   onSuccess,
@@ -47,27 +46,10 @@ export function useRegisterForm({
 
   const values = useWatch({ control: form.control });
 
-  // Progress tracking
   useEffect(() => {
-    if (!onProgress) return;
-    let filled = 0;
-    if (values.name && values.name.length > 2) filled++;
-    if (values.email && values.email.length > 4) filled++;
-    if (values.password && values.password.length > 5) filled++;
-    if (values.otp && values.otp.length === 6) filled++;
-    if (
-      values.age !== undefined &&
-      values.age !== null &&
-      String(values.age) !== ""
-    )
-      filled++;
-    if (values.city && values.city.length > 2) filled++;
-    if (values.gender && values.gender.length > 1) filled++;
-
-    onProgress(Math.min(filled / TOTAL_REQUIRED_FIELDS, 1));
+    onProgress?.(calculateRegisterProgress(values));
   }, [values, onProgress]);
 
-  // Step transitions
   async function goToStep2() {
     setRootError(null);
     const isValid = await form.trigger(["name", "email", "password"]);
@@ -87,18 +69,17 @@ export function useRegisterForm({
     setLoading(true);
 
     try {
+      const email = form.getValues("email");
       const result = await AuthCommands.registerWithEmail(form.getValues());
       trackMutationOutcome(trackedMutationNames.authRegisterEmail, "success", {
         requestId: result.requestId,
       });
-      setOtpMessage(
-        `We sent a 6-digit verification code to ${form.getValues("email")}.`,
-      );
+      setOtpMessage(`We sent a 6-digit verification code to ${email}.`);
       setDirection(1);
       setStep(3);
     } catch (error) {
       captureException(trackedMutationNames.authRegisterEmail, error, {
-        emailDomain: form.getValues("email").split("@")[1] ?? "unknown",
+        emailDomain: getEmailDomain(form.getValues("email")),
       });
       trackMutationOutcome(trackedMutationNames.authRegisterEmail, "error");
       setRootError(
@@ -152,6 +133,7 @@ export function useRegisterForm({
 
   async function resendOtp() {
     const email = form.getValues("email");
+    const emailDomain = getEmailDomain(email);
 
     setRootError(null);
     setOtpMessage(null);
@@ -165,7 +147,7 @@ export function useRegisterForm({
       setOtpMessage(`A fresh verification code is on its way to ${email}.`);
     } catch (error) {
       captureException(trackedMutationNames.authResendEmailOtp, error, {
-        emailDomain: email.split("@")[1] ?? "unknown",
+        emailDomain,
       });
       trackMutationOutcome(trackedMutationNames.authResendEmailOtp, "error");
       setRootError(

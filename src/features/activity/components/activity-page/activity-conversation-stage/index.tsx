@@ -33,9 +33,9 @@ export function ActivityConversationStage({
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -10 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="flex-1 flex overflow-hidden"
+          className="flex flex-1 overflow-hidden"
         >
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex min-w-0 flex-1 flex-col">
             <UnifiedConversationView
               kind="group"
               data={activity.selectedGroup}
@@ -76,9 +76,9 @@ export function ActivityConversationStage({
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -10 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="flex-1 flex overflow-hidden"
+          className="flex flex-1 overflow-hidden"
         >
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex min-w-0 flex-1 flex-col">
             <UnifiedConversationView
               kind="dm"
               data={activity.selectedChat}
@@ -115,7 +115,7 @@ export function ActivityConversationStage({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="flex-1 flex"
+          className="flex flex-1"
         >
           <ActivityEmptyState />
         </motion.div>

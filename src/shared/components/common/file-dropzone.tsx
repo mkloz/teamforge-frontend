@@ -42,6 +42,12 @@ interface FilePreviewListProps {
   onRemove?: (index: number) => void;
 }
 
+interface FilePreviewItemProps {
+  file: File;
+  index: number;
+  onRemove?: (index: number) => void;
+}
+
 function formatFileSize(size: number) {
   if (size < 1024 * 1024) {
     return `${Math.max(1, Math.round(size / 1024))} KB`;
@@ -52,18 +58,18 @@ function formatFileSize(size: number) {
 
 function getVariantClasses(variant: FileDropzoneVariant) {
   if (variant === "cover") {
-    return "min-h-40 rounded-2xl";
+    return "min-h-40 rounded-xl";
   }
 
   if (variant === "avatar") {
-    return "min-h-18 rounded-2xl sm:min-h-24";
+    return "min-h-18 rounded-xl sm:min-h-24";
   }
 
   if (variant === "inline") {
-    return "min-h-22 rounded-2xl";
+    return "min-h-22 rounded-xl";
   }
 
-  return "min-h-28 rounded-2xl";
+  return "min-h-28 rounded-xl";
 }
 
 function getFiles(fileList: FileList | null, maxFiles: number) {
@@ -133,7 +139,7 @@ export function FileDropzone({
   };
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn("flex flex-col gap-2", className)}>
       <Button
         type="button"
         variant="ghost"
@@ -194,7 +200,7 @@ export function FileDropzone({
               <div className="flex min-w-0 items-center gap-2">
                 <p
                   className={cn(
-                    "min-w-0 truncate text-sm font-semibold leading-tight",
+                    "min-w-0 truncate text-sm leading-tight font-semibold",
                     variant === "cover" ? "text-white" : "text-ink",
                   )}
                 >
@@ -228,7 +234,7 @@ export function FileDropzone({
               <div className="mt-2.5 hidden min-w-0 flex-wrap items-center gap-2 sm:flex">
                 <span
                   className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold leading-none",
+                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs leading-none font-semibold",
                     variant === "cover"
                       ? "bg-white/14 text-white/88"
                       : "bg-muted text-slate-muted",
@@ -240,7 +246,7 @@ export function FileDropzone({
                 {helper ? (
                   <span
                     className={cn(
-                      "inline-flex min-w-0 max-w-full truncate rounded-full px-2.5 py-1 text-[11px] font-semibold leading-none",
+                      "inline-flex max-w-full min-w-0 truncate rounded-full px-2.5 py-1 text-xs leading-none font-semibold",
                       variant === "cover"
                         ? "bg-white/10 text-white/72"
                         : "bg-background/70 text-slate-muted/75",
@@ -296,41 +302,43 @@ export function FilePreviewList({ files, onRemove }: FilePreviewListProps) {
 
   return (
     <div className="grid gap-2">
-      {files.map((file, index) => {
-        const isImage = file.type.startsWith("image/");
-        const Icon = isImage ? ImageIcon : FileText;
+      {files.map((file, index) => (
+        <FilePreviewItem
+          key={`${file.name}-${file.size}-${file.lastModified}-${index}`}
+          file={file}
+          index={index}
+          onRemove={onRemove}
+        />
+      ))}
+    </div>
+  );
+}
 
-        return (
-          <div
-            key={`${file.name}-${file.size}-${file.lastModified}-${index}`}
-            className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card px-3 py-2.5"
-          >
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-forge-teal/10 text-forge-teal">
-              <Icon size={16} />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-semibold text-ink">
-                {file.name}
-              </p>
-              <p className="text-[11px] text-slate-muted">
-                {formatFileSize(file.size)}
-              </p>
-            </div>
-            {onRemove ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="rounded-full text-slate-muted hover:text-ink"
-                onClick={() => onRemove(index)}
-                aria-label={`Remove ${file.name}`}
-              >
-                <X size={14} />
-              </Button>
-            ) : null}
-          </div>
-        );
-      })}
+function FilePreviewItem({ file, index, onRemove }: FilePreviewItemProps) {
+  const isImage = file.type.startsWith("image/");
+  const Icon = isImage ? ImageIcon : FileText;
+
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-card px-3 py-2.5">
+      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10 text-forge-teal">
+        <Icon size={16} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-xs font-semibold text-ink">{file.name}</p>
+        <p className="text-xs text-slate-muted">{formatFileSize(file.size)}</p>
+      </div>
+      {onRemove ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          className="rounded-full text-slate-muted hover:text-ink"
+          onClick={() => onRemove(index)}
+          aria-label={`Remove ${file.name}`}
+        >
+          <X size={14} />
+        </Button>
+      ) : null}
     </div>
   );
 }

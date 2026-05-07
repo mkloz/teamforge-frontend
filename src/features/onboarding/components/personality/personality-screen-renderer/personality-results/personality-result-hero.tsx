@@ -19,7 +19,7 @@ export function PersonalityResultHero({
     <section className="grid gap-6">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-3">
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-forge-teal">
+          <p className="text-xs font-black tracking-[0.16em] text-forge-teal uppercase">
             Personality result
           </p>
           <TypeSignature result={result} typeLabel={typeLabel} />

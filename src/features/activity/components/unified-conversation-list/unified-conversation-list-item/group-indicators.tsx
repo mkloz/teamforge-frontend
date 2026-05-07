@@ -14,7 +14,7 @@ export const GroupIndicators = memo(function GroupIndicators({
   if (!hasAnything) return null;
 
   return (
-    <div className="flex items-center gap-2.5 mt-2">
+    <div className="mt-2 flex items-center gap-2.5">
       {countdown && (
         <span className="flex items-center gap-1 text-micro font-bold text-forge-teal/80">
           <Clock size={11} strokeWidth={2.5} />

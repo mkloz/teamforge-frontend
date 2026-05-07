@@ -33,7 +33,7 @@ export function Step2Templates({
   });
 
   return (
-    <div className="flex flex-col gap-4 pb-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <div className="flex animate-in flex-col gap-4 pb-6 duration-300 fade-in slide-in-from-bottom-2">
       <div className="flex items-start justify-between gap-3 px-0.5">
         <div className="flex min-w-0 items-start gap-3">
           <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10 text-forge-teal">
@@ -41,7 +41,7 @@ export function Step2Templates({
           </div>
           <div className="min-w-0">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
-              <p className="text-sm font-semibold leading-tight text-foreground">
+              <p className="text-sm leading-tight font-semibold text-foreground">
                 Start from a template
               </p>
               {selectedActivity && (

@@ -17,7 +17,7 @@ export function SectionHeader({
         <span className="text-forge-teal">{icon}</span>
       </div>
       <div className="min-w-0">
-        <p className="text-sm font-semibold leading-tight text-foreground">
+        <p className="text-sm leading-tight font-semibold text-foreground">
           {title}
         </p>
         {description && (

@@ -27,20 +27,20 @@ export function MobileFiltersSheet() {
           }
           className="h-11 w-11 shrink-0 lg:hidden"
         >
-          <SlidersHorizontal className="w-3.5 h-3.5" />
+          <SlidersHorizontal className="h-3.5 w-3.5" />
         </Button>
       </SheetTrigger>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-md border-l border-border/40 p-0 overflow-y-auto"
+        className="w-full overflow-y-auto border-l border-border/40 p-0 sm:max-w-md"
       >
-        <div className="p-6">
-          <SheetHeader className="mb-8">
-            <SheetTitle className="text-left flex items-center gap-2 text-xl font-black tracking-tight">
+        <div className="px-4 py-5 sm:p-6">
+          <SheetHeader className="mb-6 sm:mb-8">
+            <SheetTitle className="flex items-center gap-2 text-left text-xl font-black tracking-tight">
               <ListFilter className="size-5 text-primary" />
               Refine results
             </SheetTitle>
-            <SheetDescription className="text-left text-xs font-medium text-muted-foreground">
+            <SheetDescription className="text-left text-sm leading-6 font-medium text-muted-foreground">
               Changes update the feed immediately. Close this panel when the
               list looks right.
             </SheetDescription>

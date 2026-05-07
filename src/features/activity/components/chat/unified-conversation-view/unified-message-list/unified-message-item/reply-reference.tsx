@@ -13,16 +13,16 @@ export const ReplyReference = memo(
     return (
       <div
         className={cn(
-          "mb-1.5 px-2.5 py-1.5 rounded-xl flex flex-col gap-0.5 min-w-30 max-w-full overflow-hidden",
-          isOwn ? "bg-white/15" : "bg-muted/50 border-l-2 border-forge-teal",
+          "mb-1.5 flex max-w-full min-w-30 flex-col gap-0.5 overflow-hidden rounded-xl px-2.5 py-1.5",
+          isOwn ? "bg-white/15" : "border-l-2 border-forge-teal bg-muted/50",
         )}
       >
-        <div className="text-micro font-bold text-forge-teal truncate tracking-tighter opacity-90 uppercase">
+        <div className="truncate text-micro font-bold tracking-tighter text-forge-teal uppercase opacity-90">
           {replyTo.sender?.name}
         </div>
         <p
           className={cn(
-            "text-micro truncate leading-tight opacity-90",
+            "truncate text-micro leading-tight opacity-90",
             !isOwn && "text-slate-muted",
           )}
         >

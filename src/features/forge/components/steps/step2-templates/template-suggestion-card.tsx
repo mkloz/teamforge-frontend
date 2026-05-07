@@ -33,11 +33,11 @@ export function TemplateSuggestionCard({
           className="transition-[scale,transform] duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-foreground/10 transition-colors duration-200 group-hover:bg-foreground/0" />
-        <div className="absolute left-2 top-2 flex size-7 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm backdrop-blur">
+        <div className="absolute top-2 left-2 flex size-7 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm backdrop-blur">
           <Icon size={13} />
         </div>
         {active && (
-          <div className="absolute right-2 top-2 flex size-6 items-center justify-center rounded-full bg-forge-teal text-white shadow-sm">
+          <div className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-forge-teal text-white shadow-sm">
             <Check size={12} strokeWidth={3} />
           </div>
         )}
@@ -47,7 +47,7 @@ export function TemplateSuggestionCard({
         <div className="flex min-w-0 items-center gap-2">
           <p
             className={cn(
-              "min-w-0 flex-1 truncate text-sm font-semibold leading-tight",
+              "min-w-0 flex-1 truncate text-sm leading-tight font-semibold",
               active ? "text-forge-teal" : "text-foreground",
             )}
           >

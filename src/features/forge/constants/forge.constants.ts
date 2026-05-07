@@ -1,4 +1,7 @@
-import type { FixedGroupSize } from "@/features/forge/lib/forge-contract";
+import type {
+  FixedGroupSize,
+  PlanCategory,
+} from "@/features/forge/lib/forge-contract";
 
 export const ALGORITHM_GROUP_SIZES: {
   value: FixedGroupSize;
@@ -11,7 +14,7 @@ export const ALGORITHM_GROUP_SIZES: {
 ];
 
 export interface ActivityOption {
-  id: string;
+  id: PlanCategory;
   label: string;
   description: string;
 }

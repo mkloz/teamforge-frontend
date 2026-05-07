@@ -56,8 +56,8 @@ export function ExploreGroupPlanCard({
         disabled={isFull || joinMutation.isPending || joinResult !== undefined}
         onClick={handleJoin}
         className={cn(
-          "shrink-0 z-20 shadow-sm",
-          isFull && "opacity-50 pointer-events-none",
+          "z-20 shrink-0 shadow-sm",
+          isFull && "pointer-events-none opacity-50",
         )}
       >
         {actionLabel}

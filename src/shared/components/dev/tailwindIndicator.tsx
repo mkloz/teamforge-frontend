@@ -1,18 +1,23 @@
-import { config } from "@/config/config";
+const breakpointLabels = [
+  { className: "block sm:hidden", label: "xs" },
+  { className: "hidden sm:block md:hidden", label: "sm" },
+  { className: "hidden md:block lg:hidden", label: "md" },
+  { className: "hidden lg:block xl:hidden", label: "lg" },
+  { className: "hidden xl:block 2xl:hidden", label: "xl" },
+  { className: "hidden 2xl:block", label: "2xl" },
+] as const;
 
-export const TailwindIndicator = () => {
-  if (config.isProduction) return null;
-
+export function TailwindIndicator() {
   return (
-    <div className="fixed bottom-1 left-2 z-10000 flex h-6 w-6 items-center justify-center rounded-full bg-gray-800 p-3 font-mono text-xs text-white">
-      <div className="block sm:hidden">xs</div>
-      <div className="hidden sm:block md:hidden lg:hidden xl:hidden 2xl:hidden">
-        sm
-      </div>
-      <div className="hidden md:block lg:hidden xl:hidden 2xl:hidden">md</div>
-      <div className="hidden lg:block xl:hidden 2xl:hidden">lg</div>
-      <div className="hidden xl:block 2xl:hidden">xl</div>
-      <div className="hidden 2xl:block">2xl</div>
+    <div
+      aria-label="Current Tailwind breakpoint"
+      className="flex h-5 min-w-6 items-center justify-center rounded-md bg-ink px-1.5 font-mono text-[10px] leading-none font-bold text-canvas shadow-sm"
+    >
+      {breakpointLabels.map(({ className, label }) => (
+        <span key={label} className={className}>
+          {label}
+        </span>
+      ))}
     </div>
   );
-};
+}

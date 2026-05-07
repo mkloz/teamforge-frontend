@@ -62,7 +62,7 @@ export function GroupPanelContent({
   return (
     <div
       className={cn(
-        "flex flex-col h-full overflow-hidden relative",
+        "relative flex h-full flex-col overflow-hidden",
         isMobile && "flex-1",
       )}
     >

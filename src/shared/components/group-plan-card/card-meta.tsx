@@ -13,31 +13,31 @@ export function CardMeta({ group, distance }: CardMetaProps) {
     getGroupPlanMetaModel(group, distance);
 
   return (
-    <div className="flex flex-col gap-3 mb-4 relative z-10">
-      <div className="flex items-center gap-3 text-sm text-foreground/80 group-hover:text-foreground transition-colors">
+    <div className="relative z-10 mb-3 flex flex-col gap-2">
+      <div className="flex items-center gap-2 text-sm text-foreground/80 transition-colors group-hover:text-foreground">
         <CalendarClock
-          className="w-4 h-4 text-primary shrink-0"
+          className="size-4 shrink-0 text-primary"
           strokeWidth={2.5}
           aria-hidden="true"
         />
         <span className="font-semibold">{formattedDate}</span>
       </div>
 
-      <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-sm text-muted-foreground">
-        <div className="flex items-center gap-2 group-hover:text-foreground/80 transition-colors">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-muted-foreground">
+        <div className="flex items-center gap-1.5 transition-colors group-hover:text-foreground/80">
           {isOnline ? (
-            <Laptop className="w-4 h-4 shrink-0" strokeWidth={2} />
+            <Laptop className="size-4 shrink-0" strokeWidth={2} />
           ) : (
-            <Route className="w-4 h-4 shrink-0" strokeWidth={2} />
+            <Route className="size-4 shrink-0" strokeWidth={2} />
           )}
           <span className="truncate">{locationLabel}</span>
         </div>
-        <div className="w-1 h-1 rounded-full bg-border" aria-hidden="true" />
-        <div className="flex items-center gap-1.5 group-hover:text-foreground/80 transition-colors">
+        <div className="size-1 rounded-full bg-border" aria-hidden="true" />
+        <div className="flex items-center gap-1.5 transition-colors group-hover:text-foreground/80">
           {isFree ? (
             <>
               <Gift
-                className="w-4 h-4 text-forge-teal shrink-0"
+                className="size-4 shrink-0 text-forge-teal"
                 strokeWidth={2}
                 aria-hidden="true"
               />
@@ -46,7 +46,7 @@ export function CardMeta({ group, distance }: CardMetaProps) {
           ) : (
             <>
               <Ticket
-                className="w-4 h-4 shrink-0"
+                className="size-4 shrink-0"
                 strokeWidth={2}
                 aria-hidden="true"
               />

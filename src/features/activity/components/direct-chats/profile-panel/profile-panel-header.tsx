@@ -7,7 +7,7 @@ interface ProfilePanelHeaderProps {
 
 export function ProfilePanelHeader({ onClose }: ProfilePanelHeaderProps) {
   return (
-    <header className="flex items-center justify-between px-4 py-3 border-b border-border bg-canvas/80 backdrop-blur-md z-20">
+    <header className="z-20 flex items-center justify-between border-b border-border bg-canvas/80 px-4 py-3 backdrop-blur-md">
       <h3 className="text-sm font-semibold tracking-tight text-foreground">
         Member Info
       </h3>

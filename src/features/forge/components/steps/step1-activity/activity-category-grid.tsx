@@ -43,21 +43,21 @@ export function ActivityCategoryGrid({
     <div className="space-y-2.5">
       <div className="flex items-center justify-between gap-3 px-0.5">
         <div className="min-w-0">
-          <p className="text-xs font-semibold leading-none text-muted-foreground">
+          <p className="text-xs leading-none font-semibold text-muted-foreground">
             Choose a category
           </p>
           <p className="mt-1 text-micro leading-none text-muted-foreground/55">
             Pick a style and we&apos;ll find the right people.
           </p>
         </div>
-        <p className="shrink-0 text-micro font-semibold leading-none text-muted-foreground/50">
+        <p className="shrink-0 text-micro leading-none font-semibold text-muted-foreground/50">
           {ACTIVITIES.length} options
         </p>
       </div>
 
       <div
         className={cn(
-          "grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 transition-transform",
+          "grid grid-cols-2 gap-2 transition-transform sm:grid-cols-3 lg:grid-cols-4",
           shaking && "animate-[shake_0.45s_ease-in-out]",
         )}
       >
@@ -73,9 +73,9 @@ export function ActivityCategoryGrid({
               onClick={() => onSelect(selected ? null : label)}
               aria-pressed={selected}
               className={cn(
-                "group relative flex min-h-20 min-w-0 flex-col gap-2 whitespace-normal rounded-lg border px-3 py-2.5 text-left transition duration-200 active:scale-[0.98]",
+                "group relative flex min-h-20 min-w-0 flex-col gap-2 rounded-lg border px-3 py-2.5 text-left whitespace-normal transition duration-200 active:scale-[0.98]",
                 selected
-                  ? "border-spark-amber/65 bg-spark-amber/10 ring-1 ring-spark-amber/20 shadow-sm"
+                  ? "border-spark-amber/65 bg-spark-amber/10 shadow-sm ring-1 ring-spark-amber/20"
                   : personalised
                     ? "border-forge-teal/35 bg-forge-teal/5 hover:border-forge-teal/50 hover:bg-forge-teal/10"
                     : "border-border/40 bg-card/80 hover:border-forge-teal/30 hover:bg-forge-teal/5",
@@ -97,7 +97,7 @@ export function ActivityCategoryGrid({
                   </span>
                   <p
                     className={cn(
-                      "min-w-0 text-pretty font-semibold leading-[1.1]",
+                      "min-w-0 leading-[1.1] font-semibold text-pretty",
                       label.length > 18
                         ? "text-[12.5px]"
                         : label.length > 13
@@ -117,7 +117,7 @@ export function ActivityCategoryGrid({
                 )}
               </div>
 
-              <p className="min-w-0 text-wrap line-clamp-2 text-xs leading-snug text-muted-foreground">
+              <p className="line-clamp-2 min-w-0 text-xs leading-snug text-wrap text-muted-foreground">
                 {description}
               </p>
             </button>

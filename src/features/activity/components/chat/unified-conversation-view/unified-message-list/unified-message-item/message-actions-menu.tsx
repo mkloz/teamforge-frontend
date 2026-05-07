@@ -68,10 +68,10 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
         <Button
           variant="ghost"
           size="icon-sm"
-          className="h-7 w-7 rounded-full border border-border/50 bg-canvas/90 text-slate-muted shadow-sm backdrop-blur-sm transition-opacity hover:text-ink"
+          className="size-8 rounded-full border border-border/50 bg-canvas/90 text-slate-muted shadow-sm backdrop-blur-sm transition-opacity hover:text-ink"
           aria-label="Message actions"
         >
-          <MoreHorizontal size={14} />
+          <MoreHorizontal className="size-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -80,18 +80,18 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
       >
         <DropdownMenuLabel>Message</DropdownMenuLabel>
         <DropdownMenuItem onSelect={() => onReply(message)}>
-          <Reply size={14} className="mr-2" />
+          <Reply className="mr-2 size-4" />
           Reply
         </DropdownMenuItem>
         {canEdit && (
           <DropdownMenuItem onSelect={() => onStartEdit(message)}>
-            <Pencil size={14} className="mr-2" />
+            <Pencil className="mr-2 size-4" />
             Edit
           </DropdownMenuItem>
         )}
         {canRetry && (
           <DropdownMenuItem onSelect={() => void onRetry(message)}>
-            <RotateCcw size={14} className="mr-2" />
+            <RotateCcw className="mr-2 size-4" />
             Retry send
           </DropdownMenuItem>
         )}
@@ -100,7 +100,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
             onSelect={() => void onDelete(message)}
             className="text-destructive focus:text-destructive"
           >
-            <Trash2 size={14} className="mr-2" />
+            <Trash2 className="mr-2 size-4" />
             Delete
           </DropdownMenuItem>
         )}
@@ -110,7 +110,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
               void (message.isPinned ? onUnpin(message) : onPin(message))
             }
           >
-            <Pin size={14} className="mr-2" />
+            <Pin className="mr-2 size-4" />
             {message.isPinned ? "Unpin" : "Pin"}
           </DropdownMenuItem>
         )}
@@ -119,7 +119,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
           <>
             <DropdownMenuSeparator />
             <DropdownMenuLabel className="flex items-center gap-2 text-xs">
-              <SmilePlus size={13} />
+              <SmilePlus className="size-4" />
               React
             </DropdownMenuLabel>
             {COMMON_REACTIONS.map((reaction) => (

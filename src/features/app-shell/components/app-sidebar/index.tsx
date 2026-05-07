@@ -3,6 +3,7 @@ import { Button } from "@/shared/components/ui/button";
 import {
   appSidebarNavigation,
   getAppNavigationItem,
+  isAppNavigationItemActive,
 } from "@/features/app-shell/lib/app-navigation";
 import {
   Tooltip,
@@ -12,7 +13,7 @@ import {
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { useActiveRoute } from "@/features/app-shell/hooks/use-active-route";
+import { useActivePathname } from "@/features/app-shell/hooks/use-active-pathname";
 import { NavItem } from "./nav-item";
 
 interface AppSidebarProps {
@@ -24,29 +25,29 @@ export function AppSidebar({
   className,
   notificationTrigger,
 }: AppSidebarProps) {
-  const { isActive } = useActiveRoute();
+  const pathname = useActivePathname();
   const forgeItem = getAppNavigationItem("forge");
   const settingsItem = getAppNavigationItem("settings");
   const ForgeIcon = forgeItem.icon;
-  const isForgeActive = isActive("/forge");
+  const isForgeActive = isAppNavigationItemActive(forgeItem, pathname);
 
   return (
     <aside
       aria-label="Desktop navigation"
       className={cn(
-        "fixed top-0 left-0 bottom-0 z-40",
+        "fixed top-0 bottom-0 left-0 z-40",
         // Hidden on mobile, icon-only on tablet and desktop
-        "hidden md:flex flex-col",
+        "hidden flex-col md:flex",
         "w-14",
-        "bg-sidebar border-r border-sidebar-border",
+        "border-r border-sidebar-border bg-sidebar",
         className,
       )}
     >
       {/* Top section: Logo */}
-      <div className="flex h-16 items-center justify-center shrink-0">
+      <div className="flex h-16 shrink-0 items-center justify-center">
         <Link
           to="/"
-          className="hover:opacity-80 transition-opacity"
+          className="transition-opacity hover:opacity-80"
           aria-label="TeamForge landing page"
         >
           <TeamForgeLogo className="size-8" showBackground={false} />
@@ -57,11 +58,11 @@ export function AppSidebar({
 
       {/* Primary nav */}
       <nav
-        className="flex flex-col items-center gap-1 px-1.5 pt-3 pb-2 flex-1"
+        className="flex flex-1 flex-col items-center gap-1 px-1.5 pt-3 pb-2"
         aria-label="App navigation"
       >
         {appSidebarNavigation.map((item) => (
-          <NavItem key={item.id} item={item} />
+          <NavItem key={item.id} item={item} pathname={pathname} />
         ))}
       </nav>
 
@@ -69,10 +70,10 @@ export function AppSidebar({
       <div className="mx-1.5 h-px bg-sidebar-border/50" aria-hidden="true" />
 
       {/* Bottom section: notifications, settings + forge */}
-      <div className="px-1.5 py-4 flex flex-col items-center gap-3">
+      <div className="flex flex-col items-center gap-3 px-1.5 py-4">
         {notificationTrigger}
 
-        <NavItem item={settingsItem} />
+        <NavItem item={settingsItem} pathname={pathname} />
 
         {/* Forge button — icon only */}
         <Tooltip>
@@ -82,7 +83,7 @@ export function AppSidebar({
               size="icon"
               variant="ghost"
               className={cn(
-                "group relative flex items-center justify-center rounded-xl transition-all duration-150 size-10",
+                "group relative flex size-10 items-center justify-center rounded-lg transition-all duration-150",
                 isForgeActive
                   ? "bg-accent/10 text-accent"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -92,7 +93,7 @@ export function AppSidebar({
                 {/* Active indicator */}
                 {isForgeActive && (
                   <span
-                    className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-accent"
+                    className="absolute top-1/2 left-0 h-6 w-1 -translate-y-1/2 rounded-full bg-accent"
                     aria-hidden="true"
                   />
                 )}

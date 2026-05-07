@@ -54,7 +54,7 @@ export function LoginForm({
   const currentRootError = rootError ?? googleError;
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex w-full flex-col">
       <FormHeader />
 
       {currentRootError ? <FormLevelError message={currentRootError} /> : null}
@@ -80,7 +80,7 @@ export function LoginForm({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="text-xs font-medium text-destructive mt-1" />
+                <FormMessage className="mt-1 text-xs font-medium text-destructive" />
               </FormItem>
             )}
           />
@@ -99,7 +99,7 @@ export function LoginForm({
                       "/auth/forgot-password",
                       authReturnTo,
                     )}
-                    className="font-sans text-xs font-medium text-forge-teal hover:underline transition-colors focus:ring-2 focus:ring-forge-teal/20 outline-hidden"
+                    className="font-sans text-xs font-medium text-forge-teal outline-hidden transition-colors hover:underline focus:ring-2 focus:ring-forge-teal/20"
                   >
                     Forgot password?
                   </Link>
@@ -131,7 +131,7 @@ export function LoginForm({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="text-xs font-medium text-destructive mt-1" />
+                <FormMessage className="mt-1 text-xs font-medium text-destructive" />
               </FormItem>
             )}
           />
@@ -140,7 +140,7 @@ export function LoginForm({
             type="submit"
             loading={loading}
             size="lg"
-            className="w-full mt-2"
+            className="mt-2 w-full"
           >
             Let's go
             <ArrowRightAnimated />

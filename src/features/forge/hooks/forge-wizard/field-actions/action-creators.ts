@@ -7,10 +7,10 @@ import type {
 export function createSetFieldAction<Field extends ForgeWizardField>(
   field: Field,
   value: ForgeWizardData[Field],
-): ForgeWizardSetFieldAction {
+): ForgeWizardSetFieldAction<Field> {
   return {
     type: "set-field",
     field,
     value,
-  } as ForgeWizardSetFieldAction;
+  };
 }

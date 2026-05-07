@@ -27,10 +27,10 @@ export function SettingsDetailHeader({
           Settings
         </Button>
       </div>
-      <p className="text-xs font-semibold uppercase tracking-widest text-slate-muted">
+      <p className="text-xs font-semibold tracking-widest text-slate-muted uppercase">
         {activeSectionMeta?.label ?? "Settings"}
       </p>
-      <h2 className="mt-2 text-2xl font-bold leading-tight text-ink lg:text-3xl">
+      <h2 className="mt-2 text-2xl leading-tight font-bold text-ink lg:text-3xl">
         {activeSectionMeta?.headline ?? "Manage your account"}
       </h2>
       <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-muted">

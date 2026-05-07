@@ -22,7 +22,7 @@ export function InterestsReviewFooter({
     <div className="flex w-full flex-col-reverse items-stretch gap-3 pt-4 pb-6 min-[430px]:flex-row min-[430px]:items-center sm:pb-5">
       <Button
         variant="outline"
-        size="lg"
+        size="md"
         onClick={onBack}
         disabled={isSaving}
         className="w-full min-w-0 min-[430px]:w-auto min-[430px]:shrink-0"
@@ -31,7 +31,7 @@ export function InterestsReviewFooter({
       </Button>
       <Button
         variant="primary"
-        size="lg"
+        size="md"
         onClick={onConfirm}
         disabled={!canConfirm || isSaving}
         className="w-full min-w-0 min-[430px]:flex-1"

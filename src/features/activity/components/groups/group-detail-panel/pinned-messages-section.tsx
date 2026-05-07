@@ -17,19 +17,19 @@ export function PinnedMessagesSection({
   if (pinnedMessages.length === 0) return null;
 
   return (
-    <section className="space-y-3">
+    <section className="flex flex-col gap-3">
       <div className="flex items-center gap-2 px-1">
-        <Pin size={14} className="text-forge-teal rotate-45" />
-        <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-muted">
+        <Pin className="size-4 rotate-45 text-forge-teal" />
+        <h4 className="text-xs font-bold tracking-wider text-slate-muted uppercase">
           Pinned Messages
         </h4>
       </div>
 
-      <div className="space-y-2">
+      <div className="flex flex-col gap-2">
         {pinnedMessages.map((message) => (
           <div
             key={message.id}
-            className="group relative flex items-start gap-1 bg-canvas border border-border/40 rounded-xl p-2 hover:border-forge-teal/30 hover:bg-forge-teal/2 transition-all duration-200"
+            className="group relative flex items-start gap-1 rounded-xl border border-border/40 bg-canvas p-2 transition-all duration-200 hover:border-forge-teal/30 hover:bg-forge-teal/2"
           >
             {onJumpToMessage ? (
               <Button
@@ -53,13 +53,13 @@ export function PinnedMessagesSection({
                 variant="accentGhost"
                 size="icon-xs"
                 type="button"
-                className="mt-0.5 h-6 w-6 shrink-0 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
+                className="mt-0.5 shrink-0 rounded-full opacity-0 transition-opacity group-hover:opacity-100"
                 onClick={() => {
                   void onUnpinMessage(message);
                 }}
                 aria-label="Unpin message"
               >
-                <X size={12} />
+                <X className="size-3.5" />
               </Button>
             ) : null}
           </div>
@@ -74,15 +74,15 @@ function PinnedMessageSummary({ message }: { message: UnifiedMessage }) {
     <>
       <div className="mb-1 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <span className="text-[12px] font-semibold text-ink leading-none">
+          <span className="text-sm leading-none font-semibold text-ink">
             {message.sender?.name || "System"}
           </span>
         </div>
-        <span className="text-[10px] text-slate-muted font-medium">
+        <span className="text-xs font-medium text-slate-muted">
           {message.createdAt && dayjs(message.createdAt).format("MMM D")}
         </span>
       </div>
-      <p className="text-[13px] text-ink/80 leading-relaxed line-clamp-2">
+      <p className="line-clamp-2 text-sm leading-relaxed text-ink/80">
         {message.content}
       </p>
     </>

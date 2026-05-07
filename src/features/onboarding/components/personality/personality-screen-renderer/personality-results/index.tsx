@@ -50,7 +50,7 @@ export function PersonalityResults({
             eyebrow="TeamForge read"
             title="How this helps a group"
           />
-          <p className="text-base font-medium leading-relaxed text-ink/82 text-pretty">
+          <p className="text-base leading-relaxed font-medium text-pretty text-ink/82">
             {viewModel.groupRead}
           </p>
         </section>

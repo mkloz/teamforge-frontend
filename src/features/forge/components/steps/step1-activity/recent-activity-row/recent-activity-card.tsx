@@ -86,7 +86,7 @@ export function RecentActivityCard({
         <div className="min-w-0 flex-1">
           <p
             className={cn(
-              "truncate text-xs font-semibold leading-tight",
+              "truncate text-xs leading-tight font-semibold",
               active
                 ? "text-spark-amber"
                 : recommended
@@ -96,7 +96,7 @@ export function RecentActivityCard({
           >
             {activity.title}
           </p>
-          <p className="mt-1 truncate text-micro font-medium leading-none text-muted-foreground">
+          <p className="mt-1 truncate text-micro leading-none font-medium text-muted-foreground">
             {getUsageLabel(activity.count)} -{" "}
             {dayjs(activity.lastUsedAt).fromNow()}
           </p>

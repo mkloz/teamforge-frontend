@@ -1,5 +1,8 @@
 import type { UpdateProfileBasicsDto } from "@/features/onboarding/api/onboarding.api";
-import type { useOnboardingFlowState } from "@/features/onboarding/lib/onboarding-flow-state";
+import {
+  buildOnboardingReturnSearch,
+  type OnboardingReturnSearchParams,
+} from "@/features/onboarding/lib/onboarding-flow-state";
 import type { ProfileBasicsValues } from "@/features/onboarding/schemas/profile-basics.schema";
 import type { User } from "@/shared/schemas";
 
@@ -59,12 +62,8 @@ export function buildProfileBasicsFlowSearch({
   returnTo,
   returnSearch,
   returnSection,
-}: ReturnType<typeof useOnboardingFlowState>) {
-  return {
-    ...(returnTo ? { returnTo } : {}),
-    ...(returnSearch ? { returnSearch } : {}),
-    ...(returnSection ? { returnSection } : {}),
-  };
+}: OnboardingReturnSearchParams) {
+  return buildOnboardingReturnSearch({ returnTo, returnSearch, returnSection });
 }
 
 export function getProfileBasicsNextRoute(nextDestination: string) {

@@ -1,20 +1,24 @@
 import { useEffect } from "react";
 
+import { getBrowserDocumentBody } from "@/shared/lib/browser-environment";
+
 interface UseBodyScrollLockOptions {
   locked: boolean;
 }
 
 export function useBodyScrollLock({ locked }: UseBodyScrollLockOptions) {
   useEffect(() => {
-    if (!locked) {
+    const body = getBrowserDocumentBody();
+
+    if (!locked || !body) {
       return;
     }
 
-    const previousBodyOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const previousBodyOverflow = body.style.overflow;
+    body.style.overflow = "hidden";
 
     return () => {
-      document.body.style.overflow = previousBodyOverflow;
+      body.style.overflow = previousBodyOverflow;
     };
   }, [locked]);
 }

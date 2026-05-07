@@ -8,13 +8,18 @@ interface UseMessageComposerDraftOptions {
   onClearError?: () => void;
 }
 
+interface MessageComposerDraftValue {
+  editingMessageId: string | null;
+  value: string;
+}
+
 export function useMessageComposerDraft({
   errorMessage,
   onClearAttachments,
   onClearError,
 }: UseMessageComposerDraftOptions) {
-  const [draftValue, setDraftValue] = useState({
-    editingMessageId: null as string | null,
+  const [draftValue, setDraftValue] = useState<MessageComposerDraftValue>({
+    editingMessageId: null,
     value: "",
   });
   const previousEditingMessageIdRef = useRef<string | null>(null);

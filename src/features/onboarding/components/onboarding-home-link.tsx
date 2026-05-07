@@ -11,7 +11,7 @@ export function OnboardingHomeLink({ className }: OnboardingHomeLinkProps) {
   return (
     <div
       className={cn(
-        "pointer-events-none absolute right-3 top-3 z-[60] sm:right-5 sm:top-4 lg:right-4 xl:right-5",
+        "pointer-events-none absolute top-3 right-3 z-[60] sm:top-4 sm:right-5 lg:right-4 xl:right-5",
         className,
       )}
     >

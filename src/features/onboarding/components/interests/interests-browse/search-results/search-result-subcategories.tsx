@@ -35,7 +35,7 @@ export function SearchResultSubcategories({
 
   return (
     <div className="flex flex-col gap-1">
-      <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-slate-muted/50 mb-1">
+      <p className="mb-1 font-sans text-[10px] font-bold tracking-widest text-slate-muted/50 uppercase">
         Categories
       </p>
       {results.subcategories.map(({ subcategory, category }) => (
@@ -80,11 +80,11 @@ function SearchResultSubcategoryItem({
   );
 
   return (
-    <div className="rounded-xl border border-slate-muted/15 overflow-hidden transition-colors">
+    <div className="overflow-hidden rounded-xl border border-slate-muted/15 transition-colors">
       <Button
         variant="ghost"
         onClick={onToggleExpanded}
-        className="group flex h-auto w-full min-w-0 items-center justify-start gap-2 rounded-none px-3 py-2.5 text-left"
+        className="group flex h-auto w-full min-w-0 items-center justify-start gap-2 rounded-lg px-3 py-2.5 text-left"
       >
         <div className="flex min-w-0 items-center gap-2">
           <span className="text-slate-muted/60">
@@ -94,7 +94,7 @@ function SearchResultSubcategoryItem({
             <span className="truncate font-sans text-xs font-bold text-ink">
               {subcategory.name}
             </span>
-            <span className="truncate font-sans text-[10px] font-bold uppercase tracking-wider text-slate-muted/50 leading-none">
+            <span className="truncate font-sans text-[10px] leading-none font-bold tracking-wider text-slate-muted/50 uppercase">
               {categoryName}
             </span>
           </div>
@@ -103,7 +103,7 @@ function SearchResultSubcategoryItem({
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="ml-auto mr-2 shrink-0 flex items-center justify-center min-w-5 h-5 px-1.5 font-sans text-xs font-bold bg-forge-teal text-white rounded-full leading-none shadow-teal-glow"
+            className="mr-2 ml-auto flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-forge-teal px-1.5 font-sans text-xs leading-none font-bold text-white shadow-teal-glow"
           >
             {selectedCount}
           </motion.span>
@@ -112,7 +112,7 @@ function SearchResultSubcategoryItem({
           animate={{ rotate: expanded ? 0 : -90 }}
           transition={{ duration: 0.18 }}
           className={cn(
-            "shrink-0 text-slate-muted/40 transition-colors group-hover:text-slate-muted transition-none",
+            "shrink-0 text-slate-muted/40 transition-colors transition-none group-hover:text-slate-muted",
             selectedCount === 0 && "ml-auto",
           )}
         >

@@ -1,5 +1,7 @@
 import { Delaunay } from "d3-delaunay";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useEventListener } from "usehooks-ts";
+
 import {
   ANIMATION_CONFIG,
   GUARD_OFFSETS,
@@ -7,6 +9,20 @@ import {
   NUM_GUARD,
   NUM_SEEDS,
 } from "@/shared/constants/voronoi.constants";
+import {
+  cancelDelay,
+  cancelScheduledAnimationFrame,
+  scheduleAnimationFrame,
+  scheduleDelay,
+} from "@/shared/lib/browser-scheduling";
+import type {
+  ScheduledAnimationFrameHandle,
+  ScheduledDelayHandle,
+} from "@/shared/lib/browser-scheduling";
+import {
+  getBrowserDevicePixelRatio,
+  getBrowserMediaQuery,
+} from "@/shared/lib/browser-environment";
 import { updateParticlePhysics } from "@/shared/lib/voronoi/voronoi-physics";
 import {
   drawCatalystCore,
@@ -35,7 +51,7 @@ export function useVoronoiAnimation({
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointsRef = useRef<Point[]>([]);
-  const requestRef = useRef<number>(0);
+  const requestRef = useRef<ScheduledAnimationFrameHandle | null>(null);
   const dprRef = useRef(1);
   const prefersReducedMotionRef = useRef(false);
 
@@ -44,7 +60,7 @@ export function useVoronoiAnimation({
   const timeRef = useRef(0);
   const startTimeRef = useRef(0); // Set in useEffect
   const typingPulseRef = useRef(0);
-  const typingTimerRef = useRef<number | null>(null);
+  const typingTimerRef = useRef<ScheduledDelayHandle | null>(null);
 
   // Input State Refs
   const progressRef = useRef(progress);
@@ -68,9 +84,9 @@ export function useVoronoiAnimation({
   const pulseTyping = useCallback(() => {
     isTypingRef.current = true;
     if (typingTimerRef.current !== null) {
-      window.clearTimeout(typingTimerRef.current);
+      cancelDelay(typingTimerRef.current);
     }
-    typingTimerRef.current = window.setTimeout(() => {
+    typingTimerRef.current = scheduleDelay(() => {
       isTypingRef.current = false;
       typingTimerRef.current = null;
     }, 800);
@@ -79,7 +95,7 @@ export function useVoronoiAnimation({
   useEffect(() => {
     return () => {
       if (typingTimerRef.current !== null) {
-        window.clearTimeout(typingTimerRef.current);
+        cancelDelay(typingTimerRef.current);
       }
     };
   }, []);
@@ -89,33 +105,37 @@ export function useVoronoiAnimation({
     startTimeRef.current = Date.now();
   }, []);
 
+  const syncDimensions = useCallback(() => {
+    if (!containerRef.current) {
+      return;
+    }
+
+    setDimensions({
+      width: containerRef.current.clientWidth,
+      height: containerRef.current.clientHeight,
+    });
+    dprRef.current = getBrowserDevicePixelRatio();
+  }, []);
+
+  useEventListener("resize", syncDimensions, undefined, { passive: true });
+
   // Handle Container Resizing and Environment Monitoring
   useEffect(() => {
-    const handleResize = () => {
-      if (containerRef.current) {
-        setDimensions({
-          width: containerRef.current.clientWidth,
-          height: containerRef.current.clientHeight,
-        });
-        dprRef.current = window.devicePixelRatio || 1;
-      }
-    };
-
-    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    prefersReducedMotionRef.current = motionQuery.matches;
+    const motionQuery = getBrowserMediaQuery(
+      "(prefers-reduced-motion: reduce)",
+    );
+    prefersReducedMotionRef.current = motionQuery?.matches ?? false;
     const motionListener = (e: MediaQueryListEvent) => {
       prefersReducedMotionRef.current = e.matches;
     };
 
-    handleResize();
-    window.addEventListener("resize", handleResize, { passive: true });
-    motionQuery.addEventListener("change", motionListener);
+    syncDimensions();
+    motionQuery?.addEventListener("change", motionListener);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
-      motionQuery.removeEventListener("change", motionListener);
+      motionQuery?.removeEventListener("change", motionListener);
     };
-  }, []);
+  }, [syncDimensions]);
 
   // Initialize Mouse Targets
   useEffect(() => {
@@ -168,8 +188,13 @@ export function useVoronoiAnimation({
 
   // Main Animation Loop
   useEffect(() => {
-    if (dimensions.width === 0 || dimensions.height === 0 || !canvasRef.current)
+    if (
+      dimensions.width === 0 ||
+      dimensions.height === 0 ||
+      !canvasRef.current
+    ) {
       return;
+    }
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d", { alpha: true });
@@ -298,11 +323,16 @@ export function useVoronoiAnimation({
       canvas.style.transform = `scale(1.25) rotate(${rotationDegrees}deg) translate(${frameX}px, ${frameY}px)`;
 
       ctx.restore();
-      requestRef.current = requestAnimationFrame(animate);
+      requestRef.current = scheduleAnimationFrame(animate);
     };
 
-    requestRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(requestRef.current);
+    requestRef.current = scheduleAnimationFrame(animate);
+
+    return () => {
+      if (requestRef.current) {
+        cancelScheduledAnimationFrame(requestRef.current);
+      }
+    };
   }, [dimensions, rotationDegrees]);
 
   function handleMouseMove(clientX: number, clientY: number) {

@@ -12,7 +12,7 @@ export function EditGroupAvatarSection({
 }: GroupIdentityUploadSectionProps) {
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
         Avatar
       </p>
       <div className="grid gap-3 sm:grid-cols-[4.5rem_1fr]">

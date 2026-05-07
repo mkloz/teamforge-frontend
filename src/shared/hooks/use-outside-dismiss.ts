@@ -1,34 +1,53 @@
 import type { RefObject } from "react";
-import { useEventCallback, useOnClickOutside } from "usehooks-ts";
+import { useEventCallback, useEventListener } from "usehooks-ts";
 
 type OutsideDismissEventType =
   | "mousedown"
   | "mouseup"
+  | "pointerdown"
   | "touchstart"
   | "touchend"
   | "focusin"
   | "focusout";
 
-interface UseOutsideDismissOptions<T extends HTMLElement> {
+interface UseOutsideDismissOptions {
   enabled?: boolean;
   eventType?: OutsideDismissEventType;
   onDismiss: () => void;
-  ref: RefObject<T | null>;
+  ref?: RefObject<HTMLElement | null>;
+  refs?: RefObject<HTMLElement | null> | Array<RefObject<HTMLElement | null>>;
 }
 
-export function useOutsideDismiss<T extends HTMLElement>({
+export function useOutsideDismiss({
   enabled = true,
   eventType = "mousedown",
   onDismiss,
   ref,
-}: UseOutsideDismissOptions<T>) {
-  const handleOutside = useEventCallback(() => {
+  refs,
+}: UseOutsideDismissOptions) {
+  const handleOutside = useEventCallback((event: Event) => {
     if (!enabled) {
+      return;
+    }
+
+    const target = event.target;
+
+    if (!(target instanceof Node)) {
+      return;
+    }
+
+    const boundaryRefs = [
+      ...(ref ? [ref] : []),
+      ...(Array.isArray(refs) ? refs : refs ? [refs] : []),
+    ];
+    const isInside = boundaryRefs.some((ref) => ref.current?.contains(target));
+
+    if (isInside) {
       return;
     }
 
     onDismiss();
   });
 
-  useOnClickOutside(ref as RefObject<T>, handleOutside, eventType);
+  useEventListener(eventType, handleOutside, undefined, { capture: true });
 }

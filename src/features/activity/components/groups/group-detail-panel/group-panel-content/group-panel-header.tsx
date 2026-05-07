@@ -7,7 +7,7 @@ interface GroupPanelHeaderProps {
 
 export function GroupPanelHeader({ onClose }: GroupPanelHeaderProps) {
   return (
-    <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-canvas/80 backdrop-blur-md z-20">
+    <div className="z-20 flex items-center justify-between border-b border-border bg-canvas/80 px-4 py-3 backdrop-blur-md">
       <h3 className="text-sm font-semibold tracking-tight text-foreground">
         Group Info
       </h3>
@@ -15,10 +15,10 @@ export function GroupPanelHeader({ onClose }: GroupPanelHeaderProps) {
         variant="ghost"
         size="icon-xs"
         onClick={onClose}
-        className="text-slate-muted hover:text-ink transition-colors"
+        className="text-slate-muted transition-colors hover:text-ink"
         aria-label="Close panel"
       >
-        <X size={16} />
+        <X className="size-4" />
       </Button>
     </div>
   );

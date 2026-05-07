@@ -17,7 +17,7 @@ export function ProfileIdentity({ user, archetype }: ProfileIdentityProps) {
 
   return (
     <div className="flex min-w-0 flex-1 flex-col items-center justify-center pt-0 sm:items-start">
-      <h1 className="text-center text-3xl font-bold leading-tight tracking-tight text-ink text-balance sm:text-left sm:text-4xl sm:text-white">
+      <h1 className="text-center text-3xl leading-tight font-bold tracking-tight text-balance text-ink sm:text-left sm:text-4xl sm:text-white">
         {user.name}
       </h1>
 
@@ -26,13 +26,13 @@ export function ProfileIdentity({ user, archetype }: ProfileIdentityProps) {
           <span className="text-sm font-semibold">{user.age} yrs</span>
         ) : null}
         {hasAge && hasCity ? (
-          <span className="w-1 h-1 rounded-full bg-slate-muted/30 sm:bg-white/40" />
+          <span className="h-1 w-1 rounded-full bg-slate-muted/30 sm:bg-white/40" />
         ) : null}
         {hasCity ? (
-          <div className="flex items-center gap-1 text-micro font-bold uppercase tracking-widest min-w-0">
+          <div className="flex min-w-0 items-center gap-1 text-micro font-bold tracking-widest uppercase">
             <MapPin
               size={12}
-              className="text-forge-teal sm:text-white/90 shrink-0"
+              className="shrink-0 text-forge-teal sm:text-white/90"
             />
             <span className="truncate">{user.city}</span>
           </div>

@@ -76,6 +76,20 @@ interface CategoryFit {
 }
 
 type WeightedTraits = Map<TemplateTrait, number>;
+const TEMPLATE_TRAIT_VALUES: TemplateTrait[] = [
+  "active",
+  "calm",
+  "creative",
+  "exploratory",
+  "focused",
+  "helpful",
+  "online",
+  "outgoing",
+  "practical",
+  "small-group",
+  "social",
+  "structured",
+];
 
 function resolveTemplateCoverImage(source: TemplateSeed["coverImageSource"]) {
   const normalizedSource = source?.trim();
@@ -230,7 +244,8 @@ function getTemplateTraits(seed: TemplateSeed, category: ActivityOption) {
     addWeightedTrait(traits, "online", 1);
   }
 
-  for (const [trait, keywords] of Object.entries(TRAIT_KEYWORDS)) {
+  for (const trait of TEMPLATE_TRAIT_VALUES) {
+    const keywords = TRAIT_KEYWORDS[trait];
     const matchCount = keywords.filter((keyword) => {
       const normalizedKeyword = getNormalizedPhrase(keyword);
 
@@ -246,11 +261,7 @@ function getTemplateTraits(seed: TemplateSeed, category: ActivityOption) {
     }).length;
 
     if (matchCount > 0) {
-      addWeightedTrait(
-        traits,
-        trait as TemplateTrait,
-        Math.min(1, 0.45 + matchCount * 0.18),
-      );
+      addWeightedTrait(traits, trait, Math.min(1, 0.45 + matchCount * 0.18));
     }
   }
 

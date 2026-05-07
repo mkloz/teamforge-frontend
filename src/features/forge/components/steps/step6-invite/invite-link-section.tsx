@@ -1,6 +1,7 @@
 import { Check, Copy, Link2 } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
+import { copyTextToClipboard } from "@/shared/lib/browser-capabilities";
 import { cn } from "@/shared/lib/utils";
 
 interface InviteLinkSectionProps {
@@ -15,7 +16,7 @@ export function InviteLinkSection({
   onCopyLink,
 }: InviteLinkSectionProps) {
   const handleCopy = () => {
-    void navigator.clipboard?.writeText(INVITE_LINK).catch(() => undefined);
+    void copyTextToClipboard(INVITE_LINK);
     onCopyLink();
   };
 
@@ -26,7 +27,7 @@ export function InviteLinkSection({
           <Link2 size={14} />
         </span>
         <div className="min-w-0">
-          <p className="text-sm font-semibold leading-none text-foreground">
+          <p className="text-sm leading-none font-semibold text-foreground">
             Share access
           </p>
           <p className="mt-1 text-micro leading-none text-muted-foreground/55">

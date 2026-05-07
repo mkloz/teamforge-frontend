@@ -13,12 +13,12 @@ export function BalanceNudge() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -4 }}
       transition={{ duration: 0.2 }}
-      className="flex items-start gap-2.5 mb-4 px-3.5 py-3 bg-spark-amber/5 border border-spark-amber/20 rounded-xl"
+      className="mb-4 flex items-start gap-2.5 rounded-xl border border-spark-amber/20 bg-spark-amber/5 px-3.5 py-3"
     >
-      <div className="text-spark-amber shrink-0 mt-0.5">
+      <div className="mt-0.5 shrink-0 text-spark-amber">
         <Sprout size={16} strokeWidth={2} />
       </div>
-      <p className="font-sans text-xs text-ink leading-snug flex-1">
+      <p className="flex-1 font-sans text-xs leading-snug text-ink">
         You have a strong lane here. A few picks from another area can make the
         profile feel more like the full you.
       </p>

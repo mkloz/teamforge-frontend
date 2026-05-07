@@ -31,7 +31,7 @@ export function ActivityLanesSection({ lanes }: ActivityLanesSectionProps) {
           {lanes.length > defaultVisibleCount ? (
             <button
               type="button"
-              className="inline-flex min-h-11 items-center text-left text-xs font-bold uppercase tracking-widest text-forge-teal transition-colors hover:text-forge-teal/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30"
+              className="inline-flex min-h-11 items-center text-left text-xs font-bold tracking-widest text-forge-teal uppercase transition-colors hover:text-forge-teal/80 focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:outline-none"
               onClick={() => setIsExpanded((value) => !value)}
             >
               {isExpanded

@@ -1,5 +1,6 @@
-import { cn } from "@/shared/lib/utils";
+import { useActivePathname } from "@/features/app-shell/hooks/use-active-pathname";
 import { appBottomNavigation } from "@/features/app-shell/lib/app-navigation";
+import { cn } from "@/shared/lib/utils";
 import { TabButton } from "./tab-button";
 
 interface AppBottomNavProps {
@@ -7,23 +8,30 @@ interface AppBottomNavProps {
 }
 
 export function AppBottomNav({ className }: AppBottomNavProps) {
+  const pathname = useActivePathname();
+
   return (
-    <nav
-      aria-label="Mobile navigation"
+    <div
       className={cn(
-        "fixed bottom-2 left-1/2 z-50",
-        "flex h-14 w-[calc(100dvw-1rem)] max-w-[30rem] -translate-x-1/2 items-stretch md:hidden",
-        "rounded-full bg-background/92 backdrop-blur-2xl",
-        "border border-border/80 shadow-[0_10px_34px_rgba(0,0,0,0.38)]",
-        "safe-area-inset-bottom pointer-events-auto overflow-hidden [contain:layout_paint]",
+        "pointer-events-none fixed inset-x-0 bottom-0 isolate z-100 md:hidden",
+        "px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]",
         className,
       )}
     >
-      <div className="z-10 flex h-full w-full items-center justify-between px-1.5">
-        {appBottomNavigation.map((tab) => (
-          <TabButton key={tab.id} item={tab} />
-        ))}
-      </div>
-    </nav>
+      <nav
+        aria-label="Mobile navigation"
+        className={cn(
+          "pointer-events-auto mx-auto flex h-16 w-full max-w-[21.5rem] items-stretch overflow-hidden rounded-full",
+          "border border-border/75 bg-background/94 shadow-[0_14px_38px_rgba(0,0,0,0.36)] backdrop-blur-2xl",
+          "[contain:layout_paint]",
+        )}
+      >
+        <div className="grid h-full w-full grid-cols-5 items-stretch px-2">
+          {appBottomNavigation.map((tab) => (
+            <TabButton key={tab.id} item={tab} pathname={pathname} />
+          ))}
+        </div>
+      </nav>
+    </div>
   );
 }

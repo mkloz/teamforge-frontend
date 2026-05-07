@@ -21,7 +21,7 @@ export function ForgeLoadingLabel({
           {displayLabel}
         </motion.p>
       </AnimatePresence>
-      <p className="text-micro font-bold uppercase text-muted-foreground">
+      <p className="text-micro font-bold text-muted-foreground uppercase">
         Matching signals
       </p>
       <div className="flex items-center gap-1.5 pt-1" aria-hidden="true">

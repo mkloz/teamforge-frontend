@@ -42,7 +42,7 @@ export function StepOtp({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-2xl border border-border bg-card px-4 py-3 text-sm text-foreground">
+      <div className="rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground">
         <p className="font-medium text-foreground">Check your inbox</p>
         <p className="mt-1 text-slate-muted">
           {otpMessage ??
@@ -54,8 +54,8 @@ export function StepOtp({
         control={control}
         name="otp"
         render={({ field }) => (
-          <FormItem className="space-y-3 mx-auto py-2 w-full">
-            <FormLabel className="font-sans text-sm font-semibold text-ink text-center flex w-full justify-center">
+          <FormItem className="mx-auto w-full space-y-3 py-2">
+            <FormLabel className="flex w-full justify-center text-center font-sans text-sm font-semibold text-ink">
               Verification Code
             </FormLabel>
             <FormControl>
@@ -63,7 +63,7 @@ export function StepOtp({
                 maxLength={6}
                 pattern={REGEXP_ONLY_DIGITS}
                 containerClassName="w-full justify-between"
-                className="w-full flex"
+                className="flex w-full"
                 {...field}
               >
                 <InputOTPGroup className="flex-1 justify-between gap-1 sm:gap-2">
@@ -76,7 +76,7 @@ export function StepOtp({
                   ))}
                 </InputOTPGroup>
 
-                <div className="flex items-center justify-center px-2 text-slate-400 font-medium">
+                <div className="flex items-center justify-center px-2 font-medium text-slate-400">
                   -
                 </div>
 
@@ -91,12 +91,12 @@ export function StepOtp({
                 </InputOTPGroup>
               </InputOTP>
             </FormControl>
-            <FormMessage className="text-xs font-medium text-destructive text-center" />
+            <FormMessage className="text-center text-xs font-medium text-destructive" />
           </FormItem>
         )}
       />
 
-      <Button type="submit" loading={loading} size="lg" className="w-full mt-4">
+      <Button type="submit" loading={loading} size="lg" className="mt-4 w-full">
         I'm ready to forge
         <ArrowRightAnimated />
       </Button>
@@ -118,7 +118,7 @@ export function StepOtp({
         disabled={loading || resendLoading}
         onClick={onBack}
         size="sm"
-        className="mt-2 text-slate-muted hover:text-ink hover:bg-transparent"
+        className="mt-2 text-slate-muted hover:bg-transparent hover:text-ink"
       >
         <ArrowLeft size={14} />
         Go back

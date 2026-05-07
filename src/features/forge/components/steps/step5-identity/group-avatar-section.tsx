@@ -22,19 +22,19 @@ export function GroupAvatarSection({
         <p className="text-xs font-semibold text-muted-foreground">
           Group avatar
         </p>
-        <p className="text-xs text-muted-foreground/60 mt-0.5">
+        <p className="mt-0.5 text-xs text-muted-foreground/60">
           A square icon that identifies your group across the app. Drag and drop
           or tap to upload.
         </p>
       </div>
 
       <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-stretch gap-3 sm:grid-cols-[6rem_1fr]">
-        <div className="relative h-18 w-18 overflow-hidden rounded-xl border border-border bg-muted sm:h-24 sm:w-24 sm:rounded-2xl">
+        <div className="relative h-18 w-18 overflow-hidden rounded-lg border border-border bg-muted sm:h-24 sm:w-24 sm:rounded-xl">
           <Avatar
             src={avatarImage}
             name={groupName || planTitle}
             shape="rounded"
-            className="size-full rounded-xl text-sm sm:rounded-2xl sm:text-lg"
+            className="size-full rounded-lg text-sm sm:rounded-xl sm:text-lg"
           />
           {avatarImage && (
             <Button
@@ -42,7 +42,7 @@ export function GroupAvatarSection({
               variant="ghost"
               size="icon-xs"
               onClick={() => onAvatarImageChange(null)}
-              className="absolute right-1.5 top-1.5 z-20 size-6 rounded-full bg-black/45 text-white hover:bg-black/65 hover:text-white"
+              className="absolute top-1.5 right-1.5 z-20 size-6 rounded-full bg-black/45 text-white hover:bg-black/65 hover:text-white"
               aria-label="Remove avatar"
             >
               <X size={12} />

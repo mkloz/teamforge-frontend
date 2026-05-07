@@ -39,7 +39,7 @@ export function ProgressBarStep({
       <motion.div
         style={{ opacity, scale }}
         className={cn(
-          "w-2 h-2 rounded-full bg-forge-teal transition-all duration-300",
+          "h-2 w-2 rounded-full bg-forge-teal transition-all duration-300",
           "shadow-[0_0_8px_rgba(13,148,136,0.3)] group-hover:shadow-[0_0_12px_rgba(13,148,136,0.5)]",
         )}
       />

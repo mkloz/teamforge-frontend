@@ -1,6 +1,8 @@
 import { useEffect, useEffectEvent, useRef } from "react";
 
 import { realtimeClient } from "@/shared/api/realtime-client";
+import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
+import type { ScheduledDelayHandle } from "@/shared/lib/browser-scheduling";
 
 interface UseChatTypingSignalInput {
   chatId?: string | null;
@@ -25,11 +27,11 @@ export function useChatTypingSignal({
   text,
 }: UseChatTypingSignalInput) {
   const isTypingRef = useRef(false);
-  const stopTimerRef = useRef<number | null>(null);
+  const stopTimerRef = useRef<ScheduledDelayHandle | null>(null);
 
   const clearStopTimer = useEffectEvent(() => {
     if (stopTimerRef.current !== null) {
-      window.clearTimeout(stopTimerRef.current);
+      cancelDelay(stopTimerRef.current);
       stopTimerRef.current = null;
     }
   });
@@ -67,7 +69,7 @@ export function useChatTypingSignal({
       emitTypingStatus(chatId, true);
     }
 
-    stopTimerRef.current = window.setTimeout(() => {
+    stopTimerRef.current = scheduleDelay(() => {
       stopTyping(chatId);
     }, TYPING_STOP_DELAY_MS);
   }, [chatId, isFocused, isPaused, text]);

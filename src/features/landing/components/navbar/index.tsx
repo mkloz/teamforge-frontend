@@ -66,31 +66,30 @@ export function Navbar() {
     <>
       <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-150 dark",
+          "dark fixed top-0 right-0 left-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-150",
           scrolled
-            ? "bg-hero-bg/95 backdrop-blur-md border-b border-white/5"
+            ? "border-b border-white/5 bg-hero-bg/95 backdrop-blur-md"
             : "bg-transparent",
         )}
       >
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+          <button
+            type="button"
+            onClick={() => {
               scrollToLandingTop();
             }}
-            className="flex items-center gap-2 select-none group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-hero-bg rounded-lg px-2 -ml-2 transition-all"
+            className="group -ml-2 flex items-center gap-2 rounded-lg border-0 bg-transparent px-2 transition-all select-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-hero-bg focus-visible:outline-none"
             aria-label="TeamForge home"
           >
-            <TeamForgeLogo className="w-8 h-8" showBackground={false} />
+            <TeamForgeLogo className="h-8 w-8" showBackground={false} />
             <span className="font-sans text-lg font-semibold tracking-tight">
               <span className="text-white">Team</span>
               <span className="text-forge-teal">Forge</span>
             </span>
-          </a>
+          </button>
 
           <nav
-            className="hidden md:flex items-center gap-8"
+            className="hidden items-center gap-8 md:flex"
             aria-label="Main navigation"
           >
             {LANDING_NAV_LINKS.map((link) => (
@@ -98,15 +97,15 @@ export function Navbar() {
                 key={link.id}
                 href={`#${link.id}`}
                 onClick={(e) => handleNavClick(e, link.id)}
-                className="font-sans text-sm font-medium text-text-dark-secondary hover:text-white transition-colors duration-200 relative group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-sm"
+                className="group relative rounded-sm font-sans text-sm font-medium text-text-dark-secondary transition-colors duration-200 hover:text-white focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-transparent focus-visible:outline-none"
               >
                 {link.label}
-                <span className="absolute -bottom-0.5 left-0 right-0 h-px bg-forge-teal scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left" />
+                <span className="absolute right-0 -bottom-0.5 left-0 h-px origin-left scale-x-0 bg-forge-teal transition-transform duration-200 group-hover:scale-x-100" />
               </a>
             ))}
           </nav>
 
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden items-center gap-3 md:flex">
             {isAuthenticated ? (
               <Button
                 variant="outline"
@@ -142,7 +141,7 @@ export function Navbar() {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden text-text-dark-secondary hover:text-white"
+            className="text-text-dark-secondary hover:text-white md:hidden"
             onClick={toggleMenu}
             aria-controls="landing-mobile-navigation"
             aria-expanded={menuOpen}
@@ -157,10 +156,10 @@ export function Navbar() {
         id="landing-mobile-navigation"
         ref={menuRef}
         className={cn(
-          "fixed inset-0 z-40 bg-hero-bg/98 backdrop-blur-lg flex flex-col items-center justify-center gap-8 transition-opacity duration-150 dark",
+          "dark fixed inset-0 z-40 flex flex-col items-center justify-center gap-8 bg-hero-bg/98 backdrop-blur-lg transition-opacity duration-150",
           menuOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none",
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0",
         )}
         aria-hidden={!menuOpen}
         inert={!menuOpen}
@@ -178,10 +177,10 @@ export function Navbar() {
               href={`#${link.id}`}
               onClick={(e) => handleNavClick(e, link.id)}
               className={cn(
-                "font-sans text-2xl font-semibold text-text-dark-secondary hover:text-white transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-4 rounded-md px-4 py-2",
+                "rounded-md px-4 py-2 font-sans text-2xl font-semibold text-text-dark-secondary transition-all duration-300 hover:text-white focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-4 focus-visible:outline-none",
                 menuOpen
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-4",
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0",
                 MOBILE_NAV_LINK_DELAYS[i],
               )}
             >
@@ -189,7 +188,7 @@ export function Navbar() {
             </a>
           ))}
         </nav>
-        <div className="flex flex-col items-center gap-4 w-48">
+        <div className="flex w-48 flex-col items-center gap-4">
           {isAuthenticated ? (
             <Button
               variant="outline"
@@ -197,11 +196,11 @@ export function Navbar() {
               loading={isSigningOut}
               onClick={handleSignOut}
               className={cn(
-                "w-full bg-transparent transition-all duration-300 delay-300",
+                "w-full bg-transparent transition-all delay-300 duration-300",
                 "hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none",
                 menuOpen
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-4",
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0",
               )}
             >
               {isSigningOut ? "Signing out" : "Sign out"}
@@ -212,11 +211,11 @@ export function Navbar() {
               asChild
               size="lg"
               className={cn(
-                "w-full bg-transparent transition-all duration-300 delay-300",
+                "w-full bg-transparent transition-all delay-300 duration-300",
                 "hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none",
                 menuOpen
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-4",
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0",
               )}
             >
               <Link {...secondaryAction.navigation} onClick={closeMenu}>
@@ -229,11 +228,11 @@ export function Navbar() {
             asChild
             size="lg"
             className={cn(
-              "w-full py-6 transition-all duration-300 delay-400",
+              "w-full py-6 transition-all delay-400 duration-300",
               "hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none",
               menuOpen
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4",
+                ? "translate-y-0 opacity-100"
+                : "translate-y-4 opacity-0",
             )}
           >
             <Link {...primaryAction.navigation} onClick={closeMenu}>

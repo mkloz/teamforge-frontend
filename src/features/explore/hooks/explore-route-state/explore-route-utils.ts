@@ -30,7 +30,7 @@ export const CLEAR_FOCUSED_FRIEND_REQUEST_ROUTE = {
 
 export function normalizeCategories(
   categories: ExploreCategory[] | null | undefined,
-) {
+): ExploreCategory[] {
   if (!categories?.length) {
     return DEFAULT_FILTERS.selectedCategories;
   }
@@ -38,7 +38,7 @@ export function normalizeCategories(
   const unique = Array.from(new Set(categories));
 
   if (unique.includes("ALL")) {
-    return ["ALL"] as ExploreCategory[];
+    return ["ALL"];
   }
 
   return unique;
@@ -73,7 +73,7 @@ export function normalizeDistance(distance: number | null | undefined) {
 
 export function normalizeSizeRange(
   sizeRange: [number, number] | null | undefined,
-) {
+): [number, number] {
   if (!sizeRange) {
     return DEFAULT_FILTERS.sizeRange;
   }
@@ -84,7 +84,7 @@ export function normalizeSizeRange(
   );
   const max = Math.min(Math.max(sizeRange[1], min), FILTER_BOUNDARIES.size.max);
 
-  return [min, max] as [number, number];
+  return [min, max];
 }
 
 export function areCategoriesEqual(

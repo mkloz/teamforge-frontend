@@ -37,7 +37,7 @@ export function GroupIdentitySection({
                 name={name}
                 alt={`${name} avatar`}
                 shape="rounded"
-                className="h-20 w-20 rounded-xl bg-muted ring-2 ring-border/30 shadow-lg"
+                className="h-20 w-20 rounded-xl bg-muted shadow-lg ring-2 ring-border/30"
                 imageClassName="transition-[scale,transform] duration-500 group-hover:scale-105"
               />
             </motion.div>
@@ -45,28 +45,28 @@ export function GroupIdentitySection({
         )}
 
         {/* Name and metadata */}
-        <div className="flex-1 min-w-0">
-          <h2 className="text-xl font-bold text-foreground tracking-tight truncate leading-tight">
+        <div className="min-w-0 flex-1">
+          <h2 className="truncate text-xl leading-tight font-bold tracking-tight text-foreground">
             {name}
           </h2>
 
           {/* Member count & Metadata */}
-          <div className="flex items-center flex-wrap gap-x-2.5 gap-y-1 mt-1">
-            <div className="flex items-center gap-1 text-[13px] font-medium text-muted-foreground">
-              <Users size={12} className="text-teal-600/70" />
+          <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1">
+            <div className="flex items-center gap-1 text-sm font-medium text-muted-foreground">
+              <Users className="size-3.5 text-forge-teal/70" />
               <span>
                 {memberCount}{" "}
-                <span className="text-muted-foreground/40 font-normal">/</span>{" "}
+                <span className="font-normal text-muted-foreground/40">/</span>{" "}
                 {maxMembers}{" "}
-                <span className="text-muted-foreground/40 font-normal">
+                <span className="font-normal text-muted-foreground/40">
                   members
                 </span>
               </span>
             </div>
 
-            <span className="text-muted-foreground/20 hidden sm:inline">•</span>
+            <span className="hidden text-muted-foreground/20 sm:inline">•</span>
 
-            <p className="text-[11px] text-muted-foreground/60 font-medium">
+            <p className="text-xs font-medium text-muted-foreground/60">
               Created Mar 4, 2026
             </p>
           </div>
@@ -75,7 +75,7 @@ export function GroupIdentitySection({
 
       {/* Description */}
       {description && (
-        <p className="text-[13px] text-foreground/70 mt-3 leading-relaxed font-normal">
+        <p className="mt-3 text-sm leading-relaxed font-normal text-foreground/70">
           {description}
         </p>
       )}

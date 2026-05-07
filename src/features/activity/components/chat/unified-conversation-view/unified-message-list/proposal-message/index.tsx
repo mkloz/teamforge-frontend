@@ -42,15 +42,15 @@ export const ProposalMessage = memo(function ProposalMessage({
   const summaryText = buildProposalSummaryText(proposal);
 
   return (
-    <div className="relative group overflow-hidden">
+    <div className="group relative overflow-hidden">
       <motion.div
         style={{ opacity, scale, x: message.isOwn ? -20 : 20 }}
         className={cn(
-          "absolute top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-forge-teal/20 text-forge-teal",
+          "absolute top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-forge-teal/20 text-forge-teal",
           message.isOwn ? "right-10" : "left-10",
         )}
       >
-        <Reply size={16} strokeWidth={2.5} />
+        <Reply className="size-4" strokeWidth={2.5} />
       </motion.div>
 
       <motion.div
@@ -63,18 +63,18 @@ export const ProposalMessage = memo(function ProposalMessage({
         onDragEnd={handleDragEnd}
         style={{ x }}
         className={cn(
-          "flex items-end relative z-10 w-full",
+          "relative z-10 flex w-full items-end",
           message.isOwn ? "justify-end" : "justify-start",
         )}
       >
         <div
           className={cn(
-            "flex w-full flex-col group/proposal sm:w-80",
+            "group/proposal flex w-full flex-col sm:w-80",
             message.isOwn ? "ml-auto items-end" : "mr-auto items-start",
           )}
         >
           {!message.isOwn && showSender && (
-            <p className="text-micro font-bold text-forge-teal mb-0.5 ml-1.5 tracking-tight opacity-90">
+            <p className="mb-0.5 ml-1.5 text-micro font-bold tracking-tight text-forge-teal opacity-90">
               {message.sender?.name || proposal.proposer.name}
             </p>
           )}
@@ -116,11 +116,11 @@ export const ProposalMessage = memo(function ProposalMessage({
             </div>
 
             <div className="flex items-center justify-end gap-2 border-t border-border/5 px-3 py-1.5">
-              <span className="text-nano font-bold uppercase tabular-nums text-slate-muted">
+              <span className="text-nano font-bold text-slate-muted uppercase tabular-nums">
                 {formatChatTime(message.createdAt)}
               </span>
               {message.status === "READ" && (
-                <ThumbsUp size={10} className="text-spark-amber" />
+                <ThumbsUp className="size-3 text-spark-amber" />
               )}
             </div>
           </div>

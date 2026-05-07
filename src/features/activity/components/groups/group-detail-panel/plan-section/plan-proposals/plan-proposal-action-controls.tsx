@@ -37,7 +37,7 @@ export function PlanProposalActionControls({
 
   if (hasVoted) {
     return (
-      <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+      <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
         Vote recorded
       </span>
     );

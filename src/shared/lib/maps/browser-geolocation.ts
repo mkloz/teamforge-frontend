@@ -1,6 +1,11 @@
+import { hasBrowserNavigator } from "@/shared/lib/browser-environment";
 import type { Coordinates } from "@/shared/lib/maps/location.types";
 
 export function isGeolocationAvailable() {
+  if (!hasBrowserNavigator()) {
+    return false;
+  }
+
   return Boolean(navigator.geolocation);
 }
 

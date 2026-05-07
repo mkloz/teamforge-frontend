@@ -34,26 +34,26 @@ export function PersonalityIntro({
     <PersonalityScreenShell className="max-w-md pt-10 sm:pt-12">
       <motion.p
         variants={fadeUpItem}
-        className="mb-3 text-center font-sans text-xs font-bold uppercase tracking-[0.18em] text-forge-teal"
+        className="mb-3 text-center font-sans text-xs font-bold tracking-[0.18em] text-forge-teal uppercase"
       >
         Personality Assessment
       </motion.p>
 
       <motion.h1
         variants={fadeUpItem}
-        className="mb-4 text-center font-sans text-2xl font-extrabold leading-tight text-ink text-balance sm:text-display-lg"
+        className="mb-4 text-center font-sans text-2xl leading-tight font-extrabold text-balance text-ink sm:text-display-lg"
       >
         What makes you, you?
       </motion.h1>
 
       <motion.div variants={fadeUpItem} className="text-left">
-        <p className="mb-3 font-sans text-sm font-medium leading-relaxed text-muted-foreground text-pretty sm:text-[0.95rem]">
+        <p className="mb-3 font-sans text-sm leading-relaxed font-medium text-pretty text-muted-foreground sm:text-[0.95rem]">
           Before we build your group, we want to understand how your mind works
           – the core of your personality.
         </p>
-        <p className="mb-6 font-sans text-xs leading-relaxed text-muted-foreground text-pretty sm:text-sm">
+        <p className="mb-6 font-sans text-xs leading-relaxed text-pretty text-muted-foreground sm:text-sm">
           This is the{" "}
-          <span className="text-ink font-semibold">IPIP Assessment</span> – a
+          <span className="font-semibold text-ink">IPIP Assessment</span> – a
           scientifically validated framework. The result shapes your group
           matches and gives you a framework for understanding yourself.
         </p>
@@ -61,7 +61,7 @@ export function PersonalityIntro({
 
       <motion.div
         variants={fadeUpItem}
-        className="w-full mb-6 h-px bg-slate-100 dark:bg-white/10"
+        className="mb-6 h-px w-full bg-slate-100 dark:bg-white/10"
       />
 
       <motion.div
@@ -70,7 +70,7 @@ export function PersonalityIntro({
       >
         {BENEFITS.map(({ icon: Icon, text }) => (
           <div key={text} className="flex items-start gap-3.5">
-            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-forge-teal/10">
+            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10">
               <Icon size={14} strokeWidth={2.5} className="text-forge-teal" />
             </div>
             <p className="font-sans text-xs leading-relaxed text-muted-foreground sm:text-sm">

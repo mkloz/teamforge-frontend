@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent, KeyboardEvent } from "react";
 
 import { useGoogleMapsStatus } from "@/shared/hooks/use-google-maps-status";
+import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
 import {
   getCurrentCoordinates,
   isGeolocationAvailable,
@@ -85,7 +86,7 @@ export function useAddressAutocomplete({
     }
 
     let active = true;
-    const handle = setTimeout(() => {
+    const handle = scheduleDelay(() => {
       getPlacePredictions(inputValue.trim())
         .then((nextSuggestions) => {
           if (!active || skipPredictionsForValueRef.current !== null) {
@@ -111,7 +112,7 @@ export function useAddressAutocomplete({
 
     return () => {
       active = false;
-      clearTimeout(handle);
+      cancelDelay(handle);
     };
   }, [inputValue, isSettledResolvedValue, mapsReady]);
 

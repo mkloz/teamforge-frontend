@@ -29,8 +29,8 @@ export function AuthSupportShell({
   footer,
 }: AuthSupportShellProps) {
   return (
-    <div className="h-screen w-full max-h-dvh flex flex-col lg:flex-row relative overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 h-16 lg:h-24 flex items-center px-4 lg:px-10 z-30 pointer-events-none">
+    <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
+      <div className="pointer-events-none absolute top-0 right-0 left-0 z-30 flex h-16 items-center px-4 lg:h-24 lg:px-10">
         <Button
           variant="inverseGhost"
           asChild
@@ -47,19 +47,19 @@ export function AuthSupportShell({
         </Button>
       </div>
 
-      <div className="hidden lg:flex flex-1 relative bg-hero-bg border-r border-border items-center justify-center overflow-hidden h-full">
+      <div className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-r border-border bg-hero-bg lg:flex">
         <VoronoiCatalyst progress={0.68} />
       </div>
 
-      <div className="flex-1 relative flex flex-col h-full overflow-hidden">
+      <div className="relative flex h-full flex-1 flex-col overflow-hidden">
         <BackgroundTexture />
 
-        <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-4 scroll-smooth relative z-10">
-          <div className="flex flex-col items-center justify-center w-full min-h-full pt-20 pb-10 lg:py-8">
+        <div className="relative z-10 flex-1 overflow-x-hidden overflow-y-auto scroll-smooth px-4 pb-4">
+          <div className="flex min-h-full w-full flex-col items-center justify-center pt-20 pb-10 lg:py-8">
             <div className="w-full max-w-sm px-2 sm:px-10 lg:p-0">
-              <div className="rounded-[28px] border border-border/70 bg-card/95 backdrop-blur-xl shadow-[0_24px_80px_rgba(28,28,26,0.12)] p-6 sm:p-8">
+              <div className="rounded-xl border border-border/70 bg-card/95 p-6 shadow-[0_24px_80px_rgba(28,28,26,0.12)] backdrop-blur-xl sm:p-8">
                 <div className="space-y-2 text-center">
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-forge-teal">
+                  <p className="text-xs font-semibold tracking-[0.22em] text-forge-teal uppercase">
                     TeamForge
                   </p>
                   <h1 className="text-2xl font-semibold tracking-tight text-foreground">

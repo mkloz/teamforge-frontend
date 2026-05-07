@@ -16,7 +16,7 @@ const locationValues = ["ALL", "IN_PERSON", "ONLINE"] as const;
 const accessValues = ["ALL", "OPEN", "BY_REQUEST"] as const;
 const sortValues = ["MATCH", "SOONEST", "NEWEST"] as const;
 
-const parseAsSizeRange = createParser({
+const parseAsSizeRange = createParser<[number, number]>({
   parse(value) {
     const [min, max] = value.split("-").map((part) => Number(part));
 
@@ -30,7 +30,7 @@ const parseAsSizeRange = createParser({
       return null;
     }
 
-    return [min, max] as [number, number];
+    return [min, max];
   },
   serialize(value) {
     return `${value[0]}-${value[1]}`;

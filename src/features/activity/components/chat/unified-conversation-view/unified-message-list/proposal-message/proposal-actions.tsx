@@ -33,7 +33,7 @@ export const ProposalActions = memo(function ProposalActions({
       <Button
         variant="outline"
         size="sm"
-        className="h-9 flex-1 text-micro font-black uppercase tracking-wider"
+        className="h-9 flex-1 text-micro font-black tracking-wider uppercase"
         disabled={isSubmitting}
         onClick={onWithdraw}
       >
@@ -56,7 +56,7 @@ export const ProposalActions = memo(function ProposalActions({
       <Button
         variant="secondary"
         size="sm"
-        className="h-9 flex-1 text-micro font-black uppercase tracking-wider text-ink border-amber-500/20"
+        className="h-9 flex-1 border-amber-500/20 text-micro font-black tracking-wider text-ink uppercase"
         disabled={isSubmitting}
         onClick={onApprove}
       >
@@ -66,7 +66,7 @@ export const ProposalActions = memo(function ProposalActions({
       <Button
         variant="subtle"
         size="sm"
-        className="h-9 flex-1 text-micro font-black uppercase tracking-wider border-slate-muted/20"
+        className="h-9 flex-1 border-slate-muted/20 text-micro font-black tracking-wider uppercase"
         disabled={isSubmitting}
         onClick={onReject}
       >

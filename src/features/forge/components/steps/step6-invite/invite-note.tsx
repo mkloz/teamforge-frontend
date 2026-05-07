@@ -20,7 +20,7 @@ export function InviteNote({ forgeMode, inviteeCount }: InviteNoteProps) {
     <section className="space-y-3 border-t border-border/25 pt-4">
       <div className="flex items-center justify-between gap-3 px-0.5">
         <div className="min-w-0">
-          <p className="text-sm font-semibold leading-none text-foreground">
+          <p className="text-sm leading-none font-semibold text-foreground">
             What happens next
           </p>
           <p className="mt-1 text-micro leading-none text-muted-foreground/55">
@@ -109,7 +109,7 @@ function NextStepItem({
       <div className="min-w-0">
         <p
           className={cn(
-            "text-sm font-semibold leading-tight",
+            "text-sm leading-tight font-semibold",
             active
               ? amber
                 ? "text-spark-amber"

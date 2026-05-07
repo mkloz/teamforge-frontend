@@ -41,25 +41,25 @@ export const HeaderInfo = memo(
       )}
     >
       {/* Avatar Section - Premium Rounded Squares for Groups, Circles for Users */}
-      <div className="relative shrink-0 flex items-center justify-center">
+      <div className="relative flex shrink-0 items-center justify-center">
         <Avatar
           src={avatarUrl}
           name={title}
           shape={isGroup ? "rounded" : "circle"}
           className={cn(
             "relative transition-all duration-300 group-hover/header-info:shadow-sm",
-            isGroup ? "w-10 h-10 rounded-md" : "w-10 h-10",
+            isGroup ? "h-10 w-10 rounded-md" : "h-10 w-10",
           )}
           imageClassName="transition-[scale,transform] duration-700 ease-out group-hover/header-info:scale-110"
-          fallbackClassName="bg-muted text-[10px] text-muted-foreground"
+          fallbackClassName="bg-muted text-xs text-muted-foreground"
           loading="eager"
         >
-          <div className="absolute inset-0 bg-ink/0 group-hover/header-info:bg-ink/5 transition-colors" />
+          <div className="absolute inset-0 bg-ink/0 transition-colors group-hover/header-info:bg-ink/5" />
         </Avatar>
 
         {/* Secondary indicator (Group member or Online Status) */}
         {isGroup && secondaryAvatar ? (
-          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-lg overflow-hidden z-10 transition-transform duration-300 group-hover/header-info:translate-x-0.5 group-hover/header-info:translate-y-0.5 shadow-sm">
+          <div className="absolute -right-0.5 -bottom-0.5 z-10 size-3 overflow-hidden rounded-lg shadow-sm transition-transform duration-300 group-hover/header-info:translate-x-0.5 group-hover/header-info:translate-y-0.5">
             <Avatar
               src={secondaryAvatar}
               alt=""
@@ -71,12 +71,12 @@ export const HeaderInfo = memo(
         ) : !isGroup && onlineStatus ? (
           <span
             className={cn(
-              "absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-canvas shadow-none transition-all duration-300",
+              "absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 border-canvas shadow-none transition-all duration-300",
               onlineStatus === "ONLINE"
-                ? "bg-forge-teal scale-100"
+                ? "scale-100 bg-forge-teal"
                 : onlineStatus === "AWAY"
-                  ? "bg-spark-amber scale-100"
-                  : "bg-slate-muted/40 scale-90 opacity-50",
+                  ? "scale-100 bg-spark-amber"
+                  : "scale-90 bg-slate-muted/40 opacity-50",
             )}
             title={onlineStatus === "ONLINE" ? "Online" : "Away"}
           />
@@ -84,16 +84,13 @@ export const HeaderInfo = memo(
       </div>
 
       {/* Title & Subtitle Section */}
-      <div className="min-w-0 flex-1 flex flex-col justify-center h-10">
-        <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
-          <h2 className="text-[14px] font-bold text-foreground tracking-tight truncate leading-tight group-hover/header-info:text-primary transition-colors duration-300">
+      <div className="flex h-10 min-w-0 flex-1 flex-col justify-center">
+        <div className="flex min-w-0 items-center gap-1.5 overflow-hidden">
+          <h2 className="truncate text-sm leading-tight font-bold tracking-tight text-foreground transition-colors duration-300 group-hover/header-info:text-primary">
             {title}
           </h2>
           {isGroup && (
-            <ChevronRight
-              size={14}
-              className="text-slate-muted/30 group-hover/header-info:text-primary/60 group-hover/header-info:translate-x-0.5 transition-all duration-300 shrink-0"
-            />
+            <ChevronRight className="size-3.5 shrink-0 text-slate-muted/30 transition-all duration-300 group-hover/header-info:translate-x-0.5 group-hover/header-info:text-primary/60" />
           )}
         </div>
 
@@ -105,9 +102,9 @@ export const HeaderInfo = memo(
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -3 }}
               transition={{ duration: 0.2 }}
-              className="flex items-center gap-1.5 mt-0.5"
+              className="mt-0.5 flex items-center gap-1.5"
             >
-              <p className="text-[11px] font-bold text-forge-teal leading-tight truncate">
+              <p className="truncate text-xs leading-tight font-bold text-forge-teal">
                 {typingText}
               </p>
               <UnifiedTypingIndicator
@@ -122,7 +119,7 @@ export const HeaderInfo = memo(
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -3 }}
               transition={{ duration: 0.2 }}
-              className="text-[12px] font-medium text-slate-muted/80 leading-tight mt-0.5 truncate"
+              className="mt-0.5 truncate text-xs leading-tight font-medium text-slate-muted/80"
             >
               {subtitle}
             </motion.p>

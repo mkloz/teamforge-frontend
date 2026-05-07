@@ -13,6 +13,10 @@ export function useGoogleMapsStatus() {
   );
 
   useEffect(() => {
+    if (!hasGoogleMapsApiKey()) {
+      return;
+    }
+
     let cancelled = false;
 
     loadGoogleMaps()

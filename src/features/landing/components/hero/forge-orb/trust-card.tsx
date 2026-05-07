@@ -16,13 +16,13 @@ export function TrustCard() {
         ease: "easeInOut",
       }}
       className={cn(
-        "rounded-2xl px-4 py-3.5 w-37.5",
-        "bg-[#0a1212]/80 backdrop-blur-xl border border-forge-teal/20",
+        "w-37.5 rounded-xl px-4 py-3.5",
+        "border border-forge-teal/20 bg-[#0a1212]/80 backdrop-blur-xl",
         "shadow-[0_12px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.04)]",
       )}
       aria-hidden="true"
     >
-      <p className="text-forge-teal text-nano font-semibold font-sans mb-2.5 uppercase tracking-[0.15em] opacity-90">
+      <p className="mb-2.5 font-sans text-nano font-semibold tracking-[0.15em] text-forge-teal uppercase opacity-90">
         Trust Score
       </p>
       <div className="flex items-center gap-2.5">
@@ -73,10 +73,10 @@ export function TrustCard() {
           </text>
         </svg>
         <div>
-          <p className="text-text-dark-muted text-nano font-sans leading-snug">
+          <p className="font-sans text-nano leading-snug text-text-dark-muted">
             Verified
           </p>
-          <p className="text-forge-teal-light text-nano font-semibold font-sans leading-snug">
+          <p className="font-sans text-nano leading-snug font-semibold text-forge-teal-light">
             Reliable
           </p>
         </div>

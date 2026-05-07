@@ -6,7 +6,7 @@ export function HostMemberRow() {
           You
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold leading-tight text-foreground">
+          <p className="text-sm leading-tight font-semibold text-foreground">
             You
           </p>
           <p className="mt-1 text-xs leading-snug text-muted-foreground">
@@ -16,7 +16,7 @@ export function HostMemberRow() {
       </div>
 
       <div className="flex items-center justify-between gap-3">
-        <span className="text-micro font-semibold uppercase tracking-wide text-forge-teal">
+        <span className="text-micro font-semibold tracking-wide text-forge-teal uppercase">
           Group owner
         </span>
         <span className="rounded-full border border-forge-teal/25 bg-forge-teal/10 px-2 py-0.5 text-micro font-bold text-forge-teal">

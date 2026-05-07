@@ -56,8 +56,8 @@ export const ChatStatusBar = memo(function ChatStatusBar({
   return (
     <div
       className={cn(
-        "relative flex items-center gap-2 pl-4 pr-2 py-1.5 min-h-0",
-        "w-full shrink-0 z-90",
+        "relative flex min-h-0 items-center gap-2 py-1.5 pr-2 pl-4",
+        "z-90 w-full shrink-0",
         "border-b border-border/50",
         "bg-canvas dark:bg-canvas",
       )}
@@ -77,15 +77,14 @@ export const ChatStatusBar = memo(function ChatStatusBar({
         onClick={handleBarClick}
         className={cn(
           "group h-auto min-w-0 flex-1 justify-start gap-2 p-0 text-left",
-          "select-none rounded-md",
+          "rounded-lg select-none",
           "transition-colors duration-150",
-          "focus-visible:ring-inset focus-visible:ring-forge-teal/40",
+          "focus-visible:ring-forge-teal/40 focus-visible:ring-inset",
         )}
       >
         <Icon
-          size={13}
           strokeWidth={2}
-          className={cn("shrink-0 opacity-90", activeEntry.colorClass)}
+          className={cn("size-3.5 shrink-0 opacity-90", activeEntry.colorClass)}
           aria-hidden
         />
 
@@ -107,18 +106,18 @@ export const ChatStatusBar = memo(function ChatStatusBar({
             >
               <span
                 className={cn(
-                  "shrink-0 text-[10px] font-semibold uppercase tracking-widest leading-none",
+                  "shrink-0 text-xs leading-none font-semibold tracking-wider uppercase",
                   activeEntry.colorClass,
                 )}
               >
                 {activeEntry.label}
               </span>
 
-              <span className="shrink-0 text-slate-muted/50 text-[10px] leading-none">
+              <span className="shrink-0 text-xs leading-none text-slate-muted/50">
                 ·
               </span>
 
-              <span className="truncate text-xs font-medium leading-none text-ink/75 dark:text-ink/65">
+              <span className="truncate text-xs leading-none font-medium text-ink/75 dark:text-ink/65">
                 {activeEntry.body}
               </span>
             </motion.span>
@@ -126,15 +125,14 @@ export const ChatStatusBar = memo(function ChatStatusBar({
         </span>
       </Button>
 
-      <div className="shrink-0 flex items-center">
+      <div className="flex shrink-0 items-center">
         {activeEntry.isPlan ? (
           // Wrap in same w-6 h-6 as the unpin button so both branches
           // produce identical height, preventing the plan entry being shorter.
-          <div className="flex items-center justify-center w-6 h-6">
+          <div className="flex size-6 items-center justify-center">
             <ChevronRight
-              size={14}
               strokeWidth={1.5}
-              className="text-slate-muted/40 group-hover:text-slate-muted transition-colors duration-150"
+              className="size-3.5 text-slate-muted/40 transition-colors duration-150 group-hover:text-slate-muted"
               aria-hidden
             />
           </div>
@@ -147,14 +145,14 @@ export const ChatStatusBar = memo(function ChatStatusBar({
               aria-label="Unpin message"
               onClick={handleUnpin}
               className={cn(
-                "h-6 w-6 rounded-full",
+                "size-7 rounded-full",
                 "text-slate-muted/60",
-                "hover:text-ink hover:bg-muted/80",
+                "hover:bg-muted/80 hover:text-ink",
                 "transition-colors duration-150",
                 "focus-visible:ring-forge-teal/40",
               )}
             >
-              <X size={12} strokeWidth={2} />
+              <X className="size-3.5" strokeWidth={2} />
             </Button>
           )
         )}

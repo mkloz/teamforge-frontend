@@ -78,13 +78,13 @@ export function TagPill({
               className={cn(
                 "size-2.5 shrink-0 text-white transition duration-200 ease-out sm:size-3",
                 selected
-                  ? "opacity-100 scale-100 translate-x-0"
-                  : "opacity-0 scale-50 -translate-x-2",
+                  ? "translate-x-0 scale-100 opacity-100"
+                  : "-translate-x-2 scale-50 opacity-0",
               )}
             />
           </div>
 
-          <span className="flex min-h-3.5 min-w-0 max-w-[8.25rem] items-center justify-center truncate text-center leading-[1.1] sm:min-h-4 sm:max-w-none">
+          <span className="flex min-h-3.5 max-w-[8.25rem] min-w-0 items-center justify-center truncate text-center leading-[1.1] sm:min-h-4 sm:max-w-none">
             {label}
           </span>
 
@@ -106,7 +106,7 @@ export function TagPill({
                 className="group/dismiss size-3.5 rounded-full p-0 hover:bg-slate-muted/10 sm:size-4"
               >
                 <X
-                  className="text-slate-muted/60 group-hover/dismiss:text-slate-muted transition-colors"
+                  className="text-slate-muted/60 transition-colors group-hover/dismiss:text-slate-muted"
                   strokeWidth={3}
                 />
               </Button>

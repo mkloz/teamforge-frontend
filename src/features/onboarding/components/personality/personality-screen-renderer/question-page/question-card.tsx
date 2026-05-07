@@ -25,14 +25,14 @@ export function QuestionCard({
   return (
     <div
       className={cn(
-        "relative w-full p-4 transition-all duration-300 bg-card sm:rounded-2xl rounded-xl border border-border shadow-xs",
+        "relative w-full rounded-xl border border-border bg-card p-4 shadow-xs transition-all duration-300",
         answered
           ? "border-forge-teal/30 bg-forge-teal/6 shadow-sm"
-          : "hover:shadow-sm sm:hover:shadow-md active:bg-slate-50/50 dark:active:bg-white/5",
+          : "hover:shadow-sm active:bg-slate-50/50 sm:hover:shadow-md dark:active:bg-white/5",
       )}
     >
-      <div className="flex items-center justify-between mb-2.5 sm:mb-3 h-5 sm:h-6">
-        <span className="inline-flex items-center font-sans text-nano font-bold uppercase tracking-widest rounded-full px-2 py-0.5 sm:px-2.5 sm:py-1 bg-slate-500/10 text-muted-foreground">
+      <div className="mb-2.5 flex h-5 items-center justify-between sm:mb-3 sm:h-6">
+        <span className="inline-flex items-center rounded-full bg-slate-500/10 px-2 py-0.5 font-sans text-nano font-bold tracking-widest text-muted-foreground uppercase sm:px-2.5 sm:py-1">
           Q {index} of {totalQuestions}
         </span>
 
@@ -43,16 +43,16 @@ export function QuestionCard({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
-              className="inline-flex items-center gap-1 font-sans text-nano font-bold uppercase tracking-wider rounded-full px-2 py-0.5 sm:px-2.5 sm:py-1 bg-forge-teal/10 text-forge-teal"
+              className="inline-flex items-center gap-1 rounded-full bg-forge-teal/10 px-2 py-0.5 font-sans text-nano font-bold tracking-wider text-forge-teal uppercase sm:px-2.5 sm:py-1"
             >
-              <Check size={9} strokeWidth={3} className="sm:w-2.5 sm:h-2.5" />
+              <Check size={9} strokeWidth={3} className="sm:h-2.5 sm:w-2.5" />
               Done
             </motion.span>
           )}
         </AnimatePresence>
       </div>
 
-      <h3 className="font-sans text-sm sm:text-base font-semibold leading-snug mb-3 sm:mb-5 text-pretty text-ink">
+      <h3 className="mb-3 font-sans text-sm leading-snug font-semibold text-pretty text-ink sm:mb-5 sm:text-base">
         {question.text}
       </h3>
 

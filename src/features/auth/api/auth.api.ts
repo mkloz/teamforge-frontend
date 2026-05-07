@@ -45,10 +45,17 @@ const REGISTER_PROFILE_GENDER_MAP = {
 function normalizeGender(
   gender: RegisterValues["gender"],
 ): RegisterDto["gender"] {
-  return (
-    REGISTER_PROFILE_GENDER_MAP[
-      gender as keyof typeof REGISTER_PROFILE_GENDER_MAP
-    ] ?? "OTHER"
+  return isRegisterProfileGender(gender)
+    ? REGISTER_PROFILE_GENDER_MAP[gender]
+    : "OTHER";
+}
+
+function isRegisterProfileGender(
+  gender: string,
+): gender is keyof typeof REGISTER_PROFILE_GENDER_MAP {
+  return Object.prototype.hasOwnProperty.call(
+    REGISTER_PROFILE_GENDER_MAP,
+    gender,
   );
 }
 

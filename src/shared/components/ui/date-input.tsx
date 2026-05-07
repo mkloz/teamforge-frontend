@@ -3,19 +3,12 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-} from "react";
+import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { Button } from "@/shared/components/ui/button";
 import { Input, type InputProps } from "@/shared/components/ui/input";
-import { useEscapeKey } from "@/shared/hooks/use-escape-key";
+import { useFloatingInputPanel } from "@/shared/hooks/use-floating-input-panel";
 import { cn } from "@/shared/lib/utils";
 
 type DateInputProps = Omit<
@@ -111,36 +104,6 @@ function isYearOutOfRange(year: number, min?: string, max?: string) {
   return (min != null && lastDay < min) || (max != null && firstDay > max);
 }
 
-function getPanelPosition(
-  anchor: HTMLElement,
-  panelWidth: number,
-  panelHeight: number,
-): CSSProperties {
-  const rect = anchor.getBoundingClientRect();
-  const gap = 8;
-  const viewportPadding = 8;
-  const availableWidth = window.innerWidth - viewportPadding * 2;
-  const resolvedWidth = Math.min(
-    availableWidth,
-    Math.max(panelWidth, rect.width),
-  );
-  const left = Math.min(
-    Math.max(viewportPadding, rect.left),
-    window.innerWidth - resolvedWidth - viewportPadding,
-  );
-  const hasRoomBelow = rect.bottom + gap + panelHeight < window.innerHeight;
-  const top = hasRoomBelow
-    ? rect.bottom + gap
-    : Math.max(viewportPadding, rect.top - panelHeight - gap);
-
-  return {
-    left,
-    position: "fixed",
-    top,
-    width: resolvedWidth,
-  };
-}
-
 function DateInput({
   className,
   clearable = true,
@@ -156,11 +119,19 @@ function DateInput({
   const selectedDate = parseDateValue(value);
   const todayValue = toDateValue(new Date());
   const [calendarView, setCalendarView] = useState<CalendarView>("days");
-  const [open, setOpen] = useState(false);
   const [visibleMonth, setVisibleMonth] = useState(selectedDate ?? new Date());
-  const [panelStyle, setPanelStyle] = useState<CSSProperties | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const panelRef = useRef<HTMLDivElement | null>(null);
+  const {
+    closePanel,
+    open,
+    openPanel,
+    panelRef,
+    panelStyle,
+    portalTarget,
+    triggerRef,
+  } = useFloatingInputPanel({
+    panelHeight: 360,
+    panelWidth: 288,
+  });
   const monthLabel = new Intl.DateTimeFormat("en", {
     month: "long",
     year: "numeric",
@@ -175,55 +146,11 @@ function DateInput({
     [yearRangeStart],
   );
 
-  useEscapeKey({ enabled: open, onEscape: () => setOpen(false) });
-
-  const updatePanelPosition = useCallback(() => {
-    if (!containerRef.current) {
-      return;
-    }
-
-    setPanelStyle(getPanelPosition(containerRef.current, 288, 360));
-  }, []);
-
   const openCalendar = () => {
     setVisibleMonth(selectedDate ?? new Date());
     setCalendarView("days");
-    updatePanelPosition();
-    setOpen(true);
+    openPanel();
   };
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const handlePointerDown = (event: PointerEvent) => {
-      const target = event.target;
-
-      if (!(target instanceof Node)) {
-        return;
-      }
-
-      if (
-        containerRef.current?.contains(target) ||
-        panelRef.current?.contains(target)
-      ) {
-        return;
-      }
-
-      setOpen(false);
-    };
-
-    window.addEventListener("resize", updatePanelPosition);
-    window.addEventListener("scroll", updatePanelPosition, true);
-    document.addEventListener("pointerdown", handlePointerDown, true);
-
-    return () => {
-      window.removeEventListener("resize", updatePanelPosition);
-      window.removeEventListener("scroll", updatePanelPosition, true);
-      document.removeEventListener("pointerdown", handlePointerDown, true);
-    };
-  }, [open, updatePanelPosition]);
 
   const moveVisibleRange = (amount: number) => {
     setVisibleMonth((current) => {
@@ -275,11 +202,11 @@ function DateInput({
     }
 
     onValueChange(nextValue);
-    setOpen(false);
+    closePanel();
   };
 
   return (
-    <div ref={containerRef} className={cn("relative w-full", wrapperClassName)}>
+    <div ref={triggerRef} className={cn("relative w-full", wrapperClassName)}>
       <Input
         {...props}
         readOnly
@@ -308,7 +235,7 @@ function DateInput({
         }}
       />
 
-      {open && panelStyle && typeof document !== "undefined"
+      {open && panelStyle && portalTarget
         ? createPortal(
             <div
               ref={panelRef}
@@ -369,7 +296,7 @@ function DateInput({
                   {weekdays.map((weekday) => (
                     <span
                       key={weekday}
-                      className="py-1 text-[10px] font-black uppercase tracking-wide text-slate-muted"
+                      className="py-1 text-xs font-black tracking-wide text-slate-muted uppercase"
                     >
                       {weekday}
                     </span>
@@ -486,7 +413,7 @@ function DateInput({
                     size="xs"
                     onClick={() => {
                       onValueChange("");
-                      setOpen(false);
+                      closePanel();
                     }}
                   >
                     Clear
@@ -494,7 +421,7 @@ function DateInput({
                 ) : null}
               </div>
             </div>,
-            document.body,
+            portalTarget,
           )
         : null}
     </div>

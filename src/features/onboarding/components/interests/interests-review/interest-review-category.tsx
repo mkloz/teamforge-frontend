@@ -20,15 +20,15 @@ export function InterestReviewCategory({
   onRemove,
 }: InterestReviewCategoryProps) {
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-      <div className="flex items-center gap-2 mb-3 px-1">
+    <div className="animate-in duration-500 fade-in slide-in-from-bottom-2">
+      <div className="mb-3 flex items-center gap-2 px-1">
         <div
           className={cn(
-            "w-1.5 h-1.5 rounded-full shadow-sm",
+            "h-1.5 w-1.5 rounded-full shadow-sm",
             getCategoryColorClass(category.id),
           )}
         />
-        <span className="font-sans text-[10px] font-bold uppercase tracking-[0.14em] text-slate-muted/60">
+        <span className="font-sans text-[10px] font-bold tracking-[0.14em] text-slate-muted/60 uppercase">
           {category.name}
         </span>
       </div>
@@ -56,7 +56,7 @@ export function InterestReviewCategory({
                 onClick={() => onRemove(id)}
                 className="min-w-0"
               >
-                <span className="min-w-0 max-w-[8.25rem] truncate leading-none sm:max-w-none">
+                <span className="max-w-[8.25rem] min-w-0 truncate leading-none sm:max-w-none">
                   {tag.name}
                 </span>
                 <X

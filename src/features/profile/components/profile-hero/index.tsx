@@ -13,7 +13,7 @@ export function ProfileHero({ user, archetype, socialRead }: ProfileHeroProps) {
   const hasBio = Boolean(user.bio?.trim());
 
   return (
-    <div className="relative z-0 flex w-full flex-col pb-4 sm:pb-8 sm:px-0">
+    <div className="relative z-0 flex w-full flex-col pb-4 sm:px-0 sm:pb-8">
       <div className="flex w-full flex-col gap-5 sm:gap-6">
         <div className="flex w-full flex-col justify-between gap-5 sm:flex-row sm:items-start sm:gap-6">
           <div className="relative top-2 flex min-w-0 flex-1 flex-col items-center gap-3 sm:top-1 sm:flex-row sm:items-start sm:gap-6 md:top-5">
@@ -25,11 +25,11 @@ export function ProfileHero({ user, archetype, socialRead }: ProfileHeroProps) {
         <div className="flex flex-col gap-5 sm:gap-6">
           <blockquote className="relative mx-auto max-w-[34rem] sm:mx-0 sm:max-w-2xl">
             {hasBio ? (
-              <p className="relative z-10 text-center text-base font-medium leading-relaxed text-ink/82 text-pretty sm:text-left md:text-xl">
+              <p className="relative z-10 text-center text-base leading-relaxed font-medium text-pretty text-ink/82 sm:text-left md:text-xl">
                 {user.bio}
               </p>
             ) : (
-              <p className="relative z-10 text-center text-base font-medium leading-relaxed text-ink/82 text-pretty sm:text-left md:text-xl">
+              <p className="relative z-10 text-center text-base leading-relaxed font-medium text-pretty text-ink/82 sm:text-left md:text-xl">
                 {socialRead}
               </p>
             )}

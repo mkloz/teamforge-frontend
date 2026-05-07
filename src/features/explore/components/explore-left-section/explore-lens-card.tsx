@@ -36,29 +36,29 @@ export function ExploreLensCard({
       aria-labelledby="explore-identity-heading"
       className="space-y-4 px-1 py-1"
     >
-      <div className="flex items-center gap-3">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
-          <Compass size={19} aria-hidden="true" />
+      <div className="flex items-center gap-2.5">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
+          <Compass size={17} aria-hidden="true" />
         </span>
 
         <div className="min-w-0 flex-1">
           <h2
             id="explore-identity-heading"
-            className="text-base font-black leading-tight tracking-tight text-foreground"
+            className="text-base leading-tight font-black tracking-tight text-foreground"
           >
             Why this view
           </h2>
-          <p className="mt-1 text-xs font-semibold leading-relaxed text-muted-foreground">
+          <p className="mt-0.5 text-xs leading-relaxed font-semibold text-muted-foreground">
             Tuned from your profile and results
           </p>
         </div>
       </div>
 
-      <p className="text-base font-medium leading-7 text-foreground/88">
+      <p className="text-sm leading-6 font-medium text-foreground/90">
         {lensInsight.summary}
       </p>
 
-      <div className="text-sm font-semibold leading-7 text-muted-foreground">
+      <div className="text-xs leading-5 font-semibold text-muted-foreground">
         <GuidanceBlock items={lensInsight.bullets} />
       </div>
     </section>
@@ -72,12 +72,12 @@ function GuidanceBlock({ items }: { items: string[] }) {
         {items.map((item) => (
           <div key={item} className="flex items-start gap-3">
             <Check
-              className="mt-1.5 shrink-0 text-forge-teal"
-              size={14}
+              className="mt-0.5 shrink-0 text-forge-teal"
+              size={13}
               strokeWidth={2.5}
               aria-hidden="true"
             />
-            <span className="min-w-0 leading-7">{item}</span>
+            <span className="min-w-0 leading-6">{item}</span>
           </div>
         ))}
       </div>

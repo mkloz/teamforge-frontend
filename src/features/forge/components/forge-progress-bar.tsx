@@ -48,9 +48,9 @@ export function ForgeProgressBar({
           const isComplete = s < step;
 
           return (
-            <div key={s} className={cn("flex flex-col gap-1.5 flex-1")}>
+            <div key={s} className={cn("flex flex-1 flex-col gap-1.5")}>
               {/* Track bar */}
-              <div className="relative h-0.75 rounded-full overflow-hidden bg-muted">
+              <div className="relative h-0.75 overflow-hidden rounded-full bg-muted">
                 <div
                   className={cn(
                     "absolute inset-0 rounded-full transition-colors duration-500 ease-out",

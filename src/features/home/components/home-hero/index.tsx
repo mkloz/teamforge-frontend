@@ -56,11 +56,11 @@ export function HomeHero() {
           <div className="min-w-0 flex-1">
             <h1
               id="home-hero-heading"
-              className="text-xl font-black leading-tight tracking-tight text-foreground sm:text-2xl md:text-3xl lg:text-4xl"
+              className="text-xl leading-tight font-black tracking-tight text-foreground sm:text-2xl md:text-3xl lg:text-4xl"
             >
               {greeting}
             </h1>
-            <p className="mt-1 text-xs font-medium leading-relaxed text-muted-foreground sm:text-sm md:text-base">
+            <p className="mt-1 text-xs leading-relaxed font-medium text-muted-foreground sm:text-sm md:text-base">
               {sub}
             </p>
           </div>
@@ -70,7 +70,7 @@ export function HomeHero() {
 
         <motion.div
           variants={itemVariants}
-          className="relative grid gap-4 overflow-hidden rounded-2xl px-4 py-4 sm:gap-6 sm:px-5 sm:py-5 lg:px-6 2xl:min-h-80 2xl:grid-cols-[minmax(0,1fr)_21rem] 2xl:items-center 2xl:gap-10"
+          className="relative grid gap-4 overflow-hidden rounded-xl px-4 py-4 sm:gap-6 sm:px-5 sm:py-5 lg:px-6 2xl:min-h-80 2xl:grid-cols-[minmax(0,1fr)_21rem] 2xl:items-center 2xl:gap-10"
         >
           <div className="absolute inset-y-0 left-0 w-full bg-[linear-gradient(112deg,rgba(20,184,166,0.13),rgba(20,184,166,0.04)_48%,transparent_76%)]" />
           <div className="absolute inset-y-5 left-2 w-px rounded-full bg-forge-teal/55 sm:inset-y-6 sm:left-3" />
@@ -88,13 +88,13 @@ export function HomeHero() {
                 <p className="text-xs font-black text-forge-teal">
                   {nextMove.eyebrow}
                 </p>
-                <h2 className="mt-1 max-w-3xl text-lg font-black leading-tight tracking-tight text-foreground sm:text-2xl lg:text-3xl">
+                <h2 className="mt-1 max-w-3xl text-lg leading-tight font-black tracking-tight text-foreground sm:text-2xl lg:text-3xl">
                   {nextMove.title}
                 </h2>
               </div>
             </div>
 
-            <p className="max-w-xl text-xs font-medium leading-relaxed text-muted-foreground sm:text-sm lg:text-base">
+            <p className="max-w-xl text-xs leading-relaxed font-medium text-muted-foreground sm:text-sm lg:text-base">
               {nextMove.body}
             </p>
 

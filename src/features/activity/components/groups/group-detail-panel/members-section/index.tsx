@@ -1,10 +1,11 @@
 import type {
   ActivityParticipant,
+  GroupMember,
   MemberRole,
 } from "@/features/activity/lib/activity-contract";
-import type { GroupMember } from "@/features/activity/lib/activity-contract";
-import { MemberCard } from "./member-card";
+
 import { InviteMembersDialog } from "./invite-members-dialog";
+import { MemberCard } from "./member-card";
 
 interface MembersSectionProps {
   inviteCandidates?: ActivityParticipant[];
@@ -40,13 +41,13 @@ export function MembersSection({
 
   return (
     <section aria-labelledby="members-heading">
-      <div className="flex items-center justify-between mb-3">
+      <div className="mb-3 flex items-center justify-between">
         <h3
           id="members-heading"
-          className="text-sm font-bold text-foreground uppercase tracking-widest"
+          className="text-sm font-bold tracking-widest text-foreground uppercase"
         >
           Members{" "}
-          <span className="text-muted-foreground/60 font-medium ml-1">
+          <span className="ml-1 font-medium text-muted-foreground/60">
             {memberCountString}
           </span>
         </h3>
@@ -59,7 +60,7 @@ export function MembersSection({
         ) : null}
       </div>
 
-      <div className="space-y-3">
+      <div className="flex flex-col gap-3">
         {members.map((member) => (
           <MemberCard
             key={member.userId}

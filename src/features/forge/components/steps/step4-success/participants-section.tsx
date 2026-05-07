@@ -44,7 +44,7 @@ export function ParticipantsSection({
             <Users size={14} />
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-semibold leading-none text-foreground">
+            <p className="text-sm leading-none font-semibold text-foreground">
               Matched people
             </p>
             <p className="mt-1 text-micro leading-none text-muted-foreground/55">
@@ -78,7 +78,7 @@ export function ParticipantsSection({
         <Button
           variant="secondary"
           onClick={onReforge}
-          className="w-full py-5 font-semibold animate-in zoom-in-95"
+          className="w-full animate-in py-5 font-semibold zoom-in-95"
         >
           <RefreshCw size={15} />
           Try another set

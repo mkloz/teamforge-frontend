@@ -21,17 +21,17 @@ export function InterestsPage() {
   } = useInterestsPageFlow();
 
   return (
-    <div className="h-screen w-full max-h-dvh flex flex-col lg:flex-row relative overflow-hidden">
-      <aside className="hidden lg:flex flex-1 relative bg-hero-bg border-r border-slate-muted/10 items-center justify-center overflow-hidden h-full">
+    <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
+      <aside className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-r border-slate-muted/10 bg-hero-bg lg:flex">
         <VoronoiCatalyst progress={progress} />
       </aside>
 
-      <main className="flex-1 flex flex-col h-full overflow-hidden relative bg-canvas">
+      <main className="relative flex h-full flex-1 flex-col overflow-hidden bg-canvas">
         <BackgroundTexture />
 
         <div
           ref={scrollContainerRef}
-          className="flex-1 overflow-y-scroll overflow-x-hidden pb-0 scroll-smooth relative z-10"
+          className="relative z-10 flex-1 overflow-x-hidden overflow-y-scroll scroll-smooth pb-0"
         >
           <InterestsProgressDecoration progress={progress} />
           <InterestsPersistentHeader
@@ -39,8 +39,8 @@ export function InterestsPage() {
             scrollRef={scrollContainerRef}
           />
 
-          <div className="flex flex-col items-center justify-start w-full min-h-full py-6 sm:py-0">
-            <div className="relative w-full max-w-xl lg:px-0 px-4 sm:px-5">
+          <div className="flex min-h-full w-full flex-col items-center justify-start py-6 sm:py-0">
+            <div className="relative w-full max-w-xl px-4 sm:px-5 lg:px-0">
               <div className="relative w-full">
                 <InterestsScreenRenderer
                   state={state}

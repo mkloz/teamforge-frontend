@@ -1,11 +1,11 @@
 import { Bell } from "lucide-react";
 
-import { useNotifications } from "@/features/notifications/hooks/use-notifications";
+import { useUnreadNotificationCount } from "@/features/notifications/hooks/use-notifications";
 import { useNotificationsDrawerState } from "@/features/notifications/hooks/use-notifications-drawer-state";
 import { Button } from "@/shared/components/ui/button";
 
 export function HomeHeroNotificationButton() {
-  const { count: unreadNotifications } = useNotifications();
+  const { count: unreadNotifications } = useUnreadNotificationCount();
   const { openDrawer } = useNotificationsDrawerState();
 
   return (
@@ -21,10 +21,10 @@ export function HomeHeroNotificationButton() {
       }
       className="relative size-11 shrink-0 rounded-lg"
     >
-      <Bell className="size-[18px]" aria-hidden="true" />
+      <Bell className="size-5" aria-hidden="true" />
       {unreadNotifications > 0 ? (
         <span
-          className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-background bg-spark-amber px-1 text-[10px] font-black text-ink"
+          className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-background bg-spark-amber px-1 text-xs font-black text-ink"
           aria-hidden="true"
         >
           {unreadNotifications}

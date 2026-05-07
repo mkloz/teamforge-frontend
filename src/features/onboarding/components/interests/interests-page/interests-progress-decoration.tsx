@@ -10,7 +10,7 @@ export function InterestsProgressDecoration({
   return (
     <TopProgressBar
       progress={progress}
-      className="-mx-4 sm:-mx-5 -mt-1 w-[calc(100%+32px)] sm:w-[calc(100%+40px)] sticky top-0 z-50"
+      className="sticky top-0 z-50 -mx-4 -mt-1 w-[calc(100%+32px)] sm:-mx-5 sm:w-[calc(100%+40px)]"
     />
   );
 }

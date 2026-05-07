@@ -25,19 +25,19 @@ export const LightboxHeader = memo(function LightboxHeader({
     <motion.div
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="absolute top-0 inset-x-0 h-20 pl-8 pr-28 flex items-center justify-between z-50 bg-linear-to-b from-black/60 to-transparent pointer-events-none"
+      className="pointer-events-none absolute inset-x-0 top-0 z-50 flex h-20 items-center justify-between bg-linear-to-b from-black/60 to-transparent pr-28 pl-8"
     >
       <div className="flex flex-col gap-0.5">
         <div className="flex items-center gap-2">
-          <span className="px-2 py-0.5 rounded-md bg-white/10 border border-white/10 text-white font-black text-micro tracking-wide">
+          <span className="rounded-md border border-white/10 bg-white/10 px-2 py-0.5 text-xs font-black tracking-wide text-white">
             {selectedIndex !== null ? selectedIndex + 1 : 0} / {count}
           </span>
-          <span className="text-white/80 font-bold text-sm tracking-tight truncate max-w-40 sm:max-w-80 uppercase">
+          <span className="max-w-40 truncate text-sm font-bold tracking-tight text-white/80 sm:max-w-80">
             {currentMedia?.name || "Shared memory"}
           </span>
         </div>
       </div>
-      <div className="flex items-center gap-4 pointer-events-auto">
+      <div className="pointer-events-auto flex items-center gap-4">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -45,7 +45,7 @@ export const LightboxHeader = memo(function LightboxHeader({
                 asChild
                 variant="ghost"
                 size="icon"
-                className="text-white/60 hover:text-white hover:bg-white/10 rounded-full transition active:scale-90 pointer-events-auto"
+                className="pointer-events-auto rounded-full text-white/60 transition hover:bg-white/10 hover:text-white active:scale-90"
               >
                 <a
                   href={currentMedia?.url ?? "#"}
@@ -59,13 +59,13 @@ export const LightboxHeader = memo(function LightboxHeader({
                     }
                   }}
                 >
-                  <Download size={20} />
+                  <Download className="size-5" />
                 </a>
               </Button>
             </TooltipTrigger>
             <TooltipContent
               side="bottom"
-              className="bg-white/10 backdrop-blur-md border-white/10 text-white font-bold text-xs"
+              className="border-white/10 bg-white/10 text-xs font-bold text-white backdrop-blur-md"
             >
               Download file
             </TooltipContent>

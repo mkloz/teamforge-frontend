@@ -65,7 +65,7 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
             : "No conversations yet";
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex h-full flex-col overflow-hidden">
       <div
         ref={scrollRef}
         onScroll={handleScroll}

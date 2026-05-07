@@ -22,23 +22,23 @@ export function ProfileBasicsPage() {
   };
 
   return (
-    <div className="h-screen w-full max-h-dvh flex flex-col lg:flex-row relative overflow-hidden">
-      <div className="hidden lg:flex flex-1 relative bg-hero-bg border-r border-border items-center justify-center overflow-hidden h-full">
+    <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
+      <div className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-r border-border bg-hero-bg lg:flex">
         <VoronoiCatalyst ref={catalystRef} progress={progress} />
       </div>
 
-      <div className="flex-1 relative flex flex-col h-full overflow-hidden">
+      <div className="relative flex h-full flex-1 flex-col overflow-hidden">
         <BackgroundTexture />
         <OnboardingHomeLink />
 
         <div
           ref={scrollContainerRef}
-          className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-4 relative h-full scroll-smooth"
+          className="relative h-full flex-1 overflow-x-hidden overflow-y-auto scroll-smooth px-4 pb-4"
           onInput={handleInput}
         >
           <TopProgressBar
             progress={progress}
-            className="-mx-4 -mt-2 w-[calc(100%+32px)] sticky top-0 z-50"
+            className="sticky top-0 z-50 -mx-4 -mt-2 w-[calc(100%+32px)]"
           />
 
           <main className="relative z-10 flex min-h-full items-start justify-center pt-20 pb-10 lg:items-center lg:py-8">

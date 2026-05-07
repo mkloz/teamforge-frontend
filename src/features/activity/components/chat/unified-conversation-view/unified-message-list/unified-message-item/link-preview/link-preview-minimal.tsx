@@ -19,10 +19,10 @@ export function LinkPreviewMinimal({ isOwn, url }: LinkPreviewMinimalProps) {
       rel="noopener noreferrer"
       onClick={(event) => event.stopPropagation()}
       className={cn(
-        "flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-medium",
-        "border border-border/40 hover:bg-muted/50 transition-colors duration-150 group",
+        "flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-medium",
+        "group border border-border/40 transition-colors duration-150 hover:bg-muted/50",
         isOwn
-          ? "bg-white/20 text-foreground border-primary/20 hover:bg-white/30"
+          ? "border-primary/20 bg-white/20 text-foreground hover:bg-white/30"
           : "bg-muted/30 text-slate-muted",
       )}
     >
@@ -30,7 +30,7 @@ export function LinkPreviewMinimal({ isOwn, url }: LinkPreviewMinimalProps) {
       <span className="truncate">{hostname}</span>
       <ExternalLink
         size={10}
-        className="shrink-0 opacity-0 group-hover:opacity-60 transition-opacity ml-auto"
+        className="ml-auto shrink-0 opacity-0 transition-opacity group-hover:opacity-60"
       />
     </a>
   );

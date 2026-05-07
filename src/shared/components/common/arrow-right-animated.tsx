@@ -1,22 +1,15 @@
+import { ArrowRight } from "lucide-react";
+
 /**
  * Animated arrow-right icon that slides in on group hover.
  * Used across all primary CTA buttons.
  */
 export function ArrowRightAnimated() {
   return (
-    <svg
-      className="w-4 h-4 ml-1.5 opacity-0 -translate-x-2 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-x-0"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
+    <ArrowRight
+      className="ml-1.5 size-4 -translate-x-2 opacity-0 transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:opacity-100"
+      strokeWidth={2.5}
       aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2.5}
-        d="M14 5l7 7m0 0l-7 7m7-7H3"
-      />
-    </svg>
+    />
   );
 }

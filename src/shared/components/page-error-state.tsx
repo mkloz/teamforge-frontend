@@ -1,5 +1,6 @@
 import { AlertTriangle } from "lucide-react";
 
+import { FeedbackState } from "@/shared/components/feedback-state";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
@@ -19,30 +20,23 @@ export function PageErrorState({
   onRetry,
 }: PageErrorStateProps) {
   return (
-    <section
-      aria-labelledby="page-error-heading"
+    <FeedbackState
+      headingId="page-error-heading"
+      icon={<AlertTriangle size={20} />}
+      iconClassName="h-11 w-11 bg-destructive/10 text-destructive"
       className={cn(
-        "rounded-2xl border border-destructive/15 bg-destructive/5 p-6",
+        "max-w-none border-destructive/15 bg-destructive/5 shadow-none",
         className,
       )}
-    >
-      <div
-        className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-destructive/10 text-destructive"
-        aria-hidden="true"
-      >
-        <AlertTriangle size={20} />
-      </div>
-
-      <h1 id="page-error-heading" className="text-2xl font-bold text-ink">
-        {title}
-      </h1>
-      <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-muted">
-        {description}
-      </p>
-
-      <Button className="mt-5" variant="primary" onClick={onRetry}>
-        {retryLabel}
-      </Button>
-    </section>
+      containerClassName="block min-h-0 p-0"
+      descriptionClassName="max-w-xl"
+      title={title}
+      description={description}
+      actions={
+        <Button variant="primary" onClick={onRetry}>
+          {retryLabel}
+        </Button>
+      }
+    />
   );
 }

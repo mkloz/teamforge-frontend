@@ -19,10 +19,16 @@ const onboardingFlowParsers = {
   mbti: parseAsString,
 };
 
+export interface OnboardingReturnSearchParams {
+  returnTo: OnboardingReturnTarget | null;
+  returnSearch: string | null;
+  returnSection: (typeof settingsSectionValues)[number] | null;
+}
+
 function isOnboardingReturnTarget(
   value: string,
 ): value is OnboardingReturnTarget {
-  return onboardingReturnTargets.includes(value as OnboardingReturnTarget);
+  return onboardingReturnTargets.some((target) => target === value);
 }
 
 function isPersonalityType(value: string): value is PersonalityType {
@@ -49,6 +55,24 @@ export function resolveOnboardingReturnTo(
   }
 
   return isOnboardingReturnTarget(value) ? value : null;
+}
+
+export function buildOnboardingReturnSearch({
+  returnTo,
+  returnSearch,
+  returnSection,
+}: OnboardingReturnSearchParams) {
+  return {
+    ...(returnTo ? { returnTo } : {}),
+    ...(returnSearch ? { returnSearch } : {}),
+    ...(returnSection ? { returnSection } : {}),
+  };
+}
+
+export function toOptionalOnboardingSearch<T extends Record<string, unknown>>(
+  search: T,
+) {
+  return Object.keys(search).length > 0 ? search : undefined;
 }
 
 export function parseOnboardingFlowSearch(searchString: string) {

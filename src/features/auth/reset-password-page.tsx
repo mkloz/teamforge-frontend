@@ -39,7 +39,7 @@ export function ResetPasswordPage() {
       {rootError ? <FormLevelError message={rootError} /> : null}
 
       {success ? (
-        <div className="rounded-2xl border border-forge-teal/20 bg-forge-teal/8 px-4 py-3 text-sm text-foreground">
+        <div className="rounded-xl border border-forge-teal/20 bg-forge-teal/8 px-4 py-3 text-sm text-foreground">
           Your password has been updated. You can head back to login now.
         </div>
       ) : (

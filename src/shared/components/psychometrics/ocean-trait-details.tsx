@@ -13,18 +13,18 @@ export function OceanTraitDetails({
 }: OceanTraitDetailsProps) {
   if (!selectedInfo) {
     return (
-      <p className="text-center text-[10px] font-bold text-slate-muted/60 uppercase tracking-widest">
+      <p className="psychometric-micro text-center font-bold tracking-widest text-slate-muted/60 uppercase">
         Tap any trait to explore
       </p>
     );
   }
 
   return (
-    <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <div className="flex animate-in flex-col gap-3 duration-300 fade-in slide-in-from-bottom-2">
       <div className="flex items-center justify-between">
         <div>
           <h5 className="text-sm font-black text-ink">{selectedInfo.label}</h5>
-          <span className="text-[10px] font-bold text-slate-muted uppercase tracking-tight">
+          <span className="psychometric-micro font-bold tracking-tight text-slate-muted uppercase">
             {selectedInfo.level} ({selectedInfo.score}%)
           </span>
         </div>
@@ -33,16 +33,16 @@ export function OceanTraitDetails({
           variant="link"
           size="xs"
           onClick={onClear}
-          className="h-auto p-0 text-[10px] uppercase tracking-widest hover:opacity-70"
+          className="psychometric-micro h-auto p-0 tracking-widest uppercase hover:opacity-70"
         >
           Close
         </Button>
       </div>
-      <p className="text-xs text-ink/80 leading-relaxed font-medium">
+      <p className="text-xs leading-relaxed font-medium text-ink/80">
         {selectedInfo.description}
       </p>
-      <div className="pt-2 border-t border-border/40">
-        <p className="text-[10px] text-slate-muted font-medium">
+      <div className="border-t border-border/40 pt-2">
+        <p className="psychometric-micro font-medium text-slate-muted">
           <span className="font-bold text-ink">In activities:</span>{" "}
           {selectedInfo.inActivities}
         </p>

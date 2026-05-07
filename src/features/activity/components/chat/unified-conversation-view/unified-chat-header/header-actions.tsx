@@ -31,7 +31,7 @@ export const HeaderActions = memo(
             className="shrink-0"
             aria-label="Cancel search"
           >
-            <X size={18} strokeWidth={2.5} />
+            <X className="size-4" strokeWidth={2.5} />
           </Button>
         </motion.div>
       ) : (
@@ -44,9 +44,8 @@ export const HeaderActions = memo(
             aria-label="Search conversation"
           >
             <Search
-              size={18}
+              className="size-4 transition-transform group-hover/search:scale-110"
               strokeWidth={2.5}
-              className="group-hover/search:scale-110 transition-transform"
             />
           </Button>
           <Button
@@ -57,10 +56,9 @@ export const HeaderActions = memo(
             aria-label="More options"
           >
             <MoreVertical
-              size={18}
               strokeWidth={2.5}
               className={cn(
-                "group-hover/more:rotate-90 transition-transform duration-300",
+                "size-4 transition-transform duration-300 group-hover/more:rotate-90",
                 isActionOpen && "rotate-90 text-forge-teal",
               )}
             />

@@ -16,8 +16,8 @@ export function InterestsFooter({
   state,
 }: InterestsFooterProps) {
   return (
-    <div className="shrink-0 w-full relative z-30 bg-canvas border-t border-slate-muted/10">
-      <div className="max-w-xl mx-auto lg:px-0 px-4 sm:px-5 w-full">
+    <div className="relative z-30 w-full shrink-0 border-t border-slate-muted/10 bg-canvas">
+      <div className="mx-auto w-full max-w-xl px-4 sm:px-5 lg:px-0">
         {state.screen === "browse" && (
           <InterestsProgressBar
             selectedCount={state.selectedCount}

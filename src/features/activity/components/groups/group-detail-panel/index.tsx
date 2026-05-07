@@ -35,9 +35,9 @@ export function GroupDetailPanel({
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          "hidden lg:flex flex-col h-full border-l border-border bg-canvas",
+          "hidden h-full flex-col border-l border-border bg-canvas lg:flex",
           "transition duration-300 ease-in-out",
-          isOpen ? "w-80 opacity-100" : "w-0 opacity-0 overflow-hidden",
+          isOpen ? "w-80 opacity-100" : "w-0 overflow-hidden opacity-0",
         )}
       >
         <GroupPanelContent
@@ -54,7 +54,7 @@ export function GroupDetailPanel({
         open={isOpen && !isDesktop}
         onOpenChange={(open) => !open && onClose()}
       >
-        <DrawerContent className="lg:hidden bg-canvas border-t rounded-t-3xl max-h-[85vh] flex flex-col overflow-hidden">
+        <DrawerContent className="flex max-h-[85vh] flex-col overflow-hidden rounded-t-xl border-t bg-canvas lg:hidden">
           <DrawerHeader className="sr-only">
             <DrawerTitle>{group.name} Details</DrawerTitle>
           </DrawerHeader>

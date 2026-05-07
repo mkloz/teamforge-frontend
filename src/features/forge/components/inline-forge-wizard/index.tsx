@@ -48,7 +48,7 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
-      className="w-full h-full flex flex-col px-4 md:px-12 max-w-3xl mx-auto"
+      className="mx-auto flex h-full w-full max-w-3xl flex-col px-4 md:px-12"
     >
       <InlineForgeHeader
         fw={fw}

@@ -76,7 +76,7 @@ function NextCard({
       </div>
       <p
         className={cn(
-          "text-sm font-semibold leading-tight",
+          "text-sm leading-tight font-semibold",
           active
             ? isAmber
               ? "text-spark-amber"

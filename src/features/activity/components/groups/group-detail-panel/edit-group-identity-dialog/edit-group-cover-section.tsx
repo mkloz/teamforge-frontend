@@ -29,7 +29,7 @@ export function EditGroupCoverSection({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
         Plan cover
       </p>
       <div className="relative">
@@ -59,7 +59,7 @@ export function EditGroupCoverSection({
             type="button"
             variant="ghost"
             size="icon-sm"
-            className="absolute right-2 top-2 z-20 rounded-full bg-black/45 text-white hover:bg-black/65 hover:text-white"
+            className="absolute top-2 right-2 z-20 rounded-full bg-black/45 text-white hover:bg-black/65 hover:text-white"
             onClick={() => editor.setCoverImage(null)}
             aria-label="Remove cover"
           >
@@ -81,7 +81,7 @@ export function EditGroupCoverSection({
         ))}
       </div>
       {activeCoverPreset && (
-        <p className="text-[11px] font-medium text-muted-foreground">
+        <p className="text-xs font-medium text-muted-foreground">
           Selected: {activeCoverPreset.label}
         </p>
       )}
@@ -116,11 +116,11 @@ function PlanCoverPresetButton({
           : "border-transparent hover:scale-[1.03] hover:shadow-sm",
       )}
     >
-      <span className="absolute bottom-1 left-1.5 text-[10px] font-bold text-white/85 drop-shadow-sm">
+      <span className="absolute bottom-1 left-1.5 text-xs font-bold text-white/85 drop-shadow-sm">
         {label}
       </span>
       {selected && (
-        <span className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-white/95 shadow-sm">
+        <span className="absolute top-1 right-1 flex size-5 items-center justify-center rounded-full bg-white/95 shadow-sm">
           <Check size={9} className="text-forge-teal" strokeWidth={3} />
         </span>
       )}

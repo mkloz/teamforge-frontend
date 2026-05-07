@@ -57,7 +57,7 @@ export function Step5Identity({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
+    <div className="animate-in space-y-8 pb-10 duration-500 fade-in slide-in-from-bottom-2">
       <GroupIdentityFields
         groupName={groupName}
         onGroupNameChange={(v) => onGroupNameChange?.(v)}

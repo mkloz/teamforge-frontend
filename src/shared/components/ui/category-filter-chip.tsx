@@ -30,7 +30,7 @@ type CategoryFilterChipProps =
 
 function getChipClassName(selected: boolean, className?: string) {
   return cn(
-    "inline-flex h-7 w-auto shrink-0 items-center justify-center gap-1.5 rounded-full border px-3 text-[10px] font-bold leading-none transition-[border-color,background-color,color,box-shadow] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50",
+    "inline-flex h-8 w-auto shrink-0 items-center justify-center gap-1.5 rounded-full border px-3 text-xs leading-none font-bold transition-[border-color,background-color,color,box-shadow] duration-150 focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-1 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
     selected
       ? "border-forge-teal bg-forge-teal text-white hover:bg-forge-teal/90"
       : "border-border bg-card text-slate-muted hover:border-border/90 hover:bg-muted/35 hover:text-foreground",
@@ -47,7 +47,7 @@ function CategoryFilterChip(props: CategoryFilterChipProps) {
       {badge != null && badge > 0 ? (
         <span
           className={cn(
-            "inline-flex h-3.5 min-w-3.5 items-center justify-center rounded-full px-0.5 text-[8px] font-black leading-none transition-colors",
+            "inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs leading-none font-black transition-colors",
             selected
               ? "bg-white/20 text-white"
               : "bg-muted text-slate-muted group-hover/chip:bg-muted/80 group-hover/chip:text-foreground group-data-[state=checked]/chip:bg-white/20 group-data-[state=checked]/chip:text-white",
@@ -60,12 +60,14 @@ function CategoryFilterChip(props: CategoryFilterChipProps) {
   );
 
   if (props.as === "radio") {
-    const rest = { ...props } as Record<string, unknown>;
-    delete rest.as;
-    delete rest.badge;
-    delete rest.className;
-    delete rest.label;
-    delete rest.selected;
+    const {
+      as: _as,
+      badge: _badge,
+      className: _className,
+      label: _label,
+      selected: _selected,
+      ...rest
+    } = props;
 
     return (
       <RadioGroupItem
@@ -73,33 +75,28 @@ function CategoryFilterChip(props: CategoryFilterChipProps) {
           selected,
           cn("group/chip aspect-auto", className),
         )}
-        {...(rest as Omit<
-          CategoryFilterChipRadioProps,
-          "as" | "badge" | "className" | "label" | "selected"
-        >)}
+        {...rest}
       >
         {content}
       </RadioGroupItem>
     );
   }
 
-  const { type = "button" } = props;
-  const rest = { ...props } as Record<string, unknown>;
-  delete rest.as;
-  delete rest.badge;
-  delete rest.className;
-  delete rest.label;
-  delete rest.selected;
-  delete rest.type;
+  const {
+    as: _as,
+    badge: _badge,
+    className: _className,
+    label: _label,
+    selected: _selected,
+    type = "button",
+    ...rest
+  } = props;
 
   return (
     <button
       type={type}
       className={getChipClassName(selected, cn("group/chip", className))}
-      {...(rest as Omit<
-        CategoryFilterChipButtonProps,
-        "as" | "badge" | "className" | "label" | "selected" | "type"
-      >)}
+      {...rest}
     >
       {content}
     </button>

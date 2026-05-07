@@ -12,8 +12,8 @@ export function LocationFilter() {
     useExploreRouteState();
 
   return (
-    <section className="space-y-2.5">
-      <h4 className="pl-1 text-base font-bold tracking-tight text-foreground">
+    <section className="space-y-2">
+      <h4 className="pl-1 text-sm font-bold tracking-tight text-foreground">
         Place
       </h4>
       <SegmentedFilterTabs
@@ -23,18 +23,18 @@ export function LocationFilter() {
       />
 
       {locationMode !== "ONLINE" && (
-        <div className="space-y-4 px-1 pt-2">
+        <div className="space-y-3 px-1 pt-1.5">
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">
-              <Route className="size-4" aria-hidden="true" />
+            <span className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+              <Route className="size-3.5" aria-hidden="true" />
               Distance
             </span>
-            <span className="text-sm font-black tracking-tight text-muted-foreground tabular-nums">
+            <span className="text-xs font-black tracking-tight text-muted-foreground tabular-nums">
               {distance} km
             </span>
           </div>
           <Slider
-            className="h-5"
+            className="h-4"
             value={[distance]}
             onValueChange={(value) => setDistance(value[0] ?? distance)}
             max={FILTER_BOUNDARIES.distance.max}

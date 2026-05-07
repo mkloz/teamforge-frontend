@@ -1,6 +1,8 @@
 import { useEffect, type RefObject } from "react";
 import { useEventCallback, useEventListener } from "usehooks-ts";
 
+import { getBrowserActiveElement } from "@/shared/lib/browser-environment";
+
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -24,7 +26,7 @@ export function useFocusTrap<T extends HTMLElement>({
       return;
     }
 
-    const activeElement = document.activeElement;
+    const activeElement = getBrowserActiveElement();
     const previouslyFocusedElement =
       activeElement instanceof HTMLElement ? activeElement : null;
 
@@ -60,13 +62,15 @@ export function useFocusTrap<T extends HTMLElement>({
       return;
     }
 
-    if (event.shiftKey && document.activeElement === first) {
+    const activeElement = getBrowserActiveElement();
+
+    if (event.shiftKey && activeElement === first) {
       last.focus();
       event.preventDefault();
       return;
     }
 
-    if (!event.shiftKey && document.activeElement === last) {
+    if (!event.shiftKey && activeElement === last) {
       first.focus();
       event.preventDefault();
     }

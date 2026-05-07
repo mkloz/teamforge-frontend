@@ -20,7 +20,7 @@ export function PrimaryButton({
       disabled={disabled}
       variant="primary"
       size="lg"
-      className="h-14 w-full rounded-2xl font-bold"
+      className="h-14 w-full rounded-xl font-bold"
     >
       <span className="relative z-10 flex items-center gap-2.5">
         {label}
@@ -42,12 +42,12 @@ export function ManualForgeButton({ onClick }: { onClick: () => void }) {
         variant="secondary"
         size="lg"
         aria-label="Forge this group"
-        className="h-14 w-full rounded-2xl font-bold"
+        className="h-14 w-full rounded-xl font-bold"
       >
         <UsersRound
           size={18}
           aria-hidden="true"
-          className="group-hover:scale-110 transition-transform"
+          className="transition-transform group-hover:scale-110"
         />
         <span>Forge group</span>
         <ArrowRight size={14} className="opacity-70" />
@@ -64,12 +64,12 @@ export function AutoForgeButton({ onClick }: { onClick: () => void }) {
         variant="primary"
         size="lg"
         aria-label="Auto-forge with algorithm"
-        className="h-14 w-full rounded-2xl font-bold"
+        className="h-14 w-full rounded-xl font-bold"
       >
         <Cpu
           size={18}
           aria-hidden="true"
-          className="shrink-0 group-hover:rotate-12 transition-transform"
+          className="shrink-0 transition-transform group-hover:rotate-12"
         />
         <span className="truncate">
           <span className="sm:hidden">Auto-forge</span>
@@ -87,11 +87,11 @@ export function ReforgeButton({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       variant="secondary"
       size="lg"
-      className="h-14 w-full rounded-2xl font-bold"
+      className="h-14 w-full rounded-xl font-bold"
     >
       <RefreshCw
         size={15}
-        className="group-hover:rotate-180 transition-transform duration-500"
+        className="transition-transform duration-500 group-hover:rotate-180"
       />
       Try again
     </Button>

@@ -26,6 +26,91 @@
     background-size: 24px 24px;
   }
 
+  .auth-background-dot-grid {
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      color-mix(in srgb, var(--color-slate-muted) 32%, transparent) 1px,
+      transparent 0
+    );
+    background-size: 32px 32px;
+    mask-image: radial-gradient(circle, transparent 30%, black 80%);
+    -webkit-mask-image: radial-gradient(circle, transparent 30%, black 80%);
+  }
+
+  .image-placeholder-grid-low,
+  .image-placeholder-grid-medium,
+  .image-placeholder-grid-high {
+    background-image: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--color-ink) 3%, transparent) 1px,
+      transparent 2px
+    );
+    background-position: 0 0;
+  }
+
+  .image-placeholder-grid-low {
+    background-size: 30px 30px;
+  }
+
+  .image-placeholder-grid-medium {
+    background-size: 20px 20px;
+  }
+
+  .image-placeholder-grid-high {
+    background-size: 12px 12px;
+  }
+
+  .image-placeholder-corner {
+    @apply absolute m-3 size-1/6;
+  }
+
+  .avatar-initials {
+    font-size: 0.72em;
+  }
+
+  .group-plan-card-empty-art {
+    background-image:
+      radial-gradient(circle at 28% 24%, rgba(13, 148, 136, 0.16), transparent 34%),
+      radial-gradient(circle at 72% 76%, rgba(245, 158, 11, 0.13), transparent 32%);
+  }
+
+  .group-plan-card-empty-art-core {
+    border-color: rgba(13, 148, 136, 0.22);
+    background-color: rgba(13, 148, 136, 0.07);
+    box-shadow: 0 0 0 10px rgba(13, 148, 136, 0.035);
+  }
+
+  .group-plan-card-fit-reason {
+    max-width: 34rem;
+  }
+
+  .address-suggestion-main {
+    font-size: 0.8125rem;
+  }
+
+  .psychometric-micro,
+  .psychometric-chart-label {
+    font-size: 0.625rem;
+  }
+
+  .spectrum-progress {
+    width: var(--spectrum-position);
+  }
+
+  .spectrum-marker {
+    left: var(--spectrum-position);
+  }
+
+  .spectrum-marker-amber {
+    @apply border-spark-amber;
+    box-shadow: 0 0 4px rgba(245, 158, 11, 0.18);
+  }
+
+  .spectrum-marker-teal {
+    @apply border-forge-teal;
+    box-shadow: 0 0 4px rgba(13, 148, 136, 0.18);
+  }
+
   /* Flagship Button Utilities */
   .btn-hull {
     @apply relative border border-white/10 shadow-[0_4px_14px_0_rgba(13,148,136,0.39)] ring-1 ring-forge-teal dark:shadow-none;
@@ -34,7 +119,7 @@
   /* Inner light spill for that premium 'glass' inset look */
   .btn-light-spill::before {
     content: "";
-    @apply pointer-events-none absolute inset-px rounded-[inherit] border-t border-white/30 border-x;
+    @apply pointer-events-none absolute inset-px rounded-[inherit] border-x border-t border-white/30;
   }
 
   .btn-sweep-container {

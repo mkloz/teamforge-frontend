@@ -21,12 +21,12 @@ export function SubcategoryTagGroup({
   subcategory,
 }: SubcategoryTagGroupProps) {
   return (
-    <div className="py-2 flex flex-col gap-3">
-      <div className="flex items-center gap-2 mb-1">
+    <div className="flex flex-col gap-3 py-2">
+      <div className="mb-1 flex items-center gap-2">
         <span className="text-slate-muted/60">
           {renderSubcategoryIcon(subcategory.id)}
         </span>
-        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-muted/40">
+        <span className="text-[10px] font-bold tracking-wider text-slate-muted/40 uppercase">
           {subcategory.name}
         </span>
       </div>

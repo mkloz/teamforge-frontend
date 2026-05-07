@@ -16,7 +16,7 @@ export function MessageListBottomAnchor({
   return (
     <>
       <div
-        className="absolute left-0 right-0"
+        className="absolute right-0 left-0"
         style={{ top: `${totalHeight}px` }}
       >
         <TypingPresence typingUsers={typingUsers} />

@@ -51,7 +51,7 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="mx-auto grid w-full max-w-6xl gap-7 px-4 py-5 md:px-8 lg:grid-cols-[14rem_minmax(0,56rem)] lg:gap-12 xl:gap-18 lg:py-10">
+    <div className="mx-auto grid w-full max-w-6xl gap-7 px-4 py-5 md:px-8 lg:grid-cols-[14rem_minmax(0,56rem)] lg:gap-12 lg:py-10 xl:gap-18">
       <SettingsSidebar
         activeSection={activeSection}
         isMobileDetailOpen={mobileDetail.isMobileDetailOpen}
@@ -62,7 +62,7 @@ export function SettingsPage() {
 
       <section
         className={cn(
-          "min-w-0 w-full pt-11 lg:block lg:max-w-4xl lg:pt-0",
+          "w-full min-w-0 pt-11 lg:block lg:max-w-4xl lg:pt-0",
           !mobileDetail.isMobileDetailOpen && "hidden",
         )}
       >

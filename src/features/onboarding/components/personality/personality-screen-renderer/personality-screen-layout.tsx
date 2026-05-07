@@ -91,7 +91,7 @@ export function StepNavigation({
       )}
     >
       <Button
-        size="lg"
+        size="md"
         variant="outline"
         onClick={onBack}
         className={cn(
@@ -103,7 +103,7 @@ export function StepNavigation({
         <span className="truncate">{backLabel}</span>
       </Button>
       <Button
-        size="lg"
+        size="md"
         onClick={onNext}
         className="w-full min-w-0 min-[430px]:flex-1"
       >

@@ -61,7 +61,7 @@ export function AnimatedCircularProgressBar({
           strokeDashoffset="0"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className=" opacity-100"
+          className="opacity-100"
           style={circleStyle}
         />
         <motion.circle
@@ -85,7 +85,7 @@ export function AnimatedCircularProgressBar({
       </svg>
       <motion.span
         data-current-value={value}
-        className="duration-[unset] absolute inset-0 m-auto mx-auto flex items-center justify-center text-center transition-none"
+        className="absolute inset-0 m-auto mx-auto flex items-center justify-center text-center transition-none duration-[unset]"
       >
         {labelText}
       </motion.span>

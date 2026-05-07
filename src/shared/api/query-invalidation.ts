@@ -1,29 +1,30 @@
-import { appQueryClient } from "@/shared/api/query-client";
+import type { QueryKey } from "@tanstack/react-query";
 
-import { APP_QUERY_KEYS } from "./query-keys";
+import { appQueryClient } from "@/shared/api/query-client";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+
+function invalidateQuery(queryKey: QueryKey) {
+  return appQueryClient.invalidateQueries({ queryKey });
+}
+
+function invalidateQueries(queryKeys: QueryKey[]) {
+  return Promise.all(queryKeys.map((queryKey) => invalidateQuery(queryKey)));
+}
 
 export function invalidateActivityGroupSurfaces() {
-  return Promise.all([
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.activity.groups,
-    }),
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.activity.chats,
-    }),
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.activity.groupSelection,
-    }),
+  return invalidateQueries([
+    APP_QUERY_KEYS.activity.groups,
+    APP_QUERY_KEYS.activity.chats,
+    APP_QUERY_KEYS.activity.groupSelection,
   ]);
 }
 
 export function invalidateHomeGroupSurfaces() {
-  return Promise.all([
-    appQueryClient.invalidateQueries({ queryKey: APP_QUERY_KEYS.home.groups }),
-    appQueryClient.invalidateQueries({ queryKey: APP_QUERY_KEYS.home.plans }),
-    appQueryClient.invalidateQueries({ queryKey: APP_QUERY_KEYS.home.stats }),
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.home.recommendations,
-    }),
+  return invalidateQueries([
+    APP_QUERY_KEYS.home.groups,
+    APP_QUERY_KEYS.home.plans,
+    APP_QUERY_KEYS.home.stats,
+    APP_QUERY_KEYS.home.recommendations,
   ]);
 }
 
@@ -31,62 +32,36 @@ export function invalidateGroupMembershipSurfaces() {
   return Promise.all([
     invalidateActivityGroupSurfaces(),
     invalidateHomeGroupSurfaces(),
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.explore.groups,
-    }),
+    invalidateQuery(APP_QUERY_KEYS.explore.groups),
   ]);
 }
 
 export function invalidateFriendshipSurfaces() {
-  return Promise.all([
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.activity.friendships,
-    }),
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.activity.chats,
-    }),
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.activity.directSelection,
-    }),
+  return invalidateQueries([
+    APP_QUERY_KEYS.activity.friendships,
+    APP_QUERY_KEYS.activity.chats,
+    APP_QUERY_KEYS.activity.directSelection,
   ]);
 }
 
 export function invalidateInvitationSurfaces() {
-  return Promise.all([
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.home.invitations,
-    }),
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.home.sentInvitations,
-    }),
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.notifications.unreadCount,
-    }),
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.notifications.list,
-    }),
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.notifications.unreadList,
-    }),
+  return invalidateQueries([
+    APP_QUERY_KEYS.home.invitations,
+    APP_QUERY_KEYS.home.sentInvitations,
+    APP_QUERY_KEYS.notifications.unreadCount,
+    APP_QUERY_KEYS.notifications.list,
+    APP_QUERY_KEYS.notifications.unreadList,
   ]);
 }
 
 export function invalidateNotificationSurfaces() {
-  return Promise.all([
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.notifications.list,
-    }),
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.notifications.unreadCount,
-    }),
-    appQueryClient.invalidateQueries({
-      queryKey: APP_QUERY_KEYS.notifications.unreadList,
-    }),
+  return invalidateQueries([
+    APP_QUERY_KEYS.notifications.list,
+    APP_QUERY_KEYS.notifications.unreadCount,
+    APP_QUERY_KEYS.notifications.unreadList,
   ]);
 }
 
 export function invalidateExploreFriendRequestSurfaces() {
-  return appQueryClient.invalidateQueries({
-    queryKey: APP_QUERY_KEYS.explore.friendRequests,
-  });
+  return invalidateQuery(APP_QUERY_KEYS.explore.friendRequests);
 }

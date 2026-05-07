@@ -31,15 +31,15 @@ export function PersonalityTestPage() {
 
   return (
     <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
-      <div className="flex-1 relative flex flex-col h-full overflow-hidden">
+      <div className="relative flex h-full flex-1 flex-col overflow-hidden">
         <BackgroundTexture />
         {testState.screen.id !== "questions" ? <OnboardingHomeLink /> : null}
 
         <div
           ref={scrollContainerRef}
-          className="relative h-full flex-1 overflow-y-auto overflow-x-hidden scroll-smooth"
+          className="relative h-full flex-1 overflow-x-hidden overflow-y-auto scroll-smooth"
         >
-          <div className="absolute top-0 left-0 right-0 z-50">
+          <div className="absolute top-0 right-0 left-0 z-50">
             <TopProgressBar progress={displayProgress} />
           </div>
 

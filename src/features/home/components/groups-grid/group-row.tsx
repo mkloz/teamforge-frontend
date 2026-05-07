@@ -65,7 +65,7 @@ export function GroupRow({
         className={cn(
           "group flex h-16 cursor-pointer items-center gap-3 border-b border-border/55 px-1 py-3 sm:px-3",
           "transition-all duration-150",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
           hasNotification
             ? "rounded-xl bg-forge-teal/8 hover:border-forge-teal/20 hover:bg-forge-teal/12"
             : "bg-transparent hover:bg-card/45",
@@ -86,7 +86,7 @@ export function GroupRow({
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col gap-0">
-          <span className="truncate text-sm font-bold leading-tight text-foreground transition-colors duration-150 group-hover:text-primary">
+          <span className="truncate text-sm leading-tight font-bold text-foreground transition-colors duration-150 group-hover:text-primary">
             {group.name}
           </span>
           <div className="mt-0.5 flex items-center gap-2">

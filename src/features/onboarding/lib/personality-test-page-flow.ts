@@ -1,6 +1,7 @@
 import type { SettingsSection } from "@/features/settings/lib/settings-route";
 import { resolveOnboardingExitNavigation } from "@/features/onboarding/lib/onboarding-exit-route";
 import type { OnboardingReturnTarget } from "@/features/onboarding/lib/onboarding-route";
+import { buildOnboardingReturnSearch } from "@/features/onboarding/lib/onboarding-flow-state";
 import type { PersonalityType } from "@/shared/schemas";
 
 interface PersonalityFlowSearchParams {
@@ -18,11 +19,7 @@ export function buildPersonalityPreviousSearch({
   returnSearch,
   returnSection,
 }: PersonalityFlowSearchParams) {
-  return {
-    ...(returnTo ? { returnTo } : {}),
-    ...(returnSearch ? { returnSearch } : {}),
-    ...(returnSection ? { returnSection } : {}),
-  };
+  return buildOnboardingReturnSearch({ returnTo, returnSearch, returnSection });
 }
 
 export function buildPersonalityNextSearch({

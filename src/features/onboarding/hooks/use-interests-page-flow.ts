@@ -13,7 +13,10 @@ import {
   getOnboardingReturnDestinationLabel,
 } from "../lib/onboarding-navigation-labels";
 import { useInterests } from "./use-interests";
-import { useOnboardingFlowState } from "../lib/onboarding-flow-state";
+import {
+  toOptionalOnboardingSearch,
+  useOnboardingFlowState,
+} from "../lib/onboarding-flow-state";
 import { usePersonalityTestStore } from "../store/personality-test-store";
 
 export function useInterestsPageFlow() {
@@ -108,8 +111,7 @@ export function useInterestsPageFlow() {
 
     void navigate({
       to: "/onboarding/personality",
-      search:
-        Object.keys(previousSearch).length > 0 ? previousSearch : undefined,
+      search: toOptionalOnboardingSearch(previousSearch),
     });
   }
 

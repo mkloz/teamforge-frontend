@@ -47,7 +47,7 @@ export function CategoryFilter() {
   };
 
   return (
-    <div className="flex flex-wrap gap-x-2 gap-y-2.5 py-2">
+    <div className="flex flex-wrap gap-1.5 py-1">
       {visibleCategories.map((cat) => {
         const active = selectedCategories.includes(cat.id);
         return (
@@ -56,7 +56,7 @@ export function CategoryFilter() {
             label={cat.label}
             selected={active}
             className={cn(
-              "h-9 border px-4 text-sm transition-[border-color,background-color,color] hover:border-border/90 hover:bg-muted/35 hover:text-foreground active:translate-y-0",
+              "h-7 border px-2.5 text-xs transition-[border-color,background-color,color] hover:border-border/90 hover:bg-muted/35 hover:text-foreground active:translate-y-0",
               active &&
                 "border-forge-teal/35 bg-forge-teal/[0.09] text-forge-teal hover:border-forge-teal/45 hover:bg-forge-teal/[0.12] hover:text-forge-teal",
             )}
@@ -67,7 +67,7 @@ export function CategoryFilter() {
       {!expanded && hiddenCategoryCount > 0 ? (
         <button
           type="button"
-          className="inline-flex h-9 items-center rounded-full border border-border bg-card px-4 text-sm font-bold text-muted-foreground transition-[border-color,background-color,color] hover:border-border/90 hover:bg-muted/35 hover:text-foreground"
+          className="inline-flex h-7 items-center rounded-full border border-border bg-card px-2.5 text-xs font-bold text-muted-foreground transition-[border-color,background-color,color] hover:border-border/90 hover:bg-muted/35 hover:text-foreground"
           onClick={() => setExpanded(true)}
         >
           +{hiddenCategoryCount} more
@@ -76,7 +76,7 @@ export function CategoryFilter() {
       {expanded ? (
         <button
           type="button"
-          className="inline-flex h-9 items-center rounded-full border border-border bg-card px-4 text-sm font-bold text-muted-foreground transition-[border-color,background-color,color] hover:border-border/90 hover:bg-muted/35 hover:text-foreground"
+          className="inline-flex h-7 items-center rounded-full border border-border bg-card px-2.5 text-xs font-bold text-muted-foreground transition-[border-color,background-color,color] hover:border-border/90 hover:bg-muted/35 hover:text-foreground"
           onClick={() => setExpanded(false)}
         >
           Show less

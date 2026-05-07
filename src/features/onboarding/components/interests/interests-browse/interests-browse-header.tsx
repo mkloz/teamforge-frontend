@@ -25,18 +25,18 @@ export function InterestsBrowseHeader({
 }: InterestsBrowseHeaderProps) {
   if (variant === "pills") {
     return (
-      <nav className="flex overflow-x-auto scrollbar-hide gap-1.5 sm:gap-2 scroll-smooth items-center h-10 py-1 -m-1 px-1">
+      <nav className="scrollbar-hide -m-1 flex h-10 items-center gap-1.5 overflow-x-auto scroll-smooth px-1 py-1 sm:gap-2">
         {categories.map((category) => (
           <Button
             variant="outline"
             size="xs"
             key={`nav-${category.id}`}
             onClick={() => onQuickJumpCategory(category.id)}
-            className="rounded-full bg-card text-slate-muted border-slate-muted/15 dark:border-white/10 focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-1 focus-visible:outline-none shrink-0"
+            className="shrink-0 rounded-full border-slate-muted/15 bg-card text-slate-muted focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-1 focus-visible:outline-none dark:border-white/10"
           >
             <div
               className={cn(
-                "w-1.5 h-1.5 rounded-full shrink-0",
+                "h-1.5 w-1.5 shrink-0 rounded-full",
                 getCategoryColorClass(category.id),
               )}
             />
@@ -48,7 +48,7 @@ export function InterestsBrowseHeader({
   }
 
   return (
-    <div className="w-full mt-2">
+    <div className="mt-2 w-full">
       <Input
         type="text"
         value={searchQuery}

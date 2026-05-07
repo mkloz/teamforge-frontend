@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef } from "react";
 
+import {
+  cancelScheduledAnimationFrame,
+  scheduleAnimationFrame,
+} from "@/shared/lib/browser-scheduling";
 import type { PlanProposal } from "@/shared/schemas/plan";
 
 export function useFocusedPlanProposalScroll(
@@ -19,7 +23,7 @@ export function useFocusedPlanProposalScroll(
       return;
     }
 
-    const frame = window.requestAnimationFrame(() => {
+    const frame = scheduleAnimationFrame(() => {
       target.scrollIntoView({
         behavior: "smooth",
         block: "center",
@@ -27,7 +31,7 @@ export function useFocusedPlanProposalScroll(
     });
 
     return () => {
-      window.cancelAnimationFrame(frame);
+      cancelScheduledAnimationFrame(frame);
     };
   }, [focusedProposalId, proposals]);
 

@@ -56,6 +56,28 @@ function mergeNotifications(
   );
 }
 
+function findCachedNotification(id: string) {
+  const notifications = appQueryClient.getQueryData<Notification[] | undefined>(
+    NOTIFICATIONS_QUERY_KEY,
+  );
+  const unreadNotifications = appQueryClient.getQueryData<
+    Notification[] | undefined
+  >(NOTIFICATIONS_UNREAD_QUERY_KEY);
+
+  return (
+    notifications?.find((item) => item.id === id) ??
+    unreadNotifications?.find((item) => item.id === id)
+  );
+}
+
+function hasCachedUnreadNotification(id: string) {
+  return Boolean(
+    appQueryClient
+      .getQueryData<Notification[] | undefined>(NOTIFICATIONS_UNREAD_QUERY_KEY)
+      ?.some((item) => item.id === id && !item.isRead),
+  );
+}
+
 export const NotificationsCache = {
   async cancelQueries() {
     await Promise.all([
@@ -96,21 +118,25 @@ export const NotificationsCache = {
   },
 
   restore(snapshot: NotificationsCacheSnapshot | undefined) {
-    if (snapshot?.previousItems) {
+    if (!snapshot) {
+      return;
+    }
+
+    if (snapshot.previousItems !== undefined) {
       appQueryClient.setQueryData(
         NOTIFICATIONS_QUERY_KEY,
         snapshot.previousItems,
       );
     }
 
-    if (snapshot?.previousUnreadItems) {
+    if (snapshot.previousUnreadItems !== undefined) {
       appQueryClient.setQueryData(
         NOTIFICATIONS_UNREAD_QUERY_KEY,
         snapshot.previousUnreadItems,
       );
     }
 
-    if (typeof snapshot?.previousCount === "number") {
+    if (typeof snapshot.previousCount === "number") {
       appQueryClient.setQueryData(
         NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY,
         snapshot.previousCount,
@@ -167,9 +193,7 @@ export const NotificationsCache = {
   },
 
   shouldReplaceCachedNotification(notification: Notification) {
-    const existingNotification = appQueryClient
-      .getQueryData<Notification[] | undefined>(NOTIFICATIONS_QUERY_KEY)
-      ?.find((item) => item.id === notification.id);
+    const existingNotification = findCachedNotification(notification.id);
 
     return (
       !existingNotification ||
@@ -179,16 +203,12 @@ export const NotificationsCache = {
   },
 
   applyNotificationUpdate(notification: Notification) {
-    const existingNotification = appQueryClient
-      .getQueryData<Notification[] | undefined>(NOTIFICATIONS_QUERY_KEY)
-      ?.find((item) => item.id === notification.id);
-    const didTransitionToRead =
-      notification.isRead &&
-      existingNotification &&
-      !existingNotification.isRead;
-    const didTransitionToUnread =
-      !notification.isRead &&
-      (!existingNotification || existingNotification.isRead);
+    const existingNotification = findCachedNotification(notification.id);
+    const wasUnread =
+      hasCachedUnreadNotification(notification.id) ||
+      existingNotification?.isRead === false;
+    const didTransitionToRead = notification.isRead && wasUnread;
+    const didTransitionToUnread = !notification.isRead && !wasUnread;
 
     updateNotificationsQuery((items) =>
       mergeNotifications(items, notification),

@@ -26,7 +26,7 @@ export function GroupActionButton({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        "h-auto w-full justify-start gap-4 rounded-xl border border-transparent px-3 py-2.5 transition-all duration-200 group",
+        "group h-auto w-full justify-start gap-4 rounded-xl border border-transparent px-3 py-2.5 transition-all duration-200",
         variant === "default" && "text-ink hover:bg-muted/80",
         variant === "muted" && "text-slate-muted hover:bg-muted hover:text-ink",
       )}

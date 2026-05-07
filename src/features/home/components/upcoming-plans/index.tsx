@@ -21,7 +21,7 @@ function EmptyPlans() {
         <p className="text-sm font-black text-foreground">
           Your calendar is open.
         </p>
-        <p className="mt-1 text-xs font-medium leading-relaxed text-muted-foreground">
+        <p className="mt-1 text-xs leading-relaxed font-medium text-muted-foreground">
           Forge a group or join one to get a real plan moving.
         </p>
       </div>
@@ -36,7 +36,7 @@ export function UpcomingPlans() {
 
   if (isPlansLoading && plans.length === 0) {
     return (
-      <div className="flex w-full flex-col gap-4 animate-pulse">
+      <div className="flex w-full animate-pulse flex-col gap-4">
         <div className="h-8 w-48 rounded bg-muted" />
         <div className="grid gap-2">
           <div className="h-24 rounded-xl bg-muted" />
@@ -68,7 +68,7 @@ export function UpcomingPlans() {
       ) : (
         <div
           role="list"
-          className="relative grid border-y border-border/55 before:absolute before:bottom-4 before:left-4 before:top-4 before:w-px before:bg-border/45"
+          className="relative grid border-y border-border/55 before:absolute before:top-4 before:bottom-4 before:left-4 before:w-px before:bg-border/45"
         >
           {visiblePlans.map((plan, i) => (
             <PlanCard key={plan.plan.id} group={plan} index={i} />

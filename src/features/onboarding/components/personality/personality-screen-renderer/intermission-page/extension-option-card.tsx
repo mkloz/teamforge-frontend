@@ -36,7 +36,7 @@ export function ExtensionOptionCard({
         <div className="mb-1.5 flex min-w-0 items-center gap-2">
           <span
             className={cn(
-              "max-w-full truncate rounded-full px-2 py-0.5 font-sans text-[0.68rem] font-bold uppercase tracking-wider",
+              "max-w-full truncate rounded-full px-2 py-0.5 font-sans text-[0.68rem] font-bold tracking-wider uppercase",
               isSelected
                 ? "bg-forge-teal text-white"
                 : "bg-slate-100 text-muted-foreground dark:bg-white/8",
@@ -52,7 +52,7 @@ export function ExtensionOptionCard({
 
       <div className="relative z-10 flex shrink-0 items-center gap-2 sm:gap-3">
         <div className="mr-0 flex flex-col items-end sm:mr-1">
-          <span className="font-sans text-[11px] font-medium lowercase text-muted-foreground sm:text-xs">
+          <span className="font-sans text-[11px] font-medium text-muted-foreground lowercase sm:text-xs">
             est. +{option.estimatedMinutesToAdd} min
           </span>
         </div>

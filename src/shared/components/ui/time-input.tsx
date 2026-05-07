@@ -5,14 +5,14 @@ import {
   useMemo,
   useRef,
   useState,
-  type CSSProperties,
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
 
 import { Button } from "@/shared/components/ui/button";
 import { Input, type InputProps } from "@/shared/components/ui/input";
-import { useEscapeKey } from "@/shared/hooks/use-escape-key";
+import { useFloatingInputPanel } from "@/shared/hooks/use-floating-input-panel";
+import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
 import { cn } from "@/shared/lib/utils";
 
 type TimeInputProps = Omit<
@@ -26,6 +26,7 @@ type TimeInputProps = Omit<
 };
 
 type TimePeriod = "AM" | "PM";
+const TIME_PERIODS: TimePeriod[] = ["AM", "PM"];
 
 function formatTimeValue(hour: number, minute: number) {
   return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
@@ -140,36 +141,6 @@ function toHour24(hour: number, period: TimePeriod, useMeridiem: boolean) {
   return (hour % 12) + (period === "PM" ? 12 : 0);
 }
 
-function getPanelPosition(
-  anchor: HTMLElement,
-  panelWidth: number,
-  panelHeight: number,
-): CSSProperties {
-  const rect = anchor.getBoundingClientRect();
-  const gap = 8;
-  const viewportPadding = 8;
-  const availableWidth = window.innerWidth - viewportPadding * 2;
-  const resolvedWidth = Math.min(
-    availableWidth,
-    Math.max(panelWidth, rect.width),
-  );
-  const left = Math.min(
-    Math.max(viewportPadding, rect.left),
-    window.innerWidth - resolvedWidth - viewportPadding,
-  );
-  const hasRoomBelow = rect.bottom + gap + panelHeight < window.innerHeight;
-  const top = hasRoomBelow
-    ? rect.bottom + gap
-    : Math.max(viewportPadding, rect.top - panelHeight - gap);
-
-  return {
-    left,
-    position: "fixed",
-    top,
-    width: resolvedWidth,
-  };
-}
-
 interface TimeScrollColumnProps<T extends number | string> {
   activeRef?: (node: HTMLButtonElement | null) => void;
   ariaLabel: string;
@@ -229,7 +200,7 @@ function TimeScrollColumn<T extends number | string>({
 
   return (
     <div className="flex min-w-0 flex-col px-1.5">
-      <p className="pb-2 text-center text-[10px] font-black uppercase text-slate-muted">
+      <p className="pb-2 text-center text-xs font-black text-slate-muted uppercase">
         {title}
       </p>
       <div className="relative flex min-h-56 flex-1 items-center">
@@ -238,7 +209,7 @@ function TimeScrollColumn<T extends number | string>({
           role="listbox"
           aria-label={ariaLabel}
           style={{ scrollbarWidth: "none" }}
-          className="max-h-56 w-full space-y-1 overflow-y-auto py-7 [-ms-overflow-style:none] [&::-webkit-scrollbar]:!hidden [&::-webkit-scrollbar]:!w-0"
+          className="flex max-h-56 w-full flex-col gap-1 overflow-y-auto py-7 [-ms-overflow-style:none] [&::-webkit-scrollbar]:!hidden [&::-webkit-scrollbar]:!w-0"
           onScroll={updateScrollState}
         >
           {options.map((option) => {
@@ -257,7 +228,6 @@ function TimeScrollColumn<T extends number | string>({
                   size="sm"
                   role="option"
                   aria-selected={selected}
-                  aria-pressed={selected}
                   className={cn(
                     "h-8 w-full max-w-16 rounded-full text-xs tabular-nums",
                     selected &&
@@ -327,10 +297,18 @@ function TimeInput({
     shouldUseMeridiemTime() ? "12" : "24",
   );
   const useMeridiem = timeFormat === "12";
-  const [open, setOpen] = useState(false);
-  const [panelStyle, setPanelStyle] = useState<CSSProperties | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const panelRef = useRef<HTMLDivElement | null>(null);
+  const {
+    closePanel,
+    open,
+    openPanel,
+    panelRef,
+    panelStyle,
+    portalTarget,
+    triggerRef,
+  } = useFloatingInputPanel({
+    panelHeight: 340,
+    panelWidth: useMeridiem ? 188 : 144,
+  });
   const activeRefs = useRef<{
     hour: HTMLButtonElement | null;
     minute: HTMLButtonElement | null;
@@ -348,23 +326,6 @@ function TimeInput({
     () => buildMinuteOptions(intervalMinutes),
     [intervalMinutes],
   );
-
-  useEscapeKey({ enabled: open, onEscape: () => setOpen(false) });
-
-  const updatePanelPosition = useCallback(() => {
-    if (!containerRef.current) {
-      return;
-    }
-
-    setPanelStyle(
-      getPanelPosition(containerRef.current, useMeridiem ? 188 : 144, 340),
-    );
-  }, [useMeridiem]);
-
-  const openTimePicker = () => {
-    updatePanelPosition();
-    setOpen(true);
-  };
 
   const commitParts = ({
     hour = selectedParts.hour,
@@ -423,48 +384,19 @@ function TimeInput({
       return;
     }
 
-    window.setTimeout(() => {
+    const delay = scheduleDelay(() => {
       activeRefs.current.hour?.scrollIntoView({ block: "center" });
       activeRefs.current.minute?.scrollIntoView({ block: "center" });
       activeRefs.current.hour?.focus({ preventScroll: true });
     }, 0);
-  }, [open, selectedParts.hour, selectedParts.minute]);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const handlePointerDown = (event: PointerEvent) => {
-      const target = event.target;
-
-      if (!(target instanceof Node)) {
-        return;
-      }
-
-      if (
-        containerRef.current?.contains(target) ||
-        panelRef.current?.contains(target)
-      ) {
-        return;
-      }
-
-      setOpen(false);
-    };
-
-    window.addEventListener("resize", updatePanelPosition);
-    window.addEventListener("scroll", updatePanelPosition, true);
-    document.addEventListener("pointerdown", handlePointerDown, true);
 
     return () => {
-      window.removeEventListener("resize", updatePanelPosition);
-      window.removeEventListener("scroll", updatePanelPosition, true);
-      document.removeEventListener("pointerdown", handlePointerDown, true);
+      cancelDelay(delay);
     };
-  }, [open, updatePanelPosition]);
+  }, [open, selectedParts.hour, selectedParts.minute]);
 
   return (
-    <div ref={containerRef} className={cn("relative w-full", wrapperClassName)}>
+    <div ref={triggerRef} className={cn("relative w-full", wrapperClassName)}>
       <Input
         {...props}
         readOnly
@@ -477,7 +409,7 @@ function TimeInput({
         className={cn("cursor-pointer caret-transparent", className)}
         onClick={() => {
           if (!disabled) {
-            openTimePicker();
+            openPanel();
           }
         }}
         onKeyDown={(event) => {
@@ -488,12 +420,12 @@ function TimeInput({
               event.key === "ArrowDown")
           ) {
             event.preventDefault();
-            openTimePicker();
+            openPanel();
           }
         }}
       />
 
-      {open && panelStyle && typeof document !== "undefined"
+      {open && panelStyle && portalTarget
         ? createPortal(
             <div
               ref={panelRef}
@@ -502,7 +434,7 @@ function TimeInput({
             >
               <div
                 className={cn(
-                  "grid w-full items-stretch rounded-xl py-1 divide-x divide-border/60",
+                  "grid w-full items-stretch divide-x divide-border/60 rounded-xl py-1",
                   useMeridiem
                     ? "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(3.5rem,0.7fr)]"
                     : "grid-cols-2",
@@ -556,7 +488,7 @@ function TimeInput({
 
                 {useMeridiem ? (
                   <div className="flex min-w-0 flex-col px-1.5">
-                    <p className="pb-2 text-center text-[10px] font-black uppercase text-slate-muted">
+                    <p className="pb-2 text-center text-xs font-black text-slate-muted uppercase">
                       Period
                     </p>
                     <div
@@ -564,7 +496,7 @@ function TimeInput({
                       aria-label="Choose period"
                       className="flex min-h-56 flex-1 flex-col justify-center gap-1"
                     >
-                      {(["AM", "PM"] as const).map((period) => {
+                      {TIME_PERIODS.map((period) => {
                         const selected = selectedParts.period === period;
 
                         return (
@@ -580,7 +512,6 @@ function TimeInput({
                             size="sm"
                             role="option"
                             aria-selected={selected}
-                            aria-pressed={selected}
                             className={cn(
                               "mx-auto h-8 w-full max-w-14 rounded-full text-xs",
                               selected &&
@@ -588,7 +519,7 @@ function TimeInput({
                             )}
                             onKeyDown={(event) =>
                               handleColumnKeyDown(
-                                ["AM", "PM"] as TimePeriod[],
+                                TIME_PERIODS,
                                 selectedParts.period,
                                 event,
                                 (nextPeriod) =>
@@ -627,7 +558,7 @@ function TimeInput({
                       size="xs"
                       onClick={() => {
                         onValueChange("");
-                        setOpen(false);
+                        closePanel();
                       }}
                     >
                       Clear
@@ -637,14 +568,14 @@ function TimeInput({
                     type="button"
                     variant="ghost"
                     size="xs"
-                    onClick={() => setOpen(false)}
+                    onClick={closePanel}
                   >
                     Done
                   </Button>
                 </div>
               </div>
             </div>,
-            document.body,
+            portalTarget,
           )
         : null}
     </div>

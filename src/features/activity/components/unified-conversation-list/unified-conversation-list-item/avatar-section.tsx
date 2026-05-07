@@ -32,19 +32,19 @@ export const AvatarSection = memo(
           name={title}
           shape={isGroup ? "rounded" : "circle"}
           className={cn(
-            "ring-1 ring-border/50 shadow-sm transition-colors duration-200 group-hover/item:ring-forge-teal/30",
+            "shadow-sm ring-1 ring-border/50 transition-colors duration-200 group-hover/item:ring-forge-teal/30",
             isGroup && "rounded-md",
-            isCompact ? "w-9 h-9" : "w-11 h-11",
+            isCompact ? "h-9 w-9" : "h-11 w-11",
           )}
         />
 
         {isGroup && secondaryAvatar && !isCompact && (
-          <div className="absolute -bottom-0.5 -right-0.5 ring-2 ring-background rounded-lg overflow-hidden shadow-sm">
+          <div className="absolute -right-0.5 -bottom-0.5 overflow-hidden rounded-lg shadow-sm ring-2 ring-background">
             <Avatar
               src={secondaryAvatar}
               alt=""
               shape="rounded"
-              className="w-3 h-3 rounded-lg"
+              className="h-3 w-3 rounded-lg"
               fallback=""
             />
           </div>

@@ -25,20 +25,21 @@ export const ProposalVoters = memo(function ProposalVoters({
   return (
     <>
       <div className="flex items-center justify-between">
-        <div className="flex -space-x-1.5 pt-0.5">
-          {voters.map((voter) => (
+        <div className="flex pt-0.5">
+          {voters.map((voter, index) => (
             <Avatar
               key={voter.id}
               src={voter.avatar}
               name={voter.name}
               className={cn(
-                "h-5 w-5 ring-2 transition-transform hover:z-10 hover:scale-110",
+                "size-5 ring-2 transition-transform hover:z-10 hover:scale-110",
+                index > 0 && "-ml-1.5",
                 voter.vote === "APPROVE"
                   ? "ring-forge-teal"
                   : "ring-destructive",
               )}
               fallbackClassName={cn(
-                "text-[9px]",
+                "text-xs",
                 voter.vote === "APPROVE"
                   ? "text-forge-teal"
                   : "text-destructive",
@@ -47,7 +48,7 @@ export const ProposalVoters = memo(function ProposalVoters({
             />
           ))}
         </div>
-        <span className="text-micro font-black uppercase tracking-widest text-muted-foreground">
+        <span className="text-micro font-black tracking-widest text-muted-foreground uppercase">
           {score}
         </span>
       </div>

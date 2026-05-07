@@ -31,19 +31,19 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
     <div
       ref={containerRef}
       className={cn(
-        "relative flex-1 w-full max-w-md lg:max-w-none transition-[opacity,transform] duration-700 delay-200",
-        inView ? "opacity-100 scale-100" : "opacity-0 scale-95",
+        "relative w-full max-w-md flex-1 transition-[opacity,transform] delay-200 duration-700 lg:max-w-none",
+        inView ? "scale-100 opacity-100" : "scale-95 opacity-0",
       )}
     >
       <div className="relative mx-auto" style={{ width: size, height: size }}>
         {/* Visual background rings */}
         <div
-          className="absolute inset-0 m-auto rounded-full pointer-events-none border border-forge-teal/10"
+          className="pointer-events-none absolute inset-0 m-auto rounded-full border border-forge-teal/10"
           aria-hidden="true"
           style={{ width: size * 0.78, height: size * 0.78 }}
         />
         <div
-          className="absolute inset-0 m-auto rounded-full pointer-events-none border border-dashed border-forge-teal/5"
+          className="pointer-events-none absolute inset-0 m-auto rounded-full border border-dashed border-forge-teal/5"
           aria-hidden="true"
           style={{ width: size * 0.56, height: size * 0.56 }}
         />
@@ -190,7 +190,7 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
         </svg>
       </div>
 
-      <div className="text-center mt-6 h-7 overflow-hidden">
+      <div className="mt-6 h-7 overflow-hidden text-center">
         <AnimatePresence mode="wait">
           <motion.p
             key={phase}
@@ -201,7 +201,7 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
             className={cn(
               "font-sans text-sm",
               phase === "formed"
-                ? "text-spark-amber font-semibold [text-shadow:0_0_10px_rgba(245,158,11,0.5)]"
+                ? "font-semibold text-spark-amber [text-shadow:0_0_10px_rgba(245,158,11,0.5)]"
                 : "text-text-dark-secondary",
             )}
           >

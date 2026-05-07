@@ -94,7 +94,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
   }));
 
   return (
-    <div className="flex flex-col h-full bg-canvas/40 animate-in fade-in duration-300">
+    <div className="flex h-full animate-in flex-col bg-canvas/40 duration-300 fade-in">
       <UnifiedChatHeader
         kind={kind}
         title={headerProps.title}
@@ -132,7 +132,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
       />
 
       {/* Message area */}
-      <div className="flex-1 relative overflow-hidden">
+      <div className="relative flex-1 overflow-hidden">
         <UnifiedMessageList
           messages={messages}
           kind={kind}

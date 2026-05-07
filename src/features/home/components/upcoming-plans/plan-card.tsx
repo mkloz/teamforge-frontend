@@ -39,31 +39,31 @@ export function PlanCard({ group, index }: PlanCardProps) {
       }}
       role="listitem"
       className={cn(
-        "group grid grid-cols-[4.75rem_minmax(0,1fr)] items-center gap-x-3 gap-y-2 border-b border-border/55 py-3.5 pl-0 pr-1 last:border-b-0",
+        "group grid grid-cols-[4.75rem_minmax(0,1fr)] items-center gap-x-3 gap-y-2 border-b border-border/55 py-3.5 pr-1 pl-0 last:border-b-0",
         "transition-colors duration-150 hover:bg-forge-teal/5 sm:grid-cols-[5.5rem_minmax(0,1fr)_auto] sm:pr-3 md:gap-4",
       )}
     >
       <div className="relative flex h-full min-h-16 flex-col justify-center pl-9">
         <span
           className={cn(
-            "absolute left-4 top-1/2 z-10 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full ring-4 ring-background",
+            "absolute top-1/2 left-4 z-10 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full ring-4 ring-background",
             isActionable ? "bg-spark-amber" : "bg-forge-teal",
           )}
           aria-hidden="true"
         />
-        <span className="text-[10px] font-black uppercase leading-none text-muted-foreground">
+        <span className="text-xs leading-none font-black text-muted-foreground uppercase">
           {month}
         </span>
-        <span className="mt-1 text-2xl font-black leading-none text-foreground">
+        <span className="mt-1 text-2xl leading-none font-black text-foreground">
           {dayNum}
         </span>
-        <span className="mt-1 text-[10px] font-bold leading-none text-muted-foreground">
+        <span className="mt-1 text-xs leading-none font-bold text-muted-foreground">
           {dayName}
         </span>
       </div>
 
       <div className="min-w-0">
-        <p className="truncate text-sm font-bold leading-snug text-foreground transition-colors duration-200 group-hover:text-forge-teal">
+        <p className="truncate text-sm leading-snug font-bold text-foreground transition-colors duration-200 group-hover:text-forge-teal">
           {plan.title}
         </p>
         <p className="mt-0.5 truncate text-xs font-medium text-muted-foreground">
@@ -97,7 +97,7 @@ export function PlanCard({ group, index }: PlanCardProps) {
               src={member.avatar}
               name={member.name}
               className="size-7 border-2 border-card bg-muted shadow-xs sm:size-8"
-              fallbackClassName="text-[10px]"
+              fallbackClassName="text-xs"
             />
           ))}
           {memberPreviews.length > 3 && (

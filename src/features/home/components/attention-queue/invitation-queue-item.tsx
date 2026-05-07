@@ -53,7 +53,7 @@ export function InvitationQueueItem({
           <p className="line-clamp-1 text-sm font-black text-foreground">
             {invite.group.name}
           </p>
-          <p className="mt-1 line-clamp-2 text-xs font-medium leading-relaxed text-muted-foreground">
+          <p className="mt-1 line-clamp-2 text-xs leading-relaxed font-medium text-muted-foreground">
             {invite.inviter?.name ?? "Someone"} invited you.{" "}
             {invite.group.activeMembersCount} people inside.
           </p>
@@ -62,7 +62,7 @@ export function InvitationQueueItem({
       <div className="flex shrink-0 items-center gap-1">
         <Button
           size="xs"
-          className="px-3 text-[11px]"
+          className="px-3 text-xs"
           loading={acceptingInviteId === invite.id}
           disabled={isAccepting || isDeclining}
           onClick={() => void onAccept(invite.id)}

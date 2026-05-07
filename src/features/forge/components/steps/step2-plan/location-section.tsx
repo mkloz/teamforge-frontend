@@ -36,6 +36,11 @@ export function LocationSection({
 }: LocationSectionProps) {
   const showAddress = locationType === "IN_PERSON";
   const showOnlineLocation = locationType === "ONLINE";
+  const handleLocationTypeChange = (value: string) => {
+    if (isLocationType(value)) {
+      onLocationTypeChange(value);
+    }
+  };
 
   return (
     <SectionCard>
@@ -47,7 +52,7 @@ export function LocationSection({
 
       <RadioGroup
         value={locationType}
-        onValueChange={(value) => onLocationTypeChange(value as LocationType)}
+        onValueChange={handleLocationTypeChange}
         className="grid grid-cols-1 gap-2 sm:grid-cols-3"
         aria-label="Location type"
       >
@@ -80,7 +85,7 @@ export function LocationSection({
               <div className="min-w-0">
                 <p
                   className={cn(
-                    "truncate text-xs font-semibold leading-tight",
+                    "truncate text-xs leading-tight font-semibold",
                     active ? "text-forge-teal" : "text-foreground",
                   )}
                 >
@@ -96,7 +101,7 @@ export function LocationSection({
       </RadioGroup>
 
       {showAddress && (
-        <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
+        <div className="animate-in space-y-2 duration-200 fade-in slide-in-from-top-1">
           <AddressAutocomplete
             label="Address or venue"
             badge="Plan location"
@@ -125,7 +130,7 @@ export function LocationSection({
       )}
 
       {locationType === "ONLINE" && (
-        <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
+        <div className="animate-in space-y-2 duration-200 fade-in slide-in-from-top-1">
           <FieldLabel htmlFor="plan-online-location">
             Meeting link or platform
           </FieldLabel>
@@ -141,8 +146,8 @@ export function LocationSection({
       )}
 
       {locationType === "TBD" && (
-        <div className="flex items-center gap-2 rounded-lg border border-border/40 bg-muted/40 px-3 py-2 animate-in fade-in duration-200">
-          <Globe size={12} className="text-muted-foreground/50 shrink-0" />
+        <div className="flex animate-in items-center gap-2 rounded-lg border border-border/40 bg-muted/40 px-3 py-2 duration-200 fade-in">
+          <Globe size={12} className="shrink-0 text-muted-foreground/50" />
           <p className="text-xs leading-snug text-muted-foreground/70">
             Location will be confirmed with members once the group is formed.
           </p>
@@ -150,4 +155,8 @@ export function LocationSection({
       )}
     </SectionCard>
   );
+}
+
+function isLocationType(value: string): value is LocationType {
+  return LOCATION_TYPES.some((locationType) => locationType.id === value);
 }

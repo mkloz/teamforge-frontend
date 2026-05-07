@@ -16,7 +16,7 @@ export function PasswordStrengthMeter({
 
   return (
     <div className="mt-1 pb-1">
-      <div className="flex gap-1 h-1">
+      <div className="flex h-1 gap-1">
         {[1, 2, 3].map((segment) => (
           <div
             key={segment}
@@ -26,7 +26,7 @@ export function PasswordStrengthMeter({
           />
         ))}
       </div>
-      <p className={`text-xs font-medium mt-1 ${labelColorClassName}`}>
+      <p className={`mt-1 text-xs font-medium ${labelColorClassName}`}>
         {strength.label}
       </p>
     </div>

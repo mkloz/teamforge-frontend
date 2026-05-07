@@ -1,22 +1,20 @@
-import { useActiveRoute } from "@/features/app-shell/hooks/use-active-route";
-import type { AppNavigationItem } from "@/features/app-shell/lib/app-navigation";
+import {
+  isAppNavigationItemActive,
+  type AppNavigationItem,
+} from "@/features/app-shell/lib/app-navigation";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 
 interface TabButtonProps {
   item: AppNavigationItem;
+  pathname: string;
 }
 
-export function TabButton({ item }: TabButtonProps) {
-  const { isActive, startsWith } = useActiveRoute();
+export function TabButton({ item, pathname }: TabButtonProps) {
   const ItemIcon = item.icon;
   const isForge = item.id === "forge";
-
-  const active =
-    item.matchMode === "prefix"
-      ? startsWith(item.navigation.to)
-      : isActive(item.navigation.to);
+  const active = isAppNavigationItemActive(item, pathname);
 
   const activeColorText = isForge
     ? "text-accent stroke-[2.5]"
@@ -32,26 +30,25 @@ export function TabButton({ item }: TabButtonProps) {
       aria-current={active ? "page" : undefined}
       aria-label={item.label}
       className={cn(
-        "relative flex h-full w-12 flex-none flex-col items-center justify-center px-0 min-[380px]:w-14",
-        "min-w-0 transition-colors duration-200",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset rounded-2xl",
+        "relative flex h-full min-w-0 items-center justify-center rounded-2xl px-0.5",
+        "transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset",
       )}
     >
       <motion.div
         whileTap={{ scale: 0.85 }}
         transition={{ type: "spring", stiffness: 400, damping: 17 }}
-        className="relative flex flex-col items-center justify-center z-10 w-full h-full"
+        className="relative z-10 flex h-full w-full min-w-0 flex-col items-center justify-center gap-0.5"
       >
         <div
           className={cn(
             "relative flex items-center justify-center transition-colors duration-300",
             active
-              ? `w-10 h-10 rounded-full ${activeColorBg} shadow-inner`
-              : "w-9 h-9 rounded-full bg-transparent shadow-none",
+              ? `h-8 w-8 rounded-full ${activeColorBg} shadow-inner`
+              : "h-8 w-8 rounded-full bg-transparent shadow-none",
           )}
         >
           <ItemIcon
-            size={active ? 20 : 18}
+            size={active ? 18 : 17}
             aria-hidden="true"
             className={cn(
               "shrink-0 transition-colors duration-300",
@@ -73,10 +70,8 @@ export function TabButton({ item }: TabButtonProps) {
 
         <span
           className={cn(
-            "text-micro font-semibold tracking-tight transition duration-300 whitespace-nowrap",
-            active
-              ? "absolute opacity-0 scale-50 translate-y-4"
-              : "relative opacity-100 scale-100 translate-y-0 text-muted-foreground -mt-1",
+            "max-w-full truncate text-[10px] leading-none font-semibold tracking-tight whitespace-nowrap transition-colors duration-300",
+            active ? activeColorText : "text-muted-foreground",
           )}
         >
           {item.label}

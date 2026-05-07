@@ -52,14 +52,14 @@ export const ProposalMessageDetails = memo(function ProposalMessageDetails({
         proposed={formatProposalValue(proposal.field, proposal.proposedValue)}
       />
 
-      <div className="mt-4 space-y-2">
+      <div className="mt-4 flex flex-col gap-2">
         <ProposalVoters
           voters={proposalVoters}
           score={`${totalVotes}/${eligibleVoterCount} votes`}
           progress={voteProgress}
         />
 
-        <div className="flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
+        <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
           <span>{formatProposalDate(proposal.createdAt)}</span>
           <span className="font-medium">
             {approveCount} approve · {rejectCount} reject

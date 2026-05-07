@@ -37,13 +37,13 @@ export const MessageMedia = memo(
     return (
       <div
         className={cn(
-          "w-full overflow-hidden shrink-0 flex flex-col gap-1",
+          "flex w-full shrink-0 flex-col gap-1 overflow-hidden",
           content ? "mb-1" : "",
         )}
       >
         {/* Voice Notes */}
         {attachments.some((a: UnifiedAttachment) => a.type === "AUDIO") && (
-          <div className="p-1 px-1.5 flex flex-col gap-1">
+          <div className="flex flex-col gap-1 p-1 px-1.5">
             {attachments
               .filter((a: UnifiedAttachment) => a.type === "AUDIO")
               .map((voice: UnifiedAttachment) => (
@@ -59,7 +59,7 @@ export const MessageMedia = memo(
 
         {/* Documents */}
         {attachments.some((a: UnifiedAttachment) => a.type === "FILE") && (
-          <div className="flex flex-col gap-1.5 w-full text-left">
+          <div className="flex w-full flex-col gap-1.5 text-left">
             {attachments
               .filter((a: UnifiedAttachment) => a.type === "FILE")
               .map((file: UnifiedAttachment) => (

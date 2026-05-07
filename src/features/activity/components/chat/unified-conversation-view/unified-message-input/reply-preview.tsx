@@ -17,19 +17,19 @@ export const ReplyPreview = memo(
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
-          className="overflow-hidden bg-muted/30 rounded-t-3xl"
+          className="overflow-hidden rounded-t-xl bg-muted/30"
         >
-          <div className="flex items-start gap-3 px-4 py-2.5 border-b border-border/40">
-            <div className="flex-1 min-w-0 flex gap-3 items-center">
-              <div className="w-1 self-stretch bg-forge-teal rounded-full opacity-80" />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 mb-0.5">
-                  <Reply size={12} className="text-forge-teal" />
-                  <span className="text-xs font-bold text-forge-teal truncate tracking-tight uppercase">
+          <div className="flex items-start gap-3 border-b border-border/40 px-4 py-2.5">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              <div className="w-1 self-stretch rounded-full bg-forge-teal opacity-80" />
+              <div className="min-w-0 flex-1">
+                <div className="mb-0.5 flex items-center gap-1.5">
+                  <Reply className="size-3 text-forge-teal" />
+                  <span className="truncate text-xs font-bold tracking-tight text-forge-teal uppercase">
                     {replyingTo.sender?.name}
                   </span>
                 </div>
-                <p className="text-xs text-slate-muted truncate leading-relaxed">
+                <p className="truncate text-xs leading-relaxed text-slate-muted">
                   {replyingTo.content}
                 </p>
               </div>
@@ -37,10 +37,10 @@ export const ReplyPreview = memo(
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7 shrink-0 text-slate-muted hover:text-ink hover:bg-black/5 rounded-full transition-colors -mr-1"
+              className="-mr-1 size-7 shrink-0 rounded-full text-slate-muted transition-colors hover:bg-black/5 hover:text-ink"
               onClick={onClear}
             >
-              <X size={15} />
+              <X className="size-4" />
             </Button>
           </div>
         </motion.div>

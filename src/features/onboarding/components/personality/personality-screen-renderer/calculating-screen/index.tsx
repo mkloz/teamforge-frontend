@@ -18,7 +18,7 @@ export function CalculatingScreen({ vector, onDone }: CalculatingScreenProps) {
 
   return (
     <div className="flex min-h-[calc(100dvh-2rem)] w-full flex-col items-center justify-center px-4 py-12 sm:px-6">
-      <p className="mb-8 font-sans text-xs font-bold uppercase tracking-[0.18em] text-forge-teal">
+      <p className="mb-8 font-sans text-xs font-bold tracking-[0.18em] text-forge-teal uppercase">
         Computing Personality Vector
       </p>
 
@@ -58,7 +58,7 @@ export function CalculatingScreen({ vector, onDone }: CalculatingScreenProps) {
                 custom={index}
                 animate={controls}
                 initial={{ width: "0%" }}
-                className="absolute bottom-0 left-0 top-0 h-full rounded-full bg-linear-to-r from-teal-400 to-forge-teal shadow-[0_0_12px_rgba(13,148,136,0.4)]"
+                className="absolute top-0 bottom-0 left-0 h-full rounded-full bg-linear-to-r from-teal-400 to-forge-teal shadow-[0_0_12px_rgba(13,148,136,0.4)]"
               />
             </div>
           </motion.div>

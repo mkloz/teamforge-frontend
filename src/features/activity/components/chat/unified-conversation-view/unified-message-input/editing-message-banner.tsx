@@ -12,8 +12,8 @@ export const EditingMessageBanner = memo(function EditingMessageBanner({
   return (
     <div className="flex items-center justify-between gap-3 border-b border-border/60 px-3 py-2 text-xs">
       <div className="flex min-w-0 items-center gap-2">
-        <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-forge-teal/10 text-forge-teal">
-          <PencilLine size={14} />
+        <div className="flex size-7 items-center justify-center rounded-lg bg-forge-teal/10 text-forge-teal">
+          <PencilLine className="size-3.5" />
         </div>
         <div className="min-w-0">
           <p className="font-semibold text-ink">Editing message</p>

@@ -13,7 +13,7 @@ export function FailureReasons({ context, reasons }: FailureReasonsProps) {
           <SlidersHorizontal size={14} />
         </div>
         <div className="min-w-0">
-          <p className="text-xs font-semibold leading-none text-muted-foreground">
+          <p className="text-xs leading-none font-semibold text-muted-foreground">
             What likely happened
           </p>
           <p className="mt-1 text-micro leading-none text-muted-foreground/55">
@@ -28,10 +28,10 @@ export function FailureReasons({ context, reasons }: FailureReasonsProps) {
             key={reason}
             className="rounded-lg border border-border/40 bg-card/75 p-3"
           >
-            <span className="text-micro font-black tabular-nums text-spark-amber">
+            <span className="text-micro font-black text-spark-amber tabular-nums">
               0{index + 1}
             </span>
-            <p className="mt-2 text-xs font-medium leading-snug text-muted-foreground">
+            <p className="mt-2 text-xs leading-snug font-medium text-muted-foreground">
               {reason}
             </p>
           </div>

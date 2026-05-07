@@ -20,7 +20,7 @@ export function RecommendedGroups() {
 
   if (isRecommendationsLoading && recommendations.length === 0) {
     return (
-      <div className="flex w-full flex-col gap-4 animate-pulse">
+      <div className="flex w-full animate-pulse flex-col gap-4">
         <div className="h-8 w-56 rounded bg-muted" />
         <div className="grid gap-3 md:grid-cols-2">
           <div className="h-48 rounded-xl bg-muted" />
@@ -33,7 +33,7 @@ export function RecommendedGroups() {
   return (
     <section
       aria-labelledby="recommended-groups-heading"
-      className="flex w-full flex-col gap-4"
+      className="flex w-full flex-col gap-5"
     >
       <HomeSectionHeading
         id="recommended-groups-heading"
@@ -59,7 +59,7 @@ export function RecommendedGroups() {
             <p className="text-sm font-black text-foreground">
               No strong openings yet.
             </p>
-            <p className="mt-1 text-xs font-medium leading-relaxed text-muted-foreground">
+            <p className="mt-1 text-xs leading-relaxed font-medium text-muted-foreground">
               When a group looks like a good fit, it will show up here.
             </p>
           </div>
@@ -95,7 +95,7 @@ export function RecommendedGroups() {
 
           <div
             role="list"
-            className="hidden md:grid md:grid-cols-2 md:gap-4 xl:grid-cols-3"
+            className="hidden md:grid md:grid-cols-2 md:gap-5 xl:grid-cols-3"
           >
             {visibleRecommendations.map((recommendation) => (
               <div key={recommendation.id} className="min-w-0">

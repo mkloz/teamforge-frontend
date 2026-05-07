@@ -1,9 +1,11 @@
+import { Pause, Play } from "lucide-react";
+import type { MouseEvent } from "react";
 import { memo } from "react";
-import { Play, Pause } from "lucide-react";
+
+import { useAudioPlayer } from "@/features/activity/hooks/use-audio-player";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
-import { useAudioPlayer } from "@/features/activity/hooks/use-audio-player";
 
 interface VoiceNoteProps {
   url: string;
@@ -32,7 +34,7 @@ export const VoiceNote = memo(function VoiceNote({
     formatTime,
   } = useAudioPlayer(url);
 
-  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleSeek = (e: MouseEvent<HTMLButtonElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     seek(x / rect.width);
@@ -43,13 +45,13 @@ export const VoiceNote = memo(function VoiceNote({
   return (
     <div
       className={cn(
-        "flex flex-col gap-0.5 min-w-56 rounded-xl ",
+        "flex min-w-56 flex-col gap-0.5 rounded-xl",
         isOwn ? "items-end" : "items-start",
       )}
     >
       <div
         className={cn(
-          "flex items-center gap-3 w-full",
+          "flex w-full items-center gap-3",
           isOwn ? "flex-row-reverse" : "flex-row",
         )}
       >
@@ -59,27 +61,24 @@ export const VoiceNote = memo(function VoiceNote({
           variant="ghost"
           size="icon"
           className={cn(
-            "h-10 w-10 shrink-0 rounded-full transition active:scale-90",
+            "size-10 shrink-0 rounded-full transition active:scale-90",
             isOwn
-              ? "bg-primary/10 dark:bg-white/10 hover:bg-primary/20 dark:hover:bg-white/20 text-primary dark:text-white border border-primary/10 dark:border-white/10"
-              : "bg-forge-teal/5 hover:bg-forge-teal/10 text-forge-teal border border-forge-teal/10",
+              ? "border border-primary/10 bg-primary/10 text-primary hover:bg-primary/20 dark:border-white/10 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
+              : "border border-forge-teal/10 bg-forge-teal/5 text-forge-teal hover:bg-forge-teal/10",
           )}
         >
           {isPlaying ? (
-            <Pause size={18} fill="currentColor" strokeWidth={0} />
+            <Pause className="size-5" fill="currentColor" strokeWidth={0} />
           ) : (
-            <Play
-              size={18}
-              fill="currentColor"
-              strokeWidth={0}
-              className="ml-1"
-            />
+            <Play className="ml-1 size-5" fill="currentColor" strokeWidth={0} />
           )}
         </Button>
 
         {/* Waveform Area */}
-        <div
-          className="flex-1 h-10 flex items-center gap-0.5 cursor-pointer group/waveform relative"
+        <button
+          type="button"
+          aria-label="Seek voice note"
+          className="group/waveform relative flex h-10 flex-1 cursor-pointer items-center gap-0.5 border-0 bg-transparent p-0"
           onClick={handleSeek}
         >
           {bars.map((bar, i) => {
@@ -109,7 +108,7 @@ export const VoiceNote = memo(function VoiceNote({
                       : { duration: 0.2 },
                 }}
                 className={cn(
-                  "w-0.75 rounded-full transition-colors",
+                  "w-px rounded-full transition-colors",
                   isActive
                     ? isOwn
                       ? "bg-primary dark:bg-white"
@@ -125,16 +124,16 @@ export const VoiceNote = memo(function VoiceNote({
           {/* Progress Head */}
           <motion.div
             className={cn(
-              "absolute top-0 bottom-0 w-0.5 pointer-events-none z-10",
+              "pointer-events-none absolute top-0 bottom-0 z-10 w-0.5",
               isOwn
-                ? "bg-primary/60 dark:bg-white/60 shadow-[0_0_10px_rgba(var(--color-primary),0.5)] dark:shadow-[0_0_10px_white]"
+                ? "bg-primary/60 shadow-[0_0_10px_rgba(var(--color-primary),0.5)] dark:bg-white/60 dark:shadow-[0_0_10px_white]"
                 : "bg-forge-teal/60 shadow-[0_0_10px_rgba(var(--color-forge-teal),0.5)]",
             )}
             style={{ left: `${progress * 100}%` }}
             initial={false}
             animate={{ opacity: isPlaying ? 1 : 0 }}
           />
-        </div>
+        </button>
 
         {/* Features: Speed Toggle */}
         <Button
@@ -142,10 +141,10 @@ export const VoiceNote = memo(function VoiceNote({
           variant="subtle"
           size="xs"
           className={cn(
-            "h-8 px-2 rounded-lg text-micro font-black tabular-nums transition border shrink-0",
+            "h-8 shrink-0 rounded-lg border px-2 text-xs font-black tabular-nums transition",
             isOwn
-              ? "bg-primary/5 dark:bg-white/5 border-primary/10 dark:border-white/10 text-primary/70 dark:text-white/70 hover:bg-primary/10 dark:hover:bg-white/10"
-              : "bg-forge-teal/5 border-forge-teal/10 text-forge-teal/70 hover:bg-forge-teal/10",
+              ? "border-primary/10 bg-primary/5 text-primary/70 hover:bg-primary/10 dark:border-white/10 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10"
+              : "border-forge-teal/10 bg-forge-teal/5 text-forge-teal/70 hover:bg-forge-teal/10",
           )}
         >
           {playbackSpeed}x
@@ -155,10 +154,10 @@ export const VoiceNote = memo(function VoiceNote({
       {/* Time Info */}
       <div
         className={cn(
-          "flex justify-between w-full pr-12 pl-13 text-micro font-bold tracking-tight opacity-50 -mt-1",
+          "-mt-1 flex w-full justify-between pr-12 pl-13 text-micro font-bold tracking-tight opacity-50",
           isOwn
-            ? "text-slate-muted flex-row-reverse"
-            : "text-slate-muted flex-row",
+            ? "flex-row-reverse text-slate-muted"
+            : "flex-row text-slate-muted",
         )}
       >
         <span className="tabular-nums">

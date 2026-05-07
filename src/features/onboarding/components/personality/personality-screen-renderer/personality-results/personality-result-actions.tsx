@@ -17,18 +17,18 @@ export function PersonalityResultActions({
     <>
       <section className="mt-auto flex flex-col gap-3 border-t border-border/70 pt-6 sm:flex-row">
         <Button
-          size="lg"
+          size="md"
           onClick={onContinue}
-          className="w-full min-w-0 text-base sm:flex-1"
+          className="w-full min-w-0 sm:flex-1"
         >
           <span className="truncate">{continueLabel}</span>
           <ArrowRight size={18} className="shrink-0" />
         </Button>
         <Button
           variant="outline"
-          size="lg"
+          size="md"
           onClick={onRetake}
-          className="w-full min-w-0 text-base sm:w-auto sm:shrink-0"
+          className="w-full min-w-0 sm:w-auto sm:shrink-0"
         >
           <RefreshCcw size={18} className="shrink-0" />
           <span className="truncate">Retake</span>

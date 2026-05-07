@@ -17,7 +17,7 @@ export function GroupFitSection({ insight }: GroupFitSectionProps) {
           <h2 className="text-[1.6rem] font-black tracking-tight text-ink md:text-3xl">
             {insight.title}
           </h2>
-          <p className="text-base font-medium leading-relaxed text-ink/85 text-pretty md:text-lg">
+          <p className="text-base leading-relaxed font-medium text-pretty text-ink/85 md:text-lg">
             {getCompactSummary(insight.summary)}
           </p>
         </div>
@@ -39,10 +39,10 @@ export function GroupFitSection({ insight }: GroupFitSectionProps) {
 
       {insight.signals[0] ? (
         <div className="flex max-w-3xl flex-col gap-2 border-l border-forge-teal/40 pl-4">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-muted">
+          <p className="text-xs font-bold tracking-widest text-slate-muted uppercase">
             Why it works
           </p>
-          <p className="text-sm font-semibold leading-relaxed text-ink/82">
+          <p className="text-sm leading-relaxed font-semibold text-ink/82">
             {getCompactSummary(insight.signals[0])}
           </p>
         </div>
@@ -62,11 +62,11 @@ function FitGuidance({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-muted">
+      <div className="flex items-center gap-2 text-xs font-bold tracking-widest text-slate-muted uppercase">
         <Icon size={14} className="shrink-0 text-forge-teal" />
         {label}
       </div>
-      <p className="text-sm font-medium leading-relaxed text-ink/75">
+      <p className="text-sm leading-relaxed font-medium text-ink/75">
         {getCompactSummary(value)}
       </p>
     </div>

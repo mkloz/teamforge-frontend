@@ -31,7 +31,7 @@ export function MessageSenderBlock({
     <div
       ref={blockRef}
       data-message-block-key={block.key}
-      className="absolute left-0 right-0 flex flex-col gap-0.5"
+      className="absolute right-0 left-0 flex flex-col gap-0.5"
       style={{
         minHeight:
           block.measuredHeight === null ? `${block.height}px` : undefined,
@@ -42,12 +42,12 @@ export function MessageSenderBlock({
 
       <div
         className={cn(
-          "flex items-stretch gap-3 group/sender mb-3 relative",
+          "group/sender relative mb-3 flex items-stretch gap-3",
           block.isOwn ? "flex-row-reverse" : "flex-row",
         )}
       >
         {!block.isOwn && block.senderGroup.senderId !== "system" && (
-          <div className="w-8 shrink-0 flex flex-col justify-end">
+          <div className="flex w-8 shrink-0 flex-col justify-end">
             <div className="sticky bottom-2 flex flex-col items-center">
               <Button
                 variant="ghost"
@@ -56,14 +56,14 @@ export function MessageSenderBlock({
                   block.senderGroup.sender &&
                   onAvatarClick(block.senderGroup.sender)
                 }
-                className="rounded-full h-8 w-8 p-0"
+                className="size-8 rounded-full p-0"
                 aria-label={`View ${getParticipantDisplayName(block.senderGroup.sender)}'s profile`}
               >
                 <Avatar
                   src={block.senderGroup.sender?.avatar}
                   name={getParticipantDisplayName(block.senderGroup.sender)}
                   fallback={getParticipantInitials(block.senderGroup.sender)}
-                  className="h-8 w-8 bg-muted text-[10px] text-muted-foreground ring-1 ring-border shadow-sm"
+                  className="size-8 bg-muted text-xs text-muted-foreground shadow-sm ring-1 ring-border"
                   fallbackClassName="text-muted-foreground"
                 />
               </Button>
@@ -73,7 +73,7 @@ export function MessageSenderBlock({
 
         <div
           className={cn(
-            "flex-1 flex flex-col min-w-0",
+            "flex min-w-0 flex-1 flex-col",
             block.isOwn ? "items-end" : "items-start",
           )}
         >
@@ -85,7 +85,7 @@ export function MessageSenderBlock({
                 key={message.id}
                 ref={getMessageRef(message.id)}
                 className={cn(
-                  "w-full rounded-2xl transition-[background-color,box-shadow] duration-500",
+                  "w-full rounded-xl transition-[background-color,box-shadow] duration-500",
                   highlightedMessageId === message.id &&
                     "bg-forge-teal/8 shadow-[0_0_0_1px_rgba(13,148,136,0.18)]",
                 )}

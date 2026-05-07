@@ -11,7 +11,7 @@ export function PagerDots({ total, activeIndex, accentClass }: PagerDotsProps) {
     return (
       <div
         className={cn(
-          "absolute left-0 inset-y-0 w-0.5 rounded-r-full",
+          "absolute inset-y-0 left-0 w-0.5 rounded-r-full",
           accentClass,
         )}
         aria-hidden
@@ -21,7 +21,7 @@ export function PagerDots({ total, activeIndex, accentClass }: PagerDotsProps) {
 
   return (
     <div
-      className="absolute left-0 inset-y-0 w-3.5 flex flex-col items-center justify-center gap-1"
+      className="absolute inset-y-0 left-0 flex w-3.5 flex-col items-center justify-center gap-1"
       aria-hidden
     >
       {Array.from({ length: total }, (_, i) => {
@@ -31,7 +31,7 @@ export function PagerDots({ total, activeIndex, accentClass }: PagerDotsProps) {
             key={i}
             className={cn(
               "rounded-full transition-all duration-250",
-              isActive ? cn("w-1.5 h-1.5", accentClass) : "w-1 h-1 bg-border",
+              isActive ? cn("h-1.5 w-1.5", accentClass) : "h-1 w-1 bg-border",
             )}
           />
         );

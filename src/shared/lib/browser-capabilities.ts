@@ -1,3 +1,8 @@
+import {
+  hasBrowserNavigator,
+  hasBrowserWindow,
+} from "@/shared/lib/browser-environment";
+
 export interface BrowserShareData {
   title: string;
   text: string;
@@ -10,12 +15,16 @@ export type BrowserShareResult =
   | "dismissed"
   | "failed";
 
-export function getCurrentBrowserUrl() {
+export function getCurrentBrowserUrl(fallback = "https://teamforge.app") {
+  if (!hasBrowserWindow()) {
+    return fallback;
+  }
+
   return window.location.href;
 }
 
 export function getCurrentBrowserOrigin(fallback = "https://teamforge.app") {
-  if (typeof window === "undefined") {
+  if (!hasBrowserWindow()) {
     return fallback;
   }
 
@@ -23,7 +32,7 @@ export function getCurrentBrowserOrigin(fallback = "https://teamforge.app") {
 }
 
 export function canShareBrowserData(shareData: BrowserShareData) {
-  if (typeof navigator.share !== "function") {
+  if (!hasBrowserNavigator() || typeof navigator.share !== "function") {
     return false;
   }
 
@@ -52,7 +61,10 @@ export async function shareBrowserData(
 }
 
 export async function copyTextToClipboard(value: string) {
-  if (typeof navigator.clipboard?.writeText !== "function") {
+  if (
+    !hasBrowserNavigator() ||
+    typeof navigator.clipboard?.writeText !== "function"
+  ) {
     return false;
   }
 
@@ -65,5 +77,9 @@ export async function copyTextToClipboard(value: string) {
 }
 
 export function openExternalUrl(url: string) {
+  if (!hasBrowserWindow()) {
+    return false;
+  }
+
   return window.open(url, "_blank", "noopener,noreferrer") !== null;
 }

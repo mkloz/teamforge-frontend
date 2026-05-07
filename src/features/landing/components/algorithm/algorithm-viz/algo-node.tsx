@@ -242,7 +242,7 @@ export function AlgoNode({
             y: ns.r + size * (node.type === "selected" ? 0.001 : 0.003),
           }}
           fontSize={size * 0.018}
-          className="font-sans pointer-events-none"
+          className="pointer-events-none font-sans"
           transition={{ duration: 0.3 }}
         >
           {node.tag}
@@ -265,7 +265,7 @@ export function AlgoNode({
                   : "rgba(20, 184, 166, 0.8)"
               }
               fontSize={size * 0.016}
-              className="font-mono font-bold tracking-wider pointer-events-none"
+              className="pointer-events-none font-mono font-bold tracking-wider"
               initial={{ opacity: 0, y: 5 }}
               animate={{
                 opacity: phase === "formed" && node.type === "rejected" ? 0 : 1,

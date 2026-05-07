@@ -86,13 +86,13 @@ export function NotificationItem({
       onClick={() => onSelect(item)}
       disabled={isPending}
       className={cn(
-        "w-full h-auto p-0 rounded-none border-none hover:bg-muted/50 focus-visible:ring-inset",
+        "h-auto w-full rounded-none border-none p-0 hover:bg-muted/45 focus-visible:ring-inset",
         !item.isRead && "bg-secondary/20",
       )}
     >
       <span
         className={cn(
-          "w-full flex items-start gap-4 px-4 py-3.5 border-l-4 transition-all duration-200 cursor-pointer text-left",
+          "flex w-full cursor-pointer items-start gap-4 border-l-4 px-4 py-4 text-left transition-all duration-200",
           config.borderClass,
         )}
         aria-label={`${item.title}: ${item.message}`}
@@ -109,19 +109,19 @@ export function NotificationItem({
         </span>
 
         {/* Content */}
-        <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-          <p className="text-[14px] font-bold text-ink leading-tight truncate">
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <p className="truncate text-sm leading-tight font-bold text-ink">
             {item.title}
           </p>
-          <p className="text-[12.5px] text-slate-muted leading-snug line-clamp-2">
+          <p className="line-clamp-2 text-sm leading-snug text-slate-muted">
             {item.message}
           </p>
-          <div className="flex items-center gap-2 mt-1.5">
-            <p className="text-[10px] font-bold text-slate-muted/50 uppercase tracking-widest">
+          <div className="mt-1.5 flex items-center gap-2">
+            <p className="text-xs font-bold tracking-wider text-slate-muted/50 uppercase">
               {relativeTime(item.createdAt)}
             </p>
             {isPending && (
-              <span className="text-[10px] font-bold uppercase tracking-widest text-forge-teal">
+              <span className="text-xs font-bold tracking-wider text-forge-teal uppercase">
                 Opening...
               </span>
             )}

@@ -23,10 +23,10 @@ function AccountFact({
         <Icon size={16} strokeWidth={2} />
       </div>
       <div className="min-w-0">
-        <p className="text-xs font-semibold uppercase tracking-widest text-slate-muted">
+        <p className="text-xs font-semibold tracking-widest text-slate-muted uppercase">
           {label}
         </p>
-        <p className="mt-1 break-words text-sm font-semibold text-ink">
+        <p className="mt-1 text-sm font-semibold break-words text-ink">
           {value}
         </p>
       </div>

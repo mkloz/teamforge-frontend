@@ -23,22 +23,22 @@ The core mechanic: press one button — **"Forge my group"** — and receive one
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | React 19.2 + TypeScript 5.9 |
-| Build tool | Vite 7 |
-| Routing | TanStack Router v1 (manual route tree in `src/router.tsx`) |
-| Server state | TanStack Query v5 |
-| Client state | Zustand v5 |
-| Forms | React Hook Form v7 + Zod v4 |
-| Styling | Tailwind CSS v4 |
-| UI primitives | shadcn/ui + Radix UI |
-| HTTP client | ky (with auto token refresh) |
-| Animations | Framer Motion v12 |
-| Data viz | Recharts + D3 |
-| Icons | Lucide React (primary), React Icons (fallback) |
-| Linting / Formatting | ESLint 9 + Prettier 3.8 |
-| Git hooks | Husky + lint-staged |
+| Layer                | Technology                                                 |
+| -------------------- | ---------------------------------------------------------- |
+| Framework            | React 19.2 + TypeScript 5.9                                |
+| Build tool           | Vite 7                                                     |
+| Routing              | TanStack Router v1 (manual route tree in `src/router.tsx`) |
+| Server state         | TanStack Query v5                                          |
+| Client state         | Zustand v5                                                 |
+| Forms                | React Hook Form v7 + Zod v4                                |
+| Styling              | Tailwind CSS v4                                            |
+| UI primitives        | shadcn/ui + Radix UI                                       |
+| HTTP client          | ky (with auto token refresh)                               |
+| Animations           | Framer Motion v12                                          |
+| Data viz             | Recharts + D3 through charting dependencies                |
+| Icons                | Lucide React                                               |
+| Linting / Formatting | ESLint 9 + Prettier 3.8                                    |
+| Git hooks            | Husky + lint-staged                                        |
 
 ---
 
@@ -137,24 +137,24 @@ Not every feature uses every folder, but backend-facing data seams should live i
 
 Create a `.env.local` file at the project root. **Never commit this file.**
 
-| Variable | Required | Description |
-|---|---|---|
-| `VITE_API_URL` | Yes | Base URL for the backend REST API (e.g. `https://api.teamforge.app`) |
-| `VITE_GOOGLE_CLIENT_ID` | Yes | Google OAuth 2.0 client ID for social login |
+| Variable                | Required | Description                                                          |
+| ----------------------- | -------- | -------------------------------------------------------------------- |
+| `VITE_API_URL`          | Yes      | Base URL for the backend REST API (e.g. `https://api.teamforge.app`) |
+| `VITE_GOOGLE_CLIENT_ID` | Yes      | Google OAuth 2.0 client ID for social login                          |
 
 ---
 
 ## Available Scripts
 
-| Script | Description |
-|---|---|
-| `npm run dev` | Start the Vite development server with HMR |
-| `npm run build` | Type-check and build for production (`dist/`) |
-| `npm run preview` | Preview the production build locally |
-| `npm run lint` | Run ESLint across the entire codebase |
-| `npm run typecheck` | Run TypeScript project checks |
-| `npm run check` | Run linting and type-checking together |
-| `npm run format` | Format all `src/` files with Prettier |
+| Script              | Description                                   |
+| ------------------- | --------------------------------------------- |
+| `npm run dev`       | Start the Vite development server with HMR    |
+| `npm run build`     | Type-check and build for production (`dist/`) |
+| `npm run preview`   | Preview the production build locally          |
+| `npm run lint`      | Run ESLint across the entire codebase         |
+| `npm run typecheck` | Run TypeScript project checks                 |
+| `npm run check`     | Run linting and type-checking together        |
+| `npm run format`    | Format all `src/` files with Prettier         |
 
 Pre-commit hooks (via Husky + lint-staged) automatically run ESLint fixes and Prettier on staged `src/` files before every commit.
 

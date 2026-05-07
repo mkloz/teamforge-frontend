@@ -77,7 +77,7 @@ export function InterestsBrowse({
 
   return (
     <TooltipProvider>
-      <div className="flex flex-col w-full max-w-xl mx-auto pb-8">
+      <div className="mx-auto flex w-full max-w-xl flex-col pb-8">
         <PageTitle
           isSearching={isSearching}
           hideContextLabel={hideContextLabel}

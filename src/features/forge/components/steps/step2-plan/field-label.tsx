@@ -23,7 +23,7 @@ export function FieldLabel({
       >
         {children}
         {required && (
-          <span className="text-accent ml-1" aria-label="required">
+          <span className="ml-1 text-accent" aria-label="required">
             *
           </span>
         )}

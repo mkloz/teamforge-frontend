@@ -11,7 +11,7 @@ export function LinkPreviewMedia({ data }: LinkPreviewMediaProps) {
   }
 
   return (
-    <div className="relative w-full aspect-[2.4/1] overflow-hidden bg-muted/40">
+    <div className="relative aspect-[2.4/1] w-full overflow-hidden bg-muted/40">
       <Image
         src={data.image}
         alt={data.title ?? ""}

@@ -77,9 +77,9 @@ export function useKeptForgeSearch(state: ForgeWizardData) {
   return {
     handleKeepSearchingChange,
     isKeepingSearch,
-    isSearchKept:
-      Boolean(state.activityId) &&
-      keptSearchActivityIds.has(state.activityId as string),
+    isSearchKept: state.activityId
+      ? keptSearchActivityIds.has(state.activityId)
+      : false,
     markSearchKept,
   };
 }

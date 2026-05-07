@@ -4,6 +4,8 @@ import { useForm, useWatch } from "react-hook-form";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import { AuthCommands } from "@/features/auth/api/auth-commands";
+import { calculateLoginProgress } from "@/features/auth/lib/auth-form-progress";
+import { getEmailDomain } from "@/features/auth/lib/auth-telemetry";
 import {
   loginSchema,
   type LoginValues,
@@ -13,8 +15,6 @@ interface UseLoginFormOptions {
   onSuccess?: () => void | Promise<void>;
   onProgress?: (progress: number) => void;
 }
-
-const FIELD_MIN_LENGTH = 3;
 
 export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
   const [showPassword, setShowPassword] = useState(false);
@@ -35,14 +35,17 @@ export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
   const passwordValue = useWatch({ control: form.control, name: "password" });
 
   useEffect(() => {
-    if (!onProgress) return;
-    let p = 0;
-    if (emailValue && emailValue.length > FIELD_MIN_LENGTH) p += 0.5;
-    if (passwordValue && passwordValue.length > FIELD_MIN_LENGTH) p += 0.5;
-    onProgress(p);
+    onProgress?.(
+      calculateLoginProgress({
+        email: emailValue,
+        password: passwordValue,
+      }),
+    );
   }, [emailValue, passwordValue, onProgress]);
 
   async function onSubmit(values: LoginValues) {
+    const emailDomain = getEmailDomain(values.email);
+
     setRootError(null);
     setLoading(true);
 
@@ -54,10 +57,10 @@ export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
       await onSuccess?.();
     } catch (error) {
       captureException(trackedMutationNames.authLoginEmail, error, {
-        emailDomain: values.email.split("@")[1] ?? "unknown",
+        emailDomain,
       });
       trackMutationOutcome(trackedMutationNames.authLoginEmail, "error", {
-        emailDomain: values.email.split("@")[1] ?? "unknown",
+        emailDomain,
       });
       setRootError(
         AuthCommands.getAuthErrorMessage(

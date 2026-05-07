@@ -18,8 +18,8 @@ export function FooterActionArea({
   onDisabledStep1Continue,
 }: FooterActionAreaProps) {
   return (
-    <div className="px-4 md:px-12 pt-5 pb-8 md:pb-12">
-      <div className="max-w-2xl mx-auto w-full space-y-4">
+    <div className="px-4 pt-5 pb-8 md:px-12 md:pb-12">
+      <div className="mx-auto w-full max-w-2xl space-y-4">
         <div className="flex items-center gap-3">
           <AnimatePresence>
             {fw.canGoBack && (
@@ -33,7 +33,7 @@ export function FooterActionArea({
                   variant="outline"
                   size="icon"
                   onClick={fw.goBack}
-                  className="size-14 rounded-2xl"
+                  className="size-14 rounded-xl"
                   aria-label="Go back"
                 >
                   <ChevronLeft size={20} />

@@ -51,7 +51,7 @@ export function StackCard({
         zIndex: index + 10,
       }}
       className={cn(
-        "absolute w-full max-w-lg min-h-80 md:min-h-100 flex flex-col origin-top mx-auto left-0 right-0",
+        "absolute right-0 left-0 mx-auto flex min-h-80 w-full max-w-lg origin-top flex-col md:min-h-100",
         index === 0 && "top-0 md:top-[12vh]",
         index === 1 && "top-4 md:top-[calc(12vh+24px)]",
         index === 2 && "top-8 md:top-[calc(12vh+48px)]",
@@ -60,13 +60,13 @@ export function StackCard({
       )}
     >
       <Card
-        className="h-full border-slate-100 shadow-[0_8px_40px_rgba(0,0,0,0.06)] flex flex-col justify-center p-8 md:p-12"
+        className="flex h-full flex-col justify-center border-slate-100 p-8 shadow-[0_8px_40px_rgba(0,0,0,0.06)] md:p-12"
         aria-labelledby={`card-title-${card.id}`}
       >
-        <CardContent className="p-0 flex flex-col gap-6">
+        <CardContent className="flex flex-col gap-6 p-0">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-px bg-forge-teal/40" aria-hidden="true" />
-            <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-forge-teal/70">
+            <div className="h-px w-8 bg-forge-teal/40" aria-hidden="true" />
+            <span className="text-[10px] font-semibold tracking-[0.2em] text-forge-teal/70 uppercase">
               {String(index + 1).padStart(2, "0")} /{" "}
               {String(totalCards).padStart(2, "0")}
             </span>
@@ -79,7 +79,7 @@ export function StackCard({
                 "font-sans font-bold",
                 card.variant === "credo"
                   ? "text-xl text-forge-teal"
-                  : "text-2xl md:text-3xl text-ink",
+                  : "text-2xl text-ink md:text-3xl",
               )}
             >
               {card.title}
@@ -88,14 +88,14 @@ export function StackCard({
               className={cn(
                 "font-sans leading-relaxed text-balance",
                 card.variant === "credo"
-                  ? "text-xl md:text-2xl font-medium text-ink italic"
-                  : "text-base md:text-lg text-slate-muted",
+                  ? "text-xl font-medium text-ink italic md:text-2xl"
+                  : "text-base text-slate-muted md:text-lg",
               )}
             >
               {card.description}
             </p>
             {card.footer && (
-              <p className="mt-2 text-xs font-semibold text-forge-teal/60 uppercase tracking-widest">
+              <p className="mt-2 text-xs font-semibold tracking-widest text-forge-teal/60 uppercase">
                 {card.footer}
               </p>
             )}

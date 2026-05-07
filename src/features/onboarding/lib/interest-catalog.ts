@@ -29,16 +29,18 @@ export function getLeafInterests(subcategory: Interest) {
 }
 
 export function buildLeafInterestMap(categories: Interest[]) {
-  return Object.fromEntries(
-    categories.flatMap((category) =>
-      getSubcategories(category).flatMap((subcategory) =>
-        getLeafInterests(subcategory).map((interest) => [
-          interest.id,
-          interest,
-        ]),
-      ),
-    ),
-  ) as Record<string, Interest>;
+  return categories.reduce<Record<string, Interest>>(
+    (interestMap, category) => {
+      for (const subcategory of getSubcategories(category)) {
+        for (const interest of getLeafInterests(subcategory)) {
+          interestMap[interest.id] = interest;
+        }
+      }
+
+      return interestMap;
+    },
+    {},
+  );
 }
 
 export function getCategoryLeafIds(category: Interest) {

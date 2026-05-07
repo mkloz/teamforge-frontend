@@ -26,13 +26,13 @@ export function InterestsPersistentHeader({
   return (
     <div
       className={cn(
-        "sticky z-40 w-full border-b bg-canvas/90 border-slate-muted/10 pt-3 backdrop-blur-sm shadow-none",
+        "sticky z-40 w-full border-b border-slate-muted/10 bg-canvas/90 pt-3 shadow-none backdrop-blur-sm",
         state.screen === "browse" ? "-top-10" : "top-0 shadow-sm",
       )}
     >
-      <div className="max-w-xl mx-auto lg:px-0 px-4 sm:px-5">
+      <div className="mx-auto max-w-xl px-4 sm:px-5 lg:px-0">
         {state.screen === "browse" && (
-          <div className="flex flex-col mb-1">
+          <div className="mb-1 flex flex-col">
             <motion.div style={{ opacity: headerOpacity }}>
               <InterestsBrowseHeader
                 categories={state.categories}

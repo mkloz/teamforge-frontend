@@ -68,7 +68,7 @@ export function GroupSummaryCard({
           />
         ) : (
           <div className="flex h-full items-start p-4">
-            <p className="w-fit rounded-full border border-white/10 bg-black/15 px-2.5 py-1 text-micro font-bold uppercase tracking-wide text-white/75 backdrop-blur">
+            <p className="w-fit rounded-full border border-white/10 bg-black/15 px-2.5 py-1 text-micro font-bold tracking-wide text-white/75 uppercase backdrop-blur">
               Final review
             </p>
           </div>
@@ -77,12 +77,12 @@ export function GroupSummaryCard({
           className="absolute inset-0 bg-linear-to-b from-black/10 via-transparent to-black/55"
           aria-hidden
         />
-        <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-3">
+        <div className="absolute right-4 bottom-3 left-4 flex items-end justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-micro font-bold uppercase tracking-wide text-white/70">
+            <p className="text-micro font-bold tracking-wide text-white/70 uppercase">
               {statusLabel}
             </p>
-            <p className="truncate text-lg font-black leading-tight text-white">
+            <p className="truncate text-lg leading-tight font-black text-white">
               {displayPlanTitle}
             </p>
           </div>
@@ -103,10 +103,10 @@ export function GroupSummaryCard({
             fallbackClassName="text-[11px] font-bold"
           />
           <div className="min-w-0 flex-1">
-            <h4 className="truncate text-base font-bold leading-tight text-foreground">
+            <h4 className="truncate text-base leading-tight font-bold text-foreground">
               {displayGroupName}
             </h4>
-            <p className="mt-1 text-xs leading-relaxed text-muted-foreground line-clamp-2 sm:max-w-2xl">
+            <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground sm:max-w-2xl">
               {displayDescription}
             </p>
           </div>
@@ -147,7 +147,7 @@ function SummaryItem({ icon, label, value }: SummaryItemProps) {
         {icon}
       </span>
       <span className="min-w-0">
-        <span className="block text-micro font-bold uppercase tracking-wide text-muted-foreground/60">
+        <span className="block text-micro font-bold tracking-wide text-muted-foreground/60 uppercase">
           {label}
         </span>
         <span className="block truncate text-xs font-semibold text-foreground">

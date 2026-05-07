@@ -1,5 +1,6 @@
 import type { SettingsSection } from "@/features/settings/lib/settings-route";
 import { resolveOnboardingExitNavigation } from "@/features/onboarding/lib/onboarding-exit-route";
+import { buildOnboardingReturnSearch } from "@/features/onboarding/lib/onboarding-flow-state";
 import type { OnboardingReturnTarget } from "@/features/onboarding/lib/onboarding-route";
 import { MIN_INTERESTS } from "@/features/onboarding/data/interests-data";
 import type { PersonalityType } from "@/shared/schemas";
@@ -18,9 +19,7 @@ export function buildInterestsFlowSearch({
   mbti,
 }: InterestsFlowSearchParams) {
   return {
-    ...(returnTo ? { returnTo } : {}),
-    ...(returnSearch ? { returnSearch } : {}),
-    ...(returnSection ? { returnSection } : {}),
+    ...buildOnboardingReturnSearch({ returnTo, returnSearch, returnSection }),
     ...(mbti ? { mbti } : {}),
   };
 }

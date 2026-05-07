@@ -1,4 +1,5 @@
 import { cn } from "@/shared/lib/utils";
+import type { CSSProperties } from "react";
 import type { DimensionScore } from "@/shared/types/psychometrics";
 
 interface DimensionSpectrumProps {
@@ -15,6 +16,16 @@ const DIMENSION_LABELS: Record<
   JP: { name: "Perceiving", left: "J", right: "P" },
 };
 
+type SpectrumStyle = CSSProperties & {
+  "--spectrum-position": string;
+};
+
+function getSpectrumStyle(markerPosition: number): SpectrumStyle {
+  return {
+    "--spectrum-position": `${markerPosition}%`,
+  };
+}
+
 export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
   const labels = DIMENSION_LABELS[score.dimension];
   const markerPosition = score.score;
@@ -23,12 +34,12 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between px-1">
-        <span className="text-micro font-black text-slate-muted uppercase tracking-widest">
+        <span className="text-micro font-black tracking-widest text-slate-muted uppercase">
           {labels.name}
         </span>
         <span
           className={cn(
-            "text-micro font-black uppercase tracking-widest transition-colors",
+            "text-micro font-black tracking-widest uppercase transition-colors",
             score.isBorderline ? "text-spark-amber" : "text-forge-teal",
           )}
         >
@@ -39,14 +50,14 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
       <div className="flex items-center gap-3">
         <span
           className={cn(
-            "text-xs font-black w-4 flex justify-center transition-colors",
+            "flex w-4 justify-center text-xs font-black transition-colors",
             isLeftSide ? "text-forge-teal" : "text-slate-muted/50",
           )}
         >
           {labels.left}
         </span>
 
-        <div className="relative flex-1 h-2 rounded-full bg-slate-muted/10 border border-border/10">
+        <div className="relative h-2 flex-1 rounded-full border border-border/10 bg-slate-muted/10">
           <SpectrumTrack
             markerPosition={markerPosition}
             isBorderline={score.isBorderline}
@@ -55,7 +66,7 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
 
         <span
           className={cn(
-            "text-xs font-black w-4 flex justify-center transition-colors",
+            "flex w-4 justify-center text-xs font-black transition-colors",
             !isLeftSide ? "text-forge-teal" : "text-slate-muted/50",
           )}
         >
@@ -72,25 +83,23 @@ interface SpectrumTrackProps {
 }
 
 function SpectrumTrack({ isBorderline, markerPosition }: SpectrumTrackProps) {
+  const spectrumStyle = getSpectrumStyle(markerPosition);
+
   return (
     <div aria-hidden="true" className="absolute inset-0 overflow-visible">
       <div
         className={cn(
-          "h-full rounded-full",
+          "spectrum-progress h-full rounded-full",
           isBorderline ? "bg-spark-amber/45" : "bg-forge-teal/45",
         )}
-        style={{ width: `${markerPosition}%` }}
+        style={spectrumStyle}
       />
       <span
         className={cn(
-          "absolute top-1/2 block size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 bg-white",
-          isBorderline
-            ? "border-spark-amber shadow-[0_0_4px_rgba(245,158,11,0.18)]"
-            : "border-forge-teal shadow-[0_0_4px_rgba(13,148,136,0.18)]",
+          "spectrum-marker absolute top-1/2 block size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 bg-white",
+          isBorderline ? "spectrum-marker-amber" : "spectrum-marker-teal",
         )}
-        style={{
-          left: `${markerPosition}%`,
-        }}
+        style={spectrumStyle}
       />
     </div>
   );

@@ -16,15 +16,15 @@ export const MessageContent = memo(
     const previewUrl = extractFirstUrl(content);
 
     return (
-      <div className="px-2 py-1.5 flex flex-col gap-2 relative min-w-0">
+      <div className="relative flex min-w-0 flex-col gap-2 px-2 py-1.5">
         {/* Link preview — only rendered when a URL is detected in the content */}
         {previewUrl && <LinkPreview url={previewUrl} isOwn={isOwn} />}
 
         <p
           className={cn(
-            "text-sm whitespace-pre-wrap wrap-break-word leading-[1.45] font-medium tracking-tight",
+            "text-sm leading-[1.45] font-medium tracking-tight wrap-break-word whitespace-pre-wrap",
             content.length < 50 &&
-              !content.includes("\n") &&
+              !content.includes(" ") &&
               reactionGroupsLength === 0 &&
               "pr-18",
           )}

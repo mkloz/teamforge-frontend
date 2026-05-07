@@ -29,12 +29,12 @@ export function ExploreLeftSection() {
   const { data: currentUser, isLoading } = useQuery(currentUserQueryOptions());
 
   return (
-    <aside className="flex flex-col gap-6">
+    <aside className="flex flex-col gap-5">
       <div className="hidden space-y-1.5 px-1 md:block">
-        <h1 className="text-3xl font-black leading-tight tracking-tight text-foreground">
+        <h1 className="text-[1.7rem] leading-tight font-black tracking-tight text-foreground">
           Explore
         </h1>
-        <p className="text-sm font-medium leading-relaxed text-muted-foreground">
+        <p className="text-sm leading-relaxed font-medium text-muted-foreground">
           Open groups with timing and room to join.
         </p>
       </div>
@@ -48,11 +48,11 @@ export function ExploreLeftSection() {
           interests={currentUser?.interests ?? []}
         />
       ) : isLoading ? (
-        <div className="rounded-2xl border border-border/70 bg-card/40 p-4 text-sm font-medium text-slate-muted">
+        <div className="rounded-xl border border-border/70 bg-card/40 p-4 text-sm font-medium text-slate-muted">
           Loading your compatibility profile.
         </div>
       ) : currentUser && !currentUser.emailVerified ? (
-        <div className="rounded-2xl border border-border/70 bg-card/40 p-4 text-sm font-medium text-slate-muted">
+        <div className="rounded-xl border border-border/70 bg-card/40 p-4 text-sm font-medium text-slate-muted">
           <p className="leading-relaxed">
             Verify your account to keep your explore signals and recovery
             settings in good shape.
@@ -64,7 +64,7 @@ export function ExploreLeftSection() {
       ) : currentUser &&
         (!currentUser.personalityType ||
           !hasCompleteOceanProfile(currentUser)) ? (
-        <div className="rounded-2xl border border-border/70 bg-card/40 p-4 text-sm font-medium text-slate-muted">
+        <div className="rounded-xl border border-border/70 bg-card/40 p-4 text-sm font-medium text-slate-muted">
           <p className="leading-relaxed">
             Complete your personality profile to unlock compatibility insights
             here.
@@ -80,7 +80,7 @@ export function ExploreLeftSection() {
           </Button>
         </div>
       ) : currentUser && !(currentUser.interests?.length ?? 0) ? (
-        <div className="rounded-2xl border border-border/70 bg-card/40 p-4 text-sm font-medium text-slate-muted">
+        <div className="rounded-xl border border-border/70 bg-card/40 p-4 text-sm font-medium text-slate-muted">
           <p className="leading-relaxed">
             Add your interests so explore can rank groups around what you
             actually want to do.
@@ -96,16 +96,16 @@ export function ExploreLeftSection() {
           </Button>
         </div>
       ) : currentUser ? (
-        <div className="rounded-2xl border border-border/70 bg-card/40 p-4 text-sm font-medium text-slate-muted">
+        <div className="rounded-xl border border-border/70 bg-card/40 p-4 text-sm font-medium text-slate-muted">
           Your compatibility profile is still syncing.
         </div>
       ) : (
-        <div className="rounded-2xl border border-border/70 bg-card/40 p-4 text-sm font-medium text-slate-muted">
+        <div className="rounded-xl border border-border/70 bg-card/40 p-4 text-sm font-medium text-slate-muted">
           Sign in to see your compatibility profile.
         </div>
       )}
 
-      <div className="px-1 pt-1">
+      <div className="px-1 pt-0.5">
         <ForgeCTA />
       </div>
     </aside>

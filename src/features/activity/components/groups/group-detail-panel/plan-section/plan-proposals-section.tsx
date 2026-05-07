@@ -30,20 +30,23 @@ export function PlanProposalsSection({
   }
 
   return (
-    <div className="mt-5 space-y-3" aria-labelledby="plan-proposals-title">
+    <div
+      className="mt-5 flex flex-col gap-3"
+      aria-labelledby="plan-proposals-title"
+    >
       <div className="flex items-center justify-between gap-3">
         <h3
           id="plan-proposals-title"
-          className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60"
+          className="text-xs font-bold tracking-wider text-muted-foreground/60 uppercase"
         >
           Plan Proposals
         </h3>
-        <span className="text-[10px] font-semibold text-muted-foreground">
+        <span className="text-xs font-semibold text-muted-foreground">
           {proposals.length} active
         </span>
       </div>
 
-      <div className="space-y-2.5">
+      <div className="flex flex-col gap-2.5">
         {proposals.map((proposal) => (
           <PlanProposalCard
             key={proposal.id}

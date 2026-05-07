@@ -86,13 +86,13 @@ export type ForgeWizardField =
   | "inviteCopied"
   | "invitesSent";
 
-export type ForgeWizardSetFieldAction = {
-  [Field in ForgeWizardField]: {
-    type: "set-field";
-    field: Field;
-    value: ForgeWizardData[Field];
-  };
-}[ForgeWizardField];
+export interface ForgeWizardSetFieldAction<
+  Field extends ForgeWizardField = ForgeWizardField,
+> {
+  type: "set-field";
+  field: Field;
+  value: ForgeWizardData[Field];
+}
 
 export type ForgeWizardAction =
   | { type: "reset" }

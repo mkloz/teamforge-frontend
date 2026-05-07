@@ -18,7 +18,7 @@ export function BrowseGroupsRow({ delay }: BrowseGroupsRowProps) {
     >
       <Link
         {...buildExploreNavigation()}
-        className="group flex h-16 items-center justify-between rounded-xl border-b border-border/55 px-1 py-3 text-xs font-bold text-muted-foreground transition-all duration-150 hover:bg-card/45 hover:text-forge-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-3"
+        className="group flex h-16 items-center justify-between rounded-xl border-b border-border/55 px-1 py-3 text-xs font-bold text-muted-foreground transition-all duration-150 hover:bg-card/45 hover:text-forge-teal focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:px-3"
         aria-label="Browse and discover new groups"
       >
         <span>Browse more groups</span>

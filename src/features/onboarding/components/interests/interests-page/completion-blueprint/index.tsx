@@ -37,7 +37,7 @@ export function CompletionBlueprint({
         variants={completionStagger}
         initial="initial"
         animate="animate"
-        className="relative z-10 w-full max-w-md px-6 flex flex-col items-center"
+        className="relative z-10 flex w-full max-w-md flex-col items-center px-6"
       >
         <CompletionBlueprintHeader />
         <CompletionBlueprintCard

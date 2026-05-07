@@ -62,10 +62,10 @@ export function SuccessHero({
             <Check size={20} strokeWidth={2.5} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
               Group ready
             </p>
-            <h3 className="mt-1 text-xl font-bold leading-tight text-foreground">
+            <h3 className="mt-1 text-xl leading-tight font-bold text-foreground">
               {displayTitle} has a lineup.
             </h3>
             <p className="mt-1.5 text-sm leading-snug text-muted-foreground">
@@ -98,7 +98,7 @@ export function SuccessHero({
               )}
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold leading-tight text-foreground">
+              <p className="text-sm leading-tight font-semibold text-foreground">
                 {activeParticipants.length + 1} people
               </p>
               <p className="truncate text-xs text-muted-foreground">
@@ -110,10 +110,10 @@ export function SuccessHero({
           <div className="flex shrink-0 items-center gap-2 text-right">
             <UsersRound size={15} className="text-forge-teal" />
             <div>
-              <p className="text-sm font-bold leading-tight text-foreground">
+              <p className="text-sm leading-tight font-bold text-foreground">
                 {averageScore !== null ? `${averageScore}%` : "Ready"}
               </p>
-              <p className="text-micro font-semibold uppercase tracking-wide text-muted-foreground">
+              <p className="text-micro font-semibold tracking-wide text-muted-foreground uppercase">
                 Avg fit
               </p>
             </div>
@@ -140,7 +140,7 @@ export function SuccessHero({
             )}
           </p>
           {topFit && (
-            <span className="font-bold tabular-nums text-spark-amber">
+            <span className="font-bold text-spark-amber tabular-nums">
               {topFit.score}%
             </span>
           )}

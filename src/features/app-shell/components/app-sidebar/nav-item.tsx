@@ -3,21 +3,23 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
-import type { AppNavigationItem } from "@/features/app-shell/lib/app-navigation";
+import {
+  isAppNavigationItemActive,
+  type AppNavigationItem,
+} from "@/features/app-shell/lib/app-navigation";
 import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
-import { useActiveRoute } from "@/features/app-shell/hooks/use-active-route";
 
 interface NavItemProps {
   item: AppNavigationItem;
+  pathname: string;
 }
 
-export function NavItem({ item }: NavItemProps) {
-  const { isActive, startsWith } = useActiveRoute();
+export function NavItem({ item, pathname }: NavItemProps) {
   const Icon = item.icon;
-  const activePath = item.navigation.to;
-  const active =
-    item.matchMode === "prefix" ? startsWith(activePath) : isActive(activePath);
+  const active = isAppNavigationItemActive(item, pathname);
+  const badge = item.badge ?? 0;
+  const hasBadge = badge > 0;
 
   return (
     <Tooltip>
@@ -27,10 +29,10 @@ export function NavItem({ item }: NavItemProps) {
           aria-current={active ? "page" : undefined}
           aria-label={item.label}
           className={cn(
-            "group relative flex items-center rounded-xl transition-colors duration-150",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+            "group relative flex items-center rounded-lg transition-colors duration-150",
+            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:outline-none",
             // Icon-only centered square for both tablet and desktop
-            "justify-center h-10 w-10",
+            "h-10 w-10 justify-center",
             "text-sm font-medium",
             active
               ? "bg-secondary text-primary"
@@ -40,7 +42,7 @@ export function NavItem({ item }: NavItemProps) {
           {/* Active left-border indicator — thin and subtle */}
           {active && (
             <span
-              className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-primary"
+              className="absolute top-1/2 left-0 h-6 w-1 -translate-y-1/2 rounded-full bg-primary"
               aria-hidden="true"
             />
           )}
@@ -57,12 +59,12 @@ export function NavItem({ item }: NavItemProps) {
               aria-hidden="true"
             />
 
-            {item.badge != null && item.badge > 0 && (
+            {hasBadge && (
               <span
-                className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground shadow-sm border-2 border-sidebar"
-                aria-label={`${item.badge} unread`}
+                className="absolute -top-2 -right-2 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-sidebar bg-accent px-1 text-xs font-bold text-accent-foreground shadow-sm"
+                aria-label={`${badge} unread`}
               >
-                {item.badge > 9 ? "9+" : item.badge}
+                {badge > 9 ? "9+" : badge}
               </span>
             )}
           </div>
@@ -71,7 +73,7 @@ export function NavItem({ item }: NavItemProps) {
       </TooltipTrigger>
       <TooltipContent side="right">
         {item.label}
-        {item.badge != null && item.badge > 0 && ` (${item.badge})`}
+        {hasBadge && ` (${badge})`}
       </TooltipContent>
     </Tooltip>
   );

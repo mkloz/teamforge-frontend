@@ -28,10 +28,10 @@ export function AlgorithmTuningSection({
         variant="ghost"
         type="button"
         onClick={() => onAlgorithmsExpandedChange(!algorithmsExpanded)}
-        className="w-full h-auto flex items-center justify-between rounded-none px-3 py-3 hover:bg-forge-teal/5 transition-colors"
+        className="flex h-auto w-full items-center justify-between rounded-lg px-3 py-3 transition-colors hover:bg-forge-teal/5"
         contentClassName="justify-between"
       >
-        <div className="text-left space-y-0.5">
+        <div className="space-y-0.5 text-left">
           <p className="text-xs font-semibold text-foreground">
             Algorithm tuning
           </p>
@@ -49,7 +49,7 @@ export function AlgorithmTuningSection({
       </Button>
 
       {algorithmsExpanded && (
-        <div className="px-4 pb-4 space-y-5 border-t border-muted/15 pt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="animate-in space-y-5 border-t border-muted/15 px-4 pt-4 pb-4 duration-300 fade-in slide-in-from-top-2">
           <WeightSlider
             label="Matching level"
             subLabel="Prioritize behavioral compatibility"

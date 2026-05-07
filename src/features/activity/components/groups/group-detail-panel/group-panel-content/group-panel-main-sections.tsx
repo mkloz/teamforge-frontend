@@ -97,7 +97,7 @@ export function GroupPanelMainSections({
         </motion.div>
       )}
 
-      <div className="border-t border-border/50 my-6" />
+      <div className="my-6 border-t border-border/50" />
 
       {members.length > 0 && (
         <motion.div variants={groupPanelItemVariants}>

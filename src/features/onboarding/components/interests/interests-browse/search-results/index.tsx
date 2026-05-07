@@ -38,7 +38,7 @@ export function SearchResults({
         <SearchEmptyState query={query} />
       ) : (
         <div className="flex flex-col gap-4">
-          <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-slate-muted/40">
+          <p className="font-sans text-[10px] font-bold tracking-wider text-slate-muted/40 uppercase">
             {formatSearchResultCount(totalCount)}
           </p>
           <SearchResultSubcategories

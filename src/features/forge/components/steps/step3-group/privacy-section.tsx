@@ -16,10 +16,10 @@ export function PrivacySection({
   return (
     <section className="space-y-3 border-t border-border/25 pt-4">
       <div className="px-0.5">
-        <p className="text-xs md:text-sm font-semibold text-muted-foreground">
+        <p className="text-xs font-semibold text-muted-foreground md:text-sm">
           Who can find this group?
         </p>
-        <p className="text-xs text-muted-foreground/60 mt-0.5">
+        <p className="mt-0.5 text-xs text-muted-foreground/60">
           Controls who can discover and join.
         </p>
       </div>
@@ -37,16 +37,16 @@ export function PrivacySection({
               aria-checked={active}
               onClick={() => onVisibilityChange(value)}
               className={cn(
-                "group h-auto w-full min-w-0 items-start justify-start whitespace-normal rounded-lg border p-3 text-left transition-colors duration-200",
+                "group h-auto w-full min-w-0 items-start justify-start rounded-lg border p-3 text-left whitespace-normal transition-colors duration-200",
                 active
-                  ? "border-forge-teal/55 bg-forge-teal/10 ring-1 ring-forge-teal/20 shadow-sm"
+                  ? "border-forge-teal/55 bg-forge-teal/10 shadow-sm ring-1 ring-forge-teal/20"
                   : "border-border/40 bg-card hover:border-forge-teal/30 hover:bg-forge-teal/5",
               )}
               contentClassName="min-w-0 items-start justify-start gap-3 whitespace-normal sm:grid sm:w-full sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:gap-x-3 sm:gap-y-0"
             >
               <div
                 className={cn(
-                  "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-200 sm:col-start-1 sm:row-start-1",
+                  "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-200 sm:col-start-1 sm:row-start-1",
                   active
                     ? "bg-forge-teal text-white shadow-sm shadow-forge-teal/25"
                     : "bg-muted text-muted-foreground group-hover:bg-forge-teal/10 group-hover:text-forge-teal",
@@ -57,26 +57,26 @@ export function PrivacySection({
               <div className="min-w-0 flex-1 space-y-1 sm:contents">
                 <p
                   className={cn(
-                    "min-w-0 text-pretty text-[13px] font-semibold leading-tight sm:col-start-2 sm:row-start-1 sm:self-center",
+                    "min-w-0 text-[13px] leading-tight font-semibold text-pretty sm:col-start-2 sm:row-start-1 sm:self-center",
                     active ? "text-forge-teal" : "text-foreground",
                   )}
                 >
                   {label}
                 </p>
-                <p className="min-w-0 text-pretty text-[11px] leading-snug text-muted-foreground sm:col-span-3 sm:col-start-1 sm:row-start-2 sm:pt-2">
+                <p className="min-w-0 text-[11px] leading-snug text-pretty text-muted-foreground sm:col-span-3 sm:col-start-1 sm:row-start-2 sm:pt-2">
                   {description}
                 </p>
               </div>
               <div
                 className={cn(
-                  "w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center mt-1 transition-colors duration-200 sm:col-start-3 sm:row-start-1",
+                  "mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition-colors duration-200 sm:col-start-3 sm:row-start-1",
                   active
                     ? "border-forge-teal bg-forge-teal"
                     : "border-border/50",
                 )}
               >
                 {active && (
-                  <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                  <div className="h-1.5 w-1.5 rounded-full bg-white" />
                 )}
               </div>
             </Button>

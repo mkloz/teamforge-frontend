@@ -2,7 +2,7 @@ import type { OceanScores, OceanTraitKey } from "../../profile-contract";
 import type { TraitProfile } from "../types";
 
 export function buildTraitProfile(scores: OceanScores): TraitProfile {
-  const entries = Object.entries(scores) as Array<[OceanTraitKey, number]>;
+  const entries = getOceanScoreEntries(scores);
   const high = new Set<OceanTraitKey>();
   const low = new Set<OceanTraitKey>();
   const moderateHigh = new Set<OceanTraitKey>();
@@ -42,6 +42,18 @@ export function buildTraitProfile(scores: OceanScores): TraitProfile {
     moderateLow,
     scores,
   };
+}
+
+function getOceanScoreEntries(
+  scores: OceanScores,
+): Array<[OceanTraitKey, number]> {
+  return [
+    ["agreeableness", scores.agreeableness],
+    ["conscientiousness", scores.conscientiousness],
+    ["extraversion", scores.extraversion],
+    ["neuroticism", scores.neuroticism],
+    ["openness", scores.openness],
+  ];
 }
 
 function getTraitLabel(key: OceanTraitKey) {

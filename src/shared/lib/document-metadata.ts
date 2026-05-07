@@ -1,3 +1,5 @@
+import { hasBrowserDocument } from "@/shared/lib/browser-environment";
+
 export type MetaDescriptor =
   | {
       name: string;
@@ -57,6 +59,10 @@ function applyMetaDescriptor(descriptor: MetaDescriptor): MetadataSnapshot {
 }
 
 export function applyDocumentMetadata(metadata: PageMetadata) {
+  if (!hasBrowserDocument()) {
+    return () => {};
+  }
+
   const previousTitle = document.title;
   const snapshots = metadata.meta?.map(applyMetaDescriptor) ?? [];
 

@@ -20,11 +20,11 @@ export function ManualGroupDetails({
   const selectedInviteeCount = manualInviteeIds.length;
 
   return (
-    <div className="space-y-4 animate-in fade-in zoom-in-95 duration-300">
+    <div className="animate-in space-y-4 duration-300 zoom-in-95 fade-in">
       <div className="space-y-3 rounded-lg border border-border/35 bg-card/65 px-3 py-3">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <span className="text-xs font-bold text-muted-foreground/50 tracking-wide">
+            <span className="text-xs font-bold tracking-wide text-muted-foreground/50">
               Max group size
             </span>
             <p className="mt-0.5 text-xs text-muted-foreground/65">
@@ -32,7 +32,7 @@ export function ManualGroupDetails({
               {inviteLimit !== 1 ? "s" : ""}.
             </p>
           </div>
-          <span className="rounded-lg border border-spark-amber/20 bg-spark-amber/10 px-2.5 py-1 text-xs font-black tabular-nums text-spark-amber">
+          <span className="rounded-lg border border-spark-amber/20 bg-spark-amber/10 px-2.5 py-1 text-xs font-black text-spark-amber tabular-nums">
             {selectedInviteeCount + 1}/{fixedSize}
           </span>
         </div>
@@ -58,15 +58,15 @@ export function ManualGroupDetails({
         </div>
       </div>
 
-      <div className="rounded-lg border border-border/35 bg-muted/20 p-3 flex gap-3">
-        <div className="w-9 h-9 rounded-lg bg-spark-amber/10 flex items-center justify-center shrink-0 mt-0.5">
+      <div className="flex gap-3 rounded-lg border border-border/35 bg-muted/20 p-3">
+        <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-spark-amber/10">
           <Users size={16} className="text-spark-amber" />
         </div>
         <div className="space-y-1">
           <h5 className="text-sm font-black tracking-tight text-foreground">
             Pick who to invite
           </h5>
-          <p className="text-xs text-muted-foreground leading-relaxed opacity-80">
+          <p className="text-xs leading-relaxed text-muted-foreground opacity-80">
             Manual groups start with you as the organiser. Selected friends
             receive real invitations after you confirm the group.
           </p>
@@ -81,12 +81,12 @@ export function ManualGroupDetails({
         )}
 
         {!isLoadingFriends && friends.length === 0 && (
-          <div className="rounded-lg border border-border/40 bg-card p-4 flex gap-3">
+          <div className="flex gap-3 rounded-lg border border-border/40 bg-card p-4">
             <AlertCircle
               size={16}
               className="mt-0.5 shrink-0 text-muted-foreground/60"
             />
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            <p className="text-xs leading-relaxed text-muted-foreground">
               You do not have friends to invite yet. The group can still be
               created now, then shared later from the group hub.
             </p>

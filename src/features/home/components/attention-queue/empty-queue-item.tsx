@@ -15,7 +15,7 @@ export function EmptyQueueItem() {
           <p className="text-sm font-black text-foreground">
             Nothing needs a decision.
           </p>
-          <p className="mt-1 text-xs font-medium leading-relaxed text-muted-foreground">
+          <p className="mt-1 text-xs leading-relaxed font-medium text-muted-foreground">
             Your groups are quiet enough to look for a fresh opening.
           </p>
         </div>

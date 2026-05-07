@@ -18,22 +18,22 @@ export function ExploreRightFilters({ hideHeader }: ExploreRightFiltersProps) {
     sizeRange[1] !== DEFAULT_FILTERS.sizeRange[1];
 
   return (
-    <aside className="flex flex-col gap-6">
+    <aside className="flex flex-col gap-4">
       {!hideHeader && (
         <div>
-          <h3 className="mb-1.5 flex items-center gap-2 text-base font-bold text-foreground">
-            <Filter className="size-4.5" aria-hidden="true" />
+          <h3 className="mb-1 flex items-center gap-2 text-sm font-bold text-foreground">
+            <Filter className="size-4" aria-hidden="true" />
             Refine
           </h3>
-          <p className="pr-4 text-sm font-medium leading-relaxed text-muted-foreground">
+          <p className="pr-4 text-xs leading-relaxed font-medium text-muted-foreground">
             Narrow the list once you know what kind of opening you want.
           </p>
         </div>
       )}
 
-      <div className="flex w-full flex-col gap-6">
-        <section className="space-y-2">
-          <h4 className="pl-1 text-base font-bold tracking-tight text-foreground">
+      <div className="flex w-full flex-col gap-4">
+        <section className="space-y-1.5">
+          <h4 className="pl-1 text-sm font-bold tracking-tight text-foreground">
             Activity
           </h4>
           <CategoryFilter />
@@ -41,8 +41,8 @@ export function ExploreRightFilters({ hideHeader }: ExploreRightFiltersProps) {
 
         <LocationFilter />
 
-        <details className="group space-y-4" open={hasMoreOptionFilters}>
-          <summary className="flex cursor-pointer list-none items-center justify-between rounded-xl border border-border/60 bg-card/35 px-3.5 py-2.5 text-sm font-bold text-muted-foreground transition-colors hover:border-border hover:bg-muted/25 hover:text-foreground [&::-webkit-details-marker]:hidden">
+        <details className="group space-y-3" open={hasMoreOptionFilters}>
+          <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg border border-border/60 bg-card/35 px-3 py-2 text-xs font-bold text-muted-foreground transition-colors hover:border-border hover:bg-muted/25 hover:text-foreground [&::-webkit-details-marker]:hidden">
             <span>More options</span>
             <ChevronDown
               className="size-3.5 text-muted-foreground transition-transform group-open:rotate-180"
@@ -50,7 +50,7 @@ export function ExploreRightFilters({ hideHeader }: ExploreRightFiltersProps) {
             />
           </summary>
 
-          <div className="space-y-5 pt-1">
+          <div className="space-y-4 pt-0.5">
             <SizeFilter />
             <AccessFilter />
           </div>

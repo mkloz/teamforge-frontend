@@ -1,7 +1,10 @@
+import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
+import type { ScheduledDelayHandle } from "@/shared/lib/browser-scheduling";
 import { realtimeChatTypingPayloadSchema } from "@/shared/schemas";
 import type { RealtimeChatTypingPayload } from "@/shared/schemas";
 
 type TypingUser = RealtimeChatTypingPayload["user"];
+type TypingTimeoutHandle = ScheduledDelayHandle;
 type SetChatTypingState = (
   chatId: string,
   user: TypingUser,
@@ -9,14 +12,14 @@ type SetChatTypingState = (
 ) => void;
 
 export function createTypingTimeoutRegistry() {
-  return new Map<string, number>();
+  return new Map<string, TypingTimeoutHandle>();
 }
 
 export function clearTypingTimeoutRegistry(
-  typingTimeouts: Map<string, number>,
+  typingTimeouts: Map<string, TypingTimeoutHandle>,
 ) {
   for (const timeout of typingTimeouts.values()) {
-    window.clearTimeout(timeout);
+    cancelDelay(timeout);
   }
 
   typingTimeouts.clear();
@@ -26,7 +29,7 @@ export function handleRealtimeTypingPayload(
   payload: unknown,
   currentUserId: string,
   setChatTypingState: SetChatTypingState,
-  typingTimeouts: Map<string, number>,
+  typingTimeouts: Map<string, TypingTimeoutHandle>,
 ) {
   const parsed = realtimeChatTypingPayloadSchema.parse(payload);
 
@@ -40,7 +43,7 @@ export function handleRealtimeTypingPayload(
   const existingTimeout = typingTimeouts.get(timeoutKey);
 
   if (existingTimeout !== undefined) {
-    window.clearTimeout(existingTimeout);
+    cancelDelay(existingTimeout);
     typingTimeouts.delete(timeoutKey);
   }
 
@@ -48,7 +51,7 @@ export function handleRealtimeTypingPayload(
     return;
   }
 
-  const timeout = window.setTimeout(() => {
+  const timeout = scheduleDelay(() => {
     setChatTypingState(parsed.chatId, parsed.user, false);
     typingTimeouts.delete(timeoutKey);
   }, 2600);

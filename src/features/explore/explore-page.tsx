@@ -6,19 +6,19 @@ import { ExploreSearchHeader } from "@/features/explore/components/explore-searc
 export function ExplorePage() {
   return (
     <div className="w-full">
-      <div className="mx-auto grid w-full max-w-[34rem] grid-cols-1 gap-6 px-4 pt-3 md:max-w-[46rem] md:pt-6 lg:max-w-screen-2xl lg:grid-cols-12 lg:gap-8 lg:px-6 xl:grid-cols-12">
-        <div className="relative hidden pr-6 xl:col-span-3 xl:block">
+      <div className="mx-auto grid w-full max-w-[34rem] grid-cols-1 gap-6 px-4 pt-3 md:max-w-[46rem] md:pt-6 lg:max-w-[88rem] lg:grid-cols-12 lg:gap-6 lg:px-5 xl:grid-cols-[17rem_minmax(0,43rem)_17rem] xl:justify-center xl:gap-7">
+        <div className="relative hidden xl:block">
           <div className="sticky top-6 self-start">
             <ExploreLeftSection />
           </div>
         </div>
 
-        <main className="col-span-1 flex min-h-[120vh] min-w-0 flex-col pb-34 lg:col-span-8 lg:pb-32 xl:col-span-6">
+        <main className="col-span-1 flex min-h-[120vh] min-w-0 flex-col pb-34 lg:col-span-8 lg:pb-32 xl:col-auto">
           <div className="mb-4 xl:hidden">
-            <h1 className="text-2xl font-black leading-tight tracking-tight text-foreground">
+            <h1 className="text-2xl leading-tight font-black tracking-tight text-foreground">
               Explore
             </h1>
-            <p className="mt-1 max-w-2xl text-sm font-medium leading-relaxed text-muted-foreground">
+            <p className="mt-1 max-w-2xl text-sm leading-relaxed font-medium text-muted-foreground">
               Open groups ranked by fit, timing, and available seats.
             </p>
           </div>
@@ -26,7 +26,7 @@ export function ExplorePage() {
           <ExploreFeed />
         </main>
 
-        <div className="relative hidden pl-6 lg:col-span-4 lg:block xl:col-span-3">
+        <div className="relative hidden lg:col-span-4 lg:block xl:col-auto">
           <div className="sticky top-8 self-start">
             <ExploreRightFilters />
           </div>

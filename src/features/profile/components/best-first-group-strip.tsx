@@ -25,10 +25,10 @@ export function BestFirstGroupStrip({
           <p className="text-sm font-extrabold text-spark-amber">
             Good first plan
           </p>
-          <h2 className="mt-1 text-lg font-black leading-tight text-ink md:text-xl">
+          <h2 className="mt-1 text-lg leading-tight font-black text-ink md:text-xl">
             {primaryIdea.title}
           </h2>
-          <p className="mt-1 max-w-2xl text-sm font-medium leading-relaxed text-slate-muted">
+          <p className="mt-1 max-w-2xl text-sm leading-relaxed font-medium text-slate-muted">
             {getCompactDetail(primaryIdea.detail)}
           </p>
         </div>
@@ -38,7 +38,7 @@ export function BestFirstGroupStrip({
             {supportingIdeas.map((idea) => (
               <span
                 key={idea.title}
-                className="inline-flex min-h-9 max-w-full items-center gap-2 rounded-full border border-border/80 px-3 py-1 text-xs font-bold leading-snug text-ink/80"
+                className="inline-flex min-h-9 max-w-full items-center gap-2 rounded-full border border-border/80 px-3 py-1 text-xs leading-snug font-bold text-ink/80"
               >
                 <ArrowRight size={13} className="shrink-0 text-forge-teal" />
                 <span className="min-w-0 break-words">{idea.title}</span>

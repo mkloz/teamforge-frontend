@@ -18,7 +18,7 @@ export function ProfileStepQueueItem({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="flex min-w-0 items-start gap-3 border-b border-border/55 px-1 py-4 transition-colors duration-150 hover:bg-forge-teal/5 last:border-b-0 sm:px-3"
+      className="flex min-w-0 items-start gap-3 border-b border-border/55 px-1 py-4 transition-colors duration-150 last:border-b-0 hover:bg-forge-teal/5 sm:px-3"
     >
       <div className="flex min-w-0 flex-1 items-start gap-3">
         <div className="flex size-10 shrink-0 items-center justify-center text-forge-teal">
@@ -26,7 +26,7 @@ export function ProfileStepQueueItem({
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-black text-foreground">{nextStep.title}</p>
-          <p className="mt-1 text-xs font-medium leading-relaxed text-muted-foreground">
+          <p className="mt-1 text-xs leading-relaxed font-medium text-muted-foreground">
             {nextStep.body}
           </p>
         </div>

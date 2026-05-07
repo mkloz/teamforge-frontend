@@ -51,7 +51,7 @@ export function UserProfilePanel({
 
   if (!participant) {
     return (
-      <div className="flex-1 flex items-center justify-center p-8 text-center">
+      <div className="flex flex-1 items-center justify-center p-8 text-center">
         <p className="text-sm text-slate-muted">User profile not found</p>
       </div>
     );
@@ -60,7 +60,7 @@ export function UserProfilePanel({
   return (
     <div
       className={cn(
-        "flex flex-col flex-1 overflow-y-auto",
+        "flex flex-1 flex-col overflow-y-auto",
         isMobile ? "pb-safe scrollbar-hide" : "scrollbar-thin",
       )}
     >

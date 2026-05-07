@@ -58,13 +58,13 @@ export function FriendsInvitation() {
         description="For the group that needs one familiar face."
       />
 
-      <div className="rounded-2xl border border-border/45 bg-forge-teal/5 px-3 py-3">
+      <div className="rounded-xl border border-border/45 bg-forge-teal/5 px-3 py-3">
         <div className="flex min-w-0 items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <p className="text-sm font-black text-foreground">
               Share TeamForge with someone who would fit the room.
             </p>
-            <p className="mt-1 text-xs font-medium leading-relaxed text-muted-foreground">
+            <p className="mt-1 text-xs leading-relaxed font-medium text-muted-foreground">
               Send the app now. Invite them to a group when the moment fits.
             </p>
           </div>
@@ -86,7 +86,7 @@ export function FriendsInvitation() {
               "transition-colors duration-150 hover:bg-forge-teal/8",
             )}
           >
-            <span className="min-w-0 flex-1 truncate text-[11px] font-bold text-muted-foreground">
+            <span className="min-w-0 flex-1 truncate text-xs font-bold text-muted-foreground">
               {displayInviteLink}
             </span>
             <Button

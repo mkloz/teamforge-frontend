@@ -1,6 +1,10 @@
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
 import { FileUploadApi } from "@/shared/api/file-upload";
-import { chatApiSchema, linkPreviewSchema } from "@/shared/schemas";
+import {
+  chatApiSchema,
+  linkPreviewSchema,
+  messageApiSchema,
+} from "@/shared/schemas";
 
 import {
   DEFAULT_ACTIVITY_API_LIMIT,
@@ -14,7 +18,6 @@ import {
   type SendMessagePayload,
   type UpdateMessagePayload,
 } from "@/features/activity/api/activity-api-contracts";
-import { messageApiSchema } from "@/shared/schemas";
 
 export async function getChats() {
   const response = await apiClient

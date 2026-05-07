@@ -4,13 +4,13 @@ import { motion } from "framer-motion";
 import { type LucideIcon, ChevronRight } from "lucide-react";
 
 const subcategoryChipVariants = cva(
-  "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold font-sans transition duration-150 select-none leading-none border",
+  "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-sans text-xs leading-none font-bold transition duration-150 select-none",
   {
     variants: {
       state: {
         collapsed:
-          "bg-card border-slate-muted/15 dark:border-white/10 text-slate-muted dark:text-slate-300 hover:border-slate-muted/30 dark:hover:border-white/18 hover:bg-canvas dark:hover:bg-white/5",
-        expanded: "bg-forge-teal/10 border-forge-teal/30 text-forge-teal",
+          "border-slate-muted/15 bg-card text-slate-muted hover:border-slate-muted/30 hover:bg-canvas dark:border-white/10 dark:text-slate-300 dark:hover:border-white/18 dark:hover:bg-white/5",
+        expanded: "border-forge-teal/30 bg-forge-teal/10 text-forge-teal",
       },
     },
     defaultVariants: {
@@ -20,7 +20,7 @@ const subcategoryChipVariants = cva(
 );
 
 const badgeVariants = cva(
-  "shrink-0 flex items-center justify-center min-w-[1.125rem] h-4.5 px-1 text-[10px] font-bold rounded-full leading-none",
+  "flex h-4.5 min-w-[1.125rem] shrink-0 items-center justify-center rounded-full px-1 text-[10px] leading-none font-bold",
   {
     variants: {
       state: {
@@ -60,7 +60,7 @@ export function SubcategoryChip({
       whileTap={{ scale: 0.94 }}
       className={cn(subcategoryChipVariants({ state: currentState }))}
     >
-      <Icon className="w-3.5 h-3.5" strokeWidth={2.5} />
+      <Icon className="h-3.5 w-3.5" strokeWidth={2.5} />
       <span>{label}</span>
       {selectedCount > 0 && (
         <span className={cn(badgeVariants({ state: currentState }))}>

@@ -40,14 +40,14 @@ function TooltipContent({
         data-slot="tooltip-content"
         sideOffset={sideOffset}
         className={cn(
-          "z-50 w-fit origin-(--radix-tooltip-content-transform-origin) animate-in rounded-lg border-2 border-white/20 bg-forge-teal px-2.5 py-1.5 text-micro font-medium font-sans text-white shadow-teal-glow fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
+          "z-50 w-fit origin-(--radix-tooltip-content-transform-origin) animate-in rounded-lg border-2 border-white/20 bg-forge-teal px-2.5 py-1.5 font-sans text-micro font-medium text-white shadow-teal-glow fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
           className,
         )}
         {...props}
       >
         {children}
         <TooltipPrimitive.Arrow asChild>
-          <div className="z-50 size-1 translate-y-[calc(-50%)] rotate-45 bg-forge-teal border-r-2 border-b-2 border-white/20 transition-none" />
+          <div className="z-50 size-1 translate-y-[calc(-50%)] rotate-45 border-r-2 border-b-2 border-white/20 bg-forge-teal transition-none" />
         </TooltipPrimitive.Arrow>
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>

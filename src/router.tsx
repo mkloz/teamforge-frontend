@@ -1,8 +1,15 @@
 import { createRouter } from "@tanstack/react-router";
 
-import { appRoutes, appShellRoute } from "@/app/router/app-routes";
-import { onboardingRoutes } from "@/app/router/onboarding-routes";
-import { publicRoutes } from "@/app/router/public-routes";
+import {
+  appRouteModules,
+  appRoutes,
+  appShellRoute,
+} from "@/app/router/app-routes";
+import {
+  onboardingRouteModules,
+  onboardingRoutes,
+} from "@/app/router/onboarding-routes";
+import { publicRouteModules, publicRoutes } from "@/app/router/public-routes";
 import { rootRoute } from "@/app/router/root-route";
 
 const routeTree = rootRoute.addChildren([
@@ -14,6 +21,12 @@ const routeTree = rootRoute.addChildren([
 export const router = createRouter({
   routeTree,
 });
+
+export const lazyRouteModules = [
+  ...publicRouteModules,
+  ...onboardingRouteModules,
+  ...appRouteModules,
+];
 
 declare module "@tanstack/react-router" {
   interface Register {

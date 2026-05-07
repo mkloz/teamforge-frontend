@@ -64,13 +64,13 @@ export function InviteMembersDialog({
           variant="outline"
           size="sm"
           disabled={disabled}
-          className="h-8 text-[11px] font-bold uppercase tracking-wider"
+          className="text-xs font-bold tracking-wider uppercase"
         >
-          <UserPlus size={13} className="mr-1" />
+          <UserPlus className="mr-1 size-3.5" />
           Invite
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md rounded-3xl border-border/60 bg-canvas p-0">
+      <DialogContent className="max-w-md rounded-xl border-border/60 bg-canvas p-0">
         <DialogHeader className="border-b border-border/50 px-6 py-5">
           <DialogTitle>Invite to group</DialogTitle>
           <DialogDescription>
@@ -78,19 +78,19 @@ export function InviteMembersDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 px-6 py-5">
+        <div className="flex flex-col gap-4 px-6 py-5">
           <div>
             <Input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search friends by name, city, or personality"
-              leftIcon={<Search size={14} />}
+              leftIcon={<Search className="size-4" />}
             />
           </div>
 
-          <div className="max-h-80 space-y-2 overflow-y-auto pr-1">
+          <div className="flex max-h-80 flex-col gap-2 overflow-y-auto pr-1">
             {filteredCandidates.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-border/70 bg-background/50 px-4 py-6 text-center text-sm text-slate-muted">
+              <div className="rounded-xl border border-dashed border-border/70 bg-background/50 px-4 py-6 text-center text-sm text-slate-muted">
                 No eligible friends to invite right now.
               </div>
             ) : (
@@ -100,7 +100,7 @@ export function InviteMembersDialog({
                 return (
                   <div
                     key={candidate.id}
-                    className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background/80 px-3 py-3"
+                    className="flex items-center gap-3 rounded-xl border border-border/60 bg-background/80 px-3 py-3"
                   >
                     <Avatar
                       src={candidate.avatar}

@@ -18,7 +18,7 @@ export const ScrollActionButtons = memo(
     onScrollToProposal,
   }: ScrollActionButtonsProps) => (
     <AnimatePresence mode="popLayout">
-      <div className="absolute bottom-6 right-6 flex flex-col gap-3 items-end z-30 pointer-events-none">
+      <div className="pointer-events-none absolute right-6 bottom-6 z-30 flex flex-col items-end gap-3">
         {showScrollToBottom && (
           <motion.div
             initial={{ opacity: 0, scale: 0.8, y: 10 }}
@@ -30,13 +30,10 @@ export const ScrollActionButtons = memo(
               onClick={() => onScrollToBottom()}
               variant="surface"
               size="icon"
-              className="relative h-10 w-10 shrink-0 rounded-full"
+              className="relative size-10 shrink-0 rounded-full"
             >
-              <ChevronDown
-                size={22}
-                className="group-hover:translate-y-0.5 transition-transform"
-              />
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-spark-amber rounded-full border-2 border-canvas text-nano text-ink font-black flex items-center justify-center">
+              <ChevronDown className="size-5 transition-transform group-hover:translate-y-0.5" />
+              <div className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full border-2 border-canvas bg-spark-amber text-xs font-black text-ink">
                 3
               </div>
             </Button>
@@ -56,8 +53,8 @@ export const ScrollActionButtons = memo(
               size="xs"
               className="rounded-full px-2.5 py-1.5"
             >
-              <AlertCircle size={14} className="animate-pulse" />
-              <span className="text-micro font-black tracking-wider">Vote</span>
+              <AlertCircle className="size-3.5 animate-pulse" />
+              <span className="text-xs font-black tracking-wider">Vote</span>
             </Button>
           </motion.div>
         )}

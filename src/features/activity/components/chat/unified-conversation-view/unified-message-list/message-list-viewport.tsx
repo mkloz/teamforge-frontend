@@ -17,7 +17,7 @@ export function MessageListViewport({
     <div
       ref={containerRef}
       onScroll={onScroll}
-      className="relative z-10 flex-1 overflow-y-auto px-1 pt-4 pb-0 scroll-smooth scrollbar-none scroll-margin-top-12"
+      className="scrollbar-none scroll-margin-top-12 relative z-10 flex-1 overflow-y-auto scroll-smooth px-1 pt-4 pb-0"
     >
       <div className="relative pb-2" style={{ height: `${totalHeight}px` }}>
         {children}

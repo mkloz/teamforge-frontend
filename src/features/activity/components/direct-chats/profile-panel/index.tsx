@@ -29,8 +29,8 @@ export function ProfilePanel({ chat, isOpen, onClose }: ProfilePanelProps) {
   return (
     <aside
       className={cn(
-        "hidden lg:flex flex-col h-full bg-canvas border-l border-border transition duration-300 ease-out",
-        isOpen ? "w-80 opacity-100" : "w-0 opacity-0 overflow-hidden",
+        "hidden h-full flex-col border-l border-border bg-canvas transition duration-300 ease-out lg:flex",
+        isOpen ? "w-80 opacity-100" : "w-0 overflow-hidden opacity-0",
       )}
     >
       <ProfilePanelHeader onClose={onClose} />
@@ -58,11 +58,11 @@ export function ProfilePanelMobile({
 
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="bg-canvas border-t rounded-t-3xl h-[90vh]">
+      <DrawerContent className="h-[90vh] rounded-t-3xl border-t bg-canvas">
         <DrawerHeader className="sr-only">
           <DrawerTitle>User Profile</DrawerTitle>
         </DrawerHeader>
-        <div className="flex-1 overflow-y-auto min-h-0 pb-10 scrollbar-hide">
+        <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto pb-10">
           <ProfilePanelContent
             chat={chat}
             profileNavigation={buildProfileNavigation()}

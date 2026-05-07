@@ -43,13 +43,13 @@ export function PlanSection({
     <div
       ref={sectionRef}
       className={cn(
-        "space-y-0 rounded-2xl transition-[background-color,box-shadow] duration-500",
+        "rounded-xl transition-[background-color,box-shadow] duration-500",
         isFocused && "bg-forge-teal/6 shadow-[0_0_0_1px_rgba(13,148,136,0.18)]",
       )}
       aria-labelledby="current-plan-title"
     >
       {/* Eyebrow label */}
-      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-2">
+      <p className="mb-2 text-xs font-bold tracking-wider text-muted-foreground/50 uppercase">
         Current Plan
       </p>
 
@@ -57,17 +57,17 @@ export function PlanSection({
       <div className="flex items-start justify-between gap-3">
         <h2
           id="current-plan-title"
-          className="text-lg font-bold text-foreground tracking-tight leading-tight"
+          className="text-lg leading-tight font-bold tracking-tight text-foreground"
         >
           {plan.title}
         </h2>
       </div>
 
       {/* Category and Status Badges */}
-      <div className="flex flex-wrap gap-2 mt-2">
+      <div className="mt-2 flex flex-wrap gap-2">
         <span
           className={cn(
-            "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase",
+            "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold tracking-wider uppercase",
             categoryColors[plan.category],
           )}
         >
@@ -75,7 +75,7 @@ export function PlanSection({
         </span>
         <span
           className={cn(
-            "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase",
+            "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold tracking-wider uppercase",
             statusColors[plan.status],
           )}
         >
@@ -84,45 +84,39 @@ export function PlanSection({
       </div>
 
       {/* Description */}
-      <p className="text-[13px] text-foreground/60 mt-2 leading-relaxed line-clamp-2">
+      <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-foreground/60">
         {plan.description}
       </p>
 
       {/* Details - Compact List */}
       <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
         {/* Date/Time Row */}
-        <div className="col-span-2 flex items-center gap-3 group/item">
+        <div className="group/item col-span-2 flex items-center gap-3">
           <div
-            className="flex items-center justify-center w-8 h-8 rounded-lg bg-forge-teal/10 transition-colors duration-300"
+            className="flex size-8 items-center justify-center rounded-lg bg-forge-teal/10 transition-colors duration-300"
             aria-hidden="true"
           >
-            <Calendar
-              size={15}
-              className="text-forge-teal opacity-90 shadow-xs"
-            />
+            <Calendar className="size-4 text-forge-teal opacity-90 shadow-xs" />
           </div>
           <div>
-            <p className="font-bold text-foreground text-sm">
+            <p className="text-sm font-bold text-foreground">
               {formattedDate}{" "}
-              <span className="text-slate-muted/50 mx-1">·</span>{" "}
+              <span className="mx-1 text-slate-muted/50">·</span>{" "}
               {formattedTime}
             </p>
           </div>
         </div>
 
         {/* Location Row */}
-        <div className="col-span-2 flex items-center gap-3 text-sm group/item">
+        <div className="group/item col-span-2 flex items-center gap-3 text-sm">
           <div
-            className="flex items-center justify-center w-8 h-8 rounded-lg bg-forge-teal/10 transition-colors duration-300"
+            className="flex size-8 items-center justify-center rounded-lg bg-forge-teal/10 transition-colors duration-300"
             aria-hidden="true"
           >
-            <MapPin
-              size={15}
-              className="text-forge-teal opacity-90 shadow-xs"
-            />
+            <MapPin className="size-4 text-forge-teal opacity-90 shadow-xs" />
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-bold text-foreground text-sm truncate">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-bold text-foreground">
               {formattedLocation}
             </p>
             {plan.locationMode === "IN_PERSON" &&
@@ -132,7 +126,7 @@ export function PlanSection({
                   href={`https://maps.google.com/?q=${plan.locationLat},${plan.locationLng}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center text-[11px] text-primary font-semibold hover:underline gap-1 group-hover/item:translate-x-1 transition-transform"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-primary transition-transform group-hover/item:translate-x-1 hover:underline"
                 >
                   Open in Maps
                 </a>

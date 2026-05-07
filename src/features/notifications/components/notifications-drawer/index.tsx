@@ -14,7 +14,7 @@ import type { Notification } from "@/shared/schemas";
 import { resolveNotificationDestination } from "@/features/notifications/lib/notification-destination";
 
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
-import { NotificationItem } from "./notification-item";
+import { NotificationsSection } from "./notifications-section";
 
 interface NotificationsDrawerProps {
   open: boolean;
@@ -61,10 +61,10 @@ export function NotificationsDrawer({
     >
       <DrawerContent
         className={cn(
-          "bg-card border-border",
+          "border-border bg-card",
           isDesktop
-            ? "lg:w-96 lg:rounded-none lg:border-l"
-            : "max-lg:rounded-t-3xl max-lg:border-t max-lg:max-h-[78vh]",
+            ? "lg:w-96 lg:rounded-l-xl lg:border-l"
+            : "max-lg:max-h-[78vh] max-lg:rounded-t-xl max-lg:border-t",
         )}
       >
         <DrawerHeader className="sr-only">
@@ -72,8 +72,8 @@ export function NotificationsDrawer({
         </DrawerHeader>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 h-16 border-b border-border shrink-0">
-          <h2 className="font-bold text-lg text-ink tracking-tight">
+        <div className="flex h-16 shrink-0 items-center justify-between border-b border-border px-6">
+          <h2 className="text-lg font-bold tracking-tight text-ink">
             Notifications
           </h2>
           <div className="flex items-center gap-1.5">
@@ -82,7 +82,7 @@ export function NotificationsDrawer({
               size="sm"
               onClick={markAllRead}
               disabled={items.length === 0 || isMarkingAllRead}
-              className="h-auto p-0 text-[12px] font-bold"
+              className="h-auto p-0 text-xs font-bold"
             >
               {isMarkingAllRead ? "Marking..." : "Mark all read"}
             </Button>
@@ -99,47 +99,25 @@ export function NotificationsDrawer({
         </div>
 
         {/* Scrollable list */}
-        <div className="overflow-y-auto flex-1 overscroll-contain">
+        <div className="flex-1 overflow-y-auto overscroll-contain">
           {items.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-16 px-4">
+            <p className="px-4 py-16 text-center text-sm text-muted-foreground">
               No notifications yet.
             </p>
           ) : (
             <>
-              {today.length > 0 && (
-                <section aria-label="Today's notifications">
-                  <div className="px-6 py-4 sticky top-0 bg-card/95 backdrop-blur-md border-b border-border/50 z-10">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-muted/60">
-                      Today
-                    </p>
-                  </div>
-                  {today.map((n) => (
-                    <NotificationItem
-                      key={n.id}
-                      item={n}
-                      onSelect={handleSelectNotification}
-                      isPending={pendingNotificationId === n.id}
-                    />
-                  ))}
-                </section>
-              )}
-              {earlier.length > 0 && (
-                <section aria-label="Earlier notifications">
-                  <div className="px-6 py-4 sticky top-0 bg-card/95 backdrop-blur-md border-b border-border/50 z-10">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-muted/60">
-                      Earlier
-                    </p>
-                  </div>
-                  {earlier.map((n) => (
-                    <NotificationItem
-                      key={n.id}
-                      item={n}
-                      onSelect={handleSelectNotification}
-                      isPending={pendingNotificationId === n.id}
-                    />
-                  ))}
-                </section>
-              )}
+              <NotificationsSection
+                label="Today"
+                items={today}
+                pendingNotificationId={pendingNotificationId}
+                onSelect={handleSelectNotification}
+              />
+              <NotificationsSection
+                label="Earlier"
+                items={earlier}
+                pendingNotificationId={pendingNotificationId}
+                onSelect={handleSelectNotification}
+              />
             </>
           )}
         </div>

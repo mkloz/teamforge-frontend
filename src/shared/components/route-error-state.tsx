@@ -3,13 +3,19 @@ import { Link, useRouter } from "@tanstack/react-router";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { FeedbackState } from "@/shared/components/feedback-state";
+import { Button } from "@/shared/components/ui/button";
+import {
+  getBrowserSessionStorageItem,
+  reloadBrowserLocation,
+  setBrowserSessionStorageItem,
+} from "@/shared/lib/browser-environment";
 import { captureException, trackEvent } from "@/shared/lib/telemetry";
 import type { RouteErrorScope } from "@/shared/lib/telemetry-contract";
 import {
   telemetryErrorScopes,
   trackedEventNames,
 } from "@/shared/lib/telemetry-contract";
-import { Button } from "@/shared/components/ui/button";
 
 const DYNAMIC_IMPORT_RELOAD_KEY = "teamforge:dynamic-import-reload";
 const DYNAMIC_IMPORT_RELOAD_COOLDOWN_MS = 30_000;
@@ -41,7 +47,7 @@ function isDynamicImportFetchError(error: unknown) {
 
 function recoverDynamicImportError() {
   const lastReload = Number(
-    window.sessionStorage.getItem(DYNAMIC_IMPORT_RELOAD_KEY) ?? 0,
+    getBrowserSessionStorageItem(DYNAMIC_IMPORT_RELOAD_KEY) ?? 0,
   );
   const now = Date.now();
 
@@ -49,8 +55,8 @@ function recoverDynamicImportError() {
     return false;
   }
 
-  window.sessionStorage.setItem(DYNAMIC_IMPORT_RELOAD_KEY, String(now));
-  window.location.reload();
+  setBrowserSessionStorageItem(DYNAMIC_IMPORT_RELOAD_KEY, String(now));
+  reloadBrowserLocation();
 
   return true;
 }
@@ -71,11 +77,7 @@ export function RouteErrorState({
   const [isRetrying, setIsRetrying] = useState(false);
 
   useEffect(() => {
-    if (
-      typeof window !== "undefined" &&
-      isDynamicImportFetchError(error) &&
-      recoverDynamicImportError()
-    ) {
+    if (isDynamicImportFetchError(error) && recoverDynamicImportError()) {
       return;
     }
 
@@ -118,24 +120,15 @@ export function RouteErrorState({
   }
 
   return (
-    <div
-      className={
-        fullPage
-          ? "flex min-h-screen items-center justify-center bg-canvas px-4 py-10"
-          : "flex min-h-[60vh] items-center justify-center px-4 py-10"
-      }
-    >
-      <div className="w-full max-w-lg rounded-3xl border border-border bg-card p-6 shadow-sm">
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-destructive/10 text-destructive">
-          <AlertTriangle size={22} />
-        </div>
-
-        <h1 className="text-2xl font-bold text-ink">{title}</h1>
-        <p className="mt-2 text-sm leading-relaxed text-slate-muted">
-          {description}
-        </p>
-
-        <div className="mt-5 flex flex-wrap gap-3">
+    <FeedbackState
+      fullPage={fullPage}
+      headingId="route-error-heading"
+      icon={<AlertTriangle size={22} />}
+      iconClassName="bg-destructive/10 text-destructive"
+      title={title}
+      description={description}
+      actions={
+        <>
           {onRetry ? (
             <Button onClick={() => void handleRetry()} loading={isRetrying}>
               <RefreshCw size={16} />
@@ -146,8 +139,8 @@ export function RouteErrorState({
           <Button asChild variant="outline">
             <Link to={fallbackTo}>{fallbackLabel}</Link>
           </Button>
-        </div>
-      </div>
-    </div>
+        </>
+      }
+    />
   );
 }

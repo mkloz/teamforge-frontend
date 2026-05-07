@@ -14,7 +14,7 @@ export function CompletionBlueprintAction({
   return (
     <motion.div
       variants={completionFadeUp}
-      className="w-full mt-12 flex flex-col items-center"
+      className="mt-12 flex w-full flex-col items-center"
     >
       <Button
         variant="primary"
@@ -29,7 +29,7 @@ export function CompletionBlueprintAction({
         />
       </Button>
 
-      <p className="mt-6 max-w-50 text-center font-sans text-[10px] font-bold uppercase leading-relaxed tracking-widest text-muted-foreground drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)]">
+      <p className="mt-6 max-w-50 text-center font-sans text-[10px] leading-relaxed font-bold tracking-widest text-muted-foreground uppercase drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)]">
         Built from your personality and interests.
       </p>
     </motion.div>

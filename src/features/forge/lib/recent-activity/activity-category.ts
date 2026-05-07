@@ -1,14 +1,14 @@
 import { ACTIVITIES } from "@/features/forge/constants/forge.constants";
 import type { RecentForgeActivity } from "@/features/forge/api/forge.api";
+import type { PlanCategory } from "@/features/forge/lib/forge-contract";
 import type { RecentActivityItem } from "@/features/forge/lib/recent-activity/types";
 
 const activityOptionsByLabel = new Map(
   ACTIVITIES.map((activity) => [activity.label, activity]),
 );
 
-const activityOptionsById = new Map(
-  ACTIVITIES.map((activity) => [activity.id, activity]),
-);
+const activityOptionsById: ReadonlyMap<string, (typeof ACTIVITIES)[number]> =
+  new Map(ACTIVITIES.map((activity) => [activity.id, activity]));
 
 export function normalizeRecentActivityTitle(title: string) {
   return title.trim().replace(/\s+/g, " ");
@@ -41,7 +41,7 @@ function getActivityCategoryText(activity: RecentForgeActivity) {
 
 function getTextCategoryId(activity: RecentForgeActivity) {
   const text = getActivityCategoryText(activity).toLowerCase();
-  let bestCategoryId: string | null = null;
+  let bestCategoryId: PlanCategory | null = null;
   let bestScore = 0;
 
   for (const category of ACTIVITIES) {

@@ -40,14 +40,14 @@ export const ContentSection = memo(
     const latestMessage = item.latestMessage;
 
     return (
-      <div className="flex-1 min-w-0 flex flex-col justify-center">
+      <div className="flex min-w-0 flex-1 flex-col justify-center">
         {/* Title and Time row */}
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 min-w-0">
+          <div className="flex min-w-0 items-center gap-1.5">
             <h3
               className={cn(
-                "font-bold truncate transition-colors tracking-tight",
-                isCompact ? "text-[13px]" : "text-sm",
+                "truncate font-bold tracking-tight transition-colors",
+                "text-sm",
                 isSelected
                   ? "text-ink"
                   : "text-ink/90 group-hover/item:text-ink",
@@ -57,15 +57,17 @@ export const ContentSection = memo(
             </h3>
             {!isGroup && isMuted && (
               <BellOff
-                size={isCompact ? 9 : 11}
-                className="text-slate-muted/60 shrink-0"
+                className={cn(
+                  "shrink-0 text-slate-muted/60",
+                  isCompact ? "size-3" : "size-3.5",
+                )}
               />
             )}
           </div>
           <time
             className={cn(
-              "text-micro font-medium text-slate-muted shrink-0 tabular-nums",
-              isCompact && "scale-90 origin-right",
+              "shrink-0 text-micro font-medium text-slate-muted tabular-nums",
+              isCompact && "origin-right scale-90",
             )}
           >
             {latestMessage?.createdAt
@@ -81,22 +83,22 @@ export const ContentSection = memo(
             isCompact ? "mt-0" : "mt-1",
           )}
         >
-          <div className="flex items-center gap-1.5 min-w-0 flex-1">
+          <div className="flex min-w-0 flex-1 items-center gap-1.5">
             {!isGroup && latestMessage?.isOwn && latestMessage?.status && (
               <MsgStatusIcon
                 status={latestMessage.status}
                 isCompact={isCompact}
               />
             )}
-            <div className="flex items-center gap-1 overflow-hidden min-w-0">
+            <div className="flex min-w-0 items-center gap-1 overflow-hidden">
               <SubtitleIcon type={latestMessage?.type} isCompact={isCompact} />
 
               {item.isTyping ? (
-                <div className="flex items-baseline gap-1 animate-in fade-in slide-in-from-left-2 duration-300">
+                <div className="flex animate-in items-baseline gap-1 duration-300 fade-in slide-in-from-left-2">
                   <span
                     className={cn(
-                      "font-bold text-forge-teal leading-tight",
-                      isCompact ? "text-[10px]" : "text-xs",
+                      "leading-tight font-bold text-forge-teal",
+                      "text-xs",
                     )}
                   >
                     typing
@@ -110,11 +112,11 @@ export const ContentSection = memo(
                 <p
                   className={cn(
                     "truncate leading-tight",
-                    isCompact ? "text-[11px]" : "text-xs",
+                    "text-xs",
                     hasUnread
-                      ? "text-ink font-bold"
+                      ? "font-bold text-ink"
                       : "text-slate-muted/80 group-hover/item:text-slate-muted",
-                    latestMessage?.isSystem && "italic text-slate-muted/60",
+                    latestMessage?.isSystem && "text-slate-muted/60 italic",
                   )}
                 >
                   {subtitle}

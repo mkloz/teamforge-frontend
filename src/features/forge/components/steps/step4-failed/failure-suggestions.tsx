@@ -17,7 +17,7 @@ export function FailureSuggestions({ suggestions }: FailureSuggestionsProps) {
         {suggestions.map((suggestion) => (
           <div key={suggestion} className="flex items-center gap-3 px-3.5 py-3">
             <ArrowRight size={13} className="shrink-0 text-forge-teal" />
-            <p className="text-xs font-semibold leading-snug text-foreground">
+            <p className="text-xs leading-snug font-semibold text-foreground">
               {suggestion}
             </p>
           </div>

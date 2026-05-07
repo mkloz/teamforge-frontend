@@ -61,32 +61,32 @@ export const AttachmentMenu = memo(function AttachmentMenu({
             aria-label="Add attachment"
             disabled={disabled}
           >
-            <Paperclip size={22} strokeWidth={2.2} />
+            <Paperclip className="size-5" strokeWidth={2.2} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="start"
           sideOffset={16}
-          className="w-50 p-2 rounded-2xl shadow-xl border-border/40 animate-in slide-in-from-bottom-2"
+          className="w-50 animate-in rounded-xl border-border/40 p-2 shadow-xl slide-in-from-bottom-2"
         >
           <DropdownMenuItem
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer focus:bg-muted text-sm font-semibold text-ink transition-colors"
+            className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-ink transition-colors focus:bg-muted"
             onSelect={(event) => {
               event.preventDefault();
               imageInputRef.current?.click();
             }}
           >
-            <ImageIcon size={18} className="text-forge-teal" />
+            <ImageIcon className="size-4 text-forge-teal" />
             <span>Photos</span>
           </DropdownMenuItem>
           <DropdownMenuItem
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer focus:bg-muted text-sm font-semibold text-ink transition-colors"
+            className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-ink transition-colors focus:bg-muted"
             onSelect={(event) => {
               event.preventDefault();
               fileInputRef.current?.click();
             }}
           >
-            <FileText size={18} className="text-forge-teal" />
+            <FileText className="size-4 text-forge-teal" />
             <span>Documents</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

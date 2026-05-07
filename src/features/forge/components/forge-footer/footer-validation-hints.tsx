@@ -18,7 +18,7 @@ export function FooterValidationHints({ fw }: ForgeFooterChildProps) {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <p className="text-xs text-muted-foreground/80 font-medium pl-3 border-l-2 border-primary/40">
+            <p className="border-l-2 border-primary/40 pl-3 text-xs font-medium text-muted-foreground/80">
               {fw.forgeValidationMessage}
             </p>
           </motion.div>

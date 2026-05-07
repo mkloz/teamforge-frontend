@@ -64,7 +64,7 @@ export function VoronoiLogo({
         rotateY: tiltY,
         transformStyle: "preserve-3d",
       }}
-      className="relative w-72 h-72 md:w-96 md:h-96 flex items-center justify-center"
+      className="relative flex h-72 w-72 items-center justify-center md:h-96 md:w-96"
       role="img"
       aria-label="Interactive visualization showing TeamForge's group formation process"
     >
@@ -74,7 +74,7 @@ export function VoronoiLogo({
           opacity: coreOpacity,
           scale: coreScale,
         }}
-        className="absolute w-32 h-32 md:w-48 md:h-48 rounded-full bg-forge-teal/5 border-2 border-forge-teal/20 flex items-center justify-center p-6 z-10"
+        className="absolute z-10 flex h-32 w-32 items-center justify-center rounded-full border-2 border-forge-teal/20 bg-forge-teal/5 p-6 md:h-48 md:w-48"
       >
         {/* Pulsing rings for Phase 1 */}
         {!shouldReduceMotion &&
@@ -88,9 +88,9 @@ export function VoronoiLogo({
           style={{
             boxShadow: coreBoxShadow,
           }}
-          className="w-full h-full rounded-full bg-forge-teal flex items-center justify-center text-white"
+          className="flex h-full w-full items-center justify-center rounded-full bg-forge-teal text-white"
         >
-          <span className="font-sans font-bold text-sm uppercase tracking-widest">
+          <span className="font-sans text-sm font-bold tracking-widest uppercase">
             You
           </span>
         </motion.div>
@@ -102,10 +102,10 @@ export function VoronoiLogo({
           opacity: radarOpacity,
           rotate: radarRotate,
         }}
-        className="absolute w-64 h-64 md:w-96 md:h-96 pointer-events-none"
+        className="pointer-events-none absolute h-64 w-64 md:h-96 md:w-96"
       >
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-4 md:w-8 h-1/2 bg-linear-to-t from-transparent via-spark-amber/10 to-spark-amber/40 blur-xl" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-1/2 bg-spark-amber blur-sm" />
+        <div className="absolute top-0 left-1/2 h-1/2 w-4 -translate-x-1/2 bg-linear-to-t from-transparent via-spark-amber/10 to-spark-amber/40 blur-xl md:w-8" />
+        <div className="absolute top-0 left-1/2 h-1/2 w-0.5 -translate-x-1/2 bg-spark-amber blur-sm" />
       </motion.div>
 
       {!shouldReduceMotion && (
@@ -115,7 +115,7 @@ export function VoronoiLogo({
           }}
           animate={{ scale: [0.5, 2], opacity: [0.5, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
-          className="absolute w-64 h-64 md:w-96 md:h-96 rounded-full border-2 border-spark-amber/20"
+          className="absolute h-64 w-64 rounded-full border-2 border-spark-amber/20 md:h-96 md:w-96"
         />
       )}
 
@@ -131,7 +131,7 @@ export function VoronoiLogo({
 
       {/* Phase 3: Social Graph Connections (Step 3) */}
       <svg
-        className="absolute inset-0 w-full h-full pointer-events-none z-0"
+        className="pointer-events-none absolute inset-0 z-0 h-full w-full"
         viewBox="0 0 100 100"
         aria-hidden="true"
       >
@@ -157,7 +157,7 @@ export function VoronoiLogo({
         style={{
           opacity: svgOpacity,
         }}
-        className="w-full h-full drop-shadow-[0_20px_50px_rgba(13,148,136,0.15)]"
+        className="h-full w-full drop-shadow-[0_20px_50px_rgba(13,148,136,0.15)]"
       >
         <defs>
           <clipPath id="group-boundary-hiw">

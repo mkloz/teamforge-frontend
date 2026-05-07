@@ -33,7 +33,7 @@ export function SessionRow({ session, isRevoking, onRevoke }: SessionRowProps) {
         </div>
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="text-base font-semibold leading-6 text-ink">
+            <p className="text-base leading-6 font-semibold text-ink">
               {device.label}
             </p>
             {session.isCurrent && (

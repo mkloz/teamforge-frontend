@@ -41,7 +41,7 @@ export const ActionTarget = memo(
             className="flex-none rounded-full"
             aria-label="Send message"
           >
-            <Send size={18} strokeWidth={2.5} className="ml-0.5" />
+            <Send className="ml-0.5 size-4" strokeWidth={2.5} />
           </Button>
         </motion.div>
       ) : (
@@ -69,7 +69,7 @@ export const ActionTarget = memo(
                   className="rounded-full"
                   aria-label="Cancel recording"
                 >
-                  <Trash2 size={20} />
+                  <Trash2 className="size-5" />
                 </Button>
               </motion.div>
             )}
@@ -125,8 +125,7 @@ export const ActionTarget = memo(
             disabled={disabled}
           >
             <Mic
-              size={20}
-              className={cn(isRecording && "animate-pulse")}
+              className={cn("size-5", isRecording && "animate-pulse")}
               strokeWidth={isRecording ? 2.5 : 2}
             />
           </Button>

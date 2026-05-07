@@ -8,8 +8,8 @@ interface ProfileAvatarProps {
 export function ProfileAvatar({ src, name }: ProfileAvatarProps) {
   return (
     <div className="group relative shrink-0">
-      <div className="absolute inset-0 rounded-full bg-spark-amber/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-      <div className="absolute -inset-1.5 border-2 border-forge-teal/30 rounded-full transition duration-700 opacity-0 group-hover:opacity-100 group-hover:rotate-180 group-hover:scale-105" />
+      <div className="absolute inset-0 rounded-full bg-spark-amber/20 opacity-0 blur-xl transition-opacity duration-700 group-hover:opacity-100" />
+      <div className="absolute -inset-1.5 rounded-full border-2 border-forge-teal/30 opacity-0 transition duration-700 group-hover:scale-105 group-hover:rotate-180 group-hover:opacity-100" />
       <Avatar
         src={src}
         name={name}
@@ -17,7 +17,7 @@ export function ProfileAvatar({ src, name }: ProfileAvatarProps) {
         fallbackClassName="bg-muted text-forge-teal text-3xl sm:text-4xl"
         loading="eager"
       />
-      <div className="absolute bottom-2 right-2 z-20 h-5 w-5 rounded-full border-2 border-canvas bg-forge-teal shadow-sm sm:bottom-3 sm:right-3" />
+      <div className="absolute right-2 bottom-2 z-20 h-5 w-5 rounded-full border-2 border-canvas bg-forge-teal shadow-sm sm:right-3 sm:bottom-3" />
     </div>
   );
 }

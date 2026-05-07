@@ -1,5 +1,5 @@
 import { track } from "@vercel/analytics";
-import type { ApiException } from "@/shared/types/api-error";
+import { ApiExceptionSchema } from "@/shared/types/api-error";
 import type { TrackedMutationName } from "@/shared/lib/telemetry-contract";
 
 type TelemetryValue = string | number | boolean | null | undefined;
@@ -27,7 +27,9 @@ function readApiException(error: Error) {
     return null;
   }
 
-  return cause as Partial<ApiException>;
+  const parsed = ApiExceptionSchema.partial().safeParse(cause);
+
+  return parsed.success ? parsed.data : null;
 }
 
 function toTelemetryValue(value: TelemetryContext[string]): TelemetryValue {

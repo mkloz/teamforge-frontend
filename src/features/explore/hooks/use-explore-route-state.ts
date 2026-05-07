@@ -2,10 +2,7 @@ import { useQueryStates } from "nuqs";
 
 import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
 import { exploreRouteParsers } from "@/features/explore/hooks/explore-route-state/explore-route-parsers";
-import type {
-  ExploreRouteState,
-  SetExploreRouteState,
-} from "@/features/explore/hooks/explore-route-state/explore-route-state.types";
+import type { SetExploreRouteState } from "@/features/explore/hooks/explore-route-state/explore-route-state.types";
 import {
   CLEAR_EXPLORE_FILTER_ROUTE,
   CLEAR_FOCUSED_FRIEND_REQUEST_ROUTE,
@@ -56,8 +53,9 @@ export function useExploreRouteState() {
   const [routeState, setRouteState] = useQueryStates(exploreRouteParsers, {
     history: "replace",
   });
-  const route = resolveExploreRouteState(routeState as ExploreRouteState);
-  const setExploreRouteState = setRouteState as SetExploreRouteState;
+  const route = resolveExploreRouteState(routeState);
+  const setExploreRouteState: SetExploreRouteState = (state, options) =>
+    setRouteState(state, options);
 
   useExploreRouteSync({
     access,

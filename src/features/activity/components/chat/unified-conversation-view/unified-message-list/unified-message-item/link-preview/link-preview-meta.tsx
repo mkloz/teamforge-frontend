@@ -23,7 +23,7 @@ export function LinkPreviewMeta({
         <Image
           src={data.favicon}
           alt=""
-          wrapperClassName="mt-0.5 h-5 w-5 shrink-0 rounded"
+          wrapperClassName="mt-0.5 size-5 shrink-0 rounded"
           className="object-contain opacity-80"
           loadingComponent={null}
           fallbackComponent={null}
@@ -31,10 +31,10 @@ export function LinkPreviewMeta({
         />
       )}
 
-      <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span
           className={cn(
-            "text-[10px] font-semibold uppercase tracking-widest truncate",
+            "truncate text-xs font-semibold tracking-wider uppercase",
             isOwn
               ? "text-primary dark:text-primary-foreground/50"
               : "text-forge-teal/80",
@@ -46,7 +46,7 @@ export function LinkPreviewMeta({
         {data.title && (
           <p
             className={cn(
-              "text-xs font-semibold leading-snug line-clamp-2",
+              "line-clamp-2 text-xs leading-snug font-semibold",
               isOwn ? "text-foreground" : "text-ink",
             )}
           >
@@ -57,7 +57,7 @@ export function LinkPreviewMeta({
         {data.description && (
           <p
             className={cn(
-              "text-[10px] leading-relaxed line-clamp-2",
+              "line-clamp-2 text-xs leading-relaxed",
               isOwn ? "text-foreground/70" : "text-slate-muted",
             )}
           >
@@ -70,7 +70,7 @@ export function LinkPreviewMeta({
         size={12}
         strokeWidth={1.5}
         className={cn(
-          "shrink-0 self-start mt-0.5 opacity-0 group-hover:opacity-50 transition-opacity duration-150",
+          "mt-0.5 shrink-0 self-start opacity-0 transition-opacity duration-150 group-hover:opacity-50",
           isOwn ? "text-foreground" : "text-slate-muted",
         )}
         aria-hidden

@@ -4,6 +4,25 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { NotificationsCache } from "@/features/notifications/api/notifications-cache";
 import { NotificationsCommands } from "@/features/notifications/api/notifications-commands";
 import { NotificationsQueryFactory } from "@/features/notifications/api/notifications-query-factory";
+import { groupNotificationsByRecency } from "@/features/notifications/lib/notification-groups";
+
+export function useUnreadNotificationCount() {
+  const unreadCountQuery = useQuery(NotificationsQueryFactory.unreadCount());
+
+  return {
+    count: unreadCountQuery.data ?? 0,
+    isLoading: unreadCountQuery.isLoading,
+  };
+}
+
+export function useUnreadNotifications() {
+  const unreadItemsQuery = useQuery(NotificationsQueryFactory.unreadList());
+
+  return {
+    unreadItems: unreadItemsQuery.data ?? [],
+    isLoading: unreadItemsQuery.isLoading,
+  };
+}
 
 export function useNotifications() {
   const { data } = useQuery(NotificationsQueryFactory.list());
@@ -63,12 +82,7 @@ export function useNotifications() {
     unreadItemsQuery.data?.length ??
     NotificationsCache.countUnread(items);
 
-  const today = items.filter(
-    (item) => referenceTime - new Date(item.createdAt).getTime() < 86_400_000,
-  );
-  const earlier = items.filter(
-    (item) => referenceTime - new Date(item.createdAt).getTime() >= 86_400_000,
-  );
+  const { today, earlier } = groupNotificationsByRecency(items, referenceTime);
 
   return {
     items,

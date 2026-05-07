@@ -41,13 +41,13 @@ export const MessageFooter = memo(
         className={cn(
           "flex items-end gap-3 px-2 pb-1",
           reactionGroups.length > 0
-            ? "justify-between mt-1 mb-0.5"
+            ? "mt-1 mb-0.5 justify-between"
             : "justify-end",
           content &&
             content.length < 50 &&
-            !content.includes("\n") &&
+            !content.includes(" ") &&
             reactionGroups.length === 0 &&
-            "absolute bottom-1.75 right-2",
+            "absolute right-2 bottom-1.75",
         )}
       >
         <MessageReactions
@@ -56,15 +56,15 @@ export const MessageFooter = memo(
           onToggleReaction={onToggleReaction}
         />
 
-        <div className="flex items-center gap-1 opacity-70 shrink-0">
+        <div className="flex shrink-0 items-center gap-1 opacity-70">
           {isEdited && (
-            <span className="text-nano font-bold italic mr-0.5 opacity-60">
+            <span className="mr-0.5 text-nano font-bold italic opacity-60">
               Edited
             </span>
           )}
           <span
             className={cn(
-              "text-nano select-none font-bold tabular-nums text-slate-muted",
+              "text-nano font-bold text-slate-muted tabular-nums select-none",
             )}
           >
             {formatChatTime(createdAt)}

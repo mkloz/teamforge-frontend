@@ -14,7 +14,10 @@ import {
   PROFILE_BASICS_DEFAULT_VALUES,
   toProfileBasicsDto,
 } from "@/features/onboarding/lib/profile-basics-form-model";
-import { useOnboardingFlowState } from "@/features/onboarding/lib/onboarding-flow-state";
+import {
+  toOptionalOnboardingSearch,
+  useOnboardingFlowState,
+} from "@/features/onboarding/lib/onboarding-flow-state";
 import {
   profileBasicsSchema,
   type ProfileBasicsValues,
@@ -70,7 +73,7 @@ export function useProfileBasicsForm() {
 
       await navigate({
         to: getProfileBasicsNextRoute(nextDestination),
-        search: Object.keys(nextSearch).length > 0 ? nextSearch : undefined,
+        search: toOptionalOnboardingSearch(nextSearch),
       });
     } catch (error) {
       setSaveError(

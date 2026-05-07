@@ -34,26 +34,26 @@ export function InlineForgeHeader({
   const currentMetadata = getForgeStepMetadata(fw);
 
   return (
-    <div className="sticky top-0 md:top-0 z-30 bg-transparent backdrop-blur-xl -mx-6 md:-mx-12 px-6 md:px-12 pb-3 border-b border-border/40 mb-2 shadow-sm shadow-black/5">
-      <div className="flex items-center justify-between pt-4 mb-2 md:mb-3">
+    <div className="sticky top-0 z-30 -mx-6 mb-2 border-b border-border/40 bg-transparent px-6 pb-3 shadow-sm shadow-black/5 backdrop-blur-xl md:top-0 md:-mx-12 md:px-12">
+      <div className="mb-2 flex items-center justify-between pt-4 md:mb-3">
         <div className="flex items-center gap-3">
           {fw.canGoBack ? (
             <Button
               variant="ghost"
               size="sm"
               onClick={fw.goBack}
-              className="size-8 p-0 rounded-full shrink-0 text-slate-muted hover:text-ink"
+              className="size-8 shrink-0 rounded-full p-0 text-slate-muted hover:text-ink"
               aria-label="Go back"
             >
               <ChevronLeft size={18} />
             </Button>
           ) : (
-            <div className="size-8 rounded-full flex items-center justify-center bg-accent/10 shrink-0">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent/10">
               <Network size={14} className="text-accent" />
             </div>
           )}
           <div className="flex items-baseline overflow-hidden">
-            <h2 className="text-base md:text-lg font-black text-foreground tracking-tight">
+            <h2 className="text-base font-black tracking-tight text-foreground md:text-lg">
               {currentMetadata.title}
             </h2>
           </div>
@@ -76,12 +76,12 @@ export function InlineForgeHeader({
                       onCancelDialogChange(true);
                     }
                   }}
-                  className="h-8 px-3 text-[10px] font-black uppercase tracking-widest"
+                  className="h-8 px-3 text-[10px] font-black tracking-widest uppercase"
                 >
                   Cancel
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent className="rounded-2xl">
+              <AlertDialogContent className="rounded-xl">
                 <AlertDialogHeader>
                   <AlertDialogTitle>Exit the forge?</AlertDialogTitle>
                   <AlertDialogDescription>

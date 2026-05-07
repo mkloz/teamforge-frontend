@@ -1,5 +1,8 @@
-import { buildQuestionList, type TestLength } from "../data/ipip-questions";
-import type { IpipQuestion } from "../data/ipip-questions";
+import {
+  buildQuestionList,
+  type IpipQuestion,
+  type TestLength,
+} from "../data/ipip-questions";
 import { evaluatePersonalityVector } from "./personality-evaluation";
 import type { ScreenState } from "../store/personality-test-store";
 import { calculateVector, type RawAnswers } from "../utils/score-calculator";

@@ -19,7 +19,10 @@ import {
 } from "../lib/onboarding-navigation-labels";
 import { getOceanScoresFromVector } from "../lib/personality-results";
 import { QUESTIONS_PER_PAGE } from "../lib/personality-test-page-constants";
-import { useOnboardingFlowState } from "../lib/onboarding-flow-state";
+import {
+  toOptionalOnboardingSearch,
+  useOnboardingFlowState,
+} from "../lib/onboarding-flow-state";
 import { usePersonalityTest } from "./use-personality-test";
 
 export function usePersonalityTestPageFlow() {
@@ -76,7 +79,7 @@ export function usePersonalityTestPageFlow() {
 
     await navigate({
       to: "/onboarding/interests",
-      search: Object.keys(nextSearch).length > 0 ? nextSearch : undefined,
+      search: toOptionalOnboardingSearch(nextSearch),
     });
   }
 
@@ -101,8 +104,7 @@ export function usePersonalityTestPageFlow() {
 
     await navigate({
       to: "/onboarding/profile",
-      search:
-        Object.keys(previousSearch).length > 0 ? previousSearch : undefined,
+      search: toOptionalOnboardingSearch(previousSearch),
     });
   }
 

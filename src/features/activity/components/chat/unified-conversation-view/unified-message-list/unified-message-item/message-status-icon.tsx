@@ -21,7 +21,7 @@ export const MessageStatusIcon = memo(function MessageStatusIcon({
   return (
     <div className={cn("flex items-center", className)}>
       {status === "SENDING" && (
-        <Clock size={10} className="text-slate-muted/40 animate-pulse" />
+        <Clock size={10} className="animate-pulse text-slate-muted/40" />
       )}
       {status === "SENT" && (
         <Check size={10} className="text-slate-muted/40" strokeWidth={3} />

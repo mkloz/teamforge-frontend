@@ -21,27 +21,27 @@ export function GroupCard() {
         ease: "easeInOut",
       }}
       className={cn(
-        "rounded-2xl px-4 py-3.5 w-45",
-        "bg-[#0a1212]/80 backdrop-blur-xl border border-forge-teal/20",
+        "w-45 rounded-xl px-4 py-3.5",
+        "border border-forge-teal/20 bg-[#0a1212]/80 backdrop-blur-xl",
         "shadow-[0_12px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.04)]",
       )}
       aria-hidden="true"
     >
-      <div className="flex items-center justify-between mb-2.5">
-        <p className="text-forge-teal text-nano font-semibold font-sans uppercase tracking-[0.15em] opacity-90">
+      <div className="mb-2.5 flex items-center justify-between">
+        <p className="font-sans text-nano font-semibold tracking-[0.15em] text-forge-teal uppercase opacity-90">
           Your Group
         </p>
-        <span className="text-spark-amber text-nano font-bold font-sans bg-spark-amber/10 px-2 py-0.5 rounded-full border border-spark-amber/20">
+        <span className="rounded-full border border-spark-amber/20 bg-spark-amber/10 px-2 py-0.5 font-sans text-nano font-bold text-spark-amber">
           94% match
         </span>
       </div>
-      <div className="flex -space-x-2 mb-3">
+      <div className="mb-3 flex -space-x-2">
         {members.map((m, i) => (
           <Avatar
             key={i}
             src={m.avatar}
             name="Member"
-            className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center ring-2 ring-hero-bg bg-[#111]"
+            className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-[#111] ring-2 ring-hero-bg"
             style={{ zIndex: members.length - i }}
           />
         ))}
@@ -50,7 +50,7 @@ export function GroupCard() {
         {["Hiking", "Tech", "Coffee"].map((tag) => (
           <span
             key={tag}
-            className="text-nano font-medium font-sans text-text-dark-muted bg-white/5 px-1.5 py-0.5 rounded"
+            className="rounded bg-white/5 px-1.5 py-0.5 font-sans text-nano font-medium text-text-dark-muted"
           >
             {tag}
           </span>

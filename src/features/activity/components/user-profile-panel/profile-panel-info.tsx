@@ -91,17 +91,17 @@ export function ProfilePanelInfo({
   const participantDetails = getParticipantDetails(participant);
 
   return (
-    <div className="flex flex-col w-full">
-      <div className="relative h-24 md:h-28 w-full bg-forge-teal overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]" />
+    <div className="flex w-full flex-col">
+      <div className="relative h-24 w-full overflow-hidden bg-forge-teal md:h-28">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px] opacity-10" />
 
-        <div className="absolute inset-x-4 top-4 flex items-center justify-between z-40">
+        <div className="absolute inset-x-4 top-4 z-40 flex items-center justify-between">
           {onBack ? (
             <Button
               size="icon"
               variant="outline"
               onClick={onBack}
-              className="rounded-full bg-white/10 hover:bg-white/20 border-white/20 text-white shadow-sm transition-all"
+              className="rounded-full border-white/20 bg-white/10 text-white shadow-sm transition-all hover:bg-white/20"
               aria-label="Go back"
             >
               <ChevronLeft size={18} />
@@ -113,12 +113,12 @@ export function ProfilePanelInfo({
           {profileNavigation && (
             <Link
               {...profileNavigation}
-              className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-full"
+              className="block rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               <Button
                 size="icon"
                 variant="outline"
-                className="rounded-full bg-white/10 hover:bg-white/20 border-white/20 text-white shadow-sm transition-all"
+                className="rounded-full border-white/20 bg-white/10 text-white shadow-sm transition-all hover:bg-white/20"
                 aria-label="View full profile"
               >
                 <ExternalLink size={14} />
@@ -128,42 +128,42 @@ export function ProfilePanelInfo({
         </div>
       </div>
 
-      <div className="px-6 -mt-10 md:-mt-12 flex flex-col items-center text-center relative z-40 space-y-4">
+      <div className="relative z-40 -mt-10 flex flex-col items-center space-y-4 px-6 text-center md:-mt-12">
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="relative group"
+          className="group relative"
         >
           <Avatar
             src={participant.avatar}
             name={participant.name}
             className={cn(
-              "bg-card ring-4 ring-canvas shadow-sm transition-all duration-300",
-              isMobile ? "w-20 h-20" : "w-24 h-24",
+              "bg-card shadow-sm ring-4 ring-canvas transition-all duration-300",
+              isMobile ? "h-20 w-20" : "h-24 w-24",
             )}
           />
           <span
             className={cn(
-              "absolute bottom-0.5 right-0.5 rounded-full border-4 border-canvas shadow-sm z-10",
-              isMobile ? "w-5 h-5" : "w-6 h-6",
+              "absolute right-0.5 bottom-0.5 z-10 rounded-full border-4 border-canvas shadow-sm",
+              isMobile ? "h-5 w-5" : "h-6 w-6",
               statusColor,
             )}
           />
         </motion.div>
 
         <div className="space-y-0.5">
-          <h3 className="text-xl md:text-2xl font-extrabold text-ink tracking-tight leading-tight">
+          <h3 className="text-xl leading-tight font-extrabold tracking-tight text-ink md:text-2xl">
             {participant.name}
           </h3>
           <div className="flex items-center justify-center gap-1.5">
-            <p className="text-xs font-medium text-slate-muted tracking-normal">
+            <p className="text-xs font-medium tracking-normal text-slate-muted">
               {participantDetails ?? "Profile details syncing"}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 w-full pt-1">
+        <div className="flex w-full items-center gap-2 pt-1">
           {isDirectChat ? (
             <Button variant="primary" className="flex-1">
               <UserPlus size={16} />
@@ -190,7 +190,7 @@ export function ProfilePanelInfo({
           >
             <Info size={18} />
             {isDirectChat && (
-              <span className="ml-2 text-sm font-semibold text-slate-muted group-hover:text-forge-teal transition-colors">
+              <span className="ml-2 text-sm font-semibold text-slate-muted transition-colors group-hover:text-forge-teal">
                 Details
               </span>
             )}
@@ -199,11 +199,11 @@ export function ProfilePanelInfo({
 
         <div className="flex items-center gap-2">
           {participant.personalityType && (
-            <div className="bg-forge-teal text-white text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
+            <div className="rounded-full bg-forge-teal px-3 py-1 text-[11px] font-bold tracking-widest text-white uppercase shadow-sm">
               {participant.personalityType}
             </div>
           )}
-          <div className="bg-spark-amber/10 border border-spark-amber/20 text-spark-amber text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+          <div className="rounded-full border border-spark-amber/20 bg-spark-amber/10 px-3 py-1 text-[11px] font-bold tracking-widest text-spark-amber uppercase">
             Trust {formatTrustScore(participant.trustScore)}
           </div>
         </div>
@@ -211,32 +211,32 @@ export function ProfilePanelInfo({
 
       {participant.bio && (
         <div className="px-6 pt-10">
-          <h4 className="text-xs font-semibold text-slate-muted uppercase tracking-widest px-1 mb-4">
+          <h4 className="mb-4 px-1 text-xs font-semibold tracking-widest text-slate-muted uppercase">
             About
           </h4>
-          <div className="relative bg-forge-teal/5 rounded-2xl p-4 border border-forge-teal/10">
-            <p className="text-sm text-ink leading-relaxed font-medium italic text-pretty opacity-90">
+          <div className="relative rounded-xl border border-forge-teal/10 bg-forge-teal/5 p-4">
+            <p className="text-sm leading-relaxed font-medium text-pretty text-ink italic opacity-90">
               "{participant.bio}"
             </p>
           </div>
         </div>
       )}
 
-      <div className="px-6 pt-8 pb-2 space-y-6 flex flex-col items-center">
+      <div className="flex flex-col items-center space-y-6 px-6 pt-8 pb-2">
         <div className="w-full">
-          <h4 className="text-xs font-semibold text-slate-muted uppercase tracking-widest px-1 mb-2">
+          <h4 className="mb-2 px-1 text-xs font-semibold tracking-widest text-slate-muted uppercase">
             Psychometric Profile
           </h4>
         </div>
 
         {oceanScores ? (
-          <div className="relative w-full aspect-square pointer-events-none opacity-90 hover:opacity-100 transition-opacity px-4">
-            <div className="relative z-10 w-full h-full scale-110">
+          <div className="pointer-events-none relative aspect-square w-full px-4 opacity-90 transition-opacity hover:opacity-100">
+            <div className="relative z-10 h-full w-full scale-110">
               <OceanDiagram scores={oceanScores} interactive={false} />
             </div>
           </div>
         ) : (
-          <div className="w-full rounded-2xl border border-border bg-card px-4 py-6 text-center">
+          <div className="w-full rounded-xl border border-border bg-card px-4 py-6 text-center">
             <p className="text-sm font-medium text-slate-muted">
               Psychometric profile syncing.
             </p>

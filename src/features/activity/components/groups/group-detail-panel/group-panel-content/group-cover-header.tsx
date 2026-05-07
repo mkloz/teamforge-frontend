@@ -46,14 +46,13 @@ export function GroupCoverHeader({
             variant="ghost"
             size="icon-xs"
             className={cn(
-              "absolute z-30 transition-all p-0",
+              "absolute z-30 rounded-full border-0 bg-black/20 p-0 text-white backdrop-blur-sm transition-all hover:bg-black/40",
               isMobile ? "top-4 right-14 size-9" : "top-3 right-4",
-              "bg-black/20 hover:bg-black/40 backdrop-blur-sm text-white border-0 rounded-full",
             )}
             aria-label="Edit group settings"
             onClick={onEditGroup}
           >
-            <Pencil size={isMobile ? 18 : 16} />
+            <Pencil className={isMobile ? "size-5" : "size-4"} />
           </Button>
         )}
 
@@ -62,10 +61,10 @@ export function GroupCoverHeader({
             variant="ghost"
             size="icon-xs"
             onClick={onClose}
-            className="absolute top-3 right-3 p-0 bg-black/20 hover:bg-black/40 backdrop-blur-sm text-white border-0 rounded-full"
+            className="absolute top-3 right-3 rounded-full border-0 bg-black/20 p-0 text-white backdrop-blur-sm hover:bg-black/40"
             aria-label="Close group panel"
           >
-            <X size={16} />
+            <X className="size-4" />
           </Button>
         )}
       </div>

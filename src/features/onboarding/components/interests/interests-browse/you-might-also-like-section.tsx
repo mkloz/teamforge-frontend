@@ -31,9 +31,9 @@ export function YouMightAlsoLikeSection({
       titleClassName={cn(hasSelected ? "text-spark-amber" : "text-forge-teal")}
       dotClassName="bg-forge-teal/30 group-hover:scale-150 transition-transform duration-300"
       countClassName="text-forge-teal/70 group-hover:text-forge-teal transition-colors"
-      className="mb-4 rounded-xl border border-slate-muted/10 bg-canvas overflow-hidden p-0.5 group/section transition-colors duration-300 hover:border-forge-teal/20"
+      className="group/section mb-4 overflow-hidden rounded-xl border border-slate-muted/10 bg-canvas p-0.5 transition-colors duration-300 hover:border-forge-teal/20"
     >
-      <div className="flex flex-wrap gap-1 px-2.5 pb-3 pt-2 sm:gap-1.5 sm:px-4 sm:pb-4">
+      <div className="flex flex-wrap gap-1 px-2.5 pt-2 pb-3 sm:gap-1.5 sm:px-4 sm:pb-4">
         {tags.map((tag) => (
           <TagPill
             key={tag.id}

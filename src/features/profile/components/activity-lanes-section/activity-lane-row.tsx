@@ -20,7 +20,7 @@ export function ActivityLaneRow({ lane }: ActivityLaneRowProps) {
         </div>
         <div>
           <h4 className="text-sm font-extrabold text-ink">{lane.label}</h4>
-          <p className="mt-1 text-xs font-bold uppercase tracking-widest text-slate-muted">
+          <p className="mt-1 text-xs font-bold tracking-widest text-slate-muted uppercase">
             {evidenceLabel}
           </p>
         </div>

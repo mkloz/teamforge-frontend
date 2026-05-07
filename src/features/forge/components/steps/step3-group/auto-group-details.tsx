@@ -22,13 +22,13 @@ export function AutoGroupDetails({
   onGroupSizeModeChange,
 }: AutoGroupDetailsProps) {
   return (
-    <div className="space-y-4 animate-in fade-in zoom-in-95 duration-300">
+    <div className="animate-in space-y-4 duration-300 zoom-in-95 fade-in">
       <div className="space-y-3 rounded-lg border border-border/35 bg-card/65 px-3 py-3">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-muted-foreground/50 tracking-wide">
+          <span className="text-xs font-bold tracking-wide text-muted-foreground/50">
             Capacity
           </span>
-          <div className="flex items-center gap-0 p-0.5 rounded-lg bg-background/60 border border-border/40">
+          <div className="flex items-center gap-0 rounded-lg border border-border/40 bg-background/60 p-0.5">
             {(["range", "fixed"] as const).map((mode) => {
               const nextMode = mode === "range" ? "RANGE" : "FIXED";
               const active = groupSizeMode === nextMode;
@@ -54,7 +54,7 @@ export function AutoGroupDetails({
                   {mode === "range" ? "Range" : "Fixed"}
                   <span
                     className={cn(
-                      "tabular-nums font-black transition-colors",
+                      "font-black tabular-nums transition-colors",
                       active
                         ? mode === "range"
                           ? "text-forge-teal"
@@ -70,9 +70,9 @@ export function AutoGroupDetails({
           </div>
         </div>
 
-        <div className="min-h-18 flex flex-col justify-center">
+        <div className="flex min-h-18 flex-col justify-center">
           {groupSizeMode === "RANGE" ? (
-            <div className="space-y-1 animate-in fade-in duration-200">
+            <div className="animate-in space-y-1 duration-200 fade-in">
               <div className="py-1">
                 <Slider
                   className="h-10"
@@ -98,7 +98,7 @@ export function AutoGroupDetails({
               </div>
             </div>
           ) : (
-            <div className="space-y-1 animate-in fade-in duration-200">
+            <div className="animate-in space-y-1 duration-200 fade-in">
               <div className="py-1">
                 <Slider
                   className="h-10"

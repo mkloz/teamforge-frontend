@@ -18,11 +18,11 @@ export function LengthOptionSummary({
   return (
     <div className="flex flex-col">
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-        <span className="font-sans text-base font-extrabold leading-tight text-ink">
+        <span className="font-sans text-base leading-tight font-extrabold text-ink">
           {viewModel.config.label}
         </span>
         {isAdjust && viewModel.isComplete ? (
-          <span className="shrink-0 rounded-full bg-forge-teal px-1.5 py-px font-sans text-[0.6rem] font-black uppercase tracking-wide text-white">
+          <span className="shrink-0 rounded-full bg-forge-teal px-1.5 py-px font-sans text-[0.6rem] font-black tracking-wide text-white uppercase">
             Done
           </span>
         ) : null}

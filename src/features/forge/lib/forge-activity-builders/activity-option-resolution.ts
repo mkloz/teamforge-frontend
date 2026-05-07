@@ -24,7 +24,7 @@ export function resolvePlanCategory(
 ): PlanCategory {
   const match = findActivityOption(selectedActivity);
 
-  return (match?.id as PlanCategory | undefined) ?? "OTHER";
+  return match?.id ?? "OTHER";
 }
 
 export function resolveActivityAccess(visibility: Visibility): ActivityAccess {

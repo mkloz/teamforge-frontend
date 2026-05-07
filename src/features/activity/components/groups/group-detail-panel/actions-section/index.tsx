@@ -30,14 +30,14 @@ export function ActionsSection({
   const canDisband = canDisbandGroup(currentUserRole, groupStatus);
 
   return (
-    <section className="space-y-2">
-      <h3 className="mb-3 text-sm font-bold uppercase tracking-widest text-foreground">
+    <section className="flex flex-col gap-2">
+      <h3 className="mb-3 text-sm font-bold tracking-widest text-foreground uppercase">
         Actions
       </h3>
 
       {!actionsLocked && (
         <GroupActionButton
-          icon={<BellOff size={16} />}
+          icon={<BellOff className="size-4" />}
           label="Mute Notifications"
           onClick={() => {
             // Kept as a visible future affordance until notification preferences land.
@@ -53,7 +53,7 @@ export function ActionsSection({
           confirmDescription="You’ll leave this group and lose access to its chat and planning workspace."
           confirmTitle="Leave this group?"
           disabled={isLeaving || isDisbanding}
-          icon={<LogOut size={16} />}
+          icon={<LogOut className="size-4" />}
           label={isLeaving ? "Leaving..." : "Leave Group"}
           onConfirm={onLeaveGroup}
           variant="destructive"
@@ -66,7 +66,7 @@ export function ActionsSection({
           confirmDescription="This will close the group for everyone, cancel unfinished plans, and remove access to the shared workspace."
           confirmTitle="Disband this group?"
           disabled={isDisbanding || isLeaving}
-          icon={<ShieldAlert size={16} />}
+          icon={<ShieldAlert className="size-4" />}
           label={isDisbanding ? "Disbanding..." : "Disband Group"}
           onConfirm={onDisbandGroup}
           variant="destructive"
@@ -74,7 +74,7 @@ export function ActionsSection({
       )}
 
       <GroupActionButton
-        icon={<Flag size={16} />}
+        icon={<Flag className="size-4" />}
         label="Report Group"
         onClick={() => {
           // TODO: wire report flow when moderation endpoints exist.

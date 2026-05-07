@@ -26,10 +26,10 @@ export function ProfilePortraitSection({
             {readLabel}
           </span>
         </div>
-        <h2 className="max-w-3xl text-[1.6rem] font-black leading-tight tracking-tight text-ink md:text-3xl">
+        <h2 className="max-w-3xl text-[1.6rem] leading-tight font-black tracking-tight text-ink md:text-3xl">
           {portrait.title}
         </h2>
-        <p className="max-w-3xl text-base font-medium leading-relaxed text-ink/82 text-pretty md:text-lg">
+        <p className="max-w-3xl text-base leading-relaxed font-medium text-pretty text-ink/82 md:text-lg">
           {getCompactLead(portrait.lead)}
         </p>
       </div>
@@ -40,10 +40,10 @@ export function ProfilePortraitSection({
             key={`${detail.label}-${detail.value}`}
             className="flex flex-col gap-1"
           >
-            <p className="text-xs font-black uppercase tracking-widest text-slate-muted">
+            <p className="text-xs font-black tracking-widest text-slate-muted uppercase">
               {detail.label}
             </p>
-            <p className="text-sm font-semibold leading-snug text-ink/85">
+            <p className="text-sm leading-snug font-semibold text-ink/85">
               {getCompactSentence(detail.value)}
             </p>
           </div>

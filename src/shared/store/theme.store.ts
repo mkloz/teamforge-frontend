@@ -1,6 +1,17 @@
 import { useEffect } from "react";
 import { create } from "zustand";
 
+import {
+  cancelScheduledAnimationFrame,
+  scheduleAnimationFrame,
+} from "@/shared/lib/browser-scheduling";
+import type { ScheduledAnimationFrameHandle } from "@/shared/lib/browser-scheduling";
+import {
+  getBrowserComputedStyle,
+  getBrowserDocumentElement,
+  getBrowserMediaQuery,
+} from "@/shared/lib/browser-environment";
+
 export const Theme = {
   LIGHT: "light",
   DARK: "dark",
@@ -36,7 +47,11 @@ export function useInitializeTheme() {
   const syncWithSystem = useThemeStore((state) => state.syncWithSystem);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const mediaQuery = getBrowserMediaQuery("(prefers-color-scheme: dark)");
+
+    if (!mediaQuery) {
+      return;
+    }
 
     syncWithSystem(mediaQuery.matches ? Theme.DARK : Theme.LIGHT);
 
@@ -52,25 +67,36 @@ export function useInitializeTheme() {
   }, [syncWithSystem]);
 
   useEffect(() => {
-    const root = document.documentElement;
-    let firstFrame = 0;
-    let secondFrame = 0;
+    const root = getBrowserDocumentElement();
+
+    if (!root) {
+      return;
+    }
+
+    let firstFrame: ScheduledAnimationFrameHandle | null = null;
+    let secondFrame: ScheduledAnimationFrameHandle | null = null;
 
     root.classList.add("disable-transitions");
     root.dataset.theme = theme;
     root.classList.remove(Theme.LIGHT, Theme.DARK);
     root.classList.add(theme);
-    void window.getComputedStyle(root).opacity;
+    void getBrowserComputedStyle(root)?.opacity;
 
-    firstFrame = window.requestAnimationFrame(() => {
-      secondFrame = window.requestAnimationFrame(() => {
+    firstFrame = scheduleAnimationFrame(() => {
+      secondFrame = scheduleAnimationFrame(() => {
         root.classList.remove("disable-transitions");
       });
     });
 
     return () => {
-      window.cancelAnimationFrame(firstFrame);
-      window.cancelAnimationFrame(secondFrame);
+      if (firstFrame) {
+        cancelScheduledAnimationFrame(firstFrame);
+      }
+
+      if (secondFrame) {
+        cancelScheduledAnimationFrame(secondFrame);
+      }
+
       root.classList.remove("disable-transitions");
     };
   }, [theme]);

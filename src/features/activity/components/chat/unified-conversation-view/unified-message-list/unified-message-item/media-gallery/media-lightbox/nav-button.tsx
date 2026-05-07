@@ -14,7 +14,7 @@ export const NavButton = memo(
       type="button"
       variant="ghost"
       onClick={onClick}
-      className="pointer-events-auto h-14 w-14 rounded-xl border border-white/10 bg-white/5 text-white/50 backdrop-blur-md transition hover:scale-105 hover:bg-white/10 hover:text-white"
+      className="pointer-events-auto size-12 rounded-xl border border-white/10 bg-white/5 text-white/50 backdrop-blur-md transition hover:scale-105 hover:bg-white/10 hover:text-white sm:size-14"
     >
       {icon}
     </Button>

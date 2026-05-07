@@ -48,20 +48,20 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
   } = useHeaderSearch();
 
   return (
-    <header className="shrink-0 flex items-center gap-2 px-3 pb-3 pt-2 md:pt-3 border-b border-border bg-canvas/80 backdrop-blur-md sticky top-0 z-100">
+    <header className="sticky top-0 z-100 flex shrink-0 items-center gap-2 border-b border-border bg-canvas/80 px-3 pt-2 pb-3 backdrop-blur-md md:pt-3">
       {onBack && (
         <Button
           variant="ghost"
           size="icon-sm"
           onClick={onBack}
-          className="lg:hidden mr-1 text-slate-muted shrink-0"
+          className="mr-1 shrink-0 text-slate-muted lg:hidden"
           aria-label="Back to conversations"
         >
           <ArrowLeft size={20} strokeWidth={2.5} />
         </Button>
       )}
 
-      <div className="flex-1 flex items-center min-w-0">
+      <div className="flex min-w-0 flex-1 items-center">
         {!isSearching ? (
           <HeaderInfo
             title={title}

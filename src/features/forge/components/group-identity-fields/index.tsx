@@ -38,11 +38,11 @@ export function GroupIdentityFields({
   return (
     <div className="space-y-3.5">
       <div className="px-0.5">
-        <p className="text-xs md:text-sm font-semibold text-foreground">
+        <p className="text-xs font-semibold text-foreground md:text-sm">
           Group identity
         </p>
         {subtitle && (
-          <p className="text-xs text-muted-foreground/60 mt-0.5">{subtitle}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground/60">{subtitle}</p>
         )}
       </div>
 

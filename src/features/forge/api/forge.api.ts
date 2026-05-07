@@ -14,7 +14,6 @@ import {
   locationModeSchema,
   planCategorySchema,
   planSchema,
-  type FriendshipApi,
 } from "@/shared/schemas";
 import { z } from "zod";
 
@@ -87,8 +86,7 @@ export class ForgeApi {
       })
       .json<unknown>();
 
-    return createPaginatedSchema(friendshipApiSchema).parse(response)
-      .items as FriendshipApi[];
+    return createPaginatedSchema(friendshipApiSchema).parse(response).items;
   }
 
   static async getRecentActivities() {

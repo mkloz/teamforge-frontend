@@ -59,9 +59,9 @@ export function ExploreFeed() {
   }
 
   return (
-    <div className="flex flex-col gap-5 md:gap-6">
+    <div className="flex flex-col gap-4 md:gap-5">
       {featuredGroup ? (
-        <section className="space-y-3">
+        <section className="space-y-2.5">
           <FeedSectionLabel
             title="Best opening right now"
             detail={`${groups.length} ${groups.length === 1 ? "group" : "groups"} available`}
@@ -73,7 +73,7 @@ export function ExploreFeed() {
       ) : null}
 
       {remainingGroups.length > 0 ? (
-        <section className="space-y-3">
+        <section className="space-y-2.5">
           <FeedSectionLabel
             title="More openings"
             detail={`${remainingGroups.length} more available`}
@@ -156,10 +156,10 @@ function ExploreFeedLoading() {
           </p>
         </div>
         <div className="relative hidden h-10 w-24 shrink-0 sm:block">
-          <span className="absolute left-0 top-1/2 h-px w-full bg-border" />
-          <span className="absolute left-1 top-1/2 size-2 -translate-y-1/2 rounded-full bg-forge-teal animate-pulse" />
-          <span className="absolute left-1/2 top-1/2 size-2 -translate-y-1/2 rounded-full bg-spark-amber animate-pulse [animation-delay:180ms]" />
-          <span className="absolute right-1 top-1/2 size-2 -translate-y-1/2 rounded-full bg-ink/80 animate-pulse [animation-delay:360ms] dark:bg-white/80" />
+          <span className="absolute top-1/2 left-0 h-px w-full bg-border" />
+          <span className="absolute top-1/2 left-1 size-2 -translate-y-1/2 animate-pulse rounded-full bg-forge-teal" />
+          <span className="absolute top-1/2 left-1/2 size-2 -translate-y-1/2 animate-pulse rounded-full bg-spark-amber [animation-delay:180ms]" />
+          <span className="absolute top-1/2 right-1 size-2 -translate-y-1/2 animate-pulse rounded-full bg-ink/80 [animation-delay:360ms] dark:bg-white/80" />
         </div>
       </div>
 
@@ -174,17 +174,17 @@ function ExploreGroupPlanCardSkeleton({ index }: { index: number }) {
   return (
     <div
       className={cn(
-        "relative flex min-h-72 w-full animate-pulse overflow-hidden rounded-2xl border border-border/70 bg-card md:min-h-64 md:flex-row",
+        "relative flex min-h-72 w-full animate-pulse overflow-hidden rounded-xl border border-border/70 bg-card md:min-h-64 md:flex-row",
         LOADING_CARD_DELAYS[index],
       )}
     >
-      <div className="relative h-56 shrink-0 overflow-hidden border-b border-border bg-linear-to-br from-forge-teal/14 via-canvas to-spark-amber/14 md:h-auto md:w-2/5 md:border-b-0 md:border-r">
+      <div className="relative h-56 shrink-0 overflow-hidden border-b border-border bg-linear-to-br from-forge-teal/14 via-canvas to-spark-amber/14 md:h-auto md:w-2/5 md:border-r md:border-b-0">
         <div className="absolute inset-x-5 top-5 h-2 rounded-full bg-white/60" />
-        <div className="absolute bottom-5 left-5 right-10 flex flex-col gap-2">
+        <div className="absolute right-10 bottom-5 left-5 flex flex-col gap-2">
           <div className="h-3 w-24 rounded-full bg-white/70" />
           <div className="h-4 w-full max-w-52 rounded-full bg-white/75" />
         </div>
-        <span className="absolute right-4 top-4 h-8 w-16 rounded-full bg-ink/15 dark:bg-white/20" />
+        <span className="absolute top-4 right-4 h-8 w-16 rounded-full bg-ink/15 dark:bg-white/20" />
       </div>
 
       <div className="flex min-w-0 grow flex-col bg-canvas p-5 md:p-6">
@@ -202,8 +202,8 @@ function ExploreGroupPlanCardSkeleton({ index }: { index: number }) {
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-3">
-          <div className="h-12 rounded-2xl bg-muted/70" />
-          <div className="h-12 rounded-2xl bg-muted/70" />
+          <div className="h-12 rounded-lg bg-muted/70" />
+          <div className="h-12 rounded-lg bg-muted/70" />
         </div>
 
         <div className="mt-auto pt-5">
@@ -245,12 +245,12 @@ function ExploreFeedEmpty({
         </div>
 
         <div className="flex flex-col gap-2">
-          <h3 className="text-2xl font-black leading-tight tracking-tight text-foreground">
+          <h3 className="text-2xl leading-tight font-black tracking-tight text-foreground">
             {isFiltered
               ? "Nothing fits these filters yet"
               : "No open groups yet"}
           </h3>
-          <p className="mx-auto max-w-md text-sm font-medium leading-relaxed text-muted-foreground">
+          <p className="mx-auto max-w-md text-sm leading-relaxed font-medium text-muted-foreground">
             {isFiltered
               ? "Widen the search a little and TeamForge will look for nearby groups with more room to breathe."
               : "Explore is quiet right now. Forge a group and give others a clear place to join in."}

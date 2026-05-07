@@ -4,7 +4,7 @@ export function RemovalNote() {
       <div className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-muted-foreground/35" />
       <div className="space-y-1">
         <p className="text-xs font-semibold text-foreground">Removing people</p>
-        <p className="text-xs text-muted-foreground leading-relaxed">
+        <p className="text-xs leading-relaxed text-muted-foreground">
           Removed people are skipped for this group only. Use{" "}
           <span className="font-semibold text-spark-amber">
             Try another set

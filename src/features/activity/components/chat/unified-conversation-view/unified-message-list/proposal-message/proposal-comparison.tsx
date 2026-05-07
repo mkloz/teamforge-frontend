@@ -20,7 +20,7 @@ export const ProposalComparison = memo(function ProposalComparison({
         </span>
       </div>
       <div className="flex items-center justify-between rounded-lg border border-spark-amber/20 bg-spark-amber/10 p-2">
-        <span className="text-micro font-black uppercase text-spark-amber">
+        <span className="text-micro font-black text-spark-amber uppercase">
           New
         </span>
         <span className="text-micro font-bold text-foreground">{proposed}</span>

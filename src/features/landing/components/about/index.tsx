@@ -29,20 +29,20 @@ export function AboutSection() {
     <section
       id="about"
       ref={containerRef}
-      className="relative bg-canvas w-full h-[400vh]"
+      className="relative h-[400vh] w-full bg-canvas"
       aria-labelledby="about-heading"
     >
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center">
-        <div className="max-w-7xl mx-auto w-full px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24 items-center">
+      <div className="sticky top-0 flex h-screen w-full items-center overflow-hidden">
+        <div className="mx-auto w-full max-w-7xl px-6">
+          <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-2 lg:gap-24">
             {/* Left Column: Sticky Narrative */}
-            <header className="flex flex-col justify-center items-center md:items-start text-center md:text-left h-full max-w-xl z-20 pt-12 md:pt-0">
+            <header className="z-20 flex h-full max-w-xl flex-col items-center justify-center pt-12 text-center md:items-start md:pt-0 md:text-left">
               <motion.h2
                 id="about-heading"
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-3xl md:text-5xl lg:text-6xl font-black leading-[1.1] text-ink text-balance font-sans tracking-tight"
+                className="font-sans text-3xl leading-[1.1] font-black tracking-tight text-balance text-ink md:text-5xl lg:text-6xl"
               >
                 Designed for the way humans{" "}
                 <span className="text-forge-teal">actually connect.</span>
@@ -52,7 +52,7 @@ export function AboutSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="text-base md:text-xl font-normal leading-relaxed text-slate-muted mt-6 md:mt-8 text-pretty font-sans"
+                className="mt-6 font-sans text-base leading-relaxed font-normal text-pretty text-slate-muted md:mt-8 md:text-xl"
               >
                 The difference between a hollow weekend and a meaningful one is
                 the right circle. We solved the social search problem so you can
@@ -61,9 +61,9 @@ export function AboutSection() {
             </header>
 
             {/* Right Column: Cards Stacking */}
-            <div className="relative h-100 md:h-screen md:mt-0 flex items-center">
+            <div className="relative flex h-100 items-center md:mt-0 md:h-screen">
               <div
-                className="w-full relative h-100 md:h-150"
+                className="relative h-100 w-full md:h-150"
                 role="region"
                 aria-label="Brand narrative cards"
               >
@@ -89,7 +89,7 @@ export function AboutSection() {
                 asChild
                 variant="ghost"
                 size="sm"
-                className="absolute bottom-8 right-8 z-50 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] h-9 px-4"
+                className="absolute right-8 bottom-8 z-50 h-9 rounded-full px-4 text-[10px] font-bold tracking-[0.2em] uppercase"
               >
                 <motion.button
                   initial={{ opacity: 0, y: 10 }}

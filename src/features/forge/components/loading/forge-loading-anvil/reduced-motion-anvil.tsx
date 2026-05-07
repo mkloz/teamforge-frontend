@@ -54,7 +54,7 @@ export function ReducedMotionAnvil({
       </div>
       <div className="space-y-1 text-center">
         <p className="text-sm font-black text-foreground">{displayLabel}</p>
-        <p className="text-micro font-bold uppercase text-muted-foreground">
+        <p className="text-micro font-bold text-muted-foreground uppercase">
           Matching signals
         </p>
       </div>

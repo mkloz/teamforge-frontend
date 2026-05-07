@@ -29,17 +29,17 @@ export function StepCredentials({
       <RegisterIdentityFields />
       <RegisterPasswordField />
 
-      <Button type="button" onClick={onNext} size="lg" className="w-full mt-2">
+      <Button type="button" onClick={onNext} size="lg" className="mt-2 w-full">
         Next step
         <ArrowRightAnimated />
       </Button>
 
       <div className="flex items-center gap-3">
-        <div className="flex-1 h-px bg-border" />
-        <span className="font-sans text-xs text-slate-muted font-medium">
+        <div className="h-px flex-1 bg-border" />
+        <span className="font-sans text-xs font-medium text-slate-muted">
           or use
         </span>
-        <div className="flex-1 h-px bg-border" />
+        <div className="h-px flex-1 bg-border" />
       </div>
 
       <Button

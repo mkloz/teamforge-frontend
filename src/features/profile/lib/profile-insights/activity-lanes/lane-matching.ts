@@ -110,8 +110,8 @@ function getInterestTaxonomyIds(interest: Interest) {
       interest.parent?.slug,
       interest.parentId,
     ]
-      .filter(Boolean)
-      .flatMap((value) => normalizeTaxonomyId(value as string)),
+      .filter((value): value is string => Boolean(value))
+      .flatMap((value) => normalizeTaxonomyId(value)),
   );
 }
 

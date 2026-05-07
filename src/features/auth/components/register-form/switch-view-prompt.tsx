@@ -6,7 +6,7 @@ interface SwitchViewPromptProps {
 
 export function SwitchViewPrompt({ onClick }: SwitchViewPromptProps) {
   return (
-    <p className="font-sans text-sm text-slate-muted text-center mt-6 flex items-center justify-center gap-1">
+    <p className="mt-6 flex items-center justify-center gap-1 text-center font-sans text-sm text-slate-muted">
       Already have an account?{" "}
       <Button
         variant="link"

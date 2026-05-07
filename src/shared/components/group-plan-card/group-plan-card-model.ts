@@ -1,4 +1,5 @@
 import {
+  getExploreGroupDisplayName,
   getExploreGroupDisplayTitle,
   getExploreGroupDistanceLabel,
   getExploreGroupFitReason,
@@ -7,11 +8,17 @@ import {
 import type { ExploreGroup } from "@/shared/schemas";
 
 export function getGroupPlanCardModel(group: ExploreGroup) {
+  const title = getExploreGroupDisplayTitle(group);
+
   return {
+    access: group.access,
     distance: getExploreGroupDistanceLabel(group),
     fitReason: getExploreGroupFitReason(group),
+    groupName: getExploreGroupDisplayName(group),
+    imageAlt: title,
+    imageSrc: group.avatar ?? undefined,
     isFull: isExploreGroupFull(group),
-    title: getExploreGroupDisplayTitle(group),
+    title,
   };
 }
 
@@ -44,16 +51,20 @@ export function getGroupPlanMetaModel(group: ExploreGroup, distance?: string) {
 }
 
 function formatPlanDate(dateStr: string) {
-  return dateStr
-    ? new Date(dateStr)
-        .toLocaleString("en-US", {
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-        })
-        .replace(/,/g, " •")
-    : "Date TBD";
+  const date = new Date(dateStr);
+
+  if (!dateStr || Number.isNaN(date.getTime())) {
+    return "Date TBD";
+  }
+
+  return date
+    .toLocaleString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    })
+    .replace(/,/g, " •");
 }

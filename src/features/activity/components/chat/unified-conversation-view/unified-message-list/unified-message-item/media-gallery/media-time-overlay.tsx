@@ -12,8 +12,8 @@ interface MediaTimeOverlayProps {
 
 export const MediaTimeOverlay = memo(
   ({ timestamp, isOwn, status, isReadByOthers }: MediaTimeOverlayProps) => (
-    <div className="absolute bottom-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white shadow-lg z-20">
-      <span className="text-nano font-black tabular-nums tracking-tighter opacity-90">
+    <div className="absolute right-2 bottom-2 z-20 flex items-center gap-1 rounded-full border border-white/10 bg-black/40 px-1.5 py-0.5 text-white shadow-lg backdrop-blur-md">
+      <span className="text-nano font-black tracking-tighter tabular-nums opacity-90">
         {formatChatTime(timestamp)}
       </span>
       {isOwn && status && (

@@ -22,6 +22,12 @@ function isLocationMode(value: unknown): value is LocationMode {
   return value === "IN_PERSON" || value === "ONLINE" || value === "TBD";
 }
 
+function isPlanLocationPayload(
+  value: unknown,
+): value is Partial<PlanLocationValue> {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
 export function normalizePlanLocationValue(
   value: Partial<PlanLocationValue> & { locationMode: LocationMode },
 ): PlanLocationValue {
@@ -76,9 +82,12 @@ export function parsePlanLocationValue(value: string | null) {
   }
 
   try {
-    const parsed = JSON.parse(trimmed) as Partial<PlanLocationValue>;
+    const parsed: unknown = JSON.parse(trimmed);
 
-    if (!isLocationMode(parsed.locationMode)) {
+    if (
+      !isPlanLocationPayload(parsed) ||
+      !isLocationMode(parsed.locationMode)
+    ) {
       return null;
     }
 

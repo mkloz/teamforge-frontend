@@ -12,7 +12,7 @@ export function PersonalityStrengths({ strengths }: PersonalityStrengthsProps) {
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-3">
         <span className="h-px flex-1 bg-border/70" />
-        <p className="shrink-0 text-[11px] font-black uppercase tracking-[0.18em] text-forge-teal">
+        <p className="shrink-0 text-[11px] font-black tracking-[0.18em] text-forge-teal uppercase">
           Key strengths
         </p>
         <span className="h-px flex-1 bg-border/70" />
@@ -30,7 +30,7 @@ function StrengthItem({ children }: { children: string }) {
   return (
     <motion.div
       variants={popDownItem}
-      className="flex items-start gap-3 text-sm font-semibold leading-snug text-ink/86"
+      className="flex items-start gap-3 text-sm leading-snug font-semibold text-ink/86"
     >
       <Check size={15} className="mt-0.5 shrink-0 text-forge-teal" />
       <span>{children}</span>

@@ -16,6 +16,10 @@ export const PLAN_PROPOSAL_FIELD_OPTIONS = [
 export type ProposalField =
   (typeof PLAN_PROPOSAL_FIELD_OPTIONS)[number]["value"];
 
+export function isProposalField(value: string): value is ProposalField {
+  return PLAN_PROPOSAL_FIELD_OPTIONS.some((option) => option.value === value);
+}
+
 export function toDateTimeLocalValue(value: string | null) {
   if (!value) {
     return "";

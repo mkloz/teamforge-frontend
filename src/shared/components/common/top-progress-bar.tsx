@@ -19,7 +19,7 @@ export function TopProgressBar({
   return (
     <div
       className={cn(
-        "sticky top-0 left-0 right-0 h-1.5 z-100 pointer-events-none bg-black/5 dark:bg-white/5 overflow-hidden",
+        "pointer-events-none sticky top-0 right-0 left-0 z-100 h-1.5 overflow-hidden bg-black/5 dark:bg-white/5",
         className,
       )}
       aria-hidden="true"

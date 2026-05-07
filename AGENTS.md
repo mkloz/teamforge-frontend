@@ -36,8 +36,8 @@ The platform uses a multi-factor scoring system combining:
 | HTTP client   | ky v1.14 (with auto token refresh)                                       |
 | Realtime      | Socket.IO client v4                                                      |
 | Animations    | Framer Motion v12.34                                                     |
-| Data viz      | Recharts v3 + D3 (color, delaunay, voronoi, ease, interpolate, timer)    |
-| Icons         | Lucide React (primary), React Icons (fallback)                           |
+| Data viz      | Recharts v3 + D3 through charting dependencies                           |
+| Icons         | Lucide React                                                             |
 | Analytics     | Vercel Analytics                                                         |
 | Linting       | ESLint 9 + typescript-eslint + TanStack Query ESLint plugin              |
 | Formatting    | Prettier 3.8                                                             |
@@ -295,7 +295,7 @@ All visual design follows the specifications in `docs/visual-style-guide.md`. Th
 
 **Icons:**
 
-- **Lucide React** is the primary icon library. Use `react-icons` only for icons unavailable in Lucide.
+- **Lucide React** is the icon library. Add another icon package only when a specific icon cannot be represented well with Lucide.
 - Default stroke width: `1.5` at 20–24px, `2` at 16px.
 - Never use emojis as icons.
 

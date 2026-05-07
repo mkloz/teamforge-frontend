@@ -69,7 +69,7 @@ export function RegisterForm({
   }, [step, onStepChange]);
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex w-full flex-col">
       <StepHeader step={step} />
 
       {rootError && <FormLevelError message={rootError} />}

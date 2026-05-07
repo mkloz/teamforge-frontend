@@ -37,17 +37,17 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
   });
 
   const containerClasses = cn(
-    "flex-1 flex flex-col min-w-0 transition-colors duration-300 relative rounded-3xl border",
+    "relative flex min-w-0 flex-1 flex-col rounded-xl border transition-colors duration-300",
     composer.isRecording
-      ? "bg-red-500/5 border-red-500/20"
+      ? "border-destructive/20 bg-destructive/5"
       : composer.isFocused
-        ? "bg-card border-forge-teal/40 shadow-[0_4px_16px_rgba(13,148,136,0.08)]"
-        : "bg-card/60 border-border/50 shadow-sm",
+        ? "border-forge-teal/40 bg-card shadow-[0_4px_16px_rgba(13,148,136,0.08)]"
+        : "border-border/50 bg-card/60 shadow-sm",
   );
 
   return (
-    <div className="shrink-0 px-3 pt-2 pb-2.5 border-t border-border/60 bg-canvas/90 backdrop-blur-xl safe-area-inset-bottom z-30 isolate overflow-visible min-h-16">
-      <div className="flex items-end gap-2.5 w-full mx-auto">
+    <div className="safe-area-inset-bottom isolate z-30 min-h-16 shrink-0 overflow-visible border-t border-border/60 bg-canvas/90 px-3 pt-2 pb-2.5 backdrop-blur-xl">
+      <div className="mx-auto flex w-full items-end gap-2.5">
         <div
           className={containerClasses}
           onDragOver={composer.handleDragOver}
@@ -55,7 +55,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
           onDrop={composer.handleDrop}
         >
           {composer.isDraggingFiles && (
-            <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-3xl border-2 border-dashed border-forge-teal bg-forge-teal/10 text-sm font-semibold text-forge-teal">
+            <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-xl border-2 border-dashed border-forge-teal bg-forge-teal/10 text-sm font-semibold text-forge-teal">
               Drop files to attach
             </div>
           )}
@@ -78,7 +78,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
             onRemoveAttachment={composer.removeAttachment}
           />
 
-          <div className="flex items-end min-h-11 w-full relative z-10">
+          <div className="relative z-10 flex min-h-11 w-full items-end">
             {composer.isRecording ? (
               <RecordingOverlay
                 timeLabel={composer.formatRecordingTime(composer.recordingTime)}
@@ -107,7 +107,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
           </div>
 
           {composer.recordingError && (
-            <p className="text-[10px] text-red-500/80 font-medium px-4 pb-1.5 -mt-1">
+            <p className="-mt-1 px-4 pb-1.5 text-xs font-medium text-destructive/80">
               {composer.recordingError === "permission-denied"
                 ? "Microphone access denied. Check your browser settings."
                 : composer.recordingError === "not-supported"
@@ -117,13 +117,13 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
           )}
 
           {errorMessage && (
-            <p className="px-4 pb-1.5 text-[10px] font-medium text-red-500/80">
+            <p className="px-4 pb-1.5 text-xs font-medium text-destructive/80">
               {errorMessage}
             </p>
           )}
         </div>
 
-        <div className="shrink-0 flex items-end h-11 mb-0.5">
+        <div className="mb-0.5 flex h-11 shrink-0 items-end">
           <ActionTarget
             hasContent={composer.hasDraft}
             isRecording={composer.isRecording}

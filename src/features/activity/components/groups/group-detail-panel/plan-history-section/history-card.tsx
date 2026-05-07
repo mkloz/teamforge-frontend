@@ -11,27 +11,27 @@ interface HistoryCardProps {
 
 export function HistoryCard({ item }: HistoryCardProps) {
   return (
-    <div className="flex gap-3.5 p-2 rounded-xl bg-muted/20 hover:bg-muted/40 border border-transparent hover:border-border/50 transition-all duration-300 group">
+    <div className="group flex gap-3.5 rounded-xl border border-transparent bg-muted/20 p-2 transition-all duration-300 hover:border-border/50 hover:bg-muted/40">
       {/* Thumbnail with hover zoom */}
-      <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 shadow-xs">
+      <div className="relative size-12 shrink-0 overflow-hidden rounded-lg shadow-xs">
         <PlanCover
           value={item.coverImage}
           alt={item.title}
           imageClassName="transition-[scale,transform] duration-500 group-hover:scale-110"
         />
-        <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
+        <div className="absolute inset-0 bg-black/5 transition-colors group-hover:bg-transparent" />
       </div>
 
       {/* Content Section */}
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
-          <h4 className="text-[13px] font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+          <h4 className="truncate text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
             {item.title}
           </h4>
           {item.rating && (
-            <div className="flex items-center gap-1 shrink-0 bg-amber-500/10 px-1 py-0.5 rounded-md">
-              <Star size={8} className="text-amber-500 fill-amber-500" />
-              <span className="text-[9px] font-bold text-amber-600 dark:text-amber-400">
+            <div className="flex shrink-0 items-center gap-1 rounded-md bg-spark-amber/10 px-1.5 py-0.5">
+              <Star className="size-3 fill-spark-amber text-spark-amber" />
+              <span className="text-xs font-bold text-spark-amber">
                 {item.rating}
               </span>
             </div>
@@ -39,17 +39,17 @@ export function HistoryCard({ item }: HistoryCardProps) {
         </div>
 
         {/* Metadata Badges */}
-        <div className="flex items-center gap-2 mt-1">
+        <div className="mt-1 flex items-center gap-2">
           <span
             className={cn(
-              "text-[8px] px-1 py-0.5 rounded font-bold uppercase tracking-wider",
+              "rounded px-1.5 py-0.5 text-xs font-bold tracking-wider uppercase",
               categoryColors[item.category],
             )}
           >
             {item.category}
           </span>
-          <span className="text-[9px] font-bold text-muted-foreground uppercase flex items-center gap-1 opacity-50">
-            <Calendar size={9} />
+          <span className="flex items-center gap-1 text-xs font-bold text-muted-foreground uppercase opacity-50">
+            <Calendar className="size-3" />
             {item.dateTime
               ? new Date(item.dateTime).toLocaleDateString("en-US", {
                   month: "short",
@@ -60,8 +60,8 @@ export function HistoryCard({ item }: HistoryCardProps) {
         </div>
 
         {/* Location - Responsive display */}
-        <p className="text-[9px] font-medium text-muted-foreground mt-0.5 truncate flex items-center gap-1 opacity-40">
-          <MapPin size={9} />
+        <p className="mt-0.5 flex items-center gap-1 truncate text-xs font-medium text-muted-foreground opacity-40">
+          <MapPin className="size-3" />
           {item.location}
         </p>
       </div>
@@ -71,10 +71,10 @@ export function HistoryCard({ item }: HistoryCardProps) {
         <Button
           variant="secondary"
           size="icon"
-          className="h-7 w-7 shrink-0 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-1 group-hover:translate-x-0"
+          className="h-9 w-9 shrink-0 translate-x-1 rounded-lg opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
           title="Create similar plan"
         >
-          <RotateCcw size={12} className="text-muted-foreground" />
+          <RotateCcw className="size-3.5 text-muted-foreground" />
         </Button>
       </div>
     </div>

@@ -44,7 +44,7 @@ export function Step3Group({
   );
 
   return (
-    <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-4">
+    <div className="animate-in space-y-5 pb-4 duration-500 fade-in slide-in-from-bottom-4">
       <GroupIdentityFields
         groupName={groupName}
         onGroupNameChange={(v) => onGroupNameChange?.(v)}
@@ -66,10 +66,10 @@ export function Step3Group({
 
       <section className="space-y-3.5 border-t border-border/25 pt-4">
         <div className="flex items-baseline justify-between gap-3 px-0.5">
-          <p className="text-xs md:text-sm font-semibold text-muted-foreground">
+          <p className="text-xs font-semibold text-muted-foreground md:text-sm">
             Group details
           </p>
-          <p className="text-micro font-semibold uppercase tracking-wide text-muted-foreground/40">
+          <p className="text-micro font-semibold tracking-wide text-muted-foreground/40 uppercase">
             {forgeMode === "MANUAL" ? "Invite-led" : "Automatic"}
           </p>
         </div>

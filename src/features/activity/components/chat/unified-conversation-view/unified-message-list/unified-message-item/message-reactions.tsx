@@ -33,7 +33,7 @@ export const MessageReactions = memo(function MessageReactions({
     <TooltipProvider delayDuration={150}>
       <div
         className={cn(
-          "flex flex-wrap gap-1 mt-1 animate-in fade-in zoom-in-95 duration-500",
+          "mt-1 flex animate-in flex-wrap gap-1 duration-500 zoom-in-95 fade-in",
           isOwn ? "justify-end" : "justify-start",
           className,
         )}
@@ -45,16 +45,16 @@ export const MessageReactions = memo(function MessageReactions({
                 variant={reaction.isActive ? "primary" : "subtle"}
                 size="xs"
                 className={cn(
-                  "h-auto py-0.5 px-1.5 rounded-full border text-micro font-bold transition-all",
+                  "h-auto rounded-full border px-1.5 py-0.5 text-xs font-bold transition-all",
                   reaction.isActive
-                    ? "bg-forge-teal/10 border-forge-teal/20 text-forge-teal shadow-[0_2px_8px_-2px_rgba(13,148,136,0.2)]"
+                    ? "border-forge-teal/20 bg-forge-teal/10 text-forge-teal shadow-[0_2px_8px_-2px_rgba(13,148,136,0.2)]"
                     : "border-transparent",
                 )}
                 onClick={() => onToggleReaction?.(reaction.emoji)}
               >
                 <span className="text-xs leading-none">{reaction.emoji}</span>
                 {reaction.count > 1 && (
-                  <span className="opacity-80 tabular-nums">
+                  <span className="tabular-nums opacity-80">
                     {reaction.count}
                   </span>
                 )}
@@ -62,7 +62,7 @@ export const MessageReactions = memo(function MessageReactions({
             </TooltipTrigger>
             <TooltipContent
               side="top"
-              className="px-2 py-1 bg-black/80 backdrop-blur-md rounded-lg border-white/10 text-micro font-bold text-white shadow-xl"
+              className="rounded-lg border-white/10 bg-black/80 px-2 py-1 text-xs font-bold text-white shadow-xl backdrop-blur-md"
             >
               Reactions: {reaction.emoji}
             </TooltipContent>

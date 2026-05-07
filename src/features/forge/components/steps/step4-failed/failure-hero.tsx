@@ -12,10 +12,10 @@ export function FailureHero({ description }: FailureHeroProps) {
           <AlertCircle size={20} strokeWidth={2.4} />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-black uppercase tracking-wide text-spark-amber">
+          <p className="text-xs font-black tracking-wide text-spark-amber uppercase">
             Pool constraint
           </p>
-          <h3 className="mt-1 text-lg font-black leading-tight text-foreground">
+          <h3 className="mt-1 text-lg leading-tight font-black text-foreground">
             We could not form this group yet
           </h3>
           <p className="mt-1 text-xs leading-snug text-muted-foreground">

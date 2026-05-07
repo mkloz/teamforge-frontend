@@ -47,14 +47,14 @@ export function MemberCard({
           name={member.user?.name}
           className={cn(
             "h-10 w-10 ring-1 ring-border/20 transition-all group-hover/member:ring-border/40",
-            isHighCompatibility && "ring-forge-teal/30 ring-2",
+            isHighCompatibility && "ring-2 ring-forge-teal/30",
           )}
           imageClassName="transition-[scale,transform] duration-500 group-hover/member:scale-110"
         />
         {onlineStatus && (
           <span
             className={cn(
-              "absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-canvas shadow-sm",
+              "absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-canvas shadow-sm",
               onlineStatus === "ONLINE"
                 ? "bg-forge-teal"
                 : onlineStatus === "AWAY"
@@ -65,23 +65,23 @@ export function MemberCard({
         )}
         {isAdmin && (
           <div
-            className="absolute -top-1 -left-1 flex items-center justify-center w-5 h-5 rounded-md bg-amber-500 shadow-md text-white border-2 border-canvas"
+            className="absolute -top-1 -left-1 flex size-5 items-center justify-center rounded-md border-2 border-canvas bg-spark-amber text-white shadow-md"
             title="Group Admin"
           >
-            <Crown size={10} fill="currentColor" />
+            <Crown className="size-3" fill="currentColor" />
           </div>
         )}
       </div>
 
       {/* Info Section */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-0.5">
-          <p className="text-sm font-semibold text-foreground truncate">
+      <div className="min-w-0 flex-1">
+        <div className="mb-0.5 flex items-center gap-2">
+          <p className="truncate text-sm font-semibold text-foreground">
             {member.user?.name}
           </p>
           <Badge
             variant="mbti"
-            className="text-[9px] h-4 px-1.5 font-bold tracking-tight"
+            className="h-5 px-2 text-xs font-bold tracking-tight"
           >
             {member.user?.personalityType}
           </Badge>
@@ -90,13 +90,13 @@ export function MemberCard({
           )}
         </div>
         <div className="flex items-center gap-2.5">
-          <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">
+          <span className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
             Trust {member.user?.trustScore}%
           </span>
-          <div className="w-px h-2 bg-border/50" />
+          <div className="h-2 w-px bg-border/50" />
           <span
             className={cn(
-              "text-[9px] font-bold uppercase tracking-wider",
+              "text-xs font-bold tracking-wider uppercase",
               isHighCompatibility
                 ? "text-forge-teal"
                 : "text-muted-foreground/60",
@@ -110,7 +110,7 @@ export function MemberCard({
   );
 
   return (
-    <div className="w-full flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-border/50 hover:bg-muted/30 transition-all duration-300 group/member text-left">
+    <div className="group/member flex w-full items-center gap-3 rounded-xl border border-transparent p-2 text-left transition-all duration-300 hover:border-border/50 hover:bg-muted/30">
       {onShowProfile ? (
         <Button
           type="button"
@@ -168,7 +168,7 @@ export function MemberCard({
           </AlertDialogContent>
         </AlertDialog>
       ) : (
-        <div className="w-1.5 h-1.5 rounded-full bg-border opacity-0 group-hover/member:opacity-100 transition-opacity" />
+        <div className="size-1.5 rounded-full bg-border opacity-0 transition-opacity group-hover/member:opacity-100" />
       )}
     </div>
   );

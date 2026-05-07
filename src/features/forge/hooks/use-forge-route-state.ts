@@ -12,6 +12,8 @@ import { forgeSearchModeValues } from "@/features/forge/lib/forge-route";
 import type { ForgeMode } from "../lib/forge-contract";
 import type { Step } from "../lib/forge-wizard";
 
+const stepValues: Step[] = [1, 2, 3, 4, 5, 6, 7];
+
 function mapModeToSearch(mode: ForgeMode) {
   return mode === "MANUAL" ? "manual" : "auto";
 }
@@ -27,7 +29,7 @@ function normalizeStep(step: number | null | undefined): Step {
     return 1;
   }
 
-  return step as Step;
+  return stepValues.find((stepValue) => stepValue === step) ?? 1;
 }
 
 export function useForgeRouteState() {

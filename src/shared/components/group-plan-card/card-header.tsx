@@ -1,50 +1,56 @@
 import { Handshake } from "lucide-react";
 
 import { Avatar } from "@/shared/components/common/avatar";
-import { getExploreGroupDisplayName } from "@/shared/lib/explore-group-presenters";
+import type { GroupPlanCardVariant } from "@/shared/components/group-plan-card/group-plan-card-types";
 import { cn } from "@/shared/lib/utils";
 import type { ExploreGroup } from "@/shared/schemas";
 
 interface CardHeaderProps {
-  group: ExploreGroup;
-  variant?: "default" | "compact";
+  access: ExploreGroup["access"];
+  groupName: string;
+  imageSrc?: string;
+  variant?: GroupPlanCardVariant;
 }
 
-export function CardHeader({ group, variant = "default" }: CardHeaderProps) {
+export function CardHeader({
+  access,
+  groupName,
+  imageSrc,
+  variant = "default",
+}: CardHeaderProps) {
   const isCompact = variant === "compact";
-  const groupName = getExploreGroupDisplayName(group);
 
   return (
     <div
       className={cn(
-        "flex justify-between items-start gap-4",
-        isCompact ? "mb-2" : "mb-3",
+        "flex items-start justify-between gap-4",
+        isCompact ? "mb-3" : "mb-3",
       )}
     >
       <div className="flex items-center gap-2.5">
         <Avatar
-          src={group.avatar}
+          src={imageSrc}
           name={groupName}
           className={cn(
             "border border-border bg-muted",
-            isCompact ? "size-5" : "size-6",
+            isCompact ? "size-7" : "size-6",
           )}
-          fallbackClassName="text-[10px]"
+          fallbackClassName="text-xs"
         />
         <span
           className={cn(
-            "font-semibold text-muted-foreground tracking-tight group-hover:text-foreground transition-colors truncate",
-            isCompact ? "text-xs" : "text-sm",
+            "truncate font-semibold tracking-tight text-muted-foreground transition-colors group-hover:text-foreground",
+            isCompact ? "text-xs" : "text-xs",
           )}
         >
           {groupName}
         </span>
       </div>
 
-      {group.access === "BY_REQUEST" ? (
-        <span className="flex items-center gap-1 shrink-0 px-2 py-0.5 rounded-md border border-border/80 text-muted-foreground text-[10px] font-bold uppercase tracking-wider bg-background/50">
-          <Handshake className="w-3 h-3" aria-hidden="true" />
-          Req
+      {access === "BY_REQUEST" ? (
+        <span className="flex shrink-0 items-center gap-1 rounded-full border border-border/80 bg-background/50 px-2 py-0.5 text-xs font-bold text-muted-foreground">
+          <Handshake className="h-3 w-3" aria-hidden="true" />
+          Request
         </span>
       ) : null}
     </div>

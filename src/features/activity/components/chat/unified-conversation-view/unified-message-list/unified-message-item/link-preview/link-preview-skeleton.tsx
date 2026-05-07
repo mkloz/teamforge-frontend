@@ -12,15 +12,15 @@ export function LinkPreviewSkeleton({ isOwn }: LinkPreviewSkeletonProps) {
   return (
     <div
       className={cn(
-        "flex gap-3 p-2.5 rounded-xl",
-        isOwn ? "bg-black/10" : "bg-muted/40 border border-border/40",
+        "flex gap-3 rounded-xl p-2.5",
+        isOwn ? "bg-black/10" : "border border-border/40 bg-muted/40",
       )}
     >
-      <div className={cn("w-14 h-14 rounded-lg shrink-0", pulse)} />
-      <div className="flex flex-col gap-1.5 flex-1 justify-center min-w-0">
-        <div className={cn("h-2.5 rounded-full w-3/4", pulse)} />
-        <div className={cn("h-2 rounded-full w-full", pulse)} />
-        <div className={cn("h-2 rounded-full w-1/2", pulse)} />
+      <div className={cn("h-14 w-14 shrink-0 rounded-lg", pulse)} />
+      <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">
+        <div className={cn("h-2.5 w-3/4 rounded-full", pulse)} />
+        <div className={cn("h-2 w-full rounded-full", pulse)} />
+        <div className={cn("h-2 w-1/2 rounded-full", pulse)} />
       </div>
     </div>
   );

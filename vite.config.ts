@@ -34,8 +34,7 @@ export default defineConfig({
 
           if (
             id.includes("/@tanstack/react-router") ||
-            id.includes("/@tanstack/react-query") ||
-            id.includes("/@tanstack/router-devtools")
+            id.includes("/@tanstack/react-query")
           ) {
             return "tanstack";
           }
@@ -71,7 +70,7 @@ export default defineConfig({
             return "ui-vendor";
           }
 
-          if (id.includes("/lucide-react/") || id.includes("/react-icons/")) {
+          if (id.includes("/lucide-react/")) {
             return "icons";
           }
 

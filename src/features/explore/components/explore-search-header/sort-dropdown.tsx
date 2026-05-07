@@ -22,27 +22,27 @@ export function SortDropdown() {
           variant="outline"
           size="icon"
           aria-label="Sort groups"
-          className="h-11 w-11 shrink-0 rounded-xl border border-border/60 text-muted-foreground transition-all hover:border-border hover:text-foreground"
+          className="h-11 w-11 shrink-0 rounded-lg border border-border/60 text-muted-foreground transition-all hover:border-border hover:text-foreground"
         >
-          <ArrowDownWideNarrow className="w-3.5 h-3.5" />
+          <ArrowDownWideNarrow className="h-3.5 w-3.5" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="w-52 rounded-xl p-1.5 bg-background border-border/40 shadow-xl"
+        className="w-52 rounded-xl border-border/40 bg-background p-1.5 shadow-xl"
       >
         <DropdownMenuLabel className="px-3 py-1.5 text-xs font-semibold text-muted-foreground">
           Feed priority
         </DropdownMenuLabel>
-        <DropdownMenuSeparator className="bg-border/10 mx-1" />
+        <DropdownMenuSeparator className="mx-1 bg-border/10" />
         {SORTS.map(({ id, label, icon: Icon }) => (
           <DropdownMenuItem
             key={id}
             onClick={() => setSortBy(id)}
             className={cn(
-              "flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-default transition-colors",
+              "flex cursor-default items-center gap-2.5 rounded-lg px-3 py-2 transition-colors",
               sortBy === id
-                ? "bg-primary/10 text-primary font-bold"
+                ? "bg-primary/10 font-bold text-primary"
                 : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
             )}
           >
@@ -54,7 +54,7 @@ export function SortDropdown() {
             />
             <span className="text-xs">{label}</span>
             {sortBy === id && (
-              <div className="ml-auto w-1 h-1 rounded-full bg-primary" />
+              <div className="ml-auto h-1 w-1 rounded-full bg-primary" />
             )}
           </DropdownMenuItem>
         ))}
