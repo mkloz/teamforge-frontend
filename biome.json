@@ -70,7 +70,13 @@
         "useExhaustiveDependencies": "warn"
       },
       "nursery": {
-        "noFloatingPromises": "warn"
+        "noFloatingPromises": "warn",
+        "useSortedClasses": {
+          "level": "warn",
+          "options": {
+            "functions": ["clsx", "cva", "twMerge", "cn"]
+          }
+        }
       },
       "style": {
         "noDescendingSpecificity": "warn",
