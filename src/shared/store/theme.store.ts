@@ -49,7 +49,7 @@ export function useInitializeTheme() {
     const mediaQuery = getBrowserMediaQuery("(prefers-color-scheme: dark)");
 
     if (!mediaQuery) {
-      return;
+      return undefined;
     }
 
     syncWithSystem(mediaQuery.matches ? Theme.DARK : Theme.LIGHT);
@@ -69,7 +69,7 @@ export function useInitializeTheme() {
     const root = getBrowserDocumentElement();
 
     if (!root) {
-      return;
+      return undefined;
     }
 
     let firstFrame: ScheduledAnimationFrameHandle | null = null;

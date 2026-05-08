@@ -17,7 +17,7 @@ export function useSettingsBlockedUsers(enabled: boolean) {
     meta: {
       telemetryName: trackedMutationNames.settingsUnblockUser,
     },
-    mutationFn: SettingsCommands.unblockUser,
+    mutationFn: (userId: string) => SettingsCommands.unblockUser(userId),
     onMutate: async (userId) => {
       await SettingsCache.cancelBlockedUsers();
 

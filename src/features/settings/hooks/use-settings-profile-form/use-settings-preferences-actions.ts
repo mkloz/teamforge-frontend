@@ -31,7 +31,11 @@ export function useSettingsPreferencesActions({
     meta: {
       telemetryName: trackedMutationNames.settingsNotificationPreferences,
     },
-    mutationFn: SettingsCommands.updateNotificationPreferences,
+    mutationFn: (
+      payload: Parameters<
+        typeof SettingsCommands.updateNotificationPreferences
+      >[0],
+    ) => SettingsCommands.updateNotificationPreferences(payload),
     onSuccess: (result) => {
       SettingsCache.setNotificationPreferences(result.data);
       setPreferencesError(null);

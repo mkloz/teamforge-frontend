@@ -16,7 +16,7 @@ export function useDeleteAccountAction() {
     meta: {
       telemetryName: trackedMutationNames.settingsDeleteAccount,
     },
-    mutationFn: SettingsCommands.deleteAccount,
+    mutationFn: () => SettingsCommands.deleteAccount(),
     onSuccess: async (result) => {
       trackMutationOutcome(
         trackedMutationNames.settingsDeleteAccount,

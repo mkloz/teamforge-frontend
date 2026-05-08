@@ -1,4 +1,4 @@
-import type { MotionValue } from "framer-motion";
+import type { MotionStyle, MotionValue } from "framer-motion";
 import { motion, useTransform } from "framer-motion";
 import { useRef } from "react";
 import type { AboutCard } from "@/features/landing/components/about/about-data";
@@ -40,23 +40,34 @@ export function StackCard({
     [0, 1],
   );
   const opacityFinal = index === 0 ? 1 : opacity;
+  const fallbackTop = 12 + (index - 3) * 4;
+  const fallbackMdTop = `calc(12vh + ${index * 24}px)`;
+  const motionStyle = {
+    scale,
+    y: yFinal,
+    opacity: opacityFinal,
+    zIndex: index + 10,
+  } satisfies MotionStyle;
+
+  const stackCardStyle =
+    index > 2
+      ? {
+          ...motionStyle,
+          "--stack-card-top": `${fallbackTop * 0.25}rem`,
+          "--stack-card-md-top": fallbackMdTop,
+        }
+      : motionStyle;
 
   return (
     <motion.div
       ref={containerRef}
-      style={{
-        scale,
-        y: yFinal,
-        opacity: opacityFinal,
-        zIndex: index + 10,
-      }}
+      style={stackCardStyle}
       className={cn(
         "absolute right-0 left-0 mx-auto flex min-h-80 w-full max-w-lg origin-top flex-col md:min-h-100",
         index === 0 && "top-0 md:top-[12vh]",
         index === 1 && "top-4 md:top-[calc(12vh+24px)]",
         index === 2 && "top-8 md:top-[calc(12vh+48px)]",
-        index > 2 &&
-          `top-${12 + (index - 3) * 4} md:top-[calc(12vh+${index * 24}px)]`,
+        index > 2 && "top-(--stack-card-top) md:top-(--stack-card-md-top)",
       )}
     >
       <Card

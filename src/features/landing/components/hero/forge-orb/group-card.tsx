@@ -22,7 +22,7 @@ export function GroupCard() {
       }}
       className={cn(
         "w-45 rounded-xl px-4 py-3.5",
-        "border border-forge-teal/20 bg-[#0a1212]/80 backdrop-blur-xl",
+        "border border-forge-teal/20 bg-forge-deep-panel/80 backdrop-blur-xl",
         "shadow-[0_12px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.04)]",
       )}
       aria-hidden="true"
@@ -41,7 +41,7 @@ export function GroupCard() {
             key={m.avatar}
             src={m.avatar}
             name="Member"
-            className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-[#111] ring-2 ring-hero-bg"
+            className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-forge-deep-surface ring-2 ring-hero-bg"
             style={{ zIndex: members.length - members.indexOf(m) }}
           />
         ))}

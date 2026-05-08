@@ -10,15 +10,17 @@ export interface ApiResponseWithRequestId<T> {
 export const REQUEST_ID_HEADER = "x-request-id";
 
 export async function parseApiError(error: HTTPError) {
-  const payload = await error.response
-    .clone()
-    .json()
-    .then((value) => {
-      const parsed = ApiExceptionSchema.safeParse(value);
+  let payload: Awaited<ReturnType<typeof ApiExceptionSchema.parse>> | null =
+    null;
 
-      return parsed.success ? parsed.data : null;
-    })
-    .catch(() => null);
+  try {
+    const value: unknown = await error.response.clone().json();
+    const parsed = ApiExceptionSchema.safeParse(value);
+
+    payload = parsed.success ? parsed.data : null;
+  } catch {
+    payload = null;
+  }
 
   const requestId = error.response.headers.get(REQUEST_ID_HEADER);
 

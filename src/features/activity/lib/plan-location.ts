@@ -1,3 +1,4 @@
+import { z } from "zod";
 import type { LocationMode } from "@/shared/schemas/enums";
 
 export interface PlanLocationValue {
@@ -18,15 +19,12 @@ function cleanLocation(value: string | null | undefined) {
   return trimmed.length > 0 ? trimmed : null;
 }
 
-function isLocationMode(value: unknown): value is LocationMode {
-  return value === "IN_PERSON" || value === "ONLINE" || value === "TBD";
-}
-
-function isPlanLocationPayload(
-  value: unknown,
-): value is Partial<PlanLocationValue> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
-}
+const planLocationPayloadSchema = z.object({
+  location: z.string().nullable().optional(),
+  locationLat: z.number().nullable().optional(),
+  locationLng: z.number().nullable().optional(),
+  locationMode: z.enum(["IN_PERSON", "ONLINE", "TBD"]),
+});
 
 export function normalizePlanLocationValue(
   value: Partial<PlanLocationValue> & { locationMode: LocationMode },
@@ -82,20 +80,19 @@ export function parsePlanLocationValue(value: string | null) {
   }
 
   try {
-    const parsed: unknown = JSON.parse(trimmed);
+    const parsed = planLocationPayloadSchema.safeParse(JSON.parse(trimmed));
 
-    if (
-      !isPlanLocationPayload(parsed) ||
-      !isLocationMode(parsed.locationMode)
-    ) {
+    if (!parsed.success) {
       return null;
     }
 
+    const payload = parsed.data;
+
     return normalizePlanLocationValue({
-      locationMode: parsed.locationMode,
-      location: parsed.location ?? null,
-      locationLat: parsed.locationLat ?? null,
-      locationLng: parsed.locationLng ?? null,
+      locationMode: payload.locationMode,
+      location: payload.location ?? null,
+      locationLat: payload.locationLat ?? null,
+      locationLng: payload.locationLng ?? null,
     });
   } catch {
     return null;

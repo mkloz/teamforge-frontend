@@ -13,7 +13,7 @@ interface RouteModulePrefetcherProps {
 export function RouteModulePrefetcher({ modules }: RouteModulePrefetcherProps) {
   useEffect(() => {
     if (modules.length === 0) {
-      return;
+      return undefined;
     }
 
     let cancelled = false;

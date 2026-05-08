@@ -51,7 +51,7 @@ export function useForgeOrbAnimation(
 ) {
   useEffect(() => {
     if (shouldReduceMotion) {
-      return;
+      return undefined;
     }
 
     let frame: number;

@@ -16,6 +16,8 @@ export function useHeaderSearch() {
       }, 50);
       return () => clearTimeout(timer);
     }
+
+    return undefined;
   }, [isSearching]);
 
   function toggleSearch(state: boolean) {

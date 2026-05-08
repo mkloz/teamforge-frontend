@@ -34,7 +34,9 @@ export function usePersonalityTestPageFlow() {
   const queryClient = useQueryClient();
   const invalidateCurrentUser = useInvalidateCurrentUser();
   const { mutateAsync: persistPersonality } = useMutation({
-    mutationFn: OnboardingCommands.updatePersonality,
+    mutationFn: (
+      payload: Parameters<typeof OnboardingCommands.updatePersonality>[0],
+    ) => OnboardingCommands.updatePersonality(payload),
     onSuccess: async (updatedUser) => {
       OnboardingCache.setCurrentUser(queryClient, updatedUser);
       await invalidateCurrentUser();

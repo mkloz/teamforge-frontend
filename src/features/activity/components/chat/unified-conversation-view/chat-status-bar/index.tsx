@@ -59,7 +59,7 @@ export const ChatStatusBar = memo(function ChatStatusBar({
         "relative flex min-h-0 items-center gap-2 py-1.5 pr-2 pl-4",
         "z-90 w-full shrink-0",
         "border-b border-border/50",
-        "bg-canvas dark:bg-canvas",
+        "bg-canvas",
       )}
     >
       <PagerDots

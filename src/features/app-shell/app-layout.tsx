@@ -32,7 +32,7 @@ export function AppLayout({
       <div className="min-h-screen overflow-x-clip bg-canvas font-sans text-foreground">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:rounded-xl focus:bg-primary focus:px-4 focus:py-2 focus:font-medium focus:text-primary-foreground"
+          className="fixed top-4 left-4 z-100 -translate-y-24 rounded-xl bg-primary px-4 py-2 font-medium text-primary-foreground opacity-0 transition focus:translate-y-0 focus:opacity-100"
         >
           Skip to main content
         </a>

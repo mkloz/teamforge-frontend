@@ -18,7 +18,9 @@ export function useSaveInterests({
   const queryClient = useQueryClient();
   const [saveErrorMessage, setSaveErrorMessage] = useState<string | null>(null);
   const { mutateAsync: saveInterests, isPending: isSaving } = useMutation({
-    mutationFn: OnboardingCommands.setInterests,
+    mutationFn: (
+      payload: Parameters<typeof OnboardingCommands.setInterests>[0],
+    ) => OnboardingCommands.setInterests(payload),
     onSuccess: async (result) => {
       OnboardingCache.applySavedInterests(queryClient, result.interests);
       await OnboardingCache.invalidateCurrentUser(queryClient);

@@ -6,7 +6,7 @@ const SUPPORTED_AUDIO_MIME_TYPES = [
 ];
 
 export function canRequestAudioStream() {
-  return Boolean(navigator.mediaDevices?.getUserMedia);
+  return typeof navigator.mediaDevices?.getUserMedia === "function";
 }
 
 export function canRecordAudio() {

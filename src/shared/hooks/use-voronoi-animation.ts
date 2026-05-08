@@ -148,7 +148,9 @@ export function useVoronoiAnimation({
 
   // Point Generation
   useEffect(() => {
-    if (dimensions.width === 0 || dimensions.height === 0) return;
+    if (dimensions.width === 0 || dimensions.height === 0) {
+      return undefined;
+    }
 
     pointsRef.current = Array.from({ length: NUM_SEEDS }).map((_, i) => {
       const isCore = i < NUM_CORE;
@@ -184,6 +186,8 @@ export function useVoronoiAnimation({
           : 0.03 + Math.random() * 0.12,
       };
     });
+
+    return undefined;
   }, [dimensions]);
 
   // Main Animation Loop
@@ -193,12 +197,14 @@ export function useVoronoiAnimation({
       dimensions.height === 0 ||
       !canvasRef.current
     ) {
-      return;
+      return undefined;
     }
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d", { alpha: true });
-    if (!ctx) return;
+    if (!ctx) {
+      return undefined;
+    }
 
     const flatPoints = new Float64Array(NUM_SEEDS * 2);
     const bounds: [number, number, number, number] = [

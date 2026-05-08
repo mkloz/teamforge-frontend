@@ -65,7 +65,7 @@ export function PlanPhotoSection({
             variant="ghost"
             size="icon-xs"
             onClick={() => onCoverImageChange(null)}
-            className="absolute top-2 right-2 z-20 size-7 rounded-full bg-black/45 text-white hover:bg-black/65 hover:text-white"
+            className="absolute top-2 right-2 z-20 size-7 rounded-full bg-black/45 text-white hover:bg-black/65"
             aria-label="Remove cover"
           >
             <X size={13} />
@@ -85,7 +85,7 @@ export function PlanPhotoSection({
               onClick={() => onCoverImageChange(selected ? null : id)}
               aria-pressed={selected}
               className={cn(
-                "group h-10 justify-start gap-2 rounded-lg border bg-card px-2.5 text-xs font-bold text-foreground shadow-none transition-[border-color,background-color,box-shadow,transform] duration-200 hover:bg-card active:scale-[0.98]",
+                "group h-10 justify-start gap-2 rounded-lg border bg-card px-2.5 text-xs font-bold text-foreground shadow-none transition-[border-color,background-color,box-shadow,transform] duration-200 active:scale-[0.98]",
                 selected
                   ? "border-forge-teal/75 bg-forge-teal/8 text-forge-teal ring-1 ring-forge-teal/20"
                   : "border-border/45 hover:border-forge-teal/35 hover:bg-forge-teal/5",

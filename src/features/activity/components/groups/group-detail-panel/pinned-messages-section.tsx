@@ -36,7 +36,7 @@ export function PinnedMessagesSection({
                 type="button"
                 variant="ghost"
                 onClick={() => onJumpToMessage(message.id)}
-                className="h-auto min-w-0 flex-1 justify-start rounded-lg border-0 bg-transparent p-1 text-left hover:bg-transparent focus-visible:ring-forge-teal/30"
+                className="h-auto min-w-0 flex-1 justify-start rounded-lg border-0 bg-transparent p-1 text-left focus-visible:ring-forge-teal/30"
                 contentClassName="block h-auto min-w-0"
                 aria-label={`Jump to pinned message from ${message.sender?.name || "System"}`}
               >

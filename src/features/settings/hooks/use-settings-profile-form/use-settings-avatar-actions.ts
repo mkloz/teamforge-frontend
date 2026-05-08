@@ -15,7 +15,7 @@ export function useSettingsAvatarActions() {
     meta: {
       telemetryName: trackedMutationNames.settingsUploadAvatar,
     },
-    mutationFn: SettingsCommands.uploadAvatar,
+    mutationFn: (file: File) => SettingsCommands.uploadAvatar(file),
     onSuccess: async (result) => {
       await invalidateCurrentUser();
       setAvatarError(null);
@@ -43,7 +43,7 @@ export function useSettingsAvatarActions() {
     meta: {
       telemetryName: trackedMutationNames.settingsUploadAvatar,
     },
-    mutationFn: SettingsCommands.deleteAvatar,
+    mutationFn: () => SettingsCommands.deleteAvatar(),
     onSuccess: async (result) => {
       await invalidateCurrentUser();
       setAvatarError(null);

@@ -12,7 +12,7 @@ export function useHomeInvitationActions() {
     variables: acceptingInviteId,
   } = useMutation({
     mutationKey: ["home", "invitation", "accept"],
-    mutationFn: HomeCommands.acceptInvitation,
+    mutationFn: (inviteId: string) => HomeCommands.acceptInvitation(inviteId),
   });
 
   const {
@@ -21,7 +21,7 @@ export function useHomeInvitationActions() {
     variables: decliningInviteId,
   } = useMutation({
     mutationKey: ["home", "invitation", "decline"],
-    mutationFn: HomeCommands.declineInvitation,
+    mutationFn: (inviteId: string) => HomeCommands.declineInvitation(inviteId),
   });
 
   async function acceptInvitation(inviteId: string) {

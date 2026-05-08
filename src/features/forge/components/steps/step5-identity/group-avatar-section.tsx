@@ -42,7 +42,7 @@ export function GroupAvatarSection({
               variant="ghost"
               size="icon-xs"
               onClick={() => onAvatarImageChange(null)}
-              className="absolute top-1.5 right-1.5 z-20 size-6 rounded-full bg-black/45 text-white hover:bg-black/65 hover:text-white"
+              className="absolute top-1.5 right-1.5 z-20 size-6 rounded-full bg-black/45 text-white hover:bg-black/65"
               aria-label="Remove avatar"
             >
               <X size={12} />

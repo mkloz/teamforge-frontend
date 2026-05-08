@@ -76,7 +76,7 @@ export function usePlanProposalForm(plan: Plan) {
     }
 
     setError(null);
-    createProposal({
+    await createProposal({
       field,
       proposedValue,
     });

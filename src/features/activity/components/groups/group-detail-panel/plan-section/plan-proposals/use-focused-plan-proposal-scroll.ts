@@ -15,13 +15,13 @@ export function useFocusedPlanProposalScroll(
   // biome-ignore lint/correctness/useExhaustiveDependencies: Proposal list changes can mount the focused ref after the id is already set.
   useEffect(() => {
     if (!focusedProposalId) {
-      return;
+      return undefined;
     }
 
     const target = proposalRefs.current[focusedProposalId];
 
     if (!target) {
-      return;
+      return undefined;
     }
 
     const frame = scheduleAnimationFrame(() => {

@@ -58,7 +58,9 @@ export function useSettingsProfileBase() {
     meta: {
       telemetryName: trackedMutationNames.settingsUpdateProfile,
     },
-    mutationFn: SettingsCommands.updateProfile,
+    mutationFn: (
+      payload: Parameters<typeof SettingsCommands.updateProfile>[0],
+    ) => SettingsCommands.updateProfile(payload),
     onSuccess: async (result) => {
       await invalidateCurrentUser();
       setSaveError(null);

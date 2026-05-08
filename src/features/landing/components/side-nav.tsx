@@ -35,7 +35,7 @@ export function SideNav() {
                   "rounded-full transition-all duration-300",
                   isActive
                     ? "h-2.5 w-2.5 bg-forge-teal shadow-[0_0_10px_rgba(13,148,136,0.4)]"
-                    : "h-1 w-1 bg-slate-muted group-hover:bg-forge-teal/50 dark:text-white/40",
+                    : "h-1 w-1 bg-slate-muted group-hover:bg-forge-teal/50",
                 )}
               />
 

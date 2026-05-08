@@ -50,7 +50,9 @@ export function useProfileBasicsForm() {
   }, [currentUser, form]);
 
   const profileBasicsMutation = useMutation({
-    mutationFn: OnboardingCommands.updateProfileBasics,
+    mutationFn: (
+      payload: Parameters<typeof OnboardingCommands.updateProfileBasics>[0],
+    ) => OnboardingCommands.updateProfileBasics(payload),
     onSuccess: (updatedUser) => {
       OnboardingCache.setCurrentUser(queryClient, updatedUser);
     },

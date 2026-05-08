@@ -116,7 +116,7 @@ export function MemberCard({
           type="button"
           variant="ghost"
           onClick={handleShowProfile}
-          className="h-auto min-w-0 flex-1 justify-start rounded-lg border-0 bg-transparent p-0 text-left hover:bg-transparent focus-visible:ring-forge-teal/30"
+          className="h-auto min-w-0 flex-1 justify-start rounded-lg border-0 bg-transparent p-0 text-left focus-visible:ring-forge-teal/30"
           contentClassName="min-w-0 justify-start gap-3"
           aria-label={`View ${member.user?.name ?? "member"} profile`}
         >

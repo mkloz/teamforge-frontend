@@ -35,7 +35,7 @@ export function useNotifications() {
 
   const markReadMutation = useMutation({
     mutationKey: ["notifications", "mark-read"],
-    mutationFn: NotificationsCommands.markRead,
+    mutationFn: (id: string) => NotificationsCommands.markRead(id),
     onMutate: async (id) => {
       await NotificationsCache.cancelQueries();
 
@@ -57,7 +57,7 @@ export function useNotifications() {
 
   const markAllReadMutation = useMutation({
     mutationKey: ["notifications", "mark-all-read"],
-    mutationFn: NotificationsCommands.markAllRead,
+    mutationFn: () => NotificationsCommands.markAllRead(),
     onMutate: async () => {
       await NotificationsCache.cancelQueries();
 

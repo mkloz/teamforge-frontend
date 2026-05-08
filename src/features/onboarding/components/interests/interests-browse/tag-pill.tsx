@@ -44,7 +44,7 @@ export function TagPill({
       className={cn(
         "h-auto max-w-full rounded-full px-1.5 py-0.75 text-[11px] sm:px-2 sm:py-1 sm:text-xs",
         !selected &&
-          "bg-card text-slate-muted dark:border-white/10 dark:bg-card dark:text-slate-300",
+          "border-border/40 bg-card text-slate-muted dark:border-white/10 dark:text-slate-300",
       )}
     >
       <TagWrapper

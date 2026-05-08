@@ -95,7 +95,7 @@ export function useActivityRealtimeSync({
 
   useEffect(() => {
     if (!activeChatId) {
-      return;
+      return undefined;
     }
 
     return subscribeToRealtimeChat(activeChatId, clearChatTypingState);
@@ -103,7 +103,7 @@ export function useActivityRealtimeSync({
 
   useEffect(() => {
     if (!activePlanId) {
-      return;
+      return undefined;
     }
 
     return subscribeToRealtimePlan(activePlanId);
@@ -111,7 +111,7 @@ export function useActivityRealtimeSync({
 
   useEffect(() => {
     if (!currentUserId) {
-      return;
+      return undefined;
     }
 
     const typingTimeouts = createTypingTimeoutRegistry();

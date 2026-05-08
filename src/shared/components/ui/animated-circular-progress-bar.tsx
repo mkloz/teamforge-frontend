@@ -3,9 +3,9 @@ import type { CSSProperties } from "react";
 import { cn } from "@/shared/lib/utils";
 
 export interface AnimatedCircularProgressBarProps {
-  max: number;
-  value: number;
-  min: number;
+  max?: number;
+  value?: number;
+  min?: number;
   gaugePrimaryColor: string;
   gaugeSecondaryColor: string;
   className?: string;

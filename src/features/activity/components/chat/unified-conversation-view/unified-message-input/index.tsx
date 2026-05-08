@@ -130,7 +130,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
             hasContent={composer.hasDraft}
             isRecording={composer.isRecording}
             onSend={() => {
-              void composer.handleSubmit();
+              composer.handleSubmit();
             }}
             onCancelRecording={composer.cancelRecording}
             onStartRecording={() => {

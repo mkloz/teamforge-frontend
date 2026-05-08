@@ -5,6 +5,8 @@
 
   --color-forge-teal: #0d9488;
   --color-forge-teal-light: #14b8a6;
+  --color-forge-deep-panel: #0a1212;
+  --color-forge-deep-surface: #111111;
   --color-spark-amber: #f59e0b;
   --color-hero-bg: #090909;
   --color-ink: var(--ink);
@@ -48,6 +50,7 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

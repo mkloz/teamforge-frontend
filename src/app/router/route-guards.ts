@@ -57,18 +57,20 @@ export async function requireAuthenticatedUser(location?: RouteLocationLike) {
   const returnHref = buildRouteLocationHref(location);
   const hasSession = await restoreAuthSessionIfNeeded();
 
-  if (!hasSession) redirectToLogin(returnHref);
+  if (!hasSession) {
+    return redirectToLogin(returnHref);
+  }
 
   try {
     const currentUser = await ensureCurrentUser();
 
     if (!currentUser) {
-      redirectToLogin(returnHref);
+      return redirectToLogin(returnHref);
     }
 
     return currentUser;
   } catch {
-    redirectToLogin(returnHref);
+    return redirectToLogin(returnHref);
   }
 }
 

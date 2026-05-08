@@ -40,7 +40,9 @@ export function useAlgorithmSequence(
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: initialNodes intentionally restarts the animation cycle when the dataset changes.
   useEffect(() => {
-    if (!inView || nodesEmpty) return;
+    if (!inView || nodesEmpty) {
+      return undefined;
+    }
 
     let isCancelled = false;
     const timeouts: ReturnType<typeof setTimeout>[] = [];

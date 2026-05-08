@@ -33,7 +33,8 @@ export function useSettingsSecurityActions({
   });
 
   const passwordResetMutation = useMutation({
-    mutationFn: SettingsCommands.sendResetPasswordLink,
+    mutationFn: (email: string) =>
+      SettingsCommands.sendResetPasswordLink(email),
     onSuccess: () => {
       setSecurityError(null);
       setSecurityMessage("Password reset link sent to your email.");
@@ -50,14 +51,15 @@ export function useSettingsSecurityActions({
     meta: {
       telemetryName: trackedMutationNames.settingsRevokeSession,
     },
-    mutationFn: SettingsCommands.revokeSession,
+    mutationFn: (sessionId: string) =>
+      SettingsCommands.revokeSession(sessionId),
   });
 
   const revokeOtherSessionsMutation = useMutation({
     meta: {
       telemetryName: trackedMutationNames.settingsRevokeOtherSessions,
     },
-    mutationFn: SettingsCommands.revokeOtherSessions,
+    mutationFn: () => SettingsCommands.revokeOtherSessions(),
     onSuccess: async (result) => {
       await SettingsCache.invalidateSessions();
       setSecurityError(null);

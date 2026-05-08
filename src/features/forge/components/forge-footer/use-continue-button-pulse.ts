@@ -21,6 +21,8 @@ export function useContinueButtonPulse(fw: ForgeWizardState) {
         clearTimeout(t2);
       };
     }
+
+    return undefined;
   }, [fw.selectedActivity, fw.step]);
 
   return continuePulse;

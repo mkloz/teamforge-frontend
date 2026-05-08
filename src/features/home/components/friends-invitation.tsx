@@ -108,18 +108,18 @@ export function FriendsInvitation() {
           <Button
             variant="primary"
             className="h-11 rounded-md px-4 text-xs font-black"
-            onClick={() => {
-              void shareBrowserData({
+            onClick={async () => {
+              const shareResult = await shareBrowserData({
                 title: "Join me on TeamForge",
                 text: "Find your people, intelligently.",
                 url: inviteLink,
-              }).then((result) => {
-                if (result === "shared" || result === "dismissed") {
-                  return;
-                }
-
-                void handleCopy();
               });
+
+              if (shareResult === "shared" || shareResult === "dismissed") {
+                return;
+              }
+
+              await handleCopy();
             }}
           >
             <Share2 className="size-3.5" />

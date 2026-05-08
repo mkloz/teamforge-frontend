@@ -79,7 +79,7 @@ export function useAddressSuggestionsPanel({
 
   useEffect(() => {
     if (!isSuggestionsOpen || suggestions.length === 0) {
-      return;
+      return undefined;
     }
 
     updatePanelPosition();
@@ -106,13 +106,13 @@ export function useAddressSuggestionsPanel({
 
   useEffect(() => {
     if (!isSuggestionsOpen || activeSuggestionIndex < 0) {
-      return;
+      return undefined;
     }
 
     const suggestion = suggestions[activeSuggestionIndex];
 
     if (!suggestion) {
-      return;
+      return undefined;
     }
 
     optionRefs.current.get(suggestion.place_id)?.scrollIntoView({

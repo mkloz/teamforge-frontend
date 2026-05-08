@@ -6,7 +6,7 @@ import { ExploreSearchHeader } from "@/features/explore/components/explore-searc
 export function ExplorePage() {
   return (
     <div className="w-full">
-      <div className="mx-auto grid w-full max-w-[34rem] grid-cols-1 gap-6 px-4 pt-3 md:max-w-[46rem] md:pt-6 lg:max-w-[88rem] lg:grid-cols-12 lg:gap-6 lg:px-5 xl:grid-cols-[17rem_minmax(0,43rem)_17rem] xl:justify-center xl:gap-7">
+      <div className="mx-auto grid w-full max-w-136 grid-cols-1 gap-6 px-4 pt-3 md:max-w-184 md:pt-6 lg:max-w-352 lg:grid-cols-12 lg:px-5 xl:grid-cols-[17rem_minmax(0,43rem)_17rem] xl:justify-center xl:gap-7">
         <div className="relative hidden xl:block">
           <div className="sticky top-6 self-start">
             <ExploreLeftSection />

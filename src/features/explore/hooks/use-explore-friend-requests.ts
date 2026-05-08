@@ -13,7 +13,8 @@ export function useExploreFriendRequests() {
       telemetryName: trackedMutationNames.exploreAcceptFriendRequest,
     },
     mutationKey: ["explore", "friend-request", "accept"],
-    mutationFn: ExploreCommands.acceptFriendRequest,
+    mutationFn: (requesterId: string) =>
+      ExploreCommands.acceptFriendRequest(requesterId),
     onSuccess: (result) => {
       trackMutationOutcome(
         trackedMutationNames.exploreAcceptFriendRequest,
@@ -42,7 +43,8 @@ export function useExploreFriendRequests() {
       telemetryName: trackedMutationNames.exploreDeclineFriendRequest,
     },
     mutationKey: ["explore", "friend-request", "decline"],
-    mutationFn: ExploreCommands.declineFriendRequest,
+    mutationFn: (requesterId: string) =>
+      ExploreCommands.declineFriendRequest(requesterId),
     onSuccess: (result) => {
       trackMutationOutcome(
         trackedMutationNames.exploreDeclineFriendRequest,

@@ -12,7 +12,7 @@ export interface InterestsState extends InterestsSnapshot {
   toggle: (id: string, maxInterests: number) => void;
   toggleReject: (id: string) => void;
   setScreen: (screen: InterestsScreen) => void;
-  setPersonalityType: (type: PersonalityType | string | null) => void;
+  setPersonalityType: (type: string | null) => void;
   replaceSelected: (ids: string[], maxInterests: number) => void;
   reset: () => void;
 }

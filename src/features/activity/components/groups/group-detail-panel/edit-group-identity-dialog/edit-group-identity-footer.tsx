@@ -27,7 +27,7 @@ export function EditGroupIdentityFooter({
         type="button"
         variant="primary"
         disabled={isSaveDisabled}
-        onClick={() => void editor.save()}
+        onClick={() => editor.save()}
       >
         {editor.isSaving ? "Saving..." : "Save"}
       </Button>

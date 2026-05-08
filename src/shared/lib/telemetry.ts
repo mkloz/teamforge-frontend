@@ -1,5 +1,5 @@
 import { track } from "@vercel/analytics";
-import type { TrackedMutationName } from "@/shared/lib/telemetry-contract";
+import { warnInDevelopment } from "@/shared/lib/development-warning";
 import { ApiExceptionSchema } from "@/shared/types/api-error";
 
 type TelemetryValue = string | number | boolean | null | undefined;
@@ -46,7 +46,7 @@ function toTelemetryValue(value: TelemetryContext[string]): TelemetryValue {
   try {
     return JSON.stringify(value);
   } catch {
-    return String(value);
+    return "Unserializable telemetry value";
   }
 }
 
@@ -94,9 +94,9 @@ export function trackEvent(name: string, context: TelemetryContext = {}) {
   const payload = sanitizeContext(context);
 
   try {
-    void track(name, payload);
-  } catch {
-    // Ignore analytics transport failures to avoid affecting product flows.
+    track(name, payload);
+  } catch (error) {
+    warnInDevelopment("Analytics tracking failed.", error);
   }
 }
 
@@ -125,7 +125,7 @@ export function captureException(
 }
 
 export function trackMutationOutcome(
-  name: TrackedMutationName | string,
+  name: string,
   status: "success" | "error",
   context: TelemetryContext = {},
 ) {

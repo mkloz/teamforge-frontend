@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": [
+    "eslint",
     "typescript",
     "unicorn",
     "oxc",
@@ -8,8 +9,26 @@
     "react",
     "react_perf",
     "jsx_a11y",
-    "vitest"
+    "vitest",
+    "promise"
   ],
+  "jsPlugins": [
+    "oxlint-tailwindcss",
+    "./node_modules/oxlint-plugin-query/dist/index.js",
+    "oxlint-plugin-inhuman",
+    "@bensandee/eslint-plugin"
+  ],
+  "settings": {
+    "tailwindcss": {
+      "entryPoint": "src/index.css",
+      "exclude": {
+        "variablePatterns": ["^styles?$"]
+      }
+    }
+  },
+  "options": {
+    "typeAware": true
+  },
   "categories": {
     "correctness": "warn",
     "suspicious": "warn",
@@ -49,9 +68,47 @@
     "jsx-a11y/prefer-tag-over-role": "off",
     "typescript/no-explicit-any": "warn",
     "typescript/no-extraneous-class": "off",
+    "tailwindcss/no-unknown-classes": [
+      "error",
+      {
+        "allowlist": [
+          "bg-forge-deep-panel/80",
+          "bg-forge-deep-surface",
+          "bg-noise",
+          "text-destructive-foreground"
+        ]
+      }
+    ],
+    "tailwindcss/no-duplicate-classes": "error",
+    "tailwindcss/no-conflicting-classes": "warn",
+    "tailwindcss/no-deprecated-classes": "error",
+    "tailwindcss/no-unnecessary-whitespace": "error",
+    "tailwindcss/no-dark-without-light": "warn",
+    "tailwindcss/no-contradicting-variants": "warn",
+    "tailwindcss/enforce-canonical": "warn",
+    "tailwindcss/enforce-sort-order": "off",
+    "tailwindcss/enforce-shorthand": "warn",
+    "tailwindcss/enforce-consistent-important-position": "warn",
+    "tailwindcss/enforce-negative-arbitrary-values": "warn",
+    "tailwindcss/enforce-consistent-variable-syntax": "warn",
+    "tailwindcss/consistent-variant-order": "warn",
+    "tailwindcss/no-hardcoded-colors": "warn",
+    "tailwindcss/no-unnecessary-arbitrary-value": "warn",
+    "oxlint-plugin-query/exhaustive-deps": "error",
+    "oxlint-plugin-query/no-rest-destructuring": "warn",
+    "oxlint-plugin-query/stable-query-client": "error",
+    "oxlint-plugin-query/no-unstable-deps": "error",
+    "oxlint-plugin-query/infinite-query-property-order": "error",
+    "oxlint-plugin-query/mutation-property-order": "error",
     "unicorn/consistent-function-scoping": "warn",
     "unicorn/no-array-reverse": "off",
     "unicorn/no-array-sort": "off",
-    "unicorn/no-useless-fallback-in-spread": "warn"
+    "unicorn/no-useless-fallback-in-spread": "warn",
+    "bensandee/no-empty-catch": "error",
+    "bensandee/no-unsafe-exec": "error",
+    "bensandee/no-unsafe-json-parse": "error",
+    "bensandee/no-unsafe-response-json": "error",
+    "bensandee/no-zod-any": "error",
+    "inhuman/no-swallowed-catch": "error"
   }
 }

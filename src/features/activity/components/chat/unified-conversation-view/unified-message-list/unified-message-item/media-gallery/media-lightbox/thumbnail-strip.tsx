@@ -110,7 +110,7 @@ function ThumbnailItem({
 export const ThumbnailStrip = memo(
   ({ attachments, selectedIndex, onSelect }: ThumbnailStripProps) => (
     <div className="pointer-events-none absolute inset-x-0 bottom-10 flex h-16 items-center justify-center px-10">
-      <div className="scrollbar-none pointer-events-auto flex gap-2 overflow-x-auto rounded-xl border border-white/10 bg-black/40 p-2 backdrop-blur-2xl">
+      <div className="scrollbar-hide pointer-events-auto flex gap-2 overflow-x-auto rounded-xl border border-white/10 bg-black/40 p-2 backdrop-blur-2xl">
         {attachments.map((media, i) => (
           <ThumbnailItem
             key={media.id}

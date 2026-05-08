@@ -11,10 +11,16 @@ import { appQueryClient } from "@/shared/api/query-client";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 
 export const HomeQueryFactory = {
-  groups: HomeQueryOptions.groups,
-  invitations: HomeQueryOptions.invitations,
-  recommendations: HomeQueryOptions.recommendations,
-  sentInvitations: HomeQueryOptions.sentInvitations,
+  groups: (...args: Parameters<typeof HomeQueryOptions.groups>) =>
+    HomeQueryOptions.groups(...args),
+  invitations: (...args: Parameters<typeof HomeQueryOptions.invitations>) =>
+    HomeQueryOptions.invitations(...args),
+  recommendations: (
+    ...args: Parameters<typeof HomeQueryOptions.recommendations>
+  ) => HomeQueryOptions.recommendations(...args),
+  sentInvitations: (
+    ...args: Parameters<typeof HomeQueryOptions.sentInvitations>
+  ) => HomeQueryOptions.sentInvitations(...args),
 
   stats() {
     return queryOptions({

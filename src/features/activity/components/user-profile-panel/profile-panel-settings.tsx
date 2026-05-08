@@ -20,7 +20,12 @@ export function ProfilePanelSettings({
   onToggleBlock,
 }: ProfilePanelSettingsProps) {
   return (
-    <div className={cn("p-6", isMobile && "pb-safe pb-8")}>
+    <div
+      className={cn(
+        "p-6",
+        isMobile && "pb-[calc(2rem+env(safe-area-inset-bottom))]",
+      )}
+    >
       <h4 className="mb-4 px-1 text-xs font-semibold tracking-widest text-slate-muted uppercase">
         Account & Safety
       </h4>

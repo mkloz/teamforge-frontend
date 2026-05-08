@@ -2,6 +2,8 @@ import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import biome from "vite-plugin-biome";
+import oxlint from "vite-plugin-oxlint";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -12,6 +14,8 @@ export default defineConfig({
       },
     }),
     tailwindcss(),
+    oxlint(),
+    biome(),
   ],
   server: {
     port: 3000,

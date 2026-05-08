@@ -11,7 +11,7 @@ export function useBodyScrollLock({ locked }: UseBodyScrollLockOptions) {
     const body = getBrowserDocumentBody();
 
     if (!locked || !body) {
-      return;
+      return undefined;
     }
 
     const previousBodyOverflow = body.style.overflow;

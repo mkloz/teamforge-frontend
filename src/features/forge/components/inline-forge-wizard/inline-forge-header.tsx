@@ -33,7 +33,7 @@ export function InlineForgeHeader({
   const currentMetadata = getForgeStepMetadata(fw);
 
   return (
-    <div className="sticky top-0 z-30 -mx-6 mb-2 border-b border-border/40 bg-transparent px-6 pb-3 shadow-sm shadow-black/5 backdrop-blur-xl md:top-0 md:-mx-12 md:px-12">
+    <div className="sticky top-0 z-30 -mx-6 mb-2 border-b border-border/40 bg-transparent px-6 pb-3 shadow-sm shadow-black/5 backdrop-blur-xl md:-mx-12 md:px-12">
       <div className="mb-2 flex items-center justify-between pt-4 md:mb-3">
         <div className="flex items-center gap-3">
           {fw.canGoBack ? (

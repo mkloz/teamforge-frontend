@@ -41,7 +41,7 @@ export function QuestionPage({
   });
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-3rem)] w-full max-w-xl flex-col px-0 sm:min-h-[calc(100dvh-4rem)] sm:px-0">
+    <div className="mx-auto flex min-h-[calc(100dvh-3rem)] w-full max-w-xl flex-col px-0 sm:min-h-[calc(100dvh-4rem)]">
       <div className="mb-6 flex items-center gap-3">
         <div className="min-w-0 flex-1">
           <QuestionPageHeader

@@ -1,3 +1,5 @@
+import { warnInDevelopment } from "@/shared/lib/development-warning";
+
 export function hasBrowserWindow() {
   return typeof window !== "undefined";
 }
@@ -61,8 +63,8 @@ export function setBrowserSessionStorageItem(key: string, value: string) {
 
   try {
     window.sessionStorage.setItem(key, value);
-  } catch {
-    // Session storage can be unavailable in restricted browser contexts.
+  } catch (error) {
+    warnInDevelopment("Session storage write failed.", error);
   }
 }
 

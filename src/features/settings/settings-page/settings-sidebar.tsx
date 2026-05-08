@@ -49,7 +49,7 @@ export function SettingsSidebar({
           className="h-auto w-full justify-start rounded-lg px-1 py-3 lg:px-4"
           disabled={isSigningOut}
           onClick={() => {
-            void onSignOut();
+            onSignOut();
           }}
         >
           <LogOut size={16} />
@@ -85,7 +85,7 @@ function SettingsSectionNav({
             onClick={() => onSectionSelect(section.id)}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "group relative flex w-full items-center justify-between gap-3 border-b border-border px-1 py-2 text-left transition-colors last:border-b-0 focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:outline-none active:bg-muted/40 lg:items-start lg:border-b-0 lg:px-4 lg:py-2 lg:active:bg-transparent",
+              "group relative flex w-full items-center justify-between gap-3 border-b border-border px-1 py-2 text-left transition-colors last:border-b-0 focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:outline-none active:bg-muted/40 lg:items-start lg:border-b-0 lg:px-4 active:lg:bg-transparent",
               "after:absolute after:top-2.5 after:bottom-2.5 after:left-0 after:w-0.5 after:origin-center after:scale-y-0 after:bg-forge-teal after:transition-transform",
               isActive
                 ? "text-ink lg:after:scale-y-100"

@@ -5,6 +5,7 @@ import type {
   Group,
   GroupMember,
 } from "@/features/activity/lib/activity-contract";
+import { warnInDevelopment } from "@/shared/lib/development-warning";
 
 export function useCompletedGroupRating(group: Group) {
   const {
@@ -73,8 +74,8 @@ export function useCompletedGroupRating(group: Group) {
         setSelectedUserId(null);
         setScore(0);
         setComment("");
-      } catch {
-        // TanStack Query owns the user-facing error toast.
+      } catch (error) {
+        warnInDevelopment("Completed group rating submission failed.", error);
       }
     });
   };

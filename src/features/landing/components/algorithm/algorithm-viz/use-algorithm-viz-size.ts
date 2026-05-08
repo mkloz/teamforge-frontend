@@ -9,7 +9,9 @@ export function useAlgorithmVizSize() {
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container) {
+      return undefined;
+    }
 
     const updateSize = () => {
       setSize(Math.min(container.offsetWidth, MAX_ALGORITHM_VIZ_SIZE));

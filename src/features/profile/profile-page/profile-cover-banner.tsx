@@ -8,7 +8,7 @@ export function ProfileCoverBanner({
   return (
     <div className="absolute top-0 right-0 left-0 z-0 h-32 overflow-hidden bg-forge-teal sm:h-36 md:h-44">
       <div
-        className="absolute inset-0 bg-gradient-to-b from-black/5 to-black/20"
+        className="absolute inset-0 bg-linear-to-b from-black/5 to-black/20"
         aria-hidden="true"
       />
 

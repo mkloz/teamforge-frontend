@@ -23,7 +23,7 @@ export function useFocusTrap<T extends HTMLElement>({
 }: UseFocusTrapOptions<T>) {
   useEffect(() => {
     if (!enabled) {
-      return;
+      return undefined;
     }
 
     const activeElement = getBrowserActiveElement();

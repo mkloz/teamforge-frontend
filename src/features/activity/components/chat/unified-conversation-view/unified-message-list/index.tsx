@@ -105,7 +105,7 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
 
   useEffect(() => {
     if (!messageScrollHandleRef) {
-      return;
+      return undefined;
     }
 
     messageScrollHandleRef.current = { scrollToMessage };

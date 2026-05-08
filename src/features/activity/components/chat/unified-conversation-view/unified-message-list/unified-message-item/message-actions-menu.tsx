@@ -98,7 +98,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
         {message.isOwn && (
           <DropdownMenuItem
             onSelect={() => void onDelete(message)}
-            className="text-destructive focus:text-destructive"
+            className="text-destructive"
           >
             <Trash2 className="mr-2 size-4" />
             Delete

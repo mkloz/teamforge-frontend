@@ -128,7 +128,7 @@ export function ParticipantRow({
             size="icon"
             onClick={() => onRestoreParticipant(participant.userId)}
             aria-label={`Restore ${participantName}`}
-            className="size-8 opacity-100 md:opacity-0 md:group-hover:opacity-100"
+            className="size-8 max-md:opacity-100 md:opacity-0 group-hover:md:opacity-100"
           >
             <UserPlus size={14} />
           </Button>
@@ -138,7 +138,7 @@ export function ParticipantRow({
             size="icon"
             onClick={() => onRemoveParticipant(participant.userId)}
             aria-label={`Remove ${participantName}`}
-            className="size-8 opacity-100 md:opacity-0 md:group-hover:opacity-100"
+            className="size-8 max-md:opacity-100 md:opacity-0 group-hover:md:opacity-100"
           >
             <UserMinus size={14} />
           </Button>

@@ -44,6 +44,8 @@ export function HomeHeroMoveIcon({ kind, className }: HomeHeroMoveIconProps) {
     case "forge":
       return <Flame className={className} aria-hidden="true" />;
   }
+
+  return null;
 }
 
 export function PrimaryAction({ move }: { move: HomeNextMove }) {

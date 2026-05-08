@@ -32,7 +32,7 @@ export function useMessageContainerSize(
     const containerElement = containerRef?.current;
 
     if (!containerElement || typeof ResizeObserver === "undefined") {
-      return;
+      return undefined;
     }
 
     const observer = new ResizeObserver((entries) => {

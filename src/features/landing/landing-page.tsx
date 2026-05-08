@@ -15,7 +15,7 @@ export function LandingPage() {
     <div className="bg-canvas font-sans text-ink antialiased">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:rounded-lg focus:bg-forge-teal focus:px-4 focus:py-2 focus:text-white focus:outline-none"
+        className="fixed top-4 left-4 z-100 -translate-y-24 rounded-lg bg-forge-teal px-4 py-2 text-white opacity-0 transition focus:translate-y-0 focus:opacity-100 focus:outline-none"
       >
         Skip to main content
       </a>

@@ -51,6 +51,8 @@ export function getCurrentProposalValue(plan: Plan, field: ProposalField) {
     case "LOCATION":
       return formatPlanLocation(plan);
   }
+
+  return "";
 }
 
 export function normalizeProposedValue(field: ProposalField, value: string) {

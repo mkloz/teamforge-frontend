@@ -24,9 +24,9 @@ export function currentUserQueryOptions() {
 
 export function useAuthSessionState() {
   const tokens = useSyncExternalStore(
-    authSession.subscribe,
-    authSession.getTokens,
-    authSession.getTokens,
+    (listener) => authSession.subscribe(listener),
+    () => authSession.getTokens(),
+    () => authSession.getTokens(),
   );
 
   return {

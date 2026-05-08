@@ -14,22 +14,26 @@ export function useGoogleMapsStatus() {
 
   useEffect(() => {
     if (!hasGoogleMapsApiKey()) {
-      return;
+      return undefined;
     }
 
     let cancelled = false;
 
-    loadGoogleMaps()
-      .then(() => {
+    async function syncGoogleMapsStatus() {
+      try {
+        await loadGoogleMaps();
+
         if (!cancelled) {
           setMapsStatus("ready");
         }
-      })
-      .catch(() => {
+      } catch {
         if (!cancelled) {
           setMapsStatus("unavailable");
         }
-      });
+      }
+    }
+
+    void syncGoogleMapsStatus();
 
     return () => {
       cancelled = true;

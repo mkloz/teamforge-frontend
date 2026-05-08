@@ -5,13 +5,30 @@ import { ActivityPinnedMessageCache } from "./cache/activity-pinned-message-cach
 import { ActivityPresenceCache } from "./cache/activity-presence-cache";
 
 export const ActivitySurfaceCache = {
-  applyFriendshipUpdate: ActivityFriendshipCache.applyFriendshipUpdate,
-  applyPresenceChanged: ActivityPresenceCache.applyPresenceChanged,
-  applyRealtimeGroupUpdate: ActivityGroupCache.applyRealtimeGroupUpdate,
-  removeFriendshipFromActivity:
-    ActivityFriendshipCache.removeFriendshipFromActivity,
-  removePinnedMessage: ActivityPinnedMessageCache.removePinnedMessage,
-  syncPinnedMessage: ActivityPinnedMessageCache.syncPinnedMessage,
-  updateChatLastMessage: ActivityChatSummaryCache.updateChatLastMessage,
-  updateChatSummary: ActivityChatSummaryCache.updateChatSummary,
+  applyFriendshipUpdate: (
+    ...args: Parameters<typeof ActivityFriendshipCache.applyFriendshipUpdate>
+  ) => ActivityFriendshipCache.applyFriendshipUpdate(...args),
+  applyPresenceChanged: (
+    ...args: Parameters<typeof ActivityPresenceCache.applyPresenceChanged>
+  ) => ActivityPresenceCache.applyPresenceChanged(...args),
+  applyRealtimeGroupUpdate: (
+    ...args: Parameters<typeof ActivityGroupCache.applyRealtimeGroupUpdate>
+  ) => ActivityGroupCache.applyRealtimeGroupUpdate(...args),
+  removeFriendshipFromActivity: (
+    ...args: Parameters<
+      typeof ActivityFriendshipCache.removeFriendshipFromActivity
+    >
+  ) => ActivityFriendshipCache.removeFriendshipFromActivity(...args),
+  removePinnedMessage: (
+    ...args: Parameters<typeof ActivityPinnedMessageCache.removePinnedMessage>
+  ) => ActivityPinnedMessageCache.removePinnedMessage(...args),
+  syncPinnedMessage: (
+    ...args: Parameters<typeof ActivityPinnedMessageCache.syncPinnedMessage>
+  ) => ActivityPinnedMessageCache.syncPinnedMessage(...args),
+  updateChatLastMessage: (
+    ...args: Parameters<typeof ActivityChatSummaryCache.updateChatLastMessage>
+  ) => ActivityChatSummaryCache.updateChatLastMessage(...args),
+  updateChatSummary: (
+    ...args: Parameters<typeof ActivityChatSummaryCache.updateChatSummary>
+  ) => ActivityChatSummaryCache.updateChatSummary(...args),
 };

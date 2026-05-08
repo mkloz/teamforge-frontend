@@ -17,6 +17,15 @@
     display: none !important;
   }
 
+  .bg-noise {
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      color-mix(in srgb, var(--color-ink) 22%, transparent) 1px,
+      transparent 0
+    );
+    background-size: 14px 14px;
+  }
+
   .disable-transitions,
   .disable-transitions *,
   .disable-transitions *::before,

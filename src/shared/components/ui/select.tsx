@@ -39,7 +39,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "group/select flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-card px-3.5 py-2 font-sans text-sm font-medium text-ink shadow-xs transition-[background-color,border-color,box-shadow,color] duration-200 outline-none placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-muted/50 disabled:text-slate-muted disabled:opacity-70 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/15 data-[placeholder]:text-slate-muted/70 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:min-w-0 *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 dark:bg-input/30 dark:aria-invalid:ring-destructive/30 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-slate-muted",
+        "group/select flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-card px-3.5 py-2 font-sans text-sm font-medium text-ink shadow-xs transition-[background-color,border-color,box-shadow,color] duration-200 outline-none placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-muted/50 disabled:text-slate-muted disabled:opacity-70 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/15 data-[placeholder]:text-slate-muted/70 *:data-[slot=select-value]:flex *:data-[slot=select-value]:min-w-0 *:data-[slot=select-value]:truncate *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 dark:bg-input/30 dark:aria-invalid:ring-destructive/30 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-slate-muted",
         size === "sm" && "h-9 px-3 text-xs",
         className,
       )}
@@ -89,7 +89,7 @@ function SelectContent({
         <SelectScrollUpButton />
         <SelectPrimitive.Viewport
           className={cn(
-            "scrollbar-hide p-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:!hidden [&::-webkit-scrollbar]:!w-0",
+            "scrollbar-hide p-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden! [&::-webkit-scrollbar]:w-0!",
             position === "popper" &&
               "w-full min-w-(--radix-select-trigger-width) scroll-my-1",
           )}
@@ -127,7 +127,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex min-h-9 w-full cursor-default items-center gap-2 rounded-lg py-1.5 pr-8 pl-2.5 text-sm font-medium text-ink outline-hidden transition-colors select-none focus:bg-muted/65 focus:text-ink data-[state=checked]:bg-muted/55 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-slate-muted *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
+        "relative flex min-h-9 w-full cursor-default items-center gap-2 rounded-lg py-1.5 pr-8 pl-2.5 text-sm font-medium text-ink outline-hidden transition-colors select-none focus:bg-muted/65 data-[state=checked]:bg-muted/55 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-slate-muted *:last:[span]:flex *:last:[span]:items-center *:last:[span]:gap-2",
         className,
       )}
       {...props}

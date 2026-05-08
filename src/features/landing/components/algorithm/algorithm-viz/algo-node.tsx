@@ -182,7 +182,7 @@ export function AlgoNode({
             cx={0}
             cy={0}
             animate={{ r: ns.r }}
-            fill="#111"
+            fill="var(--color-forge-deep-surface)"
             stroke={ns.fill}
             strokeWidth={node.type === "selected" || isHovered ? 2.5 : 1}
             transition={{ duration: 0.4 }}
@@ -197,7 +197,7 @@ export function AlgoNode({
             <Avatar
               src={node.avatar}
               name={node.label}
-              className="h-full w-full bg-[#111]"
+              className="h-full w-full bg-forge-deep-surface"
               loading="lazy"
             />
           </foreignObject>

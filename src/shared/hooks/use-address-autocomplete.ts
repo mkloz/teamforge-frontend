@@ -82,32 +82,32 @@ export function useAddressAutocomplete({
         setActiveSuggestionIndex(-1);
       }
 
-      return;
+      return undefined;
     }
 
     let active = true;
     const handle = scheduleDelay(() => {
-      getPlacePredictions(inputValue.trim())
-        .then((nextSuggestions) => {
-          if (!active || skipPredictionsForValueRef.current !== null) {
-            return;
-          }
+      async function refreshPredictions() {
+        try {
+          const nextSuggestions = await getPlacePredictions(inputValue.trim());
 
-          setSuggestions(nextSuggestions);
-          setIsSuggestionsOpen(
-            hasTypedInSessionRef.current && Boolean(nextSuggestions.length),
-          );
-          setActiveSuggestionIndex(-1);
-        })
-        .catch(() => {
-          if (!active || skipPredictionsForValueRef.current !== null) {
-            return;
+          if (active && skipPredictionsForValueRef.current === null) {
+            setSuggestions(nextSuggestions);
+            setIsSuggestionsOpen(
+              hasTypedInSessionRef.current && Boolean(nextSuggestions.length),
+            );
+            setActiveSuggestionIndex(-1);
           }
+        } catch {
+          if (active && skipPredictionsForValueRef.current === null) {
+            setSuggestions([]);
+            setIsSuggestionsOpen(false);
+            setActiveSuggestionIndex(-1);
+          }
+        }
+      }
 
-          setSuggestions([]);
-          setIsSuggestionsOpen(false);
-          setActiveSuggestionIndex(-1);
-        });
+      void refreshPredictions();
     }, 250);
 
     return () => {
@@ -246,11 +246,12 @@ export function useAddressAutocomplete({
       setSuggestions([]);
       setIsSuggestionsOpen(false);
       setActiveSuggestionIndex(-1);
+      setIsResolvingPlace(false);
       onLocationSelect(nextLocation);
+      return;
     } catch {
       setMessage("We couldn't read that location. Try another result.");
       closeSuggestions();
-    } finally {
       setIsResolvingPlace(false);
     }
   }
@@ -274,6 +275,7 @@ export function useAddressAutocomplete({
       if (!nextLocation) {
         setMessage("We found your area, but couldn't label it.");
         skipPredictionsForValueRef.current = "Current area";
+        setIsLocating(false);
         onLocationSelect({
           address: "Current area",
           city: "Current area",
@@ -285,15 +287,16 @@ export function useAddressAutocomplete({
       }
 
       skipPredictionsForValueRef.current = nextLocation.address;
+      setIsLocating(false);
       onLocationSelect({
         ...nextLocation,
         lat: coordinates.lat,
         lng: coordinates.lng,
       });
       setDraftInput(null);
+      return;
     } catch {
       setMessage("Allow location access or search manually.");
-    } finally {
       setIsLocating(false);
     }
   }

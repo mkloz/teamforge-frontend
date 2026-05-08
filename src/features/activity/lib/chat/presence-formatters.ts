@@ -13,6 +13,8 @@ export function getStatusText(status: OnlineStatus, lastSeen?: string): string {
     case "OFFLINE":
       return lastSeen ? formatLastSeen(lastSeen) : "Offline";
   }
+
+  return "Offline";
 }
 
 export function formatTypingText(

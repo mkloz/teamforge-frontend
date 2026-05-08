@@ -57,7 +57,7 @@ export function useFocusedMessageScroll({
 
   useEffect(() => {
     if (!focusedMessageId) {
-      return;
+      return undefined;
     }
 
     const targetMessage = messages.some(
@@ -65,7 +65,7 @@ export function useFocusedMessageScroll({
     );
 
     if (!targetMessage) {
-      return;
+      return undefined;
     }
 
     const frame = requestAnimationFrame(() => {

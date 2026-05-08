@@ -250,7 +250,7 @@ function TimeScrollColumn<T extends number | string>({
           role="listbox"
           aria-label={ariaLabel}
           style={{ scrollbarWidth: "none" }}
-          className="flex max-h-56 w-full flex-col gap-1 overflow-y-auto py-7 [-ms-overflow-style:none] [&::-webkit-scrollbar]:!hidden [&::-webkit-scrollbar]:!w-0"
+          className="flex max-h-56 w-full flex-col gap-1 overflow-y-auto py-7 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden! [&::-webkit-scrollbar]:w-0!"
           onScroll={updateScrollState}
         >
           {options.map((option) => {
@@ -272,8 +272,7 @@ function TimeScrollColumn<T extends number | string>({
                   tabIndex={selected ? 0 : -1}
                   className={cn(
                     "h-8 w-full max-w-16 rounded-full text-xs tabular-nums",
-                    selected &&
-                      "border-forge-teal bg-forge-teal text-white hover:bg-forge-teal hover:text-white",
+                    selected && "border-forge-teal bg-forge-teal text-white",
                   )}
                   onKeyDown={(event) => onKeyDown(option, event)}
                   onClick={() => onSelect(option)}
@@ -387,7 +386,7 @@ function TimeInput({
   // biome-ignore lint/correctness/useExhaustiveDependencies: selected time changes should recenter the active option while the panel is open.
   useEffect(() => {
     if (!open) {
-      return;
+      return undefined;
     }
 
     const delay = scheduleDelay(() => {
@@ -524,7 +523,7 @@ function TimeInput({
                             className={cn(
                               "mx-auto h-8 w-full max-w-14 rounded-full text-xs",
                               selected &&
-                                "border-forge-teal bg-forge-teal text-white hover:bg-forge-teal hover:text-white",
+                                "border-forge-teal bg-forge-teal text-white",
                             )}
                             onKeyDown={(event) =>
                               handleColumnKeyDown(

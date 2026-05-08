@@ -118,7 +118,7 @@ export function ForgeOrb() {
 
         <div className="pointer-events-none absolute inset-0 flex transform-[translateZ(30px)] items-center justify-center">
           <TeamForgeLogo
-            className="h-20 w-20 drop-shadow-[0_0_16px_rgba(245,158,11,0.25)] filter md:h-24 md:w-24"
+            className="h-20 w-20 drop-shadow-[0_0_16px_rgba(245,158,11,0.25)] md:h-24 md:w-24"
             showBackground={false}
           />
         </div>

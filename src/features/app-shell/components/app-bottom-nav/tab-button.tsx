@@ -70,7 +70,7 @@ export function TabButton({ item, pathname }: TabButtonProps) {
 
         <span
           className={cn(
-            "max-w-full truncate text-[10px] leading-none font-semibold tracking-tight whitespace-nowrap transition-colors duration-300",
+            "max-w-full truncate text-[10px] leading-none font-semibold tracking-tight transition-colors duration-300",
             active ? activeColorText : "text-muted-foreground",
           )}
         >

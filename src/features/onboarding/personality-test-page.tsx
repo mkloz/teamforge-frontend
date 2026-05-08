@@ -44,8 +44,8 @@ export function PersonalityTestPage() {
 
           <div
             className={cn(
-              "relative flex min-h-full flex-col items-center justify-start px-4 pb-4 sm:px-6 sm:pb-4",
-              hasTopPadding ? "pt-7 sm:pt-12" : "pt-4 sm:pt-4",
+              "relative flex min-h-full flex-col items-center justify-start px-4 pb-4 sm:px-6",
+              hasTopPadding ? "pt-7 sm:pt-12" : "pt-4",
             )}
           >
             <div className="relative flex w-full max-w-xl flex-1 flex-col">

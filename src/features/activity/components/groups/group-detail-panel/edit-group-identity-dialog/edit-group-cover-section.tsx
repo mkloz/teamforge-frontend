@@ -59,7 +59,7 @@ export function EditGroupCoverSection({
             type="button"
             variant="ghost"
             size="icon-sm"
-            className="absolute top-2 right-2 z-20 rounded-full bg-black/45 text-white hover:bg-black/65 hover:text-white"
+            className="absolute top-2 right-2 z-20 rounded-full bg-black/45 text-white hover:bg-black/65"
             onClick={() => editor.setCoverImage(null)}
             aria-label="Remove cover"
           >
