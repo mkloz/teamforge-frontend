@@ -51,26 +51,26 @@
     "rules": {
       "recommended": true,
       "a11y": {
-        "noNoninteractiveElementInteractions": "warn",
-        "noNoninteractiveTabindex": "warn",
-        "noStaticElementInteractions": "warn",
-        "noSvgWithoutTitle": "warn",
-        "useAriaPropsForRole": "warn",
-        "useAriaPropsSupportedByRole": "warn",
-        "useFocusableInteractive": "warn",
-        "useKeyWithClickEvents": "warn",
-        "useSemanticElements": "warn"
+        "noNoninteractiveElementInteractions": "error",
+        "noNoninteractiveTabindex": "error",
+        "noStaticElementInteractions": "error",
+        "noSvgWithoutTitle": "error",
+        "useAriaPropsForRole": "error",
+        "useAriaPropsSupportedByRole": "error",
+        "useFocusableInteractive": "error",
+        "useKeyWithClickEvents": "error",
+        "useSemanticElements": "error"
       },
       "complexity": {
-        "noImportantStyles": "warn",
+        "noImportantStyles": "error",
         "noStaticOnlyClass": "off",
-        "noUselessSwitchCase": "warn"
+        "noUselessSwitchCase": "error"
       },
       "correctness": {
-        "useExhaustiveDependencies": "warn"
+        "useExhaustiveDependencies": "error"
       },
       "nursery": {
-        "noFloatingPromises": "warn",
+        "noFloatingPromises": "error",
         "useSortedClasses": {
           "level": "warn",
           "options": {
@@ -79,11 +79,13 @@
         }
       },
       "style": {
-        "noDescendingSpecificity": "warn",
-        "noNonNullAssertion": "warn"
+        "noDescendingSpecificity": "error",
+        "noNonNullAssertion": "error",
+        "useImportType": "error"
       },
       "suspicious": {
-        "noArrayIndexKey": "warn"
+        "noArrayIndexKey": "error",
+        "noExplicitAny": "error"
       }
     }
   },
