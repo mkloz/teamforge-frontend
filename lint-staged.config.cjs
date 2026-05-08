@@ -1,5 +1,6 @@
 module.exports = {
   "*.{ts,tsx,js,jsx,mjs,cjs}": [
+    "react-compiler-tracker --stage-record-file",
     "biome check --write --no-errors-on-unmatched",
     "oxlint --config .oxlintrc.json --format stylish --no-error-on-unmatched-pattern",
   ],

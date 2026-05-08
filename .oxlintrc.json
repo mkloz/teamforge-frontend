@@ -21,6 +21,19 @@
   "settings": {
     "tailwindcss": {
       "entryPoint": "src/index.css",
+      "attributes": [
+        "classNames",
+        "containerClassName",
+        "contentClassName",
+        "countClassName",
+        "descriptionClassName",
+        "dotClassName",
+        "fallbackClassName",
+        "iconClassName",
+        "imageClassName",
+        "titleClassName",
+        "wrapperClassName"
+      ],
       "exclude": {
         "variablePatterns": ["^styles?$"]
       }
@@ -92,8 +105,10 @@
     "tailwindcss/enforce-negative-arbitrary-values": "error",
     "tailwindcss/enforce-consistent-variable-syntax": "error",
     "tailwindcss/consistent-variant-order": "warn",
+    "tailwindcss/no-arbitrary-value": "warn",
     "tailwindcss/no-hardcoded-colors": "error",
     "tailwindcss/no-unnecessary-arbitrary-value": "error",
+    "tailwindcss/prefer-theme-tokens": "warn",
     "oxlint-plugin-query/exhaustive-deps": "error",
     "oxlint-plugin-query/no-rest-destructuring": "error",
     "oxlint-plugin-query/stable-query-client": "error",

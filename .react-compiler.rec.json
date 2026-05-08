@@ -1,0 +1,81 @@
+{
+  "recordVersion": 1,
+  "react-compiler-version": "^1.0.0",
+  "files": {
+    "src\\features\\activity\\components\\chat\\unified-conversation-view\\unified-message-input\\use-message-composer-submit.ts": {
+      "CompileError": 1
+    },
+    "src\\features\\activity\\components\\groups\\group-detail-panel\\plan-section\\use-plan-proposal-form.ts": {
+      "CompileError": 1
+    },
+    "src\\features\\activity\\hooks\\group-identity\\use-image-upload-field.ts": {
+      "CompileError": 1
+    },
+    "src\\features\\activity\\hooks\\use-activity-composer.ts": {
+      "CompileError": 1
+    },
+    "src\\features\\activity\\hooks\\use-activity-group-actions.ts": {
+      "CompileError": 4
+    },
+    "src\\features\\auth\\hooks\\use-forgot-password-form.ts": {
+      "CompileError": 1
+    },
+    "src\\features\\auth\\hooks\\use-google-auth.ts": {
+      "CompileError": 1
+    },
+    "src\\features\\auth\\hooks\\use-login-form.ts": {
+      "CompileError": 1
+    },
+    "src\\features\\auth\\hooks\\use-register-form.ts": {
+      "CompileError": 3
+    },
+    "src\\features\\auth\\hooks\\use-reset-password-form.ts": {
+      "CompileError": 1
+    },
+    "src\\features\\forge\\components\\steps\\step5-identity\\use-step5-image-uploads.ts": {
+      "CompileError": 1
+    },
+    "src\\features\\forge\\hooks\\forge-wizard\\use-forge-wizard-submit-actions\\use-forge-execution-actions.ts": {
+      "CompileError": 1
+    },
+    "src\\features\\forge\\hooks\\forge-wizard\\use-forge-wizard-submit-actions\\use-save-forge-identity-action.ts": {
+      "CompileError": 1
+    },
+    "src\\features\\forge\\hooks\\forge-wizard\\use-forge-wizard-submit-actions\\use-send-forge-invites-action.ts": {
+      "CompileError": 2
+    },
+    "src\\features\\forge\\hooks\\forge-wizard\\use-kept-forge-search.ts": {
+      "CompileError": 1
+    },
+    "src\\features\\home\\components\\attention-queue\\use-attention-queue-state.ts": {
+      "CompileError": 1
+    },
+    "src\\features\\landing\\components\\navbar\\index.tsx": {
+      "CompileError": 1
+    },
+    "src\\features\\notifications\\components\\notifications-drawer\\index.tsx": {
+      "CompileError": 1
+    },
+    "src\\features\\settings\\hooks\\use-settings-profile-form\\use-settings-security-actions.ts": {
+      "CompileError": 1
+    },
+    "src\\features\\settings\\settings-page\\use-settings-sign-out.ts": {
+      "CompileError": 1
+    },
+    "src\\features\\user-menu\\components\\user-menu\\use-user-menu-sign-out.ts": {
+      "CompileError": 1
+    },
+    "src\\shared\\components\\common\\image.tsx": {
+      "CompileError": 3
+    },
+    "src\\shared\\components\\route-error-state.tsx": {
+      "CompileError": 1
+    },
+    "src\\shared\\components\\ui\\time-input.tsx": {
+      "CompileError": 3
+    },
+    "src\\shared\\hooks\\use-address-autocomplete.ts": {
+      "CompileError": 1
+    }
+  }
+}

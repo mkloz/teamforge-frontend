@@ -1,4 +1,5 @@
-export { buildHomeNextMove, type HomeNextMove } from "./home-next-move";
+export { buildHomeNextMove } from "./home-next-move";
+export type { HomeNextMove } from "./home-next-move.types";
 export {
   getActiveGroupPreview,
   getRecommendationPreview,
