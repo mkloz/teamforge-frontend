@@ -8,7 +8,7 @@ export function BlockedUsersLoadingState({
   message,
 }: BlockedUsersLoadingStateProps) {
   return (
-    <div className="flex items-center gap-2 py-4 text-sm text-slate-muted">
+    <div className="flex items-center gap-2 py-4 text-slate-muted text-sm">
       <Loader2 size={16} className="animate-spin" />
       {message}
     </div>
@@ -22,7 +22,7 @@ interface BlockedUsersErrorStateProps {
 export function BlockedUsersErrorState({
   message,
 }: BlockedUsersErrorStateProps) {
-  return <p className="py-4 text-sm text-destructive">{message}</p>;
+  return <p className="py-4 text-destructive text-sm">{message}</p>;
 }
 
 export function BlockedUsersEmptyState() {
@@ -32,8 +32,8 @@ export function BlockedUsersEmptyState() {
         <ShieldOff size={16} />
       </div>
       <div>
-        <p className="text-sm font-semibold text-ink">No blocked users</p>
-        <p className="mt-1 text-sm leading-relaxed text-slate-muted">
+        <p className="font-semibold text-ink text-sm">No blocked users</p>
+        <p className="mt-1 text-slate-muted text-sm leading-relaxed">
           People you block from direct chats will appear here.
         </p>
       </div>

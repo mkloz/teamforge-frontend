@@ -20,7 +20,7 @@ export function PinnedMessagesSection({
     <section className="flex flex-col gap-3">
       <div className="flex items-center gap-2 px-1">
         <Pin className="size-4 rotate-45 text-forge-teal" />
-        <h4 className="text-xs font-bold tracking-wider text-slate-muted uppercase">
+        <h4 className="font-bold text-slate-muted text-xs uppercase tracking-wider">
           Pinned Messages
         </h4>
       </div>
@@ -74,15 +74,15 @@ function PinnedMessageSummary({ message }: { message: UnifiedMessage }) {
     <>
       <div className="mb-1 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <span className="text-sm leading-none font-semibold text-ink">
+          <span className="font-semibold text-ink text-sm leading-none">
             {message.sender?.name || "System"}
           </span>
         </div>
-        <span className="text-xs font-medium text-slate-muted">
+        <span className="font-medium text-slate-muted text-xs">
           {message.createdAt && dayjs(message.createdAt).format("MMM D")}
         </span>
       </div>
-      <p className="line-clamp-2 text-sm leading-relaxed text-ink/80">
+      <p className="line-clamp-2 text-ink/80 text-sm leading-relaxed">
         {message.content}
       </p>
     </>

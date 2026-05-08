@@ -76,12 +76,12 @@ export function MemberCard({
       {/* Info Section */}
       <div className="min-w-0 flex-1">
         <div className="mb-0.5 flex items-center gap-2">
-          <p className="truncate text-sm font-semibold text-foreground">
+          <p className="truncate font-semibold text-foreground text-sm">
             {member.user?.name}
           </p>
           <Badge
             variant="mbti"
-            className="h-5 px-2 text-xs font-bold tracking-tight"
+            className="h-5 px-2 font-bold text-xs tracking-tight"
           >
             {member.user?.personalityType}
           </Badge>
@@ -90,13 +90,13 @@ export function MemberCard({
           )}
         </div>
         <div className="flex items-center gap-2.5">
-          <span className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
+          <span className="font-bold text-muted-foreground text-xs uppercase tracking-wider">
             Trust {member.user?.trustScore}%
           </span>
           <div className="h-2 w-px bg-border/50" />
           <span
             className={cn(
-              "text-xs font-bold tracking-wider uppercase",
+              "font-bold text-xs uppercase tracking-wider",
               isHighCompatibility
                 ? "text-forge-teal"
                 : "text-muted-foreground/60",

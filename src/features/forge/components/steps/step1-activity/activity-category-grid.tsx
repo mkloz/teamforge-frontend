@@ -42,14 +42,14 @@ export function ActivityCategoryGrid({
     <div className="space-y-2.5">
       <div className="flex items-center justify-between gap-3 px-0.5">
         <div className="min-w-0">
-          <p className="text-xs leading-none font-semibold text-muted-foreground">
+          <p className="font-semibold text-muted-foreground text-xs leading-none">
             Choose a category
           </p>
-          <p className="mt-1 text-micro leading-none text-muted-foreground/55">
+          <p className="mt-1 text-micro text-muted-foreground/55 leading-none">
             Pick a style and we&apos;ll find the right people.
           </p>
         </div>
-        <p className="shrink-0 text-micro leading-none font-semibold text-muted-foreground/50">
+        <p className="shrink-0 font-semibold text-micro text-muted-foreground/50 leading-none">
           {ACTIVITIES.length} options
         </p>
       </div>
@@ -72,7 +72,7 @@ export function ActivityCategoryGrid({
               onClick={() => onSelect(selected ? null : label)}
               aria-pressed={selected}
               className={cn(
-                "group relative flex min-h-20 min-w-0 flex-col gap-2 rounded-lg border px-3 py-2.5 text-left whitespace-normal transition duration-200 active:scale-[0.98]",
+                "group relative flex min-h-20 min-w-0 flex-col gap-2 whitespace-normal rounded-lg border px-3 py-2.5 text-left transition duration-200 active:scale-[0.98]",
                 selected
                   ? "border-spark-amber/65 bg-spark-amber/10 shadow-sm ring-1 ring-spark-amber/20"
                   : personalised
@@ -96,7 +96,7 @@ export function ActivityCategoryGrid({
                   </span>
                   <p
                     className={cn(
-                      "min-w-0 leading-[1.1] font-semibold text-pretty",
+                      "min-w-0 text-pretty font-semibold leading-[1.1]",
                       label.length > 18
                         ? "text-[12.5px]"
                         : label.length > 13
@@ -116,7 +116,7 @@ export function ActivityCategoryGrid({
                 )}
               </div>
 
-              <p className="line-clamp-2 min-w-0 text-xs leading-snug text-wrap text-muted-foreground">
+              <p className="line-clamp-2 min-w-0 text-wrap text-muted-foreground text-xs leading-snug">
                 {description}
               </p>
             </button>

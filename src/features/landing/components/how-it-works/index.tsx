@@ -157,7 +157,7 @@ export function HowItWorksSection() {
                 asChild
                 variant="ghost"
                 size="sm"
-                className="absolute right-8 bottom-8 z-50 h-9 rounded-full px-4 text-[10px] font-bold tracking-[0.2em] uppercase"
+                className="absolute right-8 bottom-8 z-50 h-9 rounded-full px-4 font-bold text-[10px] uppercase tracking-[0.2em]"
               >
                 <motion.button
                   initial={{ opacity: 0, y: 10 }}

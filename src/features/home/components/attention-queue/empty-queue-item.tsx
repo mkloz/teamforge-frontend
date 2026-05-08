@@ -12,10 +12,10 @@ export function EmptyQueueItem() {
           <CheckCircle2 className="size-5" aria-hidden="true" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-black text-foreground">
+          <p className="font-black text-foreground text-sm">
             Nothing needs a decision.
           </p>
-          <p className="mt-1 text-xs leading-relaxed font-medium text-muted-foreground">
+          <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">
             Your groups are quiet enough to look for a fresh opening.
           </p>
         </div>

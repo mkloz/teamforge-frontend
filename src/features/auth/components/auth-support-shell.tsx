@@ -42,30 +42,30 @@ export function AuthSupportShell({
               size={16}
               className="transition-transform duration-300 ease-out group-hover:-translate-x-1"
             />
-            <span className="text-xs font-medium">{backLabel}</span>
+            <span className="font-medium text-xs">{backLabel}</span>
           </Link>
         </Button>
       </div>
 
-      <div className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-r border-border bg-hero-bg lg:flex">
+      <div className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-border border-r bg-hero-bg lg:flex">
         <VoronoiCatalyst progress={0.68} />
       </div>
 
       <div className="relative flex h-full flex-1 flex-col overflow-hidden">
         <BackgroundTexture />
 
-        <div className="relative z-10 flex-1 overflow-x-hidden overflow-y-auto scroll-smooth px-4 pb-4">
+        <div className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth px-4 pb-4">
           <div className="flex min-h-full w-full flex-col items-center justify-center pt-20 pb-10 lg:py-8">
             <div className="w-full max-w-sm px-2 sm:px-10 lg:p-0">
               <div className="rounded-xl border border-border/70 bg-card/95 p-6 shadow-[0_24px_80px_rgba(28,28,26,0.12)] backdrop-blur-xl sm:p-8">
                 <div className="space-y-2 text-center">
-                  <p className="text-xs font-semibold tracking-[0.22em] text-forge-teal uppercase">
+                  <p className="font-semibold text-forge-teal text-xs uppercase tracking-[0.22em]">
                     TeamForge
                   </p>
-                  <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                  <h1 className="font-semibold text-2xl text-foreground tracking-tight">
                     {title}
                   </h1>
-                  <p className="text-sm leading-6 text-slate-muted">
+                  <p className="text-slate-muted text-sm leading-6">
                     {description}
                   </p>
                 </div>

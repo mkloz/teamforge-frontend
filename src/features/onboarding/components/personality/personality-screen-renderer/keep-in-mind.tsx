@@ -39,21 +39,21 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
     <PersonalityScreenShell className="max-w-md">
       <motion.p
         variants={fadeUpItem}
-        className="mb-3 text-center font-sans text-xs font-bold tracking-[0.15em] text-forge-teal uppercase"
+        className="mb-3 text-center font-bold font-sans text-forge-teal text-xs uppercase tracking-[0.15em]"
       >
         Before you begin
       </motion.p>
 
       <motion.h1
         variants={fadeUpItem}
-        className="mb-5 text-center font-sans text-display-xs leading-tight font-extrabold text-balance text-ink sm:text-display-sm"
+        className="mb-5 text-balance text-center font-extrabold font-sans text-display-xs text-ink leading-tight sm:text-display-sm"
       >
         Answer as yourself
       </motion.h1>
 
       <motion.p
         variants={fadeUpItem}
-        className="mb-7 text-center font-sans text-sm leading-relaxed font-medium text-muted-foreground sm:text-base"
+        className="mb-7 text-center font-medium font-sans text-muted-foreground text-sm leading-relaxed sm:text-base"
       >
         A quick reminder before the questions: answer from ordinary life, not
         from the version of yourself you think you should be.
@@ -69,10 +69,10 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
               <Icon size={14} strokeWidth={2.5} />
             </div>
             <div className="flex flex-col gap-0.5 text-left">
-              <span className="font-sans text-sm leading-tight font-bold text-ink">
+              <span className="font-bold font-sans text-ink text-sm leading-tight">
                 {title}
               </span>
-              <p className="max-w-sm font-sans text-sm leading-relaxed font-medium text-muted-foreground">
+              <p className="max-w-sm font-medium font-sans text-muted-foreground text-sm leading-relaxed">
                 {text}
               </p>
             </div>

@@ -29,10 +29,10 @@ export const LightboxHeader = memo(function LightboxHeader({
     >
       <div className="flex flex-col gap-0.5">
         <div className="flex items-center gap-2">
-          <span className="rounded-md border border-white/10 bg-white/10 px-2 py-0.5 text-xs font-black tracking-wide text-white">
+          <span className="rounded-md border border-white/10 bg-white/10 px-2 py-0.5 font-black text-white text-xs tracking-wide">
             {selectedIndex !== null ? selectedIndex + 1 : 0} / {count}
           </span>
-          <span className="max-w-40 truncate text-sm font-bold tracking-tight text-white/80 sm:max-w-80">
+          <span className="max-w-40 truncate font-bold text-sm text-white/80 tracking-tight sm:max-w-80">
             {currentMedia?.name || "Shared memory"}
           </span>
         </div>
@@ -65,7 +65,7 @@ export const LightboxHeader = memo(function LightboxHeader({
             </TooltipTrigger>
             <TooltipContent
               side="bottom"
-              className="border-white/10 bg-white/10 text-xs font-bold text-white backdrop-blur-md"
+              className="border-white/10 bg-white/10 font-bold text-white text-xs backdrop-blur-md"
             >
               Download file
             </TooltipContent>

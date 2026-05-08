@@ -19,7 +19,7 @@ export function ActivateAccountPage() {
       backLabel="Back to login"
       footer={
         state === "error" ? (
-          <p className="text-center text-sm text-slate-muted">
+          <p className="text-center text-slate-muted text-sm">
             Still stuck?{" "}
             <Link
               {...buildAuthRouteNavigation("/auth/register", returnTo)}

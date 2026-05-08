@@ -18,7 +18,7 @@ export function BlockedUserRow({
   const user = friendship.counterpart;
 
   return (
-    <div className="flex flex-col gap-4 border-b border-border py-4 md:flex-row md:items-center md:justify-between">
+    <div className="flex flex-col gap-4 border-border border-b py-4 md:flex-row md:items-center md:justify-between">
       <div className="flex min-w-0 items-center gap-3">
         <Avatar
           src={user.avatar}
@@ -27,8 +27,8 @@ export function BlockedUserRow({
         />
 
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-ink">{user.name}</p>
-          <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-muted">
+          <p className="truncate font-semibold text-ink text-sm">{user.name}</p>
+          <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-slate-muted text-xs">
             <span>Blocked {formatBlockedDate(friendship.updatedAt)}</span>
             {user.city && <span>{user.city}</span>}
             {user.personalityType && <span>{user.personalityType}</span>}

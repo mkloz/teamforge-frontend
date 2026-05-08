@@ -10,10 +10,10 @@ export function SearchEmptyState({ query }: SearchEmptyStateProps) {
       <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-forge-teal/15 bg-forge-teal/5">
         <Search size={20} className="text-forge-teal/70" strokeWidth={2} />
       </div>
-      <p className="font-sans text-base font-black tracking-tight text-ink">
+      <p className="font-black font-sans text-base text-ink tracking-tight">
         No exact interest for &ldquo;{query}&rdquo;
       </p>
-      <p className="mt-2 font-sans text-sm leading-relaxed font-medium text-pretty text-slate-muted">
+      <p className="mt-2 text-pretty font-medium font-sans text-slate-muted text-sm leading-relaxed">
         Try a broader word, or pick the closest thing from the catalog. The
         point is honest signal, not perfect wording.
       </p>

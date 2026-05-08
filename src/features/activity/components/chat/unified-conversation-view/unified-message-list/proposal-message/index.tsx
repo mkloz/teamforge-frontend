@@ -74,7 +74,7 @@ export const ProposalMessage = memo(function ProposalMessage({
           )}
         >
           {!message.isOwn && showSender && (
-            <p className="mb-0.5 ml-1.5 text-micro font-bold tracking-tight text-forge-teal opacity-90">
+            <p className="mb-0.5 ml-1.5 font-bold text-forge-teal text-micro tracking-tight opacity-90">
               {message.sender?.name || proposal.proposer.name}
             </p>
           )}
@@ -115,8 +115,8 @@ export const ProposalMessage = memo(function ProposalMessage({
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 border-t border-border/5 px-3 py-1.5">
-              <span className="text-nano font-bold text-slate-muted uppercase tabular-nums">
+            <div className="flex items-center justify-end gap-2 border-border/5 border-t px-3 py-1.5">
+              <span className="font-bold text-nano text-slate-muted uppercase tabular-nums">
                 {formatChatTime(message.createdAt)}
               </span>
               {message.status === "READ" && (

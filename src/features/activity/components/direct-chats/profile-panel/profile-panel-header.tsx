@@ -7,8 +7,8 @@ interface ProfilePanelHeaderProps {
 
 export function ProfilePanelHeader({ onClose }: ProfilePanelHeaderProps) {
   return (
-    <header className="z-20 flex items-center justify-between border-b border-border bg-canvas/80 px-4 py-3 backdrop-blur-md">
-      <h3 className="text-sm font-semibold tracking-tight text-foreground">
+    <header className="z-20 flex items-center justify-between border-border border-b bg-canvas/80 px-4 py-3 backdrop-blur-md">
+      <h3 className="font-semibold text-foreground text-sm tracking-tight">
         Member Info
       </h3>
       <Button

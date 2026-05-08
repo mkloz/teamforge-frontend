@@ -28,7 +28,7 @@ export function ResetPasswordField({ label, name }: ResetPasswordFieldProps) {
       name={name}
       render={({ field }) => (
         <FormItem className="space-y-0 text-left">
-          <FormLabel className="font-sans text-sm font-semibold text-foreground">
+          <FormLabel className="font-sans font-semibold text-foreground text-sm">
             {label}
           </FormLabel>
           <FormControl>
@@ -59,7 +59,7 @@ export function ResetPasswordField({ label, name }: ResetPasswordFieldProps) {
               {...field}
             />
           </FormControl>
-          <FormMessage className="mt-1 text-xs font-medium text-destructive" />
+          <FormMessage className="mt-1 font-medium text-destructive text-xs" />
         </FormItem>
       )}
     />

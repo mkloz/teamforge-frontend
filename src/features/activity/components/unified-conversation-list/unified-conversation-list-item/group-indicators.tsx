@@ -16,13 +16,13 @@ export const GroupIndicators = memo(function GroupIndicators({
   return (
     <div className="mt-2 flex items-center gap-2.5">
       {countdown && (
-        <span className="flex items-center gap-1 text-micro font-bold text-forge-teal/80">
+        <span className="flex items-center gap-1 font-bold text-forge-teal/80 text-micro">
           <Clock size={11} strokeWidth={2.5} />
           {countdown}
         </span>
       )}
       {isDraft && (
-        <span className="flex items-center gap-1 text-micro font-bold text-spark-amber">
+        <span className="flex items-center gap-1 font-bold text-micro text-spark-amber">
           <FileEdit size={11} strokeWidth={2.5} />
           Pending
         </span>

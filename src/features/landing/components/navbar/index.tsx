@@ -68,7 +68,7 @@ export function Navbar() {
         className={cn(
           "dark fixed top-0 right-0 left-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-150",
           scrolled
-            ? "border-b border-white/5 bg-hero-bg/95 backdrop-blur-md"
+            ? "border-white/5 border-b bg-hero-bg/95 backdrop-blur-md"
             : "bg-transparent",
         )}
       >
@@ -78,11 +78,11 @@ export function Navbar() {
             onClick={() => {
               scrollToLandingTop();
             }}
-            className="group -ml-2 flex items-center gap-2 rounded-lg border-0 bg-transparent px-2 transition-all select-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-hero-bg focus-visible:outline-none"
+            className="group -ml-2 flex select-none items-center gap-2 rounded-lg border-0 bg-transparent px-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-hero-bg"
             aria-label="TeamForge home"
           >
             <TeamForgeLogo className="h-8 w-8" showBackground={false} />
-            <span className="font-sans text-lg font-semibold tracking-tight">
+            <span className="font-sans font-semibold text-lg tracking-tight">
               <span className="text-white">Team</span>
               <span className="text-forge-teal">Forge</span>
             </span>
@@ -97,7 +97,7 @@ export function Navbar() {
                 key={link.id}
                 href={`#${link.id}`}
                 onClick={(e) => handleNavClick(e, link.id)}
-                className="group relative rounded-sm font-sans text-sm font-medium text-text-dark-secondary transition-colors duration-200 hover:text-white focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-transparent focus-visible:outline-none"
+                className="group relative rounded-sm font-medium font-sans text-sm text-text-dark-secondary transition-colors duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
               >
                 {link.label}
                 <span className="absolute right-0 -bottom-0.5 left-0 h-px origin-left scale-x-0 bg-forge-teal transition-transform duration-200 group-hover:scale-x-100" />
@@ -177,7 +177,7 @@ export function Navbar() {
               href={`#${link.id}`}
               onClick={(e) => handleNavClick(e, link.id)}
               className={cn(
-                "rounded-md px-4 py-2 font-sans text-2xl font-semibold text-text-dark-secondary transition-all duration-300 hover:text-white focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-4 focus-visible:outline-none",
+                "rounded-md px-4 py-2 font-sans font-semibold text-2xl text-text-dark-secondary transition-all duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-4",
                 menuOpen
                   ? "translate-y-0 opacity-100"
                   : "translate-y-4 opacity-0",

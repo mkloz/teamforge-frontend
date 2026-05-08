@@ -84,7 +84,7 @@ export function TagPill({
             />
           </div>
 
-          <span className="flex min-h-3.5 max-w-[8.25rem] min-w-0 items-center justify-center truncate text-center leading-[1.1] sm:min-h-4 sm:max-w-none">
+          <span className="flex min-h-3.5 min-w-0 max-w-[8.25rem] items-center justify-center truncate text-center leading-[1.1] sm:min-h-4 sm:max-w-none">
             {label}
           </span>
 

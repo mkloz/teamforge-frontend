@@ -22,7 +22,7 @@ export const RecordingOverlay = memo(({ timeLabel }: RecordingOverlayProps) => {
     <div className="flex h-11 flex-1 items-center gap-3 px-4">
       <div className="flex items-center gap-2 text-destructive">
         <div className="size-2.5 animate-pulse rounded-full bg-destructive" />
-        <span className="text-sm font-black tracking-wide tabular-nums">
+        <span className="font-black text-sm tabular-nums tracking-wide">
           {timeLabel}
         </span>
       </div>
@@ -35,7 +35,7 @@ export const RecordingOverlay = memo(({ timeLabel }: RecordingOverlayProps) => {
           />
         ))}
       </div>
-      <span className="animate-in text-micro font-bold tracking-wider text-slate-muted uppercase fade-in slide-in-from-right-2">
+      <span className="fade-in slide-in-from-right-2 animate-in font-bold text-micro text-slate-muted uppercase tracking-wider">
         Recording...
       </span>
     </div>

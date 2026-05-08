@@ -18,7 +18,7 @@ export function BalanceNudge() {
       <div className="mt-0.5 shrink-0 text-spark-amber">
         <Sprout size={16} strokeWidth={2} />
       </div>
-      <p className="flex-1 font-sans text-xs leading-snug text-ink">
+      <p className="flex-1 font-sans text-ink text-xs leading-snug">
         You have a strong lane here. A few picks from another area can make the
         profile feel more like the full you.
       </p>

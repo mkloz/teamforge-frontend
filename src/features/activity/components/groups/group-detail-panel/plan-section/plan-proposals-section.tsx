@@ -37,11 +37,11 @@ export function PlanProposalsSection({
       <div className="flex items-center justify-between gap-3">
         <h3
           id="plan-proposals-title"
-          className="text-xs font-bold tracking-wider text-muted-foreground/60 uppercase"
+          className="font-bold text-muted-foreground/60 text-xs uppercase tracking-wider"
         >
           Plan Proposals
         </h3>
-        <span className="text-xs font-semibold text-muted-foreground">
+        <span className="font-semibold text-muted-foreground text-xs">
           {proposals.length} active
         </span>
       </div>

@@ -39,10 +39,10 @@ export const SystemMessage = memo(function SystemMessage({
   const { container, icon: Icon, iconStroke } = styleMap[config.type];
 
   return (
-    <div className="pointer-events-none mt-4 mb-2 flex animate-in justify-center px-6 duration-700 zoom-in-95 fade-in">
+    <div className="zoom-in-95 fade-in pointer-events-none mt-4 mb-2 flex animate-in justify-center px-6 duration-700">
       <div
         className={cn(
-          "flex items-center gap-2 rounded-full border px-3 py-1 text-micro font-bold tracking-tight",
+          "flex items-center gap-2 rounded-full border px-3 py-1 font-bold text-micro tracking-tight",
           container,
         )}
       >

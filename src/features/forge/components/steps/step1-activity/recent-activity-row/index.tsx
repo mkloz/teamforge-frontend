@@ -67,10 +67,10 @@ export function RecentActivityRow({
             <History size={13} />
           </div>
           <div className="min-w-0">
-            <p className="text-xs leading-none font-semibold text-muted-foreground">
+            <p className="font-semibold text-muted-foreground text-xs leading-none">
               Recent activity
             </p>
-            <p className="mt-1 text-micro leading-none text-muted-foreground/55">
+            <p className="mt-1 text-micro text-muted-foreground/55 leading-none">
               Reuse what you forge often.
             </p>
           </div>

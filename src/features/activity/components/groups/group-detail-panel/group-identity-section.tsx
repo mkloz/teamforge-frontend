@@ -46,13 +46,13 @@ export function GroupIdentitySection({
 
         {/* Name and metadata */}
         <div className="min-w-0 flex-1">
-          <h2 className="truncate text-xl leading-tight font-bold tracking-tight text-foreground">
+          <h2 className="truncate font-bold text-foreground text-xl leading-tight tracking-tight">
             {name}
           </h2>
 
           {/* Member count & Metadata */}
           <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1">
-            <div className="flex items-center gap-1 text-sm font-medium text-muted-foreground">
+            <div className="flex items-center gap-1 font-medium text-muted-foreground text-sm">
               <Users className="size-3.5 text-forge-teal/70" />
               <span>
                 {memberCount}{" "}
@@ -66,7 +66,7 @@ export function GroupIdentitySection({
 
             <span className="hidden text-muted-foreground/20 sm:inline">•</span>
 
-            <p className="text-xs font-medium text-muted-foreground/60">
+            <p className="font-medium text-muted-foreground/60 text-xs">
               Created Mar 4, 2026
             </p>
           </div>
@@ -75,7 +75,7 @@ export function GroupIdentitySection({
 
       {/* Description */}
       {description && (
-        <p className="mt-3 text-sm leading-relaxed font-normal text-foreground/70">
+        <p className="mt-3 font-normal text-foreground/70 text-sm leading-relaxed">
           {description}
         </p>
       )}

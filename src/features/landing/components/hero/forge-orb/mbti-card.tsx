@@ -19,10 +19,10 @@ export function MbtiCard() {
       )}
       aria-hidden="true"
     >
-      <p className="mb-1.5 font-sans text-nano font-semibold tracking-[0.15em] text-forge-teal uppercase opacity-90">
+      <p className="mb-1.5 font-sans font-semibold text-forge-teal text-nano uppercase tracking-[0.15em] opacity-90">
         Personality
       </p>
-      <p className="mb-2.5 font-sans text-2xl font-extrabold tracking-tight text-white">
+      <p className="mb-2.5 font-extrabold font-sans text-2xl text-white tracking-tight">
         ENTJ
       </p>
       <div className="space-y-1.5">
@@ -33,7 +33,7 @@ export function MbtiCard() {
           { label: "J", fill: 65, peer: "P" },
         ].map(({ label, fill, peer }) => (
           <div key={label} className="flex items-center gap-1.5">
-            <span className="w-2.5 font-sans text-nano font-bold text-forge-teal-light">
+            <span className="w-2.5 font-bold font-sans text-forge-teal-light text-nano">
               {label}
             </span>
             <div className="h-0.75 flex-1 overflow-hidden rounded-full bg-white/5">

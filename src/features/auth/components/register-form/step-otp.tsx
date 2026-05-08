@@ -41,7 +41,7 @@ export function StepOtp({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground">
+      <div className="rounded-xl border border-border bg-card px-4 py-3 text-foreground text-sm">
         <p className="font-medium text-foreground">Check your inbox</p>
         <p className="mt-1 text-slate-muted">
           {otpMessage ??
@@ -54,7 +54,7 @@ export function StepOtp({
         name="otp"
         render={({ field }) => (
           <FormItem className="mx-auto w-full space-y-3 py-2">
-            <FormLabel className="flex w-full justify-center text-center font-sans text-sm font-semibold text-ink">
+            <FormLabel className="flex w-full justify-center text-center font-sans font-semibold text-ink text-sm">
               Verification Code
             </FormLabel>
             <FormControl>
@@ -90,7 +90,7 @@ export function StepOtp({
                 </InputOTPGroup>
               </InputOTP>
             </FormControl>
-            <FormMessage className="text-center text-xs font-medium text-destructive" />
+            <FormMessage className="text-center font-medium text-destructive text-xs" />
           </FormItem>
         )}
       />

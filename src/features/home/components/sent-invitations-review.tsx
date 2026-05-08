@@ -44,14 +44,14 @@ export function SentInvitationsReview({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <div className="inline-flex items-center gap-2 rounded-full bg-forge-teal/10 px-3 py-1 text-xs font-black tracking-[0.14em] text-forge-teal uppercase">
+          <div className="inline-flex items-center gap-2 rounded-full bg-forge-teal/10 px-3 py-1 font-black text-forge-teal text-xs uppercase tracking-[0.14em]">
             <BellRing className="size-3.5" />
             Sent invite update
           </div>
-          <h2 className="text-lg font-black tracking-tight text-foreground">
+          <h2 className="font-black text-foreground text-lg tracking-tight">
             Invite status
           </h2>
-          <p className="text-sm leading-relaxed font-medium text-muted-foreground">
+          <p className="font-medium text-muted-foreground text-sm leading-relaxed">
             Review the exact invitation that changed and decide what to do next.
           </p>
         </div>
@@ -73,20 +73,20 @@ export function SentInvitationsReview({
         >
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-xs font-black tracking-[0.16em] text-muted-foreground uppercase">
+              <p className="font-black text-muted-foreground text-xs uppercase tracking-[0.16em]">
                 {focusedInvite.group.name}
               </p>
-              <h3 className="mt-1 truncate text-base font-black text-foreground">
+              <h3 className="mt-1 truncate font-black text-base text-foreground">
                 {focusedInvite.invitee.name}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed font-medium text-muted-foreground">
+              <p className="mt-2 font-medium text-muted-foreground text-sm leading-relaxed">
                 {focusedInvite.message?.trim() ||
                   `This invite was sent to ${focusedInvite.invitee.name} for ${focusedInvite.group.name}.`}
               </p>
             </div>
             <div
               className={cn(
-                "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-black tracking-[0.14em] uppercase",
+                "inline-flex items-center gap-2 rounded-full border px-3 py-1 font-black text-xs uppercase tracking-[0.14em]",
                 focusedInviteStatus?.tone,
               )}
             >
@@ -95,12 +95,12 @@ export function SentInvitationsReview({
             </div>
           </div>
 
-          <div className="mt-4 rounded-xl border border-border/70 bg-canvas/70 px-4 py-3 text-sm font-medium text-muted-foreground">
+          <div className="mt-4 rounded-xl border border-border/70 bg-canvas/70 px-4 py-3 font-medium text-muted-foreground text-sm">
             {getInviteStatusSentence(focusedInvite)}
           </div>
         </motion.article>
       ) : (
-        <div className="mt-4 rounded-xl border border-border/70 bg-canvas/70 px-4 py-5 text-sm font-medium text-muted-foreground">
+        <div className="mt-4 rounded-xl border border-border/70 bg-canvas/70 px-4 py-5 font-medium text-muted-foreground text-sm">
           That invite is no longer available in your recent sent history.
         </div>
       )}

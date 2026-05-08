@@ -28,16 +28,16 @@ export function WeightSlider({
     <div className="space-y-3">
       <div className="flex items-start justify-between">
         <div className="space-y-0.5">
-          <p className="text-xs font-semibold text-muted-foreground">{label}</p>
+          <p className="font-semibold text-muted-foreground text-xs">{label}</p>
           {subLabel && (
-            <p className="text-xs leading-snug text-muted-foreground/60">
+            <p className="text-muted-foreground/60 text-xs leading-snug">
               {subLabel}
             </p>
           )}
         </div>
         <div
           className={cn(
-            "shrink-0 text-sm font-black italic tabular-nums transition-colors duration-300",
+            "shrink-0 font-black text-sm italic tabular-nums transition-colors duration-300",
             isHighDiversity ? "text-spark-amber" : "text-forge-teal",
           )}
         >
@@ -76,13 +76,13 @@ export function WeightSlider({
         })}
       </div>
 
-      <div className="-mt-1 flex justify-between text-micro font-medium text-muted-foreground/50">
+      <div className="-mt-1 flex justify-between font-medium text-micro text-muted-foreground/50">
         <span>{semanticLabels.min}</span>
         <span>{semanticLabels.max}</span>
       </div>
 
       {warning && (
-        <div className="flex animate-in items-center gap-2 px-1 text-micro font-bold tracking-tight text-spark-amber/80 fade-in slide-in-from-top-1">
+        <div className="fade-in slide-in-from-top-1 flex animate-in items-center gap-2 px-1 font-bold text-micro text-spark-amber/80 tracking-tight">
           <AlertCircle size={12} />
           {warning}
         </div>

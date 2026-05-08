@@ -24,17 +24,17 @@ export const EmptyState = memo(function EmptyState({
   });
 
   return (
-    <div className="flex animate-in flex-col items-center justify-center px-6 py-16 text-center fade-in slide-in-from-bottom-2">
+    <div className="fade-in slide-in-from-bottom-2 flex animate-in flex-col items-center justify-center px-6 py-16 text-center">
       <div className="flex size-13 items-center justify-center rounded-xl border border-forge-teal/20 bg-forge-teal/8 text-forge-teal shadow-[0_0_0_1px_rgba(13,148,136,0.04)]">
         <MessageSquare size={21} strokeWidth={1.5} aria-hidden="true" />
       </div>
 
       <div className="mt-5 max-w-52">
-        <p className="text-base leading-tight font-black text-foreground">
+        <p className="font-black text-base text-foreground leading-tight">
           {label}
         </p>
         {description ? (
-          <p className="mt-2 text-sm leading-relaxed font-medium text-muted-foreground">
+          <p className="mt-2 font-medium text-muted-foreground text-sm leading-relaxed">
             {description}
           </p>
         ) : null}

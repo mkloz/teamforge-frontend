@@ -67,7 +67,7 @@ export function GroupSummaryCard({
           />
         ) : (
           <div className="flex h-full items-start p-4">
-            <p className="w-fit rounded-full border border-white/10 bg-black/15 px-2.5 py-1 text-micro font-bold tracking-wide text-white/75 uppercase backdrop-blur">
+            <p className="w-fit rounded-full border border-white/10 bg-black/15 px-2.5 py-1 font-bold text-micro text-white/75 uppercase tracking-wide backdrop-blur">
               Final review
             </p>
           </div>
@@ -78,14 +78,14 @@ export function GroupSummaryCard({
         />
         <div className="absolute right-4 bottom-3 left-4 flex items-end justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-micro font-bold tracking-wide text-white/70 uppercase">
+            <p className="font-bold text-micro text-white/70 uppercase tracking-wide">
               {statusLabel}
             </p>
-            <p className="truncate text-lg leading-tight font-black text-white">
+            <p className="truncate font-black text-lg text-white leading-tight">
               {displayPlanTitle}
             </p>
           </div>
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/15 bg-black/25 px-2.5 py-1 text-xs font-bold text-white/95 backdrop-blur">
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/15 bg-black/25 px-2.5 py-1 font-bold text-white/95 text-xs backdrop-blur">
             <Check size={12} strokeWidth={2.5} />
             Ready
           </span>
@@ -102,16 +102,16 @@ export function GroupSummaryCard({
             fallbackClassName="text-[11px] font-bold"
           />
           <div className="min-w-0 flex-1">
-            <h4 className="truncate text-base leading-tight font-bold text-foreground">
+            <h4 className="truncate font-bold text-base text-foreground leading-tight">
               {displayGroupName}
             </h4>
-            <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground sm:max-w-2xl">
+            <p className="mt-1 line-clamp-2 text-muted-foreground text-xs leading-relaxed sm:max-w-2xl">
               {displayDescription}
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 border-t border-border/25 pt-3 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 border-border/25 border-t pt-3 sm:grid-cols-3">
           <SummaryItem
             icon={<Users size={14} />}
             label="People"
@@ -146,10 +146,10 @@ function SummaryItem({ icon, label, value }: SummaryItemProps) {
         {icon}
       </span>
       <span className="min-w-0">
-        <span className="block text-micro font-bold tracking-wide text-muted-foreground/60 uppercase">
+        <span className="block font-bold text-micro text-muted-foreground/60 uppercase tracking-wide">
           {label}
         </span>
-        <span className="block truncate text-xs font-semibold text-foreground">
+        <span className="block truncate font-semibold text-foreground text-xs">
           {value}
         </span>
       </span>

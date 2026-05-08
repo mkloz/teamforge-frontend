@@ -27,7 +27,7 @@ function SignalPill({ signal }: { signal: MatchingSignal }) {
   return (
     <span
       className={cn(
-        "inline-flex min-h-9 max-w-full items-center gap-2 rounded-full border px-3 text-xs font-bold",
+        "inline-flex min-h-9 max-w-full items-center gap-2 rounded-full border px-3 font-bold text-xs",
         signal.strength === "ready"
           ? "border-forge-teal/25 bg-forge-teal/[0.07] text-forge-teal"
           : signal.strength === "good"

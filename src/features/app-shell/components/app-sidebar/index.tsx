@@ -39,7 +39,7 @@ export function AppSidebar({
         // Hidden on mobile, icon-only on tablet and desktop
         "hidden flex-col md:flex",
         "w-14",
-        "border-r border-sidebar-border bg-sidebar",
+        "border-sidebar-border border-r bg-sidebar",
         className,
       )}
     >

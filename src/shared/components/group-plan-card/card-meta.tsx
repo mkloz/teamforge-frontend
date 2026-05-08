@@ -14,7 +14,7 @@ export function CardMeta({ group, distance }: CardMetaProps) {
 
   return (
     <div className="relative z-10 mb-3 flex flex-col gap-2">
-      <div className="flex items-center gap-2 text-sm text-foreground/80 transition-colors group-hover:text-foreground">
+      <div className="flex items-center gap-2 text-foreground/80 text-sm transition-colors group-hover:text-foreground">
         <CalendarClock
           className="size-4 shrink-0 text-primary"
           strokeWidth={2.5}
@@ -23,7 +23,7 @@ export function CardMeta({ group, distance }: CardMetaProps) {
         <span className="font-semibold">{formattedDate}</span>
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-muted-foreground">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-muted-foreground text-sm">
         <div className="flex items-center gap-1.5 transition-colors group-hover:text-foreground/80">
           {isOnline ? (
             <Laptop className="size-4 shrink-0" strokeWidth={2} />

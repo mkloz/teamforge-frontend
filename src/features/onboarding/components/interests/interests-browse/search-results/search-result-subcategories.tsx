@@ -34,7 +34,7 @@ export function SearchResultSubcategories({
 
   return (
     <div className="flex flex-col gap-1">
-      <p className="mb-1 font-sans text-[10px] font-bold tracking-widest text-slate-muted/50 uppercase">
+      <p className="mb-1 font-bold font-sans text-[10px] text-slate-muted/50 uppercase tracking-widest">
         Categories
       </p>
       {results.subcategories.map(({ subcategory, category }) => (
@@ -90,10 +90,10 @@ function SearchResultSubcategoryItem({
             <SearchResultSubcategoryIcon subcategoryId={subcategory.id} />
           </span>
           <div className="flex min-w-0 flex-col">
-            <span className="truncate font-sans text-xs font-bold text-ink">
+            <span className="truncate font-bold font-sans text-ink text-xs">
               {subcategory.name}
             </span>
-            <span className="truncate font-sans text-[10px] leading-none font-bold tracking-wider text-slate-muted/50 uppercase">
+            <span className="truncate font-bold font-sans text-[10px] text-slate-muted/50 uppercase leading-none tracking-wider">
               {categoryName}
             </span>
           </div>
@@ -102,7 +102,7 @@ function SearchResultSubcategoryItem({
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="mr-2 ml-auto flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-forge-teal px-1.5 font-sans text-xs leading-none font-bold text-white shadow-teal-glow"
+            className="mr-2 ml-auto flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-forge-teal px-1.5 font-bold font-sans text-white text-xs leading-none shadow-teal-glow"
           >
             {selectedCount}
           </motion.span>

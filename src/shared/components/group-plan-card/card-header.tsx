@@ -39,7 +39,7 @@ export function CardHeader({
         />
         <span
           className={cn(
-            "truncate font-semibold tracking-tight text-muted-foreground transition-colors group-hover:text-foreground",
+            "truncate font-semibold text-muted-foreground tracking-tight transition-colors group-hover:text-foreground",
             isCompact ? "text-xs" : "text-xs",
           )}
         >
@@ -48,7 +48,7 @@ export function CardHeader({
       </div>
 
       {access === "BY_REQUEST" ? (
-        <span className="flex shrink-0 items-center gap-1 rounded-full border border-border/80 bg-background/50 px-2 py-0.5 text-xs font-bold text-muted-foreground">
+        <span className="flex shrink-0 items-center gap-1 rounded-full border border-border/80 bg-background/50 px-2 py-0.5 font-bold text-muted-foreground text-xs">
           <Handshake className="h-3 w-3" aria-hidden="true" />
           Request
         </span>

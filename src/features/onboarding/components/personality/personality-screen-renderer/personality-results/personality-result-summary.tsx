@@ -10,12 +10,12 @@ export function PersonalityResultSummary({
   profile,
 }: PersonalityResultSummaryProps) {
   return (
-    <section className="flex flex-col gap-5 border-t border-border/60 pt-7">
+    <section className="flex flex-col gap-5 border-border/60 border-t pt-7">
       <div className="flex flex-col gap-3">
-        <h2 className="text-2xl leading-tight font-black tracking-tight text-ink">
+        <h2 className="font-black text-2xl text-ink leading-tight tracking-tight">
           {profile.title}
         </h2>
-        <p className="text-base leading-relaxed font-medium text-pretty text-ink/84">
+        <p className="text-pretty font-medium text-base text-ink/84 leading-relaxed">
           {profile.summary}
         </p>
       </div>

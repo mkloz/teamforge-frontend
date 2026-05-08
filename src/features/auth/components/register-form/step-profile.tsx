@@ -46,7 +46,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
             name="age"
             render={({ field }) => (
               <FormItem className="space-y-0">
-                <FormLabel className="font-sans text-sm font-semibold text-ink">
+                <FormLabel className="font-sans font-semibold text-ink text-sm">
                   Age
                 </FormLabel>
                 <FormControl>
@@ -58,7 +58,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
                     onNumberChange={field.onChange}
                   />
                 </FormControl>
-                <FormMessage className="text-xs font-medium text-destructive" />
+                <FormMessage className="font-medium text-destructive text-xs" />
               </FormItem>
             )}
           />
@@ -71,7 +71,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
             name="gender"
             render={({ field }) => (
               <FormItem className="flex flex-col justify-start space-y-0">
-                <FormLabel className="font-sans text-sm font-semibold text-ink">
+                <FormLabel className="font-sans font-semibold text-ink text-sm">
                   Gender
                 </FormLabel>
                 <Select
@@ -91,14 +91,14 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
                     ))}
                   </SelectContent>
                 </Select>
-                <FormMessage className="text-xs font-medium text-destructive" />
+                <FormMessage className="font-medium text-destructive text-xs" />
               </FormItem>
             )}
           />
         </div>
       </div>
 
-      <p className="mt-0 text-center text-xs text-slate-muted">
+      <p className="mt-0 text-center text-slate-muted text-xs">
         We only show this on your profile; it doesn't affect your matching.
       </p>
 
@@ -130,7 +130,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
                 }}
               />
             </FormControl>
-            <FormMessage className="text-xs font-medium text-destructive" />
+            <FormMessage className="font-medium text-destructive text-xs" />
           </FormItem>
         )}
       />

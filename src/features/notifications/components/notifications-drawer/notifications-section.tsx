@@ -25,8 +25,8 @@ export function NotificationsSection({
         label === "Today" ? "Today's notifications" : `${label} notifications`
       }
     >
-      <div className="sticky top-0 z-10 border-b border-border/50 bg-card/95 px-6 py-4 backdrop-blur-md">
-        <p className="text-xs font-black tracking-[0.16em] text-slate-muted/60 uppercase">
+      <div className="sticky top-0 z-10 border-border/50 border-b bg-card/95 px-6 py-4 backdrop-blur-md">
+        <p className="font-black text-slate-muted/60 text-xs uppercase tracking-[0.16em]">
           {label}
         </p>
       </div>

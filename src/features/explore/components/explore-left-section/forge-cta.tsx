@@ -6,13 +6,13 @@ import { Button } from "@/shared/components/ui/button";
 
 export function ForgeCTA() {
   return (
-    <div className="group/card border-t border-border/50 px-1 pt-4">
+    <div className="group/card border-border/50 border-t px-1 pt-4">
       <div className="relative z-10 space-y-3">
         <div className="space-y-1.5">
-          <h3 className="text-base leading-tight font-black tracking-tight text-foreground">
+          <h3 className="font-black text-base text-foreground leading-tight tracking-tight">
             Nothing quite right?
           </h3>
-          <p className="text-xs leading-relaxed font-medium text-muted-foreground">
+          <p className="font-medium text-muted-foreground text-xs leading-relaxed">
             Start the opening yourself and let TeamForge fill the remaining
             spots around the plan.
           </p>

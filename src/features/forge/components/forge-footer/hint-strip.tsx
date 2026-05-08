@@ -9,7 +9,7 @@ function HintText({ children }: { children: ReactNode }) {
       initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -5 }}
-      className="px-4 text-center text-xs font-medium text-muted-foreground/70"
+      className="px-4 text-center font-medium text-muted-foreground/70 text-xs"
     >
       {children}
     </motion.p>
@@ -18,7 +18,7 @@ function HintText({ children }: { children: ReactNode }) {
 
 export function HintStrip({ fw }: ForgeFooterChildProps) {
   return (
-    <div className="sticky bottom-14 border-t border-border/40 bg-transparent px-4 py-2 backdrop-blur-sm md:px-12">
+    <div className="sticky bottom-14 border-border/40 border-t bg-transparent px-4 py-2 backdrop-blur-sm md:px-12">
       <div className="mx-auto flex min-h-5.5 max-w-2xl items-center justify-center">
         <AnimatePresence mode="wait">
           {fw.step === 1 && !fw.selectedActivity && (

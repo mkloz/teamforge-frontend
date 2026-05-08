@@ -21,10 +21,10 @@ export function PlanPhotoSection({
   return (
     <div className="space-y-3">
       <div>
-        <p className="text-xs font-semibold text-muted-foreground">
+        <p className="font-semibold text-muted-foreground text-xs">
           Plan photo
         </p>
-        <p className="mt-0.5 text-xs text-muted-foreground/60">
+        <p className="mt-0.5 text-muted-foreground/60 text-xs">
           This image appears on the plan card visible to all members.
         </p>
       </div>
@@ -85,7 +85,7 @@ export function PlanPhotoSection({
               onClick={() => onCoverImageChange(selected ? null : id)}
               aria-pressed={selected}
               className={cn(
-                "group h-10 justify-start gap-2 rounded-lg border bg-card px-2.5 text-xs font-bold text-foreground shadow-none transition-[border-color,background-color,box-shadow,transform] duration-200 active:scale-[0.98]",
+                "group h-10 justify-start gap-2 rounded-lg border bg-card px-2.5 font-bold text-foreground text-xs shadow-none transition-[border-color,background-color,box-shadow,transform] duration-200 active:scale-[0.98]",
                 selected
                   ? "border-forge-teal/75 bg-forge-teal/8 text-forge-teal ring-1 ring-forge-teal/20"
                   : "border-border/45 hover:border-forge-teal/35 hover:bg-forge-teal/5",

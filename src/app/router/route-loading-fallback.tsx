@@ -14,8 +14,8 @@ export function RouteLoadingFallback() {
           <span className="absolute inset-0 rounded-2xl ring-1 ring-forge-teal/10" />
         </div>
         <div className="flex flex-col gap-1">
-          <p className="text-sm font-semibold text-ink">Preparing TeamForge</p>
-          <p className="text-xs font-medium text-slate-muted">
+          <p className="font-semibold text-ink text-sm">Preparing TeamForge</p>
+          <p className="font-medium text-slate-muted text-xs">
             Warming up this page.
           </p>
         </div>

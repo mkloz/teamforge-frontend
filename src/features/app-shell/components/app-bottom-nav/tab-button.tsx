@@ -31,7 +31,7 @@ export function TabButton({ item, pathname }: TabButtonProps) {
       aria-label={item.label}
       className={cn(
         "relative flex h-full min-w-0 items-center justify-center rounded-2xl px-0.5",
-        "transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset",
+        "transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
       )}
     >
       <motion.div
@@ -58,7 +58,7 @@ export function TabButton({ item, pathname }: TabButtonProps) {
           {item.badge != null && item.badge > 0 && (
             <span
               className={cn(
-                "absolute top-0.5 right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground shadow-sm",
+                "absolute top-0.5 right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 font-bold text-[10px] text-accent-foreground shadow-sm",
                 "border-2 border-background",
                 active && "scale-110",
               )}
@@ -70,7 +70,7 @@ export function TabButton({ item, pathname }: TabButtonProps) {
 
         <span
           className={cn(
-            "max-w-full truncate text-[10px] leading-none font-semibold tracking-tight transition-colors duration-300",
+            "max-w-full truncate font-semibold text-[10px] leading-none tracking-tight transition-colors duration-300",
             active ? activeColorText : "text-muted-foreground",
           )}
         >

@@ -66,10 +66,10 @@ export const AttachmentMenu = memo(function AttachmentMenu({
         <DropdownMenuContent
           align="start"
           sideOffset={16}
-          className="w-50 animate-in rounded-xl border-border/40 p-2 shadow-xl slide-in-from-bottom-2"
+          className="slide-in-from-bottom-2 w-50 animate-in rounded-xl border-border/40 p-2 shadow-xl"
         >
           <DropdownMenuItem
-            className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-ink transition-colors focus:bg-muted"
+            className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 font-semibold text-ink text-sm transition-colors focus:bg-muted"
             onSelect={(event) => {
               event.preventDefault();
               imageInputRef.current?.click();
@@ -79,7 +79,7 @@ export const AttachmentMenu = memo(function AttachmentMenu({
             <span>Photos</span>
           </DropdownMenuItem>
           <DropdownMenuItem
-            className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-ink transition-colors focus:bg-muted"
+            className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 font-semibold text-ink text-sm transition-colors focus:bg-muted"
             onSelect={(event) => {
               event.preventDefault();
               fileInputRef.current?.click();

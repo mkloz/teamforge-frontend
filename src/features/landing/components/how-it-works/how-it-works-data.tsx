@@ -20,7 +20,7 @@ export const STEPS: Step[] = [
         {["Introverted", "Analytical", "Open", "Calm"].map((tag) => (
           <span
             key={tag}
-            className="rounded-full border border-forge-teal/20 bg-forge-teal/10 px-3 py-1 text-xs font-bold text-forge-teal"
+            className="rounded-full border border-forge-teal/20 bg-forge-teal/10 px-3 py-1 font-bold text-forge-teal text-xs"
           >
             {tag}
           </span>
@@ -39,7 +39,7 @@ export const STEPS: Step[] = [
           <MapPin className="h-5 w-5 text-spark-amber" />
         </div>
         <div>
-          <p className="text-xs font-bold text-ink">Hiking Trip</p>
+          <p className="font-bold text-ink text-xs">Hiking Trip</p>
           <p className="text-[10px] text-slate-muted">Saturday, 10:00 AM</p>
         </div>
       </div>
@@ -78,7 +78,7 @@ export const STEPS: Step[] = [
             loading="lazy"
           />
         ))}
-        <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-canvas bg-forge-teal text-[10px] font-bold text-white shadow-sm">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-canvas bg-forge-teal font-bold text-[10px] text-white shadow-sm">
           +2
         </div>
       </div>

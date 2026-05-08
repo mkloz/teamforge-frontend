@@ -5,11 +5,11 @@ interface StatPillProps {
 
 export function StatPill({ label, value }: StatPillProps) {
   return (
-    <div className="border-l border-border pl-4">
-      <p className="text-xs font-semibold tracking-widest text-slate-muted uppercase">
+    <div className="border-border border-l pl-4">
+      <p className="font-semibold text-slate-muted text-xs uppercase tracking-widest">
         {label}
       </p>
-      <p className="mt-1 text-base font-semibold break-words text-ink">
+      <p className="mt-1 break-words font-semibold text-base text-ink">
         {value ?? "Not set"}
       </p>
     </div>

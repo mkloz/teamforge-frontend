@@ -152,11 +152,11 @@ export function ProfilePanelInfo({
         </motion.div>
 
         <div className="space-y-0.5">
-          <h3 className="text-xl leading-tight font-extrabold tracking-tight text-ink md:text-2xl">
+          <h3 className="font-extrabold text-ink text-xl leading-tight tracking-tight md:text-2xl">
             {participant.name}
           </h3>
           <div className="flex items-center justify-center gap-1.5">
-            <p className="text-xs font-medium tracking-normal text-slate-muted">
+            <p className="font-medium text-slate-muted text-xs tracking-normal">
               {participantDetails ?? "Profile details syncing"}
             </p>
           </div>
@@ -189,7 +189,7 @@ export function ProfilePanelInfo({
           >
             <Info size={18} />
             {isDirectChat && (
-              <span className="ml-2 text-sm font-semibold text-slate-muted transition-colors group-hover:text-forge-teal">
+              <span className="ml-2 font-semibold text-slate-muted text-sm transition-colors group-hover:text-forge-teal">
                 Details
               </span>
             )}
@@ -198,11 +198,11 @@ export function ProfilePanelInfo({
 
         <div className="flex items-center gap-2">
           {participant.personalityType && (
-            <div className="rounded-full bg-forge-teal px-3 py-1 text-[11px] font-bold tracking-widest text-white uppercase shadow-sm">
+            <div className="rounded-full bg-forge-teal px-3 py-1 font-bold text-[11px] text-white uppercase tracking-widest shadow-sm">
               {participant.personalityType}
             </div>
           )}
-          <div className="rounded-full border border-spark-amber/20 bg-spark-amber/10 px-3 py-1 text-[11px] font-bold tracking-widest text-spark-amber uppercase">
+          <div className="rounded-full border border-spark-amber/20 bg-spark-amber/10 px-3 py-1 font-bold text-[11px] text-spark-amber uppercase tracking-widest">
             Trust {formatTrustScore(participant.trustScore)}
           </div>
         </div>
@@ -210,11 +210,11 @@ export function ProfilePanelInfo({
 
       {participant.bio && (
         <div className="px-6 pt-10">
-          <h4 className="mb-4 px-1 text-xs font-semibold tracking-widest text-slate-muted uppercase">
+          <h4 className="mb-4 px-1 font-semibold text-slate-muted text-xs uppercase tracking-widest">
             About
           </h4>
           <div className="relative rounded-xl border border-forge-teal/10 bg-forge-teal/5 p-4">
-            <p className="text-sm leading-relaxed font-medium text-pretty text-ink italic opacity-90">
+            <p className="text-pretty font-medium text-ink text-sm italic leading-relaxed opacity-90">
               "{participant.bio}"
             </p>
           </div>
@@ -223,7 +223,7 @@ export function ProfilePanelInfo({
 
       <div className="flex flex-col items-center space-y-6 px-6 pt-8 pb-2">
         <div className="w-full">
-          <h4 className="mb-2 px-1 text-xs font-semibold tracking-widest text-slate-muted uppercase">
+          <h4 className="mb-2 px-1 font-semibold text-slate-muted text-xs uppercase tracking-widest">
             Psychometric Profile
           </h4>
         </div>
@@ -236,7 +236,7 @@ export function ProfilePanelInfo({
           </div>
         ) : (
           <div className="w-full rounded-xl border border-border bg-card px-4 py-6 text-center">
-            <p className="text-sm font-medium text-slate-muted">
+            <p className="font-medium text-slate-muted text-sm">
               Psychometric profile syncing.
             </p>
           </div>

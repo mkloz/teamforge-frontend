@@ -62,9 +62,9 @@ export function GroupRow({
         {...buildActivityGroupHubNavigation(group.id)}
         aria-label={`${group.name}. Last active ${lastActivity}.`}
         className={cn(
-          "group flex h-16 cursor-pointer items-center gap-3 border-b border-border/55 px-1 py-3 sm:px-3",
+          "group flex h-16 cursor-pointer items-center gap-3 border-border/55 border-b px-1 py-3 sm:px-3",
           "transition-all duration-150",
-          "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           hasNotification
             ? "rounded-xl bg-forge-teal/8 hover:border-forge-teal/20 hover:bg-forge-teal/12"
             : "bg-transparent hover:bg-card/45",
@@ -85,11 +85,11 @@ export function GroupRow({
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col gap-0">
-          <span className="truncate text-sm leading-tight font-bold text-foreground transition-colors duration-150 group-hover:text-primary">
+          <span className="truncate font-bold text-foreground text-sm leading-tight transition-colors duration-150 group-hover:text-primary">
             {group.name}
           </span>
           <div className="mt-0.5 flex items-center gap-2">
-            <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
+            <span className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
               <Users className="size-2.5 shrink-0" aria-hidden="true" />
               {group.members.length}
             </span>
@@ -97,7 +97,7 @@ export function GroupRow({
               className="size-0.5 rounded-full bg-border"
               aria-hidden="true"
             />
-            <span className="truncate text-xs font-medium text-muted-foreground">
+            <span className="truncate font-medium text-muted-foreground text-xs">
               {lastActivity}
             </span>
           </div>

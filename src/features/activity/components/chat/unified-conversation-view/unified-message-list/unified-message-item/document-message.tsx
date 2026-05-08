@@ -49,7 +49,7 @@ export const DocumentMessage = memo(function DocumentMessage({
       <div className="flex min-w-0 flex-1 flex-col">
         <p
           className={cn(
-            "truncate text-sm font-bold tracking-tight",
+            "truncate font-bold text-sm tracking-tight",
             isOwn ? "text-white" : "text-ink",
           )}
         >
@@ -58,7 +58,7 @@ export const DocumentMessage = memo(function DocumentMessage({
         <div className="flex items-center gap-1.5 opacity-60">
           <span
             className={cn(
-              "text-nano font-black tracking-wider uppercase",
+              "font-black text-nano uppercase tracking-wider",
               isOwn ? "text-white/80" : "text-slate-muted",
             )}
           >
@@ -72,7 +72,7 @@ export const DocumentMessage = memo(function DocumentMessage({
           />
           <span
             className={cn(
-              "text-nano font-black tracking-wider uppercase",
+              "font-black text-nano uppercase tracking-wider",
               isOwn ? "text-white/80" : "text-slate-muted",
             )}
           >

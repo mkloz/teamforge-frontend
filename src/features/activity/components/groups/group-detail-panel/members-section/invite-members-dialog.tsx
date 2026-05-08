@@ -64,14 +64,14 @@ export function InviteMembersDialog({
           variant="outline"
           size="sm"
           disabled={disabled}
-          className="text-xs font-bold tracking-wider uppercase"
+          className="font-bold text-xs uppercase tracking-wider"
         >
           <UserPlus className="mr-1 size-3.5" />
           Invite
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-md rounded-xl border-border/60 bg-canvas p-0">
-        <DialogHeader className="border-b border-border/50 px-6 py-5">
+        <DialogHeader className="border-border/50 border-b px-6 py-5">
           <DialogTitle>Invite to group</DialogTitle>
           <DialogDescription>
             Invite someone you already know to join this group.
@@ -90,7 +90,7 @@ export function InviteMembersDialog({
 
           <div className="flex max-h-80 flex-col gap-2 overflow-y-auto pr-1">
             {filteredCandidates.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-border/70 bg-background/50 px-4 py-6 text-center text-sm text-slate-muted">
+              <div className="rounded-xl border border-border/70 border-dashed bg-background/50 px-4 py-6 text-center text-slate-muted text-sm">
                 No eligible friends to invite right now.
               </div>
             ) : (
@@ -107,16 +107,16 @@ export function InviteMembersDialog({
                       name={candidate.name}
                       fallback={candidate.name.slice(0, 1).toUpperCase()}
                       className={cn(
-                        "h-11 w-11 bg-muted text-sm font-semibold text-foreground",
+                        "h-11 w-11 bg-muted font-semibold text-foreground text-sm",
                         candidate.avatar && "bg-transparent",
                       )}
                     />
 
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-foreground">
+                      <p className="truncate font-semibold text-foreground text-sm">
                         {candidate.name}
                       </p>
-                      <p className="truncate text-xs text-slate-muted">
+                      <p className="truncate text-slate-muted text-xs">
                         {candidate.city || "Location pending"}
                         {candidate.personalityType
                           ? ` · ${candidate.personalityType}`
@@ -130,7 +130,7 @@ export function InviteMembersDialog({
                       onClick={() => {
                         void handleInvite(candidate.id);
                       }}
-                      className="rounded-full px-3 text-xs font-semibold"
+                      className="rounded-full px-3 font-semibold text-xs"
                     >
                       {isInviting ? "Inviting..." : "Invite"}
                     </Button>

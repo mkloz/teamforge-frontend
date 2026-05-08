@@ -25,7 +25,7 @@ export function GroupNameField({
     <div className="space-y-1.5">
       <Label
         htmlFor={nameId}
-        className="block text-xs font-semibold text-muted-foreground/70"
+        className="block font-semibold text-muted-foreground/70 text-xs"
       >
         Name
       </Label>
@@ -72,7 +72,7 @@ export function GroupNameField({
                 inputRef.current?.blur();
               }}
               className={cn(
-                "h-auto rounded-lg border px-2 py-1 text-micro font-semibold transition-colors duration-150",
+                "h-auto rounded-lg border px-2 py-1 font-semibold text-micro transition-colors duration-150",
                 groupName === name
                   ? "border-forge-teal/40 bg-forge-teal/10 text-forge-teal"
                   : "border-border/50 bg-card text-muted-foreground hover:border-forge-teal/30 hover:bg-forge-teal/5 hover:text-foreground",

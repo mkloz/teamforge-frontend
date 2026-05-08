@@ -34,11 +34,11 @@ export function AlgorithmSection() {
             inView ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
           )}
         >
-          <h2 className="mx-auto max-w-2xl font-sans text-[clamp(1.85rem,4.5vw,2.75rem)] leading-tight font-extrabold text-balance text-white">
+          <h2 className="mx-auto max-w-2xl text-balance font-extrabold font-sans text-[clamp(1.85rem,4.5vw,2.75rem)] text-white leading-tight">
             How we forge your{" "}
             <span className="text-forge-teal">next group.</span>
           </h2>
-          <p className="mx-auto mt-5 max-w-xl font-sans text-base leading-relaxed text-pretty text-text-dark-secondary md:text-lg">
+          <p className="mx-auto mt-5 max-w-xl text-pretty font-sans text-base text-text-dark-secondary leading-relaxed md:text-lg">
             We analyze values, personality, and social proximity to build groups
             where real-world connection feels natural from the start.
           </p>

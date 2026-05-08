@@ -34,7 +34,7 @@ export function LinkPreviewMeta({
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span
           className={cn(
-            "truncate text-xs font-semibold tracking-wider uppercase",
+            "truncate font-semibold text-xs uppercase tracking-wider",
             isOwn
               ? "text-primary dark:text-primary-foreground/50"
               : "text-forge-teal/80",
@@ -46,7 +46,7 @@ export function LinkPreviewMeta({
         {data.title && (
           <p
             className={cn(
-              "line-clamp-2 text-xs leading-snug font-semibold",
+              "line-clamp-2 font-semibold text-xs leading-snug",
               isOwn ? "text-foreground" : "text-ink",
             )}
           >

@@ -15,7 +15,7 @@ export function PersonalityResultActions({
 }: PersonalityResultActionsProps) {
   return (
     <>
-      <section className="mt-auto flex flex-col gap-3 border-t border-border/70 pt-6 sm:flex-row">
+      <section className="mt-auto flex flex-col gap-3 border-border/70 border-t pt-6 sm:flex-row">
         <Button
           size="md"
           onClick={onContinue}
@@ -35,7 +35,7 @@ export function PersonalityResultActions({
         </Button>
       </section>
 
-      <p className="text-center text-xs font-medium text-muted-foreground">
+      <p className="text-center font-medium text-muted-foreground text-xs">
         Retaking replaces this result and can change the groups TeamForge
         prioritizes.
       </p>

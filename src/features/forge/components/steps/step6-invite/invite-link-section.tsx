@@ -21,23 +21,23 @@ export function InviteLinkSection({
   };
 
   return (
-    <section className="space-y-3 border-t border-border/25 pt-4">
+    <section className="space-y-3 border-border/25 border-t pt-4">
       <div className="flex items-center gap-2 px-0.5">
         <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10 text-forge-teal">
           <Link2 size={14} />
         </span>
         <div className="min-w-0">
-          <p className="text-sm leading-none font-semibold text-foreground">
+          <p className="font-semibold text-foreground text-sm leading-none">
             Share access
           </p>
-          <p className="mt-1 text-micro leading-none text-muted-foreground/55">
+          <p className="mt-1 text-micro text-muted-foreground/55 leading-none">
             Keep this handy for late additions.
           </p>
         </div>
       </div>
 
-      <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-t border-border/25 pt-3">
-        <code className="min-w-0 flex-1 truncate text-xs font-semibold text-muted-foreground">
+      <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-border/25 border-t pt-3">
+        <code className="min-w-0 flex-1 truncate font-semibold text-muted-foreground text-xs">
           {INVITE_LINK}
         </code>
         <Button
@@ -46,7 +46,7 @@ export function InviteLinkSection({
           onClick={handleCopy}
           aria-label="Copy invite link"
           className={cn(
-            "h-8 shrink-0 rounded-lg px-3 text-xs font-semibold transition-colors active:scale-[0.98]",
+            "h-8 shrink-0 rounded-lg px-3 font-semibold text-xs transition-colors active:scale-[0.98]",
             inviteCopied
               ? "bg-forge-teal text-primary-foreground hover:bg-forge-teal/90"
               : "border border-border/40 bg-transparent text-foreground hover:border-forge-teal/25 hover:bg-forge-teal/8 hover:text-forge-teal",

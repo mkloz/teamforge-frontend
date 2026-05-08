@@ -50,14 +50,14 @@ export function InterestsProgressBar({
       </div>
       <div className="flex flex-col gap-3 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between min-[430px]:gap-4">
         <div className="min-w-0">
-          <span className="font-sans text-sm font-bold text-ink">
+          <span className="font-bold font-sans text-ink text-sm">
             {selectedCount}
             <span className="font-normal text-slate-muted/50">
               {" "}
               / {MAX_INTERESTS}
             </span>
           </span>
-          <p className="mt-1 font-sans text-[10px] leading-none font-bold tracking-wider text-slate-muted/60 uppercase">
+          <p className="mt-1 font-bold font-sans text-[10px] text-slate-muted/60 uppercase leading-none tracking-wider">
             {progressText}
           </p>
         </div>

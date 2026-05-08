@@ -17,7 +17,7 @@ export function RecentActivityPagination({
 }: RecentActivityPaginationProps) {
   return (
     <div className="flex shrink-0 items-center gap-1">
-      <span className="mr-1 text-micro font-semibold text-muted-foreground/45">
+      <span className="mr-1 font-semibold text-micro text-muted-foreground/45">
         {page + 1}/{pageCount}
       </span>
       <Button

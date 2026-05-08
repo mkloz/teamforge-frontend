@@ -9,8 +9,8 @@ interface AccountFormFooterProps {
 
 export function AccountFormFooter({ isSaving }: AccountFormFooterProps) {
   return (
-    <div className="flex flex-col gap-3 border-t border-border pt-5 md:flex-row md:items-center md:justify-between">
-      <p className="text-sm text-slate-muted">
+    <div className="flex flex-col gap-3 border-border border-t pt-5 md:flex-row md:items-center md:justify-between">
+      <p className="text-slate-muted text-sm">
         Changes show up across your profile and group surfaces.
       </p>
 

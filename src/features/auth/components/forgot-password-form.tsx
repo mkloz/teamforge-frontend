@@ -32,7 +32,7 @@ export function ForgotPasswordForm({
           name="email"
           render={({ field }) => (
             <FormItem className="space-y-0 text-left">
-              <FormLabel className="font-sans text-sm font-semibold text-foreground">
+              <FormLabel className="font-sans font-semibold text-foreground text-sm">
                 Email
               </FormLabel>
               <FormControl>
@@ -43,7 +43,7 @@ export function ForgotPasswordForm({
                   {...field}
                 />
               </FormControl>
-              <FormMessage className="mt-1 text-xs font-medium text-destructive" />
+              <FormMessage className="mt-1 font-medium text-destructive text-xs" />
             </FormItem>
           )}
         />

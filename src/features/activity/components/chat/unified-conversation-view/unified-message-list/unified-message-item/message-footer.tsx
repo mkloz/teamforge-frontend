@@ -58,13 +58,13 @@ export const MessageFooter = memo(
 
         <div className="flex shrink-0 items-center gap-1 opacity-70">
           {isEdited && (
-            <span className="mr-0.5 text-nano font-bold italic opacity-60">
+            <span className="mr-0.5 font-bold text-nano italic opacity-60">
               Edited
             </span>
           )}
           <span
             className={cn(
-              "text-nano font-bold text-slate-muted tabular-nums select-none",
+              "select-none font-bold text-nano text-slate-muted tabular-nums",
             )}
           >
             {formatChatTime(createdAt)}

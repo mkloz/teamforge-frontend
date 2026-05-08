@@ -32,7 +32,7 @@ export function PlanHistorySection({
           <History className="size-4 text-forge-teal/80" />
           <h3
             id="history-heading"
-            className="text-sm font-bold tracking-widest text-foreground uppercase"
+            className="font-bold text-foreground text-sm uppercase tracking-widest"
           >
             History
             {historyCount > 0 && (
@@ -46,7 +46,7 @@ export function PlanHistorySection({
           <Button
             variant="outline"
             size="sm"
-            className="text-xs font-bold tracking-wider uppercase"
+            className="font-bold text-xs uppercase tracking-wider"
           >
             <Plus className="mr-1 size-3.5" strokeWidth={3} />
             New Plan
@@ -55,14 +55,14 @@ export function PlanHistorySection({
       </div>
 
       {historyCount === 0 ? (
-        <div className="group/empty rounded-xl border-2 border-dashed border-border/40 bg-muted/10 p-6 text-center transition-colors duration-300 hover:border-border/60">
+        <div className="group/empty rounded-xl border-2 border-border/40 border-dashed bg-muted/10 p-6 text-center transition-colors duration-300 hover:border-border/60">
           <div className="mx-auto mb-2.5 flex size-10 items-center justify-center rounded-full bg-muted/30 transition-transform group-hover/empty:scale-110">
             <History className="size-5 text-muted-foreground/40" />
           </div>
-          <p className="mb-0.5 text-sm font-bold text-foreground/60">
+          <p className="mb-0.5 font-bold text-foreground/60 text-sm">
             No completed plans yet
           </p>
-          <p className="mx-auto max-w-44 text-xs leading-relaxed text-muted-foreground/50">
+          <p className="mx-auto max-w-44 text-muted-foreground/50 text-xs leading-relaxed">
             Past activities will appear here once your group completes its first
             forge.
           </p>

@@ -26,7 +26,7 @@ export function PersonalityTraitMap({
             </div>
           </section>
 
-          <section className="flex h-full flex-col gap-5 border-t border-border/60 pt-6 md:border-t-0 md:border-l md:pt-0 md:pl-3">
+          <section className="flex h-full flex-col gap-5 border-border/60 border-t pt-6 md:border-t-0 md:border-l md:pt-0 md:pl-3">
             <SectionHeading eyebrow="Trait map" title="Personality shape" />
             <div className="flex flex-1 items-center justify-center md:hidden">
               <OceanChart scores={oceanScores} />

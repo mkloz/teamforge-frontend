@@ -37,7 +37,7 @@ export function InvitationQueueItem({
       exit={{ opacity: 0, x: 16 }}
       transition={{ delay: index * 0.04 }}
       className={cn(
-        "flex min-w-0 items-center gap-3 border-b border-border/55 px-1 py-4 transition-colors duration-150 last:border-b-0 sm:px-3",
+        "flex min-w-0 items-center gap-3 border-border/55 border-b px-1 py-4 transition-colors duration-150 last:border-b-0 sm:px-3",
         isFocused ? "bg-forge-teal/8" : "hover:bg-forge-teal/5",
       )}
     >
@@ -49,10 +49,10 @@ export function InvitationQueueItem({
           fallbackClassName="text-xs"
         />
         <div className="min-w-0 flex-1">
-          <p className="line-clamp-1 text-sm font-black text-foreground">
+          <p className="line-clamp-1 font-black text-foreground text-sm">
             {invite.group.name}
           </p>
-          <p className="mt-1 line-clamp-2 text-xs leading-relaxed font-medium text-muted-foreground">
+          <p className="mt-1 line-clamp-2 font-medium text-muted-foreground text-xs leading-relaxed">
             {invite.inviter?.name ?? "Someone"} invited you.{" "}
             {invite.group.activeMembersCount} people inside.
           </p>

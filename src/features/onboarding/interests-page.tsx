@@ -22,7 +22,7 @@ export function InterestsPage() {
 
   return (
     <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
-      <aside className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-r border-slate-muted/10 bg-hero-bg lg:flex">
+      <aside className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-slate-muted/10 border-r bg-hero-bg lg:flex">
         <VoronoiCatalyst progress={progress} />
       </aside>
 

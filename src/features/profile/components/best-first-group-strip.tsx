@@ -19,16 +19,16 @@ export function BestFirstGroupStrip({
   const supportingIdeas = activityIdeas.slice(1, 3);
 
   return (
-    <section className="border-y border-border/60 py-5">
+    <section className="border-border/60 border-y py-5">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="min-w-0">
-          <p className="text-sm font-extrabold text-spark-amber">
+          <p className="font-extrabold text-sm text-spark-amber">
             Good first plan
           </p>
-          <h2 className="mt-1 text-lg leading-tight font-black text-ink md:text-xl">
+          <h2 className="mt-1 font-black text-ink text-lg leading-tight md:text-xl">
             {primaryIdea.title}
           </h2>
-          <p className="mt-1 max-w-2xl text-sm leading-relaxed font-medium text-slate-muted">
+          <p className="mt-1 max-w-2xl font-medium text-slate-muted text-sm leading-relaxed">
             {getCompactDetail(primaryIdea.detail)}
           </p>
         </div>
@@ -38,7 +38,7 @@ export function BestFirstGroupStrip({
             {supportingIdeas.map((idea) => (
               <span
                 key={idea.title}
-                className="inline-flex min-h-9 max-w-full items-center gap-2 rounded-full border border-border/80 px-3 py-1 text-xs leading-snug font-bold text-ink/80"
+                className="inline-flex min-h-9 max-w-full items-center gap-2 rounded-full border border-border/80 px-3 py-1 font-bold text-ink/80 text-xs leading-snug"
               >
                 <ArrowRight size={13} className="shrink-0 text-forge-teal" />
                 <span className="min-w-0 break-words">{idea.title}</span>

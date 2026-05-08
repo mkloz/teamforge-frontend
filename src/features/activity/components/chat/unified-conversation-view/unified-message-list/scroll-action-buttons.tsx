@@ -33,7 +33,7 @@ export const ScrollActionButtons = memo(
               className="relative size-10 shrink-0 rounded-full"
             >
               <ChevronDown className="size-5 transition-transform group-hover:translate-y-0.5" />
-              <div className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full border-2 border-canvas bg-spark-amber text-xs font-black text-ink">
+              <div className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full border-2 border-canvas bg-spark-amber font-black text-ink text-xs">
                 3
               </div>
             </Button>
@@ -54,7 +54,7 @@ export const ScrollActionButtons = memo(
               className="rounded-full px-2.5 py-1.5"
             >
               <AlertCircle className="size-3.5 animate-pulse" />
-              <span className="text-xs font-black tracking-wider">Vote</span>
+              <span className="font-black text-xs tracking-wider">Vote</span>
             </Button>
           </motion.div>
         )}

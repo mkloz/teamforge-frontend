@@ -44,7 +44,7 @@ export function Avatar({
   const fallbackNode = (
     <div
       className={cn(
-        "avatar-initials flex h-full w-full items-center justify-center bg-forge-teal/10 leading-none font-black text-forge-teal",
+        "avatar-initials flex h-full w-full items-center justify-center bg-forge-teal/10 font-black text-forge-teal leading-none",
         fallbackClassName,
       )}
     >

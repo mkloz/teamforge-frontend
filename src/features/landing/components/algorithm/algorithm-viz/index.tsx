@@ -43,7 +43,7 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
           style={{ width: size * 0.78, height: size * 0.78 }}
         />
         <div
-          className="pointer-events-none absolute inset-0 m-auto rounded-full border border-dashed border-forge-teal/5"
+          className="pointer-events-none absolute inset-0 m-auto rounded-full border border-forge-teal/5 border-dashed"
           aria-hidden="true"
           style={{ width: size * 0.56, height: size * 0.56 }}
         />

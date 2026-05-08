@@ -32,13 +32,13 @@ export function PreferenceGroup({
   return (
     <>
       <div>
-        <h3 className="text-base font-semibold text-ink">{title}</h3>
-        <p className="mt-1 text-sm text-slate-muted">{description}</p>
+        <h3 className="font-semibold text-base text-ink">{title}</h3>
+        <p className="mt-1 text-slate-muted text-sm">{description}</p>
       </div>
 
-      <div className="border-t border-border">
+      <div className="border-border border-t">
         {isLoading ? (
-          <p className="py-4 text-sm text-slate-muted">
+          <p className="py-4 text-slate-muted text-sm">
             Loading notification preferences...
           </p>
         ) : notificationPreferences ? (
@@ -49,7 +49,7 @@ export function PreferenceGroup({
             onChange={onChange}
           />
         ) : (
-          <p className="py-4 text-sm text-slate-muted">{emptyMessage}</p>
+          <p className="py-4 text-slate-muted text-sm">{emptyMessage}</p>
         )}
       </div>
     </>

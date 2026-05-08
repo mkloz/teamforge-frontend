@@ -19,7 +19,7 @@ export function TraitMapSection({
   onTraitSelect,
 }: TraitMapSectionProps) {
   return (
-    <section className="flex min-w-0 flex-col gap-5 border-t border-border/60 pt-6 lg:border-t-0 lg:pt-0">
+    <section className="flex min-w-0 flex-col gap-5 border-border/60 border-t pt-6 lg:border-t-0 lg:pt-0">
       <ProfileSectionHeading>Trait map</ProfileSectionHeading>
       <div className="py-2">
         {oceanScores ? (
@@ -39,7 +39,7 @@ export function TraitMapSection({
 function EmptyTraitMap() {
   return (
     <div className="flex flex-col items-start gap-3">
-      <p className="text-sm font-medium text-slate-muted">
+      <p className="font-medium text-slate-muted text-sm">
         OCEAN scores are not available yet.
       </p>
       <Button asChild variant="outline" size="sm">

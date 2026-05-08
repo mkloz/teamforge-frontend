@@ -37,7 +37,7 @@ export function ImagePlaceholder({
         <div className="image-placeholder-corner right-0 bottom-0 border-r-thick border-b-thick" />
       </div>
 
-      <div className="relative flex size-1/4 max-h-16 min-h-8 max-w-16 min-w-8 items-center justify-center rounded-full bg-background/50 backdrop-blur-subtle">
+      <div className="relative flex size-1/4 max-h-16 min-h-8 min-w-8 max-w-16 items-center justify-center rounded-full bg-background/50 backdrop-blur-subtle">
         <Image className="text-border" />
       </div>
     </div>

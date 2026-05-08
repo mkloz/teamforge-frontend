@@ -64,7 +64,7 @@ export function PrivacySettingsSection({
         description="Choose which personal details appear on your public profile. These details can still quietly help TeamForge place you in better groups."
       />
 
-      <div className="grid gap-0 border-t border-border lg:grid-cols-3 lg:gap-8">
+      <div className="grid gap-0 border-border border-t lg:grid-cols-3 lg:gap-8">
         {PRIVACY_TOGGLE_ITEMS.map((item) => (
           <NotificationPreferenceRow
             key={item.key}
@@ -89,8 +89,8 @@ export function PrivacySettingsSection({
         ))}
       </div>
 
-      <div className="border-l border-forge-teal/35 pl-4">
-        <p className="text-sm leading-relaxed text-slate-muted">
+      <div className="border-forge-teal/35 border-l pl-4">
+        <p className="text-slate-muted text-sm leading-relaxed">
           Exact location is never shown on public profiles. People only see your
           city when you allow it.
         </p>

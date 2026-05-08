@@ -10,7 +10,7 @@ export const EditingMessageBanner = memo(function EditingMessageBanner({
   onCancel,
 }: EditingMessageBannerProps) {
   return (
-    <div className="flex items-center justify-between gap-3 border-b border-border/60 px-3 py-2 text-xs">
+    <div className="flex items-center justify-between gap-3 border-border/60 border-b px-3 py-2 text-xs">
       <div className="flex min-w-0 items-center gap-2">
         <div className="flex size-7 items-center justify-center rounded-lg bg-forge-teal/10 text-forge-teal">
           <PencilLine className="size-3.5" />

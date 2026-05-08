@@ -28,7 +28,7 @@ export function CardMemberStack({
           name={member.name}
           fallback={member.name ? undefined : fallbackInitial}
           className={cn(
-            "border-thin border-canvas bg-canvas transition-transform duration-300 hover:z-20 hover:-translate-y-1",
+            "border-canvas border-thin bg-canvas transition-transform duration-300 hover:z-20 hover:-translate-y-1",
             sizeClassName,
           )}
           fallbackClassName="text-xs"
@@ -38,7 +38,7 @@ export function CardMemberStack({
       {hiddenMemberCount > 0 ? (
         <div
           className={cn(
-            "relative z-10 flex items-center justify-center rounded-full border-thin border-canvas bg-muted text-xs font-extrabold text-muted-foreground transition-transform duration-300 hover:z-20 hover:-translate-y-1",
+            "relative z-10 flex items-center justify-center rounded-full border-canvas border-thin bg-muted font-extrabold text-muted-foreground text-xs transition-transform duration-300 hover:z-20 hover:-translate-y-1",
             sizeClassName,
           )}
         >

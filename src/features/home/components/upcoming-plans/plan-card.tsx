@@ -37,7 +37,7 @@ export function PlanCard({ group, index }: PlanCardProps) {
         ease: [0.23, 1, 0.32, 1],
       }}
       className={cn(
-        "group grid grid-cols-[4.75rem_minmax(0,1fr)] items-center gap-x-3 gap-y-2 border-b border-border/55 py-3.5 pr-1 pl-0 last:border-b-0",
+        "group grid grid-cols-[4.75rem_minmax(0,1fr)] items-center gap-x-3 gap-y-2 border-border/55 border-b py-3.5 pr-1 pl-0 last:border-b-0",
         "transition-colors duration-150 hover:bg-forge-teal/5 sm:grid-cols-[5.5rem_minmax(0,1fr)_auto] sm:pr-3 md:gap-4",
       )}
     >
@@ -49,32 +49,32 @@ export function PlanCard({ group, index }: PlanCardProps) {
           )}
           aria-hidden="true"
         />
-        <span className="text-xs leading-none font-black text-muted-foreground uppercase">
+        <span className="font-black text-muted-foreground text-xs uppercase leading-none">
           {month}
         </span>
-        <span className="mt-1 text-2xl leading-none font-black text-foreground">
+        <span className="mt-1 font-black text-2xl text-foreground leading-none">
           {dayNum}
         </span>
-        <span className="mt-1 text-xs leading-none font-bold text-muted-foreground">
+        <span className="mt-1 font-bold text-muted-foreground text-xs leading-none">
           {dayName}
         </span>
       </div>
 
       <div className="min-w-0">
-        <p className="truncate text-sm leading-snug font-bold text-foreground transition-colors duration-200 group-hover:text-forge-teal">
+        <p className="truncate font-bold text-foreground text-sm leading-snug transition-colors duration-200 group-hover:text-forge-teal">
           {plan.title}
         </p>
-        <p className="mt-0.5 truncate text-xs font-medium text-muted-foreground">
+        <p className="mt-0.5 truncate font-medium text-muted-foreground text-xs">
           {group.name}
         </p>
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
+          <span className="flex items-center gap-1 font-semibold text-muted-foreground text-xs">
             <Clock className="size-3" aria-hidden="true" />
             {timeStr}
           </span>
           <span
             className={cn(
-              "inline-flex items-center gap-1 text-xs font-bold",
+              "inline-flex items-center gap-1 font-bold text-xs",
               status.classes,
             )}
           >
@@ -97,7 +97,7 @@ export function PlanCard({ group, index }: PlanCardProps) {
             />
           ))}
           {memberPreviews.length > 3 && (
-            <div className="flex size-7 items-center justify-center rounded-full border-2 border-card bg-muted text-xs font-extrabold text-muted-foreground shadow-xs sm:size-8">
+            <div className="flex size-7 items-center justify-center rounded-full border-2 border-card bg-muted font-extrabold text-muted-foreground text-xs shadow-xs sm:size-8">
               +{memberPreviews.length - 3}
             </div>
           )}
@@ -110,7 +110,7 @@ export function PlanCard({ group, index }: PlanCardProps) {
           aria-label={`Open chat for ${plan.title}`}
           className={cn(
             "ml-auto gap-1 rounded-md px-2.5 py-1 sm:ml-0",
-            "text-xs font-black",
+            "font-black text-xs",
           )}
         >
           <Link

@@ -15,8 +15,8 @@ export function SizeFilter() {
   return (
     <section className="space-y-2.5">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-bold text-foreground">Room size</h4>
-        <span className="rounded-full bg-muted/35 px-2 py-0.5 text-xs font-bold text-muted-foreground tabular-nums">
+        <h4 className="font-bold text-foreground text-sm">Room size</h4>
+        <span className="rounded-full bg-muted/35 px-2 py-0.5 font-bold text-muted-foreground text-xs tabular-nums">
           {sizeRange[0]}–{sizeRange[1]}
         </span>
       </div>
@@ -32,7 +32,7 @@ export function SizeFilter() {
           minStepsBetweenThumbs={1}
           aria-label="Group size range"
         />
-        <div className="mt-2 flex justify-between text-xs font-semibold text-muted-foreground/70">
+        <div className="mt-2 flex justify-between font-semibold text-muted-foreground/70 text-xs">
           <span>Small</span>
           <span>Larger</span>
         </div>

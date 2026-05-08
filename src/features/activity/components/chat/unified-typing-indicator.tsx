@@ -66,7 +66,7 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
 
           <TypingDots />
 
-          <span className="pr-1 text-micro font-semibold tracking-tight text-slate-muted">
+          <span className="pr-1 font-semibold text-micro text-slate-muted tracking-tight">
             {text.toUpperCase()}
           </span>
         </div>

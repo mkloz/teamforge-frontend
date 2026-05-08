@@ -16,17 +16,17 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
   return (
     <section
       id="forge-hero"
-      className="grid gap-7 border-b border-border pb-8 md:grid-cols-[minmax(0,1fr)_20rem] md:items-end md:pb-10"
+      className="grid gap-7 border-border border-b pb-8 md:grid-cols-[minmax(0,1fr)_20rem] md:items-end md:pb-10"
     >
       <div className="flex min-w-0 flex-col gap-7">
         <div className="flex flex-col gap-4">
-          <p className="text-sm font-black text-muted-foreground uppercase">
+          <p className="font-black text-muted-foreground text-sm uppercase">
             Forge
           </p>
-          <h1 className="max-w-3xl text-4xl leading-tight font-black text-balance text-foreground md:text-display-lg">
+          <h1 className="max-w-3xl text-balance font-black text-4xl text-foreground leading-tight md:text-display-lg">
             What are you trying to make happen?
           </h1>
-          <p className="max-w-2xl text-base leading-relaxed font-medium text-pretty text-muted-foreground">
+          <p className="max-w-2xl text-pretty font-medium text-base text-muted-foreground leading-relaxed">
             Give Forge a real activity and a few boundaries. It helps form a
             small group around the plan, then moves everyone into chat to sort
             out the final details.
@@ -44,7 +44,7 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
             <Plus size={20} />
             Forge my group
           </Button>
-          <p className="max-w-sm text-sm leading-relaxed font-medium text-muted-foreground">
+          <p className="max-w-sm font-medium text-muted-foreground text-sm leading-relaxed">
             Best when you already have a rough activity, time, or place in mind.
           </p>
         </div>
@@ -54,10 +54,10 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
         aria-label="Example forge brief"
         className="rounded-xl border border-border bg-card"
       >
-        <div className="flex items-center justify-between gap-4 border-b border-border px-4 py-3">
+        <div className="flex items-center justify-between gap-4 border-border border-b px-4 py-3">
           <div>
-            <p className="text-sm font-black text-foreground">Example brief</p>
-            <p className="text-xs font-medium text-muted-foreground">
+            <p className="font-black text-foreground text-sm">Example brief</p>
+            <p className="font-medium text-muted-foreground text-xs">
               Specific enough to start
             </p>
           </div>
@@ -70,10 +70,10 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
               key={label}
               className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-3 px-4 py-3"
             >
-              <dt className="text-xs font-black text-muted-foreground uppercase">
+              <dt className="font-black text-muted-foreground text-xs uppercase">
                 {label}
               </dt>
-              <dd className="text-sm leading-relaxed font-semibold text-foreground">
+              <dd className="font-semibold text-foreground text-sm leading-relaxed">
                 {value}
               </dd>
             </div>

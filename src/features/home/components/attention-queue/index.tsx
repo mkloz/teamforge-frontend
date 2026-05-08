@@ -91,7 +91,7 @@ export function AttentionQueue({
         description="The small things that keep a group moving."
         action={
           queueSize > 0 ? (
-            <span className="text-xs font-black text-forge-teal">
+            <span className="font-black text-forge-teal text-xs">
               {queueSize} open item{queueSize === 1 ? "" : "s"}
             </span>
           ) : null
@@ -100,7 +100,7 @@ export function AttentionQueue({
 
       <ul
         aria-label="Things that need attention"
-        className="mt-4 grid min-w-0 list-none border-y border-border/55 p-0"
+        className="mt-4 grid min-w-0 list-none border-border/55 border-y p-0"
       >
         {actionError ? <ActionErrorBanner error={actionError} /> : null}
         {shouldShowSkeleton ? <AttentionQueueSkeleton /> : null}

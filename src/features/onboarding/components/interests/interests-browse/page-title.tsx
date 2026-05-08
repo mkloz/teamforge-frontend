@@ -20,11 +20,11 @@ export function PageTitle({
           className="mb-6 overflow-hidden pt-4"
         >
           {!hideContextLabel && (
-            <p className="mb-2 font-sans text-[11px] font-bold tracking-[0.2em] text-forge-teal uppercase">
+            <p className="mb-2 font-bold font-sans text-[11px] text-forge-teal uppercase tracking-[0.2em]">
               Step 2 of 2 · Interests
             </p>
           )}
-          <h1 className="font-sans text-3xl font-extrabold tracking-tight text-ink">
+          <h1 className="font-extrabold font-sans text-3xl text-ink tracking-tight">
             What do you love doing?
           </h1>
         </motion.div>

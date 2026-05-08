@@ -2,7 +2,7 @@ import { TeamForgeLogo } from "@/assets/logo";
 
 export function Footer() {
   return (
-    <footer className="dark border-t border-white/5 bg-hero-bg py-5">
+    <footer className="dark border-white/5 border-t bg-hero-bg py-5">
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex flex-col items-center justify-center gap-2 sm:flex-row sm:gap-4">
           <span className="flex items-center gap-1.5 font-sans text-sm">

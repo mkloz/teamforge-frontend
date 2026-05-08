@@ -85,13 +85,13 @@ export function LocationSection({
               <div className="min-w-0">
                 <p
                   className={cn(
-                    "truncate text-xs leading-tight font-semibold",
+                    "truncate font-semibold text-xs leading-tight",
                     active ? "text-forge-teal" : "text-foreground",
                   )}
                 >
                   {label}
                 </p>
-                <p className="mt-0.5 truncate text-micro leading-tight text-muted-foreground/60">
+                <p className="mt-0.5 truncate text-micro text-muted-foreground/60 leading-tight">
                   {sub}
                 </p>
               </div>
@@ -101,7 +101,7 @@ export function LocationSection({
       </RadioGroup>
 
       {showAddress && (
-        <div className="animate-in space-y-2 duration-200 fade-in slide-in-from-top-1">
+        <div className="fade-in slide-in-from-top-1 animate-in space-y-2 duration-200">
           <AddressAutocomplete
             label="Address or venue"
             badge="Plan location"
@@ -124,13 +124,13 @@ export function LocationSection({
                 location?.lng ?? null,
               );
             }}
-            className="[&_label]:text-xs [&_label]:font-semibold [&_label]:text-muted-foreground"
+            className="[&_label]:font-semibold [&_label]:text-muted-foreground [&_label]:text-xs"
           />
         </div>
       )}
 
       {locationType === "ONLINE" && (
-        <div className="animate-in space-y-2 duration-200 fade-in slide-in-from-top-1">
+        <div className="fade-in slide-in-from-top-1 animate-in space-y-2 duration-200">
           <FieldLabel htmlFor="plan-online-location">
             Meeting link or platform
           </FieldLabel>
@@ -146,9 +146,9 @@ export function LocationSection({
       )}
 
       {locationType === "TBD" && (
-        <div className="flex animate-in items-center gap-2 rounded-lg border border-border/40 bg-muted/40 px-3 py-2 duration-200 fade-in">
+        <div className="fade-in flex animate-in items-center gap-2 rounded-lg border border-border/40 bg-muted/40 px-3 py-2 duration-200">
           <Globe size={12} className="shrink-0 text-muted-foreground/50" />
-          <p className="text-xs leading-snug text-muted-foreground/70">
+          <p className="text-muted-foreground/70 text-xs leading-snug">
             Location will be confirmed with members once the group is formed.
           </p>
         </div>

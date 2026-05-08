@@ -67,7 +67,7 @@ export function CategoryFilter() {
       {!expanded && hiddenCategoryCount > 0 ? (
         <button
           type="button"
-          className="inline-flex h-7 items-center rounded-full border border-border bg-card px-2.5 text-xs font-bold text-muted-foreground transition-[border-color,background-color,color] hover:border-border/90 hover:bg-muted/35 hover:text-foreground"
+          className="inline-flex h-7 items-center rounded-full border border-border bg-card px-2.5 font-bold text-muted-foreground text-xs transition-[border-color,background-color,color] hover:border-border/90 hover:bg-muted/35 hover:text-foreground"
           onClick={() => setExpanded(true)}
         >
           +{hiddenCategoryCount} more
@@ -76,7 +76,7 @@ export function CategoryFilter() {
       {expanded ? (
         <button
           type="button"
-          className="inline-flex h-7 items-center rounded-full border border-border bg-card px-2.5 text-xs font-bold text-muted-foreground transition-[border-color,background-color,color] hover:border-border/90 hover:bg-muted/35 hover:text-foreground"
+          className="inline-flex h-7 items-center rounded-full border border-border bg-card px-2.5 font-bold text-muted-foreground text-xs transition-[border-color,background-color,color] hover:border-border/90 hover:bg-muted/35 hover:text-foreground"
           onClick={() => setExpanded(false)}
         >
           Show less

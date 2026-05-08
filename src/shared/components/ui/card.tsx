@@ -34,7 +34,7 @@ function CardTitle({
     <h3
       ref={ref}
       className={cn(
-        "text-xl leading-none font-semibold tracking-tight",
+        "font-semibold text-xl leading-none tracking-tight",
         className,
       )}
       {...props}
@@ -52,7 +52,7 @@ function CardDescription({
   return (
     <p
       ref={ref}
-      className={cn("text-sm text-muted-foreground", className)}
+      className={cn("text-muted-foreground text-sm", className)}
       {...props}
     />
   );

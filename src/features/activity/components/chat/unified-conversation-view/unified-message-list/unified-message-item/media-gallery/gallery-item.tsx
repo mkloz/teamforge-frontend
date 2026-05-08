@@ -42,7 +42,7 @@ export const GalleryItem = memo(
         aria-label={`Open ${media.type === "VIDEO" ? "video" : "image"} attachment ${index + 1}`}
         className={cn(
           "group/gallery-item relative block h-full w-full appearance-none overflow-hidden bg-muted/60 text-left",
-          "focus-visible:ring-2 focus-visible:ring-forge-teal/40 focus-visible:ring-offset-2 focus-visible:outline-none",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40 focus-visible:ring-offset-2",
           "disabled:cursor-default",
           state !== "error" && "cursor-zoom-in",
           count === 1 && "aspect-square max-h-120 sm:aspect-video",
@@ -74,7 +74,7 @@ export const GalleryItem = memo(
             <div className="flex size-9 items-center justify-center rounded-full bg-muted">
               <ImageOff className="size-4 text-slate-muted" strokeWidth={1.5} />
             </div>
-            <span className="text-xs font-medium tracking-wide text-slate-muted/70 uppercase">
+            <span className="font-medium text-slate-muted/70 text-xs uppercase tracking-wide">
               Failed to load
             </span>
           </div>
@@ -140,7 +140,7 @@ export const GalleryItem = memo(
             <div className="absolute top-2 right-2 scale-90 rounded-lg border border-white/10 bg-black/20 p-1.5 opacity-0 backdrop-blur-md transition-[opacity,transform] duration-200 group-hover/gallery-item:scale-100 group-hover/gallery-item:opacity-100">
               <Layers className="size-3.5 text-white/80" />
             </div>
-            <div className="absolute inset-0 ring-0 ring-white/20 transition-all duration-500 ease-out ring-inset group-hover/gallery-item:ring-8" />
+            <div className="absolute inset-0 ring-0 ring-white/20 ring-inset transition-all duration-500 ease-out group-hover/gallery-item:ring-8" />
           </>
         )}
 

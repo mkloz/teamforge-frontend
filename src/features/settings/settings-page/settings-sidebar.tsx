@@ -28,11 +28,11 @@ export function SettingsSidebar({
         isMobileDetailOpen && "hidden",
       )}
     >
-      <div className="mb-5 border-b border-border pb-5 lg:border-b-0 lg:pb-0">
-        <h1 className="text-2xl leading-tight font-bold text-ink lg:text-3xl">
+      <div className="mb-5 border-border border-b pb-5 lg:border-b-0 lg:pb-0">
+        <h1 className="font-bold text-2xl text-ink leading-tight lg:text-3xl">
           Settings
         </h1>
-        <p className="mt-2 text-sm leading-relaxed text-slate-muted">
+        <p className="mt-2 text-slate-muted text-sm leading-relaxed">
           The parts of TeamForge that should bend around you.
         </p>
       </div>
@@ -42,7 +42,7 @@ export function SettingsSidebar({
         onSectionSelect={onSectionSelect}
       />
 
-      <div className="mt-5 border-y border-border py-1 lg:border-x-0 lg:border-t lg:border-b-0 lg:py-4">
+      <div className="mt-5 border-border border-y py-1 lg:border-x-0 lg:border-t lg:border-b-0 lg:py-4">
         <Button
           type="button"
           variant="destructive"
@@ -85,7 +85,7 @@ function SettingsSectionNav({
             onClick={() => onSectionSelect(section.id)}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "group relative flex w-full items-center justify-between gap-3 border-b border-border px-1 py-2 text-left transition-colors last:border-b-0 focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:outline-none active:bg-muted/40 lg:items-start lg:border-b-0 lg:px-4 active:lg:bg-transparent",
+              "group relative flex w-full items-center justify-between gap-3 border-border border-b px-1 py-2 text-left transition-colors last:border-b-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 active:bg-muted/40 lg:items-start lg:border-b-0 lg:px-4 active:lg:bg-transparent",
               "after:absolute after:top-2.5 after:bottom-2.5 after:left-0 after:w-0.5 after:origin-center after:scale-y-0 after:bg-forge-teal after:transition-transform",
               isActive
                 ? "text-ink lg:after:scale-y-100"
@@ -105,7 +105,7 @@ function SettingsSectionNav({
             <span className="min-w-0 flex-1">
               <span
                 className={cn(
-                  "block text-base leading-snug font-semibold lg:text-sm",
+                  "block font-semibold text-base leading-snug lg:text-sm",
                   isActive ? "text-ink" : "text-inherit",
                 )}
               >

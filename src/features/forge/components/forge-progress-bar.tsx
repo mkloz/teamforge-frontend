@@ -63,7 +63,7 @@ export function ForgeProgressBar({
               <div className="flex items-center gap-1">
                 <span
                   className={cn(
-                    "text-micro font-bold tabular-nums transition-colors duration-500",
+                    "font-bold text-micro tabular-nums transition-colors duration-500",
                     isActive
                       ? activeTextColor
                       : isComplete
@@ -75,7 +75,7 @@ export function ForgeProgressBar({
                 </span>
                 <p
                   className={cn(
-                    "text-micro font-semibold transition-colors duration-500",
+                    "font-semibold text-micro transition-colors duration-500",
                     isActive
                       ? activeTextColor
                       : isComplete

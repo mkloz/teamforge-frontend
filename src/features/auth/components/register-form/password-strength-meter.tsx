@@ -26,7 +26,7 @@ export function PasswordStrengthMeter({
           />
         ))}
       </div>
-      <p className={`mt-1 text-xs font-medium ${labelColorClassName}`}>
+      <p className={`mt-1 font-medium text-xs ${labelColorClassName}`}>
         {strength.label}
       </p>
     </div>

@@ -11,7 +11,7 @@ interface HeaderSearchProps {
 
 export function HeaderSearch({ query, setQuery, ref }: HeaderSearchProps) {
   return (
-    <div className="flex flex-1 animate-in items-center gap-2 duration-300 fade-in slide-in-from-left-2">
+    <div className="fade-in slide-in-from-left-2 flex flex-1 animate-in items-center gap-2 duration-300">
       <Input
         ref={ref}
         type="text"

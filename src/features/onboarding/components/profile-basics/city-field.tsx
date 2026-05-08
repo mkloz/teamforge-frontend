@@ -49,7 +49,7 @@ export function CityField({ form, watchedValues }: CityFieldProps) {
               }}
             />
           </FormControl>
-          <FormMessage className="text-xs font-medium text-destructive" />
+          <FormMessage className="font-medium text-destructive text-xs" />
         </FormItem>
       )}
     />

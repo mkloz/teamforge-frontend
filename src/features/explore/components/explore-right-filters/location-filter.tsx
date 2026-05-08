@@ -13,7 +13,7 @@ export function LocationFilter() {
 
   return (
     <section className="space-y-2">
-      <h4 className="pl-1 text-sm font-bold tracking-tight text-foreground">
+      <h4 className="pl-1 font-bold text-foreground text-sm tracking-tight">
         Place
       </h4>
       <SegmentedFilterTabs
@@ -25,11 +25,11 @@ export function LocationFilter() {
       {locationMode !== "ONLINE" && (
         <div className="space-y-3 px-1 pt-1.5">
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+            <span className="flex items-center gap-1.5 font-semibold text-muted-foreground text-xs">
               <Route className="size-3.5" aria-hidden="true" />
               Distance
             </span>
-            <span className="text-xs font-black tracking-tight text-muted-foreground tabular-nums">
+            <span className="font-black text-muted-foreground text-xs tabular-nums tracking-tight">
               {distance} km
             </span>
           </div>

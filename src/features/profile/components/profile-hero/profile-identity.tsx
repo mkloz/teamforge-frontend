@@ -17,19 +17,19 @@ export function ProfileIdentity({ user, archetype }: ProfileIdentityProps) {
 
   return (
     <div className="flex min-w-0 flex-1 flex-col items-center justify-center pt-0 sm:items-start">
-      <h1 className="text-center text-3xl leading-tight font-bold tracking-tight text-balance text-ink sm:text-left sm:text-4xl sm:text-white">
+      <h1 className="text-balance text-center font-bold text-3xl text-ink leading-tight tracking-tight sm:text-left sm:text-4xl sm:text-white">
         {user.name}
       </h1>
 
       <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 font-medium text-slate-muted sm:justify-start sm:text-white/80">
         {hasAge ? (
-          <span className="text-sm font-semibold">{user.age} yrs</span>
+          <span className="font-semibold text-sm">{user.age} yrs</span>
         ) : null}
         {hasAge && hasCity ? (
           <span className="h-1 w-1 rounded-full bg-slate-muted/30 sm:bg-white/40" />
         ) : null}
         {hasCity ? (
-          <div className="flex min-w-0 items-center gap-1 text-micro font-bold tracking-widest uppercase">
+          <div className="flex min-w-0 items-center gap-1 font-bold text-micro uppercase tracking-widest">
             <MapPin
               size={12}
               className="shrink-0 text-forge-teal sm:text-white/90"

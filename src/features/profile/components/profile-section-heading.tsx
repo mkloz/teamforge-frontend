@@ -13,7 +13,7 @@ export function ProfileSectionHeading({
 }: ProfileSectionHeadingProps) {
   return (
     <div className={cn("flex items-center", className)}>
-      <h3 className="text-sm font-extrabold text-ink/75">{children}</h3>
+      <h3 className="font-extrabold text-ink/75 text-sm">{children}</h3>
     </div>
   );
 }

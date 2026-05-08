@@ -19,7 +19,7 @@ export function RegisterIdentityFields() {
         name="name"
         render={({ field }) => (
           <FormItem className="space-y-0">
-            <FormLabel className="font-sans text-sm font-semibold text-ink">
+            <FormLabel className="font-sans font-semibold text-ink text-sm">
               Full Name
             </FormLabel>
             <FormControl>
@@ -29,7 +29,7 @@ export function RegisterIdentityFields() {
                 {...field}
               />
             </FormControl>
-            <FormMessage className="text-xs font-medium text-destructive" />
+            <FormMessage className="font-medium text-destructive text-xs" />
           </FormItem>
         )}
       />
@@ -39,7 +39,7 @@ export function RegisterIdentityFields() {
         name="email"
         render={({ field }) => (
           <FormItem className="space-y-0">
-            <FormLabel className="font-sans text-sm font-semibold text-ink">
+            <FormLabel className="font-sans font-semibold text-ink text-sm">
               Email
             </FormLabel>
             <FormControl>
@@ -50,7 +50,7 @@ export function RegisterIdentityFields() {
                 {...field}
               />
             </FormControl>
-            <FormMessage className="text-xs font-medium text-destructive" />
+            <FormMessage className="font-medium text-destructive text-xs" />
           </FormItem>
         )}
       />

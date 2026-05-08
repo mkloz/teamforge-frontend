@@ -35,7 +35,7 @@ export function GroupDetailPanel({
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          "hidden h-full flex-col border-l border-border bg-canvas lg:flex",
+          "hidden h-full flex-col border-border border-l bg-canvas lg:flex",
           "transition duration-300 ease-in-out",
           isOpen ? "w-80 opacity-100" : "w-0 overflow-hidden opacity-0",
         )}

@@ -91,11 +91,11 @@ export function AddressAutocomplete({
       className={cn("relative flex flex-col gap-2", className)}
     >
       <div className="flex items-baseline justify-between gap-3">
-        <Label htmlFor={inputId} className="text-sm font-semibold text-ink">
+        <Label htmlFor={inputId} className="font-semibold text-ink text-sm">
           {label}
           {required ? <span className="ml-1 text-destructive">*</span> : null}
         </Label>
-        <span className="rounded-full border border-slate-muted/30 bg-canvas px-2 py-0.5 text-micro font-semibold text-ink">
+        <span className="rounded-full border border-slate-muted/30 bg-canvas px-2 py-0.5 font-semibold text-ink text-micro">
           {badge}
         </span>
       </div>
@@ -156,7 +156,7 @@ export function AddressAutocomplete({
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <p
           id={`${inputId}-hint`}
-          className="text-xs leading-5 text-slate-muted"
+          className="text-slate-muted text-xs leading-5"
         >
           {getLocationHintMessage({ hint, message, showManualHint })}
         </p>

@@ -17,7 +17,7 @@ export function GroupDescriptionField({
     <div className="space-y-1.5">
       <Label
         htmlFor={descId}
-        className="block text-xs font-semibold text-muted-foreground/70"
+        className="block font-semibold text-muted-foreground/70 text-xs"
       >
         Description{" "}
         <span className="font-normal text-muted-foreground/40">(optional)</span>
@@ -30,7 +30,7 @@ export function GroupDescriptionField({
         placeholder="What's this group about? A shared goal, project, or interest..."
         onChange={(event) => onGroupDescriptionChange(event.target.value)}
         className={cn(
-          "rounded-xl border-border/60 bg-background/60 px-3.5 py-3 text-sm font-medium",
+          "rounded-xl border-border/60 bg-background/60 px-3.5 py-3 font-medium text-sm",
           "placeholder:text-muted-foreground/35 focus-visible:border-forge-teal/60",
           "resize-none leading-relaxed transition-colors duration-150 focus:bg-background focus:ring-2 focus:ring-forge-teal/10",
         )}

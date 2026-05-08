@@ -61,12 +61,12 @@ export function ForgePage() {
               className="grid gap-5 md:grid-cols-[13rem_minmax(0,1fr)]"
             >
               <div>
-                <p className="text-sm font-black text-muted-foreground uppercase">
+                <p className="font-black text-muted-foreground text-sm uppercase">
                   Good starts
                 </p>
                 <h2
                   id="starter-examples-title"
-                  className="mt-2 text-2xl leading-tight font-black text-balance text-foreground"
+                  className="mt-2 text-balance font-black text-2xl text-foreground leading-tight"
                 >
                   Start with the kind of plan someone can answer quickly.
                 </h2>
@@ -78,14 +78,14 @@ export function ForgePage() {
                     key={title}
                     className="rounded-xl border border-border bg-card p-4"
                   >
-                    <h3 className="text-sm font-black text-foreground">
+                    <h3 className="font-black text-foreground text-sm">
                       {title}
                     </h3>
                     <ul className="mt-3 grid gap-2">
                       {items.map((item) => (
                         <li
                           key={item}
-                          className="border-t border-border pt-2 text-sm leading-relaxed font-medium text-muted-foreground first:border-t-0 first:pt-0"
+                          className="border-border border-t pt-2 font-medium text-muted-foreground text-sm leading-relaxed first:border-t-0 first:pt-0"
                         >
                           {item}
                         </li>
@@ -102,12 +102,12 @@ export function ForgePage() {
             >
               <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
                 <div>
-                  <p className="text-sm font-black text-muted-foreground uppercase">
+                  <p className="font-black text-muted-foreground text-sm uppercase">
                     After you start
                   </p>
                   <h2
                     id="forge-next-title"
-                    className="mt-2 max-w-2xl text-2xl leading-tight font-black text-balance text-foreground"
+                    className="mt-2 max-w-2xl text-balance font-black text-2xl text-foreground leading-tight"
                   >
                     Forge turns the rough plan into a group space.
                   </h2>
@@ -116,12 +116,12 @@ export function ForgePage() {
                     {FORGE_OUTCOMES.map(([title, body]) => (
                       <div
                         key={title}
-                        className="border-t border-border pt-4 first:border-t-0 first:pt-0 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-4 sm:first:border-l-0 sm:first:pl-0"
+                        className="border-border border-t pt-4 first:border-t-0 first:pt-0 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-4 sm:first:border-l-0 sm:first:pl-0"
                       >
-                        <p className="text-sm font-black text-foreground">
+                        <p className="font-black text-foreground text-sm">
                           {title}
                         </p>
-                        <p className="mt-1 text-sm leading-relaxed font-medium text-muted-foreground">
+                        <p className="mt-1 font-medium text-muted-foreground text-sm leading-relaxed">
                           {body}
                         </p>
                       </div>

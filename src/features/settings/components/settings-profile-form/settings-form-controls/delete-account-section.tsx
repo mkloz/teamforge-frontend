@@ -32,22 +32,22 @@ export function DeleteAccountSection({
   const canDelete = confirmation === "DELETE";
 
   return (
-    <section className="border-t border-destructive/30 pt-7">
+    <section className="border-destructive/30 border-t pt-7">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="max-w-2xl">
-          <p className="text-xs font-semibold tracking-widest text-destructive uppercase">
+          <p className="font-semibold text-destructive text-xs uppercase tracking-widest">
             Permanent action
           </p>
-          <h3 className="mt-2 text-lg font-semibold text-ink">
+          <h3 className="mt-2 font-semibold text-ink text-lg">
             Delete account
           </h3>
-          <p className="mt-2 text-sm leading-relaxed text-slate-muted">
+          <p className="mt-2 text-slate-muted text-sm leading-relaxed">
             This signs you out, disables automatic group forming, removes active
             sessions, and anonymizes your sign-in identifiers. Existing group
             history may remain where other members need context.
           </p>
           {error ? (
-            <p className="mt-3 text-sm font-medium text-destructive">{error}</p>
+            <p className="mt-3 font-medium text-destructive text-sm">{error}</p>
           ) : null}
         </div>
 

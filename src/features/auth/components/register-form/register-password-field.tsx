@@ -30,7 +30,7 @@ export function RegisterPasswordField() {
       name="password"
       render={({ field, formState }) => (
         <FormItem className="space-y-0">
-          <FormLabel className="font-sans text-sm font-semibold text-ink">
+          <FormLabel className="font-sans font-semibold text-ink text-sm">
             Password
           </FormLabel>
           <FormControl>
@@ -57,7 +57,7 @@ export function RegisterPasswordField() {
           {passwordValue?.length > 0 && (
             <PasswordStrengthMeter strength={strength} />
           )}
-          <FormMessage className="text-xs font-medium text-destructive" />
+          <FormMessage className="font-medium text-destructive text-xs" />
         </FormItem>
       )}
     />

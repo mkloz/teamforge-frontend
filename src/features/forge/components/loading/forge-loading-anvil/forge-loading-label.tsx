@@ -16,12 +16,12 @@ export function ForgeLoadingLabel({
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           exit={{ opacity: 0, y: -4, filter: "blur(3px)" }}
           transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-          className="text-sm font-black text-foreground"
+          className="font-black text-foreground text-sm"
         >
           {displayLabel}
         </motion.p>
       </AnimatePresence>
-      <p className="text-micro font-bold text-muted-foreground uppercase">
+      <p className="font-bold text-micro text-muted-foreground uppercase">
         Matching signals
       </p>
       <div className="flex items-center gap-1.5 pt-1" aria-hidden="true">

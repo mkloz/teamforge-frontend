@@ -34,12 +34,12 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between px-1">
-        <span className="text-micro font-black tracking-widest text-slate-muted uppercase">
+        <span className="font-black text-micro text-slate-muted uppercase tracking-widest">
           {labels.name}
         </span>
         <span
           className={cn(
-            "text-micro font-black tracking-widest uppercase transition-colors",
+            "font-black text-micro uppercase tracking-widest transition-colors",
             score.isBorderline ? "text-spark-amber" : "text-forge-teal",
           )}
         >
@@ -50,7 +50,7 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
       <div className="flex items-center gap-3">
         <span
           className={cn(
-            "flex w-4 justify-center text-xs font-black transition-colors",
+            "flex w-4 justify-center font-black text-xs transition-colors",
             isLeftSide ? "text-forge-teal" : "text-slate-muted/50",
           )}
         >
@@ -66,7 +66,7 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
 
         <span
           className={cn(
-            "flex w-4 justify-center text-xs font-black transition-colors",
+            "flex w-4 justify-center font-black text-xs transition-colors",
             !isLeftSide ? "text-forge-teal" : "text-slate-muted/50",
           )}
         >

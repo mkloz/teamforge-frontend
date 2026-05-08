@@ -16,10 +16,10 @@ export function UserMenuProfileSummary() {
         />
 
         <div className="min-w-0 flex-1">
-          <p className="truncate text-base leading-tight font-black text-foreground">
+          <p className="truncate font-black text-base text-foreground leading-tight">
             {currentUser?.name ?? "Account details syncing"}
           </p>
-          <p className="mt-1 truncate text-sm font-medium text-muted-foreground">
+          <p className="mt-1 truncate font-medium text-muted-foreground text-sm">
             {currentUser?.email ?? "Your session is active"}
           </p>
         </div>

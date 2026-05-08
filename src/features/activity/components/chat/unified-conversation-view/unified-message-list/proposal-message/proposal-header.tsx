@@ -40,10 +40,10 @@ export const ProposalHeader = memo(function ProposalHeader({
           <Icon className="size-3.5" />
         </div>
         <div>
-          <h4 className="mb-1 text-xs leading-none font-black tracking-wider text-spark-amber/70 uppercase">
+          <h4 className="mb-1 font-black text-spark-amber/70 text-xs uppercase leading-none tracking-wider">
             Change Proposal
           </h4>
-          <p className="text-xs leading-none font-bold text-foreground">
+          <p className="font-bold text-foreground text-xs leading-none">
             {FIELD_LABELS[field]}
           </p>
         </div>
@@ -52,7 +52,7 @@ export const ProposalHeader = memo(function ProposalHeader({
       <div className="flex items-center gap-2">
         <span
           className={cn(
-            "inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-bold tracking-wider uppercase",
+            "inline-flex items-center rounded-full border px-2.5 py-1 font-bold text-xs uppercase tracking-wider",
             STATUS_STYLES[status],
           )}
         >

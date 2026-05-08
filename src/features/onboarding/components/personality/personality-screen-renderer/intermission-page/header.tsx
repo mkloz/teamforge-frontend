@@ -29,21 +29,21 @@ export function IntermissionHeader({
           className="h-full w-full text-[0px]"
         />
         <div className="absolute inset-0 flex items-center justify-center pr-4 sm:pr-7">
-          <div className="z-10 flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-forge-teal shadow-lg shadow-forge-teal/5 transition-transform duration-300 group-hover:scale-105 sm:h-11 sm:w-11 dark:shadow-[0_10px_24px_rgba(0,0,0,0.28)]">
+          <div className="z-10 flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-forge-teal shadow-forge-teal/5 shadow-lg transition-transform duration-300 group-hover:scale-105 sm:h-11 sm:w-11 dark:shadow-[0_10px_24px_rgba(0,0,0,0.28)]">
             <Icon size={18} strokeWidth={2.5} className="sm:size-[21px]" />
           </div>
         </div>
       </div>
 
-      <div className="flex h-16 flex-col items-start justify-center border-l border-slate-200/80 pl-4 sm:h-22 sm:pl-7 dark:border-white/10">
-        <span className="mb-1 font-sans text-[10px] font-black tracking-[0.18em] text-forge-teal/80 uppercase sm:text-xs">
+      <div className="flex h-16 flex-col items-start justify-center border-slate-200/80 border-l pl-4 sm:h-22 sm:pl-7 dark:border-white/10">
+        <span className="mb-1 font-black font-sans text-[10px] text-forge-teal/80 uppercase tracking-[0.18em] sm:text-xs">
           Quick Break
         </span>
         <div className="flex items-baseline gap-1.5">
-          <span className="font-sans text-2xl font-black tracking-tighter text-ink sm:text-3xl">
+          <span className="font-black font-sans text-2xl text-ink tracking-tighter sm:text-3xl">
             {answeredCount}
           </span>
-          <span className="font-sans text-xs font-bold tracking-tight text-muted-foreground sm:text-sm">
+          <span className="font-bold font-sans text-muted-foreground text-xs tracking-tight sm:text-sm">
             / {totalQuestions} answered
           </span>
         </div>

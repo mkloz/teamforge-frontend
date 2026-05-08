@@ -100,18 +100,18 @@ export function NotificationItem({
 
         {/* Content */}
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <p className="truncate text-sm leading-tight font-bold text-ink">
+          <p className="truncate font-bold text-ink text-sm leading-tight">
             {item.title}
           </p>
-          <p className="line-clamp-2 text-sm leading-snug text-slate-muted">
+          <p className="line-clamp-2 text-slate-muted text-sm leading-snug">
             {item.message}
           </p>
           <div className="mt-1.5 flex items-center gap-2">
-            <p className="text-xs font-bold tracking-wider text-slate-muted/50 uppercase">
+            <p className="font-bold text-slate-muted/50 text-xs uppercase tracking-wider">
               {relativeTime(item.createdAt)}
             </p>
             {isPending && (
-              <span className="text-xs font-bold tracking-wider text-forge-teal uppercase">
+              <span className="font-bold text-forge-teal text-xs uppercase tracking-wider">
                 Opening...
               </span>
             )}

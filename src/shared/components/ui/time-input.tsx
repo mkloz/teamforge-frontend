@@ -241,7 +241,7 @@ function TimeScrollColumn<T extends number | string>({
 
   return (
     <div className="flex min-w-0 flex-col px-1.5">
-      <p className="pb-2 text-center text-xs font-black text-slate-muted uppercase">
+      <p className="pb-2 text-center font-black text-slate-muted text-xs uppercase">
         {title}
       </p>
       <div className="relative flex min-h-56 flex-1 items-center">
@@ -250,7 +250,7 @@ function TimeScrollColumn<T extends number | string>({
           role="listbox"
           aria-label={ariaLabel}
           style={{ scrollbarWidth: "none" }}
-          className="flex max-h-56 w-full flex-col gap-1 overflow-y-auto py-7 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden! [&::-webkit-scrollbar]:w-0!"
+          className="[&::-webkit-scrollbar]:hidden! flex max-h-56 w-full flex-col gap-1 overflow-y-auto py-7 [-ms-overflow-style:none] [&::-webkit-scrollbar]:w-0!"
           onScroll={updateScrollState}
         >
           {options.map((option) => {
@@ -437,7 +437,7 @@ function TimeInput({
               id={panelId}
               ref={panelRef}
               style={panelStyle}
-              className="z-100 rounded-xl border border-border bg-card p-2 shadow-xl shadow-black/10"
+              className="z-100 rounded-xl border border-border bg-card p-2 shadow-black/10 shadow-xl"
             >
               <div
                 className={cn(
@@ -495,7 +495,7 @@ function TimeInput({
 
                 {useMeridiem ? (
                   <div className="flex min-w-0 flex-col px-1.5">
-                    <p className="pb-2 text-center text-xs font-black text-slate-muted uppercase">
+                    <p className="pb-2 text-center font-black text-slate-muted text-xs uppercase">
                       Period
                     </p>
                     <div
@@ -545,7 +545,7 @@ function TimeInput({
                 ) : null}
               </div>
 
-              <div className="mt-2 flex items-center justify-between gap-2 border-t border-border/70 pt-2">
+              <div className="mt-2 flex items-center justify-between gap-2 border-border/70 border-t pt-2">
                 <Button
                   type="button"
                   variant="ghost"

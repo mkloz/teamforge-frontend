@@ -55,7 +55,7 @@ export function CategorySection({
               getCategoryColorClass(category.id),
             )}
           />
-          <span className="font-sans text-sm font-bold transition-colors group-hover:text-forge-teal">
+          <span className="font-bold font-sans text-sm transition-colors group-hover:text-forge-teal">
             {category.name}
           </span>
         </div>
@@ -63,7 +63,7 @@ export function CategorySection({
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="mr-2 ml-auto flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-forge-teal px-1.5 font-sans text-xs leading-none font-bold text-white shadow-[0_2px_4px_rgba(13,148,136,0.2)]"
+            className="mr-2 ml-auto flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-forge-teal px-1.5 font-bold font-sans text-white text-xs leading-none shadow-[0_2px_4px_rgba(13,148,136,0.2)]"
           >
             {selectedInCategory}
           </motion.span>

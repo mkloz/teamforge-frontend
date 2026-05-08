@@ -243,7 +243,7 @@ function DateInput({
               id={panelId}
               ref={panelRef}
               style={panelStyle}
-              className="z-100 rounded-xl border border-border bg-card p-3 shadow-xl shadow-black/10"
+              className="z-100 rounded-xl border border-border bg-card p-3 shadow-black/10 shadow-xl"
             >
               <div className="mb-3 flex items-center justify-between gap-2">
                 <Button
@@ -266,7 +266,7 @@ function DateInput({
                   type="button"
                   variant="ghost"
                   size="xs"
-                  className="min-w-32 rounded-md text-sm font-bold text-ink"
+                  className="min-w-32 rounded-md font-bold text-ink text-sm"
                   aria-label="Change calendar view"
                   onClick={toggleCalendarView}
                 >
@@ -299,7 +299,7 @@ function DateInput({
                   {weekdays.map((weekday) => (
                     <span
                       key={weekday}
-                      className="py-1 text-xs font-black tracking-wide text-slate-muted uppercase"
+                      className="py-1 font-black text-slate-muted text-xs uppercase tracking-wide"
                     >
                       {weekday}
                     </span>
@@ -321,7 +321,7 @@ function DateInput({
                         disabled={disabledDay}
                         aria-pressed={selected}
                         className={cn(
-                          "h-8 w-8 rounded-lg text-xs font-bold",
+                          "h-8 w-8 rounded-lg font-bold text-xs",
                           selected &&
                             "border-forge-teal bg-forge-teal text-white",
                           outsideMonth && "text-slate-muted/35",
@@ -399,7 +399,7 @@ function DateInput({
                 </div>
               ) : null}
 
-              <div className="mt-3 flex items-center justify-between border-t border-border/70 pt-3">
+              <div className="mt-3 flex items-center justify-between border-border/70 border-t pt-3">
                 <Button
                   type="button"
                   variant="ghost"

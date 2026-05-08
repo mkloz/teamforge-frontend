@@ -45,12 +45,12 @@ export function PersonalityResults({
 
         <PersonalityResultSummary profile={viewModel.profile} />
 
-        <section className="flex flex-col gap-4 border-t border-border/60 pt-7">
+        <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
           <SectionHeading
             eyebrow="TeamForge read"
             title="How this helps a group"
           />
-          <p className="text-base leading-relaxed font-medium text-pretty text-ink/82">
+          <p className="text-pretty font-medium text-base text-ink/82 leading-relaxed">
             {viewModel.groupRead}
           </p>
         </section>

@@ -64,7 +64,7 @@ export const ContentSection = memo(
           </div>
           <time
             className={cn(
-              "shrink-0 text-micro font-medium text-slate-muted tabular-nums",
+              "shrink-0 font-medium text-micro text-slate-muted tabular-nums",
               isCompact && "origin-right scale-90",
             )}
           >
@@ -92,10 +92,10 @@ export const ContentSection = memo(
               <SubtitleIcon type={latestMessage?.type} isCompact={isCompact} />
 
               {item.isTyping ? (
-                <div className="flex animate-in items-baseline gap-1 duration-300 fade-in slide-in-from-left-2">
+                <div className="fade-in slide-in-from-left-2 flex animate-in items-baseline gap-1 duration-300">
                   <span
                     className={cn(
-                      "leading-tight font-bold text-forge-teal",
+                      "font-bold text-forge-teal leading-tight",
                       "text-xs",
                     )}
                   >

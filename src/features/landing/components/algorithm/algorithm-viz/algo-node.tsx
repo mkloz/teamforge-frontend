@@ -265,7 +265,7 @@ export function AlgoNode({
                   : "rgba(20, 184, 166, 0.8)"
               }
               fontSize={size * 0.016}
-              className="pointer-events-none font-mono font-bold tracking-wider"
+              className="pointer-events-none font-bold font-mono tracking-wider"
               initial={{ opacity: 0, y: 5 }}
               animate={{
                 opacity: phase === "formed" && node.type === "rejected" ? 0 : 1,

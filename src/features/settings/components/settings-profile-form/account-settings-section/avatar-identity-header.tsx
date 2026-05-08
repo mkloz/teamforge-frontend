@@ -28,13 +28,13 @@ export function AvatarIdentityHeader({
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-semibold tracking-widest text-forge-teal uppercase">
+        <p className="font-semibold text-forge-teal text-xs uppercase tracking-widest">
           Public identity
         </p>
-        <h2 className="mt-2 text-3xl leading-tight font-bold text-ink">
+        <h2 className="mt-2 font-bold text-3xl text-ink leading-tight">
           {currentUser?.name ?? "Your account"}
         </h2>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed break-words text-slate-muted">
+        <p className="mt-2 max-w-2xl break-words text-slate-muted text-sm leading-relaxed">
           {currentUser?.bio ||
             "Add a short intro so people have an easier first step when your group opens."}
         </p>

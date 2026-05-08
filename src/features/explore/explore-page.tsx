@@ -15,10 +15,10 @@ export function ExplorePage() {
 
         <main className="col-span-1 flex min-h-[120vh] min-w-0 flex-col pb-34 lg:col-span-8 lg:pb-32 xl:col-auto">
           <div className="mb-4 xl:hidden">
-            <h1 className="text-2xl leading-tight font-black tracking-tight text-foreground">
+            <h1 className="font-black text-2xl text-foreground leading-tight tracking-tight">
               Explore
             </h1>
-            <p className="mt-1 max-w-2xl text-sm leading-relaxed font-medium text-muted-foreground">
+            <p className="mt-1 max-w-2xl font-medium text-muted-foreground text-sm leading-relaxed">
               Open groups ranked by fit, timing, and available seats.
             </p>
           </div>

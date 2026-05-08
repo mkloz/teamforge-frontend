@@ -41,7 +41,7 @@ export const FilterHeader = memo(function FilterHeader({
   return (
     <nav
       className={cn(
-        "sticky top-0 z-20 border-b border-border/60 px-4 py-1",
+        "sticky top-0 z-20 border-border/60 border-b px-4 py-1",
         "flex items-center justify-between bg-canvas/80 backdrop-blur-md",
       )}
     >
@@ -62,7 +62,7 @@ export const FilterHeader = memo(function FilterHeader({
         ))}
       </RadioGroup>
 
-      <div className="ml-2 flex items-center border-l border-border/40 pl-2">
+      <div className="ml-2 flex items-center border-border/40 border-l pl-2">
         <Button
           variant="accentGhost"
           size="icon"

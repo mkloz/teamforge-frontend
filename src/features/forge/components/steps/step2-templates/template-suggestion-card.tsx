@@ -47,7 +47,7 @@ export function TemplateSuggestionCard({
         <div className="flex min-w-0 items-center gap-2">
           <p
             className={cn(
-              "min-w-0 flex-1 truncate text-sm leading-tight font-semibold",
+              "min-w-0 flex-1 truncate font-semibold text-sm leading-tight",
               active ? "text-forge-teal" : "text-foreground",
             )}
           >
@@ -58,18 +58,18 @@ export function TemplateSuggestionCard({
             className="shrink-0 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-forge-teal"
           />
         </div>
-        <p className="line-clamp-1 text-xs leading-snug text-muted-foreground">
+        <p className="line-clamp-1 text-muted-foreground text-xs leading-snug">
           {suggestion.description}
         </p>
 
         <div className="mt-auto flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2">
-            <span className="inline-flex shrink-0 items-center gap-1.5 text-micro font-semibold text-muted-foreground">
+            <span className="inline-flex shrink-0 items-center gap-1.5 font-semibold text-micro text-muted-foreground">
               <Users size={11} />
               {suggestion.template.fixedSize}
             </span>
             {suggestion.template.locationType === "ONLINE" && (
-              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-forge-teal/10 px-1.5 py-0.5 text-micro font-semibold text-forge-teal">
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-forge-teal/10 px-1.5 py-0.5 font-semibold text-forge-teal text-micro">
                 <Wifi size={10} />
                 Online
               </span>
@@ -77,7 +77,7 @@ export function TemplateSuggestionCard({
           </div>
           <span
             className={cn(
-              "shrink-0 rounded-full px-2 py-0.5 text-micro font-semibold",
+              "shrink-0 rounded-full px-2 py-0.5 font-semibold text-micro",
               suggestion.badge === "Personal fit"
                 ? "bg-forge-teal/10 text-forge-teal"
                 : "bg-muted text-muted-foreground",

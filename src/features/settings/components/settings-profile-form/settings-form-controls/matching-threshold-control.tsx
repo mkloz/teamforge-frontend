@@ -22,18 +22,18 @@ export function MatchingThresholdControl({
   const valueLabel = value === 0 ? "Open" : `${value}%`;
 
   return (
-    <div className="border-b border-border py-4">
+    <div className="border-border border-b py-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold text-ink">
+          <p className="font-semibold text-ink text-sm">
             Minimum compatibility
           </p>
-          <p className="mt-1 text-xs leading-relaxed text-slate-muted">
+          <p className="mt-1 text-slate-muted text-xs leading-relaxed">
             Raise this to make automatic group forming stricter. Very high
             limits can slow things down.
           </p>
         </div>
-        <div className="rounded-full border border-forge-teal/20 bg-forge-teal/8 px-3 py-1 text-sm font-bold text-forge-teal">
+        <div className="rounded-full border border-forge-teal/20 bg-forge-teal/8 px-3 py-1 font-bold text-forge-teal text-sm">
           {valueLabel}
         </div>
       </div>

@@ -17,11 +17,11 @@ export function SectionHeader({
         <span className="text-forge-teal">{icon}</span>
       </div>
       <div className="min-w-0">
-        <p className="text-sm leading-tight font-semibold text-foreground">
+        <p className="font-semibold text-foreground text-sm leading-tight">
           {title}
         </p>
         {description && (
-          <p className="mt-0.5 text-xs leading-snug text-muted-foreground/65">
+          <p className="mt-0.5 text-muted-foreground/65 text-xs leading-snug">
             {description}
           </p>
         )}

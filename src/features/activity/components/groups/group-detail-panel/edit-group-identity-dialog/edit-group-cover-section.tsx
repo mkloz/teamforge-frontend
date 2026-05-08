@@ -29,7 +29,7 @@ export function EditGroupCoverSection({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+      <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
         Plan cover
       </p>
       <div className="relative">
@@ -81,7 +81,7 @@ export function EditGroupCoverSection({
         ))}
       </div>
       {activeCoverPreset && (
-        <p className="text-xs font-medium text-muted-foreground">
+        <p className="font-medium text-muted-foreground text-xs">
           Selected: {activeCoverPreset.label}
         </p>
       )}
@@ -112,11 +112,11 @@ function PlanCoverPresetButton({
         "group relative h-14 overflow-hidden rounded-xl border-2 bg-linear-to-br p-0 transition duration-200",
         gradient,
         selected
-          ? "border-forge-teal shadow-md shadow-forge-teal/20"
+          ? "border-forge-teal shadow-forge-teal/20 shadow-md"
           : "border-transparent hover:scale-[1.03] hover:shadow-sm",
       )}
     >
-      <span className="absolute bottom-1 left-1.5 text-xs font-bold text-white/85 drop-shadow-sm">
+      <span className="absolute bottom-1 left-1.5 font-bold text-white/85 text-xs drop-shadow-sm">
         {label}
       </span>
       {selected && (

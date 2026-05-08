@@ -37,7 +37,7 @@ export function FriendRequestQueueItem({
       exit={{ opacity: 0, x: 16 }}
       transition={{ delay: index * 0.04 }}
       className={cn(
-        "flex min-w-0 items-center gap-3 border-b border-border/55 px-1 py-4 transition-colors duration-150 last:border-b-0 sm:px-3",
+        "flex min-w-0 items-center gap-3 border-border/55 border-b px-1 py-4 transition-colors duration-150 last:border-b-0 sm:px-3",
         isFocused ? "bg-forge-teal/8" : "hover:bg-forge-teal/5",
       )}
     >
@@ -50,16 +50,16 @@ export function FriendRequestQueueItem({
         />
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 items-center gap-2">
-            <p className="truncate text-sm font-black text-foreground">
+            <p className="truncate font-black text-foreground text-sm">
               {request.counterpart.name}
             </p>
             {request.counterpart.personalityType ? (
-              <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs font-black text-muted-foreground">
+              <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 font-black text-muted-foreground text-xs">
                 {request.counterpart.personalityType}
               </span>
             ) : null}
           </div>
-          <p className="mt-1 line-clamp-2 text-xs leading-relaxed font-medium text-muted-foreground">
+          <p className="mt-1 line-clamp-2 font-medium text-muted-foreground text-xs leading-relaxed">
             {getFirstName(request.counterpart.name)} wants to connect.
           </p>
         </div>

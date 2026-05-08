@@ -33,7 +33,7 @@ export function InlineForgeHeader({
   const currentMetadata = getForgeStepMetadata(fw);
 
   return (
-    <div className="sticky top-0 z-30 -mx-6 mb-2 border-b border-border/40 bg-transparent px-6 pb-3 shadow-sm shadow-black/5 backdrop-blur-xl md:-mx-12 md:px-12">
+    <div className="sticky top-0 z-30 -mx-6 mb-2 border-border/40 border-b bg-transparent px-6 pb-3 shadow-black/5 shadow-sm backdrop-blur-xl md:-mx-12 md:px-12">
       <div className="mb-2 flex items-center justify-between pt-4 md:mb-3">
         <div className="flex items-center gap-3">
           {fw.canGoBack ? (
@@ -52,7 +52,7 @@ export function InlineForgeHeader({
             </div>
           )}
           <div className="flex items-baseline overflow-hidden">
-            <h2 className="text-base font-black tracking-tight text-foreground md:text-lg">
+            <h2 className="font-black text-base text-foreground tracking-tight md:text-lg">
               {currentMetadata.title}
             </h2>
           </div>
@@ -75,7 +75,7 @@ export function InlineForgeHeader({
                       onCancelDialogChange(true);
                     }
                   }}
-                  className="h-8 px-3 text-[10px] font-black tracking-widest uppercase"
+                  className="h-8 px-3 font-black text-[10px] uppercase tracking-widest"
                 >
                   Cancel
                 </Button>

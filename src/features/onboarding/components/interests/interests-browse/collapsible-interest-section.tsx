@@ -57,7 +57,7 @@ export function CollapsibleInterestSection({
             <Icon className={cn("size-3 shrink-0", iconClassName)} />
             <span
               className={cn(
-                "min-w-0 truncate font-sans text-[11px] font-bold tracking-wider uppercase transition-colors sm:text-xs",
+                "min-w-0 truncate font-bold font-sans text-[11px] uppercase tracking-wider transition-colors sm:text-xs",
                 titleClassName,
               )}
             >
@@ -66,7 +66,7 @@ export function CollapsibleInterestSection({
             <div className="ml-0 flex shrink-0 items-center gap-1.5 sm:ml-1">
               <span className={cn("h-1 w-1 rounded-full", dotClassName)} />
               <span
-                className={cn("font-sans text-xs font-bold", countClassName)}
+                className={cn("font-bold font-sans text-xs", countClassName)}
               >
                 {count}
               </span>

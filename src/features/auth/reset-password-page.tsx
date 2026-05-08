@@ -21,7 +21,7 @@ export function ResetPasswordPage() {
       backLabel="Back to login"
       footer={
         success ? (
-          <p className="text-center text-sm text-slate-muted">
+          <p className="text-center text-slate-muted text-sm">
             Password updated.{" "}
             <Link
               {...buildAuthRouteNavigation("/auth/login", returnTo)}
@@ -37,7 +37,7 @@ export function ResetPasswordPage() {
       {rootError ? <FormLevelError message={rootError} /> : null}
 
       {success ? (
-        <div className="rounded-xl border border-forge-teal/20 bg-forge-teal/8 px-4 py-3 text-sm text-foreground">
+        <div className="rounded-xl border border-forge-teal/20 bg-forge-teal/8 px-4 py-3 text-foreground text-sm">
           Your password has been updated. You can head back to login now.
         </div>
       ) : (

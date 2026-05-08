@@ -10,7 +10,7 @@ import { PlanCard } from "./plan-card";
 
 function EmptyPlans() {
   return (
-    <div className="flex items-center gap-3 border-y border-dashed border-border/70 bg-card/40 px-1 py-5 sm:px-3">
+    <div className="flex items-center gap-3 border-border/70 border-y border-dashed bg-card/40 px-1 py-5 sm:px-3">
       <div
         className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground"
         aria-hidden="true"
@@ -18,10 +18,10 @@ function EmptyPlans() {
         <CalendarDays className="size-5" />
       </div>
       <div className="min-w-0">
-        <p className="text-sm font-black text-foreground">
+        <p className="font-black text-foreground text-sm">
           Your calendar is open.
         </p>
-        <p className="mt-1 text-xs leading-relaxed font-medium text-muted-foreground">
+        <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">
           Forge a group or join one to get a real plan moving.
         </p>
       </div>
@@ -66,7 +66,7 @@ export function UpcomingPlans() {
       {visiblePlans.length === 0 ? (
         <EmptyPlans />
       ) : (
-        <ul className="relative grid list-none border-y border-border/55 p-0 before:absolute before:top-4 before:bottom-4 before:left-4 before:w-px before:bg-border/45">
+        <ul className="relative grid list-none border-border/55 border-y p-0 before:absolute before:top-4 before:bottom-4 before:left-4 before:w-px before:bg-border/45">
           {visiblePlans.map((plan, i) => (
             <PlanCard key={plan.plan.id} group={plan} index={i} />
           ))}
@@ -74,7 +74,7 @@ export function UpcomingPlans() {
       )}
 
       {hiddenCount > 0 ? (
-        <p className="text-xs font-medium text-muted-foreground">
+        <p className="font-medium text-muted-foreground text-xs">
           {hiddenCount} more plan{hiddenCount === 1 ? "" : "s"} in Activity.
         </p>
       ) : null}

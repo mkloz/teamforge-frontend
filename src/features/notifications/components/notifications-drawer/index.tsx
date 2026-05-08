@@ -71,8 +71,8 @@ export function NotificationsDrawer({
         </DrawerHeader>
 
         {/* Header */}
-        <div className="flex h-16 shrink-0 items-center justify-between border-b border-border px-6">
-          <h2 className="text-lg font-bold tracking-tight text-ink">
+        <div className="flex h-16 shrink-0 items-center justify-between border-border border-b px-6">
+          <h2 className="font-bold text-ink text-lg tracking-tight">
             Notifications
           </h2>
           <div className="flex items-center gap-1.5">
@@ -81,7 +81,7 @@ export function NotificationsDrawer({
               size="sm"
               onClick={markAllRead}
               disabled={items.length === 0 || isMarkingAllRead}
-              className="h-auto p-0 text-xs font-bold"
+              className="h-auto p-0 font-bold text-xs"
             >
               {isMarkingAllRead ? "Marking..." : "Mark all read"}
             </Button>
@@ -100,7 +100,7 @@ export function NotificationsDrawer({
         {/* Scrollable list */}
         <div className="flex-1 overflow-y-auto overscroll-contain">
           {items.length === 0 ? (
-            <p className="px-4 py-16 text-center text-sm text-muted-foreground">
+            <p className="px-4 py-16 text-center text-muted-foreground text-sm">
               No notifications yet.
             </p>
           ) : (

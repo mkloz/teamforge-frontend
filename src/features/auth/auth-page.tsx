@@ -58,12 +58,12 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
               size={16}
               className="transition-transform duration-300 ease-out group-hover:-translate-x-1"
             />
-            <span className="text-xs font-medium">Back home</span>
+            <span className="font-medium text-xs">Back home</span>
           </Link>
         </Button>
       </div>
 
-      <div className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-r border-border bg-hero-bg lg:flex">
+      <div className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-border border-r bg-hero-bg lg:flex">
         <VoronoiCatalyst ref={catalystRef} progress={progress} />
       </div>
 
@@ -72,7 +72,7 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
 
         <div
           ref={scrollContainerRef}
-          className="relative z-10 flex-1 overflow-x-hidden overflow-y-auto scroll-smooth px-4 pb-4"
+          className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth px-4 pb-4"
           onInput={handleInput}
         >
           <TopProgressBar

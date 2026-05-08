@@ -25,11 +25,11 @@ export function ProfileHero({ user, archetype, socialRead }: ProfileHeroProps) {
         <div className="flex flex-col gap-5 sm:gap-6">
           <blockquote className="relative mx-auto max-w-[34rem] sm:mx-0 sm:max-w-2xl">
             {hasBio ? (
-              <p className="relative z-10 text-center text-base leading-relaxed font-medium text-pretty text-ink/82 sm:text-left md:text-xl">
+              <p className="relative z-10 text-pretty text-center font-medium text-base text-ink/82 leading-relaxed sm:text-left md:text-xl">
                 {user.bio}
               </p>
             ) : (
-              <p className="relative z-10 text-center text-base leading-relaxed font-medium text-pretty text-ink/82 sm:text-left md:text-xl">
+              <p className="relative z-10 text-pretty text-center font-medium text-base text-ink/82 leading-relaxed sm:text-left md:text-xl">
                 {socialRead}
               </p>
             )}

@@ -40,7 +40,7 @@ export function SideNav() {
               />
 
               {/* Hover Label */}
-              <span className="pointer-events-none absolute left-full ml-4 -translate-x-1 rounded-md border border-ink/5 bg-white px-2 py-1 text-[10px] font-bold tracking-wider whitespace-nowrap text-ink uppercase opacity-0 shadow-lg transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100 dark:border-white/10 dark:bg-zinc-900 dark:text-white">
+              <span className="pointer-events-none absolute left-full ml-4 -translate-x-1 whitespace-nowrap rounded-md border border-ink/5 bg-white px-2 py-1 font-bold text-[10px] text-ink uppercase tracking-wider opacity-0 shadow-lg transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100 dark:border-white/10 dark:bg-zinc-900 dark:text-white">
                 {section.label}
               </span>
             </Button>

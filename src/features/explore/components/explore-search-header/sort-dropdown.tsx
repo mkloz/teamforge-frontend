@@ -31,7 +31,7 @@ export function SortDropdown() {
         align="end"
         className="w-52 rounded-xl border-border/40 bg-background p-1.5 shadow-xl"
       >
-        <DropdownMenuLabel className="px-3 py-1.5 text-xs font-semibold text-muted-foreground">
+        <DropdownMenuLabel className="px-3 py-1.5 font-semibold text-muted-foreground text-xs">
           Feed priority
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="mx-1 bg-border/10" />

@@ -19,7 +19,7 @@ export function FieldLabel({
     <div className="flex items-baseline justify-between gap-2">
       <Label
         htmlFor={htmlFor}
-        className="block text-xs font-semibold text-muted-foreground"
+        className="block font-semibold text-muted-foreground text-xs"
       >
         {children}
         {required && (

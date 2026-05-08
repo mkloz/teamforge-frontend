@@ -58,15 +58,15 @@ export function AreaFields({ currentUser, form }: AreaFieldsProps) {
           </FormItem>
         )}
       />
-      <div className="flex min-h-10 gap-3 border-t border-border pt-4 lg:mt-7 lg:items-center lg:border-t-0 lg:border-l lg:pt-0 lg:pl-4">
+      <div className="flex min-h-10 gap-3 border-border border-t pt-4 lg:mt-7 lg:items-center lg:border-t-0 lg:border-l lg:pt-0 lg:pl-4">
         <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-forge-teal/8 text-forge-teal">
           <MapPin size={16} strokeWidth={2} />
         </div>
         <div className="min-w-0">
-          <p className="text-xs font-semibold tracking-widest text-slate-muted uppercase">
+          <p className="font-semibold text-slate-muted text-xs uppercase tracking-widest">
             Current city
           </p>
-          <p className="mt-1 text-sm font-semibold text-ink">{cityLabel}</p>
+          <p className="mt-1 font-semibold text-ink text-sm">{cityLabel}</p>
         </div>
       </div>
       <FormField

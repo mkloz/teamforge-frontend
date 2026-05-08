@@ -52,12 +52,12 @@ export function FeedbackState({
           {icon}
         </div>
 
-        <h1 id={headingId} className="text-2xl font-bold text-ink">
+        <h1 id={headingId} className="font-bold text-2xl text-ink">
           {title}
         </h1>
         <p
           className={cn(
-            "mt-2 text-sm leading-relaxed text-slate-muted",
+            "mt-2 text-slate-muted text-sm leading-relaxed",
             descriptionClassName,
           )}
         >

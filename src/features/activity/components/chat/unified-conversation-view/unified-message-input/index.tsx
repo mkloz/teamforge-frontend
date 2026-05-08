@@ -46,7 +46,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
   );
 
   return (
-    <div className="safe-area-inset-bottom isolate z-30 min-h-16 shrink-0 overflow-visible border-t border-border/60 bg-canvas/90 px-3 pt-2 pb-2.5 backdrop-blur-xl">
+    <div className="safe-area-inset-bottom isolate z-30 min-h-16 shrink-0 overflow-visible border-border/60 border-t bg-canvas/90 px-3 pt-2 pb-2.5 backdrop-blur-xl">
       <div className="mx-auto flex w-full items-end gap-2.5">
         {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions: File drag/drop is pointer-only decoration around the actual message controls. */}
         {/* biome-ignore lint/a11y/noStaticElementInteractions: The keyboard-accessible controls live inside this drop zone. */}
@@ -57,7 +57,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
           onDrop={composer.handleDrop}
         >
           {composer.isDraggingFiles && (
-            <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-xl border-2 border-dashed border-forge-teal bg-forge-teal/10 text-sm font-semibold text-forge-teal">
+            <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-xl border-2 border-forge-teal border-dashed bg-forge-teal/10 font-semibold text-forge-teal text-sm">
               Drop files to attach
             </div>
           )}
@@ -109,7 +109,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
           </div>
 
           {composer.recordingError && (
-            <p className="-mt-1 px-4 pb-1.5 text-xs font-medium text-destructive/80">
+            <p className="-mt-1 px-4 pb-1.5 font-medium text-destructive/80 text-xs">
               {composer.recordingError === "permission-denied"
                 ? "Microphone access denied. Check your browser settings."
                 : composer.recordingError === "not-supported"
@@ -119,7 +119,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
           )}
 
           {errorMessage && (
-            <p className="px-4 pb-1.5 text-xs font-medium text-destructive/80">
+            <p className="px-4 pb-1.5 font-medium text-destructive/80 text-xs">
               {errorMessage}
             </p>
           )}

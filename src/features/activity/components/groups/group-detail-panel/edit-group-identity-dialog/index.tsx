@@ -73,7 +73,7 @@ function EditGroupIdentityDialogContent({
         />
 
         {editor.error && (
-          <p className="text-sm font-medium text-destructive">{editor.error}</p>
+          <p className="font-medium text-destructive text-sm">{editor.error}</p>
         )}
       </div>
 

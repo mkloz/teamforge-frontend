@@ -69,10 +69,10 @@ export function EventTitleSection({
           <div
             id="name-error"
             role="alert"
-            className="flex animate-in items-center gap-2 rounded-lg border border-destructive/15 bg-destructive/5 px-3 py-2 duration-150 fade-in slide-in-from-top-1"
+            className="fade-in slide-in-from-top-1 flex animate-in items-center gap-2 rounded-lg border border-destructive/15 bg-destructive/5 px-3 py-2 duration-150"
           >
             <AlertCircle size={13} className="shrink-0 text-destructive/60" />
-            <p className="text-xs font-medium text-destructive/70">
+            <p className="font-medium text-destructive/70 text-xs">
               Title must be at least 3 characters.
             </p>
           </div>

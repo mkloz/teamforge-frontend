@@ -24,7 +24,7 @@ export function ActionSection({
   return (
     <motion.div
       variants={fadeUpItem}
-      className="mx-auto flex w-full max-w-xl flex-col-reverse items-stretch gap-3 pt-8 pb-6 min-[430px]:flex-row min-[430px]:items-center sm:pb-8"
+      className="mx-auto flex w-full max-w-xl flex-col-reverse items-stretch gap-3 pt-8 pb-6 sm:pb-8 min-[430px]:flex-row min-[430px]:items-center"
     >
       {!isDone && (
         <Button

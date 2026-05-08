@@ -59,9 +59,9 @@ export function DateTimeSection({
       </div>
 
       {(planDate || planTime) && (
-        <div className="inline-flex w-fit max-w-full animate-in items-center gap-2 rounded-full border border-forge-teal/15 bg-forge-teal/5 px-3 py-2 duration-200 fade-in">
+        <div className="fade-in inline-flex w-fit max-w-full animate-in items-center gap-2 rounded-full border border-forge-teal/15 bg-forge-teal/5 px-3 py-2 duration-200">
           <Clock size={12} className="shrink-0 text-forge-teal/70" />
-          <p className="truncate text-xs font-medium text-forge-teal">
+          <p className="truncate font-medium text-forge-teal text-xs">
             {planDate ? formatPlanDateSummary(planDate) : "Date TBD"}
             {planTime && ` at ${planTime}`}
           </p>

@@ -41,7 +41,7 @@ export function ProfileIdentityFields({
         />
 
         <div className="grid gap-2 md:contents">
-          <Label className="min-h-4 text-sm font-medium text-ink md:col-start-2 md:row-start-1">
+          <Label className="min-h-4 font-medium text-ink text-sm md:col-start-2 md:row-start-1">
             Email
           </Label>
           <Input
@@ -50,7 +50,7 @@ export function ProfileIdentityFields({
             readOnly
             className="md:col-start-2 md:row-start-2"
           />
-          <p className="text-xs text-slate-muted md:col-start-2 md:row-start-3">
+          <p className="text-slate-muted text-xs md:col-start-2 md:row-start-3">
             Email editing is not available in TeamForge yet.
           </p>
         </div>
@@ -68,7 +68,7 @@ export function ProfileIdentityFields({
                   {...field}
                   rows={5}
                   placeholder="A quick intro people will see on your profile."
-                  className="text-sm text-ink"
+                  className="text-ink text-sm"
                 />
               </FormControl>
               <FormMessage />

@@ -25,13 +25,13 @@ export function HistoryCard({ item }: HistoryCardProps) {
       {/* Content Section */}
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
-          <h4 className="truncate text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
+          <h4 className="truncate font-semibold text-foreground text-sm transition-colors group-hover:text-primary">
             {item.title}
           </h4>
           {item.rating && (
             <div className="flex shrink-0 items-center gap-1 rounded-md bg-spark-amber/10 px-1.5 py-0.5">
               <Star className="size-3 fill-spark-amber text-spark-amber" />
-              <span className="text-xs font-bold text-spark-amber">
+              <span className="font-bold text-spark-amber text-xs">
                 {item.rating}
               </span>
             </div>
@@ -42,13 +42,13 @@ export function HistoryCard({ item }: HistoryCardProps) {
         <div className="mt-1 flex items-center gap-2">
           <span
             className={cn(
-              "rounded px-1.5 py-0.5 text-xs font-bold tracking-wider uppercase",
+              "rounded px-1.5 py-0.5 font-bold text-xs uppercase tracking-wider",
               categoryColors[item.category],
             )}
           >
             {item.category}
           </span>
-          <span className="flex items-center gap-1 text-xs font-bold text-muted-foreground uppercase opacity-50">
+          <span className="flex items-center gap-1 font-bold text-muted-foreground text-xs uppercase opacity-50">
             <Calendar className="size-3" />
             {item.dateTime
               ? new Date(item.dateTime).toLocaleDateString("en-US", {
@@ -60,7 +60,7 @@ export function HistoryCard({ item }: HistoryCardProps) {
         </div>
 
         {/* Location - Responsive display */}
-        <p className="mt-0.5 flex items-center gap-1 truncate text-xs font-medium text-muted-foreground opacity-40">
+        <p className="mt-0.5 flex items-center gap-1 truncate font-medium text-muted-foreground text-xs opacity-40">
           <MapPin className="size-3" />
           {item.location}
         </p>

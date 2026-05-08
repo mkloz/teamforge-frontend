@@ -14,7 +14,7 @@ export function ReducedMotionAnvil({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-4 select-none",
+        "flex select-none flex-col items-center justify-center gap-4",
         className,
       )}
       style={{ width: size, height: size }}
@@ -53,8 +53,8 @@ export function ReducedMotionAnvil({
         <div className="absolute inset-x-7 bottom-0 h-1.5 rounded-sm bg-muted" />
       </div>
       <div className="space-y-1 text-center">
-        <p className="text-sm font-black text-foreground">{displayLabel}</p>
-        <p className="text-micro font-bold text-muted-foreground uppercase">
+        <p className="font-black text-foreground text-sm">{displayLabel}</p>
+        <p className="font-bold text-micro text-muted-foreground uppercase">
           Matching signals
         </p>
       </div>

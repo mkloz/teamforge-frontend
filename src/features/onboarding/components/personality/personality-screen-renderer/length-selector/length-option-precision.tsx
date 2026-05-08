@@ -22,12 +22,12 @@ export function LengthOptionPrecision({
 
   return (
     <div className="flex flex-col justify-center sm:items-end sm:text-right">
-      <p className="mb-2 font-sans text-xs leading-relaxed font-medium text-pretty text-muted-foreground sm:mb-1.5">
+      <p className="mb-2 text-pretty font-medium font-sans text-muted-foreground text-xs leading-relaxed sm:mb-1.5">
         {viewModel.config.sublabel}
       </p>
 
       <div className="flex w-full items-center gap-2 opacity-80 sm:justify-end">
-        <span className="shrink-0 font-sans text-xs font-black tracking-wide text-muted-foreground uppercase">
+        <span className="shrink-0 font-black font-sans text-muted-foreground text-xs uppercase tracking-wide">
           {getPrecisionLabel(isAdjust, viewModel)}
         </span>
 

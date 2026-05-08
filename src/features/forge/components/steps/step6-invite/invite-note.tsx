@@ -16,19 +16,19 @@ export function InviteNote({ forgeMode, inviteeCount }: InviteNoteProps) {
       : `${inviteeCount} selected friends`;
 
   return (
-    <section className="space-y-3 border-t border-border/25 pt-4">
+    <section className="space-y-3 border-border/25 border-t pt-4">
       <div className="flex items-center justify-between gap-3 px-0.5">
         <div className="min-w-0">
-          <p className="text-sm leading-none font-semibold text-foreground">
+          <p className="font-semibold text-foreground text-sm leading-none">
             What happens next
           </p>
-          <p className="mt-1 text-micro leading-none text-muted-foreground/55">
+          <p className="mt-1 text-micro text-muted-foreground/55 leading-none">
             A short handoff before the group opens.
           </p>
         </div>
         <span
           className={cn(
-            "shrink-0 rounded-full border px-2.5 py-1 text-xs font-bold",
+            "shrink-0 rounded-full border px-2.5 py-1 font-bold text-xs",
             manual
               ? "border-spark-amber/25 bg-spark-amber/10 text-spark-amber"
               : "border-forge-teal/25 bg-forge-teal/10 text-forge-teal",
@@ -38,7 +38,7 @@ export function InviteNote({ forgeMode, inviteeCount }: InviteNoteProps) {
         </span>
       </div>
 
-      <div className="border-t border-border/25">
+      <div className="border-border/25 border-t">
         <NextStepItem
           active
           icon={manual ? <Send size={15} /> : <UsersRound size={15} />}
@@ -91,7 +91,7 @@ function NextStepItem({
 
   return (
     <div
-      className={cn("flex gap-3 py-3", !last && "border-b border-border/25")}
+      className={cn("flex gap-3 py-3", !last && "border-border/25 border-b")}
     >
       <div
         className={cn(
@@ -108,7 +108,7 @@ function NextStepItem({
       <div className="min-w-0">
         <p
           className={cn(
-            "text-sm leading-tight font-semibold",
+            "font-semibold text-sm leading-tight",
             active
               ? amber
                 ? "text-spark-amber"
@@ -118,7 +118,7 @@ function NextStepItem({
         >
           {title}
         </p>
-        <p className="mt-1 text-xs leading-snug text-muted-foreground">
+        <p className="mt-1 text-muted-foreground text-xs leading-snug">
           {text}
         </p>
       </div>

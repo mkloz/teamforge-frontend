@@ -20,32 +20,32 @@ export const CompletedBanner = memo(function CompletedBanner({
   const rating = useCompletedGroupRating(group);
 
   return (
-    <div className="shrink-0 border-t border-border bg-muted/30">
+    <div className="shrink-0 border-border border-t bg-muted/30">
       {/* Success indicator */}
-      <div className="flex items-center justify-center gap-2 border-b border-forge-teal/20 bg-forge-teal/8 py-2">
+      <div className="flex items-center justify-center gap-2 border-forge-teal/20 border-b bg-forge-teal/8 py-2">
         <CheckCircle className="size-3.5 text-forge-teal" />
-        <span className="text-xs font-medium text-forge-teal">
+        <span className="font-medium text-forge-teal text-xs">
           Event completed
         </span>
       </div>
 
       {/* Call to action */}
       <div className="p-4">
-        <p className="mb-1 text-center text-sm font-medium text-foreground">
+        <p className="mb-1 text-center font-medium text-foreground text-sm">
           How was {group.plan?.title ?? group.name}?
         </p>
-        <p className="mb-3 text-center text-xs text-muted-foreground">
+        <p className="mb-3 text-center text-muted-foreground text-xs">
           Rate teammates to help future groups feel more reliable.
         </p>
 
         {rating.isLoading ? (
-          <div className="flex items-center justify-center gap-2 py-5 text-xs font-medium text-muted-foreground">
+          <div className="flex items-center justify-center gap-2 py-5 font-medium text-muted-foreground text-xs">
             <Loader2 className="size-4 animate-spin" />
             Loading ratings...
           </div>
         ) : rating.isError ? (
           <div className="rounded-xl border border-destructive/15 bg-destructive/5 p-3 text-center">
-            <p className="text-xs font-semibold text-destructive">
+            <p className="font-semibold text-destructive text-xs">
               Ratings could not load.
             </p>
             <Button
@@ -60,15 +60,15 @@ export const CompletedBanner = memo(function CompletedBanner({
             </Button>
           </div>
         ) : rating.rateableMembers.length === 0 ? (
-          <p className="rounded-xl border border-border bg-card/70 p-3 text-center text-xs font-medium text-muted-foreground">
+          <p className="rounded-xl border border-border bg-card/70 p-3 text-center font-medium text-muted-foreground text-xs">
             There are no teammates to rate for this group.
           </p>
         ) : rating.allRated ? (
           <div className="rounded-xl border border-forge-teal/20 bg-forge-teal/8 p-3 text-center">
-            <p className="text-xs font-semibold text-ink">
+            <p className="font-semibold text-ink text-xs">
               Thanks for rating everyone.
             </p>
-            <p className="mt-1 text-xs text-slate-muted">
+            <p className="mt-1 text-slate-muted text-xs">
               Your feedback is now part of the group's trust signal.
             </p>
           </div>
@@ -100,7 +100,7 @@ export const CompletedBanner = memo(function CompletedBanner({
               rows={2}
               placeholder="Optional note"
               onChange={(event) => rating.setComment(event.target.value)}
-              className="resize-none rounded-xl border-border bg-card text-xs text-ink placeholder:text-slate-muted/70 focus-visible:border-forge-teal/40"
+              className="resize-none rounded-xl border-border bg-card text-ink text-xs placeholder:text-slate-muted/70 focus-visible:border-forge-teal/40"
             />
 
             <Button
@@ -117,7 +117,7 @@ export const CompletedBanner = memo(function CompletedBanner({
         )}
 
         {rating.submittedRatings.length > 0 ? (
-          <p className="mt-3 text-center text-xs font-medium text-slate-muted">
+          <p className="mt-3 text-center font-medium text-slate-muted text-xs">
             Rated {rating.submittedRatings.length} of{" "}
             {rating.rateableMembers.length}
           </p>

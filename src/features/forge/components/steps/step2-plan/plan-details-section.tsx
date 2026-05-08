@@ -37,7 +37,7 @@ export function PlanDetailsSection({
             maxLength={500}
             rows={3}
             className={cn(
-              "resize-none rounded-xl border-0 bg-transparent px-3 py-3 text-sm font-medium text-foreground shadow-none",
+              "resize-none rounded-xl border-0 bg-transparent px-3 py-3 font-medium text-foreground text-sm shadow-none",
               "placeholder:text-muted-foreground/35 focus-visible:ring-0",
             )}
           />

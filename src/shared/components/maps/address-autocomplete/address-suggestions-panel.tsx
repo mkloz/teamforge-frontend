@@ -51,7 +51,7 @@ export function AddressSuggestionsPanel({
       id={suggestionsId}
       role="listbox"
       style={panelStyle}
-      className="z-100 overflow-hidden rounded-xl border border-border bg-card p-1.5 shadow-xl shadow-black/10"
+      className="z-100 overflow-hidden rounded-xl border border-border bg-card p-1.5 shadow-black/10 shadow-xl"
     >
       <div className="relative overflow-hidden rounded-lg">
         <div
@@ -97,12 +97,12 @@ export function AddressSuggestionsPanel({
                   <MapPin size={13} strokeWidth={1.9} />
                 </span>
                 <span className="min-w-0">
-                  <span className="address-suggestion-main block truncate leading-5 font-semibold text-ink">
+                  <span className="address-suggestion-main block truncate font-semibold text-ink leading-5">
                     {suggestion.structured_formatting?.main_text ??
                       suggestion.description}
                   </span>
                   {suggestion.structured_formatting?.secondary_text ? (
-                    <span className="block truncate text-micro leading-4 font-medium text-slate-muted">
+                    <span className="block truncate font-medium text-micro text-slate-muted leading-4">
                       {suggestion.structured_formatting.secondary_text}
                     </span>
                   ) : null}

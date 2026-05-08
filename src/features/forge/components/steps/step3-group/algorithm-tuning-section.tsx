@@ -32,10 +32,10 @@ export function AlgorithmTuningSection({
         contentClassName="justify-between"
       >
         <div className="space-y-0.5 text-left">
-          <p className="text-xs font-semibold text-foreground">
+          <p className="font-semibold text-foreground text-xs">
             Algorithm tuning
           </p>
-          <p className="text-xs text-muted-foreground/70">
+          <p className="text-muted-foreground/70 text-xs">
             Match: {compatibilityWeight}% · Diversity: {diversityWeight}%
           </p>
         </div>
@@ -49,7 +49,7 @@ export function AlgorithmTuningSection({
       </Button>
 
       {algorithmsExpanded && (
-        <div className="animate-in space-y-5 border-t border-muted/15 px-4 pt-4 pb-4 duration-300 fade-in slide-in-from-top-2">
+        <div className="fade-in slide-in-from-top-2 animate-in space-y-5 border-muted/15 border-t px-4 pt-4 pb-4 duration-300">
           <WeightSlider
             label="Matching level"
             subLabel="Prioritize behavioral compatibility"

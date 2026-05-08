@@ -15,14 +15,14 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
     <PersonalityScreenShell className="max-w-lg">
       <motion.p
         variants={fadeUpItem}
-        className="mb-3 text-center font-sans text-xs font-bold tracking-[0.18em] text-forge-teal uppercase"
+        className="mb-3 text-center font-bold font-sans text-forge-teal text-xs uppercase tracking-[0.18em]"
       >
         How the read works
       </motion.p>
 
       <motion.h1
         variants={fadeUpItem}
-        className="mb-5 text-center font-sans text-[1.75rem] leading-tight font-extrabold text-balance text-ink sm:mb-6 sm:text-3xl"
+        className="mb-5 text-balance text-center font-extrabold font-sans text-[1.75rem] text-ink leading-tight sm:mb-6 sm:text-3xl"
       >
         You are not one fixed type
       </motion.h1>
@@ -31,14 +31,14 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
         variants={fadeUpItem}
         className="mb-8 flex flex-col gap-5 px-1 text-left leading-relaxed"
       >
-        <p className="font-sans text-sm font-medium text-muted-foreground sm:text-chat-input">
+        <p className="font-medium font-sans text-muted-foreground text-sm sm:text-chat-input">
           Most generic tests group people into strict categories (like entirely
           a "Thinker" or purely a "Feeler"). But human psychology is much more
           nuanced than that.
         </p>
 
         <div className="flex flex-col gap-4">
-          <p className="font-sans text-sm leading-relaxed text-pretty text-muted-foreground sm:text-chat-input">
+          <p className="text-pretty font-sans text-muted-foreground text-sm leading-relaxed sm:text-chat-input">
             That's where the{" "}
             <span className="font-bold text-ink">Big Five (OCEAN) model</span>{" "}
             comes in. Instead of boxing you in, it measures exactly where you
@@ -46,7 +46,7 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
             for five distinct traits:
           </p>
 
-          <ul className="ml-2 flex flex-col gap-2.5 border-l-2 border-forge-teal/30 py-1 pl-4 font-sans text-sm text-foreground/90 sm:ml-4 sm:gap-3 sm:pl-5 sm:text-chat-input">
+          <ul className="ml-2 flex flex-col gap-2.5 border-forge-teal/30 border-l-2 py-1 pl-4 font-sans text-foreground/90 text-sm sm:ml-4 sm:gap-3 sm:pl-5 sm:text-chat-input">
             <li className="flex items-center gap-2.5">
               <span className="w-4 font-black text-forge-teal">O</span>
               <span>Openness to Experience</span>
@@ -70,7 +70,7 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
           </ul>
         </div>
 
-        <p className="font-sans text-sm leading-relaxed text-muted-foreground opacity-90 sm:text-chat-input">
+        <p className="font-sans text-muted-foreground text-sm leading-relaxed opacity-90 sm:text-chat-input">
           By measuring traits on a continuous scale, the Big Five provides a
           remarkably accurate mathematical map of your personality. It's the
           gold standard in modern psychology, and the foundation of TeamForge.

@@ -20,7 +20,7 @@ export function CardBody({
     <div className={cn("relative z-20", isCompact ? "mb-4" : "mb-3.5")}>
       <h3
         className={cn(
-          "line-clamp-2 leading-tight font-extrabold tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary md:pr-6",
+          "line-clamp-2 font-extrabold text-foreground leading-tight tracking-tight transition-colors duration-300 group-hover:text-primary md:pr-6",
           isCompact ? "text-xl" : "text-xl sm:text-2xl",
         )}
       >
@@ -28,7 +28,7 @@ export function CardBody({
       </h3>
       <p
         className={cn(
-          "group-plan-card-fit-reason mt-2 leading-relaxed font-medium text-muted-foreground",
+          "group-plan-card-fit-reason mt-2 font-medium text-muted-foreground leading-relaxed",
           isCompact ? "text-sm" : "text-sm",
         )}
       >

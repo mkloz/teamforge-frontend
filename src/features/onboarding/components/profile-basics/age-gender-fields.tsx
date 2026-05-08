@@ -31,7 +31,7 @@ export function AgeGenderFields({ form }: AgeGenderFieldsProps) {
           name="age"
           render={({ field }) => (
             <FormItem className="flex-1 gap-0">
-              <FormLabel className="font-sans text-sm font-semibold text-ink">
+              <FormLabel className="font-sans font-semibold text-ink text-sm">
                 Age
               </FormLabel>
               <FormControl>
@@ -43,7 +43,7 @@ export function AgeGenderFields({ form }: AgeGenderFieldsProps) {
                   onValueChange={field.onChange}
                 />
               </FormControl>
-              <FormMessage className="text-xs font-medium text-destructive" />
+              <FormMessage className="font-medium text-destructive text-xs" />
             </FormItem>
           )}
         />
@@ -53,7 +53,7 @@ export function AgeGenderFields({ form }: AgeGenderFieldsProps) {
           name="gender"
           render={({ field }) => (
             <FormItem className="flex flex-1 flex-col justify-start gap-0">
-              <FormLabel className="font-sans text-sm font-semibold text-ink">
+              <FormLabel className="font-sans font-semibold text-ink text-sm">
                 Gender
               </FormLabel>
               <Select onValueChange={field.onChange} value={field.value}>
@@ -70,13 +70,13 @@ export function AgeGenderFields({ form }: AgeGenderFieldsProps) {
                   ))}
                 </SelectContent>
               </Select>
-              <FormMessage className="text-xs font-medium text-destructive" />
+              <FormMessage className="font-medium text-destructive text-xs" />
             </FormItem>
           )}
         />
       </div>
 
-      <p className="mt-0 text-center text-xs text-slate-muted">
+      <p className="mt-0 text-center text-slate-muted text-xs">
         We only show this on your profile; it doesn't affect your matching.
       </p>
     </>

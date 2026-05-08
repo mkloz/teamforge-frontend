@@ -48,7 +48,7 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
   } = useHeaderSearch();
 
   return (
-    <header className="sticky top-0 z-100 flex shrink-0 items-center gap-2 border-b border-border bg-canvas/80 px-3 pt-2 pb-3 backdrop-blur-md md:pt-3">
+    <header className="sticky top-0 z-100 flex shrink-0 items-center gap-2 border-border border-b bg-canvas/80 px-3 pt-2 pb-3 backdrop-blur-md md:pt-3">
       {onBack && (
         <Button
           variant="ghost"

@@ -36,7 +36,7 @@ export function PersonalityTestPage() {
 
         <div
           ref={scrollContainerRef}
-          className="relative h-full flex-1 overflow-x-hidden overflow-y-auto scroll-smooth"
+          className="relative h-full flex-1 overflow-y-auto overflow-x-hidden scroll-smooth"
         >
           <div className="absolute top-0 right-0 left-0 z-50">
             <TopProgressBar progress={displayProgress} />
@@ -74,7 +74,7 @@ export function PersonalityTestPage() {
         </div>
       </div>
 
-      <div className="hidden h-full flex-1 items-center justify-center overflow-hidden border-l border-slate-200 bg-hero-bg lg:flex">
+      <div className="hidden h-full flex-1 items-center justify-center overflow-hidden border-slate-200 border-l bg-hero-bg lg:flex">
         <VoronoiCatalyst progress={testState.progress} />
       </div>
     </div>

@@ -104,8 +104,8 @@ function FeedSectionLabel({
 }) {
   return (
     <div className="flex items-center justify-between gap-4 px-1 max-[380px]:flex-col max-[380px]:items-start max-[380px]:gap-1">
-      <p className="text-sm font-semibold text-muted-foreground">{title}</p>
-      <span className="shrink-0 text-sm font-bold text-muted-foreground/70">
+      <p className="font-semibold text-muted-foreground text-sm">{title}</p>
+      <span className="shrink-0 font-bold text-muted-foreground/70 text-sm">
         {detail}
       </span>
     </div>
@@ -149,10 +149,10 @@ function ExploreFeedLoading() {
     >
       <div className="flex items-center justify-between gap-4 px-1">
         <div className="min-w-0">
-          <p className="text-xs font-semibold text-forge-teal">
+          <p className="font-semibold text-forge-teal text-xs">
             Scanning openings
           </p>
-          <p className="mt-1 text-sm font-medium text-muted-foreground">
+          <p className="mt-1 font-medium text-muted-foreground text-sm">
             Finding groups that fit your profile and plans.
           </p>
         </div>
@@ -179,7 +179,7 @@ function ExploreGroupPlanCardSkeleton({ index }: { index: number }) {
         LOADING_CARD_DELAYS[index],
       )}
     >
-      <div className="relative h-56 shrink-0 overflow-hidden border-b border-border bg-linear-to-br from-forge-teal/14 via-canvas to-spark-amber/14 md:h-auto md:w-2/5 md:border-r md:border-b-0">
+      <div className="relative h-56 shrink-0 overflow-hidden border-border border-b bg-linear-to-br from-forge-teal/14 via-canvas to-spark-amber/14 md:h-auto md:w-2/5 md:border-r md:border-b-0">
         <div className="absolute inset-x-5 top-5 h-2 rounded-full bg-white/60" />
         <div className="absolute right-10 bottom-5 left-5 flex flex-col gap-2">
           <div className="h-3 w-24 rounded-full bg-white/70" />
@@ -237,7 +237,7 @@ function ExploreFeedEmpty({
       className="px-4 py-16 text-center"
     >
       <div className="mx-auto flex max-w-lg flex-col items-center gap-6">
-        <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+        <div className="flex items-center gap-2 font-semibold text-muted-foreground text-xs">
           <SearchX
             className="size-5 shrink-0 text-forge-teal"
             strokeWidth={2}
@@ -246,12 +246,12 @@ function ExploreFeedEmpty({
         </div>
 
         <div className="flex flex-col gap-2">
-          <h3 className="text-2xl leading-tight font-black tracking-tight text-foreground">
+          <h3 className="font-black text-2xl text-foreground leading-tight tracking-tight">
             {isFiltered
               ? "Nothing fits these filters yet"
               : "No open groups yet"}
           </h3>
-          <p className="mx-auto max-w-md text-sm leading-relaxed font-medium text-muted-foreground">
+          <p className="mx-auto max-w-md font-medium text-muted-foreground text-sm leading-relaxed">
             {isFiltered
               ? "Widen the search a little and TeamForge will look for nearby groups with more room to breathe."
               : "Explore is quiet right now. Forge a group and give others a clear place to join in."}

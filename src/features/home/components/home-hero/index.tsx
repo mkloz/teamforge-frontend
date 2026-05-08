@@ -55,11 +55,11 @@ export function HomeHero() {
           <div className="min-w-0 flex-1">
             <h1
               id="home-hero-heading"
-              className="text-xl leading-tight font-black tracking-tight text-foreground sm:text-2xl md:text-3xl lg:text-4xl"
+              className="font-black text-foreground text-xl leading-tight tracking-tight sm:text-2xl md:text-3xl lg:text-4xl"
             >
               {greeting}
             </h1>
-            <p className="mt-1 text-xs leading-relaxed font-medium text-muted-foreground sm:text-sm md:text-base">
+            <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed sm:text-sm md:text-base">
               {sub}
             </p>
           </div>
@@ -84,16 +84,16 @@ export function HomeHero() {
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-black text-forge-teal">
+                <p className="font-black text-forge-teal text-xs">
                   {nextMove.eyebrow}
                 </p>
-                <h2 className="mt-1 max-w-3xl text-lg leading-tight font-black tracking-tight text-foreground sm:text-2xl lg:text-3xl">
+                <h2 className="mt-1 max-w-3xl font-black text-foreground text-lg leading-tight tracking-tight sm:text-2xl lg:text-3xl">
                   {nextMove.title}
                 </h2>
               </div>
             </div>
 
-            <p className="max-w-xl text-xs leading-relaxed font-medium text-muted-foreground sm:text-sm lg:text-base">
+            <p className="max-w-xl font-medium text-muted-foreground text-xs leading-relaxed sm:text-sm lg:text-base">
               {nextMove.body}
             </p>
 

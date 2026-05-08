@@ -36,7 +36,7 @@ export function StepCredentials({
 
       <div className="flex items-center gap-3">
         <div className="h-px flex-1 bg-border" />
-        <span className="font-sans text-xs font-medium text-slate-muted">
+        <span className="font-medium font-sans text-slate-muted text-xs">
           or use
         </span>
         <div className="h-px flex-1 bg-border" />

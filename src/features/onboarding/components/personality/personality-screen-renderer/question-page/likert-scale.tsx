@@ -35,7 +35,7 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
   };
 
   return (
-    <div className="flex w-full flex-col gap-1.5 select-none">
+    <div className="flex w-full select-none flex-col gap-1.5">
       <RadioGroup
         value={value ? value.toString() : ""}
         onValueChange={handleValueChange}
@@ -56,7 +56,7 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
               id={`point-${point}`}
               aria-label={LABELS[point]}
               className={cn(
-                "group/likert absolute top-1/2 z-10 flex h-24! w-[20%]! -translate-x-1/2 -translate-y-1/2 cursor-pointer appearance-none! items-center justify-center rounded-none! border-0! bg-transparent! p-0! text-inherit! shadow-none! ring-0! ring-offset-0! transition-none outline-none! focus-visible:border-transparent! sm:h-28!",
+                "group/likert appearance-none! absolute top-1/2 z-10 flex h-24! w-[20%]! -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-none! border-0! bg-transparent! p-0! text-inherit! shadow-none! outline-none! ring-0! ring-offset-0! transition-none focus-visible:border-transparent! sm:h-28!",
                 POINT_POSITION_CLASSES[point],
               )}
             >

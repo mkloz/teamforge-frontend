@@ -39,7 +39,7 @@ export const InputRow = memo(
         <Button
           variant="ghost"
           size="icon-sm"
-          className="cursor-pointer rounded-full text-slate-muted transition-colors outline-none hover:text-spark-amber"
+          className="cursor-pointer rounded-full text-slate-muted outline-none transition-colors hover:text-spark-amber"
           aria-label="Add emoji"
           disabled={disabled}
         >
@@ -60,7 +60,7 @@ export const InputRow = memo(
           disabled={disabled}
           className={cn(
             "min-h-0 resize-none border-0 bg-transparent p-0 shadow-none",
-            "text-base leading-snug font-medium text-ink caret-forge-teal placeholder:text-slate-muted/60",
+            "font-medium text-base text-ink leading-snug caret-forge-teal placeholder:text-slate-muted/60",
             "scrollbar-hide max-h-30 focus-visible:ring-0",
             "transition-colors disabled:opacity-50",
           )}

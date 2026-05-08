@@ -69,7 +69,7 @@ export function MatchingSettingsSection({
         </div>
       </div>
 
-      <div className="grid gap-0 border-t border-border lg:grid-cols-[1fr_1.4fr] lg:gap-8">
+      <div className="grid gap-0 border-border border-t lg:grid-cols-[1fr_1.4fr] lg:gap-8">
         <NotificationPreferenceRow
           checked={notificationPreferences?.autoMatchingEnabled ?? true}
           title="Automatic group forming"
@@ -106,8 +106,8 @@ export function MatchingSettingsSection({
 
       <PreferenceStatusMessage message={message} error={error} />
 
-      <div className="border-t border-border pt-6">
-        <p className="text-xs font-semibold tracking-widest text-slate-muted uppercase">
+      <div className="border-border border-t pt-6">
+        <p className="font-semibold text-slate-muted text-xs uppercase tracking-widest">
           Interests
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -115,21 +115,21 @@ export function MatchingSettingsSection({
             currentUser.interests.slice(0, 12).map((interest) => (
               <span
                 key={interest.id}
-                className="rounded-full border border-forge-teal/20 bg-forge-teal/8 px-3 py-1 text-xs font-semibold text-forge-teal"
+                className="rounded-full border border-forge-teal/20 bg-forge-teal/8 px-3 py-1 font-semibold text-forge-teal text-xs"
               >
                 {interest.name}
               </span>
             ))
           ) : (
-            <p className="text-sm text-slate-muted">
+            <p className="text-slate-muted text-sm">
               No interests have been saved yet.
             </p>
           )}
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-border pt-5 md:flex-row md:items-center md:justify-between">
-        <p className="text-sm text-slate-muted">
+      <div className="flex flex-col gap-3 border-border border-t pt-5 md:flex-row md:items-center md:justify-between">
+        <p className="text-slate-muted text-sm">
           Update your answers and interests when your preferences shift.
         </p>
 

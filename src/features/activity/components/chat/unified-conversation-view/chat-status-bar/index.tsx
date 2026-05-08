@@ -58,7 +58,7 @@ export const ChatStatusBar = memo(function ChatStatusBar({
       className={cn(
         "relative flex min-h-0 items-center gap-2 py-1.5 pr-2 pl-4",
         "z-90 w-full shrink-0",
-        "border-b border-border/50",
+        "border-border/50 border-b",
         "bg-canvas",
       )}
     >
@@ -77,7 +77,7 @@ export const ChatStatusBar = memo(function ChatStatusBar({
         onClick={handleBarClick}
         className={cn(
           "group h-auto min-w-0 flex-1 justify-start gap-2 p-0 text-left",
-          "rounded-lg select-none",
+          "select-none rounded-lg",
           "transition-colors duration-150",
           "focus-visible:ring-forge-teal/40 focus-visible:ring-inset",
         )}
@@ -106,18 +106,18 @@ export const ChatStatusBar = memo(function ChatStatusBar({
             >
               <span
                 className={cn(
-                  "shrink-0 text-xs leading-none font-semibold tracking-wider uppercase",
+                  "shrink-0 font-semibold text-xs uppercase leading-none tracking-wider",
                   activeEntry.colorClass,
                 )}
               >
                 {activeEntry.label}
               </span>
 
-              <span className="shrink-0 text-xs leading-none text-slate-muted/50">
+              <span className="shrink-0 text-slate-muted/50 text-xs leading-none">
                 ·
               </span>
 
-              <span className="truncate text-xs leading-none font-medium text-ink/75 dark:text-ink/65">
+              <span className="truncate font-medium text-ink/75 text-xs leading-none dark:text-ink/65">
                 {activeEntry.body}
               </span>
             </motion.span>

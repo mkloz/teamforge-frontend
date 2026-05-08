@@ -47,7 +47,7 @@ export function OceanDiagram({
     <div
       ref={elementRef}
       className={cn(
-        "h-full min-h-56 w-full [&_*:focus]:outline-none [&_svg]:outline-none [&_svg:focus]:outline-none",
+        "h-full min-h-56 w-full [&_*:focus]:outline-none [&_svg:focus]:outline-none [&_svg]:outline-none",
         className,
       )}
     >
@@ -127,7 +127,7 @@ export function OceanChart({
 
       {showDetails && (
         <>
-          <div className="-mt-2 border-t border-border/40" />
+          <div className="-mt-2 border-border/40 border-t" />
           <OceanTraitDetails
             selectedInfo={selectedInfo}
             onClear={() => setSelected(null)}

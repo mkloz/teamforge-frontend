@@ -25,7 +25,7 @@ export function SubcategoryTagGroup({
         <span className="text-slate-muted/60">
           {renderSubcategoryIcon(subcategory.id)}
         </span>
-        <span className="text-[10px] font-bold tracking-wider text-slate-muted/40 uppercase">
+        <span className="font-bold text-[10px] text-slate-muted/40 uppercase tracking-wider">
           {subcategory.name}
         </span>
       </div>

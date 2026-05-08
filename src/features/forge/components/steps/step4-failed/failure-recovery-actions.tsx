@@ -24,10 +24,10 @@ export function FailureRecoveryActions({
             <Clock3 size={17} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm leading-tight font-black text-foreground">
+            <p className="font-black text-foreground text-sm leading-tight">
               Keep searching
             </p>
-            <p className="mt-1 text-xs leading-snug text-muted-foreground">
+            <p className="mt-1 text-muted-foreground text-xs leading-snug">
               Save this activity as matching so it stays available for a later
               retry.
             </p>
@@ -43,15 +43,15 @@ export function FailureRecoveryActions({
       )}
 
       {onSwitchToManual && (
-        <div className="flex items-start gap-3 border-t border-border/30 p-3.5">
+        <div className="flex items-start gap-3 border-border/30 border-t p-3.5">
           <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-forge-teal/12 text-forge-teal">
             <UserPlus size={17} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm leading-tight font-black text-foreground">
+            <p className="font-black text-foreground text-sm leading-tight">
               Invite people manually
             </p>
-            <p className="mt-1 text-xs leading-snug text-muted-foreground">
+            <p className="mt-1 text-muted-foreground text-xs leading-snug">
               Keep this plan and switch to invite mode instead of rebuilding it
               from scratch.
             </p>
@@ -59,7 +59,7 @@ export function FailureRecoveryActions({
           <Button
             variant="outline"
             size="xs"
-            className="h-8 shrink-0 px-3 text-xs font-bold"
+            className="h-8 shrink-0 px-3 font-bold text-xs"
             onClick={onSwitchToManual}
           >
             Invite

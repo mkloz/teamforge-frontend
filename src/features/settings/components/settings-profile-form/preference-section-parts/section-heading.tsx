@@ -6,8 +6,8 @@ interface SectionHeadingProps {
 export function SectionHeading({ title, description }: SectionHeadingProps) {
   return (
     <div className="max-w-2xl">
-      <h2 className="text-xl font-bold text-ink">{title}</h2>
-      <p className="mt-1 text-sm leading-relaxed text-slate-muted">
+      <h2 className="font-bold text-ink text-xl">{title}</h2>
+      <p className="mt-1 text-slate-muted text-sm leading-relaxed">
         {description}
       </p>
     </div>

@@ -19,7 +19,7 @@ export function PersonalityResultHero({
     <section className="grid gap-6">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-3">
-          <p className="text-xs font-black tracking-[0.16em] text-forge-teal uppercase">
+          <p className="font-black text-forge-teal text-xs uppercase tracking-[0.16em]">
             Personality result
           </p>
           <TypeSignature result={result} typeLabel={typeLabel} />
@@ -27,7 +27,7 @@ export function PersonalityResultHero({
             href={profileUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs font-black text-muted-foreground underline-offset-4 transition-colors hover:text-forge-teal hover:underline"
+            className="inline-flex items-center gap-1.5 font-black text-muted-foreground text-xs underline-offset-4 transition-colors hover:text-forge-teal hover:underline"
           >
             Read the {result.type} profile on 16Personalities
             <ExternalLink size={12} className="shrink-0" />

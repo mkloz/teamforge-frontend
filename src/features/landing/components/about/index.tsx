@@ -42,7 +42,7 @@ export function AboutSection() {
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="font-sans text-3xl leading-[1.1] font-black tracking-tight text-balance text-ink md:text-5xl lg:text-6xl"
+                className="text-balance font-black font-sans text-3xl text-ink leading-[1.1] tracking-tight md:text-5xl lg:text-6xl"
               >
                 Designed for the way humans{" "}
                 <span className="text-forge-teal">actually connect.</span>
@@ -52,7 +52,7 @@ export function AboutSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="mt-6 font-sans text-base leading-relaxed font-normal text-pretty text-slate-muted md:mt-8 md:text-xl"
+                className="mt-6 text-pretty font-normal font-sans text-base text-slate-muted leading-relaxed md:mt-8 md:text-xl"
               >
                 The difference between a hollow weekend and a meaningful one is
                 the right circle. We solved the social search problem so you can
@@ -88,7 +88,7 @@ export function AboutSection() {
                 asChild
                 variant="ghost"
                 size="sm"
-                className="absolute right-8 bottom-8 z-50 h-9 rounded-full px-4 text-[10px] font-bold tracking-[0.2em] uppercase"
+                className="absolute right-8 bottom-8 z-50 h-9 rounded-full px-4 font-bold text-[10px] uppercase tracking-[0.2em]"
               >
                 <motion.button
                   initial={{ opacity: 0, y: 10 }}

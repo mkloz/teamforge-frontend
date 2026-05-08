@@ -7,10 +7,10 @@ export function ActivityEmptyState() {
         <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-xl border border-forge-teal/15 bg-forge-teal/8 shadow-sm">
           <MessageSquare className="size-7 text-forge-teal" strokeWidth={1.5} />
         </div>
-        <h2 className="text-lg font-bold text-ink">
+        <h2 className="font-bold text-ink text-lg">
           Pick a conversation to begin.
         </h2>
-        <p className="mt-2 text-sm leading-relaxed text-slate-muted">
+        <p className="mt-2 text-slate-muted text-sm leading-relaxed">
           Select any group or direct message from the list to start chatting and
           planning activities together.
         </p>

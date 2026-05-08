@@ -31,7 +31,7 @@ export function ActionsSection({
 
   return (
     <section className="flex flex-col gap-2">
-      <h3 className="mb-3 text-sm font-bold tracking-widest text-foreground uppercase">
+      <h3 className="mb-3 font-bold text-foreground text-sm uppercase tracking-widest">
         Actions
       </h3>
 
@@ -45,7 +45,7 @@ export function ActionsSection({
         />
       )}
 
-      <div className="my-2.5 border-t border-border" />
+      <div className="my-2.5 border-border border-t" />
 
       {!actionsLocked && (
         <ConfirmGroupActionButton

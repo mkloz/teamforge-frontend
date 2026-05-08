@@ -19,7 +19,7 @@ export function InterestsReviewFooter({
   confirmLabel = "Confirm & Finish",
 }: InterestsReviewFooterProps) {
   return (
-    <div className="flex w-full flex-col-reverse items-stretch gap-3 pt-4 pb-6 min-[430px]:flex-row min-[430px]:items-center sm:pb-5">
+    <div className="flex w-full flex-col-reverse items-stretch gap-3 pt-4 pb-6 sm:pb-5 min-[430px]:flex-row min-[430px]:items-center">
       <Button
         variant="outline"
         size="md"

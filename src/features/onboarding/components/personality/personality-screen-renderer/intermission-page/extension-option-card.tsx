@@ -27,7 +27,7 @@ export function ExtensionOptionCard({
       className={cn(
         "group/btn relative h-auto w-full min-w-0 justify-between rounded-xl border px-3 py-2.5 transition-all sm:px-3.5 sm:py-3",
         isSelected
-          ? "border-forge-teal/70 bg-forge-teal/5 shadow-sm shadow-forge-teal/10"
+          ? "border-forge-teal/70 bg-forge-teal/5 shadow-forge-teal/10 shadow-sm"
           : "border-slate-200/60 bg-card hover:border-slate-300 dark:border-white/10 dark:hover:border-white/16",
       )}
     >
@@ -35,7 +35,7 @@ export function ExtensionOptionCard({
         <div className="mb-1.5 flex min-w-0 items-center gap-2">
           <span
             className={cn(
-              "max-w-full truncate rounded-full px-2 py-0.5 font-sans text-[0.68rem] font-bold tracking-wider uppercase",
+              "max-w-full truncate rounded-full px-2 py-0.5 font-bold font-sans text-[0.68rem] uppercase tracking-wider",
               isSelected
                 ? "bg-forge-teal text-white"
                 : "bg-slate-100 text-muted-foreground dark:bg-white/8",
@@ -44,14 +44,14 @@ export function ExtensionOptionCard({
             {option.config.label}
           </span>
         </div>
-        <span className="max-w-full truncate font-sans text-xs font-bold text-ink">
+        <span className="max-w-full truncate font-bold font-sans text-ink text-xs">
           +{option.questionsToAdd} more questions
         </span>
       </div>
 
       <div className="relative z-10 flex shrink-0 items-center gap-2 sm:gap-3">
         <div className="mr-0 flex flex-col items-end sm:mr-1">
-          <span className="font-sans text-[11px] font-medium text-muted-foreground lowercase sm:text-xs">
+          <span className="font-medium font-sans text-[11px] text-muted-foreground lowercase sm:text-xs">
             est. +{option.estimatedMinutesToAdd} min
           </span>
         </div>

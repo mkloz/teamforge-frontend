@@ -32,11 +32,11 @@ export function ActiveSessionsSection({
   ).length;
 
   return (
-    <section className="border-t border-border pt-8">
+    <section className="border-border border-t pt-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="max-w-2xl">
-          <h3 className="text-lg font-semibold text-ink">Active sessions</h3>
-          <p className="mt-1 text-sm leading-relaxed text-slate-muted">
+          <h3 className="font-semibold text-ink text-lg">Active sessions</h3>
+          <p className="mt-1 text-slate-muted text-sm leading-relaxed">
             Keep the current browser active and remove devices you no longer
             use.
           </p>
@@ -58,7 +58,7 @@ export function ActiveSessionsSection({
         </Button>
       </div>
 
-      <div className="mt-6 grid gap-5 border-y border-border py-5 md:grid-cols-3">
+      <div className="mt-6 grid gap-5 border-border border-y py-5 md:grid-cols-3">
         <StatPill label="Active now" value={sessions.length} />
         <StatPill label="Other devices" value={otherSessionCount} />
         <StatPill
@@ -69,9 +69,9 @@ export function ActiveSessionsSection({
 
       <div>
         {isLoadingSessions ? (
-          <p className="py-4 text-sm text-slate-muted">Loading sessions...</p>
+          <p className="py-4 text-slate-muted text-sm">Loading sessions...</p>
         ) : sessionsError ? (
-          <p className="py-4 text-sm text-destructive">{sessionsError}</p>
+          <p className="py-4 text-destructive text-sm">{sessionsError}</p>
         ) : sessions.length ? (
           sessions.map((session) => (
             <SessionRow
@@ -82,7 +82,7 @@ export function ActiveSessionsSection({
             />
           ))
         ) : (
-          <p className="py-4 text-sm text-slate-muted">
+          <p className="py-4 text-slate-muted text-sm">
             No active sessions are available right now.
           </p>
         )}

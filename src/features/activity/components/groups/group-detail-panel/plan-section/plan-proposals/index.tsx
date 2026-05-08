@@ -49,16 +49,16 @@ export function PlanProposalCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-0.5">
-          <p className="text-xs font-bold text-foreground">
+          <p className="font-bold text-foreground text-xs">
             {PROPOSAL_FIELD_LABELS[proposal.field]}
           </p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             Proposed by {proposal.proposer.name}
           </p>
         </div>
         <span
           className={cn(
-            "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold tracking-wider uppercase",
+            "inline-flex items-center rounded-full px-2.5 py-1 font-bold text-xs uppercase tracking-wider",
             STATUS_STYLES[proposal.status],
           )}
         >
@@ -68,24 +68,24 @@ export function PlanProposalCard({
 
       <div className="flex flex-col gap-1.5">
         <div className="rounded-xl bg-muted/50 px-2.5 py-2">
-          <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+          <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
             Current
           </p>
-          <p className="text-sm text-foreground/70">
+          <p className="text-foreground/70 text-sm">
             {formatProposalValue(proposal.field, proposal.currentValue)}
           </p>
         </div>
         <div className="rounded-xl border border-forge-teal/10 bg-forge-teal/5 px-2.5 py-2">
-          <p className="text-xs font-semibold tracking-wide text-forge-teal uppercase">
+          <p className="font-semibold text-forge-teal text-xs uppercase tracking-wide">
             Proposed
           </p>
-          <p className="text-sm text-foreground">
+          <p className="text-foreground text-sm">
             {formatProposalValue(proposal.field, proposal.proposedValue)}
           </p>
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+      <div className="flex items-center justify-between gap-3 text-muted-foreground text-xs">
         <span>{formatProposalDate(proposal.createdAt)}</span>
         <span className="font-medium">
           {approveCount} approve · {rejectCount} reject

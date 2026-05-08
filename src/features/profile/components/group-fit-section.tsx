@@ -14,10 +14,10 @@ export function GroupFitSection({ insight }: GroupFitSectionProps) {
       <div className="flex flex-col gap-4">
         <ProfileSectionHeading>How they fit</ProfileSectionHeading>
         <div className="flex max-w-3xl flex-col gap-3">
-          <h2 className="text-[1.6rem] font-black tracking-tight text-ink md:text-3xl">
+          <h2 className="font-black text-[1.6rem] text-ink tracking-tight md:text-3xl">
             {insight.title}
           </h2>
-          <p className="text-base leading-relaxed font-medium text-pretty text-ink/85 md:text-lg">
+          <p className="text-pretty font-medium text-base text-ink/85 leading-relaxed md:text-lg">
             {getCompactSummary(insight.summary)}
           </p>
         </div>
@@ -38,11 +38,11 @@ export function GroupFitSection({ insight }: GroupFitSectionProps) {
       </div>
 
       {insight.signals[0] ? (
-        <div className="flex max-w-3xl flex-col gap-2 border-l border-forge-teal/40 pl-4">
-          <p className="text-xs font-bold tracking-widest text-slate-muted uppercase">
+        <div className="flex max-w-3xl flex-col gap-2 border-forge-teal/40 border-l pl-4">
+          <p className="font-bold text-slate-muted text-xs uppercase tracking-widest">
             Why it works
           </p>
-          <p className="text-sm leading-relaxed font-semibold text-ink/82">
+          <p className="font-semibold text-ink/82 text-sm leading-relaxed">
             {getCompactSummary(insight.signals[0])}
           </p>
         </div>
@@ -62,11 +62,11 @@ function FitGuidance({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-2 text-xs font-bold tracking-widest text-slate-muted uppercase">
+      <div className="flex items-center gap-2 font-bold text-slate-muted text-xs uppercase tracking-widest">
         <Icon size={14} className="shrink-0 text-forge-teal" />
         {label}
       </div>
-      <p className="text-sm leading-relaxed font-medium text-ink/75">
+      <p className="font-medium text-ink/75 text-sm leading-relaxed">
         {getCompactSummary(value)}
       </p>
     </div>

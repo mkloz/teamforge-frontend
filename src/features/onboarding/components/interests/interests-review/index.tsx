@@ -31,12 +31,12 @@ export function InterestsReview({
       {groups.length > 0 && (
         <motion.div
           variants={fadeUpItem}
-          className="mb-7 border-l border-forge-teal/40 pl-4"
+          className="mb-7 border-forge-teal/40 border-l pl-4"
         >
-          <p className="font-sans text-[10px] font-bold tracking-[0.16em] text-forge-teal uppercase">
+          <p className="font-bold font-sans text-[10px] text-forge-teal uppercase tracking-[0.16em]">
             Interest shape
           </p>
-          <p className="mt-2 text-sm leading-relaxed font-medium text-pretty text-ink/82">
+          <p className="mt-2 text-pretty font-medium text-ink/82 text-sm leading-relaxed">
             {getInterestShapeSummary(groups, selectedIds.size)}
           </p>
         </motion.div>

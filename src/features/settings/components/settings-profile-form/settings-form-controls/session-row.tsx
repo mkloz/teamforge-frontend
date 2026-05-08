@@ -18,7 +18,7 @@ export function SessionRow({ session, isRevoking, onRevoke }: SessionRowProps) {
   return (
     <div
       className={cn(
-        "grid gap-4 border-b border-border py-5 last:border-b-0 md:grid-cols-[minmax(0,1fr)_auto] md:items-center",
+        "grid gap-4 border-border border-b py-5 last:border-b-0 md:grid-cols-[minmax(0,1fr)_auto] md:items-center",
         session.isCurrent && "border-forge-teal/25",
       )}
     >
@@ -33,16 +33,16 @@ export function SessionRow({ session, isRevoking, onRevoke }: SessionRowProps) {
         </div>
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="text-base leading-6 font-semibold text-ink">
+            <p className="font-semibold text-base text-ink leading-6">
               {device.label}
             </p>
             {session.isCurrent && (
-              <span className="rounded-full border border-forge-teal/20 bg-forge-teal/8 px-2 py-0.5 text-[11px] font-semibold text-forge-teal">
+              <span className="rounded-full border border-forge-teal/20 bg-forge-teal/8 px-2 py-0.5 font-semibold text-[11px] text-forge-teal">
                 Current
               </span>
             )}
           </div>
-          <div className="mt-3 grid gap-2 text-xs text-slate-muted sm:grid-cols-3">
+          <div className="mt-3 grid gap-2 text-slate-muted text-xs sm:grid-cols-3">
             <span className="flex min-w-0 items-center gap-2">
               <CalendarClock size={14} className="shrink-0" />
               <span className="truncate">
@@ -64,7 +64,7 @@ export function SessionRow({ session, isRevoking, onRevoke }: SessionRowProps) {
           </div>
           {session.userAgent && (
             <p
-              className="mt-3 max-w-3xl truncate text-xs text-slate-muted/75"
+              className="mt-3 max-w-3xl truncate text-slate-muted/75 text-xs"
               title={session.userAgent}
             >
               {session.userAgent}

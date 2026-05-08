@@ -49,7 +49,7 @@ export function PlanSection({
       aria-labelledby="current-plan-title"
     >
       {/* Eyebrow label */}
-      <p className="mb-2 text-xs font-bold tracking-wider text-muted-foreground/50 uppercase">
+      <p className="mb-2 font-bold text-muted-foreground/50 text-xs uppercase tracking-wider">
         Current Plan
       </p>
 
@@ -57,7 +57,7 @@ export function PlanSection({
       <div className="flex items-start justify-between gap-3">
         <h2
           id="current-plan-title"
-          className="text-lg leading-tight font-bold tracking-tight text-foreground"
+          className="font-bold text-foreground text-lg leading-tight tracking-tight"
         >
           {plan.title}
         </h2>
@@ -67,7 +67,7 @@ export function PlanSection({
       <div className="mt-2 flex flex-wrap gap-2">
         <span
           className={cn(
-            "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold tracking-wider uppercase",
+            "inline-flex items-center rounded-full px-2.5 py-1 font-bold text-xs uppercase tracking-wider",
             categoryColors[plan.category],
           )}
         >
@@ -75,7 +75,7 @@ export function PlanSection({
         </span>
         <span
           className={cn(
-            "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold tracking-wider uppercase",
+            "inline-flex items-center rounded-full px-2.5 py-1 font-bold text-xs uppercase tracking-wider",
             statusColors[plan.status],
           )}
         >
@@ -84,7 +84,7 @@ export function PlanSection({
       </div>
 
       {/* Description */}
-      <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-foreground/60">
+      <p className="mt-2 line-clamp-2 text-foreground/60 text-sm leading-relaxed">
         {plan.description}
       </p>
 
@@ -99,7 +99,7 @@ export function PlanSection({
             <Calendar className="size-4 text-forge-teal opacity-90 shadow-xs" />
           </div>
           <div>
-            <p className="text-sm font-bold text-foreground">
+            <p className="font-bold text-foreground text-sm">
               {formattedDate}{" "}
               <span className="mx-1 text-slate-muted/50">·</span>{" "}
               {formattedTime}
@@ -116,7 +116,7 @@ export function PlanSection({
             <MapPin className="size-4 text-forge-teal opacity-90 shadow-xs" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-bold text-foreground">
+            <p className="truncate font-bold text-foreground text-sm">
               {formattedLocation}
             </p>
             {plan.locationMode === "IN_PERSON" &&
@@ -126,7 +126,7 @@ export function PlanSection({
                   href={`https://maps.google.com/?q=${plan.locationLat},${plan.locationLng}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-primary transition-transform group-hover/item:translate-x-1 hover:underline"
+                  className="inline-flex items-center gap-1 font-semibold text-primary text-xs transition-transform hover:underline group-hover/item:translate-x-1"
                 >
                   Open in Maps
                 </a>

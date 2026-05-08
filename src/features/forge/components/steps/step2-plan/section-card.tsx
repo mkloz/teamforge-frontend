@@ -11,7 +11,7 @@ export function SectionCard({ children, accent = false }: SectionCardProps) {
   return (
     <div
       className={cn(
-        "relative border-b border-border/25 pb-4 last:border-b-0",
+        "relative border-border/25 border-b pb-4 last:border-b-0",
         accent && "border-forge-teal/25",
       )}
     >

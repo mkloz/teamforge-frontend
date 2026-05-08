@@ -7,7 +7,7 @@ interface SecuritySummaryProps {
 
 export function SecuritySummary({ currentUser }: SecuritySummaryProps) {
   return (
-    <div className="mt-6 grid gap-5 border-t border-border pt-6 md:grid-cols-2 xl:grid-cols-4">
+    <div className="mt-6 grid gap-5 border-border border-t pt-6 md:grid-cols-2 xl:grid-cols-4">
       <StatPill label="Email" value={currentUser?.email ?? "Not set"} />
       <StatPill
         label="Provider"

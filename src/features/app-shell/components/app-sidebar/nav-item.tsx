@@ -31,10 +31,10 @@ export function NavItem({ item, pathname }: NavItemProps) {
           aria-label={ariaLabel}
           className={cn(
             "group relative flex items-center rounded-lg transition-colors duration-150",
-            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:outline-none",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
             // Icon-only centered square for both tablet and desktop
             "h-10 w-10 justify-center",
-            "text-sm font-medium",
+            "font-medium text-sm",
             active
               ? "bg-secondary text-primary"
               : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -62,7 +62,7 @@ export function NavItem({ item, pathname }: NavItemProps) {
 
             {hasBadge && (
               <span
-                className="absolute -top-2 -right-2 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-sidebar bg-accent px-1 text-xs font-bold text-accent-foreground shadow-sm"
+                className="absolute -top-2 -right-2 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-sidebar bg-accent px-1 font-bold text-accent-foreground text-xs shadow-sm"
                 aria-hidden="true"
               >
                 {badge > 9 ? "9+" : badge}

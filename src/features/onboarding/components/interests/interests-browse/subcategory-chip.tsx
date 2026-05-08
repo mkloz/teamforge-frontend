@@ -4,7 +4,7 @@ import { ChevronRight, type LucideIcon } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
 const subcategoryChipVariants = cva(
-  "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-sans text-xs leading-none font-bold transition duration-150 select-none",
+  "inline-flex select-none items-center gap-1.5 rounded-full border px-3 py-1.5 font-bold font-sans text-xs leading-none transition duration-150",
   {
     variants: {
       state: {
@@ -20,7 +20,7 @@ const subcategoryChipVariants = cva(
 );
 
 const badgeVariants = cva(
-  "flex h-4.5 min-w-[1.125rem] shrink-0 items-center justify-center rounded-full px-1 text-[10px] leading-none font-bold",
+  "flex h-4.5 min-w-[1.125rem] shrink-0 items-center justify-center rounded-full px-1 font-bold text-[10px] leading-none",
   {
     variants: {
       state: {

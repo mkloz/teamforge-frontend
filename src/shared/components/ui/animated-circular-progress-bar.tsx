@@ -44,7 +44,7 @@ export function AnimatedCircularProgressBar({
 
   return (
     <div
-      className={cn("relative size-40 text-2xl font-semibold", className)}
+      className={cn("relative size-40 font-semibold text-2xl", className)}
       style={containerStyle}
     >
       <svg

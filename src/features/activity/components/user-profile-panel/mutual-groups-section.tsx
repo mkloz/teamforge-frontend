@@ -16,8 +16,8 @@ export function MutualGroupsSection({ groups }: MutualGroupsSectionProps) {
   if (!groups.length) return null;
 
   return (
-    <div className="border-b border-border/40 px-6 py-6">
-      <h4 className="mb-4 px-1 text-xs font-semibold tracking-widest text-slate-muted uppercase">
+    <div className="border-border/40 border-b px-6 py-6">
+      <h4 className="mb-4 px-1 font-semibold text-slate-muted text-xs uppercase tracking-widest">
         Mutual Groups ({groups.length})
       </h4>
 
@@ -41,10 +41,10 @@ export function MutualGroupsSection({ groups }: MutualGroupsSectionProps) {
             </div>
 
             <div className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-bold text-ink transition-colors group-hover:text-forge-teal">
+              <span className="block truncate font-bold text-ink text-sm transition-colors group-hover:text-forge-teal">
                 {group.name}
               </span>
-              <p className="mt-0.5 text-[10px] font-semibold tracking-wider text-slate-muted uppercase opacity-80">
+              <p className="mt-0.5 font-semibold text-[10px] text-slate-muted uppercase tracking-wider opacity-80">
                 Peer Group
               </p>
             </div>

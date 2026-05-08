@@ -45,7 +45,7 @@ export const ProposalMessageDetails = memo(function ProposalMessageDetails({
 
   return (
     <div className="overflow-hidden px-3 pb-3">
-      <p className="mb-3 text-xs text-muted-foreground">{summaryText}</p>
+      <p className="mb-3 text-muted-foreground text-xs">{summaryText}</p>
 
       <ProposalComparison
         current={formatProposalValue(proposal.field, proposal.currentValue)}
@@ -59,7 +59,7 @@ export const ProposalMessageDetails = memo(function ProposalMessageDetails({
           progress={voteProgress}
         />
 
-        <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+        <div className="flex items-center justify-between gap-3 text-muted-foreground text-xs">
           <span>{formatProposalDate(proposal.createdAt)}</span>
           <span className="font-medium">
             {approveCount} approve · {rejectCount} reject

@@ -44,7 +44,7 @@ export function MembersSection({
       <div className="mb-3 flex items-center justify-between">
         <h3
           id="members-heading"
-          className="text-sm font-bold tracking-widest text-foreground uppercase"
+          className="font-bold text-foreground text-sm uppercase tracking-widest"
         >
           Members{" "}
           <span className="ml-1 font-medium text-muted-foreground/60">

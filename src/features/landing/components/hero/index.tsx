@@ -28,7 +28,7 @@ export function HeroSection() {
       <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pt-28 pb-20 pl-6 md:pl-12">
         <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-8">
           <div className="flex max-w-xl flex-1 animate-hero-fade-in flex-col items-center text-center lg:items-start lg:text-left">
-            <h1 className="mb-5 font-sans text-[clamp(2.25rem,5.5vw,4rem)] leading-[1.08] font-extrabold text-balance text-white">
+            <h1 className="mb-5 text-balance font-extrabold font-sans text-[clamp(2.25rem,5.5vw,4rem)] text-white leading-[1.08]">
               Find your people,
               <br />
               <span className="relative inline-block pb-2 text-forge-teal drop-shadow-[0_0_32px_rgba(13,148,136,0.35)]">
@@ -36,7 +36,7 @@ export function HeroSection() {
               </span>
             </h1>
 
-            <p className="mb-8 max-w-md font-sans text-base leading-relaxed text-pretty text-text-dark-secondary md:text-lg">
+            <p className="mb-8 max-w-md text-pretty font-sans text-base text-text-dark-secondary leading-relaxed md:text-lg">
               TeamForge is built for purposeful connection, not endless
               browsing. We intelligently assemble a small group of compatible
               people sharing your interests, so you can spend less time

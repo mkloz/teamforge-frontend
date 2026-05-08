@@ -77,7 +77,7 @@ export function StackCard({
         <CardContent className="flex flex-col gap-6 p-0">
           <div className="flex items-center gap-3">
             <div className="h-px w-8 bg-forge-teal/40" aria-hidden="true" />
-            <span className="text-[10px] font-semibold tracking-[0.2em] text-forge-teal/70 uppercase">
+            <span className="font-semibold text-[10px] text-forge-teal/70 uppercase tracking-[0.2em]">
               {String(index + 1).padStart(2, "0")} /{" "}
               {String(totalCards).padStart(2, "0")}
             </span>
@@ -87,9 +87,9 @@ export function StackCard({
             <h3
               id={`card-title-${card.id}`}
               className={cn(
-                "font-sans font-bold",
+                "font-bold font-sans",
                 card.variant === "credo"
-                  ? "text-xl text-forge-teal"
+                  ? "text-forge-teal text-xl"
                   : "text-2xl text-ink md:text-3xl",
               )}
             >
@@ -97,16 +97,16 @@ export function StackCard({
             </h3>
             <p
               className={cn(
-                "font-sans leading-relaxed text-balance",
+                "text-balance font-sans leading-relaxed",
                 card.variant === "credo"
-                  ? "text-xl font-medium text-ink italic md:text-2xl"
+                  ? "font-medium text-ink text-xl italic md:text-2xl"
                   : "text-base text-slate-muted md:text-lg",
               )}
             >
               {card.description}
             </p>
             {card.footer && (
-              <p className="mt-2 text-xs font-semibold tracking-widest text-forge-teal/60 uppercase">
+              <p className="mt-2 font-semibold text-forge-teal/60 text-xs uppercase tracking-widest">
                 {card.footer}
               </p>
             )}

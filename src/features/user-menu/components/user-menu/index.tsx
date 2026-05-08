@@ -39,13 +39,13 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
 
       <SheetContent
         side="right"
-        className="z-70 flex w-full flex-col border-l border-border bg-canvas p-0 text-foreground shadow-xl shadow-black/15 sm:max-w-md [&>button]:top-5 [&>button]:right-5 [&>button]:rounded-full [&>button]:border [&>button]:border-border/70 [&>button]:bg-card/85 [&>button]:p-2 [&>button]:opacity-100"
+        className="z-70 flex w-full flex-col border-border border-l bg-canvas p-0 text-foreground shadow-black/15 shadow-xl sm:max-w-md [&>button]:top-5 [&>button]:right-5 [&>button]:rounded-full [&>button]:border [&>button]:border-border/70 [&>button]:bg-card/85 [&>button]:p-2 [&>button]:opacity-100"
       >
-        <SheetHeader className="border-b border-border/70 px-5 py-5 pr-14 text-left">
-          <SheetTitle className="text-xl font-black tracking-tight">
+        <SheetHeader className="border-border/70 border-b px-5 py-5 pr-14 text-left">
+          <SheetTitle className="font-black text-xl tracking-tight">
             Account
           </SheetTitle>
-          <SheetDescription className="text-sm font-medium">
+          <SheetDescription className="font-medium text-sm">
             Your profile, preferences, and session.
           </SheetDescription>
         </SheetHeader>
@@ -76,8 +76,8 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
             />
           </section>
 
-          <section className="border-t border-border/70 px-5 py-4">
-            <h3 className="text-sm font-black text-foreground">Settings</h3>
+          <section className="border-border/70 border-t px-5 py-4">
+            <h3 className="font-black text-foreground text-sm">Settings</h3>
             <div className="mt-2 flex flex-col gap-1">
               <MenuLinkItem
                 icon={SlidersHorizontal}
@@ -106,7 +106,7 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
             </div>
           </section>
 
-          <div className="mt-auto border-t border-border/70 p-5">
+          <div className="mt-auto border-border/70 border-t p-5">
             <UserMenuSignOutButton />
           </div>
         </div>

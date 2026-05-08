@@ -30,7 +30,7 @@ export function AppearanceSettingsSection() {
         description="Choose how TeamForge should look on this device."
       />
 
-      <div className="border-t border-border">
+      <div className="border-border border-t">
         <div className="flex flex-col gap-3 py-5 sm:flex-row">
           {THEME_OPTIONS.map((option) => {
             const Icon = option.icon;
@@ -50,10 +50,10 @@ export function AppearanceSettingsSection() {
                   <Icon className="size-4" aria-hidden="true" />
                 </span>
                 <span className="min-w-0">
-                  <span className="block text-sm font-black">
+                  <span className="block font-black text-sm">
                     {option.label}
                   </span>
-                  <span className="mt-1 block text-xs leading-relaxed font-medium opacity-75">
+                  <span className="mt-1 block font-medium text-xs leading-relaxed opacity-75">
                     {option.description}
                   </span>
                 </span>

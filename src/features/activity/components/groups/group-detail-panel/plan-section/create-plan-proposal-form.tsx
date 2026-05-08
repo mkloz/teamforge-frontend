@@ -63,20 +63,20 @@ export function CreatePlanProposalForm({ plan }: CreatePlanProposalFormProps) {
   return (
     <div className="mt-5 flex flex-col gap-3 rounded-xl border border-border/60 bg-card/70 p-3">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs font-bold text-foreground">New Proposal</p>
+        <p className="font-bold text-foreground text-xs">New Proposal</p>
         <Button
           type="button"
           variant="ghost"
           size="xs"
           onClick={form.closeForm}
-          className="px-2 text-xs text-muted-foreground hover:text-foreground"
+          className="px-2 text-muted-foreground text-xs hover:text-foreground"
         >
           Cancel
         </Button>
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+        <Label className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
           Field
         </Label>
         <Select value={form.field} onValueChange={handleFieldValueChange}>
@@ -94,16 +94,16 @@ export function CreatePlanProposalForm({ plan }: CreatePlanProposalFormProps) {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+        <Label className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
           Current
         </Label>
-        <div className="rounded-xl bg-muted/50 px-3 py-2 text-sm text-foreground/70">
+        <div className="rounded-xl bg-muted/50 px-3 py-2 text-foreground/70 text-sm">
           {form.currentValue || "Not set"}
         </div>
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+        <Label className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
           Proposed
         </Label>
         {form.isDateField ? (
@@ -153,7 +153,7 @@ export function CreatePlanProposalForm({ plan }: CreatePlanProposalFormProps) {
       </div>
 
       {form.error && (
-        <p className="text-xs font-medium text-destructive">{form.error}</p>
+        <p className="font-medium text-destructive text-xs">{form.error}</p>
       )}
 
       <div className="flex justify-end">

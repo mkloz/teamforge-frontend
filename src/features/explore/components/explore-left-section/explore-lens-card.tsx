@@ -44,21 +44,21 @@ export function ExploreLensCard({
         <div className="min-w-0 flex-1">
           <h2
             id="explore-identity-heading"
-            className="text-base leading-tight font-black tracking-tight text-foreground"
+            className="font-black text-base text-foreground leading-tight tracking-tight"
           >
             Why this view
           </h2>
-          <p className="mt-0.5 text-xs leading-relaxed font-semibold text-muted-foreground">
+          <p className="mt-0.5 font-semibold text-muted-foreground text-xs leading-relaxed">
             Tuned from your profile and results
           </p>
         </div>
       </div>
 
-      <p className="text-sm leading-6 font-medium text-foreground/90">
+      <p className="font-medium text-foreground/90 text-sm leading-6">
         {lensInsight.summary}
       </p>
 
-      <div className="text-xs leading-5 font-semibold text-muted-foreground">
+      <div className="font-semibold text-muted-foreground text-xs leading-5">
         <GuidanceBlock items={lensInsight.bullets} />
       </div>
     </section>

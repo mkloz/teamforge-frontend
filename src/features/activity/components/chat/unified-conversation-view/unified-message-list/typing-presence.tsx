@@ -35,7 +35,7 @@ export const TypingPresence = memo(
               />
             ))}
           </div>
-          <span className="truncate text-micro font-bold tracking-tight text-slate-muted/80">
+          <span className="truncate font-bold text-micro text-slate-muted/80 tracking-tight">
             {typingUsers.length === 1
               ? `${typingUsers[0].name} is typing`
               : typingUsers.length === 2

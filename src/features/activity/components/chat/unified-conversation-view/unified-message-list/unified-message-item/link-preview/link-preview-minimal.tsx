@@ -19,7 +19,7 @@ export function LinkPreviewMinimal({ isOwn, url }: LinkPreviewMinimalProps) {
       rel="noopener noreferrer"
       onClick={(event) => event.stopPropagation()}
       className={cn(
-        "flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-medium",
+        "flex items-center gap-2 rounded-xl px-2.5 py-2 font-medium text-xs",
         "group border border-border/40 transition-colors duration-150 hover:bg-muted/50",
         isOwn
           ? "border-primary/20 bg-white/20 text-foreground hover:bg-white/30"

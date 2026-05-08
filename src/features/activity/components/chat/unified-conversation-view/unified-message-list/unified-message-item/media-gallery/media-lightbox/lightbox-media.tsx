@@ -29,7 +29,7 @@ export const LightboxImage = memo(function LightboxImage({
           <div className="flex size-16 items-center justify-center rounded-xl border border-white/10 bg-white/5">
             <ImageOff className="size-7 text-white/30" strokeWidth={1} />
           </div>
-          <p className="text-xs font-medium tracking-wider text-white/40 uppercase">
+          <p className="font-medium text-white/40 text-xs uppercase tracking-wider">
             Image unavailable
           </p>
         </div>
@@ -49,7 +49,7 @@ export const LightboxImage = memo(function LightboxImage({
         onError={onError}
         wrapperClassName="flex h-full w-full items-center justify-center overflow-visible"
         className={cn(
-          "max-h-full max-w-full object-contain select-none",
+          "max-h-full max-w-full select-none object-contain",
           "shadow-[0_30px_60px_-15px_rgba(0,0,0,1)] ring-1 ring-white/5",
           "transition-opacity duration-300",
           state === "loaded" ? "opacity-100" : "opacity-0",
@@ -87,7 +87,7 @@ export const LightboxVideo = memo(function LightboxVideo({
           <div className="flex size-16 items-center justify-center rounded-xl border border-white/10 bg-white/5">
             <ImageOff className="size-7 text-white/30" strokeWidth={1} />
           </div>
-          <p className="text-xs font-medium tracking-wider text-white/40 uppercase">
+          <p className="font-medium text-white/40 text-xs uppercase tracking-wider">
             Video unavailable
           </p>
         </div>

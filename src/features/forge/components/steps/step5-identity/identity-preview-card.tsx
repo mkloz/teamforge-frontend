@@ -19,7 +19,7 @@ export function IdentityPreviewCard({
 
   return (
     <div className="space-y-2.5">
-      <p className="text-xs font-semibold text-muted-foreground">Preview</p>
+      <p className="font-semibold text-muted-foreground text-xs">Preview</p>
       <div className="group overflow-hidden rounded-xl border border-border/50 bg-card shadow-sm">
         <div
           className={cn(
@@ -40,10 +40,10 @@ export function IdentityPreviewCard({
             />
           ) : (
             <div className="flex h-full w-full flex-col justify-between p-4">
-              <span className="text-[10px] font-bold tracking-[0.16em] text-slate-muted uppercase">
+              <span className="font-bold text-[10px] text-slate-muted uppercase tracking-[0.16em]">
                 Artwork pending
               </span>
-              <p className="line-clamp-2 max-w-64 text-lg leading-tight font-black text-foreground">
+              <p className="line-clamp-2 max-w-64 font-black text-foreground text-lg leading-tight">
                 {displayPlanTitle}
               </p>
             </div>
@@ -63,10 +63,10 @@ export function IdentityPreviewCard({
             fallbackClassName="text-[11px]"
           />
           <div className="min-w-0 flex-1">
-            <h3 className="truncate text-sm font-bold text-foreground">
+            <h3 className="truncate font-bold text-foreground text-sm">
               {displayGroupName}
             </h3>
-            <p className="mt-0.5 truncate text-xs text-muted-foreground">
+            <p className="mt-0.5 truncate text-muted-foreground text-xs">
               {displayPlanTitle}
             </p>
           </div>

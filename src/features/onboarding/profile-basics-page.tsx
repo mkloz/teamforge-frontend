@@ -22,7 +22,7 @@ export function ProfileBasicsPage() {
 
   return (
     <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
-      <div className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-r border-border bg-hero-bg lg:flex">
+      <div className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-border border-r bg-hero-bg lg:flex">
         <VoronoiCatalyst ref={catalystRef} progress={progress} />
       </div>
 
@@ -32,7 +32,7 @@ export function ProfileBasicsPage() {
 
         <div
           ref={scrollContainerRef}
-          className="relative h-full flex-1 overflow-x-hidden overflow-y-auto scroll-smooth px-4 pb-4"
+          className="relative h-full flex-1 overflow-y-auto overflow-x-hidden scroll-smooth px-4 pb-4"
           onInput={handleInput}
         >
           <TopProgressBar

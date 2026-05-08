@@ -18,7 +18,7 @@ export function CalculatingScreen({ vector, onDone }: CalculatingScreenProps) {
 
   return (
     <div className="flex min-h-[calc(100dvh-2rem)] w-full flex-col items-center justify-center px-4 py-12 sm:px-6">
-      <p className="mb-8 font-sans text-xs font-bold tracking-[0.18em] text-forge-teal uppercase">
+      <p className="mb-8 font-bold font-sans text-forge-teal text-xs uppercase tracking-[0.18em]">
         Computing Personality Vector
       </p>
 
@@ -39,10 +39,10 @@ export function CalculatingScreen({ vector, onDone }: CalculatingScreenProps) {
             }}
           >
             <div className="flex items-baseline justify-between">
-              <span className="font-sans text-xs font-semibold text-foreground/90">
+              <span className="font-sans font-semibold text-foreground/90 text-xs">
                 {row.label}
               </span>
-              <span className="font-sans text-xs font-bold text-forge-teal">
+              <span className="font-bold font-sans text-forge-teal text-xs">
                 <AnimatedCounter value={row.value} delay={0.6 + index * 0.25} />
               </span>
             </div>
@@ -72,7 +72,7 @@ export function CalculatingScreen({ vector, onDone }: CalculatingScreenProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.3 }}
-          className="text-center font-sans text-xs font-medium text-muted-foreground"
+          className="text-center font-medium font-sans text-muted-foreground text-xs"
         >
           {message}
         </motion.p>

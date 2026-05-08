@@ -18,18 +18,18 @@ export function ProfilePortraitSection({
   const visibleDetails = portrait.details.slice(0, 2);
 
   return (
-    <section className="flex flex-col gap-5 border-t border-border/60 pt-6 sm:pt-8">
+    <section className="flex flex-col gap-5 border-border/60 border-t pt-6 sm:pt-8">
       <div className="flex max-w-4xl flex-col gap-4">
         <div className="flex flex-wrap items-center gap-3">
           <ProfileSectionHeading>Profile sketch</ProfileSectionHeading>
-          <span className="rounded-full border border-border/70 px-2.5 py-1 text-[11px] font-black text-slate-muted">
+          <span className="rounded-full border border-border/70 px-2.5 py-1 font-black text-[11px] text-slate-muted">
             {readLabel}
           </span>
         </div>
-        <h2 className="max-w-3xl text-[1.6rem] leading-tight font-black tracking-tight text-ink md:text-3xl">
+        <h2 className="max-w-3xl font-black text-[1.6rem] text-ink leading-tight tracking-tight md:text-3xl">
           {portrait.title}
         </h2>
-        <p className="max-w-3xl text-base leading-relaxed font-medium text-pretty text-ink/82 md:text-lg">
+        <p className="max-w-3xl text-pretty font-medium text-base text-ink/82 leading-relaxed md:text-lg">
           {getCompactLead(portrait.lead)}
         </p>
       </div>
@@ -40,10 +40,10 @@ export function ProfilePortraitSection({
             key={`${detail.label}-${detail.value}`}
             className="flex flex-col gap-1"
           >
-            <p className="text-xs font-black tracking-widest text-slate-muted uppercase">
+            <p className="font-black text-slate-muted text-xs uppercase tracking-widest">
               {detail.label}
             </p>
-            <p className="text-sm leading-snug font-semibold text-ink/85">
+            <p className="font-semibold text-ink/85 text-sm leading-snug">
               {getCompactSentence(detail.value)}
             </p>
           </div>
@@ -51,7 +51,7 @@ export function ProfilePortraitSection({
       </div>
 
       {portrait.mode === "hybrid" && portrait.secondaryCandidate ? (
-        <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-slate-muted">
+        <div className="flex flex-wrap items-center gap-2 font-bold text-slate-muted text-xs">
           <span>Also reads as</span>
           <span className="h-px w-5 bg-border" aria-hidden="true" />
           <span className="text-ink/80">

@@ -20,9 +20,9 @@ export function PasswordRecoverySection({
   onSendPasswordResetLink,
 }: PasswordRecoverySectionProps) {
   return (
-    <div className="mt-8 border-t border-border pt-6">
-      <h3 className="text-base font-semibold text-ink">Password & recovery</h3>
-      <p className="mt-1 text-sm text-slate-muted">
+    <div className="mt-8 border-border border-t pt-6">
+      <h3 className="font-semibold text-base text-ink">Password & recovery</h3>
+      <p className="mt-1 text-slate-muted text-sm">
         {currentUser?.authProvider === "GOOGLE"
           ? "This account signs in with Google, so password changes are managed by Google instead of TeamForge."
           : "Send a secure password reset link to your email if you want to rotate your password."}

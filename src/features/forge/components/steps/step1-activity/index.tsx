@@ -13,7 +13,7 @@ export function Step1Activity({
   const shaking = useActivityGridShake(shakeRequestId);
 
   return (
-    <div className="animate-in space-y-5 duration-300 fade-in">
+    <div className="fade-in animate-in space-y-5 duration-300">
       <RecentActivityRow
         appliedTemplateId={appliedTemplateId}
         selectedActivity={selectedActivity}

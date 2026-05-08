@@ -25,8 +25,8 @@ export function SecuritySettingsSection({
     <div className="flex flex-col gap-10">
       <section>
         <div className="max-w-2xl">
-          <h2 className="text-xl font-bold text-ink">Security & Access</h2>
-          <p className="mt-1 text-sm leading-relaxed text-slate-muted">
+          <h2 className="font-bold text-ink text-xl">Security & Access</h2>
+          <p className="mt-1 text-slate-muted text-sm leading-relaxed">
             Review how this account signs in, recover access, and manage active
             sessions.
           </p>

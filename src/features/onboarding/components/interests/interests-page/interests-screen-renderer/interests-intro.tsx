@@ -41,20 +41,20 @@ export function InterestsIntro({
     >
       <motion.h1
         variants={fadeUpItem}
-        className="mb-4 font-sans text-2xl leading-tight font-extrabold text-balance text-ink sm:text-display-lg"
+        className="mb-4 text-balance font-extrabold font-sans text-2xl text-ink leading-tight sm:text-display-lg"
       >
         What do you love doing?
       </motion.h1>
 
       <motion.div variants={fadeUpItem}>
-        <p className="mb-3 font-sans text-[13px] leading-relaxed font-medium text-pretty text-slate-muted sm:text-sm">
+        <p className="mb-3 text-pretty font-medium font-sans text-[13px] text-slate-muted leading-relaxed sm:text-sm">
           This is where your profile starts to feel like your real life: the
           hobbies, places, games, scenes, and small obsessions you would
           genuinely make time for.
         </p>
-        <p className="mb-6 font-sans text-[13px] leading-relaxed text-pretty text-slate-muted/80 sm:text-sm">
+        <p className="mb-6 text-pretty font-sans text-[13px] text-slate-muted/80 leading-relaxed sm:text-sm">
           Pick at least{" "}
-          <span className="border-b border-forge-teal/30 font-bold text-ink">
+          <span className="border-forge-teal/30 border-b font-bold text-ink">
             15 interests
           </span>
           . There are no wrong answers – only honest ones.
@@ -75,7 +75,7 @@ export function InterestsIntro({
             <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-forge-teal/5">
               <Icon size={14} strokeWidth={2.5} className="text-forge-teal" />
             </div>
-            <p className="font-sans text-[13px] leading-relaxed text-slate-muted sm:text-sm">
+            <p className="font-sans text-[13px] text-slate-muted leading-relaxed sm:text-sm">
               {text}
             </p>
           </div>

@@ -17,7 +17,7 @@ export const UnreadBadge = memo(function UnreadBadge({
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center justify-center rounded-full bg-forge-teal text-micro font-black text-white shadow-sm shadow-forge-teal/20",
+        "inline-flex shrink-0 items-center justify-center rounded-full bg-forge-teal font-black text-micro text-white shadow-forge-teal/20 shadow-sm",
         isCompact ? "h-3.5 min-w-3.5 scale-90 px-1" : "h-4.5 min-w-4.5 px-1.5",
         className,
       )}

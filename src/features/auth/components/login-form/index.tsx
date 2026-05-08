@@ -69,7 +69,7 @@ export function LoginForm({
             name="email"
             render={({ field }) => (
               <FormItem className="space-y-0 text-left">
-                <FormLabel className="font-sans text-sm font-semibold text-ink">
+                <FormLabel className="font-sans font-semibold text-ink text-sm">
                   Email
                 </FormLabel>
                 <FormControl>
@@ -80,7 +80,7 @@ export function LoginForm({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="mt-1 text-xs font-medium text-destructive" />
+                <FormMessage className="mt-1 font-medium text-destructive text-xs" />
               </FormItem>
             )}
           />
@@ -91,7 +91,7 @@ export function LoginForm({
             render={({ field }) => (
               <FormItem className="space-y-0 text-left">
                 <div className="flex items-center justify-between">
-                  <FormLabel className="font-sans text-sm font-semibold text-ink">
+                  <FormLabel className="font-sans font-semibold text-ink text-sm">
                     Password
                   </FormLabel>
                   <Link
@@ -99,7 +99,7 @@ export function LoginForm({
                       "/auth/forgot-password",
                       authReturnTo,
                     )}
-                    className="font-sans text-xs font-medium text-forge-teal outline-hidden transition-colors hover:underline focus:ring-2 focus:ring-forge-teal/20"
+                    className="font-medium font-sans text-forge-teal text-xs outline-hidden transition-colors hover:underline focus:ring-2 focus:ring-forge-teal/20"
                   >
                     Forgot password?
                   </Link>
@@ -131,7 +131,7 @@ export function LoginForm({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="mt-1 text-xs font-medium text-destructive" />
+                <FormMessage className="mt-1 font-medium text-destructive text-xs" />
               </FormItem>
             )}
           />

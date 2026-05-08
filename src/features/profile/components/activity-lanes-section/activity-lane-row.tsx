@@ -19,8 +19,8 @@ export function ActivityLaneRow({ lane }: ActivityLaneRowProps) {
           <Icon size={18} />
         </div>
         <div>
-          <h4 className="text-sm font-extrabold text-ink">{lane.label}</h4>
-          <p className="mt-1 text-xs font-bold tracking-widest text-slate-muted uppercase">
+          <h4 className="font-extrabold text-ink text-sm">{lane.label}</h4>
+          <p className="mt-1 font-bold text-slate-muted text-xs uppercase tracking-widest">
             {evidenceLabel}
           </p>
         </div>

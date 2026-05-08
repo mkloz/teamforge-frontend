@@ -28,7 +28,7 @@ export function ParticipantRow({
       className={cn(
         "group flex min-h-[104px] flex-col justify-between gap-3 rounded-lg border p-3 transition-[background-color,border-color,opacity] duration-200",
         removed
-          ? "border-dashed border-border/30 bg-muted/30 opacity-40"
+          ? "border-border/30 border-dashed bg-muted/30 opacity-40"
           : highlight
             ? "border-spark-amber/45 bg-spark-amber/8 ring-1 ring-spark-amber/15 hover:border-spark-amber/60"
             : "border-border/40 bg-card/70 hover:border-forge-teal/30 hover:bg-forge-teal/5",
@@ -52,7 +52,7 @@ export function ParticipantRow({
             shape="rounded"
             className="h-full w-full rounded-lg bg-transparent"
             fallbackClassName={cn(
-              "bg-transparent text-xs font-bold",
+              "bg-transparent font-bold text-xs",
               highlight ? "text-ink" : "text-foreground/80",
             )}
           />
@@ -62,7 +62,7 @@ export function ParticipantRow({
             <div className="min-w-0">
               <p
                 className={cn(
-                  "truncate text-sm leading-tight font-semibold transition-colors",
+                  "truncate font-semibold text-sm leading-tight transition-colors",
                   removed
                     ? "text-muted-foreground line-through"
                     : highlight
@@ -72,7 +72,7 @@ export function ParticipantRow({
               >
                 {participantName}
               </p>
-              <p className="mt-1 text-xs leading-snug text-muted-foreground">
+              <p className="mt-1 text-muted-foreground text-xs leading-snug">
                 {removed ? "Removed from session" : "Suggested member"}
               </p>
             </div>
@@ -80,7 +80,7 @@ export function ParticipantRow({
             {!removed && (
               <span
                 className={cn(
-                  "shrink-0 rounded-full border px-2 py-0.5 text-micro font-bold tabular-nums",
+                  "shrink-0 rounded-full border px-2 py-0.5 font-bold text-micro tabular-nums",
                   highlight
                     ? "border-spark-amber/30 bg-spark-amber/12 text-spark-amber"
                     : "border-border/40 bg-muted/35 text-muted-foreground",
@@ -96,7 +96,7 @@ export function ParticipantRow({
       <div className="flex items-center gap-3">
         {!removed && scorePercent !== null ? (
           <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between gap-2 text-micro font-semibold tracking-wide uppercase">
+            <div className="flex items-center justify-between gap-2 font-semibold text-micro uppercase tracking-wide">
               <span className="text-muted-foreground">
                 {participantMeta.label}
               </span>

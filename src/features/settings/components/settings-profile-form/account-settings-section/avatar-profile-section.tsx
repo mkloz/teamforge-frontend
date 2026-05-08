@@ -97,7 +97,7 @@ export function AvatarProfileSection({
       />
 
       {avatarMessage && !avatarError ? (
-        <p className="text-sm font-medium text-forge-teal">{avatarMessage}</p>
+        <p className="font-medium text-forge-teal text-sm">{avatarMessage}</p>
       ) : null}
     </div>
   );

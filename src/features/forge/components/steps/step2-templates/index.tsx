@@ -40,7 +40,7 @@ export function Step2Templates({
   });
 
   return (
-    <div className="flex animate-in flex-col gap-4 pb-6 duration-300 fade-in slide-in-from-bottom-2">
+    <div className="fade-in slide-in-from-bottom-2 flex animate-in flex-col gap-4 pb-6 duration-300">
       <div className="flex items-start justify-between gap-3 px-0.5">
         <div className="flex min-w-0 items-start gap-3">
           <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10 text-forge-teal">
@@ -48,17 +48,17 @@ export function Step2Templates({
           </div>
           <div className="min-w-0">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
-              <p className="text-sm leading-tight font-semibold text-foreground">
+              <p className="font-semibold text-foreground text-sm leading-tight">
                 Start from a template
               </p>
               {selectedActivity && (
-                <span className="inline-flex max-w-full items-center gap-1 rounded-full border border-border/45 bg-card px-2 py-0.5 text-micro font-bold text-muted-foreground">
+                <span className="inline-flex max-w-full items-center gap-1 rounded-full border border-border/45 bg-card px-2 py-0.5 font-bold text-micro text-muted-foreground">
                   <Tag size={10} />
                   <span className="truncate">{selectedActivity}</span>
                 </span>
               )}
             </div>
-            <p className="mt-1 text-xs leading-snug text-muted-foreground/65">
+            <p className="mt-1 text-muted-foreground/65 text-xs leading-snug">
               Sorted for your profile inside this category.
             </p>
           </div>

@@ -37,7 +37,7 @@ export const UnifiedConversationListItem = memo(
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
         className={cn(
-          "group/item relative flex w-full items-center text-left transition duration-200 outline-none select-none",
+          "group/item relative flex w-full select-none items-center text-left outline-none transition duration-200",
           isCompact ? "gap-2.5 px-3 py-2" : "gap-3.5 px-4 py-3.5",
           "before:absolute before:top-0 before:left-0 before:h-full before:w-1 before:bg-forge-teal before:transition before:duration-300 before:content-['']",
           isSelected

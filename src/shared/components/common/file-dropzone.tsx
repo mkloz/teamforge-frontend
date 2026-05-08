@@ -151,7 +151,7 @@ export function FileDropzone({
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
         className={cn(
-          "group relative flex h-auto w-full cursor-pointer overflow-hidden border-2 border-dashed bg-card p-0 text-left whitespace-normal transition-colors duration-150 focus-visible:ring-forge-teal/35",
+          "group relative flex h-auto w-full cursor-pointer overflow-hidden whitespace-normal border-2 border-dashed bg-card p-0 text-left transition-colors duration-150 focus-visible:ring-forge-teal/35",
           getVariantClasses(variant),
           isDragging
             ? "border-forge-teal bg-forge-teal/8"
@@ -200,7 +200,7 @@ export function FileDropzone({
               <div className="flex min-w-0 items-center gap-2">
                 <p
                   className={cn(
-                    "min-w-0 truncate text-sm leading-tight font-semibold",
+                    "min-w-0 truncate font-semibold text-sm leading-tight",
                     variant === "cover" ? "text-white" : "text-ink",
                   )}
                 >
@@ -209,7 +209,7 @@ export function FileDropzone({
                 {isDragging ? (
                   <span
                     className={cn(
-                      "hidden shrink-0 rounded-full px-2 py-0.5 text-micro font-semibold sm:inline-flex",
+                      "hidden shrink-0 rounded-full px-2 py-0.5 font-semibold text-micro sm:inline-flex",
                       variant === "cover"
                         ? "bg-white/18 text-white"
                         : "bg-forge-teal/12 text-forge-teal",
@@ -234,7 +234,7 @@ export function FileDropzone({
               <div className="mt-2.5 hidden min-w-0 flex-wrap items-center gap-2 sm:flex">
                 <span
                   className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs leading-none font-semibold",
+                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold text-xs leading-none",
                     variant === "cover"
                       ? "bg-white/14 text-white/88"
                       : "bg-muted text-slate-muted",
@@ -246,7 +246,7 @@ export function FileDropzone({
                 {helper ? (
                   <span
                     className={cn(
-                      "inline-flex max-w-full min-w-0 truncate rounded-full px-2.5 py-1 text-xs leading-none font-semibold",
+                      "inline-flex min-w-0 max-w-full truncate rounded-full px-2.5 py-1 font-semibold text-xs leading-none",
                       variant === "cover"
                         ? "bg-white/10 text-white/72"
                         : "bg-background/70 text-slate-muted/75",
@@ -262,7 +262,7 @@ export function FileDropzone({
           {actionLabel ? (
             <span
               className={cn(
-                "ml-auto hidden shrink-0 items-center rounded-full border px-3 py-1 text-xs font-semibold transition-colors duration-200 sm:inline-flex",
+                "ml-auto hidden shrink-0 items-center rounded-full border px-3 py-1 font-semibold text-xs transition-colors duration-200 sm:inline-flex",
                 variant === "cover"
                   ? "border-white/28 bg-white/14 text-white group-hover:bg-white/20"
                   : "border-forge-teal/20 bg-forge-teal/8 text-forge-teal group-hover:bg-forge-teal/12",
@@ -289,7 +289,7 @@ export function FileDropzone({
       />
 
       {error ? (
-        <p className="text-xs font-medium text-destructive">{error}</p>
+        <p className="font-medium text-destructive text-xs">{error}</p>
       ) : null}
     </div>
   );
@@ -324,8 +324,8 @@ function FilePreviewItem({ file, index, onRemove }: FilePreviewItemProps) {
         <Icon size={16} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-xs font-semibold text-ink">{file.name}</p>
-        <p className="text-xs text-slate-muted">{formatFileSize(file.size)}</p>
+        <p className="truncate font-semibold text-ink text-xs">{file.name}</p>
+        <p className="text-slate-muted text-xs">{formatFileSize(file.size)}</p>
       </div>
       {onRemove ? (
         <Button

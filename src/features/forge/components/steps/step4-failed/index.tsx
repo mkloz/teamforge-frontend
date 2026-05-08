@@ -18,7 +18,7 @@ export function Step4Failed({
     isAuto && (onKeepSearchingChange || onSwitchToManual);
 
   return (
-    <div className="flex animate-in flex-col gap-5 pb-10 duration-500 fade-in slide-in-from-bottom-2">
+    <div className="fade-in slide-in-from-bottom-2 flex animate-in flex-col gap-5 pb-10 duration-500">
       <FailureHero description={content.description} />
       <FailureReasons context={content.context} reasons={content.reasons} />
       <FailureSuggestions suggestions={content.suggestions} />
@@ -32,7 +32,7 @@ export function Step4Failed({
         />
       )}
 
-      <p className="border-t border-border/30 pt-4 text-center text-xs leading-relaxed text-muted-foreground">
+      <p className="border-border/30 border-t pt-4 text-center text-muted-foreground text-xs leading-relaxed">
         Use <span className="font-semibold text-foreground">Try again</span> to
         return to group setup with your plan intact.
       </p>

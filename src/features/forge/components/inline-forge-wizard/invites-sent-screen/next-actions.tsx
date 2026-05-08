@@ -13,7 +13,7 @@ export function NextActions({ isManual }: NextActionsProps) {
 
   return (
     <section className="flex flex-col gap-3">
-      <p className="text-sm font-semibold text-foreground">
+      <p className="font-semibold text-foreground text-sm">
         You can do this next
       </p>
       <div className="grid gap-3 sm:grid-cols-3">
@@ -76,7 +76,7 @@ function NextCard({
       </div>
       <p
         className={cn(
-          "text-sm leading-tight font-semibold",
+          "font-semibold text-sm leading-tight",
           active
             ? isAmber
               ? "text-spark-amber"
@@ -86,7 +86,7 @@ function NextCard({
       >
         {title}
       </p>
-      <p className="mt-1 text-xs leading-snug text-muted-foreground">{text}</p>
+      <p className="mt-1 text-muted-foreground text-xs leading-snug">{text}</p>
     </div>
   );
 }

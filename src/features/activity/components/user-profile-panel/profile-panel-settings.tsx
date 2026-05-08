@@ -26,7 +26,7 @@ export function ProfilePanelSettings({
         isMobile && "pb-[calc(2rem+env(safe-area-inset-bottom))]",
       )}
     >
-      <h4 className="mb-4 px-1 text-xs font-semibold tracking-widest text-slate-muted uppercase">
+      <h4 className="mb-4 px-1 font-semibold text-slate-muted text-xs uppercase tracking-widest">
         Account & Safety
       </h4>
       <div className="flex flex-col gap-1">
@@ -37,7 +37,7 @@ export function ProfilePanelSettings({
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-slate-muted transition-colors group-hover:text-forge-teal">
             {isMuted ? <BellOff size={16} /> : <Bell size={16} />}
           </div>
-          <span className="text-sm font-medium text-ink">
+          <span className="font-medium text-ink text-sm">
             {isMuted ? "Unmute Notifications" : "Mute Notifications"}
           </span>
         </Button>
@@ -55,7 +55,7 @@ export function ProfilePanelSettings({
               <Ban size={16} />
             )}
           </div>
-          <span className="text-sm font-medium">
+          <span className="font-medium text-sm">
             {isBlockActionPending
               ? isBlocked
                 ? "Unblocking..."

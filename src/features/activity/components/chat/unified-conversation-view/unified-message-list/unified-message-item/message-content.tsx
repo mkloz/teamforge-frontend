@@ -22,7 +22,7 @@ export const MessageContent = memo(
 
         <p
           className={cn(
-            "text-sm leading-[1.45] font-medium tracking-tight wrap-break-word whitespace-pre-wrap",
+            "wrap-break-word whitespace-pre-wrap font-medium text-sm leading-[1.45] tracking-tight",
             content.length < 50 &&
               !content.includes(" ") &&
               reactionGroupsLength === 0 &&

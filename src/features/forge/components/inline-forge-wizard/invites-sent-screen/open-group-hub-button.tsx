@@ -14,7 +14,7 @@ export function OpenGroupHubButton({
       variant="primary"
       size="lg"
       onClick={() => void onEnterGroupHub()}
-      className="h-14 w-full rounded-lg text-base font-bold"
+      className="h-14 w-full rounded-lg font-bold text-base"
     >
       Open group hub
       <ArrowRight size={17} />

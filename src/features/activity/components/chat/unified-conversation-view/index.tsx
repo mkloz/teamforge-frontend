@@ -91,7 +91,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
   ).map((msg: UnifiedMessage) => Object.assign({}, msg, { isOwn: false }));
 
   return (
-    <div className="flex h-full animate-in flex-col bg-canvas/40 duration-300 fade-in">
+    <div className="fade-in flex h-full animate-in flex-col bg-canvas/40 duration-300">
       <UnifiedChatHeader
         kind={kind}
         title={headerProps.title}

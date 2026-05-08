@@ -10,7 +10,7 @@ export function ActivitySidebar({ activity }: ActivitySidebarProps) {
   return (
     <aside
       className={cn(
-        "flex shrink-0 flex-col border-r border-border bg-canvas transition-colors duration-300",
+        "flex shrink-0 flex-col border-border border-r bg-canvas transition-colors duration-300",
         "w-full md:w-72 lg:w-80",
         activity.hasSelection && "hidden md:flex",
       )}

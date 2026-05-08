@@ -52,7 +52,7 @@ export function UserProfilePanel({
   if (!participant) {
     return (
       <div className="flex flex-1 items-center justify-center p-8 text-center">
-        <p className="text-sm text-slate-muted">User profile not found</p>
+        <p className="text-slate-muted text-sm">User profile not found</p>
       </div>
     );
   }

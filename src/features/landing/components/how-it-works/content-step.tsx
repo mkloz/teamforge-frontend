@@ -65,10 +65,10 @@ export function ContentStep({
       aria-hidden={!isActive}
     >
       <div className="flex flex-col gap-2">
-        <h3 className="mb-2 font-sans text-3xl leading-tight font-extrabold tracking-tight text-balance text-ink md:text-5xl">
+        <h3 className="mb-2 text-balance font-extrabold font-sans text-3xl text-ink leading-tight tracking-tight md:text-5xl">
           {step.title}
         </h3>
-        <p className="mb-4 font-sans text-lg leading-relaxed text-pretty text-slate-muted">
+        <p className="mb-4 text-pretty font-sans text-lg text-slate-muted leading-relaxed">
           {step.description}
         </p>
 

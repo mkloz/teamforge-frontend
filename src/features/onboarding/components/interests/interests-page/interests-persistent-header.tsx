@@ -26,7 +26,7 @@ export function InterestsPersistentHeader({
   return (
     <div
       className={cn(
-        "sticky z-40 w-full border-b border-slate-muted/10 bg-canvas/90 pt-3 shadow-none backdrop-blur-sm",
+        "sticky z-40 w-full border-slate-muted/10 border-b bg-canvas/90 pt-3 shadow-none backdrop-blur-sm",
         state.screen === "browse" ? "-top-10" : "top-0 shadow-sm",
       )}
     >

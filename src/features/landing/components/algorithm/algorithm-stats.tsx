@@ -14,7 +14,7 @@ export function AlgorithmStats({ inView }: AlgorithmStatsProps) {
       )}
     >
       <div className="mb-10">
-        <h3 className="mb-3 font-sans text-xl font-bold text-white">
+        <h3 className="mb-3 font-bold font-sans text-white text-xl">
           How it finds your people
         </h3>
         <div className="space-y-4">
@@ -31,14 +31,14 @@ export function AlgorithmStats({ inView }: AlgorithmStatsProps) {
             },
           ].map(({ step, title, desc }) => (
             <div key={step} className="flex gap-4">
-              <span className="mt-0.5 shrink-0 font-sans text-2xl leading-none font-extrabold text-forge-teal/25 select-none">
+              <span className="mt-0.5 shrink-0 select-none font-extrabold font-sans text-2xl text-forge-teal/25 leading-none">
                 {step}
               </span>
               <div>
-                <p className="mb-1 font-sans text-sm font-semibold text-white">
+                <p className="mb-1 font-sans font-semibold text-sm text-white">
                   {title}
                 </p>
-                <p className="font-sans text-sm leading-relaxed text-text-dark-muted">
+                <p className="font-sans text-sm text-text-dark-muted leading-relaxed">
                   {desc}
                 </p>
               </div>
@@ -48,13 +48,13 @@ export function AlgorithmStats({ inView }: AlgorithmStatsProps) {
       </div>
 
       <div>
-        <h3 className="mb-4 font-sans text-sm font-bold tracking-widest text-white uppercase">
+        <h3 className="mb-4 font-bold font-sans text-sm text-white uppercase tracking-widest">
           What we look for
         </h3>
         <div className="space-y-3">
           {FACTORS.map(({ label, weight, color }) => (
             <div key={label} className="flex items-center gap-3">
-              <span className="w-36 shrink-0 truncate font-sans text-xs text-text-dark-muted">
+              <span className="w-36 shrink-0 truncate font-sans text-text-dark-muted text-xs">
                 {label}
               </span>
               <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/5 ring-1 ring-white/10">
@@ -68,7 +68,7 @@ export function AlgorithmStats({ inView }: AlgorithmStatsProps) {
                   }}
                 />
               </div>
-              <span className="w-8 text-right font-sans text-xs font-bold text-text-dark-secondary tabular-nums">
+              <span className="w-8 text-right font-bold font-sans text-text-dark-secondary text-xs tabular-nums">
                 {weight}%
               </span>
             </div>

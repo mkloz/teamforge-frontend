@@ -24,16 +24,16 @@ export function NotificationPreferenceRow({
   return (
     <div
       className={cn(
-        "flex w-full items-center justify-between gap-4 border-b border-border py-4 text-left transition-colors",
+        "flex w-full items-center justify-between gap-4 border-border border-b py-4 text-left transition-colors",
         checked && "border-forge-teal/20",
         disabled && "cursor-not-allowed opacity-70",
       )}
     >
       <div>
-        <Label htmlFor={switchId} className="text-sm font-semibold text-ink">
+        <Label htmlFor={switchId} className="font-semibold text-ink text-sm">
           {title}
         </Label>
-        <p className="mt-1 text-xs leading-relaxed text-slate-muted">
+        <p className="mt-1 text-slate-muted text-xs leading-relaxed">
           {description}
         </p>
       </div>

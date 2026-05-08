@@ -42,12 +42,12 @@ function ProfileSignal({
 }: ProfileSignalProps) {
   return (
     <div className="min-w-0 text-center sm:text-left">
-      <p className="text-[10px] font-bold tracking-widest text-slate-muted uppercase sm:text-nano">
+      <p className="font-bold text-[10px] text-slate-muted uppercase tracking-widest sm:text-nano">
         {label}
       </p>
       <p
         className={cn(
-          "mt-0.5 text-[13px] leading-tight font-extrabold md:text-base",
+          "mt-0.5 font-extrabold text-[13px] leading-tight md:text-base",
           accent,
         )}
       >

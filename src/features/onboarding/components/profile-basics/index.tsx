@@ -31,11 +31,11 @@ export function ProfileBasicsCard({
       className="flex w-full flex-col"
     >
       <div className="mb-6 flex flex-col items-center sm:mb-8">
-        <h1 className="text-center font-sans text-2xl leading-tight font-extrabold tracking-tight text-balance text-ink sm:text-4xl">
+        <h1 className="text-balance text-center font-extrabold font-sans text-2xl text-ink leading-tight tracking-tight sm:text-4xl">
           Tell us about yourself
           <span className="text-forge-teal">.</span>
         </h1>
-        <p className="mt-1 max-w-sm text-center font-sans text-xs text-slate-muted sm:mt-2 sm:text-base">
+        <p className="mt-1 max-w-sm text-center font-sans text-slate-muted text-xs sm:mt-2 sm:text-base">
           Google handled sign-in. These details help us forge better groups.
         </p>
       </div>
@@ -45,7 +45,7 @@ export function ProfileBasicsCard({
           <ProfileBasicsFormFields form={form} watchedValues={watchedValues} />
 
           {saveError ? (
-            <p className="text-sm font-medium text-destructive">{saveError}</p>
+            <p className="font-medium text-destructive text-sm">{saveError}</p>
           ) : null}
 
           <Button

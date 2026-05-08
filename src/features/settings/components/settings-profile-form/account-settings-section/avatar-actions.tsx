@@ -27,7 +27,7 @@ export function AvatarActions({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="min-h-5 text-sm text-slate-muted">
+      <p className="min-h-5 text-slate-muted text-sm">
         {selectedAvatarFile
           ? `${selectedAvatarFile.name} - ${formatAvatarFileSize(selectedAvatarFile)}`
           : "Choose an image first, then upload when it looks right."}

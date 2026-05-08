@@ -45,11 +45,11 @@ export function CtaSection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.7, delay: 0.1 }}
         >
-          <h2 className="mb-6 font-sans text-[clamp(2rem,5.5vw,3.5rem)] leading-tight font-bold text-balance text-white">
+          <h2 className="mb-6 text-balance font-bold font-sans text-[clamp(2rem,5.5vw,3.5rem)] text-white leading-tight">
             Stop waiting for the right{" "}
             <span className="text-forge-teal">group</span> to appear.
           </h2>
-          <p className="mx-auto mb-12 max-w-xl font-sans text-lg leading-relaxed text-pretty text-text-dark-secondary">
+          <p className="mx-auto mb-12 max-w-xl text-pretty font-sans text-lg text-text-dark-secondary leading-relaxed">
             Your personality and interests, intelligently assembled into a group
             built to click. All in one button.
           </p>
@@ -95,7 +95,7 @@ export function CtaSection() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.7, delay: 0.7 }}
-          className="font-sans text-xs text-text-dark-muted"
+          className="font-sans text-text-dark-muted text-xs"
         >
           No credit card required &nbsp;&middot;&nbsp; No spam
         </motion.p>

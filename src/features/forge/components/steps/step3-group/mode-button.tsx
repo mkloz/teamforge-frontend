@@ -17,7 +17,7 @@ export function ModeButton({
       variant="ghost"
       onClick={onClick}
       className={cn(
-        "group relative h-auto min-w-0 flex-col items-start justify-start gap-2 overflow-hidden rounded-lg border p-3 text-left whitespace-normal transition-colors duration-200",
+        "group relative h-auto min-w-0 flex-col items-start justify-start gap-2 overflow-hidden whitespace-normal rounded-lg border p-3 text-left transition-colors duration-200",
         active
           ? activeColor === "primary"
             ? "border-forge-teal/55 bg-forge-teal/10 text-forge-teal shadow-sm ring-1 ring-forge-teal/20"
@@ -32,7 +32,7 @@ export function ModeButton({
             "rounded-lg p-1.5 transition-colors",
             active
               ? activeColor === "primary"
-                ? "bg-forge-teal text-white shadow-sm shadow-forge-teal/25"
+                ? "bg-forge-teal text-white shadow-forge-teal/25 shadow-sm"
                 : "bg-spark-amber text-ink shadow-sm shadow-spark-amber/25"
               : "bg-muted text-muted-foreground",
           )}
@@ -41,7 +41,7 @@ export function ModeButton({
         </div>
         <span
           className={cn(
-            "min-w-0 text-xs font-black tracking-tight text-wrap",
+            "min-w-0 text-wrap font-black text-xs tracking-tight",
             active
               ? activeColor === "primary"
                 ? "text-forge-teal"
@@ -52,7 +52,7 @@ export function ModeButton({
           {title}
         </span>
       </div>
-      <p className="min-w-0 pr-2 text-micro leading-snug font-semibold text-wrap text-muted-foreground">
+      <p className="min-w-0 text-wrap pr-2 font-semibold text-micro text-muted-foreground leading-snug">
         {description}
       </p>
     </Button>

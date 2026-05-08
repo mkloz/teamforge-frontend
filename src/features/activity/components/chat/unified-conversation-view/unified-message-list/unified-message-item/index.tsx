@@ -65,7 +65,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
           )}
         >
           {!isOwn && kind === "group" && showSender && (
-            <p className="mb-0.5 ml-1.5 text-micro font-bold tracking-tight text-forge-teal opacity-90">
+            <p className="mb-0.5 ml-1.5 font-bold text-forge-teal text-micro tracking-tight opacity-90">
               {message.sender?.name || "Unknown"}
             </p>
           )}

@@ -25,7 +25,7 @@ export function QuestionPageDots({
           )}
         />
       ))}
-      <span className="ml-1 shrink-0 font-sans text-xs leading-none font-black text-muted-foreground/80">
+      <span className="ml-1 shrink-0 font-black font-sans text-muted-foreground/80 text-xs leading-none">
         {answeredCount}/{pageQuestions.length}
       </span>
     </div>

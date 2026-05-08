@@ -19,10 +19,10 @@ export function GroupAvatarSection({
   return (
     <div className="space-y-3">
       <div>
-        <p className="text-xs font-semibold text-muted-foreground">
+        <p className="font-semibold text-muted-foreground text-xs">
           Group avatar
         </p>
-        <p className="mt-0.5 text-xs text-muted-foreground/60">
+        <p className="mt-0.5 text-muted-foreground/60 text-xs">
           A square icon that identifies your group across the app. Drag and drop
           or tap to upload.
         </p>

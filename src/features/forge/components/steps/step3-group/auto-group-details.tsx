@@ -22,10 +22,10 @@ export function AutoGroupDetails({
   onGroupSizeModeChange,
 }: AutoGroupDetailsProps) {
   return (
-    <div className="animate-in space-y-4 duration-300 zoom-in-95 fade-in">
+    <div className="zoom-in-95 fade-in animate-in space-y-4 duration-300">
       <div className="space-y-3 rounded-lg border border-border/35 bg-card/65 px-3 py-3">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold tracking-wide text-muted-foreground/50">
+          <span className="font-bold text-muted-foreground/50 text-xs tracking-wide">
             Capacity
           </span>
           <div className="flex items-center gap-0 rounded-lg border border-border/40 bg-background/60 p-0.5">
@@ -72,7 +72,7 @@ export function AutoGroupDetails({
 
         <div className="flex min-h-18 flex-col justify-center">
           {groupSizeMode === "RANGE" ? (
-            <div className="animate-in space-y-1 duration-200 fade-in">
+            <div className="fade-in animate-in space-y-1 duration-200">
               <div className="py-1">
                 <Slider
                   className="h-10"
@@ -98,7 +98,7 @@ export function AutoGroupDetails({
               </div>
             </div>
           ) : (
-            <div className="animate-in space-y-1 duration-200 fade-in">
+            <div className="fade-in animate-in space-y-1 duration-200">
               <div className="py-1">
                 <Slider
                   className="h-10"

@@ -63,7 +63,7 @@ export function MessageSenderBlock({
                   src={block.senderGroup.sender?.avatar}
                   name={getParticipantDisplayName(block.senderGroup.sender)}
                   fallback={getParticipantInitials(block.senderGroup.sender)}
-                  className="size-8 bg-muted text-xs text-muted-foreground shadow-sm ring-1 ring-border"
+                  className="size-8 bg-muted text-muted-foreground text-xs shadow-sm ring-1 ring-border"
                   fallbackClassName="text-muted-foreground"
                 />
               </Button>

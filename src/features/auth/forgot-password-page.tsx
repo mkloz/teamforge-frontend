@@ -20,7 +20,7 @@ export function ForgotPasswordPage() {
       backNavigation={buildAuthRouteNavigation("/auth/login", returnTo)}
       backLabel="Back to login"
       footer={
-        <p className="text-center text-sm text-slate-muted">
+        <p className="text-center text-slate-muted text-sm">
           Need a fresh start instead?{" "}
           <Link
             {...buildAuthRouteNavigation("/auth/register", returnTo)}
@@ -35,7 +35,7 @@ export function ForgotPasswordPage() {
       {rootError ? <FormLevelError message={rootError} /> : null}
 
       {successMessage ? (
-        <div className="rounded-xl border border-forge-teal/20 bg-forge-teal/8 px-4 py-3 text-sm text-foreground">
+        <div className="rounded-xl border border-forge-teal/20 bg-forge-teal/8 px-4 py-3 text-foreground text-sm">
           {successMessage}
         </div>
       ) : null}

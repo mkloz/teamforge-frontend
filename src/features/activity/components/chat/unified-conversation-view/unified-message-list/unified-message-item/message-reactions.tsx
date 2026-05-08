@@ -33,7 +33,7 @@ export const MessageReactions = memo(function MessageReactions({
     <TooltipProvider delayDuration={150}>
       <div
         className={cn(
-          "mt-1 flex animate-in flex-wrap gap-1 duration-500 zoom-in-95 fade-in",
+          "zoom-in-95 fade-in mt-1 flex animate-in flex-wrap gap-1 duration-500",
           isOwn ? "justify-end" : "justify-start",
           className,
         )}
@@ -45,7 +45,7 @@ export const MessageReactions = memo(function MessageReactions({
                 variant={reaction.isActive ? "primary" : "subtle"}
                 size="xs"
                 className={cn(
-                  "h-auto rounded-full border px-1.5 py-0.5 text-xs font-bold transition-all",
+                  "h-auto rounded-full border px-1.5 py-0.5 font-bold text-xs transition-all",
                   reaction.isActive
                     ? "border-forge-teal/20 bg-forge-teal/10 text-forge-teal shadow-[0_2px_8px_-2px_rgba(13,148,136,0.2)]"
                     : "border-transparent",
@@ -62,7 +62,7 @@ export const MessageReactions = memo(function MessageReactions({
             </TooltipTrigger>
             <TooltipContent
               side="top"
-              className="rounded-lg border-white/10 bg-black/80 px-2 py-1 text-xs font-bold text-white shadow-xl backdrop-blur-md"
+              className="rounded-lg border-white/10 bg-black/80 px-2 py-1 font-bold text-white text-xs shadow-xl backdrop-blur-md"
             >
               Reactions: {reaction.emoji}
             </TooltipContent>

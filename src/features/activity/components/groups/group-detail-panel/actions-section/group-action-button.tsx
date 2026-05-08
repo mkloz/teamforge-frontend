@@ -43,7 +43,7 @@ export function GroupActionButton({
       >
         {icon}
       </span>
-      <span className="text-sm font-bold tracking-tight">{label}</span>
+      <span className="font-bold text-sm tracking-tight">{label}</span>
     </Button>
   );
 }

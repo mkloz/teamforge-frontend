@@ -16,7 +16,7 @@ export function InterestsFooter({
   state,
 }: InterestsFooterProps) {
   return (
-    <div className="relative z-30 w-full shrink-0 border-t border-slate-muted/10 bg-canvas">
+    <div className="relative z-30 w-full shrink-0 border-slate-muted/10 border-t bg-canvas">
       <div className="mx-auto w-full max-w-xl px-4 sm:px-5 lg:px-0">
         {state.screen === "browse" && (
           <InterestsProgressBar
@@ -29,7 +29,7 @@ export function InterestsFooter({
           />
         )}
         {state.screen === "review" && state.saveErrorMessage && (
-          <p className="pt-4 text-sm text-red-600">{state.saveErrorMessage}</p>
+          <p className="pt-4 text-red-600 text-sm">{state.saveErrorMessage}</p>
         )}
         {state.screen === "review" && (
           <InterestsReviewFooter

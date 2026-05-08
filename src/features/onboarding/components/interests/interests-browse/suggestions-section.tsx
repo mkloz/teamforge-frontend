@@ -35,14 +35,14 @@ export function SuggestionsSection({
       trailing={
         <div className="flex shrink-0 items-center gap-1 rounded-full border border-spark-amber/20 bg-spark-amber/10 px-1.5 py-1 text-spark-amber shadow-none sm:gap-1.5 sm:px-2.5">
           <Fingerprint size={10} className="opacity-70" />
-          <span className="font-sans text-[10px] leading-none font-extrabold tracking-wider uppercase">
+          <span className="font-extrabold font-sans text-[10px] uppercase leading-none tracking-wider">
             {personalityType}
           </span>
         </div>
       }
     >
       <div className="px-2.5 pt-1 pb-3 sm:px-4 sm:pb-4">
-        <p className="mb-3 font-sans text-xs leading-snug font-medium text-slate-muted/70">
+        <p className="mb-3 font-medium font-sans text-slate-muted/70 text-xs leading-snug">
           From your profile. Keep only the ones you would actually choose.
         </p>
         <div className="flex flex-wrap gap-1 p-1 sm:gap-1.5 sm:p-1.5">

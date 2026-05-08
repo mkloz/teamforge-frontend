@@ -7,7 +7,7 @@ export function AccessFilter() {
 
   return (
     <section className="space-y-2">
-      <h4 className="pl-1 text-sm font-bold tracking-tight text-foreground">
+      <h4 className="pl-1 font-bold text-foreground text-sm tracking-tight">
         Join flow
       </h4>
       <SegmentedFilterTabs

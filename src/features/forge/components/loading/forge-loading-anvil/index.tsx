@@ -33,7 +33,7 @@ export function ForgeLoadingAnvil({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-4 select-none",
+        "flex select-none flex-col items-center justify-center gap-4",
         className,
       )}
       role="status"

@@ -61,10 +61,10 @@ export function FriendsInvitation() {
       <div className="rounded-xl border border-border/45 bg-forge-teal/5 px-3 py-3">
         <div className="flex min-w-0 items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-black text-foreground">
+            <p className="font-black text-foreground text-sm">
               Share TeamForge with someone who would fit the room.
             </p>
-            <p className="mt-1 text-xs leading-relaxed font-medium text-muted-foreground">
+            <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">
               Send the app now. Invite them to a group when the moment fits.
             </p>
           </div>
@@ -86,7 +86,7 @@ export function FriendsInvitation() {
               "transition-colors duration-150 hover:bg-forge-teal/8",
             )}
           >
-            <span className="min-w-0 flex-1 truncate text-xs font-bold text-muted-foreground">
+            <span className="min-w-0 flex-1 truncate font-bold text-muted-foreground text-xs">
               {displayInviteLink}
             </span>
             <Button
@@ -107,7 +107,7 @@ export function FriendsInvitation() {
 
           <Button
             variant="primary"
-            className="h-11 rounded-md px-4 text-xs font-black"
+            className="h-11 rounded-md px-4 font-black text-xs"
             onClick={async () => {
               const shareResult = await shareBrowserData({
                 title: "Join me on TeamForge",

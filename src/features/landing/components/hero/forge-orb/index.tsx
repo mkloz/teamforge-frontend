@@ -27,7 +27,7 @@ export function ForgeOrb() {
     <div
       ref={containerRef}
       {...tiltHandlers}
-      className="relative flex h-full min-h-90 w-full cursor-default items-center justify-center px-10 perspective-orb md:min-h-125 md:py-20 md:pr-25 md:pl-32 xl:pr-37 xl:pl-47"
+      className="perspective-orb relative flex h-full min-h-90 w-full cursor-default items-center justify-center px-10 md:min-h-125 md:py-20 md:pr-25 md:pl-32 xl:pr-37 xl:pl-47"
     >
       <div
         ref={orbContainerRef}
@@ -85,7 +85,7 @@ export function ForgeOrb() {
               style={tailStyle}
             >
               <div className="absolute inset-0">
-                <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,transparent_0%,transparent_70%,var(--tail-color-start)_85%,var(--tail-color-end)_100%)] mask-[radial-gradient(closest-side,transparent_calc(100%-2px),black_calc(100%-1px))] [-webkit-mask-image:radial-gradient(closest-side,transparent_calc(100%-2px),black_calc(100%-1px))]" />
+                <div className="mask-[radial-gradient(closest-side,transparent_calc(100%-2px),black_calc(100%-1px))] absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,transparent_0%,transparent_70%,var(--tail-color-start)_85%,var(--tail-color-end)_100%)] [-webkit-mask-image:radial-gradient(closest-side,transparent_calc(100%-2px),black_calc(100%-1px))]" />
               </div>
             </div>
           );
@@ -116,20 +116,20 @@ export function ForgeOrb() {
           );
         })}
 
-        <div className="pointer-events-none absolute inset-0 flex transform-[translateZ(30px)] items-center justify-center">
+        <div className="transform-[translateZ(30px)] pointer-events-none absolute inset-0 flex items-center justify-center">
           <TeamForgeLogo
             className="h-20 w-20 drop-shadow-[0_0_16px_rgba(245,158,11,0.25)] md:h-24 md:w-24"
             showBackground={false}
           />
         </div>
 
-        <div className="absolute -top-10 -left-10 scale-70 transform-[translateZ(40px)] sm:scale-85 md:-left-30 xl:top-4 xl:-left-44 xl:scale-100">
+        <div className="transform-[translateZ(40px)] absolute -top-10 -left-10 scale-70 sm:scale-85 md:-left-30 xl:top-4 xl:-left-44 xl:scale-100">
           <MbtiCard />
         </div>
-        <div className="absolute -top-12 -right-8 scale-70 transform-[translateZ(60px)] sm:scale-85 md:-right-20 xl:-top-16 xl:-right-30 xl:scale-100">
+        <div className="transform-[translateZ(60px)] absolute -top-12 -right-8 scale-70 sm:scale-85 md:-right-20 xl:-top-16 xl:-right-30 xl:scale-100">
           <GroupCard />
         </div>
-        <div className="absolute right-6 -bottom-8 scale-70 transform-[translateZ(50px)] sm:scale-85 md:-right-10 xl:-right-20 xl:-bottom-16 xl:scale-100">
+        <div className="transform-[translateZ(50px)] absolute right-6 -bottom-8 scale-70 sm:scale-85 md:-right-10 xl:-right-20 xl:-bottom-16 xl:scale-100">
           <TrustCard />
         </div>
       </div>

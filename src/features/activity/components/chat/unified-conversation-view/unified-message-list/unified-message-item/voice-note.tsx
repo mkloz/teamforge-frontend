@@ -140,7 +140,7 @@ export const VoiceNote = memo(function VoiceNote({
           variant="subtle"
           size="xs"
           className={cn(
-            "h-8 shrink-0 rounded-lg border px-2 text-xs font-black tabular-nums transition",
+            "h-8 shrink-0 rounded-lg border px-2 font-black text-xs tabular-nums transition",
             isOwn
               ? "border-primary/10 bg-primary/5 text-primary/70 hover:bg-primary/10 dark:border-white/10 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10"
               : "border-forge-teal/10 bg-forge-teal/5 text-forge-teal/70 hover:bg-forge-teal/10",
@@ -153,7 +153,7 @@ export const VoiceNote = memo(function VoiceNote({
       {/* Time Info */}
       <div
         className={cn(
-          "-mt-1 flex w-full justify-between pr-12 pl-13 text-micro font-bold tracking-tight opacity-50",
+          "-mt-1 flex w-full justify-between pr-12 pl-13 font-bold text-micro tracking-tight opacity-50",
           isOwn
             ? "flex-row-reverse text-slate-muted"
             : "flex-row text-slate-muted",

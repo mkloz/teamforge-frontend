@@ -8,10 +8,10 @@ interface FormGroupProps {
 
 export function FormGroup({ title, description, children }: FormGroupProps) {
   return (
-    <section className="border-t border-border pt-7">
+    <section className="border-border border-t pt-7">
       <div className="mb-5 max-w-2xl">
-        <h3 className="text-lg font-semibold text-ink">{title}</h3>
-        <p className="mt-1 text-sm leading-relaxed text-slate-muted">
+        <h3 className="font-semibold text-ink text-lg">{title}</h3>
+        <p className="mt-1 text-slate-muted text-sm leading-relaxed">
           {description}
         </p>
       </div>

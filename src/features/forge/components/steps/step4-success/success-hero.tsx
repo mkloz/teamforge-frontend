@@ -60,22 +60,22 @@ export function SuccessHero({
             <Check size={20} strokeWidth={2.5} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+            <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
               Group ready
             </p>
-            <h3 className="mt-1 text-xl leading-tight font-bold text-foreground">
+            <h3 className="mt-1 font-bold text-foreground text-xl leading-tight">
               {displayTitle} has a lineup.
             </h3>
-            <p className="mt-1.5 text-sm leading-snug text-muted-foreground">
+            <p className="mt-1.5 text-muted-foreground text-sm leading-snug">
               Keep this group as-is, or remove someone before you continue.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-3 border-y border-border/35 py-3">
+        <div className="flex items-center justify-between gap-3 border-border/35 border-y py-3">
           <div className="flex min-w-0 items-center gap-2">
             <div className="flex -space-x-2">
-              <div className="flex size-8 items-center justify-center rounded-lg border border-card bg-forge-teal text-micro font-bold text-primary-foreground">
+              <div className="flex size-8 items-center justify-center rounded-lg border border-card bg-forge-teal font-bold text-micro text-primary-foreground">
                 You
               </div>
               {visibleParticipants.map((participant) => (
@@ -90,16 +90,16 @@ export function SuccessHero({
                 />
               ))}
               {hiddenCount > 0 && (
-                <div className="flex size-8 items-center justify-center rounded-lg border border-card bg-muted text-[10px] font-bold text-muted-foreground">
+                <div className="flex size-8 items-center justify-center rounded-lg border border-card bg-muted font-bold text-[10px] text-muted-foreground">
                   +{hiddenCount}
                 </div>
               )}
             </div>
             <div className="min-w-0">
-              <p className="text-sm leading-tight font-semibold text-foreground">
+              <p className="font-semibold text-foreground text-sm leading-tight">
                 {activeParticipants.length + 1} people
               </p>
-              <p className="truncate text-xs text-muted-foreground">
+              <p className="truncate text-muted-foreground text-xs">
                 Hosted by you
               </p>
             </div>
@@ -108,10 +108,10 @@ export function SuccessHero({
           <div className="flex shrink-0 items-center gap-2 text-right">
             <UsersRound size={15} className="text-forge-teal" />
             <div>
-              <p className="text-sm leading-tight font-bold text-foreground">
+              <p className="font-bold text-foreground text-sm leading-tight">
                 {averageScore !== null ? `${averageScore}%` : "Ready"}
               </p>
-              <p className="text-micro font-semibold tracking-wide text-muted-foreground uppercase">
+              <p className="font-semibold text-micro text-muted-foreground uppercase tracking-wide">
                 Avg fit
               </p>
             </div>

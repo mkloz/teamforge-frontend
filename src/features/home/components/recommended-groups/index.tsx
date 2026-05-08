@@ -48,7 +48,7 @@ export function RecommendedGroups() {
       />
 
       {visibleRecommendations.length === 0 ? (
-        <div className="flex items-center gap-3 border-y border-dashed border-border/70 bg-card/40 px-1 py-5 sm:px-4">
+        <div className="flex items-center gap-3 border-border/70 border-y border-dashed bg-card/40 px-1 py-5 sm:px-4">
           <div
             className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground"
             aria-hidden="true"
@@ -56,10 +56,10 @@ export function RecommendedGroups() {
             <Compass className="size-5" />
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-black text-foreground">
+            <p className="font-black text-foreground text-sm">
               No strong openings yet.
             </p>
-            <p className="mt-1 text-xs leading-relaxed font-medium text-muted-foreground">
+            <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">
               When a group looks like a good fit, it will show up here.
             </p>
           </div>
