@@ -1,8 +1,8 @@
 import { CheckCircle, Loader2, Star } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
-import { Textarea } from "@/shared/components/ui/textarea";
 import { memo } from "react";
 import type { Group } from "@/features/activity/lib/activity-contract";
+import { Button } from "@/shared/components/ui/button";
+import { Textarea } from "@/shared/components/ui/textarea";
 import { MemberRatingPicker } from "./member-rating-picker";
 import { StarRatingInput } from "./star-rating-input";
 import { useCompletedGroupRating } from "./use-completed-group-rating";

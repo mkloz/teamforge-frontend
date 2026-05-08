@@ -1,6 +1,19 @@
 import type { GroupRole } from "@/shared/schemas/enums";
 
 export type {
+  ActivityChatParticipant,
+  ActivityMutualGroup,
+  ActivityParticipant,
+  DirectChat,
+  Group,
+  GroupMember,
+  Plan,
+  PlanHistoryItem,
+  UnifiedAttachment,
+  UnifiedMessage,
+  UnifiedReaction as UnifiedMessageReaction,
+} from "@/features/activity/schemas/activity.schemas";
+export type {
   ActivityAccess,
   ActivityStatus,
   ActivityVisibility,
@@ -17,19 +30,6 @@ export type {
   PlanStatus,
 } from "@/shared/schemas/enums";
 export type { PlanProposal } from "@/shared/schemas/plan";
-export type {
-  ActivityChatParticipant,
-  ActivityMutualGroup,
-  ActivityParticipant,
-  DirectChat,
-  Group,
-  GroupMember,
-  Plan,
-  PlanHistoryItem,
-  UnifiedAttachment,
-  UnifiedMessage,
-  UnifiedReaction as UnifiedMessageReaction,
-} from "@/features/activity/schemas/activity.schemas";
 
 export type UnifiedParticipant =
   import("../schemas/activity.schemas").ActivityParticipant;

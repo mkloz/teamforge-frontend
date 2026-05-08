@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useFormContext } from "react-hook-form";
-
+import type { RegisterValues } from "@/features/auth/schemas/auth-schemas";
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { AddressAutocomplete } from "@/shared/components/maps/address-autocomplete";
 import { Button } from "@/shared/components/ui/button";
@@ -19,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select";
-import type { RegisterValues } from "@/features/auth/schemas/auth-schemas";
 
 const GENDER_OPTIONS = [
   { value: "MALE", label: "Male" },

@@ -1,8 +1,8 @@
 import { HTTPError } from "ky";
 
 import {
-  ApiExceptionSchema,
   type ApiException,
+  ApiExceptionSchema,
 } from "@/shared/types/api-error";
 
 interface ApiErrorMessageOptions {

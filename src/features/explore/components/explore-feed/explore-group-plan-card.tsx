@@ -1,12 +1,10 @@
 import { Link } from "@tanstack/react-router";
-
-import { Button } from "@/shared/components/ui/button";
-import { GroupPlanCard } from "@/shared/components/group-plan-card";
 import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
+import { useJoinExploreGroup } from "@/features/explore/hooks/use-join-explore-group";
+import { GroupPlanCard } from "@/shared/components/group-plan-card";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import type { ExploreGroup } from "@/shared/schemas";
-
-import { useJoinExploreGroup } from "@/features/explore/hooks/use-join-explore-group";
 
 interface ExploreGroupPlanCardProps {
   group: ExploreGroup;

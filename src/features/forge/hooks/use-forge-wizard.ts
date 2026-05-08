@@ -1,18 +1,17 @@
 import { useCallback, useEffect, useReducer, useRef } from "react";
-
-import { useForgeAnimation } from "@/features/forge/hooks/use-forge-animation";
 import { useForgeWizardFieldActions } from "@/features/forge/hooks/forge-wizard/field-actions";
 import { useForgeWizardDerivedState } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-derived-state";
 import { useForgeWizardRouteSync } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-route-sync";
 import { useForgeWizardSubmitActions } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-submit-actions";
+import { useForgeAnimation } from "@/features/forge/hooks/use-forge-animation";
 import type { ForgeMode } from "@/features/forge/lib/forge-contract";
+import type { Step } from "@/features/forge/lib/forge-wizard";
 import {
   createInitialForgeWizardState,
   forgeWizardReducer,
   getNextStep,
   getPreviousStep,
 } from "@/features/forge/lib/forge-wizard";
-import type { Step } from "@/features/forge/lib/forge-wizard";
 
 interface UseForgeWizardOptions {
   onClose: () => void;

@@ -1,5 +1,5 @@
 import type { UseFormReturn } from "react-hook-form";
-
+import type { ProfileBasicsValues } from "@/features/onboarding/schemas/profile-basics.schema";
 import { AddressAutocomplete } from "@/shared/components/maps/address-autocomplete";
 import {
   FormControl,
@@ -7,7 +7,6 @@ import {
   FormItem,
   FormMessage,
 } from "@/shared/components/ui/form";
-import type { ProfileBasicsValues } from "@/features/onboarding/schemas/profile-basics.schema";
 
 interface CityFieldProps {
   form: UseFormReturn<ProfileBasicsValues>;

@@ -7,14 +7,14 @@ import type {
 } from "../types";
 import { getFirstName } from "../utils";
 import {
-  getCloseSecondCandidate,
-  getPortraitConfidence,
-} from "./portrait-confidence";
-import {
   buildPersonalityTensions,
   parsePersonalityType,
 } from "./personality-profile";
 import { resolvePortraitCandidates } from "./portrait-candidates";
+import {
+  getCloseSecondCandidate,
+  getPortraitConfidence,
+} from "./portrait-confidence";
 import { buildTraitProfile } from "./trait-profile";
 
 export { getCloseSecondCandidate } from "./portrait-confidence";

@@ -1,10 +1,10 @@
+import { Download, FileText } from "lucide-react";
 import { memo } from "react";
-import { FileText, Download } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import { formatFileSize } from "@/features/activity/lib/chat-utils";
+import { Button } from "@/shared/components/ui/button";
 import { openExternalUrl } from "@/shared/lib/browser-capabilities";
+import { cn } from "@/shared/lib/utils";
 
 interface DocumentMessageProps {
   attachment: UnifiedAttachment;

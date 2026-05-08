@@ -38,6 +38,7 @@ export function useAlgorithmSequence(
 
   const nodesEmpty = nodes.length === 0;
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: initialNodes intentionally restarts the animation cycle when the dataset changes.
   useEffect(() => {
     if (!inView || nodesEmpty) return;
 

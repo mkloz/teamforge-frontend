@@ -1,9 +1,9 @@
-import type { NotificationPreferences } from "@/shared/schemas";
 import {
   PreferenceStatusMessage,
   SectionHeading,
 } from "@/features/settings/components/settings-profile-form/preference-section-parts";
 import { NotificationPreferenceRow } from "@/features/settings/components/settings-profile-form/settings-form-controls";
+import type { NotificationPreferences } from "@/shared/schemas";
 
 const PRIVACY_TOGGLE_ITEMS = [
   {

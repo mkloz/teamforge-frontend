@@ -1,6 +1,5 @@
-import type { ReactNode } from "react";
-
 import { Bell, MessageSquare, Send, UsersRound } from "lucide-react";
+import type { ReactNode } from "react";
 
 import { cn } from "@/shared/lib/utils";
 

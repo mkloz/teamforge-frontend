@@ -1,5 +1,5 @@
-import { lanePriority } from "./lane-config";
 import type { LaneBucket, LaneKey } from "../types";
+import { lanePriority } from "./lane-config";
 
 export function rankLaneBuckets(grouped: Map<LaneKey, LaneBucket>) {
   return [...grouped.entries()].sort((left, right) => {

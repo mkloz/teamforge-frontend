@@ -1,9 +1,4 @@
 import {
-  buildGroupParticipants,
-  buildParticipantsFromChatSummary,
-  mapCurrentUserParticipant,
-} from "./projections/activity-participant-projections";
-import {
   buildDirectFeedItem,
   mapDirectChat,
 } from "./projections/activity-direct-projections";
@@ -20,6 +15,11 @@ import {
   mapSingleMessage,
   mergeConversationTimeline,
 } from "./projections/activity-message-projections";
+import {
+  buildGroupParticipants,
+  buildParticipantsFromChatSummary,
+  mapCurrentUserParticipant,
+} from "./projections/activity-participant-projections";
 
 export const ActivityProjections = {
   buildDirectFeedItem,

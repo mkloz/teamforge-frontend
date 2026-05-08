@@ -1,8 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
-
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-
 import { ProfileApi } from "@/features/profile/api/profile.api";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 
 export function publicProfileQueryOptions(userId: string) {
   return queryOptions({

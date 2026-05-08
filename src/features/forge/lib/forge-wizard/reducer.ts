@@ -1,7 +1,7 @@
+import { normalizeFixedGroupSize } from "@/features/forge/lib/forge-size";
 import { createInitialForgeWizardState } from "./initial-state";
 import { getNextStep, getPreviousStep } from "./navigation";
 import type { ForgeWizardAction, ForgeWizardData } from "./types";
-import { normalizeFixedGroupSize } from "@/features/forge/lib/forge-size";
 
 function clearAppliedTemplateFields(
   state: ForgeWizardData,

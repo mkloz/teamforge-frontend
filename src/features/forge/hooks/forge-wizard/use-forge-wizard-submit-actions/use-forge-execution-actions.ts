@@ -13,10 +13,11 @@ import type {
   UseForgeWizardSubmitActionsOptions,
 } from "./types";
 
-interface UseForgeExecutionActionsOptions extends Pick<
-  UseForgeWizardSubmitActionsOptions,
-  "dispatch" | "runForgeAnimation" | "state" | "syncStep" | "syncTargets"
-> {
+interface UseForgeExecutionActionsOptions
+  extends Pick<
+    UseForgeWizardSubmitActionsOptions,
+    "dispatch" | "runForgeAnimation" | "state" | "syncStep" | "syncTargets"
+  > {
   markSearchKept: (activityId: string) => void;
 }
 

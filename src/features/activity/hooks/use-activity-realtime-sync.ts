@@ -1,24 +1,23 @@
 import { useEffect, useEffectEvent } from "react";
-
-import {
-  subscribeToRealtimeChat,
-  subscribeToRealtimePlan,
-} from "@/features/activity/hooks/realtime-sync/activity-realtime-subscriptions";
-import {
-  clearTypingTimeoutRegistry,
-  createTypingTimeoutRegistry,
-  handleRealtimeTypingPayload,
-} from "@/features/activity/hooks/realtime-sync/activity-realtime-typing";
 import {
   handleRealtimeMessageNew,
   handleRealtimeMessageUpdated,
 } from "@/features/activity/hooks/realtime-sync/activity-realtime-message-events";
+import {
+  subscribeToRealtimeChat,
+  subscribeToRealtimePlan,
+} from "@/features/activity/hooks/realtime-sync/activity-realtime-subscriptions";
 import {
   handleRealtimeChatRead,
   handleRealtimeGroupUpdated,
   handleRealtimePlanUpdated,
   handleRealtimePresenceChanged,
 } from "@/features/activity/hooks/realtime-sync/activity-realtime-surface-events";
+import {
+  clearTypingTimeoutRegistry,
+  createTypingTimeoutRegistry,
+  handleRealtimeTypingPayload,
+} from "@/features/activity/hooks/realtime-sync/activity-realtime-typing";
 import { useActivityStore } from "@/features/activity/store/activity.store";
 import { realtimeClient } from "@/shared/api/realtime-client";
 import type { User } from "@/shared/schemas";

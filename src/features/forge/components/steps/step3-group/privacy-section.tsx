@@ -1,6 +1,6 @@
+import type { Visibility } from "@/features/forge/lib/forge-contract";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
-import type { Visibility } from "@/features/forge/lib/forge-contract";
 
 import { VISIBILITY_OPTIONS } from "./step3-group.constants";
 
@@ -35,6 +35,7 @@ export function PrivacySection({
               variant="ghost"
               role="radio"
               aria-checked={active}
+              tabIndex={active ? 0 : -1}
               onClick={() => onVisibilityChange(value)}
               className={cn(
                 "group h-auto w-full min-w-0 items-start justify-start rounded-lg border p-3 text-left whitespace-normal transition-colors duration-200",

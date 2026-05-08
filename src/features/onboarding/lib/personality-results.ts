@@ -1,7 +1,7 @@
-import type { DimensionScore, OceanScores } from "@/shared/types/psychometrics";
 import { generateDetailedDescription } from "@/shared/lib/personality-profile";
-import type { PersonalityEvaluation } from "./personality-evaluation";
+import type { DimensionScore, OceanScores } from "@/shared/types/psychometrics";
 import type { OceanVectorWithMeta } from "../utils/score-calculator";
+import type { PersonalityEvaluation } from "./personality-evaluation";
 
 const SOFT_BOUNDARY_THRESHOLD = 0.167;
 const GROUP_READ_SENTENCE_COUNT = 2;

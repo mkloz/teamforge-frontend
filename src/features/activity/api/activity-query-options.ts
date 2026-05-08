@@ -6,11 +6,11 @@ import {
   linkPreviewQueryOptions,
 } from "@/features/activity/api/query-options/activity-base-query-options";
 import { conversationMessagesQueryOptions } from "@/features/activity/api/query-options/activity-message-query-options";
+import type { ActivityQueryOptionsContext } from "@/features/activity/api/query-options/activity-query-options-context";
 import {
   directSelectionQueryOptions,
   groupSelectionQueryOptions,
 } from "@/features/activity/api/query-options/activity-selection-query-options";
-import type { ActivityQueryOptionsContext } from "@/features/activity/api/query-options/activity-query-options-context";
 
 export type { ActivityQueryOptionsContext } from "@/features/activity/api/query-options/activity-query-options-context";
 

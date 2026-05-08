@@ -1,15 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
-import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import { AuthCommands } from "@/features/auth/api/auth-commands";
 import { calculateLoginProgress } from "@/features/auth/lib/auth-form-progress";
 import { getEmailDomain } from "@/features/auth/lib/auth-telemetry";
 import {
-  loginSchema,
   type LoginValues,
+  loginSchema,
 } from "@/features/auth/schemas/auth-schemas";
+import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
+import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
 interface UseLoginFormOptions {
   onSuccess?: () => void | Promise<void>;

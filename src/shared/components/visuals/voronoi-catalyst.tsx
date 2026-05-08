@@ -1,7 +1,7 @@
+import { useImperativeHandle } from "react";
 import { useVoronoiAnimation } from "@/shared/hooks/use-voronoi-animation";
 import { getBrowserDevicePixelRatio } from "@/shared/lib/browser-environment";
 import type { VoronoiCatalystProps } from "@/shared/lib/voronoi/voronoi-contract";
-import { useImperativeHandle } from "react";
 
 /**
  * VoronoiCatalyst Component
@@ -18,7 +18,6 @@ export function VoronoiCatalyst({
     canvasRef,
     dimensions,
     handleMouseMove,
-    handleMouseEnter,
     handleMouseLeave,
     pulseTyping,
   } = useVoronoiAnimation({ progress, rotationDegrees });
@@ -28,11 +27,12 @@ export function VoronoiCatalyst({
   const dpr = getBrowserDevicePixelRatio();
 
   return (
+    // biome-ignore lint/a11y/noNoninteractiveElementInteractions: Pointer movement drives a decorative canvas visualization.
+    // biome-ignore lint/a11y/noStaticElementInteractions: This canvas wrapper is not an activation target.
     <div
       ref={containerRef}
       className="relative h-full w-full overflow-hidden bg-transparent shadow-[inset_0_0_120px_rgba(0,0,0,0.2)]"
       onMouseMove={(e) => handleMouseMove(e.clientX, e.clientY)}
-      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <canvas

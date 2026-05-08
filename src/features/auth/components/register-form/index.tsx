@@ -1,11 +1,11 @@
-import { Form } from "@/shared/components/ui/form";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import { FormLevelError } from "@/features/auth/components/form-level-error";
 import {
-  useRegisterForm,
   type Step,
+  useRegisterForm,
 } from "@/features/auth/hooks/use-register-form";
+import { Form } from "@/shared/components/ui/form";
 import { StepCredentials } from "./step-credentials";
 import { StepHeader } from "./step-header";
 import { StepOtp } from "./step-otp";

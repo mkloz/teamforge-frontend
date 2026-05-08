@@ -1,4 +1,4 @@
-import { useMemo, type RefObject } from "react";
+import { type RefObject, useMemo } from "react";
 
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 

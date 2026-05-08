@@ -1,21 +1,20 @@
-import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { useRef, useState } from "react";
-
+import { LoginForm } from "@/features/auth/components/login-form";
+import { RegisterForm } from "@/features/auth/components/register-form";
 import { ensureCurrentUser } from "@/shared/api/current-user-query";
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { Button } from "@/shared/components/ui/button";
+import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
+import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 import {
   buildAuthRouteNavigation,
   buildPostAuthRedirectNavigation,
   useAuthReturnState,
 } from "@/shared/lib/auth-route";
-import { LoginForm } from "@/features/auth/components/login-form";
-import { RegisterForm } from "@/features/auth/components/register-form";
-import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
 import type { VoronoiCatalystHandle } from "@/shared/lib/voronoi/voronoi-contract";
 
 type AuthView = "login" | "register";

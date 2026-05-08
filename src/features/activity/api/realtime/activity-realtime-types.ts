@@ -1,4 +1,10 @@
 import type {
+  ActivityParticipant,
+  Group,
+  Plan,
+  UnifiedMessage,
+} from "@/features/activity/lib/activity-contract";
+import type {
   ChatApi,
   FriendshipApi,
   GroupApi,
@@ -7,13 +13,6 @@ import type {
   PlanUpdateKind,
   User,
 } from "@/shared/schemas";
-
-import type {
-  ActivityParticipant,
-  Group,
-  Plan,
-  UnifiedMessage,
-} from "@/features/activity/lib/activity-contract";
 
 export interface ApplyRealtimeMessageOptions {
   activeChatId?: string | null;

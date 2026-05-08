@@ -1,12 +1,10 @@
 import { useRouterState } from "@tanstack/react-router";
-
-import type { SettingsSection } from "@/features/settings/lib/settings-route";
-import { PageErrorState } from "@/shared/components/page-error-state";
-import { cn } from "@/shared/lib/utils";
-
 import { useSettingsBlockedUsers } from "@/features/settings/hooks/use-settings-blocked-users";
 import { useSettingsProfileForm } from "@/features/settings/hooks/use-settings-profile-form";
 import { useSettingsRouteState } from "@/features/settings/hooks/use-settings-route-state";
+import type { SettingsSection } from "@/features/settings/lib/settings-route";
+import { PageErrorState } from "@/shared/components/page-error-state";
+import { cn } from "@/shared/lib/utils";
 
 import { SettingsDetailHeader } from "./settings-detail-header";
 import { SettingsFormBridge } from "./settings-form-bridge";

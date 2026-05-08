@@ -1,7 +1,6 @@
 import { useState } from "react";
-
-import type { ActivityLane } from "@/features/profile/lib/profile-insights";
 import { ProfileSectionHeading } from "@/features/profile/components/profile-section-heading";
+import type { ActivityLane } from "@/features/profile/lib/profile-insights";
 
 import { ActivityLaneRow } from "./activity-lane-row";
 import { EmptyActivityLanes } from "./empty-activity-lanes";

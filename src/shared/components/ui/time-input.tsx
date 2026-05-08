@@ -1,11 +1,13 @@
 import { ChevronDown, ChevronUp, Clock } from "lucide-react";
 import {
+  type KeyboardEvent,
+  type ReactNode,
   useCallback,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
-  type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
 
@@ -27,6 +29,44 @@ type TimeInputProps = Omit<
 
 type TimePeriod = "AM" | "PM";
 const TIME_PERIODS: TimePeriod[] = ["AM", "PM"];
+const TIME_OPTION_KEY_OFFSETS: Record<string, number> = {
+  ArrowDown: 1,
+  ArrowLeft: -1,
+  ArrowRight: 1,
+  ArrowUp: -1,
+};
+
+function handleColumnKeyDown<T>(
+  options: T[],
+  currentValue: T,
+  event: KeyboardEvent<HTMLButtonElement>,
+  onSelect: (value: T) => void,
+) {
+  const currentIndex = Math.max(0, options.indexOf(currentValue));
+
+  if (event.key === "Home") {
+    event.preventDefault();
+    onSelect(options[0]);
+    return;
+  }
+
+  if (event.key === "End") {
+    event.preventDefault();
+    onSelect(options[options.length - 1]);
+    return;
+  }
+
+  const offset = TIME_OPTION_KEY_OFFSETS[event.key];
+
+  if (offset == null) {
+    return;
+  }
+
+  event.preventDefault();
+  onSelect(
+    options[Math.max(0, Math.min(options.length - 1, currentIndex + offset))],
+  );
+}
 
 function formatTimeValue(hour: number, minute: number) {
   return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
@@ -194,6 +234,7 @@ function TimeScrollColumn<T extends number | string>({
     });
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: currentValue and options intentionally retrigger scroll-button state after list content changes.
   useEffect(() => {
     updateScrollState();
   }, [currentValue, options, updateScrollState]);
@@ -228,6 +269,7 @@ function TimeScrollColumn<T extends number | string>({
                   size="sm"
                   role="option"
                   aria-selected={selected}
+                  tabIndex={selected ? 0 : -1}
                   className={cn(
                     "h-8 w-full max-w-16 rounded-full text-xs tabular-nums",
                     selected &&
@@ -293,6 +335,7 @@ function TimeInput({
   wrapperClassName,
   ...props
 }: TimeInputProps) {
+  const panelId = useId();
   const [timeFormat, setTimeFormat] = useState<"12" | "24">(() =>
     shouldUseMeridiemTime() ? "12" : "24",
   );
@@ -341,44 +384,7 @@ function TimeInput({
     );
   };
 
-  const handleColumnKeyDown = <T,>(
-    options: T[],
-    currentValue: T,
-    event: React.KeyboardEvent<HTMLButtonElement>,
-    onSelect: (value: T) => void,
-  ) => {
-    const currentIndex = Math.max(0, options.indexOf(currentValue));
-    const keyOffsets: Record<string, number> = {
-      ArrowDown: 1,
-      ArrowLeft: -1,
-      ArrowRight: 1,
-      ArrowUp: -1,
-    };
-
-    if (event.key === "Home") {
-      event.preventDefault();
-      onSelect(options[0]);
-      return;
-    }
-
-    if (event.key === "End") {
-      event.preventDefault();
-      onSelect(options[options.length - 1]);
-      return;
-    }
-
-    const offset = keyOffsets[event.key];
-
-    if (offset == null) {
-      return;
-    }
-
-    event.preventDefault();
-    onSelect(
-      options[Math.max(0, Math.min(options.length - 1, currentIndex + offset))],
-    );
-  };
-
+  // biome-ignore lint/correctness/useExhaustiveDependencies: selected time changes should recenter the active option while the panel is open.
   useEffect(() => {
     if (!open) {
       return;
@@ -402,6 +408,7 @@ function TimeInput({
         readOnly
         disabled={disabled}
         role="combobox"
+        aria-controls={open ? panelId : undefined}
         aria-expanded={open}
         value={formatTimeDisplay(value, useMeridiem)}
         placeholder={placeholder}
@@ -428,6 +435,7 @@ function TimeInput({
       {open && panelStyle && portalTarget
         ? createPortal(
             <div
+              id={panelId}
               ref={panelRef}
               style={panelStyle}
               className="z-100 rounded-xl border border-border bg-card p-2 shadow-xl shadow-black/10"
@@ -512,6 +520,7 @@ function TimeInput({
                             size="sm"
                             role="option"
                             aria-selected={selected}
+                            tabIndex={selected ? 0 : -1}
                             className={cn(
                               "mx-auto h-8 w-full max-w-14 rounded-full text-xs",
                               selected &&

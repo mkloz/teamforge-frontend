@@ -1,9 +1,9 @@
+import { motion } from "framer-motion";
+import { ChevronUp } from "lucide-react";
 import { LANDING_SECTIONS } from "@/features/landing/constants/landing-sections";
 import { useLandingSectionNavigation } from "@/features/landing/hooks/use-landing-section-navigation";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
-import { motion } from "framer-motion";
-import { ChevronUp } from "lucide-react";
 
 export function SideNav() {
   const { activeSection, scrollToSection, scrollToTop } =

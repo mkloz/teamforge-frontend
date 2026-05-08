@@ -9,15 +9,15 @@ import {
   resolveInterestsExitNavigation,
 } from "../lib/interests-page-flow";
 import {
-  buildBackToLabel,
-  getOnboardingReturnDestinationLabel,
-} from "../lib/onboarding-navigation-labels";
-import { useInterests } from "./use-interests";
-import {
   toOptionalOnboardingSearch,
   useOnboardingFlowState,
 } from "../lib/onboarding-flow-state";
+import {
+  buildBackToLabel,
+  getOnboardingReturnDestinationLabel,
+} from "../lib/onboarding-navigation-labels";
 import { usePersonalityTestStore } from "../store/personality-test-store";
+import { useInterests } from "./use-interests";
 
 export function useInterestsPageFlow() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);

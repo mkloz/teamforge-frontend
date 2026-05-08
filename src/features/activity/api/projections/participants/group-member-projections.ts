@@ -1,6 +1,5 @@
-import type { GroupMemberApi } from "@/shared/schemas";
-
 import type { GroupMember } from "@/features/activity/lib/activity-contract";
+import type { GroupMemberApi } from "@/shared/schemas";
 
 import { normalizeCompatibilityScore } from "./participant-score-normalizers";
 import { mapGroupMemberParticipant } from "./participant-user-projections";

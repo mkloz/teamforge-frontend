@@ -12,24 +12,27 @@ export function useMessageBlockMeasurements(blocks: MessageBlockInput[]) {
     new Map<string, (node: HTMLDivElement | null) => void>(),
   );
 
-  function updateMeasuredHeight(key: string, nextHeight: number) {
-    const roundedHeight = Math.ceil(nextHeight);
+  const updateMeasuredHeight = useCallback(
+    (key: string, nextHeight: number) => {
+      const roundedHeight = Math.ceil(nextHeight);
 
-    if (!Number.isFinite(roundedHeight) || roundedHeight <= 0) {
-      return;
-    }
-
-    setMeasuredHeights((current) => {
-      if (current[key] === roundedHeight) {
-        return current;
+      if (!Number.isFinite(roundedHeight) || roundedHeight <= 0) {
+        return;
       }
 
-      return {
-        ...current,
-        [key]: roundedHeight,
-      };
-    });
-  }
+      setMeasuredHeights((current) => {
+        if (current[key] === roundedHeight) {
+          return current;
+        }
+
+        return {
+          ...current,
+          [key]: roundedHeight,
+        };
+      });
+    },
+    [],
+  );
 
   useEffect(() => {
     const activeKeys = new Set(blocks.map((block) => block.key));
@@ -62,46 +65,49 @@ export function useMessageBlockMeasurements(blocks: MessageBlockInput[]) {
     };
   }, []);
 
-  const getBlockRef = useCallback((key: string) => {
-    const existing = refCallbacksRef.current.get(key);
+  const getBlockRef = useCallback(
+    (key: string) => {
+      const existing = refCallbacksRef.current.get(key);
 
-    if (existing) {
-      return existing;
-    }
-
-    const callback = (node: HTMLDivElement | null) => {
-      const previousObserver = observersRef.current.get(key);
-
-      if (previousObserver) {
-        previousObserver.disconnect();
-        observersRef.current.delete(key);
+      if (existing) {
+        return existing;
       }
 
-      if (!node) {
-        nodesRef.current.delete(key);
-        return;
-      }
+      const callback = (node: HTMLDivElement | null) => {
+        const previousObserver = observersRef.current.get(key);
 
-      nodesRef.current.set(key, node);
-      updateMeasuredHeight(key, node.getBoundingClientRect().height);
+        if (previousObserver) {
+          previousObserver.disconnect();
+          observersRef.current.delete(key);
+        }
 
-      const observer = new ResizeObserver((entries) => {
-        const entry = entries[0];
-
-        if (!entry) {
+        if (!node) {
+          nodesRef.current.delete(key);
           return;
         }
 
-        updateMeasuredHeight(key, entry.contentRect.height);
-      });
+        nodesRef.current.set(key, node);
+        updateMeasuredHeight(key, node.getBoundingClientRect().height);
 
-      observer.observe(node);
-      observersRef.current.set(key, observer);
-    };
+        const observer = new ResizeObserver((entries) => {
+          const entry = entries[0];
 
-    refCallbacksRef.current.set(key, callback);
-    return callback;
-  }, []);
+          if (!entry) {
+            return;
+          }
+
+          updateMeasuredHeight(key, entry.contentRect.height);
+        });
+
+        observer.observe(node);
+        observersRef.current.set(key, observer);
+      };
+
+      refCallbacksRef.current.set(key, callback);
+      return callback;
+    },
+    [updateMeasuredHeight],
+  );
 
   const getBlockElement = useCallback((key: string) => {
     return nodesRef.current.get(key) ?? null;

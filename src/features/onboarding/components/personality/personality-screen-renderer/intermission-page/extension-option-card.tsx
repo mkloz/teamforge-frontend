@@ -1,8 +1,7 @@
 import { Check } from "lucide-react";
-
+import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
-import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 import type { getIntermissionUpgradeOptions } from "./constants";
 
 type IntermissionUpgradeOption = ReturnType<

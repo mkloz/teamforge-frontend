@@ -1,8 +1,7 @@
+import { motion } from "framer-motion";
+import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
-import { motion } from "framer-motion";
-
-import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 import { LengthOptionPrecision } from "./length-option-precision";
 import { LengthOptionSelectionIndicator } from "./length-option-selection-indicator";
 import { LengthOptionSummary } from "./length-option-summary";

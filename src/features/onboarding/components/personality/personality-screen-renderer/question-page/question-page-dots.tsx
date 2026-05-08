@@ -1,5 +1,5 @@
-import { cn } from "@/shared/lib/utils";
 import type { IpipQuestion } from "@/features/onboarding/data/ipip-questions";
+import { cn } from "@/shared/lib/utils";
 
 interface QuestionPageDotsProps {
   answeredCount: number;

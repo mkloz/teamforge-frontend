@@ -3,18 +3,17 @@ import { motion } from "framer-motion";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { useHomeViewerState } from "@/features/home/hooks/use-home-viewer";
 import { buildHomeNextMove } from "@/features/home/lib/home-insights";
-
-import { getGreeting } from "./home-hero-copy";
-import { containerVariants, itemVariants } from "./home-hero-motion";
-import { HomeHeroNotificationButton } from "./home-hero-notification-button";
-import { HomeHeroQuickActions } from "./home-hero-quick-actions";
-import { HomeHeroSkeleton } from "./home-hero-skeleton";
-import { HomeHeroSignalMap } from "./home-hero-signal-map";
 import {
   HomeHeroMoveIcon,
   PrimaryAction,
   SecondaryAction,
 } from "./home-hero-actions";
+import { getGreeting } from "./home-hero-copy";
+import { containerVariants, itemVariants } from "./home-hero-motion";
+import { HomeHeroNotificationButton } from "./home-hero-notification-button";
+import { HomeHeroQuickActions } from "./home-hero-quick-actions";
+import { HomeHeroSignalMap } from "./home-hero-signal-map";
+import { HomeHeroSkeleton } from "./home-hero-skeleton";
 
 export function HomeHero() {
   const { viewer, isLoading: viewerLoading } = useHomeViewerState();

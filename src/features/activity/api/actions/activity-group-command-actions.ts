@@ -1,13 +1,12 @@
-import { appQueryClient } from "@/shared/api/query-client";
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-import { invalidateGroupMembershipSurfaces } from "@/shared/api/query-invalidation";
-
-import type { ActivityActionContext } from "@/features/activity/api/activity-action-context";
 import {
   ActivityApi,
   type UpdateGroupPayload,
   type UpdatePlanPayload,
 } from "@/features/activity/api/activity.api";
+import type { ActivityActionContext } from "@/features/activity/api/activity-action-context";
+import { appQueryClient } from "@/shared/api/query-client";
+import { invalidateGroupMembershipSurfaces } from "@/shared/api/query-invalidation";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 
 async function invalidateGroupSelection(groupId: string) {
   await appQueryClient.invalidateQueries({

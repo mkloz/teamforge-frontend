@@ -1,6 +1,6 @@
-import type { Interest } from "@/shared/schemas";
-import { Circle } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { Circle } from "lucide-react";
+import type { Interest } from "@/shared/schemas";
 import {
   categoryColorById,
   categoryShortLabelById,

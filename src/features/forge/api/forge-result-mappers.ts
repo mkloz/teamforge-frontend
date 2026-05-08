@@ -1,7 +1,6 @@
-import type { GroupApi } from "@/shared/schemas";
-
 import type { ForgeExecutionResult } from "@/features/forge/api/forge-types";
 import { mapGroupToParticipants } from "@/features/forge/lib/forge-participant-mappers";
+import type { GroupApi } from "@/shared/schemas";
 
 type ForgeRequestIds = ForgeExecutionResult["requestIds"];
 

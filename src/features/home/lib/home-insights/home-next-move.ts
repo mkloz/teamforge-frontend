@@ -1,10 +1,9 @@
-import type { ExploreGroup, GroupApi, Invite } from "@/shared/schemas";
-
 import type {
   HomeViewer,
   PlannedGroup,
   UserStats,
 } from "@/features/home/lib/home-contract";
+import type { ExploreGroup, GroupApi, Invite } from "@/shared/schemas";
 
 import {
   buildDraftPlanMove,
@@ -16,8 +15,8 @@ import {
   buildReturnForgeMove,
   buildTodayOrPastPlanMove,
 } from "./home-next-move-builders";
-import { getProfileMoveCopy } from "./profile-move-copy";
 import { getDateMeta, sortPlansByUrgency } from "./plan-timing";
+import { getProfileMoveCopy } from "./profile-move-copy";
 
 interface BuildHomeNextMoveInput {
   viewer: HomeViewer;

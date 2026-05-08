@@ -1,7 +1,7 @@
 import {
   buildQuestionList,
-  TEST_LENGTH_CONFIG,
   type IpipQuestion,
+  TEST_LENGTH_CONFIG,
   type TestLength,
 } from "@/features/onboarding/data/ipip-questions";
 

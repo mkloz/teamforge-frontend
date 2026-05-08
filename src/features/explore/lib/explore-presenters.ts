@@ -1,4 +1,3 @@
-import type { User } from "@/shared/schemas";
 import {
   getExploreGroupDistanceLabel,
   getExploreGroupMatchScore,
@@ -8,6 +7,7 @@ import {
   getUserOceanScores,
   normalizeTrustScore,
 } from "@/shared/lib/user-psychometrics";
+import type { User } from "@/shared/schemas";
 import type { OceanScores } from "@/shared/types/psychometrics";
 
 export interface ExploreIdentity {

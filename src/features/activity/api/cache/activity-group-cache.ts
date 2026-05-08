@@ -1,8 +1,3 @@
-import { appQueryClient } from "@/shared/api/query-client";
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-import { invalidateHomeGroupSurfaces } from "@/shared/api/query-invalidation";
-import type { ChatApi, GroupApi, PlanProposal } from "@/shared/schemas";
-
 import type { ActivityGroupSelectionData } from "@/features/activity/api/activity-query-data";
 import {
   ACTIVITY_CHATS_QUERY_KEY,
@@ -10,6 +5,10 @@ import {
 } from "@/features/activity/api/activity-query-keys";
 import { toMessageApi } from "@/features/activity/api/messages/message-mappers";
 import type { Group } from "@/features/activity/lib/activity-contract";
+import { appQueryClient } from "@/shared/api/query-client";
+import { invalidateHomeGroupSurfaces } from "@/shared/api/query-invalidation";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import type { ChatApi, GroupApi, PlanProposal } from "@/shared/schemas";
 
 interface RealtimeGroupUpdateOptions {
   currentUserId: string;

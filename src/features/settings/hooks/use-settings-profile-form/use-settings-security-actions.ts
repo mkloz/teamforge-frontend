@@ -1,16 +1,14 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
-
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
-import { trackMutationOutcome } from "@/shared/lib/telemetry";
-import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-import type { AuthSession, User } from "@/shared/schemas";
-
 import { SettingsCache } from "@/features/settings/api/settings-cache";
 import { SettingsCommands } from "@/features/settings/api/settings-commands";
 import { SettingsQueryFactory } from "@/features/settings/api/settings-query-factory";
 import { buildSettingsLoginNavigation } from "@/features/settings/lib/settings-auth-navigation";
+import { getApiErrorMessage } from "@/shared/lib/api-error-message";
+import { trackMutationOutcome } from "@/shared/lib/telemetry";
+import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
+import type { AuthSession, User } from "@/shared/schemas";
 
 interface UseSettingsSecurityActionsOptions {
   currentUser: User | undefined;

@@ -1,13 +1,13 @@
 import { create } from "zustand";
+import type {
+  PersonalityTestState,
+  ScreenState,
+} from "./personality-test-store.types";
 import {
   buildPersonalityQuestionIds,
   hydrateQuestions,
   PERSONALITY_TEST_DEFAULT_STATE,
 } from "./personality-test-store-model";
-import type {
-  PersonalityTestState,
-  ScreenState,
-} from "./personality-test-store.types";
 
 export type { ScreenState };
 export { hydrateQuestions };

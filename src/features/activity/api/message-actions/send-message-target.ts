@@ -1,7 +1,6 @@
-import type { User } from "@/shared/schemas";
-
 import type { ActivityActionContext } from "@/features/activity/api/activity-action-context";
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
+import type { User } from "@/shared/schemas";
 
 type ActivityMessageTargetKind = "group" | "dm";
 

@@ -1,15 +1,14 @@
-import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
-import { planProposalSchema, planSchema } from "@/shared/schemas";
-
 import {
-  createPlanProposalPayloadSchema,
-  planProposalsSchema,
-  updatePlanPayloadSchema,
   type CreatePlanProposalDto,
+  createPlanProposalPayloadSchema,
   type PlanMutationResult,
+  planProposalsSchema,
   type UpdatePlanPayload,
+  updatePlanPayloadSchema,
   type VotePlanProposalDto,
 } from "@/features/activity/api/activity-api-contracts";
+import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
+import { planProposalSchema, planSchema } from "@/shared/schemas";
 
 export async function updatePlan(
   planId: string,

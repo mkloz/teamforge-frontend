@@ -1,6 +1,6 @@
+import { Ban, Bell, BellOff, Loader2 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
-import { Ban, Bell, BellOff, Loader2 } from "lucide-react";
 
 interface ProfilePanelSettingsProps {
   isMuted: boolean;

@@ -1,14 +1,14 @@
+import { Link } from "@tanstack/react-router";
+import { ArrowRight, ChevronDown } from "lucide-react";
+import { ForgeOrb } from "@/features/landing/components/hero/forge-orb";
+import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
+import { getLandingPrimaryAction } from "@/features/landing/lib/landing-auth";
+import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
 import {
   useAuthSessionState,
   useCurrentUserQuery,
 } from "@/shared/api/current-user-query";
-import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
-import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
 import { Button } from "@/shared/components/ui/button";
-import { Link } from "@tanstack/react-router";
-import { ArrowRight, ChevronDown } from "lucide-react";
-import { getLandingPrimaryAction } from "@/features/landing/lib/landing-auth";
-import { ForgeOrb } from "@/features/landing/components/hero/forge-orb";
 
 export function HeroSection() {
   const { isAuthenticated } = useAuthSessionState();

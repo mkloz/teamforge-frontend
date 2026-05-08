@@ -1,11 +1,10 @@
-import { appQueryClient } from "@/shared/api/query-client";
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-import type { PlanProposal, PlanUpdateKind, User } from "@/shared/schemas";
-
 import type { ActivityGroupSelectionData } from "@/features/activity/api/activity-query-data";
 import { ACTIVITY_GROUPS_QUERY_KEY } from "@/features/activity/api/activity-query-keys";
 import type { ActivityRealtimeContext } from "@/features/activity/api/realtime/activity-realtime-types";
 import type { Plan } from "@/features/activity/lib/activity-contract";
+import { appQueryClient } from "@/shared/api/query-client";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import type { PlanProposal, PlanUpdateKind, User } from "@/shared/schemas";
 
 export async function handleRealtimePlanUpdated(groupId: string) {
   await Promise.all([
@@ -30,10 +29,11 @@ export function applyRealtimePlanUpdate(
   appQueryClient.setQueryData<ActivityGroupSelectionData | undefined>(
     APP_QUERY_KEYS.activity.groupSelectionById(groupId),
     (current) => {
-      if (!current?.group || !current.group.plan) {
+      if (!current?.group?.plan) {
         return current;
       }
 
+      const chatId = current.chatId;
       const currentPlan = current.group.plan;
       const currentProposals = currentPlan.proposals ?? [];
       const nextProposals = proposal
@@ -71,11 +71,11 @@ export function applyRealtimePlanUpdate(
         ...current,
         group: nextGroup,
         proposalMessages:
-          current.chatId && currentUser
+          chatId && currentUser
             ? nextProposals.map((item) =>
                 context.buildProposalMessage(
                   item,
-                  current.chatId!,
+                  chatId,
                   currentUser.id,
                   participants,
                 ),

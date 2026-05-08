@@ -1,12 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-
+import { SettingsCommands } from "@/features/settings/api/settings-commands";
 import { useInvalidateCurrentUser } from "@/shared/api/current-user-query";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-
-import { SettingsCommands } from "@/features/settings/api/settings-commands";
 
 export function useSettingsAvatarActions() {
   const invalidateCurrentUser = useInvalidateCurrentUser();

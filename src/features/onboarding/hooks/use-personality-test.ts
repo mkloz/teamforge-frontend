@@ -11,13 +11,14 @@ import {
 } from "../lib/personality-test-flow";
 import {
   hydrateQuestions,
-  usePersonalityTestStore,
   type ScreenState,
+  usePersonalityTestStore,
 } from "../store/personality-test-store";
 
 interface UsePersonalityTestProps {
   questionsPerPage: number;
 }
+
 export type { ScreenState };
 
 export function usePersonalityTest({

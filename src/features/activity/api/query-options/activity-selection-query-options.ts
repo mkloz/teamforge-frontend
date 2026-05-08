@@ -1,12 +1,10 @@
 import { queryOptions } from "@tanstack/react-query";
-
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-
 import { ActivityApi } from "@/features/activity/api/activity.api";
 import type {
   ActivityDirectSelectionData,
   ActivityGroupSelectionData,
 } from "@/features/activity/api/activity-query-data";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 
 import type { ActivityQueryOptionsContext } from "./activity-query-options-context";
 

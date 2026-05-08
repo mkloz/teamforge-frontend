@@ -1,5 +1,5 @@
 import { z } from "zod";
-
+import { messageApiSchema } from "./chat-api";
 import {
   activityAccessSchema,
   activityStatusSchema,
@@ -15,7 +15,6 @@ import {
   planStatusSchema,
 } from "./enums";
 import { exploreInterestSchema } from "./explore";
-import { messageApiSchema } from "./chat-api";
 
 export const groupActivitySummarySchema = z.object({
   id: z.string(),

@@ -1,3 +1,4 @@
+import { Form } from "@/shared/components/ui/form";
 import { AccountFacts } from "./account-facts";
 import { AccountFormFooter } from "./account-form-footer";
 import { AreaFields } from "./area-fields";
@@ -6,7 +7,6 @@ import { FormGroup } from "./form-group";
 import { PersonalContextFields } from "./personal-context-fields";
 import { ProfileIdentityFields } from "./profile-identity-fields";
 import type { AccountSettingsSectionProps } from "./types";
-import { Form } from "@/shared/components/ui/form";
 
 export function AccountSettingsSection({
   currentUser,

@@ -2,11 +2,11 @@ import { useState } from "react";
 
 import { useMediaRecorderSession } from "@/features/activity/hooks/voice-recording/use-media-recorder-session";
 import { useRecordingTimer } from "@/features/activity/hooks/voice-recording/use-recording-timer";
-import { formatRecordingTime } from "@/features/activity/hooks/voice-recording/voice-recording-result";
 import type {
   RecordingError,
   UseVoiceRecordingReturn,
 } from "@/features/activity/hooks/voice-recording/voice-recording.types";
+import { formatRecordingTime } from "@/features/activity/hooks/voice-recording/voice-recording-result";
 
 export type {
   RecordingError,

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
 import {
-  observeElementSize,
   type ElementSize,
+  observeElementSize,
 } from "@/shared/lib/browser-observers";
 
 const EMPTY_SIZE: ElementSize = {

@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 import { chatApiSchema, messageApiSchema } from "./chat-api";
+import { onlineStatusSchema } from "./enums";
 import { groupApiSchema } from "./group-api";
 import { notificationSchema } from "./notification";
-import { onlineStatusSchema } from "./enums";
 import { planProposalSchema, planSchema } from "./plan";
 
 export const realtimeEventSchema = z.enum([

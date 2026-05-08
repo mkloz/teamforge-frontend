@@ -1,7 +1,7 @@
-import { cn } from "@/shared/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { motion } from "framer-motion";
-import { type LucideIcon, ChevronRight } from "lucide-react";
+import { ChevronRight, type LucideIcon } from "lucide-react";
+import { cn } from "@/shared/lib/utils";
 
 const subcategoryChipVariants = cva(
   "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-sans text-xs leading-none font-bold transition duration-150 select-none",
@@ -34,9 +34,8 @@ const badgeVariants = cva(
   },
 );
 
-interface SubcategoryChipProps extends VariantProps<
-  typeof subcategoryChipVariants
-> {
+interface SubcategoryChipProps
+  extends VariantProps<typeof subcategoryChipVariants> {
   icon: LucideIcon;
   label: string;
   selectedCount: number;

@@ -1,5 +1,5 @@
 import { cn } from "@/shared/lib/utils";
-import { MutualGroupsSection, type MutualGroup } from "./mutual-groups-section";
+import { type MutualGroup, MutualGroupsSection } from "./mutual-groups-section";
 import { ProfilePanelInfo } from "./profile-panel-info";
 import { ProfilePanelSettings } from "./profile-panel-settings";
 import type {

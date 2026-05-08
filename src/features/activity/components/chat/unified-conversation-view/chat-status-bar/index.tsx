@@ -1,6 +1,6 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronRight, X } from "lucide-react";
 import { memo } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 
 import type {
   Plan,

@@ -1,11 +1,10 @@
-import { authApi } from "@/shared/api/api";
-import { clearCurrentUserCache } from "@/shared/api/current-user-query";
-
-import { SettingsApi } from "@/features/settings/api/settings.api";
 import type {
   UpdateNotificationPreferencesDto,
   UpdateSettingsProfileDto,
 } from "@/features/settings/api/settings.api";
+import { SettingsApi } from "@/features/settings/api/settings.api";
+import { authApi } from "@/shared/api/api";
+import { clearCurrentUserCache } from "@/shared/api/current-user-query";
 
 export const SettingsCommands = {
   updateProfile(payload: UpdateSettingsProfileDto) {

@@ -17,17 +17,13 @@ const authPageLoader = () => import("@/features/auth/auth-page");
 
 const loginPageModule = createLazyRouteModule(() =>
   authPageLoader().then((m) => ({
-    default: function LoginRoute() {
-      return <m.AuthPage defaultView="login" />;
-    },
+    default: () => <m.AuthPage defaultView="login" />,
   })),
 );
 
 const registerPageModule = createLazyRouteModule(() =>
   authPageLoader().then((m) => ({
-    default: function RegisterRoute() {
-      return <m.AuthPage defaultView="register" />;
-    },
+    default: () => <m.AuthPage defaultView="register" />,
   })),
 );
 

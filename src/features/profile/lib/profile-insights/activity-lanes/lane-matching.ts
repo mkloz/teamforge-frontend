@@ -1,5 +1,8 @@
 import type { Interest } from "@/shared/schemas";
-
+import type { LaneEvidenceReason, LaneMatch, LaneRuleMatch } from "../types";
+import { normalizeTaxonomyId, normalizeText } from "../utils";
+import { lanePriority } from "./lane-config";
+import { laneRules } from "./lane-rules";
 import {
   CONTEXT_LANE_MATCH_SCORE,
   DIRECT_LANE_MATCH_SCORE,
@@ -8,10 +11,6 @@ import {
   SUPPORTING_LANE_SCORE_MULTIPLIER,
   TAXONOMY_LANE_MATCH_SCORE,
 } from "./lane-scoring";
-import type { LaneEvidenceReason, LaneMatch, LaneRuleMatch } from "../types";
-import { normalizeTaxonomyId, normalizeText } from "../utils";
-import { lanePriority } from "./lane-config";
-import { laneRules } from "./lane-rules";
 
 export function getLaneMatches(interest: Interest): LaneMatch[] {
   const textContext = buildInterestTextContext(interest);

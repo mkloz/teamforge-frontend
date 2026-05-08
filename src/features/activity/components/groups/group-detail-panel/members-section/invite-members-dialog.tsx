@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
 import { Search, UserPlus } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
 import { Avatar } from "@/shared/components/common/avatar";

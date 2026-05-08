@@ -1,8 +1,8 @@
 import {
+  type MotionValue,
   motion,
-  MotionValue,
-  useTransform,
   useMotionValueEvent,
+  useTransform,
 } from "framer-motion";
 import { useState } from "react";
 import type { Step } from "@/features/landing/components/how-it-works/how-it-works-data";

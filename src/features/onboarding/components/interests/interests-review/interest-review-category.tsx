@@ -1,10 +1,9 @@
+import { motion } from "framer-motion";
+import { X } from "lucide-react";
+import { getCategoryColorClass } from "@/features/onboarding/lib/interest-catalog";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import type { Interest } from "@/shared/schemas";
-import { motion } from "framer-motion";
-import { X } from "lucide-react";
-
-import { getCategoryColorClass } from "@/features/onboarding/lib/interest-catalog";
 
 interface InterestReviewCategoryProps {
   category: Interest;

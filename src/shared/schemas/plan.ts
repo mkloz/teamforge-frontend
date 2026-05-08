@@ -1,3 +1,4 @@
+// oxlint-disable import/no-cycle -- Recursive plan/group schemas are resolved with z.lazy.
 import { z } from "zod";
 import {
   costTypeSchema,

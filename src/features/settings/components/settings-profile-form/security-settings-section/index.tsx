@@ -1,8 +1,8 @@
+import { DeleteAccountSection } from "@/features/settings/components/settings-profile-form/settings-form-controls";
 import { ActiveSessionsSection } from "./active-sessions-section";
 import { PasswordRecoverySection } from "./password-recovery-section";
 import { SecuritySummary } from "./security-summary";
 import type { SecuritySettingsSectionProps } from "./types";
-import { DeleteAccountSection } from "@/features/settings/components/settings-profile-form/settings-form-controls";
 
 export function SecuritySettingsSection({
   currentUser,

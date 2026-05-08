@@ -14,8 +14,7 @@ export function ProposedPlanQueueItem({
   group: AttentionQueuePlan;
 }) {
   return (
-    <motion.article
-      role="listitem"
+    <motion.li
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
@@ -47,6 +46,6 @@ export function ProposedPlanQueueItem({
           Open
         </Link>
       </Button>
-    </motion.article>
+    </motion.li>
   );
 }

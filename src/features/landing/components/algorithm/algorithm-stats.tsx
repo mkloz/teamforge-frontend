@@ -1,5 +1,5 @@
-import { cn } from "@/shared/lib/utils";
 import { FACTORS } from "@/features/landing/components/algorithm/algorithm-data";
+import { cn } from "@/shared/lib/utils";
 
 interface AlgorithmStatsProps {
   inView: boolean;

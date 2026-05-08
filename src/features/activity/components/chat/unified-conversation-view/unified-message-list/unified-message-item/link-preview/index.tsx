@@ -1,6 +1,6 @@
+import { memo } from "react";
 import { useLinkPreview } from "@/features/activity/hooks/use-link-preview";
 import { cn } from "@/shared/lib/utils";
-import { memo } from "react";
 
 import { LinkPreviewMedia } from "./link-preview-media";
 import { LinkPreviewMeta } from "./link-preview-meta";

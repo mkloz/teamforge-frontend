@@ -6,9 +6,9 @@ import {
 } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useRef, useState } from "react";
-import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
 import { ABOUT_CARDS } from "@/features/landing/components/about/about-data";
 import { StackCard } from "@/features/landing/components/about/stack-card";
+import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
 import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
 import { Button } from "@/shared/components/ui/button";
 
@@ -62,9 +62,8 @@ export function AboutSection() {
 
             {/* Right Column: Cards Stacking */}
             <div className="relative flex h-100 items-center md:mt-0 md:h-screen">
-              <div
+              <section
                 className="relative h-100 w-full md:h-150"
-                role="region"
                 aria-label="Brand narrative cards"
               >
                 {ABOUT_CARDS.map((card, i) => {
@@ -80,7 +79,7 @@ export function AboutSection() {
                     />
                   );
                 })}
-              </div>
+              </section>
             </div>
           </div>
           <AnimatePresence>

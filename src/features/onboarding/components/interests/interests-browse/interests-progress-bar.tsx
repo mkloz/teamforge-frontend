@@ -1,8 +1,7 @@
-import { Button } from "@/shared/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-
 import { MAX_INTERESTS } from "@/features/onboarding/data/interests-data";
+import { Button } from "@/shared/components/ui/button";
 import {
   getInterestsProgressPercent,
   getInterestsProgressText,

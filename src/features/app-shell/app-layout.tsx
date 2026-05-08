@@ -1,9 +1,9 @@
-import { TooltipProvider } from "@/shared/components/ui/tooltip";
-import { useUiStore } from "@/shared/store/ui.store";
 import { Outlet } from "@tanstack/react-router";
-import { Activity, Suspense, type ReactNode } from "react";
+import { Activity, type ReactNode, Suspense } from "react";
 import { AppBottomNav } from "@/features/app-shell/components/app-bottom-nav";
 import { AppSidebar } from "@/features/app-shell/components/app-sidebar";
+import { TooltipProvider } from "@/shared/components/ui/tooltip";
+import { useUiStore } from "@/shared/store/ui.store";
 
 function PageSkeleton() {
   return (

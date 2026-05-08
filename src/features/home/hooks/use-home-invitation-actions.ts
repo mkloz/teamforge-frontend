@@ -1,9 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
-
 import { HomeCommands } from "@/features/home/api/home-commands";
+import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 
 export function useHomeInvitationActions() {
   const [actionError, setActionError] = useState<string | null>(null);

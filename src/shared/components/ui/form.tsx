@@ -6,12 +6,12 @@ import { Slot } from "radix-ui";
 import React from "react";
 import {
   Controller,
-  FormProvider,
-  useFormContext,
-  useFormState,
   type ControllerProps,
   type FieldPath,
   type FieldValues,
+  FormProvider,
+  useFormContext,
+  useFormState,
 } from "react-hook-form";
 
 import { Label } from "@/shared/components/ui/label";
@@ -36,8 +36,13 @@ const FormField = <
 >({
   ...props
 }: ControllerProps<TFieldValues, TName>) => {
+  const contextValue = React.useMemo(
+    () => ({ name: props.name }),
+    [props.name],
+  );
+
   return (
-    <FormFieldContext value={{ name: props.name }}>
+    <FormFieldContext value={contextValue}>
       <Controller {...props} />
     </FormFieldContext>
   );
@@ -79,9 +84,10 @@ const FormItemContext = React.createContext<FormItemContextValue | null>(null);
 
 function FormItem({ className, ...props }: React.ComponentProps<"div">) {
   const id = React.useId();
+  const contextValue = React.useMemo(() => ({ id }), [id]);
 
   return (
-    <FormItemContext value={{ id }}>
+    <FormItemContext value={contextValue}>
       <div
         data-slot="form-item"
         className={cn("grid gap-2", className)}

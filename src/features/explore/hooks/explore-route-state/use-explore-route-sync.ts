@@ -6,9 +6,8 @@ import type {
   ExploreLocationMode,
   ExploreSortOption,
 } from "@/features/explore/schemas/explore-filters.schema";
-
-import { areCategoriesEqual } from "./explore-route-utils";
 import type { ResolvedExploreRouteState } from "./explore-route-state.types";
+import { areCategoriesEqual } from "./explore-route-utils";
 
 interface UseExploreRouteSyncInput {
   access: ExploreAccessMode;

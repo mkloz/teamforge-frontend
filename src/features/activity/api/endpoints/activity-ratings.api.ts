@@ -1,12 +1,11 @@
+import {
+  type CreateRatingPayload,
+  createRatingPayloadSchema,
+  DEFAULT_ACTIVITY_API_LIMIT,
+  paginatedRatingsSchema,
+} from "@/features/activity/api/activity-api-contracts";
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
 import { createRatingResultSchema } from "@/shared/schemas";
-
-import {
-  DEFAULT_ACTIVITY_API_LIMIT,
-  createRatingPayloadSchema,
-  paginatedRatingsSchema,
-  type CreateRatingPayload,
-} from "@/features/activity/api/activity-api-contracts";
 
 export async function getGroupRatings(groupId: string) {
   const response = await apiClient

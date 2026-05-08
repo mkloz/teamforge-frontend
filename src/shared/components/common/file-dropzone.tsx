@@ -7,11 +7,11 @@ import {
   X,
 } from "lucide-react";
 import {
-  useRef,
-  useState,
   type DragEvent,
   type ReactNode,
   type RefObject,
+  useRef,
+  useState,
 } from "react";
 
 import { Button } from "@/shared/components/ui/button";
@@ -304,7 +304,7 @@ export function FilePreviewList({ files, onRemove }: FilePreviewListProps) {
     <div className="grid gap-2">
       {files.map((file, index) => (
         <FilePreviewItem
-          key={`${file.name}-${file.size}-${file.lastModified}-${index}`}
+          key={`${file.name}-${file.size}-${file.lastModified}`}
           file={file}
           index={index}
           onRemove={onRemove}

@@ -1,11 +1,10 @@
-import { useRef, type RefObject } from "react";
 import { AnimatePresence } from "framer-motion";
-
+import { type RefObject, useRef } from "react";
+import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import type {
   HomeInvitationView,
   HomePanel,
 } from "@/features/home/lib/home-route";
-import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 
 import { ActionErrorBanner } from "./action-error-banner";
 import { AttentionQueueSkeleton } from "./attention-queue-skeleton";
@@ -99,10 +98,9 @@ export function AttentionQueue({
         }
       />
 
-      <div
-        role="list"
+      <ul
         aria-label="Things that need attention"
-        className="mt-4 grid min-w-0 border-y border-border/55"
+        className="mt-4 grid min-w-0 list-none border-y border-border/55 p-0"
       >
         {actionError ? <ActionErrorBanner error={actionError} /> : null}
         {shouldShowSkeleton ? <AttentionQueueSkeleton /> : null}
@@ -149,7 +147,7 @@ export function AttentionQueue({
         </AnimatePresence>
 
         {queueSize > 4 ? <SeeRestButton /> : null}
-      </div>
+      </ul>
     </section>
   );
 }

@@ -1,13 +1,12 @@
+import { NotificationsCache } from "@/features/notifications/api/notifications-cache";
 import { appQueryClient } from "@/shared/api/query-client";
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import {
   invalidateExploreFriendRequestSurfaces,
   invalidateFriendshipSurfaces,
   invalidateGroupMembershipSurfaces,
 } from "@/shared/api/query-invalidation";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import type { Notification } from "@/shared/schemas";
-
-import { NotificationsCache } from "@/features/notifications/api/notifications-cache";
 
 export const NotificationsRealtimeHandlers = {
   addIncomingNotification(notification: Notification) {

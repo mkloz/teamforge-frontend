@@ -1,14 +1,12 @@
 import { Link } from "@tanstack/react-router";
-
-import {
-  buildAuthRouteNavigation,
-  useAuthReturnState,
-} from "@/shared/lib/auth-route";
-
 import { AuthSupportShell } from "@/features/auth/components/auth-support-shell";
 import { FormLevelError } from "@/features/auth/components/form-level-error";
 import { ResetPasswordForm } from "@/features/auth/components/reset-password";
 import { useResetPasswordForm } from "@/features/auth/hooks/use-reset-password-form";
+import {
+  buildAuthRouteNavigation,
+  useAuthReturnState,
+} from "@/shared/lib/auth-route";
 
 export function ResetPasswordPage() {
   const { returnTo } = useAuthReturnState();

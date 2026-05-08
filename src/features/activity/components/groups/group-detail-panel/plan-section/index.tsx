@@ -1,13 +1,13 @@
 import { Calendar, MapPin } from "lucide-react";
+import { useEffect, useRef } from "react";
 import type { Plan } from "@/features/activity/lib/activity-contract";
 import { formatPlanLocation } from "@/features/activity/lib/plan-location";
 import { cn } from "@/shared/lib/utils";
-import { useEffect, useRef } from "react";
 import {
   categoryColors,
-  statusColors,
   formatDate,
   formatTime,
+  statusColors,
 } from "../lib/constants";
 import { CreatePlanProposalForm } from "./create-plan-proposal-form";
 import { PlanProposalsSection } from "./plan-proposals-section";
@@ -23,7 +23,7 @@ export function PlanSection({
   isFocused = false,
   focusedProposalId = null,
 }: PlanSectionProps) {
-  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
   const formattedDate = plan.dateTime ? formatDate(plan.dateTime) : "Date TBD";
   const formattedTime = plan.dateTime ? formatTime(plan.dateTime) : "Time TBD";
   const formattedLocation = formatPlanLocation(plan);
@@ -40,7 +40,7 @@ export function PlanSection({
   }, [isFocused]);
 
   return (
-    <div
+    <section
       ref={sectionRef}
       className={cn(
         "rounded-xl transition-[background-color,box-shadow] duration-500",
@@ -141,6 +141,6 @@ export function PlanSection({
         proposals={plan.proposals ?? []}
         focusedProposalId={focusedProposalId}
       />
-    </div>
+    </section>
   );
 }

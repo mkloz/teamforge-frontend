@@ -2,7 +2,6 @@ import {
   ACTIVITIES,
   type ActivityOption,
 } from "@/features/forge/constants/forge.constants";
-import { CATEGORY_TEMPLATES } from "@/features/forge/data/forge-template-seeds";
 import {
   ACTIVITY_BY_LABEL,
   CATEGORY_TRAITS,
@@ -13,6 +12,7 @@ import type {
   TemplateSeed,
   TemplateTrait,
 } from "@/features/forge/data/forge-template-seed-types";
+import { CATEGORY_TEMPLATES } from "@/features/forge/data/forge-template-seeds";
 import type { ForgePlanTemplate } from "@/features/forge/lib/forge-template";
 import type { User } from "@/shared/schemas";
 
@@ -573,13 +573,13 @@ function getCategorySeeds(categoryId: string) {
 function hasPersonalizationSignals(user: User | undefined) {
   return Boolean(
     user &&
-    ((user.interests?.length ?? 0) > 0 ||
-      user.personalityType ||
-      typeof user.oceanO === "number" ||
-      typeof user.oceanC === "number" ||
-      typeof user.oceanE === "number" ||
-      typeof user.oceanA === "number" ||
-      typeof user.oceanN === "number"),
+      ((user.interests?.length ?? 0) > 0 ||
+        user.personalityType ||
+        typeof user.oceanO === "number" ||
+        typeof user.oceanC === "number" ||
+        typeof user.oceanE === "number" ||
+        typeof user.oceanA === "number" ||
+        typeof user.oceanN === "number"),
   );
 }
 

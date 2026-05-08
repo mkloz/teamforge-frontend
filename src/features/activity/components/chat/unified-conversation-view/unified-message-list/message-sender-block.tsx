@@ -1,8 +1,8 @@
+import type { VirtualizedMessageBlock } from "@/features/activity/hooks/use-virtualized-message-blocks";
+import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
-import type { VirtualizedMessageBlock } from "@/features/activity/hooks/use-virtualized-message-blocks";
-import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
 import { DateSeparator } from "./date-separator";
 import { MessageRenderer } from "./message-renderer";
 import {

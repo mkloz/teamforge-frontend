@@ -1,8 +1,8 @@
-import { formatBlockedDate } from "./blocked-users-formatters";
+import { Loader2, ShieldOff } from "lucide-react";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import type { FriendshipApi } from "@/shared/schemas";
-import { Loader2, ShieldOff } from "lucide-react";
+import { formatBlockedDate } from "./blocked-users-formatters";
 
 interface BlockedUserRowProps {
   friendship: FriendshipApi;

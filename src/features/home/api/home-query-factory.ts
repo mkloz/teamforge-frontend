@@ -1,16 +1,14 @@
 import { queryOptions } from "@tanstack/react-query";
-
-import { currentUserQueryOptions } from "@/shared/api/current-user-query";
-import { appQueryClient } from "@/shared/api/query-client";
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-
 import { HomeQueryOptions } from "@/features/home/api/home-query-options";
-import { getActivePlannedGroups } from "@/features/home/lib/home-plans";
-import { buildHomeStats } from "@/features/home/lib/home-stats";
 import type {
   PlannedGroup,
   UserStats,
 } from "@/features/home/lib/home-contract";
+import { getActivePlannedGroups } from "@/features/home/lib/home-plans";
+import { buildHomeStats } from "@/features/home/lib/home-stats";
+import { currentUserQueryOptions } from "@/shared/api/current-user-query";
+import { appQueryClient } from "@/shared/api/query-client";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 
 export const HomeQueryFactory = {
   groups: HomeQueryOptions.groups,

@@ -1,14 +1,13 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { toast } from "sonner";
-
+import { ActivityCommands } from "@/features/activity/api/activity-commands";
+import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import type { CreateRatingPayload } from "@/shared/schemas";
-import { ActivityCommands } from "@/features/activity/api/activity-commands";
-import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 
 export function useGroupRatings(groupId: string) {
   const { data: currentUser } = useCurrentUserQuery();

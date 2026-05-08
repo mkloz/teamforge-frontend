@@ -7,14 +7,13 @@ import { useAddressAutocomplete } from "@/shared/hooks/use-address-autocomplete"
 import { getBrowserDocumentBody } from "@/shared/lib/browser-environment";
 import type { LocationValue } from "@/shared/lib/maps/location.types";
 import { cn } from "@/shared/lib/utils";
-
-import { AddressInputControls } from "./address-input-controls";
+import type { AddressAutocompleteProps } from "./address-autocomplete-types";
 import {
   getActiveSuggestionId,
   getAddressInputRightPaddingClassName,
   getLocationHintMessage,
 } from "./address-autocomplete-utils";
-import type { AddressAutocompleteProps } from "./address-autocomplete-types";
+import { AddressInputControls } from "./address-input-controls";
 import { AddressSuggestionsPanel } from "./address-suggestions-panel";
 import { useAddressSuggestionsPanel } from "./use-address-suggestions-panel";
 

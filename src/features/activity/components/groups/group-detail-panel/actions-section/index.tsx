@@ -6,8 +6,8 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 
 import { ConfirmGroupActionButton } from "./confirm-group-action-button";
-import { canDisbandGroup, isGroupActionsLocked } from "./group-action-rules";
 import { GroupActionButton } from "./group-action-button";
+import { canDisbandGroup, isGroupActionsLocked } from "./group-action-rules";
 
 interface ActionsSectionProps {
   currentUserRole: MemberRole;

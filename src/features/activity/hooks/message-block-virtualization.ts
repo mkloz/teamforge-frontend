@@ -1,8 +1,8 @@
-import type { SenderGroup } from "@/features/activity/hooks/use-message-grouping";
 import {
   estimateSenderGroupHeight,
   getBubbleWidth,
 } from "@/features/activity/hooks/message-block-height-estimates";
+import type { SenderGroup } from "@/features/activity/hooks/use-message-grouping";
 
 export interface MessageBlockInput {
   date: string;

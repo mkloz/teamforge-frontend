@@ -1,8 +1,8 @@
+import { buildHomeNavigation } from "@/features/home/lib/home-route";
 import {
   buildAuthRouteNavigation,
   buildPostAuthRedirectNavigation,
 } from "@/shared/lib/auth-route";
-import { buildHomeNavigation } from "@/features/home/lib/home-route";
 import type { User } from "@/shared/schemas";
 
 function buildGuestLandingAction(

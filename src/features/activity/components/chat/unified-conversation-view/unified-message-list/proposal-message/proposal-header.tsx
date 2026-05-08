@@ -1,9 +1,8 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { memo } from "react";
-
-import type { PlanProposalStatus } from "@/shared/schemas/enums";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
+import type { PlanProposalStatus } from "@/shared/schemas/enums";
 
 import { FIELD_ICON_COMPONENTS, FIELD_LABELS } from "./proposal-constants";
 

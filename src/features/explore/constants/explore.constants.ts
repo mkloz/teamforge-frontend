@@ -1,3 +1,4 @@
+import type { LucideIcon } from "lucide-react";
 import {
   Activity,
   Clock,
@@ -9,7 +10,6 @@ import {
   Unlock,
   Users,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import type {
   ExploreAccessMode,
   ExploreFilters,

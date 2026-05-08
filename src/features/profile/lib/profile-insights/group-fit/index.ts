@@ -14,11 +14,11 @@ import {
   buildGroupFitOpeningMove,
   buildPortraitChemistry,
 } from "./group-fit-recommendations";
+import { getGroupFitStyle } from "./group-fit-style";
 import {
   buildPortraitGroupSignals,
   buildPortraitGroupSummary,
 } from "./group-fit-summary";
-import { getGroupFitStyle } from "./group-fit-style";
 
 export function buildGroupFit(
   socialProfile: SocialProfileModel,

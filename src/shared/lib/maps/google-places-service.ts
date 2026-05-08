@@ -1,6 +1,6 @@
 import { hasBrowserDocument } from "@/shared/lib/browser-environment";
-import { locationFromPlace } from "@/shared/lib/maps/google-place-mappers";
 import { isGooglePlacesReady } from "@/shared/lib/maps/google-maps-loader";
+import { locationFromPlace } from "@/shared/lib/maps/google-place-mappers";
 import type {
   Coordinates,
   LocationValue,

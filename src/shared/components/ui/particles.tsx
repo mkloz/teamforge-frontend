@@ -1,15 +1,14 @@
 import { useReducedMotion, useScroll, useSpring } from "framer-motion";
 import { useCallback, useEffect, useEffectEvent, useRef } from "react";
 import { useEventListener } from "usehooks-ts";
-
+import { getBrowserDevicePixelRatio } from "@/shared/lib/browser-environment";
+import { observeElementVisibility } from "@/shared/lib/browser-observers";
+import type { ScheduledAnimationFrameHandle } from "@/shared/lib/browser-scheduling";
 import {
   cancelScheduledAnimationFrame,
   getCurrentTimeMs,
   scheduleAnimationFrame,
 } from "@/shared/lib/browser-scheduling";
-import type { ScheduledAnimationFrameHandle } from "@/shared/lib/browser-scheduling";
-import { getBrowserDevicePixelRatio } from "@/shared/lib/browser-environment";
-import { observeElementVisibility } from "@/shared/lib/browser-observers";
 import { cn } from "@/shared/lib/utils";
 
 interface ParticlesProps {

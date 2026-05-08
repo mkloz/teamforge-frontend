@@ -1,8 +1,8 @@
 import { useEffect, useEffectEvent, useRef } from "react";
 
 import { realtimeClient } from "@/shared/api/realtime-client";
-import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
 import type { ScheduledDelayHandle } from "@/shared/lib/browser-scheduling";
+import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
 
 interface UseChatTypingSignalInput {
   chatId?: string | null;

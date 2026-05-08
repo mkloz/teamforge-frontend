@@ -1,5 +1,5 @@
+import { FileText, Image as ImageIcon, Paperclip } from "lucide-react";
 import { memo, useRef } from "react";
-
 import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
@@ -7,7 +7,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
-import { FileText, Image as ImageIcon, Paperclip } from "lucide-react";
 
 interface AttachmentMenuProps {
   disabled: boolean;

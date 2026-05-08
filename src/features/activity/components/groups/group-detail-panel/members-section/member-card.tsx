@@ -1,4 +1,6 @@
 import { BadgeCheck, Crown, UserMinus } from "lucide-react";
+import type { GroupMember } from "@/features/activity/lib/activity-contract";
+import { Avatar } from "@/shared/components/common/avatar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,10 +13,8 @@ import {
   AlertDialogTrigger,
 } from "@/shared/components/ui/alert-dialog";
 import { Badge } from "@/shared/components/ui/badge";
-import type { GroupMember } from "@/features/activity/lib/activity-contract";
-import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
-import { Avatar } from "@/shared/components/common/avatar";
+import { cn } from "@/shared/lib/utils";
 
 interface MemberCardProps {
   canRemove?: boolean;

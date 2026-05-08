@@ -1,11 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-
+import { ExploreCommands } from "@/features/explore/api/explore-commands";
 import { invalidateNotificationSurfaces } from "@/shared/api/query-invalidation";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-import { ExploreCommands } from "@/features/explore/api/explore-commands";
 
 export function useJoinExploreGroup(groupId: string) {
   return useMutation({

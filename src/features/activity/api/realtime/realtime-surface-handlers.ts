@@ -1,12 +1,11 @@
+import { ActivitySurfaceCache } from "@/features/activity/api/activity-surface-cache";
+import type { ActivityRealtimeContext } from "@/features/activity/api/realtime/activity-realtime-types";
 import type {
   ChatApi,
   FriendshipApi,
   GroupApi,
   OnlineStatus,
 } from "@/shared/schemas";
-
-import { ActivitySurfaceCache } from "@/features/activity/api/activity-surface-cache";
-import type { ActivityRealtimeContext } from "@/features/activity/api/realtime/activity-realtime-types";
 
 export function applyRealtimeChatRead(
   context: ActivityRealtimeContext,

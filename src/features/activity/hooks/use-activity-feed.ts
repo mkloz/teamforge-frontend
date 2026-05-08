@@ -1,8 +1,8 @@
-import { useDeferredValue } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { currentUserQueryOptions } from "@/shared/api/current-user-query";
+import { useDeferredValue } from "react";
 import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import { useActivityStore } from "@/features/activity/store/activity.store";
+import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 
 export function useActivityFeed() {
   const searchQuery = useActivityStore((state) => state.searchQuery);

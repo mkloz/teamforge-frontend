@@ -1,6 +1,6 @@
-import { Input } from "@/shared/components/ui/input";
 import { Search } from "lucide-react";
 import { memo } from "react";
+import { Input } from "@/shared/components/ui/input";
 
 interface SearchHeaderProps {
   opacity: number;

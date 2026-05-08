@@ -1,13 +1,11 @@
 import { Link } from "@tanstack/react-router";
-
+import { ActivateAccountStatus } from "@/features/auth/components/activate-account-status";
+import { AuthSupportShell } from "@/features/auth/components/auth-support-shell";
+import { useActivateAccount } from "@/features/auth/hooks/use-activate-account";
 import {
   buildAuthRouteNavigation,
   useAuthReturnState,
 } from "@/shared/lib/auth-route";
-
-import { ActivateAccountStatus } from "@/features/auth/components/activate-account-status";
-import { AuthSupportShell } from "@/features/auth/components/auth-support-shell";
-import { useActivateAccount } from "@/features/auth/hooks/use-activate-account";
 
 export function ActivateAccountPage() {
   const { returnTo } = useAuthReturnState();

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-
+import type { InterestsState } from "./interests-store.types";
 import {
   getCappedUniqueInterestIds,
   INTERESTS_DEFAULT_STATE,
@@ -7,7 +7,6 @@ import {
   toggleRejectedInterest,
   toggleSelectedInterest,
 } from "./interests-store-model";
-import type { InterestsState } from "./interests-store.types";
 
 export const useInterestsStore = create<InterestsState>()((set) => ({
   ...INTERESTS_DEFAULT_STATE,

@@ -1,6 +1,5 @@
-import type { AttachmentType, MessageType } from "@/shared/schemas";
-
 import type { SendMessagePayload } from "@/features/activity/api/activity.api";
+import type { AttachmentType, MessageType } from "@/shared/schemas";
 
 export function inferOutgoingAttachmentType(file: File): AttachmentType {
   if (file.type.startsWith("image/")) {

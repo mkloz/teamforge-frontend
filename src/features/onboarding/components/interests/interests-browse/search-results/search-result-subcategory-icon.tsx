@@ -1,5 +1,5 @@
-import { getSubcategoryIcon } from "@/features/onboarding/lib/interest-catalog";
 import { createElement } from "react";
+import { getSubcategoryIcon } from "@/features/onboarding/lib/interest-catalog";
 
 interface SearchResultSubcategoryIconProps {
   subcategoryId: string;

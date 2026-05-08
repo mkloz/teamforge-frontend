@@ -1,6 +1,6 @@
+import { motion } from "framer-motion";
 import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
-import { motion } from "framer-motion";
 
 export function GroupCard() {
   const members = [
@@ -36,13 +36,13 @@ export function GroupCard() {
         </span>
       </div>
       <div className="mb-3 flex -space-x-2">
-        {members.map((m, i) => (
+        {members.map((m) => (
           <Avatar
-            key={i}
+            key={m.avatar}
             src={m.avatar}
             name="Member"
             className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-[#111] ring-2 ring-hero-bg"
-            style={{ zIndex: members.length - i }}
+            style={{ zIndex: members.length - members.indexOf(m) }}
           />
         ))}
       </div>

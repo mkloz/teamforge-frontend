@@ -1,3 +1,6 @@
+import { motion } from "framer-motion";
+import { Download } from "lucide-react";
+import { memo } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -6,9 +9,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
-import { motion } from "framer-motion";
-import { Download } from "lucide-react";
-import { memo } from "react";
 
 interface LightboxHeaderProps {
   count: number;

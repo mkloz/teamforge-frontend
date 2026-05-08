@@ -1,5 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { Eye, EyeOff } from "lucide-react";
+import { FormLevelError } from "@/features/auth/components/form-level-error";
+import { useGoogleAuth } from "@/features/auth/hooks/use-google-auth";
+import { useLoginForm } from "@/features/auth/hooks/use-login-form";
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -12,9 +15,6 @@ import {
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
 import { buildAuthRouteNavigation } from "@/shared/lib/auth-route";
-import { FormLevelError } from "@/features/auth/components/form-level-error";
-import { useGoogleAuth } from "@/features/auth/hooks/use-google-auth";
-import { useLoginForm } from "@/features/auth/hooks/use-login-form";
 import { FormHeader } from "./form-header";
 import { GoogleAuthButton } from "./google-auth-button";
 import { SocialLoginDivider } from "./social-login-divider";

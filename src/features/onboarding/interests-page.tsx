@@ -1,12 +1,12 @@
-import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { AnimatePresence } from "framer-motion";
-import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
 import { CompletionBlueprint } from "@/features/onboarding/components/interests/interests-page/completion-blueprint";
 import { InterestsFooter } from "@/features/onboarding/components/interests/interests-page/interests-footer";
 import { InterestsPersistentHeader } from "@/features/onboarding/components/interests/interests-page/interests-persistent-header";
 import { InterestsProgressDecoration } from "@/features/onboarding/components/interests/interests-page/interests-progress-decoration";
 import { InterestsScreenRenderer } from "@/features/onboarding/components/interests/interests-page/interests-screen-renderer";
 import { useInterestsPageFlow } from "@/features/onboarding/hooks/use-interests-page-flow";
+import { BackgroundTexture } from "@/shared/components/common/background-texture";
+import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
 
 export function InterestsPage() {
   const {

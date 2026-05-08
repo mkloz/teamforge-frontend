@@ -1,9 +1,9 @@
-import { Button } from "@/shared/components/ui/button";
-import { RadioGroup } from "@/shared/components/ui/radio-group";
-import { cn } from "@/shared/lib/utils";
 import { LayoutList, Rows } from "lucide-react";
 import { memo } from "react";
 import type { FilterChip } from "@/features/activity/lib/activity-contract";
+import { Button } from "@/shared/components/ui/button";
+import { RadioGroup } from "@/shared/components/ui/radio-group";
+import { cn } from "@/shared/lib/utils";
 import { FilterChipItem } from "./filter-chip-item";
 
 interface FilterHeaderProps {

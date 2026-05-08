@@ -1,12 +1,11 @@
-import { appQueryClient } from "@/shared/api/query-client";
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-import type { ChatApi, FriendshipApi } from "@/shared/schemas";
-
 import type { ActivityDirectSelectionData } from "@/features/activity/api/activity-query-data";
 import {
   ACTIVITY_CHATS_QUERY_KEY,
   ACTIVITY_FRIENDSHIPS_QUERY_KEY,
 } from "@/features/activity/api/activity-query-keys";
+import { appQueryClient } from "@/shared/api/query-client";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import type { ChatApi, FriendshipApi } from "@/shared/schemas";
 
 interface FriendshipUpdateOptions {
   friendship: FriendshipApi;

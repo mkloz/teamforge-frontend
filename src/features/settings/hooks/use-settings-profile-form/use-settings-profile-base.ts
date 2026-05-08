@@ -2,15 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-
-import {
-  useCurrentUserQuery,
-  useInvalidateCurrentUser,
-} from "@/shared/api/current-user-query";
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
-import { trackMutationOutcome } from "@/shared/lib/telemetry";
-import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-
 import { SettingsCommands } from "@/features/settings/api/settings-commands";
 import {
   buildProfileSummary,
@@ -18,9 +9,16 @@ import {
   buildSettingsProfilePayload,
 } from "@/features/settings/lib/settings-profile-mappers";
 import {
-  settingsProfileSchema,
   type SettingsProfileValues,
+  settingsProfileSchema,
 } from "@/features/settings/schemas/settings-profile.schema";
+import {
+  useCurrentUserQuery,
+  useInvalidateCurrentUser,
+} from "@/shared/api/current-user-query";
+import { getApiErrorMessage } from "@/shared/lib/api-error-message";
+import { trackMutationOutcome } from "@/shared/lib/telemetry";
+import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
 export function useSettingsProfileBase() {
   const {

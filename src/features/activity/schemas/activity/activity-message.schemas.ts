@@ -9,8 +9,8 @@ import {
 import { planProposalSchema } from "@/shared/schemas/plan";
 
 import {
-  activityParticipantSchema,
   type ActivityParticipant,
+  activityParticipantSchema,
 } from "./activity-participant.schemas";
 
 export const unifiedAttachmentSchema = z.object({

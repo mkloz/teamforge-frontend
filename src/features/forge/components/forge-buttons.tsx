@@ -1,5 +1,5 @@
-import { Button } from "@/shared/components/ui/button";
 import { ArrowRight, Cpu, Network, RefreshCw, UsersRound } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
 
 interface PrimaryButtonProps {
   label: string;

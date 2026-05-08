@@ -1,10 +1,9 @@
+import {
+  type CreateInvitePayload,
+  createInvitePayloadSchema,
+} from "@/features/activity/api/activity-api-contracts";
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
 import { inviteSchema } from "@/shared/schemas";
-
-import {
-  createInvitePayloadSchema,
-  type CreateInvitePayload,
-} from "@/features/activity/api/activity-api-contracts";
 
 export async function createInvite(payload: CreateInvitePayload) {
   const response = await apiClient.post("invites", {

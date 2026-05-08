@@ -1,17 +1,17 @@
-import { ExploreLensCard } from "./explore-lens-card";
-import { ForgeCTA } from "./forge-cta";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { useExploreGroups } from "@/features/explore/hooks/use-explore-groups";
 import { useExploreIdentity } from "@/features/explore/hooks/use-explore-identity";
-import { useQuery } from "@tanstack/react-query";
-import { currentUserQueryOptions } from "@/shared/api/current-user-query";
-import type { User } from "@/shared/schemas";
 import {
   buildInterestsEditNavigation,
   buildPersonalityEditNavigation,
 } from "@/features/onboarding/lib/onboarding-route";
 import { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
-import { Link } from "@tanstack/react-router";
+import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { Button } from "@/shared/components/ui/button";
+import type { User } from "@/shared/schemas";
+import { ExploreLensCard } from "./explore-lens-card";
+import { ForgeCTA } from "./forge-cta";
 
 function hasCompleteOceanProfile(user: User) {
   return (

@@ -1,7 +1,6 @@
-import { useCurrentUserQuery } from "@/shared/api/current-user-query";
-
-import { cn } from "@/shared/lib/utils";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { useCurrentUserQuery } from "@/shared/api/current-user-query";
+import { cn } from "@/shared/lib/utils";
 
 interface UseMessageLayoutProps {
   message: UnifiedMessage;

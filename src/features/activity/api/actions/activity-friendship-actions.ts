@@ -1,7 +1,7 @@
-import { invalidateFriendshipSurfaces } from "@/shared/api/query-invalidation";
+import { ActivityApi } from "@/features/activity/api/activity.api";
 
 import type { ActivityActionContext } from "@/features/activity/api/activity-action-context";
-import { ActivityApi } from "@/features/activity/api/activity.api";
+import { invalidateFriendshipSurfaces } from "@/shared/api/query-invalidation";
 
 export const ActivityFriendshipActions = {
   async blockUser(context: ActivityActionContext, userId: string) {

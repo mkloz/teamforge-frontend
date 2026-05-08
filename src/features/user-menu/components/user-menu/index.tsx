@@ -24,7 +24,7 @@ import { AppearanceSwitch } from "./appearance-switch";
 import { MenuLinkItem, MenuLinkItemContent } from "./menu-link-item";
 import { UserMenuProfileSummary } from "./profile-summary";
 import { UserMenuSignOutButton } from "./sign-out-button";
-import { UserMenuTriggerButton, type UserMenuTrigger } from "./trigger-button";
+import { type UserMenuTrigger, UserMenuTriggerButton } from "./trigger-button";
 
 interface UserMenuProps {
   trigger?: UserMenuTrigger;

@@ -1,6 +1,6 @@
+import { Fingerprint, ListChecks } from "lucide-react";
 import type { Interest } from "@/shared/schemas";
 import type { PersonalityType } from "@/shared/schemas/enums";
-import { Fingerprint, ListChecks } from "lucide-react";
 
 import { CollapsibleInterestSection } from "./collapsible-interest-section";
 import { TagPill } from "./tag-pill";

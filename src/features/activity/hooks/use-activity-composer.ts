@@ -1,11 +1,10 @@
 import { useState } from "react";
-
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
-import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
-import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import type { ActivitySendMessageInput } from "@/features/activity/lib/activity-contract";
 import { useActivityStore } from "@/features/activity/store/activity.store";
+import { getApiErrorMessage } from "@/shared/lib/api-error-message";
+import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
+import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import { useActivityMessageActions } from "./use-activity-message-actions";
 
 export function useActivityComposer() {

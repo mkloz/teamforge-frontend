@@ -1,7 +1,7 @@
-import { Button } from "@/shared/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Brain, Lock, RefreshCcw } from "lucide-react";
 import { fadeUpItem } from "@/features/onboarding/constants/motion";
+import { Button } from "@/shared/components/ui/button";
 import { PersonalityScreenShell } from "./personality-screen-layout";
 
 interface PersonalityIntroProps {

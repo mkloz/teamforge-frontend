@@ -1,7 +1,4 @@
 import { queryOptions } from "@tanstack/react-query";
-
-import { getExploreGroupMatchScore } from "@/shared/lib/explore-group-presenters";
-
 import { HomeApi } from "@/features/home/api/home.api";
 import {
   HOME_GROUPS_QUERY_KEY,
@@ -9,6 +6,7 @@ import {
   HOME_RECOMMENDATIONS_QUERY_KEY,
   HOME_SENT_INVITATIONS_QUERY_KEY,
 } from "@/features/home/api/home-query-keys";
+import { getExploreGroupMatchScore } from "@/shared/lib/explore-group-presenters";
 
 export const HomeQueryOptions = {
   groups() {

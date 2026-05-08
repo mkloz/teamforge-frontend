@@ -1,7 +1,6 @@
-import type { ChatApi } from "@/shared/schemas";
-
 import { mapMessages } from "@/features/activity/api/projections/activity-message-projections";
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
+import type { ChatApi } from "@/shared/schemas";
 
 export function findGroupChat(chats: ChatApi[], groupId: string) {
   return chats.find((chat) => chat.groupId === groupId) ?? null;

@@ -1,10 +1,9 @@
-import type { Gender, User } from "@/shared/schemas";
-
 import type { UpdateSettingsProfileDto } from "@/features/settings/api/settings.api";
 import {
   type SettingsProfileValues,
   unspecifiedGenderValue,
 } from "@/features/settings/schemas/settings-profile.schema";
+import type { Gender, User } from "@/shared/schemas";
 
 function toNullableText(value: string) {
   const trimmed = value.trim();

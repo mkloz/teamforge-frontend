@@ -1,12 +1,3 @@
-import type {
-  ChatApi,
-  FriendshipApi,
-  GroupApi,
-  MessageApi,
-  PlanProposal,
-  User,
-} from "@/shared/schemas";
-
 import { ActivityProjections } from "@/features/activity/api/activity-projections";
 import type {
   ActivityParticipant,
@@ -15,6 +6,14 @@ import type {
   Group,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
+import type {
+  ChatApi,
+  FriendshipApi,
+  GroupApi,
+  MessageApi,
+  PlanProposal,
+  User,
+} from "@/shared/schemas";
 
 export function mapCurrentUserParticipant(user: User): ActivityParticipant {
   return ActivityProjections.mapCurrentUserParticipant(user);

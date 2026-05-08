@@ -1,4 +1,3 @@
-import { cn } from "@/shared/lib/utils";
 import { useState } from "react";
 import {
   PolarAngleAxis,
@@ -7,21 +6,22 @@ import {
   RadarChart,
   ResponsiveContainer,
 } from "recharts";
-import { useElementSize } from "@/shared/hooks/use-element-size";
 import {
   getOceanChartData,
   getOceanTraitByLabel,
   getOceanTraitDetails,
 } from "@/shared/components/psychometrics/ocean-chart-model";
-import { ChartDot, ChartTick } from "./ocean-chart-points";
 import { OceanTraitDetails } from "@/shared/components/psychometrics/ocean-trait-details";
+import { useElementSize } from "@/shared/hooks/use-element-size";
+import { cn } from "@/shared/lib/utils";
+import type { OceanTraitKey } from "@/shared/types/psychometrics";
+import { ChartDot, ChartTick } from "./ocean-chart-points";
 import type {
   ChartDotProps,
   ChartTickProps,
   OceanChartProps,
   OceanDiagramProps,
 } from "./psychometrics-types";
-import type { OceanTraitKey } from "@/shared/types/psychometrics";
 
 export function OceanDiagram({
   className,

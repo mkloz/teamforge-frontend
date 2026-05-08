@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
-
-import { getInvitesSentSummary, getStatusFacts } from "./invites-sent-summary";
 import { InvitesSentHero } from "./invites-sent-hero";
+import { getInvitesSentSummary, getStatusFacts } from "./invites-sent-summary";
 import { NextActions } from "./next-actions";
 import { OpenGroupHubButton } from "./open-group-hub-button";
 import type { InvitesSentScreenProps } from "./types";

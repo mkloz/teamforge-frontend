@@ -1,8 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-
-import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import type { CreatePlanProposalDto } from "@/features/activity/api/activity.api";
+import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import type { Plan } from "@/features/activity/lib/activity-contract";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 
@@ -23,10 +22,10 @@ export function useCreatePlanProposal(
       setError(null);
       onCreated?.();
     },
-    onError: (error) => {
+    onError: (mutationError) => {
       setError(
         getApiErrorMessage(
-          error,
+          mutationError,
           "We couldn't submit that proposal. Please try again.",
         ),
       );

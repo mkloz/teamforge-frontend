@@ -6,13 +6,12 @@ import {
   PrimaryButton,
   ReforgeButton,
 } from "@/features/forge/components/forge-buttons";
-
-import { FooterActionMotion } from "./footer-action-motion";
 import {
   getStep1ContinueLabel,
   getStep6ContinueLabel,
   getStep7InviteLabel,
 } from "./footer-action-labels";
+import { FooterActionMotion } from "./footer-action-motion";
 import type { ForgeFooterChildProps } from "./types";
 
 interface Step1FooterActionProps extends ForgeFooterChildProps {

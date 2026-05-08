@@ -1,13 +1,12 @@
-import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
-import { groupApiSchema } from "@/shared/schemas";
-
 import {
   DEFAULT_ACTIVITY_API_LIMIT,
-  paginatedGroupsSchema,
-  updateGroupPayloadSchema,
   type GroupMutationResult,
+  paginatedGroupsSchema,
   type UpdateGroupPayload,
+  updateGroupPayloadSchema,
 } from "@/features/activity/api/activity-api-contracts";
+import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
+import { groupApiSchema } from "@/shared/schemas";
 
 export async function getGroups() {
   const response = await apiClient

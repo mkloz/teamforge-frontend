@@ -1,7 +1,6 @@
-import type { ActivityAccess, PlanCategory } from "@/shared/schemas";
-
 import { ACTIVITIES } from "@/features/forge/constants/forge.constants";
 import type { Visibility } from "@/features/forge/lib/forge-contract";
+import type { ActivityAccess, PlanCategory } from "@/shared/schemas";
 
 export function findActivityOption(selectedActivity: string | null) {
   if (!selectedActivity) {

@@ -1,10 +1,9 @@
+import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import type { MessageReplyPreview } from "@/shared/schemas";
 
-import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
-
 import {
-  mapMessageSenderParticipant,
   type MessageParticipantsIndex,
+  mapMessageSenderParticipant,
 } from "./message-participant-index";
 
 const DELETED_REPLY_FALLBACK_DATE = new Date(0).toISOString();

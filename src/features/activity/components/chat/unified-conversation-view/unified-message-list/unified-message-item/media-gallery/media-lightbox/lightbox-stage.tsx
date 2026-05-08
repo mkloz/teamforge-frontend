@@ -1,8 +1,8 @@
-import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { memo } from "react";
 import type { MouseEvent } from "react";
+import { memo } from "react";
+import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 
 import { LightboxImage, LightboxVideo } from "./lightbox-media";
 import { NavButton } from "./nav-button";

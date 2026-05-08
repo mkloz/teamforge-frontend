@@ -2,11 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Check } from "lucide-react";
 
 import { ACTIVITIES } from "@/features/forge/constants/forge.constants";
+import { buildCategoryFitHighlights } from "@/features/forge/lib/forge-template-suggestions";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { cn } from "@/shared/lib/utils";
-
 import { ICON_MAP } from "./activity-icon-map";
-import { buildCategoryFitHighlights } from "@/features/forge/lib/forge-template-suggestions";
 
 interface ActivityCategoryGridProps {
   selectedActivity: string | null;

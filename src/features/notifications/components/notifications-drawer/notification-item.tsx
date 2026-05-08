@@ -1,6 +1,6 @@
-import { cn } from "@/shared/lib/utils";
 import { Bell, Handshake, Star, UserPlus, Users } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 import type { Notification } from "@/shared/schemas";
 
 function relativeTime(date: string): string {
@@ -48,15 +48,6 @@ function getTypeConfig(type: Notification["type"]) {
         colorClass: "text-primary bg-primary/10",
         borderClass: "border-l-primary",
       };
-    case "PLAN_CREATED":
-    case "PLAN_CONFIRMED":
-    case "PLAN_UPDATED":
-    case "PLAN_PROPOSAL":
-    case "PLAN_STARTING_SOON":
-    case "PLAN_COMPLETED":
-    case "PLAN_CANCELLED":
-    case "SYSTEM_ANNOUNCEMENT":
-    case "ACCOUNT_SECURITY":
     default:
       return {
         icon: Bell,
@@ -95,7 +86,6 @@ export function NotificationItem({
           "flex w-full cursor-pointer items-start gap-4 border-l-4 px-4 py-4 text-left transition-all duration-200",
           config.borderClass,
         )}
-        aria-label={`${item.title}: ${item.message}`}
       >
         {/* Icon badge */}
         <span

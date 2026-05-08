@@ -1,5 +1,5 @@
-import { Suspense } from "react";
 import type { ComponentType } from "react";
+import { Suspense } from "react";
 
 import { RouteLoadingFallback } from "@/app/router/route-loading-fallback";
 

@@ -1,16 +1,15 @@
-import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
-
 import type { InterestSearchResults } from "@/features/onboarding/utils/interest-logic";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 
 import { TagPill } from "../tag-pill";
-import { SearchResultSubcategoryIcon } from "./search-result-subcategory-icon";
 import {
   getSearchResultSubcategorySelectedCount,
   getSearchResultSubcategoryTags,
 } from "./search-result-subcategories-model";
+import { SearchResultSubcategoryIcon } from "./search-result-subcategory-icon";
 
 interface SearchResultSubcategoriesProps {
   expandedSubcategories: Set<string>;

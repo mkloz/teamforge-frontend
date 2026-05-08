@@ -1,9 +1,9 @@
 export function RecentActivitySkeleton() {
   return (
     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-      {Array.from({ length: 3 }).map((_, index) => (
+      {["left", "middle", "right"].map((slot) => (
         <div
-          key={index}
+          key={slot}
           className="h-14 animate-pulse overflow-hidden rounded-lg border border-border/30 bg-card"
         >
           <div className="flex h-full items-center gap-2.5">

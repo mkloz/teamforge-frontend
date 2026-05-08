@@ -1,15 +1,14 @@
-import { appQueryClient } from "@/shared/api/query-client";
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-import type { ChatApi, MessageApi, User } from "@/shared/schemas";
-
 import { ActivityActions } from "@/features/activity/api/activity-actions";
 import { ActivityMessageCache } from "@/features/activity/api/activity-message-cache";
-import { findMatchingOptimisticMessage } from "@/features/activity/api/messages/optimistic-message-match";
 import { ACTIVITY_CHATS_QUERY_KEY } from "@/features/activity/api/activity-query-keys";
+import { findMatchingOptimisticMessage } from "@/features/activity/api/messages/optimistic-message-match";
 import type {
   ActivityRealtimeContext,
   ApplyRealtimeMessageOptions,
 } from "@/features/activity/api/realtime/activity-realtime-types";
+import { appQueryClient } from "@/shared/api/query-client";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import type { ChatApi, MessageApi, User } from "@/shared/schemas";
 
 export async function applyRealtimeMessage(
   context: ActivityRealtimeContext,

@@ -7,8 +7,8 @@ import { logoutCurrentSession } from "@/shared/api/auth-session-commands";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 
 import { AuthApi } from "./auth.api";
-import { AuthCache } from "./auth-cache";
 import type { GoogleAuthIntent } from "./auth.types";
+import { AuthCache } from "./auth-cache";
 
 export class AuthCommands {
   static getAuthErrorMessage(error: unknown, fallbackMessage: string) {

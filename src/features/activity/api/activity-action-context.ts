@@ -1,15 +1,14 @@
 import type {
+  ActivityOutgoingAttachment,
+  ActivityParticipant,
+  UnifiedMessage,
+} from "@/features/activity/lib/activity-contract";
+import type {
   FriendshipApi,
   GroupApi,
   MessageApi,
   User,
 } from "@/shared/schemas";
-
-import type {
-  ActivityOutgoingAttachment,
-  ActivityParticipant,
-  UnifiedMessage,
-} from "@/features/activity/lib/activity-contract";
 
 export interface SendActivityMessageInput {
   attachments?: ActivityOutgoingAttachment[];

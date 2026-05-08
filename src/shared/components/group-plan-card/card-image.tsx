@@ -1,6 +1,6 @@
 import { Image } from "@/shared/components/common/image";
-import { cn } from "@/shared/lib/utils";
 import type { GroupPlanCardVariant } from "@/shared/components/group-plan-card/group-plan-card-types";
+import { cn } from "@/shared/lib/utils";
 
 interface CardImageProps {
   alt: string;

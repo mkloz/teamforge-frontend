@@ -15,8 +15,8 @@ import { Textarea } from "@/shared/components/ui/textarea";
 import { cn } from "@/shared/lib/utils";
 
 import {
-  PLAN_PROPOSAL_FIELD_OPTIONS,
   isProposalField,
+  PLAN_PROPOSAL_FIELD_OPTIONS,
 } from "./plan-proposal-fields";
 import { usePlanProposalForm } from "./use-plan-proposal-form";
 

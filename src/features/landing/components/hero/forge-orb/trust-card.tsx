@@ -1,5 +1,5 @@
-import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
+import { cn } from "@/shared/lib/utils";
 
 export function TrustCard() {
   const circumference = 2 * Math.PI * 16;
@@ -26,7 +26,7 @@ export function TrustCard() {
         Trust Score
       </p>
       <div className="flex items-center gap-2.5">
-        <svg width="40" height="40" viewBox="0 0 40 40">
+        <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
           <circle
             cx="20"
             cy="20"

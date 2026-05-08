@@ -1,14 +1,13 @@
-import { appQueryClient } from "@/shared/api/query-client";
-import type { ChatApi } from "@/shared/schemas";
-
 import { ACTIVITY_CHATS_QUERY_KEY } from "@/features/activity/api/activity-query-keys";
 import { toMessageApi } from "@/features/activity/api/messages/message-mappers";
 import {
-  pickNewerApiMessage,
   mergePinnedApiMessages,
+  pickNewerApiMessage,
   shouldReplaceApiMessage,
 } from "@/features/activity/api/messages/message-versioning";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { appQueryClient } from "@/shared/api/query-client";
+import type { ChatApi } from "@/shared/schemas";
 
 export const ActivityChatSummaryCache = {
   updateChatLastMessage(

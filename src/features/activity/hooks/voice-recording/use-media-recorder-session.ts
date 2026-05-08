@@ -1,6 +1,4 @@
 import { useEffect, useEffectEvent, useRef } from "react";
-
-import { createVoiceRecordingResult } from "./voice-recording-result";
 import {
   canRecordAudio,
   createAudioRecorder,
@@ -11,6 +9,7 @@ import type {
   RecordingError,
   VoiceRecordingResult,
 } from "./voice-recording.types";
+import { createVoiceRecordingResult } from "./voice-recording-result";
 
 interface UseMediaRecorderSessionOptions {
   clearTimer: () => void;

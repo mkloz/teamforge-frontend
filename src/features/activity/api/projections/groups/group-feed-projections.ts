@@ -1,11 +1,10 @@
-import type { ChatApi, GroupApi } from "@/shared/schemas";
-
 import { mapSingleMessage } from "@/features/activity/api/projections/activity-message-projections";
 import { buildGroupParticipants } from "@/features/activity/api/projections/activity-participant-projections";
 import type {
   ActivityParticipant,
   UnifiedConversation,
 } from "@/features/activity/lib/activity-contract";
+import type { ChatApi, GroupApi } from "@/shared/schemas";
 
 import { findGroupChat } from "./group-chat-projections";
 import { mapGroup } from "./group-dto-projections";

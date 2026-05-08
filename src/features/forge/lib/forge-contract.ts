@@ -6,8 +6,7 @@ import type {
 } from "@/shared/schemas/enums";
 
 export type { ForgeParticipant } from "../schemas/forge.schemas";
-export type { ForgeMode };
-export type { PlanCategory };
+export type { ForgeMode, PlanCategory };
 export type Visibility = ActivityVisibility;
 export type LocationType = LocationMode;
 export type FixedGroupSize = 2 | 3 | 4 | 5 | 6 | 7 | 8;

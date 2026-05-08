@@ -4,12 +4,11 @@ import {
   parseAsString,
   parseAsStringLiteral,
 } from "nuqs";
-
-import { explorePanelValues } from "@/features/explore/lib/explore-route";
 import {
   CATEGORIES,
   FILTER_BOUNDARIES,
 } from "@/features/explore/constants/explore.constants";
+import { explorePanelValues } from "@/features/explore/lib/explore-route";
 
 const categoryValues = CATEGORIES.map((category) => category.id);
 const locationValues = ["ALL", "IN_PERSON", "ONLINE"] as const;

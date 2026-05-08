@@ -1,11 +1,10 @@
-import { appQueryClient } from "@/shared/api/query-client";
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-
 import {
   ActivityApi,
   type CreatePlanProposalDto,
   type VotePlanProposalDto,
 } from "@/features/activity/api/activity.api";
+import { appQueryClient } from "@/shared/api/query-client";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 
 function getGroupSelectionQueryKey(groupId?: string) {
   return groupId

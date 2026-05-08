@@ -1,19 +1,19 @@
+import { Link } from "@tanstack/react-router";
+import type { ReactNode } from "react";
 import { TeamForgeLogo } from "@/assets/logo";
-import { Button } from "@/shared/components/ui/button";
+import { useActivePathname } from "@/features/app-shell/hooks/use-active-pathname";
 import {
   appSidebarNavigation,
   getAppNavigationItem,
   isAppNavigationItemActive,
 } from "@/features/app-shell/lib/app-navigation";
+import { Button } from "@/shared/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
-import { Link } from "@tanstack/react-router";
-import type { ReactNode } from "react";
-import { useActivePathname } from "@/features/app-shell/hooks/use-active-pathname";
 import { NavItem } from "./nav-item";
 
 interface AppSidebarProps {

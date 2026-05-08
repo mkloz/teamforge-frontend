@@ -1,23 +1,23 @@
+import { z } from "zod";
 import type { ApiResponseWithRequestId } from "@/shared/api/api";
 import {
   attachmentTypeSchema,
+  type CreateRatingPayload,
   chatApiSchema,
   createPaginatedSchema,
   createRatingPayloadSchema,
-  createRatingResultSchema,
+  type createRatingResultSchema,
   friendshipApiSchema,
   groupApiSchema,
-  inviteSchema,
+  type inviteSchema,
   locationModeSchema,
   messageApiSchema,
   messageTypeSchema,
   planProposalFieldSchema,
   planProposalSchema,
-  planSchema,
+  type planSchema,
   ratingEntitySchema,
-  type CreateRatingPayload,
 } from "@/shared/schemas";
-import { z } from "zod";
 
 export const DEFAULT_ACTIVITY_API_LIMIT = "100";
 export const DEFAULT_ACTIVITY_API_MESSAGE_LIMIT = "50";

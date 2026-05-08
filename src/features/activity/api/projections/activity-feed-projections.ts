@@ -1,14 +1,13 @@
-import type { ChatApi, FriendshipApi, GroupApi, User } from "@/shared/schemas";
-
+import type { ActivityFeedData } from "@/features/activity/api/activity-query-data";
+import type { FilterChip } from "@/features/activity/lib/activity-contract";
 import {
   applyFilter,
   sortByRecency,
 } from "@/features/activity/lib/unify-conversations";
-import type { FilterChip } from "@/features/activity/lib/activity-contract";
-import type { ActivityFeedData } from "@/features/activity/api/activity-query-data";
-import { mapCurrentUserParticipant } from "./activity-participant-projections";
+import type { ChatApi, FriendshipApi, GroupApi, User } from "@/shared/schemas";
 import { buildDirectFeedItem } from "./activity-direct-projections";
 import { buildGroupFeedItem } from "./activity-group-projections";
+import { mapCurrentUserParticipant } from "./activity-participant-projections";
 
 export function deriveFeedData(
   activeFilter: FilterChip,

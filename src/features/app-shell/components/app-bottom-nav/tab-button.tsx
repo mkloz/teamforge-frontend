@@ -1,10 +1,10 @@
-import {
-  isAppNavigationItemActive,
-  type AppNavigationItem,
-} from "@/features/app-shell/lib/app-navigation";
-import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import {
+  type AppNavigationItem,
+  isAppNavigationItemActive,
+} from "@/features/app-shell/lib/app-navigation";
+import { cn } from "@/shared/lib/utils";
 
 interface TabButtonProps {
   item: AppNavigationItem;

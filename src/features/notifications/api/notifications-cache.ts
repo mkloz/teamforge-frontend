@@ -1,11 +1,10 @@
-import { appQueryClient } from "@/shared/api/query-client";
-import type { Notification } from "@/shared/schemas";
-
 import {
   NOTIFICATIONS_QUERY_KEY,
-  NOTIFICATIONS_UNREAD_QUERY_KEY,
   NOTIFICATIONS_UNREAD_COUNT_QUERY_KEY,
+  NOTIFICATIONS_UNREAD_QUERY_KEY,
 } from "@/features/notifications/api/notifications-query-keys";
+import { appQueryClient } from "@/shared/api/query-client";
+import type { Notification } from "@/shared/schemas";
 
 export interface NotificationsCacheSnapshot {
   previousItems: Notification[] | undefined;

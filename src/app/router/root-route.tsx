@@ -1,8 +1,7 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
-
-import { NotFoundState } from "@/shared/components/not-found-state";
 import { createRouteErrorComponent } from "@/app/router/route-error-component";
+import { NotFoundState } from "@/shared/components/not-found-state";
 import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
 
 export const rootRoute = createRootRoute({

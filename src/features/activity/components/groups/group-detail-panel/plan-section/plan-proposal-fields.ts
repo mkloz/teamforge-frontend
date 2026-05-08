@@ -1,8 +1,8 @@
 import type { Plan } from "@/features/activity/lib/activity-contract";
 import {
   formatPlanLocation,
-  serializePlanLocationValue,
   type PlanLocationValue,
+  serializePlanLocationValue,
 } from "@/features/activity/lib/plan-location";
 import type { LocationMode } from "@/shared/schemas/enums";
 
@@ -20,6 +20,10 @@ export function isProposalField(value: string): value is ProposalField {
   return PLAN_PROPOSAL_FIELD_OPTIONS.some((option) => option.value === value);
 }
 
+function padDateTimePart(part: number) {
+  return String(part).padStart(2, "0");
+}
+
 export function toDateTimeLocalValue(value: string | null) {
   if (!value) {
     return "";
@@ -31,11 +35,9 @@ export function toDateTimeLocalValue(value: string | null) {
     return "";
   }
 
-  const pad = (part: number) => String(part).padStart(2, "0");
-
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+  return `${date.getFullYear()}-${padDateTimePart(date.getMonth() + 1)}-${padDateTimePart(
     date.getDate(),
-  )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  )}T${padDateTimePart(date.getHours())}:${padDateTimePart(date.getMinutes())}`;
 }
 
 export function getCurrentProposalValue(plan: Plan, field: ProposalField) {

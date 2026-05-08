@@ -1,10 +1,9 @@
+import type { AutoForgeExecutionInput } from "@/features/forge/lib/forge-execution-schema";
 import type {
   CreateActivityInput,
   ForgeActivityInput,
   User,
 } from "@/shared/schemas";
-
-import type { AutoForgeExecutionInput } from "@/features/forge/lib/forge-execution-schema";
 
 import {
   resolveActivityAccess,

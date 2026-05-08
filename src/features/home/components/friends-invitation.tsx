@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { Check, Copy, Share2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { Check, Copy, Share2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
@@ -109,7 +109,7 @@ export function FriendsInvitation() {
             variant="primary"
             className="h-11 rounded-md px-4 text-xs font-black"
             onClick={() => {
-              shareBrowserData({
+              void shareBrowserData({
                 title: "Join me on TeamForge",
                 text: "Find your people, intelligently.",
                 url: inviteLink,

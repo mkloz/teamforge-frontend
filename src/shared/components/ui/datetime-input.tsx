@@ -4,10 +4,11 @@ import { DateInput } from "@/shared/components/ui/date-input";
 import { TimeInput } from "@/shared/components/ui/time-input";
 import { cn } from "@/shared/lib/utils";
 
-interface DateTimeInputProps extends Omit<
-  ComponentProps<typeof DateInput>,
-  "value" | "onValueChange" | "placeholder"
-> {
+interface DateTimeInputProps
+  extends Omit<
+    ComponentProps<typeof DateInput>,
+    "value" | "onValueChange" | "placeholder"
+  > {
   intervalMinutes?: number;
   onValueChange: (value: string) => void;
   placeholder?: string;

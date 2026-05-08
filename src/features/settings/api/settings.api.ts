@@ -4,14 +4,14 @@ import {
   parseJsonWithRequestId,
 } from "@/shared/api/api";
 import { buildFileUploadBody } from "@/shared/api/file-upload";
+import type { NotificationPreferences } from "@/shared/schemas";
 import {
   authSessionListSchema,
   createPaginatedSchema,
-  fullUserResponseSchema,
   friendshipApiSchema,
+  fullUserResponseSchema,
   notificationPreferencesSchema,
 } from "@/shared/schemas";
-import type { NotificationPreferences } from "@/shared/schemas";
 
 const DEFAULT_LIMIT = "100";
 const paginatedFriendshipsSchema = createPaginatedSchema(friendshipApiSchema);

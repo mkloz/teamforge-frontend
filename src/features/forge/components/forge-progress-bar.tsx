@@ -1,5 +1,5 @@
-import { cn } from "@/shared/lib/utils";
 import type { ForgeMode } from "@/features/forge/lib/forge-contract";
+import { cn } from "@/shared/lib/utils";
 import type { Step } from "../hooks/use-forge-wizard";
 
 interface ForgeProgressBarProps {

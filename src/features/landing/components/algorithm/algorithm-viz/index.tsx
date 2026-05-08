@@ -1,8 +1,8 @@
-import { buildNodes } from "@/features/landing/lib/node-builder";
-import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useState } from "react";
 import { PHASE_LABELS } from "@/features/landing/components/algorithm/algorithm-data";
+import { buildNodes } from "@/features/landing/lib/node-builder";
+import { cn } from "@/shared/lib/utils";
 import { AlgoLine } from "./algo-line";
 import { AlgoNode } from "./algo-node";
 import { DataParticles } from "./data-particles";

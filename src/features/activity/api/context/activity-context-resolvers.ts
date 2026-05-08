@@ -1,9 +1,8 @@
-import { currentUserQueryOptions } from "@/shared/api/current-user-query";
-import { appQueryClient } from "@/shared/api/query-client";
-
 import type { ActivityQueryOptionsContext } from "@/features/activity/api/activity-query-options";
 import { ActivityQueryOptions } from "@/features/activity/api/activity-query-options";
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
+import { currentUserQueryOptions } from "@/shared/api/current-user-query";
+import { appQueryClient } from "@/shared/api/query-client";
 
 import {
   buildGroupParticipants,

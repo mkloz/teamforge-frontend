@@ -6,10 +6,10 @@ import type { Group } from "@/features/activity/lib/activity-contract";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import {
   buildGroupIdentityUpdateInput,
+  type GroupIdentityFormValues,
   getInitialGroupIdentityValues,
   hasGroupIdentityChanges,
   isGroupIdentityNameValid,
-  type GroupIdentityFormValues,
 } from "./group-identity/group-identity-form-state";
 import { useImageUploadField } from "./group-identity/use-image-upload-field";
 
@@ -46,10 +46,10 @@ export function useEditGroupIdentity(
       setError(null);
       onSaved?.();
     },
-    onError: (error) => {
+    onError: (mutationError) => {
       setError(
         getApiErrorMessage(
-          error,
+          mutationError,
           "We couldn't save those changes. Please try again.",
         ),
       );

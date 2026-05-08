@@ -1,4 +1,4 @@
-import { Voronoi } from "d3-delaunay";
+import type { Voronoi } from "d3-delaunay";
 import { ANIMATION_CONFIG, COLORS } from "@/shared/constants/voronoi.constants";
 import type { Point } from "./voronoi-contract";
 

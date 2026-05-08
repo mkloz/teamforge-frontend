@@ -1,3 +1,6 @@
+import { ListFilter, SlidersHorizontal } from "lucide-react";
+import { ExploreRightFilters } from "@/features/explore/components/explore-right-filters";
+import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 import { Button } from "@/shared/components/ui/button";
 import {
   Sheet,
@@ -8,9 +11,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/shared/components/ui/sheet";
-import { ListFilter, SlidersHorizontal } from "lucide-react";
-import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
-import { ExploreRightFilters } from "@/features/explore/components/explore-right-filters";
 
 export function MobileFiltersSheet() {
   const { isAnythingFiltered, resetFilters } = useExploreRouteState();

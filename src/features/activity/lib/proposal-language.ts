@@ -1,5 +1,5 @@
-import type { PlanProposal } from "@/shared/schemas/plan";
 import { formatPlanLocationProposalValue } from "@/features/activity/lib/plan-location";
+import type { PlanProposal } from "@/shared/schemas/plan";
 
 export const PROPOSAL_FIELD_LABELS: Record<PlanProposal["field"], string> = {
   TITLE: "Title",

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useActivityStore } from "@/features/activity/store/activity.store";
-import { useUiStore } from "@/shared/store/ui.store";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
+import { useUiStore } from "@/shared/store/ui.store";
 
 export function useActivityPanels() {
   const isBottomNavViewport = useMediaQuery("(max-width: 767px)");

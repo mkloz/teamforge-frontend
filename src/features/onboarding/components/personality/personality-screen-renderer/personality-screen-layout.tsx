@@ -1,13 +1,12 @@
-import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { ReactNode } from "react";
-
 import {
   fadeUpItem,
   staggerContainer,
 } from "@/features/onboarding/constants/motion";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 
 interface PersonalityScreenShellProps {
   children: ReactNode;

@@ -1,10 +1,10 @@
-import type { CreateRatingPayload } from "@/shared/schemas";
-
-import { ActivityActions } from "@/features/activity/api/activity-actions";
 import type {
   CreatePlanProposalDto,
   VotePlanProposalDto,
 } from "@/features/activity/api/activity.api";
+
+import { ActivityActions } from "@/features/activity/api/activity-actions";
+import type { CreateRatingPayload } from "@/shared/schemas";
 
 export const ActivityPlanRatingCommands = {
   createPlanProposal(

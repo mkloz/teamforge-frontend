@@ -1,9 +1,10 @@
-import { cn } from "@/shared/lib/utils";
 import { Smile } from "lucide-react";
-import React, { memo } from "react";
-import { AttachmentMenu } from "./attachment-menu";
+import type React from "react";
+import { memo } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Textarea } from "@/shared/components/ui/textarea";
+import { cn } from "@/shared/lib/utils";
+import { AttachmentMenu } from "./attachment-menu";
 
 interface InputRowProps {
   value: string;

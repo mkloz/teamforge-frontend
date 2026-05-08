@@ -1,10 +1,10 @@
-import { Button } from "@/shared/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Lock, RefreshCw, Users } from "lucide-react";
 import {
   fadeUpItem,
   staggerContainer,
 } from "@/features/onboarding/constants/motion";
+import { Button } from "@/shared/components/ui/button";
 
 interface InterestsIntroProps {
   backLabel: string;

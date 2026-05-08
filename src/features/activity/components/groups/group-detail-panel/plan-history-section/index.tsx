@@ -1,11 +1,11 @@
+import { ChevronDown, ChevronUp, History, Plus } from "lucide-react";
 import { useState } from "react";
-import { History, ChevronDown, ChevronUp, Plus } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
-import { Button } from "@/shared/components/ui/button";
 import type {
-  PlanHistoryItem,
   MemberRole,
+  PlanHistoryItem,
 } from "@/features/activity/lib/activity-contract";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 import { HistoryCard } from "./history-card";
 
 interface PlanHistorySectionProps {

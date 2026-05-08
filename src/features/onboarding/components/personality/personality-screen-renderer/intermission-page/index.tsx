@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
 import { staggerContainer } from "@/features/onboarding/constants/motion";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
+import { ActionSection } from "./action-section";
+import { ExtensionSection } from "./extension-section";
 import { IntermissionHeader } from "./header";
 import { InsightSection } from "./insight-section";
-import { ExtensionSection } from "./extension-section";
-import { ActionSection } from "./action-section";
 import { useIntermissionPage } from "./use-intermission-page";
 
 interface IntermissionPageProps {

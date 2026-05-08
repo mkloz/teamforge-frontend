@@ -1,4 +1,4 @@
-export {};
+export type TeamForgeGoogleMapsTypes = never;
 
 declare global {
   interface Window {

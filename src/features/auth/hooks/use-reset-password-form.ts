@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form";
 
 import { AuthCommands } from "@/features/auth/api/auth-commands";
 import {
-  resetPasswordSchema,
   type ResetPasswordValues,
+  resetPasswordSchema,
 } from "@/features/auth/schemas/auth-schemas";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";

@@ -1,5 +1,5 @@
+import { ClipboardList, FileText, Image as ImageIcon, Mic } from "lucide-react";
 import { memo } from "react";
-import { Mic, Image as ImageIcon, FileText, ClipboardList } from "lucide-react";
 import type { MessageType } from "@/shared/schemas/enums";
 
 export const SubtitleIcon = memo(

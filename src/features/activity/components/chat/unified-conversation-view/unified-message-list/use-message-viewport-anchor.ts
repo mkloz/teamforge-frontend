@@ -1,11 +1,11 @@
-import { useEffect, useLayoutEffect, useRef, type RefObject } from "react";
+import { type RefObject, useEffect, useLayoutEffect, useRef } from "react";
 
 import type { VirtualizedMessageBlock } from "@/features/activity/hooks/use-virtualized-message-blocks";
 import {
   captureViewportAnchor,
+  type PrependAnchorSnapshot,
   restorePrependAnchor,
   restoreViewportAnchor,
-  type PrependAnchorSnapshot,
   type ViewportAnchorSnapshot,
 } from "./message-viewport-anchor-utils";
 

@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
+import type { ReactNode } from "react";
 
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { Button } from "@/shared/components/ui/button";

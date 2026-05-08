@@ -4,8 +4,8 @@ import { memo, useState } from "react";
 
 import { usePlanProposalActions } from "@/features/activity/hooks/use-plan-proposal-actions";
 import { useSwipeToReply } from "@/features/activity/hooks/use-swipe-to-reply";
-import { formatChatTime } from "@/features/activity/lib/chat-utils";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { formatChatTime } from "@/features/activity/lib/chat-utils";
 import { buildProposalSummaryText } from "@/features/activity/lib/proposal-language";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { cn } from "@/shared/lib/utils";

@@ -1,6 +1,6 @@
-import { cn } from "@/shared/lib/utils";
 import { motion, useSpring, useTransform } from "framer-motion";
 import type { CSSProperties } from "react";
+import { cn } from "@/shared/lib/utils";
 
 export interface AnimatedCircularProgressBarProps {
   max: number;
@@ -52,6 +52,7 @@ export function AnimatedCircularProgressBar({
         className="size-full"
         strokeWidth="2"
         viewBox="0 0 100 100"
+        aria-hidden="true"
       >
         <circle
           cx="50"

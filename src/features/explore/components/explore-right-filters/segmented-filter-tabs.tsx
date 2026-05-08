@@ -1,5 +1,5 @@
-import { cn } from "@/shared/lib/utils";
 import type { LucideIcon } from "lucide-react";
+import { cn } from "@/shared/lib/utils";
 
 interface SegmentedFilterOption<TValue extends string> {
   icon: LucideIcon;

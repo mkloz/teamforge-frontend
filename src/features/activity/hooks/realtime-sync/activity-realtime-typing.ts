@@ -1,7 +1,7 @@
-import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
 import type { ScheduledDelayHandle } from "@/shared/lib/browser-scheduling";
-import { realtimeChatTypingPayloadSchema } from "@/shared/schemas";
+import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
 import type { RealtimeChatTypingPayload } from "@/shared/schemas";
+import { realtimeChatTypingPayloadSchema } from "@/shared/schemas";
 
 type TypingUser = RealtimeChatTypingPayload["user"];
 type TypingTimeoutHandle = ScheduledDelayHandle;

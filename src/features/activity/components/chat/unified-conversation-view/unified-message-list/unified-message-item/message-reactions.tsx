@@ -1,12 +1,12 @@
-import { cn } from "@/shared/lib/utils";
+import { memo } from "react";
+import { Button } from "@/shared/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
-import { memo } from "react";
-import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 
 export interface ReactionGroup {
   emoji: string;

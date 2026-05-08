@@ -1,7 +1,7 @@
-import { SearchInput } from "./search-input";
-import { SortDropdown } from "./sort-dropdown";
 import { MobileFiltersSheet } from "./mobile-filters-sheet";
+import { SearchInput } from "./search-input";
 import { SelectedFiltersBar } from "./selected-filters-bar";
+import { SortDropdown } from "./sort-dropdown";
 
 export function ExploreSearchHeader() {
   return (

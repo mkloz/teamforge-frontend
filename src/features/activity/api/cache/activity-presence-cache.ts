@@ -1,12 +1,3 @@
-import { appQueryClient } from "@/shared/api/query-client";
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-import type {
-  ChatApi,
-  FriendshipApi,
-  GroupApi,
-  OnlineStatus,
-} from "@/shared/schemas";
-
 import type {
   ActivityDirectSelectionData,
   ActivityGroupSelectionData,
@@ -16,6 +7,14 @@ import {
   ACTIVITY_FRIENDSHIPS_QUERY_KEY,
   ACTIVITY_GROUPS_QUERY_KEY,
 } from "@/features/activity/api/activity-query-keys";
+import { appQueryClient } from "@/shared/api/query-client";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import type {
+  ChatApi,
+  FriendshipApi,
+  GroupApi,
+  OnlineStatus,
+} from "@/shared/schemas";
 
 export const ActivityPresenceCache = {
   applyPresenceChanged(userId: string, onlineStatus: OnlineStatus) {
@@ -98,12 +97,11 @@ export const ActivityPresenceCache = {
           members:
             selection.group.members?.map((member) =>
               member.user?.id === userId
-                ? {
-                    ...member,
+                ? Object.assign({}, member, {
                     user: member.user
-                      ? { ...member.user, onlineStatus }
+                      ? Object.assign({}, member.user, { onlineStatus })
                       : member.user,
-                  }
+                  })
                 : member,
             ) ?? [],
         },
@@ -127,12 +125,11 @@ export const ActivityPresenceCache = {
           participants:
             selection.chat.participants?.map((participant) =>
               participant.user?.id === userId
-                ? {
-                    ...participant,
+                ? Object.assign({}, participant, {
                     user: participant.user
-                      ? { ...participant.user, onlineStatus }
+                      ? Object.assign({}, participant.user, { onlineStatus })
                       : participant.user,
-                  }
+                  })
                 : participant,
             ) ?? [],
         },

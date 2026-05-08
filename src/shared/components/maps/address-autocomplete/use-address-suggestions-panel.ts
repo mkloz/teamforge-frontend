@@ -1,10 +1,10 @@
 import {
+  type CSSProperties,
+  type RefObject,
   useCallback,
   useEffect,
   useRef,
   useState,
-  type CSSProperties,
-  type RefObject,
 } from "react";
 
 import { useFloatingPanelInteractions } from "@/shared/hooks/use-floating-panel-interactions";

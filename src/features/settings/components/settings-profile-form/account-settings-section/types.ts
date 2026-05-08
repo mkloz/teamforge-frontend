@@ -1,6 +1,6 @@
+import type { UseFormReturn } from "react-hook-form";
 import type { SettingsProfileValues } from "@/features/settings/schemas/settings-profile.schema";
 import type { User } from "@/shared/schemas";
-import type { UseFormReturn } from "react-hook-form";
 
 export interface AccountSettingsSectionProps {
   currentUser: User | undefined;

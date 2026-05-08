@@ -1,6 +1,5 @@
-import type { ReactNode } from "react";
-
 import { Calendar, Check, MapPin, Users } from "lucide-react";
+import type { ReactNode } from "react";
 
 import { Avatar } from "@/shared/components/common/avatar";
 import { Image } from "@/shared/components/common/image";

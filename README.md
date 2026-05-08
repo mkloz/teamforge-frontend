@@ -37,7 +37,7 @@ The core mechanic: press one button — **"Forge my group"** — and receive one
 | Animations           | Framer Motion v12                                          |
 | Data viz             | Recharts + D3 through charting dependencies                |
 | Icons                | Lucide React                                               |
-| Linting / Formatting | ESLint 9 + Prettier 3.8                                    |
+| Linting / Formatting | Oxlint + Biome                                             |
 | Git hooks            | Husky + lint-staged                                        |
 
 ---
@@ -151,12 +151,13 @@ Create a `.env.local` file at the project root. **Never commit this file.**
 | `npm run dev`       | Start the Vite development server with HMR    |
 | `npm run build`     | Type-check and build for production (`dist/`) |
 | `npm run preview`   | Preview the production build locally          |
-| `npm run lint`      | Run ESLint across the entire codebase         |
-| `npm run typecheck` | Run TypeScript project checks                 |
-| `npm run check`     | Run linting and type-checking together        |
-| `npm run format`    | Format all `src/` files with Prettier         |
+| `npm run lint`      | Run Oxlint, Biome, and TypeScript checks      |
+| `npm run lint:fix`  | Apply Biome safe fixes across the repo        |
+| `npm run format`    | Format the repo with Biome                    |
+| `npm run typecheck` | Alias for `npm run lint:types`                |
+| `npm run check`     | Alias for `npm run lint`                      |
 
-Pre-commit hooks (via Husky + lint-staged) automatically run ESLint fixes and Prettier on staged `src/` files before every commit.
+Pre-commit hooks (via Husky + lint-staged) automatically run Biome safe fixes on staged files before every commit.
 
 ---
 

@@ -1,9 +1,8 @@
-import type { MessageApi } from "@/shared/schemas";
-
 import type {
   ActivityParticipant,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
+import type { MessageApi } from "@/shared/schemas";
 
 import {
   buildMessageParticipantsIndex,

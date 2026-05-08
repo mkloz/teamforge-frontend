@@ -1,10 +1,9 @@
-import type { Interest } from "@/shared/schemas";
 import { createElement } from "react";
-
 import {
   getLeafInterests,
   getSubcategoryIcon,
 } from "@/features/onboarding/lib/interest-catalog";
+import type { Interest } from "@/shared/schemas";
 import { TagPill } from "./tag-pill";
 
 interface SubcategoryTagGroupProps {

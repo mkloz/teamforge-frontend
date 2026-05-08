@@ -1,7 +1,7 @@
 import { OCEAN_DIMENSION_LABELS } from "@/features/onboarding/data/personality-metadata";
 import {
-  toDisplayPercent,
   type OceanVectorWithMeta,
+  toDisplayPercent,
 } from "@/features/onboarding/utils/score-calculator";
 
 export const CALCULATION_DIMENSIONS = ["O", "C", "E", "A", "N"] as const;

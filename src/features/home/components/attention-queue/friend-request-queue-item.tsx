@@ -31,8 +31,7 @@ export function FriendRequestQueueItem({
   request,
 }: FriendRequestQueueItemProps) {
   return (
-    <motion.article
-      role="listitem"
+    <motion.li
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: 16 }}
@@ -89,7 +88,7 @@ export function FriendRequestQueueItem({
           <X className="size-3.5" />
         </Button>
       </div>
-    </motion.article>
+    </motion.li>
   );
 }
 

@@ -4,11 +4,11 @@ import type {
   LocationType,
   Visibility,
 } from "@/features/forge/lib/forge-contract";
+import type { ForgePlanTemplate } from "@/features/forge/lib/forge-template";
 import type {
   ForgeWizardData,
   ForgeWizardField,
 } from "@/features/forge/lib/forge-wizard";
-import type { ForgePlanTemplate } from "@/features/forge/lib/forge-template";
 
 import type {
   ForgeWizardDispatch,
@@ -33,7 +33,8 @@ export interface ActivityFieldActionOptions {
   syncMode: UseForgeWizardFieldActionsOptions["syncMode"];
 }
 
-export interface ForgeSettingsFieldActionOptions extends BaseFieldActionOptions {
+export interface ForgeSettingsFieldActionOptions
+  extends BaseFieldActionOptions {
   state: ForgeWizardData;
   syncMode: UseForgeWizardFieldActionsOptions["syncMode"];
 }
@@ -81,8 +82,7 @@ export interface ForgeSettingsFieldActions {
 }
 
 export interface ForgeWizardFieldActions
-  extends
-    ActivityFieldActions,
+  extends ActivityFieldActions,
     PlanFieldActions,
     IdentityFieldActions,
     ForgeSettingsFieldActions {

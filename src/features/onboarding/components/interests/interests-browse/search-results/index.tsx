@@ -2,12 +2,12 @@ import { motion } from "framer-motion";
 import type { InterestSearchResults } from "@/features/onboarding/utils/interest-logic";
 
 import { SearchEmptyState } from "./search-empty-state";
+import { SearchResultSubcategories } from "./search-result-subcategories";
+import { SearchResultTags } from "./search-result-tags";
 import {
   formatSearchResultCount,
   getSearchResultsCount,
 } from "./search-results-count";
-import { SearchResultSubcategories } from "./search-result-subcategories";
-import { SearchResultTags } from "./search-result-tags";
 import { useSearchResultExpansion } from "./use-search-result-expansion";
 
 export function SearchResults({

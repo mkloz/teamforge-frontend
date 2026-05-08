@@ -1,5 +1,5 @@
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,7 +14,6 @@ import {
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import type { User } from "@/shared/schemas";
-import { Trash2 } from "lucide-react";
 
 interface DeleteAccountSectionProps {
   currentUser: User | undefined;

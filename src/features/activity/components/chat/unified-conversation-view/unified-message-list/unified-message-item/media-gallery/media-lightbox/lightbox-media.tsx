@@ -1,10 +1,10 @@
+import { ImageOff, Loader2 } from "lucide-react";
+import { memo, useState } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import { cacheMediaIntrinsicSize } from "@/features/activity/lib/media-intrinsic-size";
 import { Image } from "@/shared/components/common/image";
 import { useImageState } from "@/shared/hooks/use-image-state";
 import { cn } from "@/shared/lib/utils";
-import { ImageOff, Loader2 } from "lucide-react";
-import { memo, useState } from "react";
 
 export const LightboxImage = memo(function LightboxImage({
   media,

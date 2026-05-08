@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent, KeyboardEvent } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useGoogleMapsStatus } from "@/shared/hooks/use-google-maps-status";
 import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";

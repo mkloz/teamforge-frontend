@@ -1,8 +1,8 @@
+import { ArrowLeft } from "lucide-react";
+import { memo } from "react";
 import { useHeaderSearch } from "@/features/activity/hooks/use-header-search";
 import type { OnlineStatus } from "@/features/activity/lib/activity-contract";
 import { Button } from "@/shared/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import { memo } from "react";
 import { HeaderActions } from "./header-actions";
 import { HeaderInfo } from "./header-info";
 import { HeaderSearch } from "./header-search";

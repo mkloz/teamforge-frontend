@@ -10,11 +10,10 @@ interface BrowseGroupsRowProps {
 
 export function BrowseGroupsRow({ delay }: BrowseGroupsRowProps) {
   return (
-    <motion.div
+    <motion.li
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay }}
-      role="listitem"
     >
       <Link
         {...buildExploreNavigation()}
@@ -27,6 +26,6 @@ export function BrowseGroupsRow({ delay }: BrowseGroupsRowProps) {
           aria-hidden="true"
         />
       </Link>
-    </motion.div>
+    </motion.li>
   );
 }

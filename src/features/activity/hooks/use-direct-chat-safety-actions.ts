@@ -1,13 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-
+import { ActivityCommands } from "@/features/activity/api/activity-commands";
+import type { DirectChat } from "@/features/activity/lib/activity-contract";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-
-import { ActivityCommands } from "@/features/activity/api/activity-commands";
-import type { DirectChat } from "@/features/activity/lib/activity-contract";
 import { useClearActivityRouteSelection } from "./use-clear-activity-route-selection";
 
 type DirectChatSafetyAction = "block" | "unblock";

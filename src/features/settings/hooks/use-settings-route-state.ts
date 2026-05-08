@@ -2,8 +2,8 @@ import { parseAsStringLiteral, useQueryState } from "nuqs";
 
 import {
   normalizeSettingsSection,
-  settingsSectionValues,
   type SettingsSection,
+  settingsSectionValues,
 } from "@/features/settings/lib/settings-route";
 
 const DEFAULT_SETTINGS_SECTION: SettingsSection = "account";

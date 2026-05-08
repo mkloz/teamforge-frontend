@@ -1,9 +1,8 @@
-import type { Interest } from "@/shared/schemas";
-
 import {
   getLeafInterests,
   getSubcategories,
 } from "@/features/onboarding/lib/interest-catalog";
+import type { Interest } from "@/shared/schemas";
 
 export interface InterestReviewGroup {
   category: Interest;

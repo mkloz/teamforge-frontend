@@ -39,7 +39,7 @@ export function GroupsGrid() {
         }
       />
 
-      <div role="list" aria-label="Your groups" className="flex flex-col">
+      <ul aria-label="Your groups" className="flex list-none flex-col p-0">
         {visibleGroups.length > 0 ? (
           <>
             {visibleGroups.map((group, i) => (
@@ -58,7 +58,7 @@ export function GroupsGrid() {
         ) : (
           <GroupsGridEmpty />
         )}
-      </div>
+      </ul>
     </section>
   );
 }

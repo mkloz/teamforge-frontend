@@ -1,4 +1,3 @@
-import type { User } from "@/shared/schemas";
 import { getArchetype } from "@/features/profile/lib/archetypes";
 import type {
   DimensionScore,
@@ -8,6 +7,7 @@ import {
   getUserOceanScores as getSharedUserOceanScores,
   normalizeTrustScore as normalizeSharedTrustScore,
 } from "@/shared/lib/user-psychometrics";
+import type { User } from "@/shared/schemas";
 
 /**
  * Determines the MBTI letter from a score (0-100)

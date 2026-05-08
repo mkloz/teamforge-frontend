@@ -1,8 +1,8 @@
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import { ActivityRealtimeHandlers } from "@/features/activity/api/activity-realtime-handlers";
 import { shouldApplyRealtimeEvent } from "@/shared/lib/realtime-event-registry";
-import { realtimeMessagePayloadSchema } from "@/shared/schemas";
 import type { RealtimeMessagePayload } from "@/shared/schemas";
+import { realtimeMessagePayloadSchema } from "@/shared/schemas";
 
 interface RealtimeMessageEventContext {
   activeChatId?: string | null;

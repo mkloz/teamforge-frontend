@@ -1,10 +1,10 @@
 import { ChevronDown, Filter } from "lucide-react";
+import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
+import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
+import { AccessFilter } from "./access-filter";
 import { CategoryFilter } from "./category-filter";
 import { LocationFilter } from "./location-filter";
 import { SizeFilter } from "./size-filter";
-import { AccessFilter } from "./access-filter";
-import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
-import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 
 interface ExploreRightFiltersProps {
   hideHeader?: boolean;

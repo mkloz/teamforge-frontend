@@ -1,6 +1,6 @@
-import { Avatar } from "@/shared/components/common/avatar";
 import { MapPin } from "lucide-react";
 import type { ReactNode } from "react";
+import { Avatar } from "@/shared/components/common/avatar";
 
 export interface Step {
   number: string;

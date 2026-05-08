@@ -1,7 +1,7 @@
-import { cn } from "@/shared/lib/utils";
 import { memo } from "react";
-import { LinkPreview } from "./link-preview";
 import { extractFirstUrl } from "@/features/activity/lib/chat-utils";
+import { cn } from "@/shared/lib/utils";
+import { LinkPreview } from "./link-preview";
 
 interface MessageContentProps {
   content?: string;

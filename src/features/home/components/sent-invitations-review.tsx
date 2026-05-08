@@ -1,9 +1,9 @@
-import type { Invite } from "@/shared/schemas";
-import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import { BellRing } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
+import type { Invite } from "@/shared/schemas";
 import {
   getInviteStatusCopy,
   getInviteStatusSentence,

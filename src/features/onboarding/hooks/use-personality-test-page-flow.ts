@@ -9,10 +9,9 @@ import { OnboardingCache } from "../api/onboarding-cache";
 import { OnboardingCommands } from "../api/onboarding-commands";
 import { buildQuestionList, type TestLength } from "../data/ipip-questions";
 import {
-  buildPersonalityNextSearch,
-  buildPersonalityPreviousSearch,
-  resolvePersonalityExitNavigation,
-} from "../lib/personality-test-page-flow";
+  toOptionalOnboardingSearch,
+  useOnboardingFlowState,
+} from "../lib/onboarding-flow-state";
 import {
   buildBackToLabel,
   getOnboardingReturnDestinationLabel,
@@ -20,9 +19,10 @@ import {
 import { getOceanScoresFromVector } from "../lib/personality-results";
 import { QUESTIONS_PER_PAGE } from "../lib/personality-test-page-constants";
 import {
-  toOptionalOnboardingSearch,
-  useOnboardingFlowState,
-} from "../lib/onboarding-flow-state";
+  buildPersonalityNextSearch,
+  buildPersonalityPreviousSearch,
+  resolvePersonalityExitNavigation,
+} from "../lib/personality-test-page-flow";
 import { usePersonalityTest } from "./use-personality-test";
 
 export function usePersonalityTestPageFlow() {

@@ -1,11 +1,11 @@
-import type { OnlineStatus } from "@/features/activity/lib/activity-contract";
-import { Avatar } from "@/shared/components/common/avatar";
-import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { memo } from "react";
 import { UnifiedTypingIndicator } from "@/features/activity/components/chat/unified-typing-indicator";
+import type { OnlineStatus } from "@/features/activity/lib/activity-contract";
+import { Avatar } from "@/shared/components/common/avatar";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 
 interface HeaderInfoProps {
   title: string;

@@ -1,9 +1,9 @@
-import {
-  PreferenceRowList,
-  type BooleanPreferenceItem,
-} from "./preference-row-list";
 import type { BooleanSettingsPreferenceKey } from "@/features/settings/components/settings-profile-form/settings-form-types";
 import type { NotificationPreferences } from "@/shared/schemas";
+import {
+  type BooleanPreferenceItem,
+  PreferenceRowList,
+} from "./preference-row-list";
 
 interface PreferenceGroupProps {
   title: string;

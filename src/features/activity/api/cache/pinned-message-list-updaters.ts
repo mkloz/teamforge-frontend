@@ -1,5 +1,3 @@
-import type { MessageApi } from "@/shared/schemas";
-
 import { toMessageApi } from "@/features/activity/api/messages/message-mappers";
 import {
   getMessageVersion,
@@ -7,6 +5,7 @@ import {
   shouldReplaceMessage,
 } from "@/features/activity/api/messages/message-versioning";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import type { MessageApi } from "@/shared/schemas";
 
 export function removePinnedUiMessage(
   current: UnifiedMessage[] | undefined,

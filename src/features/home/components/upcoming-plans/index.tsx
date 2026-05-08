@@ -1,10 +1,10 @@
-import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
-import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
-import { getUpcomingPreview } from "@/features/home/lib/home-insights";
-import { useHomeData } from "@/features/home/hooks/use-home-data";
-import { Button } from "@/shared/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { CalendarDays } from "lucide-react";
+import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
+import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
+import { useHomeData } from "@/features/home/hooks/use-home-data";
+import { getUpcomingPreview } from "@/features/home/lib/home-insights";
+import { Button } from "@/shared/components/ui/button";
 
 import { PlanCard } from "./plan-card";
 
@@ -66,14 +66,11 @@ export function UpcomingPlans() {
       {visiblePlans.length === 0 ? (
         <EmptyPlans />
       ) : (
-        <div
-          role="list"
-          className="relative grid border-y border-border/55 before:absolute before:top-4 before:bottom-4 before:left-4 before:w-px before:bg-border/45"
-        >
+        <ul className="relative grid list-none border-y border-border/55 p-0 before:absolute before:top-4 before:bottom-4 before:left-4 before:w-px before:bg-border/45">
           {visiblePlans.map((plan, i) => (
             <PlanCard key={plan.plan.id} group={plan} index={i} />
           ))}
-        </div>
+        </ul>
       )}
 
       {hiddenCount > 0 ? (

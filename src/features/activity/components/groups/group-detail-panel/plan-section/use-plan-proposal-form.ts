@@ -5,8 +5,8 @@ import type { Plan } from "@/features/activity/lib/activity-contract";
 
 import {
   buildLocationProposalValue,
-  getCurrentSerializedLocationProposalValue,
   getCurrentProposalValue,
+  getCurrentSerializedLocationProposalValue,
   getLocationProposalInput,
   normalizeProposedValue,
   type ProposalField,
@@ -61,10 +61,10 @@ export function usePlanProposalForm(plan: Plan) {
         field === "LOCATION"
           ? getCurrentSerializedLocationProposalValue(plan)
           : normalizeProposedValue(field, currentValue);
-    } catch (error) {
+    } catch (proposalError) {
       setError(
-        error instanceof Error
-          ? error.message
+        proposalError instanceof Error
+          ? proposalError.message
           : "Check the proposal value and try again.",
       );
       return;

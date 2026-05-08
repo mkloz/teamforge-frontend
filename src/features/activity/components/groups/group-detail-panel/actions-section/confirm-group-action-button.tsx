@@ -15,10 +15,8 @@ import {
   type GroupActionButtonProps,
 } from "./group-action-button";
 
-interface ConfirmGroupActionButtonProps extends Omit<
-  GroupActionButtonProps,
-  "onClick"
-> {
+interface ConfirmGroupActionButtonProps
+  extends Omit<GroupActionButtonProps, "onClick"> {
   confirmActionLabel: string;
   confirmDescription: string;
   confirmTitle: string;

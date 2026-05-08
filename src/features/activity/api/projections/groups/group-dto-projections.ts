@@ -1,10 +1,10 @@
-import type { ChatApi, GroupApi, PlanProposal } from "@/shared/schemas";
+import { mapGroupMember } from "@/features/activity/api/projections/activity-participant-projections";
 
 import type {
   ActivityParticipant,
   Group,
 } from "@/features/activity/lib/activity-contract";
-import { mapGroupMember } from "@/features/activity/api/projections/activity-participant-projections";
+import type { ChatApi, GroupApi, PlanProposal } from "@/shared/schemas";
 
 import { mapGroupPinnedMessages } from "./group-chat-projections";
 
@@ -70,19 +70,25 @@ function mapGroupPlan(
   group: GroupApi,
   proposals: PlanProposal[],
 ): NonNullable<Group["plan"]> {
+  const { plan } = group;
+
+  if (!plan) {
+    throw new Error("Cannot map group plan without a plan payload.");
+  }
+
   return {
-    id: group.plan!.id,
-    title: group.plan!.title,
+    id: plan.id,
+    title: plan.title,
     description: null,
-    category: group.plan!.category,
+    category: plan.category,
     coverImage: group.avatar,
-    status: group.plan!.status,
-    dateTime: group.plan!.dateTime,
-    locationMode: group.plan!.locationMode,
-    location: group.plan!.location,
-    locationLat: group.plan!.locationLat,
-    locationLng: group.plan!.locationLng,
-    cost: group.plan!.cost,
+    status: plan.status,
+    dateTime: plan.dateTime,
+    locationMode: plan.locationMode,
+    location: plan.location,
+    locationLat: plan.locationLat,
+    locationLng: plan.locationLng,
+    cost: plan.cost,
     costAmount: null,
     costDetails: null,
     completedAt: null,

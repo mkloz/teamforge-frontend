@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Reply, X } from "lucide-react";
 import { memo } from "react";
-import { Button } from "@/shared/components/ui/button";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { Button } from "@/shared/components/ui/button";
 
 interface ReplyPreviewProps {
   replyingTo: UnifiedMessage | null;

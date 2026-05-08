@@ -1,13 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
-import { trackMutationOutcome } from "@/shared/lib/telemetry";
-import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-
 import { SettingsCache } from "@/features/settings/api/settings-cache";
 import { SettingsCommands } from "@/features/settings/api/settings-commands";
 import { SettingsQueryFactory } from "@/features/settings/api/settings-query-factory";
+import { getApiErrorMessage } from "@/shared/lib/api-error-message";
+import { trackMutationOutcome } from "@/shared/lib/telemetry";
+import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
 export function useSettingsBlockedUsers(enabled: boolean) {
   const blockedUsersQuery = useQuery({

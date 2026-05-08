@@ -1,12 +1,12 @@
 import { Loader2 } from "lucide-react";
 import {
-  useEffect,
-  useRef,
-  useState,
   type ImgHTMLAttributes,
   type ReactNode,
   type Ref,
   type SyntheticEvent,
+  useEffect,
+  useRef,
+  useState,
 } from "react";
 
 import { cn } from "@/shared/lib/utils";
@@ -58,12 +58,14 @@ export function Image({
   const isSrcProvided = Boolean(src?.trim());
   const actualSrc = error && fallbackSrc ? fallbackSrc : src;
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: src changes must reset image state even when isSrcProvided stays true.
   useEffect(() => {
     setError(false);
     setFallbackFailed(false);
     setIsLoading(isSrcProvided);
   }, [isSrcProvided, src]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: actualSrc changes when fallback handling swaps image URLs.
   useEffect(() => {
     if (!isSrcProvided || !imageRef.current) {
       return;
@@ -98,29 +100,32 @@ export function Image({
       className={cn("relative h-full w-full overflow-hidden", wrapperClassName)}
     >
       {isSrcProvided && !fallbackFailed ? (
-        <img
-          ref={(node) => {
-            imageRef.current = node;
-            if (typeof ref === "function") {
-              ref(node);
-            } else if (ref) {
-              ref.current = node;
-            }
-          }}
-          src={actualSrc}
-          alt={alt}
-          style={style}
-          className={cn(
-            "h-full w-full object-cover transition-[filter,opacity,transform,scale] duration-700 ease-out",
-            isLoading ? "blur-sm" : "blur-none",
-            className,
-          )}
-          loading={loading}
-          decoding={decoding}
-          onLoad={handleLoad}
-          onError={handleError}
-          {...props}
-        />
+        <>
+          {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions: Image load/error lifecycle handlers are not user interaction. */}
+          <img
+            ref={(node) => {
+              imageRef.current = node;
+              if (typeof ref === "function") {
+                ref(node);
+              } else if (ref) {
+                ref.current = node;
+              }
+            }}
+            src={actualSrc}
+            alt={alt}
+            style={style}
+            className={cn(
+              "h-full w-full object-cover transition-[filter,opacity,transform,scale] duration-700 ease-out",
+              isLoading ? "blur-sm" : "blur-none",
+              className,
+            )}
+            loading={loading}
+            decoding={decoding}
+            onLoad={handleLoad}
+            onError={handleError}
+            {...props}
+          />
+        </>
       ) : null}
 
       {showFallback ? (

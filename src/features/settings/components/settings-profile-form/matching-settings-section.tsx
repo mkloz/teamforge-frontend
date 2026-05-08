@@ -1,11 +1,8 @@
 import { Link } from "@tanstack/react-router";
-
-import { Button } from "@/shared/components/ui/button";
 import {
   buildInterestsEditNavigation,
   buildPersonalityEditNavigation,
 } from "@/features/onboarding/lib/onboarding-route";
-import type { NotificationPreferences, User } from "@/shared/schemas";
 import {
   PreferenceStatusMessage,
   SectionHeading,
@@ -16,6 +13,8 @@ import {
   StatPill,
 } from "@/features/settings/components/settings-profile-form/settings-form-controls";
 import { normalizeTrustScore } from "@/features/settings/components/settings-profile-form/settings-formatters";
+import { Button } from "@/shared/components/ui/button";
+import type { NotificationPreferences, User } from "@/shared/schemas";
 
 interface MatchingSettingsSectionProps {
   currentUser: User | undefined;

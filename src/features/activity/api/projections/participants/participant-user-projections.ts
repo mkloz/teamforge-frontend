@@ -1,6 +1,5 @@
-import type { FriendshipUserApi, GroupMemberApi, User } from "@/shared/schemas";
-
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
+import type { FriendshipUserApi, GroupMemberApi, User } from "@/shared/schemas";
 
 import { normalizeTrustScore } from "./participant-score-normalizers";
 

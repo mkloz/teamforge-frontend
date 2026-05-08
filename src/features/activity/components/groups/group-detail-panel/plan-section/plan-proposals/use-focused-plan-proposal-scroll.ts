@@ -12,6 +12,7 @@ export function useFocusedPlanProposalScroll(
 ) {
   const proposalRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Proposal list changes can mount the focused ref after the id is already set.
   useEffect(() => {
     if (!focusedProposalId) {
       return;

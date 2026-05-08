@@ -1,12 +1,12 @@
-import { formatMemberSince } from "./account-formatters";
-import type { User } from "@/shared/schemas";
 import {
   CalendarDays,
   CheckCircle2,
+  type LucideIcon,
   Mail,
   ShieldCheck,
-  type LucideIcon,
 } from "lucide-react";
+import type { User } from "@/shared/schemas";
+import { formatMemberSince } from "./account-formatters";
 
 function AccountFact({
   icon: Icon,

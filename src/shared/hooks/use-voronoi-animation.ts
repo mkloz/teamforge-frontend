@@ -10,29 +10,29 @@ import {
   NUM_SEEDS,
 } from "@/shared/constants/voronoi.constants";
 import {
+  getBrowserDevicePixelRatio,
+  getBrowserMediaQuery,
+} from "@/shared/lib/browser-environment";
+import type {
+  ScheduledAnimationFrameHandle,
+  ScheduledDelayHandle,
+} from "@/shared/lib/browser-scheduling";
+import {
   cancelDelay,
   cancelScheduledAnimationFrame,
   scheduleAnimationFrame,
   scheduleDelay,
 } from "@/shared/lib/browser-scheduling";
 import type {
-  ScheduledAnimationFrameHandle,
-  ScheduledDelayHandle,
-} from "@/shared/lib/browser-scheduling";
-import {
-  getBrowserDevicePixelRatio,
-  getBrowserMediaQuery,
-} from "@/shared/lib/browser-environment";
+  Dimensions,
+  MouseState,
+  Point,
+} from "@/shared/lib/voronoi/voronoi-contract";
 import { updateParticlePhysics } from "@/shared/lib/voronoi/voronoi-physics";
 import {
   drawCatalystCore,
   drawParticleCells,
 } from "@/shared/lib/voronoi/voronoi-renderer";
-import type {
-  Dimensions,
-  MouseState,
-  Point,
-} from "@/shared/lib/voronoi/voronoi-contract";
 
 interface UseVoronoiOptions {
   progress: number;
@@ -349,16 +349,11 @@ export function useVoronoiAnimation({
     // This prevents the glow from 'snapping' back to center while fading.
   }
 
-  function handleMouseEnter() {
-    // We wait for the first move event to snap the mouse position
-  }
-
   return {
     containerRef,
     canvasRef,
     dimensions,
     handleMouseMove,
-    handleMouseEnter,
     handleMouseLeave,
     pulseTyping,
   };

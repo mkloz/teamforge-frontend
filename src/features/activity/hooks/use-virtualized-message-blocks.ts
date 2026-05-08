@@ -1,4 +1,4 @@
-import { useState, type RefObject } from "react";
+import { type RefObject, useState } from "react";
 
 import {
   buildVirtualizedMessageBlocks,

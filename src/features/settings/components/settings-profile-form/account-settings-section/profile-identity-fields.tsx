@@ -1,3 +1,4 @@
+import type { UseFormReturn } from "react-hook-form";
 import type { SettingsProfileValues } from "@/features/settings/schemas/settings-profile.schema";
 import {
   FormControl,
@@ -10,7 +11,6 @@ import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
 import type { User } from "@/shared/schemas";
-import type { UseFormReturn } from "react-hook-form";
 
 interface ProfileIdentityFieldsProps {
   currentUser: User | undefined;

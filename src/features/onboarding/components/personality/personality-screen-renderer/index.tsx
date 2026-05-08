@@ -1,3 +1,5 @@
+import type { TestLength } from "@/features/onboarding/data/ipip-questions";
+import type { usePersonalityTest } from "@/features/onboarding/hooks/use-personality-test";
 import { CalculatingScreen } from "./calculating-screen";
 import { IntermissionPage } from "./intermission-page";
 import { KeepInMind } from "./keep-in-mind";
@@ -7,8 +9,6 @@ import { PersonalityResults } from "./personality-results";
 import { QuestionPage } from "./question-page";
 import { Theory101 } from "./theory-101";
 import { usePersonalityScreenNavigation } from "./use-personality-screen-navigation";
-import type { TestLength } from "@/features/onboarding/data/ipip-questions";
-import type { usePersonalityTest } from "@/features/onboarding/hooks/use-personality-test";
 
 interface PersonalityScreenRendererProps {
   backLabel: string;
@@ -85,9 +85,10 @@ export function PersonalityScreenRenderer({
         />
       );
     case "calculating":
+      if (!vector) return null;
       return (
         <CalculatingScreen
-          vector={vector!}
+          vector={vector}
           onDone={actions.handleCalculationDone}
         />
       );

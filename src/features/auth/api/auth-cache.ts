@@ -1,4 +1,4 @@
-import { authSession, type AuthTokens } from "@/shared/api/auth-session";
+import { type AuthTokens, authSession } from "@/shared/api/auth-session";
 import {
   CURRENT_USER_QUERY_KEY,
   clearCurrentUserCache,

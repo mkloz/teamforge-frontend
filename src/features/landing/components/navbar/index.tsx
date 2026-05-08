@@ -1,11 +1,10 @@
-import {
-  useAuthSessionState,
-  useCurrentUserQuery,
-} from "@/shared/api/current-user-query";
-import { logoutCurrentSession } from "@/shared/api/auth-session-commands";
+import { Link } from "@tanstack/react-router";
+import { Menu, X } from "lucide-react";
+import type { MouseEvent } from "react";
+import { useState } from "react";
 import { TeamForgeLogo } from "@/assets/logo";
+import { useMobileNavDialog } from "@/features/landing/components/navbar/use-mobile-nav-dialog";
 import { LANDING_NAV_LINKS } from "@/features/landing/constants/landing-sections";
-import { useWindowScrollThreshold } from "@/shared/hooks/use-window-scroll-threshold";
 import {
   getLandingPrimaryAction,
   getLandingSecondaryAction,
@@ -14,13 +13,14 @@ import {
   scrollToLandingSection,
   scrollToLandingTop,
 } from "@/features/landing/lib/landing-scroll";
+import { logoutCurrentSession } from "@/shared/api/auth-session-commands";
+import {
+  useAuthSessionState,
+  useCurrentUserQuery,
+} from "@/shared/api/current-user-query";
 import { Button } from "@/shared/components/ui/button";
+import { useWindowScrollThreshold } from "@/shared/hooks/use-window-scroll-threshold";
 import { cn } from "@/shared/lib/utils";
-import { Link } from "@tanstack/react-router";
-import { Menu, X } from "lucide-react";
-import type { MouseEvent } from "react";
-import { useState } from "react";
-import { useMobileNavDialog } from "@/features/landing/components/navbar/use-mobile-nav-dialog";
 
 const MOBILE_NAV_LINK_DELAYS = [
   "delay-0",

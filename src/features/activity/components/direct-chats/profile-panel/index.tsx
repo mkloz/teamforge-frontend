@@ -1,16 +1,16 @@
-import { cn } from "@/shared/lib/utils";
+import { UserProfilePanel as ProfilePanelContent } from "@/features/activity/components/user-profile-panel";
+import { useDirectChatSafetyActions } from "@/features/activity/hooks/use-direct-chat-safety-actions";
 import type { DirectChat } from "@/features/activity/lib/activity-contract";
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
-import { useDirectChatSafetyActions } from "@/features/activity/hooks/use-direct-chat-safety-actions";
-import { useEscapeKey } from "@/shared/hooks/use-escape-key";
-import { UserProfilePanel as ProfilePanelContent } from "@/features/activity/components/user-profile-panel";
-import { ProfilePanelHeader } from "./profile-panel-header";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
 } from "@/shared/components/ui/drawer";
+import { useEscapeKey } from "@/shared/hooks/use-escape-key";
+import { cn } from "@/shared/lib/utils";
+import { ProfilePanelHeader } from "./profile-panel-header";
 
 interface ProfilePanelProps {
   chat: DirectChat;

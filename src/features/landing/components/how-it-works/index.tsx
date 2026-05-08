@@ -10,11 +10,11 @@ import {
 import { ChevronDown } from "lucide-react";
 import type { MouseEvent } from "react";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
-import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
 import { ContentStep } from "@/features/landing/components/how-it-works/content-step";
-import { ProgressBarStep } from "@/features/landing/components/how-it-works/progress-bar-step";
 import { STEPS } from "@/features/landing/components/how-it-works/how-it-works-data";
+import { ProgressBarStep } from "@/features/landing/components/how-it-works/progress-bar-step";
 import { VoronoiLogo } from "@/features/landing/components/how-it-works/voronoi-logo";
+import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
 import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
 import { Button } from "@/shared/components/ui/button";
 import { scrollToElementProgress } from "@/shared/lib/browser-scroll";
@@ -113,6 +113,8 @@ export function HowItWorksSection() {
         </div>
 
         {/* Right Side: The Voronoi Convergence Visualization */}
+        {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions: Mouse movement only drives a decorative tilt effect. */}
+        {/* biome-ignore lint/a11y/noStaticElementInteractions: The visualization is not an activation target. */}
         <div
           ref={visualRef}
           onMouseMove={handleMouseMove}
@@ -124,9 +126,9 @@ export function HowItWorksSection() {
             className="absolute top-1/2 right-6 z-50 hidden -translate-y-1/2 flex-col gap-4 lg:flex"
             aria-label="Steps progress"
           >
-            {STEPS.map((_, i) => (
+            {STEPS.map((step, i) => (
               <ProgressBarStep
-                key={i}
+                key={step.title}
                 index={i}
                 smoothProgress={smoothProgress}
                 onClick={() => {

@@ -1,13 +1,13 @@
-import { GroupDetailPanel } from "@/features/activity/components/groups/group-detail-panel";
+import { AnimatePresence, motion } from "framer-motion";
+import { useRef } from "react";
+import { UnifiedConversationView } from "@/features/activity/components/chat/unified-conversation-view";
+import type { MessageScrollHandle } from "@/features/activity/components/chat/unified-conversation-view/unified-message-list/message-scroll.types";
 import {
   ProfilePanel,
   ProfilePanelMobile,
 } from "@/features/activity/components/direct-chats/profile-panel";
-import { UnifiedConversationView } from "@/features/activity/components/chat/unified-conversation-view";
-import type { MessageScrollHandle } from "@/features/activity/components/chat/unified-conversation-view/unified-message-list/message-scroll.types";
+import { GroupDetailPanel } from "@/features/activity/components/groups/group-detail-panel";
 import type { ActivityWorkspace } from "@/features/activity/hooks/use-activity";
-import { AnimatePresence, motion } from "framer-motion";
-import { useRef } from "react";
 
 import { ActivityEmptyState } from "./activity-empty-state";
 

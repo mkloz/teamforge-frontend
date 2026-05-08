@@ -1,9 +1,7 @@
 import { useCallback, useState } from "react";
-
-import { captureException } from "@/shared/lib/telemetry";
-
 import { ForgeCommands } from "@/features/forge/api/forge-commands";
 import type { ForgeWizardData } from "@/features/forge/lib/forge-wizard";
+import { captureException } from "@/shared/lib/telemetry";
 
 import { buildForgeExecutionInput } from "./forge-execution-input";
 

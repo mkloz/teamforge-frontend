@@ -1,10 +1,10 @@
-import type { GroupApi } from "@/shared/schemas";
-import { Avatar } from "@/shared/components/common/avatar";
-import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
-import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight, MessageCircle, Users } from "lucide-react";
+import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
+import { Avatar } from "@/shared/components/common/avatar";
+import { cn } from "@/shared/lib/utils";
+import type { GroupApi } from "@/shared/schemas";
 
 interface GroupRowProps {
   group: GroupApi;
@@ -49,7 +49,7 @@ export function GroupRow({
   const lastActivity = formatRelativeTime(group.updatedAt);
 
   return (
-    <motion.div
+    <motion.li
       initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{
@@ -57,7 +57,6 @@ export function GroupRow({
         delay: index * 0.05,
         ease: [0.23, 1, 0.32, 1],
       }}
-      role="listitem"
     >
       <Link
         {...buildActivityGroupHubNavigation(group.id)}
@@ -112,6 +111,6 @@ export function GroupRow({
           )}
         </div>
       </Link>
-    </motion.div>
+    </motion.li>
   );
 }

@@ -1,7 +1,6 @@
-import type { ChatApi } from "@/shared/schemas";
-
 import { ActivitySurfaceCache } from "@/features/activity/api/activity-surface-cache";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import type { ChatApi } from "@/shared/schemas";
 
 export function syncPinnedMessage(chatId: string, message: UnifiedMessage) {
   ActivitySurfaceCache.syncPinnedMessage(chatId, message);

@@ -1,10 +1,9 @@
-import type { ChatApi, User } from "@/shared/schemas";
-
 import type {
   ActivityParticipant,
   Group,
   GroupMember,
 } from "@/features/activity/lib/activity-contract";
+import type { ChatApi, User } from "@/shared/schemas";
 
 import { mapCurrentUserParticipant } from "./participant-user-projections";
 

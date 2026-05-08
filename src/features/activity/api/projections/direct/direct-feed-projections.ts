@@ -1,11 +1,10 @@
-import type { ChatApi, FriendshipApi } from "@/shared/schemas";
-
 import { mapSingleMessage } from "@/features/activity/api/projections/activity-message-projections";
 import type {
   ActivityParticipant,
   DirectChat,
   UnifiedConversation,
 } from "@/features/activity/lib/activity-contract";
+import type { ChatApi, FriendshipApi } from "@/shared/schemas";
 
 import { mapDirectChat } from "./direct-chat-projections";
 

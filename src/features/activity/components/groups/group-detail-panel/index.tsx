@@ -1,6 +1,4 @@
-import { cn } from "@/shared/lib/utils";
 import type { Group } from "@/features/activity/lib/activity-contract";
-import { GroupPanelContent } from "./group-panel-content";
 import {
   Drawer,
   DrawerContent,
@@ -9,6 +7,8 @@ import {
 } from "@/shared/components/ui/drawer";
 import { useEscapeKey } from "@/shared/hooks/use-escape-key";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
+import { cn } from "@/shared/lib/utils";
+import { GroupPanelContent } from "./group-panel-content";
 
 interface GroupDetailPanelProps {
   group: Group;

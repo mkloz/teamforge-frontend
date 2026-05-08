@@ -1,12 +1,12 @@
-import type { Interest } from "@/shared/schemas";
-import { Button } from "@/shared/components/ui/button";
-import { Input } from "@/shared/components/ui/input";
-import { cn } from "@/shared/lib/utils";
 import { Search, X } from "lucide-react";
 import {
   getCategoryColorClass,
   getCategoryShortLabel,
 } from "@/features/onboarding/lib/interest-catalog";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { cn } from "@/shared/lib/utils";
+import type { Interest } from "@/shared/schemas";
 
 interface InterestsBrowseHeaderProps {
   categories: Interest[];

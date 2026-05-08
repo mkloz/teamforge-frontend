@@ -1,8 +1,8 @@
-import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
-import { cn } from "@/shared/lib/utils";
 import { CircleCheck, Info, UserPlus } from "lucide-react";
 import { memo } from "react";
+import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { getSystemMessageConfig } from "@/features/activity/lib/chat-utils";
+import { cn } from "@/shared/lib/utils";
 
 interface SystemMessageProps {
   message: UnifiedMessage;

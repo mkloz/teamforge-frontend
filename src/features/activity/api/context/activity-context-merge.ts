@@ -1,11 +1,10 @@
+import type { Group, Plan } from "@/features/activity/lib/activity-contract";
 import type {
   FriendshipApi,
   GroupApi,
   PlanProposal,
   PlanUpdateKind,
 } from "@/shared/schemas";
-
-import type { Group, Plan } from "@/features/activity/lib/activity-contract";
 
 export function getGroupVersion(
   group:

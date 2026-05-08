@@ -1,16 +1,15 @@
-import type { MessageApi } from "@/shared/schemas";
-
 import {
   ACTIVITY_QUERY_OPTIONS_CONTEXT,
   mergeActivityConversationTimeline,
 } from "@/features/activity/api/activity-context";
+import { ActivityQueryOptions } from "@/features/activity/api/activity-query-options";
 import type { ActivityMessagesInfiniteData } from "@/features/activity/api/messages/message-cache-types";
 import { flattenMessagePages } from "@/features/activity/api/messages/message-mappers";
-import { ActivityQueryOptions } from "@/features/activity/api/activity-query-options";
 import type {
   ActivityParticipant,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
+import type { MessageApi } from "@/shared/schemas";
 
 export const ActivityMessageQueryFactory = {
   conversationMessages(chatId: string) {

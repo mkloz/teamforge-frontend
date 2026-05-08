@@ -1,12 +1,10 @@
 import { queryOptions } from "@tanstack/react-query";
-
+import { ExploreApi } from "@/features/explore/api/explore.api";
+import { getServerCategory } from "@/features/explore/api/explore-filters";
+import { EXPLORE_FRIEND_REQUESTS_QUERY_KEY } from "@/features/explore/api/explore-query-keys";
+import type { ExploreFilters } from "@/features/explore/schemas/explore-filters.schema";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import type { ExploreGroup, ExploreViewInsight } from "@/shared/schemas";
-
-import { ExploreApi } from "@/features/explore/api/explore.api";
-import { EXPLORE_FRIEND_REQUESTS_QUERY_KEY } from "@/features/explore/api/explore-query-keys";
-import { getServerCategory } from "@/features/explore/api/explore-filters";
-import type { ExploreFilters } from "@/features/explore/schemas/explore-filters.schema";
 
 export type ExploreGroupsQueryData = {
   groups: ExploreGroup[];

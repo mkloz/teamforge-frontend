@@ -1,10 +1,10 @@
-import { cn } from "@/shared/lib/utils";
 import { BellOff } from "lucide-react";
 import { memo } from "react";
+import { UnifiedTypingIndicator } from "@/features/activity/components/chat/unified-typing-indicator";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
 import {
-  formatRelativeTime,
   formatCountdown,
+  formatRelativeTime,
 } from "@/features/activity/lib/chat-utils";
 import {
   getConversationIsMuted,
@@ -13,11 +13,11 @@ import {
   getConversationSubtitle,
   getConversationTitle,
 } from "@/features/activity/lib/unify-conversations";
-import { UnifiedTypingIndicator } from "@/features/activity/components/chat/unified-typing-indicator";
+import { cn } from "@/shared/lib/utils";
+import { GroupIndicators } from "./group-indicators";
 import { MsgStatusIcon } from "./msg-status-icon";
 import { SubtitleIcon } from "./subtitle-icon";
 import { UnreadBadge } from "./unread-badge";
-import { GroupIndicators } from "./group-indicators";
 
 interface ContentSectionProps {
   item: UnifiedConversation;
@@ -31,10 +31,8 @@ export const ContentSection = memo(
     const hasUnread = item.unreadCount > 0;
     const title = getConversationTitle(item);
     const subtitle = getConversationSubtitle(item);
-    const countdown =
-      isGroup && getConversationPlanDateTime(item)
-        ? formatCountdown(getConversationPlanDateTime(item)!)
-        : null;
+    const planDateTime = isGroup ? getConversationPlanDateTime(item) : null;
+    const countdown = planDateTime ? formatCountdown(planDateTime) : null;
     const isDraft = isGroup && getConversationPlanStatus(item) === "DRAFT";
     const isMuted = getConversationIsMuted(item);
     const latestMessage = item.latestMessage;

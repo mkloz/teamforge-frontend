@@ -1,6 +1,6 @@
 import { track } from "@vercel/analytics";
-import { ApiExceptionSchema } from "@/shared/types/api-error";
 import type { TrackedMutationName } from "@/shared/lib/telemetry-contract";
+import { ApiExceptionSchema } from "@/shared/types/api-error";
 
 type TelemetryValue = string | number | boolean | null | undefined;
 
@@ -119,6 +119,7 @@ export function captureException(
     requestId: serialized.requestId,
   };
 
+  // eslint-disable-next-line no-console -- Client telemetry keeps a local error trail in development and production consoles.
   console.error("[client-error]", details, error);
   trackEvent("client_error", details);
 }

@@ -1,3 +1,4 @@
+// oxlint-disable import/no-cycle -- Recursive schemas are resolved with z.lazy.
 import { z } from "zod";
 import type { Activity } from "./activity";
 import { activitySchema } from "./activity";

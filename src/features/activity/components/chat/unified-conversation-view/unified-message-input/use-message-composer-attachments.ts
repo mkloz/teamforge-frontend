@@ -1,5 +1,5 @@
-import { useState } from "react";
 import type { DragEvent } from "react";
+import { useState } from "react";
 
 import type { ActivityOutgoingAttachment } from "@/features/activity/lib/activity-contract";
 

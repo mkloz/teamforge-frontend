@@ -1,8 +1,8 @@
-import { Calendar, RotateCcw, Star, MapPin } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
-import { PlanCover } from "@/shared/components/common/plan-cover";
-import { cn } from "@/shared/lib/utils";
+import { Calendar, MapPin, RotateCcw, Star } from "lucide-react";
 import type { PlanHistoryItem } from "@/features/activity/lib/activity-contract";
+import { PlanCover } from "@/shared/components/common/plan-cover";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 import { categoryColors } from "../lib/constants";
 
 interface HistoryCardProps {

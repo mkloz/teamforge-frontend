@@ -1,6 +1,3 @@
-import type { ChatApi, FriendshipApi, GroupApi, User } from "@/shared/schemas";
-
-import type { ActivityActionContext } from "./activity-actions";
 import {
   removePinnedMessage,
   syncPinnedMessage,
@@ -32,14 +29,16 @@ import {
   resolveChatId,
   resolveParticipants,
 } from "@/features/activity/api/context/activity-context-resolvers";
-import type { ActivityFeedData } from "./activity-query-data";
-import type { ActivityQueryOptionsContext } from "./activity-query-options";
-import type { ActivityRealtimeContext } from "./activity-realtime";
-import { ActivitySurfaceCache } from "./activity-surface-cache";
 import type {
   FilterChip,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
+import type { ChatApi, FriendshipApi, GroupApi, User } from "@/shared/schemas";
+import type { ActivityActionContext } from "./activity-actions";
+import type { ActivityFeedData } from "./activity-query-data";
+import type { ActivityQueryOptionsContext } from "./activity-query-options";
+import type { ActivityRealtimeContext } from "./activity-realtime";
+import { ActivitySurfaceCache } from "./activity-surface-cache";
 
 export { updateActivityChatSummaryCache };
 

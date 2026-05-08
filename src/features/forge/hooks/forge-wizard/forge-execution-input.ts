@@ -1,6 +1,6 @@
 import {
-  forgeExecutionInputSchema,
   type AutoForgeExecutionInput,
+  forgeExecutionInputSchema,
 } from "@/features/forge/lib/forge-execution-schema";
 import type { ForgeWizardData } from "@/features/forge/lib/forge-wizard";
 

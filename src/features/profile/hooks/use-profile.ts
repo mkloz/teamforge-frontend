@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+import { publicProfileQueryOptions } from "@/features/profile/api/profile-query-options";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import type { User } from "@/shared/schemas";
-import { publicProfileQueryOptions } from "@/features/profile/api/profile-query-options";
 
 export function useProfile(userId?: string) {
   const currentUserQuery = useCurrentUserQuery();

@@ -1,12 +1,11 @@
 import { useRef, useState, useTransition } from "react";
-
-import type { Interest } from "@/shared/schemas";
 import {
-  createInitialCollapsedCategories,
   expandCategoryOnly as buildExpandedCategoryState,
+  createInitialCollapsedCategories,
   toggleCollapsedCategory,
   toggleExpandedSubcategory,
 } from "@/features/onboarding/lib/interests-browser-state";
+import type { Interest } from "@/shared/schemas";
 
 export function useInterestBrowserExpansion(categories: Interest[]) {
   const [isPending, startTransition] = useTransition();

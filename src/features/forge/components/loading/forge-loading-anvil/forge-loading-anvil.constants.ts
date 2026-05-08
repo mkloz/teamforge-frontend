@@ -45,12 +45,13 @@ export const ANVIL_SPARKS = [
   { id: 18, dx: -20, dy: -10, size: 4, color: "var(--color-spark-amber)" },
 ];
 
-export const ANVIL_SPARK_ANIMATIONS = ANVIL_SPARKS.map((spark) => ({
-  ...spark,
-  animate: {
-    opacity: [0, 0, 1, 0.8, 0],
-    scale: [0, 0, 1, 0.8, 0],
-    x: [0, 0, spark.dx * 1.1, spark.dx * 1.15, spark.dx * 1.2],
-    y: [0, 0, spark.dy * 1.1, spark.dy + 10, spark.dy + 25],
-  },
-}));
+export const ANVIL_SPARK_ANIMATIONS = ANVIL_SPARKS.map((spark) =>
+  Object.assign({}, spark, {
+    animate: {
+      opacity: [0, 0, 1, 0.8, 0],
+      scale: [0, 0, 1, 0.8, 0],
+      x: [0, 0, spark.dx * 1.1, spark.dx * 1.15, spark.dx * 1.2],
+      y: [0, 0, spark.dy * 1.1, spark.dy + 10, spark.dy + 25],
+    },
+  }),
+);

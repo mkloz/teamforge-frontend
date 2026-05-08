@@ -1,8 +1,8 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
+import { formatTypingText } from "@/features/activity/lib/chat-utils";
 import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
-import { formatTypingText } from "@/features/activity/lib/chat-utils";
 
 interface TypingUser {
   name: string;

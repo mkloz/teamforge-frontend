@@ -1,14 +1,14 @@
-import type { NotificationPreferences } from "@/shared/schemas";
-import type { BooleanSettingsPreferenceKey } from "@/features/settings/components/settings-profile-form/settings-form-types";
 import {
   PreferenceGroup,
   PreferenceStatusMessage,
   SectionHeading,
 } from "@/features/settings/components/settings-profile-form/preference-section-parts";
+import type { BooleanSettingsPreferenceKey } from "@/features/settings/components/settings-profile-form/settings-form-types";
 import {
   EMAIL_PREFERENCE_ITEMS,
   NOTIFICATION_PREFERENCE_ITEMS,
 } from "@/features/settings/components/settings-profile-form/settings-preference-items";
+import type { NotificationPreferences } from "@/shared/schemas";
 
 interface NotificationSettingsSectionProps {
   notificationPreferences: NotificationPreferences | null;

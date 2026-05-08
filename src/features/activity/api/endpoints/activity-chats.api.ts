@@ -1,3 +1,15 @@
+import {
+  createReactionPayloadSchema,
+  DEFAULT_ACTIVITY_API_LIMIT,
+  DEFAULT_ACTIVITY_API_MESSAGE_LIMIT,
+  type GetChatMessagesParams,
+  paginatedChatsSchema,
+  paginatedMessagesSchema,
+  type SendMessagePayload,
+  sendMessagePayloadSchema,
+  type UpdateMessagePayload,
+  updateMessagePayloadSchema,
+} from "@/features/activity/api/activity-api-contracts";
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
 import { FileUploadApi } from "@/shared/api/file-upload";
 import {
@@ -5,19 +17,6 @@ import {
   linkPreviewSchema,
   messageApiSchema,
 } from "@/shared/schemas";
-
-import {
-  DEFAULT_ACTIVITY_API_LIMIT,
-  DEFAULT_ACTIVITY_API_MESSAGE_LIMIT,
-  createReactionPayloadSchema,
-  paginatedChatsSchema,
-  paginatedMessagesSchema,
-  sendMessagePayloadSchema,
-  updateMessagePayloadSchema,
-  type GetChatMessagesParams,
-  type SendMessagePayload,
-  type UpdateMessagePayload,
-} from "@/features/activity/api/activity-api-contracts";
 
 export async function getChats() {
   const response = await apiClient

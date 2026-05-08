@@ -11,6 +11,7 @@ interface UseAutoResizeProps {
 export function useAutoResize({ value, maxHeight = 120 }: UseAutoResizeProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: value intentionally retriggers measurement after controlled text changes.
   useLayoutEffect(() => {
     const textarea = textareaRef.current;
     if (textarea) {

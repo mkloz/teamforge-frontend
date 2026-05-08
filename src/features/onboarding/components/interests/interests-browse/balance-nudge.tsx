@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { X, Sprout } from "lucide-react";
+import { Sprout, X } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/shared/components/ui/button";

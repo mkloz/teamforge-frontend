@@ -1,12 +1,10 @@
 import { infiniteQueryOptions } from "@tanstack/react-query";
-
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-
 import { ActivityApi } from "@/features/activity/api/activity.api";
 import {
-  DEFAULT_ACTIVITY_MESSAGE_LIMIT,
   type ActivityMessagesPageData,
+  DEFAULT_ACTIVITY_MESSAGE_LIMIT,
 } from "@/features/activity/api/messages/message-cache-types";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 
 export function conversationMessagesQueryOptions(chatId: string) {
   return infiniteQueryOptions({

@@ -1,15 +1,14 @@
-import { appQueryClient } from "@/shared/api/query-client";
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-
 import type {
   ActivityDirectSelectionData,
   ActivityGroupSelectionData,
 } from "@/features/activity/api/activity-query-data";
-import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import {
   removePinnedUiMessage,
   syncPinnedUiMessage,
 } from "@/features/activity/api/cache/pinned-message-list-updaters";
+import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { appQueryClient } from "@/shared/api/query-client";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 
 export function removePinnedMessageFromSelections(
   chatId: string,

@@ -1,8 +1,7 @@
-import { apiClient } from "@/shared/api/api";
 import {
+  type ActivityRouteSearch,
   buildActivityDmNavigation,
   buildActivityGroupNavigation,
-  type ActivityRouteSearch,
 } from "@/features/activity/lib/activity-route";
 import {
   buildExploreNavigation,
@@ -10,17 +9,13 @@ import {
 } from "@/features/explore/lib/explore-route";
 import {
   buildForgeNavigation,
-  forgeSearchModeValues,
   type ForgeRouteSearch,
+  forgeSearchModeValues,
 } from "@/features/forge/lib/forge-route";
 import {
   buildHomeNavigation,
   type HomeRouteSearch,
 } from "@/features/home/lib/home-route";
-import {
-  buildSettingsNavigation,
-  type SettingsSection,
-} from "@/features/settings/lib/settings-route";
 import {
   extractProposalId,
   matchLegacyChatPath,
@@ -32,6 +27,11 @@ import {
   resolveInviteIntent,
   shouldOpenGroupPanelForNotificationType,
 } from "@/features/notifications/lib/notification-intent";
+import {
+  buildSettingsNavigation,
+  type SettingsSection,
+} from "@/features/settings/lib/settings-route";
+import { apiClient } from "@/shared/api/api";
 import {
   createPaginatedSchema,
   groupApiSchema,
@@ -169,10 +169,10 @@ async function resolveFromLegacyLink(
   if (planProposalMatch) {
     const planId = planProposalMatch.planId;
     const proposalFromPath = planProposalMatch.proposalId ?? proposalId;
-    const groupId = await resolveGroupIdByPlanId(planId);
+    const resolvedGroupId = await resolveGroupIdByPlanId(planId);
 
-    if (groupId) {
-      return toGroupDestination(groupId, {
+    if (resolvedGroupId) {
+      return toGroupDestination(resolvedGroupId, {
         panel: "group",
         plan: planId,
         proposal: proposalFromPath ?? undefined,
@@ -183,10 +183,10 @@ async function resolveFromLegacyLink(
   const planId = matchLegacyPlanPath(pathname);
 
   if (planId) {
-    const groupId = await resolveGroupIdByPlanId(planId);
+    const resolvedGroupId = await resolveGroupIdByPlanId(planId);
 
-    if (groupId) {
-      return toGroupDestination(groupId, {
+    if (resolvedGroupId) {
+      return toGroupDestination(resolvedGroupId, {
         panel: "group",
         plan: planId,
         proposal:

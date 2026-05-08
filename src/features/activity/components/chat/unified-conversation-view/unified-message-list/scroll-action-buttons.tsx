@@ -1,7 +1,7 @@
-import { Button } from "@/shared/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle, ChevronDown } from "lucide-react";
 import { memo } from "react";
+import { Button } from "@/shared/components/ui/button";
 
 interface ScrollActionButtonsProps {
   showScrollToBottom: boolean;

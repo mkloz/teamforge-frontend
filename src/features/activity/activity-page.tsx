@@ -1,8 +1,8 @@
-import { useActivity } from "@/features/activity/hooks/use-activity";
-import { cn } from "@/shared/lib/utils";
-import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { ActivityConversationStage } from "@/features/activity/components/activity-page/activity-conversation-stage";
 import { ActivitySidebar } from "@/features/activity/components/activity-page/activity-sidebar";
+import { useActivity } from "@/features/activity/hooks/use-activity";
+import { useMediaQuery } from "@/shared/hooks/use-media-query";
+import { cn } from "@/shared/lib/utils";
 
 /**
  * ActivityPage - The main feature orchestrator for Unified Conversations,

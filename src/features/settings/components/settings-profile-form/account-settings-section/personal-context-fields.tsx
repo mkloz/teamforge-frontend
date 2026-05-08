@@ -1,4 +1,4 @@
-import { GENDER_OPTIONS } from "./account-settings-constants";
+import type { UseFormReturn } from "react-hook-form";
 import type { SettingsProfileValues } from "@/features/settings/schemas/settings-profile.schema";
 import { unspecifiedGenderValue } from "@/features/settings/schemas/settings-profile.schema";
 import {
@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select";
-import type { UseFormReturn } from "react-hook-form";
+import { GENDER_OPTIONS } from "./account-settings-constants";
 
 interface PersonalContextFieldsProps {
   form: UseFormReturn<SettingsProfileValues>;

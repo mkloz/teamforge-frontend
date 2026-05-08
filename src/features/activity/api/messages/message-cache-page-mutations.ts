@@ -1,10 +1,9 @@
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
-
-import type { ActivityMessagesInfiniteData } from "./message-cache-types";
-import { dedupeMessagePages, emptyMessagesPage } from "./message-page-cache";
-import { toMessageApi } from "./message-mappers";
-import { shouldReplaceCachedMessage } from "./message-versioning";
 import { updateMessagesCache } from "./message-cache-primitives";
+import type { ActivityMessagesInfiniteData } from "./message-cache-types";
+import { toMessageApi } from "./message-mappers";
+import { dedupeMessagePages, emptyMessagesPage } from "./message-page-cache";
+import { shouldReplaceCachedMessage } from "./message-versioning";
 
 export function insertCachedMessage(chatId: string, message: UnifiedMessage) {
   const messageApi = toMessageApi(message);

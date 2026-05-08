@@ -1,17 +1,16 @@
 import type {
+  ActivityParticipant,
+  DirectChat,
+  Group,
+  UnifiedMessage,
+} from "@/features/activity/lib/activity-contract";
+import type {
   ChatApi,
   FriendshipApi,
   GroupApi,
   MessageApi,
   PlanProposal,
 } from "@/shared/schemas";
-
-import type {
-  ActivityParticipant,
-  DirectChat,
-  Group,
-  UnifiedMessage,
-} from "@/features/activity/lib/activity-contract";
 
 interface ActivitySelectionBaseData {
   chats: ChatApi[];

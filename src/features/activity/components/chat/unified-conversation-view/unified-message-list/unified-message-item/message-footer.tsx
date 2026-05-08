@@ -1,7 +1,7 @@
-import { cn } from "@/shared/lib/utils";
 import { memo } from "react";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { formatChatTime } from "@/features/activity/lib/chat-utils";
+import { cn } from "@/shared/lib/utils";
 import { MessageReactions, type ReactionGroup } from "./message-reactions";
 import { MessageStatusIcon } from "./message-status-icon";
 

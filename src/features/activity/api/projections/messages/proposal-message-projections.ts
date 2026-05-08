@@ -1,10 +1,9 @@
-import type { PlanProposal } from "@/shared/schemas";
-
 import type {
   ActivityParticipant,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
 import { buildProposalTimelineContent } from "@/features/activity/lib/proposal-language";
+import type { PlanProposal } from "@/shared/schemas";
 
 import { buildMessageParticipantsIndex } from "./message-participant-index";
 

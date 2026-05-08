@@ -1,6 +1,6 @@
+import dayjs from "dayjs";
 import { Pin, X } from "lucide-react";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
-import dayjs from "dayjs";
 import { Button } from "@/shared/components/ui/button";
 
 interface PinnedMessagesSectionProps {

@@ -4,10 +4,10 @@ import { cn } from "@/shared/lib/utils";
 import { EditGroupIdentityDialog } from "../edit-group-identity-dialog";
 import { GroupCoverHeader } from "./group-cover-header";
 import { GroupPanelHeader } from "./group-panel-header";
-import { useGroupPanelContent } from "./use-group-panel-content";
 import { GroupPanelMainSections } from "./group-panel-main-sections";
 import { GroupPanelScrollArea } from "./group-panel-scroll-area";
 import { SelectedMemberProfile } from "./selected-member-profile";
+import { useGroupPanelContent } from "./use-group-panel-content";
 
 interface GroupPanelContentProps {
   group: Group;

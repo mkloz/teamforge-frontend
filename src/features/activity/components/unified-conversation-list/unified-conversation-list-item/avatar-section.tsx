@@ -1,5 +1,3 @@
-import { Avatar } from "@/shared/components/common/avatar";
-import { cn } from "@/shared/lib/utils";
 import { memo } from "react";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
 import {
@@ -8,6 +6,8 @@ import {
   getConversationSecondaryAvatar,
   getConversationTitle,
 } from "@/features/activity/lib/unify-conversations";
+import { Avatar } from "@/shared/components/common/avatar";
+import { cn } from "@/shared/lib/utils";
 import { StatusIndicator } from "./status-indicator";
 
 export const AvatarSection = memo(

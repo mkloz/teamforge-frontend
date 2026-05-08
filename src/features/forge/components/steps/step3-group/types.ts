@@ -1,12 +1,11 @@
 import type { ReactNode } from "react";
-
-import type { FriendshipApi } from "@/shared/schemas";
 import type {
   FixedGroupSize,
   ForgeMode,
   GroupSizeMode,
   Visibility,
 } from "@/features/forge/lib/forge-contract";
+import type { FriendshipApi } from "@/shared/schemas";
 
 export interface Step3GroupProps {
   forgeMode: ForgeMode;

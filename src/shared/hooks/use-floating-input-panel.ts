@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, type CSSProperties } from "react";
+import { type CSSProperties, useCallback, useRef, useState } from "react";
 
 import { useEscapeKey } from "@/shared/hooks/use-escape-key";
 import { useFloatingPanelInteractions } from "@/shared/hooks/use-floating-panel-interactions";

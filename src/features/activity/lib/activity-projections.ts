@@ -1,10 +1,10 @@
-import { isActivityCurrentUserId } from "./activity-identities";
 import type {
   ActivityParticipant,
   DirectChat,
   Group,
   GroupMember,
 } from "./activity-contract";
+import { isActivityCurrentUserId } from "./activity-identities";
 
 type DirectChatParticipant = NonNullable<DirectChat["participants"]>[number];
 

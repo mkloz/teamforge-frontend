@@ -1,9 +1,7 @@
-import type { ElementType } from "react";
-
-import type { PlanStatus } from "@/shared/schemas";
-import type { PlannedGroup } from "@/features/home/lib/home-contract";
-
 import { Calendar, CheckCircle2, Clock } from "lucide-react";
+import type { ElementType } from "react";
+import type { PlannedGroup } from "@/features/home/lib/home-contract";
+import type { PlanStatus } from "@/shared/schemas";
 
 export const planStatusConfig: Record<
   PlanStatus,

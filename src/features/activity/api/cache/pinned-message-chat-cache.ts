@@ -1,12 +1,11 @@
-import { appQueryClient } from "@/shared/api/query-client";
-import type { ChatApi, MessageApi } from "@/shared/schemas";
-
 import { ACTIVITY_CHATS_QUERY_KEY } from "@/features/activity/api/activity-query-keys";
-import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import {
   removePinnedApiMessage,
   syncPinnedApiMessage,
 } from "@/features/activity/api/cache/pinned-message-list-updaters";
+import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { appQueryClient } from "@/shared/api/query-client";
+import type { ChatApi, MessageApi } from "@/shared/schemas";
 
 export function removePinnedMessageFromChats(
   chatId: string,

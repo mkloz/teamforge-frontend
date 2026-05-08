@@ -13,8 +13,8 @@ import {
   getSearchRoutePatch,
   getSizeRoutePatch,
   getSortRoutePatch,
-  normalizeDistance,
   normalizeCategories,
+  normalizeDistance,
   normalizeSizeRange,
   resolveExploreRouteState,
 } from "@/features/explore/hooks/explore-route-state/explore-route-utils";

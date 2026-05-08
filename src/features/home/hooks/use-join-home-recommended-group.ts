@@ -1,12 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-
+import { HomeCommands } from "@/features/home/api/home-commands";
 import { invalidateNotificationSurfaces } from "@/shared/api/query-invalidation";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-
-import { HomeCommands } from "@/features/home/api/home-commands";
 
 export function useJoinHomeRecommendedGroup(groupId: string) {
   return useMutation({

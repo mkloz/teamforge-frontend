@@ -1,8 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-
-import { currentUserQueryOptions } from "@/shared/api/current-user-query";
-
 import { getHomeViewer } from "@/features/home/lib/home-viewer";
+import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 
 export function useHomeViewerState() {
   const query = useQuery(currentUserQueryOptions());

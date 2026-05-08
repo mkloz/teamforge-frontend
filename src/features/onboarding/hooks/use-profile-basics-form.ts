@@ -7,6 +7,10 @@ import { useForm, useWatch } from "react-hook-form";
 import { OnboardingCache } from "@/features/onboarding/api/onboarding-cache";
 import { OnboardingCommands } from "@/features/onboarding/api/onboarding-commands";
 import {
+  toOptionalOnboardingSearch,
+  useOnboardingFlowState,
+} from "@/features/onboarding/lib/onboarding-flow-state";
+import {
   buildProfileBasicsFlowSearch,
   getProfileBasicsNextRoute,
   getProfileBasicsProgress,
@@ -15,12 +19,8 @@ import {
   toProfileBasicsDto,
 } from "@/features/onboarding/lib/profile-basics-form-model";
 import {
-  toOptionalOnboardingSearch,
-  useOnboardingFlowState,
-} from "@/features/onboarding/lib/onboarding-flow-state";
-import {
-  profileBasicsSchema,
   type ProfileBasicsValues,
+  profileBasicsSchema,
 } from "@/features/onboarding/schemas/profile-basics.schema";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";

@@ -1,11 +1,11 @@
-import { getOtherChatParticipant } from "@/features/activity/lib/activity-projections";
 import type {
   DirectChat,
   Group,
 } from "@/features/activity/lib/activity-contract";
+import { getOtherChatParticipant } from "@/features/activity/lib/activity-projections";
 import {
-  getStatusText,
   formatTypingText,
+  getStatusText,
 } from "@/features/activity/lib/chat-utils";
 
 interface BaseProps {

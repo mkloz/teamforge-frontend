@@ -1,11 +1,10 @@
 import { Link } from "@tanstack/react-router";
-
+import type { HomeViewer } from "@/features/home/lib/home-contract";
 import {
   buildInterestsEditNavigation,
   buildPersonalityEditNavigation,
 } from "@/features/onboarding/lib/onboarding-route";
 import { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
-import type { HomeViewer } from "@/features/home/lib/home-contract";
 
 interface ProfileStepActionProps {
   nextStep: NonNullable<HomeViewer["nextStep"]>;

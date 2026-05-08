@@ -31,9 +31,9 @@ export function filterAvailableGroupNames(
   names: string[],
   existingGroupNames: string[],
 ) {
-  const taken = existingGroupNames.map((name) => name.toLowerCase());
+  const taken = new Set(existingGroupNames.map((name) => name.toLowerCase()));
 
-  return names.filter((name) => !taken.includes(name.toLowerCase()));
+  return names.filter((name) => !taken.has(name.toLowerCase()));
 }
 
 export function buildGroupNameSuggestions(

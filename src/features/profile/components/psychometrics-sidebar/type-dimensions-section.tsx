@@ -1,5 +1,5 @@
-import type { DimensionScore } from "@/features/profile/lib/profile-contract";
 import { ProfileSectionHeading } from "@/features/profile/components/profile-section-heading";
+import type { DimensionScore } from "@/features/profile/lib/profile-contract";
 import { DimensionSpectrum } from "@/shared/components/psychometrics/dimension-spectrum";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
 

@@ -1,6 +1,6 @@
-import type { User } from "@/shared/schemas";
 import { normalizeTrustScore } from "@/features/profile/lib/profile-utils";
 import { cn } from "@/shared/lib/utils";
+import type { User } from "@/shared/schemas";
 
 import { ProfileBadgeDivider } from "./profile-badge-divider";
 

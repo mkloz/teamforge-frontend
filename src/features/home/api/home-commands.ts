@@ -1,10 +1,9 @@
+import { HomeApi } from "@/features/home/api/home.api";
+import { HomeCache } from "@/features/home/api/home-cache";
 import {
   invalidateGroupMembershipSurfaces,
   invalidateInvitationSurfaces,
 } from "@/shared/api/query-invalidation";
-
-import { HomeApi } from "@/features/home/api/home.api";
-import { HomeCache } from "@/features/home/api/home-cache";
 
 export const HomeCommands = {
   async acceptInvitation(inviteId: string) {

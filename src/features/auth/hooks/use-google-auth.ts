@@ -2,11 +2,10 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { useState } from "react";
 
 import { config } from "@/config/config";
+import type { GoogleAuthIntent } from "@/features/auth/api/auth.types";
+import { AuthCommands } from "@/features/auth/api/auth-commands";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-
-import { AuthCommands } from "@/features/auth/api/auth-commands";
-import type { GoogleAuthIntent } from "@/features/auth/api/auth.types";
 
 interface UseGoogleAuthOptions {
   intent: GoogleAuthIntent;

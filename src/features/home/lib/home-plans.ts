@@ -1,6 +1,5 @@
-import type { GroupApi } from "@/shared/schemas";
-
 import type { PlannedGroup } from "@/features/home/lib/home-contract";
+import type { GroupApi } from "@/shared/schemas";
 
 function hasPlan(group: GroupApi): group is PlannedGroup {
   return group.plan !== null;

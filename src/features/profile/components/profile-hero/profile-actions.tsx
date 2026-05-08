@@ -1,7 +1,7 @@
-import { Button } from "@/shared/components/ui/button";
-import { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
 import { Link } from "@tanstack/react-router";
 import { Settings, SlidersHorizontal } from "lucide-react";
+import { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
+import { Button } from "@/shared/components/ui/button";
 
 export function ProfileActions() {
   return (

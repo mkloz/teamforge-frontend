@@ -1,7 +1,6 @@
-import type { GroupApi } from "@/shared/schemas";
-
 import { toMessageApi } from "@/features/activity/api/messages/message-mappers";
 import type { Group } from "@/features/activity/lib/activity-contract";
+import type { GroupApi } from "@/shared/schemas";
 
 export function mapApiGroupFromSelection(group: Group): GroupApi {
   return {

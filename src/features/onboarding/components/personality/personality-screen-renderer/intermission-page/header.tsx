@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
-import { AnimatedCircularProgressBar } from "@/shared/components/ui/animated-circular-progress-bar";
-import { fadeUpItem } from "@/features/onboarding/constants/motion";
 import type { LucideIcon } from "lucide-react";
+import { fadeUpItem } from "@/features/onboarding/constants/motion";
+import { AnimatedCircularProgressBar } from "@/shared/components/ui/animated-circular-progress-bar";
 
 interface IntermissionHeaderProps {
   totalQuestions: number;

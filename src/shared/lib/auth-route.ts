@@ -77,7 +77,7 @@ function buildReturnSearchObject(search: string | null | undefined) {
 export function resolveAuthReturnLocation(
   value: string | null | undefined,
 ): AuthReturnLocation | null {
-  if (!value || !value.startsWith("/")) {
+  if (!value?.startsWith("/")) {
     return null;
   }
 

@@ -1,12 +1,12 @@
+import type { UseFormReturn } from "react-hook-form";
 import type { SettingsSection } from "@/features/settings/lib/settings-route";
+import type { SettingsProfileValues } from "@/features/settings/schemas/settings-profile.schema";
 import type {
   AuthSession,
   FriendshipApi,
   NotificationPreferences,
   User,
 } from "@/shared/schemas";
-import type { SettingsProfileValues } from "@/features/settings/schemas/settings-profile.schema";
-import type { UseFormReturn } from "react-hook-form";
 
 export type BooleanSettingsPreferenceKey = Exclude<
   keyof NotificationPreferences,

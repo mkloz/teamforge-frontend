@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ChevronRight, type LucideIcon } from "lucide-react";
 
-import { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
+import type { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
 import { SheetClose } from "@/shared/components/ui/sheet";
 
 import { MenuIconBadge } from "./menu-icon-badge";

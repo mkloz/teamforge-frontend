@@ -1,8 +1,8 @@
+import { motion } from "framer-motion";
+import { ArrowRight, ArrowUpRight, Target } from "lucide-react";
 import { fadeUpItem } from "@/features/onboarding/constants/motion";
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
 import { Button } from "@/shared/components/ui/button";
-import { motion } from "framer-motion";
-import { ArrowRight, ArrowUpRight, Target } from "lucide-react";
 import { getIntermissionActionLabel } from "./constants";
 
 interface ActionSectionProps {

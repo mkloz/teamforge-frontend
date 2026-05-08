@@ -1,11 +1,9 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-
+import { useState } from "react";
+import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-
-import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import { useClearActivityRouteSelection } from "./use-clear-activity-route-selection";
 
 type PendingAction = "disband" | "leave" | null;

@@ -1,12 +1,11 @@
-import type { Interest } from "@/shared/schemas";
 import { motion } from "framer-motion";
-
 import { fadeUpItem } from "@/features/onboarding/constants/motion";
+import type { Interest } from "@/shared/schemas";
+import { InterestReviewCategory } from "./interest-review-category";
 import {
   getInterestReviewGroups,
   getInterestShapeSummary,
 } from "./interests-review-model";
-import { InterestReviewCategory } from "./interest-review-category";
 
 interface InterestsReviewProps {
   categories: Interest[];

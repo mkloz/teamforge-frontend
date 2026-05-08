@@ -1,5 +1,5 @@
 import { ChevronLeft, Network } from "lucide-react";
-
+import { ForgeProgressBar } from "@/features/forge/components/forge-progress-bar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,7 +12,6 @@ import {
   AlertDialogTrigger,
 } from "@/shared/components/ui/alert-dialog";
 import { Button } from "@/shared/components/ui/button";
-import { ForgeProgressBar } from "@/features/forge/components/forge-progress-bar";
 
 import { getForgeStepMetadata } from "./forge-step-metadata";
 import type { ForgeWizardChildProps } from "./types";

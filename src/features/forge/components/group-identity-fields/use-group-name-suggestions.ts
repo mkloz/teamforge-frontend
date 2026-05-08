@@ -39,6 +39,7 @@ export function useGroupNameSuggestions({
     onGroupNameChangeRef.current = onGroupNameChange;
   }, [existingGroupNames, groupName, onGroupNameChange]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: existingGroupNamesKey tracks array contents without making the effect depend on array identity.
   useEffect(() => {
     const picked = buildGroupNameSuggestions(
       selectedActivity,

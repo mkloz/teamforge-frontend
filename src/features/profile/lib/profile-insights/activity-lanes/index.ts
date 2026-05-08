@@ -1,13 +1,12 @@
 import type { Interest } from "@/shared/schemas";
-
-import { laneDrafts } from "./lane-config";
 import type { ActivityLane, LaneBucket, LaneKey } from "../types";
+import { getActivityLaneConfidence } from "./lane-confidence";
+import { laneDrafts } from "./lane-config";
 import {
   applyLaneEvidence,
   getLaneEvidenceCounts,
   sortLaneEvidence,
 } from "./lane-evidence";
-import { getActivityLaneConfidence } from "./lane-confidence";
 import { getLaneMatches } from "./lane-matching";
 import { rankLaneBuckets } from "./lane-ranking";
 

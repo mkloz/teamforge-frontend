@@ -14,9 +14,12 @@ export function useImageUploadField(onUploaded: (url: string) => void) {
     try {
       const uploaded = await FileUploadApi.uploadImage(file);
       onUploaded(uploaded.url);
-    } catch (error) {
+    } catch (uploadError) {
       setError(
-        getApiErrorMessage(error, "We couldn't upload that image. Try again."),
+        getApiErrorMessage(
+          uploadError,
+          "We couldn't upload that image. Try again.",
+        ),
       );
     } finally {
       setIsUploading(false);

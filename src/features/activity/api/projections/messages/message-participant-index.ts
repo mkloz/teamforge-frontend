@@ -1,6 +1,5 @@
-import type { MessageSenderSummary } from "@/shared/schemas";
-
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
+import type { MessageSenderSummary } from "@/shared/schemas";
 
 export type MessageParticipantsIndex = Map<string, ActivityParticipant>;
 

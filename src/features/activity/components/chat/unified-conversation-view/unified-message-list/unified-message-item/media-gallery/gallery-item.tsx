@@ -1,14 +1,14 @@
-import { Image } from "@/shared/components/common/image";
-import { cn } from "@/shared/lib/utils";
-import { useImageState } from "@/shared/hooks/use-image-state";
+import { AnimatePresence, motion } from "framer-motion";
 import { ImageOff, Layers, Play } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import { memo } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import {
   cacheMediaIntrinsicSize,
   getCachedMediaIntrinsicSize,
 } from "@/features/activity/lib/media-intrinsic-size";
+import { Image } from "@/shared/components/common/image";
+import { useImageState } from "@/shared/hooks/use-image-state";
+import { cn } from "@/shared/lib/utils";
 import { MoreOverlay } from "./more-overlay";
 
 interface GalleryItemProps {

@@ -1,9 +1,9 @@
+import { useMemo, useState } from "react";
 import { CATEGORIES } from "@/features/explore/constants/explore.constants";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
-import type { PlanCategory } from "@/shared/schemas/enums";
 import { CategoryFilterChip } from "@/shared/components/ui/category-filter-chip";
 import { cn } from "@/shared/lib/utils";
-import { useMemo, useState } from "react";
+import type { PlanCategory } from "@/shared/schemas/enums";
 
 const INITIAL_VISIBLE_CATEGORY_COUNT = 5;
 

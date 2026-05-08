@@ -1,6 +1,5 @@
-import type { User } from "@/shared/schemas";
-
 import type { HomeViewer } from "@/features/home/lib/home-contract";
+import type { User } from "@/shared/schemas";
 
 function hasCompleteOceanProfile(user: User) {
   return (

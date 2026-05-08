@@ -1,11 +1,11 @@
+import type { RefObject } from "react";
 import {
-  useState,
   useEffect,
   useEffectEvent,
   useLayoutEffect,
   useRef,
+  useState,
 } from "react";
-import type { RefObject } from "react";
 
 /**
  * useChatScroll - Encapsulates scroll behavior for the chat window,
@@ -28,12 +28,14 @@ export function useChatScroll(
   );
 
   // Scroll to bottom on initial load or conversation switch
+  // biome-ignore lint/correctness/useExhaustiveDependencies: conversationId intentionally triggers a reset even though it is not read in the effect body.
   useLayoutEffect(() => {
     scrollMessagesEndIntoView("instant");
     isInitialRender.current = false;
   }, [conversationId]);
 
   // Scroll on new messages if we're already near bottom
+  // biome-ignore lint/correctness/useExhaustiveDependencies: messageCount intentionally triggers scrolling when the message list grows.
   useEffect(() => {
     if (!isInitialRender.current && isNearBottom) {
       scrollMessagesEndIntoView("smooth");

@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 
 import { CardCapacitySummary } from "@/shared/components/group-plan-card/card-capacity-summary";
 import { CardMemberStack } from "@/shared/components/group-plan-card/card-member-stack";
-import type { GroupPlanCardVariant } from "@/shared/components/group-plan-card/group-plan-card-types";
 import { getGroupPlanCapacityModel } from "@/shared/components/group-plan-card/group-plan-card-model";
+import type { GroupPlanCardVariant } from "@/shared/components/group-plan-card/group-plan-card-types";
 import { cn } from "@/shared/lib/utils";
 import type { ExploreGroup } from "@/shared/schemas";
 

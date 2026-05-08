@@ -93,16 +93,13 @@ export function RecommendedGroups() {
             </Carousel>
           </div>
 
-          <div
-            role="list"
-            className="hidden md:grid md:grid-cols-2 md:gap-5 xl:grid-cols-3"
-          >
+          <ul className="hidden list-none p-0 md:grid md:grid-cols-2 md:gap-5 xl:grid-cols-3">
             {visibleRecommendations.map((recommendation) => (
-              <div key={recommendation.id} className="min-w-0">
+              <li key={recommendation.id} className="min-w-0">
                 <RecommendedGroupCard group={recommendation} />
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </>
       )}
     </section>

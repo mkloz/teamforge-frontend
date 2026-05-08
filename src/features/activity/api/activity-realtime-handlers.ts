@@ -1,3 +1,4 @@
+import type { Plan } from "@/features/activity/lib/activity-contract";
 import type {
   ChatApi,
   FriendshipApi,
@@ -7,11 +8,9 @@ import type {
   PlanProposal,
   PlanUpdateKind,
 } from "@/shared/schemas";
-
 import { ACTIVITY_REALTIME_CONTEXT } from "./activity-context";
-import { ActivityRealtime } from "./activity-realtime";
 import type { ApplyRealtimeMessageOptions } from "./activity-realtime";
-import type { Plan } from "@/features/activity/lib/activity-contract";
+import { ActivityRealtime } from "./activity-realtime";
 
 export const ActivityRealtimeHandlers = {
   applyMessage(

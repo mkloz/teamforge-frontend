@@ -1,7 +1,7 @@
-import { cn } from "@/shared/lib/utils";
-import { memo } from "react";
 import { motion } from "framer-motion";
+import { memo } from "react";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
+import { cn } from "@/shared/lib/utils";
 import { AvatarSection } from "./avatar-section";
 import { ContentSection } from "./content-section";
 
@@ -31,6 +31,7 @@ export const UnifiedConversationListItem = memo(
         onClick={onSelect}
         role="option"
         aria-selected={isSelected}
+        tabIndex={0}
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95 }}

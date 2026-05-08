@@ -3,8 +3,8 @@ import { motion } from "framer-motion";
 import { cn } from "@/shared/lib/utils";
 
 import {
-  RESOLUTION_SEGMENTS,
   type getLengthOptionViewModel,
+  RESOLUTION_SEGMENTS,
 } from "./length-selector-options";
 
 type LengthOptionViewModel = ReturnType<typeof getLengthOptionViewModel>;

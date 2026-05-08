@@ -1,16 +1,15 @@
 import { useEffect } from "react";
 import { create } from "zustand";
-
-import {
-  cancelScheduledAnimationFrame,
-  scheduleAnimationFrame,
-} from "@/shared/lib/browser-scheduling";
-import type { ScheduledAnimationFrameHandle } from "@/shared/lib/browser-scheduling";
 import {
   getBrowserComputedStyle,
   getBrowserDocumentElement,
   getBrowserMediaQuery,
 } from "@/shared/lib/browser-environment";
+import type { ScheduledAnimationFrameHandle } from "@/shared/lib/browser-scheduling";
+import {
+  cancelScheduledAnimationFrame,
+  scheduleAnimationFrame,
+} from "@/shared/lib/browser-scheduling";
 
 export const Theme = {
   LIGHT: "light",

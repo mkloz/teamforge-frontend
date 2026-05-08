@@ -1,7 +1,6 @@
 import type { UseFormReturn } from "react-hook-form";
-
-import { FormField } from "@/shared/components/ui/form";
 import type { ProfileBasicsValues } from "@/features/onboarding/schemas/profile-basics.schema";
+import { FormField } from "@/shared/components/ui/form";
 
 interface HiddenLocationFieldsProps {
   form: UseFormReturn<ProfileBasicsValues>;

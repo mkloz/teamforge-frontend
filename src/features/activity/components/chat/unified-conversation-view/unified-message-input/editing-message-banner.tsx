@@ -1,6 +1,6 @@
-import { Button } from "@/shared/components/ui/button";
 import { PencilLine } from "lucide-react";
 import { memo } from "react";
+import { Button } from "@/shared/components/ui/button";
 
 interface EditingMessageBannerProps {
   onCancel: () => void;

@@ -1,5 +1,5 @@
-import { ACTIVITIES } from "@/features/forge/constants/forge.constants";
 import type { RecentForgeActivity } from "@/features/forge/api/forge.api";
+import { ACTIVITIES } from "@/features/forge/constants/forge.constants";
 import type { PlanCategory } from "@/features/forge/lib/forge-contract";
 import type { RecentActivityItem } from "@/features/forge/lib/recent-activity/types";
 
@@ -29,11 +29,9 @@ function getActivityCategoryText(activity: RecentForgeActivity) {
     activity.group?.plan?.description,
     activity.group?.name,
     activity.group?.description,
-    ...(activity.interests ?? []).flatMap((interest) => [
-      interest.name,
-      interest.slug,
-      ...(interest.aliases ?? []),
-    ]),
+    ...(activity.interests ?? []).flatMap((interest) =>
+      [interest.name, interest.slug].concat(interest.aliases ?? []),
+    ),
   ]
     .filter(Boolean)
     .join(" ");
@@ -97,7 +95,7 @@ export function hasMatchingRecentActivity(
 
   return Boolean(
     selectedCategoryId &&
-    item.categoryId === selectedCategoryId &&
-    activityOptionsById.has(item.categoryId),
+      item.categoryId === selectedCategoryId &&
+      activityOptionsById.has(item.categoryId),
   );
 }

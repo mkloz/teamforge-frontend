@@ -1,14 +1,14 @@
-import { memo } from "react";
 import { AnimatePresence } from "framer-motion";
+import { memo } from "react";
 import { useSearchHeaderFade } from "@/features/activity/hooks/use-search-header-fade";
 import type {
   FilterChip,
   UnifiedConversation,
 } from "@/features/activity/lib/activity-contract";
-import { UnifiedConversationListItem } from "./unified-conversation-list-item";
 import { EmptyState } from "./empty-state";
 import { FilterHeader } from "./filter-header";
 import { SearchHeader } from "./search-header";
+import { UnifiedConversationListItem } from "./unified-conversation-list-item";
 
 interface UnifiedConversationListProps {
   items: UnifiedConversation[];

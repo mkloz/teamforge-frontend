@@ -9,6 +9,7 @@ export function HomeHeroSignalMap() {
         viewBox="0 0 360 280"
         fill="none"
         preserveAspectRatio="none"
+        aria-hidden="true"
       >
         <defs>
           <linearGradient

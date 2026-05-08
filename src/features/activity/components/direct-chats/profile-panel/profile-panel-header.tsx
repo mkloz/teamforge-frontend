@@ -1,5 +1,5 @@
-import { Button } from "@/shared/components/ui/button";
 import { X } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
 
 interface ProfilePanelHeaderProps {
   onClose: () => void;

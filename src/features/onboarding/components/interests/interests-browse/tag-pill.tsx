@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+import { Check, X } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import {
   Tooltip,
@@ -5,8 +7,6 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
-import { motion } from "framer-motion";
-import { Check, X } from "lucide-react";
 
 import { getTagPillSlotClasses } from "./tag-pill-model";
 

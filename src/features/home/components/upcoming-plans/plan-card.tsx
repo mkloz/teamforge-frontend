@@ -1,13 +1,12 @@
-import { Avatar } from "@/shared/components/common/avatar";
-import { Button } from "@/shared/components/ui/button";
-import { buildActivityGroupNavigation } from "@/features/activity/lib/activity-route";
-import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight, Clock } from "lucide-react";
-
-import { getPlanTimingLabel } from "@/features/home/lib/home-insights";
+import { buildActivityGroupNavigation } from "@/features/activity/lib/activity-route";
 import type { PlannedGroup } from "@/features/home/lib/home-contract";
+import { getPlanTimingLabel } from "@/features/home/lib/home-insights";
+import { Avatar } from "@/shared/components/common/avatar";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 import {
   getPlanCalendarParts,
   getPlanMemberPreviews,
@@ -29,7 +28,7 @@ export function PlanCard({ group, index }: PlanCardProps) {
   const memberPreviews = getPlanMemberPreviews(group);
 
   return (
-    <motion.div
+    <motion.li
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
@@ -37,7 +36,6 @@ export function PlanCard({ group, index }: PlanCardProps) {
         delay: index * 0.07,
         ease: [0.23, 1, 0.32, 1],
       }}
-      role="listitem"
       className={cn(
         "group grid grid-cols-[4.75rem_minmax(0,1fr)] items-center gap-x-3 gap-y-2 border-b border-border/55 py-3.5 pr-1 pl-0 last:border-b-0",
         "transition-colors duration-150 hover:bg-forge-teal/5 sm:grid-cols-[5.5rem_minmax(0,1fr)_auto] sm:pr-3 md:gap-4",
@@ -87,10 +85,8 @@ export function PlanCard({ group, index }: PlanCardProps) {
       </div>
 
       <div className="col-start-2 flex items-center justify-between gap-4 sm:col-start-3 sm:min-w-30 sm:justify-end">
-        <div
-          className="flex gap-1 sm:justify-end"
-          aria-label={`${memberPreviews.length} members`}
-        >
+        <div className="flex gap-1 sm:justify-end">
+          <span className="sr-only">{memberPreviews.length} members</span>
           {memberPreviews.slice(0, 3).map((member) => (
             <Avatar
               key={member.id}
@@ -128,6 +124,6 @@ export function PlanCard({ group, index }: PlanCardProps) {
           </Link>
         </Button>
       </div>
-    </motion.div>
+    </motion.li>
   );
 }

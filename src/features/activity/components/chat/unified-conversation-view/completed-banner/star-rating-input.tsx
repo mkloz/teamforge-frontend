@@ -1,6 +1,6 @@
+import { Star } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
-import { Star } from "lucide-react";
 
 interface StarRatingInputProps {
   disabled: boolean;

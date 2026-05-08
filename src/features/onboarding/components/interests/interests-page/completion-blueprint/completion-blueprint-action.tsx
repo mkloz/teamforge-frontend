@@ -1,6 +1,6 @@
-import { Button } from "@/shared/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
 
 import { completionFadeUp } from "./completion-blueprint-motion";
 

@@ -1,12 +1,11 @@
 import { useRef } from "react";
-
-import { BackgroundTexture } from "@/shared/components/common/background-texture";
-import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { OnboardingHomeLink } from "@/features/onboarding/components/onboarding-home-link";
 import { ProfileBasicsCard } from "@/features/onboarding/components/profile-basics";
 import { useProfileBasicsForm } from "@/features/onboarding/hooks/use-profile-basics-form";
-import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
+import { BackgroundTexture } from "@/shared/components/common/background-texture";
+import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
+import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 import type { VoronoiCatalystHandle } from "@/shared/lib/voronoi/voronoi-contract";
 
 export function ProfileBasicsPage() {

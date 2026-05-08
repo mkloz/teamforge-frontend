@@ -1,6 +1,6 @@
+import { Compass } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import type { Interest } from "@/shared/schemas";
-import { Compass } from "lucide-react";
 
 import { CollapsibleInterestSection } from "./collapsible-interest-section";
 import { TagPill } from "./tag-pill";

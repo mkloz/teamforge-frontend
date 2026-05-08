@@ -10,6 +10,13 @@ import { TemplateSuggestionCard } from "./template-suggestion-card";
 import type { Step2TemplatesProps } from "./types";
 import { useTemplatePagination } from "./use-template-pagination";
 
+const TEMPLATE_SKELETON_IDS = [
+  "template-skeleton-primary",
+  "template-skeleton-secondary",
+  "template-skeleton-tertiary",
+  "template-skeleton-quaternary",
+];
+
 export function Step2Templates({
   appliedTemplateId,
   selectedActivity,
@@ -66,9 +73,9 @@ export function Step2Templates({
 
       {isCurrentUserPending ? (
         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-          {Array.from({ length: 4 }, (_, index) => (
+          {TEMPLATE_SKELETON_IDS.map((skeletonId) => (
             <div
-              key={index}
+              key={skeletonId}
               className="h-24 rounded-lg border border-border/35 bg-card/70"
             >
               <div className="h-full animate-pulse bg-muted/25" />

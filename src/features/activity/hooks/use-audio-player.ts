@@ -2,6 +2,12 @@ import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 
 const BAR_COUNT = 38;
 
+function formatTime(seconds: number) {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
 export function useAudioPlayer(url: string) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -97,23 +103,20 @@ export function useAudioPlayer(url: string) {
     });
   }
 
-  function formatTime(seconds: number) {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  }
-
   const bars = useMemo(
     () =>
       Array.from({ length: BAR_COUNT }, (_, i) => {
         const mid = BAR_COUNT / 2;
         const distFromMid = Math.abs(i - mid);
         const envelope = Math.exp(
-          -Math.pow(distFromMid, 2) / (2 * Math.pow(BAR_COUNT / 4, 2)),
+          -(distFromMid ** 2) / (2 * (BAR_COUNT / 4) ** 2),
         );
         const noise = 0.4 + Math.abs(Math.sin(i * 12.9898 + 78.233)) * 0.4;
         const height = (20 + envelope * 60) * noise;
-        return { height: Math.min(Math.max(height, 15), 100) };
+        return {
+          id: `voice-note-bar-${i}`,
+          height: Math.min(Math.max(height, 15), 100),
+        };
       }),
     [],
   );

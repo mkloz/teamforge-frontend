@@ -1,10 +1,10 @@
-import { Dialog, DialogContent } from "@/shared/components/ui/dialog";
 import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
-import { ThumbnailStrip } from "./thumbnail-strip";
+import { Dialog, DialogContent } from "@/shared/components/ui/dialog";
 import { LightboxHeader } from "./lightbox-header";
 import { LightboxStage } from "./lightbox-stage";
+import { ThumbnailStrip } from "./thumbnail-strip";
 import { useLightboxNavigation } from "./use-lightbox-navigation";
 
 interface MediaLightboxProps {

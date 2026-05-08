@@ -1,11 +1,11 @@
-import { Image } from "@/shared/components/common/image";
-import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
-import { useImageState } from "@/shared/hooks/use-image-state";
 import { ImageOff, Play } from "lucide-react";
 import { memo } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import { cacheMediaIntrinsicSize } from "@/features/activity/lib/media-intrinsic-size";
+import { Image } from "@/shared/components/common/image";
+import { Button } from "@/shared/components/ui/button";
+import { useImageState } from "@/shared/hooks/use-image-state";
+import { cn } from "@/shared/lib/utils";
 
 interface ThumbnailStripProps {
   attachments: UnifiedAttachment[];

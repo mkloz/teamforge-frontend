@@ -1,8 +1,8 @@
+import { Link } from "@tanstack/react-router";
+import { MapPin } from "lucide-react";
 import { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
 import { Button } from "@/shared/components/ui/button";
 import type { User } from "@/shared/schemas";
-import { Link } from "@tanstack/react-router";
-import { MapPin } from "lucide-react";
 import { ProfileActions } from "./profile-actions";
 import { ProfileBadges } from "./profile-badges";
 

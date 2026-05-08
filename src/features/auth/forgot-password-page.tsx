@@ -1,14 +1,12 @@
 import { Link } from "@tanstack/react-router";
-
-import {
-  buildAuthRouteNavigation,
-  useAuthReturnState,
-} from "@/shared/lib/auth-route";
-
 import { AuthSupportShell } from "@/features/auth/components/auth-support-shell";
 import { ForgotPasswordForm } from "@/features/auth/components/forgot-password-form";
 import { FormLevelError } from "@/features/auth/components/form-level-error";
 import { useForgotPasswordForm } from "@/features/auth/hooks/use-forgot-password-form";
+import {
+  buildAuthRouteNavigation,
+  useAuthReturnState,
+} from "@/shared/lib/auth-route";
 
 export function ForgotPasswordPage() {
   const { returnTo } = useAuthReturnState();

@@ -1,9 +1,9 @@
-import { describeSessionDevice } from "./session-device";
-import { formatSessionTime } from "./settings-control-formatters";
+import { CalendarClock, Clock3, LogOut, Wifi } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import type { AuthSession } from "@/shared/schemas";
-import { CalendarClock, Clock3, LogOut, Wifi } from "lucide-react";
+import { describeSessionDevice } from "./session-device";
+import { formatSessionTime } from "./settings-control-formatters";
 
 interface SessionRowProps {
   session: AuthSession;

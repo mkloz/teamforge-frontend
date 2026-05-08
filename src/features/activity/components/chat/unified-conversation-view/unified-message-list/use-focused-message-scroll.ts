@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type RefObject } from "react";
+import { type RefObject, useCallback, useEffect, useState } from "react";
 
 import type { VirtualizedMessageBlock } from "@/features/activity/hooks/use-virtualized-message-blocks";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";

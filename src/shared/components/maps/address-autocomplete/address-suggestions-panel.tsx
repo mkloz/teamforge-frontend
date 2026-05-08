@@ -78,6 +78,7 @@ export function AddressSuggestionsPanel({
                 variant="ghost"
                 role="option"
                 aria-selected={active}
+                tabIndex={active ? 0 : -1}
                 onMouseEnter={() => onActiveSuggestionChange(index)}
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={() => onPredictionSelect(suggestion)}

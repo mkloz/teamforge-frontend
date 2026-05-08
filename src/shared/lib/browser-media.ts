@@ -42,5 +42,7 @@ export function createAudioRecorder(stream: MediaStream) {
 }
 
 export function stopMediaStream(stream: MediaStream | null) {
-  stream?.getTracks().forEach((track) => track.stop());
+  stream?.getTracks().forEach((track) => {
+    track.stop();
+  });
 }

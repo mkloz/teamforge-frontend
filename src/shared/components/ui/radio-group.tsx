@@ -2,7 +2,7 @@
 
 import { CircleIcon } from "lucide-react";
 import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
-import React from "react";
+import type React from "react";
 
 import { cn } from "@/shared/lib/utils";
 

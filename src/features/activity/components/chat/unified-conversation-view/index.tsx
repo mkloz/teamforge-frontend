@@ -1,5 +1,7 @@
-import { useConversationData } from "@/features/activity/hooks/use-conversation-data";
+import type { RefObject } from "react";
+import { memo, useRef } from "react";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
+import { useConversationData } from "@/features/activity/hooks/use-conversation-data";
 import type {
   ActivitySendMessageInput,
   DirectChat,
@@ -7,8 +9,6 @@ import type {
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
 import { useIsMobile } from "@/shared/hooks/use-breakpoint";
-import { memo, useRef } from "react";
-import type { RefObject } from "react";
 import { ChatStatusBar } from "./chat-status-bar";
 import { CompletedBanner } from "./completed-banner";
 import { UnifiedChatHeader } from "./unified-chat-header";
@@ -88,10 +88,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
 
   const allPinnedMessages: UnifiedMessage[] = (
     pinnedMessagesFromData || []
-  ).map((msg: UnifiedMessage) => ({
-    ...msg,
-    isOwn: false,
-  }));
+  ).map((msg: UnifiedMessage) => Object.assign({}, msg, { isOwn: false }));
 
   return (
     <div className="flex h-full animate-in flex-col bg-canvas/40 duration-300 fade-in">

@@ -7,6 +7,11 @@ interface PagerDotsProps {
 }
 
 export function PagerDots({ total, activeIndex, accentClass }: PagerDotsProps) {
+  const dots = Array.from({ length: total }, (_, index) => ({
+    id: `pager-dot-${index}`,
+    index,
+  }));
+
   if (total <= 1) {
     return (
       <div
@@ -24,11 +29,11 @@ export function PagerDots({ total, activeIndex, accentClass }: PagerDotsProps) {
       className="absolute inset-y-0 left-0 flex w-3.5 flex-col items-center justify-center gap-1"
       aria-hidden
     >
-      {Array.from({ length: total }, (_, i) => {
-        const isActive = i === activeIndex;
+      {dots.map((dot) => {
+        const isActive = dot.index === activeIndex;
         return (
           <div
-            key={i}
+            key={dot.id}
             className={cn(
               "rounded-full transition-all duration-250",
               isActive ? cn("h-1.5 w-1.5", accentClass) : "h-1 w-1 bg-border",

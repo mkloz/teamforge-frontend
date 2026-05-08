@@ -1,11 +1,10 @@
+import { ExploreApi } from "@/features/explore/api/explore.api";
+import { ExploreCache } from "@/features/explore/api/explore-cache";
 import {
   invalidateFriendshipSurfaces,
   invalidateGroupMembershipSurfaces,
   invalidateNotificationSurfaces,
 } from "@/shared/api/query-invalidation";
-
-import { ExploreApi } from "@/features/explore/api/explore.api";
-import { ExploreCache } from "@/features/explore/api/explore-cache";
 
 export const ExploreCommands = {
   async joinGroup(groupId: string) {

@@ -1,4 +1,4 @@
-import { motion, MotionValue, useTransform } from "framer-motion";
+import { type MotionValue, motion, useTransform } from "framer-motion";
 import { LogoSegment } from "./logo-segment";
 import { PsychometricMarker } from "./psychometric-marker";
 import { PulsingRing } from "./pulsing-ring";
@@ -120,9 +120,9 @@ export function VoronoiLogo({
       )}
 
       {/* Orbiting psychometric markers (Phase 1) */}
-      {[0, 72, 144, 216, 288].map((angle, i) => (
+      {[0, 72, 144, 216, 288].map((angle) => (
         <PsychometricMarker
-          key={i}
+          key={`marker-${angle}`}
           angle={angle}
           smoothProgress={smoothProgress}
           shouldReduceMotion={shouldReduceMotion}
@@ -140,9 +140,9 @@ export function VoronoiLogo({
           { x: 80, y: 80 },
           { x: 20, y: 80 },
           { x: 20, y: 20 },
-        ].map((point, i) => (
+        ].map((point) => (
           <SocialConnectionLine
-            key={i}
+            key={`line-${point.x}-${point.y}`}
             x2={point.x}
             y2={point.y}
             smoothProgress={smoothProgress}

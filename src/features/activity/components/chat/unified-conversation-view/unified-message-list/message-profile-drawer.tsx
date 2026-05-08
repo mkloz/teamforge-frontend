@@ -1,4 +1,5 @@
 import { UserProfilePanel } from "@/features/activity/components/user-profile-panel";
+import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import {
   Drawer,
@@ -6,7 +7,6 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/shared/components/ui/drawer";
-import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
 
 interface MessageProfileDrawerProps {
   selectedSender: ActivityParticipant | null;

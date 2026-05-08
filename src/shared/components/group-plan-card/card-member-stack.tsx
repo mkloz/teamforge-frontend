@@ -21,9 +21,9 @@ export function CardMemberStack({
 
   return (
     <div className="flex shrink-0 -space-x-2">
-      {visibleMembers.map((member, index) => (
+      {visibleMembers.map((member) => (
         <Avatar
-          key={`${group.id}-${index}`}
+          key={member.id}
           src={member.avatar}
           name={member.name}
           fallback={member.name ? undefined : fallbackInitial}

@@ -12,8 +12,7 @@ export function ProfileStepQueueItem({
   nextStep: NonNullable<HomeViewer["nextStep"]>;
 }) {
   return (
-    <motion.article
-      role="listitem"
+    <motion.li
       key="profile-step"
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
@@ -34,6 +33,6 @@ export function ProfileStepQueueItem({
       <Button asChild variant="outline" size="sm" className="shrink-0">
         <ProfileStepAction nextStep={nextStep} />
       </Button>
-    </motion.article>
+    </motion.li>
   );
 }

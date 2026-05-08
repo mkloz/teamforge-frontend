@@ -40,7 +40,9 @@ export function useOutsideDismiss({
       ...(ref ? [ref] : []),
       ...(Array.isArray(refs) ? refs : refs ? [refs] : []),
     ];
-    const isInside = boundaryRefs.some((ref) => ref.current?.contains(target));
+    const isInside = boundaryRefs.some((boundaryRef) =>
+      boundaryRef.current?.contains(target),
+    );
 
     if (isInside) {
       return;

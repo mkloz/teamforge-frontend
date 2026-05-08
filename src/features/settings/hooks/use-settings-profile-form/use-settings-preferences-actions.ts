@@ -1,14 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-
+import { SettingsCache } from "@/features/settings/api/settings-cache";
+import { SettingsCommands } from "@/features/settings/api/settings-commands";
+import { SettingsQueryFactory } from "@/features/settings/api/settings-query-factory";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import type { NotificationPreferences } from "@/shared/schemas";
-
-import { SettingsCache } from "@/features/settings/api/settings-cache";
-import { SettingsCommands } from "@/features/settings/api/settings-commands";
-import { SettingsQueryFactory } from "@/features/settings/api/settings-query-factory";
 
 import type { BooleanSettingsPreferenceKey } from "./types";
 

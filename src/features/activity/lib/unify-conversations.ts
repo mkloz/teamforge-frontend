@@ -135,7 +135,7 @@ export function applyFilter(
   }
 
   // Search filtering
-  if (query && query.trim()) {
+  if (query?.trim()) {
     const q = query.toLowerCase().trim();
     result = result.filter(
       (i) =>

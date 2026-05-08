@@ -1,3 +1,6 @@
+import { motion } from "framer-motion";
+import { ChevronDown, type LucideIcon } from "lucide-react";
+import { type ReactNode, useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import {
   Collapsible,
@@ -5,9 +8,6 @@ import {
   CollapsibleTrigger,
 } from "@/shared/components/ui/collapsible";
 import { cn } from "@/shared/lib/utils";
-import { motion } from "framer-motion";
-import { ChevronDown, type LucideIcon } from "lucide-react";
-import { useState, type ReactNode } from "react";
 
 interface CollapsibleInterestSectionProps {
   children: ReactNode;

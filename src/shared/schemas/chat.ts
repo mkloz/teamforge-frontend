@@ -1,9 +1,9 @@
 import { z } from "zod";
 import {
-  chatTypeSchema,
-  messageTypeSchema,
-  messageStatusSchema,
   attachmentTypeSchema,
+  chatTypeSchema,
+  messageStatusSchema,
+  messageTypeSchema,
 } from "./enums";
 import type { User } from "./user";
 import { userSchema } from "./user";

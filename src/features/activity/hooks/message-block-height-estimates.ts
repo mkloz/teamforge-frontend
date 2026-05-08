@@ -1,4 +1,4 @@
-import { layout, prepare, type PreparedText } from "@chenglou/pretext";
+import { layout, type PreparedText, prepare } from "@chenglou/pretext";
 
 import type { SenderGroup } from "@/features/activity/hooks/use-message-grouping";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";

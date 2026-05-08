@@ -1,5 +1,5 @@
 import type { UseFormReturn } from "react-hook-form";
-
+import type { ProfileBasicsValues } from "@/features/onboarding/schemas/profile-basics.schema";
 import {
   FormControl,
   FormField,
@@ -15,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select";
-import type { ProfileBasicsValues } from "@/features/onboarding/schemas/profile-basics.schema";
 
 import { GENDER_OPTIONS } from "./profile-basics-options";
 

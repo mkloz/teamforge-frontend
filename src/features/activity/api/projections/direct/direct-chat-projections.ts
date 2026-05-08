@@ -1,15 +1,14 @@
+import { mapMessages } from "@/features/activity/api/projections/activity-message-projections";
+import { mapFriendshipUserParticipant } from "@/features/activity/api/projections/activity-participant-projections";
+import type {
+  ActivityParticipant,
+  DirectChat,
+} from "@/features/activity/lib/activity-contract";
 import type {
   ChatApi,
   FriendshipApi,
   FriendshipPrivateChatApi,
 } from "@/shared/schemas";
-
-import type {
-  ActivityParticipant,
-  DirectChat,
-} from "@/features/activity/lib/activity-contract";
-import { mapMessages } from "@/features/activity/api/projections/activity-message-projections";
-import { mapFriendshipUserParticipant } from "@/features/activity/api/projections/activity-participant-projections";
 
 function buildDirectChatParticipants(
   privateChat: FriendshipPrivateChatApi,

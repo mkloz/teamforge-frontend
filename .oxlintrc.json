@@ -1,0 +1,57 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "typescript",
+    "unicorn",
+    "oxc",
+    "import",
+    "react",
+    "react_perf",
+    "jsx_a11y",
+    "vitest"
+  ],
+  "categories": {
+    "correctness": "warn",
+    "suspicious": "warn",
+    "perf": "warn",
+    "style": "off",
+    "pedantic": "off",
+    "restriction": "off",
+    "nursery": "off"
+  },
+  "env": {
+    "browser": true,
+    "es2022": true
+  },
+  "ignorePatterns": [
+    "dist/**",
+    "dist-ssr/**",
+    "coverage/**",
+    "node_modules/**",
+    "reports/**",
+    "temp/**",
+    ".agents/**"
+  ],
+  "rules": {
+    "import/no-cycle": "warn",
+    "import/no-duplicates": "error",
+    "import/no-unassigned-import": "off",
+    "no-console": "warn",
+    "no-explicit-any": "warn",
+    "no-shadow": "warn",
+    "no-underscore-dangle": "off",
+    "react-perf/jsx-no-new-array-as-prop": "off",
+    "react-perf/jsx-no-jsx-as-prop": "off",
+    "react-perf/jsx-no-new-function-as-prop": "off",
+    "react-perf/jsx-no-new-object-as-prop": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/no-unknown-property": "warn",
+    "jsx-a11y/prefer-tag-over-role": "off",
+    "typescript/no-explicit-any": "warn",
+    "typescript/no-extraneous-class": "off",
+    "unicorn/consistent-function-scoping": "warn",
+    "unicorn/no-array-reverse": "off",
+    "unicorn/no-array-sort": "off",
+    "unicorn/no-useless-fallback-in-spread": "warn"
+  }
+}

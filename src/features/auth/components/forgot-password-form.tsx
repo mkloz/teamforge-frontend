@@ -1,6 +1,6 @@
 import type { FormEventHandler } from "react";
 import type { UseFormReturn } from "react-hook-form";
-
+import type { ForgotPasswordValues } from "@/features/auth/schemas/auth-schemas";
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -12,7 +12,6 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
-import type { ForgotPasswordValues } from "@/features/auth/schemas/auth-schemas";
 
 interface ForgotPasswordFormProps {
   form: UseFormReturn<ForgotPasswordValues>;

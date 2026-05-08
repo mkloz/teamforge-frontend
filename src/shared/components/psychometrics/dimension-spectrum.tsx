@@ -1,5 +1,5 @@
-import { cn } from "@/shared/lib/utils";
 import type { CSSProperties } from "react";
+import { cn } from "@/shared/lib/utils";
 import type { DimensionScore } from "@/shared/types/psychometrics";
 
 interface DimensionSpectrumProps {

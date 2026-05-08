@@ -1,4 +1,4 @@
-import { Brain, Target, type LucideIcon } from "lucide-react";
+import { Brain, type LucideIcon, Target } from "lucide-react";
 
 import {
   TEST_LENGTH_CONFIG,

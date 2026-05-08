@@ -1,8 +1,7 @@
+import { ActivityApi } from "@/features/activity/api/activity.api";
 import { appQueryClient } from "@/shared/api/query-client";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import type { CreateRatingPayload } from "@/shared/schemas";
-
-import { ActivityApi } from "@/features/activity/api/activity.api";
 
 export const ActivityRatingActions = {
   async createGroupRating(groupId: string, payload: CreateRatingPayload) {

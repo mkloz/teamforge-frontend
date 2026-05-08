@@ -3,13 +3,13 @@ import { useMemo, useState } from "react";
 import { useActivityFriendships } from "@/features/activity/hooks/use-activity-friendships";
 import { useActivityGroupActions } from "@/features/activity/hooks/use-activity-group-actions";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
-import { buildMemberProfileChat } from "@/features/activity/lib/activity-projections";
 import type {
   DirectChat,
   Group,
   GroupMember,
   MemberRole,
 } from "@/features/activity/lib/activity-contract";
+import { buildMemberProfileChat } from "@/features/activity/lib/activity-projections";
 
 interface UseGroupPanelContentOptions {
   group: Group;

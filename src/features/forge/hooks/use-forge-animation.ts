@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const FORGE_CYCLE_MS = 1600;
 const FIRST_IMPACT_MS = 800;
@@ -13,10 +13,12 @@ export function useForgeAnimation() {
   const [forgingProgress, setForgingProgress] = useState(0);
   const [forgeStrikeCount, setForgeStrikeCount] = useState(0);
 
-  function clearForgeTimers() {
-    timeoutRefs.current.forEach((timeout) => clearTimeout(timeout));
+  const clearForgeTimers = useCallback(() => {
+    timeoutRefs.current.forEach((timeout) => {
+      clearTimeout(timeout);
+    });
     timeoutRefs.current = [];
-  }
+  }, []);
 
   function scheduleTimeout(callback: () => void, delay: number) {
     const timeout = setTimeout(callback, delay);
@@ -29,7 +31,7 @@ export function useForgeAnimation() {
     () => () => {
       clearForgeTimers();
     },
-    [],
+    [clearForgeTimers],
   );
 
   function finishForgeOnImpact(runId: number) {

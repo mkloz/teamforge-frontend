@@ -10,7 +10,10 @@ export const RecordingOverlay = memo(({ timeLabel }: RecordingOverlayProps) => {
       Array.from({ length: 24 }, (_, i) => {
         // Deterministic pseudo-random heights based on index
         const noise = 0.5 + Math.abs(Math.sin(i * 12.9898 + 78.233)) * 0.5;
-        return 20 + noise * 60;
+        return {
+          height: 20 + noise * 60,
+          id: `recording-bar-${i}`,
+        };
       }),
     [],
   );
@@ -24,11 +27,11 @@ export const RecordingOverlay = memo(({ timeLabel }: RecordingOverlayProps) => {
         </span>
       </div>
       <div className="flex h-5 flex-1 items-center gap-0.5 overflow-hidden">
-        {bars.map((height, i) => (
+        {bars.map((bar) => (
           <div
-            key={i}
+            key={bar.id}
             className="w-px rounded-full bg-destructive/30 duration-200"
-            style={{ height: `${height}%` }}
+            style={{ height: `${bar.height}%` }}
           />
         ))}
       </div>

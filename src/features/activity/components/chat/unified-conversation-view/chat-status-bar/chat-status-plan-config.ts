@@ -1,6 +1,6 @@
-import type { Plan } from "@/features/activity/lib/activity-contract";
 import { Check, CheckCircle2, FileEdit, Pin, X } from "lucide-react";
 import type { ElementType } from "react";
+import type { Plan } from "@/features/activity/lib/activity-contract";
 
 interface PlanStatusConfig {
   icon: ElementType;

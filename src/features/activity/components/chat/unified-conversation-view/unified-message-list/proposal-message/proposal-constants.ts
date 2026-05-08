@@ -2,13 +2,12 @@ import {
   CircleDollarSign,
   Clock3,
   FileText,
+  type LucideIcon,
   MapPin,
   Shapes,
-  type LucideIcon,
 } from "lucide-react";
-
-import type { PlanProposalField } from "@/shared/schemas/enums";
 import { PROPOSAL_FIELD_LABELS } from "@/features/activity/lib/proposal-language";
+import type { PlanProposalField } from "@/shared/schemas/enums";
 
 export const FIELD_ICON_COMPONENTS: Record<PlanProposalField, LucideIcon> = {
   TITLE: FileText,

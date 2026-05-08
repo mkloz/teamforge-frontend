@@ -1,7 +1,7 @@
+import { z } from "zod";
 import { apiClient } from "@/shared/api/api";
 import { fullUserResponseSchema, interestSchema } from "@/shared/schemas";
 import type { Gender, PersonalityType } from "@/shared/schemas/enums";
-import { z } from "zod";
 
 const interestTreeResponseSchema = z.array(interestSchema);
 const setUserInterestsResponseSchema = z.object({

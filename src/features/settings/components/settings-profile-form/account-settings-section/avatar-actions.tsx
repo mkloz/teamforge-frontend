@@ -1,6 +1,6 @@
-import { formatAvatarFileSize } from "./account-formatters";
-import { Button } from "@/shared/components/ui/button";
 import { Trash2, Upload, X } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
+import { formatAvatarFileSize } from "./account-formatters";
 
 interface AvatarActionsProps {
   selectedAvatarFile: File | null;

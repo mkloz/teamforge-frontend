@@ -1,6 +1,6 @@
+import type { HTMLAttributes, ImgHTMLAttributes, ReactNode } from "react";
 import { Image } from "@/shared/components/common/image";
 import { cn } from "@/shared/lib/utils";
-import type { HTMLAttributes, ImgHTMLAttributes, ReactNode } from "react";
 
 function getAvatarInitials(name?: string | null) {
   const initials = (name ?? "")
@@ -14,10 +14,8 @@ function getAvatarInitials(name?: string | null) {
   return initials || "TF";
 }
 
-interface AvatarProps extends Omit<
-  HTMLAttributes<HTMLDivElement>,
-  "onError" | "onLoad"
-> {
+interface AvatarProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, "onError" | "onLoad"> {
   src?: string | null;
   name?: string | null;
   alt?: string;

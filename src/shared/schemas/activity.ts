@@ -1,20 +1,21 @@
+// oxlint-disable import/no-cycle -- Recursive activity/group schemas are resolved with z.lazy.
 import { z } from "zod";
 import {
   activityAccessSchema,
-  activityVisibilitySchema,
-  forgeModeSchema,
   activityStatusSchema,
+  activityVisibilitySchema,
   costTypeSchema,
+  forgeModeSchema,
+  groupRoleSchema,
+  groupStatusSchema,
   locationModeSchema,
   planCategorySchema,
   planStatusSchema,
-  groupRoleSchema,
-  groupStatusSchema,
 } from "./enums";
-import type { User, Interest } from "./user";
-import { userSchema, interestSchema } from "./user";
 import type { Group } from "./group";
 import { groupSchema } from "./group";
+import type { Interest, User } from "./user";
+import { interestSchema, userSchema } from "./user";
 
 const activityData = {
   id: z.string(),

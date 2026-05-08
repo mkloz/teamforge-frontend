@@ -1,7 +1,7 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
-
+import type { ResetPasswordValues } from "@/features/auth/schemas/auth-schemas";
 import { Button } from "@/shared/components/ui/button";
 import {
   FormControl,
@@ -11,7 +11,6 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
-import type { ResetPasswordValues } from "@/features/auth/schemas/auth-schemas";
 
 interface ResetPasswordFieldProps {
   label: string;

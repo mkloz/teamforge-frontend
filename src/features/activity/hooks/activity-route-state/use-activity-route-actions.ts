@@ -1,9 +1,3 @@
-import type {
-  ActivityDensity,
-  ActivityFilter,
-  ActivityKind,
-} from "@/features/activity/lib/activity-route";
-
 import type { SetActivityRouteState } from "@/features/activity/hooks/activity-route-state/activity-route-state.types";
 import {
   CLEAR_ACTIVITY_SELECTION_ROUTE,
@@ -14,6 +8,11 @@ import {
   getSearchRoutePatch,
   getSelectionRoutePatch,
 } from "@/features/activity/hooks/activity-route-state/activity-route-state-utils";
+import type {
+  ActivityDensity,
+  ActivityFilter,
+  ActivityKind,
+} from "@/features/activity/lib/activity-route";
 
 interface UseActivityRouteActionsInput {
   isDesktop: boolean;

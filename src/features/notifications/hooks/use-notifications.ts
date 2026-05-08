@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
 import { NotificationsCache } from "@/features/notifications/api/notifications-cache";
 import { NotificationsCommands } from "@/features/notifications/api/notifications-commands";

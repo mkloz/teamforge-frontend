@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import type {
   ActivityParticipant,
   Group,
@@ -5,18 +6,17 @@ import type {
   MemberRole,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
-import { motion } from "framer-motion";
 
 import { ActionsSection } from "../actions-section";
-import {
-  groupPanelContainerVariants,
-  groupPanelItemVariants,
-} from "./group-panel-animations";
 import { GroupIdentitySection } from "../group-identity-section";
 import { MembersSection } from "../members-section";
 import { PinnedMessagesSection } from "../pinned-messages-section";
 import { PlanHistorySection } from "../plan-history-section";
 import { PlanSection } from "../plan-section";
+import {
+  groupPanelContainerVariants,
+  groupPanelItemVariants,
+} from "./group-panel-animations";
 
 interface GroupPanelMainSectionsProps {
   currentUserId: string | null;

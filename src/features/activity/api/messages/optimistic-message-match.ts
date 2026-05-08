@@ -1,6 +1,5 @@
-import type { MessageApi } from "@/shared/schemas";
-
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import type { MessageApi } from "@/shared/schemas";
 
 function normalizeMessageContent(content: string) {
   return content.trim().replace(/\s+/g, " ");

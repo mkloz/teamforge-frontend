@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+import { Pencil, X } from "lucide-react";
 import type {
   Group,
   MemberRole,
@@ -5,8 +7,6 @@ import type {
 import { PlanCover } from "@/shared/components/common/plan-cover";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
-import { motion } from "framer-motion";
-import { Pencil, X } from "lucide-react";
 
 interface GroupCoverHeaderProps {
   currentUserRole: MemberRole;

@@ -7,10 +7,13 @@
 
   /* Hide scrollbar but keep functionality */
   .scrollbar-hide {
+    /* biome-ignore lint/complexity/noImportantStyles: This utility must override browser scrollbar defaults wherever it is applied. */
     -ms-overflow-style: none !important;
+    /* biome-ignore lint/complexity/noImportantStyles: This utility must override browser scrollbar defaults wherever it is applied. */
     scrollbar-width: none !important;
   }
   .scrollbar-hide::-webkit-scrollbar {
+    /* biome-ignore lint/complexity/noImportantStyles: This utility must hide WebKit scrollbars even inside component-scoped styles. */
     display: none !important;
   }
 
@@ -18,11 +21,16 @@
   .disable-transitions *,
   .disable-transitions *::before,
   .disable-transitions *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: This root-level utility intentionally wins over all transitions during theme/layout changes. */
     transition: none !important;
   }
 
   .profile-cover-dot-grid {
-    background-image: radial-gradient(circle, var(--color-canvas) 1px, transparent 1px);
+    background-image: radial-gradient(
+      circle,
+      var(--color-canvas) 1px,
+      transparent 1px
+    );
     background-size: 24px 24px;
   }
 
@@ -70,8 +78,16 @@
 
   .group-plan-card-empty-art {
     background-image:
-      radial-gradient(circle at 28% 24%, rgba(13, 148, 136, 0.16), transparent 34%),
-      radial-gradient(circle at 72% 76%, rgba(245, 158, 11, 0.13), transparent 32%);
+      radial-gradient(
+        circle at 28% 24%,
+        rgba(13, 148, 136, 0.16),
+        transparent 34%
+      ),
+      radial-gradient(
+        circle at 72% 76%,
+        rgba(245, 158, 11, 0.13),
+        transparent 32%
+      );
   }
 
   .group-plan-card-empty-art-core {
@@ -171,6 +187,7 @@
 }
 
 /* Firefox scrollbar styling */
+/* biome-ignore lint/style/noDescendingSpecificity: Global Firefox scrollbar defaults intentionally apply after component utility declarations. */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--muted) transparent;

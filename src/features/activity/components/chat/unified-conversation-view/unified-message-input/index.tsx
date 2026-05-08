@@ -48,6 +48,8 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
   return (
     <div className="safe-area-inset-bottom isolate z-30 min-h-16 shrink-0 overflow-visible border-t border-border/60 bg-canvas/90 px-3 pt-2 pb-2.5 backdrop-blur-xl">
       <div className="mx-auto flex w-full items-end gap-2.5">
+        {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions: File drag/drop is pointer-only decoration around the actual message controls. */}
+        {/* biome-ignore lint/a11y/noStaticElementInteractions: The keyboard-accessible controls live inside this drop zone. */}
         <div
           className={containerClasses}
           onDragOver={composer.handleDragOver}

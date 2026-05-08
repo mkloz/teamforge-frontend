@@ -1,15 +1,14 @@
-import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
+import { memo } from "react";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
+import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
-import { memo } from "react";
+import type { User } from "@/shared/schemas";
 import { MessageActionsMenu } from "./message-actions-menu";
 import { MessageContent } from "./message-content";
 import { MessageFooter } from "./message-footer";
 import { MessageMedia } from "./message-media";
 import { ReplyReference } from "./reply-reference";
-
-import type { User } from "@/shared/schemas";
 
 interface UnifiedMessageItemProps {
   message: UnifiedMessage;

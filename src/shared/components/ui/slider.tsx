@@ -43,9 +43,9 @@ function Slider({
           className="absolute h-full bg-forge-teal"
         />
       </SliderPrimitive.Track>
-      {values.map((_, index) => (
+      {values.map((thumbValue) => (
         <SliderPrimitive.Thumb
-          key={index}
+          key={`slider-thumb-${thumbValue}`}
           data-slot="slider-thumb"
           className="block size-5 shrink-0 rounded-full border border-forge-teal bg-background shadow-sm ring-ring/50 transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
         />

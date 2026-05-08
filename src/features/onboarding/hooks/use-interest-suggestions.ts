@@ -1,11 +1,11 @@
-import type { Interest } from "@/shared/schemas";
-import type { PersonalityType } from "@/shared/schemas/enums";
 import {
   getCorrelatedSuggestions,
   getMbtiSuggestions,
   getSearchResults,
   getShouldShowBalanceNudge,
 } from "@/features/onboarding/utils/interest-logic";
+import type { Interest } from "@/shared/schemas";
+import type { PersonalityType } from "@/shared/schemas/enums";
 
 interface UseInterestSuggestionsInput {
   categories: Interest[];

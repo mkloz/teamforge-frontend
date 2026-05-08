@@ -1,9 +1,8 @@
 import { AnimatePresence } from "framer-motion";
-
+import { useInlineForgeStepActions } from "../use-inline-forge-step-actions";
 import { CurrentForgeStep } from "./current-forge-step";
 import { StepTransitionFrame } from "./step-transition-frame";
 import type { InlineForgeStepContentProps } from "./types";
-import { useInlineForgeStepActions } from "../use-inline-forge-step-actions";
 
 export function InlineForgeStepContent({
   activityShakeRequestId,

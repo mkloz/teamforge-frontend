@@ -3,8 +3,9 @@
  * Provides the same API as the standard shadcn/ui AlertDialog without
  * requiring an additional @radix-ui/react-alert-dialog dependency.
  */
-import { cn } from "@/shared/lib/utils";
+
 import React from "react";
+import { cn } from "@/shared/lib/utils";
 import { Button, type ButtonV2Props } from "./button";
 import {
   Dialog,

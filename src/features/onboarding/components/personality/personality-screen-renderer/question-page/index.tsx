@@ -1,8 +1,8 @@
+import { Link } from "@tanstack/react-router";
+import { TeamForgeLogo } from "@/assets/logo";
 import type { IpipQuestion } from "@/features/onboarding/data/ipip-questions";
 import type { RawAnswers } from "@/features/onboarding/utils/score-calculator";
-import { TeamForgeLogo } from "@/assets/logo";
 import { Button } from "@/shared/components/ui/button";
-import { Link } from "@tanstack/react-router";
 
 import { QuestionList } from "./question-list";
 import { QuestionPageActions } from "./question-page-actions";

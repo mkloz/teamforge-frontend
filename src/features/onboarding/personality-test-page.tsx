@@ -1,13 +1,12 @@
 import { AnimatePresence, motion } from "framer-motion";
-
+import { OnboardingHomeLink } from "@/features/onboarding/components/onboarding-home-link";
+import { PersonalityScreenRenderer } from "@/features/onboarding/components/personality/personality-screen-renderer";
+import { personalityScreenTransition } from "@/features/onboarding/constants/motion";
+import { usePersonalityTestPageFlow } from "@/features/onboarding/hooks/use-personality-test-page-flow";
+import { QUESTIONS_PER_PAGE } from "@/features/onboarding/lib/personality-test-page-constants";
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
-import { OnboardingHomeLink } from "@/features/onboarding/components/onboarding-home-link";
-import { personalityScreenTransition } from "@/features/onboarding/constants/motion";
-import { PersonalityScreenRenderer } from "@/features/onboarding/components/personality/personality-screen-renderer";
-import { usePersonalityTestPageFlow } from "@/features/onboarding/hooks/use-personality-test-page-flow";
-import { QUESTIONS_PER_PAGE } from "@/features/onboarding/lib/personality-test-page-constants";
 import { cn } from "@/shared/lib/utils";
 
 export function PersonalityTestPage() {

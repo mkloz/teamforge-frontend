@@ -1,3 +1,5 @@
+import { MapPin } from "lucide-react";
+import type { UseFormReturn } from "react-hook-form";
 import type { SettingsProfileValues } from "@/features/settings/schemas/settings-profile.schema";
 import { AddressAutocomplete } from "@/shared/components/maps/address-autocomplete";
 import {
@@ -7,8 +9,6 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import type { User } from "@/shared/schemas";
-import { MapPin } from "lucide-react";
-import type { UseFormReturn } from "react-hook-form";
 
 interface AreaFieldsProps {
   currentUser: User | undefined;

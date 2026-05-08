@@ -1,4 +1,4 @@
-import { motion, MotionValue, useTransform } from "framer-motion";
+import { type MotionValue, motion, useTransform } from "framer-motion";
 
 interface LogoSegmentProps {
   points: string;

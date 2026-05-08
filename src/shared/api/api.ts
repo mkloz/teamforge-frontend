@@ -3,16 +3,16 @@ import ky, { type Options } from "ky";
 import { config } from "@/config/config";
 import { parseApiError } from "@/shared/api/api-errors";
 import {
-  readApiRequestContext,
   type ApiAuthMode,
+  readApiRequestContext,
 } from "@/shared/api/api-request-context";
-import { authSession, type AuthTokens } from "@/shared/api/auth-session";
+import { type AuthTokens, authSession } from "@/shared/api/auth-session";
 
 export {
+  type ApiResponseWithRequestId,
   getResponseRequestId,
   parseJsonWithRequestId,
   REQUEST_ID_HEADER,
-  type ApiResponseWithRequestId,
 } from "@/shared/api/api-errors";
 export type {
   ApiAuthMode,
@@ -66,7 +66,7 @@ function buildRetryOptions(
     ...options,
     headers,
     context: {
-      ...(options.context ?? {}),
+      ...options.context,
       auth: "access",
       retryOnUnauthorized: false,
     },

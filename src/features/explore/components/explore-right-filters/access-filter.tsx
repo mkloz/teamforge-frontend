@@ -1,5 +1,5 @@
-import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 import { ACCESS_FILTER_OPTIONS } from "@/features/explore/constants/explore.constants";
+import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 import { SegmentedFilterTabs } from "./segmented-filter-tabs";
 
 export function AccessFilter() {

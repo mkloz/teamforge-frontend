@@ -1,4 +1,4 @@
-import { Moon, Sun, type LucideIcon } from "lucide-react";
+import { type LucideIcon, Moon, Sun } from "lucide-react";
 
 import { cn } from "@/shared/lib/utils";
 import { Theme, useTheme } from "@/shared/store/theme.store";

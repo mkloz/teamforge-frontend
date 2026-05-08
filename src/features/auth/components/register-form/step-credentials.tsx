@@ -1,8 +1,8 @@
+import { FormLevelError } from "@/features/auth/components/form-level-error";
+import { useGoogleAuth } from "@/features/auth/hooks/use-google-auth";
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { GoogleIcon } from "@/shared/components/icons";
 import { Button } from "@/shared/components/ui/button";
-import { FormLevelError } from "@/features/auth/components/form-level-error";
-import { useGoogleAuth } from "@/features/auth/hooks/use-google-auth";
 import { RegisterIdentityFields } from "./register-identity-fields";
 import { RegisterPasswordField } from "./register-password-field";
 

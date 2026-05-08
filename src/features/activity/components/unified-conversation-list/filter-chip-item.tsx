@@ -1,5 +1,5 @@
-import { CategoryFilterChip } from "@/shared/components/ui/category-filter-chip";
 import { memo } from "react";
+import { CategoryFilterChip } from "@/shared/components/ui/category-filter-chip";
 
 interface FilterChipItemProps {
   label: string;

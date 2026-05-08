@@ -4,12 +4,11 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 import { formatChatFullDate } from "@/features/activity/lib/chat-utils";
 import { formatPlanLocation } from "@/features/activity/lib/plan-location";
-
+import type { PinnedEntry } from "./chat-status-bar-types";
 import {
   PINNED_MESSAGE_CONFIG,
   PLAN_STATUS_CONFIG,
 } from "./chat-status-plan-config";
-import type { PinnedEntry } from "./chat-status-bar-types";
 
 export function buildPinnedEntries(
   plan: Plan | undefined,

@@ -1,4 +1,4 @@
-import { type Dimension, type IpipQuestion } from "../data/ipip-questions";
+import type { Dimension, IpipQuestion } from "../data/ipip-questions";
 
 export type RawAnswers = Record<number, 1 | 2 | 3 | 4 | 5>;
 
@@ -13,6 +13,13 @@ export interface OceanVector {
 export interface OceanVectorWithMeta extends OceanVector {
   /** Dimensions within ±0.167 of zero – letter still assigned but boundary is soft */
   softBoundary: Dimension[];
+}
+
+function normalizeScore(sum: number, n: number): number {
+  if (n === 0) return 0;
+  const midpoint = n * 3;
+  const maxDev = n * 2;
+  return Math.max(-1, Math.min(1, (sum - midpoint) / maxDev));
 }
 
 /**
@@ -37,19 +44,12 @@ export function calculateVector(
     counts[q.dimension]++;
   }
 
-  const normalize = (sum: number, n: number): number => {
-    if (n === 0) return 0;
-    const midpoint = n * 3;
-    const maxDev = n * 2;
-    return Math.max(-1, Math.min(1, (sum - midpoint) / maxDev));
-  };
-
   const vector: OceanVector = {
-    O: normalize(sums.O, counts.O),
-    C: normalize(sums.C, counts.C),
-    E: normalize(sums.E, counts.E),
-    A: normalize(sums.A, counts.A),
-    N: normalize(sums.N, counts.N),
+    O: normalizeScore(sums.O, counts.O),
+    C: normalizeScore(sums.C, counts.C),
+    E: normalizeScore(sums.E, counts.E),
+    A: normalizeScore(sums.A, counts.A),
+    N: normalizeScore(sums.N, counts.N),
   };
 
   const SOFT_THRESHOLD = 0.167;

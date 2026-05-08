@@ -1,9 +1,3 @@
-import { OceanDiagram } from "@/shared/components/psychometrics/ocean-chart";
-import { Button } from "@/shared/components/ui/button";
-import { Avatar } from "@/shared/components/common/avatar";
-import { cn } from "@/shared/lib/utils";
-import type { OnlineStatus } from "@/shared/schemas/enums";
-import type { OceanScores } from "@/shared/types/psychometrics";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
@@ -13,6 +7,12 @@ import {
   MessageSquareText,
   UserPlus,
 } from "lucide-react";
+import { Avatar } from "@/shared/components/common/avatar";
+import { OceanDiagram } from "@/shared/components/psychometrics/ocean-chart";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
+import type { OnlineStatus } from "@/shared/schemas/enums";
+import type { OceanScores } from "@/shared/types/psychometrics";
 import type { UserProfilePanelParticipant } from "./types";
 
 interface ProfilePanelInfoProps {
@@ -29,7 +29,6 @@ function getOnlineStatusColor(status: OnlineStatus): string {
       return "bg-forge-teal";
     case "AWAY":
       return "bg-spark-amber";
-    case "OFFLINE":
     default:
       return "bg-muted-foreground/40";
   }

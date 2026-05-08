@@ -1,15 +1,14 @@
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
-
+import {
+  type OnboardingReturnTarget,
+  onboardingModeValues,
+  onboardingReturnTargets,
+} from "@/features/onboarding/lib/onboarding-route";
 import {
   normalizeSettingsSection,
   settingsSectionValues,
 } from "@/features/settings/lib/settings-route";
-import {
-  onboardingModeValues,
-  onboardingReturnTargets,
-  type OnboardingReturnTarget,
-} from "@/features/onboarding/lib/onboarding-route";
-import { personalityTypeSchema, type PersonalityType } from "@/shared/schemas";
+import { type PersonalityType, personalityTypeSchema } from "@/shared/schemas";
 
 const onboardingFlowParsers = {
   mode: parseAsStringLiteral(onboardingModeValues),

@@ -1,11 +1,10 @@
+import { motion } from "framer-motion";
 import { Pause, Play } from "lucide-react";
 import type { MouseEvent } from "react";
 import { memo } from "react";
-
 import { useAudioPlayer } from "@/features/activity/hooks/use-audio-player";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
-import { motion } from "framer-motion";
 
 interface VoiceNoteProps {
   url: string;
@@ -87,7 +86,7 @@ export const VoiceNote = memo(function VoiceNote({
 
             return (
               <motion.div
-                key={i}
+                key={bar.id}
                 initial={false}
                 animate={{
                   height: `${bar.height}%`,

@@ -1,6 +1,5 @@
-import type { GroupApi } from "@/shared/schemas";
-
 import type { ForgeParticipant } from "@/features/forge/lib/forge-contract";
+import type { GroupApi } from "@/shared/schemas";
 
 function normalizeTrustScore(score: number) {
   return score > 0 && score <= 1 ? Math.round(score * 100) : Math.round(score);

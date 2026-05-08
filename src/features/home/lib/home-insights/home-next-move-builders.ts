@@ -1,6 +1,5 @@
-import type { ExploreGroup, Invite } from "@/shared/schemas";
-
 import type { PlannedGroup } from "@/features/home/lib/home-contract";
+import type { ExploreGroup, Invite } from "@/shared/schemas";
 
 import type { HomeNextMove } from "./home-next-move";
 import { getDateMeta, getHeroPlanSignal } from "./plan-timing";

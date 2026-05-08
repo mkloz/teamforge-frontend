@@ -1,7 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
-
-import type { ActivitySendMessageInput } from "@/features/activity/lib/activity-contract";
 import type { useVoiceRecording } from "@/features/activity/hooks/use-voice-recording";
+import type { ActivitySendMessageInput } from "@/features/activity/lib/activity-contract";
 
 import { getVoiceExtension } from "./message-composer-utils";
 

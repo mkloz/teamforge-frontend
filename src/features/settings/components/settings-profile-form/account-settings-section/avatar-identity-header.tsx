@@ -1,6 +1,6 @@
+import { CheckCircle2 } from "lucide-react";
 import { Avatar } from "@/shared/components/common/avatar";
 import type { User } from "@/shared/schemas";
-import { CheckCircle2 } from "lucide-react";
 
 interface AvatarIdentityHeaderProps {
   currentUser: User | undefined;

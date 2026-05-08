@@ -1,9 +1,8 @@
-import { useMediaQuery } from "@/shared/hooks/use-media-query";
-
 import { useActivityRouteActions } from "@/features/activity/hooks/activity-route-state/use-activity-route-actions";
 import { useActivityRouteQueryState } from "@/features/activity/hooks/activity-route-state/use-activity-route-query-state";
 import { useActivityRouteStoreState } from "@/features/activity/hooks/activity-route-state/use-activity-route-store-state";
 import { useActivityRouteSync } from "@/features/activity/hooks/activity-route-state/use-activity-route-sync";
+import { useMediaQuery } from "@/shared/hooks/use-media-query";
 
 export function useActivityRouteState() {
   const isDesktop = useMediaQuery("(min-width: 1024px)");

@@ -1,12 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-
+import { SettingsCommands } from "@/features/settings/api/settings-commands";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
-
-import { SettingsCommands } from "@/features/settings/api/settings-commands";
 
 export function useDeleteAccountAction() {
   const navigate = useNavigate();

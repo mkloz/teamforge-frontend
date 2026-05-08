@@ -3,7 +3,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { Button } from "@/shared/components/ui/button";
@@ -116,6 +116,7 @@ function DateInput({
   wrapperClassName,
   ...props
 }: DateInputProps) {
+  const panelId = useId();
   const selectedDate = parseDateValue(value);
   const todayValue = toDateValue(new Date());
   const [calendarView, setCalendarView] = useState<CalendarView>("days");
@@ -212,6 +213,7 @@ function DateInput({
         readOnly
         disabled={disabled}
         role="combobox"
+        aria-controls={open ? panelId : undefined}
         aria-expanded={open}
         value={formatDisplayValue(value)}
         placeholder={placeholder}
@@ -238,6 +240,7 @@ function DateInput({
       {open && panelStyle && portalTarget
         ? createPortal(
             <div
+              id={panelId}
               ref={panelRef}
               style={panelStyle}
               className="z-100 rounded-xl border border-border bg-card p-3 shadow-xl shadow-black/10"

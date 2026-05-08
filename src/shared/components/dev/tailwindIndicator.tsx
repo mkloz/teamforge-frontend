@@ -10,6 +10,7 @@ const breakpointLabels = [
 export function TailwindIndicator() {
   return (
     <div
+      role="status"
       aria-label="Current Tailwind breakpoint"
       className="flex h-5 min-w-6 items-center justify-center rounded-md bg-ink px-1.5 font-mono text-[10px] leading-none font-bold text-canvas shadow-sm"
     >

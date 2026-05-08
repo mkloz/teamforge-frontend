@@ -1,3 +1,8 @@
+import {
+  SETTINGS_BLOCKED_USERS_QUERY_KEY,
+  SETTINGS_NOTIFICATION_PREFERENCES_QUERY_KEY,
+  SETTINGS_SESSIONS_QUERY_KEY,
+} from "@/features/settings/api/settings-query-keys";
 import { appQueryClient } from "@/shared/api/query-client";
 import { invalidateFriendshipSurfaces } from "@/shared/api/query-invalidation";
 import type {
@@ -5,12 +10,6 @@ import type {
   FriendshipApi,
   NotificationPreferences,
 } from "@/shared/schemas";
-
-import {
-  SETTINGS_BLOCKED_USERS_QUERY_KEY,
-  SETTINGS_NOTIFICATION_PREFERENCES_QUERY_KEY,
-  SETTINGS_SESSIONS_QUERY_KEY,
-} from "@/features/settings/api/settings-query-keys";
 
 function removeSessionFromList(
   sessions: AuthSession[] | undefined,

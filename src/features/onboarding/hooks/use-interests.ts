@@ -1,19 +1,18 @@
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-
-import { useCurrentUserQuery } from "@/shared/api/current-user-query";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { onboardingInterestTreeQueryOptions } from "@/features/onboarding/api/onboarding-query-options";
+import type { InterestsScreen } from "@/features/onboarding/data/interests-data";
 import {
   MAX_INTERESTS,
   MIN_INTERESTS,
 } from "@/features/onboarding/data/interests-data";
-import type { InterestsScreen } from "@/features/onboarding/data/interests-data";
 import { buildLeafInterestMap } from "@/features/onboarding/lib/interest-catalog";
 import {
   getNextInterestPersonalityType,
   getNextSelectedInterestIds,
 } from "@/features/onboarding/lib/interest-selection-sync";
 import { useInterestsStore } from "@/features/onboarding/store/interests-store";
+import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import type { PersonalityType } from "@/shared/schemas/enums";
 import { useInterestBrowserExpansion } from "./use-interest-browser-expansion";
 import { useInterestSuggestions } from "./use-interest-suggestions";

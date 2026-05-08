@@ -1,7 +1,7 @@
-import { TeamForgeLogo } from "@/assets/logo";
+import { motion, useReducedMotion } from "framer-motion";
 import type { CSSProperties } from "react";
 import { useRef } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { TeamForgeLogo } from "@/assets/logo";
 import { GroupCard } from "./group-card";
 import { MbtiCard } from "./mbti-card";
 import { TrustCard } from "./trust-card";

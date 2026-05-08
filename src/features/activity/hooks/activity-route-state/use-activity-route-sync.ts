@@ -5,12 +5,11 @@ import type {
   ActivityFilter,
   ActivityKind,
 } from "@/features/activity/lib/activity-route";
-
-import { CLEAR_ACTIVITY_SELECTION_ROUTE } from "./activity-route-state-utils";
 import type {
   ResolvedActivityRouteState,
   SetActivityRouteState,
 } from "./activity-route-state.types";
+import { CLEAR_ACTIVITY_SELECTION_ROUTE } from "./activity-route-state-utils";
 
 interface UseActivityRouteSyncInput {
   activeFilter: ActivityFilter;

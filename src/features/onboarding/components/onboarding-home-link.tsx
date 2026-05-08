@@ -1,7 +1,7 @@
+import { Link } from "@tanstack/react-router";
 import { TeamForgeLogo } from "@/assets/logo";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
-import { Link } from "@tanstack/react-router";
 
 interface OnboardingHomeLinkProps {
   className?: string;

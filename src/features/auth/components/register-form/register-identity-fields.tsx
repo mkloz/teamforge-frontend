@@ -1,5 +1,5 @@
 import { useFormContext } from "react-hook-form";
-
+import type { RegisterValues } from "@/features/auth/schemas/auth-schemas";
 import {
   FormControl,
   FormField,
@@ -8,7 +8,6 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
-import type { RegisterValues } from "@/features/auth/schemas/auth-schemas";
 
 export function RegisterIdentityFields() {
   const { control } = useFormContext<RegisterValues>();

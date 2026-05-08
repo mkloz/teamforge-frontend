@@ -1,11 +1,10 @@
-import type { MessageApi } from "@/shared/schemas";
-
 import {
   flattenMessagePages,
   toUnifiedMessage,
 } from "@/features/activity/api/messages/message-mappers";
 import { getMessageVersion } from "@/features/activity/api/messages/message-versioning";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import type { MessageApi } from "@/shared/schemas";
 
 import { getMessageCaches } from "./message-cache-primitives";
 

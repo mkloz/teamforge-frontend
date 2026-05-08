@@ -1,14 +1,14 @@
 "use client";
 
-import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
-import { useExploreFeed } from "@/features/explore/hooks/use-explore-feed";
-import { PageErrorState } from "@/shared/components/page-error-state";
-import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { SearchX, SlidersHorizontal, UsersRound } from "lucide-react";
 import type { ReactNode } from "react";
+import { useExploreFeed } from "@/features/explore/hooks/use-explore-feed";
+import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
+import { PageErrorState } from "@/shared/components/page-error-state";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 
 import { ExploreGroupPlanCard } from "./explore-group-plan-card";
 
@@ -142,6 +142,7 @@ function ExploreGroupMotion({
 function ExploreFeedLoading() {
   return (
     <div
+      role="status"
       aria-busy="true"
       aria-label="Finding available groups"
       className="flex flex-col gap-5"

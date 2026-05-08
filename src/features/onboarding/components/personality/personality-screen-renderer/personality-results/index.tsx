@@ -3,8 +3,8 @@ import { motion } from "framer-motion";
 import { resultsContainer } from "@/features/onboarding/constants/motion";
 import type { PersonalityEvaluation } from "@/features/onboarding/lib/personality-evaluation";
 import { getPersonalityResultViewModel } from "@/features/onboarding/lib/personality-results";
-import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import type { OceanVectorWithMeta } from "@/features/onboarding/utils/score-calculator";
+import { TooltipProvider } from "@/shared/components/ui/tooltip";
 
 import { PersonalityResultActions } from "./personality-result-actions";
 import { PersonalityResultHero } from "./personality-result-hero";

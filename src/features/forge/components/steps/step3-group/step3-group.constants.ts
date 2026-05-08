@@ -1,4 +1,4 @@
-import { Globe, Lock, UserCheck, type LucideIcon } from "lucide-react";
+import { Globe, Lock, type LucideIcon, UserCheck } from "lucide-react";
 
 import type { Visibility } from "@/features/forge/lib/forge-contract";
 

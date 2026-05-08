@@ -1,7 +1,7 @@
-import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check } from "lucide-react";
 import type { IpipQuestion } from "@/features/onboarding/data/ipip-questions";
+import { cn } from "@/shared/lib/utils";
 import { LikertScale } from "./likert-scale";
 
 interface QuestionCardProps {

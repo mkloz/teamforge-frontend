@@ -1,8 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { HomeQueryFactory } from "@/features/home/api/home-query-factory";
 import { EMPTY_HOME_STATS } from "@/features/home/lib/home-stats";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 
 const EMPTY_PLANS: never[] = [];
 const EMPTY_GROUPS: never[] = [];

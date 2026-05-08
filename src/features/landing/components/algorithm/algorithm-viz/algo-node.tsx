@@ -1,10 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Avatar } from "@/shared/components/common/avatar";
 import type {
   DisplayNode,
   Phase,
 } from "@/features/landing/components/algorithm/algorithm-types";
+import { Avatar } from "@/shared/components/common/avatar";
 
 function MatchScoreDisplay({
   node,

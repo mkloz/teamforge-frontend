@@ -1,22 +1,22 @@
-import type { Interest } from "@/shared/schemas";
+import { AnimatePresence, motion } from "framer-motion";
+import { Activity } from "react";
+import type { InterestSearchResults } from "@/features/onboarding/utils/interest-logic";
 import { Accordion } from "@/shared/components/ui/accordion";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
-import { Activity } from "react";
+import type { Interest } from "@/shared/schemas";
 import type { PersonalityType } from "@/shared/schemas/enums";
-import type { InterestSearchResults } from "@/features/onboarding/utils/interest-logic";
 import { BalanceNudge } from "./balance-nudge";
 import { CategorySection } from "./category-section";
-import { PageTitle } from "./page-title";
-import { SearchResults } from "./search-results";
-import { SelectionShelf } from "./selection-shelf";
-import { SuggestionsSection } from "./suggestions-section";
 import {
   getIsInterestSearchActive,
   getOpenCategoryIds,
   getToggledAccordionCategoryId,
 } from "./interests-browse-state";
+import { PageTitle } from "./page-title";
+import { SearchResults } from "./search-results";
+import { SelectionShelf } from "./selection-shelf";
+import { SuggestionsSection } from "./suggestions-section";
 import { YouMightAlsoLikeSection } from "./you-might-also-like-section";
 
 interface InterestsBrowseProps {

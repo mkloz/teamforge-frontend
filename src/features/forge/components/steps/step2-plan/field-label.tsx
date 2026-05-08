@@ -23,9 +23,12 @@ export function FieldLabel({
       >
         {children}
         {required && (
-          <span className="ml-1 text-accent" aria-label="required">
-            *
-          </span>
+          <>
+            <span className="ml-1 text-accent" aria-hidden="true">
+              *
+            </span>
+            <span className="sr-only"> required</span>
+          </>
         )}
       </Label>
       {hint && (

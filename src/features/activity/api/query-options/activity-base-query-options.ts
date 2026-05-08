@@ -1,13 +1,11 @@
 import { queryOptions } from "@tanstack/react-query";
-
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-
 import { ActivityApi } from "@/features/activity/api/activity.api";
 import {
   ACTIVITY_CHATS_QUERY_KEY,
   ACTIVITY_FRIENDSHIPS_QUERY_KEY,
   ACTIVITY_GROUPS_QUERY_KEY,
 } from "@/features/activity/api/activity-query-keys";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 
 export function groupsQueryOptions() {
   return queryOptions({

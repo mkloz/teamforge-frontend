@@ -1,8 +1,8 @@
-import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Mic, Send, Trash2 } from "lucide-react";
 import { memo } from "react";
+import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 
 interface ActionTargetProps {
   hasContent: boolean;

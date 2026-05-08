@@ -1,16 +1,16 @@
-import type { Interest } from "@/shared/schemas";
-import {
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/shared/components/ui/accordion";
-import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 import {
   getCategoryColorClass,
   getSubcategories,
   getSubcategoryIcon,
 } from "@/features/onboarding/lib/interest-catalog";
+import {
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/shared/components/ui/accordion";
+import { cn } from "@/shared/lib/utils";
+import type { Interest } from "@/shared/schemas";
 import {
   getCategorySelectedCount,
   getSubcategorySelectedCount,

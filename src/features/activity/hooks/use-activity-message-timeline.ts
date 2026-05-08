@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";

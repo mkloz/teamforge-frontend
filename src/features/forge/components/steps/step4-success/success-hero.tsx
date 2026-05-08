@@ -1,14 +1,12 @@
 import { Check, UsersRound } from "lucide-react";
-
+import type { ForgeParticipant } from "@/features/forge/lib/forge-contract";
 import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
-
 import {
   getParticipantInitials,
   getParticipantName,
   getParticipantScorePercent,
 } from "./participant-utils";
-import type { ForgeParticipant } from "@/features/forge/lib/forge-contract";
 
 interface SuccessHeroProps {
   planTitle: string;

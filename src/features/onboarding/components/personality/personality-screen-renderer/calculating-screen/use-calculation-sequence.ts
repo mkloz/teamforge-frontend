@@ -79,7 +79,7 @@ export function useCalculationSequence({
       }
     }
 
-    runSequence();
+    void runSequence();
 
     return () => {
       cancelled = true;

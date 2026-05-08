@@ -1,8 +1,8 @@
+import type { User } from "@/shared/schemas";
 import { AvatarActions } from "./avatar-actions";
 import { AvatarDropzones } from "./avatar-dropzones";
 import { AvatarIdentityHeader } from "./avatar-identity-header";
 import { useAvatarPreview } from "./use-avatar-preview";
-import type { User } from "@/shared/schemas";
 
 interface AvatarProfileSectionProps {
   currentUser: User | undefined;

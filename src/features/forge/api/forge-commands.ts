@@ -1,6 +1,3 @@
-import { currentUserQueryOptions } from "@/shared/api/current-user-query";
-import { appQueryClient } from "@/shared/api/query-client";
-
 import { ForgeApi } from "@/features/forge/api/forge.api";
 import {
   invalidateForgeSearchState,
@@ -21,6 +18,8 @@ import {
   buildCreateActivityInput,
   buildForgeActivityInput,
 } from "@/features/forge/lib/forge-activity-builders";
+import { currentUserQueryOptions } from "@/shared/api/current-user-query";
+import { appQueryClient } from "@/shared/api/query-client";
 
 async function getCurrentUser() {
   return appQueryClient.ensureQueryData(currentUserQueryOptions());

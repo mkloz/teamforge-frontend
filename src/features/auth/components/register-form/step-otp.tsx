@@ -1,7 +1,7 @@
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { ArrowLeft } from "lucide-react";
 import { useFormContext } from "react-hook-form";
-
+import type { RegisterValues } from "@/features/auth/schemas/auth-schemas";
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -16,7 +16,6 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/shared/components/ui/input-otp";
-import type { RegisterValues } from "@/features/auth/schemas/auth-schemas";
 
 interface StepOtpProps {
   onBack: () => void;

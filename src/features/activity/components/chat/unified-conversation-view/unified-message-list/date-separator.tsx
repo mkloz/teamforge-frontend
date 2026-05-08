@@ -1,5 +1,5 @@
-import { formatDateSeparator } from "@/features/activity/lib/chat-utils";
 import { memo } from "react";
+import { formatDateSeparator } from "@/features/activity/lib/chat-utils";
 
 export const DateSeparator = memo(({ date }: { date: string }) => (
   <div className="pointer-events-none sticky -top-3 z-20 mt-4 mb-2 flex items-center justify-center">

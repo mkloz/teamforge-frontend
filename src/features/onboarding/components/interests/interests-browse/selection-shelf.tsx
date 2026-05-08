@@ -1,7 +1,7 @@
-import type { Interest } from "@/shared/schemas";
-import { Button } from "@/shared/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { Tags, X } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
+import type { Interest } from "@/shared/schemas";
 import { TagPill } from "./tag-pill";
 
 interface SelectionShelfProps {

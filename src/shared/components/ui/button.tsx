@@ -1,16 +1,17 @@
-import { cn } from "@/shared/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import { Loader2 } from "lucide-react";
 import {
+  type ComponentPropsWithoutRef,
   isValidElement,
   memo,
-  type ComponentPropsWithoutRef,
   type Ref,
 } from "react";
-import { buttonVariants, type ButtonVariants } from "./button-variants";
+import { cn } from "@/shared/lib/utils";
+import { type ButtonVariants, buttonVariants } from "./button-variants";
 
 export interface ButtonV2Props
-  extends Omit<ComponentPropsWithoutRef<"button">, "disabled">, ButtonVariants {
+  extends Omit<ComponentPropsWithoutRef<"button">, "disabled">,
+    ButtonVariants {
   asChild?: boolean;
   contentClassName?: string;
   loading?: boolean;

@@ -1,16 +1,14 @@
 import { useEffect, useRef } from "react";
-
-import { PageErrorState } from "@/shared/components/page-error-state";
-
 import { AttentionQueue } from "@/features/home/components/attention-queue";
 import { FriendsInvitation } from "@/features/home/components/friends-invitation";
 import { GroupsGrid } from "@/features/home/components/groups-grid";
 import { HomeHero } from "@/features/home/components/home-hero";
-import { SentInvitationsReview } from "@/features/home/components/sent-invitations-review";
 import { RecommendedGroups } from "@/features/home/components/recommended-groups";
+import { SentInvitationsReview } from "@/features/home/components/sent-invitations-review";
 import { UpcomingPlans } from "@/features/home/components/upcoming-plans";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { useHomeRouteState } from "@/features/home/hooks/use-home-route-state";
+import { PageErrorState } from "@/shared/components/page-error-state";
 
 export function HomePage() {
   const { sentInvitations, isError, refetchAll } = useHomeData();

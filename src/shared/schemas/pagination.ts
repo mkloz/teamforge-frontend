@@ -1,4 +1,4 @@
-import { z, type ZodTypeAny } from "zod";
+import { type ZodTypeAny, z } from "zod";
 
 export const paginationMetaSchema = z.object({
   totalItemsCount: z.number(),

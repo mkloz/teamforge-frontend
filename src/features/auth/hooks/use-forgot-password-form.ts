@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form";
 import { AuthCommands } from "@/features/auth/api/auth-commands";
 import { getEmailDomain } from "@/features/auth/lib/auth-telemetry";
 import {
-  forgotPasswordSchema,
   type ForgotPasswordValues,
+  forgotPasswordSchema,
 } from "@/features/auth/schemas/auth-schemas";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";

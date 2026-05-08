@@ -1,5 +1,5 @@
+import { LaptopMinimal, type LucideIcon, Smartphone } from "lucide-react";
 import type { AuthSession } from "@/shared/schemas";
-import { LaptopMinimal, Smartphone, type LucideIcon } from "lucide-react";
 
 function getBrowserName(userAgent: string) {
   if (userAgent.includes("edg/")) {

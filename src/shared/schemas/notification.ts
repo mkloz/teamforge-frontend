@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { notificationTypeSchema, entityTypeSchema } from "./enums";
+import { entityTypeSchema, notificationTypeSchema } from "./enums";
 
 export const notificationSchema = z
   .object({

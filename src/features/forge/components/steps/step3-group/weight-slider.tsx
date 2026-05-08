@@ -62,7 +62,7 @@ export function WeightSlider({
 
           return (
             <div
-              key={i}
+              key={`weight-dot-${dotPct}`}
               className={cn(
                 "h-1 flex-1 rounded-full transition-colors duration-500",
                 active

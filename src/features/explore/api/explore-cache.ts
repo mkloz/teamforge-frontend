@@ -1,10 +1,9 @@
+import { EXPLORE_FRIEND_REQUESTS_QUERY_KEY } from "@/features/explore/api/explore-query-keys";
+import type { ExploreGroupsQueryData } from "@/features/explore/api/explore-query-options";
 import type { ApiResponseWithRequestId } from "@/shared/api/api";
 import { appQueryClient } from "@/shared/api/query-client";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import type { ExploreJoinResult, FriendshipApi } from "@/shared/schemas";
-
-import type { ExploreGroupsQueryData } from "@/features/explore/api/explore-query-options";
-import { EXPLORE_FRIEND_REQUESTS_QUERY_KEY } from "@/features/explore/api/explore-query-keys";
 
 function getFriendshipVersion(friendship: FriendshipApi) {
   return friendship.version ?? new Date(friendship.updatedAt).getTime();

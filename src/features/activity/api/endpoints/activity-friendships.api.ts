@@ -1,10 +1,9 @@
-import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
-import { friendshipApiSchema } from "@/shared/schemas";
-
 import {
   DEFAULT_ACTIVITY_API_LIMIT,
   paginatedFriendshipsSchema,
 } from "@/features/activity/api/activity-api-contracts";
+import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
+import { friendshipApiSchema } from "@/shared/schemas";
 
 export async function getFriendships() {
   const [friendsResponse, blockedResponse] = await Promise.all([

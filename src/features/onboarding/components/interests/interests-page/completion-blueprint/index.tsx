@@ -1,5 +1,5 @@
-import { PERSONALITY_INFO_BY_TYPE } from "@/features/onboarding/data/personality-metadata";
 import { motion } from "framer-motion";
+import { PERSONALITY_INFO_BY_TYPE } from "@/features/onboarding/data/personality-metadata";
 
 import type { PersonalityType } from "@/shared/schemas/enums";
 

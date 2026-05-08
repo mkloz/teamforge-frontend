@@ -1,11 +1,11 @@
-import { MediaLightbox } from "./media-lightbox";
+import { memo, useState } from "react";
 import type {
   UnifiedAttachment,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
-import { memo, useState } from "react";
 import { GalleryItem } from "./gallery-item";
+import { MediaLightbox } from "./media-lightbox";
 import { MediaTimeOverlay } from "./media-time-overlay";
 
 interface MediaGalleryProps {

@@ -1,15 +1,15 @@
-import {
-  useAuthSessionState,
-  useCurrentUserQuery,
-} from "@/shared/api/current-user-query";
+import { Link } from "@tanstack/react-router";
+import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
 import { useMouseGlow } from "@/features/landing/hooks/use-mouse-glow";
 import { getLandingPrimaryAction } from "@/features/landing/lib/landing-auth";
 import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
+import {
+  useAuthSessionState,
+  useCurrentUserQuery,
+} from "@/shared/api/current-user-query";
 import { Button } from "@/shared/components/ui/button";
-import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
 
 export function CtaSection() {
   const { sectionRef, glowRef, glowHandlers } = useMouseGlow();

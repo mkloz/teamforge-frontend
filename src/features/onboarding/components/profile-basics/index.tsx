@@ -1,11 +1,10 @@
 import { motion } from "framer-motion";
 import type { FormEventHandler } from "react";
 import type { UseFormReturn } from "react-hook-form";
-
+import type { ProfileBasicsValues } from "@/features/onboarding/schemas/profile-basics.schema";
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { Button } from "@/shared/components/ui/button";
 import { Form } from "@/shared/components/ui/form";
-import type { ProfileBasicsValues } from "@/features/onboarding/schemas/profile-basics.schema";
 
 import { ProfileBasicsFormFields } from "./profile-basics-form-fields";
 

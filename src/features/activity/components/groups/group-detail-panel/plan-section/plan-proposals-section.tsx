@@ -1,8 +1,8 @@
 import { usePlanProposalActions } from "@/features/activity/hooks/use-plan-proposal-actions";
-import { PlanProposalCard } from "./plan-proposals";
-import { useFocusedPlanProposalScroll } from "./plan-proposals/use-focused-plan-proposal-scroll";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import type { PlanProposal } from "@/shared/schemas/plan";
+import { PlanProposalCard } from "./plan-proposals";
+import { useFocusedPlanProposalScroll } from "./plan-proposals/use-focused-plan-proposal-scroll";
 
 interface PlanProposalsSectionProps {
   groupId: string;
@@ -30,7 +30,7 @@ export function PlanProposalsSection({
   }
 
   return (
-    <div
+    <section
       className="mt-5 flex flex-col gap-3"
       aria-labelledby="plan-proposals-title"
     >
@@ -58,6 +58,6 @@ export function PlanProposalsSection({
           />
         ))}
       </div>
-    </div>
+    </section>
   );
 }

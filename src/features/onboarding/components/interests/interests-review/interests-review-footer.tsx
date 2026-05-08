@@ -1,5 +1,5 @@
-import { Button } from "@/shared/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
 
 interface InterestsReviewFooterProps {
   backLabel?: string;

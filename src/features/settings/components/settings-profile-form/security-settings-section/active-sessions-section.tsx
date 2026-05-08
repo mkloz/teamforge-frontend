@@ -1,11 +1,11 @@
-import { formatShortSessionTime } from "./security-formatters";
+import { Shield } from "lucide-react";
 import {
   SessionRow,
   StatPill,
 } from "@/features/settings/components/settings-profile-form/settings-form-controls";
 import { Button } from "@/shared/components/ui/button";
 import type { AuthSession } from "@/shared/schemas";
-import { Shield } from "lucide-react";
+import { formatShortSessionTime } from "./security-formatters";
 
 interface ActiveSessionsSectionProps {
   sessions: AuthSession[];

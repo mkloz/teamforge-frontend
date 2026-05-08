@@ -1,15 +1,14 @@
 import {
-  apiClient,
-  getResponseRequestId,
-  parseJsonWithRequestId,
-} from "@/shared/api/api";
-
-import {
   authResultSchema,
   authTokensSchema,
   type LoginValues,
   type RegisterValues,
 } from "@/features/auth/schemas/auth-schemas";
+import {
+  apiClient,
+  getResponseRequestId,
+  parseJsonWithRequestId,
+} from "@/shared/api/api";
 import type { GoogleAuthIntent } from "./auth.types";
 
 interface RegisterDto {
@@ -53,10 +52,7 @@ function normalizeGender(
 function isRegisterProfileGender(
   gender: string,
 ): gender is keyof typeof REGISTER_PROFILE_GENDER_MAP {
-  return Object.prototype.hasOwnProperty.call(
-    REGISTER_PROFILE_GENDER_MAP,
-    gender,
-  );
+  return Object.hasOwn(REGISTER_PROFILE_GENDER_MAP, gender);
 }
 
 export class AuthApi {
@@ -69,8 +65,8 @@ export class AuthApi {
       },
     });
 
-    return parseJsonWithRequestId(response, (payload) =>
-      authTokensSchema.parse(payload),
+    return parseJsonWithRequestId(response, (responsePayload) =>
+      authTokensSchema.parse(responsePayload),
     );
   }
 
@@ -112,8 +108,8 @@ export class AuthApi {
       },
     });
 
-    return parseJsonWithRequestId(response, (payload) =>
-      authTokensSchema.parse(payload),
+    return parseJsonWithRequestId(response, (responsePayload) =>
+      authTokensSchema.parse(responsePayload),
     );
   }
 

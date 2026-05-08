@@ -6,7 +6,7 @@ import { Button } from "@/shared/components/ui/button";
 
 export function EmptyQueueItem() {
   return (
-    <div className="flex min-w-0 items-center gap-3 px-1 py-4 sm:px-3">
+    <li className="flex min-w-0 items-center gap-3 px-1 py-4 sm:px-3">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <div className="flex size-10 shrink-0 items-center justify-center text-forge-teal">
           <CheckCircle2 className="size-5" aria-hidden="true" />
@@ -23,6 +23,6 @@ export function EmptyQueueItem() {
       <Button asChild variant="outline" size="sm" className="shrink-0">
         <Link {...buildExploreNavigation()}>Explore</Link>
       </Button>
-    </div>
+    </li>
   );
 }

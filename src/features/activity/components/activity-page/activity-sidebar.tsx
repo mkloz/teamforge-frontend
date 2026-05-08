@@ -1,5 +1,5 @@
-import type { ActivityWorkspace } from "@/features/activity/hooks/use-activity";
 import { UnifiedConversationList } from "@/features/activity/components/unified-conversation-list";
+import type { ActivityWorkspace } from "@/features/activity/hooks/use-activity";
 import { cn } from "@/shared/lib/utils";
 
 interface ActivitySidebarProps {

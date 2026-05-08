@@ -1,3 +1,5 @@
+import type { RefObject, UIEvent } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { useChatScroll } from "@/features/activity/hooks/use-chat-scroll";
 import { useMessageGrouping } from "@/features/activity/hooks/use-message-grouping";
 import { useVirtualizedMessageBlocks } from "@/features/activity/hooks/use-virtualized-message-blocks";
@@ -5,17 +7,15 @@ import type {
   ActivityParticipant,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
-import { memo, useEffect, useMemo, useState } from "react";
-import type { RefObject, UIEvent } from "react";
 import { ChatBackground } from "./chat-background";
 import { LoadingOlderIndicator } from "./loading-older-indicator";
+import { MessageBlockList } from "./message-block-list";
 import { buildMessageBlocks } from "./message-list-blocks";
 import { MessageListBottomAnchor } from "./message-list-bottom-anchor";
 import { MessageListViewport } from "./message-list-viewport";
-import { MessageBlockList } from "./message-block-list";
 import { MessageProfileDrawer } from "./message-profile-drawer";
-import { ScrollActionButtons } from "./scroll-action-buttons";
 import type { MessageScrollHandle } from "./message-scroll.types";
+import { ScrollActionButtons } from "./scroll-action-buttons";
 import { useFocusedMessageScroll } from "./use-focused-message-scroll";
 import { useMessageElementRegistry } from "./use-message-element-registry";
 import { useMessageViewportAnchor } from "./use-message-viewport-anchor";
