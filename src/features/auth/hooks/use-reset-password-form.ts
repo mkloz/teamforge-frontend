@@ -38,6 +38,7 @@ export function useResetPasswordForm() {
         requestId: result.requestId,
       });
       setSuccess(true);
+      setLoading(false);
     } catch (error) {
       captureException(trackedMutationNames.authResetPassword, error);
       trackMutationOutcome(trackedMutationNames.authResetPassword, "error");
@@ -47,7 +48,6 @@ export function useResetPasswordForm() {
           "We couldn't reset your password. Your link may have expired.",
         ),
       );
-    } finally {
       setLoading(false);
     }
   }

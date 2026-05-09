@@ -33,7 +33,7 @@ function ThumbnailItem({
       aria-current={isSelected ? "true" : undefined}
       className={cn(
         "relative size-12 shrink-0 overflow-hidden rounded-lg p-0",
-        "transition-[opacity,transform,filter] duration-200",
+        "transition-all duration-200",
         "focus-visible:ring-forge-teal/50",
         isSelected
           ? "z-10 scale-110 opacity-100 ring-2 ring-forge-teal"
@@ -70,7 +70,7 @@ function ThumbnailItem({
             }}
             onError={onError}
             className={cn(
-              "h-full w-full object-cover transition-opacity duration-200",
+              "size-full object-cover transition-opacity duration-200",
               state === "loaded" ? "opacity-100" : "opacity-0",
             )}
           />

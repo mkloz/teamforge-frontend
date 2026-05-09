@@ -34,7 +34,7 @@ export function ProfilePage() {
         <UserMenu trigger="settings" />
       </div>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[32rem] flex-col gap-8 px-4 pt-14 pb-24 sm:max-w-6xl sm:px-6 sm:pt-16 md:px-8 md:pt-20 lg:gap-12 lg:pb-16">
+      <div className="relative z-10 mx-auto flex w-full max-w-lg flex-col gap-8 px-4 pt-14 pb-24 sm:max-w-6xl sm:px-6 sm:pt-16 md:px-8 md:pt-20 lg:gap-12 lg:pb-16">
         <ProfileHero
           user={profile}
           archetype={pageModel.archetype}
@@ -47,7 +47,7 @@ export function ProfilePage() {
           activityIdeas={pageModel.profileInsights.activityIdeas}
         />
 
-        <div className="grid gap-9 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-16">
+        <div className="lg:profile-page-grid grid gap-9 lg:gap-16">
           <div className="flex min-w-0 flex-col gap-8 lg:gap-10">
             <GroupFitSection insight={pageModel.profileInsights.groupFit} />
             <ActivityLanesSection

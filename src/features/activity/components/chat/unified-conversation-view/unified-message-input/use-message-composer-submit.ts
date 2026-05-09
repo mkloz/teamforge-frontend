@@ -35,8 +35,10 @@ export function useMessageComposerSubmit({
     try {
       await onSend(payload);
       onClearComposer();
-    } finally {
       setIsSubmitting(false);
+    } catch (error) {
+      setIsSubmitting(false);
+      throw error;
     }
   }
 

@@ -83,7 +83,7 @@ export function HowItWorksSection() {
     <section
       ref={containerRef}
       id="how-it-works"
-      className="relative h-[400vh] bg-canvas"
+      className="landing-story-scroll relative bg-canvas"
       aria-labelledby="how-it-works-heading"
     >
       <h2 id="how-it-works-heading" className="sr-only">
@@ -97,8 +97,8 @@ export function HowItWorksSection() {
         />
 
         {/* Left Side: Content Storytelling */}
-        <div className="relative z-10 order-2 flex h-[60vh] w-full items-center justify-center p-6 md:order-1 md:h-full md:w-1/2 md:p-24">
-          <div className="relative flex h-full min-h-75 w-full max-w-md items-center md:h-100">
+        <div className="landing-story-spacer-lg relative z-10 order-2 flex w-full items-center justify-center p-6 md:order-1 md:h-full md:w-1/2 md:p-24">
+          <div className="relative flex size-full min-h-75 max-w-md items-center md:h-100">
             {STEPS.map((step, index) => (
               <ContentStep
                 key={step.number}
@@ -119,7 +119,7 @@ export function HowItWorksSection() {
           ref={visualRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={() => setMousePos({ x: 0, y: 0 })}
-          className="relative order-1 flex h-[40vh] w-full items-center justify-center md:order-2 md:h-full md:w-1/2"
+          className="landing-story-spacer relative order-1 flex w-full items-center justify-center md:order-2 md:h-full md:w-1/2"
         >
           {/* Progress Track (Sidebar) */}
           <nav
@@ -157,7 +157,7 @@ export function HowItWorksSection() {
                 asChild
                 variant="ghost"
                 size="sm"
-                className="absolute right-8 bottom-8 z-50 h-9 rounded-full px-4 font-bold text-[10px] uppercase tracking-[0.2em]"
+                className="absolute right-8 bottom-8 z-50 h-9 rounded-full px-4 font-bold text-xs uppercase tracking-widest"
               >
                 <motion.button
                   initial={{ opacity: 0, y: 10 }}

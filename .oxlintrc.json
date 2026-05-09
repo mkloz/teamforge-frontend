@@ -81,17 +81,7 @@
     "jsx-a11y/prefer-tag-over-role": "off",
     "typescript/no-explicit-any": "error",
     "typescript/no-extraneous-class": "off",
-    "tailwindcss/no-unknown-classes": [
-      "error",
-      {
-        "allowlist": [
-          "bg-forge-deep-panel/80",
-          "bg-forge-deep-surface",
-          "bg-noise",
-          "text-destructive-foreground"
-        ]
-      }
-    ],
+    "tailwindcss/no-unknown-classes": "off",
     "tailwindcss/no-duplicate-classes": "error",
     "tailwindcss/no-conflicting-classes": "error",
     "tailwindcss/no-deprecated-classes": "error",

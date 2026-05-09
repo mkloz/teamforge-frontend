@@ -32,7 +32,7 @@ export function AvatarActions({
           ? `${selectedAvatarFile.name} - ${formatAvatarFileSize(selectedAvatarFile)}`
           : "Choose an image first, then upload when it looks right."}
       </p>
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,8rem),1fr))] gap-3">
+      <div className="responsive-action-grid grid gap-3">
         <Button
           type="button"
           variant="primary"

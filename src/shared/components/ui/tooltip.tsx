@@ -47,7 +47,7 @@ function TooltipContent({
       >
         {children}
         <TooltipPrimitive.Arrow asChild>
-          <div className="z-50 size-1 translate-y-[calc(-50%)] rotate-45 border-white/20 border-r-2 border-b-2 bg-forge-teal transition-none" />
+          <div className="z-50 size-1 -translate-y-1/2 rotate-45 border-white/20 border-r-2 border-b-2 bg-forge-teal transition-none" />
         </TooltipPrimitive.Arrow>
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>

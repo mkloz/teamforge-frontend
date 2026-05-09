@@ -62,7 +62,7 @@ export function DataParticles({
                   ease: "linear",
                   delay: pr.delay,
                 }}
-                className="drop-shadow-[0_0_4px_var(--color-forge-teal-light)]"
+                className="drop-shadow-lg"
               />
             );
           })}

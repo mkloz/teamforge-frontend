@@ -151,13 +151,12 @@ Create a `.env.local` file at the project root. **Never commit this file.**
 | `npm run dev`       | Start the Vite development server with HMR    |
 | `npm run build`     | Type-check and build for production (`dist/`) |
 | `npm run preview`   | Preview the production build locally          |
-| `npm run lint`      | Run Oxlint, Biome, and TypeScript checks      |
+| `npm run lint`      | Run the full lint gate: Oxlint, React Compiler tracker, Biome, dependency-cruiser, and TypeScript |
+| `npm run lint:changed` | Run the fast lint gate against staged, unstaged, and untracked changed files |
 | `npm run lint:fix`  | Apply Biome safe fixes across the repo        |
-| `npm run format`    | Format the repo with Biome                    |
-| `npm run typecheck` | Alias for `npm run lint:types`                |
 | `npm run check`     | Alias for `npm run lint`                      |
 
-Pre-commit hooks (via Husky + lint-staged) automatically run Biome safe fixes on staged files before every commit.
+Pre-commit hooks (via Husky + lint-staged) automatically run React Compiler tracking, Biome safe fixes, and Oxlint on staged files before every commit. Use `npm run lint:changed` for a fast local pass on all changed files, including unstaged edits; its changed-file Oxlint stage disables type-aware analysis and JS plugins by default. Use `node scripts/lint-changed.mjs --full-oxlint` when you need the full Oxlint config on changed files, and use `npm run lint` before a final commit or pull request.
 
 ---
 
@@ -167,7 +166,7 @@ Pre-commit hooks (via Husky + lint-staged) automatically run Biome safe fixes on
 2. Follow the feature co-location pattern described in [Project Structure](#project-structure).
 3. Use the `@/` path alias — never relative `../../` imports.
 4. Use named exports for all components except route-level page files.
-5. Run `npm run lint` and `npm run build` before opening a pull request.
+5. Run `npm run lint:changed` while iterating, then `npm run lint` and `npm run build` before opening a pull request.
 6. Never use `localStorage` for persistent data — all state goes through the API layer.
 
 For AI agent contributors, read [`AGENTS.md`](AGENTS.md) in full before making any changes.

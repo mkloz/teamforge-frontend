@@ -61,9 +61,7 @@ export function UserProfilePanel({
     <div
       className={cn(
         "flex flex-1 flex-col overflow-y-auto",
-        isMobile
-          ? "scrollbar-hide pb-[env(safe-area-inset-bottom)]"
-          : "scrollbar-thin",
+        isMobile ? "scrollbar-hide pb-6" : "scrollbar-thin",
       )}
     >
       <div className="flex-1">

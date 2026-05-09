@@ -18,7 +18,7 @@ export function AvatarIdentityHeader({
           <Avatar
             src={displayedAvatarUrl}
             name={currentUser?.name}
-            className="h-28 w-28 border border-border bg-card text-2xl shadow-sm"
+            className="size-28 border border-border bg-card text-2xl shadow-sm"
             loading="eager"
           />
           <span className="absolute -right-1 -bottom-1 flex size-9 items-center justify-center rounded-full border-4 border-canvas bg-forge-teal text-white">
@@ -34,7 +34,7 @@ export function AvatarIdentityHeader({
         <h2 className="mt-2 font-bold text-3xl text-ink leading-tight">
           {currentUser?.name ?? "Your account"}
         </h2>
-        <p className="mt-2 max-w-2xl break-words text-slate-muted text-sm leading-relaxed">
+        <p className="wrap-break-word mt-2 max-w-2xl text-slate-muted text-sm leading-relaxed">
           {currentUser?.bio ||
             "Add a short intro so people have an easier first step when your group opens."}
         </p>

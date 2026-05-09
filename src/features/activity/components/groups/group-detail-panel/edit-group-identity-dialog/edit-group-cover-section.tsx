@@ -45,7 +45,7 @@ export function EditGroupCoverSection({
           error={editor.coverUploadError}
           onFiles={editor.handleCoverFiles}
           preview={
-            <div className="h-full w-full">
+            <div className="size-full">
               <PlanCover
                 value={editor.coverImage}
                 alt={`${group.name} cover preview`}
@@ -113,7 +113,7 @@ function PlanCoverPresetButton({
         gradient,
         selected
           ? "border-forge-teal shadow-forge-teal/20 shadow-md"
-          : "border-transparent hover:scale-[1.03] hover:shadow-sm",
+          : "border-transparent hover:scale-105 hover:shadow-sm",
       )}
     >
       <span className="absolute bottom-1 left-1.5 font-bold text-white/85 text-xs drop-shadow-sm">

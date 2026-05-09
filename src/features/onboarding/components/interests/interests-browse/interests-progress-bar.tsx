@@ -42,7 +42,7 @@ export function InterestsProgressBar({
     >
       <div className="mb-3 h-1 w-full overflow-hidden rounded-full bg-slate-muted/10">
         <motion.div
-          className="h-full w-full origin-left bg-forge-teal"
+          className="size-full origin-left bg-forge-teal"
           initial={{ scaleX: 0 }}
           animate={{ scaleX: pct / 100 }}
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
@@ -57,7 +57,7 @@ export function InterestsProgressBar({
               / {MAX_INTERESTS}
             </span>
           </span>
-          <p className="mt-1 font-bold font-sans text-[10px] text-slate-muted/60 uppercase leading-none tracking-wider">
+          <p className="mt-1 font-bold font-sans text-slate-muted/60 text-xs uppercase leading-none tracking-wider">
             {progressText}
           </p>
         </div>

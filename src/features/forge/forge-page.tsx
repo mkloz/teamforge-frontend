@@ -58,7 +58,7 @@ export function ForgePage() {
 
             <section
               aria-labelledby="starter-examples-title"
-              className="grid gap-5 md:grid-cols-[13rem_minmax(0,1fr)]"
+              className="md:forge-page-grid grid gap-5"
             >
               <div>
                 <p className="font-black text-muted-foreground text-sm uppercase">
@@ -100,7 +100,7 @@ export function ForgePage() {
               aria-labelledby="forge-next-title"
               className="rounded-xl border border-border bg-canvas p-5 md:p-6"
             >
-              <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+              <div className="lg:main-action-grid grid gap-6 lg:items-end">
                 <div>
                   <p className="font-black text-muted-foreground text-sm uppercase">
                     After you start
@@ -116,7 +116,7 @@ export function ForgePage() {
                     {FORGE_OUTCOMES.map(([title, body]) => (
                       <div
                         key={title}
-                        className="border-border border-t pt-4 first:border-t-0 first:pt-0 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-4 sm:first:border-l-0 sm:first:pl-0"
+                        className="border-border border-t pt-4 first:border-t-0 first:pt-0 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-4 first:sm:border-l-0 first:sm:pl-0"
                       >
                         <p className="font-black text-foreground text-sm">
                           {title}

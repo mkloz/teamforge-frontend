@@ -5,7 +5,7 @@ export function HomeHeroSignalMap() {
       aria-hidden="true"
     >
       <svg
-        className="absolute inset-0 h-full w-full text-forge-teal"
+        className="absolute inset-0 size-full text-forge-teal"
         viewBox="0 0 360 280"
         fill="none"
         preserveAspectRatio="none"

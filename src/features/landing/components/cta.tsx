@@ -45,7 +45,7 @@ export function CtaSection() {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.7, delay: 0.1 }}
         >
-          <h2 className="mb-6 text-balance font-bold font-sans text-[clamp(2rem,5.5vw,3.5rem)] text-white leading-tight">
+          <h2 className="mb-6 text-balance font-bold font-sans text-3xl text-white leading-tight sm:text-5xl">
             Stop waiting for the right{" "}
             <span className="text-forge-teal">group</span> to appear.
           </h2>

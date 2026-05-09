@@ -47,7 +47,7 @@ export function OceanDiagram({
     <div
       ref={elementRef}
       className={cn(
-        "h-full min-h-56 w-full [&_*:focus]:outline-none [&_svg:focus]:outline-none [&_svg]:outline-none",
+        "size-full min-h-56 [&_*:focus]:outline-none [&_svg:focus]:outline-none [&_svg]:outline-none",
         className,
       )}
     >

@@ -12,6 +12,26 @@ import {
   type ProposalField,
 } from "./plan-proposal-fields";
 
+function readProposalValues(
+  field: ProposalField,
+  plan: Plan,
+  value: string,
+  currentValue: string,
+  locationValue: ReturnType<typeof getLocationProposalInput>,
+) {
+  if (field === "LOCATION") {
+    return {
+      currentComparableValue: getCurrentSerializedLocationProposalValue(plan),
+      proposedValue: buildLocationProposalValue(locationValue),
+    };
+  }
+
+  return {
+    currentComparableValue: normalizeProposedValue(field, currentValue),
+    proposedValue: normalizeProposedValue(field, value),
+  };
+}
+
 export function usePlanProposalForm(plan: Plan) {
   const [isOpen, setIsOpen] = useState(false);
   const [field, setField] = useState<ProposalField>("TITLE");
@@ -49,18 +69,16 @@ export function usePlanProposalForm(plan: Plan) {
   };
 
   const handleSubmit = async () => {
-    let proposedValue: string;
-    let currentComparableValue: string;
+    let proposalValues: ReturnType<typeof readProposalValues>;
 
     try {
-      proposedValue =
-        field === "LOCATION"
-          ? buildLocationProposalValue(locationValue)
-          : normalizeProposedValue(field, value);
-      currentComparableValue =
-        field === "LOCATION"
-          ? getCurrentSerializedLocationProposalValue(plan)
-          : normalizeProposedValue(field, currentValue);
+      proposalValues = readProposalValues(
+        field,
+        plan,
+        value,
+        currentValue,
+        locationValue,
+      );
     } catch (proposalError) {
       setError(
         proposalError instanceof Error
@@ -70,7 +88,10 @@ export function usePlanProposalForm(plan: Plan) {
       return;
     }
 
-    if (!proposedValue || proposedValue === currentComparableValue) {
+    if (
+      !proposalValues.proposedValue ||
+      proposalValues.proposedValue === proposalValues.currentComparableValue
+    ) {
       setError("Add a new value before sending a proposal.");
       return;
     }
@@ -78,7 +99,7 @@ export function usePlanProposalForm(plan: Plan) {
     setError(null);
     await createProposal({
       field,
-      proposedValue,
+      proposedValue: proposalValues.proposedValue,
     });
   };
 

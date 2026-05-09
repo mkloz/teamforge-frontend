@@ -12,6 +12,12 @@ interface UseAttentionQueueStateInput {
   onClearFriendRequestFocus?: () => void;
 }
 
+function runOptionalFocusCallback(callback?: () => void) {
+  if (callback) {
+    callback();
+  }
+}
+
 export function useAttentionQueueState({
   focusedInviteId,
   focusedRequestId,
@@ -91,7 +97,7 @@ export function useAttentionQueueState({
     try {
       await acceptInvitation(inviteId);
       if (focusedInviteId === inviteId) {
-        onClearInvitationFocus?.();
+        runOptionalFocusCallback(onClearInvitationFocus);
       }
     } catch {
       restoreInvite(inviteId);
@@ -105,7 +111,7 @@ export function useAttentionQueueState({
     try {
       await declineInvitation(inviteId);
       if (focusedInviteId === inviteId) {
-        onClearInvitationFocus?.();
+        runOptionalFocusCallback(onClearInvitationFocus);
       }
     } catch {
       restoreInvite(inviteId);
@@ -118,7 +124,7 @@ export function useAttentionQueueState({
     try {
       await acceptRequest(requesterId);
       if (focusedRequestId === requesterId) {
-        onClearFriendRequestFocus?.();
+        runOptionalFocusCallback(onClearFriendRequestFocus);
       }
     } catch {
       restoreRequest(requesterId);
@@ -131,7 +137,7 @@ export function useAttentionQueueState({
     try {
       await declineRequest(requesterId);
       if (focusedRequestId === requesterId) {
-        onClearFriendRequestFocus?.();
+        runOptionalFocusCallback(onClearFriendRequestFocus);
       }
     } catch {
       restoreRequest(requesterId);

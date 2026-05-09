@@ -14,7 +14,7 @@ export function ForgeLoadingScreen({ strikeCount }: ForgeLoadingScreenProps) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 1.02 }}
       transition={{ duration: 0.45, ease: [0.32, 0.72, 0, 1] }}
-      className="relative flex min-h-[70vh] w-full flex-col items-center justify-center gap-8 px-4"
+      className="relative flex min-h-96 w-full flex-col items-center justify-center gap-8 px-4"
     >
       <ForgeLoadingAnvil
         strikeCount={strikeCount}

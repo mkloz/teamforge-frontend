@@ -42,7 +42,7 @@ export function TagPill({
       asChild
       disabled={disabled && !selected}
       className={cn(
-        "h-auto max-w-full rounded-full px-1.5 py-0.75 text-[11px] sm:px-2 sm:py-1 sm:text-xs",
+        "h-auto max-w-full rounded-full px-1.5 py-0.75 text-micro sm:px-2 sm:py-1",
         !selected &&
           "border-border/40 bg-card text-slate-muted dark:border-white/10 dark:text-slate-300",
       )}
@@ -68,7 +68,7 @@ export function TagPill({
         <div className="flex min-w-0 items-center justify-center gap-0 sm:gap-0.5">
           <div
             className={cn(
-              "relative flex h-3.5 items-center justify-center overflow-hidden transition-[width] duration-200 ease-out sm:h-4",
+              "relative flex h-3.5 items-center justify-center overflow-hidden transition-all duration-200 ease-out sm:h-4",
               slots.left,
             )}
           >
@@ -84,13 +84,13 @@ export function TagPill({
             />
           </div>
 
-          <span className="flex min-h-3.5 min-w-0 max-w-[8.25rem] items-center justify-center truncate text-center leading-[1.1] sm:min-h-4 sm:max-w-none">
+          <span className="flex min-h-3.5 min-w-0 max-w-33 items-center justify-center truncate text-center leading-tight sm:min-h-4 sm:max-w-none">
             {label}
           </span>
 
           <div
             className={cn(
-              "flex h-3.5 items-center justify-center overflow-visible transition-[width] duration-200 ease-out sm:h-4",
+              "flex h-3.5 items-center justify-center overflow-visible transition-all duration-200 ease-out sm:h-4",
               slots.right,
             )}
           >

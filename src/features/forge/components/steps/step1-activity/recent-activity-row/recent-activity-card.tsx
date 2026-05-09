@@ -27,7 +27,7 @@ export function RecentActivityCard({
       aria-pressed={active}
       onClick={() => onTemplateToggle(templateId, activity.template)}
       className={cn(
-        "group flex h-14 min-w-0 overflow-hidden rounded-lg border bg-card text-left transition-[background-color,border-color,transform] duration-200 active:scale-[0.98]",
+        "group flex h-14 min-w-0 overflow-hidden rounded-lg border bg-card text-left transition-all duration-200 active:scale-95",
         active
           ? "border-spark-amber/65 bg-spark-amber/10 ring-1 ring-spark-amber/20"
           : recommended
@@ -50,8 +50,8 @@ export function RecentActivityCard({
             <Image
               src={activity.template.coverImage ?? undefined}
               alt=""
-              wrapperClassName="absolute inset-0 h-full w-full"
-              className="transition-[scale,transform] duration-700 ease-out group-hover:scale-105"
+              wrapperClassName="absolute inset-0 size-full"
+              className="transition-transform duration-700 ease-out group-hover:scale-105"
               showNoImage={false}
             />
             <div

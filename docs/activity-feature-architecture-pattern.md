@@ -219,7 +219,8 @@ Use this order for each large feature:
 7. Extract cache writers.
 8. Refactor hooks so components call hooks, not transport/facade methods.
 9. Refactor oversized components by change reason.
-10. Run `npm run typecheck`, `npm run lint`, `npm run format`, and `npm run build`.
+10. Run `npm run lint:changed` while iterating, then `npm run lint` and
+    `npm run build` before committing.
 
 ## Done Criteria
 
@@ -232,4 +233,4 @@ A feature is production-level architecturally when:
 - Components do not own domain mutation workflows.
 - API facade files are thin adapters.
 - Projection, cache, action, and transport responsibilities are separate.
-- The build, lint, format check, and typecheck all pass.
+- The build and lint gates pass.

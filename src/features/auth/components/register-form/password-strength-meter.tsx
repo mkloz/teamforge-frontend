@@ -20,7 +20,7 @@ export function PasswordStrengthMeter({
         {[1, 2, 3].map((segment) => (
           <div
             key={segment}
-            className={`flex-1 rounded-full transition-[background-color] duration-300 ${
+            className={`flex-1 rounded-full transition-colors duration-300 ${
               strength.score >= segment ? meterColorClassName : "bg-border"
             }`}
           />

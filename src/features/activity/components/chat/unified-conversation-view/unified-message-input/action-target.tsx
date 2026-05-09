@@ -116,7 +116,7 @@ export const ActionTarget = memo(
             className={cn(
               "rounded-full transition-all duration-300",
               "touch-none select-none", // touch-none prevents scroll interference
-              isRecording && "scale-[1.15] after:hidden",
+              isRecording && "scale-110 after:hidden",
             )}
             aria-label={
               isRecording ? "Release to send" : "Hold to record voice message"

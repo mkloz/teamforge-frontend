@@ -41,7 +41,7 @@ export const GalleryItem = memo(
         onClick={state === "error" ? undefined : onClick}
         aria-label={`Open ${media.type === "VIDEO" ? "video" : "image"} attachment ${index + 1}`}
         className={cn(
-          "group/gallery-item relative block h-full w-full appearance-none overflow-hidden bg-muted/60 text-left",
+          "group/gallery-item relative block size-full appearance-none overflow-hidden bg-muted/60 text-left",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40 focus-visible:ring-offset-2",
           "disabled:cursor-default",
           state !== "error" && "cursor-zoom-in",
@@ -63,7 +63,7 @@ export const GalleryItem = memo(
               className="absolute inset-0 animate-pulse bg-muted/80"
             >
               {/* Shimmer stripe */}
-              <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.4s_ease-in-out_infinite] bg-linear-to-r from-transparent via-white/10 to-transparent" />
+              <div className="absolute inset-0 -translate-x-full animate-pulse bg-linear-to-r from-transparent via-white/10 to-transparent" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -98,7 +98,7 @@ export const GalleryItem = memo(
             }}
             onError={onError}
             className={cn(
-              "h-full w-full object-cover transition-[opacity,transform] duration-700 ease-out will-change-transform group-hover/gallery-item:scale-110",
+              "size-full object-cover transition-all duration-700 ease-out will-change-transform group-hover/gallery-item:scale-110",
               state === "loaded" ? "opacity-100" : "opacity-0",
             )}
           />
@@ -117,7 +117,7 @@ export const GalleryItem = memo(
             onError={onError}
             wrapperClassName="absolute inset-0"
             className={cn(
-              "transition-[opacity,transform] duration-700 ease-out will-change-transform group-hover/gallery-item:scale-110",
+              "transition-all duration-700 ease-out will-change-transform group-hover/gallery-item:scale-110",
               state === "loaded" ? "opacity-100" : "opacity-0",
             )}
             loadingComponent={null}
@@ -137,7 +137,7 @@ export const GalleryItem = memo(
                 </span>
               </div>
             ) : null}
-            <div className="absolute top-2 right-2 scale-90 rounded-lg border border-white/10 bg-black/20 p-1.5 opacity-0 backdrop-blur-md transition-[opacity,transform] duration-200 group-hover/gallery-item:scale-100 group-hover/gallery-item:opacity-100">
+            <div className="absolute top-2 right-2 scale-90 rounded-lg border border-white/10 bg-black/20 p-1.5 opacity-0 backdrop-blur-md transition-all duration-200 group-hover/gallery-item:scale-100 group-hover/gallery-item:opacity-100">
               <Layers className="size-3.5 text-white/80" />
             </div>
             <div className="absolute inset-0 ring-0 ring-white/20 ring-inset transition-all duration-500 ease-out group-hover/gallery-item:ring-8" />

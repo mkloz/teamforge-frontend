@@ -105,6 +105,7 @@ export function RouteErrorState({
         routeScope: scope,
         status: "success",
       });
+      setIsRetrying(false);
     } catch (retryError) {
       captureException(telemetryErrorScopes.routeError, retryError, {
         routeScope: scope,
@@ -114,7 +115,6 @@ export function RouteErrorState({
         routeScope: scope,
         status: "error",
       });
-    } finally {
       setIsRetrying(false);
     }
   }

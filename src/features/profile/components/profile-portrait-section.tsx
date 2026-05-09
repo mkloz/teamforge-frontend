@@ -22,11 +22,11 @@ export function ProfilePortraitSection({
       <div className="flex max-w-4xl flex-col gap-4">
         <div className="flex flex-wrap items-center gap-3">
           <ProfileSectionHeading>Profile sketch</ProfileSectionHeading>
-          <span className="rounded-full border border-border/70 px-2.5 py-1 font-black text-[11px] text-slate-muted">
+          <span className="rounded-full border border-border/70 px-2.5 py-1 font-black text-micro text-slate-muted">
             {readLabel}
           </span>
         </div>
-        <h2 className="max-w-3xl font-black text-[1.6rem] text-ink leading-tight tracking-tight md:text-3xl">
+        <h2 className="max-w-3xl font-black text-2xl text-ink leading-tight tracking-tight md:text-3xl">
           {portrait.title}
         </h2>
         <p className="max-w-3xl text-pretty font-medium text-base text-ink/82 leading-relaxed md:text-lg">

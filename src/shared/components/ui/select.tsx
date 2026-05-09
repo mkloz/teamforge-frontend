@@ -39,7 +39,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "group/select flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-card px-3.5 py-2 font-medium font-sans text-ink text-sm shadow-xs outline-none transition-[background-color,border-color,box-shadow,color] duration-200 placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-muted/50 disabled:text-slate-muted disabled:opacity-70 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/15 data-[placeholder]:text-slate-muted/70 *:data-[slot=select-value]:flex *:data-[slot=select-value]:min-w-0 *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 *:data-[slot=select-value]:truncate dark:bg-input/30 dark:aria-invalid:ring-destructive/30 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-slate-muted [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "group/select flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-card px-3.5 py-2 font-medium font-sans text-ink text-sm shadow-xs outline-none transition-all duration-200 placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-muted/50 disabled:text-slate-muted disabled:opacity-70 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/15 data-[placeholder]:text-slate-muted/70 *:data-[slot=select-value]:flex *:data-[slot=select-value]:min-w-0 *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 *:data-[slot=select-value]:truncate dark:bg-input/30 dark:aria-invalid:ring-destructive/30 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-slate-muted [&_svg]:pointer-events-none [&_svg]:shrink-0",
         size === "sm" && "h-9 px-3 text-xs",
         className,
       )}
@@ -89,7 +89,7 @@ function SelectContent({
         <SelectScrollUpButton />
         <SelectPrimitive.Viewport
           className={cn(
-            "scrollbar-hide [&::-webkit-scrollbar]:hidden! p-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:w-0!",
+            "scrollbar-hide [&::-webkit-scrollbar]:hidden! p-1 [&::-webkit-scrollbar]:w-0!",
             position === "popper" &&
               "w-full min-w-(--radix-select-trigger-width) scroll-my-1",
           )}

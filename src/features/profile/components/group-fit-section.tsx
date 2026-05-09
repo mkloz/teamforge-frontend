@@ -14,7 +14,7 @@ export function GroupFitSection({ insight }: GroupFitSectionProps) {
       <div className="flex flex-col gap-4">
         <ProfileSectionHeading>How they fit</ProfileSectionHeading>
         <div className="flex max-w-3xl flex-col gap-3">
-          <h2 className="font-black text-[1.6rem] text-ink tracking-tight md:text-3xl">
+          <h2 className="font-black text-2xl text-ink tracking-tight md:text-3xl">
             {insight.title}
           </h2>
           <p className="text-pretty font-medium text-base text-ink/85 leading-relaxed md:text-lg">

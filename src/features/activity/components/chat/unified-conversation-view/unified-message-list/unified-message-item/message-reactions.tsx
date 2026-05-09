@@ -47,7 +47,7 @@ export const MessageReactions = memo(function MessageReactions({
                 className={cn(
                   "h-auto rounded-full border px-1.5 py-0.5 font-bold text-xs transition-all",
                   reaction.isActive
-                    ? "border-forge-teal/20 bg-forge-teal/10 text-forge-teal shadow-[0_2px_8px_-2px_rgba(13,148,136,0.2)]"
+                    ? "border-forge-teal/20 bg-forge-teal/10 text-forge-teal shadow-sm"
                     : "border-transparent",
                 )}
                 onClick={() => onToggleReaction?.(reaction.emoji)}

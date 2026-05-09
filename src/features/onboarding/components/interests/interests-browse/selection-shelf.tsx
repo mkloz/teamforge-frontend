@@ -41,15 +41,15 @@ export function SelectionShelf({
           <div className="mb-4 flex items-center gap-2">
             {isSearching ? (
               <>
-                <div className="flex h-5 w-5 items-center justify-center rounded-md bg-forge-teal/10 text-forge-teal">
-                  <Tags className="h-3 w-3" />
+                <div className="flex size-5 items-center justify-center rounded-md bg-forge-teal/10 text-forge-teal">
+                  <Tags className="size-3" />
                 </div>
-                <p className="font-bold font-sans text-[10px] text-forge-teal uppercase tracking-widest">
+                <p className="font-bold font-sans text-forge-teal text-xs uppercase tracking-widest">
                   Related to your picks ({youMightAlsoLike.length})
                 </p>
               </>
             ) : (
-              <p className="font-bold font-sans text-[10px] text-slate-muted/50 uppercase tracking-widest">
+              <p className="font-bold font-sans text-slate-muted/50 text-xs uppercase tracking-widest">
                 Your picks ({selectedIds.size})
               </p>
             )}
@@ -76,9 +76,9 @@ export function SelectionShelf({
                       key={`shelf-${id}`}
                       size="xs"
                       onClick={() => onToggle(id)}
-                      className="h-auto max-w-full rounded-full px-1.5 py-0.75 text-[11px] sm:px-2 sm:py-1 sm:text-xs"
+                      className="h-auto max-w-full rounded-full px-1.5 py-0.75 text-micro sm:px-2 sm:py-1"
                     >
-                      <span className="min-w-0 max-w-[8.25rem] truncate leading-none sm:max-w-none">
+                      <span className="min-w-0 max-w-33 truncate leading-none sm:max-w-none">
                         {tag.name}
                       </span>
                       <X

@@ -34,7 +34,7 @@ export function PersonalityIntro({
     <PersonalityScreenShell className="max-w-md pt-10 sm:pt-12">
       <motion.p
         variants={fadeUpItem}
-        className="mb-3 text-center font-bold font-sans text-forge-teal text-xs uppercase tracking-[0.18em]"
+        className="mb-3 text-center font-bold font-sans text-forge-teal text-xs uppercase tracking-widest"
       >
         Personality Assessment
       </motion.p>
@@ -47,11 +47,11 @@ export function PersonalityIntro({
       </motion.h1>
 
       <motion.div variants={fadeUpItem} className="text-left">
-        <p className="mb-3 text-pretty font-medium font-sans text-muted-foreground text-sm leading-relaxed sm:text-[0.95rem]">
+        <p className="mb-3 text-pretty font-medium font-sans text-muted-foreground text-sm leading-relaxed sm:text-base">
           Before we build your group, we want to understand how your mind works
           – the core of your personality.
         </p>
-        <p className="mb-6 text-pretty font-sans text-muted-foreground text-xs leading-relaxed sm:text-sm">
+        <p className="mb-6 text-pretty font-sans text-muted-foreground text-xs leading-relaxed">
           This is the{" "}
           <span className="font-semibold text-ink">IPIP Assessment</span> – a
           scientifically validated framework. The result shapes your group
@@ -70,10 +70,10 @@ export function PersonalityIntro({
       >
         {BENEFITS.map(({ icon: Icon, text }) => (
           <div key={text} className="flex items-start gap-3.5">
-            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10">
+            <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10">
               <Icon size={14} strokeWidth={2.5} className="text-forge-teal" />
             </div>
-            <p className="font-sans text-muted-foreground text-xs leading-relaxed sm:text-sm">
+            <p className="font-sans text-muted-foreground text-xs leading-relaxed">
               {text}
             </p>
           </div>

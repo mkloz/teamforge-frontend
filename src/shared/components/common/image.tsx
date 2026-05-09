@@ -32,16 +32,19 @@ const DefaultLoader = () => (
   </div>
 );
 
+const DEFAULT_LOADING_COMPONENT = <DefaultLoader />;
+const DEFAULT_IMAGE_PLACEHOLDER = <ImagePlaceholder />;
+
 export function Image({
   src,
   fallbackSrc,
   alt,
   ref,
   className,
-  loadingComponent = <DefaultLoader />,
+  loadingComponent = DEFAULT_LOADING_COMPONENT,
   loadingClassName,
-  noImageComponent = <ImagePlaceholder />,
-  fallbackComponent = <ImagePlaceholder />,
+  noImageComponent = DEFAULT_IMAGE_PLACEHOLDER,
+  fallbackComponent = DEFAULT_IMAGE_PLACEHOLDER,
   wrapperClassName,
   showNoImage = true,
   style,
@@ -96,9 +99,7 @@ export function Image({
   const showFallback = fallbackFailed || !isSrcProvided;
 
   return (
-    <div
-      className={cn("relative h-full w-full overflow-hidden", wrapperClassName)}
-    >
+    <div className={cn("relative size-full overflow-hidden", wrapperClassName)}>
       {isSrcProvided && !fallbackFailed ? (
         <>
           {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions: Image load/error lifecycle handlers are not user interaction. */}
@@ -115,7 +116,7 @@ export function Image({
             alt={alt}
             style={style}
             className={cn(
-              "h-full w-full object-cover transition-[filter,opacity,transform,scale] duration-700 ease-out",
+              "size-full object-cover transition-all duration-700 ease-out",
               isLoading ? "blur-sm" : "blur-none",
               className,
             )}

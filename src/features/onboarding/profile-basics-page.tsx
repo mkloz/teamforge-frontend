@@ -37,7 +37,7 @@ export function ProfileBasicsPage() {
         >
           <TopProgressBar
             progress={progress}
-            className="sticky top-0 z-50 -mx-4 -mt-2 w-[calc(100%+32px)]"
+            className="sticky top-0 z-50 -mx-4 -mt-2 w-full"
           />
 
           <main className="relative z-10 flex min-h-full items-start justify-center pt-20 pb-10 lg:items-center lg:py-8">

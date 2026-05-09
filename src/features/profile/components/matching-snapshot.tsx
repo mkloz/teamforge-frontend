@@ -29,9 +29,9 @@ function SignalPill({ signal }: { signal: MatchingSignal }) {
       className={cn(
         "inline-flex min-h-9 max-w-full items-center gap-2 rounded-full border px-3 font-bold text-xs",
         signal.strength === "ready"
-          ? "border-forge-teal/25 bg-forge-teal/[0.07] text-forge-teal"
+          ? "border-forge-teal/25 bg-forge-teal/10 text-forge-teal"
           : signal.strength === "good"
-            ? "border-spark-amber/25 bg-spark-amber/[0.08] text-spark-amber"
+            ? "border-spark-amber/25 bg-spark-amber/8 text-spark-amber"
             : "border-border/80 text-slate-muted",
       )}
       title={signal.detail}

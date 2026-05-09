@@ -321,7 +321,7 @@ function DateInput({
                         disabled={disabledDay}
                         aria-pressed={selected}
                         className={cn(
-                          "h-8 w-8 rounded-lg font-bold text-xs",
+                          "size-8 rounded-lg font-bold text-xs",
                           selected &&
                             "border-forge-teal bg-forge-teal text-white",
                           outsideMonth && "text-slate-muted/35",

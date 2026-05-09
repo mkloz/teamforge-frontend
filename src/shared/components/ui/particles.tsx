@@ -257,12 +257,12 @@ export function Particles({
   return (
     <div
       className={cn(
-        "pointer-events-none absolute inset-0 z-0 h-full w-full",
+        "pointer-events-none absolute inset-0 z-0 size-full",
         className,
       )}
       ref={canvasContainerRef}
     >
-      <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
+      <canvas ref={canvasRef} className="absolute inset-0 size-full" />
     </div>
   );
 }

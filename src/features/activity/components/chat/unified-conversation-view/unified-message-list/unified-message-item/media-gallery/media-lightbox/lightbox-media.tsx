@@ -14,7 +14,7 @@ export const LightboxImage = memo(function LightboxImage({
   const { state, onLoad, onError } = useImageState();
 
   return (
-    <div className="relative flex h-full w-full items-center justify-center">
+    <div className="relative flex size-full items-center justify-center">
       {state === "loading" && (
         <div className="absolute inset-0 flex items-center justify-center">
           <Loader2
@@ -47,10 +47,10 @@ export const LightboxImage = memo(function LightboxImage({
           onLoad();
         }}
         onError={onError}
-        wrapperClassName="flex h-full w-full items-center justify-center overflow-visible"
+        wrapperClassName="flex items-center justify-center overflow-visible size-full"
         className={cn(
           "max-h-full max-w-full select-none object-contain",
-          "shadow-[0_30px_60px_-15px_rgba(0,0,0,1)] ring-1 ring-white/5",
+          "shadow-2xl ring-1 ring-white/5",
           "transition-opacity duration-300",
           state === "loaded" ? "opacity-100" : "opacity-0",
         )}
@@ -72,7 +72,7 @@ export const LightboxVideo = memo(function LightboxVideo({
   const [hasError, setHasError] = useState(false);
 
   return (
-    <div className="relative flex h-full w-full items-center justify-center">
+    <div className="relative flex size-full items-center justify-center">
       {!hasMetadata && !hasError && (
         <div className="absolute inset-0 flex items-center justify-center">
           <Loader2
@@ -110,7 +110,7 @@ export const LightboxVideo = memo(function LightboxVideo({
         onError={() => setHasError(true)}
         className={cn(
           "max-h-full max-w-full select-none",
-          "shadow-[0_30px_60px_-15px_rgba(0,0,0,1)] ring-1 ring-white/5",
+          "shadow-2xl ring-1 ring-white/5",
           "transition-opacity duration-300",
           hasMetadata ? "opacity-100" : "opacity-0",
         )}

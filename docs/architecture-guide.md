@@ -495,11 +495,11 @@ npm install
 # Start dev server
 npm run dev
 
-# Lint code
-npm run lint
+# Fast lint pass for staged, unstaged, and untracked changed files
+npm run lint:changed
 
-# Format code
-npm run format
+# Full lint gate
+npm run lint
 
 # Build for production
 npm run build
@@ -508,7 +508,7 @@ npm run build
 ### Git Workflow
 
 - Feature branches from `main`
-- Pre-commit hooks: lint + format
+- Pre-commit hooks: React Compiler tracking, Biome safe fixes, and Oxlint on staged files
 - PR reviews required
 - Conventional commits encouraged
 

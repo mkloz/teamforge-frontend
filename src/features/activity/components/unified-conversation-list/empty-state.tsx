@@ -25,7 +25,7 @@ export const EmptyState = memo(function EmptyState({
 
   return (
     <div className="fade-in slide-in-from-bottom-2 flex animate-in flex-col items-center justify-center px-6 py-16 text-center">
-      <div className="flex size-13 items-center justify-center rounded-xl border border-forge-teal/20 bg-forge-teal/8 text-forge-teal shadow-[0_0_0_1px_rgba(13,148,136,0.04)]">
+      <div className="flex size-13 items-center justify-center rounded-xl border border-forge-teal/20 bg-forge-teal/8 text-forge-teal ring-1 ring-forge-teal/5">
         <MessageSquare size={21} strokeWidth={1.5} aria-hidden="true" />
       </div>
 

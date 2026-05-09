@@ -41,7 +41,7 @@ export function QuestionPage({
   });
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-3rem)] w-full max-w-xl flex-col px-0 sm:min-h-[calc(100dvh-4rem)]">
+    <div className="mx-auto flex min-h-dvh w-full max-w-xl flex-col px-0">
       <div className="mb-6 flex items-center gap-3">
         <div className="min-w-0 flex-1">
           <QuestionPageHeader
@@ -60,7 +60,7 @@ export function QuestionPage({
           asChild
           variant="ghost"
           size="icon"
-          className="h-10 w-10 shrink-0 rounded-lg p-0 text-white/80 hover:bg-white/5 hover:text-white focus-visible:ring-forge-teal focus-visible:ring-offset-hero-bg"
+          className="size-10 shrink-0 rounded-lg p-0 text-white/80 hover:bg-white/5 hover:text-white focus-visible:ring-forge-teal focus-visible:ring-offset-hero-bg"
         >
           <Link to="/" aria-label="Back to TeamForge home">
             <TeamForgeLogo className="size-10" showBackground={false} />

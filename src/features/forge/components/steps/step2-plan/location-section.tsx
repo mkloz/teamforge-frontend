@@ -65,7 +65,7 @@ export function LocationSection({
               key={id}
               htmlFor={itemId}
               className={cn(
-                "group flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-left transition duration-150 active:scale-[0.98]",
+                "group flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-left transition duration-150 active:scale-95",
                 active
                   ? "border-forge-teal/35 bg-forge-teal/10 ring-1 ring-forge-teal/20"
                   : "border-border/50 bg-background/40 hover:border-forge-teal/25 hover:bg-forge-teal/5",

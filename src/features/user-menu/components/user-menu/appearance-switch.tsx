@@ -53,7 +53,7 @@ function AppearanceOption({
       aria-pressed={isActive}
       onClick={onClick}
       className={cn(
-        "flex h-7 items-center justify-center gap-1.5 rounded-full font-black text-xs transition-[background-color,color,box-shadow] duration-150",
+        "flex h-7 items-center justify-center gap-1.5 rounded-full font-black text-xs transition-all duration-150",
         isActive
           ? "bg-forge-teal text-white shadow-forge-teal/20 shadow-sm"
           : "text-muted-foreground hover:bg-muted/70 hover:text-foreground",

@@ -26,7 +26,7 @@ function AccountFact({
         <p className="font-semibold text-slate-muted text-xs uppercase tracking-widest">
           {label}
         </p>
-        <p className="mt-1 break-words font-semibold text-ink text-sm">
+        <p className="wrap-break-word mt-1 font-semibold text-ink text-sm">
           {value}
         </p>
       </div>

@@ -44,7 +44,7 @@ export function Avatar({
   const fallbackNode = (
     <div
       className={cn(
-        "avatar-initials flex h-full w-full items-center justify-center bg-forge-teal/10 font-black text-forge-teal leading-none",
+        "avatar-initials flex size-full items-center justify-center bg-forge-teal/10 font-black text-forge-teal leading-none",
         fallbackClassName,
       )}
     >
@@ -66,12 +66,10 @@ export function Avatar({
         alt={alt ?? name ?? "Avatar"}
         loading={loading}
         wrapperClassName="absolute inset-0"
-        className={cn("h-full w-full object-cover", imageClassName)}
+        className={cn("size-full object-cover", imageClassName)}
         noImageComponent={fallbackNode}
         fallbackComponent={fallbackNode}
-        loadingComponent={
-          <div className="h-full w-full animate-pulse bg-muted" />
-        }
+        loadingComponent={<div className="size-full animate-pulse bg-muted" />}
       />
       {children}
     </div>

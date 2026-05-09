@@ -27,11 +27,11 @@ export function ForgeOrb() {
     <div
       ref={containerRef}
       {...tiltHandlers}
-      className="perspective-orb relative flex h-full min-h-90 w-full cursor-default items-center justify-center px-10 md:min-h-125 md:py-20 md:pr-25 md:pl-32 xl:pr-37 xl:pl-47"
+      className="perspective-orb relative flex size-full min-h-90 cursor-default items-center justify-center px-10 md:min-h-125 md:py-20 md:pr-25 md:pl-32 xl:pr-37 xl:pl-47"
     >
       <div
         ref={orbContainerRef}
-        className="relative h-80 w-80 transition-transform duration-700 ease-out xl:h-95 xl:w-95"
+        className="relative size-80 transition-transform duration-700 ease-out xl:h-95 xl:w-95"
         style={{
           transformStyle: "preserve-3d",
         }}
@@ -43,7 +43,7 @@ export function ForgeOrb() {
               ? { duration: 0 }
               : { duration: 20, repeat: Infinity, ease: "linear" }
           }
-          className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,rgba(13,148,136,0.25),rgba(20,184,166,0.08),rgba(13,148,136,0.15),rgba(13,148,136,0.25))] blur-subtle"
+          className="forge-orb-ring-bg absolute inset-0 rounded-full blur-subtle"
           aria-hidden="true"
         />
 
@@ -58,12 +58,12 @@ export function ForgeOrb() {
               ? { duration: 0 }
               : { duration: 4, repeat: Infinity, ease: "easeInOut" }
           }
-          className="absolute inset-3 rounded-full bg-[radial-gradient(circle_at_40%_40%,rgba(13,148,136,0.15),rgba(9,9,9,0.95)_70%)]"
+          className="forge-orb-core-bg absolute inset-3 rounded-full"
           aria-hidden="true"
         />
 
         <div
-          className="absolute inset-4 rounded-full border border-white/5 bg-hero-bg shadow-[inset_0_0_40px_rgba(13,148,136,0.05)]"
+          className="forge-orb-inner-shadow absolute inset-4 rounded-full border border-white/5 bg-hero-bg"
           aria-hidden="true"
         />
 
@@ -77,7 +77,7 @@ export function ForgeOrb() {
           return (
             <div
               key={`tail-${i}`}
-              className="absolute inset-[8%]"
+              className="forge-orb-path-inset absolute"
               ref={(el) => {
                 tailRefs.current[i] = el;
               }}
@@ -85,7 +85,7 @@ export function ForgeOrb() {
               style={tailStyle}
             >
               <div className="absolute inset-0">
-                <div className="mask-[radial-gradient(closest-side,transparent_calc(100%-2px),black_calc(100%-1px))] absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,transparent_0%,transparent_70%,var(--tail-color-start)_85%,var(--tail-color-end)_100%)] [-webkit-mask-image:radial-gradient(closest-side,transparent_calc(100%-2px),black_calc(100%-1px))]" />
+                <div className="forge-orb-ring-mask forge-orb-tail-bg absolute inset-0 rounded-full" />
               </div>
             </div>
           );
@@ -102,7 +102,7 @@ export function ForgeOrb() {
           return (
             <div
               key={`dot-${i}`}
-              className="absolute inset-[8%]"
+              className="forge-orb-path-inset absolute"
               ref={(el) => {
                 dotRefs.current[i] = el;
               }}
@@ -110,26 +110,26 @@ export function ForgeOrb() {
               style={dotStyle}
             >
               <div className="absolute inset-0">
-                <div className="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-(--dot-color) shadow-[0_0_var(--glow-size)_2px_var(--glow-color)] transition-[background-color,box-shadow] duration-100 ease-linear" />
+                <div className="forge-orb-dot-shadow absolute -top-1 left-1/2 size-2 -translate-x-1/2 rounded-full bg-(--dot-color) transition-all duration-100 ease-linear" />
               </div>
             </div>
           );
         })}
 
-        <div className="transform-[translateZ(30px)] pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="forge-orb-depth-30 pointer-events-none absolute inset-0 flex items-center justify-center">
           <TeamForgeLogo
-            className="h-20 w-20 drop-shadow-[0_0_16px_rgba(245,158,11,0.25)] md:h-24 md:w-24"
+            className="forge-orb-logo-glow size-20 md:h-24 md:w-24"
             showBackground={false}
           />
         </div>
 
-        <div className="transform-[translateZ(40px)] absolute -top-10 -left-10 scale-70 sm:scale-85 md:-left-30 xl:top-4 xl:-left-44 xl:scale-100">
+        <div className="forge-orb-depth-40 absolute -top-10 -left-10 scale-70 sm:scale-85 md:-left-30 xl:top-4 xl:-left-44 xl:scale-100">
           <MbtiCard />
         </div>
-        <div className="transform-[translateZ(60px)] absolute -top-12 -right-8 scale-70 sm:scale-85 md:-right-20 xl:-top-16 xl:-right-30 xl:scale-100">
+        <div className="forge-orb-depth-60 absolute -top-12 -right-8 scale-70 sm:scale-85 md:-right-20 xl:-top-16 xl:-right-30 xl:scale-100">
           <GroupCard />
         </div>
-        <div className="transform-[translateZ(50px)] absolute right-6 -bottom-8 scale-70 sm:scale-85 md:-right-10 xl:-right-20 xl:-bottom-16 xl:scale-100">
+        <div className="forge-orb-depth-50 absolute right-6 -bottom-8 scale-70 sm:scale-85 md:-right-10 xl:-right-20 xl:-bottom-16 xl:scale-100">
           <TrustCard />
         </div>
       </div>

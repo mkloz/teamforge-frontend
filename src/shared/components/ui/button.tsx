@@ -97,14 +97,14 @@ function ButtonComponent({
           {/* Layer 1: Internal sweep effect on solid buttons */}
           {(variant === "primary" || variant === "secondary") &&
             !(disabled || loading) && (
-              <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
+              <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-inherit">
                 <span className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/20 to-transparent group-hover:animate-sweep" />
               </div>
             )}
 
           {/* Layer 2: Loading Overlay */}
           {loading && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[inherit]">
+            <div className="absolute inset-0 z-10 flex items-center justify-center rounded-inherit">
               <Loader2
                 className={cn(
                   "animate-spin text-current",
@@ -122,7 +122,7 @@ function ButtonComponent({
           {/* Layer 3: Content Container - Maintains layout width while loading */}
           <span
             className={cn(
-              "flex h-full w-full items-center gap-2 transition-opacity duration-150",
+              "flex size-full items-center gap-2 transition-opacity duration-150",
               "min-w-0 [&>span]:min-w-0",
               loading ? "opacity-0" : "opacity-100",
               getContentJustificationClass(finalClasses),

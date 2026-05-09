@@ -12,7 +12,7 @@ export function PersonalityStrengths({ strengths }: PersonalityStrengthsProps) {
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-3">
         <span className="h-px flex-1 bg-border/70" />
-        <p className="shrink-0 font-black text-[11px] text-forge-teal uppercase tracking-[0.18em]">
+        <p className="shrink-0 font-black text-forge-teal text-micro uppercase tracking-widest">
           Key strengths
         </p>
         <span className="h-px flex-1 bg-border/70" />

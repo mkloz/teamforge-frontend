@@ -36,11 +36,11 @@ export function IdentityPreviewCard({
             <Image
               src={coverImage ?? undefined}
               alt=""
-              className="h-full w-full object-cover transition-[scale,transform] duration-700 ease-out group-hover:scale-105"
+              className="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full w-full flex-col justify-between p-4">
-              <span className="font-bold text-[10px] text-slate-muted uppercase tracking-[0.16em]">
+            <div className="flex size-full flex-col justify-between p-4">
+              <span className="font-bold text-slate-muted text-xs uppercase tracking-widest">
                 Artwork pending
               </span>
               <p className="line-clamp-2 max-w-64 font-black text-foreground text-lg leading-tight">
@@ -60,7 +60,7 @@ export function IdentityPreviewCard({
             name={displayGroupName}
             shape="rounded"
             className="size-11 rounded-lg border border-border bg-muted text-sm"
-            fallbackClassName="text-[11px]"
+            fallbackClassName="text-micro"
           />
           <div className="min-w-0 flex-1">
             <h3 className="truncate font-bold text-foreground text-sm">

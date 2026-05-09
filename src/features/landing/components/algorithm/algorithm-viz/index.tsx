@@ -31,7 +31,7 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
     <div
       ref={containerRef}
       className={cn(
-        "relative w-full max-w-md flex-1 transition-[opacity,transform] delay-200 duration-700 lg:max-w-none",
+        "relative w-full max-w-md flex-1 transition-all delay-200 duration-700 lg:max-w-none",
         inView ? "scale-100 opacity-100" : "scale-95 opacity-0",
       )}
     >
@@ -201,7 +201,7 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
             className={cn(
               "font-sans text-sm",
               phase === "formed"
-                ? "font-semibold text-spark-amber [text-shadow:0_0_10px_rgba(245,158,11,0.5)]"
+                ? "font-semibold text-spark-amber drop-shadow-sm"
                 : "text-text-dark-secondary",
             )}
           >

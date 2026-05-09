@@ -86,7 +86,7 @@ export function AnimatedCircularProgressBar({
       </svg>
       <motion.span
         data-current-value={value}
-        className="absolute inset-0 m-auto mx-auto flex items-center justify-center text-center transition-none duration-[unset]"
+        className="absolute inset-0 m-auto mx-auto flex items-center justify-center text-center transition-none duration-0"
       >
         {labelText}
       </motion.span>

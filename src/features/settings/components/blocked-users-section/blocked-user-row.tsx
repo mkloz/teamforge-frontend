@@ -23,7 +23,7 @@ export function BlockedUserRow({
         <Avatar
           src={user.avatar}
           name={user.name}
-          className="h-11 w-11 border border-border bg-card text-sm"
+          className="size-11 border border-border bg-card text-sm"
         />
 
         <div className="min-w-0">

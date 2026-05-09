@@ -39,7 +39,7 @@ export const UnifiedConversationListItem = memo(
         className={cn(
           "group/item relative flex w-full select-none items-center text-left outline-none transition duration-200",
           isCompact ? "gap-2.5 px-3 py-2" : "gap-3.5 px-4 py-3.5",
-          "before:absolute before:top-0 before:left-0 before:h-full before:w-1 before:bg-forge-teal before:transition before:duration-300 before:content-['']",
+          "conversation-item-accent",
           isSelected
             ? "bg-muted/60 before:opacity-100"
             : "before:opacity-0 hover:bg-muted/30 hover:before:opacity-40",

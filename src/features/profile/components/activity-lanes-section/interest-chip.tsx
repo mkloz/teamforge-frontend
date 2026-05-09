@@ -18,7 +18,7 @@ export function InterestChip({ evidence }: InterestChipProps) {
         "inline-flex min-h-8 max-w-full items-center rounded-full border px-3 font-bold text-xs leading-snug",
         isSupporting
           ? "border-border/80 bg-canvas text-ink/70"
-          : "border-forge-teal/20 bg-forge-teal/[0.07] text-forge-teal",
+          : "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
       )}
     >
       {interest.name}

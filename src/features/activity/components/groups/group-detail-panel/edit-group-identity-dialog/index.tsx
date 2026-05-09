@@ -55,7 +55,7 @@ function EditGroupIdentityDialogContent({
   });
 
   return (
-    <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+    <DialogContent className="max-h-screen overflow-y-auto sm:max-w-xl">
       <DialogHeader>
         <DialogTitle>Group settings</DialogTitle>
         <DialogDescription className="sr-only">

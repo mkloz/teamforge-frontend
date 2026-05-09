@@ -57,7 +57,7 @@ export function ActivityCategoryGrid({
       <div
         className={cn(
           "grid grid-cols-2 gap-2 transition-transform sm:grid-cols-3 lg:grid-cols-4",
-          shaking && "animate-[shake_0.45s_ease-in-out]",
+          shaking && "animate-pulse",
         )}
       >
         {ACTIVITIES.map(({ id, label, description }) => {
@@ -72,7 +72,7 @@ export function ActivityCategoryGrid({
               onClick={() => onSelect(selected ? null : label)}
               aria-pressed={selected}
               className={cn(
-                "group relative flex min-h-20 min-w-0 flex-col gap-2 whitespace-normal rounded-lg border px-3 py-2.5 text-left transition duration-200 active:scale-[0.98]",
+                "group relative flex min-h-20 min-w-0 flex-col gap-2 whitespace-normal rounded-lg border px-3 py-2.5 text-left transition duration-200 active:scale-95",
                 selected
                   ? "border-spark-amber/65 bg-spark-amber/10 shadow-sm ring-1 ring-spark-amber/20"
                   : personalised
@@ -96,11 +96,11 @@ export function ActivityCategoryGrid({
                   </span>
                   <p
                     className={cn(
-                      "min-w-0 text-pretty font-semibold leading-[1.1]",
+                      "min-w-0 text-pretty font-semibold leading-tight",
                       label.length > 18
-                        ? "text-[12.5px]"
+                        ? "text-xs"
                         : label.length > 13
-                          ? "text-[13px]"
+                          ? "text-sm"
                           : "text-sm",
                       selected ? "text-spark-amber" : "text-foreground",
                     )}

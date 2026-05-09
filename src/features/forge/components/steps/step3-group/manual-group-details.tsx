@@ -59,7 +59,7 @@ export function ManualGroupDetails({
       </div>
 
       <div className="flex gap-3 rounded-lg border border-border/35 bg-muted/20 p-3">
-        <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-spark-amber/10">
+        <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-spark-amber/10">
           <Users size={16} className="text-spark-amber" />
         </div>
         <div className="space-y-1">

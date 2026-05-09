@@ -43,8 +43,8 @@ export function PlanSection({
     <section
       ref={sectionRef}
       className={cn(
-        "rounded-xl transition-[background-color,box-shadow] duration-500",
-        isFocused && "bg-forge-teal/6 shadow-[0_0_0_1px_rgba(13,148,136,0.18)]",
+        "rounded-xl transition-all duration-500",
+        isFocused && "bg-forge-teal/6 ring-1 ring-forge-teal/20",
       )}
       aria-labelledby="current-plan-title"
     >

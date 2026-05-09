@@ -106,6 +106,7 @@ export function useSettingsSecurityActions({
       if (session.isCurrent) {
         SettingsCommands.clearAuthState();
         await navigate(buildSettingsLoginNavigation(currentLocation));
+        setRevokingSessionId(null);
         return;
       }
 
@@ -117,13 +118,13 @@ export function useSettingsSecurityActions({
           requestId: result.requestId,
         },
       );
+      setRevokingSessionId(null);
     } catch (error) {
       SettingsCache.restoreSessions(previousSessions);
       setSecurityMessage(null);
       setSecurityError(
         getApiErrorMessage(error, "We couldn't revoke that session right now."),
       );
-    } finally {
       setRevokingSessionId(null);
     }
   }

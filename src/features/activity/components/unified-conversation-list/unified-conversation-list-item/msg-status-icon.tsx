@@ -19,7 +19,7 @@ export const MsgStatusIcon = memo(
           <span
             className={cn(
               "animate-spin rounded-full border border-slate-muted/40 border-t-transparent",
-              isCompact ? "h-2.5 w-2.5" : "h-3 w-3",
+              isCompact ? "size-2.5" : "size-3",
             )}
           />
         );

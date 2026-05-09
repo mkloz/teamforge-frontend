@@ -17,14 +17,14 @@ export function CardImage({ alt, src, variant = "default" }: CardImageProps) {
         "relative shrink-0 overflow-hidden border-border transition-colors duration-150 group-hover:border-ink dark:group-hover:border-white",
         isCompact
           ? "aspect-video w-full border-b-2"
-          : "h-42 border-b-2 md:h-auto md:w-[37%] md:border-r-2 md:border-b-0",
+          : "h-42 border-b-2 md:h-auto md:w-72 md:border-r-2 md:border-b-0",
       )}
     >
       <Image
         src={src}
         alt={alt}
         wrapperClassName="absolute inset-0"
-        className="transition-[scale,transform] duration-700 ease-out will-change-transform group-hover:scale-105"
+        className="transition-transform duration-700 ease-out will-change-transform group-hover:scale-105"
         noImageComponent={<NoImagePlaceholder />}
         fallbackComponent={<NoImagePlaceholder />}
       />
@@ -38,7 +38,7 @@ function NoImagePlaceholder() {
   return (
     <div
       aria-label="Opening without artwork"
-      className="relative h-full w-full overflow-hidden bg-canvas transition-[scale,transform] duration-700 ease-out will-change-transform group-hover:scale-105"
+      className="relative size-full overflow-hidden bg-canvas transition-transform duration-700 ease-out will-change-transform group-hover:scale-105"
       role="img"
     >
       <div

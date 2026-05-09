@@ -197,7 +197,7 @@ export function AlgoNode({
             <Avatar
               src={node.avatar}
               name={node.label}
-              className="h-full w-full bg-forge-deep-surface"
+              className="size-full bg-forge-deep-surface"
               loading="lazy"
             />
           </foreignObject>

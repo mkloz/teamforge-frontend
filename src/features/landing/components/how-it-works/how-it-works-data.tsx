@@ -36,11 +36,11 @@ export const STEPS: Step[] = [
     accent: (
       <div className="flex max-w-xs items-center gap-3 rounded-xl border border-slate-200 bg-canvas p-3 shadow-sm">
         <div className="rounded-lg bg-spark-amber/10 p-2">
-          <MapPin className="h-5 w-5 text-spark-amber" />
+          <MapPin className="size-5 text-spark-amber" />
         </div>
         <div>
           <p className="font-bold text-ink text-xs">Hiking Trip</p>
-          <p className="text-[10px] text-slate-muted">Saturday, 10:00 AM</p>
+          <p className="text-slate-muted text-xs">Saturday, 10:00 AM</p>
         </div>
       </div>
     ),
@@ -55,7 +55,7 @@ export const STEPS: Step[] = [
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
           <div className="h-full w-2/3 animate-pulse bg-forge-teal" />
         </div>
-        <div className="flex items-center justify-between font-mono text-[10px] text-slate-muted">
+        <div className="flex items-center justify-between font-mono text-slate-muted text-xs">
           <span>CURATING YOUR CIRCLE...</span>
           <span className="text-forge-teal">84%</span>
         </div>
@@ -74,11 +74,11 @@ export const STEPS: Step[] = [
             key={i}
             src={`/avatars/avatar-${i}.jpg`}
             name="Group member"
-            className="h-10 w-10 overflow-hidden rounded-full border-2 border-canvas bg-slate-200 shadow-sm"
+            className="size-10 overflow-hidden rounded-full border-2 border-canvas bg-slate-200 shadow-sm"
             loading="lazy"
           />
         ))}
-        <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-canvas bg-forge-teal font-bold text-[10px] text-white shadow-sm">
+        <div className="flex size-10 items-center justify-center rounded-full border-2 border-canvas bg-forge-teal font-bold text-white text-xs shadow-sm">
           +2
         </div>
       </div>

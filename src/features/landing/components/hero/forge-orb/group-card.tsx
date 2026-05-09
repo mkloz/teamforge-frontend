@@ -23,12 +23,12 @@ export function GroupCard() {
       className={cn(
         "w-45 rounded-xl px-4 py-3.5",
         "border border-forge-teal/20 bg-forge-deep-panel/80 backdrop-blur-xl",
-        "shadow-[0_12px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.04)]",
+        "forge-orb-card-shadow",
       )}
       aria-hidden="true"
     >
       <div className="mb-2.5 flex items-center justify-between">
-        <p className="font-sans font-semibold text-forge-teal text-nano uppercase tracking-[0.15em] opacity-90">
+        <p className="font-sans font-semibold text-forge-teal text-nano uppercase tracking-widest opacity-90">
           Your Group
         </p>
         <span className="rounded-full border border-spark-amber/20 bg-spark-amber/10 px-2 py-0.5 font-bold font-sans text-nano text-spark-amber">
@@ -41,7 +41,7 @@ export function GroupCard() {
             key={m.avatar}
             src={m.avatar}
             name="Member"
-            className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-forge-deep-surface ring-2 ring-hero-bg"
+            className="flex size-8 items-center justify-center overflow-hidden rounded-full bg-forge-deep-surface ring-2 ring-hero-bg"
             style={{ zIndex: members.length - members.indexOf(m) }}
           />
         ))}

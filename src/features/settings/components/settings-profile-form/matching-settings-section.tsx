@@ -69,7 +69,7 @@ export function MatchingSettingsSection({
         </div>
       </div>
 
-      <div className="grid gap-0 border-border border-t lg:grid-cols-[1fr_1.4fr] lg:gap-8">
+      <div className="lg:matching-settings-grid grid gap-0 border-border border-t lg:gap-8">
         <NotificationPreferenceRow
           checked={notificationPreferences?.autoMatchingEnabled ?? true}
           title="Automatic group forming"
@@ -133,7 +133,7 @@ export function MatchingSettingsSection({
           Update your answers and interests when your preferences shift.
         </p>
 
-        <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(min(100%,8rem),1fr))] gap-3 md:max-w-92">
+        <div className="responsive-action-grid grid w-full gap-3 md:max-w-92">
           <Button asChild variant="outline" className="min-w-0 px-3">
             <Link
               {...buildPersonalityEditNavigation({

@@ -50,7 +50,7 @@ export function HomePage() {
 
   return (
     <div className="mx-auto w-full max-w-screen-2xl overflow-x-clip px-4 pt-3 pb-28 sm:px-5 md:pt-6 md:pb-10 lg:px-8">
-      <div className="grid grid-cols-1 gap-9 lg:grid-cols-[minmax(0,1fr)_minmax(19rem,24rem)] lg:gap-12 xl:gap-14">
+      <div className="lg:home-page-grid grid grid-cols-1 gap-9 lg:gap-12 xl:gap-14">
         <div className="flex min-w-0 flex-col gap-10 lg:gap-12">
           <HomeHero />
           {focusedPanel === "invitations" && invitationView === "sent" ? (

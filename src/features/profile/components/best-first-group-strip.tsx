@@ -41,7 +41,7 @@ export function BestFirstGroupStrip({
                 className="inline-flex min-h-9 max-w-full items-center gap-2 rounded-full border border-border/80 px-3 py-1 font-bold text-ink/80 text-xs leading-snug"
               >
                 <ArrowRight size={13} className="shrink-0 text-forge-teal" />
-                <span className="min-w-0 break-words">{idea.title}</span>
+                <span className="wrap-break-word min-w-0">{idea.title}</span>
               </span>
             ))}
           </div>

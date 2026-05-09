@@ -159,7 +159,7 @@ export function FileDropzone({
           error && "border-destructive/50 bg-destructive/5",
           isInactive && "cursor-not-allowed opacity-70",
         )}
-        contentClassName="block h-full w-full"
+        contentClassName="block size-full"
       >
         {preview ? <div className="absolute inset-0">{preview}</div> : null}
 

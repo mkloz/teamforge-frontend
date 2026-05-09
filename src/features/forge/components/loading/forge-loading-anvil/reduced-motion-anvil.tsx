@@ -28,7 +28,7 @@ export function ReducedMotionAnvil({
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
-            className="h-full w-full"
+            className="size-full"
           >
             <path
               d="M16 14h45c3 0 5 3 3 6l-5 6c-1 2-3 3-6 3H27c-2 0-4-1-6-3l-7-9c-1-2 0-3 2-3Z"

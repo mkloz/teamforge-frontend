@@ -16,7 +16,7 @@ export function AlgorithmSection() {
     >
       <div className="absolute inset-0 z-0">
         <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_40%,rgba(13,148,136,0.1)_0%,transparent_70%)]"
+          className="algorithm-halo pointer-events-none absolute inset-0"
           aria-hidden="true"
         />
         <Particles
@@ -30,11 +30,11 @@ export function AlgorithmSection() {
       <div className="relative mx-auto max-w-6xl px-6">
         <div
           className={cn(
-            "mb-16 text-center transition-[opacity,transform] duration-700 md:mb-20",
+            "mb-16 text-center transition-all duration-700 md:mb-20",
             inView ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
           )}
         >
-          <h2 className="mx-auto max-w-2xl text-balance font-extrabold font-sans text-[clamp(1.85rem,4.5vw,2.75rem)] text-white leading-tight">
+          <h2 className="mx-auto max-w-2xl text-balance font-extrabold font-sans text-3xl text-white leading-tight sm:text-4xl">
             How we forge your{" "}
             <span className="text-forge-teal">next group.</span>
           </h2>

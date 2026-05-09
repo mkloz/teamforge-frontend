@@ -36,6 +36,21 @@ const TIME_OPTION_KEY_OFFSETS: Record<string, number> = {
   ArrowUp: -1,
 };
 
+interface ActiveTimeOptionRefs {
+  hour: HTMLButtonElement | null;
+  minute: HTMLButtonElement | null;
+  period: HTMLButtonElement | null;
+}
+
+function focusActiveTimeOptions(activeRefs: ActiveTimeOptionRefs) {
+  const hourOption = activeRefs.hour;
+  const minuteOption = activeRefs.minute;
+
+  hourOption?.scrollIntoView({ block: "center" });
+  minuteOption?.scrollIntoView({ block: "center" });
+  hourOption?.focus({ preventScroll: true });
+}
+
 function handleColumnKeyDown<T>(
   options: T[],
   currentValue: T,
@@ -250,7 +265,7 @@ function TimeScrollColumn<T extends number | string>({
           role="listbox"
           aria-label={ariaLabel}
           style={{ scrollbarWidth: "none" }}
-          className="[&::-webkit-scrollbar]:hidden! flex max-h-56 w-full flex-col gap-1 overflow-y-auto py-7 [-ms-overflow-style:none] [&::-webkit-scrollbar]:w-0!"
+          className="[&::-webkit-scrollbar]:hidden! scrollbar-hide flex max-h-56 w-full flex-col gap-1 overflow-y-auto py-7 [&::-webkit-scrollbar]:w-0!"
           onScroll={updateScrollState}
         >
           {options.map((option) => {
@@ -296,10 +311,7 @@ function TimeScrollColumn<T extends number | string>({
           )}
           onClick={() => scrollByDirection(-1)}
         >
-          <ChevronUp
-            size={14}
-            className="rounded-full bg-white/5 shadow-[0_0_16px_rgba(255,255,255,0.08)]"
-          />
+          <ChevronUp size={14} className="rounded-full bg-white/5 shadow-lg" />
         </button>
         <button
           type="button"
@@ -315,7 +327,7 @@ function TimeScrollColumn<T extends number | string>({
         >
           <ChevronDown
             size={14}
-            className="rounded-full bg-white/5 shadow-[0_0_16px_rgba(255,255,255,0.08)]"
+            className="rounded-full bg-white/5 shadow-lg"
           />
         </button>
       </div>
@@ -351,11 +363,11 @@ function TimeInput({
     panelHeight: 340,
     panelWidth: useMeridiem ? 188 : 144,
   });
-  const activeRefs = useRef<{
-    hour: HTMLButtonElement | null;
-    minute: HTMLButtonElement | null;
-    period: HTMLButtonElement | null;
-  }>({ hour: null, minute: null, period: null });
+  const activeRefs = useRef<ActiveTimeOptionRefs>({
+    hour: null,
+    minute: null,
+    period: null,
+  });
   const selectedParts = getTimeParts(value, intervalMinutes, useMeridiem);
   const hourOptions = useMemo(
     () =>
@@ -369,11 +381,11 @@ function TimeInput({
     [intervalMinutes],
   );
 
-  const commitParts = ({
-    hour = selectedParts.hour,
-    minute = selectedParts.minute,
-    period = selectedParts.period,
-  }: Partial<typeof selectedParts>) => {
+  const commitParts = (parts: Partial<typeof selectedParts>) => {
+    const hour = parts.hour ?? selectedParts.hour;
+    const minute = parts.minute ?? selectedParts.minute;
+    const period = parts.period ?? selectedParts.period;
+
     onValueChange(formatTimeValue(toHour24(hour, period, useMeridiem), minute));
   };
 
@@ -390,9 +402,7 @@ function TimeInput({
     }
 
     const delay = scheduleDelay(() => {
-      activeRefs.current.hour?.scrollIntoView({ block: "center" });
-      activeRefs.current.minute?.scrollIntoView({ block: "center" });
-      activeRefs.current.hour?.focus({ preventScroll: true });
+      focusActiveTimeOptions(activeRefs.current);
     }, 0);
 
     return () => {
@@ -442,9 +452,7 @@ function TimeInput({
               <div
                 className={cn(
                   "grid w-full items-stretch divide-x divide-border/60 rounded-xl py-1",
-                  useMeridiem
-                    ? "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(3.5rem,0.7fr)]"
-                    : "grid-cols-2",
+                  useMeridiem ? "time-entry-grid" : "grid-cols-2",
                 )}
               >
                 <TimeScrollColumn

@@ -58,7 +58,7 @@ export function ProfilePanelMobile({
 
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="h-[90vh] rounded-t-3xl border-t bg-canvas">
+      <DrawerContent className="h-dvh rounded-t-3xl border-t bg-canvas">
         <DrawerHeader className="sr-only">
           <DrawerTitle>User Profile</DrawerTitle>
         </DrawerHeader>

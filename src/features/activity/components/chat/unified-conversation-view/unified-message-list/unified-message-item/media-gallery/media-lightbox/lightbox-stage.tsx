@@ -49,7 +49,7 @@ export const LightboxStage = memo(function LightboxStage({
               ease: [0.16, 1, 0.3, 1],
               filter: { duration: 0.3 },
             }}
-            className="relative flex h-full w-full items-center justify-center"
+            className="relative flex size-full items-center justify-center"
           >
             {currentMedia.type === "VIDEO" ? (
               <LightboxVideo media={currentMedia} />

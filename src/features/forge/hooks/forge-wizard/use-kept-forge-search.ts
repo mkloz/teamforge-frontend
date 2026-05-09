@@ -49,6 +49,7 @@ export function useKeptForgeSearch(state: ForgeWizardData) {
         } else {
           await ForgeCommands.stopSearching(activityId);
         }
+        setIsKeepingSearch(false);
       } catch (error) {
         setKeptSearchActivityIds((current) => {
           const next = new Set(current);
@@ -65,7 +66,6 @@ export function useKeptForgeSearch(state: ForgeWizardData) {
           activityId,
           enabled,
         });
-      } finally {
         setIsKeepingSearch(false);
       }
     },

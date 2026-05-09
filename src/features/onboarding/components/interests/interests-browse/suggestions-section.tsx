@@ -35,7 +35,7 @@ export function SuggestionsSection({
       trailing={
         <div className="flex shrink-0 items-center gap-1 rounded-full border border-spark-amber/20 bg-spark-amber/10 px-1.5 py-1 text-spark-amber shadow-none sm:gap-1.5 sm:px-2.5">
           <Fingerprint size={10} className="opacity-70" />
-          <span className="font-extrabold font-sans text-[10px] uppercase leading-none tracking-wider">
+          <span className="font-extrabold font-sans text-xs uppercase leading-none tracking-wider">
             {personalityType}
           </span>
         </div>

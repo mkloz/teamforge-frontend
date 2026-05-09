@@ -17,7 +17,7 @@ export function ActivateAccountStatus({
   if (state === "loading") {
     return (
       <div className="rounded-xl border border-border bg-background px-4 py-6 text-center">
-        <div className="mx-auto mb-4 h-9 w-9 animate-spin rounded-full border-2 border-forge-teal/20 border-t-forge-teal" />
+        <div className="mx-auto mb-4 size-9 animate-spin rounded-full border-2 border-forge-teal/20 border-t-forge-teal" />
         <p className="text-foreground text-sm">
           Confirming your email and preparing your TeamForge account.
         </p>

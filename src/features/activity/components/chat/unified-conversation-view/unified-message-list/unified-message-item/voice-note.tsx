@@ -62,7 +62,7 @@ export const VoiceNote = memo(function VoiceNote({
           className={cn(
             "size-10 shrink-0 rounded-full transition active:scale-90",
             isOwn
-              ? "border border-primary/10 bg-primary/10 text-primary hover:bg-primary/20 dark:border-white/10 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
+              ? "border border-primary/10 bg-primary/10 text-primary hover:bg-primary/20 dark:border-white/10 dark:bg-white/10 dark:text-white hover:dark:bg-white/20"
               : "border border-forge-teal/10 bg-forge-teal/5 text-forge-teal hover:bg-forge-teal/10",
           )}
         >
@@ -125,8 +125,8 @@ export const VoiceNote = memo(function VoiceNote({
             className={cn(
               "pointer-events-none absolute top-0 bottom-0 z-10 w-0.5",
               isOwn
-                ? "bg-primary/60 shadow-[0_0_10px_rgba(var(--color-primary),0.5)] dark:bg-white/60 dark:shadow-[0_0_10px_white]"
-                : "bg-forge-teal/60 shadow-[0_0_10px_rgba(var(--color-forge-teal),0.5)]",
+                ? "bg-primary/60 shadow-lg dark:bg-white/60"
+                : "bg-forge-teal/60 shadow-lg",
             )}
             style={{ left: `${progress * 100}%` }}
             initial={false}
@@ -142,7 +142,7 @@ export const VoiceNote = memo(function VoiceNote({
           className={cn(
             "h-8 shrink-0 rounded-lg border px-2 font-black text-xs tabular-nums transition",
             isOwn
-              ? "border-primary/10 bg-primary/5 text-primary/70 hover:bg-primary/10 dark:border-white/10 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10"
+              ? "border-primary/10 bg-primary/5 text-primary/70 hover:bg-primary/10 dark:border-white/10 dark:bg-white/5 dark:text-white/70 hover:dark:bg-white/10"
               : "border-forge-teal/10 bg-forge-teal/5 text-forge-teal/70 hover:bg-forge-teal/10",
           )}
         >

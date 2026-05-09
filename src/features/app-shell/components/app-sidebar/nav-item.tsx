@@ -33,7 +33,7 @@ export function NavItem({ item, pathname }: NavItemProps) {
             "group relative flex items-center rounded-lg transition-colors duration-150",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
             // Icon-only centered square for both tablet and desktop
-            "h-10 w-10 justify-center",
+            "size-10 justify-center",
             "font-medium text-sm",
             active
               ? "bg-secondary text-primary"

@@ -88,23 +88,26 @@ export function useAddressAutocomplete({
     let active = true;
     const handle = scheduleDelay(() => {
       async function refreshPredictions() {
-        try {
-          const nextSuggestions = await getPlacePredictions(inputValue.trim());
+        const nextSuggestions = await getPlacePredictions(
+          inputValue.trim(),
+        ).catch(() => null);
 
-          if (active && skipPredictionsForValueRef.current === null) {
-            setSuggestions(nextSuggestions);
-            setIsSuggestionsOpen(
-              hasTypedInSessionRef.current && Boolean(nextSuggestions.length),
-            );
-            setActiveSuggestionIndex(-1);
-          }
-        } catch {
-          if (active && skipPredictionsForValueRef.current === null) {
-            setSuggestions([]);
-            setIsSuggestionsOpen(false);
-            setActiveSuggestionIndex(-1);
-          }
+        if (!active || skipPredictionsForValueRef.current !== null) {
+          return;
         }
+
+        if (!nextSuggestions) {
+          setSuggestions([]);
+          setIsSuggestionsOpen(false);
+          setActiveSuggestionIndex(-1);
+          return;
+        }
+
+        setSuggestions(nextSuggestions);
+        setIsSuggestionsOpen(
+          hasTypedInSessionRef.current && Boolean(nextSuggestions.length),
+        );
+        setActiveSuggestionIndex(-1);
       }
 
       void refreshPredictions();
@@ -169,6 +172,40 @@ export function useAddressAutocomplete({
     openSuggestions();
   }
 
+  async function selectPrediction(prediction: GoogleAutocompletePrediction) {
+    if (!mapsReady) {
+      return;
+    }
+
+    setIsResolvingPlace(true);
+    setMessage(null);
+    hasTypedInSessionRef.current = false;
+    skipPredictionsForValueRef.current = prediction.description;
+    setSuggestions([]);
+    setIsSuggestionsOpen(false);
+    setActiveSuggestionIndex(-1);
+
+    try {
+      const nextLocation = await resolvePlacePrediction(prediction);
+
+      setDraftInput({
+        baseValue: externalInputValue,
+        value: nextLocation.address,
+      });
+      skipPredictionsForValueRef.current = nextLocation.address;
+      setSuggestions([]);
+      setIsSuggestionsOpen(false);
+      setActiveSuggestionIndex(-1);
+      setIsResolvingPlace(false);
+      onLocationSelect(nextLocation);
+      return;
+    } catch {
+      setMessage("We couldn't read that location. Try another result.");
+      closeSuggestions();
+      setIsResolvingPlace(false);
+    }
+  }
+
   function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Escape") {
       closeSuggestions();
@@ -219,40 +256,6 @@ export function useAddressAutocomplete({
 
       event.preventDefault();
       void selectPrediction(suggestion);
-    }
-  }
-
-  async function selectPrediction(prediction: GoogleAutocompletePrediction) {
-    if (!mapsReady) {
-      return;
-    }
-
-    setIsResolvingPlace(true);
-    setMessage(null);
-    hasTypedInSessionRef.current = false;
-    skipPredictionsForValueRef.current = prediction.description;
-    setSuggestions([]);
-    setIsSuggestionsOpen(false);
-    setActiveSuggestionIndex(-1);
-
-    try {
-      const nextLocation = await resolvePlacePrediction(prediction);
-
-      setDraftInput({
-        baseValue: externalInputValue,
-        value: nextLocation.address,
-      });
-      skipPredictionsForValueRef.current = nextLocation.address;
-      setSuggestions([]);
-      setIsSuggestionsOpen(false);
-      setActiveSuggestionIndex(-1);
-      setIsResolvingPlace(false);
-      onLocationSelect(nextLocation);
-      return;
-    } catch {
-      setMessage("We couldn't read that location. Try another result.");
-      closeSuggestions();
-      setIsResolvingPlace(false);
     }
   }
 

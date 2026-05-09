@@ -6,7 +6,7 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex flex-col items-center justify-center gap-2 sm:flex-row sm:gap-4">
           <span className="flex items-center gap-1.5 font-sans text-sm">
-            <TeamForgeLogo className="h-5 w-5" showBackground={false} />
+            <TeamForgeLogo className="size-5" showBackground={false} />
             <span className="text-text-dark-secondary">Team</span>
             <span className="text-forge-teal">Forge</span>
           </span>

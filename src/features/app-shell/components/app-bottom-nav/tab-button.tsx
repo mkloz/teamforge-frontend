@@ -37,14 +37,14 @@ export function TabButton({ item, pathname }: TabButtonProps) {
       <motion.div
         whileTap={{ scale: 0.85 }}
         transition={{ type: "spring", stiffness: 400, damping: 17 }}
-        className="relative z-10 flex h-full w-full min-w-0 flex-col items-center justify-center gap-0.5"
+        className="relative z-10 flex size-full min-w-0 flex-col items-center justify-center gap-0.5"
       >
         <div
           className={cn(
             "relative flex items-center justify-center transition-colors duration-300",
             active
-              ? `h-8 w-8 rounded-full ${activeColorBg} shadow-inner`
-              : "h-8 w-8 rounded-full bg-transparent shadow-none",
+              ? `size-8 rounded-full ${activeColorBg} shadow-inner`
+              : "size-8 rounded-full bg-transparent shadow-none",
           )}
         >
           <ItemIcon
@@ -58,7 +58,7 @@ export function TabButton({ item, pathname }: TabButtonProps) {
           {item.badge != null && item.badge > 0 && (
             <span
               className={cn(
-                "absolute top-0.5 right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 font-bold text-[10px] text-accent-foreground shadow-sm",
+                "absolute top-0.5 right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 font-bold text-accent-foreground text-xs shadow-sm",
                 "border-2 border-background",
                 active && "scale-110",
               )}
@@ -70,7 +70,7 @@ export function TabButton({ item, pathname }: TabButtonProps) {
 
         <span
           className={cn(
-            "max-w-full truncate font-semibold text-[10px] leading-none tracking-tight transition-colors duration-300",
+            "max-w-full truncate font-semibold text-xs leading-none tracking-tight transition-colors duration-300",
             active ? activeColorText : "text-muted-foreground",
           )}
         >

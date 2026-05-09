@@ -36,7 +36,7 @@ export function InviteLinkSection({
         </div>
       </div>
 
-      <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-border/25 border-t pt-3">
+      <div className="main-action-grid grid min-w-0 items-center gap-2 border-border/25 border-t pt-3">
         <code className="min-w-0 flex-1 truncate font-semibold text-muted-foreground text-xs">
           {INVITE_LINK}
         </code>
@@ -46,7 +46,7 @@ export function InviteLinkSection({
           onClick={handleCopy}
           aria-label="Copy invite link"
           className={cn(
-            "h-8 shrink-0 rounded-lg px-3 font-semibold text-xs transition-colors active:scale-[0.98]",
+            "h-8 shrink-0 rounded-lg px-3 font-semibold text-xs transition-colors active:scale-95",
             inviteCopied
               ? "bg-forge-teal text-primary-foreground hover:bg-forge-teal/90"
               : "border border-border/40 bg-transparent text-foreground hover:border-forge-teal/25 hover:bg-forge-teal/8 hover:text-forge-teal",

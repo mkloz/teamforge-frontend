@@ -41,6 +41,7 @@ export function useForgotPasswordForm() {
       setSuccessMessage(
         "If that email belongs to a verified account, a reset link is on its way.",
       );
+      setLoading(false);
     } catch (error) {
       captureException(trackedMutationNames.authForgotPassword, error, {
         emailDomain,
@@ -54,7 +55,6 @@ export function useForgotPasswordForm() {
           "We couldn't send a reset link right now. Please try again.",
         ),
       );
-    } finally {
       setLoading(false);
     }
   }

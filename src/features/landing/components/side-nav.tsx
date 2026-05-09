@@ -25,7 +25,7 @@ export function SideNav() {
               variant="ghost"
               size="icon-xs"
               onClick={() => scrollToSection(section.id)}
-              className="group relative h-6 w-6 rounded-full focus-visible:ring-forge-teal"
+              className="group relative size-6 rounded-full focus-visible:ring-forge-teal"
               aria-label={`Go to ${section.label}`}
               aria-current={isActive ? "location" : undefined}
             >
@@ -34,13 +34,13 @@ export function SideNav() {
                 className={cn(
                   "rounded-full transition-all duration-300",
                   isActive
-                    ? "h-2.5 w-2.5 bg-forge-teal shadow-[0_0_10px_rgba(13,148,136,0.4)]"
-                    : "h-1 w-1 bg-slate-muted group-hover:bg-forge-teal/50",
+                    ? "size-2.5 bg-forge-teal shadow-teal-glow"
+                    : "size-1 bg-slate-muted group-hover:bg-forge-teal/50",
                 )}
               />
 
               {/* Hover Label */}
-              <span className="pointer-events-none absolute left-full ml-4 -translate-x-1 whitespace-nowrap rounded-md border border-ink/5 bg-white px-2 py-1 font-bold text-[10px] text-ink uppercase tracking-wider opacity-0 shadow-lg transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100 dark:border-white/10 dark:bg-zinc-900 dark:text-white">
+              <span className="pointer-events-none absolute left-full ml-4 -translate-x-1 whitespace-nowrap rounded-md border border-ink/5 bg-white px-2 py-1 font-bold text-ink text-xs uppercase tracking-wider opacity-0 shadow-lg transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100 dark:border-white/10 dark:bg-zinc-900 dark:text-white">
                 {section.label}
               </span>
             </Button>
@@ -63,7 +63,7 @@ export function SideNav() {
             className="p-1.5 text-slate-muted hover:text-forge-teal"
             aria-label="Scroll to top"
           >
-            <ChevronUp className="h-4 w-4" aria-hidden="true" />
+            <ChevronUp className="size-4" aria-hidden="true" />
           </Button>
         </motion.div>
       )}

@@ -44,7 +44,7 @@ export function IntermissionPage({
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="mx-auto flex min-h-[calc(100dvh-6rem)] w-full max-w-xl flex-col justify-start gap-0 pt-6 text-center sm:min-h-[calc(100dvh-5rem)] sm:pt-0 lg:min-h-0"
+      className="mx-auto flex min-h-dvh w-full max-w-xl flex-col justify-start gap-0 pt-6 text-center sm:pt-0 lg:min-h-0"
     >
       <div className="flex min-h-0 flex-1 flex-col justify-center">
         <IntermissionHeader

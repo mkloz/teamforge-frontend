@@ -30,12 +30,12 @@ export function GroupCoverHeader({
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.6 }}
-          className="h-full w-full"
+          className="size-full"
         >
           <PlanCover
             value={group.plan?.coverImage}
             alt={`${group.name} cover`}
-            imageClassName="transition-[scale,transform] duration-700 group-hover:scale-105"
+            imageClassName="transition-transform duration-700 group-hover:scale-105"
             loading="eager"
           />
         </motion.div>

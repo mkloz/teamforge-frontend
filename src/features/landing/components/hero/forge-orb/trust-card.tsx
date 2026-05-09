@@ -18,11 +18,11 @@ export function TrustCard() {
       className={cn(
         "w-37.5 rounded-xl px-4 py-3.5",
         "border border-forge-teal/20 bg-forge-deep-panel/80 backdrop-blur-xl",
-        "shadow-[0_12px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.04)]",
+        "forge-orb-card-shadow",
       )}
       aria-hidden="true"
     >
-      <p className="mb-2.5 font-sans font-semibold text-forge-teal text-nano uppercase tracking-[0.15em] opacity-90">
+      <p className="mb-2.5 font-sans font-semibold text-forge-teal text-nano uppercase tracking-widest opacity-90">
         Trust Score
       </p>
       <div className="flex items-center gap-2.5">

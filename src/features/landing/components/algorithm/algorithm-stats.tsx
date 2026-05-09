@@ -9,7 +9,7 @@ export function AlgorithmStats({ inView }: AlgorithmStatsProps) {
   return (
     <div
       className={cn(
-        "w-full max-w-md flex-1 transition-[opacity,transform] delay-300 duration-700",
+        "w-full max-w-md flex-1 transition-all delay-300 duration-700",
         inView ? "translate-x-0 opacity-100" : "translate-x-8 opacity-0",
       )}
     >
@@ -59,7 +59,7 @@ export function AlgorithmStats({ inView }: AlgorithmStatsProps) {
               </span>
               <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/5 ring-1 ring-white/10">
                 <div
-                  className="h-full rounded-full shadow-[0_0_12px_rgba(20,184,166,0.3)]"
+                  className="h-full rounded-full shadow-teal-glow"
                   style={{
                     width: inView ? `${weight * 3.3}%` : "0%",
                     background: `linear-gradient(90deg, ${color}, ${color}88)`,

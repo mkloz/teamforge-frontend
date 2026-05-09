@@ -35,7 +35,7 @@ export function LengthOptionCard({
           ? "border-forge-teal/30 bg-forge-teal/8"
           : viewModel.isRecommended
             ? "border-forge-teal/10 bg-card hover:border-forge-teal/20 dark:border-forge-teal/20"
-            : "border-border bg-card hover:border-slate-200 dark:hover:border-white/15",
+            : "border-border bg-card hover:border-slate-200 hover:dark:border-white/15",
       )}
       contentClassName="block h-auto w-full"
     >
@@ -48,7 +48,7 @@ export function LengthOptionCard({
         />
       )}
 
-      <div className="relative z-10 grid grid-cols-1 items-center gap-3.5 sm:grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)] sm:gap-5">
+      <div className="sm:split-divider-grid relative z-10 grid grid-cols-1 items-center gap-3.5 sm:gap-5">
         <div className="flex items-center gap-3">
           <LengthOptionSelectionIndicator isSelected={isSelected} />
           <LengthOptionSummary

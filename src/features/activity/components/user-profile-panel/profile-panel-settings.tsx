@@ -20,12 +20,7 @@ export function ProfilePanelSettings({
   onToggleBlock,
 }: ProfilePanelSettingsProps) {
   return (
-    <div
-      className={cn(
-        "p-6",
-        isMobile && "pb-[calc(2rem+env(safe-area-inset-bottom))]",
-      )}
-    >
+    <div className={cn("p-6", isMobile && "pb-6")}>
       <h4 className="mb-4 px-1 font-semibold text-slate-muted text-xs uppercase tracking-widest">
         Account & Safety
       </h4>
@@ -34,7 +29,7 @@ export function ProfilePanelSettings({
           variant="ghost"
           className="group flex h-auto w-full items-center justify-start gap-3 px-3 py-2"
         >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-slate-muted transition-colors group-hover:text-forge-teal">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-slate-muted transition-colors group-hover:text-forge-teal">
             {isMuted ? <BellOff size={16} /> : <Bell size={16} />}
           </div>
           <span className="font-medium text-ink text-sm">
@@ -48,7 +43,7 @@ export function ProfilePanelSettings({
           disabled={blockActionDisabled || isBlockActionPending}
           onClick={onToggleBlock}
         >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-destructive/10 text-destructive transition-colors">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-destructive/10 text-destructive transition-colors">
             {isBlockActionPending ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (

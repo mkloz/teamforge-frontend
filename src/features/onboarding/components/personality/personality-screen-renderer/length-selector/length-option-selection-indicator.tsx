@@ -12,7 +12,7 @@ export function LengthOptionSelectionIndicator({
   return (
     <div
       className={cn(
-        "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300",
+        "flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300",
         isSelected ? "border-forge-teal" : "border-slate-300",
       )}
     >
@@ -23,7 +23,7 @@ export function LengthOptionSelectionIndicator({
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
-            className="h-2.5 w-2.5 rounded-full bg-forge-teal"
+            className="size-2.5 rounded-full bg-forge-teal"
           />
         ) : null}
       </AnimatePresence>

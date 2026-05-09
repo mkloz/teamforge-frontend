@@ -2,7 +2,7 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export function SettingsSkeleton() {
   return (
-    <div className="mx-auto grid w-full max-w-6xl gap-7 px-4 py-5 md:px-8 lg:grid-cols-[14rem_minmax(0,56rem)] lg:gap-8 lg:py-10">
+    <div className="lg:settings-page-grid mx-auto grid w-full max-w-6xl gap-7 px-4 py-5 md:px-8 lg:gap-8 lg:py-10">
       <div className="flex flex-col gap-3">
         <Skeleton className="h-9 w-32 rounded-xl" />
         <Skeleton className="h-12 w-full rounded-xl" />

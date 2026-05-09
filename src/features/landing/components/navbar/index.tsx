@@ -57,8 +57,10 @@ export function Navbar() {
     try {
       closeMenu();
       await logoutCurrentSession();
-    } finally {
       setIsSigningOut(false);
+    } catch (error) {
+      setIsSigningOut(false);
+      throw error;
     }
   }
 
@@ -66,7 +68,7 @@ export function Navbar() {
     <>
       <header
         className={cn(
-          "dark fixed top-0 right-0 left-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-150",
+          "dark fixed top-0 right-0 left-0 z-50 transition-all duration-150",
           scrolled
             ? "border-white/5 border-b bg-hero-bg/95 backdrop-blur-md"
             : "bg-transparent",
@@ -81,7 +83,7 @@ export function Navbar() {
             className="group -ml-2 flex select-none items-center gap-2 rounded-lg border-0 bg-transparent px-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-hero-bg"
             aria-label="TeamForge home"
           >
-            <TeamForgeLogo className="h-8 w-8" showBackground={false} />
+            <TeamForgeLogo className="size-8" showBackground={false} />
             <span className="font-sans font-semibold text-lg tracking-tight">
               <span className="text-white">Team</span>
               <span className="text-forge-teal">Forge</span>

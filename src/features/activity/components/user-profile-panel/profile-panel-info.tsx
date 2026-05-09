@@ -92,7 +92,7 @@ export function ProfilePanelInfo({
   return (
     <div className="flex w-full flex-col">
       <div className="relative h-24 w-full overflow-hidden bg-forge-teal md:h-28">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px] opacity-10" />
+        <div className="profile-panel-grid profile-panel-grid-size absolute inset-0 opacity-10" />
 
         <div className="absolute inset-x-4 top-4 z-40 flex items-center justify-between">
           {onBack ? (
@@ -139,13 +139,13 @@ export function ProfilePanelInfo({
             name={participant.name}
             className={cn(
               "bg-card shadow-sm ring-4 ring-canvas transition-all duration-300",
-              isMobile ? "h-20 w-20" : "h-24 w-24",
+              isMobile ? "size-20" : "size-24",
             )}
           />
           <span
             className={cn(
               "absolute right-0.5 bottom-0.5 z-10 rounded-full border-4 border-canvas shadow-sm",
-              isMobile ? "h-5 w-5" : "h-6 w-6",
+              isMobile ? "size-5" : "size-6",
               statusColor,
             )}
           />
@@ -198,11 +198,11 @@ export function ProfilePanelInfo({
 
         <div className="flex items-center gap-2">
           {participant.personalityType && (
-            <div className="rounded-full bg-forge-teal px-3 py-1 font-bold text-[11px] text-white uppercase tracking-widest shadow-sm">
+            <div className="rounded-full bg-forge-teal px-3 py-1 font-bold text-micro text-white uppercase tracking-widest shadow-sm">
               {participant.personalityType}
             </div>
           )}
-          <div className="rounded-full border border-spark-amber/20 bg-spark-amber/10 px-3 py-1 font-bold text-[11px] text-spark-amber uppercase tracking-widest">
+          <div className="rounded-full border border-spark-amber/20 bg-spark-amber/10 px-3 py-1 font-bold text-micro text-spark-amber uppercase tracking-widest">
             Trust {formatTrustScore(participant.trustScore)}
           </div>
         </div>
@@ -230,7 +230,7 @@ export function ProfilePanelInfo({
 
         {oceanScores ? (
           <div className="pointer-events-none relative aspect-square w-full px-4 opacity-90 transition-opacity hover:opacity-100">
-            <div className="relative z-10 h-full w-full scale-110">
+            <div className="relative z-10 size-full scale-110">
               <OceanDiagram scores={oceanScores} interactive={false} />
             </div>
           </div>

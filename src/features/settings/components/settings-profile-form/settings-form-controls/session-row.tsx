@@ -18,11 +18,11 @@ export function SessionRow({ session, isRevoking, onRevoke }: SessionRowProps) {
   return (
     <div
       className={cn(
-        "grid gap-4 border-border border-b py-5 last:border-b-0 md:grid-cols-[minmax(0,1fr)_auto] md:items-center",
+        "md:main-action-grid grid gap-4 border-border border-b py-5 last:border-b-0 md:items-center",
         session.isCurrent && "border-forge-teal/25",
       )}
     >
-      <div className="grid min-w-0 grid-cols-[2.5rem_minmax(0,1fr)] gap-4">
+      <div className="icon-body-grid grid min-w-0 gap-4">
         <div
           className={cn(
             "flex size-10 items-center justify-center rounded-full bg-muted text-slate-muted",
@@ -37,7 +37,7 @@ export function SessionRow({ session, isRevoking, onRevoke }: SessionRowProps) {
               {device.label}
             </p>
             {session.isCurrent && (
-              <span className="rounded-full border border-forge-teal/20 bg-forge-teal/8 px-2 py-0.5 font-semibold text-[11px] text-forge-teal">
+              <span className="rounded-full border border-forge-teal/20 bg-forge-teal/8 px-2 py-0.5 font-semibold text-forge-teal text-micro">
                 Current
               </span>
             )}

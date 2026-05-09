@@ -9,7 +9,7 @@ const subcategoryChipVariants = cva(
     variants: {
       state: {
         collapsed:
-          "border-slate-muted/15 bg-card text-slate-muted hover:border-slate-muted/30 hover:bg-canvas dark:border-white/10 dark:text-slate-300 dark:hover:border-white/18 dark:hover:bg-white/5",
+          "border-slate-muted/15 bg-card text-slate-muted hover:border-slate-muted/30 hover:bg-canvas dark:border-white/10 dark:text-slate-300 hover:dark:border-white/18 hover:dark:bg-white/5",
         expanded: "border-forge-teal/30 bg-forge-teal/10 text-forge-teal",
       },
     },
@@ -20,7 +20,7 @@ const subcategoryChipVariants = cva(
 );
 
 const badgeVariants = cva(
-  "flex h-4.5 min-w-[1.125rem] shrink-0 items-center justify-center rounded-full px-1 font-bold text-[10px] leading-none",
+  "flex h-4.5 min-w-4.5 shrink-0 items-center justify-center rounded-full px-1 font-bold text-xs leading-none",
   {
     variants: {
       state: {
@@ -59,7 +59,7 @@ export function SubcategoryChip({
       whileTap={{ scale: 0.94 }}
       className={cn(subcategoryChipVariants({ state: currentState }))}
     >
-      <Icon className="h-3.5 w-3.5" strokeWidth={2.5} />
+      <Icon className="size-3.5" strokeWidth={2.5} />
       <span>{label}</span>
       {selectedCount > 0 && (
         <span className={cn(badgeVariants({ state: currentState }))}>

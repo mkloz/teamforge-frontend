@@ -34,7 +34,7 @@ export const AvatarSection = memo(
           className={cn(
             "shadow-sm ring-1 ring-border/50 transition-colors duration-200 group-hover/item:ring-forge-teal/30",
             isGroup && "rounded-md",
-            isCompact ? "h-9 w-9" : "h-11 w-11",
+            isCompact ? "size-9" : "size-11",
           )}
         />
 
@@ -44,7 +44,7 @@ export const AvatarSection = memo(
               src={secondaryAvatar}
               alt=""
               shape="rounded"
-              className="h-3 w-3 rounded-lg"
+              className="size-3 rounded-lg"
               fallback=""
             />
           </div>

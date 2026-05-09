@@ -31,7 +31,7 @@ export function VoronoiCatalyst({
     // biome-ignore lint/a11y/noStaticElementInteractions: This canvas wrapper is not an activation target.
     <div
       ref={containerRef}
-      className="relative h-full w-full overflow-hidden bg-transparent shadow-[inset_0_0_120px_rgba(0,0,0,0.2)]"
+      className="voronoi-inner-shadow relative size-full overflow-hidden bg-transparent"
       onMouseMove={(e) => handleMouseMove(e.clientX, e.clientY)}
       onMouseLeave={handleMouseLeave}
     >

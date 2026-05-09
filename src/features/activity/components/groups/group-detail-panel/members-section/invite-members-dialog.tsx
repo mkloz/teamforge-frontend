@@ -107,7 +107,7 @@ export function InviteMembersDialog({
                       name={candidate.name}
                       fallback={candidate.name.slice(0, 1).toUpperCase()}
                       className={cn(
-                        "h-11 w-11 bg-muted font-semibold text-foreground text-sm",
+                        "size-11 bg-muted font-semibold text-foreground text-sm",
                         candidate.avatar && "bg-transparent",
                       )}
                     />

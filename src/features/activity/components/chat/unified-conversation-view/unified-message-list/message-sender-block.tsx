@@ -85,9 +85,9 @@ export function MessageSenderBlock({
                 key={message.id}
                 ref={getMessageRef(message.id)}
                 className={cn(
-                  "w-full rounded-xl transition-[background-color,box-shadow] duration-500",
+                  "w-full rounded-xl transition-all duration-500",
                   highlightedMessageId === message.id &&
-                    "bg-forge-teal/8 shadow-[0_0_0_1px_rgba(13,148,136,0.18)]",
+                    "bg-forge-teal/8 ring-1 ring-forge-teal/20",
                 )}
               >
                 <MessageRenderer

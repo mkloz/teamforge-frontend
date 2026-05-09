@@ -23,7 +23,7 @@ export function PageErrorState({
     <FeedbackState
       headingId="page-error-heading"
       icon={<AlertTriangle size={20} />}
-      iconClassName="h-11 w-11 bg-destructive/10 text-destructive"
+      iconClassName="bg-destructive/10 text-destructive size-11"
       className={cn(
         "max-w-none border-destructive/15 bg-destructive/5 shadow-none",
         className,

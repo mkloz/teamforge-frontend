@@ -47,8 +47,10 @@ export function NotificationsDrawer({
 
       onClose();
       await navigate(destination);
-    } finally {
       setPendingNotificationId(null);
+    } catch (error) {
+      setPendingNotificationId(null);
+      throw error;
     }
   }
 
@@ -63,7 +65,7 @@ export function NotificationsDrawer({
           "border-border bg-card",
           isDesktop
             ? "lg:w-96 lg:rounded-l-xl lg:border-l"
-            : "max-lg:max-h-[78vh] max-lg:rounded-t-xl max-lg:border-t",
+            : "max-lg:max-h-screen max-lg:rounded-t-xl max-lg:border-t",
         )}
       >
         <DrawerHeader className="sr-only">

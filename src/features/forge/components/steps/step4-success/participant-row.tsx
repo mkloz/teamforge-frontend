@@ -26,7 +26,7 @@ export function ParticipantRow({
   return (
     <div
       className={cn(
-        "group flex min-h-[104px] flex-col justify-between gap-3 rounded-lg border p-3 transition-[background-color,border-color,opacity] duration-200",
+        "group flex min-h-26 flex-col justify-between gap-3 rounded-lg border p-3 transition-all duration-200",
         removed
           ? "border-border/30 border-dashed bg-muted/30 opacity-40"
           : highlight
@@ -50,7 +50,7 @@ export function ParticipantRow({
             name={participantName}
             fallback={getParticipantInitials(participant)}
             shape="rounded"
-            className="h-full w-full rounded-lg bg-transparent"
+            className="size-full rounded-lg bg-transparent"
             fallbackClassName={cn(
               "bg-transparent font-bold text-xs",
               highlight ? "text-ink" : "text-foreground/80",
@@ -105,7 +105,7 @@ export function ParticipantRow({
             <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-muted/55">
               <div
                 className={cn(
-                  "h-full rounded-full transition-[width] duration-500",
+                  "h-full rounded-full transition-all duration-500",
                   highlight ? "bg-spark-amber" : "bg-forge-teal",
                 )}
                 style={{ width: `${Math.min(scorePercent, 100)}%` }}
@@ -128,7 +128,7 @@ export function ParticipantRow({
             size="icon"
             onClick={() => onRestoreParticipant(participant.userId)}
             aria-label={`Restore ${participantName}`}
-            className="size-8 max-md:opacity-100 md:opacity-0 group-hover:md:opacity-100"
+            className="size-8 max-md:opacity-100 md:opacity-0 md:group-hover:opacity-100"
           >
             <UserPlus size={14} />
           </Button>
@@ -138,7 +138,7 @@ export function ParticipantRow({
             size="icon"
             onClick={() => onRemoveParticipant(participant.userId)}
             aria-label={`Remove ${participantName}`}
-            className="size-8 max-md:opacity-100 md:opacity-0 group-hover:md:opacity-100"
+            className="size-8 max-md:opacity-100 md:opacity-0 md:group-hover:opacity-100"
           >
             <UserMinus size={14} />
           </Button>

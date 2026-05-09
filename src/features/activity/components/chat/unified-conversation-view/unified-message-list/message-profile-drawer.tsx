@@ -19,7 +19,7 @@ export function MessageProfileDrawer({
 }: MessageProfileDrawerProps) {
   return (
     <Drawer open={!!selectedSender} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="mx-auto max-h-[75svh] rounded-t-3xl border-t bg-canvas sm:max-w-md">
+      <DrawerContent className="mx-auto max-h-screen rounded-t-3xl border-t bg-canvas sm:max-w-md">
         <DrawerHeader className="sr-only">
           <DrawerTitle>User Profile</DrawerTitle>
         </DrawerHeader>

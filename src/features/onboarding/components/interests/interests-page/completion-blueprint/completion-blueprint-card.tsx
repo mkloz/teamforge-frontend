@@ -21,14 +21,14 @@ export function CompletionBlueprintCard({
       variants={completionFadeUp}
       className="perspective-1000 relative w-full"
     >
-      <div className="relative flex w-full flex-col overflow-hidden rounded-xl border border-border/85 bg-card/70 shadow-[0_28px_90px_rgba(0,0,0,0.42)] backdrop-blur-lg">
-        <div className="absolute top-[55%] right-4 left-4 h-px border-border/90 border-t border-dashed" />
-        <div className="absolute top-[55%] -left-3 h-6 w-6 -translate-y-1/2 rounded-full border border-border/85 bg-hero-bg/30" />
-        <div className="absolute top-[55%] -right-3 h-6 w-6 -translate-y-1/2 rounded-full border border-border/85 bg-hero-bg/30" />
+      <div className="relative flex w-full flex-col overflow-hidden rounded-xl border border-border/85 bg-card/70 shadow-2xl backdrop-blur-lg">
+        <div className="absolute top-1/2 right-4 left-4 h-px border-border/90 border-t border-dashed" />
+        <div className="absolute top-1/2 -left-3 size-6 -translate-y-1/2 rounded-full border border-border/85 bg-hero-bg/30" />
+        <div className="absolute top-1/2 -right-3 size-6 -translate-y-1/2 rounded-full border border-border/85 bg-hero-bg/30" />
 
         <div className="flex flex-col gap-1 p-8 pb-4">
           <div className="mb-2 flex items-center justify-between">
-            <span className="font-bold font-sans text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
+            <span className="font-bold font-sans text-muted-foreground text-xs uppercase tracking-widest">
               Your profile
             </span>
             <Fingerprint
@@ -48,7 +48,7 @@ export function CompletionBlueprintCard({
         <div className="flex flex-1 flex-col gap-8 p-8 pt-10">
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
-              <p className="font-bold font-sans text-[9px] text-muted-foreground uppercase tracking-widest">
+              <p className="font-bold font-sans text-muted-foreground text-nano uppercase tracking-widest">
                 Interests
               </p>
               <p className="font-bold font-sans text-2xl text-foreground">
@@ -59,11 +59,11 @@ export function CompletionBlueprintCard({
               </p>
             </div>
             <div className="flex flex-col gap-1">
-              <p className="font-bold font-sans text-[9px] text-muted-foreground uppercase tracking-widest">
+              <p className="font-bold font-sans text-muted-foreground text-nano uppercase tracking-widest">
                 Status
               </p>
               <div className="flex items-center gap-1.5 pt-1">
-                <div className="h-1.5 w-1.5 rounded-full bg-forge-teal shadow-[0_0_8px_rgba(13,148,136,0.45)]" />
+                <div className="size-1.5 rounded-full bg-forge-teal shadow-teal-glow" />
                 <p className="font-bold font-sans text-foreground text-xs">
                   Ready to enter
                 </p>
@@ -72,7 +72,7 @@ export function CompletionBlueprintCard({
           </div>
         </div>
 
-        <div className="pointer-events-none absolute inset-0 bg-noise opacity-[0.03]" />
+        <div className="pointer-events-none absolute inset-0 bg-noise opacity-5" />
       </div>
     </motion.div>
   );

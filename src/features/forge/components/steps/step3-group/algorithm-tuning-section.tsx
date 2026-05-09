@@ -49,7 +49,7 @@ export function AlgorithmTuningSection({
       </Button>
 
       {algorithmsExpanded && (
-        <div className="fade-in slide-in-from-top-2 animate-in space-y-5 border-muted/15 border-t px-4 pt-4 pb-4 duration-300">
+        <div className="fade-in slide-in-from-top-2 animate-in space-y-5 border-muted/15 border-t px-4 py-4 duration-300">
           <WeightSlider
             label="Matching level"
             subLabel="Prioritize behavioral compatibility"

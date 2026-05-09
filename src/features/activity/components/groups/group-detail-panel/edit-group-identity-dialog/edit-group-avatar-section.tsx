@@ -15,7 +15,7 @@ export function EditGroupAvatarSection({
       <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
         Avatar
       </p>
-      <div className="grid gap-3 sm:grid-cols-[4.5rem_1fr]">
+      <div className="sm:avatar-body-grid grid gap-3">
         <Avatar
           src={editor.avatar || null}
           name={editor.name}

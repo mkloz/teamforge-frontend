@@ -90,7 +90,7 @@ export function NotificationItem({
         {/* Icon badge */}
         <span
           className={cn(
-            "mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full shadow-sm",
+            "mt-1 flex size-9 shrink-0 items-center justify-center rounded-full shadow-sm",
             config.colorClass,
           )}
           aria-hidden="true"
@@ -116,7 +116,7 @@ export function NotificationItem({
               </span>
             )}
             {!item.isRead && (
-              <span className="h-1.5 w-1.5 rounded-full bg-forge-teal shadow-[0_0_8px_rgba(13,148,136,0.3)]" />
+              <span className="size-1.5 rounded-full bg-forge-teal shadow-teal-glow" />
             )}
           </div>
         </div>

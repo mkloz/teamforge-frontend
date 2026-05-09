@@ -37,7 +37,7 @@ export const HeaderInfo = memo(
       onClick={onToggle}
       className={cn(
         "group/header-info -m-1 h-auto min-w-0 flex-1 justify-start gap-3 rounded-lg p-1 text-left transition-all duration-300",
-        "bg-transparent hover:bg-muted/30 active:scale-[0.985]",
+        "bg-transparent hover:bg-muted/30 active:scale-985",
       )}
     >
       {/* Avatar Section - Premium Rounded Squares for Groups, Circles for Users */}
@@ -48,9 +48,9 @@ export const HeaderInfo = memo(
           shape={isGroup ? "rounded" : "circle"}
           className={cn(
             "relative transition-all duration-300 group-hover/header-info:shadow-sm",
-            isGroup ? "h-10 w-10 rounded-md" : "h-10 w-10",
+            isGroup ? "size-10 rounded-md" : "size-10",
           )}
-          imageClassName="transition-[scale,transform] duration-700 ease-out group-hover/header-info:scale-110"
+          imageClassName="transition-transform duration-700 ease-out group-hover/header-info:scale-110"
           fallbackClassName="bg-muted text-xs text-muted-foreground"
           loading="eager"
         >
@@ -65,13 +65,13 @@ export const HeaderInfo = memo(
               alt=""
               fallback=""
               shape="rounded"
-              className="h-full w-full rounded-lg"
+              className="size-full rounded-lg"
             />
           </div>
         ) : !isGroup && onlineStatus ? (
           <span
             className={cn(
-              "absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 border-canvas shadow-none transition-all duration-300",
+              "absolute right-0 bottom-0 size-3 rounded-full border-2 border-canvas shadow-none transition-all duration-300",
               onlineStatus === "ONLINE"
                 ? "scale-100 bg-forge-teal"
                 : onlineStatus === "AWAY"

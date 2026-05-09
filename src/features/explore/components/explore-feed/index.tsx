@@ -159,8 +159,8 @@ function ExploreFeedLoading() {
         <div className="relative hidden h-10 w-24 shrink-0 sm:block">
           <span className="absolute top-1/2 left-0 h-px w-full bg-border" />
           <span className="absolute top-1/2 left-1 size-2 -translate-y-1/2 animate-pulse rounded-full bg-forge-teal" />
-          <span className="absolute top-1/2 left-1/2 size-2 -translate-y-1/2 animate-pulse rounded-full bg-spark-amber [animation-delay:180ms]" />
-          <span className="absolute top-1/2 right-1 size-2 -translate-y-1/2 animate-pulse rounded-full bg-ink/80 [animation-delay:360ms] dark:bg-white/80" />
+          <span className="absolute top-1/2 left-1/2 size-2 -translate-y-1/2 animate-pulse rounded-full bg-spark-amber delay-100" />
+          <span className="absolute top-1/2 right-1 size-2 -translate-y-1/2 animate-pulse rounded-full bg-ink/80 delay-200 dark:bg-white/80" />
         </div>
       </div>
 

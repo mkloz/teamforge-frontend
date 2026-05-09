@@ -36,7 +36,7 @@ export function PagerDots({ total, activeIndex, accentClass }: PagerDotsProps) {
             key={dot.id}
             className={cn(
               "rounded-full transition-all duration-250",
-              isActive ? cn("h-1.5 w-1.5", accentClass) : "h-1 w-1 bg-border",
+              isActive ? cn("size-1.5", accentClass) : "size-1 bg-border",
             )}
           />
         );

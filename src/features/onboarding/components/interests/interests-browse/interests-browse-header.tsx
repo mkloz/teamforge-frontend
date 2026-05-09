@@ -36,7 +36,7 @@ export function InterestsBrowseHeader({
           >
             <div
               className={cn(
-                "h-1.5 w-1.5 shrink-0 rounded-full",
+                "size-1.5 shrink-0 rounded-full",
                 getCategoryColorClass(category.id),
               )}
             />

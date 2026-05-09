@@ -49,7 +49,7 @@ export function CardHeader({
 
       {access === "BY_REQUEST" ? (
         <span className="flex shrink-0 items-center gap-1 rounded-full border border-border/80 bg-background/50 px-2 py-0.5 font-bold text-muted-foreground text-xs">
-          <Handshake className="h-3 w-3" aria-hidden="true" />
+          <Handshake className="size-3" aria-hidden="true" />
           Request
         </span>
       ) : null}

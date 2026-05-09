@@ -13,6 +13,23 @@ import type {
   UseForgeWizardSubmitActionsOptions,
 } from "./types";
 
+function executeForgeCommand(
+  mode: ForgeExecutionMode,
+  state: UseForgeWizardSubmitActionsOptions["state"],
+) {
+  const input = buildForgeExecutionInput(state);
+
+  if (mode === "AUTO" && state.activityId) {
+    return ForgeCommands.executePendingAutoForge(state.activityId);
+  }
+
+  if (mode === "AUTO") {
+    return ForgeCommands.executeAutoForge(input);
+  }
+
+  return ForgeCommands.executeManualForge(input);
+}
+
 interface UseForgeExecutionActionsOptions
   extends Pick<
     UseForgeWizardSubmitActionsOptions,
@@ -34,33 +51,31 @@ export function useForgeExecutionActions({
       const mutationName = getForgeMutationName(mode);
 
       runForgeAnimation(async () => {
-        try {
-          const input = buildForgeExecutionInput(state);
-          const result =
-            mode === "AUTO" && state.activityId
-              ? await ForgeCommands.executePendingAutoForge(state.activityId)
-              : mode === "AUTO"
-                ? await ForgeCommands.executeAutoForge(input)
-                : await ForgeCommands.executeManualForge(input);
-
-          applyForgeExecutionResult(result, {
-            dispatch,
-            mutationName,
-            successStep: mode === "MANUAL" ? 6 : 5,
-            syncStep,
-            syncTargets,
-          });
-
-          if (result.activityId && result.searchKept) {
-            markSearchKept(result.activityId);
-          }
-        } catch (error) {
+        const successStep = mode === "MANUAL" ? 6 : 5;
+        const result = await executeForgeCommand(mode, state).catch((error) => {
           applyForgeExecutionFailure(error, state, {
             dispatch,
             mutationName,
             syncStep,
             syncTargets,
           });
+          return null;
+        });
+
+        if (!result) {
+          return;
+        }
+
+        applyForgeExecutionResult(result, {
+          dispatch,
+          mutationName,
+          successStep,
+          syncStep,
+          syncTargets,
+        });
+
+        if (result.activityId && result.searchKept) {
+          markSearchKept(result.activityId);
         }
       });
     },

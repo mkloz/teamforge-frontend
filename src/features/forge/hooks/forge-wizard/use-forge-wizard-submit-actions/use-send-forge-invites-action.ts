@@ -17,13 +17,20 @@ export function useSendForgeInvitesAction({
   const [isSendingInvites, setIsSendingInvites] = useState(false);
 
   const handleSendInvites = useCallback(async () => {
+    if (!state.groupId) {
+      captureException(
+        "forge.sendInvites",
+        new Error("Cannot finish forge flow before a group is formed."),
+        {
+          groupId: "missing",
+        },
+      );
+      return;
+    }
+
     setIsSendingInvites(true);
 
     try {
-      if (!state.groupId) {
-        throw new Error("Cannot finish forge flow before a group is formed.");
-      }
-
       if (state.forgeMode === "MANUAL") {
         await ForgeCommands.sendManualInvites({
           groupId: state.groupId,
@@ -32,11 +39,11 @@ export function useSendForgeInvitesAction({
         });
       }
       setField("invitesSent", true);
+      setIsSendingInvites(false);
     } catch (error) {
       captureException("forge.sendInvites", error, {
         groupId: state.groupId ?? "missing",
       });
-    } finally {
       setIsSendingInvites(false);
     }
   }, [

@@ -77,7 +77,7 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
         >
           <TopProgressBar
             progress={progress}
-            className="sticky top-0 z-50 -mx-4 -mt-2 w-[calc(100%+32px)]"
+            className="sticky top-0 z-50 -mx-4 -mt-2 w-full"
           />
 
           <div className="flex min-h-full w-full flex-col items-center justify-start pt-20 pb-10 lg:justify-center lg:py-8">

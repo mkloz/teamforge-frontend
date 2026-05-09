@@ -35,7 +35,7 @@ export function PersonalityResults({
         variants={resultsContainer}
         initial="hidden"
         animate="visible"
-        className="mx-auto flex min-h-[calc(100dvh-6rem)] w-full max-w-xl flex-col gap-8 py-8 sm:min-h-[calc(100dvh-5rem)] sm:py-10"
+        className="mx-auto flex min-h-dvh w-full max-w-xl flex-col gap-8 py-8 sm:py-10"
       >
         <PersonalityResultHero
           result={result}

@@ -9,7 +9,7 @@ export function StatPill({ label, value }: StatPillProps) {
       <p className="font-semibold text-slate-muted text-xs uppercase tracking-widest">
         {label}
       </p>
-      <p className="mt-1 break-words font-semibold text-base text-ink">
+      <p className="wrap-break-word mt-1 font-semibold text-base text-ink">
         {value ?? "Not set"}
       </p>
     </div>

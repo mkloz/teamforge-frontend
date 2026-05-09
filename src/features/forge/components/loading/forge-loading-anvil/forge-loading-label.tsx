@@ -28,7 +28,7 @@ export function ForgeLoadingLabel({
         {[0, 1, 2].map((index) => (
           <motion.span
             key={index}
-            className="h-1.5 w-1.5 rounded-full bg-forge-teal"
+            className="size-1.5 rounded-full bg-forge-teal"
             animate={{
               opacity: [0.32, 1, 0.32],
               scale: [0.9, 1.08, 0.9],

@@ -37,7 +37,7 @@ export function InterestsIntro({
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="mx-auto flex min-h-[calc(100dvh-6rem)] w-full max-w-md flex-col items-center gap-0 pt-10 text-center sm:min-h-[calc(100dvh-5rem)] sm:pt-12"
+      className="mx-auto flex min-h-dvh w-full max-w-md flex-col items-center gap-0 pt-10 text-center sm:pt-12"
     >
       <motion.h1
         variants={fadeUpItem}
@@ -47,12 +47,12 @@ export function InterestsIntro({
       </motion.h1>
 
       <motion.div variants={fadeUpItem}>
-        <p className="mb-3 text-pretty font-medium font-sans text-[13px] text-slate-muted leading-relaxed sm:text-sm">
+        <p className="mb-3 text-pretty font-medium font-sans text-slate-muted text-sm leading-relaxed">
           This is where your profile starts to feel like your real life: the
           hobbies, places, games, scenes, and small obsessions you would
           genuinely make time for.
         </p>
-        <p className="mb-6 text-pretty font-sans text-[13px] text-slate-muted/80 leading-relaxed sm:text-sm">
+        <p className="mb-6 text-pretty font-sans text-slate-muted/80 text-sm leading-relaxed">
           Pick at least{" "}
           <span className="border-forge-teal/30 border-b font-bold text-ink">
             15 interests
@@ -72,10 +72,10 @@ export function InterestsIntro({
       >
         {BENEFITS.map(({ icon: Icon, text }) => (
           <div key={text} className="flex items-start gap-3.5">
-            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-forge-teal/5">
+            <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-forge-teal/5">
               <Icon size={14} strokeWidth={2.5} className="text-forge-teal" />
             </div>
-            <p className="font-sans text-[13px] text-slate-muted leading-relaxed sm:text-sm">
+            <p className="font-sans text-slate-muted text-sm leading-relaxed">
               {text}
             </p>
           </div>

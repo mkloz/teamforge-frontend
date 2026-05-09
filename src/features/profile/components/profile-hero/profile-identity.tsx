@@ -26,7 +26,7 @@ export function ProfileIdentity({ user, archetype }: ProfileIdentityProps) {
           <span className="font-semibold text-sm">{user.age} yrs</span>
         ) : null}
         {hasAge && hasCity ? (
-          <span className="h-1 w-1 rounded-full bg-slate-muted/30 sm:bg-white/40" />
+          <span className="size-1 rounded-full bg-slate-muted/30 sm:bg-white/40" />
         ) : null}
         {hasCity ? (
           <div className="flex min-w-0 items-center gap-1 font-bold text-micro uppercase tracking-widest">

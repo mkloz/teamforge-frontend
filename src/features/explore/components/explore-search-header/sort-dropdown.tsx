@@ -22,9 +22,9 @@ export function SortDropdown() {
           variant="outline"
           size="icon"
           aria-label="Sort groups"
-          className="h-11 w-11 shrink-0 rounded-lg border border-border/60 text-muted-foreground transition-all hover:border-border hover:text-foreground"
+          className="size-11 shrink-0 rounded-lg border border-border/60 text-muted-foreground transition-all hover:border-border hover:text-foreground"
         >
-          <ArrowDownWideNarrow className="h-3.5 w-3.5" />
+          <ArrowDownWideNarrow className="size-3.5" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -54,7 +54,7 @@ export function SortDropdown() {
             />
             <span className="text-xs">{label}</span>
             {sortBy === id && (
-              <div className="ml-auto h-1 w-1 rounded-full bg-primary" />
+              <div className="ml-auto size-1 rounded-full bg-primary" />
             )}
           </DropdownMenuItem>
         ))}

@@ -15,14 +15,14 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
     <PersonalityScreenShell className="max-w-lg">
       <motion.p
         variants={fadeUpItem}
-        className="mb-3 text-center font-bold font-sans text-forge-teal text-xs uppercase tracking-[0.18em]"
+        className="mb-3 text-center font-bold font-sans text-forge-teal text-xs uppercase tracking-widest"
       >
         How the read works
       </motion.p>
 
       <motion.h1
         variants={fadeUpItem}
-        className="mb-5 text-balance text-center font-extrabold font-sans text-[1.75rem] text-ink leading-tight sm:mb-6 sm:text-3xl"
+        className="mb-5 text-balance text-center font-extrabold font-sans text-display-xs text-ink leading-tight sm:mb-6 sm:text-3xl"
       >
         You are not one fixed type
       </motion.h1>

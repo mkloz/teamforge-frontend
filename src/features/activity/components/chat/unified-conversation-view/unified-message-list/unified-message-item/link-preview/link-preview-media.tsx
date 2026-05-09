@@ -11,11 +11,11 @@ export function LinkPreviewMedia({ data }: LinkPreviewMediaProps) {
   }
 
   return (
-    <div className="relative aspect-[2.4/1] w-full overflow-hidden bg-muted/40">
+    <div className="relative aspect-video w-full overflow-hidden bg-muted/40">
       <Image
         src={data.image}
         alt={data.title ?? ""}
-        className="transition-[scale,transform] duration-500 group-hover:scale-[1.03]"
+        className="transition-transform duration-500 group-hover:scale-105"
       />
     </div>
   );

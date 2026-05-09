@@ -31,7 +31,7 @@ export function FeedbackState({
     <div
       className={cn(
         "flex items-center justify-center px-4 py-10",
-        fullPage ? "min-h-screen bg-canvas" : "min-h-[60vh]",
+        fullPage ? "min-h-screen bg-canvas" : "min-h-96",
         containerClassName,
       )}
     >
@@ -44,7 +44,7 @@ export function FeedbackState({
       >
         <div
           className={cn(
-            "mb-4 flex h-12 w-12 items-center justify-center rounded-lg",
+            "mb-4 flex size-12 items-center justify-center rounded-lg",
             iconClassName,
           )}
           aria-hidden="true"

@@ -19,7 +19,7 @@ export function TemplateSuggestionCard({
       aria-pressed={active}
       onClick={() => onTemplateToggle(suggestion.id, suggestion.template)}
       className={cn(
-        "group flex h-24 min-w-0 overflow-hidden rounded-lg border bg-card text-left transition-colors duration-200 hover:border-forge-teal/35 hover:bg-forge-teal/5 active:scale-[0.98]",
+        "group flex h-24 min-w-0 overflow-hidden rounded-lg border bg-card text-left transition-colors duration-200 hover:border-forge-teal/35 hover:bg-forge-teal/5 active:scale-95",
         active
           ? "border-forge-teal/65 bg-forge-teal/10 ring-1 ring-forge-teal/20"
           : "border-border/40",
@@ -29,8 +29,8 @@ export function TemplateSuggestionCard({
         <Image
           src={suggestion.template.coverImage ?? undefined}
           alt=""
-          wrapperClassName="h-full w-full"
-          className="transition-[scale,transform] duration-500 group-hover:scale-105"
+          wrapperClassName="size-full"
+          className="transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-foreground/10 transition-colors duration-200 group-hover:bg-foreground/0" />
         <div className="absolute top-2 left-2 flex size-7 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm backdrop-blur">

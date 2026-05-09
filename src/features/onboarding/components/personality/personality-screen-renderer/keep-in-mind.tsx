@@ -39,7 +39,7 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
     <PersonalityScreenShell className="max-w-md">
       <motion.p
         variants={fadeUpItem}
-        className="mb-3 text-center font-bold font-sans text-forge-teal text-xs uppercase tracking-[0.15em]"
+        className="mb-3 text-center font-bold font-sans text-forge-teal text-xs uppercase tracking-widest"
       >
         Before you begin
       </motion.p>
@@ -65,7 +65,7 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
       >
         {GUIDELINES.map(({ icon: Icon, title, text }) => (
           <div key={title} className="flex items-start gap-3.5">
-            <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
+            <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
               <Icon size={14} strokeWidth={2.5} />
             </div>
             <div className="flex flex-col gap-0.5 text-left">

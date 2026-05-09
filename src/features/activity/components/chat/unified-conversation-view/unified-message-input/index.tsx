@@ -41,7 +41,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
     composer.isRecording
       ? "border-destructive/20 bg-destructive/5"
       : composer.isFocused
-        ? "border-forge-teal/40 bg-card shadow-[0_4px_16px_rgba(13,148,136,0.08)]"
+        ? "border-forge-teal/40 bg-card shadow-sm"
         : "border-border/50 bg-card/60 shadow-sm",
   );
 

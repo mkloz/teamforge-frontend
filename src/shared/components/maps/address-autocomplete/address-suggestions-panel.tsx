@@ -83,7 +83,7 @@ export function AddressSuggestionsPanel({
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={() => onPredictionSelect(suggestion)}
                 className={cn(
-                  "h-auto w-full justify-start rounded-lg border-0 px-2.5 py-1 text-left font-medium shadow-none transition-colors hover:bg-muted/55 hover:text-ink focus-visible:bg-muted/55 focus-visible:ring-slate-muted/25 active:enabled:translate-y-0 enabled:active:scale-100",
+                  "h-auto w-full justify-start rounded-lg border-0 px-2.5 py-1 text-left font-medium shadow-none transition-colors hover:bg-muted/55 hover:text-ink focus-visible:bg-muted/55 focus-visible:ring-slate-muted/25 active:enabled:translate-y-0 active:enabled:scale-100",
                   active && "bg-muted/65 text-ink",
                 )}
                 contentClassName="items-start justify-start"

@@ -28,8 +28,8 @@ export function GroupAvatarSection({
         </p>
       </div>
 
-      <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-stretch gap-3 sm:grid-cols-[6rem_1fr]">
-        <div className="relative h-18 w-18 overflow-hidden rounded-lg border border-border bg-muted sm:h-24 sm:w-24 sm:rounded-xl">
+      <div className="avatar-body-grid-sm sm:avatar-body-grid-lg grid items-stretch gap-3">
+        <div className="relative size-18 overflow-hidden rounded-lg border border-border bg-muted sm:h-24 sm:w-24 sm:rounded-xl">
           <Avatar
             src={avatarImage}
             name={groupName || planTitle}

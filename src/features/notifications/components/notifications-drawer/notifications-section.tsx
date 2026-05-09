@@ -26,7 +26,7 @@ export function NotificationsSection({
       }
     >
       <div className="sticky top-0 z-10 border-border/50 border-b bg-card/95 px-6 py-4 backdrop-blur-md">
-        <p className="font-black text-slate-muted/60 text-xs uppercase tracking-[0.16em]">
+        <p className="font-black text-slate-muted/60 text-xs uppercase tracking-widest">
           {label}
         </p>
       </div>

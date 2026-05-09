@@ -35,10 +35,10 @@ export function SegmentedFilterTabs<TValue extends string>({
             aria-selected={active}
             onClick={() => onChange(option.id)}
             className={cn(
-              "inline-flex h-8 min-w-0 items-center justify-center gap-1 rounded-md px-1.5 font-bold text-[11px] outline-none transition-[background-color,color,box-shadow,transform] duration-200 focus-visible:ring-2 focus-visible:ring-primary/30",
+              "inline-flex h-8 min-w-0 items-center justify-center gap-1 rounded-md px-1.5 font-bold text-micro outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-primary/30",
               active
                 ? "bg-card text-foreground shadow-sm"
-                : "text-muted-foreground/70 hover:bg-muted/35 hover:text-foreground active:scale-[0.98]",
+                : "text-muted-foreground/70 hover:bg-muted/35 hover:text-foreground active:scale-95",
             )}
           >
             <Icon

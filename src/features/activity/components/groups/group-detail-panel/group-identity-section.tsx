@@ -37,8 +37,8 @@ export function GroupIdentitySection({
                 name={name}
                 alt={`${name} avatar`}
                 shape="rounded"
-                className="h-20 w-20 rounded-xl bg-muted shadow-lg ring-2 ring-border/30"
-                imageClassName="transition-[scale,transform] duration-500 group-hover:scale-105"
+                className="size-20 rounded-xl bg-muted shadow-lg ring-2 ring-border/30"
+                imageClassName="transition-transform duration-500 group-hover:scale-105"
               />
             </motion.div>
           </div>

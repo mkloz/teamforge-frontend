@@ -21,7 +21,7 @@ export function ImagePlaceholder({
   return (
     <div
       className={cn(
-        "relative flex h-full w-full items-center justify-center overflow-hidden rounded-md bg-muted",
+        "relative flex size-full items-center justify-center overflow-hidden rounded-md bg-muted",
         densityClassName[patternDensity],
         className,
       )}

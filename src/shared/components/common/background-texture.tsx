@@ -8,7 +8,7 @@ export function BackgroundTexture() {
       className="pointer-events-none absolute inset-0 overflow-hidden bg-canvas"
       aria-hidden="true"
     >
-      <div className="auth-background-dot-grid absolute inset-0 opacity-[0.012]" />
+      <div className="auth-background-dot-grid absolute inset-0 opacity-5" />
     </div>
   );
 }

@@ -20,7 +20,7 @@ export const StatusIndicator = memo(
       <span
         className={cn(
           "absolute right-0 bottom-0 rounded-full border-2 border-background shadow-sm",
-          isCompact ? "h-2.5 w-2.5" : "h-3.5 w-3.5",
+          isCompact ? "size-2.5" : "size-3.5",
           colors[status],
         )}
       />

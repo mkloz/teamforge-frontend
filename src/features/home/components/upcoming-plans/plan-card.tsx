@@ -37,8 +37,8 @@ export function PlanCard({ group, index }: PlanCardProps) {
         ease: [0.23, 1, 0.32, 1],
       }}
       className={cn(
-        "group grid grid-cols-[4.75rem_minmax(0,1fr)] items-center gap-x-3 gap-y-2 border-border/55 border-b py-3.5 pr-1 pl-0 last:border-b-0",
-        "transition-colors duration-150 hover:bg-forge-teal/5 sm:grid-cols-[5.5rem_minmax(0,1fr)_auto] sm:pr-3 md:gap-4",
+        "group plan-card-grid grid items-center gap-x-3 gap-y-2 border-border/55 border-b py-3.5 pr-1 pl-0 last:border-b-0",
+        "sm:plan-card-grid-wide transition-colors duration-150 hover:bg-forge-teal/5 sm:pr-3 md:gap-4",
       )}
     >
       <div className="relative flex h-full min-h-16 flex-col justify-center pl-9">

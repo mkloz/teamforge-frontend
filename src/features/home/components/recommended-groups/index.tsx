@@ -80,7 +80,7 @@ export function RecommendedGroups() {
                     key={recommendation.id}
                     className={
                       visibleRecommendations.length > 1
-                        ? "min-w-0 basis-[86%] pl-3"
+                        ? "min-w-0 basis-80 pl-3"
                         : "min-w-0 basis-full pl-3"
                     }
                   >

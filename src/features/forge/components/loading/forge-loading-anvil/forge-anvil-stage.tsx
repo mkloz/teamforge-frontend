@@ -24,7 +24,7 @@ export const ForgeAnvilStage = memo(function ForgeAnvilStage({
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
-        className="h-full w-full overflow-visible"
+        className="size-full overflow-visible"
       >
         <AnvilDefs
           anvilGradientId={anvilGradientId}

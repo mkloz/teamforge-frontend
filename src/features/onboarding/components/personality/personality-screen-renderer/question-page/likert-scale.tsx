@@ -43,7 +43,7 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
         aria-label="Rate your agreement"
       >
         <div
-          className="pointer-events-none absolute top-1/2 right-[10%] left-[10%] z-0 h-0.5 -translate-y-1/2 bg-slate-100 dark:bg-white/10"
+          className="likert-range-track pointer-events-none absolute top-1/2 z-0 h-0.5 -translate-y-1/2 bg-slate-100 dark:bg-white/10"
           aria-hidden="true"
         />
 
@@ -56,20 +56,20 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
               id={`point-${point}`}
               aria-label={LABELS[point]}
               className={cn(
-                "group/likert appearance-none! absolute top-1/2 z-10 flex h-24! w-[20%]! -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-none! border-0! bg-transparent! p-0! text-inherit! shadow-none! outline-none! ring-0! ring-offset-0! transition-none focus-visible:border-transparent! sm:h-28!",
+                "group/likert appearance-none! absolute top-1/2 z-10 flex h-24! w-1/5! -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-none! border-0! bg-transparent! p-0! text-inherit! shadow-none! outline-none! ring-0! ring-offset-0! transition-none focus-visible:border-transparent! sm:h-28!",
                 POINT_POSITION_CLASSES[point],
               )}
             >
               <div
                 className={cn(
-                  "pointer-events-none relative z-10 flex h-5 w-5 items-center justify-center rounded-full border-2 bg-card transition duration-200 group-focus-visible/likert:ring-2 group-focus-visible/likert:ring-ring group-focus-visible/likert:ring-offset-2 sm:h-6 sm:w-6",
+                  "pointer-events-none relative z-10 flex size-5 items-center justify-center rounded-full border-2 bg-card transition duration-200 group-focus-visible/likert:ring-2 group-focus-visible/likert:ring-ring group-focus-visible/likert:ring-offset-2 sm:h-6 sm:w-6",
                   selected
-                    ? "scale-[1.1] border-forge-teal bg-forge-teal shadow-xs sm:scale-[1.15]"
-                    : "border-slate-200 group-hover/likert:scale-[1.05] group-hover/likert:border-slate-300 group-active/likert:scale-[0.95] dark:border-white/12 dark:group-hover/likert:border-white/18",
+                    ? "scale-110 border-forge-teal bg-forge-teal shadow-xs"
+                    : "border-slate-200 group-hover/likert:scale-105 group-hover/likert:border-slate-300 group-active/likert:scale-95 dark:border-white/12 dark:group-hover/likert:border-white/18",
                 )}
               >
                 {selected && (
-                  <span className="h-2 w-2 rounded-full bg-white sm:h-2.5 sm:w-2.5 dark:bg-background" />
+                  <span className="size-2 rounded-full bg-white sm:h-2.5 sm:w-2.5 dark:bg-background" />
                 )}
               </div>
             </RadioGroupItem>
@@ -93,7 +93,7 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
             {LABELS[point] && (
               <span
                 className={cn(
-                  "max-w-full text-[11px] leading-4 transition-colors duration-200 sm:text-xs",
+                  "max-w-full text-micro leading-4 transition-colors duration-200",
                   value === point
                     ? "font-bold text-forge-teal"
                     : "font-semibold text-muted-foreground",

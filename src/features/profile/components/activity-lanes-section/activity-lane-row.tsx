@@ -13,9 +13,9 @@ export function ActivityLaneRow({ lane }: ActivityLaneRowProps) {
   const evidenceLabel = describeLaneEvidence(lane);
 
   return (
-    <div className="grid min-w-0 gap-3 py-5 first:pt-0 last:pb-0 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-4 sm:py-4">
+    <div className="flex min-w-0 flex-col gap-3 py-5 first:pt-0 last:pb-0 sm:py-4">
       <div className="flex items-start gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
           <Icon size={18} />
         </div>
         <div>
@@ -27,7 +27,7 @@ export function ActivityLaneRow({ lane }: ActivityLaneRowProps) {
       </div>
 
       <div className="flex min-w-0 flex-col gap-3">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex min-w-0 flex-wrap gap-2">
           {lane.evidence.map((evidence) => (
             <InterestChip key={evidence.interest.id} evidence={evidence} />
           ))}

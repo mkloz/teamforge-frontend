@@ -36,7 +36,7 @@ export function PasswordRecoverySection({
         </p>
       )}
 
-      <div className="mt-5 grid grid-cols-[repeat(auto-fit,minmax(min(100%,8rem),1fr))] gap-3">
+      <div className="responsive-action-grid mt-5 grid gap-3">
         {currentUser?.authProvider === "EMAIL" ? (
           <Button
             type="button"

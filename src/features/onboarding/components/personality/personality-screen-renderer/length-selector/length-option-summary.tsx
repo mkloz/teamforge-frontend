@@ -22,7 +22,7 @@ export function LengthOptionSummary({
           {viewModel.config.label}
         </span>
         {isAdjust && viewModel.isComplete ? (
-          <span className="shrink-0 rounded-full bg-forge-teal px-1.5 py-px font-black font-sans text-[0.6rem] text-white uppercase tracking-wide">
+          <span className="shrink-0 rounded-full bg-forge-teal px-1.5 py-px font-black font-sans text-white text-xs uppercase tracking-wide">
             Done
           </span>
         ) : null}

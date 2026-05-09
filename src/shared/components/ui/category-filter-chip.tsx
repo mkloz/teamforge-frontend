@@ -30,11 +30,11 @@ type CategoryFilterChipProps =
 
 function getChipClassName(selected: boolean, className?: string) {
   return cn(
-    "inline-flex h-8 w-auto shrink-0 items-center justify-center gap-1.5 rounded-full border px-3 font-bold text-xs leading-none transition-[border-color,background-color,color,box-shadow] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50",
+    "inline-flex h-8 w-auto shrink-0 items-center justify-center gap-1.5 rounded-full border px-3 font-bold text-xs leading-none transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50",
     selected
       ? "border-forge-teal bg-forge-teal text-white hover:bg-forge-teal/90"
       : "border-border bg-card text-slate-muted hover:border-border/90 hover:bg-muted/35 hover:text-foreground",
-    "data-[state=checked]:border-forge-teal data-[state=checked]:bg-forge-teal data-[state=checked]:text-white data-[state=checked]:hover:bg-forge-teal/90",
+    "data-[state=checked]:border-forge-teal data-[state=checked]:bg-forge-teal data-[state=checked]:text-white hover:data-[state=checked]:bg-forge-teal/90",
     className,
   );
 }

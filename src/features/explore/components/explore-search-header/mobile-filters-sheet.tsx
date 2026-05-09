@@ -25,9 +25,9 @@ export function MobileFiltersSheet() {
           aria-label={
             filtered ? "Open filters, filters active" : "Open filters"
           }
-          className="h-11 w-11 shrink-0 lg:hidden"
+          className="size-11 shrink-0 lg:hidden"
         >
-          <SlidersHorizontal className="h-3.5 w-3.5" />
+          <SlidersHorizontal className="size-3.5" />
         </Button>
       </SheetTrigger>
       <SheetContent

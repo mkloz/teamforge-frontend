@@ -64,20 +64,20 @@ export function StackCard({
       style={stackCardStyle}
       className={cn(
         "absolute right-0 left-0 mx-auto flex min-h-80 w-full max-w-lg origin-top flex-col md:min-h-100",
-        index === 0 && "top-0 md:top-[12vh]",
-        index === 1 && "top-4 md:top-[calc(12vh+24px)]",
-        index === 2 && "top-8 md:top-[calc(12vh+48px)]",
+        index === 0 && "top-0",
+        index === 1 && "top-4 md:top-12",
+        index === 2 && "top-8 md:top-24",
         index > 2 && "top-(--stack-card-top) md:top-(--stack-card-md-top)",
       )}
     >
       <Card
-        className="flex h-full flex-col justify-center border-slate-100 p-8 shadow-[0_8px_40px_rgba(0,0,0,0.06)] md:p-12"
+        className="flex h-full flex-col justify-center border-slate-100 p-8 shadow-xl md:p-12"
         aria-labelledby={`card-title-${card.id}`}
       >
         <CardContent className="flex flex-col gap-6 p-0">
           <div className="flex items-center gap-3">
             <div className="h-px w-8 bg-forge-teal/40" aria-hidden="true" />
-            <span className="font-semibold text-[10px] text-forge-teal/70 uppercase tracking-[0.2em]">
+            <span className="font-semibold text-forge-teal/70 text-xs uppercase tracking-widest">
               {String(index + 1).padStart(2, "0")} /{" "}
               {String(totalCards).padStart(2, "0")}
             </span>

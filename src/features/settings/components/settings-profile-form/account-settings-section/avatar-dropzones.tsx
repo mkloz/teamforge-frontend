@@ -27,7 +27,7 @@ export function AvatarDropzones({
 
   return (
     <>
-      <div className="grid grid-cols-[5.5rem_minmax(0,1fr)] items-stretch gap-3 sm:hidden">
+      <div className="media-body-grid grid items-stretch gap-3 sm:hidden">
         <div className="relative min-h-18 overflow-hidden rounded-xl border border-border bg-muted">
           <Avatar
             src={displayedAvatarUrl}

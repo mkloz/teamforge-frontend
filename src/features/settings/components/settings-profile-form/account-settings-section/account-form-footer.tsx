@@ -14,7 +14,7 @@ export function AccountFormFooter({ isSaving }: AccountFormFooterProps) {
         Changes show up across your profile and group surfaces.
       </p>
 
-      <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(min(100%,8rem),1fr))] gap-3 md:max-w-[23rem]">
+      <div className="responsive-action-grid grid w-full gap-3 md:max-w-92">
         <Button asChild variant="outline" className="min-w-0 px-3">
           <Link {...buildProfileNavigation()}>View profile</Link>
         </Button>

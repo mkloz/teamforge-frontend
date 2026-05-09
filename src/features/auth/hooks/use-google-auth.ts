@@ -12,6 +12,14 @@ interface UseGoogleAuthOptions {
   onSuccess?: () => void | Promise<void>;
 }
 
+async function runOptionalSuccessCallback(
+  callback?: () => void | Promise<void>,
+) {
+  if (callback) {
+    await callback();
+  }
+}
+
 export function useGoogleAuth({ intent, onSuccess }: UseGoogleAuthOptions) {
   const [loading, setLoading] = useState(false);
   const [rootError, setRootError] = useState<string | null>(null);
@@ -28,7 +36,8 @@ export function useGoogleAuth({ intent, onSuccess }: UseGoogleAuthOptions) {
           intent,
           requestId: result.requestId,
         });
-        await onSuccess?.();
+        await runOptionalSuccessCallback(onSuccess);
+        setLoading(false);
       } catch (error) {
         captureException(trackedMutationNames.authGoogle, error, { intent });
         trackMutationOutcome(trackedMutationNames.authGoogle, "error", {
@@ -40,7 +49,6 @@ export function useGoogleAuth({ intent, onSuccess }: UseGoogleAuthOptions) {
             "We couldn't finish Google sign-in. Please try again.",
           ),
         );
-      } finally {
         setLoading(false);
       }
     },

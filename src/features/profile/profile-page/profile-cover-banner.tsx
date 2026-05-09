@@ -19,7 +19,7 @@ export function ProfileCoverBanner({
 
       {personalityType ? (
         <span
-          className="pointer-events-none absolute top-1/2 w-full -translate-y-1/2 select-none text-center font-black text-[6rem] text-white/10 leading-none tracking-tighter mix-blend-overlay sm:px-6 sm:text-right sm:text-[9rem] md:text-[11rem]"
+          className="profile-cover-type pointer-events-none absolute top-1/2 w-full -translate-y-1/2 select-none text-center font-black text-white/10 leading-none tracking-tighter mix-blend-overlay sm:px-6 sm:text-right"
           aria-hidden="true"
         >
           {personalityType}

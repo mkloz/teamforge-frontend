@@ -63,7 +63,7 @@ export function GroupSummaryCard({
           <Image
             src={coverImage ?? undefined}
             alt=""
-            className="h-full w-full object-cover"
+            className="size-full object-cover"
           />
         ) : (
           <div className="flex h-full items-start p-4">
@@ -99,7 +99,7 @@ export function GroupSummaryCard({
             name={displayGroupName}
             shape="rounded"
             className="size-11 rounded-lg border border-border bg-muted"
-            fallbackClassName="text-[11px] font-bold"
+            fallbackClassName="text-micro font-bold"
           />
           <div className="min-w-0 flex-1">
             <h4 className="truncate font-bold text-base text-foreground leading-tight">

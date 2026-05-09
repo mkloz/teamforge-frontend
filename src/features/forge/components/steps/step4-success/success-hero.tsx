@@ -86,11 +86,11 @@ export function SuccessHero({
                   fallback={getParticipantInitials(participant)}
                   shape="rounded"
                   className="size-8 rounded-lg border border-card bg-muted"
-                  fallbackClassName="bg-muted text-[10px] font-bold text-foreground/80"
+                  fallbackClassName="bg-muted text-xs font-bold text-foreground/80"
                 />
               ))}
               {hiddenCount > 0 && (
-                <div className="flex size-8 items-center justify-center rounded-lg border border-card bg-muted font-bold text-[10px] text-muted-foreground">
+                <div className="flex size-8 items-center justify-center rounded-lg border border-card bg-muted font-bold text-muted-foreground text-xs">
                   +{hiddenCount}
                 </div>
               )}
@@ -121,7 +121,7 @@ export function SuccessHero({
         <div
           className={cn(
             "grid gap-2 text-xs",
-            topFit ? "grid-cols-[1fr_auto]" : "grid-cols-1",
+            topFit ? "fluid-auto-grid" : "grid-cols-1",
           )}
         >
           <p className="min-w-0 text-muted-foreground">

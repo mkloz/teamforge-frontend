@@ -56,7 +56,7 @@ export const ProposalVoters = memo(function ProposalVoters({
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
-          className="h-full bg-spark-amber shadow-[0_0_10px_rgba(245,158,11,0.5)]"
+          className="h-full bg-spark-amber shadow-amber-glow"
         />
       </div>
     </>

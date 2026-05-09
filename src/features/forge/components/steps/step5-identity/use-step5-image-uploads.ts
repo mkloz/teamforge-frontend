@@ -25,11 +25,11 @@ export function useStep5ImageUploads() {
     try {
       const uploaded = await FileUploadApi.uploadImage(file);
       onChange(uploaded.url);
+      setUploading(false);
     } catch (error) {
       setError(
         getApiErrorMessage(error, "We couldn't upload that image. Try again."),
       );
-    } finally {
       setUploading(false);
     }
   };

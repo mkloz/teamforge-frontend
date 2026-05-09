@@ -21,8 +21,10 @@ export function useUserMenuSignOut() {
     try {
       await logoutCurrentSession();
       await navigate(buildAuthRouteNavigation("/auth/login", returnHref));
-    } finally {
       setIsSigningOut(false);
+    } catch (error) {
+      setIsSigningOut(false);
+      throw error;
     }
   };
 

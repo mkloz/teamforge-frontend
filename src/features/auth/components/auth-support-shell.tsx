@@ -57,9 +57,9 @@ export function AuthSupportShell({
         <div className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth px-4 pb-4">
           <div className="flex min-h-full w-full flex-col items-center justify-center pt-20 pb-10 lg:py-8">
             <div className="w-full max-w-sm px-2 sm:px-10 lg:p-0">
-              <div className="rounded-xl border border-border/70 bg-card/95 p-6 shadow-[0_24px_80px_rgba(28,28,26,0.12)] backdrop-blur-xl sm:p-8">
+              <div className="rounded-xl border border-border/70 bg-card/95 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
                 <div className="space-y-2 text-center">
-                  <p className="font-semibold text-forge-teal text-xs uppercase tracking-[0.22em]">
+                  <p className="font-semibold text-forge-teal text-xs uppercase tracking-widest">
                     TeamForge
                   </p>
                   <h1 className="font-semibold text-2xl text-foreground tracking-tight">

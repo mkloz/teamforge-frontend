@@ -3,7 +3,7 @@ import { Loader2 } from "lucide-react";
 export function RouteLoadingFallback() {
   return (
     <div
-      className="flex min-h-[min(32rem,calc(100vh-4rem))] items-center justify-center px-6 py-10"
+      className="flex min-h-96 items-center justify-center px-6 py-10"
       role="status"
       aria-live="polite"
       aria-label="Loading page"

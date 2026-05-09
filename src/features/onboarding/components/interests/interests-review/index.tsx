@@ -33,7 +33,7 @@ export function InterestsReview({
           variants={fadeUpItem}
           className="mb-7 border-forge-teal/40 border-l pl-4"
         >
-          <p className="font-bold font-sans text-[10px] text-forge-teal uppercase tracking-[0.16em]">
+          <p className="font-bold font-sans text-forge-teal text-xs uppercase tracking-widest">
             Interest shape
           </p>
           <p className="mt-2 text-pretty font-medium text-ink/82 text-sm leading-relaxed">

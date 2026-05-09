@@ -16,6 +16,14 @@ interface UseRegisterFormOptions {
   onProgress?: (progress: number) => void;
 }
 
+async function runOptionalSuccessCallback(
+  callback?: () => void | Promise<void>,
+) {
+  if (callback) {
+    await callback();
+  }
+}
+
 export type Step = 1 | 2 | 3;
 
 export function useRegisterForm({
@@ -77,6 +85,7 @@ export function useRegisterForm({
       setOtpMessage(`We sent a 6-digit verification code to ${email}.`);
       setDirection(1);
       setStep(3);
+      setLoading(false);
     } catch (error) {
       captureException(trackedMutationNames.authRegisterEmail, error, {
         emailDomain: getEmailDomain(form.getValues("email")),
@@ -88,7 +97,6 @@ export function useRegisterForm({
           "We couldn't start your verification step. Please try again.",
         ),
       );
-    } finally {
       setLoading(false);
     }
   }
@@ -116,7 +124,8 @@ export function useRegisterForm({
       trackMutationOutcome(trackedMutationNames.authVerifyEmailOtp, "success", {
         requestId: result.requestId,
       });
-      await onSuccess?.();
+      await runOptionalSuccessCallback(onSuccess);
+      setLoading(false);
     } catch (error) {
       captureException(trackedMutationNames.authVerifyEmailOtp, error);
       trackMutationOutcome(trackedMutationNames.authVerifyEmailOtp, "error");
@@ -126,7 +135,6 @@ export function useRegisterForm({
           "We couldn't verify that code. Please try again.",
         ),
       );
-    } finally {
       setLoading(false);
     }
   }
@@ -145,6 +153,7 @@ export function useRegisterForm({
         requestId: result.requestId,
       });
       setOtpMessage(`A fresh verification code is on its way to ${email}.`);
+      setResendLoading(false);
     } catch (error) {
       captureException(trackedMutationNames.authResendEmailOtp, error, {
         emailDomain,
@@ -156,7 +165,6 @@ export function useRegisterForm({
           "We couldn't resend the verification code. Please try again.",
         ),
       );
-    } finally {
       setResendLoading(false);
     }
   }

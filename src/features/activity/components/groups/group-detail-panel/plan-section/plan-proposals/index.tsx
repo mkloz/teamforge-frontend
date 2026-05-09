@@ -42,9 +42,9 @@ export function PlanProposalCard({
         setProposalRef(proposal.id, element);
       }}
       className={cn(
-        "flex flex-col gap-2 rounded-xl border border-border/60 bg-card/70 px-3 py-3 transition-[background-color,box-shadow,border-color] duration-500",
+        "flex flex-col gap-2 rounded-xl border border-border/60 bg-card/70 px-3 py-3 transition-all duration-500",
         isFocused &&
-          "border-forge-teal/35 bg-forge-teal/6 shadow-[0_0_0_1px_rgba(13,148,136,0.18)]",
+          "border-forge-teal/35 bg-forge-teal/6 ring-1 ring-forge-teal/20",
       )}
     >
       <div className="flex items-start justify-between gap-3">

@@ -144,7 +144,7 @@
   /* Inner light spill for that premium 'glass' inset look */
   .btn-light-spill::before {
     content: "";
-    @apply pointer-events-none absolute inset-px rounded-[inherit] border-x border-t border-white/30;
+    @apply pointer-events-none absolute inset-px rounded-inherit border-x border-t border-white/30;
   }
 
   .btn-sweep-container {
@@ -164,6 +164,341 @@
   .btn-3d {
     @apply shadow-[0_8px_0_#D97706,0_15px_25px_rgba(245,158,11,0.35)] transition-all duration-150 active:translate-y-1.5 active:shadow-[0_2px_0_#D97706,0_5px_10px_rgba(245,158,11,0.2)];
   }
+}
+
+@utility settings-page-grid {
+  grid-template-columns: 14rem minmax(0, 56rem);
+}
+
+@utility settings-profile-grid {
+  grid-template-columns: minmax(0, 1fr) 15rem;
+}
+
+@utility account-settings-grid {
+  grid-template-columns: minmax(0, 1fr) 17rem;
+}
+
+@utility matching-settings-grid {
+  grid-template-columns: 1fr 1.4fr;
+}
+
+@utility profile-page-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 22rem);
+}
+
+@utility home-page-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 22rem);
+}
+
+@utility home-hero-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(17rem, 20rem);
+}
+
+@utility explore-page-grid {
+  grid-template-columns: minmax(13rem, 15rem) minmax(0, 46rem) minmax(
+      16rem,
+      19rem
+    );
+}
+
+@utility forge-page-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
+}
+
+@utility forge-hero-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 20rem);
+}
+
+@utility main-action-grid {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+@utility search-action-grid {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+@utility avatar-body-grid-sm {
+  grid-template-columns: 3rem minmax(0, 1fr);
+}
+
+@utility avatar-body-grid {
+  grid-template-columns: 4rem minmax(0, 1fr);
+}
+
+@utility avatar-body-grid-lg {
+  grid-template-columns: 5rem minmax(0, 1fr);
+}
+
+@utility media-body-grid {
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+}
+
+@utility icon-body-grid {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+@utility toggle-row-grid {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+@utility lane-row-grid {
+  grid-template-columns: minmax(9rem, 12rem) minmax(0, 1fr);
+}
+
+@utility time-entry-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(3.5rem, 0.7fr);
+}
+
+@utility split-divider-grid {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+@utility plan-card-grid {
+  grid-template-columns: 3rem minmax(0, 1fr) auto;
+}
+
+@utility plan-card-grid-wide {
+  grid-template-columns: 4rem minmax(0, 1fr) auto;
+}
+
+@utility fluid-auto-grid {
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+}
+
+@utility responsive-action-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+}
+
+@utility landing-story-scroll {
+  height: 300vh;
+}
+
+@utility landing-story-spacer {
+  height: 100vh;
+}
+
+@utility landing-story-spacer-lg {
+  height: 120vh;
+}
+
+@utility conversation-item-accent {
+  position: relative;
+}
+
+.conversation-item-accent::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0.25rem;
+  background: var(--color-forge-teal);
+  transition:
+    opacity 0.3s ease,
+    background-color 0.3s ease;
+}
+
+@utility typing-tail {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: -0.45rem;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-bottom: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+  border-bottom-left-radius: 0.75rem;
+  background: inherit;
+}
+
+@utility rounded-inherit {
+  border-radius: inherit;
+}
+
+@utility home-hero-wash {
+  background: linear-gradient(
+    112deg,
+    rgba(20, 184, 166, 0.13),
+    rgba(20, 184, 166, 0.04) 48%,
+    transparent 76%
+  );
+}
+
+@utility home-hero-wash-soft {
+  background: linear-gradient(
+    112deg,
+    rgba(20, 184, 166, 0.08),
+    rgba(20, 184, 166, 0.03) 48%,
+    transparent 76%
+  );
+}
+
+@utility profile-panel-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+}
+
+@utility profile-panel-grid-size {
+  background-size: 1.5rem 1.5rem;
+}
+
+@utility algorithm-halo {
+  background:
+    radial-gradient(
+      circle at 50% 30%,
+      rgba(13, 148, 136, 0.16),
+      transparent 36%
+    ),
+    radial-gradient(
+      circle at 72% 72%,
+      rgba(245, 158, 11, 0.12),
+      transparent 34%
+    );
+}
+
+@utility likert-range-track {
+  left: 10%;
+  right: 10%;
+}
+
+@utility profile-cover-type {
+  font-size: 6rem;
+}
+
+@utility type-signature-dash {
+  font-size: 2.4rem;
+}
+
+@utility type-signature-letter {
+  font-size: 3rem;
+}
+
+@utility type-signature-label {
+  font-size: 0.625rem;
+}
+
+@media (min-width: 640px) {
+  .profile-cover-type {
+    font-size: 9rem;
+  }
+
+  .type-signature-dash {
+    font-size: 3rem;
+  }
+
+  .type-signature-letter {
+    font-size: 3.85rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .profile-cover-type {
+    font-size: 11rem;
+  }
+}
+
+@utility completion-blueprint-scan {
+  background-image:
+    linear-gradient(rgba(13, 148, 136, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(13, 148, 136, 0.09) 1px, transparent 1px);
+}
+
+@utility completion-blueprint-scan-size {
+  background-size: 2rem 2rem;
+}
+
+@utility forge-orb-ring-bg {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(13, 148, 136, 0.2), transparent 64%),
+    conic-gradient(
+      from 180deg,
+      rgba(13, 148, 136, 0.05),
+      rgba(245, 158, 11, 0.28),
+      rgba(13, 148, 136, 0.4),
+      rgba(13, 148, 136, 0.05)
+    );
+}
+
+@utility forge-orb-core-bg {
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      rgba(255, 255, 255, 0.22),
+      transparent 20%
+    ),
+    radial-gradient(circle at 50% 50%, rgba(13, 148, 136, 0.3), transparent 62%),
+    linear-gradient(145deg, rgba(5, 20, 23, 0.95), rgba(6, 52, 56, 0.92));
+}
+
+@utility forge-orb-tail-bg {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    var(--dot-color) 16deg,
+    transparent 42deg,
+    transparent 360deg
+  );
+}
+
+@utility forge-orb-ring-mask {
+  mask: radial-gradient(
+    circle,
+    transparent 58%,
+    black 60%,
+    black 66%,
+    transparent 68%
+  );
+}
+
+@utility forge-orb-path-inset {
+  inset: calc(50% - var(--orbit-radius));
+}
+
+@utility forge-orb-card-shadow {
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.18);
+}
+
+@utility forge-orb-inner-shadow {
+  box-shadow:
+    inset 0 0 2rem rgba(255, 255, 255, 0.05),
+    inset 0 0 4rem rgba(13, 148, 136, 0.18);
+}
+
+@utility forge-orb-dot-shadow {
+  box-shadow: 0 0 1rem var(--dot-color);
+}
+
+@utility forge-orb-logo-glow {
+  filter: drop-shadow(0 0 1rem rgba(245, 158, 11, 0.45));
+}
+
+@utility forge-orb-depth-30 {
+  transform: translateZ(30px);
+}
+
+@utility forge-orb-depth-40 {
+  transform: translateZ(40px);
+}
+
+@utility forge-orb-depth-50 {
+  transform: translateZ(50px);
+}
+
+@utility forge-orb-depth-60 {
+  transform: translateZ(60px);
+}
+
+@utility forge-orb-depth-90 {
+  transform: translateZ(90px);
+}
+
+@utility voronoi-inner-shadow {
+  box-shadow: inset 0 0 4rem rgba(13, 148, 136, 0.16);
+}
+
+@utility voronoi-logo-glow {
+  filter: drop-shadow(0 1rem 2rem rgba(13, 148, 136, 0.24));
 }
 
 /* Custom scrollbar for webkit browsers - theme responsive */

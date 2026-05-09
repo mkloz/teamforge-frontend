@@ -29,12 +29,12 @@ export function useSaveForgeIdentityAction({
         coverImage: state.coverImage,
       });
       goNext();
+      setIsSavingIdentity(false);
     } catch (error) {
       captureException("forge.saveIdentity", error, {
         groupId: state.groupId ?? "missing",
       });
       goNext();
-    } finally {
       setIsSavingIdentity(false);
     }
   }, [

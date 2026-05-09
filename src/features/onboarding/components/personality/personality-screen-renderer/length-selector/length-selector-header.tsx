@@ -17,7 +17,7 @@ export function LengthSelectorHeader({
     <>
       <motion.p
         variants={fadeUpItem}
-        className="mb-3 text-center font-bold font-sans text-forge-teal text-xs uppercase tracking-[0.15em]"
+        className="mb-3 text-center font-bold font-sans text-forge-teal text-xs uppercase tracking-widest"
       >
         {eyebrow}
       </motion.p>

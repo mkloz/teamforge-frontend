@@ -8,7 +8,7 @@ import { cva, type VariantProps } from "class-variance-authority";
  * - High-speed transition: 150ms duration.
  */
 export const buttonVariants = cva(
-  "group relative inline-flex min-w-0 items-center justify-center gap-2 whitespace-nowrap font-bold text-sm transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 active:enabled:scale-[0.98] disabled:pointer-events-none data-[loading=true]:cursor-wait",
+  "group relative inline-flex min-w-0 items-center justify-center gap-2 whitespace-nowrap font-bold text-sm transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 active:enabled:scale-95 disabled:pointer-events-none data-[loading=true]:cursor-wait",
   {
     variants: {
       variant: {

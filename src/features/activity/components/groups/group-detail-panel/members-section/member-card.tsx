@@ -46,15 +46,15 @@ export function MemberCard({
           src={member.user?.avatar}
           name={member.user?.name}
           className={cn(
-            "h-10 w-10 ring-1 ring-border/20 transition-all group-hover/member:ring-border/40",
+            "size-10 ring-1 ring-border/20 transition-all group-hover/member:ring-border/40",
             isHighCompatibility && "ring-2 ring-forge-teal/30",
           )}
-          imageClassName="transition-[scale,transform] duration-500 group-hover/member:scale-110"
+          imageClassName="transition-transform duration-500 group-hover/member:scale-110"
         />
         {onlineStatus && (
           <span
             className={cn(
-              "absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-canvas shadow-sm",
+              "absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2 border-canvas shadow-sm",
               onlineStatus === "ONLINE"
                 ? "bg-forge-teal"
                 : onlineStatus === "AWAY"

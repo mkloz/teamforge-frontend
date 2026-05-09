@@ -15,7 +15,7 @@ export function ProfilePanelHeader({ onClose }: ProfilePanelHeaderProps) {
         variant="ghost"
         size="icon"
         onClick={onClose}
-        className="h-8 w-8 hover:bg-muted"
+        className="size-8 hover:bg-muted"
         aria-label="Close panel"
       >
         <X size={16} />

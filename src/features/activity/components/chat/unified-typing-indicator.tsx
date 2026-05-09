@@ -43,7 +43,7 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
         transition={{ type: "spring", damping: 25, stiffness: 350 }}
         className="pointer-events-none absolute right-4 bottom-4 left-4 z-20"
       >
-        <div className="inline-flex items-center gap-3 rounded-full border border-border/40 bg-canvas/80 px-4 py-2.5 shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-xl">
+        <div className="inline-flex items-center gap-3 rounded-full border border-border/40 bg-canvas/80 px-4 py-2.5 shadow-lg backdrop-blur-xl">
           <div className="flex -space-x-2">
             <AnimatePresence mode="popLayout">
               {users.slice(0, 3).map((user) => (
@@ -56,8 +56,8 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
                   <Avatar
                     src={user.avatar}
                     name={user.name}
-                    className="h-5.5 w-5.5 shadow-sm ring-2 ring-canvas"
-                    fallbackClassName="text-[9px]"
+                    className="size-5.5 shadow-sm ring-2 ring-canvas"
+                    fallbackClassName="text-nano"
                   />
                 </motion.div>
               ))}
@@ -89,14 +89,13 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
         <Avatar
           src={users[0]?.avatar}
           name={users[0]?.name}
-          className="h-8 w-8 shadow-sm ring-1 ring-border/20"
+          className="size-8 shadow-sm ring-1 ring-border/20"
         />
       </motion.div>
       <div
         className={cn(
           "relative rounded-xl rounded-bl-none border border-border/60 bg-card px-4 py-3 shadow-xs",
-          "after:absolute after:bottom-0 after:-left-1.5 after:h-2 after:w-1.75 after:bg-card after:content-[''] after:[clip-path:polygon(100%_0,0_100%,100%_100%)]",
-          "before:absolute before:-bottom-px before:-left-2 before:-z-10 before:h-3 before:w-2.5 before:bg-border before:content-[''] before:[clip-path:polygon(100%_0,0_100%,100%_100%)]",
+          "typing-tail",
         )}
       >
         <TypingDots dotSize="w-1.5 h-1.5" />

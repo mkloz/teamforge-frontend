@@ -79,7 +79,7 @@ export function FriendsInvitation() {
           </div>
         </div>
 
-        <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+        <div className="main-action-grid mt-3 grid items-center gap-2">
           <div
             className={cn(
               "group flex h-11 min-w-0 items-center gap-2 rounded-md border border-border/45 bg-background/70 px-3",

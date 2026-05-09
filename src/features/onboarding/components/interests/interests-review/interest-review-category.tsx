@@ -23,11 +23,11 @@ export function InterestReviewCategory({
       <div className="mb-3 flex items-center gap-2 px-1">
         <div
           className={cn(
-            "h-1.5 w-1.5 rounded-full shadow-sm",
+            "size-1.5 rounded-full shadow-sm",
             getCategoryColorClass(category.id),
           )}
         />
-        <span className="font-bold font-sans text-[10px] text-slate-muted/60 uppercase tracking-[0.14em]">
+        <span className="font-bold font-sans text-slate-muted/60 text-xs uppercase tracking-widest">
           {category.name}
         </span>
       </div>
@@ -44,7 +44,7 @@ export function InterestReviewCategory({
               key={id}
               size="xs"
               asChild
-              className="h-auto max-w-full rounded-full px-1.5 py-0.75 text-[11px] shadow-xs sm:px-2 sm:py-1 sm:text-xs"
+              className="h-auto max-w-full rounded-full px-1.5 py-0.75 text-micro shadow-xs sm:px-2 sm:py-1"
             >
               <motion.button
                 layout
@@ -55,7 +55,7 @@ export function InterestReviewCategory({
                 onClick={() => onRemove(id)}
                 className="min-w-0"
               >
-                <span className="min-w-0 max-w-[8.25rem] truncate leading-none sm:max-w-none">
+                <span className="min-w-0 max-w-33 truncate leading-none sm:max-w-none">
                   {tag.name}
                 </span>
                 <X

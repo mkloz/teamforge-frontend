@@ -43,15 +43,15 @@ export function useActivityGroupActions(groupId: string) {
         groupId,
         result.requestId,
       );
+      setPendingAction(null);
     } catch (error) {
       trackGroupAction(
         trackedMutationNames.activityGroupLeave,
         "error",
         groupId,
       );
-      throw error;
-    } finally {
       setPendingAction(null);
+      throw error;
     }
   }
 
@@ -74,15 +74,15 @@ export function useActivityGroupActions(groupId: string) {
         groupId,
         result.requestId,
       );
+      setPendingAction(null);
     } catch (error) {
       trackGroupAction(
         trackedMutationNames.activityGroupDisband,
         "error",
         groupId,
       );
-      throw error;
-    } finally {
       setPendingAction(null);
+      throw error;
     }
   }
 
@@ -107,6 +107,7 @@ export function useActivityGroupActions(groupId: string) {
           requestId: result.requestId,
         },
       );
+      setRemovingMemberId(null);
     } catch (error) {
       trackMutationOutcome(
         trackedMutationNames.activityGroupRemoveMember,
@@ -115,9 +116,8 @@ export function useActivityGroupActions(groupId: string) {
           groupId,
         },
       );
-      throw error;
-    } finally {
       setRemovingMemberId(null);
+      throw error;
     }
   }
 
@@ -134,13 +134,13 @@ export function useActivityGroupActions(groupId: string) {
           requestId: result.requestId,
         },
       );
+      setInvitingMemberId(null);
     } catch (error) {
       trackMutationOutcome(trackedMutationNames.activityGroupInvite, "error", {
         groupId,
       });
-      throw error;
-    } finally {
       setInvitingMemberId(null);
+      throw error;
     }
   }
 

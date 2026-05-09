@@ -35,7 +35,7 @@ export const LinkPreview = memo(function LinkPreview({
         "border transition-colors duration-150",
         "hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40",
         isOwn
-          ? "border-primary/10 bg-white/25 hover:bg-white/40 dark:bg-black/25 dark:hover:bg-black/40"
+          ? "border-primary/10 bg-white/25 hover:bg-white/40 dark:bg-black/25 hover:dark:bg-black/40"
           : "border-border/50 bg-card hover:border-border",
       )}
     >

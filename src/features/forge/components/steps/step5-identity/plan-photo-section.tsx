@@ -46,12 +46,12 @@ export function PlanPhotoSection({
               <Image
                 src={coverImage}
                 alt=""
-                className="transition-[scale,transform] duration-700 ease-out group-hover:scale-105"
+                className="transition-transform duration-700 ease-out group-hover:scale-105"
               />
             ) : (
               <div
                 className={cn(
-                  "h-full w-full bg-linear-to-br",
+                  "size-full bg-linear-to-br",
                   activePreset?.gradient ??
                     "from-forge-teal/18 via-canvas to-spark-amber/18",
                 )}
@@ -85,7 +85,7 @@ export function PlanPhotoSection({
               onClick={() => onCoverImageChange(selected ? null : id)}
               aria-pressed={selected}
               className={cn(
-                "group h-10 justify-start gap-2 rounded-lg border bg-card px-2.5 font-bold text-foreground text-xs shadow-none transition-[border-color,background-color,box-shadow,transform] duration-200 active:scale-[0.98]",
+                "group h-10 justify-start gap-2 rounded-lg border bg-card px-2.5 font-bold text-foreground text-xs shadow-none transition-all duration-200 active:scale-95",
                 selected
                   ? "border-forge-teal/75 bg-forge-teal/8 text-forge-teal ring-1 ring-forge-teal/20"
                   : "border-border/45 hover:border-forge-teal/35 hover:bg-forge-teal/5",

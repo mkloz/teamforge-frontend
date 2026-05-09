@@ -17,7 +17,7 @@ export function HistoryCard({ item }: HistoryCardProps) {
         <PlanCover
           value={item.coverImage}
           alt={item.title}
-          imageClassName="transition-[scale,transform] duration-500 group-hover:scale-110"
+          imageClassName="transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-black/5 transition-colors group-hover:bg-transparent" />
       </div>
@@ -71,7 +71,7 @@ export function HistoryCard({ item }: HistoryCardProps) {
         <Button
           variant="secondary"
           size="icon"
-          className="h-9 w-9 shrink-0 translate-x-1 rounded-lg opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
+          className="size-9 shrink-0 translate-x-1 rounded-lg opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
           title="Create similar plan"
         >
           <RotateCcw className="size-3.5 text-muted-foreground" />

@@ -16,6 +16,14 @@ interface UseLoginFormOptions {
   onProgress?: (progress: number) => void;
 }
 
+async function runOptionalSuccessCallback(
+  callback?: () => void | Promise<void>,
+) {
+  if (callback) {
+    await callback();
+  }
+}
+
 export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -54,7 +62,8 @@ export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
       trackMutationOutcome(trackedMutationNames.authLoginEmail, "success", {
         requestId: result.requestId,
       });
-      await onSuccess?.();
+      await runOptionalSuccessCallback(onSuccess);
+      setLoading(false);
     } catch (error) {
       captureException(trackedMutationNames.authLoginEmail, error, {
         emailDomain,
@@ -68,7 +77,6 @@ export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
           "Invalid email or password. Please try again.",
         ),
       );
-    } finally {
       setLoading(false);
     }
   }

@@ -29,14 +29,14 @@ export function MutualGroupsSection({ groups }: MutualGroupsSectionProps) {
             variant="ghost"
             className={cn(
               "h-auto w-full justify-start gap-4 rounded-xl p-3 transition-all duration-300",
-              "group border border-border bg-card text-left shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:border-forge-teal/30 hover:shadow-md",
+              "group border border-border bg-card text-left shadow-sm hover:border-forge-teal/30 hover:shadow-md",
             )}
           >
             <div className="relative shrink-0">
               <Avatar
                 src={group.avatar}
                 name={group.name}
-                className="h-11 w-11 bg-canvas shadow-xs ring-2 ring-card transition-[scale,transform] duration-500 group-hover:scale-105"
+                className="size-11 bg-canvas shadow-xs ring-2 ring-card transition-transform duration-500 group-hover:scale-105"
               />
             </div>
 
@@ -44,7 +44,7 @@ export function MutualGroupsSection({ groups }: MutualGroupsSectionProps) {
               <span className="block truncate font-bold text-ink text-sm transition-colors group-hover:text-forge-teal">
                 {group.name}
               </span>
-              <p className="mt-0.5 font-semibold text-[10px] text-slate-muted uppercase tracking-wider opacity-80">
+              <p className="mt-0.5 font-semibold text-slate-muted text-xs uppercase tracking-wider opacity-80">
                 Peer Group
               </p>
             </div>

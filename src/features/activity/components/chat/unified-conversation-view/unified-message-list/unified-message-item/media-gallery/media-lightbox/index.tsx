@@ -32,11 +32,11 @@ export const MediaLightbox = memo(function MediaLightbox({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="pointer-events-auto flex h-dvh w-full max-w-[100vw] flex-col overflow-hidden border-none bg-black/98 p-0 shadow-none backdrop-blur-3xl [&>button]:top-6 [&>button]:right-6 [&>button]:flex [&>button]:h-10 [&>button]:w-10 [&>button]:items-center [&>button]:justify-center [&>button]:rounded-full [&>button]:bg-white/10 [&>button]:text-white [&>button]:opacity-100 [&>button]:transition-all [&>button]:hover:bg-white/20 [&>button_svg]:h-5 [&>button_svg]:w-5">
+      <DialogContent className="pointer-events-auto flex h-dvh w-full max-w-full flex-col overflow-hidden border-none bg-black/98 p-0 shadow-none backdrop-blur-3xl [&>button]:top-6 [&>button]:right-6 [&>button]:flex [&>button]:h-10 [&>button]:w-10 [&>button]:items-center [&>button]:justify-center [&>button]:rounded-full [&>button]:bg-white/10 [&>button]:text-white [&>button]:opacity-100 [&>button]:transition-all hover:[&>button]:bg-white/20 [&>button_svg]:h-5 [&>button_svg]:w-5">
         <AnimatePresence mode="popLayout">
           <motion.div
             key="lightbox-container"
-            className="relative flex h-full w-full flex-col"
+            className="relative flex size-full flex-col"
           >
             <LightboxHeader
               count={count}

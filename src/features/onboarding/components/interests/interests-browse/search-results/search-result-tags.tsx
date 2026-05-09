@@ -26,7 +26,7 @@ export function SearchResultTags({
   return (
     <div>
       {results.subcategories.length > 0 && (
-        <p className="mb-2 font-bold font-sans text-[10px] text-slate-muted/50 uppercase tracking-widest">
+        <p className="mb-2 font-bold font-sans text-slate-muted/50 text-xs uppercase tracking-widest">
           Tags
         </p>
       )}

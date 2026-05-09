@@ -29,7 +29,7 @@ export function AboutSection() {
     <section
       id="about"
       ref={containerRef}
-      className="relative h-[400vh] w-full bg-canvas"
+      className="landing-story-scroll relative w-full bg-canvas"
       aria-labelledby="about-heading"
     >
       <div className="sticky top-0 flex h-screen w-full items-center overflow-hidden">
@@ -42,7 +42,7 @@ export function AboutSection() {
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-balance font-black font-sans text-3xl text-ink leading-[1.1] tracking-tight md:text-5xl lg:text-6xl"
+                className="text-balance font-black font-sans text-3xl text-ink leading-tight tracking-tight md:text-5xl lg:text-6xl"
               >
                 Designed for the way humans{" "}
                 <span className="text-forge-teal">actually connect.</span>
@@ -88,7 +88,7 @@ export function AboutSection() {
                 asChild
                 variant="ghost"
                 size="sm"
-                className="absolute right-8 bottom-8 z-50 h-9 rounded-full px-4 font-bold text-[10px] uppercase tracking-[0.2em]"
+                className="absolute right-8 bottom-8 z-50 h-9 rounded-full px-4 font-bold text-xs uppercase tracking-widest"
               >
                 <motion.button
                   initial={{ opacity: 0, y: 10 }}

@@ -47,7 +47,7 @@ export function BoxBordersSwitch() {
       size="icon-xs"
       aria-pressed={showBorders}
       aria-labelledby={labelId}
-      className="h-6 w-6 rounded-md border-ink/20 bg-card/95 p-0 shadow-sm backdrop-blur"
+      className="size-6 rounded-md border-ink/20 bg-card/95 p-0 shadow-sm backdrop-blur"
       onClick={() => setShowBorders((current) => !current)}
     >
       <Box size={12} />
