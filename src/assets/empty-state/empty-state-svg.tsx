@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { cn } from "@/shared/lib/utils";
 import { emptyVisualStroke } from "./tokens";
 import type { EmptyStateVisualBaseProps } from "./types";
 
@@ -24,10 +25,7 @@ export function EmptyStateSvg({
       strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={[
-        "block h-auto w-40 max-w-full text-foreground",
-        className,
-      ].join(" ")}
+      className={cn("block h-auto w-40 max-w-full text-foreground", className)}
       {...props}
     >
       {title ? <title>{title}</title> : null}

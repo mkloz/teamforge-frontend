@@ -879,7 +879,7 @@ function getStageJobs(options, changedFiles) {
   if (stageSet.has("biome")) {
     jobs.push(() =>
       runFileCommand({
-        baseArgs: ["check", "--no-errors-on-unmatched"],
+        baseArgs: ["check", "--no-errors-on-unmatched", "--write"],
         command: "biome",
         files: changedFiles.filter((filePath) =>
           hasExtension(filePath, EXTENSIONS.biome),

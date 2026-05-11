@@ -103,11 +103,17 @@ export function NotificationsDrawer({
         {/* Scrollable list */}
         <div className="flex-1 overflow-y-auto overscroll-contain">
           {items.length === 0 ? (
-            <div className="flex flex-col items-center px-6 py-16 text-center">
-              <EmptyNotificationsVisual className="w-32 text-foreground" />
-              <p className="mt-5 max-w-44 font-medium text-muted-foreground text-sm leading-relaxed">
-                No notifications yet.
-              </p>
+            <div className="flex flex-col items-center px-6 py-14 text-center sm:py-16">
+              <EmptyNotificationsVisual className="w-36 text-foreground" />
+              <div className="mt-6 max-w-64">
+                <p className="font-bold text-base text-foreground leading-tight">
+                  You're all caught up.
+                </p>
+                <p className="mt-2 text-muted-foreground text-sm leading-relaxed">
+                  Invites, replies, and group updates will show up here when
+                  there's something to act on.
+                </p>
+              </div>
             </div>
           ) : (
             <>

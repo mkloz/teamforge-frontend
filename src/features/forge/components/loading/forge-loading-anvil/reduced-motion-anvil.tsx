@@ -1,5 +1,8 @@
 import { cn } from "@/shared/lib/utils";
 
+const ANVIL_STAGE_VIEW_BOX = "32 32 156 142";
+const ANVIL_STAGE_ASPECT_RATIO = 142 / 156;
+
 interface ReducedMotionAnvilProps {
   className?: string;
   displayLabel: string;
@@ -17,45 +20,82 @@ export function ReducedMotionAnvil({
         "flex select-none flex-col items-center justify-center gap-4",
         className,
       )}
-      style={{ width: size, height: size }}
       role="status"
       aria-label={displayLabel}
     >
-      <div className="relative h-14 w-24">
-        <div className="absolute inset-x-1 bottom-3 h-8">
+      <div
+        className="relative"
+        style={{ width: size, height: size * ANVIL_STAGE_ASPECT_RATIO }}
+      >
+        <div className="absolute inset-0">
           <svg
-            viewBox="0 0 96 40"
+            viewBox={ANVIL_STAGE_VIEW_BOX}
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
             className="size-full"
           >
             <path
-              d="M16 14h45c3 0 5 3 3 6l-5 6c-1 2-3 3-6 3H27c-2 0-4-1-6-3l-7-9c-1-2 0-3 2-3Z"
-              className="fill-card stroke-border"
-              strokeWidth="1.5"
-            />
-            <path
-              d="M8 11h22l6 3H17c-5 0-8-1-10-3h1ZM64 11h14c3 0 4 2 2 4L68 24l-5-5 8-4h-9l2-4Z"
-              className="fill-muted stroke-border"
-              strokeWidth="1.5"
-            />
-            <path d="M28 29h27l-4 8H32l-4-8Z" className="fill-muted" />
-            <path
-              d="M24 14h34"
+              d="M58 160C75.5 151 143.5 151 162 160"
               stroke="var(--color-forge-teal)"
               strokeLinecap="round"
-              strokeOpacity="0.7"
-              strokeWidth="2"
+              strokeWidth="3"
+            />
+            <path
+              d="M63 111h91c5 0 8 5 5 9l-10 13c-2 3-6 5-10 5H82c-4 0-8-2-10-5l-13-16c-2-3 0-6 4-6Z"
+              fill="var(--color-forge-teal)"
+              stroke="currentColor"
+              strokeLinejoin="round"
+              strokeWidth="3.5"
+            />
+            <path
+              d="M47 104h39l9 7H62c-9 0-16-2-21-6-2-1-1-1 6-1ZM154 104h22c6 0 8 3 3 7l-20 15-9-10 14-5h-16l6-7ZM80 138h60l-7 18H87l-7-18Z"
+              fill="var(--color-forge-deep-surface)"
+              stroke="currentColor"
+              strokeLinejoin="round"
+              strokeWidth="3.5"
+            />
+            <path
+              d="M72 111h72M88 156h44"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeWidth="3.5"
+            />
+            <path
+              d="M99 107.75h22"
+              stroke="var(--color-spark-amber)"
+              strokeLinecap="round"
+              strokeWidth="3"
+            />
+            <path
+              d="M112 91h52"
+              fill="var(--color-forge-deep-surface)"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeWidth="3.5"
+              transform="translate(4 -9.5)"
+            />
+            <path
+              d="M101 78h12c2.761 0 5 2.239 5 5v24c0 2.761-2.239 5-5 5h-12c-2.761 0-5-2.239-5-5V83c0-2.761 2.239-5 5-5Z"
+              fill="var(--color-forge-teal)"
+              stroke="currentColor"
+              strokeWidth="3.5"
+              transform="translate(4 -9.5)"
+            />
+            <path
+              d="M103 83v24"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeWidth="3"
+              transform="translate(4 -9.5)"
             />
           </svg>
         </div>
-        <div className="absolute inset-x-7 bottom-0 h-1.5 rounded-sm bg-muted" />
       </div>
-      <div className="space-y-1 text-center">
+      <div className="flex flex-col gap-1 text-center">
         <p className="font-black text-foreground text-sm">{displayLabel}</p>
         <p className="font-bold text-micro text-muted-foreground uppercase">
-          Matching signals
+          Group forge
         </p>
       </div>
     </div>

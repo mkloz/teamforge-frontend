@@ -1,4 +1,5 @@
 import { Check, UsersRound } from "lucide-react";
+import { ForgeGroupReadyVisual } from "@/assets/empty-state/forge-group-ready";
 import type { ForgeParticipant } from "@/features/forge/lib/forge-contract";
 import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
@@ -55,21 +56,25 @@ export function SuccessHero({
   return (
     <section className="overflow-hidden rounded-lg border border-border/40 bg-card/70">
       <div className="space-y-4 px-4 py-4">
-        <div className="flex items-start gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-forge-teal/25 bg-forge-teal/10 text-forge-teal">
-            <Check size={20} strokeWidth={2.5} />
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-start gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-forge-teal/25 bg-forge-teal/10 text-forge-teal">
+              <Check size={20} strokeWidth={2.5} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+                Group ready
+              </p>
+              <h3 className="mt-1 font-bold text-foreground text-xl leading-tight">
+                {displayTitle} has a lineup.
+              </h3>
+              <p className="mt-1.5 text-muted-foreground text-sm leading-snug">
+                Keep this group as-is, or remove someone before you continue.
+              </p>
+            </div>
           </div>
-          <div className="min-w-0 flex-1">
-            <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
-              Group ready
-            </p>
-            <h3 className="mt-1 font-bold text-foreground text-xl leading-tight">
-              {displayTitle} has a lineup.
-            </h3>
-            <p className="mt-1.5 text-muted-foreground text-sm leading-snug">
-              Keep this group as-is, or remove someone before you continue.
-            </p>
-          </div>
+
+          <ForgeGroupReadyVisual className="mx-auto w-32 shrink-0 text-foreground sm:mx-0 sm:w-36" />
         </div>
 
         <div className="flex items-center justify-between gap-3 border-border/35 border-y py-3">

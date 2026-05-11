@@ -45,6 +45,12 @@ const activateAccountPageModule = createLazyRouteModule(() =>
   })),
 );
 
+const visualStatesPageModule = createLazyRouteModule(() =>
+  import("@/features/design-system/visual-states-page").then((m) => ({
+    default: m.VisualStatesPage,
+  })),
+);
+
 const landingRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
@@ -124,6 +130,22 @@ const activateAccountRoute = createRoute({
   }),
 });
 
+const designSystemRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/design-system",
+  component: createLazyPageRoute(visualStatesPageModule.Component),
+});
+
+const visualStatesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/design-system/visual-states",
+  component: createLazyPageRoute(visualStatesPageModule.Component),
+});
+
+const designSystemRoutes = import.meta.env.DEV
+  ? [designSystemRoute, visualStatesRoute]
+  : [];
+
 export const publicRoutes = [
   landingRoute,
   loginRoute,
@@ -131,6 +153,7 @@ export const publicRoutes = [
   forgotPasswordRoute,
   resetPasswordRoute,
   activateAccountRoute,
+  ...designSystemRoutes,
 ];
 
 export const publicRouteModules = [
@@ -140,4 +163,5 @@ export const publicRouteModules = [
   forgotPasswordPageModule,
   resetPasswordPageModule,
   activateAccountPageModule,
+  ...(import.meta.env.DEV ? [visualStatesPageModule] : []),
 ];

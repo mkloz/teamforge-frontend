@@ -115,6 +115,26 @@ async function executeForge(
   });
 }
 
+async function executePendingAutoForgeRequest(
+  activityId: string,
+): Promise<ForgeExecutionResult> {
+  const currentUser = await getCurrentUser();
+  const forgeResult = await ForgeApi.forgePendingActivity(activityId);
+  const group = await ForgeApi.getGroup(forgeResult.data.group.id);
+
+  return buildSuccessfulForgeResult({
+    activityId: forgeResult.data.activityId,
+    chatId: forgeResult.data.chat.id,
+    currentUserId: currentUser.id,
+    group,
+    planId: forgeResult.data.plan.id,
+    requestIds: {
+      createActivity: null,
+      forgeActivity: forgeResult.requestId,
+    },
+  });
+}
+
 export class ForgeCommands {
   static async executeManualForge(input: AutoForgeExecutionInput) {
     return executeForge(input, "MANUAL");
@@ -127,21 +147,7 @@ export class ForgeCommands {
   static async executePendingAutoForge(
     activityId: string,
   ): Promise<ForgeExecutionResult> {
-    const currentUser = await getCurrentUser();
-    const forgeResult = await ForgeApi.forgePendingActivity(activityId);
-    const group = await ForgeApi.getGroup(forgeResult.data.group.id);
-
-    return buildSuccessfulForgeResult({
-      activityId: forgeResult.data.activityId,
-      chatId: forgeResult.data.chat.id,
-      currentUserId: currentUser.id,
-      group,
-      planId: forgeResult.data.plan.id,
-      requestIds: {
-        createActivity: null,
-        forgeActivity: forgeResult.requestId,
-      },
-    });
+    return executePendingAutoForgeRequest(activityId);
   }
 
   static async saveForgedIdentity(input: SaveForgedIdentityInput) {

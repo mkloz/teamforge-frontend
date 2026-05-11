@@ -3,11 +3,7 @@ import {
   ANVIL_ANIMATION_TIMING,
 } from "./forge-loading-anvil.constants";
 
-interface AnvilHammerProps {
-  hammerGradientId: string;
-}
-
-export function AnvilHammer({ hammerGradientId }: AnvilHammerProps) {
+export function AnvilHammer() {
   return (
     <g>
       <animateTransform
@@ -18,23 +14,30 @@ export function AnvilHammer({ hammerGradientId }: AnvilHammerProps) {
         dur={`${ANVIL_ANIMATION_DURATION}s`}
         repeatCount="indefinite"
       />
-      <rect x="112" y="91" width="52" height="7" rx="3.5" fill="#8A5A16" />
-      <rect
-        x="96"
-        y="78"
-        width="22"
-        height="34"
-        rx="5"
-        fill={`url(#${hammerGradientId})`}
-        stroke="rgba(255,255,255,0.12)"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M102 80v30"
-        stroke="rgba(255,255,255,0.22)"
-        strokeLinecap="round"
-        strokeWidth="2"
-      />
+      <g transform="translate(4 -9.5)">
+        <rect
+          x="112"
+          y="91"
+          width="52"
+          height="7"
+          rx="3.5"
+          fill="var(--color-forge-deep-surface)"
+          stroke="currentColor"
+          strokeWidth="3.5"
+        />
+        <path
+          d="M101 78h12c2.761 0 5 2.239 5 5v24c0 2.761-2.239 5-5 5h-12c-2.761 0-5-2.239-5-5V83c0-2.761 2.239-5 5-5Z"
+          fill="var(--color-forge-teal)"
+          stroke="currentColor"
+          strokeWidth="3.5"
+        />
+        <path
+          d="M103 83v24"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeWidth="3"
+        />
+      </g>
     </g>
   );
 }

@@ -290,7 +290,8 @@ SVG stroke-linecap: round
 ## 11. Imagery & Illustration
 
 - **Photography:** Avoid generic stock photos. If photos are used, they must show real groups of 3–5 people doing activities. Warm, natural light. No posed corporate imagery.
-- **Illustrations:** Use sparse, geometric, low-detail illustrations aligned with the node-graph motif. Teal and amber only.
+- **In-app spot illustrations:** Empty states, error states, 404 visuals, Forge success art, and home hero-right visuals follow `docs/ui-visual-assets-reference-for-chat.md`. Use the approved TeamForge dark 2D outline style there, including its exact prompt examples.
+- **Landing/decorative illustrations:** Use sparse, geometric, low-detail illustrations aligned with the node-graph motif. Teal and amber only.
 - **Generated images:** May be used for brand mockups and presentation materials. Must match the Canvas/Teal/Amber palette.
 - **Backgrounds:** Only the node-canvas animation is used as a background element. No gradient blobs, no abstract shapes, no decorative geometric fills.
 
