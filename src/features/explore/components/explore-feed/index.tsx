@@ -2,8 +2,10 @@
 
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { SearchX, SlidersHorizontal, UsersRound } from "lucide-react";
+import { SlidersHorizontal, UsersRound } from "lucide-react";
 import type { ReactNode } from "react";
+import { EmptyExploreFilteredVisual } from "@/assets/empty-state/empty-explore-filtered";
+import { EmptyExploreOpenVisual } from "@/assets/empty-state/empty-explore-open";
 import { useExploreFeed } from "@/features/explore/hooks/use-explore-feed";
 import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
 import { PageErrorState } from "@/shared/components/page-error-state";
@@ -237,13 +239,11 @@ function ExploreFeedEmpty({
       className="px-4 py-16 text-center"
     >
       <div className="mx-auto flex max-w-lg flex-col items-center gap-6">
-        <div className="flex items-center gap-2 font-semibold text-muted-foreground text-xs">
-          <SearchX
-            className="size-5 shrink-0 text-forge-teal"
-            strokeWidth={2}
-          />
-          {isFiltered ? "0 groups for this view" : "0 open groups"}
-        </div>
+        {isFiltered ? (
+          <EmptyExploreFilteredVisual className="w-40 text-foreground" />
+        ) : (
+          <EmptyExploreOpenVisual className="w-44 text-foreground" />
+        )}
 
         <div className="flex flex-col gap-2">
           <h3 className="font-black text-2xl text-foreground leading-tight tracking-tight">

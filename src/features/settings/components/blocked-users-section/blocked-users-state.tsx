@@ -1,4 +1,6 @@
-import { Loader2, ShieldOff } from "lucide-react";
+import { Loader2 } from "lucide-react";
+
+import { EmptySettingsBlockedUsersVisual } from "@/assets/empty-state/empty-settings-blocked-users";
 
 interface BlockedUsersLoadingStateProps {
   message: string;
@@ -27,10 +29,8 @@ export function BlockedUsersErrorState({
 
 export function BlockedUsersEmptyState() {
   return (
-    <div className="flex items-start gap-3 py-5">
-      <div className="rounded-full bg-forge-teal/8 p-2 text-forge-teal">
-        <ShieldOff size={16} />
-      </div>
+    <div className="flex flex-col items-start gap-3 py-5 sm:flex-row sm:items-center sm:gap-4">
+      <EmptySettingsBlockedUsersVisual className="w-16 shrink-0 text-foreground sm:w-20" />
       <div>
         <p className="font-semibold text-ink text-sm">No blocked users</p>
         <p className="mt-1 text-slate-muted text-sm leading-relaxed">

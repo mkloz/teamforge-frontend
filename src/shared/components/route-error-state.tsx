@@ -3,6 +3,8 @@ import { Link, useRouter } from "@tanstack/react-router";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { ErrorAuthLinkVisual } from "@/assets/error-state/error-auth-link";
+import { ErrorRouteLoadVisual } from "@/assets/error-state/error-route-load";
 import { FeedbackState } from "@/shared/components/feedback-state";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -43,6 +45,14 @@ function isDynamicImportFetchError(error: unknown) {
     message.includes("Failed to fetch dynamically imported module") ||
     message.includes("Importing a module script failed")
   );
+}
+
+function getRouteErrorVisual(scope: RouteErrorScope) {
+  if (scope.startsWith("auth.")) {
+    return <ErrorAuthLinkVisual className="w-36 text-foreground" />;
+  }
+
+  return <ErrorRouteLoadVisual className="w-36 text-foreground" />;
 }
 
 function recoverDynamicImportError() {
@@ -125,6 +135,7 @@ export function RouteErrorState({
       headingId="route-error-heading"
       icon={<AlertTriangle size={22} />}
       iconClassName="bg-destructive/10 text-destructive"
+      visual={getRouteErrorVisual(scope)}
       title={title}
       description={description}
       actions={

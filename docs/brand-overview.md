@@ -148,7 +148,7 @@ The wordmark pairs the logo symbol with the product name.
 
 - "**Team**" — displayed in Ink (`#1C1C1A`) or white depending on background
 - "**Forge**" — displayed in Forge Teal (`#0D9488`)
-- Font: Inter, Bold (700)
+- Font: Plus Jakarta Sans, Bold (700)
 - No letter-spacing adjustments
 
 On dark backgrounds, "Team" uses `rgba(255,255,255,0.5)` and "Forge" uses `#0D9488`.

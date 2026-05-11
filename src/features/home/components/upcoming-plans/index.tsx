@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { CalendarDays } from "lucide-react";
+import { EmptyHomePlansVisual } from "@/assets/empty-state/empty-home-plans";
 import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
@@ -10,13 +10,8 @@ import { PlanCard } from "./plan-card";
 
 function EmptyPlans() {
   return (
-    <div className="flex items-center gap-3 border-border/70 border-y border-dashed bg-card/40 px-1 py-5 sm:px-3">
-      <div
-        className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground"
-        aria-hidden="true"
-      >
-        <CalendarDays className="size-5" />
-      </div>
+    <div className="flex items-center gap-3 border-border/70 border-y border-dashed bg-card/40 px-3 py-5">
+      <EmptyHomePlansVisual className="w-16 shrink-0 text-foreground sm:w-20" />
       <div className="min-w-0">
         <p className="font-black text-foreground text-sm">
           Your calendar is open.

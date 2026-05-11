@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ImageOff, Layers, Play } from "lucide-react";
+import { Layers, Play } from "lucide-react";
 import { memo } from "react";
+import { ErrorMediaImageUnavailableVisual } from "@/assets/error-state/error-media-image-unavailable";
+import { ErrorMediaVideoUnavailableVisual } from "@/assets/error-state/error-media-video-unavailable";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import {
   cacheMediaIntrinsicSize,
@@ -43,7 +45,7 @@ export const GalleryItem = memo(
         className={cn(
           "group/gallery-item relative block size-full appearance-none overflow-hidden bg-muted/60 text-left",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40 focus-visible:ring-offset-2",
-          "disabled:cursor-default",
+          "disabled:cursor-not-allowed",
           state !== "error" && "cursor-zoom-in",
           count === 1 && "aspect-square max-h-120 sm:aspect-video",
           count === 2 && "aspect-3/4",
@@ -71,9 +73,11 @@ export const GalleryItem = memo(
         {/* ── Error state ── */}
         {state === "error" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-muted/60">
-            <div className="flex size-9 items-center justify-center rounded-full bg-muted">
-              <ImageOff className="size-4 text-slate-muted" strokeWidth={1.5} />
-            </div>
+            {media.type === "VIDEO" ? (
+              <ErrorMediaVideoUnavailableVisual className="w-16 text-foreground" />
+            ) : (
+              <ErrorMediaImageUnavailableVisual className="w-16 text-foreground" />
+            )}
             <span className="font-medium text-slate-muted/70 text-xs uppercase tracking-wide">
               Failed to load
             </span>

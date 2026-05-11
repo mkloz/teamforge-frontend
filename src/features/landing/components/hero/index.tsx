@@ -28,10 +28,10 @@ export function HeroSection() {
       <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pt-28 pb-20 pl-6 md:pl-12">
         <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-8">
           <div className="flex max-w-xl flex-1 animate-hero-fade-in flex-col items-center text-center lg:items-start lg:text-left">
-            <h1 className="mb-5 text-balance font-extrabold font-sans text-4xl text-white leading-tight sm:text-6xl">
+            <h1 className="landing-hero-title mb-5 text-balance font-extrabold font-sans text-white">
               Find your people,
               <br />
-              <span className="relative inline-block pb-2 text-forge-teal drop-shadow-lg">
+              <span className="landing-hero-word-glow relative inline-block pb-2 text-forge-teal">
                 intelligently.
               </span>
             </h1>
@@ -84,8 +84,12 @@ export function HeroSection() {
         className="absolute bottom-7 left-1/2 z-10 -translate-x-1/2 rounded-full text-text-dark-muted hover:text-text-dark-secondary"
         aria-label="Scroll to next section"
       >
-        <div className="animate-scroll-hint">
-          <ChevronDown size={28} className="stroke-1" />
+        <div className="animate-fade-down">
+          <ChevronDown
+            size={28}
+            className="landing-hero-scroll-icon"
+            aria-hidden="true"
+          />
         </div>
       </Button>
     </section>

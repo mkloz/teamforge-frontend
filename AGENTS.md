@@ -325,8 +325,9 @@ All visual design follows the specifications in `docs/visual-style-guide.md`. Th
 ## Validation Policy
 
 - The frontend currently does not have an automated test suite by product decision.
-- Use `npm run lint:changed` for a fast local pass on staged, unstaged, and untracked changed files. Its changed-file Oxlint stage skips type-aware analysis and JS plugins by default; use `node scripts/lint-changed.mjs --full-oxlint` when that full Oxlint coverage is needed before the full lint gate.
-- For code changes, validate with `npm run lint` and `npm run build` unless the user explicitly asks for a narrower check.
+- For small changes, run only `npm run lint:changed` before handing work back.
+- Use `npm run lint:fast` while iterating only when the change is large, roughly 200+ lines changed.
+- Do not run `npm run build`, `npm run lint`, tests, audits, or other full-system verification commands for ordinary changes. Use them only when the codebase has gone through a large refactor or the change clearly needs full system verification.
 - Do not add frontend tests unless the user explicitly asks for tests.
 
 ---

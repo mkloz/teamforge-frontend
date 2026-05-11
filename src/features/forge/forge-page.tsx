@@ -58,7 +58,7 @@ export function ForgePage() {
 
             <section
               aria-labelledby="starter-examples-title"
-              className="md:forge-page-grid grid gap-5"
+              className="lg:forge-page-grid grid gap-5"
             >
               <div>
                 <p className="font-black text-muted-foreground text-sm uppercase">
@@ -72,7 +72,7 @@ export function ForgePage() {
                 </h2>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-3 sm:grid-cols-3 lg:min-w-0">
                 {STARTER_EXAMPLES.map(({ title, items }) => (
                   <article
                     key={title}

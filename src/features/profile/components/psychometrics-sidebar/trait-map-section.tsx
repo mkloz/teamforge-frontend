@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-
+import { EmptyTraitMapVisual } from "@/assets/empty-state/empty-trait-map";
 import { buildPersonalityEditNavigation } from "@/features/onboarding/lib/onboarding-route";
 import { ProfileSectionHeading } from "@/features/profile/components/profile-section-heading";
 import type { OceanScores } from "@/features/profile/lib/profile-contract";
@@ -38,19 +38,22 @@ export function TraitMapSection({
 
 function EmptyTraitMap() {
   return (
-    <div className="flex flex-col items-start gap-3">
-      <p className="font-medium text-slate-muted text-sm">
-        OCEAN scores are not available yet.
-      </p>
-      <Button asChild variant="outline" size="sm">
-        <Link
-          {...buildPersonalityEditNavigation({
-            returnTo: "/profile",
-          })}
-        >
-          Finish personality setup
-        </Link>
-      </Button>
+    <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
+      <EmptyTraitMapVisual className="w-16 shrink-0 text-foreground sm:w-20" />
+      <div className="flex min-w-0 flex-col items-start gap-3">
+        <p className="font-medium text-slate-muted text-sm">
+          OCEAN scores are not available yet.
+        </p>
+        <Button asChild variant="outline" size="sm">
+          <Link
+            {...buildPersonalityEditNavigation({
+              returnTo: "/profile",
+            })}
+          >
+            Finish personality setup
+          </Link>
+        </Button>
+      </div>
     </div>
   );
 }

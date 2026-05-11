@@ -164,6 +164,7 @@ export function changedFileLintPlugin(): Plugin {
   }
 
   return {
+    apply: "build",
     async buildStart() {
       if (!config) {
         return;

@@ -195,14 +195,14 @@
 }
 
 @utility explore-page-grid {
-  grid-template-columns: minmax(13rem, 15rem) minmax(0, 46rem) minmax(
+  grid-template-columns: minmax(16rem, 19rem) minmax(0, 46rem) minmax(
       16rem,
       19rem
     );
 }
 
 @utility forge-page-grid {
-  grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
+  grid-template-columns: minmax(0, 0.8fr) minmax(32rem, 1.2fr);
 }
 
 @utility forge-hero-grid {
@@ -318,8 +318,8 @@
 @utility home-hero-wash {
   background: linear-gradient(
     112deg,
-    rgba(20, 184, 166, 0.13),
-    rgba(20, 184, 166, 0.04) 48%,
+    rgba(13, 148, 136, 0.13),
+    rgba(13, 148, 136, 0.04) 48%,
     transparent 76%
   );
 }
@@ -327,8 +327,8 @@
 @utility home-hero-wash-soft {
   background: linear-gradient(
     112deg,
-    rgba(20, 184, 166, 0.08),
-    rgba(20, 184, 166, 0.03) 48%,
+    rgba(13, 148, 136, 0.08),
+    rgba(13, 148, 136, 0.03) 48%,
     transparent 76%
   );
 }
@@ -409,68 +409,87 @@
 }
 
 @utility forge-orb-ring-bg {
-  background:
-    radial-gradient(circle at 50% 50%, rgba(13, 148, 136, 0.2), transparent 64%),
-    conic-gradient(
-      from 180deg,
-      rgba(13, 148, 136, 0.05),
-      rgba(245, 158, 11, 0.28),
-      rgba(13, 148, 136, 0.4),
-      rgba(13, 148, 136, 0.05)
-    );
+  background: conic-gradient(
+    from 0deg,
+    rgba(13, 148, 136, 0.25),
+    rgba(13, 148, 136, 0.08),
+    rgba(13, 148, 136, 0.15),
+    rgba(13, 148, 136, 0.25)
+  );
 }
 
 @utility forge-orb-core-bg {
-  background:
-    radial-gradient(
-      circle at 35% 25%,
-      rgba(255, 255, 255, 0.22),
-      transparent 20%
-    ),
-    radial-gradient(circle at 50% 50%, rgba(13, 148, 136, 0.3), transparent 62%),
-    linear-gradient(145deg, rgba(5, 20, 23, 0.95), rgba(6, 52, 56, 0.92));
+  background: radial-gradient(
+    circle at 40% 40%,
+    rgba(13, 148, 136, 0.15),
+    rgba(9, 9, 9, 0.95) 70%
+  );
 }
 
 @utility forge-orb-tail-bg {
   background: conic-gradient(
     from 0deg,
-    transparent 0deg,
-    var(--dot-color) 16deg,
-    transparent 42deg,
-    transparent 360deg
+    transparent 0%,
+    transparent 70%,
+    var(--tail-color-start) 85%,
+    var(--tail-color-end) 100%
   );
 }
 
 @utility forge-orb-ring-mask {
-  mask: radial-gradient(
-    circle,
-    transparent 58%,
-    black 60%,
-    black 66%,
-    transparent 68%
+  mask-image: radial-gradient(
+    closest-side,
+    transparent calc(100% - 2px),
+    black calc(100% - 1px)
+  );
+  -webkit-mask-image: radial-gradient(
+    closest-side,
+    transparent calc(100% - 2px),
+    black calc(100% - 1px)
   );
 }
 
 @utility forge-orb-path-inset {
-  inset: calc(50% - var(--orbit-radius));
+  inset: 8%;
 }
 
 @utility forge-orb-card-shadow {
-  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.18);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 @utility forge-orb-inner-shadow {
-  box-shadow:
-    inset 0 0 2rem rgba(255, 255, 255, 0.05),
-    inset 0 0 4rem rgba(13, 148, 136, 0.18);
+  box-shadow: inset 0 0 40px rgba(13, 148, 136, 0.05);
 }
 
 @utility forge-orb-dot-shadow {
-  box-shadow: 0 0 1rem var(--dot-color);
+  box-shadow: 0 0 var(--glow-size) 2px var(--glow-color);
+}
+
+@utility forge-orb-dot-transition {
+  transition-property: background-color, box-shadow;
 }
 
 @utility forge-orb-logo-glow {
-  filter: drop-shadow(0 0 1rem rgba(245, 158, 11, 0.45));
+  filter: drop-shadow(0 0 16px rgba(245, 158, 11, 0.25));
+}
+
+@utility forge-orb-label-tracking {
+  letter-spacing: 0.15em;
+}
+
+@utility landing-hero-title {
+  font-size: clamp(2.25rem, 5.5vw, 4rem);
+  line-height: 1.08;
+}
+
+@utility landing-hero-word-glow {
+  filter: drop-shadow(0 0 32px rgba(13, 148, 136, 0.35));
+}
+
+@utility landing-hero-scroll-icon {
+  stroke-width: 1.25;
 }
 
 @utility forge-orb-depth-30 {

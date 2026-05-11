@@ -22,7 +22,7 @@ export function TrustCard() {
       )}
       aria-hidden="true"
     >
-      <p className="mb-2.5 font-sans font-semibold text-forge-teal text-nano uppercase tracking-widest opacity-90">
+      <p className="forge-orb-label-tracking mb-2.5 font-sans font-semibold text-forge-teal text-nano uppercase opacity-90">
         Trust Score
       </p>
       <div className="flex items-center gap-2.5">
@@ -40,25 +40,13 @@ export function TrustCard() {
             cy="20"
             r="16"
             fill="none"
-            stroke="url(#heroTrustGrad)"
+            stroke="var(--color-forge-teal)"
             strokeWidth="3"
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={circumference * (1 - score / 5)}
             transform="rotate(-90 20 20)"
           />
-          <defs>
-            <linearGradient
-              id="heroTrustGrad"
-              x1="0%"
-              y1="0%"
-              x2="100%"
-              y2="0%"
-            >
-              <stop offset="0%" stopColor="#0D9488" />
-              <stop offset="100%" stopColor="#14B8A6" />
-            </linearGradient>
-          </defs>
           <text
             x="20"
             y="20"
@@ -76,7 +64,7 @@ export function TrustCard() {
           <p className="font-sans text-nano text-text-dark-muted leading-snug">
             Verified
           </p>
-          <p className="font-sans font-semibold text-forge-teal-light text-nano leading-snug">
+          <p className="font-sans font-semibold text-forge-teal text-nano leading-snug">
             Reliable
           </p>
         </div>

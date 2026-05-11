@@ -21,12 +21,12 @@ export function AppBottomNav({ className }: AppBottomNavProps) {
       <nav
         aria-label="Mobile navigation"
         className={cn(
-          "pointer-events-auto mx-auto flex h-16 w-full max-w-86 items-stretch overflow-hidden rounded-full",
-          "border border-border/75 bg-background/94 shadow-2xl backdrop-blur-2xl",
+          "pointer-events-auto mx-auto flex h-17 w-full max-w-88 items-stretch overflow-hidden rounded-full",
+          "border border-border/55 bg-background/78 shadow-2xl shadow-black/15 backdrop-blur-2xl dark:bg-background/68",
           "contain-layout",
         )}
       >
-        <div className="grid size-full grid-cols-5 items-stretch px-2">
+        <div className="grid size-full grid-cols-5 items-stretch gap-1 p-1.5">
           {appBottomNavigation.map((tab) => (
             <TabButton key={tab.id} item={tab} pathname={pathname} />
           ))}

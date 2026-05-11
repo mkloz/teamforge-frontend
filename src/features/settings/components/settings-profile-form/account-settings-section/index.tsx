@@ -1,3 +1,4 @@
+import { ErrorProfileSaveVisual } from "@/assets/error-state/error-profile-save";
 import { Form } from "@/shared/components/ui/form";
 import { AccountFacts } from "./account-facts";
 import { AccountFormFooter } from "./account-form-footer";
@@ -62,11 +63,20 @@ export function AccountSettingsSection({
           </FormGroup>
 
           {(saveMessage || saveError) && (
-            <p
-              className={`text-sm ${saveError ? "text-destructive" : "text-forge-teal"}`}
+            <div
+              className={
+                saveError
+                  ? "flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/5 px-3 py-3"
+                  : "text-forge-teal text-sm"
+              }
             >
-              {saveError ?? saveMessage}
-            </p>
+              {saveError ? (
+                <ErrorProfileSaveVisual className="w-14 shrink-0 text-foreground" />
+              ) : null}
+              <p className={saveError ? "text-destructive text-sm" : ""}>
+                {saveError ?? saveMessage}
+              </p>
+            </div>
           )}
 
           <AccountFormFooter isSaving={isSaving} />

@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-
+import { GroupAvatarPlaceholderVisual } from "@/assets/empty-state/group-avatar-placeholder";
 import { Avatar } from "@/shared/components/common/avatar";
 import { FileDropzone } from "@/shared/components/common/file-dropzone";
 import { Button } from "@/shared/components/ui/button";
@@ -30,12 +30,18 @@ export function GroupAvatarSection({
 
       <div className="avatar-body-grid-sm sm:avatar-body-grid-lg grid items-stretch gap-3">
         <div className="relative size-18 overflow-hidden rounded-lg border border-border bg-muted sm:h-24 sm:w-24 sm:rounded-xl">
-          <Avatar
-            src={avatarImage}
-            name={groupName || planTitle}
-            shape="rounded"
-            className="size-full rounded-lg text-sm sm:rounded-xl sm:text-lg"
-          />
+          {avatarImage ? (
+            <Avatar
+              src={avatarImage}
+              name={groupName || planTitle}
+              shape="rounded"
+              className="size-full rounded-lg text-sm sm:rounded-xl sm:text-lg"
+            />
+          ) : (
+            <div className="flex size-full items-center justify-center bg-card/70 p-2">
+              <GroupAvatarPlaceholderVisual className="w-12 text-foreground sm:w-14" />
+            </div>
+          )}
           {avatarImage && (
             <Button
               type="button"

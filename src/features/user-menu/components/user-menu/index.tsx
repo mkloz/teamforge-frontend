@@ -41,7 +41,7 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
         side="right"
         className="z-70 flex w-full flex-col border-border border-l bg-canvas p-0 text-foreground shadow-black/15 shadow-xl sm:max-w-md [&>button]:top-5 [&>button]:right-5 [&>button]:rounded-full [&>button]:border [&>button]:border-border/70 [&>button]:bg-card/85 [&>button]:p-2 [&>button]:opacity-100"
       >
-        <SheetHeader className="border-border/70 border-b px-5 py-5 pr-14 text-left">
+        <SheetHeader className="border-border/70 border-b px-5 py-4 pr-14 text-left">
           <SheetTitle className="font-black text-xl tracking-tight">
             Account
           </SheetTitle>
@@ -54,11 +54,11 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
           <UserMenuProfileSummary />
           <AppearanceSwitch />
 
-          <section className="flex flex-col gap-1 px-5 py-4">
+          <section className="flex flex-col gap-0.5 px-5 py-3">
             <SheetClose asChild>
               <Link
                 {...buildProfileNavigation()}
-                className="flex min-w-0 items-center gap-3 rounded-xl px-3 py-2.5 text-foreground transition-colors duration-150 hover:bg-muted/55"
+                className="flex min-w-0 items-center gap-3 rounded-xl px-3 py-2 text-foreground transition-colors duration-150 hover:bg-muted/55"
               >
                 <MenuLinkItemContent
                   icon={UserRound}
@@ -76,9 +76,9 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
             />
           </section>
 
-          <section className="border-border/70 border-t px-5 py-4">
+          <section className="border-border/70 border-t px-5 py-3">
             <h3 className="font-black text-foreground text-sm">Settings</h3>
-            <div className="mt-2 flex flex-col gap-1">
+            <div className="mt-1.5 flex flex-col gap-0.5">
               <MenuLinkItem
                 icon={SlidersHorizontal}
                 label="Group fit"
@@ -106,7 +106,7 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
             </div>
           </section>
 
-          <div className="mt-auto border-border/70 border-t p-5">
+          <div className="mt-auto border-border/70 border-t p-4">
             <UserMenuSignOutButton />
           </div>
         </div>

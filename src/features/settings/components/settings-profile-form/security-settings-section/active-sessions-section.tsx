@@ -1,4 +1,5 @@
 import { Shield } from "lucide-react";
+import { EmptyActiveSessionsVisual } from "@/assets/empty-state/empty-active-sessions";
 import {
   SessionRow,
   StatPill,
@@ -82,9 +83,12 @@ export function ActiveSessionsSection({
             />
           ))
         ) : (
-          <p className="py-4 text-slate-muted text-sm">
-            No active sessions are available right now.
-          </p>
+          <div className="flex flex-col items-start gap-3 py-5 sm:flex-row sm:items-center sm:gap-4">
+            <EmptyActiveSessionsVisual className="w-16 shrink-0 text-foreground sm:w-20" />
+            <p className="text-slate-muted text-sm">
+              No active sessions are available right now.
+            </p>
+          </div>
         )}
       </div>
     </section>

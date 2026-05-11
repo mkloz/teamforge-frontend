@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Compass } from "lucide-react";
-
+import { EmptyRecommendationsVisual } from "@/assets/empty-state/empty-recommendations";
 import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
@@ -48,13 +47,8 @@ export function RecommendedGroups() {
       />
 
       {visibleRecommendations.length === 0 ? (
-        <div className="flex items-center gap-3 border-border/70 border-y border-dashed bg-card/40 px-1 py-5 sm:px-4">
-          <div
-            className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground"
-            aria-hidden="true"
-          >
-            <Compass className="size-5" />
-          </div>
+        <div className="flex items-center gap-3 border-border/70 border-y border-dashed bg-card/40 px-3 py-5 sm:px-4">
+          <EmptyRecommendationsVisual className="w-16 shrink-0 text-foreground sm:w-20" />
           <div className="min-w-0">
             <p className="font-black text-foreground text-sm">
               No strong openings yet.

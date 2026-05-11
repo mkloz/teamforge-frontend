@@ -1,3 +1,4 @@
+import { PlanArtworkPendingVisual } from "@/assets/empty-state/plan-artwork-pending";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Image } from "@/shared/components/common/image";
 import { cn } from "@/shared/lib/utils";
@@ -38,6 +39,18 @@ export function IdentityPreviewCard({
               alt=""
               className="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
             />
+          ) : !activePreset ? (
+            <div className="flex size-full items-center justify-between gap-3 px-4 py-3">
+              <div className="min-w-0">
+                <span className="font-bold text-slate-muted text-xs uppercase tracking-widest">
+                  Artwork pending
+                </span>
+                <p className="mt-2 line-clamp-2 max-w-56 font-black text-foreground text-lg leading-tight">
+                  {displayPlanTitle}
+                </p>
+              </div>
+              <PlanArtworkPendingVisual className="w-20 shrink-0 text-foreground" />
+            </div>
           ) : (
             <div className="flex size-full flex-col justify-between p-4">
               <span className="font-bold text-slate-muted text-xs uppercase tracking-widest">

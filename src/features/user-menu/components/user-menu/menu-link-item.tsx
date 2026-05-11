@@ -23,7 +23,7 @@ export function MenuLinkItem({
     <SheetClose asChild>
       <Link
         {...navigation}
-        className="flex min-w-0 items-center gap-3 rounded-xl px-3 py-2.5 text-foreground transition-colors duration-150 hover:bg-muted/55"
+        className="flex min-w-0 items-center gap-3 rounded-xl px-3 py-2 text-foreground transition-colors duration-150 hover:bg-muted/55"
       >
         <MenuLinkItemContent
           icon={icon}

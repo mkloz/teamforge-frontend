@@ -4,7 +4,7 @@ export const CANDIDATES = [
   {
     id: 1,
     mbti: "INTJ",
-    color: "#14b8a6",
+    color: "#0D9488",
     tag: "Architect",
     avatar: "/avatars/avatar-1.jpg",
   },
@@ -74,7 +74,7 @@ export const CANDIDATES = [
   {
     id: 11,
     mbti: "ISTJ",
-    color: "#14b8a6",
+    color: "#0D9488",
     tag: "Logistician",
     avatar: "/avatars/avatar-11.jpg",
   },
@@ -91,10 +91,10 @@ export const SELECTED_IDS = new Set([2, 4, 7, 10]);
 
 export const FACTORS = [
   { label: "How you connect", weight: 30, color: "#0D9488" },
-  { label: "Personality mesh", weight: 30, color: "#14B8A6" },
+  { label: "Personality mesh", weight: 30, color: "#0D9488" },
   { label: "Mutual friends", weight: 20, color: "#F59E0B" },
   { label: "Trust score", weight: 10, color: "#0D9488" },
-  { label: "Age alignment", weight: 10, color: "#14B8A6" },
+  { label: "Age alignment", weight: 10, color: "#0D9488" },
 ];
 
 export const PHASE_LABELS: Record<Phase, string> = {

@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { X } from "lucide-react";
 import { useState } from "react";
+import { EmptyNotificationsVisual } from "@/assets/empty-state/empty-notifications";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
 import { resolveNotificationDestination } from "@/features/notifications/lib/notification-destination";
 import { Button } from "@/shared/components/ui/button";
@@ -102,9 +103,12 @@ export function NotificationsDrawer({
         {/* Scrollable list */}
         <div className="flex-1 overflow-y-auto overscroll-contain">
           {items.length === 0 ? (
-            <p className="px-4 py-16 text-center text-muted-foreground text-sm">
-              No notifications yet.
-            </p>
+            <div className="flex flex-col items-center px-6 py-16 text-center">
+              <EmptyNotificationsVisual className="w-32 text-foreground" />
+              <p className="mt-5 max-w-44 font-medium text-muted-foreground text-sm leading-relaxed">
+                No notifications yet.
+              </p>
+            </div>
           ) : (
             <>
               <NotificationsSection

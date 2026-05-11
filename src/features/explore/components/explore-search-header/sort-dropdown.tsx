@@ -40,7 +40,7 @@ export function SortDropdown() {
             key={id}
             onClick={() => setSortBy(id)}
             className={cn(
-              "flex cursor-default items-center gap-2.5 rounded-lg px-3 py-2 transition-colors",
+              "flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 transition-colors",
               sortBy === id
                 ? "bg-primary/10 font-bold text-primary"
                 : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",

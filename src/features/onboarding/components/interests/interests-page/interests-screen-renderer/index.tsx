@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 
+import { ErrorOnboardingCatalogVisual } from "@/assets/error-state/error-onboarding-catalog";
 import { InterestsBrowse } from "@/features/onboarding/components/interests/interests-browse";
 import { InterestsReview } from "@/features/onboarding/components/interests/interests-review";
 import type { UseInterestsReturn } from "@/features/onboarding/hooks/use-interests";
@@ -93,6 +94,9 @@ function InterestsBrowseScreen({
       <InterestsCatalogState
         title="Couldn’t load interests"
         body="The interest catalog didn’t come through. Try again."
+        visual={
+          <ErrorOnboardingCatalogVisual className="mb-1 w-32 text-foreground" />
+        }
         action={
           <Button
             variant="primary"

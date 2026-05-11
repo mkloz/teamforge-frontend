@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 
+import { ErrorAuthLinkVisual } from "@/assets/error-state/error-auth-link";
 import { Button } from "@/shared/components/ui/button";
 import { buildAuthRouteNavigation } from "@/shared/lib/auth-route";
 
@@ -28,8 +29,9 @@ export function ActivateAccountStatus({
   if (state === "error") {
     return (
       <div className="space-y-4">
-        <div className="rounded-xl border border-destructive/20 bg-destructive/8 px-4 py-3 text-foreground text-sm">
-          {errorMessage}
+        <div className="rounded-xl border border-destructive/20 bg-destructive/8 px-4 py-5 text-center text-foreground text-sm">
+          <ErrorAuthLinkVisual className="mx-auto mb-3 w-28 text-foreground" />
+          <p>{errorMessage}</p>
         </div>
         <Button asChild size="lg" className="w-full">
           <Link {...buildAuthRouteNavigation("/auth/register", returnTo)}>

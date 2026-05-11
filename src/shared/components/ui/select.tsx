@@ -39,7 +39,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "group/select flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-card px-3.5 py-2 font-medium font-sans text-ink text-sm shadow-xs outline-none transition-all duration-200 placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-muted/50 disabled:text-slate-muted disabled:opacity-70 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/15 data-[placeholder]:text-slate-muted/70 *:data-[slot=select-value]:flex *:data-[slot=select-value]:min-w-0 *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 *:data-[slot=select-value]:truncate dark:bg-input/30 dark:aria-invalid:ring-destructive/30 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-slate-muted [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "group/select flex h-11 w-full min-w-0 cursor-pointer items-center justify-between gap-2 rounded-lg border border-border bg-card px-3.5 py-2 font-medium font-sans text-ink text-sm shadow-xs outline-none transition-all duration-200 placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 disabled:cursor-not-allowed disabled:bg-muted/50 disabled:text-slate-muted disabled:opacity-70 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/15 data-[placeholder]:text-slate-muted/70 *:data-[slot=select-value]:flex *:data-[slot=select-value]:min-w-0 *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 *:data-[slot=select-value]:truncate dark:bg-input/30 dark:aria-invalid:ring-destructive/30 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-slate-muted [&_svg]:pointer-events-none [&_svg]:shrink-0",
         size === "sm" && "h-9 px-3 text-xs",
         className,
       )}
@@ -127,7 +127,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex min-h-9 w-full cursor-default select-none items-center gap-2 rounded-lg py-1.5 pr-8 pl-2.5 font-medium text-ink text-sm outline-hidden transition-colors focus:bg-muted/65 data-disabled:pointer-events-none data-[state=checked]:bg-muted/55 data-disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-slate-muted [&_svg]:pointer-events-none [&_svg]:shrink-0 *:last:[span]:flex *:last:[span]:items-center *:last:[span]:gap-2",
+        "relative flex min-h-9 w-full cursor-pointer select-none items-center gap-2 rounded-lg py-1.5 pr-8 pl-2.5 font-medium text-ink text-sm outline-hidden transition-colors focus:bg-muted/65 data-disabled:cursor-not-allowed data-[state=checked]:bg-muted/55 data-disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-slate-muted [&_svg]:pointer-events-none [&_svg]:shrink-0 *:last:[span]:flex *:last:[span]:items-center *:last:[span]:gap-2",
         className,
       )}
       {...props}
@@ -166,7 +166,7 @@ function SelectScrollUpButton({
     <SelectPrimitive.ScrollUpButton
       data-slot="select-scroll-up-button"
       className={cn(
-        "flex h-8 cursor-default items-start justify-center bg-linear-to-b from-card via-card/85 to-transparent pt-1 text-slate-muted",
+        "flex h-8 cursor-pointer items-start justify-center bg-linear-to-b from-card via-card/85 to-transparent pt-1 text-slate-muted",
         className,
       )}
       {...props}
@@ -184,7 +184,7 @@ function SelectScrollDownButton({
     <SelectPrimitive.ScrollDownButton
       data-slot="select-scroll-down-button"
       className={cn(
-        "flex h-8 cursor-default items-end justify-center bg-linear-to-t from-card via-card/85 to-transparent pb-1 text-slate-muted",
+        "flex h-8 cursor-pointer items-end justify-center bg-linear-to-t from-card via-card/85 to-transparent pb-1 text-slate-muted",
         className,
       )}
       {...props}

@@ -27,7 +27,7 @@ export function OrbitalRings({ cx, cy, size }: OrbitalRingsProps) {
         cy={cy}
         r={size * 0.4}
         fill="none"
-        stroke="var(--color-forge-teal-light)"
+        stroke="var(--color-forge-teal)"
         strokeWidth="0.5"
         opacity="0.15"
         strokeDasharray="2 6"

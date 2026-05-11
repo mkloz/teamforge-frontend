@@ -77,7 +77,7 @@
       "nursery": {
         "noFloatingPromises": "error",
         "useSortedClasses": {
-          "level": "warn",
+          "level": "error",
           "options": {
             "functions": ["clsx", "cva", "twMerge", "cn"]
           }

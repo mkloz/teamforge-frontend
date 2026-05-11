@@ -8,7 +8,7 @@ import { cva, type VariantProps } from "class-variance-authority";
  * - High-speed transition: 150ms duration.
  */
 export const buttonVariants = cva(
-  "group relative inline-flex min-w-0 items-center justify-center gap-2 whitespace-nowrap font-bold text-sm transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 active:enabled:scale-95 disabled:pointer-events-none data-[loading=true]:cursor-wait",
+  "group relative inline-flex min-w-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap font-bold text-sm transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 active:enabled:scale-95 disabled:cursor-not-allowed data-[loading=true]:cursor-wait",
   {
     variants: {
       variant: {
@@ -17,9 +17,9 @@ export const buttonVariants = cva(
         secondary:
           "border-2 border-button-secondary-border bg-spark-amber text-ink after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-spark-amber active:enabled:translate-y-0 active:enabled:shadow-none hover:enabled:-translate-y-1 hover:enabled:shadow-button-secondary",
         outline:
-          "border-2 border-ink bg-transparent text-ink after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-ink active:enabled:translate-y-0 active:enabled:shadow-none hover:enabled:-translate-y-1 hover:enabled:shadow-button-outline dark:border-white dark:text-white focus-visible:dark:ring-white hover:enabled:dark:shadow-button-outline-dark",
+          "border-2 border-ink bg-transparent text-ink after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-ink active:enabled:translate-y-0! active:enabled:shadow-none! hover:enabled:-translate-y-1 hover:enabled:shadow-button-outline dark:border-white dark:text-white focus-visible:dark:ring-white hover:enabled:dark:shadow-button-outline-dark",
         destructive:
-          "border-2 border-destructive/50 bg-transparent text-destructive after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-destructive active:enabled:translate-y-0 active:enabled:shadow-none hover:enabled:-translate-y-1 hover:enabled:shadow-button-destructive hover:enabled:dark:shadow-button-destructive",
+          "border-2 border-destructive/50 bg-transparent text-destructive after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-destructive active:enabled:translate-y-0! active:enabled:shadow-none! hover:enabled:-translate-y-1 hover:enabled:shadow-button-destructive hover:enabled:dark:shadow-button-destructive",
         ghost:
           "border-2 border-transparent bg-transparent text-ink focus-visible:ring-ink active:enabled:translate-y-px active:enabled:bg-ink/10 hover:enabled:bg-ink/5 dark:text-white focus-visible:dark:ring-white hover:enabled:dark:bg-white/10",
         accentGhost:
@@ -36,7 +36,7 @@ export const buttonVariants = cva(
         default: "h-11 rounded-lg px-6",
         xs: "h-9 rounded-lg px-3 text-xs",
         sm: "h-9 rounded-lg px-4",
-        md: "h-11 rounded-xl px-6",
+        md: "h-11 rounded-lg px-6",
         lg: "h-13 rounded-xl px-5 text-base sm:px-8",
         hero: "h-14 rounded-xl px-6 text-base sm:h-16 sm:px-10 sm:text-lg",
         icon: "size-11 rounded-xl",

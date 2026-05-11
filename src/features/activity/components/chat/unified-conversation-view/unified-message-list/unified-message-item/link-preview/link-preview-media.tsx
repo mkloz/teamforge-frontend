@@ -1,3 +1,4 @@
+import { ErrorLinkPreviewUnavailableVisual } from "@/assets/error-state/error-link-preview-unavailable";
 import { Image } from "@/shared/components/common/image";
 import type { LinkPreview as LinkPreviewData } from "@/shared/schemas";
 
@@ -7,7 +8,7 @@ interface LinkPreviewMediaProps {
 
 export function LinkPreviewMedia({ data }: LinkPreviewMediaProps) {
   if (!data.image) {
-    return null;
+    return <LinkPreviewUnavailable />;
   }
 
   return (
@@ -16,7 +17,20 @@ export function LinkPreviewMedia({ data }: LinkPreviewMediaProps) {
         src={data.image}
         alt={data.title ?? ""}
         className="transition-transform duration-500 group-hover:scale-105"
+        fallbackComponent={<LinkPreviewUnavailable />}
+        noImageComponent={<LinkPreviewUnavailable />}
       />
+    </div>
+  );
+}
+
+function LinkPreviewUnavailable() {
+  return (
+    <div className="flex size-full min-h-32 flex-col items-center justify-center gap-2 bg-muted/40 text-center">
+      <ErrorLinkPreviewUnavailableVisual className="w-20 text-foreground" />
+      <span className="font-medium text-muted-foreground text-xs">
+        Preview unavailable
+      </span>
     </div>
   );
 }

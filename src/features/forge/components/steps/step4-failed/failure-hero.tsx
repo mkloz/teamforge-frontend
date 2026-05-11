@@ -1,4 +1,4 @@
-import { AlertCircle } from "lucide-react";
+import { ErrorForgeGroupFailedVisual } from "@/assets/error-state/error-forge-group-failed";
 
 interface FailureHeroProps {
   description: string;
@@ -7,10 +7,8 @@ interface FailureHeroProps {
 export function FailureHero({ description }: FailureHeroProps) {
   return (
     <section className="overflow-hidden rounded-xl border border-spark-amber/25 bg-spark-amber/8">
-      <div className="flex items-start gap-3 px-4 py-4">
-        <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-spark-amber text-ink shadow-sm shadow-spark-amber/25">
-          <AlertCircle size={20} strokeWidth={2.4} />
-        </div>
+      <div className="flex flex-col items-start gap-3 px-4 py-4 sm:flex-row sm:items-center">
+        <ErrorForgeGroupFailedVisual className="w-24 shrink-0 text-foreground sm:w-28" />
         <div className="min-w-0 flex-1">
           <p className="font-black text-spark-amber text-xs uppercase tracking-wide">
             Pool constraint

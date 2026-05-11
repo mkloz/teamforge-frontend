@@ -1,5 +1,5 @@
-import { AlertCircle, Check, Plus, Users } from "lucide-react";
-
+import { Check, Plus, Users } from "lucide-react";
+import { EmptyInviteCandidatesVisual } from "@/assets/empty-state/empty-invite-candidates";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { Slider } from "@/shared/components/ui/slider";
@@ -81,11 +81,8 @@ export function ManualGroupDetails({
         )}
 
         {!isLoadingFriends && friends.length === 0 && (
-          <div className="flex gap-3 rounded-lg border border-border/40 bg-card p-4">
-            <AlertCircle
-              size={16}
-              className="mt-0.5 shrink-0 text-muted-foreground/60"
-            />
+          <div className="flex items-center gap-3 rounded-lg border border-border/40 bg-card p-4">
+            <EmptyInviteCandidatesVisual className="w-16 shrink-0 text-foreground" />
             <p className="text-muted-foreground text-xs leading-relaxed">
               You do not have friends to invite yet. The group can still be
               created now, then shared later from the group hub.

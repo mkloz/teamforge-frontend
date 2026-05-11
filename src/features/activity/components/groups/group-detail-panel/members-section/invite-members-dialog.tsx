@@ -1,6 +1,7 @@
 import { Search, UserPlus } from "lucide-react";
 import { useMemo, useState } from "react";
-
+import { EmptyInviteCandidatesVisual } from "@/assets/empty-state/empty-invite-candidates";
+import { ErrorInviteSendFailedVisual } from "@/assets/error-state/error-invite-send-failed";
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
@@ -13,6 +14,7 @@ import {
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
 import { Input } from "@/shared/components/ui/input";
+import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { cn } from "@/shared/lib/utils";
 
 interface InviteMembersDialogProps {
@@ -30,6 +32,7 @@ export function InviteMembersDialog({
 }: InviteMembersDialogProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [inviteError, setInviteError] = useState<string | null>(null);
 
   const filteredCandidates = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -52,9 +55,20 @@ export function InviteMembersDialog({
   }, [candidates, query]);
 
   const handleInvite = async (inviteeId: string) => {
-    await onInvite(inviteeId);
-    setOpen(false);
-    setQuery("");
+    setInviteError(null);
+
+    try {
+      await onInvite(inviteeId);
+      setOpen(false);
+      setQuery("");
+    } catch (error) {
+      setInviteError(
+        getApiErrorMessage(
+          error,
+          "We couldn't send that invite. Please try again.",
+        ),
+      );
+    }
   };
 
   return (
@@ -79,10 +93,22 @@ export function InviteMembersDialog({
         </DialogHeader>
 
         <div className="flex flex-col gap-4 px-6 py-5">
+          {inviteError ? (
+            <div className="flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/5 px-3 py-3">
+              <ErrorInviteSendFailedVisual className="w-16 shrink-0 text-foreground" />
+              <p className="font-medium text-destructive text-sm leading-relaxed">
+                {inviteError}
+              </p>
+            </div>
+          ) : null}
+
           <div>
             <Input
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setInviteError(null);
+              }}
               placeholder="Search friends by name, city, or personality"
               leftIcon={<Search className="size-4" />}
             />
@@ -90,8 +116,11 @@ export function InviteMembersDialog({
 
           <div className="flex max-h-80 flex-col gap-2 overflow-y-auto pr-1">
             {filteredCandidates.length === 0 ? (
-              <div className="rounded-xl border border-border/70 border-dashed bg-background/50 px-4 py-6 text-center text-slate-muted text-sm">
-                No eligible friends to invite right now.
+              <div className="flex flex-col items-center rounded-xl border border-border/70 border-dashed bg-background/50 px-4 py-6 text-center">
+                <EmptyInviteCandidatesVisual className="w-28 text-foreground" />
+                <p className="mt-3 text-slate-muted text-sm">
+                  No eligible friends to invite right now.
+                </p>
               </div>
             ) : (
               filteredCandidates.map((candidate) => {

@@ -110,7 +110,7 @@ export function ForgeOrb() {
               style={dotStyle}
             >
               <div className="absolute inset-0">
-                <div className="forge-orb-dot-shadow absolute -top-1 left-1/2 size-2 -translate-x-1/2 rounded-full bg-(--dot-color) transition-all duration-100 ease-linear" />
+                <div className="forge-orb-dot-shadow forge-orb-dot-transition absolute -top-1 left-1/2 size-2 -translate-x-1/2 rounded-full bg-(--dot-color) duration-100 ease-linear" />
               </div>
             </div>
           );

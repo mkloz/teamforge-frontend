@@ -8,7 +8,7 @@ export function AppearanceSwitch() {
   const CurrentIcon = theme === Theme.DARK ? Moon : Sun;
 
   return (
-    <section className="flex items-center justify-between gap-3 border-border/70 border-y px-5 py-3">
+    <section className="flex items-center justify-between gap-3 border-border/70 border-y px-5 py-2.5">
       <div className="flex min-w-0 items-center gap-2.5">
         <span className="flex size-8 shrink-0 items-center justify-center text-forge-teal">
           <CurrentIcon size={16} aria-hidden="true" />

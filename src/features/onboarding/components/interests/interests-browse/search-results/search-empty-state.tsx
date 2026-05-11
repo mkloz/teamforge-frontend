@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { EmptyInterestSearchVisual } from "@/assets/empty-state/empty-interest-search";
 
 interface SearchEmptyStateProps {
   query: string;
@@ -7,9 +7,7 @@ interface SearchEmptyStateProps {
 export function SearchEmptyState({ query }: SearchEmptyStateProps) {
   return (
     <div className="mx-auto flex max-w-sm flex-col items-center py-16 text-center">
-      <div className="mb-4 flex size-12 items-center justify-center rounded-lg border border-forge-teal/15 bg-forge-teal/5">
-        <Search size={20} className="text-forge-teal/70" strokeWidth={2} />
-      </div>
+      <EmptyInterestSearchVisual className="mb-4 w-32 text-foreground" />
       <p className="font-black font-sans text-base text-ink tracking-tight">
         No exact interest for &ldquo;{query}&rdquo;
       </p>

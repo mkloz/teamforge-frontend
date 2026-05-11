@@ -63,6 +63,8 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
           : searchQuery
             ? "No conversations match your search"
             : "No conversations yet";
+  const emptyArtwork =
+    searchQuery || activeFilter !== "all" ? "filtered" : "default";
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -93,6 +95,7 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
           {items.length === 0 ? (
             <EmptyState
               label={emptyLabel}
+              artwork={emptyArtwork}
               showForgeCta={!searchQuery && activeFilter === "all"}
               showExploreCta={!searchQuery && activeFilter !== "direct"}
             />

@@ -262,7 +262,7 @@ export function AlgoNode({
               fill={
                 node.type === "selected" && phase !== "evaluating"
                   ? "#F59E0B"
-                  : "rgba(20, 184, 166, 0.8)"
+                  : "rgba(13, 148, 136, 0.8)"
               }
               fontSize={size * 0.016}
               className="pointer-events-none font-bold font-mono tracking-wider"

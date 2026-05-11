@@ -1,5 +1,6 @@
 import type { RefObject, UIEvent } from "react";
 import { memo, useEffect, useMemo, useState } from "react";
+import { EmptyMessageThreadVisual } from "@/assets/empty-state/empty-message-thread";
 import { useChatScroll } from "@/features/activity/hooks/use-chat-scroll";
 import { useMessageGrouping } from "@/features/activity/hooks/use-message-grouping";
 import { useVirtualizedMessageBlocks } from "@/features/activity/hooks/use-virtualized-message-blocks";
@@ -124,6 +125,7 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
       messages,
       scrollToMessage,
     });
+  const isEmpty = messages.length === 0;
 
   function handleViewportScroll(event: UIEvent<HTMLDivElement>) {
     handleScroll(event);
@@ -146,30 +148,49 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
       <MessageListViewport
         containerRef={containerRef}
         onScroll={handleViewportScroll}
-        totalHeight={totalHeight}
+        totalHeight={isEmpty ? 0 : totalHeight}
       >
-        {isLoadingOlderMessages && <LoadingOlderIndicator />}
-        <MessageBlockList
-          blocks={visibleBlocks}
-          getBlockRef={getBlockRef}
-          getMessageRef={getMessageRef}
-          highlightedMessageId={highlightedMessageId}
-          kind={kind}
-          onAvatarClick={handleAvatarClick}
-        />
-        <MessageListBottomAnchor
-          messagesEndRef={messagesEndRef}
-          totalHeight={totalHeight}
-          typingUsers={typingUsers}
-        />
+        {isEmpty ? (
+          <div className="flex min-h-full flex-col items-center justify-center px-6 py-10 text-center">
+            <div className="flex max-w-xs flex-col items-center">
+              <EmptyMessageThreadVisual className="w-36 text-foreground" />
+              <p className="mt-4 font-semibold text-foreground text-sm">
+                No messages yet
+              </p>
+              <p className="mt-1 text-muted-foreground text-xs leading-relaxed">
+                Start the thread when you are ready to plan together.
+              </p>
+            </div>
+            <div ref={messagesEndRef} className="h-0 w-full shrink-0" />
+          </div>
+        ) : (
+          <>
+            {isLoadingOlderMessages && <LoadingOlderIndicator />}
+            <MessageBlockList
+              blocks={visibleBlocks}
+              getBlockRef={getBlockRef}
+              getMessageRef={getMessageRef}
+              highlightedMessageId={highlightedMessageId}
+              kind={kind}
+              onAvatarClick={handleAvatarClick}
+            />
+            <MessageListBottomAnchor
+              messagesEndRef={messagesEndRef}
+              totalHeight={totalHeight}
+              typingUsers={typingUsers}
+            />
+          </>
+        )}
       </MessageListViewport>
 
-      <ScrollActionButtons
-        showScrollToBottom={showScrollToBottom}
-        onScrollToBottom={scrollToBottom}
-        hasProposalShortcut={hasProposalShortcut}
-        onScrollToProposal={scrollToClosestProposal}
-      />
+      {isEmpty ? null : (
+        <ScrollActionButtons
+          showScrollToBottom={showScrollToBottom}
+          onScrollToBottom={scrollToBottom}
+          hasProposalShortcut={hasProposalShortcut}
+          onScrollToProposal={scrollToClosestProposal}
+        />
+      )}
 
       <MessageProfileDrawer
         selectedSender={selectedSender}

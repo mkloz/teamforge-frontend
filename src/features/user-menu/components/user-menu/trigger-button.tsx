@@ -1,4 +1,5 @@
 import { Settings } from "lucide-react";
+import type { ComponentPropsWithoutRef, Ref } from "react";
 
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { Avatar } from "@/shared/components/common/avatar";
@@ -7,23 +8,37 @@ import { cn } from "@/shared/lib/utils";
 
 export type UserMenuTrigger = "avatar" | "settings";
 
-interface UserMenuTriggerButtonProps {
+interface UserMenuTriggerButtonProps
+  extends Omit<ComponentPropsWithoutRef<"button">, "children"> {
+  ref?: Ref<HTMLButtonElement>;
   trigger: UserMenuTrigger;
 }
 
-export function UserMenuTriggerButton({ trigger }: UserMenuTriggerButtonProps) {
+export function UserMenuTriggerButton({
+  className,
+  ref,
+  trigger,
+  ...props
+}: UserMenuTriggerButtonProps) {
   const { data: currentUser } = useCurrentUserQuery();
   const isSettingsTrigger = trigger === "settings";
 
   return (
     <Button
-      variant={isSettingsTrigger ? "surface" : "ghost"}
+      ref={ref}
+      variant={isSettingsTrigger ? "inverseGhost" : "ghost"}
       size="icon"
-      className={cn("shrink-0 rounded-full", isSettingsTrigger && "size-10")}
+      className={cn(
+        "shrink-0 rounded-full",
+        isSettingsTrigger &&
+          "size-10 border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-forge-teal hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-forge-teal data-[state=open]:bg-white data-[state=open]:text-forge-teal",
+        className,
+      )}
       aria-label="Open account drawer"
+      {...props}
     >
       {isSettingsTrigger ? (
-        <Settings size={18} aria-hidden="true" />
+        <Settings size={18} strokeWidth={2.25} aria-hidden="true" />
       ) : (
         <Avatar
           src={currentUser?.avatar}

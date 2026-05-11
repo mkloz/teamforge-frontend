@@ -28,7 +28,7 @@ export function GroupCard() {
       aria-hidden="true"
     >
       <div className="mb-2.5 flex items-center justify-between">
-        <p className="font-sans font-semibold text-forge-teal text-nano uppercase tracking-widest opacity-90">
+        <p className="forge-orb-label-tracking font-sans font-semibold text-forge-teal text-nano uppercase opacity-90">
           Your Group
         </p>
         <span className="rounded-full border border-spark-amber/20 bg-spark-amber/10 px-2 py-0.5 font-bold font-sans text-nano text-spark-amber">

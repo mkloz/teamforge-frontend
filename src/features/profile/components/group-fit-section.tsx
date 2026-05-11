@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { Handshake, Route, ShieldAlert } from "lucide-react";
+import { EmptyGroupFitVisual } from "@/assets/empty-state/empty-group-fit";
 
 import type { GroupFitInsight } from "../lib/profile-insights";
 import { ProfileSectionHeading } from "./profile-section-heading";
@@ -9,6 +10,29 @@ interface GroupFitSectionProps {
 }
 
 export function GroupFitSection({ insight }: GroupFitSectionProps) {
+  const showEmptyVisual =
+    insight.title === "Fit still forming" ||
+    insight.title === "Fit needs an activity";
+
+  if (showEmptyVisual) {
+    return (
+      <section className="flex flex-col gap-6">
+        <ProfileSectionHeading>How they fit</ProfileSectionHeading>
+        <div className="flex max-w-3xl flex-col items-center gap-4 sm:flex-row">
+          <EmptyGroupFitVisual className="w-32 shrink-0 text-foreground" />
+          <div className="flex min-w-0 flex-col gap-3 text-center sm:text-left">
+            <h2 className="font-black text-2xl text-ink tracking-tight md:text-3xl">
+              {insight.title}
+            </h2>
+            <p className="text-pretty font-medium text-base text-ink/85 leading-relaxed md:text-lg">
+              {getCompactSummary(insight.summary)}
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="flex flex-col gap-6">
       <div className="flex flex-col gap-4">

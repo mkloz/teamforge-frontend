@@ -1,5 +1,7 @@
-import { ImageOff, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { memo, useState } from "react";
+import { ErrorMediaImageUnavailableVisual } from "@/assets/error-state/error-media-image-unavailable";
+import { ErrorMediaVideoUnavailableVisual } from "@/assets/error-state/error-media-video-unavailable";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import { cacheMediaIntrinsicSize } from "@/features/activity/lib/media-intrinsic-size";
 import { Image } from "@/shared/components/common/image";
@@ -26,9 +28,7 @@ export const LightboxImage = memo(function LightboxImage({
 
       {state === "error" && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-          <div className="flex size-16 items-center justify-center rounded-xl border border-white/10 bg-white/5">
-            <ImageOff className="size-7 text-white/30" strokeWidth={1} />
-          </div>
+          <ErrorMediaImageUnavailableVisual className="w-36 text-white" />
           <p className="font-medium text-white/40 text-xs uppercase tracking-wider">
             Image unavailable
           </p>
@@ -84,9 +84,7 @@ export const LightboxVideo = memo(function LightboxVideo({
 
       {hasError && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-          <div className="flex size-16 items-center justify-center rounded-xl border border-white/10 bg-white/5">
-            <ImageOff className="size-7 text-white/30" strokeWidth={1} />
-          </div>
+          <ErrorMediaVideoUnavailableVisual className="w-36 text-white" />
           <p className="font-medium text-white/40 text-xs uppercase tracking-wider">
             Video unavailable
           </p>

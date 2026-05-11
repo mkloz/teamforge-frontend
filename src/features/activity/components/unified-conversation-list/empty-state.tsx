@@ -1,13 +1,17 @@
 import { Link } from "@tanstack/react-router";
-import { MessageSquare, UsersRound } from "lucide-react";
+import { UsersRound } from "lucide-react";
 import { memo } from "react";
-
+import { EmptyConversationsVisual } from "@/assets/empty-state/empty-conversations";
+import { EmptyConversationsFilteredVisual } from "@/assets/empty-state/empty-conversations-filtered";
 import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
 import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
 import { Button } from "@/shared/components/ui/button";
 
+type ConversationEmptyArtwork = "default" | "filtered";
+
 interface EmptyStateProps {
   label: string;
+  artwork?: ConversationEmptyArtwork;
   /** When true shows the Forge CTA — used for the "No conversations yet" base empty state */
   showForgeCta?: boolean;
   showExploreCta?: boolean;
@@ -15,6 +19,7 @@ interface EmptyStateProps {
 
 export const EmptyState = memo(function EmptyState({
   label,
+  artwork = "default",
   showForgeCta = false,
   showExploreCta = false,
 }: EmptyStateProps) {
@@ -25,9 +30,11 @@ export const EmptyState = memo(function EmptyState({
 
   return (
     <div className="fade-in slide-in-from-bottom-2 flex animate-in flex-col items-center justify-center px-6 py-16 text-center">
-      <div className="flex size-13 items-center justify-center rounded-xl border border-forge-teal/20 bg-forge-teal/8 text-forge-teal ring-1 ring-forge-teal/5">
-        <MessageSquare size={21} strokeWidth={1.5} aria-hidden="true" />
-      </div>
+      {artwork === "filtered" ? (
+        <EmptyConversationsFilteredVisual className="mx-auto w-40 text-foreground" />
+      ) : (
+        <EmptyConversationsVisual className="mx-auto w-40 text-foreground" />
+      )}
 
       <div className="mt-5 max-w-52">
         <p className="font-black text-base text-foreground leading-tight">

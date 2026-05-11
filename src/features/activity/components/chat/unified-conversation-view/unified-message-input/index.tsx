@@ -1,5 +1,6 @@
 import { memo } from "react";
 
+import { ErrorMessageSendFailedVisual } from "@/assets/error-state/error-message-send-failed";
 import type { ActivitySendMessageInput } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 
@@ -119,9 +120,12 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
           )}
 
           {errorMessage && (
-            <p className="px-4 pb-1.5 font-medium text-destructive/80 text-xs">
-              {errorMessage}
-            </p>
+            <div className="flex items-center gap-2 px-3 pb-2">
+              <ErrorMessageSendFailedVisual className="w-10 shrink-0 text-foreground" />
+              <p className="font-medium text-destructive/80 text-xs">
+                {errorMessage}
+              </p>
+            </div>
           )}
         </div>
 

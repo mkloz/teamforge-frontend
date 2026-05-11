@@ -42,13 +42,13 @@ A single font family is used throughout. This is a non-negotiable rule — it en
 
 ### Font Family
 
-**Inter** — designed for screens, open apertures, tall x-height, legible at every size.
+**Plus Jakarta Sans** - a contemporary screen-first sans with generous geometry, strong headings, and a warmer social-product feel than a default system face.
 
 ```
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
 ```
 
-CSS token: `--font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;`
+CSS token: `--font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;`
 
 ### Type Scale
 

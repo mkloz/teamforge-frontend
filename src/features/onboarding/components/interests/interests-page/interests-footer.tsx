@@ -1,3 +1,4 @@
+import { ErrorProfileSaveVisual } from "@/assets/error-state/error-profile-save";
 import { InterestsProgressBar } from "@/features/onboarding/components/interests/interests-browse/interests-progress-bar";
 import { InterestsReviewFooter } from "@/features/onboarding/components/interests/interests-review/interests-review-footer";
 import type { UseInterestsReturn } from "@/features/onboarding/hooks/use-interests";
@@ -29,7 +30,12 @@ export function InterestsFooter({
           />
         )}
         {state.screen === "review" && state.saveErrorMessage && (
-          <p className="pt-4 text-red-600 text-sm">{state.saveErrorMessage}</p>
+          <div className="mt-4 flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/5 px-3 py-3">
+            <ErrorProfileSaveVisual className="w-12 shrink-0 text-foreground" />
+            <p className="font-medium text-destructive text-sm">
+              {state.saveErrorMessage}
+            </p>
+          </div>
         )}
         {state.screen === "review" && (
           <InterestsReviewFooter

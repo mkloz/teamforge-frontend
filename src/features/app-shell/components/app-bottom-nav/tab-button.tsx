@@ -20,8 +20,8 @@ export function TabButton({ item, pathname }: TabButtonProps) {
     ? "text-accent stroke-[2.5]"
     : "text-primary stroke-[2.5]";
   const activeColorBg = isForge
-    ? "bg-accent/20 dark:bg-accent/25"
-    : "bg-primary/20 dark:bg-primary/25";
+    ? "border-accent/25 bg-accent/15 dark:bg-accent/20"
+    : "border-primary/25 bg-primary/15 dark:bg-primary/20";
   const inactiveColorText = "text-muted-foreground stroke-[1.5]";
 
   return (
@@ -30,25 +30,27 @@ export function TabButton({ item, pathname }: TabButtonProps) {
       aria-current={active ? "page" : undefined}
       aria-label={item.label}
       className={cn(
-        "relative flex h-full min-w-0 items-center justify-center rounded-2xl px-0.5",
-        "transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+        "relative flex h-full min-w-0 items-center justify-center rounded-full",
+        "transition-colors duration-200 hover:bg-muted/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
       )}
     >
       <motion.div
+        layout
         whileTap={{ scale: 0.85 }}
         transition={{ type: "spring", stiffness: 400, damping: 17 }}
         className="relative z-10 flex size-full min-w-0 flex-col items-center justify-center gap-0.5"
       >
-        <div
+        <motion.div
+          layout
           className={cn(
             "relative flex items-center justify-center transition-colors duration-300",
             active
-              ? `size-8 rounded-full ${activeColorBg} shadow-inner`
+              ? `size-10 rounded-full border ${activeColorBg}`
               : "size-8 rounded-full bg-transparent shadow-none",
           )}
         >
           <ItemIcon
-            size={active ? 18 : 17}
+            size={active ? 21 : 17}
             aria-hidden="true"
             className={cn(
               "shrink-0 transition-colors duration-300",
@@ -66,16 +68,21 @@ export function TabButton({ item, pathname }: TabButtonProps) {
               {item.badge > 9 ? "9+" : item.badge}
             </span>
           )}
-        </div>
+        </motion.div>
 
-        <span
-          className={cn(
-            "max-w-full truncate font-semibold text-xs leading-none tracking-tight transition-colors duration-300",
-            active ? activeColorText : "text-muted-foreground",
-          )}
+        <motion.span
+          animate={
+            active
+              ? { height: 0, opacity: 0, y: -2 }
+              : { height: "auto", opacity: 1, y: 0 }
+          }
+          aria-hidden={active}
+          className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-muted-foreground text-xs leading-none tracking-tight"
+          initial={false}
+          transition={{ duration: 0.2, ease: "easeOut" }}
         >
           {item.label}
-        </span>
+        </motion.span>
       </motion.div>
     </Link>
   );

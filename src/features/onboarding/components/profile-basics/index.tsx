@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import type { FormEventHandler } from "react";
 import type { UseFormReturn } from "react-hook-form";
+import { ErrorProfileSaveVisual } from "@/assets/error-state/error-profile-save";
 import type { ProfileBasicsValues } from "@/features/onboarding/schemas/profile-basics.schema";
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { Button } from "@/shared/components/ui/button";
@@ -45,7 +46,12 @@ export function ProfileBasicsCard({
           <ProfileBasicsFormFields form={form} watchedValues={watchedValues} />
 
           {saveError ? (
-            <p className="font-medium text-destructive text-sm">{saveError}</p>
+            <div className="flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/5 px-3 py-3">
+              <ErrorProfileSaveVisual className="w-14 shrink-0 text-foreground" />
+              <p className="font-medium text-destructive text-sm">
+                {saveError}
+              </p>
+            </div>
           ) : null}
 
           <Button

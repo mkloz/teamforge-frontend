@@ -13,6 +13,7 @@ interface FeedbackStateProps {
   icon: ReactNode;
   iconClassName: string;
   title: string;
+  visual?: ReactNode;
 }
 
 export function FeedbackState({
@@ -26,6 +27,7 @@ export function FeedbackState({
   icon,
   iconClassName,
   title,
+  visual,
 }: FeedbackStateProps) {
   return (
     <div
@@ -42,15 +44,21 @@ export function FeedbackState({
           className,
         )}
       >
-        <div
-          className={cn(
-            "mb-4 flex size-12 items-center justify-center rounded-lg",
-            iconClassName,
-          )}
-          aria-hidden="true"
-        >
-          {icon}
-        </div>
+        {visual ? (
+          <div className="mb-5 flex justify-center" aria-hidden="true">
+            {visual}
+          </div>
+        ) : (
+          <div
+            className={cn(
+              "mb-4 flex size-12 items-center justify-center rounded-lg",
+              iconClassName,
+            )}
+            aria-hidden="true"
+          >
+            {icon}
+          </div>
+        )}
 
         <h1 id={headingId} className="font-bold text-2xl text-ink">
           {title}
