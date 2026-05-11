@@ -6,5 +6,6 @@ export type GroupPlanCardVariant = "default" | "compact";
 export interface GroupPlanCardProps {
   group: ExploreGroup;
   action: ReactNode;
+  detailsLink?: ReactNode;
   variant?: GroupPlanCardVariant;
 }

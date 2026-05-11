@@ -3,6 +3,11 @@ import type React from "react";
 import { memo } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Textarea } from "@/shared/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 import { AttachmentMenu } from "./attachment-menu";
 
@@ -36,15 +41,20 @@ export const InputRow = memo(
   }: InputRowProps) => (
     <>
       <div className="flex shrink-0 items-end pb-1 pl-2">
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          className="cursor-pointer rounded-full text-slate-muted outline-none transition-colors hover:text-spark-amber"
-          aria-label="Add emoji"
-          disabled={disabled}
-        >
-          <Smile className="size-5" strokeWidth={2} />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="cursor-pointer rounded-full text-slate-muted outline-none transition-colors hover:text-spark-amber"
+              aria-label="Add emoji"
+              disabled={disabled}
+            >
+              <Smile className="size-5" strokeWidth={2} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Add emoji</TooltipContent>
+        </Tooltip>
       </div>
 
       <div className="relative flex min-h-11 flex-1 items-center px-2.5 py-2.75">

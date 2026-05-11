@@ -5,6 +5,11 @@ import { UnifiedTypingIndicator } from "@/features/activity/components/chat/unif
 import type { OnlineStatus } from "@/features/activity/lib/activity-contract";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 
 interface HeaderInfoProps {
@@ -69,17 +74,23 @@ export const HeaderInfo = memo(
             />
           </div>
         ) : !isGroup && onlineStatus ? (
-          <span
-            className={cn(
-              "absolute right-0 bottom-0 size-3 rounded-full border-2 border-canvas shadow-none transition-all duration-300",
-              onlineStatus === "ONLINE"
-                ? "scale-100 bg-forge-teal"
-                : onlineStatus === "AWAY"
-                  ? "scale-100 bg-spark-amber"
-                  : "scale-90 bg-slate-muted/40 opacity-50",
-            )}
-            title={onlineStatus === "ONLINE" ? "Online" : "Away"}
-          />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span
+                className={cn(
+                  "absolute right-0 bottom-0 size-3 rounded-full border-2 border-canvas shadow-none transition-all duration-300",
+                  onlineStatus === "ONLINE"
+                    ? "scale-100 bg-forge-teal"
+                    : onlineStatus === "AWAY"
+                      ? "scale-100 bg-spark-amber"
+                      : "scale-90 bg-slate-muted/40 opacity-50",
+                )}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              {onlineStatus === "ONLINE" ? "Online" : "Away"}
+            </TooltipContent>
+          </Tooltip>
         ) : null}
       </div>
 

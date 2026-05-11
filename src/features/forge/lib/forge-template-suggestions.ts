@@ -14,6 +14,7 @@ import type {
 } from "@/features/forge/data/forge-template-seed-types";
 import { CATEGORY_TEMPLATES } from "@/features/forge/data/forge-template-seeds";
 import type { ForgePlanTemplate } from "@/features/forge/lib/forge-template";
+import { PLAN_COVER_PRESET_IDS } from "@/shared/lib/plan-cover";
 import type { User } from "@/shared/schemas";
 
 const MIN_PERSONAL_FIT_SCORE = 3.4;
@@ -91,22 +92,39 @@ const TEMPLATE_TRAIT_VALUES: TemplateTrait[] = [
   "structured",
 ];
 
-function resolveTemplateCoverImage(source: TemplateSeed["coverImageSource"]) {
-  const normalizedSource = source?.trim();
+function hashPresetSeed(value: string) {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+
+  return hash;
+}
+
+function resolveTemplateCoverImage(
+  category: ActivityOption,
+  seed: TemplateSeed,
+) {
+  const normalizedSource = seed.coverImageSource?.trim();
 
   if (!normalizedSource) {
     return null;
   }
 
-  if (
-    normalizedSource.startsWith("http://") ||
-    normalizedSource.startsWith("https://") ||
-    normalizedSource.startsWith("/")
-  ) {
-    return normalizedSource;
+  const existingPreset = PLAN_COVER_PRESET_IDS.find(
+    (presetId) => presetId === normalizedSource,
+  );
+
+  if (existingPreset) {
+    return existingPreset;
   }
 
-  return `https://images.unsplash.com/${normalizedSource}?auto=format&fit=crop&w=1200&q=82`;
+  const presetIndex =
+    hashPresetSeed(`${category.id}:${seed.id}:${normalizedSource}`) %
+    PLAN_COVER_PRESET_IDS.length;
+
+  return PLAN_COVER_PRESET_IDS[presetIndex] ?? null;
 }
 
 function addWeightedTrait(
@@ -646,7 +664,7 @@ function buildTemplate(
     visibility: seed.visibility ?? "FRIENDS_ONLY",
     groupName: user?.city ? `${seed.groupName} - ${user.city}` : seed.groupName,
     groupDescription: seed.groupDescription,
-    coverImage: resolveTemplateCoverImage(seed.coverImageSource),
+    coverImage: resolveTemplateCoverImage(category, seed),
     avatarImage: null,
   };
 }

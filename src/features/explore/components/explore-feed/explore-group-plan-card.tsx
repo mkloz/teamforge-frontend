@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
 import { useJoinExploreGroup } from "@/features/explore/hooks/use-join-explore-group";
+import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import { GroupPlanCard } from "@/shared/components/group-plan-card";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
@@ -62,5 +63,22 @@ export function ExploreGroupPlanCard({
       </Button>
     );
 
-  return <GroupPlanCard group={group} variant={variant} action={action} />;
+  const detailsLink = (
+    <Link
+      {...buildGroupPlanDetailNavigation(group.id, { source: "explore" })}
+      aria-label={`View ${group.name} group details`}
+      className="block size-full rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    >
+      <span className="sr-only">View group details</span>
+    </Link>
+  );
+
+  return (
+    <GroupPlanCard
+      group={group}
+      variant={variant}
+      action={action}
+      detailsLink={detailsLink}
+    />
+  );
 }

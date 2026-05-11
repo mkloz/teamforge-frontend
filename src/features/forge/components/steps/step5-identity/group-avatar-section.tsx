@@ -61,7 +61,7 @@ export function GroupAvatarSection({
           accept="image/*"
           title={avatarImage ? "Replace avatar" : "Upload group avatar"}
           description="Drop a square image here or tap to browse."
-          helper="PNG, JPG, WEBP up to 5 MB"
+          helper="PNG, JPG, WEBP up to 30 MB"
           actionLabel="Browse"
           isUploading={isAvatarUploading}
           error={avatarUploadError}

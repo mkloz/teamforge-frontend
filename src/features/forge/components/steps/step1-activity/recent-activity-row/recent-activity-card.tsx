@@ -1,6 +1,6 @@
 import { Check } from "lucide-react";
 
-import { Image } from "@/shared/components/common/image";
+import { PlanCover } from "@/shared/components/common/plan-cover";
 import dayjs from "@/shared/lib/dayjs";
 import { cn } from "@/shared/lib/utils";
 
@@ -47,12 +47,11 @@ export function RecentActivityCard({
       >
         {hasCoverImage && (
           <>
-            <Image
-              src={activity.template.coverImage ?? undefined}
+            <PlanCover
+              value={activity.template.coverImage}
               alt=""
-              wrapperClassName="absolute inset-0 size-full"
-              className="transition-transform duration-700 ease-out group-hover:scale-105"
-              showNoImage={false}
+              className="absolute inset-0 size-full"
+              imageClassName="transition-transform duration-700 ease-out group-hover:scale-105"
             />
             <div
               className={cn(

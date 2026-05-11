@@ -1,4 +1,5 @@
 import type { BooleanSettingsPreferenceKey } from "@/features/settings/components/settings-profile-form/settings-form-types";
+import { SettingsPreferencesSkeleton } from "@/features/settings/components/settings-section-skeletons";
 import type { NotificationPreferences } from "@/shared/schemas";
 import {
   type BooleanPreferenceItem,
@@ -38,9 +39,7 @@ export function PreferenceGroup({
 
       <div className="border-border border-t">
         {isLoading ? (
-          <p className="py-4 text-slate-muted text-sm">
-            Loading notification preferences...
-          </p>
+          <SettingsPreferencesSkeleton />
         ) : notificationPreferences ? (
           <PreferenceRowList
             items={items}

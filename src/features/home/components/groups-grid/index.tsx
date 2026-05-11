@@ -6,21 +6,42 @@ import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { getActiveGroupPreview } from "@/features/home/lib/home-insights";
 import { useUnreadNotifications } from "@/features/notifications/hooks/use-notifications";
 import { Button } from "@/shared/components/ui/button";
+import type { GroupApi, Notification } from "@/shared/schemas";
 
 import { BrowseGroupsRow } from "./browse-groups-row";
 import { collectUnreadGroupIds } from "./group-notification-state";
 import { GroupRow } from "./group-row";
 import { GroupsGridEmpty } from "./groups-grid-empty";
-import { GroupsGridLoading } from "./groups-grid-loading";
 
 export function GroupsGrid() {
   const { groups, isGroupsLoading } = useHomeData();
   const { unreadItems: notifications } = useUnreadNotifications();
+
+  return (
+    <GroupsGridView
+      groups={groups}
+      isGroupsLoading={isGroupsLoading}
+      notifications={notifications}
+    />
+  );
+}
+
+interface GroupsGridViewProps {
+  groups: GroupApi[];
+  isGroupsLoading?: boolean;
+  notifications?: Notification[];
+}
+
+export function GroupsGridView({
+  groups,
+  isGroupsLoading = false,
+  notifications = [],
+}: GroupsGridViewProps) {
   const visibleGroups = getActiveGroupPreview(groups, 4);
   const unreadGroupIds = collectUnreadGroupIds(notifications, groups);
 
   if (isGroupsLoading && groups.length === 0) {
-    return <GroupsGridLoading />;
+    return null;
   }
 
   return (

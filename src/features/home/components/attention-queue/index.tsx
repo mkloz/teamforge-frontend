@@ -7,7 +7,6 @@ import type {
 } from "@/features/home/lib/home-route";
 
 import { ActionErrorBanner } from "./action-error-banner";
-import { AttentionQueueSkeleton } from "./attention-queue-skeleton";
 import { EmptyQueueItem } from "./empty-queue-item";
 import { FriendRequestQueueItem } from "./friend-request-queue-item";
 import { InvitationQueueItem } from "./invitation-queue-item";
@@ -16,6 +15,8 @@ import { ProposedPlanQueueItem } from "./proposed-plan-queue-item";
 import { SeeRestButton } from "./see-rest-button";
 import { useAttentionQueueFocus } from "./use-attention-queue-focus";
 import { useAttentionQueueState } from "./use-attention-queue-state";
+
+export type AttentionQueueViewState = ReturnType<typeof useAttentionQueueState>;
 
 interface AttentionQueueProps {
   focusedPanel?: HomePanel | null;
@@ -38,6 +39,43 @@ export function AttentionQueue({
 }: AttentionQueueProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const scrollRef = focusRef ?? sectionRef;
+  const state = useAttentionQueueState({
+    focusedInviteId,
+    focusedRequestId,
+    onClearFriendRequestFocus,
+    onClearInvitationFocus,
+  });
+
+  return (
+    <AttentionQueueView
+      focusedInviteId={focusedInviteId}
+      focusedPanel={focusedPanel}
+      focusedRequestId={focusedRequestId}
+      invitationView={invitationView}
+      onClearFriendRequestFocus={onClearFriendRequestFocus}
+      onClearInvitationFocus={onClearInvitationFocus}
+      scrollRef={scrollRef}
+      state={state}
+    />
+  );
+}
+
+interface AttentionQueueViewProps
+  extends Omit<AttentionQueueProps, "focusRef"> {
+  scrollRef: RefObject<HTMLElement | null>;
+  state: AttentionQueueViewState;
+}
+
+export function AttentionQueueView({
+  focusedInviteId = null,
+  focusedPanel = null,
+  focusedRequestId = null,
+  invitationView = "received",
+  onClearFriendRequestFocus,
+  onClearInvitationFocus,
+  scrollRef,
+  state,
+}: AttentionQueueViewProps) {
   const {
     acceptingInviteId,
     acceptingRequestId,
@@ -58,12 +96,7 @@ export function AttentionQueue({
     viewer,
     visibleInvitations,
     visibleRequests,
-  } = useAttentionQueueState({
-    focusedInviteId,
-    focusedRequestId,
-    onClearFriendRequestFocus,
-    onClearInvitationFocus,
-  });
+  } = state;
 
   useAttentionQueueFocus({
     focusedInviteId,
@@ -103,7 +136,6 @@ export function AttentionQueue({
         className="mt-4 grid min-w-0 list-none border-border/55 border-y p-0"
       >
         {actionError ? <ActionErrorBanner error={actionError} /> : null}
-        {shouldShowSkeleton ? <AttentionQueueSkeleton /> : null}
         {!shouldShowSkeleton && queueSize === 0 ? <EmptyQueueItem /> : null}
 
         <AnimatePresence>

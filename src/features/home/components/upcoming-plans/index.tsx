@@ -3,6 +3,7 @@ import { EmptyHomePlansVisual } from "@/assets/empty-state/empty-home-plans";
 import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
+import type { PlannedGroup } from "@/features/home/lib/home-contract";
 import { getUpcomingPreview } from "@/features/home/lib/home-insights";
 import { Button } from "@/shared/components/ui/button";
 
@@ -26,19 +27,24 @@ function EmptyPlans() {
 
 export function UpcomingPlans() {
   const { plans, isPlansLoading } = useHomeData();
+
+  return <UpcomingPlansView isPlansLoading={isPlansLoading} plans={plans} />;
+}
+
+interface UpcomingPlansViewProps {
+  isPlansLoading?: boolean;
+  plans: PlannedGroup[];
+}
+
+export function UpcomingPlansView({
+  isPlansLoading = false,
+  plans,
+}: UpcomingPlansViewProps) {
   const visiblePlans = getUpcomingPreview(plans, 4);
   const hiddenCount = Math.max(0, plans.length - visiblePlans.length);
 
   if (isPlansLoading && plans.length === 0) {
-    return (
-      <div className="flex w-full animate-pulse flex-col gap-4">
-        <div className="h-8 w-48 rounded bg-muted" />
-        <div className="grid gap-2">
-          <div className="h-24 rounded-xl bg-muted" />
-          <div className="h-24 rounded-xl bg-muted/60" />
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

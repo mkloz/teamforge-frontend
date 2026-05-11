@@ -19,6 +19,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/shared/components/ui/sheet";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 
 import { AppearanceSwitch } from "./appearance-switch";
 import { MenuLinkItem, MenuLinkItemContent } from "./menu-link-item";
@@ -33,9 +38,14 @@ interface UserMenuProps {
 export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
   return (
     <Sheet>
-      <SheetTrigger asChild>
-        <UserMenuTriggerButton trigger={trigger} />
-      </SheetTrigger>
+      <Tooltip>
+        <SheetTrigger asChild>
+          <TooltipTrigger asChild>
+            <UserMenuTriggerButton trigger={trigger} />
+          </TooltipTrigger>
+        </SheetTrigger>
+        <TooltipContent>Account</TooltipContent>
+      </Tooltip>
 
       <SheetContent
         side="right"

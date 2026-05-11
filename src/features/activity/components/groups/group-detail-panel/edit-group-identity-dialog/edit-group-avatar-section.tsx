@@ -29,7 +29,7 @@ export function EditGroupAvatarSection({
             accept="image/*"
             title={editor.avatar ? "Replace avatar" : "Upload avatar"}
             description="Drop a square group image here."
-            helper="PNG, JPG, WEBP up to 5 MB"
+            helper="PNG, JPG, WEBP up to 30 MB"
             actionLabel="Browse"
             isUploading={editor.isAvatarUploading}
             error={editor.avatarUploadError}

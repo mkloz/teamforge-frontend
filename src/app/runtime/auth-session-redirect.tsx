@@ -12,6 +12,10 @@ export function AuthSessionRedirect() {
   useEffect(() => {
     return authSession.setUnauthorizedHandler(() => {
       clearCurrentUserCache();
+      if (shouldIgnoreUnauthorizedRedirect()) {
+        return;
+      }
+
       const currentHref = buildRouteLocationHref(router.state.location);
 
       void router.navigate(
@@ -21,4 +25,13 @@ export function AuthSessionRedirect() {
   }, []);
 
   return null;
+}
+
+function shouldIgnoreUnauthorizedRedirect() {
+  const pathname = router.state.location.pathname;
+  const isBoneyardBuild =
+    (globalThis as typeof globalThis & { __BONEYARD_BUILD?: boolean })
+      .__BONEYARD_BUILD === true;
+
+  return pathname.startsWith("/design-system/boneyard") || isBoneyardBuild;
 }

@@ -1,6 +1,6 @@
 import { ArrowRight, Check, Users, Wifi } from "lucide-react";
 
-import { Image } from "@/shared/components/common/image";
+import { PlanCover } from "@/shared/components/common/plan-cover";
 import { cn } from "@/shared/lib/utils";
 
 import { ICON_MAP } from "../step1-activity/activity-icon-map";
@@ -26,11 +26,11 @@ export function TemplateSuggestionCard({
       )}
     >
       <div className="relative w-20 shrink-0 overflow-hidden bg-muted sm:w-24">
-        <Image
-          src={suggestion.template.coverImage ?? undefined}
+        <PlanCover
+          value={suggestion.template.coverImage}
           alt=""
-          wrapperClassName="size-full"
-          className="transition-transform duration-500 group-hover:scale-105"
+          className="size-full"
+          imageClassName="transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-foreground/10 transition-colors duration-200 group-hover:bg-foreground/0" />
         <div className="absolute top-2 left-2 flex size-7 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm backdrop-blur">

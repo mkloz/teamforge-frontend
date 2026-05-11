@@ -122,9 +122,7 @@ export function TagPill({
   return (
     <Tooltip>
       <TooltipTrigger asChild>{content}</TooltipTrigger>
-      <TooltipContent side="top" className="font-sans text-xs">
-        {aliases.join(" · ")}
-      </TooltipContent>
+      <TooltipContent side="top">{aliases.join(" · ")}</TooltipContent>
     </Tooltip>
   );
 }

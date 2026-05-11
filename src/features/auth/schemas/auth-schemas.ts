@@ -4,7 +4,7 @@ import { PasswordValidator } from "@/shared/validators/password.validator";
 
 export const authTokensSchema = z.object({
   accessToken: z.string().min(1),
-  refreshToken: z.string().min(1),
+  refreshToken: z.string().min(1).optional(),
 });
 
 export type AuthTokensPayload = z.infer<typeof authTokensSchema>;

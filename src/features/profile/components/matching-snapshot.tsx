@@ -1,3 +1,8 @@
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 
 import type { MatchingSignal } from "../lib/profile-insights";
@@ -25,20 +30,25 @@ export function MatchingSnapshot({ signals }: MatchingSnapshotProps) {
 
 function SignalPill({ signal }: { signal: MatchingSignal }) {
   return (
-    <span
-      className={cn(
-        "inline-flex min-h-9 max-w-full items-center gap-2 rounded-full border px-3 font-bold text-xs",
-        signal.strength === "ready"
-          ? "border-forge-teal/25 bg-forge-teal/10 text-forge-teal"
-          : signal.strength === "good"
-            ? "border-spark-amber/25 bg-spark-amber/8 text-spark-amber"
-            : "border-border/80 text-slate-muted",
-      )}
-      title={signal.detail}
-    >
-      <span className="text-ink/80">{signal.label}</span>
-      <span>{signal.value}</span>
-    </span>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          className={cn(
+            "inline-flex min-h-9 max-w-full cursor-help items-center gap-2 rounded-full border px-3 text-left font-bold text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35",
+            signal.strength === "ready"
+              ? "border-forge-teal/25 bg-forge-teal/10 text-forge-teal"
+              : signal.strength === "good"
+                ? "border-spark-amber/25 bg-spark-amber/8 text-spark-amber"
+                : "border-border/80 text-slate-muted",
+          )}
+        >
+          <span className="text-ink/80">{signal.label}</span>
+          <span>{signal.value}</span>
+        </button>
+      </TooltipTrigger>
+      <TooltipContent>{signal.detail}</TooltipContent>
+    </Tooltip>
   );
 }
 

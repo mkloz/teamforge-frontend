@@ -32,6 +32,9 @@ export const PLAN_COVER_PRESETS = [
 ] as const;
 
 export type PlanCoverPresetId = (typeof PLAN_COVER_PRESETS)[number]["id"];
+export const PLAN_COVER_PRESET_IDS = PLAN_COVER_PRESETS.map(
+  (preset) => preset.id,
+);
 
 export function getPlanCoverPreset(value?: string | null) {
   return PLAN_COVER_PRESETS.find((preset) => preset.id === value) ?? null;

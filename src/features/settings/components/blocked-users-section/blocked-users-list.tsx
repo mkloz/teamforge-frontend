@@ -1,8 +1,8 @@
+import { SettingsBlockedUsersSkeleton } from "@/features/settings/components/settings-section-skeletons";
 import { BlockedUserRow } from "./blocked-user-row";
 import {
   BlockedUsersEmptyState,
   BlockedUsersErrorState,
-  BlockedUsersLoadingState,
 } from "./blocked-users-state";
 import type { BlockedUsersSectionProps } from "./types";
 
@@ -23,7 +23,7 @@ export function BlockedUsersList({
   onUnblockUser,
 }: BlockedUsersListProps) {
   if (isLoading) {
-    return <BlockedUsersLoadingState message="Loading blocked users..." />;
+    return <SettingsBlockedUsersSkeleton />;
   }
 
   if (errorMessage) {

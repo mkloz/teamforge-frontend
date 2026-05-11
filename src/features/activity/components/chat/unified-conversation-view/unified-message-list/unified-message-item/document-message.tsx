@@ -3,6 +3,11 @@ import { memo } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import { formatFileSize } from "@/features/activity/lib/chat-utils";
 import { Button } from "@/shared/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 import { openExternalUrl } from "@/shared/lib/browser-capabilities";
 import { cn } from "@/shared/lib/utils";
 
@@ -81,20 +86,26 @@ export const DocumentMessage = memo(function DocumentMessage({
         </div>
       </div>
 
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-xs"
-        onClick={() => openExternalUrl(attachment.url)}
-        className={cn(
-          "size-8 rounded-lg transition",
-          isOwn
-            ? "bg-white/10 text-white hover:bg-white/20"
-            : "bg-forge-teal/5 text-forge-teal hover:bg-forge-teal/10",
-        )}
-      >
-        <Download className="size-4" />
-      </Button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-xs"
+            onClick={() => openExternalUrl(attachment.url)}
+            className={cn(
+              "size-8 rounded-lg transition",
+              isOwn
+                ? "bg-white/10 text-white hover:bg-white/20"
+                : "bg-forge-teal/5 text-forge-teal hover:bg-forge-teal/10",
+            )}
+            aria-label={`Download ${attachment.name || "file"}`}
+          >
+            <Download className="size-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Download file</TooltipContent>
+      </Tooltip>
     </div>
   );
 });

@@ -5,6 +5,8 @@ import { createLazyRouteModule } from "@/app/router/lazy-route-module";
 import { rootRoute } from "@/app/router/root-route";
 import { createRouteErrorComponent } from "@/app/router/route-error-component";
 import { redirectAuthenticatedUser } from "@/app/router/route-guards";
+import { AuthPageLoading } from "@/features/auth/auth-page.loading";
+import { LandingPageLoading } from "@/features/landing/landing-page.loading";
 import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
 
 const landingPageModule = createLazyRouteModule(() =>
@@ -51,17 +53,89 @@ const visualStatesPageModule = createLazyRouteModule(() =>
   })),
 );
 
+const activitySkeletonCaptureModule = createLazyRouteModule(() =>
+  import("@/features/activity/activity-page-skeleton-capture").then((m) => ({
+    default: m.ActivityPageSkeletonCapture,
+  })),
+);
+
+const authSkeletonCaptureModule = createLazyRouteModule(() =>
+  import("@/features/auth/auth-skeleton-capture").then((m) => ({
+    default: m.AuthSkeletonCapture,
+  })),
+);
+
+const landingSkeletonCaptureModule = createLazyRouteModule(() =>
+  import("@/features/landing/landing-page-skeleton-capture").then((m) => ({
+    default: m.LandingPageSkeletonCapture,
+  })),
+);
+
+const onboardingSkeletonCaptureModule = createLazyRouteModule(() =>
+  import("@/features/onboarding/onboarding-skeleton-capture").then((m) => ({
+    default: m.OnboardingSkeletonCapture,
+  })),
+);
+
+const profileSkeletonCaptureModule = createLazyRouteModule(() =>
+  import("@/features/profile/profile-page/profile-page-skeleton-capture").then(
+    (m) => ({
+      default: m.ProfilePageSkeletonCapture,
+    }),
+  ),
+);
+
+const settingsSkeletonCaptureModule = createLazyRouteModule(() =>
+  import(
+    "@/features/settings/settings-page/settings-page-skeleton-capture"
+  ).then((m) => ({
+    default: m.SettingsPageSkeletonCapture,
+  })),
+);
+
+const homeSkeletonCaptureModule = createLazyRouteModule(() =>
+  import("@/features/home/home-page-skeleton-capture").then((m) => ({
+    default: m.HomePageSkeletonCapture,
+  })),
+);
+
+const exploreSkeletonCaptureModule = createLazyRouteModule(() =>
+  import("@/features/explore/explore-page-skeleton-capture").then((m) => ({
+    default: m.ExplorePageSkeletonCapture,
+  })),
+);
+
+const forgeSkeletonCaptureModule = createLazyRouteModule(() =>
+  import("@/features/forge/forge-page-skeleton-capture").then((m) => ({
+    default: m.ForgePageSkeletonCapture,
+  })),
+);
+
+const sectionSkeletonCaptureModule = createLazyRouteModule(() =>
+  import("@/features/design-system/boneyard-section-skeletons-page").then(
+    (m) => ({
+      default: m.BoneyardSectionSkeletonsPage,
+    }),
+  ),
+);
+
 const landingRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  component: createLazyPageRoute(landingPageModule.Component),
+  component: createLazyPageRoute(
+    landingPageModule.Component,
+    <LandingPageLoading mode="route" />,
+  ),
 });
 
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/auth/login",
   beforeLoad: redirectAuthenticatedUser,
-  component: createLazyPageRoute(loginPageModule.Component),
+  component: createLazyPageRoute(
+    loginPageModule.Component,
+    <AuthPageLoading mode="route" variant="login" />,
+  ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.authLogin,
     fullPage: true,
@@ -76,7 +150,10 @@ const registerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/auth/register",
   beforeLoad: redirectAuthenticatedUser,
-  component: createLazyPageRoute(registerPageModule.Component),
+  component: createLazyPageRoute(
+    registerPageModule.Component,
+    <AuthPageLoading mode="route" variant="register" />,
+  ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.authRegister,
     fullPage: true,
@@ -91,7 +168,10 @@ const forgotPasswordRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/auth/forgot-password",
   beforeLoad: redirectAuthenticatedUser,
-  component: createLazyPageRoute(forgotPasswordPageModule.Component),
+  component: createLazyPageRoute(
+    forgotPasswordPageModule.Component,
+    <AuthPageLoading mode="route" variant="forgot-password" />,
+  ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.authForgotPassword,
     fullPage: true,
@@ -105,7 +185,10 @@ const forgotPasswordRoute = createRoute({
 const resetPasswordRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/auth/reset-password/$token",
-  component: createLazyPageRoute(resetPasswordPageModule.Component),
+  component: createLazyPageRoute(
+    resetPasswordPageModule.Component,
+    <AuthPageLoading mode="route" variant="reset-password" />,
+  ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.authResetPassword,
     fullPage: true,
@@ -119,7 +202,10 @@ const resetPasswordRoute = createRoute({
 const activateAccountRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/auth/activate/$token",
-  component: createLazyPageRoute(activateAccountPageModule.Component),
+  component: createLazyPageRoute(
+    activateAccountPageModule.Component,
+    <AuthPageLoading mode="route" variant="activate" />,
+  ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.authActivateAccount,
     fullPage: true,
@@ -142,8 +228,81 @@ const visualStatesRoute = createRoute({
   component: createLazyPageRoute(visualStatesPageModule.Component),
 });
 
+const activitySkeletonCaptureRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/design-system/boneyard/activity",
+  component: createLazyPageRoute(activitySkeletonCaptureModule.Component),
+});
+
+const authSkeletonCaptureRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/design-system/boneyard/auth",
+  component: createLazyPageRoute(authSkeletonCaptureModule.Component),
+});
+
+const landingSkeletonCaptureRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/design-system/boneyard/landing",
+  component: createLazyPageRoute(landingSkeletonCaptureModule.Component),
+});
+
+const onboardingSkeletonCaptureRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/design-system/boneyard/onboarding",
+  component: createLazyPageRoute(onboardingSkeletonCaptureModule.Component),
+});
+
+const profileSkeletonCaptureRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/design-system/boneyard/profile",
+  component: createLazyPageRoute(profileSkeletonCaptureModule.Component),
+});
+
+const settingsSkeletonCaptureRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/design-system/boneyard/settings",
+  component: createLazyPageRoute(settingsSkeletonCaptureModule.Component),
+});
+
+const homeSkeletonCaptureRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/design-system/boneyard/home",
+  component: createLazyPageRoute(homeSkeletonCaptureModule.Component),
+});
+
+const exploreSkeletonCaptureRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/design-system/boneyard/explore",
+  component: createLazyPageRoute(exploreSkeletonCaptureModule.Component),
+});
+
+const forgeSkeletonCaptureRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/design-system/boneyard/forge",
+  component: createLazyPageRoute(forgeSkeletonCaptureModule.Component),
+});
+
+const sectionSkeletonCaptureRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/design-system/boneyard/sections",
+  component: createLazyPageRoute(sectionSkeletonCaptureModule.Component),
+});
+
 const designSystemRoutes = import.meta.env.DEV
-  ? [designSystemRoute, visualStatesRoute]
+  ? [
+      designSystemRoute,
+      visualStatesRoute,
+      activitySkeletonCaptureRoute,
+      authSkeletonCaptureRoute,
+      exploreSkeletonCaptureRoute,
+      forgeSkeletonCaptureRoute,
+      homeSkeletonCaptureRoute,
+      landingSkeletonCaptureRoute,
+      onboardingSkeletonCaptureRoute,
+      profileSkeletonCaptureRoute,
+      sectionSkeletonCaptureRoute,
+      settingsSkeletonCaptureRoute,
+    ]
   : [];
 
 export const publicRoutes = [
@@ -163,5 +322,19 @@ export const publicRouteModules = [
   forgotPasswordPageModule,
   resetPasswordPageModule,
   activateAccountPageModule,
-  ...(import.meta.env.DEV ? [visualStatesPageModule] : []),
+  ...(import.meta.env.DEV
+    ? [
+        visualStatesPageModule,
+        activitySkeletonCaptureModule,
+        authSkeletonCaptureModule,
+        exploreSkeletonCaptureModule,
+        forgeSkeletonCaptureModule,
+        homeSkeletonCaptureModule,
+        landingSkeletonCaptureModule,
+        onboardingSkeletonCaptureModule,
+        profileSkeletonCaptureModule,
+        sectionSkeletonCaptureModule,
+        settingsSkeletonCaptureModule,
+      ]
+    : []),
 ];

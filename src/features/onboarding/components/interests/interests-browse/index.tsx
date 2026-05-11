@@ -2,7 +2,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Activity } from "react";
 import type { InterestSearchResults } from "@/features/onboarding/utils/interest-logic";
 import { Accordion } from "@/shared/components/ui/accordion";
-import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 import type { Interest } from "@/shared/schemas";
 import type { PersonalityType } from "@/shared/schemas/enums";
@@ -76,102 +75,100 @@ export function InterestsBrowse({
   }
 
   return (
-    <TooltipProvider>
-      <div className="mx-auto flex w-full max-w-xl flex-col pb-8">
-        <PageTitle
-          isSearching={isSearching}
-          hideContextLabel={hideContextLabel}
-        />
+    <div className="mx-auto flex w-full max-w-xl flex-col pb-8">
+      <PageTitle
+        isSearching={isSearching}
+        hideContextLabel={hideContextLabel}
+      />
 
-        <div className="relative w-full">
-          <Activity mode={isSearching ? "hidden" : "visible"}>
-            <motion.div
-              layout="position"
-              animate={{ opacity: isSearching ? 0 : 1 }}
-              transition={{ duration: 0.2 }}
-              className={cn(
-                "flex flex-col gap-2",
-                isSearching && "pointer-events-none",
-              )}
+      <div className="relative w-full">
+        <Activity mode={isSearching ? "hidden" : "visible"}>
+          <motion.div
+            layout="position"
+            animate={{ opacity: isSearching ? 0 : 1 }}
+            transition={{ duration: 0.2 }}
+            className={cn(
+              "flex flex-col gap-2",
+              isSearching && "pointer-events-none",
+            )}
+          >
+            {personalityType && suggestedTags.length > 0 && (
+              <SuggestionsSection
+                personalityType={personalityType}
+                suggestedTags={suggestedTags}
+                selectedIds={selectedIds}
+                isAtMax={isAtMax}
+                onToggle={onToggle}
+                onReject={onReject}
+              />
+            )}
+
+            {showBalanceNudge && <BalanceNudge />}
+
+            <Accordion
+              type="multiple"
+              value={openCategories}
+              onValueChange={handleAccordionChange}
             >
-              {personalityType && suggestedTags.length > 0 && (
-                <SuggestionsSection
-                  personalityType={personalityType}
-                  suggestedTags={suggestedTags}
+              {categories.map((category) => (
+                <CategorySection
+                  key={category.id}
+                  category={category}
+                  selectedIds={selectedIds}
+                  expandedSubcategories={expandedSubcategories}
+                  isAtMax={isAtMax}
+                  onRegisterCategory={onRegisterCategory}
+                  onToggleSubcategory={onToggleSubcategory}
+                  onToggleTag={onToggle}
+                />
+              ))}
+            </Accordion>
+
+            {selectedIds.size > 0 && youMightAlsoLike.length > 0 && (
+              <div className="pt-4">
+                <YouMightAlsoLikeSection
+                  tags={youMightAlsoLike}
                   selectedIds={selectedIds}
                   isAtMax={isAtMax}
                   onToggle={onToggle}
                   onReject={onReject}
                 />
-              )}
-
-              {showBalanceNudge && <BalanceNudge />}
-
-              <Accordion
-                type="multiple"
-                value={openCategories}
-                onValueChange={handleAccordionChange}
-              >
-                {categories.map((category) => (
-                  <CategorySection
-                    key={category.id}
-                    category={category}
-                    selectedIds={selectedIds}
-                    expandedSubcategories={expandedSubcategories}
-                    isAtMax={isAtMax}
-                    onRegisterCategory={onRegisterCategory}
-                    onToggleSubcategory={onToggleSubcategory}
-                    onToggleTag={onToggle}
-                  />
-                ))}
-              </Accordion>
-
-              {selectedIds.size > 0 && youMightAlsoLike.length > 0 && (
-                <div className="pt-4">
-                  <YouMightAlsoLikeSection
-                    tags={youMightAlsoLike}
-                    selectedIds={selectedIds}
-                    isAtMax={isAtMax}
-                    onToggle={onToggle}
-                    onReject={onReject}
-                  />
-                </div>
-              )}
-            </motion.div>
-          </Activity>
-
-          <AnimatePresence>
-            {isSearching && (
-              <motion.div
-                key="search-results"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="relative z-20 w-full"
-              >
-                <SearchResults
-                  query={searchQuery}
-                  results={searchResults}
-                  selectedIds={selectedIds}
-                  isAtMax={isAtMax}
-                  onToggle={onToggle}
-                />
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
-        </div>
+          </motion.div>
+        </Activity>
 
-        <SelectionShelf
-          isSearching={isSearching}
-          leafById={leafById}
-          selectedIds={selectedIds}
-          youMightAlsoLike={youMightAlsoLike}
-          isAtMax={isAtMax}
-          onToggle={onToggle}
-          onReject={onReject}
-        />
+        <AnimatePresence>
+          {isSearching && (
+            <motion.div
+              key="search-results"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="relative z-20 w-full"
+            >
+              <SearchResults
+                query={searchQuery}
+                results={searchResults}
+                selectedIds={selectedIds}
+                isAtMax={isAtMax}
+                onToggle={onToggle}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </TooltipProvider>
+
+      <SelectionShelf
+        isSearching={isSearching}
+        leafById={leafById}
+        selectedIds={selectedIds}
+        youMightAlsoLike={youMightAlsoLike}
+        isAtMax={isAtMax}
+        onToggle={onToggle}
+        onReject={onReject}
+      />
+    </div>
   );
 }
 

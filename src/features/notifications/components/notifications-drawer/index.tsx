@@ -4,6 +4,7 @@ import { useState } from "react";
 import { EmptyNotificationsVisual } from "@/assets/empty-state/empty-notifications";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
 import { resolveNotificationDestination } from "@/features/notifications/lib/notification-destination";
+import { LoadingBlock } from "@/shared/components/loading/loading-block";
 import { Button } from "@/shared/components/ui/button";
 import {
   Drawer,
@@ -31,6 +32,7 @@ export function NotificationsDrawer({
     earlier,
     markReadAsync,
     markAllRead,
+    isLoading,
     isMarkingAllRead,
   } = useNotifications();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
@@ -102,7 +104,9 @@ export function NotificationsDrawer({
 
         {/* Scrollable list */}
         <div className="flex-1 overflow-y-auto overscroll-contain">
-          {items.length === 0 ? (
+          {isLoading ? (
+            <NotificationsDrawerSkeleton />
+          ) : items.length === 0 ? (
             <div className="flex flex-col items-center px-6 py-14 text-center sm:py-16">
               <EmptyNotificationsVisual className="w-36 text-foreground" />
               <div className="mt-6 max-w-64">
@@ -134,5 +138,44 @@ export function NotificationsDrawer({
         </div>
       </DrawerContent>
     </Drawer>
+  );
+}
+
+const NOTIFICATION_SKELETON_ROWS = [
+  "invite",
+  "reply",
+  "plan",
+  "group",
+] as const;
+
+function NotificationsDrawerSkeleton() {
+  return (
+    <div className="px-6 py-5">
+      <span className="sr-only">Loading notifications</span>
+      <LoadingBlock className="mb-4 h-3 w-16 rounded-md" />
+      <div className="flex flex-col gap-3">
+        {NOTIFICATION_SKELETON_ROWS.map((row, index) => (
+          <div
+            className="flex gap-3 border-border/45 border-b pb-3 last:border-b-0"
+            key={row}
+          >
+            <LoadingBlock className="size-10 shrink-0 rounded-full" />
+            <div className="min-w-0 flex-1">
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <LoadingBlock className="h-3 w-28 rounded-md" />
+                <LoadingBlock className="h-2.5 w-10 rounded-md" />
+              </div>
+              <LoadingBlock className="h-3 w-full rounded-md" />
+              <LoadingBlock
+                className={cn(
+                  "mt-2 h-3 rounded-md",
+                  index % 2 === 0 ? "w-3/4" : "w-1/2",
+                )}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

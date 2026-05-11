@@ -1,21 +1,4 @@
-import { Loader2 } from "lucide-react";
-
 import { EmptySettingsBlockedUsersVisual } from "@/assets/empty-state/empty-settings-blocked-users";
-
-interface BlockedUsersLoadingStateProps {
-  message: string;
-}
-
-export function BlockedUsersLoadingState({
-  message,
-}: BlockedUsersLoadingStateProps) {
-  return (
-    <div className="flex items-center gap-2 py-4 text-slate-muted text-sm">
-      <Loader2 size={16} className="animate-spin" />
-      {message}
-    </div>
-  );
-}
 
 interface BlockedUsersErrorStateProps {
   message: string;

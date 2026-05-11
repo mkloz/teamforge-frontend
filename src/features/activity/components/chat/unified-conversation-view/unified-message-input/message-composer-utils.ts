@@ -1,4 +1,5 @@
 import type { ActivityOutgoingAttachment } from "@/features/activity/lib/activity-contract";
+import { CHAT_MAX_ATTACHMENTS } from "@/shared/api/api-constraints";
 
 export const MAX_TEXTAREA_HEIGHT = 120;
 
@@ -13,13 +14,15 @@ export function dedupeAttachments(
 ) {
   const seen = new Set<string>();
 
-  return nextAttachments.filter(({ file }) => {
-    const key = [file.name, file.size, file.lastModified].join(":");
-    if (seen.has(key)) {
-      return false;
-    }
+  return nextAttachments
+    .filter(({ file }) => {
+      const key = [file.name, file.size, file.lastModified].join(":");
+      if (seen.has(key)) {
+        return false;
+      }
 
-    seen.add(key);
-    return true;
-  });
+      seen.add(key);
+      return true;
+    })
+    .slice(0, CHAT_MAX_ATTACHMENTS);
 }

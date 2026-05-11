@@ -4,7 +4,6 @@ import { resultsContainer } from "@/features/onboarding/constants/motion";
 import type { PersonalityEvaluation } from "@/features/onboarding/lib/personality-evaluation";
 import { getPersonalityResultViewModel } from "@/features/onboarding/lib/personality-results";
 import type { OceanVectorWithMeta } from "@/features/onboarding/utils/score-calculator";
-import { TooltipProvider } from "@/shared/components/ui/tooltip";
 
 import { PersonalityResultActions } from "./personality-result-actions";
 import { PersonalityResultHero } from "./personality-result-hero";
@@ -30,42 +29,40 @@ export function PersonalityResults({
   const viewModel = getPersonalityResultViewModel(result, vector);
 
   return (
-    <TooltipProvider delayDuration={200}>
-      <motion.div
-        variants={resultsContainer}
-        initial="hidden"
-        animate="visible"
-        className="mx-auto flex min-h-dvh w-full max-w-xl flex-col gap-8 py-8 sm:py-10"
-      >
-        <PersonalityResultHero
-          result={result}
-          profileUrl={viewModel.externalProfileUrl}
-          typeLabel={viewModel.typeLabel}
+    <motion.div
+      variants={resultsContainer}
+      initial="hidden"
+      animate="visible"
+      className="mx-auto flex min-h-dvh w-full max-w-xl flex-col gap-8 py-8 sm:py-10"
+    >
+      <PersonalityResultHero
+        result={result}
+        profileUrl={viewModel.externalProfileUrl}
+        typeLabel={viewModel.typeLabel}
+      />
+
+      <PersonalityResultSummary profile={viewModel.profile} />
+
+      <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
+        <SectionHeading
+          eyebrow="TeamForge read"
+          title="How this helps a group"
         />
+        <p className="text-pretty font-medium text-base text-ink/82 leading-relaxed">
+          {viewModel.groupRead}
+        </p>
+      </section>
 
-        <PersonalityResultSummary profile={viewModel.profile} />
+      <PersonalityTraitMap
+        dimensionScores={viewModel.dimensionScores}
+        oceanScores={viewModel.oceanScores}
+      />
 
-        <section className="flex flex-col gap-4 border-border/60 border-t pt-7">
-          <SectionHeading
-            eyebrow="TeamForge read"
-            title="How this helps a group"
-          />
-          <p className="text-pretty font-medium text-base text-ink/82 leading-relaxed">
-            {viewModel.groupRead}
-          </p>
-        </section>
-
-        <PersonalityTraitMap
-          dimensionScores={viewModel.dimensionScores}
-          oceanScores={viewModel.oceanScores}
-        />
-
-        <PersonalityResultActions
-          continueLabel={continueLabel}
-          onContinue={onContinue}
-          onRetake={onRetake}
-        />
-      </motion.div>
-    </TooltipProvider>
+      <PersonalityResultActions
+        continueLabel={continueLabel}
+        onContinue={onContinue}
+        onRetake={onRetake}
+      />
+    </motion.div>
   );
 }

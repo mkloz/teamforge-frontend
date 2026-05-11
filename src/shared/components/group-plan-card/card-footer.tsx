@@ -28,7 +28,7 @@ export function CardFooter({
   return (
     <div
       className={cn(
-        "relative z-20 mt-auto flex min-w-0 flex-wrap items-center justify-between gap-3",
+        "pointer-events-none relative z-40 mt-auto flex min-w-0 flex-wrap items-center justify-between gap-3",
         isCompact ? "pt-3" : "pt-3",
       )}
     >
@@ -47,7 +47,7 @@ export function CardFooter({
         />
       </div>
 
-      <div className="shrink-0">{action}</div>
+      <div className="pointer-events-auto shrink-0">{action}</div>
     </div>
   );
 }

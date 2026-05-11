@@ -36,7 +36,7 @@ export function PlanPhotoSection({
           accept="image/*"
           title={coverImage ? "Change plan photo" : "Upload plan photo"}
           description="Drop a landscape image here or browse from your device."
-          helper="PNG, JPG, WEBP up to 5 MB"
+          helper="PNG, JPG, WEBP up to 30 MB"
           actionLabel="Browse"
           isUploading={isCoverUploading}
           error={coverUploadError}

@@ -1,4 +1,5 @@
 import { createRoute } from "@tanstack/react-router";
+import { z } from "zod";
 
 import { AppShellWithNotifications } from "@/app/router/app-shell-with-notifications";
 import { createLazyPageRoute } from "@/app/router/lazy-page-route";
@@ -6,6 +7,14 @@ import { createLazyRouteModule } from "@/app/router/lazy-route-module";
 import { rootRoute } from "@/app/router/root-route";
 import { createRouteErrorComponent } from "@/app/router/route-error-component";
 import { requireCanonicalAppRoute } from "@/app/router/route-guards";
+import { ActivityPageLoading } from "@/features/activity/activity-page.loading";
+import { ExplorePageLoading } from "@/features/explore/explore-page.loading";
+import { ForgePageLoading } from "@/features/forge/forge-page.loading";
+import { GroupPlanDetailPageLoading } from "@/features/group-plan-detail/group-plan-detail-page.loading";
+import { groupPlanDetailSourceValues } from "@/features/group-plan-detail/lib/group-plan-detail-route";
+import { HomePageLoading } from "@/features/home/home-page.loading";
+import { ProfilePageLoading } from "@/features/profile/profile-page/profile-page.loading";
+import { SettingsPageLoading } from "@/features/settings/settings-page/settings-page.loading";
 import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
 
 const homePageModule = createLazyRouteModule(() =>
@@ -42,6 +51,12 @@ const forgePageModule = createLazyRouteModule(() =>
   })),
 );
 
+const groupPlanDetailPageModule = createLazyRouteModule(() =>
+  import("@/features/group-plan-detail/group-plan-detail-page").then((m) => ({
+    default: m.GroupPlanDetailPage,
+  })),
+);
+
 export const appShellRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "app-shell",
@@ -52,7 +67,10 @@ export const appShellRoute = createRoute({
 const homeRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/home",
-  component: createLazyPageRoute(homePageModule.Component),
+  component: createLazyPageRoute(
+    homePageModule.Component,
+    <HomePageLoading mode="route" />,
+  ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.home,
     title: "Home could not finish loading",
@@ -66,7 +84,10 @@ const homeRoute = createRoute({
 const exploreRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/explore",
-  component: createLazyPageRoute(explorePageModule.Component),
+  component: createLazyPageRoute(
+    explorePageModule.Component,
+    <ExplorePageLoading mode="route" />,
+  ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.explore,
     title: "Explore could not finish loading",
@@ -77,10 +98,36 @@ const exploreRoute = createRoute({
   }),
 });
 
+const groupPlanDetailRoute = createRoute({
+  getParentRoute: () => appShellRoute,
+  path: "/groups/$groupId",
+  validateSearch: z.object({
+    plan: z.string().optional().catch(undefined),
+    proposal: z.string().optional().catch(undefined),
+    returnTo: z.string().optional().catch(undefined),
+    source: z.enum(groupPlanDetailSourceValues).optional().catch(undefined),
+  }),
+  component: createLazyPageRoute(
+    groupPlanDetailPageModule.Component,
+    <GroupPlanDetailPageLoading mode="route" />,
+  ),
+  errorComponent: createRouteErrorComponent({
+    scope: routeErrorScopes.groupPlanDetail,
+    title: "Group details could not finish loading",
+    description:
+      "The group and plan briefing hit an unexpected issue before it could render cleanly.",
+    fallbackTo: "/explore",
+    fallbackLabel: "Back to explore",
+  }),
+});
+
 const activityRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/activity",
-  component: createLazyPageRoute(activityPageModule.Component),
+  component: createLazyPageRoute(
+    activityPageModule.Component,
+    <ActivityPageLoading mode="route" />,
+  ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.activity,
     title: "The activity workspace hit a snag",
@@ -94,7 +141,10 @@ const activityRoute = createRoute({
 const profileRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/profile",
-  component: createLazyPageRoute(profilePageModule.Component),
+  component: createLazyPageRoute(
+    profilePageModule.Component,
+    <ProfilePageLoading mode="route" />,
+  ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.profile,
     title: "Profile could not finish loading",
@@ -108,7 +158,10 @@ const profileRoute = createRoute({
 const settingsRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/settings",
-  component: createLazyPageRoute(settingsPageModule.Component),
+  component: createLazyPageRoute(
+    settingsPageModule.Component,
+    <SettingsPageLoading mode="route" />,
+  ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.settings,
     title: "Settings could not finish loading",
@@ -122,7 +175,10 @@ const settingsRoute = createRoute({
 const forgeRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/forge",
-  component: createLazyPageRoute(forgePageModule.Component),
+  component: createLazyPageRoute(
+    forgePageModule.Component,
+    <ForgePageLoading mode="route" />,
+  ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.forge,
     title: "Forge hit an unexpected issue",
@@ -135,6 +191,7 @@ const forgeRoute = createRoute({
 export const appRoutes = [
   homeRoute,
   exploreRoute,
+  groupPlanDetailRoute,
   activityRoute,
   profileRoute,
   settingsRoute,
@@ -144,6 +201,7 @@ export const appRoutes = [
 export const appRouteModules = [
   homePageModule,
   explorePageModule,
+  groupPlanDetailPageModule,
   activityPageModule,
   profilePageModule,
   settingsPageModule,

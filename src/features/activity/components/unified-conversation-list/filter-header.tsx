@@ -3,6 +3,11 @@ import { memo } from "react";
 import type { FilterChip } from "@/features/activity/lib/activity-contract";
 import { Button } from "@/shared/components/ui/button";
 import { RadioGroup } from "@/shared/components/ui/radio-group";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 import { FilterChipItem } from "./filter-chip-item";
 
@@ -30,6 +35,7 @@ export const FilterHeader = memo(function FilterHeader({
   const visibleFilters = filters.filter(
     (f) => f.key !== "unread" || counts.unreadCount > 0,
   );
+  const densityLabel = density === "default" ? "Compact view" : "Default view";
   const handleFilterChange = (value: string) => {
     const selectedFilter = filters.find((filter) => filter.key === value);
 
@@ -63,21 +69,26 @@ export const FilterHeader = memo(function FilterHeader({
       </RadioGroup>
 
       <div className="ml-2 flex items-center border-border/40 border-l pl-2">
-        <Button
-          variant="accentGhost"
-          size="icon"
-          className="size-8"
-          onClick={() =>
-            onDensityChange?.(density === "default" ? "compact" : "default")
-          }
-          title={density === "default" ? "Compact view" : "Default view"}
-        >
-          {density === "default" ? (
-            <LayoutList className="size-3.5" />
-          ) : (
-            <Rows className="size-3.5" />
-          )}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="accentGhost"
+              size="icon"
+              className="size-8"
+              onClick={() =>
+                onDensityChange?.(density === "default" ? "compact" : "default")
+              }
+              aria-label={densityLabel}
+            >
+              {density === "default" ? (
+                <LayoutList className="size-3.5" />
+              ) : (
+                <Rows className="size-3.5" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">{densityLabel}</TooltipContent>
+        </Tooltip>
       </div>
     </nav>
   );

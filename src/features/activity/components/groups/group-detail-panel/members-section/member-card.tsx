@@ -14,6 +14,11 @@ import {
 } from "@/shared/components/ui/alert-dialog";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 
 interface MemberCardProps {
@@ -64,12 +69,14 @@ export function MemberCard({
           />
         )}
         {isAdmin && (
-          <div
-            className="absolute -top-1 -left-1 flex size-5 items-center justify-center rounded-md border-2 border-canvas bg-spark-amber text-white shadow-md"
-            title="Group Admin"
-          >
-            <Crown className="size-3" fill="currentColor" />
-          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="absolute -top-1 -left-1 flex size-5 items-center justify-center rounded-md border-2 border-canvas bg-spark-amber text-white shadow-md">
+                <Crown className="size-3" fill="currentColor" />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>Group admin</TooltipContent>
+          </Tooltip>
         )}
       </div>
 

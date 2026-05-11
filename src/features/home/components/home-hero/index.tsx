@@ -1,8 +1,15 @@
 import { motion } from "framer-motion";
+import type { ReactNode } from "react";
 
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { useHomeViewerState } from "@/features/home/hooks/use-home-viewer";
+import type {
+  HomeViewer,
+  PlannedGroup,
+  UserStats,
+} from "@/features/home/lib/home-contract";
 import { buildHomeNextMove } from "@/features/home/lib/home-insights";
+import type { ExploreGroup, GroupApi, Invite } from "@/shared/schemas";
 import {
   HomeHeroMoveIcon,
   PrimaryAction,
@@ -13,7 +20,6 @@ import { containerVariants, itemVariants } from "./home-hero-motion";
 import { HomeHeroNotificationButton } from "./home-hero-notification-button";
 import { HomeHeroQuickActions } from "./home-hero-quick-actions";
 import { HomeHeroSignalMap } from "./home-hero-signal-map";
-import { HomeHeroSkeleton } from "./home-hero-skeleton";
 
 export function HomeHero() {
   const { viewer, isLoading: viewerLoading } = useHomeViewerState();
@@ -27,9 +33,40 @@ export function HomeHero() {
     homeData.isRecommendationsLoading;
 
   if (viewerLoading || isHeroDataLoading) {
-    return <HomeHeroSkeleton />;
+    return null;
   }
 
+  return (
+    <HomeHeroView
+      groups={groups}
+      invitations={invitations}
+      plans={plans}
+      recommendations={recommendations}
+      stats={stats}
+      viewer={viewer}
+    />
+  );
+}
+
+interface HomeHeroViewProps {
+  groups: GroupApi[];
+  invitations: Invite[];
+  notificationButton?: ReactNode;
+  plans: PlannedGroup[];
+  recommendations: ExploreGroup[];
+  stats: UserStats;
+  viewer: HomeViewer;
+}
+
+export function HomeHeroView({
+  groups,
+  invitations,
+  notificationButton = <HomeHeroNotificationButton />,
+  plans,
+  recommendations,
+  stats,
+  viewer,
+}: HomeHeroViewProps) {
   const { greeting, sub } = getGreeting(viewer.firstName);
   const nextMove = buildHomeNextMove({
     viewer,
@@ -64,7 +101,7 @@ export function HomeHero() {
             </p>
           </div>
 
-          <HomeHeroNotificationButton />
+          {notificationButton}
         </motion.div>
 
         <motion.div

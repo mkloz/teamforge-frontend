@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import type { RefObject } from "react";
 import { memo, useRef } from "react";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
@@ -8,6 +9,7 @@ import type {
   Group,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
+import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import { useIsMobile } from "@/shared/hooks/use-breakpoint";
 import { ChatStatusBar } from "./chat-status-bar";
 import { CompletedBanner } from "./completed-banner";
@@ -71,6 +73,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     messageScrollHandleRef ?? internalMessageScrollHandleRef;
 
   const { unpinMessage } = useActivityMessageActions();
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const isBlockedDirectChat = kind === "dm" && Boolean(data.isBlocked);
 
@@ -89,6 +92,17 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
   const allPinnedMessages: UnifiedMessage[] = (
     pinnedMessagesFromData || []
   ).map((msg: UnifiedMessage) => Object.assign({}, msg, { isOwn: false }));
+
+  function handleViewGroupPlanDetails() {
+    if (kind !== "group") {
+      onToggleAction();
+      return;
+    }
+
+    void navigate(
+      buildGroupPlanDetailNavigation(data.id, { source: "activity" }),
+    );
+  }
 
   return (
     <div className="fade-in flex h-full animate-in flex-col bg-canvas/40 duration-300">
@@ -109,7 +123,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
       <ChatStatusBar
         plan={kind === "group" ? (data.plan ?? undefined) : undefined}
         pinnedMessages={allPinnedMessages}
-        onViewDetails={onToggleAction}
+        onViewDetails={handleViewGroupPlanDetails}
         onUnpinPinnedMessage={(messageId) => {
           const targetMessage = allPinnedMessages.find(
             (message) => message.id === messageId,

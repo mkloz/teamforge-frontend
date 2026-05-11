@@ -1,7 +1,6 @@
 import { ProfileSectionHeading } from "@/features/profile/components/profile-section-heading";
 import type { DimensionScore } from "@/features/profile/lib/profile-contract";
 import { DimensionSpectrum } from "@/shared/components/psychometrics/dimension-spectrum";
-import { TooltipProvider } from "@/shared/components/ui/tooltip";
 
 interface TypeDimensionsSectionProps {
   dimensionScores: DimensionScore[] | null;
@@ -15,11 +14,9 @@ export function TypeDimensionsSection({
       <ProfileSectionHeading>Type dimensions</ProfileSectionHeading>
       <div className="flex flex-col gap-4 px-1">
         {dimensionScores ? (
-          <TooltipProvider delayDuration={200}>
-            {dimensionScores.map((score) => (
-              <DimensionSpectrum key={score.dimension} score={score} />
-            ))}
-          </TooltipProvider>
+          dimensionScores.map((score) => (
+            <DimensionSpectrum key={score.dimension} score={score} />
+          ))
         ) : (
           <p className="font-medium text-slate-muted text-sm">
             Trait dimension data is not available yet.

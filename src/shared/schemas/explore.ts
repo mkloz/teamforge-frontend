@@ -96,3 +96,13 @@ export const exploreJoinResultSchema = z.object({
 });
 
 export type ExploreJoinResult = z.infer<typeof exploreJoinResultSchema>;
+
+export const exploreJoinRequestCancelResultSchema = z.object({
+  status: z.literal("CANCELLED"),
+  groupId: z.string(),
+  message: z.string(),
+});
+
+export type ExploreJoinRequestCancelResult = z.infer<
+  typeof exploreJoinRequestCancelResultSchema
+>;

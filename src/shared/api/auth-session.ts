@@ -1,6 +1,6 @@
 export interface AuthTokens {
   accessToken: string;
-  refreshToken: string;
+  refreshToken?: string;
 }
 
 type AuthSessionListener = () => void;
@@ -35,7 +35,10 @@ export const authSession = {
   },
 
   setTokens(nextTokens: AuthTokens) {
-    tokens = nextTokens;
+    tokens = {
+      accessToken: nextTokens.accessToken,
+      refreshToken: nextTokens.refreshToken ?? tokens?.refreshToken,
+    };
     emitChange();
   },
 

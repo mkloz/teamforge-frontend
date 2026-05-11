@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
+import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import { useJoinHomeRecommendedGroup } from "@/features/home/hooks/use-join-home-recommended-group";
 import { GroupPlanCard } from "@/shared/components/group-plan-card";
 import { Button } from "@/shared/components/ui/button";
@@ -51,5 +52,22 @@ export function RecommendedGroupCard({ group }: RecommendedGroupCardProps) {
       </Button>
     );
 
-  return <GroupPlanCard group={group} variant="compact" action={action} />;
+  const detailsLink = (
+    <Link
+      {...buildGroupPlanDetailNavigation(group.id, { source: "home" })}
+      aria-label={`View ${group.name} group details`}
+      className="block size-full rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    >
+      <span className="sr-only">View group details</span>
+    </Link>
+  );
+
+  return (
+    <GroupPlanCard
+      group={group}
+      variant="compact"
+      action={action}
+      detailsLink={detailsLink}
+    />
+  );
 }

@@ -1,11 +1,8 @@
-import { Check, Plus, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import { EmptyInviteCandidatesVisual } from "@/assets/empty-state/empty-invite-candidates";
-import { Avatar } from "@/shared/components/common/avatar";
-import { Button } from "@/shared/components/ui/button";
 import { Slider } from "@/shared/components/ui/slider";
-import { cn } from "@/shared/lib/utils";
-
-import { formatTrustScore } from "./step3-group.utils";
+import { ManualFriendInviteRow } from "./manual-friend-invite-row";
+import { ManualFriendsSkeleton } from "./manual-friends-skeleton";
 import type { ManualGroupDetailsProps } from "./types";
 
 export function ManualGroupDetails({
@@ -74,11 +71,7 @@ export function ManualGroupDetails({
       </div>
 
       <div className="space-y-2">
-        {isLoadingFriends && (
-          <div className="rounded-lg border border-border/40 bg-card p-4 font-medium text-muted-foreground text-xs">
-            Loading friends...
-          </div>
-        )}
+        {isLoadingFriends && <ManualFriendsSkeleton />}
 
         {!isLoadingFriends && friends.length === 0 && (
           <div className="flex items-center gap-3 rounded-lg border border-border/40 bg-card p-4">
@@ -97,48 +90,13 @@ export function ManualGroupDetails({
           const disabled = !selected && atLimit;
 
           return (
-            <Button
+            <ManualFriendInviteRow
               key={friend.id}
-              type="button"
-              variant="ghost"
+              friendship={friendship}
+              selected={selected}
               disabled={disabled}
-              onClick={() => onManualInviteeToggle(friend.id)}
-              className={cn(
-                "h-auto w-full justify-start rounded-lg border bg-card p-3 text-left transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50",
-                selected
-                  ? "border-spark-amber/35 bg-spark-amber/10 ring-1 ring-spark-amber/20"
-                  : "border-border/45 hover:border-spark-amber/25 hover:bg-spark-amber/5",
-              )}
-              contentClassName="w-full items-center justify-start gap-3"
-            >
-              <Avatar
-                src={friend.avatar}
-                name={friend.name}
-                className="size-11"
-              />
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold text-foreground text-sm">
-                  {friend.name}
-                </p>
-                <div className="mt-1 flex flex-wrap items-center gap-1.5 text-micro text-muted-foreground/65">
-                  {friend.city && <span>{friend.city}</span>}
-                  {friend.personalityType && (
-                    <span>{friend.personalityType}</span>
-                  )}
-                  <span>Trust {formatTrustScore(friend.trustScore)}</span>
-                </div>
-              </div>
-              <span
-                className={cn(
-                  "flex size-8 items-center justify-center rounded-full border transition-colors",
-                  selected
-                    ? "border-spark-amber bg-spark-amber text-ink"
-                    : "border-border/60 bg-background text-muted-foreground",
-                )}
-              >
-                {selected ? <Check size={15} /> : <Plus size={15} />}
-              </span>
-            </Button>
+              onToggle={onManualInviteeToggle}
+            />
           );
         })}
 

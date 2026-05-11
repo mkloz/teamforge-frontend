@@ -11,12 +11,14 @@ import {
   updateMessagePayloadSchema,
 } from "@/features/activity/api/activity-api-contracts";
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
+import { clampApiLimit, clampApiPage } from "@/shared/api/api-constraints";
 import { FileUploadApi } from "@/shared/api/file-upload";
 import {
   chatApiSchema,
   linkPreviewSchema,
   messageApiSchema,
 } from "@/shared/schemas";
+import { publicHttpUrlSchema } from "@/shared/validators/url.validator";
 
 export async function getChats() {
   const response = await apiClient
@@ -40,8 +42,8 @@ export async function getChatMessages(
   const response = await apiClient
     .get(`chats/${chatId}/messages`, {
       searchParams: {
-        limit: String(limit),
-        page: String(page),
+        limit: String(clampApiLimit(limit)),
+        page: String(clampApiPage(page)),
       },
     })
     .json<unknown>();
@@ -143,10 +145,11 @@ export async function uploadChatAttachment(file: File) {
 }
 
 export async function getLinkPreview(url: string) {
+  const previewUrl = publicHttpUrlSchema.parse(url);
   const response = await apiClient
     .get("chats/link-preview", {
       searchParams: {
-        url,
+        url: previewUrl,
       },
     })
     .json<unknown>();

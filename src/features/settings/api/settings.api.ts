@@ -3,7 +3,15 @@ import {
   getResponseRequestId,
   parseJsonWithRequestId,
 } from "@/shared/api/api";
-import { buildFileUploadBody } from "@/shared/api/file-upload";
+import {
+  IMAGE_UPLOAD_ACCEPTED_EXTENSIONS,
+  IMAGE_UPLOAD_ACCEPTED_TYPES,
+  IMAGE_UPLOAD_MAX_SIZE_BYTES,
+} from "@/shared/api/api-constraints";
+import {
+  assertAcceptedFile,
+  buildFileUploadBody,
+} from "@/shared/api/file-upload";
 import type { NotificationPreferences } from "@/shared/schemas";
 import {
   authSessionListSchema,
@@ -40,6 +48,13 @@ export class SettingsApi {
   }
 
   static async uploadAvatar(file: File) {
+    assertAcceptedFile(file, {
+      acceptedExtensions: IMAGE_UPLOAD_ACCEPTED_EXTENSIONS,
+      acceptedTypes: IMAGE_UPLOAD_ACCEPTED_TYPES,
+      maxSizeBytes: IMAGE_UPLOAD_MAX_SIZE_BYTES,
+      sizeLabel: "30 MB",
+    });
+
     const response = await apiClient.patch("users/me/avatar", {
       body: buildFileUploadBody(file, "avatar"),
     });

@@ -1,6 +1,10 @@
 // oxlint-disable import/no-cycle -- Recursive activity/group schemas are resolved with z.lazy.
 import { z } from "zod";
 import {
+  managedAssetReferenceSchema,
+  managedUploadUrlSchema,
+} from "@/shared/validators/url.validator";
+import {
   activityAccessSchema,
   activityStatusSchema,
   activityVisibilitySchema,
@@ -79,7 +83,7 @@ export const forgePlanInputSchema = z
   .object({
     title: z.string().trim().min(1).max(140),
     description: z.string().trim().min(1).max(1000).nullable().optional(),
-    coverImage: z.string().trim().min(1).max(2048).nullable().optional(),
+    coverImage: managedAssetReferenceSchema.nullable().optional(),
     category: planCategorySchema,
     dateTime: z.string().datetime(),
     locationMode: locationModeSchema,
@@ -162,7 +166,7 @@ export const forgeActivityInputSchema = z
     groupSize: z.number().int().min(2).max(8),
     groupName: z.string().trim().min(1).max(120).nullable().optional(),
     groupDescription: z.string().trim().min(1).max(1000).nullable().optional(),
-    groupAvatar: z.string().trim().min(1).max(2048).nullable().optional(),
+    groupAvatar: managedUploadUrlSchema.nullable().optional(),
     plan: forgePlanInputSchema,
   })
   .strict();

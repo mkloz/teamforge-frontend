@@ -1,6 +1,7 @@
-import { CheckCircle, Loader2, Star } from "lucide-react";
+import { CheckCircle, Star } from "lucide-react";
 import { memo } from "react";
 import type { Group } from "@/features/activity/lib/activity-contract";
+import { LoadingBlock } from "@/shared/components/loading/loading-block";
 import { Button } from "@/shared/components/ui/button";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { MemberRatingPicker } from "./member-rating-picker";
@@ -39,10 +40,7 @@ export const CompletedBanner = memo(function CompletedBanner({
         </p>
 
         {rating.isLoading ? (
-          <div className="flex items-center justify-center gap-2 py-5 font-medium text-muted-foreground text-xs">
-            <Loader2 className="size-4 animate-spin" />
-            Loading ratings...
-          </div>
+          <CompletedRatingsSkeleton />
         ) : rating.isError ? (
           <div className="rounded-xl border border-destructive/15 bg-destructive/5 p-3 text-center">
             <p className="font-semibold text-destructive text-xs">
@@ -126,3 +124,29 @@ export const CompletedBanner = memo(function CompletedBanner({
     </div>
   );
 });
+
+function CompletedRatingsSkeleton() {
+  return (
+    <div className="flex flex-col gap-3 py-1">
+      <span className="sr-only">Loading ratings</span>
+      <div className="flex justify-center gap-2">
+        <LoadingBlock className="size-8 rounded-full" />
+        <LoadingBlock className="size-8 rounded-full" />
+        <LoadingBlock className="size-8 rounded-full" />
+      </div>
+
+      <div className="rounded-xl border border-border/70 bg-card/65 p-3">
+        <div className="mb-3 flex items-center justify-center gap-1.5">
+          <LoadingBlock className="size-5 rounded-md" />
+          <LoadingBlock className="size-5 rounded-md" />
+          <LoadingBlock className="size-5 rounded-md" />
+          <LoadingBlock className="size-5 rounded-md" />
+          <LoadingBlock className="size-5 rounded-md" />
+        </div>
+        <LoadingBlock className="h-10 rounded-xl" />
+      </div>
+
+      <LoadingBlock className="mx-auto h-9 w-32 rounded-xl bg-forge-teal/18" />
+    </div>
+  );
+}

@@ -8,6 +8,7 @@ import type {
   ExploreLocationMode,
   ExploreSortOption,
 } from "@/features/explore/schemas/explore-filters.schema";
+import { EXPLORE_MAX_CATEGORY_FILTERS } from "@/shared/api/api-constraints";
 
 import type {
   ExploreRouteState,
@@ -41,7 +42,7 @@ export function normalizeCategories(
     return ["ALL"];
   }
 
-  return unique;
+  return unique.slice(0, EXPLORE_MAX_CATEGORY_FILTERS);
 }
 
 export function resolveExploreRouteState(

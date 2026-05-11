@@ -15,6 +15,11 @@ import {
 } from "react";
 
 import { Button } from "@/shared/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 
 export type FileDropzoneVariant = "cover" | "avatar" | "compact" | "inline";
@@ -328,16 +333,21 @@ function FilePreviewItem({ file, index, onRemove }: FilePreviewItemProps) {
         <p className="text-slate-muted text-xs">{formatFileSize(file.size)}</p>
       </div>
       {onRemove ? (
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          className="rounded-full text-slate-muted hover:text-ink"
-          onClick={() => onRemove(index)}
-          aria-label={`Remove ${file.name}`}
-        >
-          <X size={14} />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              className="rounded-full text-slate-muted hover:text-ink"
+              onClick={() => onRemove(index)}
+              aria-label={`Remove ${file.name}`}
+            >
+              <X size={14} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Remove file</TooltipContent>
+        </Tooltip>
       ) : null}
     </div>
   );

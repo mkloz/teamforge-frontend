@@ -128,6 +128,7 @@ const sharedHooks = {
 
 const rawApiClient = ky.create({
   prefixUrl: config.apiUrl,
+  cache: "no-store",
   credentials: "include",
   timeout: 15_000,
   hooks: sharedHooks,
@@ -151,6 +152,7 @@ export function refreshAuthSession() {
 
 export const apiClient = ky.create({
   prefixUrl: config.apiUrl,
+  cache: "no-store",
   credentials: "include",
   timeout: 15_000,
   hooks: {

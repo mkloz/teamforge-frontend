@@ -5,7 +5,7 @@ import { InterestsBrowse } from "@/features/onboarding/components/interests/inte
 import { InterestsReview } from "@/features/onboarding/components/interests/interests-review";
 import type { UseInterestsReturn } from "@/features/onboarding/hooks/use-interests";
 import { Button } from "@/shared/components/ui/button";
-
+import { InterestsCatalogSkeleton } from "./interests-catalog-skeleton";
 import { InterestsCatalogState } from "./interests-catalog-state";
 import { InterestsIntro } from "./interests-intro";
 
@@ -81,12 +81,7 @@ function InterestsBrowseScreen({
   state,
 }: InterestsBrowseScreenProps) {
   if (state.isCatalogLoading) {
-    return (
-      <InterestsCatalogState
-        title="Loading interests"
-        body="Pulling the latest interest catalog from TeamForge."
-      />
-    );
+    return <InterestsCatalogSkeleton />;
   }
 
   if (state.catalogError) {

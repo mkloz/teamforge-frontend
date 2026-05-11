@@ -1,13 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { OnboardingHomeLink } from "@/features/onboarding/components/onboarding-home-link";
 import { PersonalityScreenRenderer } from "@/features/onboarding/components/personality/personality-screen-renderer";
 import { personalityScreenTransition } from "@/features/onboarding/constants/motion";
 import { usePersonalityTestPageFlow } from "@/features/onboarding/hooks/use-personality-test-page-flow";
 import { QUESTIONS_PER_PAGE } from "@/features/onboarding/lib/personality-test-page-constants";
-import { BackgroundTexture } from "@/shared/components/common/background-texture";
-import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
-import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
-import { cn } from "@/shared/lib/utils";
+import { PersonalityPageContent } from "@/features/onboarding/onboarding-page-content";
 
 export function PersonalityTestPage() {
   const {
@@ -29,55 +25,34 @@ export function PersonalityTestPage() {
   );
 
   return (
-    <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
-      <div className="relative flex h-full flex-1 flex-col overflow-hidden">
-        <BackgroundTexture />
-        {testState.screen.id !== "questions" ? <OnboardingHomeLink /> : null}
-
-        <div
-          ref={scrollContainerRef}
-          className="relative h-full flex-1 overflow-y-auto overflow-x-hidden scroll-smooth"
+    <PersonalityPageContent
+      catalystProgress={testState.progress}
+      displayProgress={displayProgress}
+      hasTopPadding={hasTopPadding}
+      scrollContainerRef={scrollContainerRef}
+      showHomeLink={testState.screen.id !== "questions"}
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={screenTransitionKey}
+          variants={personalityScreenTransition}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          className="flex flex-1 flex-col"
         >
-          <div className="absolute top-0 right-0 left-0 z-50">
-            <TopProgressBar progress={displayProgress} />
-          </div>
-
-          <div
-            className={cn(
-              "relative flex min-h-full flex-col items-center justify-start px-4 pb-4 sm:px-6",
-              hasTopPadding ? "pt-7 sm:pt-12" : "pt-4",
-            )}
-          >
-            <div className="relative flex w-full max-w-xl flex-1 flex-col">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={screenTransitionKey}
-                  variants={personalityScreenTransition}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  className="flex flex-1 flex-col"
-                >
-                  <PersonalityScreenRenderer
-                    state={testState}
-                    backLabel={backLabel}
-                    onBack={goBack}
-                    onSelectionChange={setPendingLength}
-                    onContinue={continueToInterests}
-                    continueLabel={continueLabel}
-                    questionsPerPage={QUESTIONS_PER_PAGE}
-                  />
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="hidden h-full flex-1 items-center justify-center overflow-hidden border-slate-200 border-l bg-hero-bg lg:flex">
-        <VoronoiCatalyst progress={testState.progress} />
-      </div>
-    </div>
+          <PersonalityScreenRenderer
+            state={testState}
+            backLabel={backLabel}
+            onBack={goBack}
+            onSelectionChange={setPendingLength}
+            onContinue={continueToInterests}
+            continueLabel={continueLabel}
+            questionsPerPage={QUESTIONS_PER_PAGE}
+          />
+        </motion.div>
+      </AnimatePresence>
+    </PersonalityPageContent>
   );
 }
 

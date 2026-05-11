@@ -3,6 +3,11 @@ import { Sprout, X } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/shared/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 
 export function BalanceNudge() {
   const [dismissed, setDismissed] = useState(false);
@@ -22,16 +27,21 @@ export function BalanceNudge() {
         You have a strong lane here. A few picks from another area can make the
         profile feel more like the full you.
       </p>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-xs"
-        onClick={() => setDismissed(true)}
-        className="mt-0.5 shrink-0 text-spark-amber/50 hover:text-spark-amber"
-        aria-label="Dismiss"
-      >
-        <X size={14} strokeWidth={2.5} />
-      </Button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-xs"
+            onClick={() => setDismissed(true)}
+            className="mt-0.5 shrink-0 text-spark-amber/50 hover:text-spark-amber"
+            aria-label="Dismiss"
+          >
+            <X size={14} strokeWidth={2.5} />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Dismiss</TooltipContent>
+      </Tooltip>
     </motion.div>
   );
 }

@@ -2,6 +2,11 @@ import { Calendar, MapPin, RotateCcw, Star } from "lucide-react";
 import type { PlanHistoryItem } from "@/features/activity/lib/activity-contract";
 import { PlanCover } from "@/shared/components/common/plan-cover";
 import { Button } from "@/shared/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 import { categoryColors } from "../lib/constants";
 
@@ -68,14 +73,19 @@ export function HistoryCard({ item }: HistoryCardProps) {
 
       {/* Action button - Primary interaction */}
       <div className="flex items-center pr-1">
-        <Button
-          variant="secondary"
-          size="icon"
-          className="size-9 shrink-0 translate-x-1 rounded-lg opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
-          title="Create similar plan"
-        >
-          <RotateCcw className="size-3.5 text-muted-foreground" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="secondary"
+              size="icon"
+              className="size-9 shrink-0 translate-x-1 rounded-lg opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
+              aria-label="Create similar plan"
+            >
+              <RotateCcw className="size-3.5 text-muted-foreground" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Create similar plan</TooltipContent>
+        </Tooltip>
       </div>
     </div>
   );

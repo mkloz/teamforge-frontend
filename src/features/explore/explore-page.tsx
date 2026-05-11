@@ -1,37 +1,30 @@
+import { useQuery } from "@tanstack/react-query";
 import { ExploreFeed } from "@/features/explore/components/explore-feed";
 import { ExploreLeftSection } from "@/features/explore/components/explore-left-section";
 import { ExploreRightFilters } from "@/features/explore/components/explore-right-filters";
 import { ExploreSearchHeader } from "@/features/explore/components/explore-search-header";
+import { ExplorePageLoading } from "@/features/explore/explore-page.loading";
+import { ExplorePageContent } from "@/features/explore/explore-page-content";
+import { useExploreGroups } from "@/features/explore/hooks/use-explore-groups";
+import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 
 export function ExplorePage() {
+  const groupsQuery = useExploreGroups();
+  const currentUserQuery = useQuery(currentUserQueryOptions());
+  const isInitialLoading =
+    (groupsQuery.isLoading && !groupsQuery.data) ||
+    (currentUserQuery.isLoading && !currentUserQuery.data);
+
+  if (isInitialLoading) {
+    return <ExplorePageLoading mode="query" />;
+  }
+
   return (
-    <div className="w-full">
-      <div className="xl:explore-page-grid mx-auto grid w-full max-w-136 grid-cols-1 gap-6 px-4 pt-3 md:max-w-184 md:pt-6 lg:max-w-352 lg:grid-cols-12 lg:px-5 xl:justify-center xl:gap-7">
-        <div className="relative hidden xl:block">
-          <div className="sticky top-6 self-start">
-            <ExploreLeftSection />
-          </div>
-        </div>
-
-        <main className="col-span-1 flex min-h-96 min-w-0 flex-col pb-34 lg:col-span-8 lg:pb-32 xl:col-auto">
-          <div className="mb-4 xl:hidden">
-            <h1 className="font-black text-2xl text-foreground leading-tight tracking-tight">
-              Explore
-            </h1>
-            <p className="mt-1 max-w-2xl font-medium text-muted-foreground text-sm leading-relaxed">
-              Open groups ranked by fit, timing, and available seats.
-            </p>
-          </div>
-          <ExploreSearchHeader />
-          <ExploreFeed />
-        </main>
-
-        <div className="relative hidden lg:col-span-4 lg:block xl:col-auto">
-          <div className="sticky top-8 self-start">
-            <ExploreRightFilters />
-          </div>
-        </div>
-      </div>
-    </div>
+    <ExplorePageContent
+      leftRail={<ExploreLeftSection />}
+      searchHeader={<ExploreSearchHeader />}
+      feed={<ExploreFeed />}
+      filters={<ExploreRightFilters />}
+    />
   );
 }

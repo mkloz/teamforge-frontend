@@ -16,15 +16,19 @@ import {
   planCategorySchema,
   planSchema,
 } from "@/shared/schemas";
+import {
+  managedAssetReferenceSchema,
+  managedUploadUrlSchema,
+} from "@/shared/validators/url.validator";
 
 const updateGroupPayloadSchema = z.object({
   name: z.string().trim().min(1).max(120).optional(),
   description: z.string().trim().max(1000).nullable().optional(),
-  avatar: z.string().trim().max(2048).nullable().optional(),
+  avatar: managedUploadUrlSchema.nullable().optional(),
 });
 
 const updatePlanPayloadSchema = z.object({
-  coverImage: z.string().trim().max(2048).nullable().optional(),
+  coverImage: managedAssetReferenceSchema.nullable().optional(),
 });
 
 const createInvitePayloadSchema = z.object({

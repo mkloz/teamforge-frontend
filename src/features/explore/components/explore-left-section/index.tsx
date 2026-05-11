@@ -11,6 +11,7 @@ import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { Button } from "@/shared/components/ui/button";
 import type { User } from "@/shared/schemas";
 import { ExploreLensCard } from "./explore-lens-card";
+import { ExploreLensSkeleton } from "./explore-lens-skeleton";
 import { ForgeCTA } from "./forge-cta";
 
 function hasCompleteOceanProfile(user: User) {
@@ -48,9 +49,7 @@ export function ExploreLeftSection() {
           interests={currentUser?.interests ?? []}
         />
       ) : isLoading ? (
-        <div className="rounded-xl border border-border/70 bg-card/40 p-4 font-medium text-slate-muted text-sm">
-          Loading your compatibility profile.
-        </div>
+        <ExploreLensSkeleton />
       ) : currentUser && !currentUser.emailVerified ? (
         <div className="rounded-xl border border-border/70 bg-card/40 p-4 font-medium text-slate-muted text-sm">
           <p className="leading-relaxed">

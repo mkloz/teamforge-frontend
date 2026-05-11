@@ -1,5 +1,10 @@
 import { CalendarClock, Clock3, LogOut, Wifi } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 import type { AuthSession } from "@/shared/schemas";
 import { describeSessionDevice } from "./session-device";
@@ -63,12 +68,17 @@ export function SessionRow({ session, isRevoking, onRevoke }: SessionRowProps) {
             </span>
           </div>
           {session.userAgent && (
-            <p
-              className="mt-3 max-w-3xl truncate text-slate-muted/75 text-xs"
-              title={session.userAgent}
-            >
-              {session.userAgent}
-            </p>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  className="mt-3 block max-w-3xl cursor-help truncate border-0 bg-transparent p-0 text-left text-slate-muted/75 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35"
+                >
+                  {session.userAgent}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>{session.userAgent}</TooltipContent>
+            </Tooltip>
           )}
         </div>
       </div>

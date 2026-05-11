@@ -8,6 +8,7 @@ import {
   requireCanonicalOnboardingRoute,
   requireEditableOnboardingRoute,
 } from "@/app/router/route-guards";
+import { OnboardingPageLoading } from "@/features/onboarding/onboarding-page.loading";
 import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
 
 const profileBasicsPageModule = createLazyRouteModule(() =>
@@ -33,7 +34,10 @@ const profileBasicsRoute = createRoute({
   path: "/onboarding/profile",
   beforeLoad: ({ location }) =>
     requireCanonicalOnboardingRoute(location, "/onboarding/profile"),
-  component: createLazyPageRoute(profileBasicsPageModule.Component),
+  component: createLazyPageRoute(
+    profileBasicsPageModule.Component,
+    <OnboardingPageLoading mode="route" step="profile" />,
+  ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.onboardingProfile,
     fullPage: true,
@@ -50,7 +54,10 @@ const personalityRoute = createRoute({
   path: "/onboarding/personality",
   beforeLoad: ({ location }) =>
     requireEditableOnboardingRoute(location, "/onboarding/personality"),
-  component: createLazyPageRoute(personalityTestPageModule.Component),
+  component: createLazyPageRoute(
+    personalityTestPageModule.Component,
+    <OnboardingPageLoading mode="route" step="personality" />,
+  ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.onboardingPersonality,
     fullPage: true,
@@ -67,7 +74,10 @@ const interestsRoute = createRoute({
   path: "/onboarding/interests",
   beforeLoad: ({ location }) =>
     requireEditableOnboardingRoute(location, "/onboarding/interests"),
-  component: createLazyPageRoute(interestsPageModule.Component),
+  component: createLazyPageRoute(
+    interestsPageModule.Component,
+    <OnboardingPageLoading mode="route" step="interests" />,
+  ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.onboardingInterests,
     fullPage: true,

@@ -1,0 +1,38 @@
+{
+  "breakpoints": {
+    "390": {
+      "name": "forge.recent-activity",
+      "viewportWidth": 358,
+      "width": 358,
+      "height": 184,
+      "bones": [
+        [0, 0, 100, 56, 12],
+        [0, 64, 100, 56, 12],
+        [0, 128, 100, 56, 12]
+      ]
+    },
+    "768": {
+      "name": "forge.recent-activity",
+      "viewportWidth": 704,
+      "width": 704,
+      "height": 120,
+      "bones": [
+        [0, 0, 49.4318, 56, 12],
+        [50.5682, 0, 49.4318, 56, 12],
+        [0, 64, 49.4318, 56, 12]
+      ]
+    },
+    "1280": {
+      "name": "forge.recent-activity",
+      "viewportWidth": 1152,
+      "width": 1152,
+      "height": 56,
+      "bones": [
+        [0, 0, 32.8695, 56, 12],
+        [33.5639, 0, 32.8708, 56, 12],
+        [67.1292, 0, 32.8695, 56, 12]
+      ]
+    }
+  },
+  "_hash": "5717b255a02bc57145f1ea7e09fdf7c2"
+}

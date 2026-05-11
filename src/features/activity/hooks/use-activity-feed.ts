@@ -36,11 +36,18 @@ export function useActivityFeed() {
           typingByChatId,
         )
       : null;
+  const isInitialLoading =
+    feedData === null &&
+    (currentUserQuery.isPending ||
+      groupsQuery.isPending ||
+      chatsQuery.isPending ||
+      friendshipsQuery.isPending);
 
   return {
     searchQuery,
     activeFilter,
     sidebarDensity,
+    isInitialLoading,
     filteredItems: feedData?.items ?? [],
     groupCount: feedData?.groupCount ?? 0,
     dmCount: feedData?.dmCount ?? 0,

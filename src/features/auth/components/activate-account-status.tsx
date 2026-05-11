@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import { ErrorAuthLinkVisual } from "@/assets/error-state/error-auth-link";
+import { LoadingBlock } from "@/shared/components/loading/loading-block";
 import { Button } from "@/shared/components/ui/button";
 import { buildAuthRouteNavigation } from "@/shared/lib/auth-route";
 
@@ -18,10 +19,12 @@ export function ActivateAccountStatus({
   if (state === "loading") {
     return (
       <div className="rounded-xl border border-border bg-background px-4 py-6 text-center">
-        <div className="mx-auto mb-4 size-9 animate-spin rounded-full border-2 border-forge-teal/20 border-t-forge-teal" />
-        <p className="text-foreground text-sm">
+        <span className="sr-only">
           Confirming your email and preparing your TeamForge account.
-        </p>
+        </span>
+        <LoadingBlock className="mx-auto mb-4 size-10 rounded-full bg-forge-teal/18" />
+        <LoadingBlock className="mx-auto h-3 w-full max-w-64 rounded-md" />
+        <LoadingBlock className="mx-auto mt-2 h-3 w-44 rounded-md" />
       </div>
     );
   }

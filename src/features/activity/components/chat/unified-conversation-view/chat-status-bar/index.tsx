@@ -7,6 +7,11 @@ import type {
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
 import { Button } from "@/shared/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 
 import { buildPinnedEntries } from "./chat-status-entries";
@@ -138,22 +143,27 @@ export const ChatStatusBar = memo(function ChatStatusBar({
           </div>
         ) : (
           activeEntry.messageId && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-xs"
-              aria-label="Unpin message"
-              onClick={handleUnpin}
-              className={cn(
-                "size-7 rounded-full",
-                "text-slate-muted/60",
-                "hover:bg-muted/80 hover:text-ink",
-                "transition-colors duration-150",
-                "focus-visible:ring-forge-teal/40",
-              )}
-            >
-              <X className="size-3.5" strokeWidth={2} />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  aria-label="Unpin message"
+                  onClick={handleUnpin}
+                  className={cn(
+                    "size-7 rounded-full",
+                    "text-slate-muted/60",
+                    "hover:bg-muted/80 hover:text-ink",
+                    "transition-colors duration-150",
+                    "focus-visible:ring-forge-teal/40",
+                  )}
+                >
+                  <X className="size-3.5" strokeWidth={2} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Unpin message</TooltipContent>
+            </Tooltip>
           )
         )}
       </div>

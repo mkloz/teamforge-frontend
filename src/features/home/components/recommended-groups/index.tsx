@@ -10,23 +10,34 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/shared/components/ui/carousel";
+import type { ExploreGroup } from "@/shared/schemas";
 
 import { RecommendedGroupCard } from "./recommended-group-card";
 
 export function RecommendedGroups() {
   const { recommendations, isRecommendationsLoading } = useHomeData();
+
+  return (
+    <RecommendedGroupsView
+      isRecommendationsLoading={isRecommendationsLoading}
+      recommendations={recommendations}
+    />
+  );
+}
+
+interface RecommendedGroupsViewProps {
+  isRecommendationsLoading?: boolean;
+  recommendations: ExploreGroup[];
+}
+
+export function RecommendedGroupsView({
+  isRecommendationsLoading = false,
+  recommendations,
+}: RecommendedGroupsViewProps) {
   const visibleRecommendations = getRecommendationPreview(recommendations, 3);
 
   if (isRecommendationsLoading && recommendations.length === 0) {
-    return (
-      <div className="flex w-full animate-pulse flex-col gap-4">
-        <div className="h-8 w-56 rounded bg-muted" />
-        <div className="grid gap-3 md:grid-cols-2">
-          <div className="h-48 rounded-xl bg-muted" />
-          <div className="h-48 rounded-xl bg-muted/60" />
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

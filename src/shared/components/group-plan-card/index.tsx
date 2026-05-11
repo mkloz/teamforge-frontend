@@ -10,6 +10,7 @@ import { cn } from "@/shared/lib/utils";
 export function GroupPlanCard({
   group,
   action,
+  detailsLink,
   variant = "default",
 }: GroupPlanCardProps) {
   const isCompact = variant === "compact";
@@ -33,6 +34,9 @@ export function GroupPlanCard({
           isCompact ? "max-w-80 flex-col" : "flex-col md:flex-row",
         )}
       >
+        {detailsLink ? (
+          <div className="absolute inset-0 z-30 rounded-xl">{detailsLink}</div>
+        ) : null}
         <CardImage alt={imageAlt} src={imageSrc} variant={variant} />
 
         <div

@@ -13,6 +13,10 @@ import {
   forgeSearchModeValues,
 } from "@/features/forge/lib/forge-route";
 import {
+  buildGroupPlanDetailNavigation,
+  type GroupPlanDetailRouteSearch,
+} from "@/features/group-plan-detail/lib/group-plan-detail-route";
+import {
   buildHomeNavigation,
   type HomeRouteSearch,
 } from "@/features/home/lib/home-route";
@@ -25,7 +29,6 @@ import {
   matchLegacyPlanProposalPath,
   resolveFriendRequestIntent,
   resolveInviteIntent,
-  shouldOpenGroupPanelForNotificationType,
 } from "@/features/notifications/lib/notification-intent";
 import {
   buildSettingsNavigation,
@@ -46,6 +49,11 @@ export type NotificationDestination =
   | { to: "/home"; search?: HomeRouteSearch }
   | { to: "/explore"; search?: ExploreRouteSearch }
   | { to: "/forge"; search?: ForgeRouteSearch }
+  | {
+      to: "/groups/$groupId";
+      params: { groupId: string };
+      search?: GroupPlanDetailRouteSearch;
+    }
   | { to: "/settings"; search?: { section?: SettingsSection } };
 
 function toGroupDestination(
@@ -57,21 +65,45 @@ function toGroupDestination(
     message?: string;
   },
 ): NotificationDestination {
-  return buildActivityGroupNavigation(groupId, options);
+  if (options?.message) {
+    return buildActivityGroupNavigation(groupId, {
+      message: options.message,
+    });
+  }
+
+  return buildGroupPlanDetailNavigation(groupId, {
+    plan: options?.plan,
+    proposal: options?.proposal,
+    source: "notification",
+  });
+}
+
+function parseNotificationLink(link: string | null) {
+  if (!link) {
+    return null;
+  }
+
+  try {
+    return new URL(link, "https://teamforge.local");
+  } catch {
+    return null;
+  }
 }
 
 function extractProposalIdFromLink(link: string | null) {
-  if (!link) {
+  const parsedLink = parseNotificationLink(link);
+
+  if (!parsedLink) {
     return undefined;
   }
 
-  const parsedLink = new URL(
-    link.startsWith("/") ? link : `/${link}`,
-    "https://teamforge.local",
-  );
   const proposalId = extractProposalId(parsedLink.searchParams);
 
   return proposalId ?? undefined;
+}
+
+function extractPlanId(searchParams: URLSearchParams) {
+  return searchParams.get("plan") ?? searchParams.get("planId") ?? undefined;
 }
 
 function toDirectMessageDestination(
@@ -130,10 +162,15 @@ async function resolveFromLegacyLink(
     return null;
   }
 
-  const normalizedLink = link.startsWith("/") ? link : `/${link}`;
-  const parsedLink = new URL(normalizedLink, "https://teamforge.local");
+  const parsedLink = parseNotificationLink(link);
+
+  if (!parsedLink) {
+    return null;
+  }
+
   const pathname = parsedLink.pathname;
   const proposalId = extractProposalId(parsedLink.searchParams);
+  const planIdFromSearch = extractPlanId(parsedLink.searchParams);
 
   if (pathname === "/forge") {
     return buildForgeNavigation(resolveForgeSearch(parsedLink.searchParams));
@@ -143,13 +180,9 @@ async function resolveFromLegacyLink(
 
   if (groupId) {
     return toGroupDestination(groupId, {
-      panel: shouldOpenGroupPanelForNotificationType(notification.type)
-        ? "group"
-        : undefined,
-      proposal:
-        notification.type === "PLAN_PROPOSAL"
-          ? (proposalId ?? undefined)
-          : undefined,
+      panel: "group",
+      plan: planIdFromSearch,
+      proposal: proposalId ?? undefined,
     });
   }
 
@@ -208,6 +241,12 @@ async function resolveFromLegacyLink(
   const inviteIntent = resolveInviteIntent(pathname, parsedLink.searchParams);
 
   if (inviteIntent) {
+    if (notification.entityType === "GROUP" && notification.entityId) {
+      return toGroupDestination(notification.entityId, {
+        panel: "group",
+      });
+    }
+
     return buildHomeNavigation(inviteIntent);
   }
 
@@ -234,9 +273,7 @@ export async function resolveNotificationDestination(
 
   if (notification.entityType === "GROUP" && notification.entityId) {
     return toGroupDestination(notification.entityId, {
-      panel: shouldOpenGroupPanelForNotificationType(notification.type)
-        ? "group"
-        : undefined,
+      panel: "group",
     });
   }
 

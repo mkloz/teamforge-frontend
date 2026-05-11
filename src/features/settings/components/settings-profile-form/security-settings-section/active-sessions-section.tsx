@@ -4,6 +4,7 @@ import {
   SessionRow,
   StatPill,
 } from "@/features/settings/components/settings-profile-form/settings-form-controls";
+import { SettingsActiveSessionsSkeleton } from "@/features/settings/components/settings-section-skeletons";
 import { Button } from "@/shared/components/ui/button";
 import type { AuthSession } from "@/shared/schemas";
 import { formatShortSessionTime } from "./security-formatters";
@@ -70,7 +71,7 @@ export function ActiveSessionsSection({
 
       <div>
         {isLoadingSessions ? (
-          <p className="py-4 text-slate-muted text-sm">Loading sessions...</p>
+          <SettingsActiveSessionsSkeleton />
         ) : sessionsError ? (
           <p className="py-4 text-destructive text-sm">{sessionsError}</p>
         ) : sessions.length ? (

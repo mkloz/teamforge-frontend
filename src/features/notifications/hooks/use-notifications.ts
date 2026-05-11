@@ -25,10 +25,10 @@ export function useUnreadNotifications() {
 }
 
 export function useNotifications() {
-  const { data } = useQuery(NotificationsQueryFactory.list());
+  const listQuery = useQuery(NotificationsQueryFactory.list());
   const unreadItemsQuery = useQuery(NotificationsQueryFactory.unreadList());
   const unreadCountQuery = useQuery(NotificationsQueryFactory.unreadCount());
-  const items = data ?? [];
+  const items = listQuery.data ?? [];
   const unreadItems =
     unreadItemsQuery.data ?? items.filter((item) => !item.isRead);
   const [referenceTime] = useState(() => Date.now());
@@ -90,7 +90,7 @@ export function useNotifications() {
     today,
     earlier,
     count,
-    isLoading: unreadCountQuery.isLoading && items.length === 0,
+    isLoading: listQuery.isLoading && items.length === 0,
     isMarkingAllRead: markAllReadMutation.isPending,
     markRead: (id: string) => markReadMutation.mutate(id),
     markReadAsync: (id: string) => markReadMutation.mutateAsync(id),

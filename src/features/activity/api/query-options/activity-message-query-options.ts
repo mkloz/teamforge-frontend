@@ -4,6 +4,7 @@ import {
   type ActivityMessagesPageData,
   DEFAULT_ACTIVITY_MESSAGE_LIMIT,
 } from "@/features/activity/api/messages/message-cache-types";
+import { API_MAX_PAGE } from "@/shared/api/api-constraints";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 
 export function conversationMessagesQueryOptions(chatId: string) {
@@ -18,7 +19,8 @@ export function conversationMessagesQueryOptions(chatId: string) {
       });
     },
     getNextPageParam: (lastPage) =>
-      lastPage.meta.currentPage < lastPage.meta.totalPages
+      lastPage.meta.currentPage < lastPage.meta.totalPages &&
+      lastPage.meta.currentPage < API_MAX_PAGE
         ? lastPage.meta.currentPage + 1
         : undefined,
   });

@@ -39,7 +39,7 @@ export function EditGroupCoverSection({
           accept="image/*"
           title={editor.coverImage ? "Change cover" : "Upload cover"}
           description="Drop a plan image here or browse from your device."
-          helper="PNG, JPG, WEBP up to 5 MB"
+          helper="PNG, JPG, WEBP up to 30 MB"
           actionLabel="Browse"
           isUploading={editor.isCoverUploading}
           error={editor.coverUploadError}

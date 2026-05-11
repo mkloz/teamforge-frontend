@@ -43,7 +43,7 @@ export function AvatarDropzones({
           accept="image/*"
           title={dropzoneTitle}
           description="Drop a square image here or tap to browse."
-          helper="PNG, JPG, WEBP up to 5 MB"
+          helper="PNG, JPG, WEBP up to 30 MB"
           actionLabel="Browse"
           disabled={isAvatarBusy}
           isUploading={isUploadingAvatar}
@@ -57,7 +57,7 @@ export function AvatarDropzones({
         accept="image/*"
         title={dropzoneTitle}
         description="Drop a new profile image here or browse from your device."
-        helper="PNG, JPG, WEBP up to 5 MB"
+        helper="PNG, JPG, WEBP up to 30 MB"
         actionLabel="Browse"
         disabled={isAvatarBusy}
         isUploading={isUploadingAvatar}

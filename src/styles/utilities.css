@@ -5,6 +5,85 @@
     scrollbar-color: var(--muted-foreground) transparent;
   }
 
+  .boneyard-bone {
+    box-shadow: inset 0 0 0 1px
+      color-mix(in srgb, var(--color-ink) 2%, transparent);
+  }
+
+  .boneyard-loading-block {
+    animation: teamforge-boneyard-block-pulse 2.4s ease-in-out infinite;
+    background-color: var(--boneyard-bone-light);
+  }
+
+  .dark .boneyard-loading-block {
+    background-color: var(--boneyard-bone-dark);
+  }
+
+  @keyframes teamforge-boneyard-block-pulse {
+    0%,
+    100% {
+      background-color: var(--boneyard-bone-light);
+    }
+
+    50% {
+      background-color: color-mix(
+        in srgb,
+        var(--boneyard-bone-light) 82%,
+        var(--color-canvas)
+      );
+    }
+  }
+
+  .dark .boneyard-loading-block {
+    animation-name: teamforge-boneyard-block-pulse-dark;
+  }
+
+  @keyframes teamforge-boneyard-block-pulse-dark {
+    0%,
+    100% {
+      background-color: var(--boneyard-bone-dark);
+    }
+
+    50% {
+      background-color: color-mix(
+        in srgb,
+        var(--boneyard-bone-dark) 78%,
+        var(--color-ink)
+      );
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .boneyard-bone,
+    .boneyard-loading-block {
+      /* biome-ignore lint/complexity/noImportantStyles: Boneyard applies animation inline on generated bones; reduced-motion must win. */
+      animation: none !important;
+      /* biome-ignore lint/complexity/noImportantStyles: Boneyard stagger applies opacity inline on generated bones; reduced-motion should keep bones visible. */
+      opacity: 1 !important;
+    }
+
+    .boneyard-bone {
+      /* biome-ignore lint/complexity/noImportantStyles: Boneyard applies background inline on generated bones; reduced-motion should remove shimmer. */
+      background-color: var(--boneyard-bone-light) !important;
+      /* biome-ignore lint/complexity/noImportantStyles: Boneyard applies shimmer inline on generated bones; reduced-motion should remove shimmer. */
+      background-image: none !important;
+    }
+
+    .dark .boneyard-bone {
+      /* biome-ignore lint/complexity/noImportantStyles: Boneyard applies background inline on generated bones; dark reduced-motion color must win. */
+      background-color: var(--boneyard-bone-dark) !important;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .boneyard-bone,
+    .boneyard-loading-block {
+      /* biome-ignore lint/complexity/noImportantStyles: Forced-colors needs to override Boneyard inline generated backgrounds. */
+      background: CanvasText !important;
+      opacity: 0.28;
+    }
+  }
+
   /* Hide scrollbar but keep functionality */
   .scrollbar-hide {
     /* biome-ignore lint/complexity/noImportantStyles: This utility must override browser scrollbar defaults wherever it is applied. */
@@ -184,6 +263,10 @@
 
 @utility profile-page-grid {
   grid-template-columns: minmax(0, 1fr) minmax(18rem, 22rem);
+}
+
+@utility group-plan-hero-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(22rem, 28rem);
 }
 
 @utility home-page-grid {

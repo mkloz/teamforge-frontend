@@ -6,7 +6,6 @@ import { Button } from "@/shared/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 
@@ -38,39 +37,32 @@ export const LightboxHeader = memo(function LightboxHeader({
         </div>
       </div>
       <div className="pointer-events-auto flex items-center gap-4">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                asChild
-                variant="ghost"
-                size="icon"
-                className="pointer-events-auto rounded-full text-white/60 transition hover:bg-white/10 hover:text-white active:scale-90"
-              >
-                <a
-                  href={currentMedia?.url ?? "#"}
-                  download={currentMedia?.name || true}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="Download media"
-                  onClick={(event) => {
-                    if (!currentMedia) {
-                      event.preventDefault();
-                    }
-                  }}
-                >
-                  <Download className="size-5" />
-                </a>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent
-              side="bottom"
-              className="border-white/10 bg-white/10 font-bold text-white text-xs backdrop-blur-md"
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              asChild
+              variant="ghost"
+              size="icon"
+              className="pointer-events-auto rounded-full text-white/60 transition hover:bg-white/10 hover:text-white active:scale-90"
             >
-              Download file
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+              <a
+                href={currentMedia?.url ?? "#"}
+                download={currentMedia?.name || true}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Download media"
+                onClick={(event) => {
+                  if (!currentMedia) {
+                    event.preventDefault();
+                  }
+                }}
+              >
+                <Download className="size-5" />
+              </a>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">Download file</TooltipContent>
+        </Tooltip>
       </div>
     </motion.div>
   );

@@ -3,6 +3,7 @@ import { ExploreApi } from "@/features/explore/api/explore.api";
 import { getServerCategory } from "@/features/explore/api/explore-filters";
 import { EXPLORE_FRIEND_REQUESTS_QUERY_KEY } from "@/features/explore/api/explore-query-keys";
 import type { ExploreFilters } from "@/features/explore/schemas/explore-filters.schema";
+import { EXPLORE_MAX_CATEGORY_FILTERS } from "@/shared/api/api-constraints";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import type { ExploreGroup, ExploreViewInsight } from "@/shared/schemas";
 
@@ -18,9 +19,11 @@ export const ExploreQueryOptions = {
       queryFn: async (): Promise<ExploreGroupsQueryData> => {
         const searchParams = new URLSearchParams();
         const serverCategory = getServerCategory(filters.selectedCategories);
-        const categories = filters.selectedCategories.filter(
-          (category) => category !== "ALL",
-        );
+        const categories = Array.from(
+          new Set(
+            filters.selectedCategories.filter((category) => category !== "ALL"),
+          ),
+        ).slice(0, EXPLORE_MAX_CATEGORY_FILTERS);
 
         searchParams.set("limit", "24");
         searchParams.set("sortBy", filters.sortBy);

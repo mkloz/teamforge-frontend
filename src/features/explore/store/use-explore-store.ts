@@ -7,6 +7,7 @@ import type {
   ExploreLocationMode,
   ExploreSortOption,
 } from "@/features/explore/schemas/explore-filters.schema";
+import { EXPLORE_MAX_CATEGORY_FILTERS } from "@/shared/api/api-constraints";
 
 interface ExploreState extends ExploreFilters {
   searchQuery: string;
@@ -40,7 +41,15 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
   searchQuery: "",
 
   setSearchQuery: (searchQuery) => set({ searchQuery }),
-  setSelectedCategories: (selectedCategories) => set({ selectedCategories }),
+  setSelectedCategories: (selectedCategories) =>
+    set({
+      selectedCategories: selectedCategories.includes("ALL")
+        ? ["ALL"]
+        : Array.from(new Set(selectedCategories)).slice(
+            0,
+            EXPLORE_MAX_CATEGORY_FILTERS,
+          ),
+    }),
   setSizeRange: (sizeRange) => set({ sizeRange }),
   setDistance: (distance) => set({ distance }),
   setLocationMode: (locationMode) => set({ locationMode }),

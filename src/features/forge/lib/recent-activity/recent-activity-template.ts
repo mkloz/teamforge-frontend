@@ -5,11 +5,25 @@ import {
   getRecentActivityCategoryLabel,
   normalizeRecentActivityTitle,
 } from "@/features/forge/lib/recent-activity/activity-category";
+import {
+  isManagedAssetReference,
+  isManagedUploadUrl,
+} from "@/shared/validators/url.validator";
 
 function getPlanCostAmount(activity: RecentForgeActivity) {
   const costAmount = activity.group?.plan?.costAmount;
 
   return typeof costAmount === "number" ? String(costAmount) : "";
+}
+
+function getReusableCoverImage(value?: string | null) {
+  return typeof value === "string" && isManagedAssetReference(value)
+    ? value
+    : null;
+}
+
+function getReusableAvatarImage(value?: string | null) {
+  return typeof value === "string" && isManagedUploadUrl(value) ? value : null;
 }
 
 export function buildRecentActivityTemplate(
@@ -39,7 +53,7 @@ export function buildRecentActivityTemplate(
     visibility: activity.visibility,
     groupName: group?.name ?? "",
     groupDescription: group?.description ?? "",
-    coverImage: plan?.coverImage ?? null,
-    avatarImage: group?.avatar ?? null,
+    coverImage: getReusableCoverImage(plan?.coverImage),
+    avatarImage: getReusableAvatarImage(group?.avatar),
   };
 }

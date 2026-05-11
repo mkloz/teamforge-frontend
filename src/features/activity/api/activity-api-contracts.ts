@@ -1,6 +1,11 @@
 import { z } from "zod";
 import type { ApiResponseWithRequestId } from "@/shared/api/api";
 import {
+  CHAT_ATTACHMENT_MAX_DURATION_SECONDS,
+  CHAT_ATTACHMENT_MAX_SIZE_BYTES,
+  CHAT_MAX_ATTACHMENTS,
+} from "@/shared/api/api-constraints";
+import {
   attachmentTypeSchema,
   type CreateRatingPayload,
   chatApiSchema,
@@ -18,6 +23,10 @@ import {
   type planSchema,
   ratingEntitySchema,
 } from "@/shared/schemas";
+import {
+  managedAssetReferenceSchema,
+  managedUploadUrlSchema,
+} from "@/shared/validators/url.validator";
 
 export const DEFAULT_ACTIVITY_API_LIMIT = "100";
 export const DEFAULT_ACTIVITY_API_MESSAGE_LIMIT = "50";
@@ -40,19 +49,32 @@ export const createInvitePayloadSchema = z.object({
 
 const sendMessageAttachmentSchema = z.object({
   type: attachmentTypeSchema,
-  url: z.string().url(),
+  url: managedUploadUrlSchema,
   name: z.string().optional(),
-  size: z.number().int().nonnegative().optional(),
+  size: z
+    .number()
+    .int()
+    .nonnegative()
+    .max(CHAT_ATTACHMENT_MAX_SIZE_BYTES)
+    .optional(),
   mimeType: z.string().optional(),
-  thumbnailUrl: z.string().url().optional(),
-  duration: z.number().int().nonnegative().optional(),
+  thumbnailUrl: managedUploadUrlSchema.optional(),
+  duration: z
+    .number()
+    .int()
+    .nonnegative()
+    .max(CHAT_ATTACHMENT_MAX_DURATION_SECONDS)
+    .optional(),
 });
 
 export const sendMessagePayloadSchema = z.object({
   content: z.string().optional(),
-  replyToId: z.string().nullable().optional(),
+  replyToId: z.string().max(128).nullable().optional(),
   type: messageTypeSchema.optional(),
-  attachments: z.array(sendMessageAttachmentSchema).optional(),
+  attachments: z
+    .array(sendMessageAttachmentSchema)
+    .max(CHAT_MAX_ATTACHMENTS)
+    .optional(),
 });
 
 export const updateMessagePayloadSchema = z.object({
@@ -66,12 +88,12 @@ export const createReactionPayloadSchema = z.object({
 export const updateGroupPayloadSchema = z.object({
   name: z.string().trim().min(1).max(120).optional(),
   description: z.string().trim().max(1000).nullable().optional(),
-  avatar: z.string().trim().max(2048).nullable().optional(),
+  avatar: managedUploadUrlSchema.nullable().optional(),
 });
 
 export const updatePlanPayloadSchema = z
   .object({
-    coverImage: z.string().trim().max(2048).nullable().optional(),
+    coverImage: managedAssetReferenceSchema.nullable().optional(),
     locationMode: locationModeSchema.optional(),
     location: z.string().trim().max(200).nullable().optional(),
     locationLat: z.number().finite().min(-90).max(90).nullable().optional(),

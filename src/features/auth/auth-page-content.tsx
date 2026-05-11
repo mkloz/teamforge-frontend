@@ -1,0 +1,70 @@
+import { Link } from "@tanstack/react-router";
+import { ArrowLeft } from "lucide-react";
+import type { ReactNode, RefObject } from "react";
+import { BackgroundTexture } from "@/shared/components/common/background-texture";
+import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
+import { Button } from "@/shared/components/ui/button";
+import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
+import type { VoronoiCatalystHandle } from "@/shared/lib/voronoi/voronoi-contract";
+
+interface AuthPageContentProps {
+  catalystRef?: RefObject<VoronoiCatalystHandle | null>;
+  children: ReactNode;
+  onInput?: () => void;
+  progress: number;
+  scrollContainerRef?: RefObject<HTMLDivElement | null>;
+}
+
+export function AuthPageContent({
+  catalystRef,
+  children,
+  onInput,
+  progress,
+  scrollContainerRef,
+}: AuthPageContentProps) {
+  return (
+    <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
+      <div className="pointer-events-none absolute top-0 right-0 left-0 z-30 flex h-16 items-center px-4 lg:h-24 lg:px-10">
+        <Button
+          variant="inverseGhost"
+          asChild
+          size="sm"
+          className="pointer-events-auto h-9 rounded-full px-4"
+        >
+          <Link to="/" className="flex items-center gap-2">
+            <ArrowLeft
+              size={16}
+              className="transition-transform duration-300 ease-out group-hover:-translate-x-1"
+            />
+            <span className="font-medium text-xs">Back home</span>
+          </Link>
+        </Button>
+      </div>
+
+      <div className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-border border-r bg-hero-bg lg:flex">
+        <VoronoiCatalyst ref={catalystRef} progress={progress} />
+      </div>
+
+      <div className="relative flex h-full flex-1 flex-col overflow-hidden">
+        <BackgroundTexture />
+
+        <div
+          ref={scrollContainerRef}
+          className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth px-4 pb-4"
+          onInput={onInput}
+        >
+          <TopProgressBar
+            progress={progress}
+            className="sticky top-0 z-50 -mx-4 -mt-2 w-full"
+          />
+
+          <div className="flex min-h-full w-full flex-col items-center justify-start pt-20 pb-10 lg:justify-center lg:py-8">
+            <div className="relative w-full max-w-sm px-2 sm:px-10 lg:p-0">
+              {children}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

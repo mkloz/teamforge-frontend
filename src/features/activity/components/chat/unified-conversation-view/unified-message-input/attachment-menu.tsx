@@ -7,6 +7,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 
 interface AttachmentMenuProps {
   disabled: boolean;
@@ -52,17 +57,22 @@ export const AttachmentMenu = memo(function AttachmentMenu({
       />
 
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="accentGhost"
-            size="icon-sm"
-            className="cursor-pointer rounded-full outline-none"
-            aria-label="Add attachment"
-            disabled={disabled}
-          >
-            <Paperclip className="size-5" strokeWidth={2.2} />
-          </Button>
-        </DropdownMenuTrigger>
+        <Tooltip>
+          <DropdownMenuTrigger asChild>
+            <TooltipTrigger asChild>
+              <Button
+                variant="accentGhost"
+                size="icon-sm"
+                className="cursor-pointer rounded-full outline-none"
+                aria-label="Add attachment"
+                disabled={disabled}
+              >
+                <Paperclip className="size-5" strokeWidth={2.2} />
+              </Button>
+            </TooltipTrigger>
+          </DropdownMenuTrigger>
+          <TooltipContent>Add attachment</TooltipContent>
+        </Tooltip>
         <DropdownMenuContent
           align="start"
           sideOffset={16}

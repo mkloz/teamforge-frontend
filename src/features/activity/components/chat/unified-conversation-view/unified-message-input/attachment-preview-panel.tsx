@@ -1,5 +1,5 @@
 import { memo } from "react";
-
+import { CHAT_MAX_ATTACHMENTS } from "@/shared/api/api-constraints";
 import {
   FileDropzone,
   FilePreviewList,
@@ -30,7 +30,7 @@ export const AttachmentPreviewPanel = memo(function AttachmentPreviewPanel({
       <FileDropzone
         variant="inline"
         multiple
-        maxFiles={10}
+        maxFiles={CHAT_MAX_ATTACHMENTS}
         title="Add more attachments"
         description="Drop photos or documents here before sending."
         helper="Multiple files supported"

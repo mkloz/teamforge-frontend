@@ -6,6 +6,11 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 import { PlanCover } from "@/shared/components/common/plan-cover";
 import { Button } from "@/shared/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 
 interface GroupCoverHeaderProps {
@@ -42,30 +47,40 @@ export function GroupCoverHeader({
         <div className="absolute inset-0 bg-linear-to-t from-canvas/90 via-canvas/10 to-transparent" />
 
         {currentUserRole === "ADMIN" && (
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            className={cn(
-              "absolute z-30 rounded-full border-0 bg-black/20 p-0 text-white backdrop-blur-sm transition-all hover:bg-black/40",
-              isMobile ? "top-4 right-14 size-9" : "top-3 right-4",
-            )}
-            aria-label="Edit group settings"
-            onClick={onEditGroup}
-          >
-            <Pencil className={isMobile ? "size-5" : "size-4"} />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                className={cn(
+                  "absolute z-30 rounded-full border-0 bg-black/20 p-0 text-white backdrop-blur-sm transition-all hover:bg-black/40",
+                  isMobile ? "top-4 right-14 size-9" : "top-3 right-4",
+                )}
+                aria-label="Edit group settings"
+                onClick={onEditGroup}
+              >
+                <Pencil className={isMobile ? "size-5" : "size-4"} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Edit group settings</TooltipContent>
+          </Tooltip>
         )}
 
         {isMobile && (
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            onClick={onClose}
-            className="absolute top-3 right-3 rounded-full border-0 bg-black/20 p-0 text-white backdrop-blur-sm hover:bg-black/40"
-            aria-label="Close group panel"
-          >
-            <X className="size-4" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                onClick={onClose}
+                className="absolute top-3 right-3 rounded-full border-0 bg-black/20 p-0 text-white backdrop-blur-sm hover:bg-black/40"
+                aria-label="Close group panel"
+              >
+                <X className="size-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Close group panel</TooltipContent>
+          </Tooltip>
         )}
       </div>
     </header>

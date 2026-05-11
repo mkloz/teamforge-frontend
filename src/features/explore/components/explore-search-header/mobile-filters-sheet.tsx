@@ -11,6 +11,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/shared/components/ui/sheet";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 
 export function MobileFiltersSheet() {
   const { isAnythingFiltered, resetFilters } = useExploreRouteState();
@@ -18,18 +23,25 @@ export function MobileFiltersSheet() {
 
   return (
     <Sheet>
-      <SheetTrigger asChild>
-        <Button
-          variant={filtered ? "primary" : "outline"}
-          size="icon"
-          aria-label={
-            filtered ? "Open filters, filters active" : "Open filters"
-          }
-          className="size-11 shrink-0 lg:hidden"
-        >
-          <SlidersHorizontal className="size-3.5" />
-        </Button>
-      </SheetTrigger>
+      <Tooltip>
+        <SheetTrigger asChild>
+          <TooltipTrigger asChild>
+            <Button
+              variant={filtered ? "primary" : "outline"}
+              size="icon"
+              aria-label={
+                filtered ? "Open filters, filters active" : "Open filters"
+              }
+              className="size-11 shrink-0 lg:hidden"
+            >
+              <SlidersHorizontal className="size-3.5" />
+            </Button>
+          </TooltipTrigger>
+        </SheetTrigger>
+        <TooltipContent>
+          {filtered ? "Filters active" : "Open filters"}
+        </TooltipContent>
+      </Tooltip>
       <SheetContent
         side="right"
         className="w-full overflow-y-auto border-border/40 border-l p-0 sm:max-w-md"

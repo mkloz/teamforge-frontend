@@ -52,10 +52,7 @@ export class AuthCommands {
   static async loginWithGoogle(code: string, intent: GoogleAuthIntent) {
     const result = await AuthApi.loginWithGoogle(code, intent);
 
-    AuthCache.startAuthenticatedSession({
-      accessToken: result.data.accessToken,
-      refreshToken: result.data.refreshToken,
-    });
+    AuthCache.startAuthenticatedSession(result.data);
 
     return result;
   }

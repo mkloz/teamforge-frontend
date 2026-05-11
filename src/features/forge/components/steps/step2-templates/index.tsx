@@ -7,15 +7,9 @@ import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { StartBlankTemplateButton } from "./start-blank-template-button";
 import { TemplatePaginationControls } from "./template-pagination-controls";
 import { TemplateSuggestionCard } from "./template-suggestion-card";
+import { TemplateSuggestionsSkeleton } from "./template-suggestions-skeleton";
 import type { Step2TemplatesProps } from "./types";
 import { useTemplatePagination } from "./use-template-pagination";
-
-const TEMPLATE_SKELETON_IDS = [
-  "template-skeleton-primary",
-  "template-skeleton-secondary",
-  "template-skeleton-tertiary",
-  "template-skeleton-quaternary",
-];
 
 export function Step2Templates({
   appliedTemplateId,
@@ -72,16 +66,7 @@ export function Step2Templates({
       </div>
 
       {isCurrentUserPending ? (
-        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-          {TEMPLATE_SKELETON_IDS.map((skeletonId) => (
-            <div
-              key={skeletonId}
-              className="h-24 rounded-lg border border-border/35 bg-card/70"
-            >
-              <div className="h-full animate-pulse bg-muted/25" />
-            </div>
-          ))}
-        </div>
+        <TemplateSuggestionsSkeleton />
       ) : (
         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
           {visibleSuggestions.map((suggestion) => (

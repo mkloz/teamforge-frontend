@@ -28,8 +28,10 @@ export const planUpdateKindSchema = z.enum([
   "completed",
   "cancelled",
   "proposal_created",
+  "proposal_voted",
   "proposal_approved",
   "proposal_rejected",
+  "proposal_withdrawn",
 ]);
 
 export const groupUpdateReasonSchema = z.enum([
