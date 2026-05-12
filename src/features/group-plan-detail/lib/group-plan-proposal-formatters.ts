@@ -45,14 +45,14 @@ export const costTypeLabels: Record<CostType, string> = {
 
 type Plan = NonNullable<GroupPlanDetail["plan"]>;
 
-interface PlanLocationValue {
+export interface PlanLocationValue {
   location: string | null;
   locationLat: number | null;
   locationLng: number | null;
   locationMode: LocationMode;
 }
 
-interface PlanCostValue {
+export interface PlanCostValue {
   cost: CostType;
   costAmount: number | null;
   costDetails: string | null;
@@ -77,6 +77,14 @@ function padDateTimePart(part: number) {
 
 function isPlanCategory(value: string): value is PlanCategory {
   return Object.keys(planCategoryLabels).some((category) => category === value);
+}
+
+export function isLocationMode(value: string): value is LocationMode {
+  return Object.keys(locationModeLabels).some((mode) => mode === value);
+}
+
+export function isCostType(value: string): value is CostType {
+  return Object.keys(costTypeLabels).some((cost) => cost === value);
 }
 
 function cleanText(value: string | null | undefined) {

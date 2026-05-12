@@ -1,10 +1,13 @@
 import type { Ref } from "react";
-import { FitBriefSection } from "@/features/group-plan-detail/components/fit-brief-section";
-import { GroupPlanDetailHero } from "@/features/group-plan-detail/components/group-plan-detail-hero";
-import { MemberLineupSection } from "@/features/group-plan-detail/components/member-lineup-section";
-import { PlanBriefSection } from "@/features/group-plan-detail/components/plan-brief-section";
-import { PlanningSection } from "@/features/group-plan-detail/components/planning-section";
-import { SafetyNotesSection } from "@/features/group-plan-detail/components/safety-notes-section";
+import { ActivitySection } from "@/features/group-plan-detail/components/content/activity-section";
+import { FitSection } from "@/features/group-plan-detail/components/content/fit-section";
+import { GroupSection } from "@/features/group-plan-detail/components/content/group-section";
+import { PeopleSection } from "@/features/group-plan-detail/components/content/people-section";
+import { PitchSection } from "@/features/group-plan-detail/components/content/pitch-section";
+import { PlanSection } from "@/features/group-plan-detail/components/content/plan-section";
+import { GroupPlanHero } from "@/features/group-plan-detail/components/hero/group-plan-hero";
+import { MobileActionDock } from "@/features/group-plan-detail/components/mobile-action-dock";
+import { DecisionRail } from "@/features/group-plan-detail/components/rail/decision-rail";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 
 interface GroupPlanDetailPageContentProps {
@@ -12,6 +15,14 @@ interface GroupPlanDetailPageContentProps {
   highlightedProposalId?: string | null;
   isPlanHighlighted?: boolean;
   isPlanningHighlighted?: boolean;
+  planSectionRef?: Ref<HTMLElement>;
+  planningSectionRef?: Ref<HTMLElement>;
+}
+
+interface GroupPlanSectionFocusProps {
+  highlightedProposalId: string | null;
+  isPlanHighlighted: boolean;
+  isPlanningHighlighted: boolean;
   planSectionRef?: Ref<HTMLElement>;
   planningSectionRef?: Ref<HTMLElement>;
 }
@@ -24,28 +35,101 @@ export function GroupPlanDetailPageContent({
   planSectionRef,
   planningSectionRef,
 }: GroupPlanDetailPageContentProps) {
-  return (
-    <div className="mx-auto w-full max-w-screen-2xl overflow-x-clip px-4 pt-3 pb-28 sm:px-5 md:pt-6 md:pb-10 lg:px-8">
-      <GroupPlanDetailHero detail={detail} />
+  const focus = {
+    highlightedProposalId,
+    isPlanHighlighted,
+    isPlanningHighlighted,
+    planSectionRef,
+    planningSectionRef,
+  };
 
-      <main className="grid max-w-6xl grid-cols-1 gap-8 pt-2 pb-4 lg:pt-3 lg:pb-6">
-        <div className="flex min-w-0 flex-col gap-9">
-          <PlanBriefSection
-            detail={detail}
-            isHighlighted={isPlanHighlighted}
-            sectionRef={planSectionRef}
-          />
-          <MemberLineupSection detail={detail} />
-          <FitBriefSection detail={detail} />
-          <PlanningSection
-            detail={detail}
-            highlightedProposalId={highlightedProposalId}
-            isHighlighted={isPlanningHighlighted}
-            sectionRef={planningSectionRef}
-          />
-          <SafetyNotesSection detail={detail} />
-        </div>
-      </main>
+  return (
+    <>
+      <GroupPlanDetailPageShell detail={detail} focus={focus} />
+      <MobileActionDock detail={detail} />
+    </>
+  );
+}
+
+function GroupPlanDetailPageShell({
+  detail,
+  focus,
+}: {
+  detail: GroupPlanDetail;
+  focus: GroupPlanSectionFocusProps;
+}) {
+  return (
+    <div className="mx-auto w-full max-w-5xl overflow-x-clip px-4 pt-3 pb-32 sm:px-5 md:pt-6 md:pb-12 lg:px-8">
+      <GroupPlanHero detail={detail} />
+      <GroupPlanPitch detail={detail} />
+      <GroupPlanDetailGrid detail={detail} focus={focus} />
+    </div>
+  );
+}
+
+function GroupPlanPitch({ detail }: { detail: GroupPlanDetail }) {
+  return (
+    <div className="mt-8 mb-10">
+      <PitchSection detail={detail} />
+    </div>
+  );
+}
+
+function GroupPlanDetailGrid({
+  detail,
+  focus,
+}: {
+  detail: GroupPlanDetail;
+  focus: GroupPlanSectionFocusProps;
+}) {
+  return (
+    <div className="lg:group-plan-detail-grid mt-12 grid gap-12">
+      <GroupPlanMainSections detail={detail} focus={focus} />
+
+      <aside className="min-w-0">
+        <DecisionRail detail={detail} />
+      </aside>
+    </div>
+  );
+}
+
+function GroupPlanMainSections({
+  detail,
+  focus,
+}: {
+  detail: GroupPlanDetail;
+  focus: GroupPlanSectionFocusProps;
+}) {
+  return (
+    <main className="flex min-w-0 flex-col gap-12">
+      <GroupSection detail={detail} />
+      <PlanSection
+        detail={detail}
+        isHighlighted={focus.isPlanHighlighted}
+        sectionRef={focus.planSectionRef}
+      />
+      <PeopleSection detail={detail} />
+      <FitSection detail={detail} />
+      <ActivityAnchor detail={detail} focus={focus} />
+    </main>
+  );
+}
+
+function ActivityAnchor({
+  detail,
+  focus,
+}: {
+  detail: GroupPlanDetail;
+  focus: GroupPlanSectionFocusProps;
+}) {
+  return (
+    <div id="activity" className="scroll-mt-24">
+      <ActivitySection
+        detail={detail}
+        highlightedProposalId={focus.highlightedProposalId}
+        isHighlighted={focus.isPlanningHighlighted}
+        sectionRef={focus.planningSectionRef}
+      />
     </div>
   );
 }

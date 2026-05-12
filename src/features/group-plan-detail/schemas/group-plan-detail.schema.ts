@@ -129,11 +129,6 @@ export const groupPlanDetailSchema = z.object({
     visibility: z.enum(["PUBLIC_SUMMARY", "MEMBER_ONLY", "HIDDEN"]),
     proposals: z.array(planProposalSchema),
   }),
-  safety: z.object({
-    accessNote: z.string().nullable(),
-    privacyNote: z.string().nullable(),
-    trustNote: z.string().nullable(),
-  }),
   timestamps: z.object({
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),

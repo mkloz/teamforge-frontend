@@ -141,13 +141,17 @@ export function RouteErrorState({
       actions={
         <>
           {onRetry ? (
-            <Button onClick={() => void handleRetry()} loading={isRetrying}>
+            <Button
+              className="min-w-36"
+              onClick={() => void handleRetry()}
+              loading={isRetrying}
+            >
               <RefreshCw size={16} />
               {retryLabel}
             </Button>
           ) : null}
 
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" className="min-w-36">
             <Link to={fallbackTo}>{fallbackLabel}</Link>
           </Button>
         </>

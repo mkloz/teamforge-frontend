@@ -171,11 +171,6 @@ const groupPlanDetailFixture: GroupPlanDetail = {
       },
     ],
   },
-  safety: {
-    accessNote: "Members can open the group workspace once they join.",
-    privacyNote: "Only members can see full planning history and chat details.",
-    trustNote: "The current group has a strong attendance pattern.",
-  },
   timestamps: {
     createdAt: now,
     updatedAt: now,

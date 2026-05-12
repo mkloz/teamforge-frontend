@@ -32,26 +32,29 @@ export function FeedbackState({
   return (
     <div
       className={cn(
-        "flex items-center justify-center px-4 py-10",
-        fullPage ? "min-h-screen bg-canvas" : "min-h-96",
+        "grid min-h-dvh place-items-center px-4 py-12",
+        fullPage ? "bg-canvas" : null,
         containerClassName,
       )}
     >
       <section
         aria-labelledby={headingId}
         className={cn(
-          "w-full max-w-lg rounded-xl border border-border bg-card p-6 shadow-sm",
+          "w-full max-w-md px-6 py-8 text-center sm:px-8",
           className,
         )}
       >
         {visual ? (
-          <div className="mb-5 flex justify-center" aria-hidden="true">
+          <div
+            className="mx-auto mb-6 flex max-w-44 justify-center"
+            aria-hidden="true"
+          >
             {visual}
           </div>
         ) : (
           <div
             className={cn(
-              "mb-4 flex size-12 items-center justify-center rounded-lg",
+              "mx-auto mb-5 flex size-12 items-center justify-center rounded-2xl",
               iconClassName,
             )}
             aria-hidden="true"
@@ -65,7 +68,7 @@ export function FeedbackState({
         </h1>
         <p
           className={cn(
-            "mt-2 text-slate-muted text-sm leading-relaxed",
+            "mx-auto mt-3 max-w-sm text-slate-muted text-sm leading-relaxed",
             descriptionClassName,
           )}
         >
@@ -73,7 +76,9 @@ export function FeedbackState({
         </p>
 
         {actions ? (
-          <div className="mt-5 flex flex-wrap gap-3">{actions}</div>
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+            {actions}
+          </div>
         ) : null}
       </section>
     </div>

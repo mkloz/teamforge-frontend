@@ -1,0 +1,50 @@
+import type { GroupPlanFitSignal } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
+import { cn } from "@/shared/lib/utils";
+
+const STRENGTH_DOT_KEYS = ["first", "second", "third"] as const;
+
+export function StrengthDots({
+  strength,
+}: {
+  strength: GroupPlanFitSignal["strength"];
+}) {
+  const filled = getFilledDotCount(strength);
+
+  return (
+    <div
+      className="flex gap-0.5"
+      role="img"
+      aria-label={`${strength.toLowerCase()} strength`}
+    >
+      {STRENGTH_DOT_KEYS.map((key, index) => (
+        <span
+          key={key}
+          className={cn(
+            "size-1 rounded-full",
+            index < filled ? getFilledDotClass(strength) : "bg-border",
+          )}
+        />
+      ))}
+    </div>
+  );
+}
+
+function getFilledDotCount(strength: GroupPlanFitSignal["strength"]) {
+  if (strength === "HIGH") {
+    return 3;
+  }
+  if (strength === "MEDIUM") {
+    return 2;
+  }
+  return 1;
+}
+
+function getFilledDotClass(strength: GroupPlanFitSignal["strength"]) {
+  if (strength === "HIGH") {
+    return "bg-forge-teal";
+  }
+  if (strength === "MEDIUM") {
+    return "bg-spark-amber";
+  }
+  return "bg-muted-foreground";
+}

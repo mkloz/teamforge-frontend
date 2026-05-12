@@ -269,6 +269,10 @@
   grid-template-columns: minmax(0, 1fr) minmax(22rem, 28rem);
 }
 
+@utility group-plan-detail-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 20rem);
+}
+
 @utility home-page-grid {
   grid-template-columns: minmax(0, 1fr) minmax(18rem, 22rem);
 }
@@ -294,6 +298,14 @@
 
 @utility main-action-grid {
   grid-template-columns: minmax(0, 1fr) auto;
+}
+
+@utility mobile-action-safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);
+}
+
+@utility mobile-action-shadow {
+  box-shadow: 0 -8px 24px rgb(0 0 0 / 6%);
 }
 
 @utility search-action-grid {
