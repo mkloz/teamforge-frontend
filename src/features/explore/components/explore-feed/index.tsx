@@ -9,7 +9,7 @@ import { useExploreFeed } from "@/features/explore/hooks/use-explore-feed";
 import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
 import {
   SkeletonAvatar,
-  SkeletonCard,
+  SkeletonButton,
   SkeletonText,
 } from "@/shared/components/loading/skeleton-patterns";
 import { PageErrorState } from "@/shared/components/page-error-state";
@@ -17,6 +17,8 @@ import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
 import { ExploreFeedContent } from "./explore-feed-content";
+
+const EXPLORE_FEED_LOADING_KEYS = ["primary", "secondary", "tertiary"];
 
 export function ExploreFeed() {
   const {
@@ -63,30 +65,98 @@ function ExploreFeedLoading() {
     <div
       aria-busy="true"
       aria-label="Loading explore groups"
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-4 md:gap-5"
       role="status"
     >
       <span className="sr-only">Loading explore groups</span>
-      {["recommended", "local", "open"].map((item, index) => (
-        <SkeletonCard key={item} className="p-4">
-          <div className="flex flex-col gap-4">
-            <div className="flex items-start gap-3">
-              <SkeletonAvatar
-                className="size-12"
-                tone={index === 0 ? "teal" : "default"}
-              />
-              <div className="min-w-0 flex-1">
-                <SkeletonText lines={3} widths={["w-2/5", "w-full", "w-3/4"]} />
-              </div>
+      <ExploreFeedLoadingSection
+        count={1}
+        detailWidth="w-28"
+        titleWidth="w-40"
+        tone="teal"
+      />
+      <ExploreFeedLoadingSection
+        count={2}
+        detailWidth="w-32"
+        titleWidth="w-28"
+      />
+    </div>
+  );
+}
+
+function ExploreFeedLoadingSection({
+  count,
+  detailWidth,
+  titleWidth,
+  tone = "default",
+}: {
+  count: number;
+  detailWidth: string;
+  titleWidth: string;
+  tone?: "default" | "teal";
+}) {
+  return (
+    <section className="flex flex-col gap-2.5">
+      <div className="flex items-center justify-between gap-4 px-1">
+        <Skeleton className={`h-4 ${titleWidth}`} />
+        <Skeleton className={`h-4 shrink-0 ${detailWidth}`} />
+      </div>
+      {EXPLORE_FEED_LOADING_KEYS.slice(0, count).map((key, index) => (
+        <ExploreGroupPlanCardSkeleton
+          key={key}
+          tone={index === 0 ? tone : "default"}
+        />
+      ))}
+    </section>
+  );
+}
+
+function ExploreGroupPlanCardSkeleton({
+  tone = "default",
+}: {
+  tone?: "default" | "teal";
+}) {
+  return (
+    <div className="group relative list-none outline-none">
+      <div className="relative isolate z-10 flex w-full overflow-hidden rounded-xl border-2 border-border bg-card md:flex-row">
+        <Skeleton
+          shape="square"
+          className="h-42 shrink-0 border-border border-b-2 md:h-auto md:w-72 md:border-r-2 md:border-b-0"
+          tone={tone}
+        />
+        <div className="flex min-w-0 grow flex-col bg-canvas p-4 md:p-4.5">
+          <div className="mb-3 flex items-start justify-between gap-4">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <SkeletonAvatar className="size-6" tone={tone} />
+              <Skeleton className="h-3 w-28" />
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Skeleton shape="pill" className="h-7 w-20" />
-              <Skeleton shape="pill" className="h-7 w-24" tone="amber" />
-              <Skeleton shape="pill" className="h-7 w-16" />
+            <Skeleton shape="pill" className="h-6 w-24" />
+          </div>
+
+          <SkeletonText lines={3} widths={["w-4/5", "w-full", "w-2/3"]} />
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Skeleton shape="pill" className="h-7 w-24" />
+            <Skeleton shape="pill" className="h-7 w-28" tone="amber" />
+            <Skeleton shape="pill" className="h-7 w-20" />
+          </div>
+
+          <div className="mt-auto pt-4">
+            <div className="h-px w-full bg-border/60" />
+            <div className="mt-3 flex min-w-0 flex-wrap items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2.5">
+                <div className="flex">
+                  <SkeletonAvatar className="size-8 border-2 border-canvas" />
+                  <SkeletonAvatar className="-ml-2 size-8 border-2 border-canvas" />
+                  <SkeletonAvatar className="-ml-2 size-8 border-2 border-canvas" />
+                </div>
+                <Skeleton className="h-3 w-24" />
+              </div>
+              <SkeletonButton className="h-10 w-32" tone="teal" />
             </div>
           </div>
-        </SkeletonCard>
-      ))}
+        </div>
+      </div>
     </div>
   );
 }

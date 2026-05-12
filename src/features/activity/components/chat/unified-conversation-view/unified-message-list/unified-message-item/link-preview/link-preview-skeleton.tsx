@@ -1,3 +1,4 @@
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import { cn } from "@/shared/lib/utils";
 
 interface LinkPreviewSkeletonProps {
@@ -5,9 +6,7 @@ interface LinkPreviewSkeletonProps {
 }
 
 export function LinkPreviewSkeleton({ isOwn }: LinkPreviewSkeletonProps) {
-  const pulse = isOwn
-    ? "bg-white/15 animate-pulse"
-    : "bg-muted/80 animate-pulse";
+  const tone = isOwn ? "teal" : "default";
 
   return (
     <div
@@ -16,11 +15,11 @@ export function LinkPreviewSkeleton({ isOwn }: LinkPreviewSkeletonProps) {
         isOwn ? "bg-black/10" : "border border-border/40 bg-muted/40",
       )}
     >
-      <div className={cn("size-14 shrink-0 rounded-lg", pulse)} />
+      <Skeleton shape="square" tone={tone} className="size-14 shrink-0" />
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">
-        <div className={cn("h-2.5 w-3/4 rounded-full", pulse)} />
-        <div className={cn("h-2 w-full rounded-full", pulse)} />
-        <div className={cn("h-2 w-1/2 rounded-full", pulse)} />
+        <Skeleton shape="pill" tone={tone} className="h-2.5 w-3/4" />
+        <Skeleton shape="pill" tone={tone} className="h-2 w-full" />
+        <Skeleton shape="pill" tone={tone} className="h-2 w-1/2" />
       </div>
     </div>
   );

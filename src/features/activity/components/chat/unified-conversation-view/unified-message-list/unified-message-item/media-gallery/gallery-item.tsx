@@ -9,6 +9,7 @@ import {
   getCachedMediaIntrinsicSize,
 } from "@/features/activity/lib/media-intrinsic-size";
 import { Image } from "@/shared/components/common/image";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useImageState } from "@/shared/hooks/use-image-state";
 import { cn } from "@/shared/lib/utils";
 import { MoreOverlay } from "./more-overlay";
@@ -62,10 +63,9 @@ export const GalleryItem = memo(
               initial={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="absolute inset-0 animate-pulse bg-muted/80"
+              className="absolute inset-0"
             >
-              {/* Shimmer stripe */}
-              <div className="absolute inset-0 -translate-x-full animate-pulse bg-linear-to-r from-transparent via-white/10 to-transparent" />
+              <Skeleton className="size-full" tone="muted" />
             </motion.div>
           )}
         </AnimatePresence>

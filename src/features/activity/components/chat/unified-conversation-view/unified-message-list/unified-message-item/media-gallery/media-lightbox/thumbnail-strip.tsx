@@ -4,6 +4,7 @@ import type { UnifiedAttachment } from "@/features/activity/lib/activity-contrac
 import { cacheMediaIntrinsicSize } from "@/features/activity/lib/media-intrinsic-size";
 import { Image } from "@/shared/components/common/image";
 import { Button } from "@/shared/components/ui/button";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useImageState } from "@/shared/hooks/use-image-state";
 import { cn } from "@/shared/lib/utils";
 
@@ -42,7 +43,10 @@ function ThumbnailItem({
     >
       {/* Skeleton */}
       {state === "loading" && (
-        <div className="absolute inset-0 animate-pulse rounded-lg bg-white/10" />
+        <Skeleton
+          className="absolute inset-0 rounded-lg bg-white/10 ring-white/10"
+          tone="muted"
+        />
       )}
 
       {/* Error */}

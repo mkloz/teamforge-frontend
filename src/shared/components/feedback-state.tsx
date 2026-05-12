@@ -32,9 +32,9 @@ export function FeedbackState({
   return (
     <div
       className={cn(
-        "grid min-h-dvh place-items-center px-4 py-12",
-        fullPage ? "bg-canvas" : null,
+        "grid place-items-center px-4 py-12",
         containerClassName,
+        fullPage ? "fixed inset-0 z-50 bg-canvas" : "min-h-dvh",
       )}
     >
       <section

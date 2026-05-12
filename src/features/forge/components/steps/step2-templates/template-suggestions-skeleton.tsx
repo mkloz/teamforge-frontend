@@ -1,7 +1,3 @@
-import {
-  SkeletonCard,
-  SkeletonText,
-} from "@/shared/components/loading/skeleton-patterns";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export function TemplateSuggestionsSkeleton() {
@@ -18,23 +14,34 @@ function TemplateSuggestionsSkeletonContent() {
     >
       <span className="sr-only">Loading template suggestions</span>
       {["arts", "tech", "movement", "food"].map((item, index) => (
-        <SkeletonCard key={item} className="p-4">
-          <div className="flex flex-col gap-4">
-            <div className="flex items-start justify-between gap-3">
-              <SkeletonText
-                className="flex-1"
-                lines={2}
-                widths={["w-24", "w-40"]}
-              />
+        <div
+          key={item}
+          className="flex h-24 min-w-0 overflow-hidden rounded-lg border border-border/40 bg-card text-left"
+        >
+          <Skeleton
+            shape="square"
+            className="h-full w-20 shrink-0 rounded-none sm:w-24"
+            tone={index === 0 ? "teal" : "default"}
+          />
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5 px-3 py-2.5">
+            <div className="flex min-w-0 items-center gap-2">
+              <Skeleton className="h-4 min-w-0 flex-1" />
+              <Skeleton shape="circle" className="size-4 shrink-0" />
+            </div>
+            <Skeleton className="h-3 w-4/5" />
+            <div className="mt-auto flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-3 w-10" />
+                <Skeleton shape="pill" className="h-5 w-14" />
+              </div>
               <Skeleton
                 shape="pill"
-                className="h-7 w-16"
-                tone={index === 0 ? "amber" : "default"}
+                className="h-5 w-20"
+                tone={index === 0 ? "teal" : "default"}
               />
             </div>
-            <SkeletonText lines={3} widths={["w-full", "w-11/12", "w-2/3"]} />
           </div>
-        </SkeletonCard>
+        </div>
       ))}
     </div>
   );

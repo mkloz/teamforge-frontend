@@ -2,8 +2,6 @@ import type { SettingsSection } from "@/features/settings/lib/settings-route";
 import type { PageLoadingProps } from "@/shared/components/loading/page-loading";
 import {
   SkeletonButton,
-  SkeletonCard,
-  SkeletonList,
   SkeletonText,
 } from "@/shared/components/loading/skeleton-patterns";
 import { Skeleton } from "@/shared/components/ui/skeleton";
@@ -13,7 +11,7 @@ interface SettingsPageLoadingProps extends PageLoadingProps {
 }
 
 export function SettingsPageLoading({
-  activeSection: _activeSection,
+  activeSection = "account",
 }: SettingsPageLoadingProps = {}) {
   return (
     <div
@@ -57,13 +55,250 @@ export function SettingsPageLoading({
         <div className="mb-7 border-border border-b pb-5 lg:mb-9 lg:pb-7">
           <SkeletonText lines={3} widths={["w-24", "w-3/5", "w-full"]} />
         </div>
-        <SkeletonCard className="p-5">
-          <SkeletonText lines={2} widths={["w-36", "w-64"]} />
-          <div className="mt-5">
-            <SkeletonList count={4} />
-          </div>
-        </SkeletonCard>
+        <SettingsSectionSkeleton activeSection={activeSection} />
       </section>
+    </div>
+  );
+}
+
+function SettingsSectionSkeleton({
+  activeSection,
+}: {
+  activeSection: SettingsSection;
+}) {
+  if (activeSection === "account") {
+    return <AccountSectionSkeleton />;
+  }
+
+  if (activeSection === "security") {
+    return <SecuritySectionSkeleton />;
+  }
+
+  if (activeSection === "matching") {
+    return <MatchingSectionSkeleton />;
+  }
+
+  if (activeSection === "safety") {
+    return <BlockedUsersSectionSkeleton />;
+  }
+
+  return <PreferenceSectionSkeleton />;
+}
+
+function AccountSectionSkeleton() {
+  return (
+    <div className="flex flex-col gap-9">
+      <section className="lg:account-settings-grid grid gap-8 lg:items-start">
+        <div className="flex flex-col items-center gap-4 text-center lg:items-start lg:text-left">
+          <Skeleton shape="circle" className="size-28" tone="teal" />
+          <SkeletonButton className="h-10 w-32" />
+          <SkeletonButton className="h-10 w-28" />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {["name", "email", "type", "trust"].map((item) => (
+            <div key={item} className="border-border border-t pt-4">
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="mt-2 h-5 w-36" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {["Name and intro", "Personal context", "Area"].map((item, index) => (
+        <section key={item} className="border-border border-t pt-6">
+          <Skeleton className="h-5 w-40" />
+          <Skeleton className="mt-2 h-4 w-full max-w-xl" />
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            <SettingsInputSkeleton />
+            <SettingsInputSkeleton />
+            {index === 0 ? (
+              <SettingsInputSkeleton
+                className="sm:col-span-2"
+                inputClassName="h-24"
+              />
+            ) : null}
+          </div>
+        </section>
+      ))}
+
+      <div className="flex justify-end border-border border-t pt-5">
+        <SkeletonButton className="h-11 w-full sm:w-36" tone="teal" />
+      </div>
+    </div>
+  );
+}
+
+function MatchingSectionSkeleton() {
+  return (
+    <section className="flex flex-col gap-8">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+        <SectionHeadingSkeleton />
+        <div className="grid gap-5 sm:grid-cols-2">
+          <StatPillSkeleton />
+          <StatPillSkeleton />
+        </div>
+      </div>
+
+      <div className="lg:matching-settings-grid grid gap-0 border-border border-t lg:gap-8">
+        <PreferenceRowSkeleton tone="teal" />
+        <div className="border-border border-b py-5 lg:border-b-0">
+          <Skeleton className="h-4 w-40" />
+          <Skeleton className="mt-4 h-2 w-full" tone="teal" />
+          <div className="mt-3 flex justify-between">
+            <Skeleton className="h-3 w-16" />
+            <Skeleton className="h-3 w-16" />
+          </div>
+        </div>
+      </div>
+
+      <div className="border-border border-t pt-6">
+        <Skeleton className="h-3 w-20" />
+        <div className="mt-3 flex flex-wrap gap-2">
+          {["one", "two", "three", "four", "five"].map((item, index) => (
+            <Skeleton
+              key={item}
+              shape="pill"
+              className="h-7 w-24"
+              tone={index === 0 ? "teal" : "default"}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PreferenceSectionSkeleton() {
+  return (
+    <section className="flex flex-col gap-8">
+      <SectionHeadingSkeleton />
+      <div className="grid gap-0 border-border border-t lg:grid-cols-3 lg:gap-8">
+        <PreferenceRowSkeleton tone="teal" />
+        <PreferenceRowSkeleton />
+        <PreferenceRowSkeleton />
+      </div>
+      <div className="border-forge-teal/35 border-l pl-4">
+        <SkeletonText lines={2} widths={["w-full", "w-3/4"]} />
+      </div>
+    </section>
+  );
+}
+
+function SecuritySectionSkeleton() {
+  return (
+    <div className="flex flex-col gap-10">
+      <section>
+        <SectionHeadingSkeleton />
+        <div className="mt-5 grid gap-4 sm:grid-cols-3">
+          <StatPillSkeleton />
+          <StatPillSkeleton />
+          <StatPillSkeleton />
+        </div>
+        <div className="mt-6 flex flex-col gap-3 border-border border-t pt-5 md:flex-row md:items-center md:justify-between">
+          <SkeletonText lines={2} widths={["w-48", "w-72"]} />
+          <SkeletonButton className="h-10 w-full md:w-44" tone="teal" />
+        </div>
+      </section>
+
+      <section>
+        <Skeleton className="h-5 w-40" />
+        <div className="mt-4 border-border border-t">
+          {["current", "other"].map((item, index) => (
+            <div
+              key={item}
+              className="md:main-action-grid grid gap-4 border-border border-b py-5 last:border-b-0 md:items-center"
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <Skeleton
+                  shape="square"
+                  className="size-10"
+                  tone={index === 0 ? "teal" : "default"}
+                />
+                <SkeletonText
+                  className="min-w-0 flex-1"
+                  lines={2}
+                  widths={["w-44", "w-64"]}
+                />
+              </div>
+              <SkeletonButton className="h-10 w-24" />
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function BlockedUsersSectionSkeleton() {
+  return (
+    <section>
+      <SectionHeadingSkeleton />
+      <div className="mt-6 border-border border-t">
+        {["first", "second"].map((item) => (
+          <div
+            key={item}
+            className="flex items-center gap-3 border-border border-b py-5 last:border-b-0"
+          >
+            <Skeleton shape="circle" className="size-11" />
+            <SkeletonText
+              className="flex-1"
+              lines={2}
+              widths={["w-36", "w-48"]}
+            />
+            <SkeletonButton className="h-10 w-24" />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function SectionHeadingSkeleton() {
+  return (
+    <div className="max-w-2xl">
+      <Skeleton className="h-5 w-44" />
+      <SkeletonText className="mt-2" lines={2} widths={["w-full", "w-3/4"]} />
+    </div>
+  );
+}
+
+function SettingsInputSkeleton({
+  className,
+  inputClassName = "h-11",
+}: {
+  className?: string;
+  inputClassName?: string;
+}) {
+  return (
+    <div className={className}>
+      <Skeleton className="h-3 w-20" />
+      <Skeleton className={`mt-2 w-full ${inputClassName}`} />
+    </div>
+  );
+}
+
+function StatPillSkeleton() {
+  return (
+    <div className="rounded-full border border-border px-4 py-3">
+      <Skeleton className="h-3 w-20" />
+      <Skeleton className="mt-2 h-5 w-24" />
+    </div>
+  );
+}
+
+function PreferenceRowSkeleton({
+  tone = "default",
+}: {
+  tone?: "default" | "teal";
+}) {
+  return (
+    <div className="flex items-start justify-between gap-4 border-border border-b py-5 lg:border-b-0">
+      <SkeletonText
+        className="min-w-0 flex-1"
+        lines={2}
+        widths={["w-40", "w-full"]}
+      />
+      <Skeleton shape="pill" className="h-7 w-12 shrink-0" tone={tone} />
     </div>
   );
 }

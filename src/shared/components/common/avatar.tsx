@@ -1,5 +1,6 @@
 import type { HTMLAttributes, ImgHTMLAttributes, ReactNode } from "react";
 import { Image } from "@/shared/components/common/image";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import { cn } from "@/shared/lib/utils";
 
 function getAvatarInitials(name?: string | null) {
@@ -69,7 +70,7 @@ export function Avatar({
         className={cn("size-full object-cover", imageClassName)}
         noImageComponent={fallbackNode}
         fallbackComponent={fallbackNode}
-        loadingComponent={<div className="size-full animate-pulse bg-muted" />}
+        loadingComponent={<Skeleton className="size-full" />}
       />
       {children}
     </div>

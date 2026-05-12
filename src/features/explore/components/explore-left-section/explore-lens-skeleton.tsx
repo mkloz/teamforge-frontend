@@ -1,7 +1,4 @@
-import {
-  SkeletonCard,
-  SkeletonText,
-} from "@/shared/components/loading/skeleton-patterns";
+import { SkeletonText } from "@/shared/components/loading/skeleton-patterns";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export function ExploreLensSkeleton() {
@@ -10,29 +7,33 @@ export function ExploreLensSkeleton() {
 
 function ExploreLensSkeletonContent() {
   return (
-    <SkeletonCard
+    <section
       aria-label="Loading explore lens"
-      className="flex flex-col gap-5 p-4"
+      className="space-y-4 px-1 py-1"
       role="status"
     >
-      <SkeletonText lines={2} widths={["w-24", "w-44"]} />
-      <div className="flex items-center gap-3">
-        <Skeleton shape="circle" className="size-14" tone="teal" />
+      <div className="flex items-center gap-2.5">
+        <Skeleton shape="circle" className="size-9 shrink-0" tone="teal" />
         <SkeletonText
-          className="flex-1"
-          lines={3}
-          widths={["w-16", "w-full", "w-5/6"]}
+          className="min-w-0 flex-1"
+          lines={2}
+          size="sm"
+          widths={["w-28", "w-44"]}
         />
       </div>
-      <SkeletonText
-        lines={4}
-        widths={["w-full", "w-11/12", "w-full", "w-3/4"]}
-      />
-      <div className="grid grid-cols-2 gap-2">
-        {["one", "two", "three", "four"].map((item) => (
-          <Skeleton key={item} className="h-16" />
+      <SkeletonText lines={3} widths={["w-full", "w-11/12", "w-3/4"]} />
+      <div className="flex flex-col gap-2">
+        {["timing", "join", "place"].map((item) => (
+          <div key={item} className="flex items-start gap-3">
+            <Skeleton
+              shape="circle"
+              className="mt-1 size-3.5 shrink-0"
+              tone="teal"
+            />
+            <Skeleton className="h-4 min-w-0 flex-1" />
+          </div>
         ))}
       </div>
-    </SkeletonCard>
+    </section>
   );
 }

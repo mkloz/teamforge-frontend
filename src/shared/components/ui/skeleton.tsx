@@ -4,7 +4,7 @@ import type React from "react";
 import { cn } from "@/shared/lib/utils";
 
 const skeletonVariants = cva(
-  "motion-safe:animate-pulse forced-colors:bg-slate-muted/40",
+  "skeleton-shimmer forced-colors:bg-slate-muted/40",
   {
     variants: {
       shape: {
@@ -15,10 +15,12 @@ const skeletonVariants = cva(
         square: "rounded-lg",
       },
       tone: {
-        default: "bg-slate-muted/12 dark:bg-slate-muted/18",
-        muted: "bg-muted",
-        teal: "bg-forge-teal/12 dark:bg-forge-teal/18",
-        amber: "bg-spark-amber/14 dark:bg-spark-amber/20",
+        default:
+          "bg-slate-muted/10 ring-1 ring-ink/5 dark:bg-slate-muted/20 dark:ring-slate-muted/10",
+        muted: "bg-muted ring-1 ring-ink/5 dark:ring-slate-muted/10",
+        teal: "bg-forge-teal/10 ring-1 ring-forge-teal/10 dark:bg-forge-teal/15",
+        amber:
+          "bg-spark-amber/15 ring-1 ring-spark-amber/10 dark:bg-spark-amber/20",
       },
     },
     defaultVariants: {

@@ -3,7 +3,6 @@ import { AuthSupportShell } from "@/features/auth/components/auth-support-shell"
 import type { PageLoadingProps } from "@/shared/components/loading/page-loading";
 import {
   SkeletonButton,
-  SkeletonCard,
   SkeletonText,
 } from "@/shared/components/loading/skeleton-patterns";
 import { Skeleton } from "@/shared/components/ui/skeleton";
@@ -56,21 +55,58 @@ export function AuthPageLoadingFixture({
 
 function AuthFormSkeleton({ variant }: { variant: "login" | "register" }) {
   return (
-    <SkeletonCard
+    <div
       aria-label={`Loading ${variant}`}
-      className="p-6 sm:p-8"
+      className="flex w-full flex-col"
       role="status"
     >
       <span className="sr-only">Loading {variant}</span>
-      <SkeletonText lines={3} widths={["w-20", "w-44", "w-full"]} />
-      <div className="mt-6 flex flex-col gap-4">
-        <Skeleton className="h-12 w-full" />
-        {variant === "register" ? <Skeleton className="h-12 w-full" /> : null}
-        <Skeleton className="h-12 w-full" />
-        <SkeletonButton className="h-12 w-full" tone="teal" />
+
+      <div className="mb-8 flex flex-col items-center text-center">
+        <Skeleton className="h-3 w-24" tone="teal" />
+        <Skeleton className="mt-3 h-8 w-56 max-w-full" />
+        <Skeleton className="mt-2 h-4 w-72 max-w-full" />
       </div>
-      <Skeleton className="mx-auto mt-6 h-4 w-40" />
-    </SkeletonCard>
+
+      <div className="flex flex-col gap-4">
+        <AuthInputSkeleton hasTrailingAction={variant === "login"} />
+        {variant === "register" ? <AuthInputSkeleton /> : null}
+        <AuthInputSkeleton hasInlineAction={variant === "login"} />
+        {variant === "register" ? <AuthInputSkeleton hasInlineAction /> : null}
+        <SkeletonButton className="mt-2 h-12 w-full" tone="teal" />
+        <div className="flex items-center gap-3 py-1">
+          <Skeleton className="h-px flex-1" />
+          <Skeleton className="h-3 w-16" />
+          <Skeleton className="h-px flex-1" />
+        </div>
+        <SkeletonButton className="h-12 w-full" />
+      </div>
+
+      <Skeleton className="mx-auto mt-7 h-4 w-48" />
+    </div>
+  );
+}
+
+function AuthInputSkeleton({
+  hasInlineAction = false,
+  hasTrailingAction = false,
+}: {
+  hasInlineAction?: boolean;
+  hasTrailingAction?: boolean;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between gap-3">
+        <Skeleton className="h-3 w-20" />
+        {hasInlineAction ? <Skeleton className="h-3 w-28" tone="teal" /> : null}
+      </div>
+      <div className="flex h-12 items-center gap-2 rounded-xl border border-border bg-background px-3">
+        <Skeleton className="h-4 min-w-0 flex-1" />
+        {hasTrailingAction ? (
+          <Skeleton shape="square" className="size-8 shrink-0" />
+        ) : null}
+      </div>
+    </div>
   );
 }
 
