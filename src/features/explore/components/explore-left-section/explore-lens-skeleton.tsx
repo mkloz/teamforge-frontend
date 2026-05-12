@@ -1,47 +1,38 @@
-import { ExploreLensCard } from "@/features/explore/components/explore-left-section/explore-lens-card";
-import { GeneratedSkeleton } from "@/shared/components/loading/generated-skeleton";
-
-export const EXPLORE_LENS_SKELETON_NAME = "explore.lens";
-
-const fixtureInsight = {
-  summary:
-    "Showing idea-led openings around design critique with flexible starts, then favoring groups that are easier to act on.",
-  bullets: [
-    "3 plans already have a time attached.",
-    "2 groups can be joined without a request.",
-    "Design critique appears most often in the current results.",
-    "2 openings are local or place-ready.",
-  ],
-};
-
-const fixtureOceanScores = {
-  openness: 82,
-  conscientiousness: 58,
-  extraversion: 64,
-  agreeableness: 71,
-  neuroticism: 36,
-};
+import {
+  SkeletonCard,
+  SkeletonText,
+} from "@/shared/components/loading/skeleton-patterns";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export function ExploreLensSkeleton() {
-  const fixture = <ExploreLensSkeletonFixture />;
-
-  return (
-    <GeneratedSkeleton
-      name={EXPLORE_LENS_SKELETON_NAME}
-      loading
-      fixture={fixture}
-    >
-      {fixture}
-    </GeneratedSkeleton>
-  );
+  return <ExploreLensSkeletonContent />;
 }
 
-export function ExploreLensSkeletonFixture() {
+function ExploreLensSkeletonContent() {
   return (
-    <ExploreLensCard
-      insight={fixtureInsight}
-      mbti="ENFP"
-      oceanScores={fixtureOceanScores}
-    />
+    <SkeletonCard
+      aria-label="Loading explore lens"
+      className="flex flex-col gap-5 p-4"
+      role="status"
+    >
+      <SkeletonText lines={2} widths={["w-24", "w-44"]} />
+      <div className="flex items-center gap-3">
+        <Skeleton shape="circle" className="size-14" tone="teal" />
+        <SkeletonText
+          className="flex-1"
+          lines={3}
+          widths={["w-16", "w-full", "w-5/6"]}
+        />
+      </div>
+      <SkeletonText
+        lines={4}
+        widths={["w-full", "w-11/12", "w-full", "w-3/4"]}
+      />
+      <div className="grid grid-cols-2 gap-2">
+        {["one", "two", "three", "four"].map((item) => (
+          <Skeleton key={item} className="h-16" />
+        ))}
+      </div>
+    </SkeletonCard>
   );
 }

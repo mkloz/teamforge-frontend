@@ -112,9 +112,9 @@ const forgeSkeletonCaptureModule = createLazyRouteModule(() =>
 );
 
 const sectionSkeletonCaptureModule = createLazyRouteModule(() =>
-  import("@/features/design-system/boneyard-section-skeletons-page").then(
+  import("@/features/design-system/skeleton-section-previews-page").then(
     (m) => ({
-      default: m.BoneyardSectionSkeletonsPage,
+      default: m.SkeletonSectionPreviewsPage,
     }),
   ),
 );
@@ -230,61 +230,61 @@ const visualStatesRoute = createRoute({
 
 const activitySkeletonCaptureRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/design-system/boneyard/activity",
+  path: "/design-system/skeletons/activity",
   component: createLazyPageRoute(activitySkeletonCaptureModule.Component),
 });
 
 const authSkeletonCaptureRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/design-system/boneyard/auth",
+  path: "/design-system/skeletons/auth",
   component: createLazyPageRoute(authSkeletonCaptureModule.Component),
 });
 
 const landingSkeletonCaptureRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/design-system/boneyard/landing",
+  path: "/design-system/skeletons/landing",
   component: createLazyPageRoute(landingSkeletonCaptureModule.Component),
 });
 
 const onboardingSkeletonCaptureRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/design-system/boneyard/onboarding",
+  path: "/design-system/skeletons/onboarding",
   component: createLazyPageRoute(onboardingSkeletonCaptureModule.Component),
 });
 
 const profileSkeletonCaptureRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/design-system/boneyard/profile",
+  path: "/design-system/skeletons/profile",
   component: createLazyPageRoute(profileSkeletonCaptureModule.Component),
 });
 
 const settingsSkeletonCaptureRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/design-system/boneyard/settings",
+  path: "/design-system/skeletons/settings",
   component: createLazyPageRoute(settingsSkeletonCaptureModule.Component),
 });
 
 const homeSkeletonCaptureRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/design-system/boneyard/home",
+  path: "/design-system/skeletons/home",
   component: createLazyPageRoute(homeSkeletonCaptureModule.Component),
 });
 
 const exploreSkeletonCaptureRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/design-system/boneyard/explore",
+  path: "/design-system/skeletons/explore",
   component: createLazyPageRoute(exploreSkeletonCaptureModule.Component),
 });
 
 const forgeSkeletonCaptureRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/design-system/boneyard/forge",
+  path: "/design-system/skeletons/forge",
   component: createLazyPageRoute(forgeSkeletonCaptureModule.Component),
 });
 
 const sectionSkeletonCaptureRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/design-system/boneyard/sections",
+  path: "/design-system/skeletons/sections",
   component: createLazyPageRoute(sectionSkeletonCaptureModule.Component),
 });
 

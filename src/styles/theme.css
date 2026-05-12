@@ -193,26 +193,6 @@
   --sidebar-accent-foreground: #0d9488;
   --sidebar-border: rgba(28, 28, 26, 0.06);
   --sidebar-ring: #0d9488;
-  --boneyard-bone-light: color-mix(
-    in srgb,
-    var(--color-slate-muted) 12%,
-    transparent
-  );
-  --boneyard-bone-dark: color-mix(
-    in srgb,
-    var(--color-ink) 8%,
-    transparent
-  );
-  --boneyard-shimmer-light: color-mix(
-    in srgb,
-    var(--color-canvas) 72%,
-    var(--color-slate-muted) 28%
-  );
-  --boneyard-shimmer-dark: color-mix(
-    in srgb,
-    var(--color-ink) 12%,
-    transparent
-  );
 }
 
 .dark {
@@ -251,24 +231,4 @@
   --sidebar-accent-foreground: #0d9488;
   --sidebar-border: rgba(255, 255, 255, 0.06);
   --sidebar-ring: #0d9488;
-  --boneyard-bone-light: color-mix(
-    in srgb,
-    var(--color-slate-muted) 12%,
-    transparent
-  );
-  --boneyard-bone-dark: color-mix(
-    in srgb,
-    var(--color-ink) 8%,
-    transparent
-  );
-  --boneyard-shimmer-light: color-mix(
-    in srgb,
-    var(--color-canvas) 72%,
-    var(--color-slate-muted) 28%
-  );
-  --boneyard-shimmer-dark: color-mix(
-    in srgb,
-    var(--color-ink) 12%,
-    transparent
-  );
 }

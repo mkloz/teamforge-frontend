@@ -5,15 +5,16 @@ import { motion } from "framer-motion";
 import { SlidersHorizontal, UsersRound } from "lucide-react";
 import { EmptyExploreFilteredVisual } from "@/assets/empty-state/empty-explore-filtered";
 import { EmptyExploreOpenVisual } from "@/assets/empty-state/empty-explore-open";
-import {
-  EXPLORE_FEED_SKELETON_NAME,
-  ExploreFeedSkeletonFixture,
-} from "@/features/explore/components/explore-feed/explore-feed-skeleton-fixture";
 import { useExploreFeed } from "@/features/explore/hooks/use-explore-feed";
 import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
-import { GeneratedSkeleton } from "@/shared/components/loading/generated-skeleton";
+import {
+  SkeletonAvatar,
+  SkeletonCard,
+  SkeletonText,
+} from "@/shared/components/loading/skeleton-patterns";
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { Button } from "@/shared/components/ui/button";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 import { ExploreFeedContent } from "./explore-feed-content";
 
@@ -58,16 +59,35 @@ export function ExploreFeed() {
 }
 
 function ExploreFeedLoading() {
-  const fixture = <ExploreFeedSkeletonFixture />;
-
   return (
-    <GeneratedSkeleton
-      name={EXPLORE_FEED_SKELETON_NAME}
-      loading
-      fixture={fixture}
+    <div
+      aria-busy="true"
+      aria-label="Loading explore groups"
+      className="flex flex-col gap-4"
+      role="status"
     >
-      {fixture}
-    </GeneratedSkeleton>
+      <span className="sr-only">Loading explore groups</span>
+      {["recommended", "local", "open"].map((item, index) => (
+        <SkeletonCard key={item} className="p-4">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-start gap-3">
+              <SkeletonAvatar
+                className="size-12"
+                tone={index === 0 ? "teal" : "default"}
+              />
+              <div className="min-w-0 flex-1">
+                <SkeletonText lines={3} widths={["w-2/5", "w-full", "w-3/4"]} />
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Skeleton shape="pill" className="h-7 w-20" />
+              <Skeleton shape="pill" className="h-7 w-24" tone="amber" />
+              <Skeleton shape="pill" className="h-7 w-16" />
+            </div>
+          </div>
+        </SkeletonCard>
+      ))}
+    </div>
   );
 }
 

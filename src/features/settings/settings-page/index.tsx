@@ -3,15 +3,10 @@ import { useSettingsBlockedUsers } from "@/features/settings/hooks/use-settings-
 import { useSettingsProfileForm } from "@/features/settings/hooks/use-settings-profile-form";
 import { useSettingsRouteState } from "@/features/settings/hooks/use-settings-route-state";
 import type { SettingsSection } from "@/features/settings/lib/settings-route";
-import { GeneratedSkeleton } from "@/shared/components/loading/generated-skeleton";
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { SettingsFormBridge } from "./settings-form-bridge";
 import { SettingsPageLoading } from "./settings-page.loading";
 import { SettingsPageContent } from "./settings-page-content";
-import {
-  SETTINGS_PAGE_SKELETON_NAME,
-  SettingsPageSkeletonFixture,
-} from "./settings-page-skeleton-fixture";
 import { useSettingsMobileDetail } from "./use-settings-mobile-detail";
 import { useSettingsSignOut } from "./use-settings-sign-out";
 
@@ -48,25 +43,19 @@ export function SettingsPage() {
   }
 
   return (
-    <GeneratedSkeleton
-      name={SETTINGS_PAGE_SKELETON_NAME}
-      loading={profileFormState.isLoading}
-      fixture={<SettingsPageSkeletonFixture activeSection={activeSection} />}
+    <SettingsPageContent
+      activeSection={activeSection}
+      isMobileDetailOpen={mobileDetail.isMobileDetailOpen}
+      isSigningOut={signOut.isSigningOut}
+      onSectionSelect={handleSectionSelect}
+      onSignOut={signOut.signOut}
+      onMobileBack={mobileDetail.closeMobileDetail}
     >
-      <SettingsPageContent
+      <SettingsFormBridge
         activeSection={activeSection}
-        isMobileDetailOpen={mobileDetail.isMobileDetailOpen}
-        isSigningOut={signOut.isSigningOut}
-        onSectionSelect={handleSectionSelect}
-        onSignOut={signOut.signOut}
-        onMobileBack={mobileDetail.closeMobileDetail}
-      >
-        <SettingsFormBridge
-          activeSection={activeSection}
-          blockedUsersState={blockedUsersState}
-          profileFormState={profileFormState}
-        />
-      </SettingsPageContent>
-    </GeneratedSkeleton>
+        blockedUsersState={blockedUsersState}
+        profileFormState={profileFormState}
+      />
+    </SettingsPageContent>
   );
 }

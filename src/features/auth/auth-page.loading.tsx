@@ -1,23 +1,12 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { FormEventHandler } from "react";
-import { useForm } from "react-hook-form";
 import { AuthPageContent } from "@/features/auth/auth-page-content";
-import { ActivateAccountStatus } from "@/features/auth/components/activate-account-status";
 import { AuthSupportShell } from "@/features/auth/components/auth-support-shell";
-import { ForgotPasswordForm } from "@/features/auth/components/forgot-password-form";
-import { LoginForm } from "@/features/auth/components/login-form";
-import { RegisterForm } from "@/features/auth/components/register-form";
-import { ResetPasswordForm } from "@/features/auth/components/reset-password";
+import type { PageLoadingProps } from "@/shared/components/loading/page-loading";
 import {
-  type ForgotPasswordValues,
-  forgotPasswordSchema,
-  type ResetPasswordValues,
-  resetPasswordSchema,
-} from "@/features/auth/schemas/auth-schemas";
-import {
-  GeneratedPageLoading,
-  type PageLoadingProps,
-} from "@/shared/components/loading/page-loading";
+  SkeletonButton,
+  SkeletonCard,
+  SkeletonText,
+} from "@/shared/components/loading/skeleton-patterns";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 type AuthLoadingVariant =
   | "activate"
@@ -39,116 +28,99 @@ const AUTH_LOADING_NAMES = {
 } satisfies Record<AuthLoadingVariant, string>;
 
 export function AuthPageLoading({ variant }: AuthPageLoadingProps) {
-  const fixture = <AuthPageLoadingFixture variant={variant} />;
-
-  return (
-    <GeneratedPageLoading name={AUTH_LOADING_NAMES[variant]} fixture={fixture}>
-      {fixture}
-    </GeneratedPageLoading>
-  );
+  void AUTH_LOADING_NAMES[variant];
+  return <AuthPageLoadingFixture variant={variant} />;
 }
 
 export function AuthPageLoadingFixture({
   variant,
 }: Pick<AuthPageLoadingProps, "variant">) {
   if (variant === "forgot-password") {
-    return <ForgotPasswordLoadingFixture />;
+    return <SupportLoadingFixture kind="forgot-password" />;
   }
 
   if (variant === "reset-password") {
-    return <ResetPasswordLoadingFixture />;
+    return <SupportLoadingFixture kind="reset-password" />;
   }
 
   if (variant === "activate") {
-    return <ActivateLoadingFixture />;
+    return <SupportLoadingFixture kind="activate" />;
   }
 
   return (
     <AuthPageContent progress={variant === "register" ? 0.32 : 0.18}>
-      {variant === "register" ? (
-        <RegisterForm onSwitchToLogin={noop} />
-      ) : (
-        <LoginForm onSwitchToRegister={noop} />
-      )}
+      <AuthFormSkeleton variant={variant} />
     </AuthPageContent>
   );
 }
 
-function ForgotPasswordLoadingFixture() {
-  const form = useForm<ForgotPasswordValues>({
-    resolver: zodResolver(forgotPasswordSchema),
-    mode: "onChange",
-    reValidateMode: "onChange",
-    defaultValues: {
-      email: "",
-    },
-  });
-
+function AuthFormSkeleton({ variant }: { variant: "login" | "register" }) {
   return (
-    <AuthSupportShell
-      title="Reset your password"
-      description="Enter your email and we'll send you a secure link to choose a new password."
-      backNavigation={{ to: "/auth/login" }}
-      backLabel="Back to login"
-      footer={
-        <p className="text-center text-slate-muted text-sm">
-          Need a fresh start instead?{" "}
-          <span className="font-medium text-forge-teal">Create an account</span>
-          .
-        </p>
-      }
+    <SkeletonCard
+      aria-label={`Loading ${variant}`}
+      className="p-6 sm:p-8"
+      role="status"
     >
-      <ForgotPasswordForm
-        form={form}
-        loading={false}
-        onSubmit={preventFixtureSubmit}
-      />
-    </AuthSupportShell>
+      <span className="sr-only">Loading {variant}</span>
+      <SkeletonText lines={3} widths={["w-20", "w-44", "w-full"]} />
+      <div className="mt-6 flex flex-col gap-4">
+        <Skeleton className="h-12 w-full" />
+        {variant === "register" ? <Skeleton className="h-12 w-full" /> : null}
+        <Skeleton className="h-12 w-full" />
+        <SkeletonButton className="h-12 w-full" tone="teal" />
+      </div>
+      <Skeleton className="mx-auto mt-6 h-4 w-40" />
+    </SkeletonCard>
   );
 }
 
-function ResetPasswordLoadingFixture() {
-  const form = useForm<ResetPasswordValues>({
-    resolver: zodResolver(resetPasswordSchema),
-    mode: "onChange",
-    reValidateMode: "onChange",
-    defaultValues: {
-      confirmPassword: "",
-      password: "",
-    },
-  });
+function SupportLoadingFixture({
+  kind,
+}: {
+  kind: "activate" | "forgot-password" | "reset-password";
+}) {
+  const title =
+    kind === "activate"
+      ? "Activating your account"
+      : kind === "forgot-password"
+        ? "Reset your password"
+        : "Choose a new password";
+  const description =
+    kind === "activate"
+      ? "We're checking your verification link and signing you in securely."
+      : kind === "forgot-password"
+        ? "Enter your email and we'll send you a secure link to choose a new password."
+        : "This password will replace the old one for your TeamForge account.";
 
   return (
     <AuthSupportShell
-      title="Choose a new password"
-      description="This password will replace the old one for your TeamForge account."
+      title={title}
+      description={description}
       backNavigation={{ to: "/auth/login" }}
       backLabel="Back to login"
     >
-      <ResetPasswordForm
-        form={form}
-        loading={false}
-        onSubmit={preventFixtureSubmit}
-      />
+      <div
+        aria-busy="true"
+        aria-label={`Loading ${kind}`}
+        className="flex flex-col gap-4"
+        role="status"
+      >
+        <span className="sr-only">Loading {kind}</span>
+        {kind === "activate" ? (
+          <>
+            <Skeleton shape="circle" className="mx-auto size-12" tone="teal" />
+            <SkeletonText lines={2} widths={["w-full", "w-3/4"]} />
+          </>
+        ) : (
+          <>
+            <Skeleton className="h-12 w-full" />
+            {kind === "reset-password" ? (
+              <Skeleton className="h-12 w-full" />
+            ) : null}
+            <SkeletonButton className="h-12 w-full" tone="teal" />
+          </>
+        )}
+      </div>
     </AuthSupportShell>
   );
 }
-
-function ActivateLoadingFixture() {
-  return (
-    <AuthSupportShell
-      title="Activating your account"
-      description="We're checking your verification link and signing you in securely."
-      backNavigation={{ to: "/auth/login" }}
-      backLabel="Back to login"
-    >
-      <ActivateAccountStatus errorMessage={null} state="loading" />
-    </AuthSupportShell>
-  );
-}
-
-const noop = () => {};
-
-const preventFixtureSubmit: FormEventHandler<HTMLFormElement> = (event) => {
-  event.preventDefault();
-};

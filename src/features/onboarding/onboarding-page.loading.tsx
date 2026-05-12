@@ -1,39 +1,15 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { FormEventHandler } from "react";
-import { useMemo, useRef } from "react";
-import { useForm } from "react-hook-form";
-import { InterestsFooter } from "@/features/onboarding/components/interests/interests-page/interests-footer";
-import { InterestsPersistentHeader } from "@/features/onboarding/components/interests/interests-page/interests-persistent-header";
-import { InterestsProgressDecoration } from "@/features/onboarding/components/interests/interests-page/interests-progress-decoration";
-import { InterestsScreenRenderer } from "@/features/onboarding/components/interests/interests-page/interests-screen-renderer";
-import {
-  interestsCatalogFixtureCategories,
-  interestsCatalogFixtureExpandedSubcategories,
-  interestsCatalogFixtureLeafById,
-  interestsCatalogFixtureRelatedTags,
-  interestsCatalogFixtureSelectedIds,
-  interestsCatalogFixtureSuggestedTags,
-} from "@/features/onboarding/components/interests/interests-page/interests-screen-renderer/interests-catalog-fixture";
-import { LengthSelector } from "@/features/onboarding/components/personality/personality-screen-renderer/length-selector";
-import { ProfileBasicsCard } from "@/features/onboarding/components/profile-basics";
-import type { UseInterestsReturn } from "@/features/onboarding/hooks/use-interests";
-import {
-  getProfileBasicsProgress,
-  PROFILE_BASICS_DEFAULT_VALUES,
-} from "@/features/onboarding/lib/profile-basics-form-model";
 import {
   InterestsPageContent,
   PersonalityPageContent,
   ProfileBasicsPageContent,
 } from "@/features/onboarding/onboarding-page-content";
+import type { PageLoadingProps } from "@/shared/components/loading/page-loading";
 import {
-  type ProfileBasicsValues,
-  profileBasicsSchema,
-} from "@/features/onboarding/schemas/profile-basics.schema";
-import {
-  GeneratedPageLoading,
-  type PageLoadingProps,
-} from "@/shared/components/loading/page-loading";
+  SkeletonButton,
+  SkeletonCard,
+  SkeletonText,
+} from "@/shared/components/loading/skeleton-patterns";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 type OnboardingLoadingStep = "interests" | "personality" | "profile";
 
@@ -47,25 +23,9 @@ const ONBOARDING_LOADING_NAMES = {
   profile: "onboarding.profile-page",
 } satisfies Record<OnboardingLoadingStep, string>;
 
-const noop = () => {};
-
-const asyncNoop = async () => {};
-
-const preventFixtureSubmit: FormEventHandler<HTMLFormElement> = (event) => {
-  event.preventDefault();
-};
-
 export function OnboardingPageLoading({ step }: OnboardingPageLoadingProps) {
-  const fixture = <OnboardingPageLoadingFixture step={step} />;
-
-  return (
-    <GeneratedPageLoading
-      name={ONBOARDING_LOADING_NAMES[step]}
-      fixture={fixture}
-    >
-      {fixture}
-    </GeneratedPageLoading>
-  );
+  void ONBOARDING_LOADING_NAMES[step];
+  return <OnboardingPageLoadingFixture step={step} />;
 }
 
 export function OnboardingPageLoadingFixture({
@@ -83,26 +43,22 @@ export function OnboardingPageLoadingFixture({
 }
 
 function ProfileBasicsLoadingFixture() {
-  const form = useForm<ProfileBasicsValues>({
-    resolver: zodResolver(profileBasicsSchema),
-    mode: "onChange",
-    reValidateMode: "onChange",
-    defaultValues: PROFILE_BASICS_DEFAULT_VALUES,
-  });
-  const watchedValues = form.watch();
-
   return (
-    <ProfileBasicsPageContent
-      progress={getProfileBasicsProgress(watchedValues)}
-      onInput={noop}
-    >
-      <ProfileBasicsCard
-        form={form}
-        watchedValues={watchedValues}
-        saveError={null}
-        isSaving={false}
-        onSubmit={preventFixtureSubmit}
-      />
+    <ProfileBasicsPageContent progress={0.24}>
+      <SkeletonCard
+        aria-label="Loading profile basics"
+        className="p-6"
+        role="status"
+      >
+        <span className="sr-only">Loading profile basics</span>
+        <SkeletonText lines={3} widths={["w-24", "w-56", "w-full"]} />
+        <div className="mt-6 flex flex-col gap-4">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-24 w-full" />
+          <SkeletonButton className="h-12 w-full" tone="teal" />
+        </div>
+      </SkeletonCard>
     </ProfileBasicsPageContent>
   );
 }
@@ -115,93 +71,84 @@ function PersonalityLoadingFixture() {
       hasTopPadding
       showHomeLink
     >
-      <LengthSelector
-        initialLength={50}
-        onBack={noop}
-        onBegin={noop}
-        onSelectionChange={noop}
-      />
+      <SkeletonCard
+        aria-label="Loading personality"
+        className="mt-10 p-6"
+        role="status"
+      >
+        <span className="sr-only">Loading personality</span>
+        <SkeletonText lines={3} widths={["w-28", "w-full", "w-4/5"]} />
+        <div className="mt-6 grid gap-3">
+          <Skeleton className="h-14 w-full" />
+          <Skeleton className="h-14 w-full" />
+          <Skeleton className="h-14 w-full" />
+        </div>
+      </SkeletonCard>
     </PersonalityPageContent>
   );
 }
 
 function InterestsLoadingFixture() {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const state = useMemo(() => buildInterestsFixtureState(), []);
-  const progress = state.selectedCount / 15;
-
   return (
     <InterestsPageContent
-      progress={progress}
-      scrollContainerRef={scrollContainerRef}
-      header={
-        <>
-          <InterestsProgressDecoration progress={progress} />
-          <InterestsPersistentHeader
-            state={state}
-            scrollRef={scrollContainerRef}
-          />
-        </>
-      }
-      footer={
-        <InterestsFooter
-          state={state}
-          backLabel="Back to personality"
-          isEditMode={false}
-          onBack={noop}
-        />
-      }
+      progress={0.5}
+      header={<InterestsHeaderSkeleton />}
+      footer={<InterestsFooterSkeleton />}
     >
-      <InterestsScreenRenderer
-        state={state}
-        backLabel="Back to personality"
-        onBack={noop}
-        isEditMode={false}
-      />
+      <div
+        aria-busy="true"
+        aria-label="Loading interests"
+        className="grid gap-4"
+        role="status"
+      >
+        <span className="sr-only">Loading interests</span>
+        <SkeletonCard className="p-4">
+          <SkeletonText lines={2} widths={["w-32", "w-72"]} />
+          <div className="mt-4 flex flex-wrap gap-2">
+            {["one", "two", "three", "four"].map((item, index) => (
+              <Skeleton
+                key={item}
+                shape="pill"
+                className="h-9 w-24"
+                tone={index === 0 ? "teal" : "default"}
+              />
+            ))}
+          </div>
+        </SkeletonCard>
+        {["culture", "active", "focused"].map((item) => (
+          <SkeletonCard key={item} className="p-4">
+            <SkeletonText lines={2} widths={["w-40", "w-56"]} />
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              <Skeleton className="h-12" />
+              <Skeleton className="h-12" />
+              <Skeleton className="h-12" />
+              <Skeleton className="h-12" />
+            </div>
+          </SkeletonCard>
+        ))}
+      </div>
     </InterestsPageContent>
   );
 }
 
-function buildInterestsFixtureState(): UseInterestsReturn {
-  return {
-    screen: "browse",
-    personalityType: "ENFP",
-    categories: interestsCatalogFixtureCategories,
-    leafById: interestsCatalogFixtureLeafById,
-    searchQuery: "",
-    collapsedCategories: new Set<string>(),
-    expandedSubcategories: interestsCatalogFixtureExpandedSubcategories,
-    selectedIds: interestsCatalogFixtureSelectedIds,
-    selectedCount: interestsCatalogFixtureSelectedIds.size,
-    canContinue: false,
-    isAtMax: false,
-    suggestedTags: interestsCatalogFixtureSuggestedTags,
-    searchResults: {
-      tags: [],
-      subcategories: [],
-    },
-    youMightAlsoLike: interestsCatalogFixtureRelatedTags,
-    showBalanceNudge: false,
-    isCatalogLoading: false,
-    catalogError: null,
-    isSaving: false,
-    saveErrorMessage: null,
-    setSearchQuery: noop,
-    toggleCategory: noop,
-    expandCategoryOnly: noop,
-    jumpToCategory: noop,
-    registerCategoryElement: noop,
-    toggleSubcategory: noop,
-    goToReview: noop,
-    goToBrowse: noop,
-    setScreen: noop,
-    toggle: noop,
-    reject: noop,
-    finalize: asyncNoop,
-    retryCatalog: async () => {
-      throw new Error("Fixture retry is unavailable.");
-    },
-    isPending: false,
-    reset: noop,
-  };
+function InterestsHeaderSkeleton() {
+  return (
+    <div className="sticky top-0 z-30 border-border border-b bg-canvas/95 px-4 py-4 backdrop-blur">
+      <div className="mx-auto flex max-w-xl items-center justify-between gap-4">
+        <SkeletonText className="flex-1" lines={2} widths={["w-28", "w-44"]} />
+        <Skeleton shape="pill" className="h-8 w-20" tone="teal" />
+      </div>
+    </div>
+  );
+}
+
+function InterestsFooterSkeleton() {
+  return (
+    <footer className="border-border border-t bg-card p-4">
+      <div className="mx-auto flex max-w-xl items-center justify-between gap-3">
+        <SkeletonButton className="w-24" />
+        <SkeletonButton className="w-32" tone="teal" />
+      </div>
+    </footer>
+  );
 }

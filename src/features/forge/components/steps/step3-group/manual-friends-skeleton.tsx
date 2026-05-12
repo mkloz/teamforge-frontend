@@ -1,27 +1,15 @@
-import { GeneratedSkeleton } from "@/shared/components/loading/generated-skeleton";
-import type { FriendshipApi, FriendshipUserApi } from "@/shared/schemas";
-import { ManualFriendInviteRow } from "./manual-friend-invite-row";
-
-export const MANUAL_FRIENDS_SKELETON_NAME = "forge.manual-friends";
-
-const noop = () => {};
+import {
+  SkeletonAvatar,
+  SkeletonCard,
+  SkeletonText,
+} from "@/shared/components/loading/skeleton-patterns";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export function ManualFriendsSkeleton() {
-  const fixture = <ManualFriendsSkeletonFixture />;
-
-  return (
-    <GeneratedSkeleton
-      name={MANUAL_FRIENDS_SKELETON_NAME}
-      loading
-      fixture={fixture}
-      fallback={null}
-    >
-      {fixture}
-    </GeneratedSkeleton>
-  );
+  return <ManualFriendsSkeletonContent />;
 }
 
-export function ManualFriendsSkeletonFixture() {
+function ManualFriendsSkeletonContent() {
   return (
     <div
       aria-busy="true"
@@ -30,66 +18,26 @@ export function ManualFriendsSkeletonFixture() {
       role="status"
     >
       <span className="sr-only">Loading friends</span>
-      {manualFriendsFixture.map((friendshipItem, index) => (
-        <ManualFriendInviteRow
-          key={friendshipItem.counterpart.id}
-          friendship={friendshipItem}
-          selected={index === 1}
-          disabled={false}
-          onToggle={noop}
-        />
+      {["maya", "cody", "noah"].map((item, index) => (
+        <SkeletonCard key={item} className="p-3">
+          <div className="flex items-center gap-3">
+            <SkeletonAvatar
+              className="size-10"
+              tone={index === 1 ? "teal" : "default"}
+            />
+            <SkeletonText
+              className="flex-1"
+              lines={2}
+              widths={["w-32", "w-48"]}
+            />
+            <Skeleton
+              shape="circle"
+              className="size-5"
+              tone={index === 1 ? "teal" : "default"}
+            />
+          </div>
+        </SkeletonCard>
       ))}
     </div>
   );
-}
-
-const manualFriendsFixture: FriendshipApi[] = [
-  buildFriendship("friend-maya", "Maya Chen", "London", "ISFP", 88),
-  buildFriendship("friend-cody", "Cody Rivera", "Camden", "INTJ", 91),
-  buildFriendship("friend-noah", "Noah Patel", "Hackney", "ENTP", 84),
-];
-
-function buildFriendship(
-  id: string,
-  name: string,
-  city: string,
-  personalityType: FriendshipUserApi["personalityType"],
-  trustScore: number,
-): FriendshipApi {
-  const user: FriendshipUserApi = {
-    id,
-    name,
-    avatar: null,
-    city,
-    personalityType,
-    trustScore,
-    onlineStatus: "ONLINE",
-  };
-  const now = "2026-05-11T12:00:00.000Z";
-
-  return {
-    status: "ACCEPTED",
-    createdAt: now,
-    updatedAt: now,
-    version: 1,
-    requesterId: "viewer",
-    receiverId: id,
-    privateChatId: `chat-${id}`,
-    requester: {
-      id: "viewer",
-      name: "You",
-      avatar: null,
-      city: "London",
-      personalityType: "ENFP",
-      trustScore: 92,
-      onlineStatus: "ONLINE",
-    },
-    receiver: user,
-    counterpart: user,
-    privateChat: {
-      id: `chat-${id}`,
-      type: "PRIVATE",
-      createdAt: now,
-    },
-  };
 }

@@ -1,23 +1,20 @@
-import { ExploreFeedSkeletonFixture } from "@/features/explore/components/explore-feed/explore-feed-skeleton-fixture";
-import { ExploreLensSkeletonFixture } from "@/features/explore/components/explore-left-section/explore-lens-skeleton";
-import { ForgeCTA } from "@/features/explore/components/explore-left-section/forge-cta";
-import { ExploreRightFilters } from "@/features/explore/components/explore-right-filters";
-import { ExploreSearchHeader } from "@/features/explore/components/explore-search-header";
 import { ExplorePageContent } from "@/features/explore/explore-page-content";
+import type { PageLoadingProps } from "@/shared/components/loading/page-loading";
 import {
-  GeneratedPageLoading,
-  type PageLoadingProps,
-} from "@/shared/components/loading/page-loading";
-
-export const EXPLORE_PAGE_SKELETON_NAME = "explore.page";
+  SkeletonAvatar,
+  SkeletonButton,
+  SkeletonCard,
+  SkeletonList,
+  SkeletonText,
+} from "@/shared/components/loading/skeleton-patterns";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export function ExplorePageLoading(_props: PageLoadingProps = {}) {
-  const fixture = <ExplorePageLoadingFixture />;
-
   return (
-    <GeneratedPageLoading name={EXPLORE_PAGE_SKELETON_NAME} fixture={fixture}>
-      {fixture}
-    </GeneratedPageLoading>
+    <div aria-busy="true" aria-label="Loading explore" role="status">
+      <span className="sr-only">Loading explore</span>
+      <ExplorePageLoadingFixture />
+    </div>
   );
 }
 
@@ -25,9 +22,9 @@ export function ExplorePageLoadingFixture() {
   return (
     <ExplorePageContent
       leftRail={<ExploreLoadingLeftRail />}
-      searchHeader={<ExploreSearchHeader />}
-      feed={<ExploreFeedSkeletonFixture />}
-      filters={<ExploreRightFilters />}
+      searchHeader={<ExploreSearchSkeleton />}
+      feed={<ExploreFeedSkeleton />}
+      filters={<ExploreFiltersSkeleton />}
     />
   );
 }
@@ -44,11 +41,69 @@ function ExploreLoadingLeftRail() {
         </p>
       </div>
 
-      <ExploreLensSkeletonFixture />
+      <SkeletonCard className="p-4">
+        <SkeletonText lines={2} widths={["w-20", "w-40"]} />
+        <div className="mt-5 grid gap-3">
+          <SkeletonText
+            lines={4}
+            widths={["w-full", "w-11/12", "w-full", "w-3/4"]}
+          />
+        </div>
+      </SkeletonCard>
 
       <div className="px-1 pt-0.5">
-        <ForgeCTA />
+        <SkeletonButton className="h-12 w-full" tone="teal" />
       </div>
     </aside>
+  );
+}
+
+function ExploreSearchSkeleton() {
+  return (
+    <div className="mb-4 flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 sm:flex-row sm:items-center">
+      <Skeleton className="h-11 flex-1" />
+      <div className="flex gap-2">
+        <SkeletonButton className="h-11 w-24" />
+        <SkeletonButton className="size-11" />
+      </div>
+    </div>
+  );
+}
+
+function ExploreFeedSkeleton() {
+  return (
+    <div className="flex flex-col gap-4">
+      {["featured", "nearby", "new"].map((item, index) => (
+        <SkeletonCard key={item} className="p-4">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-start gap-3">
+              <SkeletonAvatar
+                className="size-12"
+                tone={index === 0 ? "teal" : "default"}
+              />
+              <div className="min-w-0 flex-1">
+                <SkeletonText lines={3} widths={["w-2/5", "w-full", "w-3/4"]} />
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Skeleton shape="pill" className="h-7 w-20" />
+              <Skeleton shape="pill" className="h-7 w-24" tone="amber" />
+              <Skeleton shape="pill" className="h-7 w-16" />
+            </div>
+          </div>
+        </SkeletonCard>
+      ))}
+    </div>
+  );
+}
+
+function ExploreFiltersSkeleton() {
+  return (
+    <SkeletonCard className="p-4">
+      <SkeletonText lines={2} widths={["w-28", "w-44"]} />
+      <div className="mt-5 flex flex-col gap-5">
+        <SkeletonList count={4} />
+      </div>
+    </SkeletonCard>
   );
 }
