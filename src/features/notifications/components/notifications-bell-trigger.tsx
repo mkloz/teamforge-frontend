@@ -43,7 +43,7 @@ export function NotificationsBellTrigger({
           )}
         </Button>
       </TooltipTrigger>
-      <TooltipContent>
+      <TooltipContent side="right">
         {count > 0 ? `${count} unread notifications` : "Notifications"}
       </TooltipContent>
     </Tooltip>

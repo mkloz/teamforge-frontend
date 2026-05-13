@@ -15,6 +15,18 @@ const landingPageModule = createLazyRouteModule(() =>
   })),
 );
 
+const privacyPageModule = createLazyRouteModule(() =>
+  import("@/features/legal/legal-page").then((m) => ({
+    default: () => <m.LegalPage kind="privacy" />,
+  })),
+);
+
+const termsPageModule = createLazyRouteModule(() =>
+  import("@/features/legal/legal-page").then((m) => ({
+    default: () => <m.LegalPage kind="terms" />,
+  })),
+);
+
 const authPageLoader = () => import("@/features/auth/auth-page");
 
 const loginPageModule = createLazyRouteModule(() =>
@@ -47,78 +59,6 @@ const activateAccountPageModule = createLazyRouteModule(() =>
   })),
 );
 
-const visualStatesPageModule = createLazyRouteModule(() =>
-  import("@/features/design-system/visual-states-page").then((m) => ({
-    default: m.VisualStatesPage,
-  })),
-);
-
-const activitySkeletonCaptureModule = createLazyRouteModule(() =>
-  import("@/features/activity/activity-page-skeleton-capture").then((m) => ({
-    default: m.ActivityPageSkeletonCapture,
-  })),
-);
-
-const authSkeletonCaptureModule = createLazyRouteModule(() =>
-  import("@/features/auth/auth-skeleton-capture").then((m) => ({
-    default: m.AuthSkeletonCapture,
-  })),
-);
-
-const landingSkeletonCaptureModule = createLazyRouteModule(() =>
-  import("@/features/landing/landing-page-skeleton-capture").then((m) => ({
-    default: m.LandingPageSkeletonCapture,
-  })),
-);
-
-const onboardingSkeletonCaptureModule = createLazyRouteModule(() =>
-  import("@/features/onboarding/onboarding-skeleton-capture").then((m) => ({
-    default: m.OnboardingSkeletonCapture,
-  })),
-);
-
-const profileSkeletonCaptureModule = createLazyRouteModule(() =>
-  import("@/features/profile/profile-page/profile-page-skeleton-capture").then(
-    (m) => ({
-      default: m.ProfilePageSkeletonCapture,
-    }),
-  ),
-);
-
-const settingsSkeletonCaptureModule = createLazyRouteModule(() =>
-  import(
-    "@/features/settings/settings-page/settings-page-skeleton-capture"
-  ).then((m) => ({
-    default: m.SettingsPageSkeletonCapture,
-  })),
-);
-
-const homeSkeletonCaptureModule = createLazyRouteModule(() =>
-  import("@/features/home/home-page-skeleton-capture").then((m) => ({
-    default: m.HomePageSkeletonCapture,
-  })),
-);
-
-const exploreSkeletonCaptureModule = createLazyRouteModule(() =>
-  import("@/features/explore/explore-page-skeleton-capture").then((m) => ({
-    default: m.ExplorePageSkeletonCapture,
-  })),
-);
-
-const forgeSkeletonCaptureModule = createLazyRouteModule(() =>
-  import("@/features/forge/forge-page-skeleton-capture").then((m) => ({
-    default: m.ForgePageSkeletonCapture,
-  })),
-);
-
-const sectionSkeletonCaptureModule = createLazyRouteModule(() =>
-  import("@/features/design-system/skeleton-section-previews-page").then(
-    (m) => ({
-      default: m.SkeletonSectionPreviewsPage,
-    }),
-  ),
-);
-
 const landingRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
@@ -126,6 +66,18 @@ const landingRoute = createRoute({
     landingPageModule.Component,
     <LandingPageLoading mode="route" />,
   ),
+});
+
+const privacyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/privacy",
+  component: createLazyPageRoute(privacyPageModule.Component),
+});
+
+const termsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/terms",
+  component: createLazyPageRoute(termsPageModule.Component),
 });
 
 const loginRoute = createRoute({
@@ -216,125 +168,24 @@ const activateAccountRoute = createRoute({
   }),
 });
 
-const designSystemRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/design-system",
-  component: createLazyPageRoute(visualStatesPageModule.Component),
-});
-
-const visualStatesRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/design-system/visual-states",
-  component: createLazyPageRoute(visualStatesPageModule.Component),
-});
-
-const activitySkeletonCaptureRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/design-system/skeletons/activity",
-  component: createLazyPageRoute(activitySkeletonCaptureModule.Component),
-});
-
-const authSkeletonCaptureRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/design-system/skeletons/auth",
-  component: createLazyPageRoute(authSkeletonCaptureModule.Component),
-});
-
-const landingSkeletonCaptureRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/design-system/skeletons/landing",
-  component: createLazyPageRoute(landingSkeletonCaptureModule.Component),
-});
-
-const onboardingSkeletonCaptureRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/design-system/skeletons/onboarding",
-  component: createLazyPageRoute(onboardingSkeletonCaptureModule.Component),
-});
-
-const profileSkeletonCaptureRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/design-system/skeletons/profile",
-  component: createLazyPageRoute(profileSkeletonCaptureModule.Component),
-});
-
-const settingsSkeletonCaptureRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/design-system/skeletons/settings",
-  component: createLazyPageRoute(settingsSkeletonCaptureModule.Component),
-});
-
-const homeSkeletonCaptureRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/design-system/skeletons/home",
-  component: createLazyPageRoute(homeSkeletonCaptureModule.Component),
-});
-
-const exploreSkeletonCaptureRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/design-system/skeletons/explore",
-  component: createLazyPageRoute(exploreSkeletonCaptureModule.Component),
-});
-
-const forgeSkeletonCaptureRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/design-system/skeletons/forge",
-  component: createLazyPageRoute(forgeSkeletonCaptureModule.Component),
-});
-
-const sectionSkeletonCaptureRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/design-system/skeletons/sections",
-  component: createLazyPageRoute(sectionSkeletonCaptureModule.Component),
-});
-
-const designSystemRoutes = import.meta.env.DEV
-  ? [
-      designSystemRoute,
-      visualStatesRoute,
-      activitySkeletonCaptureRoute,
-      authSkeletonCaptureRoute,
-      exploreSkeletonCaptureRoute,
-      forgeSkeletonCaptureRoute,
-      homeSkeletonCaptureRoute,
-      landingSkeletonCaptureRoute,
-      onboardingSkeletonCaptureRoute,
-      profileSkeletonCaptureRoute,
-      sectionSkeletonCaptureRoute,
-      settingsSkeletonCaptureRoute,
-    ]
-  : [];
-
 export const publicRoutes = [
   landingRoute,
+  privacyRoute,
+  termsRoute,
   loginRoute,
   registerRoute,
   forgotPasswordRoute,
   resetPasswordRoute,
   activateAccountRoute,
-  ...designSystemRoutes,
 ];
 
 export const publicRouteModules = [
   landingPageModule,
+  privacyPageModule,
+  termsPageModule,
   loginPageModule,
   registerPageModule,
   forgotPasswordPageModule,
   resetPasswordPageModule,
   activateAccountPageModule,
-  ...(import.meta.env.DEV
-    ? [
-        visualStatesPageModule,
-        activitySkeletonCaptureModule,
-        authSkeletonCaptureModule,
-        exploreSkeletonCaptureModule,
-        forgeSkeletonCaptureModule,
-        homeSkeletonCaptureModule,
-        landingSkeletonCaptureModule,
-        onboardingSkeletonCaptureModule,
-        profileSkeletonCaptureModule,
-        sectionSkeletonCaptureModule,
-        settingsSkeletonCaptureModule,
-      ]
-    : []),
 ];

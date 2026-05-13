@@ -6,6 +6,7 @@ import type {
   ExploreFilters,
   ExploreLocationMode,
   ExploreSortOption,
+  ExploreTimeWindow,
 } from "@/features/explore/schemas/explore-filters.schema";
 import { EXPLORE_MAX_CATEGORY_FILTERS } from "@/shared/api/api-constraints";
 
@@ -19,6 +20,9 @@ interface ExploreState extends ExploreFilters {
   setLocationMode: (mode: ExploreLocationMode) => void;
   setAccess: (access: ExploreAccessMode) => void;
   setSortBy: (sortBy: ExploreSortOption) => void;
+  setTimeWindow: (timeWindow: ExploreTimeWindow) => void;
+  setStartsAfter: (startsAfter: string | null) => void;
+  setStartsBefore: (startsBefore: string | null) => void;
 
   // Helpers
   resetFilters: () => void;
@@ -55,6 +59,9 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
   setLocationMode: (locationMode) => set({ locationMode }),
   setAccess: (access) => set({ access }),
   setSortBy: (sortBy) => set({ sortBy }),
+  setTimeWindow: (timeWindow) => set({ timeWindow }),
+  setStartsAfter: (startsAfter) => set({ startsAfter }),
+  setStartsBefore: (startsBefore) => set({ startsBefore }),
 
   resetFilters: () =>
     set({
@@ -65,6 +72,9 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
       locationMode: DEFAULT_FILTERS.locationMode,
       access: DEFAULT_FILTERS.access,
       sortBy: DEFAULT_FILTERS.sortBy,
+      timeWindow: DEFAULT_FILTERS.timeWindow,
+      startsAfter: DEFAULT_FILTERS.startsAfter,
+      startsBefore: DEFAULT_FILTERS.startsBefore,
     }),
 
   isAnythingFiltered: () => {
@@ -76,6 +86,9 @@ export const useExploreStore = create<ExploreState>((set, get) => ({
       ) ||
       state.locationMode !== DEFAULT_FILTERS.locationMode ||
       state.access !== DEFAULT_FILTERS.access ||
+      state.timeWindow !== DEFAULT_FILTERS.timeWindow ||
+      state.startsAfter !== DEFAULT_FILTERS.startsAfter ||
+      state.startsBefore !== DEFAULT_FILTERS.startsBefore ||
       state.distance !== DEFAULT_FILTERS.distance ||
       state.sizeRange[0] !== DEFAULT_FILTERS.sizeRange[0] ||
       state.sizeRange[1] !== DEFAULT_FILTERS.sizeRange[1]

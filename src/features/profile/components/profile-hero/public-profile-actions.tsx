@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { Compass, UsersRound } from "lucide-react";
+import { MessageCircle, UserRoundPlus } from "lucide-react";
+import { buildActivityDmNavigation } from "@/features/activity/lib/activity-route";
+import { usePublicProfileActions } from "@/features/profile/hooks/use-public-profile-actions";
 import { Button } from "@/shared/components/ui/button";
 import type { User } from "@/shared/schemas";
 
@@ -8,27 +10,52 @@ interface PublicProfileActionsProps {
 }
 
 export function PublicProfileActions({ user }: PublicProfileActionsProps) {
+  const {
+    connectDisabled,
+    connectLabel,
+    connectLoading,
+    messageChatId,
+    messageDisabled,
+    onConnect,
+  } = usePublicProfileActions(user);
+
   return (
     <div className="grid w-full grid-cols-1 items-center gap-2 pr-0 sm:flex sm:w-auto sm:flex-row sm:gap-3 min-[390px]:grid-cols-2">
-      <Button asChild className="min-h-11 w-full shrink-0 sm:w-auto">
-        <Link
-          to="/forge"
-          aria-label={`Forge a group after viewing ${user.name}'s profile`}
-        >
-          <UsersRound className="shrink-0" />
-          <span>Forge a group</span>
-        </Link>
-      </Button>
       <Button
-        asChild
-        variant="outline"
-        className="min-h-11 w-full border-2 sm:w-auto"
+        className="min-h-11 w-full shrink-0 sm:w-auto"
+        disabled={connectDisabled}
+        loading={connectLoading}
+        onClick={() => onConnect()}
+        aria-label={`${connectLabel} with ${user.name}`}
       >
-        <Link to="/explore" aria-label="Explore more groups">
-          <Compass className="shrink-0" />
-          <span>Explore groups</span>
-        </Link>
+        <UserRoundPlus className="shrink-0" />
+        <span>{connectLabel}</span>
       </Button>
+      {messageChatId ? (
+        <Button
+          asChild
+          variant="outline"
+          className="min-h-11 w-full border-2 sm:w-auto"
+        >
+          <Link
+            {...buildActivityDmNavigation(messageChatId)}
+            aria-label={`Message ${user.name}`}
+          >
+            <MessageCircle className="shrink-0" />
+            <span>Message</span>
+          </Link>
+        </Button>
+      ) : (
+        <Button
+          variant="outline"
+          className="min-h-11 w-full border-2 sm:w-auto"
+          disabled={messageDisabled}
+          aria-label={`Message ${user.name}`}
+        >
+          <MessageCircle className="shrink-0" />
+          <span>Message</span>
+        </Button>
+      )}
     </div>
   );
 }

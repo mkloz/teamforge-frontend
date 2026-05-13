@@ -26,7 +26,7 @@ export function GroupPlanActionButton({
   if (action.kind === "link" && action.href) {
     return (
       <Button asChild variant={variant} size={size} className={className}>
-        <Link to={action.href.to} search={action.href.search}>
+        <Link {...action.href}>
           {showIcon ? <Icon className="size-4" aria-hidden="true" /> : null}
           {label}
         </Link>

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { MessageCircle, UserRoundPlus } from "lucide-react";
+import { ExternalLink, UserRoundPlus } from "lucide-react";
 import type { GroupPlanDetailMember } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
+import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import {
   Tooltip,
   TooltipContent,
@@ -16,15 +17,14 @@ export function MemberAction({ member }: { member: GroupPlanDetailMember }) {
       <Tooltip>
         <TooltipTrigger asChild>
           <Link
-            to="/activity"
-            search={{ kind: "dm" as const }}
+            {...buildProfileNavigation(member.userId)}
             className={memberActionClassName}
-            aria-label={`Message ${member.name}`}
+            aria-label={`Open ${member.name}'s profile`}
           >
-            <MessageCircle className="size-4" />
+            <ExternalLink className="size-4" />
           </Link>
         </TooltipTrigger>
-        <TooltipContent side="top">Message {member.name}</TooltipContent>
+        <TooltipContent side="top">Open {member.name}'s profile</TooltipContent>
       </Tooltip>
     );
   }

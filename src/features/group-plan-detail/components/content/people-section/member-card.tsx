@@ -1,5 +1,7 @@
+import { Link } from "@tanstack/react-router";
 import { Crown } from "lucide-react";
 import type { GroupPlanDetailMember } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
+import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import { MemberAction } from "./member-action";
@@ -22,10 +24,17 @@ export function MemberCard({
   return (
     <article
       className={cn(
-        "group flex items-center gap-3 px-2 py-2 transition-colors duration-150 hover:bg-muted/50",
+        "group relative flex items-center gap-3 px-2 py-2 transition-colors duration-150 hover:bg-muted/50",
         isHost && "bg-forge-teal/5",
       )}
     >
+      <Link
+        {...buildProfileNavigation(member.userId)}
+        aria-label={`View ${member.name}'s profile`}
+        className="absolute inset-0 z-10 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <span className="sr-only">View {member.name}'s profile</span>
+      </Link>
       <MemberAvatar member={member} isHost={isHost} />
 
       <div className="min-w-0 flex-1">
@@ -33,7 +42,11 @@ export function MemberCard({
         <MemberMeta member={member} />
       </div>
 
-      {isMember && !isViewer ? <MemberAction member={member} /> : null}
+      {isMember && !isViewer ? (
+        <div className="relative z-20">
+          <MemberAction member={member} />
+        </div>
+      ) : null}
     </article>
   );
 }

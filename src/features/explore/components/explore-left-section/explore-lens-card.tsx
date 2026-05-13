@@ -1,4 +1,7 @@
+import { Link } from "@tanstack/react-router";
 import { Check, Compass } from "lucide-react";
+import { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
+import { Button } from "@/shared/components/ui/button";
 
 import type {
   ExploreGroup,
@@ -61,6 +64,10 @@ export function ExploreLensCard({
       <div className="font-semibold text-muted-foreground text-xs leading-5">
         <GuidanceBlock items={lensInsight.bullets} />
       </div>
+
+      <Button asChild variant="outline" size="sm" className="w-full">
+        <Link {...buildSettingsNavigation("matching")}>Tune group fit</Link>
+      </Button>
     </section>
   );
 }

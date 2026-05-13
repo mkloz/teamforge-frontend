@@ -2,22 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { ForgeOrb } from "@/features/landing/components/hero/forge-orb";
 import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
-import { getLandingPrimaryAction } from "@/features/landing/lib/landing-auth";
+import { useLandingAuthActions } from "@/features/landing/hooks/use-landing-auth-actions";
 import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
-import {
-  useAuthSessionState,
-  useCurrentUserQuery,
-} from "@/shared/api/current-user-query";
 import { Button } from "@/shared/components/ui/button";
 
 export function HeroSection() {
-  const { isAuthenticated } = useAuthSessionState();
-  const { data: currentUser } = useCurrentUserQuery();
-  const primaryAction = getLandingPrimaryAction(
-    isAuthenticated,
-    currentUser,
-    "Get Started - Free",
-  );
+  const { isResolvingAuthAction, primaryAction } =
+    useLandingAuthActions("Get Started - Free");
 
   return (
     <section
@@ -44,20 +35,31 @@ export function HeroSection() {
             </p>
 
             <div className="mb-10 flex w-full flex-col items-center gap-4 sm:w-auto sm:flex-row">
-              <Button
-                asChild
-                size="hero"
-                className="w-full hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none sm:w-auto"
-              >
-                <Link {...primaryAction.navigation}>
+              {isResolvingAuthAction ? (
+                <Button
+                  size="hero"
+                  loading
+                  className="w-full sm:w-auto"
+                  aria-label="Checking TeamForge session"
+                >
                   {primaryAction.label}
-                  <ArrowRight
-                    size={20}
-                    className="ml-2 transition-transform group-hover:translate-x-0.5"
-                    aria-hidden="true"
-                  />
-                </Link>
-              </Button>
+                </Button>
+              ) : (
+                <Button
+                  asChild
+                  size="hero"
+                  className="w-full hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none sm:w-auto"
+                >
+                  <Link {...primaryAction.navigation}>
+                    {primaryAction.label}
+                    <ArrowRight
+                      size={20}
+                      className="ml-2 transition-transform group-hover:translate-x-0.5"
+                      aria-hidden="true"
+                    />
+                  </Link>
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="hero"

@@ -1,6 +1,8 @@
+import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Check, UserPlus, X } from "lucide-react";
+import { ArrowRight, Check, UserPlus, X } from "lucide-react";
 
+import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
@@ -30,6 +32,8 @@ export function FriendRequestQueueItem({
   onDecline,
   request,
 }: FriendRequestQueueItemProps) {
+  const profileNavigation = buildProfileNavigation(request.counterpart.id);
+
   return (
     <motion.li
       initial={{ opacity: 0, y: 8 }}
@@ -37,11 +41,15 @@ export function FriendRequestQueueItem({
       exit={{ opacity: 0, x: 16 }}
       transition={{ delay: index * 0.04 }}
       className={cn(
-        "flex min-w-0 items-center gap-3 border-border/55 border-b px-1 py-4 transition-colors duration-150 last:border-b-0 sm:px-3",
+        "group flex min-w-0 items-center gap-3 border-border/55 border-b px-1 py-4 transition-colors duration-150 last:border-b-0 sm:px-3",
         isFocused ? "bg-forge-teal/8" : "hover:bg-forge-teal/5",
       )}
     >
-      <div className="flex min-w-0 flex-1 items-start gap-3">
+      <Link
+        {...profileNavigation}
+        aria-label={`View ${request.counterpart.name}'s profile`}
+        className="flex min-w-0 flex-1 items-start gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
         <Avatar
           src={request.counterpart.avatar}
           name={request.counterpart.name}
@@ -50,7 +58,7 @@ export function FriendRequestQueueItem({
         />
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 items-center gap-2">
-            <p className="truncate font-black text-foreground text-sm">
+            <p className="truncate font-black text-foreground text-sm transition-colors duration-150 group-hover:text-forge-teal">
               {request.counterpart.name}
             </p>
             {request.counterpart.personalityType ? (
@@ -63,7 +71,11 @@ export function FriendRequestQueueItem({
             {getFirstName(request.counterpart.name)} wants to connect.
           </p>
         </div>
-      </div>
+        <ArrowRight
+          className="mt-1 size-4 shrink-0 text-muted-foreground opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:opacity-70"
+          aria-hidden="true"
+        />
+      </Link>
       <div className="flex shrink-0 items-center gap-1">
         <Button
           size="xs"

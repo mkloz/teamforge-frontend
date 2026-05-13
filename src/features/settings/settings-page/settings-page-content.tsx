@@ -39,7 +39,7 @@ export function SettingsPageContent({
 
       <section
         className={cn(
-          "w-full min-w-0 pt-11 lg:block lg:max-w-4xl lg:pt-0",
+          "w-full min-w-0 border-border/70 pt-11 lg:block lg:max-w-4xl lg:border-l lg:pt-0 lg:pl-10 xl:pl-12",
           !isMobileDetailOpen && "hidden",
         )}
       >

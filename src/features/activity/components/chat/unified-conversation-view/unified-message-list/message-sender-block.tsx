@@ -1,7 +1,7 @@
+import { Link } from "@tanstack/react-router";
 import type { VirtualizedMessageBlock } from "@/features/activity/hooks/use-virtualized-message-blocks";
-import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
+import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar } from "@/shared/components/common/avatar";
-import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { DateSeparator } from "./date-separator";
 import { MessageRenderer } from "./message-renderer";
@@ -16,7 +16,6 @@ interface MessageSenderBlockProps {
   highlightedMessageId: string | null;
   blockRef: (node: HTMLDivElement | null) => void;
   getMessageRef: (messageId: string) => (node: HTMLDivElement | null) => void;
-  onAvatarClick: (sender: ActivityParticipant) => void;
 }
 
 export function MessageSenderBlock({
@@ -25,7 +24,6 @@ export function MessageSenderBlock({
   highlightedMessageId,
   blockRef,
   getMessageRef,
-  onAvatarClick,
 }: MessageSenderBlockProps) {
   return (
     <div
@@ -46,30 +44,27 @@ export function MessageSenderBlock({
           block.isOwn ? "flex-row-reverse" : "flex-row",
         )}
       >
-        {!block.isOwn && block.senderGroup.senderId !== "system" && (
-          <div className="flex w-8 shrink-0 flex-col justify-end">
-            <div className="sticky bottom-2 flex flex-col items-center">
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() =>
-                  block.senderGroup.sender &&
-                  onAvatarClick(block.senderGroup.sender)
-                }
-                className="size-8 rounded-full p-0"
-                aria-label={`View ${getParticipantDisplayName(block.senderGroup.sender)}'s profile`}
-              >
-                <Avatar
-                  src={block.senderGroup.sender?.avatar}
-                  name={getParticipantDisplayName(block.senderGroup.sender)}
-                  fallback={getParticipantInitials(block.senderGroup.sender)}
-                  className="size-8 bg-muted text-muted-foreground text-xs shadow-sm ring-1 ring-border"
-                  fallbackClassName="text-muted-foreground"
-                />
-              </Button>
+        {!block.isOwn &&
+          block.senderGroup.senderId !== "system" &&
+          block.senderGroup.sender && (
+            <div className="flex w-8 shrink-0 flex-col justify-end">
+              <div className="sticky bottom-2 flex flex-col items-center">
+                <Link
+                  {...buildProfileNavigation(block.senderGroup.sender.id)}
+                  className="inline-flex size-8 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label={`View ${getParticipantDisplayName(block.senderGroup.sender)}'s profile`}
+                >
+                  <Avatar
+                    src={block.senderGroup.sender?.avatar}
+                    name={getParticipantDisplayName(block.senderGroup.sender)}
+                    fallback={getParticipantInitials(block.senderGroup.sender)}
+                    className="size-8 bg-muted text-muted-foreground text-xs shadow-sm ring-1 ring-border"
+                    fallbackClassName="text-muted-foreground"
+                  />
+                </Link>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         <div
           className={cn(

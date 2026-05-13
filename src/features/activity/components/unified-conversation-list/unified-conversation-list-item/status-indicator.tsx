@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-import { cn } from "@/shared/lib/utils";
+import { AvatarStatus } from "@/shared/components/common/avatar";
 
 export const StatusIndicator = memo(
   ({
@@ -10,19 +10,10 @@ export const StatusIndicator = memo(
     status: "ONLINE" | "AWAY" | "OFFLINE";
     isCompact?: boolean;
   }) => {
-    const colors = {
-      ONLINE: "bg-forge-teal",
-      AWAY: "bg-spark-amber",
-      OFFLINE: "bg-slate-muted/40",
-    };
-
     return (
-      <span
-        className={cn(
-          "absolute right-0 bottom-0 rounded-full border-2 border-background shadow-sm",
-          isCompact ? "size-2.5" : "size-3.5",
-          colors[status],
-        )}
+      <AvatarStatus
+        status={status}
+        sizeClassName={isCompact ? "size-2.5" : "size-3.5"}
       />
     );
   },

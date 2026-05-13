@@ -23,11 +23,10 @@ export function ForgePageLoadingFixture() {
           <div className="flex min-w-0 flex-col gap-7">
             <div className="flex flex-col gap-4">
               <Skeleton className="h-4 w-16" />
-              <SkeletonText
-                lines={3}
-                size="lg"
-                widths={["w-full", "w-4/5", "w-2/3"]}
-              />
+              <div className="flex max-w-3xl flex-col gap-3">
+                <Skeleton className="h-11 w-full md:h-16" />
+                <Skeleton className="h-11 w-4/5 md:h-16" />
+              </div>
               <SkeletonText
                 className="max-w-2xl"
                 lines={3}

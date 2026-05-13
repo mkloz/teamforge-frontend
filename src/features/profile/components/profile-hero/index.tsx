@@ -26,7 +26,11 @@ export function ProfileHero({
       <div className="flex w-full flex-col gap-5 sm:gap-6 lg:gap-9">
         <div className="flex w-full flex-col justify-between gap-5 sm:flex-row sm:items-start sm:gap-6">
           <div className="relative top-2 flex min-w-0 flex-1 flex-row items-start gap-4 sm:top-1 sm:gap-6 md:top-5">
-            <ProfileAvatar src={user.avatar} name={user.name} />
+            <ProfileAvatar
+              src={user.avatar}
+              name={user.name}
+              onlineStatus={user.onlineStatus ?? "ONLINE"}
+            />
             <ProfileIdentity
               user={user}
               archetype={archetype}

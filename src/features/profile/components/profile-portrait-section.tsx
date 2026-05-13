@@ -1,3 +1,5 @@
+import type { LucideIcon } from "lucide-react";
+import { BadgeCheck, Compass, Eye, Radar, TriangleAlert } from "lucide-react";
 import type { ProfilePortraitInsight } from "../lib/profile-insights";
 import { ProfileSectionHeading } from "./profile-section-heading";
 
@@ -15,60 +17,212 @@ export function ProfilePortraitSection({
   }[portrait.confidence];
   const readLabel =
     portrait.mode === "hybrid" ? "Blended read" : confidenceLabel;
-  const visibleDetails = portrait.details.slice(0, 2);
+  const visibleDetails = portrait.details.slice(0, 3);
 
   return (
-    <section className="flex flex-col gap-5 border-border/60 border-t pt-6 sm:pt-8">
-      <div className="flex max-w-4xl flex-col gap-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <ProfileSectionHeading>Profile sketch</ProfileSectionHeading>
-          <span className="rounded-full border border-border/70 px-2.5 py-1 font-black text-micro text-slate-muted">
-            {readLabel}
-          </span>
-        </div>
-        <h2 className="max-w-3xl font-black text-2xl text-ink leading-tight tracking-tight md:text-3xl">
-          {portrait.title}
-        </h2>
-        <p className="max-w-3xl text-pretty font-medium text-base text-ink/82 leading-relaxed md:text-lg">
-          {getCompactLead(portrait.lead)}
-        </p>
-      </div>
-
-      <div className="grid max-w-3xl gap-4 sm:grid-cols-2 sm:gap-5">
-        {visibleDetails.map((detail) => (
-          <div
-            key={`${detail.label}-${detail.value}`}
-            className="flex flex-col gap-1"
-          >
-            <p className="font-black text-slate-muted text-xs uppercase tracking-widest">
-              {detail.label}
-            </p>
-            <p className="font-semibold text-ink/85 text-sm leading-snug">
-              {getCompactSentence(detail.value)}
+    <section className="border-border/60 border-t pt-6 sm:pt-8">
+      <div className="grid gap-5 lg:grid-cols-3 lg:items-stretch">
+        <div className="flex min-w-0 flex-col gap-5 lg:col-span-2">
+          <div className="flex min-w-0 flex-col gap-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <ProfileSectionHeading>Profile sketch</ProfileSectionHeading>
+              <span className="rounded-full border border-border/70 px-2.5 py-1 font-black text-micro text-slate-muted">
+                {readLabel}
+              </span>
+            </div>
+            <h2 className="max-w-3xl font-black text-2xl text-ink leading-tight tracking-tight md:text-3xl">
+              {portrait.title}
+            </h2>
+            <p className="max-w-2xl text-pretty font-semibold text-base text-ink/82 leading-relaxed">
+              {getCompactLead(portrait.lead)}
             </p>
           </div>
+
+          <div className="grid max-w-3xl border-border/70 border-y md:grid-cols-3">
+            {visibleDetails.map((detail) => (
+              <PortraitDetailRow
+                key={`${detail.label}-${detail.value}`}
+                detail={detail}
+              />
+            ))}
+          </div>
+        </div>
+
+        <HowYouShowUpCard candidates={portrait.candidates} />
+      </div>
+    </section>
+  );
+}
+
+function HowYouShowUpCard({
+  candidates,
+}: {
+  candidates: ProfilePortraitInsight["candidates"];
+}) {
+  const visibleCandidates = candidates.slice(0, 3);
+
+  if (visibleCandidates.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="flex h-full min-h-64 flex-col rounded-2xl border border-forge-teal/20 bg-forge-teal/8 p-4">
+      <div className="flex items-center justify-between gap-3">
+        <p className="font-black text-slate-muted text-sm">How you show up</p>
+        <Radar className="size-4 text-forge-teal" aria-hidden="true" />
+      </div>
+      <div className="mt-5 flex flex-1 flex-col justify-between gap-4">
+        {visibleCandidates.map((candidate) => (
+          <ShowUpMeter
+            key={candidate.key}
+            rank={visibleCandidates.indexOf(candidate)}
+            candidateKey={candidate.key}
+            title={candidate.title}
+            share={candidate.share}
+          />
         ))}
       </div>
+    </div>
+  );
+}
 
-      {portrait.mode === "hybrid" && portrait.secondaryCandidate ? (
-        <div className="flex flex-wrap items-center gap-2 font-bold text-slate-muted text-xs">
-          <span>Also reads as</span>
-          <span className="h-px w-5 bg-border" aria-hidden="true" />
-          <span className="text-ink/80">
-            {portrait.secondaryCandidate.title}
-          </span>
-        </div>
-      ) : null}
-    </section>
+function ShowUpMeter({
+  candidateKey,
+  rank,
+  share,
+  title,
+}: {
+  candidateKey: ProfilePortraitInsight["candidates"][number]["key"];
+  rank: number;
+  share: number;
+  title: string;
+}) {
+  const percent = formatSharePercent(share);
+  const filledSegments = Math.max(1, Math.min(6, Math.round(percent / 16.67)));
+  const rankLabel = getShowUpRankLabel(rank);
+  const compactTitle = getCompactShowUpTitle(candidateKey, title);
+
+  return (
+    <div className="min-w-0">
+      <div className="flex items-center justify-between gap-3">
+        <p className="font-bold text-slate-muted text-xs">{rankLabel}</p>
+        <p className="shrink-0 font-black text-forge-teal text-xs">
+          {percent}%
+        </p>
+      </div>
+      <p className="mt-1 text-pretty font-bold text-ink text-sm leading-snug">
+        {compactTitle}
+      </p>
+      <meter
+        className="sr-only"
+        min={0}
+        max={100}
+        value={percent}
+        aria-label={`${rankLabel}: ${title}, ${percent} percent`}
+      />
+      <div className="mt-2 grid grid-cols-6 gap-1.5" aria-hidden="true">
+        {SHOW_UP_SEGMENTS.map((segment) => (
+          <span
+            key={segment}
+            className={
+              segment <= filledSegments
+                ? "h-1.5 rounded-full bg-forge-teal"
+                : "h-1.5 rounded-full bg-slate-muted/15"
+            }
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PortraitDetailRow({
+  detail,
+}: {
+  detail: ProfilePortraitInsight["details"][number];
+}) {
+  const Icon = getDetailIcon(detail.label);
+
+  return (
+    <div className="min-w-0 border-border/70 border-t py-4 first:border-t-0 md:border-t-0 md:border-l md:px-4 last:md:pr-0 first:md:border-l-0 first:md:pl-0">
+      <div className="flex min-w-0 items-center gap-2">
+        <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
+          <Icon className="size-3.5" aria-hidden="true" />
+        </span>
+        <p className="font-bold text-slate-muted text-sm">{detail.label}</p>
+      </div>
+      <p className="mt-2 text-pretty font-semibold text-ink/85 text-sm leading-snug">
+        {getCompactSentence(detail.value)}
+      </p>{" "}
+    </div>
   );
 }
 
 function getCompactLead(value: string) {
   const sentences = value.match(/[^.!?]+[.!?]+/g) ?? [value];
-  return sentences.slice(0, 2).join(" ").trim();
+  return sentences.slice(0, 1).join(" ").trim();
 }
 
 function getCompactSentence(value: string) {
   const [sentence] = value.match(/[^.!?]+[.!?]+/g) ?? [value];
   return sentence.trim();
 }
+
+function getDetailIcon(label: string): LucideIcon {
+  const normalizedLabel = label.toLowerCase();
+
+  if (normalizedLabel.includes("setting")) {
+    return Compass;
+  }
+
+  if (normalizedLabel.includes("watch") || normalizedLabel.includes("avoid")) {
+    return TriangleAlert;
+  }
+
+  if (normalizedLabel.includes("basis") || normalizedLabel.includes("trait")) {
+    return BadgeCheck;
+  }
+
+  return Eye;
+}
+
+function formatSharePercent(share: number) {
+  const normalizedShare = share > 1 ? share : share * 100;
+
+  return Math.max(0, Math.min(100, Math.round(normalizedShare)));
+}
+
+function getShowUpRankLabel(rank: number) {
+  return ["Most visible", "Also present", "Quiet signal"][rank] ?? "Signal";
+}
+
+function getCompactShowUpTitle(
+  key: ProfilePortraitInsight["candidates"][number]["key"],
+  fallback: string,
+) {
+  const labels: Record<
+    ProfilePortraitInsight["candidates"][number]["key"],
+    string
+  > = {
+    activeCatalyst: "You turn loose plans into real outings",
+    cafeConnector: "You make easy plans feel personal",
+    calmAnchor: "You keep the pace feeling human",
+    creativeInstigator: "You give the plan a point of view",
+    curiousSpecialist: "You bring the tangent people remember",
+    flexibleParticipant: "You find the thread others can follow",
+    focusedBuilder: "You turn talk into something concrete",
+    ideaFirstExplorer: "You find the better angle on a plan",
+    playfulScout: "You make joining feel easier",
+    practicalOrganizer: "You help the plan actually hold",
+    quietSpecialist: "You bring the interesting side route",
+    restlessInstigator: "You get people moving before things stall",
+    socialGameHost: "You give everyone something to do",
+    steadyHost: "You help the room settle",
+    tasteMaker: "You make the plan feel chosen",
+    warmConnector: "You make the room feel easier",
+  };
+
+  return labels[key] ?? fallback;
+}
+
+const SHOW_UP_SEGMENTS = [1, 2, 3, 4, 5, 6];

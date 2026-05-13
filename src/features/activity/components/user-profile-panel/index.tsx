@@ -11,6 +11,7 @@ import type {
   UserProfilePanelChat,
   UserProfilePanelParticipant,
 } from "./types";
+import { useHydratedProfilePanelParticipant } from "./use-hydrated-profile-panel-participant";
 
 interface UserProfilePanelProps {
   participant?: UserProfilePanelParticipant;
@@ -41,7 +42,7 @@ export function UserProfilePanel({
   onBack,
   onToggleBlock,
 }: UserProfilePanelProps) {
-  const participant =
+  const selectedParticipant =
     propParticipant ||
     chat?.participants?.find(
       (member) =>
@@ -49,6 +50,8 @@ export function UserProfilePanel({
         member.user?.id !== "user-current",
     )?.user ||
     chat?.participants?.[0]?.user;
+  const { isHydratingProfile, participant } =
+    useHydratedProfilePanelParticipant(selectedParticipant);
 
   const mutualGroups = propMutualGroups || chat?.mutualGroups || [];
   const isMuted = propIsMuted ?? chat?.isMuted ?? false;
@@ -72,6 +75,7 @@ export function UserProfilePanel({
       <div className="flex-1">
         <ProfilePanelInfo
           participant={participant}
+          isHydratingProfile={isHydratingProfile}
           chatNavigation={
             chat?.id ? buildActivityDmNavigation(chat.id) : undefined
           }

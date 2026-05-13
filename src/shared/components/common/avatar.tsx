@@ -2,6 +2,7 @@ import type { HTMLAttributes, ImgHTMLAttributes, ReactNode } from "react";
 import { Image } from "@/shared/components/common/image";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { cn } from "@/shared/lib/utils";
+import type { OnlineStatus } from "@/shared/schemas/enums";
 
 function getAvatarInitials(name?: string | null) {
   const initials = (name ?? "")
@@ -25,6 +26,39 @@ interface AvatarProps
   fallbackClassName?: string;
   loading?: ImgHTMLAttributes<HTMLImageElement>["loading"];
   shape?: "circle" | "rounded";
+}
+
+interface AvatarStatusProps extends HTMLAttributes<HTMLSpanElement> {
+  status: OnlineStatus;
+  borderClassName?: string;
+  sizeClassName?: string;
+}
+
+const avatarStatusColors: Record<OnlineStatus, string> = {
+  ONLINE: "bg-forge-teal",
+  AWAY: "bg-spark-amber",
+  OFFLINE: "bg-slate-muted/40",
+};
+
+export function AvatarStatus({
+  status,
+  borderClassName = "border-background",
+  className,
+  sizeClassName = "size-3",
+  ...props
+}: AvatarStatusProps) {
+  return (
+    <span
+      className={cn(
+        "avatar-status-anchor absolute z-20 rounded-full border-2 shadow-sm",
+        sizeClassName,
+        borderClassName,
+        avatarStatusColors[status],
+        className,
+      )}
+      {...props}
+    />
+  );
 }
 
 export function Avatar({

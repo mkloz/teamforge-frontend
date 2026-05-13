@@ -17,6 +17,20 @@ export function buildEmptyGroupFit(): GroupFitInsight {
     summary:
       "TeamForge needs a little more profile detail before it can describe the social fit with confidence.",
     title: "Fit still forming",
+    userSignal: {
+      connectionStyle: {
+        description: "You find common ground fast.",
+        value: "Curious",
+      },
+      groupEnergy: {
+        description: "You help plans feel easier to join.",
+        value: "Steady",
+      },
+      socialRhythm: {
+        description: "You bring steady energy to new groups.",
+        value: "Grounded",
+      },
+    },
   };
 }
 
@@ -37,5 +51,19 @@ export function buildMissingActivityGroupFit(): GroupFitInsight {
     summary:
       "The social read has a starting shape, but the group match should stay conservative until interests point to a real activity.",
     title: "Fit needs an activity",
+    userSignal: {
+      connectionStyle: {
+        description: "You find common ground fast.",
+        value: "Curious",
+      },
+      groupEnergy: {
+        description: "You help plans feel easier to join.",
+        value: "Steady",
+      },
+      socialRhythm: {
+        description: "You bring steady energy to new groups.",
+        value: "Grounded",
+      },
+    },
   };
 }

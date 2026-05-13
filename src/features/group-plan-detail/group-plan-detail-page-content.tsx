@@ -8,11 +8,13 @@ import { GroupPlanHero } from "@/features/group-plan-detail/components/hero/grou
 import { MobileActionDock } from "@/features/group-plan-detail/components/mobile-action-dock";
 import { DecisionRail } from "@/features/group-plan-detail/components/rail/decision-rail";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
+import type { GroupPlanDetailRouteSearch } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 
 interface GroupPlanDetailPageContentProps {
   detail: GroupPlanDetail;
   isPlanHighlighted?: boolean;
   planSectionRef?: Ref<HTMLElement>;
+  search: GroupPlanDetailRouteSearch;
 }
 
 interface GroupPlanSectionFocusProps {
@@ -24,6 +26,7 @@ export function GroupPlanDetailPageContent({
   detail,
   isPlanHighlighted = false,
   planSectionRef,
+  search,
 }: GroupPlanDetailPageContentProps) {
   const focus = {
     isPlanHighlighted,
@@ -32,7 +35,7 @@ export function GroupPlanDetailPageContent({
 
   return (
     <>
-      <GroupPlanDetailPageShell detail={detail} focus={focus} />
+      <GroupPlanDetailPageShell detail={detail} focus={focus} search={search} />
       <MobileActionDock detail={detail} />
     </>
   );
@@ -41,13 +44,15 @@ export function GroupPlanDetailPageContent({
 function GroupPlanDetailPageShell({
   detail,
   focus,
+  search,
 }: {
   detail: GroupPlanDetail;
   focus: GroupPlanSectionFocusProps;
+  search: GroupPlanDetailRouteSearch;
 }) {
   return (
     <div className="mx-auto w-full max-w-5xl overflow-x-clip px-4 pt-3 pb-32 sm:px-5 md:pt-6 md:pb-12 lg:px-8">
-      <GroupPlanHero detail={detail} />
+      <GroupPlanHero detail={detail} search={search} />
       <GroupPlanPitch detail={detail} />
       <GroupPlanDetailGrid detail={detail} focus={focus} />
     </div>
@@ -73,7 +78,7 @@ function GroupPlanDetailGrid({
     <div className="lg:group-plan-detail-grid mt-12 grid gap-12">
       <GroupPlanMainSections detail={detail} focus={focus} />
 
-      <aside className="min-w-0">
+      <aside className="min-w-0 border-border/70 lg:border-l lg:pl-8 xl:pl-10">
         <DecisionRail detail={detail} />
       </aside>
     </div>

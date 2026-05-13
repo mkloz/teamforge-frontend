@@ -111,6 +111,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
         title={headerProps.title}
         subtitle={headerProps.subtitle}
         avatarUrl={headerProps.avatarUrl}
+        detailsNavigation={headerProps.detailsNavigation}
         secondaryAvatar={headerProps.secondaryAvatar}
         onlineStatus={headerProps.onlineStatus}
         isTyping={isMobile && activeTypingUsers.length > 0}
@@ -155,7 +156,6 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
           messageScrollHandleRef={activeMessageScrollHandleRef}
           onLoadOlderMessages={onLoadOlderMessages}
           typingUsers={activeTypingUsers}
-          onToggleAction={onToggleAction}
         />
       </div>
 

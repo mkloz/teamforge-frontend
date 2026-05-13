@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 import { ExploreQueryFactory } from "@/features/explore/api/explore-query-factory";
@@ -19,6 +19,9 @@ export function useExploreGroups() {
           : state.distance,
       access: state.access,
       sortBy: state.sortBy,
+      timeWindow: state.timeWindow,
+      startsAfter: state.startsAfter,
+      startsBefore: state.startsBefore,
     }),
     [
       state.access,
@@ -27,12 +30,15 @@ export function useExploreGroups() {
       state.selectedCategories,
       state.sizeRange,
       state.sortBy,
+      state.timeWindow,
+      state.startsAfter,
+      state.startsBefore,
     ],
   );
   const debouncedFilters = useDebouncedValue(filters, 250);
   const debouncedSearchQuery = useDebouncedValue(state.searchQuery, 300);
 
-  return useQuery(
+  return useInfiniteQuery(
     ExploreQueryFactory.groups(debouncedFilters, debouncedSearchQuery),
   );
 }

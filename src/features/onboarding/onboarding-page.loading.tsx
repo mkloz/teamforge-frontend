@@ -1,3 +1,4 @@
+import { InterestsCatalogSkeleton } from "@/features/onboarding/components/interests/interests-page/interests-screen-renderer/interests-catalog-skeleton";
 import {
   InterestsPageContent,
   PersonalityPageContent,
@@ -131,35 +132,7 @@ function InterestsLoadingFixture() {
         role="status"
       >
         <span className="sr-only">Loading interests</span>
-        <section className="flex flex-col gap-4 pt-2">
-          <Skeleton className="h-3 w-24" tone="teal" />
-          <Skeleton className="h-9 w-80 max-w-full" />
-          <SkeletonText lines={2} widths={["w-full", "w-3/4"]} />
-          <div className="flex flex-wrap gap-2">
-            {["one", "two", "three", "four"].map((item, index) => (
-              <Skeleton
-                key={item}
-                shape="pill"
-                className="h-9 w-24"
-                tone={index === 0 ? "teal" : "default"}
-              />
-            ))}
-          </div>
-        </section>
-        {["culture", "active", "focused"].map((item) => (
-          <section key={item} className="border-border/70 border-t pt-5">
-            <div className="flex items-start justify-between gap-3">
-              <SkeletonText lines={2} widths={["w-40", "w-56"]} />
-              <Skeleton shape="circle" className="size-8 shrink-0" />
-            </div>
-            <div className="mt-4 grid gap-2 sm:grid-cols-2">
-              <InterestChoiceSkeleton tone="teal" />
-              <InterestChoiceSkeleton />
-              <InterestChoiceSkeleton />
-              <InterestChoiceSkeleton />
-            </div>
-          </section>
-        ))}
+        <InterestsCatalogSkeleton />
       </div>
     </InterestsPageContent>
   );
@@ -192,19 +165,6 @@ function FormFieldSkeleton({ className }: { className?: string }) {
     <div className="flex flex-col gap-1.5">
       <Skeleton className="h-3 w-20" />
       <Skeleton className={className ?? "h-12 w-full"} />
-    </div>
-  );
-}
-
-function InterestChoiceSkeleton({
-  tone = "default",
-}: {
-  tone?: "default" | "teal";
-}) {
-  return (
-    <div className="flex h-12 items-center gap-3 rounded-xl border border-border/70 bg-card/50 px-3">
-      <Skeleton shape="circle" className="size-5 shrink-0" tone={tone} />
-      <Skeleton className="h-3 min-w-0 flex-1" tone={tone} />
     </div>
   );
 }

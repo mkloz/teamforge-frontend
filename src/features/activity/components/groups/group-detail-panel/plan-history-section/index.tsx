@@ -6,10 +6,14 @@ import { cn } from "@/shared/lib/utils";
 import { HistoryCard } from "./history-card";
 
 interface PlanHistorySectionProps {
+  groupId: string;
   history: PlanHistoryItem[];
 }
 
-export function PlanHistorySection({ history }: PlanHistorySectionProps) {
+export function PlanHistorySection({
+  groupId,
+  history,
+}: PlanHistorySectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const visibleHistory = isExpanded ? history : history.slice(0, 2);
   const historyCount = history.length;
@@ -39,7 +43,7 @@ export function PlanHistorySection({ history }: PlanHistorySectionProps) {
 
       <div className="divide-y divide-border/70 border-border/70 border-y">
         {visibleHistory.map((item) => (
-          <HistoryCard key={item.id} item={item} />
+          <HistoryCard key={item.id} groupId={groupId} item={item} />
         ))}
 
         {historyCount > 2 && (

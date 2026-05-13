@@ -38,6 +38,7 @@ export interface FileDropzoneProps {
   multiple?: boolean;
   onFiles: (files: File[]) => void;
   preview?: ReactNode;
+  showMeta?: boolean;
   title: string;
   variant?: FileDropzoneVariant;
 }
@@ -107,6 +108,7 @@ export function FileDropzone({
   multiple = false,
   onFiles,
   preview,
+  showMeta = true,
   title,
   variant = "compact",
 }: FileDropzoneProps) {
@@ -236,31 +238,33 @@ export function FileDropzone({
                 </p>
               ) : null}
 
-              <div className="mt-2.5 hidden min-w-0 flex-wrap items-center gap-2 sm:flex">
-                <span
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold text-xs leading-none",
-                    variant === "cover"
-                      ? "bg-white/14 text-white/88"
-                      : "bg-muted text-slate-muted",
-                  )}
-                >
-                  <MousePointerClick size={11} />
-                  {getDropHint(variant, multiple)}
-                </span>
-                {helper ? (
+              {showMeta ? (
+                <div className="mt-2.5 hidden min-w-0 flex-wrap items-center gap-2 sm:flex">
                   <span
                     className={cn(
-                      "inline-flex min-w-0 max-w-full truncate rounded-full px-2.5 py-1 font-semibold text-xs leading-none",
+                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold text-xs leading-none",
                       variant === "cover"
-                        ? "bg-white/10 text-white/72"
-                        : "bg-background/70 text-slate-muted/75",
+                        ? "bg-white/14 text-white/88"
+                        : "bg-muted text-slate-muted",
                     )}
                   >
-                    {helper}
+                    <MousePointerClick size={11} />
+                    {getDropHint(variant, multiple)}
                   </span>
-                ) : null}
-              </div>
+                  {helper ? (
+                    <span
+                      className={cn(
+                        "inline-flex min-w-0 max-w-full truncate rounded-full px-2.5 py-1 font-semibold text-xs leading-none",
+                        variant === "cover"
+                          ? "bg-white/10 text-white/72"
+                          : "bg-background/70 text-slate-muted/75",
+                      )}
+                    >
+                      {helper}
+                    </span>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
           </div>
 

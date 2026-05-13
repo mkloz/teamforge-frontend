@@ -132,31 +132,57 @@ function HomeAttentionQueueSkeleton() {
         aria-label="Loading things that need attention"
         className="mt-4 grid min-w-0 list-none border-border/55 border-y p-0"
       >
-        {["profile", "invite"].map((item, index) => (
+        {[
+          "invite-a",
+          "invite-b",
+          "request-a",
+          "request-b",
+          "plan-a",
+          "plan-b",
+        ].map((item, index) => (
           <li
             key={item}
-            className="flex min-w-0 items-start gap-3 border-border/55 border-b px-1 py-4 last:border-b-0 sm:px-3"
+            className="flex min-w-0 items-center gap-3 border-border/55 border-b px-1 py-3 last:border-b-0 sm:px-3"
           >
-            <div className="flex min-w-0 flex-1 items-start gap-3">
-              {index === 0 ? (
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              {index >= 4 ? (
                 <Skeleton
-                  shape="square"
-                  className="size-10 shrink-0"
-                  tone="teal"
+                  shape="circle"
+                  className="size-8 shrink-0"
+                  tone="amber"
                 />
               ) : (
-                <SkeletonAvatar className="size-11 shrink-0" />
+                <SkeletonAvatar
+                  className="size-10 shrink-0"
+                  tone={index < 2 ? "teal" : "default"}
+                />
               )}
               <SkeletonText
                 className="min-w-0 flex-1"
                 lines={2}
                 size="sm"
-                widths={index === 0 ? ["w-40", "w-72"] : ["w-32", "w-64"]}
+                widths={
+                  index >= 4
+                    ? ["w-44", "w-28"]
+                    : index < 2
+                      ? ["w-40", "w-72"]
+                      : ["w-32", "w-56"]
+                }
               />
             </div>
-            <SkeletonButton className="h-8 w-28 shrink-0" />
+            <div className="flex shrink-0 items-center gap-2">
+              <SkeletonButton
+                className={index >= 4 ? "h-8 w-20" : "h-8 w-20"}
+                tone={index >= 4 ? "default" : "teal"}
+              />
+              <Skeleton shape="circle" className="size-8" tone="amber" />
+            </div>
           </li>
         ))}
+        <li className="flex items-center gap-2 px-3 py-4">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton shape="circle" className="size-4" />
+        </li>
       </ul>
     </section>
   );
@@ -166,15 +192,43 @@ function HomeUpcomingPlansSkeleton() {
   return (
     <section className="flex w-full flex-col gap-4">
       <HomeSectionHeadingSkeleton actionWidth="w-14" />
-      <div className="flex items-center gap-3 border-border/70 border-y border-dashed bg-card/40 px-3 py-5">
-        <Skeleton shape="square" className="h-14 w-16 shrink-0" tone="teal" />
-        <SkeletonText
-          className="min-w-0 flex-1"
-          lines={2}
-          size="sm"
-          widths={["w-40", "w-80"]}
-        />
-      </div>
+      <ul className="border-border/55 border-y">
+        {["first", "second", "third", "fourth"].map((item, index) => (
+          <li
+            key={item}
+            className="plan-card-grid sm:plan-card-grid-wide grid min-h-20 items-center gap-x-3 gap-y-2 border-border/55 border-b py-3.5 pr-1 last:border-b-0 sm:pr-3 md:gap-4"
+          >
+            <div className="relative flex h-full min-h-16 flex-col justify-center pl-9">
+              <Skeleton
+                shape="circle"
+                className="absolute top-1/2 left-4 size-2.5 -translate-x-1/2 -translate-y-1/2"
+                tone={index === 0 ? "teal" : "default"}
+              />
+              <Skeleton className="h-2.5 w-8" />
+              <Skeleton className="mt-1 h-6 w-5" />
+              <Skeleton className="mt-1 h-2.5 w-6" />
+            </div>
+
+            <div className="min-w-0">
+              <Skeleton className="h-4 w-44 max-w-full" />
+              <Skeleton className="mt-1.5 h-3 w-36 max-w-full" />
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-3 w-20" tone="teal" />
+              </div>
+            </div>
+
+            <div className="col-start-2 flex items-center justify-between gap-4 sm:col-start-3 sm:min-w-30 sm:justify-end">
+              <div className="flex">
+                <SkeletonAvatar className="size-7 border-2 border-card sm:size-8" />
+                <SkeletonAvatar className="-ml-2 size-7 border-2 border-card sm:size-8" />
+                <SkeletonAvatar className="-ml-2 size-7 border-2 border-card sm:size-8" />
+              </div>
+              <Skeleton className="h-4 w-14" tone="teal" />
+            </div>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -251,24 +305,25 @@ function HomeGroupsSkeleton() {
         aria-label="Loading your groups"
         className="flex list-none flex-col p-0"
       >
-        <li className="flex h-16 items-center gap-3 border-border/55 border-b px-1 py-3 sm:px-3">
-          <SkeletonAvatar className="size-9" tone="teal" />
-          <SkeletonText
-            className="min-w-0 flex-1"
-            lines={2}
-            size="sm"
-            widths={["w-28", "w-36"]}
-          />
-          <Skeleton shape="circle" className="size-4" />
-        </li>
-        <li className="flex h-16 items-center gap-3 border-border/55 border-b px-1 py-3 sm:px-3">
-          <SkeletonAvatar className="size-9" />
-          <SkeletonText
-            className="min-w-0 flex-1"
-            lines={2}
-            size="sm"
-            widths={["w-32", "w-28"]}
-          />
+        {["first", "second", "third", "fourth"].map((item, index) => (
+          <li
+            key={item}
+            className="flex h-14 items-center gap-3 border-border/55 border-b px-1 py-3 sm:px-3"
+          >
+            <SkeletonAvatar
+              className="size-9"
+              tone={index === 0 ? "teal" : "default"}
+            />
+            <SkeletonText
+              className="min-w-0 flex-1"
+              lines={2}
+              size="sm"
+              widths={index % 2 === 0 ? ["w-32", "w-16"] : ["w-36", "w-20"]}
+            />
+          </li>
+        ))}
+        <li className="flex h-12 items-center justify-between gap-3 rounded-b-xl border-border/55 border-b px-3 py-3">
+          <Skeleton className="h-3 w-32" />
           <Skeleton shape="circle" className="size-4" />
         </li>
       </ul>

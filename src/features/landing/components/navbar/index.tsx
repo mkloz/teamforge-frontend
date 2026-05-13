@@ -5,19 +5,12 @@ import { useState } from "react";
 import { TeamForgeLogo } from "@/assets/logo";
 import { useMobileNavDialog } from "@/features/landing/components/navbar/use-mobile-nav-dialog";
 import { LANDING_NAV_LINKS } from "@/features/landing/constants/landing-sections";
-import {
-  getLandingPrimaryAction,
-  getLandingSecondaryAction,
-} from "@/features/landing/lib/landing-auth";
+import { useLandingAuthActions } from "@/features/landing/hooks/use-landing-auth-actions";
 import {
   scrollToLandingSection,
   scrollToLandingTop,
 } from "@/features/landing/lib/landing-scroll";
 import { logoutCurrentSession } from "@/shared/api/auth-session-commands";
-import {
-  useAuthSessionState,
-  useCurrentUserQuery,
-} from "@/shared/api/current-user-query";
 import { Button } from "@/shared/components/ui/button";
 import { useWindowScrollThreshold } from "@/shared/hooks/use-window-scroll-threshold";
 import { cn } from "@/shared/lib/utils";
@@ -32,15 +25,13 @@ const MOBILE_NAV_LINK_DELAYS = [
 export function Navbar() {
   const scrolled = useWindowScrollThreshold(60);
   const { closeMenu, menuOpen, menuRef, toggleMenu } = useMobileNavDialog();
-  const { isAuthenticated } = useAuthSessionState();
-  const { data: currentUser } = useCurrentUserQuery();
   const [isSigningOut, setIsSigningOut] = useState(false);
-  const primaryAction = getLandingPrimaryAction(
+  const {
     isAuthenticated,
-    currentUser,
-    "Get Started",
-  );
-  const secondaryAction = getLandingSecondaryAction(isAuthenticated, "Log In");
+    isResolvingAuthAction,
+    primaryAction,
+    secondaryAction,
+  } = useLandingAuthActions("Get Started");
 
   const handleNavClick = (
     event: MouseEvent<HTMLAnchorElement>,
@@ -108,7 +99,17 @@ export function Navbar() {
           </nav>
 
           <div className="hidden items-center gap-3 md:flex">
-            {isAuthenticated ? (
+            {isResolvingAuthAction && !isAuthenticated ? (
+              <Button
+                variant="outline"
+                size="sm"
+                loading
+                className="hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none"
+                aria-label="Checking TeamForge session"
+              >
+                {secondaryAction.label}
+              </Button>
+            ) : isAuthenticated ? (
               <Button
                 variant="outline"
                 size="sm"
@@ -130,14 +131,26 @@ export function Navbar() {
                 </Link>
               </Button>
             )}
-            <Button
-              variant="primary"
-              asChild
-              size="sm"
-              className="hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none"
-            >
-              <Link {...primaryAction.navigation}>{primaryAction.label}</Link>
-            </Button>
+            {isResolvingAuthAction ? (
+              <Button
+                variant="primary"
+                size="sm"
+                loading
+                className="hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none"
+                aria-label="Checking TeamForge session"
+              >
+                {primaryAction.label}
+              </Button>
+            ) : (
+              <Button
+                variant="primary"
+                asChild
+                size="sm"
+                className="hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none"
+              >
+                <Link {...primaryAction.navigation}>{primaryAction.label}</Link>
+              </Button>
+            )}
           </div>
 
           <Button
@@ -191,7 +204,23 @@ export function Navbar() {
           ))}
         </nav>
         <div className="flex w-48 flex-col items-center gap-4">
-          {isAuthenticated ? (
+          {isResolvingAuthAction && !isAuthenticated ? (
+            <Button
+              variant="outline"
+              size="lg"
+              loading
+              className={cn(
+                "w-full bg-transparent transition-all delay-300 duration-300",
+                "hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none",
+                menuOpen
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0",
+              )}
+              aria-label="Checking TeamForge session"
+            >
+              {secondaryAction.label}
+            </Button>
+          ) : isAuthenticated ? (
             <Button
               variant="outline"
               size="lg"
@@ -225,22 +254,40 @@ export function Navbar() {
               </Link>
             </Button>
           )}
-          <Button
-            variant="primary"
-            asChild
-            size="lg"
-            className={cn(
-              "w-full py-6 transition-all delay-400 duration-300",
-              "hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none",
-              menuOpen
-                ? "translate-y-0 opacity-100"
-                : "translate-y-4 opacity-0",
-            )}
-          >
-            <Link {...primaryAction.navigation} onClick={closeMenu}>
+          {isResolvingAuthAction ? (
+            <Button
+              variant="primary"
+              size="lg"
+              loading
+              className={cn(
+                "w-full py-6 transition-all delay-400 duration-300",
+                "hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none",
+                menuOpen
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0",
+              )}
+              aria-label="Checking TeamForge session"
+            >
               {primaryAction.label}
-            </Link>
-          </Button>
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              asChild
+              size="lg"
+              className={cn(
+                "w-full py-6 transition-all delay-400 duration-300",
+                "hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none",
+                menuOpen
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0",
+              )}
+            >
+              <Link {...primaryAction.navigation} onClick={closeMenu}>
+                {primaryAction.label}
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
     </>

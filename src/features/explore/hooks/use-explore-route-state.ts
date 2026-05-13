@@ -13,6 +13,9 @@ import {
   getSearchRoutePatch,
   getSizeRoutePatch,
   getSortRoutePatch,
+  getStartsAfterRoutePatch,
+  getStartsBeforeRoutePatch,
+  getTimeRoutePatch,
   normalizeCategories,
   normalizeDistance,
   normalizeSizeRange,
@@ -24,6 +27,7 @@ import type {
   ExploreCategory,
   ExploreLocationMode,
   ExploreSortOption,
+  ExploreTimeWindow,
 } from "@/features/explore/schemas/explore-filters.schema";
 import { useExploreStore } from "@/features/explore/store/use-explore-store";
 
@@ -37,6 +41,9 @@ export function useExploreRouteState() {
   const locationMode = useExploreStore((state) => state.locationMode);
   const access = useExploreStore((state) => state.access);
   const sortBy = useExploreStore((state) => state.sortBy);
+  const timeWindow = useExploreStore((state) => state.timeWindow);
+  const startsAfter = useExploreStore((state) => state.startsAfter);
+  const startsBefore = useExploreStore((state) => state.startsBefore);
   const setSearchQuery = useExploreStore((state) => state.setSearchQuery);
   const setSelectedCategories = useExploreStore(
     (state) => state.setSelectedCategories,
@@ -46,6 +53,9 @@ export function useExploreRouteState() {
   const setLocationMode = useExploreStore((state) => state.setLocationMode);
   const setAccess = useExploreStore((state) => state.setAccess);
   const setSortBy = useExploreStore((state) => state.setSortBy);
+  const setTimeWindow = useExploreStore((state) => state.setTimeWindow);
+  const setStartsAfter = useExploreStore((state) => state.setStartsAfter);
+  const setStartsBefore = useExploreStore((state) => state.setStartsBefore);
   const resetFilters = useExploreStore((state) => state.resetFilters);
   const getIsAnythingFiltered = useExploreStore(
     (state) => state.isAnythingFiltered,
@@ -70,9 +80,15 @@ export function useExploreRouteState() {
     setSearchQuery,
     setSelectedCategories,
     setSizeRange,
+    setStartsAfter,
+    setStartsBefore,
     setSortBy,
+    setTimeWindow,
     sizeRange,
+    startsAfter,
+    startsBefore,
     sortBy,
+    timeWindow,
   });
 
   function updateSearchQuery(nextQuery: string) {
@@ -130,6 +146,27 @@ export function useExploreRouteState() {
     });
   }
 
+  function updateTimeWindow(nextTimeWindow: ExploreTimeWindow) {
+    setTimeWindow(nextTimeWindow);
+    void setExploreRouteState(getTimeRoutePatch(nextTimeWindow), {
+      history: "push",
+    });
+  }
+
+  function updateStartsAfter(nextStartsAfter: string | null) {
+    setStartsAfter(nextStartsAfter);
+    void setExploreRouteState(getStartsAfterRoutePatch(nextStartsAfter), {
+      history: "push",
+    });
+  }
+
+  function updateStartsBefore(nextStartsBefore: string | null) {
+    setStartsBefore(nextStartsBefore);
+    void setExploreRouteState(getStartsBeforeRoutePatch(nextStartsBefore), {
+      history: "push",
+    });
+  }
+
   function clearAllFilters() {
     resetFilters();
     void setExploreRouteState(CLEAR_EXPLORE_FILTER_ROUTE, {
@@ -158,6 +195,9 @@ export function useExploreRouteState() {
     locationMode,
     access,
     sortBy,
+    timeWindow,
+    startsAfter,
+    startsBefore,
     setSearchQuery: updateSearchQuery,
     setSelectedCategories: updateSelectedCategories,
     setSizeRange: updateSizeRange,
@@ -165,6 +205,9 @@ export function useExploreRouteState() {
     setLocationMode: updateLocationMode,
     setAccess: updateAccess,
     setSortBy: updateSortBy,
+    setTimeWindow: updateTimeWindow,
+    setStartsAfter: updateStartsAfter,
+    setStartsBefore: updateStartsBefore,
     resetFilters: clearAllFilters,
     isAnythingFiltered: getIsAnythingFiltered(),
     removeCategory: removeSelectedCategory,

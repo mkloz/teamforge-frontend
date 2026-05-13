@@ -20,14 +20,14 @@ export function ActivityLaneRow({ lane }: ActivityLaneRowProps) {
         </div>
         <div>
           <h4 className="font-extrabold text-ink text-sm">{lane.label}</h4>
-          <p className="mt-1 font-bold text-slate-muted text-xs uppercase tracking-widest">
+          <p className="mt-1 font-semibold text-slate-muted text-xs">
             {evidenceLabel}
           </p>
         </div>
       </div>
 
       <div className="flex min-w-0 flex-col gap-3">
-        <div className="flex min-w-0 flex-wrap gap-2">
+        <div className="flex min-w-0 flex-wrap gap-1.5 sm:gap-2">
           {lane.evidence.map((evidence) => (
             <InterestChip key={evidence.interest.id} evidence={evidence} />
           ))}

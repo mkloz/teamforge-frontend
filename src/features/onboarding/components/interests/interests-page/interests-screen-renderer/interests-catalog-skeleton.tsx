@@ -10,41 +10,90 @@ function InterestsCatalogSkeletonContent() {
     <div
       aria-busy="true"
       aria-label="Loading interests"
-      className="grid gap-4"
+      className="mx-auto flex w-full max-w-xl flex-col pb-8"
       role="status"
     >
       <span className="sr-only">Loading interests</span>
-      <section className="flex flex-col gap-4 pt-2">
-        <SkeletonText lines={2} widths={["w-32", "w-72"]} />
-        <div className="flex flex-wrap gap-2">
-          {["suggested", "local", "creative", "active"].map((item, index) => (
-            <Skeleton
-              key={item}
-              shape="pill"
-              className="h-9 w-24"
-              tone={index === 0 ? "teal" : "default"}
-            />
-          ))}
-        </div>
-      </section>
-      {["culture", "movement", "building"].map((item) => (
-        <section key={item} className="border-border/70 border-t pt-5">
-          <div className="flex items-center justify-between gap-3">
-            <SkeletonText
-              className="flex-1"
-              lines={2}
-              widths={["w-40", "w-56"]}
-            />
-            <Skeleton shape="circle" className="size-8" />
+      <div className="mb-5 flex flex-col gap-2 pt-2">
+        <Skeleton className="h-3 w-28" tone="teal" />
+        <Skeleton className="h-8 w-80 max-w-full" />
+        <SkeletonText lines={2} widths={["w-full", "w-4/5"]} />
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <section className="overflow-hidden rounded-xl border border-slate-muted/10 bg-canvas p-0.5">
+          <div className="flex min-h-12 items-center gap-2 rounded-xl px-3 py-3 sm:px-4">
+            <Skeleton shape="circle" className="size-3 shrink-0" tone="teal" />
+            <Skeleton className="h-3 w-28" />
+            <div className="ml-auto flex items-center gap-1.5">
+              <Skeleton shape="circle" className="size-1" tone="teal" />
+              <Skeleton className="h-3 w-4" />
+              <Skeleton shape="circle" className="size-4" />
+            </div>
           </div>
-          <div className="mt-4 grid gap-2 sm:grid-cols-2">
-            <InterestChoiceSkeleton tone="teal" />
-            <InterestChoiceSkeleton />
-            <InterestChoiceSkeleton />
-            <InterestChoiceSkeleton />
+
+          <div className="flex flex-col gap-4 pb-6">
+            <div className="flex flex-wrap gap-1.5 px-0 py-1.5 sm:gap-2 sm:p-1.5">
+              {["film", "music", "food", "books", "design"].map(
+                (item, index) => (
+                  <Skeleton
+                    key={item}
+                    shape="pill"
+                    className={index === 4 ? "h-9 w-28" : "h-9 w-24"}
+                    tone={index === 0 ? "teal" : "default"}
+                  />
+                ),
+              )}
+            </div>
+
+            <div className="flex flex-wrap gap-2 px-1.5">
+              {["one", "two", "three", "four", "five", "six"].map(
+                (item, index) => (
+                  <InterestChoiceSkeleton
+                    key={item}
+                    tone={index === 0 ? "teal" : "default"}
+                  />
+                ),
+              )}
+            </div>
           </div>
         </section>
-      ))}
+
+        {["movement", "building"].map((item, sectionIndex) => (
+          <section
+            key={item}
+            className="overflow-hidden rounded-xl border border-slate-muted/10 bg-canvas p-0.5"
+          >
+            <div className="flex min-h-12 items-center gap-2 rounded-xl px-3 py-3 sm:px-4">
+              <Skeleton
+                shape="circle"
+                className="size-3 shrink-0"
+                tone={sectionIndex === 0 ? "amber" : "default"}
+              />
+              <Skeleton className="h-3 w-32" />
+              <div className="ml-auto flex items-center gap-1.5">
+                <Skeleton shape="circle" className="size-1" />
+                <Skeleton className="h-3 w-4" />
+                <Skeleton shape="circle" className="size-4" />
+              </div>
+            </div>
+          </section>
+        ))}
+
+        <section className="mt-4 overflow-hidden rounded-xl border border-slate-muted/10 bg-canvas p-0.5">
+          <div className="flex min-h-12 items-center gap-2 rounded-xl px-3 py-3 sm:px-4">
+            <Skeleton shape="circle" className="size-3 shrink-0" tone="amber" />
+            <Skeleton className="h-3 w-36" />
+            <div className="ml-auto">
+              <Skeleton shape="circle" className="size-4" />
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2 px-3 pb-3">
+            <Skeleton shape="pill" className="h-8 w-28" tone="amber" />
+            <Skeleton shape="pill" className="h-8 w-24" />
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
@@ -55,9 +104,9 @@ function InterestChoiceSkeleton({
   tone?: "default" | "teal";
 }) {
   return (
-    <div className="flex h-12 items-center gap-3 rounded-xl border border-border/70 bg-card/50 px-3">
-      <Skeleton shape="circle" className="size-5 shrink-0" tone={tone} />
-      <Skeleton className="h-3 min-w-0 flex-1" tone={tone} />
+    <div className="inline-flex h-9 items-center gap-2 rounded-full border border-border/70 bg-card/50 px-3">
+      <Skeleton shape="circle" className="size-3 shrink-0" tone={tone} />
+      <Skeleton className="h-3 w-20" tone={tone} />
     </div>
   );
 }

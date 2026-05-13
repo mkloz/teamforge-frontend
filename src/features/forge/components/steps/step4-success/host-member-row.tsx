@@ -1,7 +1,14 @@
+import { Link } from "@tanstack/react-router";
+import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
+
 export function HostMemberRow() {
   return (
     <div className="flex min-h-26 flex-col justify-between gap-3 rounded-lg border border-forge-teal/35 bg-forge-teal/5 p-3 transition-colors duration-200">
-      <div className="flex items-start gap-3">
+      <Link
+        {...buildProfileNavigation()}
+        aria-label="View your profile"
+        className="flex items-start gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
         <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-forge-teal font-bold text-micro text-primary-foreground shadow-forge-teal/20 shadow-sm">
           You
         </div>
@@ -13,7 +20,7 @@ export function HostMemberRow() {
             Host and organizer
           </p>
         </div>
-      </div>
+      </Link>
 
       <div className="flex items-center justify-between gap-3">
         <span className="font-semibold text-forge-teal text-micro uppercase tracking-wide">

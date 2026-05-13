@@ -29,7 +29,7 @@ export function ProfilePageContent({
   const shouldShowUserMenu = showUserMenu ?? mode === "self";
 
   return (
-    <main className="relative min-h-full overflow-x-hidden bg-canvas pb-32 md:pb-0">
+    <main className="relative min-h-full overflow-x-clip bg-canvas pb-32 md:pb-0">
       <ProfileCoverBanner personalityType={profile.personalityType} />
 
       {shouldShowUserMenu ? (
@@ -64,7 +64,7 @@ export function ProfilePageContent({
             />
           </div>
 
-          <div className="flex min-w-0 shrink-0 flex-col">
+          <div className="flex min-w-0 shrink-0 flex-col border-border/70 lg:sticky lg:top-4 lg:self-start lg:border-l lg:pl-8 xl:pl-10">
             <PsychometricsSidebar
               oceanScores={pageModel.oceanScores}
               dimensionScores={pageModel.dimensionScores}

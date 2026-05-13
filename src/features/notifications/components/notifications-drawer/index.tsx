@@ -150,28 +150,41 @@ const NOTIFICATION_SKELETON_ROWS = [
 
 function NotificationsDrawerSkeleton() {
   return (
-    <div className="px-6 py-5">
+    <div>
       <span className="sr-only">Loading notifications</span>
-      <LoadingBlock className="mb-4 h-3 w-16 rounded-md" />
-      <div className="flex flex-col gap-3">
+      <div className="sticky top-0 z-10 border-border/50 border-b bg-card/95 px-6 py-4 backdrop-blur-md">
+        <LoadingBlock className="h-3 w-16 rounded-md" />
+      </div>
+      <div className="flex flex-col">
         {NOTIFICATION_SKELETON_ROWS.map((row, index) => (
           <div
-            className="flex gap-3 border-border/45 border-b pb-3 last:border-b-0"
+            className={cn(
+              "flex w-full items-start gap-4 border-border/45 border-b border-l-4 px-4 py-4 text-left last:border-b-0",
+              index === 0 ? "border-l-spark-amber" : "border-l-forge-teal",
+            )}
             key={row}
           >
-            <LoadingBlock className="size-10 shrink-0 rounded-full" />
-            <div className="min-w-0 flex-1">
-              <div className="mb-2 flex items-center justify-between gap-3">
-                <LoadingBlock className="h-3 w-28 rounded-md" />
-                <LoadingBlock className="h-2.5 w-10 rounded-md" />
-              </div>
+            <LoadingBlock
+              className={cn(
+                "mt-1 size-9 shrink-0 rounded-full",
+                index === 0 ? "bg-spark-amber/18" : "bg-forge-teal/12",
+              )}
+            />
+            <div className="min-w-0 flex-1 flex-col gap-0.5">
+              <LoadingBlock className="h-3.5 w-32 rounded-md" />
               <LoadingBlock className="h-3 w-full rounded-md" />
               <LoadingBlock
                 className={cn(
-                  "mt-2 h-3 rounded-md",
+                  "mt-1.5 h-3 rounded-md",
                   index % 2 === 0 ? "w-3/4" : "w-1/2",
                 )}
               />
+              <div className="mt-2 flex items-center gap-2">
+                <LoadingBlock className="h-2.5 w-12 rounded-md" />
+                {index === 0 ? (
+                  <LoadingBlock className="size-1.5 rounded-full bg-forge-teal/35" />
+                ) : null}
+              </div>
             </div>
           </div>
         ))}

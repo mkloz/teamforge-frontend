@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
 import { HeroCover } from "@/features/group-plan-detail/components/hero/hero-cover";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import {
@@ -9,18 +8,24 @@ import {
   formatPlanDateTime,
   getSeatsLabel,
 } from "@/features/group-plan-detail/lib/group-plan-detail-formatters";
+import {
+  type GroupPlanDetailRouteSearch,
+  getGroupPlanDetailBackLink,
+} from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import { Button } from "@/shared/components/ui/button";
 
 interface GroupPlanHeroProps {
   detail: GroupPlanDetail;
+  search: GroupPlanDetailRouteSearch;
 }
 
-export function GroupPlanHero({ detail }: GroupPlanHeroProps) {
+export function GroupPlanHero({ detail, search }: GroupPlanHeroProps) {
   const planTitle = detail.plan?.title ?? detail.activity.title;
   const planTime = formatPlanDateTime(detail.plan?.dateTime);
   const location = formatLocation(detail);
   const cost = detail.plan ? formatCost(detail.plan) : null;
   const seats = getSeatsLabel(detail);
+  const backLink = getGroupPlanDetailBackLink(detail.group.id, search);
 
   const metadata = [
     planTime.full !== "Date TBD" ? planTime.full : "Date TBD",
@@ -34,9 +39,9 @@ export function GroupPlanHero({ detail }: GroupPlanHeroProps) {
   return (
     <header className="space-y-4">
       <Button asChild variant="ghost" size="sm" className="px-0">
-        <Link {...buildExploreNavigation()}>
+        <Link {...backLink.navigation}>
           <ArrowLeft className="size-4" aria-hidden="true" />
-          Back to groups
+          {backLink.label}
         </Link>
       </Button>
 

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Home, Plus } from "lucide-react";
 
 import { TeamForgeLogo } from "@/assets/logo";
+import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
@@ -37,37 +38,40 @@ export function NotFoundState({ fullPage = false }: NotFoundStateProps) {
           <span className="font-black">TeamForge</span>
         </Link>
 
-        <SoloActivityScene />
+        <SoloActivityScene className="absolute inset-0 lg:hidden" />
 
-        <div className="relative z-10 flex flex-1 items-end pb-8 sm:pb-12 lg:items-center lg:justify-end lg:pb-0">
-          <div className="w-full max-w-lg">
-            <p className="mb-4 font-black text-slate-muted text-sm uppercase tracking-widest">
-              404
-            </p>
-            <h1
-              id="not-found-heading"
-              className="max-w-96 font-black text-5xl text-ink leading-none tracking-tight sm:text-6xl lg:text-7xl"
-            >
-              A group of one.
-            </h1>
-            <p className="mt-6 max-w-lg text-base text-slate-muted leading-relaxed sm:text-lg">
-              You're the only person here because this page is a dead end.
-              TeamForge is about shared experiences, so let's get you back.
-            </p>
+        <div className="relative z-10 flex flex-1 items-end pb-8 sm:pb-12 lg:items-center lg:pb-0">
+          <div className="relative grid w-full gap-10 lg:grid-cols-2 lg:items-stretch lg:gap-12">
+            <SoloActivityScene className="hidden overflow-visible lg:block" />
+            <div className="w-full max-w-lg lg:justify-self-end">
+              <p className="mb-4 font-black text-slate-muted text-sm uppercase tracking-widest">
+                404
+              </p>
+              <h1
+                id="not-found-heading"
+                className="max-w-96 font-black text-5xl text-ink leading-none tracking-tight sm:text-6xl lg:text-7xl"
+              >
+                A group of one.
+              </h1>
+              <p className="mt-6 max-w-lg text-base text-slate-muted leading-relaxed sm:text-lg">
+                You're the only person here because this page is a dead end.
+                TeamForge is about shared experiences, so let's get you back.
+              </p>
 
-            <div className="mt-8 grid gap-3 sm:flex">
-              <Button asChild size="lg">
-                <Link to="/forge" search={{ open: true }}>
-                  <Plus className="size-5" aria-hidden="true" />
-                  Forge my group
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link to="/">
-                  <Home className="size-5" aria-hidden="true" />
-                  Back to landing
-                </Link>
-              </Button>
+              <div className="mt-8 grid gap-3 sm:flex">
+                <Button asChild size="lg">
+                  <Link {...buildForgeLaunchNavigation()}>
+                    <Plus className="size-5" aria-hidden="true" />
+                    Forge my group
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg">
+                  <Link to="/">
+                    <Home className="size-5" aria-hidden="true" />
+                    Back to landing
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>

@@ -22,6 +22,7 @@ export interface AppNavigationItem {
   label: string;
   icon: LucideIcon;
   badge?: number;
+  activePathPrefixes?: readonly string[];
   matchMode?: MatchMode;
   navigation:
     | ReturnType<typeof buildHomeNavigation>
@@ -43,6 +44,7 @@ const APP_NAVIGATION: Record<AppNavigationItem["id"], AppNavigationItem> = {
     id: "explore",
     label: "Explore",
     icon: Compass,
+    activePathPrefixes: ["/groups"],
     navigation: buildExploreNavigation(),
   },
   activity: {
@@ -56,6 +58,7 @@ const APP_NAVIGATION: Record<AppNavigationItem["id"], AppNavigationItem> = {
     id: "profile",
     label: "Profile",
     icon: User,
+    activePathPrefixes: ["/users"],
     navigation: buildProfileNavigation(),
   },
   settings: {
@@ -81,6 +84,10 @@ export function isAppNavigationItemActive(
   pathname: string,
 ) {
   const activePath = item.navigation.to;
+
+  if (item.activePathPrefixes?.some((prefix) => pathname.startsWith(prefix))) {
+    return true;
+  }
 
   return item.matchMode === "prefix"
     ? pathname.startsWith(activePath)

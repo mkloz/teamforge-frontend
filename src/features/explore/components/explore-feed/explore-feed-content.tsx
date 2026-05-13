@@ -1,13 +1,23 @@
 import { AnimatePresence, motion } from "framer-motion";
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 import type { ExploreGroup } from "@/shared/schemas";
 import { ExploreGroupPlanCard } from "./explore-group-plan-card";
 
 interface ExploreFeedContentProps {
   groups: ExploreGroup[];
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+  onLoadMore: () => void;
+  totalGroups: number;
 }
 
-export function ExploreFeedContent({ groups }: ExploreFeedContentProps) {
+export function ExploreFeedContent({
+  groups,
+  hasNextPage,
+  isFetchingNextPage,
+  onLoadMore,
+  totalGroups,
+}: ExploreFeedContentProps) {
   const featuredGroup = groups[0] ?? null;
   const remainingGroups = groups.slice(1);
 
@@ -17,7 +27,7 @@ export function ExploreFeedContent({ groups }: ExploreFeedContentProps) {
         <section className="space-y-2.5">
           <FeedSectionLabel
             title="Best opening right now"
-            detail={`${groups.length} ${groups.length === 1 ? "group" : "groups"} available`}
+            detail={`${totalGroups} ${totalGroups === 1 ? "group" : "groups"} available`}
           />
           <ExploreGroupMotion index={0} groupId={featuredGroup.id}>
             <ExploreGroupPlanCard group={featuredGroup} />
@@ -29,7 +39,7 @@ export function ExploreFeedContent({ groups }: ExploreFeedContentProps) {
         <section className="space-y-2.5">
           <FeedSectionLabel
             title="More openings"
-            detail={`${remainingGroups.length} more available`}
+            detail={`${remainingGroups.length} shown`}
           />
           <AnimatePresence mode="popLayout">
             {remainingGroups.map((group, index) => (
@@ -44,6 +54,69 @@ export function ExploreFeedContent({ groups }: ExploreFeedContentProps) {
           </AnimatePresence>
         </section>
       ) : null}
+
+      <ExploreInfiniteScrollSentinel
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        onLoadMore={onLoadMore}
+      />
+    </div>
+  );
+}
+
+function ExploreInfiniteScrollSentinel({
+  hasNextPage,
+  isFetchingNextPage,
+  onLoadMore,
+}: {
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+  onLoadMore: () => void;
+}) {
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+
+    if (
+      !sentinel ||
+      !hasNextPage ||
+      isFetchingNextPage ||
+      typeof IntersectionObserver === "undefined"
+    ) {
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          onLoadMore();
+        }
+      },
+      { rootMargin: "640px 0px 640px" },
+    );
+
+    observer.observe(sentinel);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [hasNextPage, isFetchingNextPage, onLoadMore]);
+
+  if (!hasNextPage) {
+    return null;
+  }
+
+  return (
+    <div ref={sentinelRef} className="flex justify-center py-2">
+      <button
+        type="button"
+        onClick={onLoadMore}
+        disabled={isFetchingNextPage}
+        className="rounded-full border border-border/70 bg-card/35 px-3 py-1.5 font-bold text-muted-foreground text-xs transition-colors hover:border-border hover:bg-muted/30 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40 disabled:cursor-wait disabled:opacity-70"
+      >
+        {isFetchingNextPage ? "Loading more..." : "Load more"}
+      </button>
     </div>
   );
 }

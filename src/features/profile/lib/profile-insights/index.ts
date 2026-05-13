@@ -18,6 +18,7 @@ export type {
   ProfileInsightModel,
   ProfilePortraitCandidate,
   ProfilePortraitInsight,
+  UserGroupSignal,
 } from "./types";
 
 export function buildProfileInsights(

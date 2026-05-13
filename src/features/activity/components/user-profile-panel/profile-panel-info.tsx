@@ -9,29 +9,19 @@ import {
 import type { buildActivityDmNavigation } from "@/features/activity/lib/activity-route";
 import { getArchetype } from "@/features/profile/lib/archetypes";
 import type { ProfileNavigation } from "@/features/profile/lib/profile-route";
-import { Avatar } from "@/shared/components/common/avatar";
+import { Avatar, AvatarStatus } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import type { OnlineStatus } from "@/shared/schemas/enums";
-import type { OceanScores } from "@/shared/types/psychometrics";
+import { buildShowUpSignals, type ShowUpSignal } from "./show-up-profile";
 import type { UserProfilePanelParticipant } from "./types";
 
 interface ProfilePanelInfoProps {
   participant: UserProfilePanelParticipant;
+  isHydratingProfile?: boolean;
   chatNavigation?: ReturnType<typeof buildActivityDmNavigation>;
   profileNavigation?: ProfileNavigation;
   onBack?: () => void;
-}
-
-function getOnlineStatusColor(status: OnlineStatus): string {
-  switch (status) {
-    case "ONLINE":
-      return "bg-forge-teal";
-    case "AWAY":
-      return "bg-spark-amber";
-    default:
-      return "bg-muted-foreground/40";
-  }
 }
 
 function formatPercent(score: number | null | undefined): number {
@@ -42,57 +32,15 @@ function formatPercent(score: number | null | undefined): number {
   return Math.round(score > 0 && score <= 1 ? score * 100 : score);
 }
 
-function getParticipantOceanScores(
-  participant: UserProfilePanelParticipant,
-): OceanScores | null {
-  const hasAnyOceanScores = [
-    participant.oceanO,
-    participant.oceanC,
-    participant.oceanE,
-    participant.oceanA,
-    participant.oceanN,
-  ].some((score) => score !== null);
-
-  if (!hasAnyOceanScores) {
-    return null;
-  }
-
-  return {
-    openness: participant.oceanO ?? 50,
-    conscientiousness: participant.oceanC ?? 50,
-    extraversion: participant.oceanE ?? 50,
-    agreeableness: participant.oceanA ?? 50,
-    neuroticism: participant.oceanN ?? 50,
-  };
-}
-
-function getPersonalitySignals(scores: OceanScores | null) {
-  if (!scores) {
-    return [];
-  }
-
-  return [
-    { label: "Curiosity", value: scores.openness },
-    { label: "Organization", value: scores.conscientiousness },
-    { label: "Social energy", value: scores.extraversion },
-    { label: "Warmth", value: scores.agreeableness },
-    { label: "Sensitivity", value: scores.neuroticism },
-  ]
-    .sort((first, second) => second.value - first.value)
-    .slice(0, 3);
-}
-
 export function ProfilePanelInfo({
   participant,
+  isHydratingProfile = false,
   chatNavigation,
   profileNavigation,
   onBack,
 }: ProfilePanelInfoProps) {
-  const statusColor = getOnlineStatusColor(
-    participant.onlineStatus || "OFFLINE",
-  );
-  const oceanScores = getParticipantOceanScores(participant);
-  const personalitySignals = getPersonalitySignals(oceanScores);
+  const onlineStatus = participant.onlineStatus || "OFFLINE";
+  const personalitySignals = buildShowUpSignals(participant);
   const trustScore = formatPercent(participant.trustScore);
   const typeLabel = participant.personalityType ?? "Open";
   const groupMode = participant.personalityType
@@ -147,7 +95,7 @@ export function ProfilePanelInfo({
           <PanelProfileAvatar
             name={participant.name}
             src={participant.avatar}
-            statusColor={statusColor}
+            onlineStatus={onlineStatus}
           />
 
           <div className="min-w-0 flex-1 pt-5 text-left">
@@ -193,14 +141,16 @@ export function ProfilePanelInfo({
         </h4>
 
         {personalitySignals.length > 0 ? (
-          <div className="mt-3 flex flex-col gap-3">
+          <div className="mt-4 flex flex-col gap-4">
             {personalitySignals.map((signal) => (
-              <PersonalitySignal key={signal.label} {...signal} />
+              <PersonalitySignal key={signal.key} signal={signal} />
             ))}
           </div>
         ) : (
           <p className="mt-2 font-medium text-slate-muted text-sm">
-            Personality signals are still syncing.
+            {isHydratingProfile
+              ? "Personality signals are loading."
+              : "Personality signals are not available yet."}
           </p>
         )}
       </section>
@@ -261,12 +211,12 @@ function ProfileActionButtons({
 
 function PanelProfileAvatar({
   name,
+  onlineStatus,
   src,
-  statusColor,
 }: {
   name: string;
+  onlineStatus: OnlineStatus;
   src: string | null;
-  statusColor: string;
 }) {
   return (
     <motion.div
@@ -277,19 +227,20 @@ function PanelProfileAvatar({
     >
       <div className="absolute inset-0 rounded-full bg-spark-amber/20 opacity-0 blur-xl transition-opacity duration-700 group-hover:opacity-100" />
       <div className="absolute -inset-1.5 rounded-full border-2 border-forge-teal/30 opacity-0 transition duration-700 group-hover:rotate-180 group-hover:scale-105 group-hover:opacity-100" />
-      <Avatar
-        src={src}
-        name={name}
-        className="relative z-10 size-20 border-canvas border-thick bg-muted text-2xl shadow-lg ring-1 ring-border/70 transition-transform duration-300 group-hover:scale-105"
-        fallbackClassName="bg-muted text-forge-teal text-2xl"
-        loading="eager"
-      />
-      <span
-        className={cn(
-          "absolute right-1.5 bottom-1.5 z-20 size-4 rounded-full border-2 border-canvas shadow-sm",
-          statusColor,
-        )}
-      />
+      <div className="relative z-10 size-20 transition-transform duration-300 group-hover:scale-105">
+        <Avatar
+          src={src}
+          name={name}
+          className="size-full border-canvas border-thick bg-muted text-2xl shadow-lg ring-1 ring-border/70"
+          fallbackClassName="bg-muted text-forge-teal text-2xl"
+          loading="eager"
+        />
+        <AvatarStatus
+          status={onlineStatus}
+          borderClassName="border-canvas"
+          sizeClassName="size-4"
+        />
+      </div>
     </motion.div>
   );
 }
@@ -364,28 +315,63 @@ function ProfileMetaRow({
   );
 }
 
-function PersonalitySignal({ label, value }: { label: string; value: number }) {
-  const filledSegments = Math.max(1, Math.min(5, Math.round(value / 20)));
+function PersonalitySignal({ signal }: { signal: ShowUpSignal }) {
+  const filledSegments =
+    typeof signal.value === "number"
+      ? Math.max(1, Math.min(5, Math.round(signal.value / 20)))
+      : null;
+  const roundedValue = Math.round(signal.value ?? 0);
 
   return (
-    <div className="flex min-w-0 items-center gap-3">
-      <div className="min-w-0 flex-1">
-        <p className="truncate font-semibold text-ink text-sm">{label}</p>
-        <p className="font-bold text-slate-muted text-xs">
-          {Math.round(value)}%
-        </p>
+    <div className="min-w-0 border-border/70 border-b pb-4 last:border-b-0 last:pb-0">
+      <div className="flex min-w-0 items-baseline justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate font-bold text-ink text-sm leading-tight">
+            {signal.label}
+          </p>
+          <p className="mt-0.5 font-bold text-slate-muted text-xs leading-tight">
+            {signal.level}
+          </p>
+        </div>
+        {signal.source === "ocean" ? (
+          <p className="shrink-0 font-bold text-forge-teal text-xs leading-tight">
+            {roundedValue}%
+          </p>
+        ) : (
+          <p className="shrink-0 font-bold text-slate-muted text-xs leading-tight">
+            Type cue
+          </p>
+        )}
       </div>
-      <div className="flex w-20 shrink-0 gap-1">
-        {PERSONALITY_SEGMENTS.map((segment) => (
-          <span
-            key={segment}
-            className={cn(
-              "h-1.5 min-w-0 flex-1 rounded-full",
-              segment <= filledSegments ? "bg-forge-teal" : "bg-slate-muted/15",
-            )}
+
+      <p className="mt-2 text-pretty text-slate-muted text-xs leading-relaxed">
+        {signal.description}
+      </p>
+
+      {filledSegments ? (
+        <div className="mt-3">
+          <meter
+            className="sr-only"
+            min={0}
+            max={100}
+            value={roundedValue}
+            aria-label={`${signal.label} ${roundedValue} percent`}
           />
-        ))}
-      </div>
+          <div className="grid grid-cols-5 gap-1.5" aria-hidden="true">
+            {PERSONALITY_SEGMENTS.map((segment) => (
+              <span
+                key={segment}
+                className={cn(
+                  "h-1.5 min-w-0 rounded-full",
+                  segment <= filledSegments
+                    ? "bg-forge-teal"
+                    : "bg-slate-muted/15",
+                )}
+              />
+            ))}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

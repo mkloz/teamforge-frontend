@@ -9,3 +9,11 @@ export function publicProfileQueryOptions(userId: string) {
     staleTime: 60_000,
   });
 }
+
+export function profileFriendshipQueryOptions(userId: string) {
+  return queryOptions({
+    queryKey: APP_QUERY_KEYS.profile.friendshipWith(userId),
+    queryFn: () => ProfileApi.getFriendshipWithUser(userId),
+    staleTime: 30_000,
+  });
+}

@@ -14,6 +14,13 @@ const categoryValues = CATEGORIES.map((category) => category.id);
 const locationValues = ["ALL", "IN_PERSON", "ONLINE"] as const;
 const accessValues = ["ALL", "OPEN", "BY_REQUEST"] as const;
 const sortValues = ["MATCH", "SOONEST", "NEWEST"] as const;
+const timeValues = [
+  "ALL",
+  "TODAY",
+  "TOMORROW",
+  "THIS_WEEK",
+  "THIS_WEEKEND",
+] as const;
 
 const parseAsSizeRange = createParser<[number, number]>({
   parse(value) {
@@ -62,7 +69,10 @@ export const exploreRouteParsers = {
   location: parseAsStringLiteral(locationValues),
   panel: parseAsStringLiteral(explorePanelValues),
   q: parseAsString,
+  from: parseAsString,
   request: parseAsString,
   size: parseAsSizeRange,
   sort: parseAsStringLiteral(sortValues),
+  time: parseAsStringLiteral(timeValues),
+  to: parseAsString,
 };

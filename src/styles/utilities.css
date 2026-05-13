@@ -126,6 +126,12 @@
     font-size: 0.72em;
   }
 
+  .avatar-status-anchor {
+    right: 14.64466094%;
+    bottom: 14.64466094%;
+    transform: translate(50%, 50%);
+  }
+
   .group-plan-card-empty-art {
     background-image:
       radial-gradient(
@@ -250,6 +256,26 @@
     );
 }
 
+@utility explore-sticky-rail {
+  max-height: none;
+  overflow: visible;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.explore-sticky-rail::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-height: 720px) {
+  .explore-sticky-rail {
+    max-height: calc(100dvh - 4rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 0.5rem;
+  }
+}
+
 @utility forge-page-grid {
   grid-template-columns: minmax(0, 0.8fr) minmax(32rem, 1.2fr);
 }
@@ -268,6 +294,11 @@
 
 @utility mobile-action-shadow {
   box-shadow: 0 -8px 24px rgb(0 0 0 / 6%);
+}
+
+@utility modal-viewport-frame {
+  width: calc(100% - 2rem);
+  max-height: calc(100dvh - 2rem);
 }
 
 @utility search-action-grid {

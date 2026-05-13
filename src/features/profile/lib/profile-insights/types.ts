@@ -61,6 +61,18 @@ export interface GroupFitInsight {
   signals: string[];
   summary: string;
   title: string;
+  userSignal: UserGroupSignal;
+}
+
+export interface UserGroupSignal {
+  connectionStyle: UserGroupSignalItem;
+  groupEnergy: UserGroupSignalItem;
+  socialRhythm: UserGroupSignalItem;
+}
+
+export interface UserGroupSignalItem {
+  description: string;
+  value: string;
 }
 
 export interface ProfilePortraitInsight {

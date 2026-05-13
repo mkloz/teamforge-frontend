@@ -24,6 +24,13 @@ export function getLandingPrimaryAction(
     return buildGuestLandingAction("/auth/register", guestLabel);
   }
 
+  if (user == null) {
+    return {
+      navigation: buildHomeNavigation(),
+      label: "Open TeamForge",
+    };
+  }
+
   const destination = buildPostAuthRedirectNavigation(user, null);
   const label =
     destination.to === "/home" ? "Open TeamForge" : "Continue onboarding";

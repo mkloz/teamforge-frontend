@@ -10,7 +10,6 @@ import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
 import {
   SkeletonAvatar,
   SkeletonButton,
-  SkeletonText,
 } from "@/shared/components/loading/skeleton-patterns";
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { Button } from "@/shared/components/ui/button";
@@ -24,12 +23,16 @@ export function ExploreFeed() {
   const {
     groups,
     hasGroups,
+    hasNextPage,
     isAnythingFiltered,
     isError,
+    isFetchingNextPage,
     isLoading,
+    fetchNextPage,
     refetch,
     resetFilters,
     searchQuery,
+    totalGroups,
   } = useExploreFeed();
   if (isLoading) {
     return <ExploreFeedLoading />;
@@ -57,7 +60,17 @@ export function ExploreFeed() {
     );
   }
 
-  return <ExploreFeedContent groups={groups} />;
+  return (
+    <ExploreFeedContent
+      groups={groups}
+      hasNextPage={hasNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+      onLoadMore={() => {
+        void fetchNextPage();
+      }}
+      totalGroups={totalGroups}
+    />
+  );
 }
 
 function ExploreFeedLoading() {
@@ -118,10 +131,10 @@ function ExploreGroupPlanCardSkeleton({
 }) {
   return (
     <div className="group relative list-none outline-none">
-      <div className="relative isolate z-10 flex w-full overflow-hidden rounded-xl border-2 border-border bg-card md:flex-row">
+      <div className="relative isolate z-10 flex w-full overflow-hidden rounded-xl border-2 border-border bg-card md:min-h-64 md:flex-row">
         <Skeleton
           shape="square"
-          className="h-42 shrink-0 border-border border-b-2 md:h-auto md:w-72 md:border-r-2 md:border-b-0"
+          className="h-42 shrink-0 rounded-none border-border border-b-2 md:h-auto md:w-72 md:border-r-2 md:border-b-0"
           tone={tone}
         />
         <div className="flex min-w-0 grow flex-col bg-canvas p-4 md:p-4.5">
@@ -133,12 +146,18 @@ function ExploreGroupPlanCardSkeleton({
             <Skeleton shape="pill" className="h-6 w-24" />
           </div>
 
-          <SkeletonText lines={3} widths={["w-4/5", "w-full", "w-2/3"]} />
+          <Skeleton className="h-8 w-4/5 max-w-96 md:h-9" />
+          <Skeleton className="mt-3 h-4 w-full max-w-108" />
 
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Skeleton shape="pill" className="h-7 w-24" />
-            <Skeleton shape="pill" className="h-7 w-28" tone="amber" />
-            <Skeleton shape="pill" className="h-7 w-20" />
+          <div className="mt-5 grid gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Skeleton shape="circle" className="size-4" tone="teal" />
+              <Skeleton className="h-4 w-44 max-w-full" />
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-16" />
+            </div>
           </div>
 
           <div className="mt-auto pt-4">

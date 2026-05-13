@@ -76,6 +76,7 @@ function GroupPlanDetailLoadedView({
       detail={detail}
       isPlanHighlighted={landingFocus.isPlanHighlighted}
       planSectionRef={landingFocus.planSectionRef}
+      search={search}
     />
   );
 }

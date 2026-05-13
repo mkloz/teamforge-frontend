@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { memo } from "react";
+import type { ConversationDetailsNavigation } from "@/features/activity/hooks/use-conversation-data";
 import { useHeaderSearch } from "@/features/activity/hooks/use-header-search";
 import type { OnlineStatus } from "@/features/activity/lib/activity-contract";
 import { Button } from "@/shared/components/ui/button";
@@ -11,6 +12,7 @@ interface UnifiedChatHeaderProps {
   title: string;
   subtitle?: string;
   avatarUrl?: string | null;
+  detailsNavigation?: ConversationDetailsNavigation;
   kind: "dm" | "group";
   onlineStatus?: OnlineStatus;
   secondaryAvatar?: string | null;
@@ -29,6 +31,7 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
   title,
   subtitle,
   avatarUrl,
+  detailsNavigation,
   kind,
   onlineStatus,
   secondaryAvatar,
@@ -67,6 +70,7 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
             title={title}
             subtitle={subtitle}
             avatarUrl={avatarUrl}
+            detailsNavigation={detailsNavigation}
             isGroup={isGroup}
             secondaryAvatar={secondaryAvatar}
             onlineStatus={onlineStatus}

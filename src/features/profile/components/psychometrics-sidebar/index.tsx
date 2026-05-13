@@ -23,7 +23,7 @@ export function PsychometricsSidebar({
   );
 
   return (
-    <div className="grid w-full gap-8 md:grid-cols-2 lg:sticky lg:top-4 lg:flex lg:flex-col lg:gap-10">
+    <div className="grid w-full gap-8 md:grid-cols-2 lg:flex lg:flex-col lg:gap-10">
       <TraitMapSection
         oceanScores={oceanScores}
         selectedTrait={selectedTrait}

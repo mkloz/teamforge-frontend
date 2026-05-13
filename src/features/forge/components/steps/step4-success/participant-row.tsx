@@ -1,5 +1,7 @@
+import { Link } from "@tanstack/react-router";
 import { UserMinus, UserPlus } from "lucide-react";
 
+import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
@@ -22,6 +24,7 @@ export function ParticipantRow({
   const participantMeta = getParticipantMeta(participant);
   const participantName = getParticipantName(participant);
   const scorePercent = getParticipantScorePercent(participant);
+  const profileNavigation = buildProfileNavigation(participant.userId);
 
   return (
     <div
@@ -34,7 +37,11 @@ export function ParticipantRow({
             : "border-border/40 bg-card/70 hover:border-forge-teal/30 hover:bg-forge-teal/5",
       )}
     >
-      <div className="flex items-start gap-3">
+      <Link
+        {...profileNavigation}
+        aria-label={`View ${participantName}'s profile`}
+        className="flex items-start gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
         <div
           className={cn(
             "flex size-10 shrink-0 items-center justify-center rounded-lg text-lg transition-colors duration-200",
@@ -91,7 +98,7 @@ export function ParticipantRow({
             )}
           </div>
         </div>
-      </div>
+      </Link>
 
       <div className="flex items-center gap-3">
         {!removed && scorePercent !== null ? (

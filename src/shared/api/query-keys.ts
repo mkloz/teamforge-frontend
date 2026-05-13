@@ -56,5 +56,7 @@ export const APP_QUERY_KEYS = {
   },
   profile: {
     byId: (userId: string) => ["profile", userId] as const,
+    friendshipWith: (userId: string) =>
+      ["profile", "friendship", userId] as const,
   },
 } as const;

@@ -1,6 +1,8 @@
+import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Check, X } from "lucide-react";
+import { ArrowRight, Check, X } from "lucide-react";
 
+import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
@@ -30,6 +32,10 @@ export function InvitationQueueItem({
   onAccept,
   onDecline,
 }: InvitationQueueItemProps) {
+  const detailsNavigation = buildGroupPlanDetailNavigation(invite.group.id, {
+    source: "invite",
+  });
+
   return (
     <motion.li
       initial={{ opacity: 0, y: 8 }}
@@ -37,11 +43,15 @@ export function InvitationQueueItem({
       exit={{ opacity: 0, x: 16 }}
       transition={{ delay: index * 0.04 }}
       className={cn(
-        "flex min-w-0 items-center gap-3 border-border/55 border-b px-1 py-4 transition-colors duration-150 last:border-b-0 sm:px-3",
+        "group flex min-w-0 items-center gap-3 border-border/55 border-b px-1 py-4 transition-colors duration-150 last:border-b-0 sm:px-3",
         isFocused ? "bg-forge-teal/8" : "hover:bg-forge-teal/5",
       )}
     >
-      <div className="flex min-w-0 flex-1 items-start gap-3">
+      <Link
+        {...detailsNavigation}
+        aria-label={`Review invitation to ${invite.group.name}`}
+        className="flex min-w-0 flex-1 items-start gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
         <Avatar
           src={invite.group.avatar}
           name={invite.group.name}
@@ -49,7 +59,7 @@ export function InvitationQueueItem({
           fallbackClassName="text-xs"
         />
         <div className="min-w-0 flex-1">
-          <p className="line-clamp-1 font-black text-foreground text-sm">
+          <p className="line-clamp-1 font-black text-foreground text-sm transition-colors duration-150 group-hover:text-forge-teal">
             {invite.group.name}
           </p>
           <p className="mt-1 line-clamp-2 font-medium text-muted-foreground text-xs leading-relaxed">
@@ -57,7 +67,11 @@ export function InvitationQueueItem({
             {invite.group.activeMembersCount} people inside.
           </p>
         </div>
-      </div>
+        <ArrowRight
+          className="mt-1 size-4 shrink-0 text-muted-foreground opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:opacity-70"
+          aria-hidden="true"
+        />
+      </Link>
       <div className="flex shrink-0 items-center gap-1">
         <Button
           size="xs"

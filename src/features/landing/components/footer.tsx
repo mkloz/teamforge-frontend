@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { TeamForgeLogo } from "@/assets/logo";
 
 export function Footer() {
@@ -13,21 +14,21 @@ export function Footer() {
           <span className="hidden text-sm text-text-dark-muted sm:block">
             ·
           </span>
-          <a
-            href="/privacy"
+          <Link
+            to="/privacy"
             className="font-sans text-sm text-text-dark-muted transition-colors hover:text-text-dark-secondary"
           >
             Privacy
-          </a>
+          </Link>
           <span className="hidden text-sm text-text-dark-muted sm:block">
             ·
           </span>
-          <a
-            href="/terms"
+          <Link
+            to="/terms"
             className="font-sans text-sm text-text-dark-muted transition-colors hover:text-text-dark-secondary"
           >
             Terms
-          </a>
+          </Link>
           <span className="hidden text-sm text-text-dark-muted sm:block">
             ·
           </span>

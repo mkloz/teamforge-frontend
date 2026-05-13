@@ -21,34 +21,34 @@ export function buildGroupFitBestWith(
   const planPhrase = buildOpeningIdeaSentence(openingIdea);
 
   if (style.posture === "starter") {
-    return `People who will say yes to a first move before the plan is over-polished.${planPhrase}`;
+    return `People who say yes before every detail is fixed.${planPhrase}`;
   }
 
   if (style.posture === "connector" || style.posture === "host") {
-    return `Warm, activity-led groups where nobody has to perform socially right away.${planPhrase}`;
+    return `Warm groups where the activity eases people in.${planPhrase}`;
   }
 
   if (style.posture === "coordinator") {
-    return `People who appreciate a plan that has shape: time, place, fallback, and one simple next step.${planPhrase}`;
+    return `People who like a plan with shape and a next step.${planPhrase}`;
   }
 
   if (style.posture === "specialist" || style.posture === "builder") {
-    return `Smaller groups built around a real topic, object, route, or shared problem.${planPhrase}`;
+    return `Smaller groups built around a real shared focus.${planPhrase}`;
   }
 
   if (style.posture === "curator") {
-    return `People who care about the feel of the plan: place, route, taste, and small details.${planPhrase}`;
+    return `People who care how the plan feels, not just what it is.${planPhrase}`;
   }
 
   if (pressure === "easy") {
-    return `Low-pressure groups where the activity creates the first conversation.${planPhrase}`;
+    return `Low-pressure groups where the activity starts the talk.${planPhrase}`;
   }
 
   if (structure === "framed") {
-    return `A clear plan that still leaves enough room for the group to feel natural.${planPhrase}`;
+    return `A clear plan with room for the group to feel natural.${planPhrase}`;
   }
 
-  return `A group where the first activity is concrete enough to make joining easy.${planPhrase}`;
+  return `A concrete first activity that makes joining easy.${planPhrase}`;
 }
 
 export function buildGroupFitAvoid(
@@ -58,34 +58,34 @@ export function buildGroupFitAvoid(
   const style = getGroupFitStyle(key);
 
   if (socialProfile.context.tensions.length > 0) {
-    return "Reading the headline type too literally; the first plan should stay simple enough to let the mixed cue resolve naturally.";
+    return "Reading one cue too literally; keep the first plan simple.";
   }
 
   if (socialProfile.secondaryCandidate) {
-    return "A group that only fits one side of the profile; the first plan should leave a little room for the secondary side.";
+    return "Groups that only fit one side of the profile.";
   }
 
   if (style.posture === "starter") {
-    return "Plans that stay abstract or require a long pre-meet discussion.";
+    return "Plans that stay abstract before anyone meets.";
   }
 
   if (style.posture === "connector" || style.posture === "host") {
-    return "Formats that depend on instant chemistry or heavy introductions.";
+    return "Formats that depend on instant chemistry.";
   }
 
   if (style.posture === "coordinator") {
-    return "Vague open-ended plans where nobody knows what happens first.";
+    return "Vague plans where nobody knows what starts first.";
   }
 
   if (style.posture === "specialist" || style.posture === "builder") {
-    return "Broad social mixers; the group needs a concrete topic or task.";
+    return "Broad mixers without a concrete topic or task.";
   }
 
   if (style.posture === "curator") {
-    return "Generic venues or plans that could belong to anyone.";
+    return "Generic plans that could belong to anyone.";
   }
 
-  return "A first group that is too broad; the activity should still do real matching work.";
+  return "First groups that feel too broad to join easily.";
 }
 
 export function buildGroupFitOpeningMove(

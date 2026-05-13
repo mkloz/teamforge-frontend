@@ -2,7 +2,6 @@ import { useRouterState } from "@tanstack/react-router";
 import { useSettingsBlockedUsers } from "@/features/settings/hooks/use-settings-blocked-users";
 import { useSettingsProfileForm } from "@/features/settings/hooks/use-settings-profile-form";
 import { useSettingsRouteState } from "@/features/settings/hooks/use-settings-route-state";
-import type { SettingsSection } from "@/features/settings/lib/settings-route";
 import { PageErrorState } from "@/shared/components/page-error-state";
 import { SettingsFormBridge } from "./settings-form-bridge";
 import { SettingsPageLoading } from "./settings-page.loading";
@@ -11,7 +10,7 @@ import { useSettingsMobileDetail } from "./use-settings-mobile-detail";
 import { useSettingsSignOut } from "./use-settings-sign-out";
 
 export function SettingsPage() {
-  const { activeSection, setActiveSection } = useSettingsRouteState();
+  const { activeSection } = useSettingsRouteState();
   const currentLocation = useRouterState({
     select: (state) => state.location,
   });
@@ -37,8 +36,7 @@ export function SettingsPage() {
     );
   }
 
-  function handleSectionSelect(section: SettingsSection) {
-    setActiveSection(section);
+  function handleSectionSelect() {
     mobileDetail.openMobileDetail();
   }
 

@@ -19,6 +19,12 @@ export function SelectedFiltersBar() {
     setLocationMode,
     access,
     setAccess,
+    timeWindow,
+    setTimeWindow,
+    startsAfter,
+    startsBefore,
+    setStartsAfter,
+    setStartsBefore,
     resetFilters,
     removeCategory,
   } = useExploreRouteState();
@@ -26,6 +32,9 @@ export function SelectedFiltersBar() {
   const categoryTags = selectedCategories.filter((c) => c !== "ALL");
   const isLocationFiltered = locationMode !== DEFAULT_FILTERS.locationMode;
   const isAccessFiltered = access !== DEFAULT_FILTERS.access;
+  const isExactStartFiltered = Boolean(startsAfter || startsBefore);
+  const isTimeFiltered =
+    !isExactStartFiltered && timeWindow !== DEFAULT_FILTERS.timeWindow;
   const isDistanceFiltered =
     distance !== DEFAULT_FILTERS.distance && locationMode !== "ONLINE";
   const isSizeFiltered =
@@ -35,6 +44,8 @@ export function SelectedFiltersBar() {
     categoryTags.length > 0 ||
     isLocationFiltered ||
     isAccessFiltered ||
+    isExactStartFiltered ||
+    isTimeFiltered ||
     isDistanceFiltered ||
     isSizeFiltered;
 
@@ -122,6 +133,48 @@ export function SelectedFiltersBar() {
                 />
               </motion.div>
             )}
+            {isTimeFiltered && (
+              <motion.div
+                key="time"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                layout
+              >
+                <FilterTag
+                  label={getTimeWindowLabel(timeWindow)}
+                  onRemove={() => setTimeWindow(DEFAULT_FILTERS.timeWindow)}
+                />
+              </motion.div>
+            )}
+            {startsAfter && (
+              <motion.div
+                key="starts-after"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                layout
+              >
+                <FilterTag
+                  label={`From ${formatDateTimeFilter(startsAfter)}`}
+                  onRemove={() => setStartsAfter(DEFAULT_FILTERS.startsAfter)}
+                />
+              </motion.div>
+            )}
+            {startsBefore && (
+              <motion.div
+                key="starts-before"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                layout
+              >
+                <FilterTag
+                  label={`To ${formatDateTimeFilter(startsBefore)}`}
+                  onRemove={() => setStartsBefore(DEFAULT_FILTERS.startsBefore)}
+                />
+              </motion.div>
+            )}
             {isSizeFiltered && (
               <motion.div
                 key="size"
@@ -141,4 +194,33 @@ export function SelectedFiltersBar() {
       </motion.div>
     </AnimatePresence>
   );
+}
+
+function getTimeWindowLabel(timeWindow: string) {
+  switch (timeWindow) {
+    case "TODAY":
+      return "Today";
+    case "TOMORROW":
+      return "Tomorrow";
+    case "THIS_WEEK":
+      return "This week";
+    case "THIS_WEEKEND":
+      return "This weekend";
+    default:
+      return "Any time";
+  }
+}
+
+function formatDateTimeFilter(value: string) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return date.toLocaleString(undefined, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }

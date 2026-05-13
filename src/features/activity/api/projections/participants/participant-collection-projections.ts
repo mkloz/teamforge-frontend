@@ -5,6 +5,7 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 import type { ChatApi, User } from "@/shared/schemas";
 
+import { normalizeTrustScore } from "./participant-score-normalizers";
 import { mapCurrentUserParticipant } from "./participant-user-projections";
 
 export function buildParticipantsFromChatSummary(
@@ -16,17 +17,29 @@ export function buildParticipantsFromChatSummary(
     ...currentUserParticipant,
     onlineStatus: currentUserParticipant.onlineStatus,
   };
-  const participants =
-    chat.participants?.map((participant) => ({
-      id: participant.user.id,
-      name: participant.user.name,
-      avatar: participant.user.avatar,
-      onlineStatus: participant.user.onlineStatus,
-      trustScore:
-        participant.user.id === currentUser.id
-          ? currentUserParticipant.trustScore
-          : 0,
-    })) ?? [];
+  const participants: ActivityParticipant[] =
+    chat.participants?.map(
+      (participant): ActivityParticipant => ({
+        id: participant.user.id,
+        name: participant.user.name,
+        avatar: participant.user.avatar,
+        bio: participant.user.bio ?? null,
+        age: participant.user.age ?? null,
+        gender: participant.user.gender ?? null,
+        city: participant.user.city ?? null,
+        personalityType: participant.user.personalityType ?? null,
+        oceanO: participant.user.oceanO ?? null,
+        oceanC: participant.user.oceanC ?? null,
+        oceanE: participant.user.oceanE ?? null,
+        oceanA: participant.user.oceanA ?? null,
+        oceanN: participant.user.oceanN ?? null,
+        onlineStatus: participant.user.onlineStatus,
+        trustScore:
+          participant.user.id === currentUser.id
+            ? currentUserParticipant.trustScore
+            : normalizeTrustScore(participant.user.trustScore ?? 0),
+      }),
+    ) ?? [];
 
   if (!participants.some((participant) => participant.id === currentUser.id)) {
     participants.push(normalizedCurrentUserParticipant);

@@ -4,7 +4,7 @@ import {
   MapPin,
   Network,
   ShieldCheck,
-  Sparkles,
+  Tags,
   UsersRound,
 } from "lucide-react";
 import type { GroupPlanFitSignal } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
@@ -12,7 +12,7 @@ import { cn } from "@/shared/lib/utils";
 import { StrengthDots } from "./strength-dots";
 
 const SIGNAL_ICONS: Record<GroupPlanFitSignal["key"], LucideIcon> = {
-  SHARED_INTERESTS: Sparkles,
+  SHARED_INTERESTS: Tags,
   SOCIAL_PACE: UsersRound,
   LOCATION: MapPin,
   KNOWN_CONNECTION: Network,

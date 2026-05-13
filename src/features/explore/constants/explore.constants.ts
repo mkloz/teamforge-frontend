@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   Activity,
+  CalendarDays,
   Clock,
   Globe,
   Handshake,
@@ -15,6 +16,7 @@ import type {
   ExploreFilters,
   ExploreLocationMode,
   ExploreSortOption,
+  ExploreTimeWindow,
 } from "@/features/explore/schemas/explore-filters.schema";
 
 export const SORTS: {
@@ -63,6 +65,18 @@ export const ACCESS_FILTER_OPTIONS: {
   { id: "BY_REQUEST", label: "Request", icon: Handshake },
 ];
 
+export const TIME_FILTER_OPTIONS: {
+  id: ExploreTimeWindow;
+  label: string;
+  icon: LucideIcon;
+}[] = [
+  { id: "ALL", label: "Any", icon: CalendarDays },
+  { id: "TODAY", label: "Today", icon: Clock },
+  { id: "TOMORROW", label: "Tomorrow", icon: CalendarDays },
+  { id: "THIS_WEEK", label: "This week", icon: CalendarDays },
+  { id: "THIS_WEEKEND", label: "Weekend", icon: CalendarDays },
+];
+
 export const FILTER_BOUNDARIES = {
   distance: { min: 2, max: 50, default: 15 },
   size: { min: 2, max: 8, defaultMin: 3, defaultMax: 8 },
@@ -78,4 +92,7 @@ export const DEFAULT_FILTERS: ExploreFilters = {
   locationMode: "ALL",
   access: "ALL",
   sortBy: "MATCH",
+  timeWindow: "ALL",
+  startsAfter: null,
+  startsBefore: null,
 };

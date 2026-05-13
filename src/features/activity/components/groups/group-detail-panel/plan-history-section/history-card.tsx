@@ -1,5 +1,7 @@
+import { Link } from "@tanstack/react-router";
 import { Calendar, MapPin, Star } from "lucide-react";
 import type { PlanHistoryItem } from "@/features/activity/lib/activity-contract";
+import { buildActivityGroupNavigation } from "@/features/activity/lib/activity-route";
 import { PlanCover } from "@/shared/components/common/plan-cover";
 import { cn } from "@/shared/lib/utils";
 import {
@@ -9,14 +11,22 @@ import {
 } from "../lib/constants";
 
 interface HistoryCardProps {
+  groupId: string;
   item: PlanHistoryItem;
 }
 
-export function HistoryCard({ item }: HistoryCardProps) {
+export function HistoryCard({ groupId, item }: HistoryCardProps) {
   const statusLabel = formatPanelToken(item.status);
 
   return (
-    <div className="group flex gap-3.5 py-3">
+    <Link
+      {...buildActivityGroupNavigation(groupId, {
+        panel: "group",
+        plan: item.id,
+      })}
+      aria-label={`Open previous plan ${item.title}`}
+      className="group flex gap-3.5 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
       <div className="relative size-12 shrink-0 overflow-hidden rounded-lg shadow-xs">
         <PlanCover
           value={item.coverImage}
@@ -76,6 +86,6 @@ export function HistoryCard({ item }: HistoryCardProps) {
           </p>
         ) : null}
       </div>
-    </div>
+    </Link>
   );
 }

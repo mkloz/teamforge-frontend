@@ -1,6 +1,10 @@
+import { Link } from "@tanstack/react-router";
 import { ChevronRight, LogOut } from "lucide-react";
 
-import type { SettingsSection } from "@/features/settings/lib/settings-route";
+import {
+  buildSettingsNavigation,
+  type SettingsSection,
+} from "@/features/settings/lib/settings-route";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
@@ -79,10 +83,23 @@ function SettingsSectionNav({
         const Icon = section.icon;
 
         return (
-          <button
+          <Link
             key={section.id}
-            type="button"
-            onClick={() => onSectionSelect(section.id)}
+            {...buildSettingsNavigation(section.id)}
+            onClick={(event) => {
+              if (
+                event.defaultPrevented ||
+                event.button !== 0 ||
+                event.metaKey ||
+                event.altKey ||
+                event.ctrlKey ||
+                event.shiftKey
+              ) {
+                return;
+              }
+
+              onSectionSelect(section.id);
+            }}
             aria-current={isActive ? "page" : undefined}
             className={cn(
               "group relative flex w-full items-center justify-between gap-3 border-border border-b px-1 py-2 text-left transition-colors last:border-b-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 active:bg-muted/40 lg:items-start lg:border-b-0 lg:px-4 active:lg:bg-transparent",
@@ -125,7 +142,7 @@ function SettingsSectionNav({
               className="shrink-0 text-slate-muted/60 transition-colors group-hover:text-slate-muted lg:hidden"
               aria-hidden="true"
             />
-          </button>
+          </Link>
         );
       })}
     </nav>

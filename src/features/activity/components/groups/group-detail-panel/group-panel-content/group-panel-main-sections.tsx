@@ -132,7 +132,10 @@ export function GroupPanelMainSections({
       )}
 
       <motion.div variants={groupPanelItemVariants}>
-        <PlanHistorySection history={group.planHistory ?? []} />
+        <PlanHistorySection
+          groupId={group.id}
+          history={group.planHistory ?? []}
+        />
       </motion.div>
 
       {!isGroupLocked ? (

@@ -8,11 +8,11 @@ const skeletonVariants = cva(
   {
     variants: {
       shape: {
-        default: "rounded-md",
-        card: "rounded-2xl",
+        default: "rounded-lg",
+        card: "rounded-xl",
         circle: "rounded-full",
         pill: "rounded-full",
-        square: "rounded-lg",
+        square: "rounded-xl",
       },
       tone: {
         default:

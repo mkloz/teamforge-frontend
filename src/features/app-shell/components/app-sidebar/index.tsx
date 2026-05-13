@@ -7,6 +7,7 @@ import {
   getAppNavigationItem,
   isAppNavigationItemActive,
 } from "@/features/app-shell/lib/app-navigation";
+import { buildHomeNavigation } from "@/features/home/lib/home-route";
 import { Button } from "@/shared/components/ui/button";
 import {
   Tooltip,
@@ -46,9 +47,9 @@ export function AppSidebar({
       {/* Top section: Logo */}
       <div className="flex h-16 shrink-0 items-center justify-center">
         <Link
-          to="/"
+          {...buildHomeNavigation()}
           className="transition-opacity hover:opacity-80"
-          aria-label="TeamForge landing page"
+          aria-label="TeamForge home"
         >
           <TeamForgeLogo className="size-8" showBackground={false} />
         </Link>

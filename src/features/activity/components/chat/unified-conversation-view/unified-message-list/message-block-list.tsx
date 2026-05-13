@@ -1,5 +1,4 @@
 import type { VirtualizedMessageBlock } from "@/features/activity/hooks/use-virtualized-message-blocks";
-import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
 import { MessageSenderBlock } from "./message-sender-block";
 
 interface MessageBlockListProps {
@@ -8,7 +7,6 @@ interface MessageBlockListProps {
   getMessageRef: (messageId: string) => (node: HTMLDivElement | null) => void;
   highlightedMessageId: string | null;
   kind: "dm" | "group";
-  onAvatarClick: (sender: ActivityParticipant) => void;
 }
 
 export function MessageBlockList({
@@ -17,7 +15,6 @@ export function MessageBlockList({
   getMessageRef,
   highlightedMessageId,
   kind,
-  onAvatarClick,
 }: MessageBlockListProps) {
   return (
     <>
@@ -29,7 +26,6 @@ export function MessageBlockList({
           getMessageRef={getMessageRef}
           highlightedMessageId={highlightedMessageId}
           kind={kind}
-          onAvatarClick={onAvatarClick}
         />
       ))}
     </>

@@ -129,21 +129,21 @@ function CompletedRatingsSkeleton() {
   return (
     <div className="flex flex-col gap-3 py-1">
       <span className="sr-only">Loading ratings</span>
-      <div className="flex justify-center gap-2">
-        <LoadingBlock className="size-8 rounded-full" />
-        <LoadingBlock className="size-8 rounded-full" />
-        <LoadingBlock className="size-8 rounded-full" />
+      <div className="flex gap-2 overflow-hidden pb-1">
+        <LoadingBlock className="h-8 w-24 shrink-0 rounded-full bg-forge-teal/12" />
+        <LoadingBlock className="h-8 w-28 shrink-0 rounded-full" />
+        <LoadingBlock className="h-8 w-24 shrink-0 rounded-full" />
       </div>
 
-      <div className="rounded-xl border border-border/70 bg-card/65 p-3">
+      <div className="flex flex-col gap-3 rounded-xl border border-border/70 bg-card/65 p-3">
         <div className="mb-3 flex items-center justify-center gap-1.5">
-          <LoadingBlock className="size-5 rounded-md" />
-          <LoadingBlock className="size-5 rounded-md" />
-          <LoadingBlock className="size-5 rounded-md" />
-          <LoadingBlock className="size-5 rounded-md" />
-          <LoadingBlock className="size-5 rounded-md" />
+          <LoadingBlock className="size-6 rounded-full bg-spark-amber/18" />
+          <LoadingBlock className="size-6 rounded-full bg-spark-amber/18" />
+          <LoadingBlock className="size-6 rounded-full bg-spark-amber/18" />
+          <LoadingBlock className="size-6 rounded-full" />
+          <LoadingBlock className="size-6 rounded-full" />
         </div>
-        <LoadingBlock className="h-10 rounded-xl" />
+        <LoadingBlock className="h-16 rounded-xl" />
       </div>
 
       <LoadingBlock className="mx-auto h-9 w-32 rounded-xl bg-forge-teal/18" />

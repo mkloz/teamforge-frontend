@@ -20,7 +20,10 @@ export function SegmentedFilterTabs<TValue extends string>({
 }: SegmentedFilterTabsProps<TValue>) {
   return (
     <div
-      className="grid grid-cols-3 gap-0.5 rounded-lg border border-border/45 bg-muted/15 p-0.5"
+      className={cn(
+        "grid gap-0.5 rounded-lg border border-border/45 bg-muted/15 p-0.5",
+        options.length === 4 ? "grid-cols-2" : "grid-cols-3",
+      )}
       role="tablist"
     >
       {options.map((option) => {

@@ -13,39 +13,39 @@ export function EditGroupAvatarSection({
   return (
     <div className="flex flex-col gap-2">
       <p className="font-semibold text-muted-foreground text-xs">Avatar</p>
-      <div className="sm:avatar-body-grid grid gap-3">
+      <div className="media-body-grid grid gap-3">
         <Avatar
           src={editor.avatar || null}
           name={editor.name}
           shape="rounded"
-          className="size-18 rounded-lg border border-border bg-muted"
-        />
-        <div className="flex min-w-0 flex-col gap-2">
-          <FileDropzone
-            inputRef={inputRef}
-            variant="inline"
-            accept="image/*"
-            title={editor.avatar ? "Replace avatar" : "Upload avatar"}
-            description="Drop a square group image here."
-            helper="PNG, JPG, WEBP up to 30 MB"
-            actionLabel="Browse"
-            isUploading={editor.isAvatarUploading}
-            error={editor.avatarUploadError}
-            onFiles={editor.handleAvatarFiles}
-          />
-          {editor.avatar && (
+          className="size-22 rounded-xl border border-border bg-muted"
+        >
+          {editor.avatar ? (
             <Button
               type="button"
               variant="ghost"
-              size="sm"
-              className="self-start"
+              size="icon-sm"
+              className="absolute top-1 right-1 z-20 size-6 rounded-full bg-ink/65 p-0 text-canvas shadow-sm hover:bg-ink/85"
               onClick={() => editor.setAvatar("")}
+              aria-label="Remove avatar"
             >
-              <X className="size-4" aria-hidden="true" />
-              Remove avatar
+              <X className="size-3.5" aria-hidden="true" />
             </Button>
-          )}
-        </div>
+          ) : null}
+        </Avatar>
+        <FileDropzone
+          inputRef={inputRef}
+          variant="inline"
+          accept="image/*"
+          title={editor.avatar ? "Replace avatar" : "Upload avatar"}
+          description="Drop a square group image here."
+          helper="PNG, JPG, WEBP up to 30 MB"
+          actionLabel="Browse"
+          isUploading={editor.isAvatarUploading}
+          error={editor.avatarUploadError}
+          showMeta={false}
+          onFiles={editor.handleAvatarFiles}
+        />
       </div>
     </div>
   );

@@ -1,20 +1,16 @@
 import type { RefObject, UIEvent } from "react";
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo } from "react";
 import { EmptyMessageThreadVisual } from "@/assets/empty-state/empty-message-thread";
 import { useChatScroll } from "@/features/activity/hooks/use-chat-scroll";
 import { useMessageGrouping } from "@/features/activity/hooks/use-message-grouping";
 import { useVirtualizedMessageBlocks } from "@/features/activity/hooks/use-virtualized-message-blocks";
-import type {
-  ActivityParticipant,
-  UnifiedMessage,
-} from "@/features/activity/lib/activity-contract";
+import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { ChatBackground } from "./chat-background";
 import { LoadingOlderIndicator } from "./loading-older-indicator";
 import { MessageBlockList } from "./message-block-list";
 import { buildMessageBlocks } from "./message-list-blocks";
 import { MessageListBottomAnchor } from "./message-list-bottom-anchor";
 import { MessageListViewport } from "./message-list-viewport";
-import { MessageProfileDrawer } from "./message-profile-drawer";
 import type { MessageScrollHandle } from "./message-scroll.types";
 import { ScrollActionButtons } from "./scroll-action-buttons";
 import { useFocusedMessageScroll } from "./use-focused-message-scroll";
@@ -33,7 +29,6 @@ interface UnifiedMessageListProps {
   messageScrollHandleRef?: RefObject<MessageScrollHandle | null>;
   onLoadOlderMessages?: () => Promise<void> | void;
   typingUsers?: { name: string; avatar: string | null }[];
-  onToggleAction?: () => void;
 }
 
 /**
@@ -51,23 +46,7 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
   messageScrollHandleRef,
   onLoadOlderMessages,
   typingUsers = [],
-  onToggleAction,
 }: UnifiedMessageListProps) {
-  const [selectedSender, setSelectedSender] =
-    useState<ActivityParticipant | null>(null);
-
-  function handleAvatarClick(sender: ActivityParticipant) {
-    if (kind === "dm") {
-      onToggleAction?.();
-    } else {
-      setSelectedSender(sender);
-    }
-  }
-
-  function handleCloseProfile() {
-    setSelectedSender(null);
-  }
-
   const { showScrollToBottom, handleScroll, isNearBottom, scrollToBottom } =
     useChatScroll(messagesEndRef, containerRef, messages.length, kind);
   const groupedMessages = useMessageGrouping(messages);
@@ -172,7 +151,6 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
               getMessageRef={getMessageRef}
               highlightedMessageId={highlightedMessageId}
               kind={kind}
-              onAvatarClick={handleAvatarClick}
             />
             <MessageListBottomAnchor
               messagesEndRef={messagesEndRef}
@@ -191,11 +169,6 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
           onScrollToProposal={scrollToClosestProposal}
         />
       )}
-
-      <MessageProfileDrawer
-        selectedSender={selectedSender}
-        onClose={handleCloseProfile}
-      />
     </div>
   );
 });

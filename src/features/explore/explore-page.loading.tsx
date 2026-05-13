@@ -51,22 +51,28 @@ function ExploreLoadingLeftRail() {
 
         <SkeletonText lines={3} widths={["w-full", "w-11/12", "w-3/4"]} />
 
-        <div className="flex flex-col gap-2">
-          {["timing", "join", "place"].map((item) => (
+        <div className="flex flex-col gap-3">
+          {["timing", "join", "interest", "place"].map((item, index) => (
             <div key={item} className="flex items-start gap-3">
+              <Skeleton className="mt-1 size-3 shrink-0" tone="teal" />
               <Skeleton
-                shape="circle"
-                className="mt-1 size-3.5 shrink-0"
-                tone="teal"
+                className={cn("h-4 min-w-0 flex-1", index === 3 && "max-w-48")}
               />
-              <Skeleton className="h-4 min-w-0 flex-1" />
             </div>
           ))}
         </div>
+
+        <SkeletonButton className="h-11 w-full" />
       </section>
 
-      <div className="px-1 pt-0.5">
-        <SkeletonButton className="h-12 w-full" tone="teal" />
+      <div className="group/card border-border/50 border-t px-1 pt-4">
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <Skeleton className="h-5 w-36" />
+            <SkeletonText lines={2} size="sm" widths={["w-full", "w-4/5"]} />
+          </div>
+          <SkeletonButton className="h-12 w-full" tone="teal" />
+        </div>
       </div>
     </aside>
   );
@@ -76,14 +82,9 @@ function ExploreSearchSkeleton() {
   return (
     <div className="sticky top-0 z-30 -mx-4 mb-4 border-border/10 border-b bg-canvas/96 px-4 pt-2 pb-2.5 backdrop-blur md:mx-0 md:mb-5 md:px-0 md:pt-0">
       <div className="search-action-grid mt-1 mb-1.5 grid items-center gap-1.5 sm:gap-2">
-        <Skeleton className="h-11 min-w-0" />
-        <SkeletonButton className="h-11 w-24" />
+        <Skeleton className="h-11 min-w-0 rounded-xl" />
+        <SkeletonButton className="h-11 w-14 rounded-xl sm:w-16" />
         <SkeletonButton className="size-11" />
-      </div>
-      <div className="flex min-h-8 flex-wrap items-center gap-2">
-        <Skeleton shape="pill" className="h-7 w-24" tone="teal" />
-        <Skeleton shape="pill" className="h-7 w-28" />
-        <Skeleton shape="pill" className="h-7 w-20" />
       </div>
     </div>
   );
@@ -142,10 +143,10 @@ function ExploreGroupPlanCardSkeleton({
 }) {
   return (
     <div className="group relative list-none outline-none">
-      <div className="relative isolate z-10 flex w-full overflow-hidden rounded-xl border-2 border-border bg-card md:flex-row">
+      <div className="relative isolate z-10 flex w-full overflow-hidden rounded-xl border-2 border-border bg-card md:min-h-64 md:flex-row">
         <Skeleton
           shape="square"
-          className="h-42 shrink-0 border-border border-b-2 md:h-auto md:w-72 md:border-r-2 md:border-b-0"
+          className="h-42 shrink-0 rounded-none border-border border-b-2 md:h-auto md:w-72 md:border-r-2 md:border-b-0"
           tone={tone}
         />
         <div className="flex min-w-0 grow flex-col bg-canvas p-4 md:p-4.5">
@@ -157,12 +158,18 @@ function ExploreGroupPlanCardSkeleton({
             <Skeleton shape="pill" className="h-6 w-24" />
           </div>
 
-          <SkeletonText lines={3} widths={["w-4/5", "w-full", "w-2/3"]} />
+          <Skeleton className="h-8 w-4/5 max-w-96 md:h-9" />
+          <Skeleton className="mt-3 h-4 w-full max-w-108" />
 
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Skeleton shape="pill" className="h-7 w-24" />
-            <Skeleton shape="pill" className="h-7 w-28" tone="amber" />
-            <Skeleton shape="pill" className="h-7 w-20" />
+          <div className="mt-5 grid gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Skeleton shape="circle" className="size-4" tone="teal" />
+              <Skeleton className="h-4 w-44 max-w-full" />
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-16" />
+            </div>
           </div>
 
           <div className="mt-auto pt-4">
@@ -202,25 +209,47 @@ function ExploreFiltersSkeleton() {
       </div>
 
       <div className="flex w-full flex-col gap-4">
-        <section className="flex flex-col gap-1.5">
+        <section className="flex flex-col gap-2">
           <Skeleton className="ml-1 h-4 w-20" />
-          <div className="grid gap-2">
-            {["first", "second", "third", "fourth"].map((item, index) => (
+          <div className="flex flex-wrap gap-2">
+            {["all", "tech", "sports", "arts", "social", "more"].map(
+              (item, index) => (
+                <Skeleton
+                  key={item}
+                  shape="pill"
+                  className={index === 5 ? "h-8 w-20" : "h-8 w-16"}
+                  tone={index === 0 ? "teal" : "default"}
+                />
+              ),
+            )}
+          </div>
+        </section>
+
+        <section className="flex flex-col gap-3">
+          <Skeleton className="h-4 w-16" />
+          <div className="grid grid-cols-3 gap-1 rounded-xl border border-border/60 bg-card/35 p-1">
+            {["any", "local", "online"].map((item, index) => (
               <Skeleton
                 key={item}
-                className="h-10 w-full"
+                className="h-9 w-full rounded-lg"
                 tone={index === 0 ? "teal" : "default"}
               />
             ))}
           </div>
+          <div className="flex items-center justify-between gap-3">
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-3 w-10" />
+          </div>
+          <div className="relative h-6">
+            <Skeleton className="absolute top-2 left-0 h-2 w-full" />
+            <Skeleton
+              className="absolute top-0 left-1/3 size-6 rounded-full border-2 border-canvas"
+              tone="teal"
+            />
+          </div>
         </section>
 
-        <section className="flex flex-col gap-2">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-11 w-full" />
-        </section>
-
-        <div className="rounded-lg border border-border/60 bg-card/35 px-3 py-2">
+        <div className="rounded-lg border border-border/60 bg-card/35 px-3 py-3">
           <div className="flex items-center justify-between gap-3">
             <Skeleton className="h-3 w-24" />
             <Skeleton shape="circle" className="size-4" />

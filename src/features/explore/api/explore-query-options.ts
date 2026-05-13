@@ -1,30 +1,53 @@
-import { queryOptions } from "@tanstack/react-query";
+import {
+  infiniteQueryOptions,
+  keepPreviousData,
+  queryOptions,
+} from "@tanstack/react-query";
 import { ExploreApi } from "@/features/explore/api/explore.api";
 import { getServerCategory } from "@/features/explore/api/explore-filters";
 import { EXPLORE_FRIEND_REQUESTS_QUERY_KEY } from "@/features/explore/api/explore-query-keys";
+import {
+  getCustomExploreTimeRange,
+  getExploreTimeWindowRange,
+} from "@/features/explore/lib/explore-time-window";
 import type { ExploreFilters } from "@/features/explore/schemas/explore-filters.schema";
-import { EXPLORE_MAX_CATEGORY_FILTERS } from "@/shared/api/api-constraints";
+import {
+  API_MAX_PAGE,
+  EXPLORE_MAX_CATEGORY_FILTERS,
+} from "@/shared/api/api-constraints";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-import type { ExploreGroup, ExploreViewInsight } from "@/shared/schemas";
+import type {
+  ExploreGroup,
+  ExploreViewInsight,
+  PaginationMeta,
+} from "@/shared/schemas";
 
 export type ExploreGroupsQueryData = {
   groups: ExploreGroup[];
   insight: ExploreViewInsight;
+  meta: PaginationMeta;
 };
 
 export const ExploreQueryOptions = {
   groups(filters: ExploreFilters, searchQuery: string) {
-    return queryOptions({
+    return infiniteQueryOptions({
       queryKey: APP_QUERY_KEYS.explore.groupsWithFilters(searchQuery, filters),
-      queryFn: async (): Promise<ExploreGroupsQueryData> => {
+      initialPageParam: 1,
+      queryFn: async ({ pageParam }): Promise<ExploreGroupsQueryData> => {
         const searchParams = new URLSearchParams();
         const serverCategory = getServerCategory(filters.selectedCategories);
+        const timeRange =
+          getCustomExploreTimeRange({
+            startsAfter: filters.startsAfter,
+            startsBefore: filters.startsBefore,
+          }) ?? getExploreTimeWindowRange(filters.timeWindow);
         const categories = Array.from(
           new Set(
             filters.selectedCategories.filter((category) => category !== "ALL"),
           ),
         ).slice(0, EXPLORE_MAX_CATEGORY_FILTERS);
 
+        searchParams.set("page", String(pageParam));
         searchParams.set("limit", "24");
         searchParams.set("sortBy", filters.sortBy);
         searchParams.set("minMembers", String(filters.sizeRange[0]));
@@ -48,6 +71,16 @@ export const ExploreQueryOptions = {
           searchParams.set("maxDistanceKm", String(filters.distance));
         }
 
+        if (timeRange) {
+          if (timeRange.start) {
+            searchParams.set("startsAfter", timeRange.start.toISOString());
+          }
+
+          if (timeRange.end) {
+            searchParams.set("startsBefore", timeRange.end.toISOString());
+          }
+        }
+
         if (searchQuery.trim()) {
           searchParams.set("search", searchQuery.trim());
         }
@@ -57,9 +90,15 @@ export const ExploreQueryOptions = {
         return {
           groups: response.items,
           insight: response.insight,
+          meta: response.meta,
         };
       },
-      placeholderData: (previousData) => previousData,
+      getNextPageParam: (lastPage) =>
+        lastPage.meta.currentPage < lastPage.meta.totalPages &&
+        lastPage.meta.currentPage < API_MAX_PAGE
+          ? lastPage.meta.currentPage + 1
+          : undefined,
+      placeholderData: keepPreviousData,
       staleTime: 60_000,
     });
   },

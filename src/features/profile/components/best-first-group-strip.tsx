@@ -1,4 +1,7 @@
+import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
+import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
+import { Button } from "@/shared/components/ui/button";
 
 import type { ActivityIdea } from "../lib/profile-insights";
 
@@ -33,19 +36,28 @@ export function BestFirstGroupStrip({
           </p>
         </div>
 
-        {supportingIdeas.length > 0 ? (
-          <div className="flex min-w-0 flex-wrap items-center gap-2 md:justify-end">
-            {supportingIdeas.map((idea) => (
-              <span
-                key={idea.title}
-                className="inline-flex min-h-9 max-w-full items-center gap-2 rounded-full border border-border/80 px-3 py-1 font-bold text-ink/80 text-xs leading-snug"
-              >
-                <ArrowRight size={13} className="shrink-0 text-forge-teal" />
-                <span className="wrap-break-word min-w-0">{idea.title}</span>
-              </span>
-            ))}
-          </div>
-        ) : null}
+        <div className="flex min-w-0 flex-col gap-3 md:items-end">
+          {supportingIdeas.length > 0 ? (
+            <div className="flex min-w-0 flex-wrap items-center gap-2 md:justify-end">
+              {supportingIdeas.map((idea) => (
+                <span
+                  key={idea.title}
+                  className="inline-flex min-h-9 max-w-full items-center gap-2 rounded-full border border-border/80 px-3 py-1 font-bold text-ink/80 text-xs leading-snug"
+                >
+                  <ArrowRight size={13} className="shrink-0 text-forge-teal" />
+                  <span className="wrap-break-word min-w-0">{idea.title}</span>
+                </span>
+              ))}
+            </div>
+          ) : null}
+
+          <Button asChild variant="outline" size="sm">
+            <Link {...buildForgeLaunchNavigation()}>
+              Forge this kind of group
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
+          </Button>
+        </div>
       </div>
     </section>
   );

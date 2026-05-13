@@ -1,3 +1,4 @@
+import type { InfiniteData } from "@tanstack/react-query";
 import { EXPLORE_FRIEND_REQUESTS_QUERY_KEY } from "@/features/explore/api/explore-query-keys";
 import type { ExploreGroupsQueryData } from "@/features/explore/api/explore-query-options";
 import type { ApiResponseWithRequestId } from "@/shared/api/api";
@@ -40,6 +41,35 @@ function mergeFriendships(
   );
 }
 
+function removeGroupFromExplorePages(
+  data: InfiniteData<ExploreGroupsQueryData> | undefined,
+  groupId: string,
+) {
+  if (!data) {
+    return data;
+  }
+
+  return {
+    ...data,
+    pages: data.pages.map((page) => {
+      const nextGroups = page.groups.filter((group) => group.id !== groupId);
+
+      if (nextGroups.length === page.groups.length) {
+        return page;
+      }
+
+      return {
+        ...page,
+        groups: nextGroups,
+        meta: {
+          ...page.meta,
+          totalItemsCount: Math.max(0, page.meta.totalItemsCount - 1),
+        },
+      };
+    }),
+  };
+}
+
 export const ExploreCache = {
   applyFriendRequestUpdate(friendship: FriendshipApi) {
     appQueryClient.setQueryData<FriendshipApi[] | undefined>(
@@ -65,20 +95,19 @@ export const ExploreCache = {
       return;
     }
 
-    for (const [
-      queryKey,
-      data,
-    ] of appQueryClient.getQueriesData<ExploreGroupsQueryData>({
+    for (const [queryKey, data] of appQueryClient.getQueriesData<
+      InfiniteData<ExploreGroupsQueryData>
+    >({
       queryKey: APP_QUERY_KEYS.explore.groups,
     })) {
       if (!data) {
         continue;
       }
 
-      appQueryClient.setQueryData<ExploreGroupsQueryData>(queryKey, {
-        ...data,
-        groups: data.groups.filter((group) => group.id !== nextResult.groupId),
-      });
+      appQueryClient.setQueryData<InfiniteData<ExploreGroupsQueryData>>(
+        queryKey,
+        removeGroupFromExplorePages(data, nextResult.groupId),
+      );
     }
   },
 };

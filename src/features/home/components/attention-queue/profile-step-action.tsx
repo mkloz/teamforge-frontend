@@ -10,30 +10,24 @@ interface ProfileStepActionProps {
   nextStep: NonNullable<HomeViewer["nextStep"]>;
 }
 
-export function ProfileStepAction({ nextStep }: ProfileStepActionProps) {
+export function getProfileStepNavigation(
+  nextStep: NonNullable<HomeViewer["nextStep"]>,
+) {
   if (nextStep.kind === "security") {
-    return (
-      <Link {...buildSettingsNavigation("security")}>{nextStep.label}</Link>
-    );
+    return buildSettingsNavigation("security");
   }
 
   if (nextStep.kind === "account") {
-    return (
-      <Link {...buildSettingsNavigation("account")}>{nextStep.label}</Link>
-    );
+    return buildSettingsNavigation("account");
   }
 
   if (nextStep.kind === "personality") {
-    return (
-      <Link {...buildPersonalityEditNavigation({ returnTo: "/home" })}>
-        {nextStep.label}
-      </Link>
-    );
+    return buildPersonalityEditNavigation({ returnTo: "/home" });
   }
 
-  return (
-    <Link {...buildInterestsEditNavigation({ returnTo: "/home" })}>
-      {nextStep.label}
-    </Link>
-  );
+  return buildInterestsEditNavigation({ returnTo: "/home" });
+}
+
+export function ProfileStepAction({ nextStep }: ProfileStepActionProps) {
+  return <Link {...getProfileStepNavigation(nextStep)}>{nextStep.label}</Link>;
 }

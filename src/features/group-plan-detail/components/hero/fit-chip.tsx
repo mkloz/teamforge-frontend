@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { Target } from "lucide-react";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { getFitPercent } from "@/features/group-plan-detail/lib/group-plan-detail-formatters";
 import { cn } from "@/shared/lib/utils";
@@ -29,7 +29,7 @@ export function FitChip({ detail, tone = "overlay" }: FitChipProps) {
           : "border-forge-teal/25 bg-forge-teal/10 text-forge-teal",
       )}
     >
-      <Sparkles className="size-3.5" aria-hidden="true" />
+      <Target className="size-3.5" aria-hidden="true" />
       <span className="uppercase">
         {verdict}
         {suffix}

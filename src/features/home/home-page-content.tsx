@@ -32,7 +32,7 @@ export function HomePageContent({
 
         <aside
           aria-label="Active groups and sharing"
-          className="flex min-w-0 flex-col gap-8"
+          className="flex min-w-0 flex-col gap-8 border-border/70 lg:border-l lg:pl-8 xl:pl-10"
         >
           <div className="flex min-w-0 flex-col gap-8 lg:sticky lg:top-8">
             {groupsGrid}

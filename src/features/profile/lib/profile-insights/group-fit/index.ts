@@ -19,6 +19,7 @@ import {
   buildPortraitGroupSignals,
   buildPortraitGroupSummary,
 } from "./group-fit-summary";
+import { buildUserGroupSignal } from "./user-group-signal";
 
 export function buildGroupFit(
   socialProfile: SocialProfileModel,
@@ -55,5 +56,6 @@ export function buildGroupFit(
     ),
     summary: buildPortraitGroupSummary(primaryKey, socialProfile, closeSecond),
     title: style.title,
+    userSignal: buildUserGroupSignal(),
   };
 }

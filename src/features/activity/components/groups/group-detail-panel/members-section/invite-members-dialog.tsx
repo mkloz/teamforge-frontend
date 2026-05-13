@@ -1,8 +1,10 @@
+import { Link } from "@tanstack/react-router";
 import { Search, UserPlus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { EmptyInviteCandidatesVisual } from "@/assets/empty-state/empty-invite-candidates";
 import { ErrorInviteSendFailedVisual } from "@/assets/error-state/error-invite-send-failed";
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
+import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -132,27 +134,33 @@ export function InviteMembersDialog({
                     key={candidate.id}
                     className="flex items-center gap-3 rounded-lg border border-border/60 bg-background/80 px-3 py-3"
                   >
-                    <Avatar
-                      src={candidate.avatar}
-                      name={candidate.name}
-                      fallback={candidate.name.slice(0, 1).toUpperCase()}
-                      className={cn(
-                        "size-11 bg-muted font-semibold text-foreground text-sm",
-                        candidate.avatar && "bg-transparent",
-                      )}
-                    />
+                    <Link
+                      {...buildProfileNavigation(candidate.id)}
+                      aria-label={`View ${candidate.name}'s profile`}
+                      className="group flex min-w-0 flex-1 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      <Avatar
+                        src={candidate.avatar}
+                        name={candidate.name}
+                        fallback={candidate.name.slice(0, 1).toUpperCase()}
+                        className={cn(
+                          "size-11 bg-muted font-semibold text-foreground text-sm transition-transform group-hover:scale-105",
+                          candidate.avatar && "bg-transparent",
+                        )}
+                      />
 
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate font-semibold text-foreground text-sm">
-                        {candidate.name}
-                      </p>
-                      <p className="truncate text-slate-muted text-xs">
-                        {candidate.city || "Location pending"}
-                        {candidate.personalityType
-                          ? ` · ${candidate.personalityType}`
-                          : ""}
-                      </p>
-                    </div>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-semibold text-foreground text-sm transition-colors group-hover:text-forge-teal">
+                          {candidate.name}
+                        </span>
+                        <span className="block truncate text-slate-muted text-xs">
+                          {candidate.city || "Location pending"}
+                          {candidate.personalityType
+                            ? ` · ${candidate.personalityType}`
+                            : ""}
+                        </span>
+                      </span>
+                    </Link>
 
                     <Button
                       size="sm"

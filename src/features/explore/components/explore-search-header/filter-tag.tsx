@@ -14,8 +14,8 @@ interface FilterTagProps {
 
 export function FilterTag({ label, onRemove }: FilterTagProps) {
   return (
-    <div className="group/tag flex h-6 shrink-0 items-center gap-1 rounded-full border border-border/60 bg-canvas pr-0.5 pl-2.5 font-semibold text-foreground text-micro transition-all duration-150 hover:border-primary/30 hover:bg-primary/5">
-      <span>{label}</span>
+    <div className="group/tag flex h-6 shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-border/60 bg-canvas pr-0.5 pl-2.5 font-semibold text-foreground text-micro transition-all duration-150 hover:border-primary/30 hover:bg-primary/5">
+      <span className="whitespace-nowrap">{label}</span>
       <Tooltip>
         <TooltipTrigger asChild>
           <Button

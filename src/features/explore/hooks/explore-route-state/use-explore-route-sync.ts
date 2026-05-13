@@ -5,6 +5,7 @@ import type {
   ExploreCategory,
   ExploreLocationMode,
   ExploreSortOption,
+  ExploreTimeWindow,
 } from "@/features/explore/schemas/explore-filters.schema";
 import type { ResolvedExploreRouteState } from "./explore-route-state.types";
 import { areCategoriesEqual } from "./explore-route-utils";
@@ -22,9 +23,15 @@ interface UseExploreRouteSyncInput {
   setSearchQuery: (query: string) => void;
   setSelectedCategories: (categories: ExploreCategory[]) => void;
   setSizeRange: (range: [number, number]) => void;
+  setStartsAfter: (startsAfter: string | null) => void;
+  setStartsBefore: (startsBefore: string | null) => void;
   setSortBy: (sortBy: ExploreSortOption) => void;
+  setTimeWindow: (timeWindow: ExploreTimeWindow) => void;
   sizeRange: [number, number];
+  startsAfter: string | null;
+  startsBefore: string | null;
   sortBy: ExploreSortOption;
+  timeWindow: ExploreTimeWindow;
 }
 
 export function useExploreRouteSync({
@@ -40,9 +47,15 @@ export function useExploreRouteSync({
   setSearchQuery,
   setSelectedCategories,
   setSizeRange,
+  setStartsAfter,
+  setStartsBefore,
   setSortBy,
+  setTimeWindow,
   sizeRange,
+  startsAfter,
+  startsBefore,
   sortBy,
+  timeWindow,
 }: UseExploreRouteSyncInput) {
   useEffect(() => {
     if (searchQuery !== route.searchQuery) {
@@ -88,4 +101,22 @@ export function useExploreRouteSync({
       setSortBy(route.sort);
     }
   }, [route.sort, setSortBy, sortBy]);
+
+  useEffect(() => {
+    if (timeWindow !== route.timeWindow) {
+      setTimeWindow(route.timeWindow);
+    }
+  }, [route.timeWindow, setTimeWindow, timeWindow]);
+
+  useEffect(() => {
+    if (startsAfter !== route.startsAfter) {
+      setStartsAfter(route.startsAfter);
+    }
+  }, [route.startsAfter, setStartsAfter, startsAfter]);
+
+  useEffect(() => {
+    if (startsBefore !== route.startsBefore) {
+      setStartsBefore(route.startsBefore);
+    }
+  }, [route.startsBefore, setStartsBefore, startsBefore]);
 }

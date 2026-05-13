@@ -1,19 +1,20 @@
 import { ChevronDown, Filter } from "lucide-react";
 import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
-import { AccessFilter } from "./access-filter";
 import { CategoryFilter } from "./category-filter";
+import { DateRangeFilter } from "./date-range-filter";
 import { LocationFilter } from "./location-filter";
 import { SizeFilter } from "./size-filter";
+import { TimeFilter } from "./time-filter";
 
 interface ExploreRightFiltersProps {
   hideHeader?: boolean;
 }
 
 export function ExploreRightFilters({ hideHeader }: ExploreRightFiltersProps) {
-  const { access, sizeRange } = useExploreRouteState();
+  const { sizeRange, startsAfter, startsBefore } = useExploreRouteState();
   const hasMoreOptionFilters =
-    access !== DEFAULT_FILTERS.access ||
+    Boolean(startsAfter || startsBefore) ||
     sizeRange[0] !== DEFAULT_FILTERS.sizeRange[0] ||
     sizeRange[1] !== DEFAULT_FILTERS.sizeRange[1];
 
@@ -40,6 +41,7 @@ export function ExploreRightFilters({ hideHeader }: ExploreRightFiltersProps) {
         </section>
 
         <LocationFilter />
+        <TimeFilter />
 
         <details className="group space-y-3" open={hasMoreOptionFilters}>
           <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg border border-border/60 bg-card/35 px-3 py-2 font-bold text-muted-foreground text-xs transition-colors hover:border-border hover:bg-muted/25 hover:text-foreground [&::-webkit-details-marker]:hidden">
@@ -51,8 +53,8 @@ export function ExploreRightFilters({ hideHeader }: ExploreRightFiltersProps) {
           </summary>
 
           <div className="space-y-4 pt-0.5">
+            <DateRangeFilter />
             <SizeFilter />
-            <AccessFilter />
           </div>
         </details>
       </div>

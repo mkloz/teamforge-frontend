@@ -86,7 +86,7 @@ export function SkeletonCard({
     <div
       aria-hidden="true"
       className={cn(
-        "rounded-2xl border border-border bg-card/95 p-4 shadow-sm",
+        "rounded-xl border border-border bg-card/95 p-4 shadow-sm",
         className,
       )}
       {...props}

@@ -7,6 +7,7 @@ import type {
   ExploreCategory,
   ExploreLocationMode,
   ExploreSortOption,
+  ExploreTimeWindow,
 } from "@/features/explore/schemas/explore-filters.schema";
 import { EXPLORE_MAX_CATEGORY_FILTERS } from "@/shared/api/api-constraints";
 
@@ -19,9 +20,12 @@ export const CLEAR_EXPLORE_FILTER_ROUTE = {
   access: null,
   category: null,
   distance: null,
+  from: null,
   location: null,
   size: null,
   sort: null,
+  time: null,
+  to: null,
 } as const;
 
 export const CLEAR_FOCUSED_FRIEND_REQUEST_ROUTE = {
@@ -57,8 +61,21 @@ export function resolveExploreRouteState(
     location: routeState.location ?? DEFAULT_FILTERS.locationMode,
     searchQuery: routeState.q ?? "",
     sizeRange: normalizeSizeRange(routeState.size),
+    startsAfter: normalizeDateTimeInput(routeState.from),
+    startsBefore: normalizeDateTimeInput(routeState.to),
     sort: routeState.sort ?? DEFAULT_FILTERS.sortBy,
+    timeWindow: routeState.time ?? DEFAULT_FILTERS.timeWindow,
   };
+}
+
+function normalizeDateTimeInput(value: string | null | undefined) {
+  if (!value?.trim()) {
+    return null;
+  }
+
+  const date = new Date(value);
+
+  return Number.isNaN(date.getTime()) ? null : value;
 }
 
 export function normalizeDistance(distance: number | null | undefined) {
@@ -148,5 +165,23 @@ export function getAccessRoutePatch(nextAccess: ExploreAccessMode) {
 export function getSortRoutePatch(nextSort: ExploreSortOption) {
   return {
     sort: nextSort === DEFAULT_FILTERS.sortBy ? null : nextSort,
+  };
+}
+
+export function getTimeRoutePatch(nextTimeWindow: ExploreTimeWindow) {
+  return {
+    time: nextTimeWindow === DEFAULT_FILTERS.timeWindow ? null : nextTimeWindow,
+  };
+}
+
+export function getStartsAfterRoutePatch(nextStartsAfter: string | null) {
+  return {
+    from: normalizeDateTimeInput(nextStartsAfter),
+  };
+}
+
+export function getStartsBeforeRoutePatch(nextStartsBefore: string | null) {
+  return {
+    to: normalizeDateTimeInput(nextStartsBefore),
   };
 }

@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { EmptyTraitMapVisual } from "@/assets/empty-state/empty-trait-map";
 import { buildPersonalityEditNavigation } from "@/features/onboarding/lib/onboarding-route";
-import { ProfileSectionHeading } from "@/features/profile/components/profile-section-heading";
 import type { OceanScores } from "@/features/profile/lib/profile-contract";
 import { OceanChart } from "@/shared/components/psychometrics/ocean-chart";
 import { Button } from "@/shared/components/ui/button";
@@ -19,8 +18,7 @@ export function TraitMapSection({
   onTraitSelect,
 }: TraitMapSectionProps) {
   return (
-    <section className="flex min-w-0 flex-col gap-5 border-border/60 border-t pt-6 lg:border-t-0 lg:pt-0">
-      <ProfileSectionHeading>Trait map</ProfileSectionHeading>
+    <section className="flex min-w-0 flex-col border-border/60 border-t pt-6 lg:border-t-0 lg:pt-0">
       <div className="py-2">
         {oceanScores ? (
           <OceanChart

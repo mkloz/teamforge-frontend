@@ -5,16 +5,22 @@ export function useExploreFeed() {
   const groupsQuery = useExploreGroups();
   const { isAnythingFiltered, resetFilters, searchQuery } =
     useExploreRouteState();
+  const groups = groupsQuery.data?.pages.flatMap((page) => page.groups) ?? [];
+  const firstPage = groupsQuery.data?.pages[0];
 
   return {
-    groups: groupsQuery.data?.groups ?? [],
-    hasGroups: (groupsQuery.data?.groups.length ?? 0) > 0,
-    insight: groupsQuery.data?.insight,
+    groups,
+    hasGroups: groups.length > 0,
+    hasNextPage: groupsQuery.hasNextPage,
+    insight: firstPage?.insight,
     isAnythingFiltered,
     isError: groupsQuery.isError,
+    isFetchingNextPage: groupsQuery.isFetchingNextPage,
     isLoading: groupsQuery.isLoading,
+    fetchNextPage: groupsQuery.fetchNextPage,
     refetch: groupsQuery.refetch,
     resetFilters,
     searchQuery,
+    totalGroups: firstPage?.meta.totalItemsCount ?? groups.length,
   };
 }

@@ -1,6 +1,8 @@
+import { Link } from "@tanstack/react-router";
 import { BadgeCheck, Crown, UserMinus, UserRound } from "lucide-react";
 import type { GroupMember } from "@/features/activity/lib/activity-contract";
-import { Avatar } from "@/shared/components/common/avatar";
+import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
+import { Avatar, AvatarStatus } from "@/shared/components/common/avatar";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,10 +41,7 @@ export function MemberCard({
   const isAdmin = member.role === "ADMIN";
   const isHighCompatibility = (member.compatibilityScore || 0) > 90;
   const onlineStatus = member.user?.onlineStatus;
-
-  const handleShowProfile = () => {
-    onShowProfile?.(member);
-  };
+  const profileNavigation = buildProfileNavigation(member.userId);
 
   const memberSummary = (
     <>
@@ -57,16 +56,7 @@ export function MemberCard({
           imageClassName="transition-transform duration-500 group-hover/member:scale-110"
         />
         {onlineStatus && (
-          <span
-            className={cn(
-              "absolute -right-0.5 -bottom-0.5 size-3 rounded-full border-2 border-canvas shadow-sm",
-              onlineStatus === "ONLINE"
-                ? "bg-forge-teal"
-                : onlineStatus === "AWAY"
-                  ? "bg-spark-amber"
-                  : "bg-slate-muted/40",
-            )}
-          />
+          <AvatarStatus status={onlineStatus} borderClassName="border-canvas" />
         )}
         {isAdmin && (
           <Tooltip>
@@ -119,16 +109,13 @@ export function MemberCard({
   return (
     <div className="group/member flex w-full items-center gap-2 px-1.5 py-1.5 text-left transition-colors duration-150 focus-within:bg-slate-muted/10 hover:bg-slate-muted/10">
       {onShowProfile ? (
-        <Button
-          type="button"
-          variant="link"
-          onClick={handleShowProfile}
-          className="h-auto min-w-0 flex-1 justify-start rounded-lg p-0 text-left text-foreground! focus-visible:ring-forge-teal/30 hover:enabled:no-underline"
-          contentClassName="min-w-0 justify-start gap-3"
+        <Link
+          {...profileNavigation}
+          className="flex min-w-0 flex-1 items-center justify-start gap-3 rounded-lg text-left text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30"
           aria-label={`View ${member.user?.name ?? "member"} profile`}
         >
           {memberSummary}
-        </Button>
+        </Link>
       ) : (
         <div className="flex min-w-0 flex-1 items-center gap-3">
           {memberSummary}
@@ -139,20 +126,17 @@ export function MemberCard({
         {onShowProfile ? (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                type="button"
-                variant="accentGhost"
-                size="icon-xs"
+              <Link
+                {...profileNavigation}
                 className={cn(
-                  "absolute inset-0 size-8 rounded-lg opacity-80 transition-opacity group-hover/member:opacity-100",
+                  "absolute inset-0 flex size-8 items-center justify-center rounded-lg text-muted-foreground opacity-80 transition-colors transition-opacity hover:bg-forge-teal/10 hover:text-forge-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 group-hover/member:opacity-100",
                   canRemove &&
                     "group-focus-within/member:opacity-0 group-hover/member:opacity-0",
                 )}
-                onClick={handleShowProfile}
                 aria-label={`View ${member.user?.name ?? "member"} profile`}
               >
                 <UserRound className="size-4" />
-              </Button>
+              </Link>
             </TooltipTrigger>
             <TooltipContent>View profile</TooltipContent>
           </Tooltip>

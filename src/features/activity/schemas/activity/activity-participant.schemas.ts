@@ -22,6 +22,7 @@ export const activityParticipantSchema = z.object({
   oceanN: z.number().nullable().optional(),
   onlineStatus: onlineStatusSchema.optional(),
   trustScore: z.number(),
+  compatibilityScore: z.number().nullable().optional(),
 });
 
 export type ActivityParticipant = z.infer<typeof activityParticipantSchema>;

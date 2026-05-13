@@ -2,22 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
+import { useLandingAuthActions } from "@/features/landing/hooks/use-landing-auth-actions";
 import { useMouseGlow } from "@/features/landing/hooks/use-mouse-glow";
-import { getLandingPrimaryAction } from "@/features/landing/lib/landing-auth";
 import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
-import {
-  useAuthSessionState,
-  useCurrentUserQuery,
-} from "@/shared/api/current-user-query";
 import { Button } from "@/shared/components/ui/button";
 
 export function CtaSection() {
   const { sectionRef, glowRef, glowHandlers } = useMouseGlow();
-  const { isAuthenticated } = useAuthSessionState();
-  const { data: currentUser } = useCurrentUserQuery();
-  const primaryAction = getLandingPrimaryAction(
-    isAuthenticated,
-    currentUser,
+  const { isResolvingAuthAction, primaryAction } = useLandingAuthActions(
     "Create Free Account",
   );
 
@@ -61,23 +53,34 @@ export function CtaSection() {
           transition={{ duration: 0.7, delay: 0.2 }}
           className="mb-6 flex flex-col items-center justify-center gap-4 sm:flex-row"
         >
-          <Button
-            asChild
-            size="hero"
-            className="w-full hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none sm:w-auto"
-          >
-            <Link
-              {...primaryAction.navigation}
-              aria-label={primaryAction.label}
+          {isResolvingAuthAction ? (
+            <Button
+              size="hero"
+              loading
+              className="w-full sm:w-auto"
+              aria-label="Checking TeamForge session"
             >
               {primaryAction.label}
-              <ArrowRight
-                size={20}
-                className="ml-2 transition-transform duration-200 group-hover:translate-x-1"
-                aria-hidden="true"
-              />
-            </Link>
-          </Button>
+            </Button>
+          ) : (
+            <Button
+              asChild
+              size="hero"
+              className="w-full hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none sm:w-auto"
+            >
+              <Link
+                {...primaryAction.navigation}
+                aria-label={primaryAction.label}
+              >
+                {primaryAction.label}
+                <ArrowRight
+                  size={20}
+                  className="ml-2 transition-transform duration-200 group-hover:translate-x-1"
+                  aria-hidden="true"
+                />
+              </Link>
+            </Button>
+          )}
 
           <Button
             variant="outline"
