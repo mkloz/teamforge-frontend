@@ -28,7 +28,7 @@ export function PlanProposalActionControls({
         size="sm"
         disabled={actions.isWithdrawing}
         onClick={() => void actions.withdrawProposal(proposalId)}
-        className="rounded-xl"
+        className="rounded-lg"
       >
         {actions.isWithdrawing ? "Withdrawing..." : "Withdraw"}
       </Button>
@@ -50,7 +50,7 @@ export function PlanProposalActionControls({
         size="sm"
         disabled={actions.isVoting}
         onClick={() => void actions.approveProposal(proposalId)}
-        className="rounded-xl"
+        className="rounded-lg"
       >
         {actions.isVoting ? "Submitting..." : "Approve"}
       </Button>
@@ -59,7 +59,7 @@ export function PlanProposalActionControls({
         size="sm"
         disabled={actions.isVoting}
         onClick={() => void actions.rejectProposal(proposalId)}
-        className="rounded-xl"
+        className="rounded-lg"
       >
         Reject
       </Button>

@@ -33,27 +33,6 @@ export function getPeopleSectionModel({
   };
 }
 
-export function getTrustLabel(score: number): string | null {
-  if (score >= 0.9) {
-    return "Highly reliable";
-  }
-  if (score >= 0.7) {
-    return "Reliable";
-  }
-  return null;
-}
-
-export function getCompatLabel(score: number | null): string | null {
-  if (typeof score !== "number") {
-    return null;
-  }
-  const pct = Math.round(score * 100);
-  if (pct >= 80) {
-    return `${pct}% compatible`;
-  }
-  return null;
-}
-
 function isViewerMember(detail: GroupPlanDetail) {
   const rel = detail.viewer.relationship;
   return rel === "ADMIN" || rel === "MODERATOR" || rel === "MEMBER";

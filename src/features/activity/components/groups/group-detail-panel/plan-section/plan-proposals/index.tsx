@@ -20,6 +20,7 @@ const STATUS_STYLES: Record<PlanProposal["status"], string> = {
 
 interface PlanProposalCardProps {
   actions: ReturnType<typeof usePlanProposalActions>;
+  canAct?: boolean;
   currentUserId?: string;
   isFocused: boolean;
   proposal: PlanProposal;
@@ -28,6 +29,7 @@ interface PlanProposalCardProps {
 
 export function PlanProposalCard({
   actions,
+  canAct = true,
   currentUserId,
   isFocused,
   proposal,
@@ -35,6 +37,8 @@ export function PlanProposalCard({
 }: PlanProposalCardProps) {
   const { approveCount, hasVoted, isPending, isProposer, rejectCount } =
     getPlanProposalViewState(proposal, currentUserId);
+  const voteSummary = getVoteSummary(approveCount, rejectCount);
+  const shouldCompact = !isPending;
 
   return (
     <div
@@ -42,9 +46,10 @@ export function PlanProposalCard({
         setProposalRef(proposal.id, element);
       }}
       className={cn(
-        "flex flex-col gap-2 rounded-xl border border-border/60 bg-card/70 px-3 py-3 transition-all duration-500",
+        "flex flex-col gap-2 border-border/70 border-t py-3 transition-colors duration-500",
+        shouldCompact && "gap-1.5",
         isFocused &&
-          "border-forge-teal/35 bg-forge-teal/6 ring-1 ring-forge-teal/20",
+          "rounded-lg bg-forge-teal/8 px-3 ring-1 ring-forge-teal/20",
       )}
     >
       <div className="flex items-start justify-between gap-3">
@@ -58,7 +63,7 @@ export function PlanProposalCard({
         </div>
         <span
           className={cn(
-            "inline-flex items-center rounded-full px-2.5 py-1 font-bold text-xs uppercase tracking-wider",
+            "inline-flex items-center rounded-full px-2.5 py-1 font-bold text-xs",
             STATUS_STYLES[proposal.status],
           )}
         >
@@ -66,33 +71,43 @@ export function PlanProposalCard({
         </span>
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <div className="rounded-xl bg-muted/50 px-2.5 py-2">
-          <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
-            Current
-          </p>
-          <p className="text-foreground/70 text-sm">
-            {formatProposalValue(proposal.field, proposal.currentValue)}
-          </p>
-        </div>
-        <div className="rounded-xl border border-forge-teal/10 bg-forge-teal/5 px-2.5 py-2">
-          <p className="font-semibold text-forge-teal text-xs uppercase tracking-wide">
-            Proposed
-          </p>
-          <p className="text-foreground text-sm">
+      {shouldCompact ? (
+        <p className="text-muted-foreground text-xs leading-relaxed">
+          Proposed{" "}
+          <span className="font-semibold text-foreground">
             {formatProposalValue(proposal.field, proposal.proposedValue)}
-          </p>
+          </span>{" "}
+          instead of{" "}
+          <span className="font-medium">
+            {formatProposalValue(proposal.field, proposal.currentValue)}
+          </span>
+          .
+        </p>
+      ) : (
+        <div className="divide-y divide-border/70 border-border/70 border-y">
+          <div className="py-2">
+            <p className="font-semibold text-muted-foreground text-xs">
+              Current
+            </p>
+            <p className="text-foreground/70 text-sm leading-snug">
+              {formatProposalValue(proposal.field, proposal.currentValue)}
+            </p>
+          </div>
+          <div className="py-2">
+            <p className="font-semibold text-forge-teal text-xs">Proposed</p>
+            <p className="text-foreground text-sm leading-snug">
+              {formatProposalValue(proposal.field, proposal.proposedValue)}
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex items-center justify-between gap-3 text-muted-foreground text-xs">
         <span>{formatProposalDate(proposal.createdAt)}</span>
-        <span className="font-medium">
-          {approveCount} approve · {rejectCount} reject
-        </span>
+        <span className="font-medium">{voteSummary}</span>
       </div>
 
-      {isPending && (
+      {isPending && canAct ? (
         <div className="flex flex-wrap gap-2 pt-1">
           <PlanProposalActionControls
             actions={actions}
@@ -101,7 +116,15 @@ export function PlanProposalCard({
             proposalId={proposal.id}
           />
         </div>
-      )}
+      ) : null}
     </div>
   );
+}
+
+function getVoteSummary(approveCount: number, rejectCount: number) {
+  if (approveCount === 0 && rejectCount === 0) {
+    return "No votes yet";
+  }
+
+  return `${approveCount} approve · ${rejectCount} reject`;
 }

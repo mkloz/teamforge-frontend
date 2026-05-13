@@ -53,6 +53,7 @@ export function GroupPanelContent({
     return (
       <SelectedMemberProfile
         isMobile={isMobile}
+        member={selectedMember}
         memberChat={memberChat}
         onBack={() => setSelectedMember(null)}
       />
@@ -66,16 +67,16 @@ export function GroupPanelContent({
         isMobile && "flex-1",
       )}
     >
-      {!isMobile && <GroupPanelHeader onClose={onClose} />}
+      {!isMobile && (
+        <GroupPanelHeader
+          groupId={group.id}
+          groupName={group.name}
+          onClose={onClose}
+        />
+      )}
 
       <GroupPanelScrollArea isMobile={isMobile}>
-        <GroupCoverHeader
-          currentUserRole={currentUserRole}
-          group={group}
-          isMobile={isMobile}
-          onClose={onClose}
-          onEditGroup={() => setIsEditOpen(true)}
-        />
+        <GroupCoverHeader group={group} isMobile={isMobile} onClose={onClose} />
 
         <GroupPanelMainSections
           currentUserId={currentUserId}
@@ -93,6 +94,7 @@ export function GroupPanelContent({
           leaveGroup={leaveGroup}
           memberCount={memberCount}
           members={members}
+          onEditGroup={() => setIsEditOpen(true)}
           removeMember={removeMember}
           removingMemberId={removingMemberId}
           setSelectedMember={setSelectedMember}

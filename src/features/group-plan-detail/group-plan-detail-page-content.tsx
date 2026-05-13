@@ -1,5 +1,4 @@
 import type { Ref } from "react";
-import { ActivitySection } from "@/features/group-plan-detail/components/content/activity-section";
 import { FitSection } from "@/features/group-plan-detail/components/content/fit-section";
 import { GroupSection } from "@/features/group-plan-detail/components/content/group-section";
 import { PeopleSection } from "@/features/group-plan-detail/components/content/people-section";
@@ -12,35 +11,23 @@ import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-pla
 
 interface GroupPlanDetailPageContentProps {
   detail: GroupPlanDetail;
-  highlightedProposalId?: string | null;
   isPlanHighlighted?: boolean;
-  isPlanningHighlighted?: boolean;
   planSectionRef?: Ref<HTMLElement>;
-  planningSectionRef?: Ref<HTMLElement>;
 }
 
 interface GroupPlanSectionFocusProps {
-  highlightedProposalId: string | null;
   isPlanHighlighted: boolean;
-  isPlanningHighlighted: boolean;
   planSectionRef?: Ref<HTMLElement>;
-  planningSectionRef?: Ref<HTMLElement>;
 }
 
 export function GroupPlanDetailPageContent({
   detail,
-  highlightedProposalId = null,
   isPlanHighlighted = false,
-  isPlanningHighlighted = false,
   planSectionRef,
-  planningSectionRef,
 }: GroupPlanDetailPageContentProps) {
   const focus = {
-    highlightedProposalId,
     isPlanHighlighted,
-    isPlanningHighlighted,
     planSectionRef,
-    planningSectionRef,
   };
 
   return (
@@ -110,26 +97,6 @@ function GroupPlanMainSections({
       />
       <PeopleSection detail={detail} />
       <FitSection detail={detail} />
-      <ActivityAnchor detail={detail} focus={focus} />
     </main>
-  );
-}
-
-function ActivityAnchor({
-  detail,
-  focus,
-}: {
-  detail: GroupPlanDetail;
-  focus: GroupPlanSectionFocusProps;
-}) {
-  return (
-    <div id="activity" className="scroll-mt-24">
-      <ActivitySection
-        detail={detail}
-        highlightedProposalId={focus.highlightedProposalId}
-        isHighlighted={focus.isPlanningHighlighted}
-        sectionRef={focus.planningSectionRef}
-      />
-    </div>
   );
 }

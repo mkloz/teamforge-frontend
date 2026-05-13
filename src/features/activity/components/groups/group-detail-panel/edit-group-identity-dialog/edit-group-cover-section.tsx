@@ -29,9 +29,7 @@ export function EditGroupCoverSection({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
-        Plan cover
-      </p>
+      <p className="font-semibold text-muted-foreground text-xs">Plan cover</p>
       <div className="relative">
         <FileDropzone
           inputRef={inputRef}
@@ -59,7 +57,7 @@ export function EditGroupCoverSection({
             type="button"
             variant="ghost"
             size="icon-sm"
-            className="absolute top-2 right-2 z-20 rounded-full bg-black/45 text-white hover:bg-black/65"
+            className="absolute top-2 right-2 z-20 rounded-full bg-ink/45 text-canvas hover:bg-ink/65"
             onClick={() => editor.setCoverImage(null)}
             aria-label="Remove cover"
           >
@@ -109,7 +107,7 @@ function PlanCoverPresetButton({
       onClick={onToggle}
       aria-pressed={selected}
       className={cn(
-        "group relative h-14 overflow-hidden rounded-xl border-2 bg-linear-to-br p-0 transition duration-200",
+        "group relative h-14 overflow-hidden rounded-lg border-2 bg-linear-to-br p-0 transition duration-200",
         gradient,
         selected
           ? "border-forge-teal shadow-forge-teal/20 shadow-md"

@@ -15,6 +15,7 @@ import { EditGroupAvatarSection } from "./edit-group-avatar-section";
 import { EditGroupCoverSection } from "./edit-group-cover-section";
 import { EditGroupIdentityFields } from "./edit-group-identity-fields";
 import { EditGroupIdentityFooter } from "./edit-group-identity-footer";
+import { EditPlanDetailsFields } from "./edit-plan-details-fields";
 
 interface EditGroupIdentityDialogProps {
   group: Group;
@@ -57,20 +58,36 @@ function EditGroupIdentityDialogContent({
   return (
     <DialogContent className="max-h-screen overflow-y-auto sm:max-w-xl">
       <DialogHeader>
-        <DialogTitle>Group settings</DialogTitle>
-        <DialogDescription className="sr-only">
-          Edit group settings
+        <DialogTitle>Edit details</DialogTitle>
+        <DialogDescription>
+          Update the group identity and the current plan from one place.
         </DialogDescription>
       </DialogHeader>
 
-      <div className="flex flex-col gap-5">
-        <EditGroupIdentityFields editor={editor} />
-        <EditGroupAvatarSection editor={editor} inputRef={avatarInputRef} />
-        <EditGroupCoverSection
-          editor={editor}
-          group={group}
-          inputRef={coverInputRef}
-        />
+      <div className="flex flex-col gap-6">
+        <section className="flex flex-col gap-4">
+          <SectionHeader
+            title="Group"
+            description="Name, description, and the image people recognise in the member list."
+          />
+          <EditGroupIdentityFields editor={editor} />
+          <EditGroupAvatarSection editor={editor} inputRef={avatarInputRef} />
+        </section>
+
+        {group.plan ? (
+          <section className="flex flex-col gap-4 border-border/70 border-t pt-5">
+            <SectionHeader
+              title="Current plan"
+              description="Activity details, timing, place, cost, and cover image."
+            />
+            <EditPlanDetailsFields editor={editor} />
+            <EditGroupCoverSection
+              editor={editor}
+              group={group}
+              inputRef={coverInputRef}
+            />
+          </section>
+        ) : null}
 
         {editor.error && (
           <p className="font-medium text-destructive text-sm">{editor.error}</p>
@@ -84,5 +101,22 @@ function EditGroupIdentityDialogContent({
         />
       </DialogFooter>
     </DialogContent>
+  );
+}
+
+function SectionHeader({
+  description,
+  title,
+}: {
+  description: string;
+  title: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <h3 className="font-bold text-foreground text-sm">{title}</h3>
+      <p className="text-muted-foreground text-xs leading-relaxed">
+        {description}
+      </p>
+    </div>
   );
 }

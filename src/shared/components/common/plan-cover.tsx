@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Image } from "@/shared/components/common/image";
 import { getPlanCoverPreset } from "@/shared/lib/plan-cover";
 import { cn } from "@/shared/lib/utils";
@@ -10,16 +11,26 @@ interface PlanCoverProps {
   value?: string | null;
   alt: string;
   className?: string;
+  fallbackComponent?: ReactNode;
   imageClassName?: string;
   loading?: "eager" | "lazy";
+  loadingClassName?: string;
+  loadingComponent?: ReactNode;
+  noImageComponent?: ReactNode;
+  showNoImage?: boolean;
 }
 
 export function PlanCover({
   value,
   alt,
   className,
+  fallbackComponent,
   imageClassName,
   loading = "lazy",
+  loadingClassName,
+  loadingComponent,
+  noImageComponent,
+  showNoImage,
 }: PlanCoverProps) {
   const preset = getPlanCoverPreset(value);
 
@@ -45,6 +56,11 @@ export function PlanCover({
       loading={loading}
       wrapperClassName={className}
       className={imageClassName}
+      fallbackComponent={fallbackComponent}
+      loadingClassName={loadingClassName}
+      loadingComponent={loadingComponent}
+      noImageComponent={noImageComponent}
+      showNoImage={showNoImage}
     />
   );
 }

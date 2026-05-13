@@ -1,4 +1,4 @@
-import { BadgeCheck, Crown, UserMinus } from "lucide-react";
+import { BadgeCheck, Crown, UserMinus, UserRound } from "lucide-react";
 import type { GroupMember } from "@/features/activity/lib/activity-contract";
 import { Avatar } from "@/shared/components/common/avatar";
 import {
@@ -82,13 +82,13 @@ export function MemberCard({
 
       {/* Info Section */}
       <div className="min-w-0 flex-1">
-        <div className="mb-0.5 flex items-center gap-2">
+        <div className="mb-0.5 flex items-center gap-1.5">
           <p className="truncate font-semibold text-foreground text-sm">
             {member.user?.name}
           </p>
           <Badge
             variant="mbti"
-            className="h-5 px-2 font-bold text-xs tracking-tight"
+            className="h-4 shrink-0 px-1.5 font-bold leading-none tracking-normal"
           >
             {member.user?.personalityType}
           </Badge>
@@ -97,19 +97,19 @@ export function MemberCard({
           )}
         </div>
         <div className="flex items-center gap-2.5">
-          <span className="font-bold text-muted-foreground text-xs uppercase tracking-wider">
+          <span className="font-bold text-muted-foreground text-xs">
             Trust {member.user?.trustScore}%
           </span>
           <div className="h-2 w-px bg-border/50" />
           <span
             className={cn(
-              "font-bold text-xs uppercase tracking-wider",
+              "font-bold text-xs",
               isHighCompatibility
                 ? "text-forge-teal"
                 : "text-muted-foreground/60",
             )}
           >
-            {member.compatibilityScore}% match
+            {member.compatibilityScore}% fit
           </span>
         </div>
       </div>
@@ -117,13 +117,13 @@ export function MemberCard({
   );
 
   return (
-    <div className="group/member flex w-full items-center gap-3 rounded-xl border border-transparent p-2 text-left transition-all duration-300 hover:border-border/50 hover:bg-muted/30">
+    <div className="group/member flex w-full items-center gap-2 px-1.5 py-1.5 text-left transition-colors duration-150 focus-within:bg-slate-muted/10 hover:bg-slate-muted/10">
       {onShowProfile ? (
         <Button
           type="button"
-          variant="ghost"
+          variant="link"
           onClick={handleShowProfile}
-          className="h-auto min-w-0 flex-1 justify-start rounded-lg border-0 bg-transparent p-0 text-left focus-visible:ring-forge-teal/30"
+          className="h-auto min-w-0 flex-1 justify-start rounded-lg p-0 text-left text-foreground! focus-visible:ring-forge-teal/30 hover:enabled:no-underline"
           contentClassName="min-w-0 justify-start gap-3"
           aria-label={`View ${member.user?.name ?? "member"} profile`}
         >
@@ -135,48 +135,69 @@ export function MemberCard({
         </div>
       )}
 
-      {/* Subtle interaction indicator */}
-      {canRemove && onRemove ? (
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              variant="destructive"
-              size="icon-xs"
-              type="button"
-              disabled={removing}
-              onClick={(event) => {
-                event.stopPropagation();
-              }}
-              className="shrink-0"
-              aria-label={`Remove ${member.user?.name ?? "member"} from group`}
-            >
-              <UserMinus size={14} />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent onClick={(event) => event.stopPropagation()}>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Remove member?</AlertDialogTitle>
-              <AlertDialogDescription>
-                {member.user?.name ?? "This member"} will lose access to the
-                group chat and planning workspace.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                variant="destructive"
-                onClick={() => {
-                  void onRemove(member.userId);
-                }}
+      <div className="relative size-8 shrink-0">
+        {onShowProfile ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="accentGhost"
+                size="icon-xs"
+                className={cn(
+                  "absolute inset-0 size-8 rounded-lg opacity-80 transition-opacity group-hover/member:opacity-100",
+                  canRemove &&
+                    "group-focus-within/member:opacity-0 group-hover/member:opacity-0",
+                )}
+                onClick={handleShowProfile}
+                aria-label={`View ${member.user?.name ?? "member"} profile`}
               >
-                {removing ? "Removing..." : "Remove Member"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      ) : (
-        <div className="size-1.5 rounded-full bg-border opacity-0 transition-opacity group-hover/member:opacity-100" />
-      )}
+                <UserRound className="size-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>View profile</TooltipContent>
+          </Tooltip>
+        ) : null}
+
+        {canRemove && onRemove ? (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="destructive"
+                size="icon-xs"
+                type="button"
+                disabled={removing}
+                onClick={(event) => {
+                  event.stopPropagation();
+                }}
+                className="absolute inset-0 size-8 opacity-0 transition-opacity group-focus-within/member:opacity-100 group-hover/member:opacity-100"
+                aria-label={`Remove ${member.user?.name ?? "member"} from group`}
+              >
+                <UserMinus size={14} />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent onClick={(event) => event.stopPropagation()}>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Remove member?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {member.user?.name ?? "This member"} will lose access to the
+                  group chat and planning workspace.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  variant="destructive"
+                  onClick={() => {
+                    void onRemove(member.userId);
+                  }}
+                >
+                  {removing ? "Removing..." : "Remove member"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        ) : null}
+      </div>
     </div>
   );
 }

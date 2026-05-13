@@ -4,27 +4,27 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 
 export const categoryColors: Record<PlanCategory, string> = {
-  TECH: "bg-blue-500/15 text-blue-600",
-  SPORTS: "bg-green-500/15 text-green-600",
-  ARTS: "bg-purple-500/15 text-purple-600",
-  SOCIAL: "bg-orange-500/15 text-orange-600",
-  OUTDOORS: "bg-emerald-500/15 text-emerald-600",
-  LEARNING: "bg-indigo-500/15 text-indigo-600",
-  MUSIC: "bg-pink-500/15 text-pink-600",
-  FOOD: "bg-amber-500/15 text-amber-600",
-  GAMING: "bg-violet-500/15 text-violet-600",
-  WELLNESS: "bg-teal-500/15 text-teal-600",
-  TRAVEL: "bg-sky-500/15 text-sky-600",
-  OTHER: "bg-slate-500/15 text-slate-600",
+  TECH: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
+  SPORTS: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
+  ARTS: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
+  SOCIAL: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
+  OUTDOORS: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
+  LEARNING: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
+  MUSIC: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
+  FOOD: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
+  GAMING: "border-slate-muted/20 bg-slate-muted/10 text-slate-muted",
+  WELLNESS: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
+  TRAVEL: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
+  OTHER: "border-slate-muted/20 bg-slate-muted/10 text-slate-muted",
 };
 
 export const statusColors: Record<PlanStatus, string> = {
-  DRAFT: "bg-slate-500/15 text-slate-600",
-  PROPOSED: "bg-amber-500/15 text-amber-600",
-  CONFIRMED: "bg-teal-500/15 text-teal-600",
-  IN_PROGRESS: "bg-indigo-500/15 text-indigo-600",
-  COMPLETED: "bg-blue-500/15 text-blue-600",
-  CANCELLED: "bg-red-500/15 text-red-600",
+  DRAFT: "border-slate-muted/20 bg-slate-muted/10 text-slate-muted",
+  PROPOSED: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
+  CONFIRMED: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
+  IN_PROGRESS: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
+  COMPLETED: "border-slate-muted/20 bg-slate-muted/10 text-slate-muted",
+  CANCELLED: "border-slate-muted/20 bg-slate-muted/10 text-slate-muted",
 };
 
 export const formatDate = (date: string | Date) => {
@@ -41,3 +41,11 @@ export const formatTime = (date: string | Date) => {
     minute: "2-digit",
   });
 };
+
+export function formatPanelToken(value: string) {
+  return value
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}

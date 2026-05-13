@@ -1,7 +1,6 @@
 import { UserProfilePanel as ProfilePanelContent } from "@/features/activity/components/user-profile-panel";
 import { useDirectChatSafetyActions } from "@/features/activity/hooks/use-direct-chat-safety-actions";
 import type { DirectChat } from "@/features/activity/lib/activity-contract";
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import {
   Drawer,
   DrawerContent,
@@ -36,7 +35,6 @@ export function ProfilePanel({ chat, isOpen, onClose }: ProfilePanelProps) {
       <ProfilePanelHeader onClose={onClose} />
       <ProfilePanelContent
         chat={chat}
-        profileNavigation={buildProfileNavigation()}
         blockActionDisabled={!safetyActions.canToggleBlock}
         isBlockActionPending={safetyActions.isBlockActionPending}
         onToggleBlock={safetyActions.toggleBlock}
@@ -65,7 +63,6 @@ export function ProfilePanelMobile({
         <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto pb-10">
           <ProfilePanelContent
             chat={chat}
-            profileNavigation={buildProfileNavigation()}
             isMobile={true}
             blockActionDisabled={!safetyActions.canToggleBlock}
             isBlockActionPending={safetyActions.isBlockActionPending}

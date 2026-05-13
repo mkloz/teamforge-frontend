@@ -37,7 +37,7 @@ export function GroupDetailPanel({
         className={cn(
           "hidden h-full flex-col border-border border-l bg-canvas lg:flex",
           "transition duration-300 ease-in-out",
-          isOpen ? "w-80 opacity-100" : "w-0 overflow-hidden opacity-0",
+          isOpen ? "w-96 opacity-100" : "w-0 overflow-hidden opacity-0",
         )}
       >
         <GroupPanelContent

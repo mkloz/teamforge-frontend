@@ -55,7 +55,6 @@ export function GroupPlanDetailPageLoadingFixture() {
           <PlanSectionSkeleton />
           <PeopleSectionSkeleton />
           <GroupPlanSectionSkeleton titleWidth="w-28" />
-          <ActivitySectionSkeleton />
         </main>
 
         <aside className="min-w-0">
@@ -143,29 +142,6 @@ function PeopleSectionSkeleton() {
               className="min-w-0 flex-1"
               lines={2}
               widths={["w-32", "w-44"]}
-            />
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function ActivitySectionSkeleton() {
-  return (
-    <section className="scroll-mt-24">
-      <Skeleton className="h-3 w-24" tone="teal" />
-      <Skeleton className="mt-2 h-8 w-48" />
-      <div className="mt-6 flex flex-col gap-4">
-        {["proposal", "chat", "vote"].map((item, index) => (
-          <div
-            key={item}
-            className="md:main-action-grid grid gap-4 border-border/70 border-t pt-4"
-          >
-            <SkeletonText lines={2} widths={["w-40", "w-full"]} />
-            <SkeletonButton
-              className="h-10 w-full md:w-28"
-              tone={index === 0 ? "teal" : "default"}
             />
           </div>
         ))}

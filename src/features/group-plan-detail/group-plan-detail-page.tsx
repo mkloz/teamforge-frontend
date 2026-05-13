@@ -74,11 +74,8 @@ function GroupPlanDetailLoadedView({
   return (
     <GroupPlanDetailPageContent
       detail={detail}
-      highlightedProposalId={landingFocus.highlightedProposalId}
       isPlanHighlighted={landingFocus.isPlanHighlighted}
-      isPlanningHighlighted={landingFocus.isPlanningHighlighted}
       planSectionRef={landingFocus.planSectionRef}
-      planningSectionRef={landingFocus.planningSectionRef}
     />
   );
 }

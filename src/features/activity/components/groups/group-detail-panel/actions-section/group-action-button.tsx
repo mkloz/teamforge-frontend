@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
 
 import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
-
 export interface GroupActionButtonProps {
   disabled?: boolean;
   icon: ReactNode;
@@ -18,31 +16,21 @@ export function GroupActionButton({
   onClick,
   variant = "default",
 }: GroupActionButtonProps) {
-  const buttonVariant = variant === "destructive" ? "destructive" : "ghost";
+  const buttonVariant =
+    variant === "destructive"
+      ? "destructive"
+      : variant === "muted"
+        ? "accentGhost"
+        : "subtle";
 
   return (
     <Button
       variant={buttonVariant}
       disabled={disabled}
       onClick={onClick}
-      className={cn(
-        "group h-auto w-full justify-start gap-4 rounded-xl border border-transparent px-3 py-2.5 transition-all duration-200",
-        variant === "default" && "text-ink hover:bg-muted/80",
-        variant === "muted" && "text-slate-muted hover:bg-muted hover:text-ink",
-      )}
+      className="h-auto w-full justify-start px-3 py-3 text-left"
     >
-      <span
-        className={cn(
-          "shrink-0 rounded-lg p-2 transition-colors",
-          variant === "default" &&
-            "bg-muted group-hover:bg-ink group-hover:text-white",
-          variant === "destructive" && "bg-destructive/10 text-destructive",
-          variant === "muted" &&
-            "bg-muted/50 group-hover:bg-ink group-hover:text-white",
-        )}
-      >
-        {icon}
-      </span>
+      <span className="shrink-0">{icon}</span>
       <span className="font-bold text-sm tracking-tight">{label}</span>
     </Button>
   );

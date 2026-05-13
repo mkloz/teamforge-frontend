@@ -39,6 +39,12 @@ const profilePageModule = createLazyRouteModule(() =>
   })),
 );
 
+const userDetailPageModule = createLazyRouteModule(() =>
+  import("@/features/profile/user-detail-page").then((m) => ({
+    default: m.UserDetailPage,
+  })),
+);
+
 const settingsPageModule = createLazyRouteModule(() =>
   import("@/features/settings/settings-page").then((m) => ({
     default: m.SettingsPage,
@@ -155,6 +161,23 @@ const profileRoute = createRoute({
   }),
 });
 
+const userDetailRoute = createRoute({
+  getParentRoute: () => appShellRoute,
+  path: "/users/$userId",
+  component: createLazyPageRoute(
+    userDetailPageModule.Component,
+    <ProfilePageLoading mode="route" />,
+  ),
+  errorComponent: createRouteErrorComponent({
+    scope: routeErrorScopes.userDetail,
+    title: "Profile could not finish loading",
+    description:
+      "This public profile hit an unexpected issue while loading details, interests, or social fit.",
+    fallbackTo: "/explore",
+    fallbackLabel: "Back to explore",
+  }),
+});
+
 const settingsRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/settings",
@@ -194,6 +217,7 @@ export const appRoutes = [
   groupPlanDetailRoute,
   activityRoute,
   profileRoute,
+  userDetailRoute,
   settingsRoute,
   forgeRoute,
 ];
@@ -204,6 +228,7 @@ export const appRouteModules = [
   groupPlanDetailPageModule,
   activityPageModule,
   profilePageModule,
+  userDetailPageModule,
   settingsPageModule,
   forgePageModule,
 ];

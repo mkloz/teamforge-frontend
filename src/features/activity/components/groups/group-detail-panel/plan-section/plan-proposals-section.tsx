@@ -6,12 +6,14 @@ import { useFocusedPlanProposalScroll } from "./plan-proposals/use-focused-plan-
 
 interface PlanProposalsSectionProps {
   groupId: string;
+  isReadOnly?: boolean;
   proposals: PlanProposal[];
   focusedProposalId?: string | null;
 }
 
 export function PlanProposalsSection({
   groupId,
+  isReadOnly = false,
   proposals,
   focusedProposalId = null,
 }: PlanProposalsSectionProps) {
@@ -24,6 +26,9 @@ export function PlanProposalsSection({
     groupId,
     mutationKeyScope: `group-${groupId}`,
   });
+  const activeProposalCount = proposals.filter(
+    (proposal) => proposal.status === "PENDING",
+  ).length;
 
   if (proposals.length === 0) {
     return null;
@@ -37,12 +42,16 @@ export function PlanProposalsSection({
       <div className="flex items-center justify-between gap-3">
         <h3
           id="plan-proposals-title"
-          className="font-bold text-muted-foreground/60 text-xs uppercase tracking-wider"
+          className="font-bold text-muted-foreground/70 text-xs"
         >
-          Plan Proposals
+          {isReadOnly ? "Plan change history" : "Plan changes"}
         </h3>
         <span className="font-semibold text-muted-foreground text-xs">
-          {proposals.length} active
+          {isReadOnly
+            ? `${proposals.length} total`
+            : activeProposalCount === 0
+              ? "None active"
+              : `${activeProposalCount} active`}
         </span>
       </div>
 
@@ -51,6 +60,7 @@ export function PlanProposalsSection({
           <PlanProposalCard
             key={proposal.id}
             actions={proposalActions}
+            canAct={!isReadOnly}
             currentUserId={currentUser?.id}
             isFocused={focusedProposalId === proposal.id}
             proposal={proposal}

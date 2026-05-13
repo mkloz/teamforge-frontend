@@ -76,15 +76,16 @@ export function InviteMembersDialog({
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          size="sm"
+          size="xs"
           disabled={disabled}
-          className="font-bold text-xs uppercase tracking-wider"
+          className="px-3 font-bold text-xs"
+          contentClassName="gap-1.5"
         >
-          <UserPlus className="mr-1 size-3.5" />
+          <UserPlus className="size-3.5" />
           Invite
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md rounded-xl border-border/60 bg-canvas p-0">
+      <DialogContent className="max-w-md rounded-lg border-border/60 bg-canvas p-0">
         <DialogHeader className="border-border/50 border-b px-6 py-5">
           <DialogTitle>Invite to group</DialogTitle>
           <DialogDescription>
@@ -94,7 +95,7 @@ export function InviteMembersDialog({
 
         <div className="flex flex-col gap-4 px-6 py-5">
           {inviteError ? (
-            <div className="flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/5 px-3 py-3">
+            <div className="flex items-center gap-3 rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-3">
               <ErrorInviteSendFailedVisual className="w-16 shrink-0 text-foreground" />
               <p className="font-medium text-destructive text-sm leading-relaxed">
                 {inviteError}
@@ -116,7 +117,7 @@ export function InviteMembersDialog({
 
           <div className="flex max-h-80 flex-col gap-2 overflow-y-auto pr-1">
             {filteredCandidates.length === 0 ? (
-              <div className="flex flex-col items-center rounded-xl border border-border/70 border-dashed bg-background/50 px-4 py-6 text-center">
+              <div className="flex flex-col items-center rounded-lg border border-border/70 border-dashed bg-background/50 px-4 py-6 text-center">
                 <EmptyInviteCandidatesVisual className="w-28 text-foreground" />
                 <p className="mt-3 text-slate-muted text-sm">
                   No eligible friends to invite right now.
@@ -129,7 +130,7 @@ export function InviteMembersDialog({
                 return (
                   <div
                     key={candidate.id}
-                    className="flex items-center gap-3 rounded-xl border border-border/60 bg-background/80 px-3 py-3"
+                    className="flex items-center gap-3 rounded-lg border border-border/60 bg-background/80 px-3 py-3"
                   >
                     <Avatar
                       src={candidate.avatar}

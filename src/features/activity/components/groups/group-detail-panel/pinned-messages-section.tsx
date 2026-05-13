@@ -20,16 +20,14 @@ export function PinnedMessagesSection({
     <section className="flex flex-col gap-3">
       <div className="flex items-center gap-2 px-1">
         <Pin className="size-4 rotate-45 text-forge-teal" />
-        <h4 className="font-bold text-slate-muted text-xs uppercase tracking-wider">
-          Pinned Messages
-        </h4>
+        <h4 className="font-bold text-slate-muted text-xs">Pinned messages</h4>
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="divide-y divide-border/70 border-border/70 border-y">
         {pinnedMessages.map((message) => (
           <div
             key={message.id}
-            className="group relative flex items-start gap-1 rounded-xl border border-border/40 bg-canvas p-2 transition-all duration-200 hover:border-forge-teal/30 hover:bg-forge-teal/2"
+            className="group relative flex items-start gap-1 py-2.5"
           >
             {onJumpToMessage ? (
               <Button

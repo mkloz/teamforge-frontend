@@ -1,5 +1,6 @@
 import type {
   Gender,
+  GroupRole,
   OnlineStatus,
   PersonalityType,
 } from "@/shared/schemas/enums";
@@ -20,6 +21,8 @@ export interface UserProfilePanelParticipant {
   oceanN?: number | null;
   onlineStatus?: OnlineStatus;
   trustScore: number;
+  compatibilityScore?: number | null;
+  groupRole?: GroupRole | null;
 }
 
 export interface UserProfilePanelChatParticipant {
@@ -35,6 +38,7 @@ export interface UserProfilePanelMutualGroup {
 }
 
 export interface UserProfilePanelChat {
+  id?: string;
   participants?: UserProfilePanelChatParticipant[];
   mutualGroups?: UserProfilePanelMutualGroup[];
   isMuted?: boolean;

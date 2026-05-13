@@ -48,14 +48,12 @@ export function ConfirmGroupActionButton({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <div className="w-full">
-          <GroupActionButton
-            icon={icon}
-            label={label}
-            onClick={() => {}}
-            variant={variant}
-          />
-        </div>
+        <GroupActionButton
+          icon={icon}
+          label={label}
+          onClick={() => {}}
+          variant={variant}
+        />
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -65,6 +63,7 @@ export function ConfirmGroupActionButton({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
+            variant={variant === "destructive" ? "destructive" : "primary"}
             onClick={() => {
               void onConfirm();
             }}

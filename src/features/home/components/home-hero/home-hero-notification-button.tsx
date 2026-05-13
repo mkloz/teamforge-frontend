@@ -11,7 +11,7 @@ export function HomeHeroNotificationButton() {
   return (
     <Button
       type="button"
-      variant="surface"
+      variant="outline"
       size="icon"
       onClick={() => void openDrawer()}
       aria-label={

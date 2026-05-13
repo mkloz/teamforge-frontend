@@ -9,6 +9,7 @@ import {
   attachmentTypeSchema,
   type CreateRatingPayload,
   chatApiSchema,
+  costTypeSchema,
   createPaginatedSchema,
   createRatingPayloadSchema,
   type createRatingResultSchema,
@@ -18,9 +19,11 @@ import {
   locationModeSchema,
   messageApiSchema,
   messageTypeSchema,
+  planCategorySchema,
   planProposalFieldSchema,
   planProposalSchema,
   type planSchema,
+  planStatusSchema,
   ratingEntitySchema,
 } from "@/shared/schemas";
 import {
@@ -93,11 +96,19 @@ export const updateGroupPayloadSchema = z.object({
 
 export const updatePlanPayloadSchema = z
   .object({
+    title: z.string().trim().min(1).max(120).optional(),
+    description: z.string().trim().max(1000).nullable().optional(),
+    category: planCategorySchema.optional(),
     coverImage: managedAssetReferenceSchema.nullable().optional(),
+    status: planStatusSchema.optional(),
+    dateTime: z.string().datetime().nullable().optional(),
     locationMode: locationModeSchema.optional(),
     location: z.string().trim().max(200).nullable().optional(),
     locationLat: z.number().finite().min(-90).max(90).nullable().optional(),
     locationLng: z.number().finite().min(-180).max(180).nullable().optional(),
+    cost: costTypeSchema.optional(),
+    costAmount: z.number().nonnegative().nullable().optional(),
+    costDetails: z.string().trim().max(500).nullable().optional(),
   })
   .superRefine((input, context) => {
     const hasLat =

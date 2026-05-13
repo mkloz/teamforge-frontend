@@ -1,6 +1,8 @@
+import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
+import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
 
 export interface MutualGroup {
   id: string;
@@ -16,41 +18,39 @@ export function MutualGroupsSection({ groups }: MutualGroupsSectionProps) {
   if (!groups.length) return null;
 
   return (
-    <div className="border-border/40 border-b px-6 py-6">
-      <h4 className="mb-4 px-1 font-semibold text-slate-muted text-xs uppercase tracking-widest">
-        Mutual Groups ({groups.length})
+    <section className="border-border/70 border-b px-5 py-6">
+      <h4 className="font-bold text-slate-muted text-xs">
+        Shared groups ({groups.length})
       </h4>
 
-      <div className="grid grid-cols-1 gap-3">
+      <div className="mt-3 flex flex-col divide-y divide-border/70 border-border/70 border-y">
         {groups.map((group) => (
           <Button
+            asChild
             key={group.id}
-            type="button"
-            variant="ghost"
-            className={cn(
-              "h-auto w-full justify-start gap-4 rounded-xl p-3 transition-all duration-300",
-              "group border border-border bg-card text-left shadow-sm hover:border-forge-teal/30 hover:shadow-md",
-            )}
+            variant="link"
+            className="group h-auto w-full justify-start rounded-lg px-0 py-2 text-left text-ink! hover:enabled:no-underline"
           >
-            <div className="relative shrink-0">
+            <Link
+              {...buildGroupPlanDetailNavigation(group.id, {
+                source: "activity",
+              })}
+              aria-label={`Open ${group.name}`}
+            >
               <Avatar
                 src={group.avatar}
                 name={group.name}
-                className="size-11 bg-canvas shadow-xs ring-2 ring-card transition-transform duration-500 group-hover:scale-105"
+                className="size-9 bg-canvas ring-1 ring-border/40"
               />
-            </div>
 
-            <div className="min-w-0 flex-1">
-              <span className="block truncate font-bold text-ink text-sm transition-colors group-hover:text-forge-teal">
+              <span className="min-w-0 flex-1 truncate font-bold text-sm transition-colors group-hover:text-forge-teal">
                 {group.name}
               </span>
-              <p className="mt-0.5 font-semibold text-slate-muted text-xs uppercase tracking-wider opacity-80">
-                Peer Group
-              </p>
-            </div>
+              <ArrowRight className="size-3.5 shrink-0 text-slate-muted transition-colors group-hover:text-forge-teal" />
+            </Link>
           </Button>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

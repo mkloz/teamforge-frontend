@@ -1,6 +1,5 @@
 import { UserProfilePanel } from "@/features/activity/components/user-profile-panel";
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import {
   Drawer,
   DrawerContent,
@@ -27,7 +26,6 @@ export function MessageProfileDrawer({
         {selectedSender && (
           <UserProfilePanel
             participant={selectedSender}
-            profileNavigation={buildProfileNavigation()}
             isMobile={true}
             isDirectChat={false}
             onBack={onClose}

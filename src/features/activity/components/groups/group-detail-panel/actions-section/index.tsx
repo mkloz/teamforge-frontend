@@ -1,4 +1,4 @@
-import { BellOff, Flag, LogOut, ShieldAlert } from "lucide-react";
+import { LogOut, ShieldAlert } from "lucide-react";
 
 import type {
   GroupStatus,
@@ -6,7 +6,6 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 
 import { ConfirmGroupActionButton } from "./confirm-group-action-button";
-import { GroupActionButton } from "./group-action-button";
 import { canDisbandGroup, isGroupActionsLocked } from "./group-action-rules";
 
 interface ActionsSectionProps {
@@ -30,31 +29,24 @@ export function ActionsSection({
   const canDisband = canDisbandGroup(currentUserRole, groupStatus);
 
   return (
-    <section className="flex flex-col gap-2">
-      <h3 className="mb-3 font-bold text-foreground text-sm uppercase tracking-widest">
-        Actions
-      </h3>
-
-      {!actionsLocked && (
-        <GroupActionButton
-          icon={<BellOff className="size-4" />}
-          label="Mute Notifications"
-          onClick={() => {
-            // Kept as a visible future affordance until notification preferences land.
-          }}
-        />
-      )}
-
-      <div className="my-2.5 border-border border-t" />
+    <section className="flex flex-col gap-3" aria-labelledby="group-controls">
+      <div className="flex flex-col gap-1">
+        <h3 id="group-controls" className="font-bold text-foreground text-sm">
+          Membership
+        </h3>
+        <p className="text-slate-muted text-xs leading-relaxed">
+          Manage your access to this group chat and plan.
+        </p>
+      </div>
 
       {!actionsLocked && (
         <ConfirmGroupActionButton
-          confirmActionLabel={isLeaving ? "Leaving..." : "Leave Group"}
+          confirmActionLabel={isLeaving ? "Leaving..." : "Leave group"}
           confirmDescription="You’ll leave this group and lose access to its chat and planning workspace."
           confirmTitle="Leave this group?"
           disabled={isLeaving || isDisbanding}
           icon={<LogOut className="size-4" />}
-          label={isLeaving ? "Leaving..." : "Leave Group"}
+          label={isLeaving ? "Leaving..." : "Leave group"}
           onConfirm={onLeaveGroup}
           variant="destructive"
         />
@@ -62,25 +54,24 @@ export function ActionsSection({
 
       {canDisband && (
         <ConfirmGroupActionButton
-          confirmActionLabel={isDisbanding ? "Disbanding..." : "Disband Group"}
+          confirmActionLabel={isDisbanding ? "Disbanding..." : "Disband group"}
           confirmDescription="This will close the group for everyone, cancel unfinished plans, and remove access to the shared workspace."
           confirmTitle="Disband this group?"
           disabled={isDisbanding || isLeaving}
           icon={<ShieldAlert className="size-4" />}
-          label={isDisbanding ? "Disbanding..." : "Disband Group"}
+          label={isDisbanding ? "Disbanding..." : "Disband group"}
           onConfirm={onDisbandGroup}
           variant="destructive"
         />
       )}
 
-      <GroupActionButton
-        icon={<Flag className="size-4" />}
-        label="Report Group"
-        onClick={() => {
-          // TODO: wire report flow when moderation endpoints exist.
-        }}
-        variant="muted"
-      />
+      {actionsLocked ? (
+        <div className="rounded-xl border border-border/70 bg-muted/20 px-4 py-3">
+          <p className="font-medium text-slate-muted text-sm">
+            This group is closed, so membership controls are unavailable.
+          </p>
+        </div>
+      ) : null}
     </section>
   );
 }

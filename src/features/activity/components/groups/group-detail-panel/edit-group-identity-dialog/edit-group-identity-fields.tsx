@@ -16,7 +16,7 @@ export function EditGroupIdentityFields({
       <div className="flex flex-col gap-2">
         <Label
           htmlFor="group-name"
-          className="font-semibold text-muted-foreground text-xs uppercase tracking-wide"
+          className="font-semibold text-muted-foreground text-xs"
         >
           Name
         </Label>
@@ -31,7 +31,7 @@ export function EditGroupIdentityFields({
       <div className="flex flex-col gap-2">
         <Label
           htmlFor="group-description"
-          className="font-semibold text-muted-foreground text-xs uppercase tracking-wide"
+          className="font-semibold text-muted-foreground text-xs"
         >
           Description
         </Label>

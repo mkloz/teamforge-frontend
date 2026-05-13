@@ -12,15 +12,13 @@ export function EditGroupAvatarSection({
 }: GroupIdentityUploadSectionProps) {
   return (
     <div className="flex flex-col gap-2">
-      <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
-        Avatar
-      </p>
+      <p className="font-semibold text-muted-foreground text-xs">Avatar</p>
       <div className="sm:avatar-body-grid grid gap-3">
         <Avatar
           src={editor.avatar || null}
           name={editor.name}
           shape="rounded"
-          className="size-18 rounded-xl border border-border bg-muted"
+          className="size-18 rounded-lg border border-border bg-muted"
         />
         <div className="flex min-w-0 flex-col gap-2">
           <FileDropzone

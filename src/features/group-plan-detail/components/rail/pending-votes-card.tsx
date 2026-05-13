@@ -1,4 +1,6 @@
+import { Link } from "@tanstack/react-router";
 import { MessageSquareWarning } from "lucide-react";
+import { buildActivityGroupNavigation } from "@/features/activity/lib/activity-route";
 import { RailCard } from "@/features/group-plan-detail/components/rail/rail-card";
 import { getPendingVoteHeadline } from "@/features/group-plan-detail/components/rail/rail-model";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
@@ -27,7 +29,13 @@ export function PendingVotesCard({ detail }: PendingVotesCardProps) {
             Approve, reject, or weigh in on what the group is shaping.
           </p>
           <Button asChild variant="outline" size="sm" className="mt-3 w-full">
-            <a href="#activity">Review changes</a>
+            <Link
+              {...buildActivityGroupNavigation(detail.group.id, {
+                panel: "group",
+              })}
+            >
+              Open workspace
+            </Link>
           </Button>
         </div>
       </div>

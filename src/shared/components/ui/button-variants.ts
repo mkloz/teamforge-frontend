@@ -24,8 +24,6 @@ export const buttonVariants = cva(
           "border-2 border-transparent bg-transparent text-ink focus-visible:ring-ink active:enabled:translate-y-px active:enabled:bg-ink/10 hover:enabled:bg-ink/5 dark:text-white focus-visible:dark:ring-white hover:enabled:dark:bg-white/10",
         accentGhost:
           "border-2 border-transparent bg-transparent text-slate-muted focus-visible:ring-forge-teal active:enabled:translate-y-px active:enabled:bg-forge-teal/12 hover:enabled:bg-forge-teal/8 hover:enabled:text-forge-teal dark:text-slate-300 focus-visible:dark:ring-forge-teal hover:enabled:dark:bg-forge-teal/12 hover:enabled:dark:text-forge-teal",
-        surface:
-          "border border-border/70 bg-card/90 text-foreground shadow-sm backdrop-blur-sm focus-visible:ring-forge-teal active:enabled:translate-y-px active:enabled:bg-forge-teal/12 hover:enabled:border-forge-teal/35 hover:enabled:bg-forge-teal/8 hover:enabled:text-forge-teal",
         inverseGhost:
           "border border-ink/5 bg-canvas/10 text-primary-foreground backdrop-blur-sm focus-visible:ring-white active:enabled:translate-y-px hover:enabled:border-ink/10 hover:enabled:bg-white hover:enabled:text-ink hover:enabled:shadow-sm",
         link: "text-forge-teal underline-offset-4 focus-visible:ring-forge-teal hover:enabled:underline",

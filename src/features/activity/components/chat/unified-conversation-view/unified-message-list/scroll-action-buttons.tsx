@@ -28,7 +28,7 @@ export const ScrollActionButtons = memo(
           >
             <Button
               onClick={() => onScrollToBottom()}
-              variant="surface"
+              variant="outline"
               size="icon"
               className="relative size-10 shrink-0 rounded-full"
             >

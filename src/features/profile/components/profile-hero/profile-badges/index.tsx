@@ -15,7 +15,7 @@ export function ProfileBadges({ user, archetype }: ProfileBadgesProps) {
   const groupMode = archetype.replace(/^The\s+/i, "");
 
   return (
-    <div className="grid w-full shrink-0 grid-cols-3 items-start gap-3 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:justify-center md:justify-start md:gap-4">
+    <div className="flex w-auto shrink-0 flex-wrap items-center justify-start gap-4">
       <ProfileSignal
         accent="text-forge-teal"
         label="Trust"
@@ -24,7 +24,7 @@ export function ProfileBadges({ user, archetype }: ProfileBadgesProps) {
       <ProfileBadgeDivider />
       <ProfileSignal label="Type" value={user.personalityType || "Open"} />
       <ProfileBadgeDivider />
-      <ProfileSignal label="Group mode" value={groupMode} />
+      <ProfileSignal label="Role" value={groupMode} />
     </div>
   );
 }
@@ -41,8 +41,8 @@ function ProfileSignal({
   value,
 }: ProfileSignalProps) {
   return (
-    <div className="min-w-0 text-center sm:text-left">
-      <p className="font-bold text-slate-muted text-xs uppercase tracking-widest sm:text-nano">
+    <div className="min-w-0 text-left">
+      <p className="font-bold text-nano text-slate-muted uppercase tracking-widest">
         {label}
       </p>
       <p

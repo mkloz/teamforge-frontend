@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { ActivityLanesSection } from "@/features/profile/components/activity-lanes-section";
 import { BestFirstGroupStrip } from "@/features/profile/components/best-first-group-strip";
 import { GroupFitSection } from "@/features/profile/components/group-fit-section";
@@ -13,20 +14,25 @@ import { buildProfilePageModel } from "./profile-page-model";
 
 interface ProfilePageContentProps {
   profile: User;
+  mode?: "self" | "public";
+  renderActions?: () => ReactNode;
   showUserMenu?: boolean;
 }
 
 export function ProfilePageContent({
+  mode = "self",
   profile,
-  showUserMenu = true,
+  renderActions,
+  showUserMenu,
 }: ProfilePageContentProps) {
   const pageModel = buildProfilePageModel(profile);
+  const shouldShowUserMenu = showUserMenu ?? mode === "self";
 
   return (
     <main className="relative min-h-full overflow-x-hidden bg-canvas pb-32 md:pb-0">
       <ProfileCoverBanner personalityType={profile.personalityType} />
 
-      {showUserMenu ? (
+      {shouldShowUserMenu ? (
         <div className="absolute top-4 right-4 z-50 md:top-6 md:right-8">
           <UserMenu trigger="settings" />
         </div>
@@ -37,6 +43,8 @@ export function ProfilePageContent({
           user={profile}
           archetype={pageModel.archetype}
           socialRead={pageModel.socialRead}
+          renderActions={renderActions}
+          showMissingDetailsAction={mode === "self"}
         />
 
         <ProfilePortraitSection portrait={pageModel.profileInsights.portrait} />

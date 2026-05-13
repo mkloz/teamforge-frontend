@@ -13,6 +13,7 @@ export function EditGroupIdentityFooter({
 }: EditGroupIdentityFooterProps) {
   const isSaveDisabled =
     !editor.isNameValid ||
+    !editor.isPlanValid ||
     !editor.hasChanges ||
     editor.isSaving ||
     editor.isAvatarUploading ||

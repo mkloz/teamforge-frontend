@@ -1,3 +1,8 @@
+import { buildActivityDmNavigation } from "@/features/activity/lib/activity-route";
+import {
+  buildProfileNavigation,
+  type ProfileNavigation,
+} from "@/features/profile/lib/profile-route";
 import { cn } from "@/shared/lib/utils";
 import { type MutualGroup, MutualGroupsSection } from "./mutual-groups-section";
 import { ProfilePanelInfo } from "./profile-panel-info";
@@ -10,7 +15,7 @@ import type {
 interface UserProfilePanelProps {
   participant?: UserProfilePanelParticipant;
   chat?: UserProfilePanelChat;
-  profileNavigation?: { to: "/profile" };
+  profileNavigation?: ProfileNavigation;
   mutualGroups?: MutualGroup[];
   isMuted?: boolean;
   isBlocked?: boolean;
@@ -67,9 +72,12 @@ export function UserProfilePanel({
       <div className="flex-1">
         <ProfilePanelInfo
           participant={participant}
-          profileNavigation={profileNavigation}
-          isMobile={isMobile}
-          isDirectChat={isDirectChat}
+          chatNavigation={
+            chat?.id ? buildActivityDmNavigation(chat.id) : undefined
+          }
+          profileNavigation={
+            profileNavigation ?? buildProfileNavigation(participant.id)
+          }
           onBack={onBack}
         />
 

@@ -2,12 +2,28 @@ import type {
   UpdateGroupPayload,
   UpdatePlanPayload,
 } from "@/features/activity/api/activity.api";
-import type { Group } from "@/features/activity/lib/activity-contract";
+import type {
+  CostType,
+  Group,
+  LocationMode,
+  PlanCategory,
+  PlanStatus,
+} from "@/features/activity/lib/activity-contract";
 
 export interface GroupIdentityFormValues {
   avatar: string;
   coverImage: string | null;
   description: string;
+  planCategory: PlanCategory | "";
+  planCost: CostType;
+  planCostAmount: string;
+  planCostDetails: string;
+  planDateTime: string;
+  planDescription: string;
+  planLocation: string;
+  planLocationMode: LocationMode;
+  planStatus: PlanStatus | "";
+  planTitle: string;
   name: string;
 }
 
@@ -26,6 +42,19 @@ export function getInitialGroupIdentityValues(
     coverImage: group.plan?.coverImage ?? null,
     description: group.description ?? "",
     name: group.name,
+    planCategory: group.plan?.category ?? "",
+    planCost: group.plan?.cost ?? "FREE",
+    planCostAmount:
+      typeof group.plan?.costAmount === "number"
+        ? String(group.plan.costAmount)
+        : "",
+    planCostDetails: group.plan?.costDetails ?? "",
+    planDateTime: toDateTimeLocalValue(group.plan?.dateTime ?? null),
+    planDescription: group.plan?.description ?? "",
+    planLocation: group.plan?.location ?? "",
+    planLocationMode: group.plan?.locationMode ?? "TBD",
+    planStatus: group.plan?.status ?? "",
+    planTitle: group.plan?.title ?? "",
   };
 }
 
@@ -38,12 +67,15 @@ export function hasGroupIdentityChanges(
   values: GroupIdentityFormValues,
 ) {
   const groupPayload = buildGroupPayload(values);
+  const planPayload = group.plan ? buildPlanPayload(values) : undefined;
 
   return (
     groupPayload.name !== group.name ||
     groupPayload.description !== group.description ||
     groupPayload.avatar !== group.avatar ||
-    values.coverImage !== (group.plan?.coverImage ?? null)
+    Boolean(
+      group.plan && planPayload && hasPlanPayloadChanges(group, planPayload),
+    )
   );
 }
 
@@ -56,8 +88,8 @@ export function buildGroupIdentityUpdateInput(
     ? groupPayload
     : undefined;
   const nextPlanPayload =
-    group.plan && values.coverImage !== group.plan.coverImage
-      ? { coverImage: values.coverImage }
+    group.plan && hasPlanPayloadChanges(group, buildPlanPayload(values))
+      ? buildPlanPayload(values)
       : undefined;
 
   return {
@@ -86,8 +118,123 @@ function hasGroupPayloadChanges(group: Group, payload: UpdateGroupPayload) {
   );
 }
 
+function buildPlanPayload(values: GroupIdentityFormValues): UpdatePlanPayload {
+  return {
+    category: values.planCategory || undefined,
+    cost: values.planCost,
+    costAmount: normalizeCostAmount(values),
+    costDetails: normalizeOptionalText(values.planCostDetails),
+    coverImage: values.coverImage,
+    dateTime: normalizeDateTime(values.planDateTime),
+    description: normalizeOptionalText(values.planDescription),
+    location: normalizeLocation(values),
+    locationLat: null,
+    locationLng: null,
+    locationMode: values.planLocationMode,
+    status: values.planStatus || undefined,
+    title: values.planTitle.trim(),
+  };
+}
+
+function hasPlanPayloadChanges(group: Group, payload: UpdatePlanPayload) {
+  if (!group.plan) {
+    return false;
+  }
+
+  return (
+    payload.category !== group.plan.category ||
+    payload.cost !== group.plan.cost ||
+    payload.costAmount !== group.plan.costAmount ||
+    payload.costDetails !== group.plan.costDetails ||
+    payload.coverImage !== group.plan.coverImage ||
+    payload.dateTime !== group.plan.dateTime ||
+    payload.description !== group.plan.description ||
+    payload.location !== group.plan.location ||
+    payload.locationLat !== group.plan.locationLat ||
+    payload.locationLng !== group.plan.locationLng ||
+    payload.locationMode !== group.plan.locationMode ||
+    payload.status !== group.plan.status ||
+    payload.title !== group.plan.title
+  );
+}
+
+export function isGroupPlanValid(values: GroupIdentityFormValues) {
+  if (!values.planTitle.trim()) {
+    return false;
+  }
+
+  if (!values.planCategory || !values.planStatus) {
+    return false;
+  }
+
+  if (values.planDateTime && !normalizeDateTime(values.planDateTime)) {
+    return false;
+  }
+
+  if (
+    values.planLocationMode !== "TBD" &&
+    !normalizeOptionalText(values.planLocation)
+  ) {
+    return false;
+  }
+
+  if (values.planCost === "PAID" && !normalizeCostAmount(values)) {
+    return false;
+  }
+
+  return true;
+}
+
+function normalizeCostAmount(values: GroupIdentityFormValues) {
+  if (values.planCost !== "PAID") {
+    return null;
+  }
+
+  const amount = Number(values.planCostAmount);
+  return values.planCostAmount.trim() && !Number.isNaN(amount) ? amount : null;
+}
+
+function normalizeDateTime(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return null;
+  }
+
+  const date = new Date(trimmed);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
+function normalizeLocation(values: GroupIdentityFormValues) {
+  if (values.planLocationMode === "TBD") {
+    return null;
+  }
+
+  return normalizeOptionalText(values.planLocation);
+}
+
 function normalizeOptionalText(value: string) {
   const trimmed = value.trim();
 
   return trimmed.length > 0 ? trimmed : null;
+}
+
+function padDateTimePart(part: number) {
+  return String(part).padStart(2, "0");
+}
+
+function toDateTimeLocalValue(value: string | null) {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return `${date.getFullYear()}-${padDateTimePart(date.getMonth() + 1)}-${padDateTimePart(
+    date.getDate(),
+  )}T${padDateTimePart(date.getHours())}:${padDateTimePart(date.getMinutes())}`;
 }

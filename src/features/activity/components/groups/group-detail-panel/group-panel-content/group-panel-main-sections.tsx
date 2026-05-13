@@ -8,6 +8,7 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 
 import { ActionsSection } from "../actions-section";
+import { isGroupActionsLocked } from "../actions-section/group-action-rules";
 import { GroupIdentitySection } from "../group-identity-section";
 import { MembersSection } from "../members-section";
 import { PinnedMessagesSection } from "../pinned-messages-section";
@@ -34,6 +35,7 @@ interface GroupPanelMainSectionsProps {
   leaveGroup: () => Promise<void> | void;
   memberCount: number;
   members: GroupMember[];
+  onEditGroup: () => void;
   removeMember: (memberId: string) => Promise<void> | void;
   removingMemberId: string | null;
   setSelectedMember: (member: GroupMember) => void;
@@ -56,39 +58,53 @@ export function GroupPanelMainSections({
   leaveGroup,
   memberCount,
   members,
+  onEditGroup,
   removeMember,
   removingMemberId,
   setSelectedMember,
   unpinMessage,
 }: GroupPanelMainSectionsProps) {
+  const isGroupLocked = isGroupActionsLocked(group.status);
+
   return (
     <motion.div
       variants={groupPanelContainerVariants}
       initial="hidden"
       animate="visible"
-      className="px-4 pt-3 pb-6"
+      className="flex flex-col gap-7 px-5 pt-0 pb-7"
     >
       <motion.div variants={groupPanelItemVariants}>
         <GroupIdentitySection
-          name={group.name}
+          activity={group.activity}
+          avatar={group.avatar}
+          coverImage={group.plan?.coverImage ?? null}
+          createdAt={group.createdAt}
+          currentUserRole={currentUserRole}
           description={group.description}
+          isReadOnly={isGroupLocked}
           memberCount={memberCount}
           maxMembers={group.maxMembers}
+          groupId={group.id}
+          name={group.name}
+          onEditGroup={onEditGroup}
+          plan={group.plan}
+          status={group.status}
         />
       </motion.div>
 
       {group.plan && (
-        <motion.div variants={groupPanelItemVariants} className="mt-5">
+        <motion.div variants={groupPanelItemVariants}>
           <PlanSection
             plan={group.plan}
             isFocused={focusedPlanId === group.plan.id}
             focusedProposalId={focusedProposalId}
+            isReadOnly={isGroupLocked}
           />
         </motion.div>
       )}
 
       {group.chat?.pinnedMessages && group.chat.pinnedMessages.length > 0 && (
-        <motion.div variants={groupPanelItemVariants} className="mt-6">
+        <motion.div variants={groupPanelItemVariants}>
           <PinnedMessagesSection
             onJumpToMessage={jumpToPinnedMessage}
             onUnpinMessage={unpinMessage}
@@ -97,8 +113,6 @@ export function GroupPanelMainSections({
         </motion.div>
       )}
 
-      <div className="my-6 border-border/50 border-t" />
-
       {members.length > 0 && (
         <motion.div variants={groupPanelItemVariants}>
           <MembersSection
@@ -106,6 +120,7 @@ export function GroupPanelMainSections({
             maxMembers={group.maxMembers}
             currentUserId={currentUserId}
             currentUserRole={currentUserRole}
+            isReadOnly={isGroupLocked}
             inviteCandidates={inviteCandidates}
             invitingMemberId={invitingMemberId}
             onInviteMember={inviteMember}
@@ -116,23 +131,41 @@ export function GroupPanelMainSections({
         </motion.div>
       )}
 
-      <motion.div variants={groupPanelItemVariants} className="mt-8">
-        <PlanHistorySection
-          history={group.planHistory ?? []}
-          userRole={currentUserRole}
-        />
+      <motion.div variants={groupPanelItemVariants}>
+        <PlanHistorySection history={group.planHistory ?? []} />
       </motion.div>
 
-      <motion.div variants={groupPanelItemVariants} className="mt-8">
-        <ActionsSection
-          currentUserRole={currentUserRole}
-          groupStatus={group.status}
-          isDisbanding={isDisbanding}
-          isLeaving={isLeaving}
-          onDisbandGroup={disbandGroup}
-          onLeaveGroup={leaveGroup}
-        />
-      </motion.div>
+      {!isGroupLocked ? (
+        <motion.div variants={groupPanelItemVariants}>
+          <ActionsSection
+            currentUserRole={currentUserRole}
+            groupStatus={group.status}
+            isDisbanding={isDisbanding}
+            isLeaving={isLeaving}
+            onDisbandGroup={disbandGroup}
+            onLeaveGroup={leaveGroup}
+          />
+        </motion.div>
+      ) : (
+        <motion.div variants={groupPanelItemVariants}>
+          <ArchivedGroupFooter status={group.status} />
+        </motion.div>
+      )}
     </motion.div>
+  );
+}
+
+function ArchivedGroupFooter({ status }: { status: Group["status"] }) {
+  const label =
+    status === "COMPLETED"
+      ? "Group archived after the final plan."
+      : "Group closed and kept for history.";
+
+  return (
+    <footer className="border-border/70 border-t pt-4 pb-2">
+      <p className="text-center font-medium text-slate-muted text-xs">
+        {label}
+      </p>
+    </footer>
   );
 }

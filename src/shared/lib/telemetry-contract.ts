@@ -63,6 +63,7 @@ export const routeErrorScopes = {
   groupPlanDetail: "group-plan-detail",
   activity: "activity",
   profile: "profile",
+  userDetail: "user-detail",
   settings: "settings",
   forge: "forge",
   designSystem: "design-system",

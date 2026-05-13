@@ -1,9 +1,5 @@
-import { motion } from "framer-motion";
-import { Pencil, X } from "lucide-react";
-import type {
-  Group,
-  MemberRole,
-} from "@/features/activity/lib/activity-contract";
+import { X } from "lucide-react";
+import type { Group } from "@/features/activity/lib/activity-contract";
 import { PlanCover } from "@/shared/components/common/plan-cover";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -14,66 +10,39 @@ import {
 import { cn } from "@/shared/lib/utils";
 
 interface GroupCoverHeaderProps {
-  currentUserRole: MemberRole;
   group: Group;
   isMobile: boolean;
   onClose: () => void;
-  onEditGroup: () => void;
 }
 
 export function GroupCoverHeader({
-  currentUserRole,
   group,
   isMobile,
   onClose,
-  onEditGroup,
 }: GroupCoverHeaderProps) {
   return (
     <header className="relative">
-      <div className={cn("relative w-full", isMobile ? "h-44" : "h-36")}>
-        <motion.div
-          initial={{ scale: 1.1 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.6 }}
-          className="size-full"
-        >
+      <div className={cn("relative w-full", isMobile ? "h-44" : "h-40")}>
+        <div className="size-full bg-canvas">
           <PlanCover
             value={group.plan?.coverImage}
             alt={`${group.name} cover`}
-            imageClassName="transition-transform duration-700 group-hover:scale-105"
+            imageClassName="transition-opacity duration-500 ease-out"
             loading="eager"
+            loadingClassName="bg-canvas/35"
+            loadingComponent={null}
           />
-        </motion.div>
-        <div className="absolute inset-0 bg-linear-to-t from-canvas/90 via-canvas/10 to-transparent" />
-
-        {currentUserRole === "ADMIN" && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-xs"
-                className={cn(
-                  "absolute z-30 rounded-full border-0 bg-black/20 p-0 text-white backdrop-blur-sm transition-all hover:bg-black/40",
-                  isMobile ? "top-4 right-14 size-9" : "top-3 right-4",
-                )}
-                aria-label="Edit group settings"
-                onClick={onEditGroup}
-              >
-                <Pencil className={isMobile ? "size-5" : "size-4"} />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Edit group settings</TooltipContent>
-          </Tooltip>
-        )}
+        </div>
+        <div className="absolute inset-0 bg-linear-to-t from-canvas via-canvas/20 to-ink/20" />
 
         {isMobile && (
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
-                size="icon-xs"
+                size="icon"
                 onClick={onClose}
-                className="absolute top-3 right-3 rounded-full border-0 bg-black/20 p-0 text-white backdrop-blur-sm hover:bg-black/40"
+                className="absolute top-3 right-3 rounded-full border-0 bg-ink/35 p-0 text-white backdrop-blur-sm hover:bg-ink/55"
                 aria-label="Close group panel"
               >
                 <X className="size-4" />

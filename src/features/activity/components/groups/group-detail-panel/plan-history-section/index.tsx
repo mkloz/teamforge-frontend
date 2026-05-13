@@ -1,102 +1,69 @@
-import { ChevronDown, ChevronUp, History, Plus } from "lucide-react";
+import { CalendarCheck2, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
-import type {
-  MemberRole,
-  PlanHistoryItem,
-} from "@/features/activity/lib/activity-contract";
+import type { PlanHistoryItem } from "@/features/activity/lib/activity-contract";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { HistoryCard } from "./history-card";
 
 interface PlanHistorySectionProps {
   history: PlanHistoryItem[];
-  userRole: MemberRole;
 }
 
-export function PlanHistorySection({
-  history,
-  userRole,
-}: PlanHistorySectionProps) {
+export function PlanHistorySection({ history }: PlanHistorySectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const isAdmin = userRole === "ADMIN";
   const visibleHistory = isExpanded ? history : history.slice(0, 2);
   const historyCount = history.length;
 
-  if (historyCount === 0 && !isAdmin) return null;
+  if (historyCount === 0) return null;
 
   return (
-    <section aria-labelledby="history-heading">
-      {/* Header with action button */}
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <History className="size-4 text-forge-teal/80" />
-          <h3
-            id="history-heading"
-            className="font-bold text-foreground text-sm uppercase tracking-widest"
-          >
-            History
-            {historyCount > 0 && (
-              <span className="ml-2 font-medium text-muted-foreground/50">
-                ({historyCount})
-              </span>
-            )}
-          </h3>
+    <section aria-labelledby="previous-plans-heading">
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div className="flex min-w-0 gap-2.5">
+          <CalendarCheck2 className="mt-0.5 size-4 shrink-0 text-forge-teal" />
+          <div className="min-w-0">
+            <h3
+              id="previous-plans-heading"
+              className="font-bold text-foreground text-sm"
+            >
+              Previous plans
+            </h3>
+            <p className="mt-1 text-slate-muted text-xs leading-relaxed">
+              {historyCount === 1
+                ? "1 past plan from this group."
+                : `${historyCount} past plans from this group.`}
+            </p>
+          </div>
         </div>
-        {isAdmin && (
+      </div>
+
+      <div className="divide-y divide-border/70 border-border/70 border-y">
+        {visibleHistory.map((item) => (
+          <HistoryCard key={item.id} item={item} />
+        ))}
+
+        {historyCount > 2 && (
           <Button
-            variant="outline"
-            size="sm"
-            className="font-bold text-xs uppercase tracking-wider"
+            type="button"
+            variant="ghost"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className={cn("h-auto w-full gap-1.5 py-2.5", "text-xs")}
+            aria-expanded={isExpanded}
           >
-            <Plus className="mr-1 size-3.5" strokeWidth={3} />
-            New Plan
+            {isExpanded ? (
+              <>
+                <ChevronUp className="size-3.5" strokeWidth={2.5} />
+                Show less
+              </>
+            ) : (
+              <>
+                <ChevronDown className="size-3.5" strokeWidth={2.5} />
+                See {historyCount - 2} more
+              </>
+            )}
           </Button>
         )}
       </div>
-
-      {historyCount === 0 ? (
-        <div className="group/empty rounded-xl border-2 border-border/40 border-dashed bg-muted/10 p-6 text-center transition-colors duration-300 hover:border-border/60">
-          <div className="mx-auto mb-2.5 flex size-10 items-center justify-center rounded-full bg-muted/30 transition-transform group-hover/empty:scale-110">
-            <History className="size-5 text-muted-foreground/40" />
-          </div>
-          <p className="mb-0.5 font-bold text-foreground/60 text-sm">
-            No completed plans yet
-          </p>
-          <p className="mx-auto max-w-44 text-muted-foreground/50 text-xs leading-relaxed">
-            Past activities will appear here once your group completes its first
-            forge.
-          </p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-2.5">
-          {visibleHistory.map((item) => (
-            <HistoryCard key={item.id} item={item} />
-          ))}
-
-          {/* Expand/collapse button - standardized style */}
-          {historyCount > 2 && (
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setIsExpanded(!isExpanded)}
-              className={cn("h-auto w-full gap-1.5 py-2.5", "text-xs")}
-              aria-expanded={isExpanded}
-            >
-              {isExpanded ? (
-                <>
-                  <ChevronUp className="size-3.5" strokeWidth={2.5} />
-                  Show less
-                </>
-              ) : (
-                <>
-                  <ChevronDown className="size-3.5" strokeWidth={2.5} />
-                  See {historyCount - 2} more
-                </>
-              )}
-            </Button>
-          )}
-        </div>
-      )}
     </section>
   );
 }

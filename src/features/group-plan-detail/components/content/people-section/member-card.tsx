@@ -1,10 +1,8 @@
-import { Crown, ShieldCheck, Sparkles, UserRoundCheck } from "lucide-react";
+import { Crown } from "lucide-react";
 import type { GroupPlanDetailMember } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import { MemberAction } from "./member-action";
-import { MemberBadge } from "./member-badge";
-import { getCompatLabel, getTrustLabel } from "./people-section-model";
 
 interface MemberCardProps {
   member: GroupPlanDetailMember;
@@ -20,25 +18,19 @@ export function MemberCard({
   variant,
 }: MemberCardProps) {
   const isHost = variant === "host";
-  const trustLabel = getTrustLabel(member.trustScore);
-  const compatLabel = getCompatLabel(member.compatibilityScore);
 
   return (
     <article
       className={cn(
-        "group flex items-center gap-3.5 rounded-xl p-2.5 transition-colors duration-200",
-        isHost ? "bg-forge-teal/5 hover:bg-forge-teal/8" : "hover:bg-muted/50",
+        "group flex items-center gap-3 px-2 py-2 transition-colors duration-150 hover:bg-muted/50",
+        isHost && "bg-forge-teal/5",
       )}
     >
       <MemberAvatar member={member} isHost={isHost} />
 
       <div className="min-w-0 flex-1">
         <MemberIdentity member={member} isHost={isHost} isViewer={isViewer} />
-        <MemberMeta
-          member={member}
-          compatLabel={compatLabel}
-          trustLabel={trustLabel}
-        />
+        <MemberMeta member={member} />
       </div>
 
       {isMember && !isViewer ? <MemberAction member={member} /> : null}
@@ -59,14 +51,14 @@ function MemberAvatar({
         src={member.avatar}
         name={member.name}
         className={cn(
-          "size-10 border-2",
+          "size-10 ring-1 ring-border/20",
           member.trustScore >= 0.8
-            ? "border-forge-teal/40"
-            : "border-border/60",
+            ? "ring-2 ring-forge-teal/30"
+            : "ring-border/40",
         )}
       />
       {isHost ? (
-        <div className="absolute -right-0.5 -bottom-0.5 flex size-5 items-center justify-center rounded-full bg-forge-teal text-white shadow-sm">
+        <div className="absolute -top-1 -left-1 flex size-5 items-center justify-center rounded-md border-2 border-canvas bg-spark-amber text-white shadow-md">
           <Crown className="size-2.5" aria-hidden="true" />
         </div>
       ) : null}
@@ -89,12 +81,17 @@ function MemberIdentity({
         {member.name}
       </h3>
       {isViewer ? (
-        <span className="type-signature-label shrink-0 rounded-full bg-muted px-1.5 py-0.5 font-bold text-muted-foreground uppercase tracking-widest">
+        <span className="shrink-0 rounded-full bg-muted px-1.5 py-0.5 font-bold text-micro text-muted-foreground">
           You
         </span>
       ) : null}
+      {member.personalityType ? (
+        <span className="h-4 shrink-0 rounded-full bg-forge-teal px-1.5 font-bold text-micro text-white leading-4">
+          {member.personalityType}
+        </span>
+      ) : null}
       {isHost ? (
-        <span className="type-signature-label shrink-0 font-bold text-forge-teal uppercase tracking-widest">
+        <span className="shrink-0 font-bold text-forge-teal text-micro">
           {member.role === "ADMIN" ? "Host" : "Mod"}
         </span>
       ) : null}
@@ -102,39 +99,45 @@ function MemberIdentity({
   );
 }
 
-function MemberMeta({
-  compatLabel,
-  member,
-  trustLabel,
-}: {
-  compatLabel: string | null;
-  member: GroupPlanDetailMember;
-  trustLabel: string | null;
-}) {
+function MemberMeta({ member }: { member: GroupPlanDetailMember }) {
+  const trustPercent = formatPercent(member.trustScore);
+  const compatibilityPercent = formatPercent(member.compatibilityScore);
+  const isHighCompatibility =
+    typeof compatibilityPercent === "number" && compatibilityPercent >= 80;
+
   return (
-    <div className="mt-1 flex flex-wrap items-center gap-1.5">
-      {member.personalityType ? (
-        <MemberBadge
-          text={member.personalityType}
-          icon={Sparkles}
-          color="teal"
-        />
+    <div className="mt-0.5 flex min-w-0 items-center gap-2.5">
+      <span className="shrink-0 font-bold text-muted-foreground text-xs">
+        Trust {trustPercent}%
+      </span>
+      {typeof compatibilityPercent === "number" ? (
+        <>
+          <div className="h-2 w-px shrink-0 bg-border/50" />
+          <span
+            className={cn(
+              "shrink-0 font-bold text-xs",
+              isHighCompatibility
+                ? "text-forge-teal"
+                : "text-muted-foreground/60",
+            )}
+          >
+            {compatibilityPercent}% fit
+          </span>
+        </>
       ) : null}
       {member.knownConnection ? (
-        <MemberBadge
-          text={member.knownConnection}
-          icon={UserRoundCheck}
-          color="amber"
-        />
-      ) : null}
-      {trustLabel ? (
-        <MemberBadge text={trustLabel} icon={ShieldCheck} color="muted" />
-      ) : null}
-      {compatLabel ? (
-        <span className="type-signature-label font-medium text-muted-foreground">
-          {compatLabel}
+        <span className="min-w-0 truncate font-medium text-muted-foreground/70 text-xs">
+          {member.knownConnection}
         </span>
       ) : null}
     </div>
   );
+}
+
+function formatPercent(score: number | null) {
+  if (typeof score !== "number") {
+    return null;
+  }
+
+  return Math.round(score > 1 ? score : score * 100);
 }

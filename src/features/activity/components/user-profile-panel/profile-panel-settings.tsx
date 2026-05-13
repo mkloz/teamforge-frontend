@@ -20,47 +20,51 @@ export function ProfilePanelSettings({
   onToggleBlock,
 }: ProfilePanelSettingsProps) {
   return (
-    <div className={cn("p-6", isMobile && "pb-6")}>
-      <h4 className="mb-4 px-1 font-semibold text-slate-muted text-xs uppercase tracking-widest">
-        Account & Safety
-      </h4>
-      <div className="flex flex-col gap-1">
+    <section
+      className={cn("border-border/70 border-t px-5 py-5", isMobile && "pb-6")}
+    >
+      <h4 className="font-bold text-slate-muted text-xs">Account & safety</h4>
+      <div className="mt-3 flex flex-col divide-y divide-border/70 border-border/70 border-y">
         <Button
           variant="ghost"
-          className="group flex h-auto w-full items-center justify-start gap-3 px-3 py-2"
+          className="group flex h-auto w-full items-center justify-start rounded-lg px-0 py-3"
+          contentClassName="justify-start gap-3"
         >
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-slate-muted transition-colors group-hover:text-forge-teal">
-            {isMuted ? <BellOff size={16} /> : <Bell size={16} />}
-          </div>
+          {isMuted ? (
+            <BellOff className="size-4 shrink-0 text-slate-muted transition-colors group-hover:text-forge-teal" />
+          ) : (
+            <Bell className="size-4 shrink-0 text-slate-muted transition-colors group-hover:text-forge-teal" />
+          )}
           <span className="font-medium text-ink text-sm">
-            {isMuted ? "Unmute Notifications" : "Mute Notifications"}
+            {isMuted ? "Unmute notifications" : "Mute notifications"}
           </span>
         </Button>
 
         <Button
-          variant="destructive"
-          className="group flex h-auto w-full items-center justify-start gap-3 px-3 py-2"
-          disabled={blockActionDisabled || isBlockActionPending}
+          variant="ghost"
+          className="group flex h-auto w-full items-center justify-start rounded-lg px-0 py-3 text-destructive"
+          contentClassName="justify-start gap-3"
+          disabled={
+            blockActionDisabled || isBlockActionPending || !onToggleBlock
+          }
           onClick={onToggleBlock}
         >
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-destructive/10 text-destructive transition-colors">
-            {isBlockActionPending ? (
-              <Loader2 size={16} className="animate-spin" />
-            ) : (
-              <Ban size={16} />
-            )}
-          </div>
+          {isBlockActionPending ? (
+            <Loader2 className="size-4 shrink-0 animate-spin" />
+          ) : (
+            <Ban className="size-4 shrink-0" />
+          )}
           <span className="font-medium text-sm">
             {isBlockActionPending
               ? isBlocked
                 ? "Unblocking..."
                 : "Blocking..."
               : isBlocked
-                ? "Unblock User"
-                : "Block User"}
+                ? "Unblock user"
+                : "Block user"}
           </span>
         </Button>
       </div>
-    </div>
+    </section>
   );
 }

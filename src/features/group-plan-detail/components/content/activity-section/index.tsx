@@ -37,7 +37,7 @@ export function ActivitySection({
 
   return (
     <Section
-      heading={hasProposals ? "Plan changes in flight" : "Plan activity"}
+      heading={hasProposals ? "Plan changes in flight" : "Plan changes"}
       description={
         hasProposals
           ? "Members are weighing changes to the plan. Approve, reject, or suggest your own."

@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { MapPin } from "lucide-react";
+import type { ReactNode } from "react";
 import { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
 import { Button } from "@/shared/components/ui/button";
 import type { User } from "@/shared/schemas";
@@ -9,54 +10,58 @@ import { ProfileBadges } from "./profile-badges";
 interface ProfileIdentityProps {
   user: User;
   archetype: string;
+  actions?: ReactNode;
+  showMissingDetailsAction?: boolean;
 }
 
-export function ProfileIdentity({ user, archetype }: ProfileIdentityProps) {
+export function ProfileIdentity({
+  user,
+  archetype,
+  actions = <ProfileActions />,
+  showMissingDetailsAction = true,
+}: ProfileIdentityProps) {
   const hasAge = typeof user.age === "number";
   const hasCity = Boolean(user.city);
 
   return (
-    <div className="flex min-w-0 flex-1 flex-col items-center justify-center pt-0 sm:items-start">
-      <h1 className="text-balance text-center font-bold text-3xl text-ink leading-tight tracking-tight sm:text-left sm:text-4xl sm:text-white">
+    <div className="flex min-w-0 flex-1 flex-col items-start justify-center pt-0">
+      <h1 className="text-balance text-left font-bold text-3xl text-white leading-tight tracking-tight sm:text-4xl">
         {user.name}
       </h1>
 
-      <div className="mt-1.5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 font-medium text-slate-muted sm:justify-start sm:text-white/80">
+      <div className="mt-1.5 flex flex-wrap items-center justify-start gap-x-2 gap-y-1 font-medium text-white/80">
         {hasAge ? (
           <span className="font-semibold text-sm">{user.age} yrs</span>
         ) : null}
         {hasAge && hasCity ? (
-          <span className="size-1 rounded-full bg-slate-muted/30 sm:bg-white/40" />
+          <span className="size-1 rounded-full bg-white/40" />
         ) : null}
         {hasCity ? (
           <div className="flex min-w-0 items-center gap-1 font-bold text-micro uppercase tracking-widest">
-            <MapPin
-              size={12}
-              className="shrink-0 text-forge-teal sm:text-white/90"
-            />
+            <MapPin size={12} className="shrink-0 text-white/90" />
             <span className="truncate">{user.city}</span>
           </div>
         ) : null}
         {!hasAge && !hasCity ? (
-          <div className="flex flex-col items-center gap-2 sm:items-start">
-            <span className="text-sm">
+          <div className="flex flex-col items-start gap-2">
+            <span className="text-sm text-white/80">
               Profile details are still being filled in.
             </span>
-            <Button asChild variant="outline" size="sm">
-              <Link {...buildSettingsNavigation("account")}>
-                Finish account details
-              </Link>
-            </Button>
+            {showMissingDetailsAction ? (
+              <Button asChild variant="outline" size="sm">
+                <Link {...buildSettingsNavigation("account")}>
+                  Finish account details
+                </Link>
+              </Button>
+            ) : null}
           </div>
         ) : null}
       </div>
 
       {/* Universal Badges & Actions Row */}
-      <div className="mt-4 flex w-full flex-col items-center justify-center gap-5 pb-1 sm:mt-5 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+      <div className="mt-2 flex w-full flex-col items-start justify-center gap-5 pb-1 sm:mt-5 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
         <ProfileBadges user={user} archetype={archetype} />
-        <div className="hidden lg:flex">
-          <ProfileActions />
-        </div>
+        <div className="hidden lg:flex">{actions}</div>
       </div>
     </div>
   );

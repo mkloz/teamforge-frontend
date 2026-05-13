@@ -8,7 +8,7 @@ import {
 } from "@/shared/components/ui/tooltip";
 
 const memberActionClassName =
-  "flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground opacity-0 transition-all duration-200 hover:bg-forge-teal/10 hover:text-forge-teal group-hover:opacity-100";
+  "flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground opacity-80 transition-colors duration-150 hover:bg-forge-teal/10 hover:text-forge-teal group-hover:opacity-100";
 
 export function MemberAction({ member }: { member: GroupPlanDetailMember }) {
   if (member.knownConnection) {

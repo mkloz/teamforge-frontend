@@ -6,7 +6,7 @@ export function ProfileBadgeDivider() {
   return (
     <motion.div
       variants={profileBadgeItemVariants}
-      className="hidden h-6 w-px rounded-full bg-slate-muted/20 sm:block"
+      className="h-6 w-px rounded-full bg-slate-muted/20"
     />
   );
 }

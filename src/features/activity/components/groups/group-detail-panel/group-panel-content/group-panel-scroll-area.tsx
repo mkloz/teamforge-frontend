@@ -14,7 +14,7 @@ export function GroupPanelScrollArea({
   return (
     <div
       className={cn(
-        "flex-1 overflow-y-auto",
+        "scrollbar-thin flex-1 overflow-y-auto",
         isMobile && "scrollbar-hide pb-6",
       )}
     >

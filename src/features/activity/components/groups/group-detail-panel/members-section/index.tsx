@@ -10,6 +10,7 @@ import { MemberCard } from "./member-card";
 interface MembersSectionProps {
   inviteCandidates?: ActivityParticipant[];
   invitingMemberId?: string | null;
+  isReadOnly?: boolean;
   members: GroupMember[];
   maxMembers: number;
   currentUserId: string | null;
@@ -23,6 +24,7 @@ interface MembersSectionProps {
 export function MembersSection({
   inviteCandidates = [],
   invitingMemberId = null,
+  isReadOnly = false,
   members,
   maxMembers,
   currentUserId,
@@ -33,6 +35,7 @@ export function MembersSection({
   onShowProfile,
 }: MembersSectionProps) {
   const canInvite =
+    !isReadOnly &&
     members.length < maxMembers &&
     inviteCandidates.length > 0 &&
     currentUserRole !== "MEMBER" &&
@@ -42,10 +45,7 @@ export function MembersSection({
   return (
     <section aria-labelledby="members-heading">
       <div className="mb-3 flex items-center justify-between">
-        <h3
-          id="members-heading"
-          className="font-bold text-foreground text-sm uppercase tracking-widest"
-        >
+        <h3 id="members-heading" className="font-bold text-foreground text-sm">
           Members{" "}
           <span className="ml-1 font-medium text-muted-foreground/60">
             {memberCountString}
@@ -60,11 +60,12 @@ export function MembersSection({
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div className="divide-y divide-border/70 border-border/70 border-y">
         {members.map((member) => (
           <MemberCard
             key={member.userId}
             canRemove={
+              !isReadOnly &&
               currentUserRole === "ADMIN" &&
               currentUserId !== null &&
               member.userId !== currentUserId

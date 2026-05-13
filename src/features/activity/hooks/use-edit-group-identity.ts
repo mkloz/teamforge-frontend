@@ -10,6 +10,7 @@ import {
   getInitialGroupIdentityValues,
   hasGroupIdentityChanges,
   isGroupIdentityNameValid,
+  isGroupPlanValid,
 } from "./group-identity/group-identity-form-state";
 import { useImageUploadField } from "./group-identity/use-image-upload-field";
 
@@ -26,6 +27,24 @@ export function useEditGroupIdentity(
   const [description, setDescription] = useState(initialValues.description);
   const [avatar, setAvatar] = useState(initialValues.avatar);
   const [coverImage, setCoverImage] = useState(initialValues.coverImage);
+  const [planTitle, setPlanTitle] = useState(initialValues.planTitle);
+  const [planDescription, setPlanDescription] = useState(
+    initialValues.planDescription,
+  );
+  const [planCategory, setPlanCategory] = useState(initialValues.planCategory);
+  const [planStatus, setPlanStatus] = useState(initialValues.planStatus);
+  const [planDateTime, setPlanDateTime] = useState(initialValues.planDateTime);
+  const [planLocationMode, setPlanLocationMode] = useState(
+    initialValues.planLocationMode,
+  );
+  const [planLocation, setPlanLocation] = useState(initialValues.planLocation);
+  const [planCost, setPlanCost] = useState(initialValues.planCost);
+  const [planCostAmount, setPlanCostAmount] = useState(
+    initialValues.planCostAmount,
+  );
+  const [planCostDetails, setPlanCostDetails] = useState(
+    initialValues.planCostDetails,
+  );
   const [error, setError] = useState<string | null>(null);
   const avatarUpload = useImageUploadField(setAvatar);
   const coverUpload = useImageUploadField(setCoverImage);
@@ -34,6 +53,16 @@ export function useEditGroupIdentity(
     coverImage,
     description,
     name,
+    planCategory,
+    planCost,
+    planCostAmount,
+    planCostDetails,
+    planDateTime,
+    planDescription,
+    planLocation,
+    planLocationMode,
+    planStatus,
+    planTitle,
   };
 
   const mutation = useMutation({
@@ -57,6 +86,7 @@ export function useEditGroupIdentity(
   });
 
   const isNameValid = isGroupIdentityNameValid(name);
+  const isPlanValid = !group.plan || isGroupPlanValid(values);
   const hasChanges = hasGroupIdentityChanges(group, values);
 
   function save() {
@@ -77,12 +107,33 @@ export function useEditGroupIdentity(
     isAvatarUploading: avatarUpload.isUploading,
     isCoverUploading: coverUpload.isUploading,
     isNameValid,
+    isPlanValid,
     isSaving: mutation.isPending,
     name,
+    planCategory,
+    planCost,
+    planCostAmount,
+    planCostDetails,
+    planDateTime,
+    planDescription,
+    planLocation,
+    planLocationMode,
+    planStatus,
+    planTitle,
     save,
     setAvatar,
     setCoverImage,
     setDescription,
     setName,
+    setPlanCategory,
+    setPlanCost,
+    setPlanCostAmount,
+    setPlanCostDetails,
+    setPlanDateTime,
+    setPlanDescription,
+    setPlanLocation,
+    setPlanLocationMode,
+    setPlanStatus,
+    setPlanTitle,
   };
 }

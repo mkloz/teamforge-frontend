@@ -1,36 +1,34 @@
-import { Calendar, MapPin, RotateCcw, Star } from "lucide-react";
+import { Calendar, MapPin, Star } from "lucide-react";
 import type { PlanHistoryItem } from "@/features/activity/lib/activity-contract";
 import { PlanCover } from "@/shared/components/common/plan-cover";
-import { Button } from "@/shared/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
-import { categoryColors } from "../lib/constants";
+import {
+  categoryColors,
+  formatPanelToken,
+  statusColors,
+} from "../lib/constants";
 
 interface HistoryCardProps {
   item: PlanHistoryItem;
 }
 
 export function HistoryCard({ item }: HistoryCardProps) {
+  const statusLabel = formatPanelToken(item.status);
+
   return (
-    <div className="group flex gap-3.5 rounded-xl border border-transparent bg-muted/20 p-2 transition-all duration-300 hover:border-border/50 hover:bg-muted/40">
-      {/* Thumbnail with hover zoom */}
+    <div className="group flex gap-3.5 py-3">
       <div className="relative size-12 shrink-0 overflow-hidden rounded-lg shadow-xs">
         <PlanCover
           value={item.coverImage}
           alt={item.title}
           imageClassName="transition-transform duration-500 group-hover:scale-110"
         />
-        <div className="absolute inset-0 bg-black/5 transition-colors group-hover:bg-transparent" />
+        <div className="absolute inset-0 bg-ink/5 transition-colors group-hover:bg-transparent" />
       </div>
 
-      {/* Content Section */}
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
-          <h4 className="truncate font-semibold text-foreground text-sm transition-colors group-hover:text-primary">
+          <h4 className="truncate font-semibold text-ink text-sm transition-colors group-hover:text-forge-teal">
             {item.title}
           </h4>
           {item.rating && (
@@ -43,17 +41,24 @@ export function HistoryCard({ item }: HistoryCardProps) {
           )}
         </div>
 
-        {/* Metadata Badges */}
         <div className="mt-1 flex items-center gap-2">
           <span
             className={cn(
-              "rounded px-1.5 py-0.5 font-bold text-xs uppercase tracking-wider",
+              "rounded-full border px-2 py-0.5 font-bold text-micro",
               categoryColors[item.category],
             )}
           >
-            {item.category}
+            {formatPanelToken(item.category)}
           </span>
-          <span className="flex items-center gap-1 font-bold text-muted-foreground text-xs uppercase opacity-50">
+          <span
+            className={cn(
+              "rounded-full border px-2 py-0.5 font-bold text-micro",
+              statusColors[item.status],
+            )}
+          >
+            {statusLabel}
+          </span>
+          <span className="flex items-center gap-1 font-bold text-muted-foreground text-xs opacity-70">
             <Calendar className="size-3" />
             {item.dateTime
               ? new Date(item.dateTime).toLocaleDateString("en-US", {
@@ -64,28 +69,12 @@ export function HistoryCard({ item }: HistoryCardProps) {
           </span>
         </div>
 
-        {/* Location - Responsive display */}
-        <p className="mt-0.5 flex items-center gap-1 truncate font-medium text-muted-foreground text-xs opacity-40">
-          <MapPin className="size-3" />
-          {item.location}
-        </p>
-      </div>
-
-      {/* Action button - Primary interaction */}
-      <div className="flex items-center pr-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="secondary"
-              size="icon"
-              className="size-9 shrink-0 translate-x-1 rounded-lg opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
-              aria-label="Create similar plan"
-            >
-              <RotateCcw className="size-3.5 text-muted-foreground" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Create similar plan</TooltipContent>
-        </Tooltip>
+        {item.location ? (
+          <p className="mt-1 flex items-center gap-1 truncate font-medium text-slate-muted text-xs">
+            <MapPin className="size-3" />
+            {item.location}
+          </p>
+        ) : null}
       </div>
     </div>
   );
