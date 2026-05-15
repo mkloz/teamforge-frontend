@@ -4,6 +4,7 @@ export interface Step5IdentityProps {
   planTitle: string;
   activityTitle: string;
   coverImage: string | null;
+  templateCoverImage?: string | null;
   onCoverImageChange: (url: string | null) => void;
   avatarImage: string | null;
   onAvatarImageChange: (url: string | null) => void;
@@ -21,7 +22,7 @@ export interface PlanPhotoSectionProps {
   coverInputRef: RefObject<HTMLInputElement | null>;
   coverUploadError: string | null;
   isCoverUploading: boolean;
-  isImageCover: boolean;
+  templateCoverImage?: string | null;
   onCoverImageChange: (url: string | null) => void;
   onCoverFiles: (files: File[]) => void;
 }
@@ -46,6 +47,5 @@ export interface IdentityPreviewCardProps {
   coverImage: string | null;
   groupName: string;
   isImageAvatar: boolean;
-  isImageCover: boolean;
   planTitle: string;
 }

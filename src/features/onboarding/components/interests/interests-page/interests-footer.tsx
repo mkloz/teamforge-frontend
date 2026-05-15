@@ -31,7 +31,7 @@ export function InterestsFooter({
         )}
         {state.screen === "review" && state.saveErrorMessage && (
           <div className="mt-4 flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/5 px-3 py-3">
-            <ErrorProfileSaveVisual className="w-12 shrink-0 text-foreground" />
+            <ErrorProfileSaveVisual className="h-6 w-auto shrink-0 text-foreground" />
             <p className="font-medium text-destructive text-sm">
               {state.saveErrorMessage}
             </p>

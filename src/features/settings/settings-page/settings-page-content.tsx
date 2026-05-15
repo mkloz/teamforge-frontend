@@ -15,7 +15,7 @@ interface SettingsPageContentProps {
   isSigningOut: boolean;
   onMobileBack: () => void;
   onSectionSelect: (section: SettingsSection) => void;
-  onSignOut: () => void;
+  onSignOut: () => Promise<void> | void;
 }
 
 export function SettingsPageContent({

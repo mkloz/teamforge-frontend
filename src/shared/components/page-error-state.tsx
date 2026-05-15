@@ -25,7 +25,9 @@ export function PageErrorState({
       headingId="page-error-heading"
       icon={<AlertTriangle size={20} />}
       iconClassName="bg-destructive/10 text-destructive size-11"
-      visual={<ErrorPageDataLoadVisual className="w-36 text-foreground" />}
+      visual={
+        <ErrorPageDataLoadVisual className="h-32 w-auto text-foreground" />
+      }
       className={cn(className, "max-w-md")}
       title={title}
       description={description}

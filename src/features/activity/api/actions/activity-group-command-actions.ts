@@ -1,5 +1,6 @@
 import {
   ActivityApi,
+  type CreateGroupPlanPayload,
   type UpdateGroupPayload,
   type UpdatePlanPayload,
 } from "@/features/activity/api/activity.api";
@@ -38,6 +39,34 @@ export const ActivityGroupCommandActions = {
 
     await Promise.all(requests);
     await invalidateGroupMembershipSurfaces();
+  },
+
+  async confirmPlan(planId: string, groupId: string) {
+    const result = await ActivityApi.confirmPlan(planId);
+    await invalidateGroupSelection(groupId);
+    await invalidateGroupMembershipSurfaces();
+    return result;
+  },
+
+  async completePlan(planId: string, groupId: string) {
+    const result = await ActivityApi.completePlan(planId);
+    await invalidateGroupSelection(groupId);
+    await invalidateGroupMembershipSurfaces();
+    return result;
+  },
+
+  async cancelPlan(planId: string, groupId: string) {
+    const result = await ActivityApi.cancelPlan(planId);
+    await invalidateGroupSelection(groupId);
+    await invalidateGroupMembershipSurfaces();
+    return result;
+  },
+
+  async createNextGroupPlan(groupId: string, payload: CreateGroupPlanPayload) {
+    const result = await ActivityApi.createNextGroupPlan(groupId, payload);
+    await invalidateGroupSelection(groupId);
+    await invalidateGroupMembershipSurfaces();
+    return result;
   },
 
   async leaveGroup(

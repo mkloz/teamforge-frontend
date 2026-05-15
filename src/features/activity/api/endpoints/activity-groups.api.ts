@@ -1,4 +1,6 @@
 import {
+  type CreateGroupPlanPayload,
+  createGroupPlanPayloadSchema,
   DEFAULT_ACTIVITY_API_LIMIT,
   type GroupMutationResult,
   paginatedGroupsSchema,
@@ -59,6 +61,19 @@ export async function removeGroupMember(groupId: string, memberId: string) {
 
 export async function disbandGroup(groupId: string) {
   const response = await apiClient.post(`groups/${groupId}/disband`);
+
+  return parseJsonWithRequestId(response, (value) =>
+    groupApiSchema.parse(value),
+  );
+}
+
+export async function createNextGroupPlan(
+  groupId: string,
+  payload: CreateGroupPlanPayload,
+) {
+  const response = await apiClient.post(`groups/${groupId}/plans`, {
+    json: createGroupPlanPayloadSchema.parse(payload),
+  });
 
   return parseJsonWithRequestId(response, (value) =>
     groupApiSchema.parse(value),

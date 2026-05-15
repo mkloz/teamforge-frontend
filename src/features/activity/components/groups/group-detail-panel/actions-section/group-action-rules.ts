@@ -4,7 +4,7 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 
 export function isGroupActionsLocked(groupStatus: GroupStatus) {
-  return groupStatus === "COMPLETED" || groupStatus === "DISBANDED";
+  return groupStatus === "DISBANDED";
 }
 
 export function canDisbandGroup(

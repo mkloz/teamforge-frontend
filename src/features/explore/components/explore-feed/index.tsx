@@ -80,9 +80,9 @@ function ExploreFeedEmpty({
     <section className="px-4 py-16 text-center">
       <div className="mx-auto flex max-w-lg flex-col items-center gap-6">
         {isFiltered ? (
-          <EmptyExploreFilteredVisual className="w-40 text-foreground" />
+          <EmptyExploreFilteredVisual className="h-36 w-auto text-foreground" />
         ) : (
-          <EmptyExploreOpenVisual className="w-44 text-foreground" />
+          <EmptyExploreOpenVisual className="h-36 w-auto text-foreground" />
         )}
 
         <div className="flex flex-col gap-2">

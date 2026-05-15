@@ -43,6 +43,7 @@ export interface ForgeWizardData {
   groupDescription: string;
   manualInviteeIds: string[];
   coverImage: string | null;
+  templateCoverImage: string | null;
   avatarImage: string | null;
   activityId: string | null;
   groupId: string | null;

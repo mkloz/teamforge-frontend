@@ -21,6 +21,26 @@ export async function updatePlan(
   return parseJsonWithRequestId(response, (value) => planSchema.parse(value));
 }
 
+export async function confirmPlan(planId: string): Promise<PlanMutationResult> {
+  const response = await apiClient.post(`plans/${planId}/confirm`);
+
+  return parseJsonWithRequestId(response, (value) => planSchema.parse(value));
+}
+
+export async function completePlan(
+  planId: string,
+): Promise<PlanMutationResult> {
+  const response = await apiClient.post(`plans/${planId}/complete`);
+
+  return parseJsonWithRequestId(response, (value) => planSchema.parse(value));
+}
+
+export async function cancelPlan(planId: string): Promise<PlanMutationResult> {
+  const response = await apiClient.post(`plans/${planId}/cancel`);
+
+  return parseJsonWithRequestId(response, (value) => planSchema.parse(value));
+}
+
 export async function getPlanProposals(planId: string) {
   const response = await apiClient
     .get(`plans/${planId}/proposals`)

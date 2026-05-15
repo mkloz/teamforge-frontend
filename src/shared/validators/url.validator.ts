@@ -1,10 +1,11 @@
 import { z } from "zod";
 
-import { config } from "@/config/config";
 import { PLAN_COVER_PRESET_IDS } from "@/shared/lib/plan-cover";
 
 const MAX_URL_LENGTH = 2048;
 const MANAGED_UPLOAD_PREFIX = "uploads";
+const ASSET_TOKEN_MAX_LENGTH = 64;
+const ASSET_TOKEN_PATTERN = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
 const PLAN_COVER_PRESET_ID_SET = new Set<string>(PLAN_COVER_PRESET_IDS);
 
 function parseUrl(value: unknown) {
@@ -45,28 +46,6 @@ function hasUnsafePathSegment(pathname: string) {
   });
 }
 
-function getAllowedUploadOrigins() {
-  const origins = new Set<string>();
-  const apiUrl = parseUrl(config.apiUrl);
-
-  if (apiUrl) {
-    origins.add(apiUrl.origin);
-  }
-
-  if (typeof window !== "undefined") {
-    origins.add(window.location.origin);
-  }
-
-  return origins;
-}
-
-function hasManagedUploadProtocol(url: URL) {
-  return (
-    url.protocol === "https:" ||
-    (!config.isProduction && url.protocol === "http:")
-  );
-}
-
 export function isPublicHttpUrl(value: unknown) {
   const url = parseUrl(value);
 
@@ -83,10 +62,9 @@ export function isManagedUploadUrl(value: unknown) {
 
   if (
     url === null ||
-    !hasManagedUploadProtocol(url) ||
+    url.protocol !== "https:" ||
     url.hostname === "" ||
     hasCredentials(url) ||
-    !getAllowedUploadOrigins().has(url.origin) ||
     url.search !== "" ||
     url.hash !== "" ||
     hasUnsafePathSegment(url.pathname)
@@ -102,7 +80,10 @@ export function isManagedUploadUrl(value: unknown) {
 export function isManagedAssetReference(value: unknown) {
   return (
     isManagedUploadUrl(value) ||
-    (typeof value === "string" && PLAN_COVER_PRESET_ID_SET.has(value))
+    (typeof value === "string" &&
+      (PLAN_COVER_PRESET_ID_SET.has(value) ||
+        (value.length <= ASSET_TOKEN_MAX_LENGTH &&
+          ASSET_TOKEN_PATTERN.test(value))))
   );
 }
 
@@ -124,5 +105,5 @@ export const managedAssetReferenceSchema = z
   .string()
   .max(MAX_URL_LENGTH)
   .refine(isManagedAssetReference, {
-    message: "Use a TeamForge asset preset or uploaded asset URL.",
+    message: "Use a TeamForge cover preset or uploaded asset.",
   });

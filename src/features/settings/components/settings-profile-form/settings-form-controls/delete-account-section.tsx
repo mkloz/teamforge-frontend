@@ -1,16 +1,6 @@
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/shared/components/ui/alert-dialog";
+import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import type { User } from "@/shared/schemas";
@@ -34,7 +24,7 @@ export function DeleteAccountSection({
   return (
     <section className="border-destructive/30 border-t pt-7">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div className="max-w-2xl">
+        <div className="min-w-0 max-w-2xl flex-1">
           <p className="font-semibold text-destructive text-xs uppercase tracking-widest">
             Permanent action
           </p>
@@ -51,49 +41,41 @@ export function DeleteAccountSection({
           ) : null}
         </div>
 
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button type="button" variant="destructive">
+        <ActionDialog
+          cancelLabel="Keep account"
+          confirmLabel={isDeleting ? "Deleting..." : "Delete account"}
+          description={`This cannot be undone from the app. Type DELETE to confirm deletion for ${
+            currentUser?.email ?? "this account"
+          }.`}
+          details={[
+            "Your active sessions will be removed.",
+            "Automatic group forming will stop for this account.",
+            "Existing group history may remain where other members need context.",
+          ]}
+          disabled={!canDelete || isDeleting}
+          loading={isDeleting}
+          onConfirm={onDelete}
+          onOpenChange={(open) => {
+            if (!open) {
+              setConfirmation("");
+            }
+          }}
+          title="Delete your TeamForge account?"
+          tone="danger"
+          trigger={
+            <Button type="button" variant="destructive" className="shrink-0">
               <Trash2 size={14} />
               Delete account
             </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                Delete your TeamForge account?
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                This cannot be undone from the app. Type DELETE to confirm
-                deletion for {currentUser?.email ?? "this account"}.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-
-            <Input
-              value={confirmation}
-              onChange={(event) => setConfirmation(event.target.value)}
-              placeholder="DELETE"
-              aria-label="Type DELETE to confirm account deletion"
-            />
-
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                variant="destructive"
-                disabled={!canDelete || isDeleting}
-                onClick={(event) => {
-                  event.preventDefault();
-                  if (!canDelete || isDeleting) {
-                    return;
-                  }
-                  void onDelete();
-                }}
-              >
-                {isDeleting ? "Deleting..." : "Delete account"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+          }
+        >
+          <Input
+            value={confirmation}
+            onChange={(event) => setConfirmation(event.target.value)}
+            placeholder="DELETE"
+            aria-label="Type DELETE to confirm account deletion"
+          />
+        </ActionDialog>
       </div>
     </section>
   );

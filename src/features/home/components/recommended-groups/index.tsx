@@ -60,7 +60,7 @@ export function RecommendedGroupsView({
 
       {visibleRecommendations.length === 0 ? (
         <div className="flex items-center gap-3 border-border/70 border-y border-dashed bg-card/40 px-3 py-5 sm:px-4">
-          <EmptyRecommendationsVisual className="w-16 shrink-0 text-foreground sm:w-20" />
+          <EmptyRecommendationsVisual className="h-11 w-auto shrink-0 text-foreground sm:h-12" />
           <div className="min-w-0">
             <p className="font-black text-foreground text-sm">
               No strong openings yet.

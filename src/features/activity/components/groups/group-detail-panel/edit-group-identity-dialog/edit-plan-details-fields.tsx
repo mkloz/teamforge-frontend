@@ -14,7 +14,6 @@ import type {
   CostType,
   LocationMode,
   PlanCategory,
-  PlanStatus,
 } from "@/shared/schemas/enums";
 import { formatPanelToken } from "../lib/constants";
 import type { GroupIdentityEditor } from "./edit-group-identity-dialog.types";
@@ -37,15 +36,6 @@ const PLAN_CATEGORY_OPTIONS = [
   "TRAVEL",
   "OTHER",
 ] as const satisfies readonly PlanCategory[];
-
-const PLAN_STATUS_OPTIONS = [
-  "DRAFT",
-  "PROPOSED",
-  "CONFIRMED",
-  "IN_PROGRESS",
-  "COMPLETED",
-  "CANCELLED",
-] as const satisfies readonly PlanStatus[];
 
 const COST_OPTIONS = ["FREE", "PAID"] as const satisfies readonly CostType[];
 
@@ -90,34 +80,6 @@ export function EditPlanDetailsFields({ editor }: EditPlanDetailsFieldsProps) {
               {PLAN_CATEGORY_OPTIONS.map((category) => (
                 <SelectItem key={category} value={category}>
                   {formatPanelToken(category)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label
-            htmlFor="plan-status"
-            className="font-semibold text-muted-foreground text-xs"
-          >
-            Status
-          </Label>
-          <Select
-            value={editor.planStatus}
-            onValueChange={(value) => {
-              if (isPlanStatus(value)) {
-                editor.setPlanStatus(value);
-              }
-            }}
-          >
-            <SelectTrigger id="plan-status">
-              <SelectValue placeholder="Choose status" />
-            </SelectTrigger>
-            <SelectContent>
-              {PLAN_STATUS_OPTIONS.map((status) => (
-                <SelectItem key={status} value={status}>
-                  {status === "DRAFT" ? "Pending" : formatPanelToken(status)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -282,10 +244,6 @@ export function EditPlanDetailsFields({ editor }: EditPlanDetailsFieldsProps) {
 
 function isPlanCategory(value: string): value is PlanCategory {
   return PLAN_CATEGORY_OPTIONS.some((category) => category === value);
-}
-
-function isPlanStatus(value: string): value is PlanStatus {
-  return PLAN_STATUS_OPTIONS.some((status) => status === value);
 }
 
 function isCostType(value: string): value is CostType {

@@ -27,7 +27,7 @@ export function LinkPreviewMedia({ data }: LinkPreviewMediaProps) {
 function LinkPreviewUnavailable() {
   return (
     <div className="flex size-full min-h-32 flex-col items-center justify-center gap-2 bg-muted/40 text-center">
-      <ErrorLinkPreviewUnavailableVisual className="w-20 text-foreground" />
+      <ErrorLinkPreviewUnavailableVisual className="h-16 w-auto text-foreground" />
       <span className="font-medium text-muted-foreground text-xs">
         Preview unavailable
       </span>

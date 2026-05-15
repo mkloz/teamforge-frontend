@@ -1,7 +1,10 @@
 import type { Group } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 
-import { EditGroupIdentityDialog } from "../edit-group-identity-dialog";
+import {
+  EditGroupIdentityDialog,
+  EditPlanDetailsDialog,
+} from "../edit-group-identity-dialog";
 import { GroupCoverHeader } from "./group-cover-header";
 import { GroupPanelHeader } from "./group-panel-header";
 import { GroupPanelMainSections } from "./group-panel-main-sections";
@@ -29,6 +32,10 @@ export function GroupPanelContent({
   const {
     currentUserId,
     currentUserRole,
+    cancelPlan,
+    completePlan,
+    confirmPlan,
+    createNextGroupPlan,
     disbandGroup,
     inviteCandidates,
     inviteMember,
@@ -36,15 +43,18 @@ export function GroupPanelContent({
     isDisbanding,
     isEditOpen,
     isLeaving,
+    isPlanEditOpen,
     jumpToPinnedMessage,
     leaveGroup,
     memberChat,
     memberCount,
     members,
+    pendingPlanAction,
     removeMember,
     removingMemberId,
     selectedMember,
     setIsEditOpen,
+    setIsPlanEditOpen,
     setSelectedMember,
     unpinMessage,
   } = useGroupPanelContent({ group, isMobile, onClose, onJumpToMessage });
@@ -81,6 +91,10 @@ export function GroupPanelContent({
         <GroupPanelMainSections
           currentUserId={currentUserId}
           currentUserRole={currentUserRole}
+          cancelPlan={cancelPlan}
+          completePlan={completePlan}
+          confirmPlan={confirmPlan}
+          createNextGroupPlan={createNextGroupPlan}
           disbandGroup={disbandGroup}
           focusedPlanId={focusedPlanId}
           focusedProposalId={focusedProposalId}
@@ -94,7 +108,9 @@ export function GroupPanelContent({
           leaveGroup={leaveGroup}
           memberCount={memberCount}
           members={members}
+          pendingPlanAction={pendingPlanAction}
           onEditGroup={() => setIsEditOpen(true)}
+          onEditPlan={() => setIsPlanEditOpen(true)}
           removeMember={removeMember}
           removingMemberId={removingMemberId}
           setSelectedMember={setSelectedMember}
@@ -103,11 +119,18 @@ export function GroupPanelContent({
       </GroupPanelScrollArea>
 
       {currentUserRole === "ADMIN" && (
-        <EditGroupIdentityDialog
-          group={group}
-          open={isEditOpen}
-          onOpenChange={setIsEditOpen}
-        />
+        <>
+          <EditGroupIdentityDialog
+            group={group}
+            open={isEditOpen}
+            onOpenChange={setIsEditOpen}
+          />
+          <EditPlanDetailsDialog
+            group={group}
+            open={isPlanEditOpen}
+            onOpenChange={setIsPlanEditOpen}
+          />
+        </>
       )}
     </div>
   );

@@ -14,7 +14,10 @@ import type {
 } from "@/features/forge/data/forge-template-seed-types";
 import { CATEGORY_TEMPLATES } from "@/features/forge/data/forge-template-seeds";
 import type { ForgePlanTemplate } from "@/features/forge/lib/forge-template";
-import { PLAN_COVER_PRESET_IDS } from "@/shared/lib/plan-cover";
+import {
+  PLAN_COVER_PRESET_IDS,
+  PLAN_COVER_PRESETS,
+} from "@/shared/lib/plan-cover";
 import type { User } from "@/shared/schemas";
 
 const MIN_PERSONAL_FIT_SCORE = 3.4;
@@ -92,43 +95,10 @@ const TEMPLATE_TRAIT_VALUES: TemplateTrait[] = [
   "social",
   "structured",
 ];
+const TEMPLATE_COVER_PRESET_IDS = PLAN_COVER_PRESETS.map((preset) => preset.id);
+const PLAN_COVER_PRESET_ID_SET = new Set<string>(PLAN_COVER_PRESET_IDS);
 
-function hashPresetSeed(value: string) {
-  let hash = 0;
-
-  for (let index = 0; index < value.length; index += 1) {
-    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
-  }
-
-  return hash;
-}
-
-function resolveTemplateCoverImage(
-  category: ActivityOption,
-  seed: TemplateSeed,
-) {
-  const normalizedSource = seed.coverImageSource?.trim();
-
-  if (!normalizedSource) {
-    return null;
-  }
-
-  const existingPreset = PLAN_COVER_PRESET_IDS.find(
-    (presetId) => presetId === normalizedSource,
-  );
-
-  if (existingPreset) {
-    return existingPreset;
-  }
-
-  const presetIndex =
-    hashPresetSeed(`${category.id}:${seed.id}:${normalizedSource}`) %
-    PLAN_COVER_PRESET_IDS.length;
-
-  return PLAN_COVER_PRESET_IDS[presetIndex] ?? null;
-}
-
-function resolveTemplatePreviewCoverImage(seed: TemplateSeed) {
+function resolveTemplateCoverPreviewImage(seed: TemplateSeed) {
   const normalizedSource = seed.coverImageSource?.trim();
 
   if (!normalizedSource) {
@@ -136,6 +106,38 @@ function resolveTemplatePreviewCoverImage(seed: TemplateSeed) {
   }
 
   return normalizedSource;
+}
+
+function resolvePersistedTemplateCoverImage(
+  category: ActivityOption,
+  seed: TemplateSeed,
+) {
+  const normalizedSource = seed.coverImageSource?.trim();
+
+  if (normalizedSource && PLAN_COVER_PRESET_ID_SET.has(normalizedSource)) {
+    return normalizedSource;
+  }
+
+  const presetIndex = getStableIndex(
+    `${category.id}:${seed.id}`,
+    TEMPLATE_COVER_PRESET_IDS.length,
+  );
+
+  return TEMPLATE_COVER_PRESET_IDS[presetIndex] ?? null;
+}
+
+function getStableIndex(value: string, length: number) {
+  if (length <= 0) {
+    return 0;
+  }
+
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+
+  return hash % length;
 }
 
 function addWeightedTrait(
@@ -675,7 +677,7 @@ function buildTemplate(
     visibility: seed.visibility ?? "FRIENDS_ONLY",
     groupName: user?.city ? `${seed.groupName} - ${user.city}` : seed.groupName,
     groupDescription: seed.groupDescription,
-    coverImage: resolveTemplateCoverImage(category, seed),
+    coverImage: resolvePersistedTemplateCoverImage(category, seed),
     avatarImage: null,
   };
 }
@@ -710,7 +712,7 @@ export function buildTemplateSuggestions(
       id: `${category.id}-${seed.id}`,
       categoryId: category.id,
       categoryLabel: category.label,
-      coverImage: resolveTemplatePreviewCoverImage(seed),
+      coverImage: resolveTemplateCoverPreviewImage(seed),
       title: seed.title,
       description: seed.description,
       badge: getSuggestionBadge(item, index, topScore, hasPersonalSignals),

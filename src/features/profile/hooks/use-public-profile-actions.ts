@@ -11,6 +11,8 @@ import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import type { FriendshipApi, User } from "@/shared/schemas";
 
+type PublicProfileActionUser = Pick<User, "id">;
+
 function isIncomingRequest(
   friendship: FriendshipApi | null | undefined,
   currentUserId: string | null,
@@ -51,7 +53,7 @@ function getMessageChatId(friendship: FriendshipApi | null | undefined) {
   return friendship.privateChat?.id ?? friendship.privateChatId;
 }
 
-export function usePublicProfileActions(user: User) {
+export function usePublicProfileActions(user: PublicProfileActionUser) {
   const currentUserQuery = useCurrentUserQuery();
   const currentUserId = currentUserQuery.data?.id ?? null;
   const queryClient = useQueryClient();

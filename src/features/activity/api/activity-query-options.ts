@@ -2,6 +2,7 @@ import {
   chatsQueryOptions,
   friendshipsQueryOptions,
   groupRatingsQueryOptions,
+  groupReviewStateQueryOptions,
   groupsQueryOptions,
   linkPreviewQueryOptions,
 } from "@/features/activity/api/query-options/activity-base-query-options";
@@ -29,6 +30,10 @@ export const ActivityQueryOptions = {
 
   groupRatings(groupId: string) {
     return groupRatingsQueryOptions(groupId);
+  },
+
+  groupReviewState(groupId: string) {
+    return groupReviewStateQueryOptions(groupId);
   },
 
   linkPreview(url: string) {

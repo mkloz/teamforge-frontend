@@ -17,6 +17,12 @@ import { PlanSection } from "../plan-section";
 interface GroupPanelMainSectionsProps {
   currentUserId: string | null;
   currentUserRole: MemberRole;
+  cancelPlan: (planId: string) => Promise<void> | void;
+  completePlan: (planId: string) => Promise<void> | void;
+  confirmPlan: (planId: string) => Promise<void> | void;
+  createNextGroupPlan: (
+    plan: NonNullable<Group["plan"]>,
+  ) => Promise<void> | void;
   disbandGroup: () => Promise<void> | void;
   focusedPlanId: string | null;
   focusedProposalId: string | null;
@@ -31,6 +37,8 @@ interface GroupPanelMainSectionsProps {
   memberCount: number;
   members: GroupMember[];
   onEditGroup: () => void;
+  onEditPlan: () => void;
+  pendingPlanAction: string | null;
   removeMember: (memberId: string) => Promise<void> | void;
   removingMemberId: string | null;
   setSelectedMember: (member: GroupMember) => void;
@@ -40,6 +48,10 @@ interface GroupPanelMainSectionsProps {
 export function GroupPanelMainSections({
   currentUserId,
   currentUserRole,
+  cancelPlan,
+  completePlan,
+  confirmPlan,
+  createNextGroupPlan,
   disbandGroup,
   focusedPlanId,
   focusedProposalId,
@@ -54,12 +66,15 @@ export function GroupPanelMainSections({
   memberCount,
   members,
   onEditGroup,
+  onEditPlan,
+  pendingPlanAction,
   removeMember,
   removingMemberId,
   setSelectedMember,
   unpinMessage,
 }: GroupPanelMainSectionsProps) {
   const isGroupLocked = isGroupActionsLocked(group.status);
+  const currentPlan = group.plan;
 
   return (
     <div className="flex flex-col gap-7 px-5 pt-0 pb-7">
@@ -80,12 +95,19 @@ export function GroupPanelMainSections({
         status={group.status}
       />
 
-      {group.plan && (
+      {currentPlan && (
         <PlanSection
-          plan={group.plan}
-          isFocused={focusedPlanId === group.plan.id}
+          plan={currentPlan}
+          isFocused={focusedPlanId === currentPlan.id}
           focusedProposalId={focusedProposalId}
           isReadOnly={isGroupLocked}
+          currentUserRole={currentUserRole}
+          pendingAction={pendingPlanAction}
+          onCancelPlan={() => cancelPlan(currentPlan.id)}
+          onCompletePlan={() => completePlan(currentPlan.id)}
+          onConfirmPlan={() => confirmPlan(currentPlan.id)}
+          onCreateNextPlan={() => createNextGroupPlan(currentPlan)}
+          onEditPlan={onEditPlan}
         />
       )}
 
@@ -136,9 +158,9 @@ export function GroupPanelMainSections({
 
 function ArchivedGroupFooter({ status }: { status: Group["status"] }) {
   const label =
-    status === "COMPLETED"
-      ? "Group archived after the final plan."
-      : "Group closed and kept for history.";
+    status === "DISBANDED"
+      ? "Group closed and kept for history."
+      : "Group controls are unavailable.";
 
   return (
     <footer className="border-border/70 border-t pt-4 pb-2">

@@ -18,6 +18,11 @@ import type {
   ExploreSortOption,
   ExploreTimeWindow,
 } from "@/features/explore/schemas/explore-filters.schema";
+import {
+  EXPLORE_DEFAULT_DISTANCE_KM,
+  EXPLORE_MAX_DISTANCE_KM,
+  EXPLORE_MIN_DISTANCE_KM,
+} from "@/shared/api/api-constraints";
 
 export const SORTS: {
   id: ExploreSortOption;
@@ -70,7 +75,7 @@ export const TIME_FILTER_OPTIONS: {
   label: string;
   icon: LucideIcon;
 }[] = [
-  { id: "ALL", label: "Any", icon: CalendarDays },
+  { id: "ALL", label: "Upcoming", icon: CalendarDays },
   { id: "TODAY", label: "Today", icon: Clock },
   { id: "TOMORROW", label: "Tomorrow", icon: CalendarDays },
   { id: "THIS_WEEK", label: "This week", icon: CalendarDays },
@@ -78,7 +83,11 @@ export const TIME_FILTER_OPTIONS: {
 ];
 
 export const FILTER_BOUNDARIES = {
-  distance: { min: 2, max: 50, default: 15 },
+  distance: {
+    min: EXPLORE_MIN_DISTANCE_KM,
+    max: EXPLORE_MAX_DISTANCE_KM,
+    default: EXPLORE_DEFAULT_DISTANCE_KM,
+  },
   size: { min: 2, max: 8, defaultMin: 3, defaultMax: 8 },
 } as const;
 

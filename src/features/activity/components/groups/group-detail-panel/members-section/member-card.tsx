@@ -3,17 +3,7 @@ import { BadgeCheck, Crown, UserMinus, UserRound } from "lucide-react";
 import type { GroupMember } from "@/features/activity/lib/activity-contract";
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar, AvatarStatus } from "@/shared/components/common/avatar";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/shared/components/ui/alert-dialog";
+import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -143,8 +133,18 @@ export function MemberCard({
         ) : null}
 
         {canRemove && onRemove ? (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
+          <ActionDialog
+            cancelLabel="Keep member"
+            confirmLabel={removing ? "Removing..." : "Remove member"}
+            description={`${
+              member.user?.name ?? "This member"
+            } will lose access to the group chat and planning workspace.`}
+            loading={removing}
+            onConfirm={() => onRemove(member.userId)}
+            onContentClick={(event) => event.stopPropagation()}
+            title="Remove member?"
+            tone="danger"
+            trigger={
               <Button
                 variant="destructive"
                 size="icon-xs"
@@ -158,28 +158,8 @@ export function MemberCard({
               >
                 <UserMinus size={14} />
               </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent onClick={(event) => event.stopPropagation()}>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Remove member?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  {member.user?.name ?? "This member"} will lose access to the
-                  group chat and planning workspace.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  variant="destructive"
-                  onClick={() => {
-                    void onRemove(member.userId);
-                  }}
-                >
-                  {removing ? "Removing..." : "Remove member"}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+            }
+          />
         ) : null}
       </div>
     </div>

@@ -8,6 +8,7 @@ export function IdentityStepPanel({ fw }: ForgeWizardChildProps) {
       planTitle={fw.planName}
       activityTitle={fw.selectedActivity || ""}
       coverImage={fw.coverImage}
+      templateCoverImage={fw.templateCoverImage}
       onCoverImageChange={fw.setCoverImage}
       avatarImage={fw.avatarImage}
       onAvatarImageChange={fw.setAvatarImage}

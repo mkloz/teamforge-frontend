@@ -1,12 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import type { CreateGroupPlanPayload } from "@/features/activity/api/activity.api";
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
+import type { Plan } from "@/features/activity/lib/activity-contract";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import { useClearActivityRouteSelection } from "./use-clear-activity-route-selection";
 
-type PendingAction = "disband" | "leave" | null;
+type PendingAction =
+  | "cancel-plan"
+  | "complete-plan"
+  | "confirm-plan"
+  | "create-next-plan"
+  | "disband"
+  | "leave"
+  | null;
 
 function trackGroupAction(
   mutation: string,
@@ -121,6 +130,52 @@ export function useActivityGroupActions(groupId: string) {
     }
   }
 
+  async function confirmPlan(planId: string) {
+    await runPlanAction("confirm-plan", () =>
+      ActivityCommands.confirmPlan(planId, groupId),
+    );
+  }
+
+  async function completePlan(planId: string) {
+    await runPlanAction("complete-plan", () =>
+      ActivityCommands.completePlan(planId, groupId),
+    );
+  }
+
+  async function cancelPlan(planId: string) {
+    await runPlanAction("cancel-plan", () =>
+      ActivityCommands.cancelPlan(planId, groupId),
+    );
+  }
+
+  async function createNextGroupPlan(plan: Plan) {
+    await runPlanAction("create-next-plan", () =>
+      ActivityCommands.createNextGroupPlan(
+        groupId,
+        buildCreateNextPlanPayload(plan),
+      ),
+    );
+  }
+
+  async function runPlanAction(
+    action: Exclude<PendingAction, "disband" | "leave" | null>,
+    execute: () => Promise<unknown>,
+  ) {
+    if (!currentUserQuery.data) {
+      return;
+    }
+
+    setPendingAction(action);
+
+    try {
+      await execute();
+      setPendingAction(null);
+    } catch (error) {
+      setPendingAction(null);
+      throw error;
+    }
+  }
+
   async function inviteMember(inviteeId: string) {
     setInvitingMemberId(inviteeId);
 
@@ -146,13 +201,44 @@ export function useActivityGroupActions(groupId: string) {
 
   return {
     currentUserId: currentUserQuery.data?.id ?? null,
+    pendingPlanAction: pendingAction,
     isDisbanding: pendingAction === "disband",
     isLeaving: pendingAction === "leave",
     invitingMemberId,
     removingMemberId,
+    cancelPlan,
+    completePlan,
+    confirmPlan,
+    createNextGroupPlan,
     disbandGroup,
     inviteMember,
     leaveGroup,
     removeMember,
+  };
+}
+
+function buildCreateNextPlanPayload(plan: Plan): CreateGroupPlanPayload {
+  const hasPlace = Boolean(plan.location?.trim());
+  const locationMode = hasPlace ? plan.locationMode : "TBD";
+
+  return {
+    category: plan.category,
+    cost: plan.cost,
+    costAmount: plan.cost === "PAID" ? plan.costAmount : null,
+    costDetails: plan.costDetails,
+    coverImage: plan.coverImage,
+    dateTime: null,
+    description: plan.description,
+    location: locationMode === "TBD" ? null : plan.location,
+    locationLat:
+      locationMode === "IN_PERSON" && plan.locationLat !== null
+        ? plan.locationLat
+        : null,
+    locationLng:
+      locationMode === "IN_PERSON" && plan.locationLng !== null
+        ? plan.locationLng
+        : null,
+    locationMode,
+    title: plan.title,
   };
 }

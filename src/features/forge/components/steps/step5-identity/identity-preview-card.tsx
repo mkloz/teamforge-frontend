@@ -1,6 +1,6 @@
 import { PlanArtworkPendingVisual } from "@/assets/empty-state/plan-artwork-pending";
 import { Avatar } from "@/shared/components/common/avatar";
-import { Image } from "@/shared/components/common/image";
+import { PlanCover } from "@/shared/components/common/plan-cover";
 import { cn } from "@/shared/lib/utils";
 
 import type { IdentityPreviewCardProps } from "./types";
@@ -12,11 +12,15 @@ export function IdentityPreviewCard({
   coverImage,
   groupName,
   isImageAvatar,
-  isImageCover,
   planTitle,
 }: IdentityPreviewCardProps) {
   const displayGroupName = groupName.trim() || planTitle || "Untitled group";
   const displayPlanTitle = planTitle || activityTitle || "Untitled plan";
+  const hasCover = Boolean(
+    coverImage &&
+      (activePreset ||
+        coverImage.match(/^(https?:\/\/|data:image\/|blob:|\/)/i)),
+  );
 
   return (
     <div className="flex flex-col gap-2.5">
@@ -25,21 +29,18 @@ export function IdentityPreviewCard({
         <div
           className={cn(
             "relative h-28 w-full overflow-hidden transition-colors duration-500",
-            !isImageCover &&
-              !activePreset &&
+            !hasCover &&
               "bg-linear-to-br from-forge-teal/18 via-canvas to-spark-amber/18",
-            !isImageCover &&
-              activePreset &&
-              `bg-linear-to-br ${activePreset.gradient}`,
           )}
         >
-          {isImageCover ? (
-            <Image
-              src={coverImage ?? undefined}
+          {hasCover ? (
+            <PlanCover
+              value={coverImage}
               alt=""
               className="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              imageClassName="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
             />
-          ) : !activePreset ? (
+          ) : (
             <div className="flex size-full items-center justify-between gap-3 px-4 py-3">
               <div className="min-w-0">
                 <span className="font-bold text-slate-muted text-xs uppercase tracking-widest">
@@ -49,16 +50,7 @@ export function IdentityPreviewCard({
                   {displayPlanTitle}
                 </p>
               </div>
-              <PlanArtworkPendingVisual className="w-20 shrink-0 text-foreground" />
-            </div>
-          ) : (
-            <div className="flex size-full flex-col justify-between p-4">
-              <span className="font-bold text-slate-muted text-xs uppercase tracking-widest">
-                Artwork pending
-              </span>
-              <p className="line-clamp-2 max-w-64 font-black text-foreground text-lg leading-tight">
-                {displayPlanTitle}
-              </p>
+              <PlanArtworkPendingVisual className="h-16 w-auto shrink-0 text-foreground" />
             </div>
           )}
           <div

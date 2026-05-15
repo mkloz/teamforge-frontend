@@ -2,7 +2,7 @@ import { Calendar, Check, MapPin, Users } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Avatar } from "@/shared/components/common/avatar";
-import { Image } from "@/shared/components/common/image";
+import { PlanCover } from "@/shared/components/common/plan-cover";
 import { getPlanCoverPreset } from "@/shared/lib/plan-cover";
 import { cn } from "@/shared/lib/utils";
 
@@ -32,9 +32,10 @@ export function GroupSummaryCard({
   planTitle,
 }: GroupSummaryCardProps) {
   const coverPreset = getPlanCoverPreset(coverImage);
-  const coverIsImage = Boolean(
+  const coverIsImageSource = Boolean(
     coverImage?.match(/^(https?:\/\/|data:image\/|blob:|\/)/i),
   );
+  const hasCover = Boolean(coverImage && (coverPreset || coverIsImageSource));
   const avatarIsImage = Boolean(
     avatarImage?.match(/^(https?:\/\/|data:image\/|blob:|\/)/i),
   );
@@ -51,19 +52,16 @@ export function GroupSummaryCard({
       <div
         className={cn(
           "relative h-28 overflow-hidden transition-colors duration-500 sm:h-32",
-          !coverIsImage &&
-            !coverPreset &&
+          !hasCover &&
             "bg-linear-to-br from-forge-teal/16 via-canvas to-spark-amber/16",
-          !coverIsImage &&
-            coverPreset &&
-            `bg-linear-to-br ${coverPreset.gradient}`,
         )}
       >
-        {coverIsImage ? (
-          <Image
-            src={coverImage ?? undefined}
+        {hasCover ? (
+          <PlanCover
+            value={coverImage}
             alt=""
-            className="size-full object-cover"
+            className="size-full"
+            imageClassName="size-full object-cover"
           />
         ) : (
           <div className="flex h-full items-start p-4">

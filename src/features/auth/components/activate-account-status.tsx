@@ -33,7 +33,7 @@ export function ActivateAccountStatus({
     return (
       <div className="flex flex-col gap-4">
         <div className="rounded-xl border border-destructive/20 bg-destructive/8 px-4 py-5 text-center text-foreground text-sm">
-          <ErrorAuthLinkVisual className="mx-auto mb-3 w-28 text-foreground" />
+          <ErrorAuthLinkVisual className="mx-auto mb-3 h-28 w-auto text-foreground" />
           <p>{errorMessage}</p>
         </div>
         <Button asChild size="lg" className="w-full">

@@ -1,4 +1,5 @@
 import { CalendarClock, Clock3, LogOut, Wifi } from "lucide-react";
+import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import {
   Tooltip,
@@ -19,6 +20,13 @@ interface SessionRowProps {
 export function SessionRow({ session, isRevoking, onRevoke }: SessionRowProps) {
   const device = describeSessionDevice(session);
   const DeviceIcon = device.icon;
+  const actionTitle = session.isCurrent
+    ? "Sign out of this browser?"
+    : `Revoke ${device.label}?`;
+  const actionDescription = session.isCurrent
+    ? "This ends your current session and sends you back to login."
+    : "This ends that device session. The next person using it will need to sign in again.";
+  const actionLabel = session.isCurrent ? "Sign out here" : "Revoke session";
 
   return (
     <div
@@ -83,23 +91,36 @@ export function SessionRow({ session, isRevoking, onRevoke }: SessionRowProps) {
         </div>
       </div>
 
-      <Button
-        type="button"
-        variant={session.isCurrent ? "destructive" : "outline"}
-        size="sm"
-        className="w-full md:w-auto"
-        disabled={isRevoking}
-        onClick={() => {
-          void onRevoke(session);
-        }}
-      >
-        <LogOut size={14} />
-        {isRevoking
-          ? "Signing out..."
-          : session.isCurrent
-            ? "Sign out here"
-            : "Revoke"}
-      </Button>
+      <ActionDialog
+        cancelLabel="Keep session"
+        confirmLabel={isRevoking ? "Signing out..." : actionLabel}
+        description={actionDescription}
+        details={[
+          `Started ${formatSessionTime(session.createdAt)}`,
+          `Expires ${formatSessionTime(session.expiresAt)}`,
+          session.ipAddress ? `IP ${session.ipAddress}` : "IP unknown",
+        ]}
+        loading={isRevoking}
+        onConfirm={() => onRevoke(session)}
+        title={actionTitle}
+        tone={session.isCurrent ? "danger" : "warning"}
+        trigger={
+          <Button
+            type="button"
+            variant={session.isCurrent ? "destructive" : "outline"}
+            size="sm"
+            className="w-full md:w-auto"
+            disabled={isRevoking}
+          >
+            <LogOut size={14} />
+            {isRevoking
+              ? "Signing out..."
+              : session.isCurrent
+                ? "Sign out here"
+                : "Revoke"}
+          </Button>
+        }
+      />
     </div>
   );
 }

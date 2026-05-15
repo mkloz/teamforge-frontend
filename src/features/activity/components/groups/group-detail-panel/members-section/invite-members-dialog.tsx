@@ -98,7 +98,7 @@ export function InviteMembersDialog({
         <div className="flex flex-col gap-4 px-6 py-5">
           {inviteError ? (
             <div className="flex items-center gap-3 rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-3">
-              <ErrorInviteSendFailedVisual className="w-16 shrink-0 text-foreground" />
+              <ErrorInviteSendFailedVisual className="h-8 w-auto shrink-0 text-foreground" />
               <p className="font-medium text-destructive text-sm leading-relaxed">
                 {inviteError}
               </p>
@@ -120,7 +120,7 @@ export function InviteMembersDialog({
           <div className="flex max-h-80 flex-col gap-2 overflow-y-auto pr-1">
             {filteredCandidates.length === 0 ? (
               <div className="flex flex-col items-center rounded-lg border border-border/70 border-dashed bg-background/50 px-4 py-6 text-center">
-                <EmptyInviteCandidatesVisual className="w-28 text-foreground" />
+                <EmptyInviteCandidatesVisual className="h-24 w-auto text-foreground" />
                 <p className="mt-3 text-slate-muted text-sm">
                   No eligible friends to invite right now.
                 </p>

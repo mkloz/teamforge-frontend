@@ -28,8 +28,8 @@ export function GroupAvatarSection({
         </p>
       </div>
 
-      <div className="grid grid-cols-[3rem_minmax(0,1fr)] items-stretch gap-3 sm:grid-cols-[5rem_minmax(0,1fr)]">
-        <div className="relative size-18 overflow-hidden rounded-lg border border-border bg-muted sm:h-24 sm:w-24 sm:rounded-xl">
+      <div className="flex h-18 items-stretch gap-3 sm:h-24">
+        <div className="relative h-full w-18 shrink-0 overflow-hidden rounded-lg border border-border bg-muted sm:w-24 sm:rounded-xl">
           {avatarImage ? (
             <Avatar
               src={avatarImage}
@@ -39,7 +39,7 @@ export function GroupAvatarSection({
             />
           ) : (
             <div className="flex size-full items-center justify-center bg-card/70 p-2">
-              <GroupAvatarPlaceholderVisual className="w-12 text-foreground sm:w-14" />
+              <GroupAvatarPlaceholderVisual className="h-10 w-auto text-foreground sm:h-12" />
             </div>
           )}
           {avatarImage && (
@@ -56,6 +56,7 @@ export function GroupAvatarSection({
           )}
         </div>
         <FileDropzone
+          className="min-h-0 min-w-0 flex-1"
           inputRef={avatarInputRef}
           variant="avatar"
           accept="image/*"

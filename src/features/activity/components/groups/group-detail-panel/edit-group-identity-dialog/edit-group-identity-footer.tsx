@@ -4,20 +4,18 @@ import type { GroupIdentityEditor } from "./edit-group-identity-dialog.types";
 
 interface EditGroupIdentityFooterProps {
   editor: GroupIdentityEditor;
+  isSaveDisabled?: boolean;
   onCancel: () => void;
+  saveLabel?: string;
 }
 
 export function EditGroupIdentityFooter({
   editor,
+  isSaveDisabled,
   onCancel,
+  saveLabel = "Save",
 }: EditGroupIdentityFooterProps) {
-  const isSaveDisabled =
-    !editor.isNameValid ||
-    !editor.isPlanValid ||
-    !editor.hasChanges ||
-    editor.isSaving ||
-    editor.isAvatarUploading ||
-    editor.isCoverUploading;
+  const saveDisabled = isSaveDisabled ?? !editor.canSave;
 
   return (
     <>
@@ -27,10 +25,10 @@ export function EditGroupIdentityFooter({
       <Button
         type="button"
         variant="primary"
-        disabled={isSaveDisabled}
+        disabled={saveDisabled}
         onClick={() => editor.save()}
       >
-        {editor.isSaving ? "Saving..." : "Save"}
+        {editor.isSaving ? "Saving..." : saveLabel}
       </Button>
     </>
   );

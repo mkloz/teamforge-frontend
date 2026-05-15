@@ -66,14 +66,11 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
 
         <dl className="divide-y divide-border">
           {SAMPLE_BRIEF.map(([label, value]) => (
-            <div
-              key={label}
-              className="grid grid-cols-[3rem_minmax(0,1fr)] gap-3 px-4 py-3"
-            >
-              <dt className="font-black text-muted-foreground text-xs uppercase">
+            <div key={label} className="flex items-baseline gap-4 px-4 py-3">
+              <dt className="w-18 shrink-0 font-black text-muted-foreground text-xs uppercase">
                 {label}
               </dt>
-              <dd className="font-semibold text-foreground text-sm leading-relaxed">
+              <dd className="min-w-0 font-semibold text-foreground text-sm leading-relaxed">
                 {value}
               </dd>
             </div>

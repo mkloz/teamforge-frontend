@@ -6,10 +6,13 @@ import * as PlanEndpoints from "@/features/activity/api/endpoints/activity-plans
 import * as RatingEndpoints from "@/features/activity/api/endpoints/activity-ratings.api";
 
 export type {
+  CreateGroupPlanPayload,
   CreateInvitePayload,
   CreatePlanProposalDto,
   CreateRatingMutationResult,
   CreateRatingPayload,
+  DeferGroupReviewMutationResult,
+  DeferGroupReviewPayload,
   FriendshipMutationResult,
   GetChatMessagesParams,
   GroupMutationResult,

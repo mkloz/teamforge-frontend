@@ -7,12 +7,11 @@ import {
   formatTypingText,
   getStatusText,
 } from "@/features/activity/lib/chat-utils";
-import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 
-export type ConversationDetailsNavigation =
-  | ReturnType<typeof buildGroupPlanDetailNavigation>
-  | ReturnType<typeof buildProfileNavigation>;
+export type ConversationDetailsNavigation = ReturnType<
+  typeof buildProfileNavigation
+>;
 
 interface BaseProps {
   isTyping?: boolean;
@@ -60,7 +59,7 @@ export function useConversationData({
     headerProps,
     activeTypingUsers,
     typingText,
-    isCompleted: isGroup && group?.status === "COMPLETED",
+    isCompleted: isGroup && group?.plan?.status === "COMPLETED",
   };
 }
 
@@ -83,9 +82,6 @@ function getConversationHeaderProps({
       subtitle: `${group.members?.length || 0} members`,
       avatarUrl: group.avatar,
       secondaryAvatar: group.plan?.coverImage,
-      detailsNavigation: buildGroupPlanDetailNavigation(group.id, {
-        source: "activity",
-      }),
     };
   }
 

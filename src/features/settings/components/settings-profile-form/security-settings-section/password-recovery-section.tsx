@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
+import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import type { User } from "@/shared/schemas";
 
@@ -38,17 +39,36 @@ export function PasswordRecoverySection({
 
       <div className="responsive-action-grid mt-5 grid gap-3">
         {currentUser?.authProvider === "EMAIL" ? (
-          <Button
-            type="button"
-            variant="primary"
-            className="min-w-0 px-3"
+          <ActionDialog
+            cancelLabel="Not now"
+            confirmLabel={
+              isSendingPasswordResetLink ? "Sending..." : "Send reset link"
+            }
+            description={`We'll email a password reset link to ${
+              currentUser.email
+            }.`}
+            details={[
+              "Your current password stays active until you change it.",
+              "You can ignore the email if you did not mean to request it.",
+            ]}
             disabled={isSendingPasswordResetLink}
-            onClick={() => {
-              void onSendPasswordResetLink();
-            }}
-          >
-            {isSendingPasswordResetLink ? "Sending link..." : "Send reset link"}
-          </Button>
+            loading={isSendingPasswordResetLink}
+            onConfirm={onSendPasswordResetLink}
+            title="Send a reset link?"
+            tone="info"
+            trigger={
+              <Button
+                type="button"
+                variant="primary"
+                className="min-w-0 px-3"
+                disabled={isSendingPasswordResetLink}
+              >
+                {isSendingPasswordResetLink
+                  ? "Sending link..."
+                  : "Send reset link"}
+              </Button>
+            }
+          />
         ) : (
           <Button
             type="button"

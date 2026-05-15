@@ -148,7 +148,7 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
         ) : isEmpty ? (
           <div className="flex min-h-full flex-col items-center justify-center px-6 py-10 text-center">
             <div className="flex max-w-xs flex-col items-center">
-              <EmptyMessageThreadVisual className="w-36 text-foreground" />
+              <EmptyMessageThreadVisual className="h-32 w-auto text-foreground" />
               <p className="mt-4 font-semibold text-foreground text-sm">
                 No messages yet
               </p>

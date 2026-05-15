@@ -4,12 +4,19 @@ import {
   CheckCircle2,
   CircleDashed,
   MapPin,
+  Pencil,
+  PlusCircle,
   XCircle,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
-import type { Plan } from "@/features/activity/lib/activity-contract";
+import type {
+  MemberRole,
+  Plan,
+} from "@/features/activity/lib/activity-contract";
 import { formatPlanLocation } from "@/features/activity/lib/plan-location";
+import { ActionDialog } from "@/shared/components/ui/action-dialog";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import {
   categoryColors,
@@ -21,15 +28,29 @@ import {
 
 interface PlanSectionProps {
   plan: Plan;
+  currentUserRole?: MemberRole;
   isFocused?: boolean;
   focusedProposalId?: string | null;
   isReadOnly?: boolean;
+  onCancelPlan?: () => Promise<void> | void;
+  onCompletePlan?: () => Promise<void> | void;
+  onConfirmPlan?: () => Promise<void> | void;
+  onCreateNextPlan?: () => Promise<void> | void;
+  onEditPlan?: () => void;
+  pendingAction?: string | null;
 }
 
 export function PlanSection({
+  currentUserRole = "MEMBER",
   plan,
   isFocused = false,
   isReadOnly = false,
+  onCancelPlan,
+  onCompletePlan,
+  onConfirmPlan,
+  onCreateNextPlan,
+  onEditPlan,
+  pendingAction = null,
 }: PlanSectionProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const formattedDate = plan.dateTime ? formatDate(plan.dateTime) : "Date TBD";
@@ -100,6 +121,18 @@ export function PlanSection({
             : null
         }
         time={formattedTime}
+      />
+
+      <PlanLifecycleActions
+        currentUserRole={currentUserRole}
+        isReadOnly={isReadOnly}
+        onCancelPlan={onCancelPlan}
+        onCompletePlan={onCompletePlan}
+        onConfirmPlan={onConfirmPlan}
+        onCreateNextPlan={onCreateNextPlan}
+        onEditPlan={onEditPlan}
+        pendingAction={pendingAction}
+        plan={plan}
       />
     </section>
   );
@@ -238,6 +271,170 @@ function PlanFact({
           ) : null}
         </dd>
       </div>
+    </div>
+  );
+}
+
+function PlanLifecycleActions({
+  currentUserRole,
+  isReadOnly,
+  onCancelPlan,
+  onCompletePlan,
+  onConfirmPlan,
+  onCreateNextPlan,
+  onEditPlan,
+  pendingAction,
+  plan,
+}: {
+  currentUserRole: MemberRole;
+  isReadOnly: boolean;
+  onCancelPlan?: () => Promise<void> | void;
+  onCompletePlan?: () => Promise<void> | void;
+  onConfirmPlan?: () => Promise<void> | void;
+  onCreateNextPlan?: () => Promise<void> | void;
+  onEditPlan?: () => void;
+  pendingAction: string | null;
+  plan: Plan;
+}) {
+  if (currentUserRole !== "ADMIN" || isReadOnly) {
+    return null;
+  }
+
+  const isDraftLike = plan.status === "DRAFT" || plan.status === "PROPOSED";
+  const isActive = plan.status === "CONFIRMED" || plan.status === "IN_PROGRESS";
+  const isTerminal = plan.status === "COMPLETED" || plan.status === "CANCELLED";
+
+  return (
+    <div className="mt-4 flex flex-wrap gap-2">
+      {isDraftLike ? (
+        <ActionDialog
+          cancelLabel="Review first"
+          confirmLabel={
+            pendingAction === "confirm-plan" ? "Confirming..." : "Confirm plan"
+          }
+          description="This turns the draft into the plan everyone sees as ready."
+          details={[
+            plan.dateTime ? `Time: ${formatDate(plan.dateTime)}` : "Date TBD",
+            `Place: ${formatPlanLocation(plan)}`,
+          ]}
+          disabled={!plan.dateTime || pendingAction !== null || !onConfirmPlan}
+          loading={pendingAction === "confirm-plan"}
+          onConfirm={onConfirmPlan}
+          title="Confirm this plan?"
+          tone="info"
+          trigger={
+            <Button
+              type="button"
+              size="sm"
+              className="min-w-max grow basis-36"
+              contentClassName="gap-1.5"
+              disabled={
+                !plan.dateTime || pendingAction !== null || !onConfirmPlan
+              }
+              loading={pendingAction === "confirm-plan"}
+              title={
+                !plan.dateTime ? "Set a date before confirming" : undefined
+              }
+            >
+              <CheckCircle2 className="size-3.5 shrink-0" />
+              Confirm plan
+            </Button>
+          }
+        />
+      ) : null}
+
+      {isActive ? (
+        <ActionDialog
+          cancelLabel="Not yet"
+          confirmLabel={
+            pendingAction === "complete-plan" ? "Completing..." : "Complete"
+          }
+          description="Mark this plan as finished when the group has wrapped it up."
+          details={[
+            "The plan moves into completed history.",
+            "Members can still use the group for follow-up and future plans.",
+          ]}
+          disabled={pendingAction !== null || !onCompletePlan}
+          loading={pendingAction === "complete-plan"}
+          onConfirm={onCompletePlan}
+          title="Complete this plan?"
+          tone="success"
+          trigger={
+            <Button
+              type="button"
+              size="sm"
+              className="min-w-max grow basis-36"
+              contentClassName="gap-1.5"
+              disabled={pendingAction !== null || !onCompletePlan}
+              loading={pendingAction === "complete-plan"}
+            >
+              <CheckCircle2 className="size-3.5 shrink-0" />
+              Complete
+            </Button>
+          }
+        />
+      ) : null}
+
+      {!isTerminal ? (
+        <ActionDialog
+          cancelLabel="Keep plan"
+          confirmLabel={
+            pendingAction === "cancel-plan" ? "Cancelling..." : "Cancel plan"
+          }
+          description="This closes the current plan for the group."
+          details={[
+            "Members will see the plan as cancelled.",
+            "The group chat stays open for deciding what happens next.",
+          ]}
+          disabled={pendingAction !== null || !onCancelPlan}
+          loading={pendingAction === "cancel-plan"}
+          onConfirm={onCancelPlan}
+          title="Cancel this plan?"
+          tone="danger"
+          trigger={
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="min-w-max grow basis-36"
+              contentClassName="gap-1.5"
+              disabled={pendingAction !== null || !onCancelPlan}
+              loading={pendingAction === "cancel-plan"}
+            >
+              <XCircle className="size-3.5 shrink-0" />
+              Cancel
+            </Button>
+          }
+        />
+      ) : null}
+
+      {isTerminal ? (
+        <Button
+          type="button"
+          size="sm"
+          className="min-w-max grow basis-36"
+          contentClassName="gap-1.5"
+          disabled={pendingAction !== null}
+          loading={pendingAction === "create-next-plan"}
+          onClick={onCreateNextPlan}
+        >
+          <PlusCircle className="size-3.5 shrink-0" />
+          Plan another
+        </Button>
+      ) : null}
+
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        className="min-w-max grow basis-36"
+        contentClassName="gap-1.5"
+        disabled={pendingAction !== null || !onEditPlan}
+        onClick={onEditPlan}
+      >
+        <Pencil className="size-3.5 shrink-0" />
+        Edit plan
+      </Button>
     </div>
   );
 }

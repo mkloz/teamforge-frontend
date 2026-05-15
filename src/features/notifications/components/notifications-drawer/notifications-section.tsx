@@ -28,31 +28,40 @@ export function NotificationsSection({
         label === "Today" ? "Today's notifications" : `${label} notifications`
       }
     >
-      <div className="sticky top-0 z-10 border-border/50 border-b bg-card/95 px-6 py-4 backdrop-blur-md">
-        <p className="font-black text-slate-muted/60 text-xs uppercase tracking-widest">
-          {label}
-        </p>
+      <div className="sticky top-0 z-10 border-border/60 border-b bg-canvas px-5 py-3">
+        <div className="flex items-center justify-between gap-3">
+          <p className="font-semibold text-slate-muted text-xs">{label}</p>
+          <span className="rounded-full bg-slate-muted/10 px-2 py-0.5 font-semibold text-slate-muted text-xs tabular-nums">
+            {items.length}
+          </span>
+        </div>
       </div>
-      <AnimatePresence initial={false}>
-        {items.map((item) => (
-          <motion.div
-            key={item.id}
-            initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 4 }}
-            animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-            exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -2 }}
-            transition={{
-              duration: shouldReduceMotion ? 0.08 : 0.15,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-          >
-            <NotificationItem
-              item={item}
-              onSelect={onSelect}
-              isPending={pendingNotificationId === item.id}
-            />
-          </motion.div>
-        ))}
-      </AnimatePresence>
+      <ul className="divide-y divide-border/55">
+        <AnimatePresence initial={false}>
+          {items.map((item) => (
+            <motion.li
+              key={item.id}
+              initial={
+                shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 4 }
+              }
+              animate={
+                shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
+              }
+              exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -2 }}
+              transition={{
+                duration: shouldReduceMotion ? 0.08 : 0.15,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
+              <NotificationItem
+                item={item}
+                onSelect={onSelect}
+                isPending={pendingNotificationId === item.id}
+              />
+            </motion.li>
+          ))}
+        </AnimatePresence>
+      </ul>
     </section>
   );
 }

@@ -74,9 +74,9 @@ export const GalleryItem = memo(
         {state === "error" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-muted/60">
             {media.type === "VIDEO" ? (
-              <ErrorMediaVideoUnavailableVisual className="w-16 text-foreground" />
+              <ErrorMediaVideoUnavailableVisual className="h-12 w-auto text-foreground" />
             ) : (
-              <ErrorMediaImageUnavailableVisual className="w-16 text-foreground" />
+              <ErrorMediaImageUnavailableVisual className="h-12 w-auto text-foreground" />
             )}
             <span className="font-medium text-slate-muted/70 text-xs uppercase tracking-wide">
               Failed to load

@@ -7,7 +7,6 @@ import type {
   Group,
   LocationMode,
   PlanCategory,
-  PlanStatus,
 } from "@/features/activity/lib/activity-contract";
 
 export interface GroupIdentityFormValues {
@@ -22,7 +21,6 @@ export interface GroupIdentityFormValues {
   planDescription: string;
   planLocation: string;
   planLocationMode: LocationMode;
-  planStatus: PlanStatus | "";
   planTitle: string;
   name: string;
 }
@@ -53,7 +51,6 @@ export function getInitialGroupIdentityValues(
     planDescription: group.plan?.description ?? "",
     planLocation: group.plan?.location ?? "",
     planLocationMode: group.plan?.locationMode ?? "TBD",
-    planStatus: group.plan?.status ?? "",
     planTitle: group.plan?.title ?? "",
   };
 }
@@ -66,17 +63,26 @@ export function hasGroupIdentityChanges(
   group: Group,
   values: GroupIdentityFormValues,
 ) {
-  const groupPayload = buildGroupPayload(values);
-  const planPayload = group.plan ? buildPlanPayload(values) : undefined;
-
   return (
-    groupPayload.name !== group.name ||
-    groupPayload.description !== group.description ||
-    groupPayload.avatar !== group.avatar ||
-    Boolean(
-      group.plan && planPayload && hasPlanPayloadChanges(group, planPayload),
-    )
+    hasGroupIdentityDetailsChanges(group, values) ||
+    hasGroupPlanDetailsChanges(group, values)
   );
+}
+
+export function hasGroupIdentityDetailsChanges(
+  group: Group,
+  values: GroupIdentityFormValues,
+) {
+  return hasGroupPayloadChanges(group, buildGroupPayload(values));
+}
+
+export function hasGroupPlanDetailsChanges(
+  group: Group,
+  values: GroupIdentityFormValues,
+) {
+  return group.plan
+    ? hasPlanPayloadChanges(group, buildPlanPayload(values))
+    : false;
 }
 
 export function buildGroupIdentityUpdateInput(
@@ -131,7 +137,6 @@ function buildPlanPayload(values: GroupIdentityFormValues): UpdatePlanPayload {
     locationLat: null,
     locationLng: null,
     locationMode: values.planLocationMode,
-    status: values.planStatus || undefined,
     title: values.planTitle.trim(),
   };
 }
@@ -153,7 +158,6 @@ function hasPlanPayloadChanges(group: Group, payload: UpdatePlanPayload) {
     payload.locationLat !== group.plan.locationLat ||
     payload.locationLng !== group.plan.locationLng ||
     payload.locationMode !== group.plan.locationMode ||
-    payload.status !== group.plan.status ||
     payload.title !== group.plan.title
   );
 }
@@ -163,7 +167,7 @@ export function isGroupPlanValid(values: GroupIdentityFormValues) {
     return false;
   }
 
-  if (!values.planCategory || !values.planStatus) {
+  if (!values.planCategory) {
     return false;
   }
 

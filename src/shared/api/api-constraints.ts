@@ -2,6 +2,9 @@ export const API_MAX_PAGE = 500;
 export const API_MAX_LIMIT = 100;
 
 export const EXPLORE_MAX_CATEGORY_FILTERS = 12;
+export const EXPLORE_MIN_DISTANCE_KM = 2;
+export const EXPLORE_MAX_DISTANCE_KM = 50;
+export const EXPLORE_DEFAULT_DISTANCE_KM = 15;
 
 export const IMAGE_UPLOAD_MAX_SIZE_BYTES = 30 * 1024 * 1024;
 export const CHAT_ATTACHMENT_MAX_SIZE_BYTES = 40 * 1024 * 1024;

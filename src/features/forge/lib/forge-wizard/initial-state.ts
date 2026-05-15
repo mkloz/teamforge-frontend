@@ -32,6 +32,7 @@ export function createInitialForgeWizardState(): ForgeWizardData {
     groupDescription: "",
     manualInviteeIds: [],
     coverImage: null,
+    templateCoverImage: null,
     avatarImage: null,
     activityId: null,
     groupId: null,

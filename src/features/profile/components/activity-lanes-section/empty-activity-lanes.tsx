@@ -6,7 +6,7 @@ import { Button } from "@/shared/components/ui/button";
 export function EmptyActivityLanes() {
   return (
     <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
-      <EmptyProfileActivityLanesVisual className="w-16 shrink-0 text-foreground sm:w-20" />
+      <EmptyProfileActivityLanesVisual className="h-16 w-auto shrink-0 text-foreground" />
       <div className="flex min-w-0 flex-col items-start gap-3">
         <p className="font-medium text-slate-muted text-sm">
           Add a few interests and TeamForge can turn them into activity lanes.

@@ -33,9 +33,9 @@ export const EmptyState = memo(function EmptyState({
   return (
     <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
       {artwork === "filtered" ? (
-        <EmptyConversationsFilteredVisual className="mx-auto w-40 text-foreground" />
+        <EmptyConversationsFilteredVisual className="mx-auto h-36 w-auto text-foreground" />
       ) : (
-        <EmptyConversationsVisual className="mx-auto w-40 text-foreground" />
+        <EmptyConversationsVisual className="mx-auto h-36 w-auto text-foreground" />
       )}
 
       <div className="mt-5 max-w-52">

@@ -50,7 +50,16 @@ export function mapGroup(
           ),
         }
       : undefined,
-    planHistory: [],
+    planHistory:
+      group.planHistory?.map((plan) => ({
+        id: plan.id,
+        title: plan.title,
+        category: plan.category,
+        dateTime: plan.dateTime,
+        coverImage: null,
+        status: plan.status,
+        location: plan.location ?? undefined,
+      })) ?? [],
   };
 }
 

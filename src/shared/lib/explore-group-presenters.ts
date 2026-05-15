@@ -70,6 +70,10 @@ export function getExploreGroupDistanceLabel(group: ExploreGroup) {
     return "Online";
   }
 
+  if (group.plan?.locationMode === "TBD") {
+    return group.activity.city || "Place TBD";
+  }
+
   return group.activity.city || "Location pending";
 }
 
@@ -98,7 +102,12 @@ export function getExploreGroupFitReason(group: ExploreGroup) {
   }
 
   if (strongest === "cityAlignment") {
-    return `${group.activity.city || "The location"} keeps this practical to join.`;
+    const place =
+      group.plan?.locationMode === "TBD"
+        ? group.activity.city || "The area"
+        : group.activity.city || "The location";
+
+    return `${place} keeps this practical to join.`;
   }
 
   if (group.access === "OPEN" && !isExploreGroupFull(group)) {

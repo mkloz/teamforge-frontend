@@ -121,7 +121,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
 
           {errorMessage && (
             <div className="flex items-center gap-2 px-3 pb-2">
-              <ErrorMessageSendFailedVisual className="w-10 shrink-0 text-foreground" />
+              <ErrorMessageSendFailedVisual className="h-5 w-auto shrink-0 text-foreground" />
               <p className="font-medium text-destructive/80 text-xs">
                 {errorMessage}
               </p>

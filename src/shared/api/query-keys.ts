@@ -14,6 +14,8 @@ export const APP_QUERY_KEYS = {
       ["activity-selection", "dm", chatId] as const,
     groupRatings: (groupId: string) =>
       ["activity", "ratings", "group", groupId] as const,
+    groupReviewState: (groupId: string) =>
+      ["activity", "ratings", "group", groupId, "review-state"] as const,
     linkPreview: (url: string) => ["activity", "link-preview", url] as const,
     messages: (chatId: string) => ["activity-messages", chatId] as const,
     conversationMessages: (chatId: string) =>

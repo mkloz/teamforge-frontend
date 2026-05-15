@@ -28,14 +28,20 @@ export function useGroupPanelContent({
     null,
   );
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isPlanEditOpen, setIsPlanEditOpen] = useState(false);
   const {
+    cancelPlan,
+    completePlan,
+    confirmPlan,
     currentUserId,
+    createNextGroupPlan,
     disbandGroup,
     inviteMember,
     isDisbanding,
     isLeaving,
     invitingMemberId,
     leaveGroup,
+    pendingPlanAction,
     removeMember,
     removingMemberId,
   } = useActivityGroupActions(group.id);
@@ -93,6 +99,10 @@ export function useGroupPanelContent({
   return {
     currentUserId,
     currentUserRole,
+    cancelPlan,
+    completePlan,
+    confirmPlan,
+    createNextGroupPlan,
     disbandGroup,
     inviteCandidates,
     inviteMember,
@@ -100,15 +110,18 @@ export function useGroupPanelContent({
     isDisbanding,
     isEditOpen,
     isLeaving,
+    isPlanEditOpen,
     jumpToPinnedMessage,
     leaveGroup,
     memberChat,
     memberCount,
     members,
+    pendingPlanAction,
     removeMember,
     removingMemberId,
     selectedMember,
     setIsEditOpen,
+    setIsPlanEditOpen,
     setSelectedMember,
     unpinMessage,
   };

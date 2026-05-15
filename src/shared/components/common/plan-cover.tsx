@@ -34,7 +34,24 @@ export function PlanCover({
 }: PlanCoverProps) {
   const preset = getPlanCoverPreset(value);
 
-  if (preset) {
+  if (preset?.kind === "image") {
+    return (
+      <Image
+        src={preset.src}
+        alt={alt}
+        loading={loading}
+        wrapperClassName={className}
+        className={imageClassName}
+        fallbackComponent={fallbackComponent}
+        loadingClassName={loadingClassName}
+        loadingComponent={loadingComponent}
+        noImageComponent={noImageComponent}
+        showNoImage={showNoImage}
+      />
+    );
+  }
+
+  if (preset?.kind === "gradient") {
     return (
       <div
         aria-label={alt}

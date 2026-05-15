@@ -3,12 +3,16 @@ import dayjs from "dayjs";
 import {
   ArrowRight,
   CalendarDays,
+  CheckCircle2,
+  CircleDot,
+  Clock3,
   Globe2,
   Lock,
   MapPin,
   Pencil,
   UserCheck,
   UsersRound,
+  XCircle,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import type {
@@ -86,22 +90,12 @@ export function GroupIdentitySection({
           />
         </div>
 
-        <div className="min-w-0 flex-1 pb-1">
-          <div className="flex min-w-0 items-start gap-2">
-            <h2 className="line-clamp-2 font-bold text-2xl text-ink leading-tight tracking-tight">
-              {displayName}
-            </h2>
-            <span
-              className={cn(
-                "shrink-0 rounded-full border px-2 py-0.5 font-bold text-micro",
-                status === "ACTIVE"
-                  ? "border-forge-teal/20 bg-forge-teal/10 text-forge-teal"
-                  : "border-slate-muted/20 bg-slate-muted/10 text-slate-muted",
-              )}
-            >
-              {statusLabel}
-            </span>
-          </div>
+        <div className="relative min-w-0 flex-1 pr-10 pb-1">
+          <GroupStatusIcon label={statusLabel} status={status} />
+
+          <h2 className="line-clamp-2 font-bold text-2xl text-ink leading-tight tracking-tight">
+            {displayName}
+          </h2>
 
           {activityTitle ? (
             <p className="mt-2 line-clamp-2 font-semibold text-forge-teal text-xs leading-snug">
@@ -164,6 +158,32 @@ export function GroupIdentitySection({
         ) : null}
       </div>
     </section>
+  );
+}
+
+function GroupStatusIcon({
+  label,
+  status,
+}: {
+  label: string;
+  status: GroupStatus;
+}) {
+  const Icon = GROUP_STATUS_ICONS[status];
+
+  return (
+    <span
+      aria-label={`Group status: ${label}`}
+      className={cn(
+        "absolute top-0 right-0 flex size-8 items-center justify-center rounded-lg border",
+        status === "ACTIVE"
+          ? "border-forge-teal/20 bg-forge-teal/10 text-forge-teal"
+          : "border-slate-muted/15 bg-slate-muted/10 text-slate-muted",
+      )}
+      role="img"
+      title={label}
+    >
+      <Icon className="size-3.5" strokeWidth={2} />
+    </span>
   );
 }
 
@@ -263,6 +283,15 @@ function GroupFactList({
 }
 
 const CAPACITY_SEGMENT_KEYS = ["1", "2", "3", "4", "5", "6", "7", "8"];
+
+const GROUP_STATUS_ICONS = {
+  ACTIVE: CheckCircle2,
+  COMPLETED: CheckCircle2,
+  DISBANDED: XCircle,
+  FORMING: CircleDot,
+  PENDING: Clock3,
+  PLANNING: Clock3,
+} satisfies Record<GroupStatus, typeof Clock3>;
 
 interface CompactFactProps {
   icon: ReactNode;

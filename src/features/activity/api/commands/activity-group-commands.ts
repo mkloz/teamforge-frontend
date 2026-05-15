@@ -1,4 +1,5 @@
 import type {
+  CreateGroupPlanPayload,
   UpdateGroupPayload,
   UpdatePlanPayload,
 } from "@/features/activity/api/activity.api";
@@ -17,6 +18,22 @@ export const ActivityGroupCommands = {
     planPayload?: UpdatePlanPayload;
   }) {
     return ActivityActions.updateGroupIdentity(input);
+  },
+
+  confirmPlan(planId: string, groupId: string) {
+    return ActivityActions.confirmPlan(planId, groupId);
+  },
+
+  completePlan(planId: string, groupId: string) {
+    return ActivityActions.completePlan(planId, groupId);
+  },
+
+  cancelPlan(planId: string, groupId: string) {
+    return ActivityActions.cancelPlan(planId, groupId);
+  },
+
+  createNextGroupPlan(groupId: string, payload: CreateGroupPlanPayload) {
+    return ActivityActions.createNextGroupPlan(groupId, payload);
   },
 
   leaveGroup(groupId: string, currentUserId: string) {

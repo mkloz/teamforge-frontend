@@ -1,14 +1,4 @@
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/shared/components/ui/alert-dialog";
+import { ActionDialog } from "@/shared/components/ui/action-dialog";
 
 import {
   GroupActionButton,
@@ -46,32 +36,21 @@ export function ConfirmGroupActionButton({
   }
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
+    <ActionDialog
+      cancelLabel="Stay here"
+      confirmLabel={confirmActionLabel}
+      description={confirmDescription}
+      onConfirm={onConfirm}
+      title={confirmTitle}
+      tone={variant === "destructive" ? "danger" : "info"}
+      trigger={
         <GroupActionButton
           icon={icon}
           label={label}
           onClick={() => {}}
           variant={variant}
         />
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{confirmTitle}</AlertDialogTitle>
-          <AlertDialogDescription>{confirmDescription}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            variant={variant === "destructive" ? "destructive" : "primary"}
-            onClick={() => {
-              void onConfirm();
-            }}
-          >
-            {confirmActionLabel}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      }
+    />
   );
 }

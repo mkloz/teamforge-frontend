@@ -87,6 +87,17 @@ export const groupPlanDetailSchema = z.object({
       costDetails: z.string().nullable(),
     })
     .nullable(),
+  planHistory: z.array(
+    z.object({
+      id: z.string(),
+      title: z.string(),
+      category: planCategorySchema,
+      dateTime: z.string().datetime().nullable(),
+      coverImage: z.string().nullable(),
+      status: planStatusSchema,
+      location: z.string().nullable(),
+    }),
+  ),
   members: z.array(
     z.object({
       id: z.string(),

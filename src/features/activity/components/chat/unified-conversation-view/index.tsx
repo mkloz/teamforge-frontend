@@ -1,4 +1,3 @@
-import { useNavigate } from "@tanstack/react-router";
 import type { RefObject } from "react";
 import { memo, useRef } from "react";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
@@ -9,10 +8,9 @@ import type {
   Group,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
-import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import { useIsMobile } from "@/shared/hooks/use-breakpoint";
 import { ChatStatusBar } from "./chat-status-bar";
-import { CompletedBanner } from "./completed-banner";
+import { CompletedReviewGate } from "./completed-banner";
 import { UnifiedChatHeader } from "./unified-chat-header";
 import { UnifiedMessageInput } from "./unified-message-input";
 import { UnifiedMessageList } from "./unified-message-list";
@@ -76,7 +74,6 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     messageScrollHandleRef ?? internalMessageScrollHandleRef;
 
   const { unpinMessage } = useActivityMessageActions();
-  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const isBlockedDirectChat = kind === "dm" && Boolean(data.isBlocked);
 
@@ -95,17 +92,6 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
   const allPinnedMessages: UnifiedMessage[] = (
     pinnedMessagesFromData || []
   ).map((msg: UnifiedMessage) => Object.assign({}, msg, { isOwn: false }));
-
-  function handleViewGroupPlanDetails() {
-    if (kind !== "group") {
-      onToggleAction();
-      return;
-    }
-
-    void navigate(
-      buildGroupPlanDetailNavigation(data.id, { source: "activity" }),
-    );
-  }
 
   return (
     <div className="flex h-full flex-col bg-canvas/40">
@@ -127,7 +113,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
       <ChatStatusBar
         plan={kind === "group" ? (data.plan ?? undefined) : undefined}
         pinnedMessages={allPinnedMessages}
-        onViewDetails={handleViewGroupPlanDetails}
+        onViewDetails={onToggleAction}
         onUnpinPinnedMessage={(messageId) => {
           const targetMessage = allPinnedMessages.find(
             (message) => message.id === messageId,
@@ -167,7 +153,20 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
 
       {/* Input area */}
       {isCompleted && kind === "group" && data.plan ? (
-        <CompletedBanner group={data} />
+        <CompletedReviewGate group={data}>
+          <UnifiedMessageInput
+            chatId={data.chat?.id ?? null}
+            errorMessage={sendError}
+            disabled={isBlockedDirectChat}
+            onSend={onSendMessage}
+            onClearError={onClearSendError}
+            placeholder={
+              isBlockedDirectChat
+                ? "Unblock this user to send messages"
+                : undefined
+            }
+          />
+        </CompletedReviewGate>
       ) : (
         <UnifiedMessageInput
           chatId={kind === "group" ? (data.chat?.id ?? null) : data.id}

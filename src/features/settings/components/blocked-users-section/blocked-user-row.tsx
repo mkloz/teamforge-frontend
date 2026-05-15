@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Loader2, ShieldOff } from "lucide-react";
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar } from "@/shared/components/common/avatar";
+import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import type { FriendshipApi } from "@/shared/schemas";
 import { formatBlockedDate } from "./blocked-users-formatters";
@@ -44,22 +45,31 @@ export function BlockedUserRow({
         </div>
       </Link>
 
-      <Button
-        type="button"
-        variant="outline"
-        disabled={isUnblocking}
-        className="w-full justify-center md:w-auto"
-        onClick={() => {
-          void onUnblockUser(user.id);
-        }}
-      >
-        {isUnblocking ? (
-          <Loader2 size={14} className="animate-spin" />
-        ) : (
-          <ShieldOff size={14} />
-        )}
-        {isUnblocking ? "Unblocking..." : "Unblock"}
-      </Button>
+      <ActionDialog
+        cancelLabel="Keep blocked"
+        confirmLabel={isUnblocking ? "Unblocking..." : "Unblock"}
+        description={`${user.name} will leave your blocked people list and can contact you again.`}
+        details={["You can block them again from their profile panel."]}
+        loading={isUnblocking}
+        onConfirm={() => onUnblockUser(user.id)}
+        title="Unblock this user?"
+        tone="info"
+        trigger={
+          <Button
+            type="button"
+            variant="outline"
+            disabled={isUnblocking}
+            className="w-full justify-center md:w-auto"
+          >
+            {isUnblocking ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : (
+              <ShieldOff size={14} />
+            )}
+            {isUnblocking ? "Unblocking..." : "Unblock"}
+          </Button>
+        }
+      />
     </div>
   );
 }

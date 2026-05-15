@@ -9,6 +9,8 @@ import {
   type GroupIdentityFormValues,
   getInitialGroupIdentityValues,
   hasGroupIdentityChanges,
+  hasGroupIdentityDetailsChanges,
+  hasGroupPlanDetailsChanges,
   isGroupIdentityNameValid,
   isGroupPlanValid,
 } from "./group-identity/group-identity-form-state";
@@ -32,7 +34,6 @@ export function useEditGroupIdentity(
     initialValues.planDescription,
   );
   const [planCategory, setPlanCategory] = useState(initialValues.planCategory);
-  const [planStatus, setPlanStatus] = useState(initialValues.planStatus);
   const [planDateTime, setPlanDateTime] = useState(initialValues.planDateTime);
   const [planLocationMode, setPlanLocationMode] = useState(
     initialValues.planLocationMode,
@@ -61,7 +62,6 @@ export function useEditGroupIdentity(
     planDescription,
     planLocation,
     planLocationMode,
-    planStatus,
     planTitle,
   };
 
@@ -88,6 +88,23 @@ export function useEditGroupIdentity(
   const isNameValid = isGroupIdentityNameValid(name);
   const isPlanValid = !group.plan || isGroupPlanValid(values);
   const hasChanges = hasGroupIdentityChanges(group, values);
+  const hasGroupDetailsChanges = hasGroupIdentityDetailsChanges(group, values);
+  const hasPlanDetailsChanges = hasGroupPlanDetailsChanges(group, values);
+  const isBusy = mutation.isPending;
+  const canSaveGroupDetails =
+    isNameValid &&
+    hasGroupDetailsChanges &&
+    !isBusy &&
+    !avatarUpload.isUploading;
+  const canSavePlanDetails =
+    isPlanValid && hasPlanDetailsChanges && !isBusy && !coverUpload.isUploading;
+  const canSave =
+    hasChanges &&
+    isNameValid &&
+    isPlanValid &&
+    !isBusy &&
+    !avatarUpload.isUploading &&
+    !coverUpload.isUploading;
 
   function save() {
     setError(null);
@@ -97,6 +114,9 @@ export function useEditGroupIdentity(
   return {
     avatar,
     avatarUploadError: avatarUpload.error,
+    canSave,
+    canSaveGroupDetails,
+    canSavePlanDetails,
     coverImage,
     coverUploadError: coverUpload.error,
     description,
@@ -104,6 +124,8 @@ export function useEditGroupIdentity(
     handleAvatarFiles: avatarUpload.handleFiles,
     handleCoverFiles: coverUpload.handleFiles,
     hasChanges,
+    hasGroupDetailsChanges,
+    hasPlanDetailsChanges,
     isAvatarUploading: avatarUpload.isUploading,
     isCoverUploading: coverUpload.isUploading,
     isNameValid,
@@ -118,7 +140,6 @@ export function useEditGroupIdentity(
     planDescription,
     planLocation,
     planLocationMode,
-    planStatus,
     planTitle,
     save,
     setAvatar,
@@ -133,7 +154,6 @@ export function useEditGroupIdentity(
     setPlanDescription,
     setPlanLocation,
     setPlanLocationMode,
-    setPlanStatus,
     setPlanTitle,
   };
 }

@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { formatPlanLocationProposalValue } from "@/features/activity/lib/plan-location";
 import type { PlanProposal } from "@/shared/schemas/plan";
 
@@ -40,6 +41,10 @@ export function formatProposalValue(
     return "Not set";
   }
 
+  if (field === "COST") {
+    return formatCostProposalValue(value);
+  }
+
   if (field === "LOCATION") {
     return formatPlanLocationProposalValue(value);
   }
@@ -57,6 +62,77 @@ export function formatProposalValue(
   }
 
   return value;
+}
+
+type CostProposalValue = {
+  cost: "FREE" | "PAID";
+  costAmount: number | null;
+  costDetails: string | null;
+};
+
+const costProposalValueSchema = z
+  .object({
+    cost: z.enum(["FREE", "PAID"]),
+    costAmount: z.number().finite().nullable().optional(),
+    costDetails: z.string().nullable().optional(),
+  })
+  .transform(
+    (value): CostProposalValue => ({
+      cost: value.cost,
+      costAmount: value.costAmount ?? null,
+      costDetails:
+        typeof value.costDetails === "string" &&
+        value.costDetails.trim().length > 0
+          ? value.costDetails.trim()
+          : null,
+    }),
+  );
+
+function formatCostProposalValue(value: string) {
+  const parsedValue = parseCostProposalValue(value);
+
+  if (!parsedValue) {
+    return value;
+  }
+
+  const details = parsedValue.costDetails;
+
+  if (parsedValue.cost === "FREE") {
+    return details ? `Free \u00b7 ${details}` : "Free";
+  }
+
+  const amount =
+    parsedValue.costAmount === null
+      ? null
+      : `About \u00a3${formatCostAmount(parsedValue.costAmount)}`;
+
+  if (amount && details) {
+    return `${amount} \u00b7 ${details}`;
+  }
+
+  return amount ?? details ?? "Paid";
+}
+
+function parseCostProposalValue(value: string): CostProposalValue | null {
+  const trimmedValue = value.trim();
+
+  if (trimmedValue === "FREE" || trimmedValue === "PAID") {
+    return { cost: trimmedValue, costAmount: null, costDetails: null };
+  }
+
+  let result: ReturnType<typeof costProposalValueSchema.safeParse>;
+
+  try {
+    result = costProposalValueSchema.safeParse(JSON.parse(value));
+  } catch {
+    return null;
+  }
+
+  return result.success ? result.data : null;
+}
+
+function formatCostAmount(value: number) {
+  return Number.isInteger(value) ? String(value) : value.toFixed(2);
 }
 
 export function buildProposalTimelineContent(proposal: PlanProposal) {

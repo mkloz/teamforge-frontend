@@ -1,4 +1,5 @@
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
+import { EXPLORE_DEFAULT_DISTANCE_KM } from "@/shared/api/api-constraints";
 import {
   createPaginatedSchema,
   exploreGroupSchema,
@@ -50,6 +51,8 @@ export class HomeApi {
       .get("explore/groups", {
         searchParams: {
           limit: 6,
+          maxDistanceKm: EXPLORE_DEFAULT_DISTANCE_KM,
+          sortBy: "MATCH",
         },
       })
       .json<unknown>();

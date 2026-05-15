@@ -40,6 +40,15 @@ export function groupRatingsQueryOptions(groupId: string) {
   });
 }
 
+export function groupReviewStateQueryOptions(groupId: string) {
+  return queryOptions({
+    queryKey: APP_QUERY_KEYS.activity.groupReviewState(groupId),
+    queryFn: () => ActivityApi.getGroupReviewState(groupId),
+    enabled: groupId.length > 0,
+    staleTime: 15_000,
+  });
+}
+
 export function linkPreviewQueryOptions(url: string) {
   return queryOptions({
     queryKey: APP_QUERY_KEYS.activity.linkPreview(url),

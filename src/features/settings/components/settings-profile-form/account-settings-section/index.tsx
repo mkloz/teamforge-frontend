@@ -71,7 +71,7 @@ export function AccountSettingsSection({
               }
             >
               {saveError ? (
-                <ErrorProfileSaveVisual className="w-14 shrink-0 text-foreground" />
+                <ErrorProfileSaveVisual className="h-6 w-auto shrink-0 text-foreground" />
               ) : null}
               <p className={saveError ? "text-destructive text-sm" : ""}>
                 {saveError ?? saveMessage}

@@ -4,7 +4,7 @@ export function ActivityEmptyState() {
   return (
     <section className="hidden flex-1 items-center justify-center bg-canvas/30 backdrop-blur-sm md:flex">
       <div className="max-w-sm px-6 text-center">
-        <ActivityNoConversationSelectedVisual className="mx-auto mb-6 w-40 text-foreground" />
+        <ActivityNoConversationSelectedVisual className="mx-auto mb-6 h-36 w-auto text-foreground" />
         <h2 className="font-bold text-ink text-lg">
           Pick a conversation to begin.
         </h2>

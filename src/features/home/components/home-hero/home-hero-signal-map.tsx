@@ -6,7 +6,7 @@ export function HomeHeroSignalMap() {
       className="relative hidden min-h-72 overflow-hidden 2xl:block"
       aria-hidden="true"
     >
-      <HomeHeroActivityWorkbenchVisual className="absolute inset-0 m-auto w-full text-foreground" />
+      <HomeHeroActivityWorkbenchVisual className="absolute inset-0 m-auto size-full text-foreground" />
     </div>
   );
 }

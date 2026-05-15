@@ -7,9 +7,10 @@ import {
   SmilePlus,
   Trash2,
 } from "lucide-react";
-import { memo } from "react";
+import { memo, useState } from "react";
 
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
@@ -53,6 +54,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
   onToggleReaction,
   onUnpin,
 }: MessageActionsMenuProps) {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const canEdit =
     message.isOwn &&
     message.type === "TEXT" &&
@@ -63,79 +65,99 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
   const canPin = message.status !== "FAILED" && message.type !== "PLAN_UPDATE";
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          className="size-8 rounded-full border border-border/50 bg-canvas/90 text-slate-muted shadow-sm backdrop-blur-sm transition-opacity hover:text-ink"
-          aria-label="Message actions"
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className="size-8 rounded-full border border-border/50 bg-canvas/90 text-slate-muted shadow-sm backdrop-blur-sm transition-opacity hover:text-ink"
+            aria-label="Message actions"
+          >
+            <MoreHorizontal className="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align={message.isOwn ? "end" : "start"}
+          className="w-48"
         >
-          <MoreHorizontal className="size-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align={message.isOwn ? "end" : "start"}
-        className="w-48"
-      >
-        <DropdownMenuLabel>Message</DropdownMenuLabel>
-        <DropdownMenuItem onSelect={() => onReply(message)}>
-          <Reply className="mr-2 size-4" />
-          Reply
-        </DropdownMenuItem>
-        {canEdit && (
-          <DropdownMenuItem onSelect={() => onStartEdit(message)}>
-            <Pencil className="mr-2 size-4" />
-            Edit
+          <DropdownMenuLabel>Message</DropdownMenuLabel>
+          <DropdownMenuItem onSelect={() => onReply(message)}>
+            <Reply className="mr-2 size-4" />
+            Reply
           </DropdownMenuItem>
-        )}
-        {canRetry && (
-          <DropdownMenuItem onSelect={() => void onRetry(message)}>
-            <RotateCcw className="mr-2 size-4" />
-            Retry send
-          </DropdownMenuItem>
-        )}
-        {message.isOwn && (
-          <DropdownMenuItem
-            onSelect={() => void onDelete(message)}
-            className="text-destructive"
-          >
-            <Trash2 className="mr-2 size-4" />
-            Delete
-          </DropdownMenuItem>
-        )}
-        {canPin && (
-          <DropdownMenuItem
-            onSelect={() =>
-              void (message.isPinned ? onUnpin(message) : onPin(message))
-            }
-          >
-            <Pin className="mr-2 size-4" />
-            {message.isPinned ? "Unpin" : "Pin"}
-          </DropdownMenuItem>
-        )}
+          {canEdit && (
+            <DropdownMenuItem onSelect={() => onStartEdit(message)}>
+              <Pencil className="mr-2 size-4" />
+              Edit
+            </DropdownMenuItem>
+          )}
+          {canRetry && (
+            <DropdownMenuItem onSelect={() => void onRetry(message)}>
+              <RotateCcw className="mr-2 size-4" />
+              Retry send
+            </DropdownMenuItem>
+          )}
+          {message.isOwn && (
+            <DropdownMenuItem
+              onSelect={() => setDeleteDialogOpen(true)}
+              className="text-destructive"
+            >
+              <Trash2 className="mr-2 size-4" />
+              Delete
+            </DropdownMenuItem>
+          )}
+          {canPin && (
+            <DropdownMenuItem
+              onSelect={() =>
+                void (message.isPinned ? onUnpin(message) : onPin(message))
+              }
+            >
+              <Pin className="mr-2 size-4" />
+              {message.isPinned ? "Unpin" : "Pin"}
+            </DropdownMenuItem>
+          )}
 
-        {canReact && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel className="flex items-center gap-2 text-xs">
-              <SmilePlus className="size-4" />
-              React
-            </DropdownMenuLabel>
-            {COMMON_REACTIONS.map((reaction) => (
-              <DropdownMenuItem
-                key={reaction.emoji}
-                onSelect={() => void onToggleReaction(message, reaction.emoji)}
-              >
-                <span className="mr-2 text-base leading-none">
-                  {reaction.emoji}
-                </span>
-                {reaction.label}
-              </DropdownMenuItem>
-            ))}
-          </>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+          {canReact && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="flex items-center gap-2 text-xs">
+                <SmilePlus className="size-4" />
+                React
+              </DropdownMenuLabel>
+              {COMMON_REACTIONS.map((reaction) => (
+                <DropdownMenuItem
+                  key={reaction.emoji}
+                  onSelect={() =>
+                    void onToggleReaction(message, reaction.emoji)
+                  }
+                >
+                  <span className="mr-2 text-base leading-none">
+                    {reaction.emoji}
+                  </span>
+                  {reaction.label}
+                </DropdownMenuItem>
+              ))}
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <ActionDialog
+        cancelLabel="Keep message"
+        confirmLabel="Delete message"
+        description="This removes the message from the conversation. Replies and pinned context may feel different for everyone."
+        details={
+          message.attachments?.length
+            ? ["Attached files will no longer appear with this message."]
+            : undefined
+        }
+        onConfirm={() => onDelete(message)}
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Delete this message?"
+        tone="danger"
+      />
+    </>
   );
 });

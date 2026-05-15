@@ -4,17 +4,7 @@ import { RailCard } from "@/features/group-plan-detail/components/rail/rail-card
 import type { useGroupPlanActionState } from "@/features/group-plan-detail/hooks/use-group-plan-action-state";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { getSeatsLabel } from "@/features/group-plan-detail/lib/group-plan-detail-formatters";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/shared/components/ui/alert-dialog";
+import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 
 interface DecisionActionCardProps {
@@ -100,33 +90,21 @@ function LeaveGroupConfirmationAction({
   action: SecondaryGroupPlanAction;
 }) {
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
+    <ActionDialog
+      cancelLabel="Stay in group"
+      confirmLabel="Leave group"
+      description="You will lose access to the group chat and planning workspace."
+      loading={action.loading}
+      onConfirm={() => action.onClick?.()}
+      title="Leave this group?"
+      tone="danger"
+      trigger={
         <Button variant="outline" className="w-full" disabled={action.loading}>
           <LogOut className="size-4" aria-hidden="true" />
           {action.label}
         </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Leave this group?</AlertDialogTitle>
-          <AlertDialogDescription>
-            You will lose access to the group chat and planning workspace.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Stay</AlertDialogCancel>
-          <AlertDialogAction
-            variant="destructive"
-            onClick={() => {
-              action.onClick?.();
-            }}
-          >
-            Leave group
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      }
+    />
   );
 }
 

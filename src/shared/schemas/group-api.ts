@@ -91,8 +91,10 @@ export const groupApiSchema = z
     version: z.number().optional(),
     disbandedAt: z.string().datetime().nullable(),
     activityId: z.string(),
+    currentPlanId: z.string().nullable().optional(),
     activity: groupActivitySummarySchema,
     plan: groupPlanSummarySchema.nullable(),
+    planHistory: z.array(groupPlanSummarySchema).optional(),
     chat: z
       .object({
         id: z.string(),

@@ -90,7 +90,7 @@ function InterestsBrowseScreen({
         title="Couldn’t load interests"
         body="The interest catalog didn’t come through. Try again."
         visual={
-          <ErrorOnboardingCatalogVisual className="mb-1 w-32 text-foreground" />
+          <ErrorOnboardingCatalogVisual className="mb-1 h-28 w-auto text-foreground" />
         }
         action={
           <Button

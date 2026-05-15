@@ -7,6 +7,7 @@ import { Button } from "@/shared/components/ui/button";
 import {
   getPlanCoverPreset,
   PLAN_COVER_PRESETS,
+  type PlanCoverPreset,
 } from "@/shared/lib/plan-cover";
 import { cn } from "@/shared/lib/utils";
 
@@ -66,14 +67,15 @@ export function EditGroupCoverSection({
         )}
       </div>
       <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-        {PLAN_COVER_PRESETS.map(({ id, gradient, label }) => (
+        {PLAN_COVER_PRESETS.map((preset) => (
           <PlanCoverPresetButton
-            key={id}
-            gradient={gradient}
-            label={label}
-            selected={editor.coverImage === id}
+            key={preset.id}
+            preset={preset}
+            selected={editor.coverImage === preset.id}
             onToggle={() =>
-              editor.setCoverImage(editor.coverImage === id ? null : id)
+              editor.setCoverImage(
+                editor.coverImage === preset.id ? null : preset.id,
+              )
             }
           />
         ))}
@@ -88,16 +90,14 @@ export function EditGroupCoverSection({
 }
 
 interface PlanCoverPresetButtonProps {
-  gradient: string;
-  label: string;
+  preset: PlanCoverPreset;
   onToggle: () => void;
   selected: boolean;
 }
 
 function PlanCoverPresetButton({
-  gradient,
-  label,
   onToggle,
+  preset,
   selected,
 }: PlanCoverPresetButtonProps) {
   return (
@@ -107,15 +107,24 @@ function PlanCoverPresetButton({
       onClick={onToggle}
       aria-pressed={selected}
       className={cn(
-        "group relative h-14 overflow-hidden rounded-lg border-2 bg-linear-to-br p-0 transition duration-200",
-        gradient,
+        "group relative h-14 overflow-hidden rounded-lg border-2 p-0 transition duration-200",
+        preset.kind === "gradient" && `bg-linear-to-br ${preset.gradient}`,
         selected
           ? "border-forge-teal shadow-forge-teal/20 shadow-md"
           : "border-transparent hover:scale-105 hover:shadow-sm",
       )}
     >
+      {preset.kind === "image" && (
+        <img
+          src={preset.src}
+          alt=""
+          className="absolute inset-0 size-full object-cover transition duration-300 group-hover:scale-105"
+          loading="lazy"
+        />
+      )}
+      <span className="absolute inset-0 bg-linear-to-b from-black/5 via-transparent to-black/55" />
       <span className="absolute bottom-1 left-1.5 font-bold text-white/85 text-xs drop-shadow-sm">
-        {label}
+        {preset.label}
       </span>
       {selected && (
         <span className="absolute top-1 right-1 flex size-5 items-center justify-center rounded-full bg-white/95 shadow-sm">

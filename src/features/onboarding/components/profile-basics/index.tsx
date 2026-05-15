@@ -47,7 +47,7 @@ export function ProfileBasicsCard({
 
           {saveError ? (
             <div className="flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/5 px-3 py-3">
-              <ErrorProfileSaveVisual className="w-14 shrink-0 text-foreground" />
+              <ErrorProfileSaveVisual className="h-6 w-auto shrink-0 text-foreground" />
               <p className="font-medium text-destructive text-sm">
                 {saveError}
               </p>

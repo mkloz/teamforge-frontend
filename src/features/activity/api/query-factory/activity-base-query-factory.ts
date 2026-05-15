@@ -17,6 +17,10 @@ export const ActivityBaseQueryFactory = {
     return ActivityQueryOptions.groupRatings(groupId);
   },
 
+  groupReviewState(groupId: string) {
+    return ActivityQueryOptions.groupReviewState(groupId);
+  },
+
   linkPreview(url: string) {
     return ActivityQueryOptions.linkPreview(url);
   },

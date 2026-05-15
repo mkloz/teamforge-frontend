@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { X } from "lucide-react";
+import { CheckCheck, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { EmptyNotificationsVisual } from "@/assets/empty-state/empty-notifications";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
@@ -35,6 +35,7 @@ export function NotificationsDrawer({
     markAllRead,
     isLoading,
     isMarkingAllRead,
+    count,
   } = useNotifications();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const navigate = useNavigate();
@@ -73,10 +74,10 @@ export function NotificationsDrawer({
     >
       <DrawerContent
         className={cn(
-          "border-border bg-card",
+          "border-border bg-canvas text-ink shadow-none",
           isDesktop
-            ? "lg:w-96 lg:rounded-l-xl lg:border-l"
-            : "max-lg:max-h-screen max-lg:rounded-t-xl max-lg:border-t",
+            ? "lg:w-96 lg:rounded-l-2xl lg:border-l"
+            : "max-lg:max-h-screen max-lg:rounded-t-2xl max-lg:border-t",
         )}
       >
         <DrawerHeader className="sr-only">
@@ -84,28 +85,41 @@ export function NotificationsDrawer({
         </DrawerHeader>
 
         {/* Header */}
-        <div className="flex h-16 shrink-0 items-center justify-between border-border border-b px-6">
-          <h2 className="font-bold text-ink text-lg tracking-tight">
-            Notifications
-          </h2>
-          <div className="flex items-center gap-1.5">
+        <div className="flex min-h-18 shrink-0 flex-wrap items-center justify-between gap-3 border-border border-b px-5 py-4">
+          <div className="min-w-0 flex-1">
+            <h2 className="font-bold text-ink text-lg leading-tight tracking-tight">
+              Notifications
+            </h2>
+            <p className="mt-1 text-slate-muted text-xs">
+              {count > 0
+                ? `${count} unread ${count === 1 ? "update" : "updates"}`
+                : "All caught up"}
+            </p>
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
             <Button
-              variant="link"
+              variant="subtle"
               size="sm"
               onClick={markAllRead}
-              disabled={items.length === 0 || isMarkingAllRead}
-              className="h-auto p-0 font-bold text-xs"
+              disabled={count === 0 || isMarkingAllRead}
+              className="px-3"
+              contentClassName="gap-1.5"
             >
+              <CheckCheck className="size-3.5 shrink-0" aria-hidden="true" />
               {isMarkingAllRead ? "Marking..." : "Mark all read"}
             </Button>
             <Button
               variant="accentGhost"
-              size="icon-xs"
+              size="icon"
               onClick={onClose}
               aria-label="Close notifications"
-              className="p-0"
+              className="size-10 p-0"
             >
-              <X size={20} strokeWidth={2.5} aria-hidden="true" />
+              <X
+                className="size-5 shrink-0"
+                strokeWidth={2}
+                aria-hidden="true"
+              />
             </Button>
           </div>
         </div>
@@ -119,14 +133,13 @@ export function NotificationsDrawer({
             <NotificationsDrawerSkeleton />
           ) : items.length === 0 ? (
             <div className="flex flex-col items-center px-6 py-14 text-center sm:py-16">
-              <EmptyNotificationsVisual className="w-36 text-foreground" />
-              <div className="mt-6 max-w-64">
-                <p className="font-bold text-base text-foreground leading-tight">
-                  You're all caught up.
+              <EmptyNotificationsVisual className="h-30 w-auto text-foreground" />
+              <div className="mt-6 max-w-68">
+                <p className="font-bold text-base text-ink leading-tight">
+                  Nothing needs your attention
                 </p>
                 <p className="mt-2 text-muted-foreground text-sm leading-relaxed">
-                  Invites, replies, and group updates will show up here when
-                  there's something to act on.
+                  We'll keep this quiet until there's something useful to check.
                 </p>
               </div>
             </div>
@@ -163,21 +176,18 @@ function NotificationsDrawerSkeleton() {
   return (
     <div>
       <span className="sr-only">Loading notifications</span>
-      <div className="sticky top-0 z-10 border-border/50 border-b bg-card/95 px-6 py-4 backdrop-blur-md">
+      <div className="sticky top-0 z-10 border-border/60 border-b bg-canvas px-5 py-3">
         <LoadingBlock className="h-3 w-16 rounded-md" />
       </div>
-      <div className="flex flex-col">
+      <div className="divide-y divide-border/55">
         {NOTIFICATION_SKELETON_ROWS.map((row, index) => (
           <div
-            className={cn(
-              "flex w-full items-start gap-4 border-border/45 border-b border-l-4 px-4 py-4 text-left last:border-b-0",
-              index === 0 ? "border-l-spark-amber" : "border-l-forge-teal",
-            )}
+            className="flex w-full items-start gap-3 px-5 py-4 text-left"
             key={row}
           >
             <LoadingBlock
               className={cn(
-                "mt-1 size-9 shrink-0 rounded-full",
+                "mt-0.5 size-10 shrink-0 rounded-xl",
                 index === 0 ? "bg-spark-amber/18" : "bg-forge-teal/12",
               )}
             />
@@ -193,7 +203,7 @@ function NotificationsDrawerSkeleton() {
               <div className="mt-2 flex items-center gap-2">
                 <LoadingBlock className="h-2.5 w-12 rounded-md" />
                 {index === 0 ? (
-                  <LoadingBlock className="size-1.5 rounded-full bg-forge-teal/35" />
+                  <LoadingBlock className="size-2 rounded-full bg-forge-teal/35" />
                 ) : null}
               </div>
             </div>

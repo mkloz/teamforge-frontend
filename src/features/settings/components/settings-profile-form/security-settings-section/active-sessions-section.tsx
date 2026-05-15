@@ -5,6 +5,7 @@ import {
   StatPill,
 } from "@/features/settings/components/settings-profile-form/settings-form-controls";
 import { SettingsActiveSessionsSkeleton } from "@/features/settings/components/settings-section-skeletons";
+import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import type { AuthSession } from "@/shared/schemas";
 import { formatShortSessionTime } from "./security-formatters";
@@ -44,20 +45,39 @@ export function ActiveSessionsSection({
           </p>
         </div>
 
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full md:w-auto"
+        <ActionDialog
+          cancelLabel="Keep devices"
+          confirmLabel={
+            isRevokingOtherSessions
+              ? "Signing out..."
+              : "Sign out other devices"
+          }
+          description={`This signs out ${otherSessionCount} other ${
+            otherSessionCount === 1 ? "device" : "devices"
+          }. Your current browser stays active.`}
+          details={[
+            "Anyone using those sessions will need to sign in again.",
+            "This is useful after using a shared computer or losing a device.",
+          ]}
           disabled={isRevokingOtherSessions || sessions.length <= 1}
-          onClick={() => {
-            void onRevokeOtherSessions();
-          }}
-        >
-          <Shield size={14} />
-          {isRevokingOtherSessions
-            ? "Signing out others..."
-            : "Sign out other devices"}
-        </Button>
+          loading={isRevokingOtherSessions}
+          onConfirm={onRevokeOtherSessions}
+          title="Sign out other devices?"
+          tone="warning"
+          trigger={
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full md:w-auto"
+              disabled={isRevokingOtherSessions || sessions.length <= 1}
+            >
+              <Shield size={14} />
+              {isRevokingOtherSessions
+                ? "Signing out others..."
+                : "Sign out other devices"}
+            </Button>
+          }
+        />
       </div>
 
       <div className="mt-6 grid gap-5 border-border border-y py-5 md:grid-cols-3">
@@ -85,7 +105,7 @@ export function ActiveSessionsSection({
           ))
         ) : (
           <div className="flex flex-col items-start gap-3 py-5 sm:flex-row sm:items-center sm:gap-4">
-            <EmptyActiveSessionsVisual className="w-16 shrink-0 text-foreground sm:w-20" />
+            <EmptyActiveSessionsVisual className="h-6 w-auto shrink-0 text-foreground" />
             <p className="text-slate-muted text-sm">
               No active sessions are available right now.
             </p>

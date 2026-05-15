@@ -12,11 +12,11 @@ export function NextActions({ isManual }: NextActionsProps) {
   const actions = getNextActions(isManual);
 
   return (
-    <section className="flex flex-col gap-3">
+    <section className="flex flex-col gap-4 lg:border-border/25 lg:border-l lg:pl-8">
       <p className="font-semibold text-foreground text-sm">
         You can do this next
       </p>
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
         {actions.map((action) => (
           <NextCard key={action.title} {...action} />
         ))}
@@ -61,10 +61,10 @@ function NextCard({
   const isAmber = tone === "amber";
 
   return (
-    <div className="min-w-0">
+    <div className="min-w-0 lg:flex lg:gap-3">
       <div
         className={cn(
-          "mb-2 flex size-8 items-center justify-center rounded-lg",
+          "mb-2 flex size-8 shrink-0 items-center justify-center rounded-lg lg:mb-0",
           active
             ? isAmber
               ? "bg-spark-amber text-ink"
@@ -74,19 +74,23 @@ function NextCard({
       >
         {icon}
       </div>
-      <p
-        className={cn(
-          "font-semibold text-sm leading-tight",
-          active
-            ? isAmber
-              ? "text-spark-amber"
-              : "text-forge-teal"
-            : "text-foreground",
-        )}
-      >
-        {title}
-      </p>
-      <p className="mt-1 text-muted-foreground text-xs leading-snug">{text}</p>
+      <div className="min-w-0">
+        <p
+          className={cn(
+            "font-semibold text-sm leading-tight",
+            active
+              ? isAmber
+                ? "text-spark-amber"
+                : "text-forge-teal"
+              : "text-foreground",
+          )}
+        >
+          {title}
+        </p>
+        <p className="mt-1 text-muted-foreground text-xs leading-snug">
+          {text}
+        </p>
+      </div>
     </div>
   );
 }

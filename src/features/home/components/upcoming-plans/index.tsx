@@ -13,7 +13,7 @@ import { PlanCard } from "./plan-card";
 function EmptyPlans() {
   return (
     <div className="flex items-center gap-3 border-border/70 border-y border-dashed bg-card/40 px-3 py-5">
-      <EmptyHomePlansVisual className="w-16 shrink-0 text-foreground sm:w-20" />
+      <EmptyHomePlansVisual className="h-10 w-auto shrink-0 text-foreground sm:h-11" />
       <div className="min-w-0">
         <p className="font-black text-foreground text-sm">
           Your calendar is open.

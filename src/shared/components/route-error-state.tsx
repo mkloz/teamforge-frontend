@@ -49,10 +49,10 @@ function isDynamicImportFetchError(error: unknown) {
 
 function getRouteErrorVisual(scope: RouteErrorScope) {
   if (scope.startsWith("auth.")) {
-    return <ErrorAuthLinkVisual className="w-36 text-foreground" />;
+    return <ErrorAuthLinkVisual className="h-36 w-auto text-foreground" />;
   }
 
-  return <ErrorRouteLoadVisual className="w-36 text-foreground" />;
+  return <ErrorRouteLoadVisual className="h-36 w-auto text-foreground" />;
 }
 
 function recoverDynamicImportError() {

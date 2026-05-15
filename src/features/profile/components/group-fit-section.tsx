@@ -26,7 +26,7 @@ export function GroupFitSection({ insight }: GroupFitSectionProps) {
       <section className="flex flex-col gap-6">
         <ProfileSectionHeading>How they fit</ProfileSectionHeading>
         <div className="flex max-w-3xl flex-col items-center gap-4 sm:flex-row">
-          <EmptyGroupFitVisual className="w-32 shrink-0 text-foreground" />
+          <EmptyGroupFitVisual className="h-20 w-auto shrink-0 text-foreground" />
           <div className="flex min-w-0 flex-col gap-3 text-center sm:text-left">
             <h2 className="font-black text-2xl text-ink tracking-tight md:text-3xl">
               {insight.title}

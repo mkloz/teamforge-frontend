@@ -74,7 +74,7 @@ export function SuccessHero({
             </div>
           </div>
 
-          <ForgeGroupReadyVisual className="mx-auto w-32 shrink-0 text-foreground sm:mx-0 sm:w-36" />
+          <ForgeGroupReadyVisual className="mx-auto h-18 w-auto shrink-0 text-foreground sm:mx-0" />
         </div>
 
         <div className="flex items-center justify-between gap-3 border-border/35 border-y py-3">

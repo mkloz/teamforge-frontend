@@ -13,6 +13,7 @@ export function Step5Identity({
   planTitle,
   activityTitle,
   coverImage,
+  templateCoverImage,
   onCoverImageChange,
   avatarImage,
   onAvatarImageChange,
@@ -33,9 +34,6 @@ export function Step5Identity({
   } = useStep5ImageUploads();
 
   const activePreset = getPlanCoverPreset(coverImage);
-  const isImageCover = Boolean(
-    coverImage?.match(/^(https?:\/\/|data:image\/|blob:|\/)/i),
-  );
   const isImageAvatar = Boolean(
     avatarImage?.match(/^(https?:\/\/|data:image\/|blob:|\/)/i),
   );
@@ -73,7 +71,7 @@ export function Step5Identity({
         coverInputRef={coverInputRef}
         coverUploadError={coverUploadError}
         isCoverUploading={isCoverUploading}
-        isImageCover={isImageCover}
+        templateCoverImage={templateCoverImage}
         onCoverFiles={handleCoverFiles}
         onCoverImageChange={onCoverImageChange}
       />
@@ -96,7 +94,6 @@ export function Step5Identity({
         coverImage={coverImage}
         groupName={groupName}
         isImageAvatar={isImageAvatar}
-        isImageCover={isImageCover}
         planTitle={planTitle}
       />
     </div>

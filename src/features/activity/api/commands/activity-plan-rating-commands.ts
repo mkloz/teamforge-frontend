@@ -4,7 +4,10 @@ import type {
 } from "@/features/activity/api/activity.api";
 
 import { ActivityActions } from "@/features/activity/api/activity-actions";
-import type { CreateRatingPayload } from "@/shared/schemas";
+import type {
+  CreateRatingPayload,
+  DeferGroupReviewPayload,
+} from "@/shared/schemas";
 
 export const ActivityPlanRatingCommands = {
   createPlanProposal(
@@ -29,5 +32,9 @@ export const ActivityPlanRatingCommands = {
 
   createGroupRating(groupId: string, payload: CreateRatingPayload) {
     return ActivityActions.createGroupRating(groupId, payload);
+  },
+
+  deferGroupReview(groupId: string, payload: DeferGroupReviewPayload) {
+    return ActivityActions.deferGroupReview(groupId, payload);
   },
 };

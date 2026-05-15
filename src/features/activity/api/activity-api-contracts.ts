@@ -13,8 +13,11 @@ import {
   createPaginatedSchema,
   createRatingPayloadSchema,
   type createRatingResultSchema,
+  type DeferGroupReviewPayload,
+  deferGroupReviewPayloadSchema,
   friendshipApiSchema,
   groupApiSchema,
+  type groupReviewStateSchema,
   type inviteSchema,
   locationModeSchema,
   messageApiSchema,
@@ -23,7 +26,6 @@ import {
   planProposalFieldSchema,
   planProposalSchema,
   type planSchema,
-  planStatusSchema,
   ratingEntitySchema,
 } from "@/shared/schemas";
 import {
@@ -41,7 +43,7 @@ export const paginatedFriendshipsSchema =
 export const paginatedMessagesSchema = createPaginatedSchema(messageApiSchema);
 export const planProposalsSchema = z.array(planProposalSchema);
 export const paginatedRatingsSchema = createPaginatedSchema(ratingEntitySchema);
-export { createRatingPayloadSchema };
+export { createRatingPayloadSchema, deferGroupReviewPayloadSchema };
 
 export const createInvitePayloadSchema = z.object({
   groupId: z.string().min(1),
@@ -100,7 +102,6 @@ export const updatePlanPayloadSchema = z
     description: z.string().trim().max(1000).nullable().optional(),
     category: planCategorySchema.optional(),
     coverImage: managedAssetReferenceSchema.nullable().optional(),
-    status: planStatusSchema.optional(),
     dateTime: z.string().datetime().nullable().optional(),
     locationMode: locationModeSchema.optional(),
     location: z.string().trim().max(200).nullable().optional(),
@@ -153,6 +154,8 @@ export const updatePlanPayloadSchema = z
     }
   });
 
+export const createGroupPlanPayloadSchema = updatePlanPayloadSchema;
+
 export const createPlanProposalPayloadSchema = z.object({
   field: planProposalFieldSchema,
   proposedValue: z.string().trim().min(1),
@@ -173,16 +176,22 @@ export type PaginatedMessagesResponse = z.infer<typeof paginatedMessagesSchema>;
 export type CreateInvitePayload = z.infer<typeof createInvitePayloadSchema>;
 export type UpdateGroupPayload = z.infer<typeof updateGroupPayloadSchema>;
 export type UpdatePlanPayload = z.infer<typeof updatePlanPayloadSchema>;
+export type CreateGroupPlanPayload = z.infer<
+  typeof createGroupPlanPayloadSchema
+>;
 export type CreatePlanProposalDto = z.infer<
   typeof createPlanProposalPayloadSchema
 >;
-export type { CreateRatingPayload };
+export type { CreateRatingPayload, DeferGroupReviewPayload };
 
 export type MessageMutationResult = ApiResponseWithRequestId<
   z.infer<typeof messageApiSchema>
 >;
 export type CreateRatingMutationResult = ApiResponseWithRequestId<
   z.infer<typeof createRatingResultSchema>
+>;
+export type DeferGroupReviewMutationResult = ApiResponseWithRequestId<
+  z.infer<typeof groupReviewStateSchema>
 >;
 export type GroupMutationResult = ApiResponseWithRequestId<
   z.infer<typeof groupApiSchema>

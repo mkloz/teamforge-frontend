@@ -37,7 +37,7 @@ export function TraitMapSection({
 function EmptyTraitMap() {
   return (
     <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
-      <EmptyTraitMapVisual className="w-16 shrink-0 text-foreground sm:w-20" />
+      <EmptyTraitMapVisual className="h-16 w-auto shrink-0 text-foreground" />
       <div className="flex min-w-0 flex-col items-start gap-3">
         <p className="font-medium text-slate-muted text-sm">
           OCEAN scores are not available yet.
