@@ -1,9 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { SettingsCache } from "@/features/settings/api/settings-cache";
 import { SettingsCommands } from "@/features/settings/api/settings-commands";
 import { SettingsQueryFactory } from "@/features/settings/api/settings-query-factory";
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
@@ -15,6 +13,7 @@ export function useSettingsBlockedUsers(enabled: boolean) {
 
   const unblockMutation = useMutation({
     meta: {
+      errorToastMessage: "We couldn't unblock that user right now.",
       telemetryName: trackedMutationNames.settingsUnblockUser,
     },
     mutationFn: (userId: string) => SettingsCommands.unblockUser(userId),
@@ -34,16 +33,12 @@ export function useSettingsBlockedUsers(enabled: boolean) {
           requestId: result.requestId,
         },
       );
-      toast.success("User unblocked.");
 
       await SettingsCache.invalidateBlockedUserSurfaces();
     },
-    onError: (error, _userId, context) => {
+    onError: (_error, _userId, context) => {
       trackMutationOutcome(trackedMutationNames.settingsUnblockUser, "error");
       SettingsCache.restoreBlockedUsers(context?.previousBlockedUsers);
-      toast.error(
-        getApiErrorMessage(error, "We couldn't unblock that user right now."),
-      );
     },
   });
 

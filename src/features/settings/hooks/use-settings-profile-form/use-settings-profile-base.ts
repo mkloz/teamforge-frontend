@@ -56,6 +56,7 @@ export function useSettingsProfileBase() {
 
   const profileMutation = useMutation({
     meta: {
+      errorToastMessage: "We couldn't save your changes. Please try again.",
       telemetryName: trackedMutationNames.settingsUpdateProfile,
     },
     mutationFn: (

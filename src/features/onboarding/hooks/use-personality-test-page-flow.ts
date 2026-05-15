@@ -34,6 +34,9 @@ export function usePersonalityTestPageFlow() {
   const queryClient = useQueryClient();
   const invalidateCurrentUser = useInvalidateCurrentUser();
   const { mutateAsync: persistPersonality } = useMutation({
+    meta: {
+      errorToastMessage: "We couldn't save your personality result right now.",
+    },
     mutationFn: (
       payload: Parameters<typeof OnboardingCommands.updatePersonality>[0],
     ) => OnboardingCommands.updatePersonality(payload),

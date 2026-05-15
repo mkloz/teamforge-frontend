@@ -1,9 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import type { DirectChat } from "@/features/activity/lib/activity-contract";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import { useClearActivityRouteSelection } from "./use-clear-activity-route-selection";
@@ -32,6 +30,9 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
     : null;
 
   const mutation = useMutation({
+    meta: {
+      errorToastMessage: "We couldn't update that safety setting right now.",
+    },
     mutationFn: ({ action, targetUserId }: DirectChatSafetyMutationInput) =>
       action === "block"
         ? ActivityCommands.blockUser(targetUserId)
@@ -42,26 +43,14 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
         requestId: result.requestId,
       });
 
-      if (action === "block") {
-        toast.success("User blocked.");
-        return;
+      if (action === "unblock") {
+        await clearRouteSelection();
       }
-
-      toast.success("User unblocked.");
-      await clearRouteSelection();
     },
-    onError: (error, { action }) => {
+    onError: (_error, { action }) => {
       trackMutationOutcome(getSafetyMutationName(action), "error", {
         chatId: chat.id,
       });
-      toast.error(
-        getApiErrorMessage(
-          error,
-          action === "block"
-            ? "We couldn't block that user right now."
-            : "We couldn't unblock that user right now.",
-        ),
-      );
     },
   });
 

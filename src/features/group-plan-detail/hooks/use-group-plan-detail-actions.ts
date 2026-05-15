@@ -1,13 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { GroupPlanDetailCommands } from "@/features/group-plan-detail/api/group-plan-detail-commands";
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
 export function useGroupPlanDetailActions(groupId: string) {
   const joinMutation = useMutation({
     meta: {
+      errorToastMessage: "We couldn't join that group right now.",
       telemetryName: trackedMutationNames.exploreJoinGroup,
     },
     mutationKey: ["group-plan-detail", "join", groupId],
@@ -17,24 +16,17 @@ export function useGroupPlanDetailActions(groupId: string) {
         requestId: result.requestId,
         joinStatus: result.data.status,
       });
-      toast.success(
-        result.data.status === "REQUESTED"
-          ? "Join request sent."
-          : "You joined the group.",
-      );
     },
-    onError: (error) => {
+    onError: (_error) => {
       trackMutationOutcome(trackedMutationNames.exploreJoinGroup, "error", {
         groupId,
       });
-      toast.error(
-        getApiErrorMessage(error, "We couldn't join that group right now."),
-      );
     },
   });
 
   const cancelRequestMutation = useMutation({
     meta: {
+      errorToastMessage: "We couldn't cancel that request right now.",
       telemetryName: trackedMutationNames.groupPlanCancelJoinRequest,
     },
     mutationKey: ["group-plan-detail", "cancel-request", groupId],
@@ -48,9 +40,8 @@ export function useGroupPlanDetailActions(groupId: string) {
           requestId: result.requestId,
         },
       );
-      toast.success("Join request cancelled.");
     },
-    onError: (error) => {
+    onError: (_error) => {
       trackMutationOutcome(
         trackedMutationNames.groupPlanCancelJoinRequest,
         "error",
@@ -58,14 +49,12 @@ export function useGroupPlanDetailActions(groupId: string) {
           groupId,
         },
       );
-      toast.error(
-        getApiErrorMessage(error, "We couldn't cancel that request right now."),
-      );
     },
   });
 
   const acceptInviteMutation = useMutation({
     meta: {
+      errorToastMessage: "We couldn't accept that invite right now.",
       telemetryName: trackedMutationNames.groupPlanAcceptInvite,
     },
     mutationKey: ["group-plan-detail", "accept-invite", groupId],
@@ -80,9 +69,8 @@ export function useGroupPlanDetailActions(groupId: string) {
           requestId: result.requestId,
         },
       );
-      toast.success("Invite accepted. You're in.");
     },
-    onError: (error) => {
+    onError: (_error) => {
       trackMutationOutcome(
         trackedMutationNames.groupPlanAcceptInvite,
         "error",
@@ -90,14 +78,12 @@ export function useGroupPlanDetailActions(groupId: string) {
           groupId,
         },
       );
-      toast.error(
-        getApiErrorMessage(error, "We couldn't accept that invite right now."),
-      );
     },
   });
 
   const declineInviteMutation = useMutation({
     meta: {
+      errorToastMessage: "We couldn't decline that invite right now.",
       telemetryName: trackedMutationNames.groupPlanDeclineInvite,
     },
     mutationKey: ["group-plan-detail", "decline-invite", groupId],
@@ -112,9 +98,8 @@ export function useGroupPlanDetailActions(groupId: string) {
           requestId: result.requestId,
         },
       );
-      toast.success("Invite declined.");
     },
-    onError: (error) => {
+    onError: (_error) => {
       trackMutationOutcome(
         trackedMutationNames.groupPlanDeclineInvite,
         "error",
@@ -122,14 +107,12 @@ export function useGroupPlanDetailActions(groupId: string) {
           groupId,
         },
       );
-      toast.error(
-        getApiErrorMessage(error, "We couldn't decline that invite right now."),
-      );
     },
   });
 
   const leaveMutation = useMutation({
     meta: {
+      errorToastMessage: "We couldn't leave that group right now.",
       telemetryName: trackedMutationNames.activityGroupLeave,
     },
     mutationKey: ["group-plan-detail", "leave", groupId],
@@ -139,15 +122,11 @@ export function useGroupPlanDetailActions(groupId: string) {
         groupId,
         requestId: result.requestId,
       });
-      toast.success("You left the group.");
     },
-    onError: (error) => {
+    onError: (_error) => {
       trackMutationOutcome(trackedMutationNames.activityGroupLeave, "error", {
         groupId,
       });
-      toast.error(
-        getApiErrorMessage(error, "We couldn't leave that group right now."),
-      );
     },
   });
 

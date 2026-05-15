@@ -5,7 +5,7 @@ import {
   ApiExceptionSchema,
 } from "@/shared/types/api-error";
 
-interface ApiErrorMessageOptions {
+export interface ApiErrorMessageOptions {
   badRequestMessage?: string;
   unauthorizedMessage?: string;
   forbiddenMessage?: string;

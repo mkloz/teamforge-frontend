@@ -50,6 +50,9 @@ export function useProfileBasicsForm() {
   }, [currentUser, form]);
 
   const profileBasicsMutation = useMutation({
+    meta: {
+      errorToastMessage: "We couldn't save those details. Please try again.",
+    },
     mutationFn: (
       payload: Parameters<typeof OnboardingCommands.updateProfileBasics>[0],
     ) => OnboardingCommands.updateProfileBasics(payload),

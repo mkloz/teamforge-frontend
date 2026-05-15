@@ -1,10 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { toast } from "sonner";
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import type { CreateRatingPayload } from "@/shared/schemas";
@@ -18,6 +16,9 @@ export function useGroupRatings(groupId: string) {
 
   const createRatingMutation = useMutation({
     meta: {
+      errorToastConflictMessage:
+        "You've already rated this person for this group.",
+      errorToastMessage: "We couldn't submit that rating right now.",
       telemetryName: trackedMutationNames.activityGroupRatingSubmit,
     },
     mutationFn: (payload: CreateRatingPayload) =>
@@ -33,11 +34,8 @@ export function useGroupRatings(groupId: string) {
           updatedTrustScore: result.data.updatedTrustScore,
         },
       );
-      toast.success(
-        `Thanks. ${result.data.rating.ratee.name}'s trust score updated.`,
-      );
     },
-    onError: (error, payload) => {
+    onError: (_error, payload) => {
       trackMutationOutcome(
         trackedMutationNames.activityGroupRatingSubmit,
         "error",
@@ -46,26 +44,13 @@ export function useGroupRatings(groupId: string) {
           score: payload.score,
         },
       );
-      toast.error(
-        getApiErrorMessage(error, "We couldn't submit that rating right now.", {
-          conflictMessage: "You've already rated this person for this group.",
-        }),
-      );
     },
   });
   const deferReviewMutation = useMutation({
+    meta: {
+      errorToastMessage: "We couldn't move that review prompt right now.",
+    },
     mutationFn: ActivityCommands.deferGroupReview.bind(null, groupId),
-    onSuccess: () => {
-      toast.success("Review moved to the next completed plan.");
-    },
-    onError: (error) => {
-      toast.error(
-        getApiErrorMessage(
-          error,
-          "We couldn't move that review prompt right now.",
-        ),
-      );
-    },
   });
 
   const submittedRatings = useMemo(

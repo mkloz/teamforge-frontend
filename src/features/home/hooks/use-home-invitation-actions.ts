@@ -11,6 +11,9 @@ export function useHomeInvitationActions() {
     isPending: isAccepting,
     variables: acceptingInviteId,
   } = useMutation({
+    meta: {
+      errorToastMessage: "We couldn't accept that invite right now.",
+    },
     mutationKey: ["home", "invitation", "accept"],
     mutationFn: (inviteId: string) => HomeCommands.acceptInvitation(inviteId),
   });
@@ -20,6 +23,9 @@ export function useHomeInvitationActions() {
     isPending: isDeclining,
     variables: decliningInviteId,
   } = useMutation({
+    meta: {
+      errorToastMessage: "We couldn't decline that invite right now.",
+    },
     mutationKey: ["home", "invitation", "decline"],
     mutationFn: (inviteId: string) => HomeCommands.declineInvitation(inviteId),
   });

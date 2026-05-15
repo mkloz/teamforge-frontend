@@ -1,11 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
 import type {
   CreateGroupPlanProposalPayload,
   VoteGroupPlanProposalPayload,
 } from "@/features/group-plan-detail/api/group-plan-detail.api";
 import { GroupPlanDetailCommands } from "@/features/group-plan-detail/api/group-plan-detail-commands";
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
@@ -25,6 +23,7 @@ export function useGroupPlanProposalActions({
 }: UseGroupPlanProposalActionsOptions) {
   const createMutation = useMutation({
     meta: {
+      errorToastMessage: "We couldn't suggest that change right now.",
       telemetryName: trackedMutationNames.groupPlanCreateProposal,
     },
     mutationKey: ["group-plan-detail", "proposal", "create", groupId, planId],
@@ -50,9 +49,8 @@ export function useGroupPlanProposalActions({
           requestId: result.requestId,
         },
       );
-      toast.success("Plan change suggested.");
     },
-    onError: (error) => {
+    onError: (_error) => {
       trackMutationOutcome(
         trackedMutationNames.groupPlanCreateProposal,
         "error",
@@ -61,14 +59,12 @@ export function useGroupPlanProposalActions({
           planId,
         },
       );
-      toast.error(
-        getApiErrorMessage(error, "We couldn't suggest that change right now."),
-      );
     },
   });
 
   const voteMutation = useMutation({
     meta: {
+      errorToastMessage: "We couldn't submit your vote right now.",
       telemetryName: trackedMutationNames.groupPlanVoteProposal,
     },
     mutationKey: ["group-plan-detail", "proposal", "vote", groupId],
@@ -85,13 +81,8 @@ export function useGroupPlanProposalActions({
           vote: input.vote,
         },
       );
-      toast.success(
-        input.vote === "APPROVE"
-          ? "Plan change approved."
-          : "Plan change rejected.",
-      );
     },
-    onError: (error) => {
+    onError: (_error) => {
       trackMutationOutcome(
         trackedMutationNames.groupPlanVoteProposal,
         "error",
@@ -99,14 +90,12 @@ export function useGroupPlanProposalActions({
           groupId,
         },
       );
-      toast.error(
-        getApiErrorMessage(error, "We couldn't submit your vote right now."),
-      );
     },
   });
 
   const withdrawMutation = useMutation({
     meta: {
+      errorToastMessage: "We couldn't withdraw that change right now.",
       telemetryName: trackedMutationNames.groupPlanWithdrawProposal,
     },
     mutationKey: ["group-plan-detail", "proposal", "withdraw", groupId],
@@ -122,21 +111,14 @@ export function useGroupPlanProposalActions({
           requestId: result.requestId,
         },
       );
-      toast.success("Plan change withdrawn.");
     },
-    onError: (error) => {
+    onError: (_error) => {
       trackMutationOutcome(
         trackedMutationNames.groupPlanWithdrawProposal,
         "error",
         {
           groupId,
         },
-      );
-      toast.error(
-        getApiErrorMessage(
-          error,
-          "We couldn't withdraw that change right now.",
-        ),
       );
     },
   });

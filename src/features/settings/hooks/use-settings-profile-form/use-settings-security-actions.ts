@@ -33,6 +33,9 @@ export function useSettingsSecurityActions({
   });
 
   const passwordResetMutation = useMutation({
+    meta: {
+      errorToastMessage: "We couldn't send the reset link right now.",
+    },
     mutationFn: (email: string) =>
       SettingsCommands.sendResetPasswordLink(email),
     onSuccess: () => {
@@ -49,6 +52,7 @@ export function useSettingsSecurityActions({
 
   const revokeSessionMutation = useMutation({
     meta: {
+      errorToastMessage: "We couldn't revoke that session right now.",
       telemetryName: trackedMutationNames.settingsRevokeSession,
     },
     mutationFn: (sessionId: string) =>
@@ -57,6 +61,7 @@ export function useSettingsSecurityActions({
 
   const revokeOtherSessionsMutation = useMutation({
     meta: {
+      errorToastMessage: "We couldn't revoke the other sessions right now.",
       telemetryName: trackedMutationNames.settingsRevokeOtherSessions,
     },
     mutationFn: () => SettingsCommands.revokeOtherSessions(),

@@ -15,6 +15,9 @@ export function useCreatePlanProposal(
 ) {
   const [error, setError] = useState<string | null>(null);
   const createMutation = useMutation({
+    meta: {
+      errorToastMessage: "We couldn't submit that proposal. Please try again.",
+    },
     mutationKey: ["activity", "proposal", "create", plan.id],
     mutationFn: (payload: CreatePlanProposalDto) =>
       ActivityCommands.createPlanProposal(plan.id, payload, plan.groupId),

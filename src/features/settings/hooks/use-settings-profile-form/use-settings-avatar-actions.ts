@@ -13,6 +13,7 @@ export function useSettingsAvatarActions() {
 
   const avatarMutation = useMutation({
     meta: {
+      errorToastMessage: "We couldn't upload that image. Please try again.",
       telemetryName: trackedMutationNames.settingsUploadAvatar,
     },
     mutationFn: (file: File) => SettingsCommands.uploadAvatar(file),
@@ -41,6 +42,7 @@ export function useSettingsAvatarActions() {
 
   const deleteAvatarMutation = useMutation({
     meta: {
+      errorToastMessage: "We couldn't remove your profile photo right now.",
       telemetryName: trackedMutationNames.settingsUploadAvatar,
     },
     mutationFn: () => SettingsCommands.deleteAvatar(),

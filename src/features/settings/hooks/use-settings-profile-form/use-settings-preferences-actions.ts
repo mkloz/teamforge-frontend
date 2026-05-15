@@ -29,6 +29,8 @@ export function useSettingsPreferencesActions({
 
   const preferencesMutation = useMutation({
     meta: {
+      errorToastMessage:
+        "We couldn't update your notification preferences right now.",
       telemetryName: trackedMutationNames.settingsNotificationPreferences,
     },
     mutationFn: (

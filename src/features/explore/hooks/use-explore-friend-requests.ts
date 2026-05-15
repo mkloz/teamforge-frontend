@@ -1,8 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { ExploreCommands } from "@/features/explore/api/explore-commands";
 import { ExploreQueryFactory } from "@/features/explore/api/explore-query-factory";
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
@@ -10,6 +8,7 @@ export function useExploreFriendRequests() {
   const requestsQuery = useQuery(ExploreQueryFactory.friendRequests());
   const acceptMutation = useMutation({
     meta: {
+      errorToastMessage: "We couldn't accept that friend request right now.",
       telemetryName: trackedMutationNames.exploreAcceptFriendRequest,
     },
     mutationKey: ["explore", "friend-request", "accept"],
@@ -23,23 +22,17 @@ export function useExploreFriendRequests() {
           requestId: result.requestId,
         },
       );
-      toast.success("Friend request accepted.");
     },
-    onError: (error) => {
+    onError: (_error) => {
       trackMutationOutcome(
         trackedMutationNames.exploreAcceptFriendRequest,
         "error",
-      );
-      toast.error(
-        getApiErrorMessage(
-          error,
-          "We couldn't accept that friend request right now.",
-        ),
       );
     },
   });
   const declineMutation = useMutation({
     meta: {
+      errorToastMessage: "We couldn't decline that friend request right now.",
       telemetryName: trackedMutationNames.exploreDeclineFriendRequest,
     },
     mutationKey: ["explore", "friend-request", "decline"],
@@ -53,18 +46,11 @@ export function useExploreFriendRequests() {
           requestId: result.requestId,
         },
       );
-      toast.success("Friend request declined.");
     },
-    onError: (error) => {
+    onError: (_error) => {
       trackMutationOutcome(
         trackedMutationNames.exploreDeclineFriendRequest,
         "error",
-      );
-      toast.error(
-        getApiErrorMessage(
-          error,
-          "We couldn't decline that friend request right now.",
-        ),
       );
     },
   });

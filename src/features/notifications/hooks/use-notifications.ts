@@ -34,6 +34,9 @@ export function useNotifications() {
   const [referenceTime] = useState(() => Date.now());
 
   const markReadMutation = useMutation({
+    meta: {
+      errorToastMessage: "We couldn't update that notification right now.",
+    },
     mutationKey: ["notifications", "mark-read"],
     mutationFn: (id: string) => NotificationsCommands.markRead(id),
     onMutate: async (id) => {
@@ -56,6 +59,9 @@ export function useNotifications() {
   });
 
   const markAllReadMutation = useMutation({
+    meta: {
+      errorToastMessage: "We couldn't update your notifications right now.",
+    },
     mutationKey: ["notifications", "mark-all-read"],
     mutationFn: () => NotificationsCommands.markAllRead(),
     onMutate: async () => {

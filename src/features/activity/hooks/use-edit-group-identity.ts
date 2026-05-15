@@ -66,6 +66,9 @@ export function useEditGroupIdentity(
   };
 
   const mutation = useMutation({
+    meta: {
+      errorToastMessage: "We couldn't save those changes. Please try again.",
+    },
     mutationKey: ["activity", "group-identity", "update", group.id],
     mutationFn: (nextValues: GroupIdentityFormValues) =>
       ActivityCommands.updateGroupIdentity(

@@ -14,6 +14,8 @@ export function useDeleteAccountAction() {
 
   const deleteAccountMutation = useMutation({
     meta: {
+      errorToastMessage:
+        "We couldn't delete your account right now. Please try again.",
       telemetryName: trackedMutationNames.settingsDeleteAccount,
     },
     mutationFn: () => SettingsCommands.deleteAccount(),

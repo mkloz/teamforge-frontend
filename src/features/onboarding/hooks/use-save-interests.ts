@@ -18,6 +18,10 @@ export function useSaveInterests({
   const queryClient = useQueryClient();
   const [saveErrorMessage, setSaveErrorMessage] = useState<string | null>(null);
   const { mutateAsync: saveInterests, isPending: isSaving } = useMutation({
+    meta: {
+      errorToastMessage:
+        "We couldn't save your interests just yet. Please try again.",
+    },
     mutationFn: (
       payload: Parameters<typeof OnboardingCommands.setInterests>[0],
     ) => OnboardingCommands.setInterests(payload),

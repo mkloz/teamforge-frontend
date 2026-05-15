@@ -18,6 +18,7 @@ import {
   AlertDialogTrigger,
 } from "@/shared/components/ui/alert-dialog";
 import { Button, type ButtonV2Props } from "@/shared/components/ui/button";
+import { showAppErrorToast } from "@/shared/lib/error-toast";
 import { captureException } from "@/shared/lib/telemetry";
 import { cn } from "@/shared/lib/utils";
 
@@ -147,6 +148,7 @@ export function ActionDialog({
       captureException("ui.action-dialog.confirm", error, {
         title: typeof title === "string" ? title : "Action dialog",
       });
+      showAppErrorToast(error);
     } finally {
       setInternalLoading(false);
     }

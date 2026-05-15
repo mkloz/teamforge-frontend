@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { ProfileApi } from "@/features/profile/api/profile.api";
 import { profileFriendshipQueryOptions } from "@/features/profile/api/profile-query-options";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
@@ -8,7 +7,6 @@ import {
   invalidateFriendshipSurfaces,
 } from "@/shared/api/query-invalidation";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import type { FriendshipApi, User } from "@/shared/schemas";
 
 type PublicProfileActionUser = Pick<User, "id">;
@@ -68,6 +66,11 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
   const messageChatId = getMessageChatId(friendship);
 
   const connectMutation = useMutation({
+    meta: {
+      errorToastMessage: incomingRequest
+        ? "We couldn't accept that connection right now."
+        : "We couldn't send that connection request right now.",
+    },
     mutationKey: ["profile", "connect", user.id],
     mutationFn: () =>
       incomingRequest
@@ -83,20 +86,6 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
         invalidateFriendshipSurfaces(),
         invalidateExploreFriendRequestSurfaces(),
       ]);
-
-      toast.success(
-        incomingRequest ? "Connection accepted." : "Connection request sent.",
-      );
-    },
-    onError: (error) => {
-      toast.error(
-        getApiErrorMessage(
-          error,
-          incomingRequest
-            ? "We couldn't accept that connection right now."
-            : "We couldn't send that connection request right now.",
-        ),
-      );
     },
   });
 

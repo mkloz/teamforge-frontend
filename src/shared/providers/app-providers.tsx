@@ -19,7 +19,22 @@ export function AppProviders({ children }: { children: ReactNode }) {
       {import.meta.env.DEV ? (
         <ReactQueryDevtools initialIsOpen={false} />
       ) : null}
-      <Toaster richColors position="top-right" closeButton />
+      <Toaster
+        closeButton
+        position="top-right"
+        visibleToasts={3}
+        toastOptions={{
+          classNames: {
+            closeButton:
+              "border-border bg-background text-muted-foreground hover:text-foreground",
+            description: "font-medium text-muted-foreground text-sm",
+            error: "border-destructive/25",
+            title: "font-bold text-sm",
+            toast:
+              "rounded-xl border border-border bg-card text-foreground shadow-lg",
+          },
+        }}
+      />
       <Analytics />
     </QueryClientProvider>
   );
