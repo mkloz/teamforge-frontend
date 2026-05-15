@@ -19,7 +19,7 @@ export function IdentityPreviewCard({
   const displayPlanTitle = planTitle || activityTitle || "Untitled plan";
 
   return (
-    <div className="space-y-2.5">
+    <div className="flex flex-col gap-2.5">
       <p className="font-semibold text-muted-foreground text-xs">Preview</p>
       <div className="group overflow-hidden rounded-xl border border-border/50 bg-card shadow-sm">
         <div

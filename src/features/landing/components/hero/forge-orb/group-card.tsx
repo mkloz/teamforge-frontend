@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
 import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
+import { ForgeOrbEyebrow, ForgeOrbPanel } from "./forge-orb-panel";
 
 export function GroupCard() {
   const members = [
@@ -9,9 +9,10 @@ export function GroupCard() {
     { avatar: "/avatars/avatar-8.jpg" },
     { avatar: "/avatars/avatar-12.jpg" },
   ];
+  const memberStackOrder = ["z-40", "z-30", "z-20", "z-10"];
 
   return (
-    <motion.div
+    <ForgeOrbPanel
       initial={{ y: 0, rotate: 0 }}
       animate={{ y: [-8, 0], rotate: [1, 0] }}
       transition={{
@@ -20,29 +21,25 @@ export function GroupCard() {
         repeatType: "mirror",
         ease: "easeInOut",
       }}
-      className={cn(
-        "w-45 rounded-xl px-4 py-3.5",
-        "border border-forge-teal/20 bg-forge-deep-panel/80 backdrop-blur-xl",
-        "forge-orb-card-shadow",
-      )}
-      aria-hidden="true"
+      className="w-45"
     >
       <div className="mb-2.5 flex items-center justify-between">
-        <p className="forge-orb-label-tracking font-sans font-semibold text-forge-teal text-nano uppercase opacity-90">
-          Your Group
-        </p>
+        <ForgeOrbEyebrow>Your Group</ForgeOrbEyebrow>
         <span className="rounded-full border border-spark-amber/20 bg-spark-amber/10 px-2 py-0.5 font-bold font-sans text-nano text-spark-amber">
           94% match
         </span>
       </div>
-      <div className="mb-3 flex -space-x-2">
-        {members.map((m) => (
+      <div className="mb-3 flex">
+        {members.map((m, index) => (
           <Avatar
             key={m.avatar}
             src={m.avatar}
             name="Member"
-            className="flex size-8 items-center justify-center overflow-hidden rounded-full bg-forge-deep-surface ring-2 ring-hero-bg"
-            style={{ zIndex: members.length - members.indexOf(m) }}
+            className={cn(
+              "flex size-8 items-center justify-center overflow-hidden rounded-full bg-forge-deep-surface ring-2 ring-hero-bg",
+              index > 0 && "-ml-2",
+              memberStackOrder[index],
+            )}
           />
         ))}
       </div>
@@ -56,6 +53,6 @@ export function GroupCard() {
           </span>
         ))}
       </div>
-    </motion.div>
+    </ForgeOrbPanel>
   );
 }

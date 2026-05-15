@@ -58,7 +58,7 @@ export function AuthSupportShell({
           <div className="flex min-h-full w-full flex-col items-center justify-center pt-20 pb-10 lg:py-8">
             <div className="w-full max-w-sm px-2 sm:px-10 lg:p-0">
               <div className="rounded-xl border border-border/70 bg-card/95 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
-                <div className="space-y-2 text-center">
+                <div className="flex flex-col gap-2 text-center">
                   <p className="font-semibold text-forge-teal text-xs uppercase tracking-widest">
                     TeamForge
                   </p>

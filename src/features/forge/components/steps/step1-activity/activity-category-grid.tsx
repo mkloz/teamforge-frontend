@@ -39,7 +39,7 @@ export function ActivityCategoryGrid({
   );
 
   return (
-    <div className="space-y-2.5">
+    <div className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between gap-3 px-0.5">
         <div className="min-w-0">
           <p className="font-semibold text-muted-foreground text-xs leading-none">

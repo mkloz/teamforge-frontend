@@ -70,7 +70,7 @@ export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
 
       <section
         aria-labelledby="starter-examples-title"
-        className="lg:forge-page-grid grid gap-5"
+        className="grid gap-5 lg:grid-cols-[minmax(0,0.8fr)_minmax(32rem,1.2fr)]"
       >
         <div>
           <p className="font-black text-muted-foreground text-sm uppercase">

@@ -31,7 +31,7 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
   const text = formatTypingText(users, isGroup) || "";
 
   if (variant === "minimal") {
-    return <TypingDots dotSize="w-1 h-1" className={className} />;
+    return <TypingDots dotSize="size-1" className={className} />;
   }
 
   if (variant === "floating") {
@@ -44,14 +44,15 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
         className="pointer-events-none absolute right-4 bottom-4 left-4 z-20"
       >
         <div className="inline-flex items-center gap-3 rounded-full border border-border/40 bg-canvas/80 px-4 py-2.5 shadow-lg backdrop-blur-xl">
-          <div className="flex -space-x-2">
+          <div className="flex">
             <AnimatePresence mode="popLayout">
-              {users.slice(0, 3).map((user) => (
+              {users.slice(0, 3).map((user, index) => (
                 <motion.div
                   key={user.name}
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0 }}
+                  className={index > 0 ? "-ml-2" : undefined}
                 >
                   <Avatar
                     src={user.avatar}
@@ -95,10 +96,13 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
       <div
         className={cn(
           "relative rounded-xl rounded-bl-none border border-border/60 bg-card px-4 py-3 shadow-xs",
-          "typing-tail",
         )}
       >
-        <TypingDots dotSize="w-1.5 h-1.5" />
+        <span
+          aria-hidden="true"
+          className="absolute -bottom-px -left-2 size-3 rounded-bl-xl border-border border-b border-l bg-inherit"
+        />
+        <TypingDots dotSize="size-1.5" />
       </div>
     </motion.div>
   );
@@ -106,7 +110,7 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
 
 function TypingDots({
   className,
-  dotSize = "w-1 h-1",
+  dotSize = "size-1",
 }: {
   className?: string;
   dotSize?: string;

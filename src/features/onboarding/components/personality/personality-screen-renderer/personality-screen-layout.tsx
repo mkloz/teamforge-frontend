@@ -85,7 +85,7 @@ export function StepNavigation({
   return (
     <MotionStep
       className={cn(
-        "mt-auto flex w-full flex-col-reverse items-stretch gap-3 pt-6 min-[430px]:flex-row min-[430px]:items-center",
+        "mt-auto flex w-full xs:flex-row flex-col-reverse xs:items-center items-stretch gap-3 pt-6",
         className,
       )}
     >
@@ -93,19 +93,12 @@ export function StepNavigation({
         size="md"
         variant="outline"
         onClick={onBack}
-        className={cn(
-          "w-full min-w-0 min-[430px]:w-auto min-[430px]:shrink-0",
-          backClassName,
-        )}
+        className={cn("w-full xs:w-auto min-w-0 xs:shrink-0", backClassName)}
       >
         <ArrowLeft size={16} strokeWidth={2.5} />
         <span className="truncate">{backLabel}</span>
       </Button>
-      <Button
-        size="md"
-        onClick={onNext}
-        className="w-full min-w-0 min-[430px]:flex-1"
-      >
+      <Button size="md" onClick={onNext} className="w-full min-w-0 xs:flex-1">
         <span className="truncate">{nextLabel}</span>
         <ArrowRight size={16} strokeWidth={2.5} />
       </Button>

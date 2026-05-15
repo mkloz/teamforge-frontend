@@ -20,13 +20,13 @@ export function GroupPlanDetailPageLoadingFixture() {
       role="status"
     >
       <span className="sr-only">Loading group plan</span>
-      <header className="space-y-4">
+      <header className="flex flex-col gap-4">
         <SkeletonButton className="h-9 w-32" />
         <div className="relative overflow-hidden rounded-t-3xl bg-canvas">
           <div className="relative h-70 w-full bg-canvas sm:h-85 md:h-100 lg:h-110">
             <Skeleton
               shape="square"
-              className="absolute inset-0 size-full rounded-none"
+              className="absolute inset-0 size-full rounded-lg"
               tone="teal"
             />
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-canvas via-canvas/60 to-60% to-transparent" />
@@ -50,7 +50,7 @@ export function GroupPlanDetailPageLoadingFixture() {
         />
       </div>
 
-      <div className="lg:group-plan-detail-grid mt-12 grid gap-12">
+      <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,20rem)]">
         <main className="flex min-w-0 flex-col gap-12">
           <GroupSectionSkeleton />
           <PlanSectionSkeleton />

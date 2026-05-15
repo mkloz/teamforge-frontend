@@ -11,5 +11,5 @@
 /* Base HTML elements & Layer base */
 @import "./styles/base.css";
 
-/* Custom utility classes & scrollbars */
+/* Reusable utility classes & scrollbars */
 @import "./styles/utilities.css";

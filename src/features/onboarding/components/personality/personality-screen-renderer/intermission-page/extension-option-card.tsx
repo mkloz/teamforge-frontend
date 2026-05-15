@@ -28,7 +28,7 @@ export function ExtensionOptionCard({
         "group/btn relative h-auto w-full min-w-0 justify-between rounded-xl border px-3 py-2.5 transition-all sm:px-3.5 sm:py-3",
         isSelected
           ? "border-forge-teal/70 bg-forge-teal/5 shadow-forge-teal/10 shadow-sm"
-          : "border-slate-200/60 bg-card hover:border-slate-300 dark:border-white/10 hover:dark:border-white/16",
+          : "border-border/60 bg-card hover:border-slate-muted/35 dark:border-white/10 hover:dark:border-white/16",
       )}
     >
       <div className="relative z-10 flex min-w-0 flex-col items-start">
@@ -38,7 +38,7 @@ export function ExtensionOptionCard({
               "max-w-full truncate rounded-full px-2 py-0.5 font-bold font-sans text-micro uppercase tracking-wider",
               isSelected
                 ? "bg-forge-teal text-white"
-                : "bg-slate-100 text-muted-foreground dark:bg-white/8",
+                : "bg-muted text-muted-foreground dark:bg-white/8",
             )}
           >
             {option.config.label}
@@ -60,7 +60,7 @@ export function ExtensionOptionCard({
             "flex size-6 items-center justify-center rounded-full border-2 transition-all",
             isSelected
               ? "border-forge-teal bg-forge-teal text-white"
-              : "border-slate-200 bg-card text-slate-300 group-hover/btn:border-slate-300 group-hover/btn:text-slate-400 dark:border-white/12 dark:text-white/40 dark:group-hover/btn:border-white/18 dark:group-hover/btn:text-white/60",
+              : "border-border bg-card text-slate-muted/55 group-hover/btn:border-slate-muted/35 group-hover/btn:text-slate-muted/70 dark:border-white/12 dark:text-white/40 dark:group-hover/btn:border-white/18 dark:group-hover/btn:text-white/60",
           )}
         >
           {isSelected ? (

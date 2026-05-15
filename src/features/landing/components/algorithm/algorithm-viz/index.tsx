@@ -58,28 +58,12 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
         >
           <defs>
             <radialGradient id="centerGlow">
-              <stop
-                offset="0%"
-                stopColor="var(--color-forge-teal)"
-                stopOpacity="0.4"
-              />
-              <stop
-                offset="100%"
-                stopColor="var(--color-forge-teal)"
-                stopOpacity="0"
-              />
+              <stop offset="0%" stopColor="#0D9488" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="#0D9488" stopOpacity="0" />
             </radialGradient>
             <radialGradient id="amberGlow">
-              <stop
-                offset="0%"
-                stopColor="var(--color-spark-amber)"
-                stopOpacity="0.4"
-              />
-              <stop
-                offset="100%"
-                stopColor="var(--color-spark-amber)"
-                stopOpacity="0"
-              />
+              <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="#F59E0B" stopOpacity="0" />
             </radialGradient>
             <filter id="softBlur">
               <feGaussianBlur stdDeviation="4" />
@@ -99,7 +83,7 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
                 cx={cx}
                 cy={cy}
                 fill="none"
-                stroke="var(--color-forge-teal)"
+                stroke="#0D9488"
                 strokeWidth="1"
                 initial={{ r: size * 0.05, opacity: 0.6 }}
                 animate={{ r: size * 0.48, opacity: 0 }}
@@ -117,7 +101,7 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
                 cy={cy}
                 r={size * 0.36}
                 fill="none"
-                stroke="var(--color-forge-teal)"
+                stroke="#0D9488"
                 strokeWidth="1"
                 opacity="0.3"
                 strokeDasharray="6 8"
@@ -158,7 +142,7 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
                     y2: cy + Math.sin(b.angle) * size * 0.22,
                     opacity: phase === "formed" ? 0.45 : 0,
                   }}
-                  stroke="var(--color-spark-amber)"
+                  stroke="#F59E0B"
                   strokeWidth="1.5"
                   strokeDasharray="4 4"
                   transition={{ duration: 1.5, ease: "easeInOut" }}

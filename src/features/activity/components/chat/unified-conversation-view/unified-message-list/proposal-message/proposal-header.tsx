@@ -1,9 +1,9 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { memo } from "react";
+import { PROPOSAL_STATUS_LABELS } from "@/features/activity/lib/proposal-language";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import type { PlanProposalStatus } from "@/shared/schemas/enums";
-
 import { FIELD_ICON_COMPONENTS, FIELD_LABELS } from "./proposal-constants";
 
 interface ProposalHeaderProps {
@@ -40,8 +40,8 @@ export const ProposalHeader = memo(function ProposalHeader({
           <Icon className="size-3.5" />
         </div>
         <div>
-          <h4 className="mb-1 font-black text-spark-amber/70 text-xs uppercase leading-none tracking-wider">
-            Change Proposal
+          <h4 className="mb-1 font-bold text-spark-amber/80 text-xs leading-none">
+            Plan change
           </h4>
           <p className="font-bold text-foreground text-xs leading-none">
             {FIELD_LABELS[field]}
@@ -52,11 +52,11 @@ export const ProposalHeader = memo(function ProposalHeader({
       <div className="flex items-center gap-2">
         <span
           className={cn(
-            "inline-flex items-center rounded-full border px-2.5 py-1 font-bold text-xs uppercase tracking-wider",
+            "inline-flex items-center rounded-full border px-2.5 py-1 font-bold text-xs",
             STATUS_STYLES[status],
           )}
         >
-          {status}
+          {PROPOSAL_STATUS_LABELS[status]}
         </span>
         {isExpanded ? (
           <ChevronUp className="size-4 text-muted-foreground" />

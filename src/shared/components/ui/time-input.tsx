@@ -51,6 +51,12 @@ function focusActiveTimeOptions(activeRefs: ActiveTimeOptionRefs) {
   hourOption?.focus({ preventScroll: true });
 }
 
+function getTimePickerGridClass(useMeridiem: boolean) {
+  return useMeridiem
+    ? "grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(3.5rem,0.7fr)]"
+    : "grid-cols-2";
+}
+
 function handleColumnKeyDown<T>(
   options: T[],
   currentValue: T,
@@ -264,7 +270,6 @@ function TimeScrollColumn<T extends number | string>({
           ref={scrollRef}
           role="listbox"
           aria-label={ariaLabel}
-          style={{ scrollbarWidth: "none" }}
           className="[&::-webkit-scrollbar]:hidden! scrollbar-hide flex max-h-56 w-full flex-col gap-1 overflow-y-auto py-7 [&::-webkit-scrollbar]:w-0!"
           onScroll={updateScrollState}
         >
@@ -452,7 +457,7 @@ function TimeInput({
               <div
                 className={cn(
                   "grid w-full items-stretch divide-x divide-border/60 rounded-xl py-1",
-                  useMeridiem ? "time-entry-grid" : "grid-cols-2",
+                  getTimePickerGridClass(useMeridiem),
                 )}
               >
                 <TimeScrollColumn

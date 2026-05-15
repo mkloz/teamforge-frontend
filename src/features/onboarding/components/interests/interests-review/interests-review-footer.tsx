@@ -19,13 +19,13 @@ export function InterestsReviewFooter({
   confirmLabel = "Confirm & Finish",
 }: InterestsReviewFooterProps) {
   return (
-    <div className="flex w-full flex-col-reverse items-stretch gap-3 pt-4 pb-6 sm:pb-5 min-[430px]:flex-row min-[430px]:items-center">
+    <div className="flex w-full xs:flex-row flex-col-reverse xs:items-center items-stretch gap-3 pt-4 pb-6 sm:pb-5">
       <Button
         variant="outline"
         size="md"
         onClick={onBack}
         disabled={isSaving}
-        className="w-full min-w-0 min-[430px]:w-auto min-[430px]:shrink-0"
+        className="w-full xs:w-auto min-w-0 xs:shrink-0"
       >
         <span className="truncate">{backLabel}</span>
       </Button>
@@ -34,7 +34,7 @@ export function InterestsReviewFooter({
         size="md"
         onClick={onConfirm}
         disabled={!canConfirm || isSaving}
-        className="w-full min-w-0 min-[430px]:flex-1"
+        className="w-full min-w-0 xs:flex-1"
       >
         <span className="truncate">{isSaving ? "Saving…" : confirmLabel}</span>
         <CheckCircle2 size={18} />

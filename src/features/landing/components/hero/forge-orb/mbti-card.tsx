@@ -1,9 +1,8 @@
-import { motion } from "framer-motion";
-import { cn } from "@/shared/lib/utils";
+import { ForgeOrbEyebrow, ForgeOrbPanel } from "./forge-orb-panel";
 
 export function MbtiCard() {
   return (
-    <motion.div
+    <ForgeOrbPanel
       initial={{ y: 0, rotate: -2 }}
       animate={{ y: [-12, 0], rotate: [-1, -2] }}
       transition={{
@@ -12,20 +11,13 @@ export function MbtiCard() {
         repeatType: "mirror",
         ease: "easeInOut",
       }}
-      className={cn(
-        "w-45 rounded-xl px-4 py-3.5",
-        "border border-forge-teal/20 bg-forge-deep-panel/80 backdrop-blur-xl",
-        "forge-orb-card-shadow",
-      )}
-      aria-hidden="true"
+      className="w-45"
     >
-      <p className="forge-orb-label-tracking mb-1.5 font-sans font-semibold text-forge-teal text-nano uppercase opacity-90">
-        Personality
-      </p>
+      <ForgeOrbEyebrow className="mb-1.5">Personality</ForgeOrbEyebrow>
       <p className="mb-2.5 font-extrabold font-sans text-2xl text-white tracking-tight">
         ENTJ
       </p>
-      <div className="space-y-1.5">
+      <div className="flex flex-col gap-1.5">
         {[
           { label: "E", fill: 80, peer: "I" },
           { label: "N", fill: 55, peer: "S" },
@@ -48,6 +40,6 @@ export function MbtiCard() {
           </div>
         ))}
       </div>
-    </motion.div>
+    </ForgeOrbPanel>
   );
 }

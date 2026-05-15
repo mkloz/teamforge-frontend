@@ -4,7 +4,7 @@ import type React from "react";
 import { cn } from "@/shared/lib/utils";
 
 const skeletonVariants = cva(
-  "skeleton-shimmer forced-colors:bg-slate-muted/40",
+  "relative overflow-hidden after:absolute after:inset-0 after:translate-x-[-110%] after:animate-skeleton-shimmer after:bg-[linear-gradient(100deg,transparent_0%,color-mix(in_srgb,var(--color-canvas)_58%,transparent)_46%,transparent_78%)] after:opacity-85 after:content-[''] motion-reduce:after:hidden dark:after:bg-[linear-gradient(100deg,transparent_0%,color-mix(in_srgb,var(--color-ink)_10%,transparent)_46%,transparent_78%)] forced-colors:bg-slate-muted/40 forced-colors:after:hidden",
   {
     variants: {
       shape: {

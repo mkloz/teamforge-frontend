@@ -98,7 +98,7 @@ export function LandingPageLoadingFixture() {
 
         <section className="landing-story-scroll relative bg-canvas">
           <div className="sticky top-0 flex h-screen w-full flex-col items-center overflow-hidden md:flex-row">
-            <div className="landing-story-spacer-lg relative z-10 order-2 flex w-full items-center justify-center p-6 md:order-1 md:h-full md:w-1/2 md:p-24">
+            <div className="relative z-10 order-2 flex h-[120vh] w-full items-center justify-center p-6 md:order-1 md:h-full md:w-1/2 md:p-24">
               <div className="flex w-full max-w-md flex-col gap-5">
                 <Skeleton className="h-3 w-16" tone="teal" />
                 <Skeleton className="h-10 w-full" />
@@ -108,7 +108,7 @@ export function LandingPageLoadingFixture() {
                 />
               </div>
             </div>
-            <div className="landing-story-spacer relative order-1 flex w-full items-center justify-center md:order-2 md:h-full md:w-1/2">
+            <div className="relative order-1 flex h-screen w-full items-center justify-center md:order-2 md:h-full md:w-1/2">
               <Skeleton
                 shape="circle"
                 className="size-64 md:size-88"

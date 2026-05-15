@@ -114,7 +114,7 @@ export const VoiceNote = memo(function VoiceNote({
                       : "bg-forge-teal"
                     : isOwn
                       ? "bg-primary/30 dark:bg-white/30"
-                      : "bg-slate-300",
+                      : "bg-slate-muted/35",
                 )}
               />
             );

@@ -17,7 +17,7 @@ export function AlgorithmStats({ inView }: AlgorithmStatsProps) {
         <h3 className="mb-3 font-bold font-sans text-white text-xl">
           How it finds your people
         </h3>
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4">
           {[
             {
               step: "01",
@@ -51,7 +51,7 @@ export function AlgorithmStats({ inView }: AlgorithmStatsProps) {
         <h3 className="mb-4 font-bold font-sans text-sm text-white uppercase tracking-widest">
           What we look for
         </h3>
-        <div className="space-y-3">
+        <div className="flex flex-col gap-3">
           {FACTORS.map(({ label, weight, color }) => (
             <div key={label} className="flex items-center gap-3">
               <span className="w-36 shrink-0 truncate font-sans text-text-dark-muted text-xs">

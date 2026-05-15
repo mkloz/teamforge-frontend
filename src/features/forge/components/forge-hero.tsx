@@ -16,7 +16,7 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
   return (
     <section
       id="forge-hero"
-      className="md:forge-hero-grid grid gap-7 border-border border-b pb-8 md:items-end md:pb-10"
+      className="grid gap-7 border-border border-b pb-8 md:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)] md:items-end md:pb-10"
     >
       <div className="flex min-w-0 flex-col gap-7">
         <div className="flex flex-col gap-4">
@@ -68,7 +68,7 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
           {SAMPLE_BRIEF.map(([label, value]) => (
             <div
               key={label}
-              className="avatar-body-grid-sm grid gap-3 px-4 py-3"
+              className="grid grid-cols-[3rem_minmax(0,1fr)] gap-3 px-4 py-3"
             >
               <dt className="font-black text-muted-foreground text-xs uppercase">
                 {label}

@@ -17,7 +17,7 @@ export function GroupAvatarSection({
   planTitle,
 }: GroupAvatarSectionProps) {
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col gap-3">
       <div>
         <p className="font-semibold text-muted-foreground text-xs">
           Group avatar
@@ -28,7 +28,7 @@ export function GroupAvatarSection({
         </p>
       </div>
 
-      <div className="avatar-body-grid-sm sm:avatar-body-grid-lg grid items-stretch gap-3">
+      <div className="grid grid-cols-[3rem_minmax(0,1fr)] items-stretch gap-3 sm:grid-cols-[5rem_minmax(0,1fr)]">
         <div className="relative size-18 overflow-hidden rounded-lg border border-border bg-muted sm:h-24 sm:w-24 sm:rounded-xl">
           {avatarImage ? (
             <Avatar

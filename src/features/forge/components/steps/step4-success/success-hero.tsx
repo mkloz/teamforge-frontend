@@ -55,7 +55,7 @@ export function SuccessHero({
 
   return (
     <section className="overflow-hidden rounded-lg border border-border/40 bg-card/70">
-      <div className="space-y-4 px-4 py-4">
+      <div className="flex flex-col gap-4 px-4 py-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-start gap-3">
             <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-forge-teal/25 bg-forge-teal/10 text-forge-teal">
@@ -79,7 +79,7 @@ export function SuccessHero({
 
         <div className="flex items-center justify-between gap-3 border-border/35 border-y py-3">
           <div className="flex min-w-0 items-center gap-2">
-            <div className="flex -space-x-2">
+            <div className="flex">
               <div className="flex size-8 items-center justify-center rounded-lg border border-card bg-forge-teal font-bold text-micro text-primary-foreground">
                 You
               </div>
@@ -90,12 +90,12 @@ export function SuccessHero({
                   name={getParticipantName(participant)}
                   fallback={getParticipantInitials(participant)}
                   shape="rounded"
-                  className="size-8 rounded-lg border border-card bg-muted"
+                  className="-ml-2 size-8 rounded-lg border border-card bg-muted"
                   fallbackClassName="bg-muted text-xs font-bold text-foreground/80"
                 />
               ))}
               {hiddenCount > 0 && (
-                <div className="flex size-8 items-center justify-center rounded-lg border border-card bg-muted font-bold text-muted-foreground text-xs">
+                <div className="-ml-2 flex size-8 items-center justify-center rounded-lg border border-card bg-muted font-bold text-muted-foreground text-xs">
                   +{hiddenCount}
                 </div>
               )}
@@ -126,7 +126,9 @@ export function SuccessHero({
         <div
           className={cn(
             "grid gap-2 text-xs",
-            topFit ? "fluid-auto-grid" : "grid-cols-1",
+            topFit
+              ? "grid-cols-[repeat(auto-fit,minmax(8rem,1fr))]"
+              : "grid-cols-1",
           )}
         >
           <p className="min-w-0 text-muted-foreground">

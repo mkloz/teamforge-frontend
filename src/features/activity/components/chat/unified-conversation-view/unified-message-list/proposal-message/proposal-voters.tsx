@@ -65,7 +65,7 @@ export const ProposalVoters = memo(function ProposalVoters({
             );
           })}
         </div>
-        <span className="font-black text-micro text-muted-foreground uppercase tracking-widest">
+        <span className="font-bold text-micro text-muted-foreground">
           {score}
         </span>
       </div>

@@ -60,21 +60,21 @@ export function AlgoNode({
     switch (node.type) {
       case "center":
         return {
-          fill: "var(--color-forge-teal)",
+          fill: "#0D9488",
           r: size * 0.055,
           textFill: "#fff",
           opacity: 1,
           glow: true,
-          glowColor: "var(--color-forge-teal)",
+          glowColor: "#0D9488",
         };
       case "selected":
         return {
-          fill: "var(--color-spark-amber)",
+          fill: "#F59E0B",
           r: isHovered ? size * 0.045 : size * 0.038,
-          textFill: "var(--color-ink)",
+          textFill: "#111827",
           opacity: 1,
           glow: true,
-          glowColor: "var(--color-spark-amber)",
+          glowColor: "#F59E0B",
         };
       case "rejected":
         return {
@@ -92,7 +92,7 @@ export function AlgoNode({
           textFill: "#fff",
           opacity: phase === "idle" ? 0 : 0.8,
           glow: isHovered,
-          glowColor: "var(--color-forge-teal)",
+          glowColor: "#0D9488",
         };
     }
   };
@@ -161,7 +161,7 @@ export function AlgoNode({
             cx={0}
             cy={0}
             r={ns.r * 1.6}
-            fill={ns.glowColor || "var(--color-forge-teal)"}
+            fill={ns.glowColor || "#0D9488"}
             opacity={0.15}
             filter="url(#softBlur)"
             initial={{ scale: 0.8, opacity: 0 }}

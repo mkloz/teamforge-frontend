@@ -75,7 +75,10 @@ export function RegisterForm({
       {rootError && <FormLevelError message={rootError} />}
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-4"
+        >
           <AnimatePresence mode="wait" custom={direction} initial={false}>
             <motion.div
               key={step}

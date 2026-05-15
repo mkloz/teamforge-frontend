@@ -21,7 +21,7 @@ export function AreaFields({ currentUser, form }: AreaFieldsProps) {
   const cityLabel = currentUser?.city ?? "City not set";
 
   return (
-    <div className="lg:settings-profile-grid grid gap-5 lg:items-start">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_15rem] lg:items-start">
       <FormField
         control={form.control}
         name="city"

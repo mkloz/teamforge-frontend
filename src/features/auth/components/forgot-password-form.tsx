@@ -31,7 +31,7 @@ export function ForgotPasswordForm({
           control={form.control}
           name="email"
           render={({ field }) => (
-            <FormItem className="space-y-0 text-left">
+            <FormItem className="gap-0 text-left">
               <FormLabel className="font-sans font-semibold text-foreground text-sm">
                 Email
               </FormLabel>

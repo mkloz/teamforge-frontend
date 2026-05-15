@@ -31,7 +31,7 @@ export function AlgorithmTuningSection({
         className="flex h-auto w-full items-center justify-between rounded-lg px-3 py-3 transition-colors hover:bg-forge-teal/5"
         contentClassName="justify-between"
       >
-        <div className="space-y-0.5 text-left">
+        <div className="flex flex-col gap-0.5 text-left">
           <p className="font-semibold text-foreground text-xs">
             Algorithm tuning
           </p>
@@ -49,7 +49,7 @@ export function AlgorithmTuningSection({
       </Button>
 
       {algorithmsExpanded && (
-        <div className="fade-in slide-in-from-top-2 animate-in space-y-5 border-muted/15 border-t px-4 py-4 duration-300">
+        <div className="fade-in slide-in-from-top-2 flex animate-in flex-col gap-5 border-muted/15 border-t px-4 py-4 duration-300">
           <WeightSlider
             label="Matching level"
             subLabel="Prioritize behavioral compatibility"

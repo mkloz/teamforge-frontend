@@ -19,7 +19,7 @@ export function PlanPhotoSection({
   onCoverImageChange,
 }: PlanPhotoSectionProps) {
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col gap-3">
       <div>
         <p className="font-semibold text-muted-foreground text-xs">
           Plan photo

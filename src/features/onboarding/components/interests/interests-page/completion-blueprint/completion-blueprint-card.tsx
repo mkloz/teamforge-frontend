@@ -72,7 +72,7 @@ export function CompletionBlueprintCard({
           </div>
         </div>
 
-        <div className="pointer-events-none absolute inset-0 bg-noise opacity-5" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,color-mix(in_srgb,var(--color-ink)_22%,transparent)_1px,transparent_0)] bg-size-[14px_14px] opacity-5" />
       </div>
     </motion.div>
   );

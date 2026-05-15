@@ -29,7 +29,7 @@ export function RegisterPasswordField() {
       control={control}
       name="password"
       render={({ field, formState }) => (
-        <FormItem className="space-y-0">
+        <FormItem className="gap-0">
           <FormLabel className="font-sans font-semibold text-ink text-sm">
             Password
           </FormLabel>

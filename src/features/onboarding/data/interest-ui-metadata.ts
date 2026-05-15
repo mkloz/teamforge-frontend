@@ -3,11 +3,11 @@ export { interestIconByTaxonomyId as subcategoryIconById } from "@/shared/lib/in
 export const DEFAULT_CATEGORY_COLOR = "bg-slate-muted/30";
 
 export const categoryColorById: Record<string, string> = {
-  careers: "bg-blue-500",
-  lifestyle: "bg-emerald-500",
-  entertainment: "bg-violet-500",
-  sports_outdoors: "bg-orange-500",
-  hobbies_creating: "bg-pink-500",
+  careers: "bg-forge-teal",
+  lifestyle: "bg-spark-amber",
+  entertainment: "bg-forge-teal/80",
+  sports_outdoors: "bg-spark-amber/85",
+  hobbies_creating: "bg-forge-teal/65",
 };
 
 export const categoryShortLabelById: Record<string, string> = {

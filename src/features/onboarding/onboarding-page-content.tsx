@@ -96,7 +96,7 @@ export function PersonalityPageContent({
         </div>
       </div>
 
-      <div className="hidden h-full flex-1 items-center justify-center overflow-hidden border-slate-200 border-l bg-hero-bg lg:flex">
+      <div className="hidden h-full flex-1 items-center justify-center overflow-hidden border-border border-l bg-hero-bg lg:flex">
         <VoronoiCatalyst progress={catalystProgress} />
       </div>
     </div>

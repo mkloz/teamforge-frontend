@@ -19,7 +19,7 @@ export function FooterActionArea({
 }: FooterActionAreaProps) {
   return (
     <div className="px-4 pt-5 pb-8 md:px-12 md:pb-12">
-      <div className="mx-auto w-full max-w-2xl space-y-4">
+      <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
         <div className="flex items-center gap-3">
           <AnimatePresence>
             {fw.canGoBack && (

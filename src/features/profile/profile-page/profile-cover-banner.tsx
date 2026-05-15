@@ -13,13 +13,13 @@ export function ProfileCoverBanner({
       />
 
       <div
-        className="profile-cover-dot-grid absolute inset-0 opacity-15"
+        className="absolute inset-0 bg-[radial-gradient(circle,var(--color-canvas)_1px,transparent_1px)] bg-size-[24px_24px] opacity-15"
         aria-hidden="true"
       />
 
       {personalityType ? (
         <span
-          className="profile-cover-type pointer-events-none absolute top-1/2 w-full -translate-y-1/2 select-none px-6 text-right font-black text-white/10 leading-none tracking-tighter mix-blend-overlay"
+          className="pointer-events-none absolute top-1/2 w-full -translate-y-1/2 select-none px-6 text-right font-black text-[6rem] text-white/10 leading-none tracking-tighter mix-blend-overlay sm:text-[9rem] md:text-[11rem]"
           aria-hidden="true"
         >
           {personalityType}

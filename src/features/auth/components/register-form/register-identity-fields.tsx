@@ -18,7 +18,7 @@ export function RegisterIdentityFields() {
         control={control}
         name="name"
         render={({ field }) => (
-          <FormItem className="space-y-0">
+          <FormItem className="gap-0">
             <FormLabel className="font-sans font-semibold text-ink text-sm">
               Full Name
             </FormLabel>
@@ -38,7 +38,7 @@ export function RegisterIdentityFields() {
         control={control}
         name="email"
         render={({ field }) => (
-          <FormItem className="space-y-0">
+          <FormItem className="gap-0">
             <FormLabel className="font-sans font-semibold text-ink text-sm">
               Email
             </FormLabel>

@@ -25,7 +25,7 @@ export function AccountSettingsSection({
 }: AccountSettingsSectionProps) {
   return (
     <div className="flex flex-col gap-9">
-      <section className="lg:account-settings-grid grid gap-8 lg:items-start">
+      <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-start">
         <AvatarProfileSection
           currentUser={currentUser}
           avatarMessage={avatarMessage}

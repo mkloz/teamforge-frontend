@@ -48,7 +48,7 @@ export function InterestsProgressBar({
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         />
       </div>
-      <div className="flex flex-col gap-3 min-[430px]:flex-row min-[430px]:items-center min-[430px]:justify-between min-[430px]:gap-4">
+      <div className="flex xs:flex-row flex-col xs:items-center xs:justify-between gap-3 xs:gap-4">
         <div className="min-w-0">
           <span className="font-bold font-sans text-ink text-sm">
             {selectedCount}
@@ -61,7 +61,7 @@ export function InterestsProgressBar({
             {progressText}
           </p>
         </div>
-        <div className="grid grid-cols-2 items-center gap-2 min-[430px]:flex min-[430px]:shrink-0">
+        <div className="xs:flex grid xs:shrink-0 grid-cols-2 items-center gap-2">
           <Button
             variant="outline"
             size="sm"

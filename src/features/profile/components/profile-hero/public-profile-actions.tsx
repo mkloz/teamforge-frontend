@@ -20,7 +20,7 @@ export function PublicProfileActions({ user }: PublicProfileActionsProps) {
   } = usePublicProfileActions(user);
 
   return (
-    <div className="grid w-full grid-cols-1 items-center gap-2 pr-0 sm:flex sm:w-auto sm:flex-row sm:gap-3 min-[390px]:grid-cols-2">
+    <div className="grid w-full grid-cols-1 xxs:grid-cols-2 items-center gap-2 pr-0 sm:flex sm:w-auto sm:flex-row sm:gap-3">
       <Button
         className="min-h-11 w-full shrink-0 sm:w-auto"
         disabled={connectDisabled}

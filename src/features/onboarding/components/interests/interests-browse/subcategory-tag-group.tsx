@@ -47,7 +47,7 @@ export function SubcategoryTagGroup({
 
 function renderSubcategoryIcon(subcategoryId: string) {
   return createElement(getSubcategoryIcon(subcategoryId), {
-    className: "w-3.5 h-3.5",
+    className: "size-3.5",
     strokeWidth: 2.5,
   });
 }

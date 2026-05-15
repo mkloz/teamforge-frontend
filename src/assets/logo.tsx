@@ -4,7 +4,7 @@ interface TeamForgeVoronoiProps {
 }
 
 export function TeamForgeLogo({
-  className = "w-12 h-12",
+  className = "size-12",
   showBackground = true,
 }: TeamForgeVoronoiProps) {
   return (
@@ -27,10 +27,10 @@ export function TeamForgeLogo({
 
       <g clipPath="url(#group-boundary)">
         {/* The k-NN Quadrants
-            Color: Forge Teal with varying opacities to represent
-            the diverse 4D MBTI vectors of the 4 group members.
-            Stroke: Canvas (#FAFAF8) creates the physical boundaries.
-        */}
+ Color: Forge Teal with varying opacities to represent
+ the diverse 4D MBTI vectors of the 4 group members.
+ Stroke: Canvas (#FAFAF8) creates the physical boundaries.
+ */}
         <g stroke="#FAFAF8" strokeWidth="5" strokeLinejoin="round">
           <polygon
             points="52,68 40,-10 130,-10 130,50"
@@ -58,10 +58,7 @@ export function TeamForgeLogo({
         </g>
       </g>
 
-      {/* The Greedy Matching Apex
-          Color: Spark Amber. Represents the MGS (Marginal Group Score)
-          convergence point where the SocialBonus finalizes the group.
-      */}
+      {/* The amber apex marks the point where the group comes together. */}
       <circle
         cx="52"
         cy="68"

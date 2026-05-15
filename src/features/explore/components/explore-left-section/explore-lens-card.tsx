@@ -37,7 +37,7 @@ export function ExploreLensCard({
   return (
     <section
       aria-labelledby="explore-identity-heading"
-      className="space-y-4 px-1 py-1"
+      className="flex flex-col gap-4 px-1 py-1"
     >
       <div className="flex items-center gap-2.5">
         <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">

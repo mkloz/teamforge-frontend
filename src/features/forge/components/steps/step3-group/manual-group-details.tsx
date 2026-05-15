@@ -17,8 +17,8 @@ export function ManualGroupDetails({
   const selectedInviteeCount = manualInviteeIds.length;
 
   return (
-    <div className="zoom-in-95 fade-in animate-in space-y-4 duration-300">
-      <div className="space-y-3 rounded-lg border border-border/35 bg-card/65 px-3 py-3">
+    <div className="zoom-in-95 fade-in flex animate-in flex-col gap-4 duration-300">
+      <div className="flex flex-col gap-3 rounded-lg border border-border/35 bg-card/65 px-3 py-3">
         <div className="flex items-center justify-between gap-3">
           <div>
             <span className="font-bold text-muted-foreground/50 text-xs tracking-wide">
@@ -34,7 +34,7 @@ export function ManualGroupDetails({
           </span>
         </div>
 
-        <div className="space-y-1">
+        <div className="flex flex-col gap-1">
           <div className="py-1">
             <Slider
               className="h-10"
@@ -59,7 +59,7 @@ export function ManualGroupDetails({
         <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-spark-amber/10">
           <Users size={16} className="text-spark-amber" />
         </div>
-        <div className="space-y-1">
+        <div className="flex flex-col gap-1">
           <h5 className="font-black text-foreground text-sm tracking-tight">
             Pick who to invite
           </h5>
@@ -70,7 +70,7 @@ export function ManualGroupDetails({
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="flex flex-col gap-2">
         {isLoadingFriends && <ManualFriendsSkeleton />}
 
         {!isLoadingFriends && friends.length === 0 && (

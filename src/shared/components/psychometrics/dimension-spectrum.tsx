@@ -89,15 +89,17 @@ function SpectrumTrack({ isBorderline, markerPosition }: SpectrumTrackProps) {
     <div aria-hidden="true" className="absolute inset-0 overflow-visible">
       <div
         className={cn(
-          "spectrum-progress h-full rounded-full",
+          "h-full w-(--spectrum-position) rounded-full",
           isBorderline ? "bg-spark-amber/45" : "bg-forge-teal/45",
         )}
         style={spectrumStyle}
       />
       <span
         className={cn(
-          "spectrum-marker absolute top-1/2 block size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 bg-white",
-          isBorderline ? "spectrum-marker-amber" : "spectrum-marker-teal",
+          "absolute top-1/2 left-(--spectrum-position) block size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 bg-white",
+          isBorderline
+            ? "border-spark-amber shadow-[0_0_4px_color-mix(in_srgb,var(--color-spark-amber)_18%,transparent)]"
+            : "border-forge-teal shadow-[0_0_4px_color-mix(in_srgb,var(--color-forge-teal)_18%,transparent)]",
         )}
         style={spectrumStyle}
       />

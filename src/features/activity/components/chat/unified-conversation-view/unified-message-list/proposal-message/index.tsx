@@ -116,7 +116,7 @@ export const ProposalMessage = memo(function ProposalMessage({
             </div>
 
             <div className="flex items-center justify-end gap-2 border-border/5 border-t px-3 py-1.5">
-              <span className="font-bold text-nano text-slate-muted uppercase tabular-nums">
+              <span className="font-bold text-nano text-slate-muted tabular-nums">
                 {formatChatTime(message.createdAt)}
               </span>
               {message.status === "READ" && (

@@ -34,6 +34,14 @@
   ) {
     cursor: not-allowed;
   }
+
+  :root.disable-transitions,
+  :root.disable-transitions *,
+  :root.disable-transitions *::before,
+  :root.disable-transitions *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: This root-level theme state intentionally wins over all transitions during theme changes. */
+    transition: none !important;
+  }
 }
 
 /* Safe-area inset for notched/home-indicator devices */

@@ -21,7 +21,7 @@ export function InviteLinkSection({
   };
 
   return (
-    <section className="space-y-3 border-border/25 border-t pt-4">
+    <section className="flex flex-col gap-3 border-border/25 border-t pt-4">
       <div className="flex items-center gap-2 px-0.5">
         <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10 text-forge-teal">
           <Link2 size={14} />

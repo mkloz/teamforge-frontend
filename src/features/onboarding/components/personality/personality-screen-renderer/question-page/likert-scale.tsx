@@ -17,13 +17,25 @@ const LABELS: Record<LikertPoint, string> = {
   5: "Strongly agree",
 };
 
-const POINT_POSITION_CLASSES: Record<(typeof POINTS)[number], string> = {
+const POINT_POSITION_CLASSES: Record<LikertPoint, string> = {
   1: "left-[10%]",
   2: "left-[30%]",
   3: "left-1/2",
   4: "left-[70%]",
   5: "left-[90%]",
 };
+
+function getLabelAlignmentClass(point: LikertPoint) {
+  if (point === 1) {
+    return "justify-start";
+  }
+
+  if (point === 5) {
+    return "justify-end";
+  }
+
+  return "justify-center";
+}
 
 export function LikertScale({ value, onChange }: LikertScaleProps) {
   const handleValueChange = (nextValue: string) => {
@@ -43,7 +55,7 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
         aria-label="Rate your agreement"
       >
         <div
-          className="likert-range-track pointer-events-none absolute top-1/2 z-0 h-0.5 -translate-y-1/2 bg-slate-100 dark:bg-white/10"
+          className="pointer-events-none absolute top-1/2 right-[10%] left-[10%] z-0 h-0.5 -translate-y-1/2 bg-muted dark:bg-white/10"
           aria-hidden="true"
         />
 
@@ -56,7 +68,7 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
               id={`point-${point}`}
               aria-label={LABELS[point]}
               className={cn(
-                "group/likert appearance-none! absolute top-1/2 z-10 flex h-24! w-1/5! -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-none! border-0! bg-transparent! p-0! text-inherit! shadow-none! outline-none! ring-0! ring-offset-0! transition-none focus-visible:border-transparent! sm:h-28!",
+                "group/likert appearance-none! absolute top-1/2 z-10 flex h-24! w-1/5! -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full! border-0! bg-transparent! p-0! text-inherit! shadow-none! outline-none! ring-0! ring-offset-0! transition-none focus-visible:border-transparent! sm:h-28!",
                 POINT_POSITION_CLASSES[point],
               )}
             >
@@ -65,7 +77,7 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
                   "pointer-events-none relative z-10 flex size-5 items-center justify-center rounded-full border-2 bg-card transition duration-200 group-focus-visible/likert:ring-2 group-focus-visible/likert:ring-ring group-focus-visible/likert:ring-offset-2 sm:h-6 sm:w-6",
                   selected
                     ? "scale-110 border-forge-teal bg-forge-teal shadow-xs"
-                    : "border-slate-200 group-hover/likert:scale-105 group-hover/likert:border-slate-300 group-active/likert:scale-95 dark:border-white/12 dark:group-hover/likert:border-white/18",
+                    : "border-border group-hover/likert:scale-105 group-hover/likert:border-slate-muted/35 group-active/likert:scale-95 dark:border-white/12 dark:group-hover/likert:border-white/18",
                 )}
               >
                 {selected && (
@@ -83,11 +95,7 @@ export function LikertScale({ value, onChange }: LikertScaleProps) {
             key={`label-${point}`}
             className={cn(
               "flex min-h-5 px-0.5 text-center",
-              point === 1
-                ? "justify-start"
-                : point === 5
-                  ? "justify-end"
-                  : "justify-center",
+              getLabelAlignmentClass(point),
             )}
           >
             {LABELS[point] && (

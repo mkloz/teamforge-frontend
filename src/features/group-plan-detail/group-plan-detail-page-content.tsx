@@ -75,7 +75,7 @@ function GroupPlanDetailGrid({
   focus: GroupPlanSectionFocusProps;
 }) {
   return (
-    <div className="lg:group-plan-detail-grid mt-12 grid gap-12">
+    <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,20rem)]">
       <GroupPlanMainSections detail={detail} focus={focus} />
 
       <aside className="min-w-0 border-border/70 lg:border-l lg:pl-8 xl:pl-10">

@@ -9,7 +9,7 @@ function ExploreLensSkeletonContent() {
   return (
     <section
       aria-label="Loading explore lens"
-      className="space-y-4 px-1 py-1"
+      className="flex flex-col gap-4 px-1 py-1"
       role="status"
     >
       <div className="flex items-center gap-2.5">

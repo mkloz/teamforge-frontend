@@ -97,7 +97,7 @@ export function HowItWorksSection() {
         />
 
         {/* Left Side: Content Storytelling */}
-        <div className="landing-story-spacer-lg relative z-10 order-2 flex w-full items-center justify-center p-6 md:order-1 md:h-full md:w-1/2 md:p-24">
+        <div className="relative z-10 order-2 flex h-[120vh] w-full items-center justify-center p-6 md:order-1 md:h-full md:w-1/2 md:p-24">
           <div className="relative flex size-full min-h-75 max-w-md items-center md:h-100">
             {STEPS.map((step, index) => (
               <ContentStep
@@ -119,7 +119,7 @@ export function HowItWorksSection() {
           ref={visualRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={() => setMousePos({ x: 0, y: 0 })}
-          className="landing-story-spacer relative order-1 flex w-full items-center justify-center md:order-2 md:h-full md:w-1/2"
+          className="relative order-1 flex h-screen w-full items-center justify-center md:order-2 md:h-full md:w-1/2"
         >
           {/* Progress Track (Sidebar) */}
           <nav

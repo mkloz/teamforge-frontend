@@ -19,14 +19,20 @@ interface SkeletonListProps extends React.ComponentProps<"div"> {
 type SkeletonPrimitiveProps = Omit<SkeletonProps, "shape">;
 
 const DEFAULT_TEXT_WIDTHS = ["w-full", "w-11/12", "w-3/4"];
-const TEXT_SIZE_CLASSES = {
-  lg: "h-4",
-  md: "h-3",
-  sm: "h-2.5",
-} as const;
 
 function buildSkeletonKeys(prefix: string, count: number) {
   return Array.from({ length: count }, (_, index) => `${prefix}-${index + 1}`);
+}
+
+function getSkeletonTextHeight(size: SkeletonTextProps["size"]) {
+  switch (size) {
+    case "lg":
+      return "h-4";
+    case "sm":
+      return "h-2.5";
+    default:
+      return "h-3";
+  }
 }
 
 export function SkeletonText({
@@ -45,7 +51,7 @@ export function SkeletonText({
         <Skeleton
           key={key}
           className={cn(
-            TEXT_SIZE_CLASSES[size],
+            getSkeletonTextHeight(size),
             widths[index % widths.length],
             lineClassName,
           )}

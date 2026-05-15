@@ -92,7 +92,7 @@ export function GroupSummaryCard({
         </div>
       </div>
 
-      <div className="space-y-4 px-4 py-4">
+      <div className="flex flex-col gap-4 px-4 py-4">
         <div className="flex items-start gap-3">
           <Avatar
             src={avatarIsImage ? avatarImage : null}

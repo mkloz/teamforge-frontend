@@ -13,7 +13,7 @@ export function EditGroupAvatarSection({
   return (
     <div className="flex flex-col gap-2">
       <p className="font-semibold text-muted-foreground text-xs">Avatar</p>
-      <div className="media-body-grid grid gap-3">
+      <div className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-3">
         <Avatar
           src={editor.avatar || null}
           name={editor.name}

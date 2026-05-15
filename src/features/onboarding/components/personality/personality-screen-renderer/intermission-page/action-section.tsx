@@ -24,14 +24,14 @@ export function ActionSection({
   return (
     <motion.div
       variants={fadeUpItem}
-      className="mx-auto flex w-full max-w-xl flex-col-reverse items-stretch gap-3 pt-8 pb-6 sm:pb-8 min-[430px]:flex-row min-[430px]:items-center"
+      className="mx-auto flex w-full max-w-xl xs:flex-row flex-col-reverse xs:items-center items-stretch gap-3 pt-8 pb-6 sm:pb-8"
     >
       {!isDone && (
         <Button
           variant="outline"
           size="md"
           onClick={onAdjustLength}
-          className="w-full min-w-0 min-[430px]:w-auto min-[430px]:shrink-0"
+          className="w-full xs:w-auto min-w-0 xs:shrink-0"
         >
           <Target size={14} strokeWidth={2.5} />
           <span className="truncate">Adjust depth</span>
@@ -42,7 +42,7 @@ export function ActionSection({
         variant={hasUpgradeSelected ? "secondary" : "primary"}
         size="md"
         onClick={onContinue}
-        className="w-full min-w-0 min-[430px]:flex-1"
+        className="w-full min-w-0 xs:flex-1"
       >
         <span className="truncate">{buttonLabel}</span>
         {hasUpgradeSelected ? (

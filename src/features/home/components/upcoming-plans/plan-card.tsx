@@ -47,7 +47,7 @@ export function PlanCard({ group, index }: PlanCardProps) {
       <Link
         {...navigation}
         aria-label={`Open ${plan.title} in ${group.name}`}
-        className="plan-card-grid sm:plan-card-grid-wide grid items-center gap-x-3 gap-y-2 py-3.5 pr-1 pl-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:pr-3 md:gap-4"
+        className="grid grid-cols-[3rem_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 py-3.5 pr-1 pl-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[4rem_minmax(0,1fr)_auto] sm:pr-3 md:gap-4"
       >
         <div className="relative flex h-full min-h-16 flex-col justify-center pl-9">
           <span

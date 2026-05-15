@@ -77,7 +77,7 @@ export function NotificationItem({
       onClick={() => onSelect(item)}
       disabled={isPending}
       className={cn(
-        "h-auto w-full rounded-none border-none p-0 hover:bg-muted/45 focus-visible:ring-inset",
+        "h-auto w-full rounded-lg border-none p-0 hover:bg-muted/45 focus-visible:ring-inset",
         !item.isRead && "bg-secondary/20",
       )}
     >

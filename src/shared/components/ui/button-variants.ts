@@ -23,9 +23,9 @@ export const buttonVariants = cva(
         ghost:
           "border-2 border-transparent bg-transparent text-ink focus-visible:ring-ink active:enabled:translate-y-px active:enabled:bg-ink/10 hover:enabled:bg-ink/5 dark:text-white focus-visible:dark:ring-white hover:enabled:dark:bg-white/10",
         accentGhost:
-          "border-2 border-transparent bg-transparent text-slate-muted focus-visible:ring-forge-teal active:enabled:translate-y-px active:enabled:bg-forge-teal/12 hover:enabled:bg-forge-teal/8 hover:enabled:text-forge-teal dark:text-slate-300 focus-visible:dark:ring-forge-teal hover:enabled:dark:bg-forge-teal/12 hover:enabled:dark:text-forge-teal",
+          "border-2 border-transparent bg-transparent text-slate-muted focus-visible:ring-forge-teal active:enabled:translate-y-px active:enabled:bg-forge-teal/12 hover:enabled:bg-forge-teal/8 hover:enabled:text-forge-teal focus-visible:dark:ring-forge-teal hover:enabled:dark:bg-forge-teal/12 hover:enabled:dark:text-forge-teal",
         inverseGhost:
-          "border border-ink/5 bg-canvas/10 text-primary-foreground backdrop-blur-sm focus-visible:ring-white active:enabled:translate-y-px hover:enabled:border-ink/10 hover:enabled:bg-white hover:enabled:text-ink hover:enabled:shadow-sm",
+          "border border-white/10 bg-white/8 text-white/80 backdrop-blur-sm focus-visible:ring-white active:enabled:translate-y-px hover:enabled:border-white/25 hover:enabled:bg-white/14 hover:enabled:text-white hover:enabled:shadow-sm",
         link: "text-forge-teal underline-offset-4 focus-visible:ring-forge-teal hover:enabled:underline",
         subtle:
           "border border-transparent bg-muted/40 text-slate-muted hover:enabled:border-border/50 hover:enabled:bg-muted hover:enabled:text-ink",

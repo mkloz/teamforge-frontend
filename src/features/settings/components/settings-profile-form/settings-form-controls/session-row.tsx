@@ -27,7 +27,7 @@ export function SessionRow({ session, isRevoking, onRevoke }: SessionRowProps) {
         session.isCurrent && "border-forge-teal/25",
       )}
     >
-      <div className="icon-body-grid grid min-w-0 gap-4">
+      <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-4">
         <div
           className={cn(
             "flex size-10 items-center justify-center rounded-full bg-muted text-slate-muted",

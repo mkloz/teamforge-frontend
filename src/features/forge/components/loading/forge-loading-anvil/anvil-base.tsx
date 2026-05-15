@@ -8,7 +8,7 @@ import {
 export function AnvilBase() {
   return (
     <motion.g
-      style={{ transformOrigin: "110px 148px" }}
+      className="origin-[110px_148px]"
       animate={{
         scaleY: [1, 1, 1, 0.965, 1.01, 1],
         y: [0, 0, 0, 1.25, -0.25, 0],

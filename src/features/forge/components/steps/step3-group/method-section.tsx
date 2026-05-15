@@ -14,7 +14,7 @@ export function MethodSection({
   onForgeModeChange,
 }: MethodSectionProps) {
   return (
-    <section className="space-y-2.5 border-border/25 border-t pt-4">
+    <section className="flex flex-col gap-2.5 border-border/25 border-t pt-4">
       <p className="px-0.5 font-semibold text-muted-foreground text-xs md:text-sm">
         Choose your method
       </p>

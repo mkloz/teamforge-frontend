@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { Home, Plus } from "lucide-react";
+import { Home } from "lucide-react";
+import type { ReactNode } from "react";
 
 import { TeamForgeLogo } from "@/assets/logo";
-import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
@@ -10,9 +10,13 @@ import { SoloActivityScene } from "./solo-activity-scene";
 
 interface NotFoundStateProps {
   fullPage?: boolean;
+  primaryAction?: ReactNode;
 }
 
-export function NotFoundState({ fullPage = false }: NotFoundStateProps) {
+export function NotFoundState({
+  fullPage = false,
+  primaryAction,
+}: NotFoundStateProps) {
   return (
     <main
       className={cn(
@@ -59,12 +63,7 @@ export function NotFoundState({ fullPage = false }: NotFoundStateProps) {
               </p>
 
               <div className="mt-8 grid gap-3 sm:flex">
-                <Button asChild size="lg">
-                  <Link {...buildForgeLaunchNavigation()}>
-                    <Plus className="size-5" aria-hidden="true" />
-                    Forge my group
-                  </Link>
-                </Button>
+                {primaryAction}
                 <Button asChild variant="outline" size="lg">
                   <Link to="/">
                     <Home className="size-5" aria-hidden="true" />

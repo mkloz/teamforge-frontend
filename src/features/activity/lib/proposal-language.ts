@@ -11,10 +11,10 @@ export const PROPOSAL_FIELD_LABELS: Record<PlanProposal["field"], string> = {
 };
 
 export const PROPOSAL_STATUS_LABELS: Record<PlanProposal["status"], string> = {
-  PENDING: "PENDING",
-  APPROVED: "APPROVED",
-  REJECTED: "REJECTED",
-  WITHDRAWN: "WITHDRAWN",
+  PENDING: "Pending",
+  APPROVED: "Approved",
+  REJECTED: "Rejected",
+  WITHDRAWN: "Withdrawn",
 };
 
 export function formatProposalDate(value: string) {

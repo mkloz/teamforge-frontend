@@ -19,7 +19,7 @@ export function ForgePageLoadingFixture() {
   return (
     <ForgePageShell>
       <div className="flex flex-col gap-8 py-6 md:py-10">
-        <section className="md:forge-hero-grid grid gap-7 border-border border-b pb-8 md:items-end md:pb-10">
+        <section className="grid gap-7 border-border border-b pb-8 md:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)] md:items-end md:pb-10">
           <div className="flex min-w-0 flex-col gap-7">
             <div className="flex flex-col gap-4">
               <Skeleton className="h-4 w-16" />
@@ -58,7 +58,7 @@ export function ForgePageLoadingFixture() {
               {["activity", "when", "where", "group"].map((item, index) => (
                 <div
                   key={item}
-                  className="avatar-body-grid-sm grid gap-3 px-4 py-3"
+                  className="grid grid-cols-[3rem_minmax(0,1fr)] gap-3 px-4 py-3"
                 >
                   <Skeleton className="h-3 w-14" />
                   <Skeleton
@@ -71,7 +71,7 @@ export function ForgePageLoadingFixture() {
           </aside>
         </section>
 
-        <section className="lg:forge-page-grid grid gap-5">
+        <section className="grid gap-5 lg:grid-cols-[minmax(0,0.8fr)_minmax(32rem,1.2fr)]">
           <div>
             <Skeleton className="h-4 w-24" />
             <Skeleton className="mt-2 h-8 w-96 max-w-full" />

@@ -28,7 +28,7 @@ export function CardBody({
       </h3>
       <p
         className={cn(
-          "group-plan-card-fit-reason mt-2 font-medium text-muted-foreground leading-relaxed",
+          "mt-2 max-w-136 font-medium text-muted-foreground leading-relaxed",
           isCompact ? "text-sm" : "text-sm",
         )}
       >

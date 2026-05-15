@@ -17,7 +17,7 @@ export function RecentActivitySkeleton() {
         >
           <Skeleton
             shape="square"
-            className="h-full w-14 shrink-0 rounded-none"
+            className="h-full w-14 shrink-0 rounded-lg"
             tone={index === 1 ? "teal" : "default"}
           />
           <div className="flex min-w-0 flex-1 items-center gap-2 px-2.5 py-2">

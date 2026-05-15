@@ -48,6 +48,18 @@ function getContentJustificationClass(classes: string) {
   return "justify-center";
 }
 
+function getLoaderSizeClass(size: ButtonV2Props["size"]) {
+  if (size === "xs") {
+    return "size-3.5";
+  }
+
+  if (size === "sm") {
+    return "size-4";
+  }
+
+  return "size-5";
+}
+
 /**
  * TeamForge Unified Button (V2)
  * High-fidelity, mechanical-first design system component.
@@ -97,22 +109,18 @@ function ButtonComponent({
           {/* Layer 1: Internal sweep effect on solid buttons */}
           {(variant === "primary" || variant === "secondary") &&
             !(disabled || loading) && (
-              <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-inherit">
+              <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
                 <span className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/20 to-transparent group-hover:animate-sweep" />
               </div>
             )}
 
           {/* Layer 2: Loading Overlay */}
           {loading && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center rounded-inherit">
+            <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[inherit]">
               <Loader2
                 className={cn(
                   "animate-spin text-current",
-                  size === "xs"
-                    ? "size-3.5"
-                    : size === "sm"
-                      ? "size-4"
-                      : "size-5",
+                  getLoaderSizeClass(size),
                 )}
               />
               <span className="sr-only">Loading...</span>

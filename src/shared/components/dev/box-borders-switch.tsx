@@ -17,11 +17,11 @@ function applyBoxBordersStyle() {
   const style = document.createElement("style");
   style.id = BOX_BORDERS_STYLE_ID;
   style.textContent = `
-    * {
-      outline: 1px solid rgba(239, 68, 68, 0.75) !important;
-      outline-offset: -1px !important;
-    }
-  `;
+ * {
+ outline: 1px solid color-mix(in srgb, var(--color-destructive) 75%, transparent) !important;
+ outline-offset: -1px !important;
+ }
+ `;
 
   document.head.append(style);
 }
@@ -43,7 +43,7 @@ export function BoxBordersSwitch() {
   return (
     <Button
       type="button"
-      variant={showBorders ? "secondary" : "surface"}
+      variant={showBorders ? "secondary" : "subtle"}
       size="icon-xs"
       aria-pressed={showBorders}
       aria-labelledby={labelId}

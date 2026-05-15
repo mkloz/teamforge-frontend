@@ -101,7 +101,7 @@ export function LocationSection({
       </RadioGroup>
 
       {showAddress && (
-        <div className="fade-in slide-in-from-top-1 animate-in space-y-2 duration-200">
+        <div className="fade-in slide-in-from-top-1 flex animate-in flex-col gap-2 duration-200">
           <AddressAutocomplete
             label="Address or venue"
             badge="Plan location"
@@ -130,7 +130,7 @@ export function LocationSection({
       )}
 
       {locationType === "ONLINE" && (
-        <div className="fade-in slide-in-from-top-1 animate-in space-y-2 duration-200">
+        <div className="fade-in slide-in-from-top-1 flex animate-in flex-col gap-2 duration-200">
           <FieldLabel htmlFor="plan-online-location">
             Meeting link or platform
           </FieldLabel>

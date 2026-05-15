@@ -33,7 +33,7 @@ export function ExploreRightFilters({ hideHeader }: ExploreRightFiltersProps) {
       )}
 
       <div className="flex w-full flex-col gap-4">
-        <section className="space-y-1.5">
+        <section className="flex flex-col gap-1.5">
           <h4 className="pl-1 font-bold text-foreground text-sm tracking-tight">
             Activity
           </h4>
@@ -43,7 +43,10 @@ export function ExploreRightFilters({ hideHeader }: ExploreRightFiltersProps) {
         <LocationFilter />
         <TimeFilter />
 
-        <details className="group space-y-3" open={hasMoreOptionFilters}>
+        <details
+          className="group flex flex-col gap-3"
+          open={hasMoreOptionFilters}
+        >
           <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg border border-border/60 bg-card/35 px-3 py-2 font-bold text-muted-foreground text-xs transition-colors hover:border-border hover:bg-muted/25 hover:text-foreground [&::-webkit-details-marker]:hidden">
             <span>More options</span>
             <ChevronDown
@@ -52,7 +55,7 @@ export function ExploreRightFilters({ hideHeader }: ExploreRightFiltersProps) {
             />
           </summary>
 
-          <div className="space-y-4 pt-0.5">
+          <div className="flex flex-col gap-4 pt-0.5">
             <DateRangeFilter />
             <SizeFilter />
           </div>

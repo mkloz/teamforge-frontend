@@ -53,7 +53,7 @@ export function ProfilePanelInfo({
         <div className="relative h-28 overflow-hidden bg-forge-teal px-4 pt-3">
           <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
             <div className="absolute inset-0 bg-linear-to-b from-black/5 to-black/20" />
-            <div className="profile-cover-dot-grid absolute inset-0 opacity-15" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle,var(--color-canvas)_1px,transparent_1px)] bg-size-[24px_24px] opacity-15" />
             {participant.personalityType ? (
               <span className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 select-none font-black text-8xl text-white/10 leading-none tracking-tighter mix-blend-overlay">
                 {participant.personalityType}

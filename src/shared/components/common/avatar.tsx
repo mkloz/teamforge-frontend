@@ -50,7 +50,7 @@ export function AvatarStatus({
   return (
     <span
       className={cn(
-        "avatar-status-anchor absolute z-20 rounded-full border-2 shadow-sm",
+        "absolute right-[14.64466094%] bottom-[14.64466094%] z-20 translate-x-1/2 translate-y-1/2 rounded-full border-2 shadow-sm",
         sizeClassName,
         borderClassName,
         avatarStatusColors[status],
@@ -79,7 +79,7 @@ export function Avatar({
   const fallbackNode = (
     <div
       className={cn(
-        "avatar-initials flex size-full items-center justify-center bg-forge-teal/10 font-black text-forge-teal leading-none",
+        "flex size-full items-center justify-center bg-forge-teal/10 font-black text-[0.72em] text-forge-teal leading-none",
         fallbackClassName,
       )}
     >

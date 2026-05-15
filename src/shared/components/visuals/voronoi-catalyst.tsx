@@ -31,7 +31,7 @@ export function VoronoiCatalyst({
     // biome-ignore lint/a11y/noStaticElementInteractions: This canvas wrapper is not an activation target.
     <div
       ref={containerRef}
-      className="voronoi-inner-shadow relative size-full overflow-hidden bg-transparent"
+      className="relative size-full overflow-hidden bg-transparent shadow-[inset_0_0_4rem_rgba(13,148,136,0.16)]"
       onMouseMove={(e) => handleMouseMove(e.clientX, e.clientY)}
       onMouseLeave={handleMouseLeave}
     >
@@ -39,23 +39,13 @@ export function VoronoiCatalyst({
         ref={canvasRef}
         width={dimensions.width * dpr}
         height={dimensions.height * dpr}
-        className="block min-h-full min-w-full transition-opacity duration-1000 will-change-transform"
+        className="block min-h-full min-w-full scale-125 transition-opacity duration-1000 will-change-transform"
         style={{
           width: dimensions.width,
           height: dimensions.height,
-          // Initial transform; the actual transform is managed by the animation loop
-          transform: "scale(1.25)",
         }}
       />
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: `
-            linear-gradient(to right, rgba(0, 0, 0, 0.50) 0%, transparent 12%, transparent 90%, rgba(0, 0, 0, 0.50) 100%),
-            linear-gradient(to bottom, rgba(0, 0, 0, 0.50) 0%, transparent 12%, transparent 90%, rgba(0, 0, 0, 0.50) 100%)
-          `,
-        }}
-      />
+      <div className="pointer-events-none absolute inset-0 [background:linear-gradient(to_right,rgba(0,0,0,0.5)_0%,transparent_12%,transparent_90%,rgba(0,0,0,0.5)_100%),linear-gradient(to_bottom,rgba(0,0,0,0.5)_0%,transparent_12%,transparent_90%,rgba(0,0,0,0.5)_100%)]" />
     </div>
   );
 }

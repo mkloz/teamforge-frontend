@@ -43,8 +43,8 @@ export const PLAN_STATUS_CONFIG: Record<Plan["status"], PlanStatusConfig> = {
   CANCELLED: {
     icon: X,
     label: "Cancelled",
-    accentClass: "bg-red-500/50",
-    colorClass: "text-red-500",
+    accentClass: "bg-destructive/50",
+    colorClass: "text-destructive",
   },
 };
 

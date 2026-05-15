@@ -20,7 +20,7 @@ export function LinkPreviewSkeleton({ isOwn }: LinkPreviewSkeletonProps) {
       <Skeleton
         shape="square"
         tone={tone}
-        className="aspect-video w-full rounded-none"
+        className="aspect-video w-full rounded-lg"
       />
       <div className="flex gap-2.5 px-2.5 py-2">
         <Skeleton

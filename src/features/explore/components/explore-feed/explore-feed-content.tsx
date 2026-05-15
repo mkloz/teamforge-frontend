@@ -24,7 +24,7 @@ export function ExploreFeedContent({
   return (
     <div className="flex flex-col gap-4 md:gap-5">
       {featuredGroup ? (
-        <section className="space-y-2.5">
+        <section className="flex flex-col gap-2.5">
           <FeedSectionLabel
             title="Best opening right now"
             detail={`${totalGroups} ${totalGroups === 1 ? "group" : "groups"} available`}
@@ -36,7 +36,7 @@ export function ExploreFeedContent({
       ) : null}
 
       {remainingGroups.length > 0 ? (
-        <section className="space-y-2.5">
+        <section className="flex flex-col gap-2.5">
           <FeedSectionLabel
             title="More openings"
             detail={`${remainingGroups.length} shown`}
@@ -129,7 +129,7 @@ function FeedSectionLabel({
   title: string;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 px-1 max-[380px]:flex-col max-[380px]:items-start max-[380px]:gap-1">
+    <div className="flex items-center justify-between gap-4 px-1 max-compact:flex-col max-compact:items-start max-compact:gap-1">
       <p className="font-semibold text-muted-foreground text-sm">{title}</p>
       <span className="shrink-0 font-bold text-muted-foreground/70 text-sm">
         {detail}

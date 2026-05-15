@@ -20,7 +20,7 @@ function TemplateSuggestionsSkeletonContent() {
         >
           <Skeleton
             shape="square"
-            className="h-full w-20 shrink-0 rounded-none sm:w-24"
+            className="h-full w-20 shrink-0 rounded-lg sm:w-24"
             tone={index === 0 ? "teal" : "default"}
           />
           <div className="flex min-w-0 flex-1 flex-col gap-1.5 px-3 py-2.5">

@@ -32,7 +32,7 @@ export function LengthOptionPrecision({
         </span>
 
         {showProgress ? (
-          <div className="h-1.5 w-24 shrink-0 overflow-hidden rounded-full bg-slate-100 sm:w-28 dark:bg-white/10">
+          <div className="h-1.5 w-24 shrink-0 overflow-hidden rounded-full bg-muted sm:w-28 dark:bg-white/10">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${viewModel.progressPercent}%` }}
@@ -48,7 +48,7 @@ export function LengthOptionPrecision({
                   "h-1.5 w-3 rounded-full transition-colors",
                   index < viewModel.resolutionSegmentCount
                     ? "bg-forge-teal/40"
-                    : "bg-slate-100 dark:bg-white/10",
+                    : "bg-muted dark:bg-white/10",
                 )}
               />
             ))}

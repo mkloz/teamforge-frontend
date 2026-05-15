@@ -44,7 +44,7 @@ export function Step3Group({
   );
 
   return (
-    <div className="fade-in slide-in-from-bottom-4 animate-in space-y-5 pb-4 duration-500">
+    <div className="fade-in slide-in-from-bottom-4 flex animate-in flex-col gap-5 pb-4 duration-500">
       <GroupIdentityFields
         groupName={groupName}
         onGroupNameChange={(v) => onGroupNameChange?.(v)}
@@ -64,7 +64,7 @@ export function Step3Group({
         onForgeModeChange={onForgeModeChange}
       />
 
-      <section className="space-y-3.5 border-border/25 border-t pt-4">
+      <section className="flex flex-col gap-3.5 border-border/25 border-t pt-4">
         <div className="flex items-baseline justify-between gap-3 px-0.5">
           <p className="font-semibold text-muted-foreground text-xs md:text-sm">
             Group details

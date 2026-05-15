@@ -12,7 +12,7 @@ export function LocationFilter() {
     useExploreRouteState();
 
   return (
-    <section className="space-y-2">
+    <section className="flex flex-col gap-2">
       <h4 className="pl-1 font-bold text-foreground text-sm tracking-tight">
         Place
       </h4>
@@ -23,7 +23,7 @@ export function LocationFilter() {
       />
 
       {locationMode !== "ONLINE" && (
-        <div className="space-y-3 px-1 pt-1.5">
+        <div className="flex flex-col gap-3 px-1 pt-1.5">
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-1.5 font-semibold text-muted-foreground text-xs">
               <Route className="size-3.5" aria-hidden="true" />

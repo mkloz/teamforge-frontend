@@ -45,7 +45,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
             control={control}
             name="age"
             render={({ field }) => (
-              <FormItem className="space-y-0">
+              <FormItem className="gap-0">
                 <FormLabel className="font-sans font-semibold text-ink text-sm">
                   Age
                 </FormLabel>
@@ -70,7 +70,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
             control={control}
             name="gender"
             render={({ field }) => (
-              <FormItem className="flex flex-col justify-start space-y-0">
+              <FormItem className="flex flex-col justify-start gap-0">
                 <FormLabel className="font-sans font-semibold text-ink text-sm">
                   Gender
                 </FormLabel>
@@ -107,7 +107,7 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
         control={control}
         name="city"
         render={({ field }) => (
-          <FormItem className="space-y-0">
+          <FormItem className="gap-0">
             <FormControl>
               <AddressAutocomplete
                 label="City"

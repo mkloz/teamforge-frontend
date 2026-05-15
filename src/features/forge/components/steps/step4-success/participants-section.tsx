@@ -37,7 +37,7 @@ export function ParticipantsSection({
   }, null)?.id;
 
   return (
-    <section className="space-y-3 border-border/25 border-t pt-4">
+    <section className="flex flex-col gap-3 border-border/25 border-t pt-4">
       <div className="flex items-center justify-between gap-3 px-0.5">
         <div className="flex min-w-0 items-center gap-2">
           <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10 text-forge-teal">

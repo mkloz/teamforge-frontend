@@ -27,7 +27,7 @@ export function Step2Plan({
   const charCount = trimmed.length;
 
   return (
-    <div className="fade-in slide-in-from-bottom-2 animate-in space-y-4 pb-6 duration-300">
+    <div className="fade-in slide-in-from-bottom-2 flex animate-in flex-col gap-4 pb-6 duration-300">
       <EventTitleSection
         charCount={charCount}
         isNameError={isNameError}

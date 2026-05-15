@@ -20,22 +20,18 @@ export function LengthSelectorActions({
   return (
     <motion.div
       variants={fadeUpItem}
-      className="mt-auto flex w-full flex-col-reverse items-stretch gap-3 pt-6 min-[430px]:flex-row min-[430px]:items-center"
+      className="mt-auto flex w-full xs:flex-row flex-col-reverse xs:items-center items-stretch gap-3 pt-6"
     >
       <Button
         size="md"
         variant="outline"
         onClick={onBack}
-        className="w-full min-w-0 px-4 min-[430px]:w-auto min-[430px]:shrink-0"
+        className="w-full xs:w-auto min-w-0 xs:shrink-0 px-4"
       >
         <ArrowLeft size={16} strokeWidth={2.5} />
         <span className="truncate">{backLabel}</span>
       </Button>
-      <Button
-        size="md"
-        onClick={onBegin}
-        className="w-full min-w-0 min-[430px]:flex-1"
-      >
+      <Button size="md" onClick={onBegin} className="w-full min-w-0 xs:flex-1">
         <span className="truncate">{actionLabel}</span>
         <ArrowRight size={18} strokeWidth={2.5} />
       </Button>

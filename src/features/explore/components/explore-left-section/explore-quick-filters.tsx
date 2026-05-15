@@ -124,7 +124,7 @@ export function ExploreQuickFilters() {
   return (
     <section
       aria-labelledby="explore-quick-filters-heading"
-      className="space-y-3 px-1 py-1"
+      className="flex flex-col gap-3 px-1 py-1"
     >
       <div className="flex items-center gap-2.5">
         <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">

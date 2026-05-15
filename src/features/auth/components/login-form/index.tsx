@@ -68,7 +68,7 @@ export function LoginForm({
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem className="space-y-0 text-left">
+              <FormItem className="gap-0 text-left">
                 <FormLabel className="font-sans font-semibold text-ink text-sm">
                   Email
                 </FormLabel>
@@ -89,7 +89,7 @@ export function LoginForm({
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem className="space-y-0 text-left">
+              <FormItem className="gap-0 text-left">
                 <div className="flex items-center justify-between">
                   <FormLabel className="font-sans font-semibold text-ink text-sm">
                     Password

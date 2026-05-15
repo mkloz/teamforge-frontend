@@ -157,7 +157,7 @@ export function VoronoiLogo({
         style={{
           opacity: svgOpacity,
         }}
-        className="voronoi-logo-glow size-full"
+        className="filter-[drop-shadow(0_1rem_2rem_rgba(13,148,136,0.24))] size-full"
       >
         <defs>
           <clipPath id="group-boundary-hiw">
@@ -209,7 +209,7 @@ export function VoronoiLogo({
           cx="52"
           cy="68"
           r="8"
-          fill="var(--color-spark-amber)"
+          fill="#F59E0B"
           stroke="#FAFAF8"
           strokeWidth="2.5"
           style={{

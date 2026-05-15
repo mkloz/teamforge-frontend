@@ -38,7 +38,7 @@ export function LogoSegment({
   return (
     <motion.polygon
       points={points}
-      fill="var(--color-forge-teal)"
+      fill="#0D9488"
       fillOpacity={fillOpacity}
       style={{
         transformOrigin: "52px 68px",

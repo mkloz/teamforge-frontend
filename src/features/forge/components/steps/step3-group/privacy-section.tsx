@@ -14,7 +14,7 @@ export function PrivacySection({
   onVisibilityChange,
 }: PrivacySectionProps) {
   return (
-    <section className="space-y-3 border-border/25 border-t pt-4">
+    <section className="flex flex-col gap-3 border-border/25 border-t pt-4">
       <div className="px-0.5">
         <p className="font-semibold text-muted-foreground text-xs md:text-sm">
           Who can find this group?
@@ -43,7 +43,7 @@ export function PrivacySection({
                   ? "border-forge-teal/55 bg-forge-teal/10 shadow-sm ring-1 ring-forge-teal/20"
                   : "border-border/40 bg-card hover:border-forge-teal/30 hover:bg-forge-teal/5",
               )}
-              contentClassName="min-w-0 items-start justify-start gap-3 whitespace-normal sm:grid sm:w-full sm:toggle-row-grid sm:gap-x-3 sm:gap-y-0"
+              contentClassName="min-w-0 items-start justify-start gap-3 whitespace-normal sm:grid sm:w-full sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-x-3 sm:gap-y-0"
             >
               <div
                 className={cn(
@@ -55,7 +55,7 @@ export function PrivacySection({
               >
                 <Icon size={15} />
               </div>
-              <div className="min-w-0 flex-1 space-y-1 sm:contents">
+              <div className="min-w-0 flex-1 gap-1 sm:contents">
                 <p
                   className={cn(
                     "min-w-0 text-pretty font-semibold text-sm leading-tight sm:col-start-2 sm:row-start-1 sm:self-center",

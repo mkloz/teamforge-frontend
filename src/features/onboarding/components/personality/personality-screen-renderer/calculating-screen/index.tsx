@@ -47,7 +47,7 @@ export function CalculatingScreen({ vector, onDone }: CalculatingScreenProps) {
               </span>
             </div>
             <div
-              className="relative h-2 w-full overflow-hidden rounded-full bg-slate-100 shadow-inner dark:bg-white/10"
+              className="relative h-2 w-full overflow-hidden rounded-full bg-muted shadow-inner dark:bg-white/10"
               role="progressbar"
               aria-label={row.label}
               aria-valuemin={0}
@@ -58,7 +58,7 @@ export function CalculatingScreen({ vector, onDone }: CalculatingScreenProps) {
                 custom={index}
                 animate={controls}
                 initial={{ width: "0%" }}
-                className="absolute top-0 bottom-0 left-0 h-full rounded-full bg-linear-to-r from-teal-400 to-forge-teal shadow-teal-glow"
+                className="absolute top-0 bottom-0 left-0 h-full rounded-full bg-linear-to-r from-forge-teal/70 to-forge-teal shadow-teal-glow"
               />
             </div>
           </motion.div>

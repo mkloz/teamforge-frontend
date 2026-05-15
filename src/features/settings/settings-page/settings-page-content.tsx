@@ -28,7 +28,7 @@ export function SettingsPageContent({
   const activeSectionMeta = getSettingsSectionMeta(activeSection);
 
   return (
-    <div className="lg:settings-page-grid mx-auto grid w-full max-w-6xl gap-7 px-4 py-5 md:px-8 lg:gap-12 lg:py-10 xl:gap-18">
+    <div className="mx-auto grid w-full max-w-6xl gap-7 px-4 py-5 md:px-8 lg:grid-cols-[14rem_minmax(0,56rem)] lg:gap-12 lg:py-10 xl:gap-18">
       <SettingsSidebar
         activeSection={activeSection}
         isMobileDetailOpen={isMobileDetailOpen}

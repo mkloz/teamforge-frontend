@@ -7,8 +7,8 @@ import { Button } from "@/shared/components/ui/button";
 export function ForgeCTA() {
   return (
     <div className="group/card border-border/50 border-t px-1 pt-4">
-      <div className="relative z-10 space-y-3">
-        <div className="space-y-1.5">
+      <div className="relative z-10 flex flex-col gap-3">
+        <div className="flex flex-col gap-1.5">
           <h3 className="font-black text-base text-foreground leading-tight tracking-tight">
             Nothing quite right?
           </h3>

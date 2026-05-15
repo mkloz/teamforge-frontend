@@ -13,7 +13,7 @@ export function OceanTraitDetails({
 }: OceanTraitDetailsProps) {
   if (!selectedInfo) {
     return (
-      <p className="psychometric-micro text-center font-bold text-slate-muted/60 uppercase tracking-widest">
+      <p className="type-signature-label text-center font-bold text-slate-muted/60 uppercase tracking-widest">
         Tap any trait to explore
       </p>
     );
@@ -24,7 +24,7 @@ export function OceanTraitDetails({
       <div className="flex items-center justify-between">
         <div>
           <h5 className="font-black text-ink text-sm">{selectedInfo.label}</h5>
-          <span className="psychometric-micro font-bold text-slate-muted uppercase tracking-tight">
+          <span className="type-signature-label font-bold text-slate-muted uppercase tracking-tight">
             {selectedInfo.level} ({selectedInfo.score}%)
           </span>
         </div>
@@ -33,7 +33,7 @@ export function OceanTraitDetails({
           variant="link"
           size="xs"
           onClick={onClear}
-          className="psychometric-micro h-auto p-0 uppercase tracking-widest hover:opacity-70"
+          className="type-signature-label h-auto p-0 uppercase tracking-widest hover:opacity-70"
         >
           Close
         </Button>
@@ -42,7 +42,7 @@ export function OceanTraitDetails({
         {selectedInfo.description}
       </p>
       <div className="border-border/40 border-t pt-2">
-        <p className="psychometric-micro font-medium text-slate-muted">
+        <p className="type-signature-label font-medium text-slate-muted">
           <span className="font-bold text-ink">In activities:</span>{" "}
           {selectedInfo.inActivities}
         </p>

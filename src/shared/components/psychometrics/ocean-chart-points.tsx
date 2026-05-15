@@ -121,7 +121,7 @@ export function ChartTick({
         textAnchor="middle"
         dominantBaseline="middle"
         className={cn(
-          "psychometric-chart-label select-none font-bold transition-colors",
+          "type-signature-label select-none font-bold transition-colors",
           isSelected ? "fill-primary" : "fill-slate-muted/80",
         )}
       >
@@ -133,7 +133,7 @@ export function ChartTick({
           y={labelY + 12}
           textAnchor="middle"
           dominantBaseline="middle"
-          className="psychometric-chart-label mt-1 select-none fill-primary font-black"
+          className="type-signature-label mt-1 select-none fill-primary font-black"
         >
           {score}%
         </text>

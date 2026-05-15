@@ -10,6 +10,7 @@ export function AnvilSparks() {
   return (
     <>
       <motion.path
+        className="origin-[110px_107.75px]"
         d="M99 107.75h22"
         stroke="var(--color-spark-amber)"
         strokeLinecap="round"
@@ -17,7 +18,6 @@ export function AnvilSparks() {
         animate={{
           scaleX: [1, 1, 1, 1.34, 1.08, 1],
         }}
-        style={{ transformOrigin: "110px 107.75px" }}
         transition={ANVIL_LOOP_TRANSITION}
       />
       {ANVIL_SPARK_ANIMATIONS.map((spark) => (

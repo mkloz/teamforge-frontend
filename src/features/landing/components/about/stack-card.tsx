@@ -71,7 +71,7 @@ export function StackCard({
       )}
     >
       <Card
-        className="flex h-full flex-col justify-center border-slate-100 p-8 shadow-xl md:p-12"
+        className="flex h-full flex-col justify-center border-border/60 p-8 shadow-xl md:p-12"
         aria-labelledby={`card-title-${card.id}`}
       >
         <CardContent className="flex flex-col gap-6 p-0">

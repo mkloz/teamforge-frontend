@@ -37,7 +37,7 @@ export function GroupPlanHero({ detail, search }: GroupPlanHeroProps) {
     .join(" · ");
 
   return (
-    <header className="space-y-4">
+    <header className="flex flex-col gap-4">
       <Button asChild variant="ghost" size="sm" className="px-0">
         <Link {...backLink.navigation}>
           <ArrowLeft className="size-4" aria-hidden="true" />

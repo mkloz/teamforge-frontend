@@ -27,7 +27,7 @@ export function DateRangeFilter() {
   }
 
   return (
-    <section className="space-y-2">
+    <section className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-3">
         <h4 className="font-bold text-foreground text-sm">Date range</h4>
         {hasDateRange ? (

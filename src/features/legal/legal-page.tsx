@@ -446,7 +446,7 @@ export function LegalPage({ kind }: LegalPageProps) {
               </p>
               <nav
                 aria-label={`${copy.eyebrow} sections`}
-                className="mt-3 grid max-h-96 gap-1 overflow-y-auto pr-1"
+                className="mt-3 grid max-h-48 gap-1 overflow-y-auto pr-1"
               >
                 {copy.sections.map((section) => (
                   <a

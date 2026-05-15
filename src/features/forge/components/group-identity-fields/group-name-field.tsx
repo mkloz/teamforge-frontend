@@ -22,7 +22,7 @@ export function GroupNameField({
   suggestions,
 }: GroupNameFieldProps) {
   return (
-    <div className="space-y-1.5">
+    <div className="flex flex-col gap-1.5">
       <Label
         htmlFor={nameId}
         className="block font-semibold text-muted-foreground/70 text-xs"

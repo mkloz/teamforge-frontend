@@ -66,8 +66,8 @@ function ExploreLoadingLeftRail() {
       </section>
 
       <div className="group/card border-border/50 border-t px-1 pt-4">
-        <div className="space-y-3">
-          <div className="space-y-1.5">
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1.5">
             <Skeleton className="h-5 w-36" />
             <SkeletonText lines={2} size="sm" widths={["w-full", "w-4/5"]} />
           </div>
@@ -81,7 +81,7 @@ function ExploreLoadingLeftRail() {
 function ExploreSearchSkeleton() {
   return (
     <div className="sticky top-0 z-30 -mx-4 mb-4 border-border/10 border-b bg-canvas/96 px-4 pt-2 pb-2.5 backdrop-blur md:mx-0 md:mb-5 md:px-0 md:pt-0">
-      <div className="search-action-grid mt-1 mb-1.5 grid items-center gap-1.5 sm:gap-2">
+      <div className="mt-1 mb-1.5 grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-1.5 sm:gap-2">
         <Skeleton className="h-11 min-w-0 rounded-xl" />
         <SkeletonButton className="h-11 w-14 rounded-xl sm:w-16" />
         <SkeletonButton className="size-11" />
@@ -146,7 +146,7 @@ function ExploreGroupPlanCardSkeleton({
       <div className="relative isolate z-10 flex w-full overflow-hidden rounded-xl border-2 border-border bg-card md:min-h-64 md:flex-row">
         <Skeleton
           shape="square"
-          className="h-42 shrink-0 rounded-none border-border border-b-2 md:h-auto md:w-72 md:border-r-2 md:border-b-0"
+          className="h-42 shrink-0 rounded-lg border-border border-b-2 md:h-auto md:w-72 md:border-r-2 md:border-b-0"
           tone={tone}
         />
         <div className="flex min-w-0 grow flex-col bg-canvas p-4 md:p-4.5">

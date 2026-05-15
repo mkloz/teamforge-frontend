@@ -60,7 +60,7 @@ export function RecentActivityRow({
   }
 
   return (
-    <section className="space-y-2.5">
+    <section className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between gap-3 px-0.5">
         <div className="flex min-w-0 items-center gap-2">
           <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">

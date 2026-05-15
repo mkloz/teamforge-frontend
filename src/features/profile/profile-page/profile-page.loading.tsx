@@ -23,7 +23,7 @@ export function ProfilePageLoading(_props: PageLoadingProps = {}) {
         <ProfileHeroSkeleton />
         <ProfilePortraitSkeleton />
         <BestFirstGroupStripSkeleton />
-        <div className="lg:profile-page-grid grid gap-9 lg:gap-16">
+        <div className="grid gap-9 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)] lg:gap-16">
           <div className="flex min-w-0 flex-col gap-8 lg:gap-10">
             <GroupFitSkeleton />
             <ActivityLanesSkeleton />

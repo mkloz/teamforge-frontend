@@ -1,12 +1,11 @@
-import { motion } from "framer-motion";
-import { cn } from "@/shared/lib/utils";
+import { ForgeOrbEyebrow, ForgeOrbPanel } from "./forge-orb-panel";
 
 export function TrustCard() {
   const circumference = 2 * Math.PI * 16;
   const score = 4.2;
 
   return (
-    <motion.div
+    <ForgeOrbPanel
       initial={{ y: 0, rotate: 2 }}
       animate={{ y: [-10, 0], rotate: [1, 2] }}
       transition={{
@@ -15,16 +14,9 @@ export function TrustCard() {
         repeatType: "mirror",
         ease: "easeInOut",
       }}
-      className={cn(
-        "w-37.5 rounded-xl px-4 py-3.5",
-        "border border-forge-teal/20 bg-forge-deep-panel/80 backdrop-blur-xl",
-        "forge-orb-card-shadow",
-      )}
-      aria-hidden="true"
+      className="w-37.5"
     >
-      <p className="forge-orb-label-tracking mb-2.5 font-sans font-semibold text-forge-teal text-nano uppercase opacity-90">
-        Trust Score
-      </p>
+      <ForgeOrbEyebrow className="mb-2.5">Trust Score</ForgeOrbEyebrow>
       <div className="flex items-center gap-2.5">
         <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
           <circle
@@ -69,6 +61,6 @@ export function TrustCard() {
           </p>
         </div>
       </div>
-    </motion.div>
+    </ForgeOrbPanel>
   );
 }

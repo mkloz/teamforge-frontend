@@ -38,8 +38,8 @@ function HomeHeroSkeleton() {
           <SkeletonButton className="size-11" />
         </div>
 
-        <div className="2xl:home-hero-grid relative grid gap-4 overflow-hidden rounded-xl px-4 py-4 sm:gap-6 sm:px-5 sm:py-5 lg:px-6 2xl:min-h-80 2xl:items-center 2xl:gap-10">
-          <div className="home-hero-wash absolute inset-y-0 left-0 w-full" />
+        <div className="relative grid gap-4 overflow-hidden rounded-xl px-4 py-4 sm:gap-6 sm:px-5 sm:py-5 lg:px-6 2xl:min-h-80 2xl:grid-cols-[minmax(0,1fr)_minmax(17rem,20rem)] 2xl:items-center 2xl:gap-10">
+          <div className="absolute inset-y-0 left-0 w-full [background:linear-gradient(112deg,color-mix(in_srgb,var(--color-forge-teal)_13%,transparent),color-mix(in_srgb,var(--color-forge-teal)_4%,transparent)_48%,transparent_76%)]" />
           <div className="absolute inset-y-5 left-2 w-px rounded-full bg-forge-teal/55 sm:inset-y-6 sm:left-3" />
 
           <div className="relative z-10 flex min-w-0 flex-col gap-4 pl-2 sm:gap-5 sm:pl-4">
@@ -196,7 +196,7 @@ function HomeUpcomingPlansSkeleton() {
         {["first", "second", "third", "fourth"].map((item, index) => (
           <li
             key={item}
-            className="plan-card-grid sm:plan-card-grid-wide grid min-h-20 items-center gap-x-3 gap-y-2 border-border/55 border-b py-3.5 pr-1 last:border-b-0 sm:pr-3 md:gap-4"
+            className="grid min-h-20 grid-cols-[3rem_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 border-border/55 border-b py-3.5 pr-1 last:border-b-0 sm:grid-cols-[4rem_minmax(0,1fr)_auto] sm:pr-3 md:gap-4"
           >
             <div className="relative flex h-full min-h-16 flex-col justify-center pl-9">
               <Skeleton
@@ -266,7 +266,7 @@ function HomeRecommendedGroupCardSkeleton({
         <div className="flex w-full flex-col">
           <Skeleton
             shape="square"
-            className="aspect-video w-full rounded-none border-border border-b-2"
+            className="aspect-video w-full rounded-t-lg border-border border-b-2"
             tone={tone}
           />
           <div className="flex min-w-0 grow flex-col bg-canvas p-4">

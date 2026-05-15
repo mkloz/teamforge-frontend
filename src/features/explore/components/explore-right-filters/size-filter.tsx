@@ -13,7 +13,7 @@ export function SizeFilter() {
   };
 
   return (
-    <section className="space-y-2.5">
+    <section className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between">
         <h4 className="font-bold text-foreground text-sm">Room size</h4>
         <span className="rounded-full bg-muted/35 px-2 py-0.5 font-bold text-muted-foreground text-xs tabular-nums">

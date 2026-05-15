@@ -25,9 +25,9 @@ export function WeightSlider({
   const pct = ((value - min) / (max - min)) * 100;
 
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col gap-3">
       <div className="flex items-start justify-between">
-        <div className="space-y-0.5">
+        <div className="flex flex-col gap-0.5">
           <p className="font-semibold text-muted-foreground text-xs">{label}</p>
           {subLabel && (
             <p className="text-muted-foreground/60 text-xs leading-snug">

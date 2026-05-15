@@ -27,7 +27,7 @@ export function TemplateSuggestionCard({
     >
       <div className="relative w-20 shrink-0 overflow-hidden bg-muted sm:w-24">
         <PlanCover
-          value={suggestion.template.coverImage}
+          value={suggestion.coverImage ?? suggestion.template.coverImage}
           alt=""
           className="size-full"
           imageClassName="transition-transform duration-500 group-hover:scale-105"

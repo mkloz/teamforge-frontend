@@ -60,7 +60,7 @@ function EditGroupIdentityDialogContent({
   const hasPlan = Boolean(group.plan);
 
   return (
-    <DialogContent className="modal-viewport-frame flex flex-col gap-0 overflow-hidden rounded-2xl border-border/70 bg-canvas px-4 py-0 shadow-xl sm:max-w-2xl [&>button]:top-3 [&>button]:right-3">
+    <DialogContent className="flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden rounded-2xl border-border/70 bg-canvas px-4 py-0 shadow-xl sm:max-w-2xl [&>button]:top-3 [&>button]:right-3">
       <DialogHeader className="border-border/60 border-b py-5 pr-10">
         <DialogTitle>Edit details</DialogTitle>
         <DialogDescription>

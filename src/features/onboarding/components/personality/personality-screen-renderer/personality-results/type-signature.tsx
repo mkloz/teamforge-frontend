@@ -37,7 +37,7 @@ export function TypeSignature({ result, typeLabel }: TypeSignatureProps) {
           {index === typeLetters.length && (
             <motion.span
               variants={popDownItem}
-              className="type-signature-dash pb-5 font-black text-muted-foreground/60 leading-none sm:pb-6"
+              className="pb-5 font-black text-[2.4rem] text-muted-foreground/60 leading-none sm:pb-6 sm:text-[3rem]"
               aria-hidden="true"
             >
               -
@@ -47,7 +47,7 @@ export function TypeSignature({ result, typeLabel }: TypeSignatureProps) {
             variants={popDownItem}
             className="w-11 text-center sm:w-14"
           >
-            <span className="type-signature-letter block font-black text-ink leading-none tracking-tight">
+            <span className="block font-black text-[3rem] text-ink leading-none tracking-tight sm:text-[3.85rem]">
               {letter}
             </span>
             <span className="type-signature-label mt-1 block font-black text-muted-foreground uppercase tracking-widest">

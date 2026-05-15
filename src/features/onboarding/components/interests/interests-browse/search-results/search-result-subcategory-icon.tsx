@@ -9,7 +9,7 @@ export function SearchResultSubcategoryIcon({
   subcategoryId,
 }: SearchResultSubcategoryIconProps) {
   return createElement(getSubcategoryIcon(subcategoryId), {
-    className: "w-5 h-5",
+    className: "size-5",
     strokeWidth: 1.5,
   });
 }

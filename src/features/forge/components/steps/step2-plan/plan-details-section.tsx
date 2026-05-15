@@ -24,7 +24,7 @@ export function PlanDetailsSection({
         description="Add anything people should know before joining."
       />
 
-      <div className="space-y-2.5">
+      <div className="flex flex-col gap-2.5">
         <FieldLabel htmlFor="plan-description" hint="Optional">
           Description
         </FieldLabel>

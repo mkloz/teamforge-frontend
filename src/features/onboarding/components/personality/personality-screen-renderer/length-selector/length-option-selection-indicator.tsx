@@ -13,7 +13,7 @@ export function LengthOptionSelectionIndicator({
     <div
       className={cn(
         "flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300",
-        isSelected ? "border-forge-teal" : "border-slate-300",
+        isSelected ? "border-forge-teal" : "border-slate-muted/35",
       )}
     >
       <AnimatePresence mode="wait">

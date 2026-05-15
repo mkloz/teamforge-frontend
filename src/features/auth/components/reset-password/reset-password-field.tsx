@@ -27,7 +27,7 @@ export function ResetPasswordField({ label, name }: ResetPasswordFieldProps) {
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="space-y-0 text-left">
+        <FormItem className="gap-0 text-left">
           <FormLabel className="font-sans font-semibold text-foreground text-sm">
             {label}
           </FormLabel>

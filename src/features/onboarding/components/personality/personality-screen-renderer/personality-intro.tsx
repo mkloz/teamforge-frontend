@@ -61,7 +61,7 @@ export function PersonalityIntro({
 
       <motion.div
         variants={fadeUpItem}
-        className="mb-6 h-px w-full bg-slate-100 dark:bg-white/10"
+        className="mb-6 h-px w-full bg-muted dark:bg-white/10"
       />
 
       <motion.div
@@ -82,13 +82,13 @@ export function PersonalityIntro({
 
       <motion.div
         variants={fadeUpItem}
-        className="mt-auto flex w-full flex-col-reverse items-stretch gap-3 pt-6 min-[430px]:flex-row min-[430px]:items-center"
+        className="mt-auto flex w-full xs:flex-row flex-col-reverse xs:items-center items-stretch gap-3 pt-6"
       >
         <Button
           size="md"
           variant="outline"
           onClick={onBack}
-          className="w-full min-w-0 px-4 min-[430px]:w-auto min-[430px]:shrink-0"
+          className="w-full xs:w-auto min-w-0 xs:shrink-0 px-4"
         >
           <ArrowLeft size={16} strokeWidth={2.5} />
           <span className="truncate">{backLabel}</span>
@@ -96,7 +96,7 @@ export function PersonalityIntro({
         <Button
           size="md"
           onClick={onStart}
-          className="flex w-full min-w-0 items-center justify-center gap-2 min-[430px]:flex-1"
+          className="flex w-full min-w-0 xs:flex-1 items-center justify-center gap-2"
         >
           <span className="truncate">Let's find out</span>
           <ArrowRight size={16} strokeWidth={2.5} />

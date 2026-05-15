@@ -97,7 +97,7 @@ export function AddressSuggestionsPanel({
                   <MapPin size={13} strokeWidth={1.9} />
                 </span>
                 <span className="min-w-0">
-                  <span className="address-suggestion-main block truncate font-semibold text-ink leading-5">
+                  <span className="block truncate font-semibold text-ink text-sm leading-5">
                     {suggestion.structured_formatting?.main_text ??
                       suggestion.description}
                   </span>

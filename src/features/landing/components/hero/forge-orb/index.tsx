@@ -43,7 +43,7 @@ export function ForgeOrb() {
               ? { duration: 0 }
               : { duration: 20, repeat: Infinity, ease: "linear" }
           }
-          className="forge-orb-ring-bg absolute inset-0 rounded-full blur-subtle"
+          className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,rgba(13,148,136,0.25),rgba(13,148,136,0.08),rgba(13,148,136,0.15),rgba(13,148,136,0.25))] blur-subtle"
           aria-hidden="true"
         />
 
@@ -58,80 +58,102 @@ export function ForgeOrb() {
               ? { duration: 0 }
               : { duration: 4, repeat: Infinity, ease: "easeInOut" }
           }
-          className="forge-orb-core-bg absolute inset-3 rounded-full"
+          className="absolute inset-3 rounded-full bg-[radial-gradient(circle_at_40%_40%,rgba(13,148,136,0.15),rgba(9,9,9,0.95)_70%)]"
           aria-hidden="true"
         />
 
         <div
-          className="forge-orb-inner-shadow absolute inset-4 rounded-full border border-white/5 bg-hero-bg"
+          className="absolute inset-4 rounded-full border border-white/5 bg-hero-bg shadow-[inset_0_0_40px_rgba(13,148,136,0.05)]"
           aria-hidden="true"
         />
 
-        {/* The 4 MBTI Data Vectors (Comet Tails) */}
         {[0, 1, 2, 3].map((i) => {
-          const tailStyle: CSSProperties & Record<string, string> = {
-            "--tail-color-end": "rgba(13,148,136,0.85)",
-            "--tail-color-start": "rgba(13,148,136,0.15)",
-          };
-
           return (
-            <div
+            <DataVectorTail
               key={`tail-${i}`}
-              className="forge-orb-path-inset absolute"
               ref={(el) => {
                 tailRefs.current[i] = el;
               }}
-              aria-hidden="true"
-              style={tailStyle}
-            >
-              <div className="absolute inset-0">
-                <div className="forge-orb-ring-mask forge-orb-tail-bg absolute inset-0 rounded-full" />
-              </div>
-            </div>
+            />
           );
         })}
 
-        {/* The 4 MBTI Data Vectors (Dots) */}
         {[0, 1, 2, 3].map((i) => {
-          const dotStyle: CSSProperties & Record<string, string> = {
-            "--dot-color": "rgba(13,148,136,1)",
-            "--glow-color": "rgba(13,148,136,0.5)",
-            "--glow-size": "12px",
-          };
-
           return (
-            <div
+            <DataVectorDot
               key={`dot-${i}`}
-              className="forge-orb-path-inset absolute"
               ref={(el) => {
                 dotRefs.current[i] = el;
               }}
-              aria-hidden="true"
-              style={dotStyle}
-            >
-              <div className="absolute inset-0">
-                <div className="forge-orb-dot-shadow forge-orb-dot-transition absolute -top-1 left-1/2 size-2 -translate-x-1/2 rounded-full bg-(--dot-color) duration-100 ease-linear" />
-              </div>
-            </div>
+            />
           );
         })}
 
-        <div className="forge-orb-depth-30 pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="transform-[translateZ(30px)] pointer-events-none absolute inset-0 flex items-center justify-center">
           <TeamForgeLogo
-            className="forge-orb-logo-glow size-20 md:h-24 md:w-24"
+            className="filter-[drop-shadow(0_0_16px_rgba(245,158,11,0.25))] size-20 md:h-24 md:w-24"
             showBackground={false}
           />
         </div>
 
-        <div className="forge-orb-depth-40 absolute -top-10 -left-10 scale-70 sm:scale-85 md:-left-30 xl:top-4 xl:-left-44 xl:scale-100">
+        <div className="transform-[translateZ(40px)] absolute -top-10 -left-10 scale-70 sm:scale-85 md:-left-30 xl:top-4 xl:-left-44 xl:scale-100">
           <MbtiCard />
         </div>
-        <div className="forge-orb-depth-60 absolute -top-12 -right-8 scale-70 sm:scale-85 md:-right-20 xl:-top-16 xl:-right-30 xl:scale-100">
+        <div className="transform-[translateZ(60px)] absolute -top-12 -right-8 scale-70 sm:scale-85 md:-right-20 xl:-top-16 xl:-right-30 xl:scale-100">
           <GroupCard />
         </div>
-        <div className="forge-orb-depth-50 absolute right-6 -bottom-8 scale-70 sm:scale-85 md:-right-10 xl:-right-20 xl:-bottom-16 xl:scale-100">
+        <div className="transform-[translateZ(50px)] absolute right-6 -bottom-8 scale-70 sm:scale-85 md:-right-10 xl:-right-20 xl:-bottom-16 xl:scale-100">
           <TrustCard />
         </div>
+      </div>
+    </div>
+  );
+}
+
+function DataVectorTail({
+  ref,
+}: {
+  ref: (node: HTMLDivElement | null) => void;
+}) {
+  const tailStyle: CSSProperties & Record<string, string> = {
+    "--tail-color-end": "rgba(13,148,136,0.85)",
+    "--tail-color-start": "rgba(13,148,136,0.15)",
+  };
+
+  return (
+    <div
+      ref={ref}
+      className="absolute inset-[8%]"
+      aria-hidden="true"
+      style={tailStyle}
+    >
+      <div className="absolute inset-0">
+        <div className="mask-[radial-gradient(closest-side,transparent_calc(100%-2px),black_calc(100%-1px))] absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,transparent_0%,transparent_70%,var(--tail-color-start)_85%,var(--tail-color-end)_100%)] [-webkit-mask-image:radial-gradient(closest-side,transparent_calc(100%-2px),black_calc(100%-1px))]" />
+      </div>
+    </div>
+  );
+}
+
+function DataVectorDot({
+  ref,
+}: {
+  ref: (node: HTMLDivElement | null) => void;
+}) {
+  const dotStyle: CSSProperties & Record<string, string> = {
+    "--dot-color": "rgba(13,148,136,1)",
+    "--glow-color": "rgba(13,148,136,0.5)",
+    "--glow-size": "12px",
+  };
+
+  return (
+    <div
+      ref={ref}
+      className="absolute inset-[8%]"
+      aria-hidden="true"
+      style={dotStyle}
+    >
+      <div className="absolute inset-0">
+        <div className="absolute -top-1 left-1/2 size-2 -translate-x-1/2 rounded-full bg-(--dot-color) shadow-[0_0_var(--glow-size)_2px_var(--glow-color)] transition-[background-color,box-shadow] duration-100 ease-linear" />
       </div>
     </div>
   );

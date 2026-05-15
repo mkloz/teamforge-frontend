@@ -17,7 +17,7 @@ export function SettingsPageLoading({
     <div
       aria-busy="true"
       aria-label="Loading settings"
-      className="lg:settings-page-grid mx-auto grid w-full max-w-6xl gap-7 px-4 py-5 md:px-8 lg:gap-12 lg:py-10 xl:gap-18"
+      className="mx-auto grid w-full max-w-6xl gap-7 px-4 py-5 md:px-8 lg:grid-cols-[14rem_minmax(0,56rem)] lg:gap-12 lg:py-10 xl:gap-18"
       role="status"
     >
       <span className="sr-only">Loading settings</span>
@@ -95,7 +95,7 @@ function SettingsSectionSkeleton({
 function AccountSectionSkeleton() {
   return (
     <div className="flex flex-col gap-9">
-      <section className="lg:account-settings-grid grid gap-8 lg:items-start">
+      <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-start">
         <div className="flex flex-col gap-5">
           <div className="flex items-start gap-5">
             <Skeleton
@@ -189,7 +189,7 @@ function AccountSectionSkeleton() {
       <section className="border-border border-t pt-6">
         <Skeleton className="h-5 w-16" />
         <Skeleton className="mt-2 h-4 w-full max-w-2xl" />
-        <div className="lg:settings-profile-grid mt-5 grid gap-5 lg:items-start">
+        <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_15rem] lg:items-start">
           <div>
             <div className="flex items-center justify-between gap-3">
               <Skeleton className="h-3 w-20" />
@@ -227,7 +227,7 @@ function MatchingSectionSkeleton() {
         </div>
       </div>
 
-      <div className="lg:matching-settings-grid grid gap-0 border-border border-t lg:gap-8">
+      <div className="grid gap-0 border-border border-t lg:grid-cols-[1fr_1.4fr] lg:gap-8">
         <PreferenceRowSkeleton tone="teal" />
         <div className="border-border border-b py-5 lg:border-b-0">
           <Skeleton className="h-4 w-40" />

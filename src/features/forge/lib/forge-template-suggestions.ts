@@ -53,6 +53,7 @@ export interface SuggestedTemplate {
   id: string;
   categoryId: string;
   categoryLabel: string;
+  coverImage: string | null;
   title: string;
   description: string;
   badge: string;
@@ -125,6 +126,16 @@ function resolveTemplateCoverImage(
     PLAN_COVER_PRESET_IDS.length;
 
   return PLAN_COVER_PRESET_IDS[presetIndex] ?? null;
+}
+
+function resolveTemplatePreviewCoverImage(seed: TemplateSeed) {
+  const normalizedSource = seed.coverImageSource?.trim();
+
+  if (!normalizedSource) {
+    return null;
+  }
+
+  return normalizedSource;
 }
 
 function addWeightedTrait(
@@ -699,6 +710,7 @@ export function buildTemplateSuggestions(
       id: `${category.id}-${seed.id}`,
       categoryId: category.id,
       categoryLabel: category.label,
+      coverImage: resolveTemplatePreviewCoverImage(seed),
       title: seed.title,
       description: seed.description,
       badge: getSuggestionBadge(item, index, topScore, hasPersonalSignals),

@@ -38,7 +38,7 @@ export function DateTimeSection({
       />
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div className="space-y-2.5">
+        <div className="flex flex-col gap-2.5">
           <FieldLabel htmlFor="plan-date">Date required</FieldLabel>
           <DateInput
             id="plan-date"
@@ -48,7 +48,7 @@ export function DateTimeSection({
           />
         </div>
 
-        <div className="space-y-2.5">
+        <div className="flex flex-col gap-2.5">
           <FieldLabel htmlFor="plan-time">Time required</FieldLabel>
           <TimeInput
             id="plan-time"

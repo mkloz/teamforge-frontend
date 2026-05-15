@@ -16,17 +16,16 @@ export function AlgoLine({ node, phase, cx, cy, size }: AlgoLineProps) {
   if (node.type === "center") return null;
 
   const getLineProps = () => {
-    if (phase === "idle")
-      return { opacity: 0, stroke: "var(--color-forge-teal)", width: 0.8 };
+    if (phase === "idle") return { opacity: 0, stroke: "#0D9488", width: 0.8 };
     if (node.type === "rejected")
       return { opacity: 0.02, stroke: "#374151", width: 0.5 };
     if (node.type === "selected")
       return {
         opacity: 0.65,
-        stroke: "var(--color-spark-amber)",
+        stroke: "#F59E0B",
         width: 1.8,
       };
-    return { opacity: 0.15, stroke: "var(--color-forge-teal)", width: 0.8 };
+    return { opacity: 0.15, stroke: "#0D9488", width: 0.8 };
   };
 
   const lp = getLineProps();

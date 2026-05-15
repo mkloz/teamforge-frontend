@@ -22,7 +22,7 @@ export function ExtensionSection({
       variants={fadeUpItem}
       className="mb-5 flex w-full flex-col items-start text-left"
     >
-      <div className="mb-5 h-px w-full bg-slate-200/60 sm:mb-6 dark:bg-white/10" />
+      <div className="mb-5 h-px w-full bg-muted/60 sm:mb-6 dark:bg-white/10" />
 
       <h3 className="mb-1.5 flex items-center gap-2 font-bold font-sans text-base text-ink">
         Want a sharper result?

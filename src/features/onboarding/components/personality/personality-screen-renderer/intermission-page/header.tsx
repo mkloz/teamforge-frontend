@@ -25,7 +25,7 @@ export function IntermissionHeader({
           min={0}
           value={answeredCount}
           gaugePrimaryColor="var(--color-forge-teal)"
-          gaugeSecondaryColor="rgba(148, 163, 184, 0.22)"
+          gaugeSecondaryColor="color-mix(in srgb, var(--color-slate-muted) 22%, transparent)"
           className="size-full text-transparent"
         />
         <div className="absolute inset-0 flex items-center justify-center pr-4 sm:pr-7">
@@ -35,7 +35,7 @@ export function IntermissionHeader({
         </div>
       </div>
 
-      <div className="flex h-16 flex-col items-start justify-center border-slate-200/80 border-l pl-4 sm:h-22 sm:pl-7 dark:border-white/10">
+      <div className="flex h-16 flex-col items-start justify-center border-border/80 border-l pl-4 sm:h-22 sm:pl-7 dark:border-white/10">
         <span className="mb-1 font-black font-sans text-forge-teal/80 text-xs uppercase tracking-widest">
           Quick Break
         </span>

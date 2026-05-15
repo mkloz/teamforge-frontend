@@ -7,7 +7,7 @@ export function CompletionBlueprintBackground() {
         <VoronoiCatalyst progress={1} rotationDegrees={0} />
       </div>
       <div className="absolute inset-0 bg-hero-bg/62" />
-      <div className="completion-blueprint-scan completion-blueprint-scan-size pointer-events-none absolute inset-0" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(color-mix(in_srgb,var(--color-forge-teal)_9%,transparent)_1px,transparent_1px),linear-gradient(90deg,color-mix(in_srgb,var(--color-forge-teal)_9%,transparent)_1px,transparent_1px)] bg-size-[2rem_2rem]" />
     </div>
   );
 }

@@ -23,12 +23,8 @@ export function CtaSection() {
     >
       <div
         ref={glowRef}
-        className="pointer-events-none absolute inset-0 transition-opacity duration-500"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(13,148,136,0.15)_0%,transparent_70%)] opacity-0 transition-opacity duration-500"
         aria-hidden="true"
-        style={{
-          opacity: 0,
-          background: `radial-gradient(circle at center, rgba(13, 148, 136, 0.15) 0%, transparent 70%)`,
-        }}
       />
       <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
         <motion.div

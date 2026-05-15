@@ -30,7 +30,7 @@ export function EventTitleSection({
         description="Name the specific hangout you want to organise."
       />
 
-      <div className="space-y-2.5">
+      <div className="flex flex-col gap-2.5">
         <FieldLabel
           htmlFor="plan-name"
           required

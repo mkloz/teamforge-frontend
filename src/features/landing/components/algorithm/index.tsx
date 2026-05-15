@@ -16,7 +16,7 @@ export function AlgorithmSection() {
     >
       <div className="absolute inset-0 z-0">
         <div
-          className="algorithm-halo pointer-events-none absolute inset-0"
+          className="pointer-events-none absolute inset-0 [background:radial-gradient(circle_at_50%_30%,rgba(13,148,136,0.16),transparent_36%),radial-gradient(circle_at_72%_72%,rgba(245,158,11,0.12),transparent_34%)]"
           aria-hidden="true"
         />
         <Particles

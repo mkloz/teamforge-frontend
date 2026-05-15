@@ -39,12 +39,16 @@ export const UnifiedConversationListItem = memo(
         className={cn(
           "group/item relative flex w-full select-none items-center text-left outline-none transition duration-200",
           isCompact ? "gap-2.5 px-3 py-2" : "gap-3.5 px-4 py-3.5",
-          "conversation-item-accent",
-          isSelected
-            ? "bg-muted/60 before:opacity-100"
-            : "before:opacity-0 hover:bg-muted/30 hover:before:opacity-40",
+          isSelected ? "bg-muted/60" : "hover:bg-muted/30",
         )}
       >
+        <span
+          aria-hidden="true"
+          className={cn(
+            "absolute top-0 left-0 h-full w-1 bg-forge-teal opacity-0 transition-opacity duration-300",
+            isSelected ? "opacity-100" : "group-hover/item:opacity-40",
+          )}
+        />
         <AvatarSection item={item} isGroup={isGroup} isCompact={isCompact} />
         <ContentSection
           item={item}

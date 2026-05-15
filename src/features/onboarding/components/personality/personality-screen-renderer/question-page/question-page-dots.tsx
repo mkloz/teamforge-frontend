@@ -21,7 +21,7 @@ export function QuestionPageDots({
             "h-0.75 flex-1 rounded-full transition-colors duration-300",
             answeredQuestionIds.has(question.id)
               ? "bg-forge-teal"
-              : "bg-slate-500/15",
+              : "bg-slate-muted/15",
           )}
         />
       ))}

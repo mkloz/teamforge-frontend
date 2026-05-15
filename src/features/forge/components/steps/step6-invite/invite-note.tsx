@@ -16,7 +16,7 @@ export function InviteNote({ forgeMode, inviteeCount }: InviteNoteProps) {
       : `${inviteeCount} selected friends`;
 
   return (
-    <section className="space-y-3 border-border/25 border-t pt-4">
+    <section className="flex flex-col gap-3 border-border/25 border-t pt-4">
       <div className="flex items-center justify-between gap-3 px-0.5">
         <div className="min-w-0">
           <p className="font-semibold text-foreground text-sm leading-none">

@@ -28,11 +28,11 @@ export function QuestionCard({
         "relative w-full rounded-xl border border-border bg-card p-4 shadow-xs transition-all duration-300",
         answered
           ? "border-forge-teal/30 bg-forge-teal/6 shadow-sm"
-          : "hover:shadow-sm active:bg-slate-50/50 hover:sm:shadow-md active:dark:bg-white/5",
+          : "hover:shadow-sm active:bg-muted/50 hover:sm:shadow-md active:dark:bg-white/5",
       )}
     >
       <div className="mb-2.5 flex h-5 items-center justify-between sm:mb-3 sm:h-6">
-        <span className="inline-flex items-center rounded-full bg-slate-500/10 px-2 py-0.5 font-bold font-sans text-muted-foreground text-nano uppercase tracking-widest sm:px-2.5 sm:py-1">
+        <span className="inline-flex items-center rounded-full bg-slate-muted/10 px-2 py-0.5 font-bold font-sans text-muted-foreground text-nano uppercase tracking-widest sm:px-2.5 sm:py-1">
           Q {index} of {totalQuestions}
         </span>
 

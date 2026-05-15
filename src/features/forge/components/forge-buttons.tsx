@@ -36,7 +36,7 @@ export function PrimaryButton({
 
 export function ManualForgeButton({ onClick }: { onClick: () => void }) {
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       <Button
         onClick={onClick}
         variant="secondary"
@@ -58,7 +58,7 @@ export function ManualForgeButton({ onClick }: { onClick: () => void }) {
 
 export function AutoForgeButton({ onClick }: { onClick: () => void }) {
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       <Button
         onClick={onClick}
         variant="primary"

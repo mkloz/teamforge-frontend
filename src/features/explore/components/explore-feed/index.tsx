@@ -134,7 +134,7 @@ function ExploreGroupPlanCardSkeleton({
       <div className="relative isolate z-10 flex w-full overflow-hidden rounded-xl border-2 border-border bg-card md:min-h-64 md:flex-row">
         <Skeleton
           shape="square"
-          className="h-42 shrink-0 rounded-none border-border border-b-2 md:h-auto md:w-72 md:border-r-2 md:border-b-0"
+          className="h-42 shrink-0 rounded-lg border-border border-b-2 md:h-auto md:w-72 md:border-r-2 md:border-b-0"
           tone={tone}
         />
         <div className="flex min-w-0 grow flex-col bg-canvas p-4 md:p-4.5">

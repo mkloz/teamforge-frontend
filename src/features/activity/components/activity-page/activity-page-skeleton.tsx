@@ -130,7 +130,7 @@ function ActivityConversationSkeleton() {
             </div>
           </div>
 
-          <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-hidden bg-forge-teal/5 bg-noise px-4 py-5">
+          <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-hidden bg-[radial-gradient(circle_at_1px_1px,color-mix(in_srgb,var(--color-ink)_22%,transparent)_1px,transparent_0)] bg-forge-teal/5 bg-size-[14px_14px] px-4 py-5">
             <div className="mx-auto">
               <Skeleton shape="pill" className="h-7 w-20" />
             </div>
@@ -205,7 +205,7 @@ function ActivityDetailSkeleton() {
         <div className="relative h-44 overflow-hidden border-border border-b">
           <Skeleton
             shape="square"
-            className="absolute inset-0 rounded-none"
+            className="absolute inset-0 rounded-lg"
             tone="teal"
           />
           <div className="absolute right-5 bottom-5 left-5 flex items-end gap-4">

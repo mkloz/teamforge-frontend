@@ -12,7 +12,7 @@ export function TimeFilter() {
   }
 
   return (
-    <section className="space-y-2">
+    <section className="flex flex-col gap-2">
       <h4 className="pl-1 font-bold text-foreground text-sm tracking-tight">
         Time
       </h4>

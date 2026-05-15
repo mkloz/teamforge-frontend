@@ -27,7 +27,7 @@ interface StepOtpProps {
 }
 
 const OTP_SLOT_CLASS =
-  "h-12 w-10 sm:w-12 max-w-[48px] rounded-xl border border-border bg-white font-mono text-lg hover:border-forge-teal/40 transition-all duration-200 focus-within:border-forge-teal focus-within:ring-2 focus-within:ring-forge-teal/15";
+  "h-12 w-10 max-w-12 rounded-xl border border-border bg-card font-mono text-lg transition-all duration-200 hover:border-forge-teal/40 focus-within:border-forge-teal focus-within:ring-2 focus-within:ring-forge-teal/15 sm:w-12";
 
 export function StepOtp({
   onBack,
@@ -53,7 +53,7 @@ export function StepOtp({
         control={control}
         name="otp"
         render={({ field }) => (
-          <FormItem className="mx-auto w-full space-y-3 py-2">
+          <FormItem className="mx-auto w-full gap-3 py-2">
             <FormLabel className="flex w-full justify-center text-center font-sans font-semibold text-ink text-sm">
               Verification Code
             </FormLabel>
@@ -75,7 +75,7 @@ export function StepOtp({
                   ))}
                 </InputOTPGroup>
 
-                <div className="flex items-center justify-center px-2 font-medium text-slate-400">
+                <div className="flex items-center justify-center px-2 font-medium text-slate-muted/70">
                   -
                 </div>
 

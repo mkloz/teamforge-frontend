@@ -69,7 +69,7 @@ export function MatchingSettingsSection({
         </div>
       </div>
 
-      <div className="lg:matching-settings-grid grid gap-0 border-border border-t lg:gap-8">
+      <div className="grid gap-0 border-border border-t lg:grid-cols-[1fr_1.4fr] lg:gap-8">
         <NotificationPreferenceRow
           checked={notificationPreferences?.autoMatchingEnabled ?? true}
           title="Automatic group forming"
