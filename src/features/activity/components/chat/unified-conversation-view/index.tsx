@@ -105,7 +105,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
   }
 
   return (
-    <div className="fade-in flex h-full animate-in flex-col bg-canvas/40 duration-300">
+    <div className="flex h-full flex-col bg-canvas/40">
       <UnifiedChatHeader
         kind={kind}
         title={headerProps.title}

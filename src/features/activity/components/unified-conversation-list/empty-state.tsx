@@ -29,7 +29,7 @@ export const EmptyState = memo(function EmptyState({
   });
 
   return (
-    <div className="fade-in slide-in-from-bottom-2 flex animate-in flex-col items-center justify-center px-6 py-16 text-center">
+    <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
       {artwork === "filtered" ? (
         <EmptyConversationsFilteredVisual className="mx-auto w-40 text-foreground" />
       ) : (

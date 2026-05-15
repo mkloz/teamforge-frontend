@@ -1,4 +1,3 @@
-import { AnimatePresence } from "framer-motion";
 import { type RefObject, useRef } from "react";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import type {
@@ -138,45 +137,41 @@ export function AttentionQueueView({
         {actionError ? <ActionErrorBanner error={actionError} /> : null}
         {!shouldShowSkeleton && queueSize === 0 ? <EmptyQueueItem /> : null}
 
-        <AnimatePresence>
-          {viewer.nextStep ? (
-            <ProfileStepQueueItem nextStep={viewer.nextStep} />
-          ) : null}
+        {viewer.nextStep ? (
+          <ProfileStepQueueItem nextStep={viewer.nextStep} />
+        ) : null}
 
-          {visibleInvitations.slice(0, 2).map((invite, index) => (
-            <InvitationQueueItem
-              key={invite.id}
-              invite={invite}
-              index={index}
-              isFocused={focusedInviteId === invite.id}
-              acceptingInviteId={acceptingInviteId}
-              decliningInviteId={decliningInviteId}
-              isAccepting={isAcceptingInvite}
-              isDeclining={isDecliningInvite}
-              onAccept={acceptVisibleInvite}
-              onDecline={declineVisibleInvite}
-            />
-          ))}
+        {visibleInvitations.slice(0, 2).map((invite) => (
+          <InvitationQueueItem
+            key={invite.id}
+            invite={invite}
+            isFocused={focusedInviteId === invite.id}
+            acceptingInviteId={acceptingInviteId}
+            decliningInviteId={decliningInviteId}
+            isAccepting={isAcceptingInvite}
+            isDeclining={isDecliningInvite}
+            onAccept={acceptVisibleInvite}
+            onDecline={declineVisibleInvite}
+          />
+        ))}
 
-          {visibleRequests.slice(0, 2).map((request, index) => (
-            <FriendRequestQueueItem
-              key={request.requesterId}
-              request={request}
-              index={index}
-              isFocused={focusedRequestId === request.requesterId}
-              acceptingRequestId={acceptingRequestId}
-              decliningRequestId={decliningRequestId}
-              isAccepting={isAccepting}
-              isDeclining={isDeclining}
-              onAccept={acceptVisibleRequest}
-              onDecline={declineVisibleRequest}
-            />
-          ))}
+        {visibleRequests.slice(0, 2).map((request) => (
+          <FriendRequestQueueItem
+            key={request.requesterId}
+            request={request}
+            isFocused={focusedRequestId === request.requesterId}
+            acceptingRequestId={acceptingRequestId}
+            decliningRequestId={decliningRequestId}
+            isAccepting={isAccepting}
+            isDeclining={isDeclining}
+            onAccept={acceptVisibleRequest}
+            onDecline={declineVisibleRequest}
+          />
+        ))}
 
-          {proposedPlans.map((group) => (
-            <ProposedPlanQueueItem key={group.plan.id} group={group} />
-          ))}
-        </AnimatePresence>
+        {proposedPlans.map((group) => (
+          <ProposedPlanQueueItem key={group.plan.id} group={group} />
+        ))}
 
         {queueSize > 4 ? <SeeRestButton /> : null}
       </ul>

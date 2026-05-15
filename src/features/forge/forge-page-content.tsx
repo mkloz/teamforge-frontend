@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
@@ -58,14 +57,7 @@ export function ForgePageShell({
 
 export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
   return (
-    <motion.div
-      key="forge-introduction"
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.25, ease: "easeOut" }}
-      className="flex flex-col gap-8 py-6 md:py-10"
-    >
+    <div className="flex flex-col gap-8 py-6 md:py-10">
       <ForgeHero onForgeClick={onForgeClick} />
 
       <section
@@ -149,6 +141,6 @@ export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
           </Button>
         </div>
       </section>
-    </motion.div>
+    </div>
   );
 }

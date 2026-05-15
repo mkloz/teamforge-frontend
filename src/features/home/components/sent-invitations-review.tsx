@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { BellRing } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { Button } from "@/shared/components/ui/button";
@@ -66,11 +65,7 @@ export function SentInvitationsReview({
       </div>
 
       {focusedInvite ? (
-        <motion.article
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-4 rounded-xl border border-forge-teal/40 bg-forge-teal/5 p-4"
-        >
+        <article className="mt-4 rounded-xl border border-forge-teal/40 bg-forge-teal/5 p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="font-black text-muted-foreground text-xs uppercase tracking-widest">
@@ -98,7 +93,7 @@ export function SentInvitationsReview({
           <div className="mt-4 rounded-xl border border-border/70 bg-canvas/70 px-4 py-3 font-medium text-muted-foreground text-sm">
             {getInviteStatusSentence(focusedInvite)}
           </div>
-        </motion.article>
+        </article>
       ) : (
         <div className="mt-4 rounded-xl border border-border/70 bg-canvas/70 px-4 py-5 font-medium text-muted-foreground text-sm">
           That invite is no longer available in your recent sent history.

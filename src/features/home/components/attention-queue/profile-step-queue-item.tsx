@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 
 import type { HomeViewer } from "@/features/home/lib/home-contract";
@@ -14,11 +13,8 @@ export function ProfileStepQueueItem({
   const navigation = getProfileStepNavigation(nextStep);
 
   return (
-    <motion.li
+    <li
       key="profile-step"
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
       className="group border-border/55 border-b transition-colors duration-150 last:border-b-0 hover:bg-forge-teal/5"
     >
       <Link
@@ -44,6 +40,6 @@ export function ProfileStepQueueItem({
           <ArrowRight className="size-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
         </span>
       </Link>
-    </motion.li>
+    </li>
   );
 }

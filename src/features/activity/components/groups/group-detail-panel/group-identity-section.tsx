@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import dayjs from "dayjs";
-import { motion } from "framer-motion";
 import {
   ArrowRight,
   CalendarDays,
@@ -76,12 +75,7 @@ export function GroupIdentitySection({
   return (
     <section className="relative -mt-12 flex flex-col gap-4">
       <div className="flex items-end gap-4">
-        <motion.div
-          initial={{ scale: 0.88, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.12, duration: 0.32, ease: "easeOut" }}
-          className="group pointer-events-auto shrink-0"
-        >
+        <div className="group pointer-events-auto shrink-0">
           <Avatar
             src={avatarSrc}
             name={displayName}
@@ -90,7 +84,7 @@ export function GroupIdentitySection({
             className="size-20 rounded-xl bg-muted shadow-lg ring-4 ring-canvas"
             imageClassName="transition-transform duration-500 group-hover:scale-105"
           />
-        </motion.div>
+        </div>
 
         <div className="min-w-0 flex-1 pb-1">
           <div className="flex min-w-0 items-start gap-2">

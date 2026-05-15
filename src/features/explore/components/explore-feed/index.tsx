@@ -1,7 +1,6 @@
 "use client";
 
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 import { SlidersHorizontal, UsersRound } from "lucide-react";
 import { EmptyExploreFilteredVisual } from "@/assets/empty-state/empty-explore-filtered";
 import { EmptyExploreOpenVisual } from "@/assets/empty-state/empty-explore-open";
@@ -188,11 +187,7 @@ function ExploreFeedEmpty({
   resetFilters: () => void;
 }) {
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="px-4 py-16 text-center"
-    >
+    <section className="px-4 py-16 text-center">
       <div className="mx-auto flex max-w-lg flex-col items-center gap-6">
         {isFiltered ? (
           <EmptyExploreFilteredVisual className="w-40 text-foreground" />
@@ -231,6 +226,6 @@ function ExploreFeedEmpty({
           </Button>
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 }

@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Check, Copy, Share2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -47,12 +46,7 @@ export function FriendsInvitation() {
   };
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: 0.1 }}
-      className="flex w-full flex-col gap-4"
-    >
+    <section className="flex w-full flex-col gap-4">
       <HomeSectionHeading
         title="Bring someone in"
         description="For the group that needs one familiar face."
@@ -127,6 +121,6 @@ export function FriendsInvitation() {
           </Button>
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 }

@@ -34,7 +34,7 @@ export function Step2Templates({
   });
 
   return (
-    <div className="fade-in slide-in-from-bottom-2 flex animate-in flex-col gap-4 pb-6 duration-300">
+    <div className="flex flex-col gap-4 pb-6">
       <div className="flex items-start justify-between gap-3 px-0.5">
         <div className="flex min-w-0 items-start gap-3">
           <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10 text-forge-teal">

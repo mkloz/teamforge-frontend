@@ -78,7 +78,7 @@ export function ParticipantsSection({
         <Button
           variant="secondary"
           onClick={onReforge}
-          className="zoom-in-95 w-full animate-in py-5 font-semibold"
+          className="w-full py-5 font-semibold"
         >
           <RefreshCw size={15} />
           Try another set

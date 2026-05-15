@@ -1,4 +1,3 @@
-import { AnimatePresence } from "framer-motion";
 import { memo } from "react";
 import { useSearchHeaderFade } from "@/features/activity/hooks/use-search-header-fade";
 import type {
@@ -100,17 +99,15 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
               showExploreCta={!searchQuery && activeFilter !== "direct"}
             />
           ) : (
-            <AnimatePresence mode="popLayout" initial={false}>
-              {items.map((item) => (
-                <UnifiedConversationListItem
-                  key={`${item.kind}-${item.id}`}
-                  item={item}
-                  isSelected={item.id === selectedId}
-                  density={sidebarDensity}
-                  onSelect={() => onSelectItem(item.id, item.kind)}
-                />
-              ))}
-            </AnimatePresence>
+            items.map((item) => (
+              <UnifiedConversationListItem
+                key={`${item.kind}-${item.id}`}
+                item={item}
+                isSelected={item.id === selectedId}
+                density={sidebarDensity}
+                onSelect={() => onSelectItem(item.id, item.kind)}
+              />
+            ))
           )}
         </div>
       </div>

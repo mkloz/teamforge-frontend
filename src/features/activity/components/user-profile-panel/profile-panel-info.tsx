@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 import {
   ChevronLeft,
   ExternalLink,
@@ -219,12 +218,7 @@ function PanelProfileAvatar({
   src: string | null;
 }) {
   return (
-    <motion.div
-      initial={{ scale: 0.92, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.28, ease: "easeOut" }}
-      className="group relative shrink-0"
-    >
+    <div className="group relative shrink-0">
       <div className="absolute inset-0 rounded-full bg-spark-amber/20 opacity-0 blur-xl transition-opacity duration-700 group-hover:opacity-100" />
       <div className="absolute -inset-1.5 rounded-full border-2 border-forge-teal/30 opacity-0 transition duration-700 group-hover:rotate-180 group-hover:scale-105 group-hover:opacity-100" />
       <div className="relative z-10 size-20 transition-transform duration-300 group-hover:scale-105">
@@ -241,7 +235,7 @@ function PanelProfileAvatar({
           sizeClassName="size-4"
         />
       </div>
-    </motion.div>
+    </div>
   );
 }
 

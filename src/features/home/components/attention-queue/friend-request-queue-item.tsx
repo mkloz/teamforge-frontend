@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 import { ArrowRight, Check, UserPlus, X } from "lucide-react";
 
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
@@ -11,7 +10,6 @@ import type { AttentionQueueFriendRequest } from "./attention-queue.types";
 
 interface FriendRequestQueueItemProps {
   request: AttentionQueueFriendRequest;
-  index: number;
   isFocused: boolean;
   acceptingRequestId: string | null;
   decliningRequestId: string | null;
@@ -24,7 +22,6 @@ interface FriendRequestQueueItemProps {
 export function FriendRequestQueueItem({
   acceptingRequestId,
   decliningRequestId,
-  index,
   isAccepting,
   isDeclining,
   isFocused,
@@ -35,11 +32,7 @@ export function FriendRequestQueueItem({
   const profileNavigation = buildProfileNavigation(request.counterpart.id);
 
   return (
-    <motion.li
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, x: 16 }}
-      transition={{ delay: index * 0.04 }}
+    <li
       className={cn(
         "group flex min-w-0 items-center gap-3 border-border/55 border-b px-1 py-4 transition-colors duration-150 last:border-b-0 sm:px-3",
         isFocused ? "bg-forge-teal/8" : "hover:bg-forge-teal/5",
@@ -100,7 +93,7 @@ export function FriendRequestQueueItem({
           <X className="size-3.5" />
         </Button>
       </div>
-    </motion.li>
+    </li>
   );
 }
 

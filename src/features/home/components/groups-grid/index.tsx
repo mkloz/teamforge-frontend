@@ -63,7 +63,7 @@ export function GroupsGridView({
       <ul aria-label="Your groups" className="flex list-none flex-col p-0">
         {visibleGroups.length > 0 ? (
           <>
-            {visibleGroups.map((group, i) => (
+            {visibleGroups.map((group) => (
               <GroupRow
                 key={group.id}
                 group={group}
@@ -71,10 +71,9 @@ export function GroupsGridView({
                   unreadGroupIds.has(group.id) ||
                   (group.plan ? unreadGroupIds.has(group.plan.id) : false)
                 }
-                index={i}
               />
             ))}
-            <BrowseGroupsRow delay={visibleGroups.length * 0.05 + 0.1} />
+            <BrowseGroupsRow />
           </>
         ) : (
           <GroupsGridEmpty />

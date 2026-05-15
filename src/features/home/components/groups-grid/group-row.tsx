@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 import { ArrowRight, MessageCircle, Users } from "lucide-react";
 import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
 import { Avatar } from "@/shared/components/common/avatar";
@@ -9,7 +8,6 @@ import type { GroupApi } from "@/shared/schemas";
 interface GroupRowProps {
   group: GroupApi;
   hasNotification?: boolean;
-  index: number;
 }
 
 function formatRelativeTime(value: string) {
@@ -41,23 +39,11 @@ function formatRelativeTime(value: string) {
   return `${Math.floor(diffDays / 7)}w ago`;
 }
 
-export function GroupRow({
-  group,
-  hasNotification = false,
-  index,
-}: GroupRowProps) {
+export function GroupRow({ group, hasNotification = false }: GroupRowProps) {
   const lastActivity = formatRelativeTime(group.updatedAt);
 
   return (
-    <motion.li
-      initial={{ opacity: 0, x: -8 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{
-        duration: 0.3,
-        delay: index * 0.05,
-        ease: [0.23, 1, 0.32, 1],
-      }}
-    >
+    <li>
       <Link
         {...buildActivityGroupHubNavigation(group.id)}
         aria-label={`${group.name}. Last active ${lastActivity}.`}
@@ -111,6 +97,6 @@ export function GroupRow({
           )}
         </div>
       </Link>
-    </motion.li>
+    </li>
   );
 }

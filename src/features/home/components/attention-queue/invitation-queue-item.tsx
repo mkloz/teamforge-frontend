@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 import { ArrowRight, Check, X } from "lucide-react";
 
 import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
@@ -11,7 +10,6 @@ import type { AttentionQueueInvitation } from "./attention-queue.types";
 
 interface InvitationQueueItemProps {
   invite: AttentionQueueInvitation;
-  index: number;
   isFocused: boolean;
   acceptingInviteId: string | null;
   decliningInviteId: string | null;
@@ -24,7 +22,6 @@ interface InvitationQueueItemProps {
 export function InvitationQueueItem({
   acceptingInviteId,
   decliningInviteId,
-  index,
   invite,
   isAccepting,
   isDeclining,
@@ -37,11 +34,7 @@ export function InvitationQueueItem({
   });
 
   return (
-    <motion.li
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, x: 16 }}
-      transition={{ delay: index * 0.04 }}
+    <li
       className={cn(
         "group flex min-w-0 items-center gap-3 border-border/55 border-b px-1 py-4 transition-colors duration-150 last:border-b-0 sm:px-3",
         isFocused ? "bg-forge-teal/8" : "hover:bg-forge-teal/5",
@@ -96,6 +89,6 @@ export function InvitationQueueItem({
           <X className="size-3.5" />
         </Button>
       </div>
-    </motion.li>
+    </li>
   );
 }

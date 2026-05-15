@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { memo } from "react";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
@@ -26,16 +25,12 @@ export const UnifiedConversationListItem = memo(
     const isCompact = density === "compact";
 
     return (
-      <motion.button
+      <button
         type="button"
         onClick={onSelect}
         role="option"
         aria-selected={isSelected}
         tabIndex={0}
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.2, ease: "easeOut" }}
         className={cn(
           "group/item relative flex w-full select-none items-center text-left outline-none transition duration-200",
           isCompact ? "gap-2.5 px-3 py-2" : "gap-3.5 px-4 py-3.5",
@@ -56,7 +51,7 @@ export const UnifiedConversationListItem = memo(
           isSelected={isSelected}
           isCompact={isCompact}
         />
-      </motion.button>
+      </button>
     );
   },
 );

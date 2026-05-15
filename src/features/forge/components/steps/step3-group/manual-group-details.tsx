@@ -17,7 +17,7 @@ export function ManualGroupDetails({
   const selectedInviteeCount = manualInviteeIds.length;
 
   return (
-    <div className="zoom-in-95 fade-in flex animate-in flex-col gap-4 duration-300">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3 rounded-lg border border-border/35 bg-card/65 px-3 py-3">
         <div className="flex items-center justify-between gap-3">
           <div>

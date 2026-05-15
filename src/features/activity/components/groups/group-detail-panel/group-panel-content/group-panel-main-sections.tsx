@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import type {
   ActivityParticipant,
   Group,
@@ -14,10 +13,6 @@ import { MembersSection } from "../members-section";
 import { PinnedMessagesSection } from "../pinned-messages-section";
 import { PlanHistorySection } from "../plan-history-section";
 import { PlanSection } from "../plan-section";
-import {
-  groupPanelContainerVariants,
-  groupPanelItemVariants,
-} from "./group-panel-animations";
 
 interface GroupPanelMainSectionsProps {
   currentUserId: string | null;
@@ -67,94 +62,75 @@ export function GroupPanelMainSections({
   const isGroupLocked = isGroupActionsLocked(group.status);
 
   return (
-    <motion.div
-      variants={groupPanelContainerVariants}
-      initial="hidden"
-      animate="visible"
-      className="flex flex-col gap-7 px-5 pt-0 pb-7"
-    >
-      <motion.div variants={groupPanelItemVariants}>
-        <GroupIdentitySection
-          activity={group.activity}
-          avatar={group.avatar}
-          coverImage={group.plan?.coverImage ?? null}
-          createdAt={group.createdAt}
-          currentUserRole={currentUserRole}
-          description={group.description}
-          isReadOnly={isGroupLocked}
-          memberCount={memberCount}
-          maxMembers={group.maxMembers}
-          groupId={group.id}
-          name={group.name}
-          onEditGroup={onEditGroup}
-          plan={group.plan}
-          status={group.status}
-        />
-      </motion.div>
+    <div className="flex flex-col gap-7 px-5 pt-0 pb-7">
+      <GroupIdentitySection
+        activity={group.activity}
+        avatar={group.avatar}
+        coverImage={group.plan?.coverImage ?? null}
+        createdAt={group.createdAt}
+        currentUserRole={currentUserRole}
+        description={group.description}
+        isReadOnly={isGroupLocked}
+        memberCount={memberCount}
+        maxMembers={group.maxMembers}
+        groupId={group.id}
+        name={group.name}
+        onEditGroup={onEditGroup}
+        plan={group.plan}
+        status={group.status}
+      />
 
       {group.plan && (
-        <motion.div variants={groupPanelItemVariants}>
-          <PlanSection
-            plan={group.plan}
-            isFocused={focusedPlanId === group.plan.id}
-            focusedProposalId={focusedProposalId}
-            isReadOnly={isGroupLocked}
-          />
-        </motion.div>
+        <PlanSection
+          plan={group.plan}
+          isFocused={focusedPlanId === group.plan.id}
+          focusedProposalId={focusedProposalId}
+          isReadOnly={isGroupLocked}
+        />
       )}
 
       {group.chat?.pinnedMessages && group.chat.pinnedMessages.length > 0 && (
-        <motion.div variants={groupPanelItemVariants}>
-          <PinnedMessagesSection
-            onJumpToMessage={jumpToPinnedMessage}
-            onUnpinMessage={unpinMessage}
-            pinnedMessages={group.chat.pinnedMessages}
-          />
-        </motion.div>
+        <PinnedMessagesSection
+          onJumpToMessage={jumpToPinnedMessage}
+          onUnpinMessage={unpinMessage}
+          pinnedMessages={group.chat.pinnedMessages}
+        />
       )}
 
       {members.length > 0 && (
-        <motion.div variants={groupPanelItemVariants}>
-          <MembersSection
-            members={members}
-            maxMembers={group.maxMembers}
-            currentUserId={currentUserId}
-            currentUserRole={currentUserRole}
-            isReadOnly={isGroupLocked}
-            inviteCandidates={inviteCandidates}
-            invitingMemberId={invitingMemberId}
-            onInviteMember={inviteMember}
-            onRemoveMember={removeMember}
-            onShowProfile={setSelectedMember}
-            removingMemberId={removingMemberId}
-          />
-        </motion.div>
+        <MembersSection
+          members={members}
+          maxMembers={group.maxMembers}
+          currentUserId={currentUserId}
+          currentUserRole={currentUserRole}
+          isReadOnly={isGroupLocked}
+          inviteCandidates={inviteCandidates}
+          invitingMemberId={invitingMemberId}
+          onInviteMember={inviteMember}
+          onRemoveMember={removeMember}
+          onShowProfile={setSelectedMember}
+          removingMemberId={removingMemberId}
+        />
       )}
 
-      <motion.div variants={groupPanelItemVariants}>
-        <PlanHistorySection
-          groupId={group.id}
-          history={group.planHistory ?? []}
-        />
-      </motion.div>
+      <PlanHistorySection
+        groupId={group.id}
+        history={group.planHistory ?? []}
+      />
 
       {!isGroupLocked ? (
-        <motion.div variants={groupPanelItemVariants}>
-          <ActionsSection
-            currentUserRole={currentUserRole}
-            groupStatus={group.status}
-            isDisbanding={isDisbanding}
-            isLeaving={isLeaving}
-            onDisbandGroup={disbandGroup}
-            onLeaveGroup={leaveGroup}
-          />
-        </motion.div>
+        <ActionsSection
+          currentUserRole={currentUserRole}
+          groupStatus={group.status}
+          isDisbanding={isDisbanding}
+          isLeaving={isLeaving}
+          onDisbandGroup={disbandGroup}
+          onLeaveGroup={leaveGroup}
+        />
       ) : (
-        <motion.div variants={groupPanelItemVariants}>
-          <ArchivedGroupFooter status={group.status} />
-        </motion.div>
+        <ArchivedGroupFooter status={group.status} />
       )}
-    </motion.div>
+    </div>
   );
 }
 

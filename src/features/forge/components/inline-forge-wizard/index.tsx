@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useState } from "react";
 
 import { ForgeFooter } from "@/features/forge/components/forge-footer/index";
@@ -42,14 +41,7 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
   }
 
   return (
-    <motion.div
-      key="forge-wizard-form"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
-      className="mx-auto flex size-full max-w-3xl flex-col px-4 md:px-12"
-    >
+    <div className="mx-auto flex size-full max-w-3xl flex-col px-4 md:px-12">
       <InlineForgeHeader
         fw={fw}
         hasProgress={hasProgress}
@@ -69,6 +61,6 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
           setActivityShakeRequestId((requestId) => requestId + 1)
         }
       />
-    </motion.div>
+    </div>
   );
 }

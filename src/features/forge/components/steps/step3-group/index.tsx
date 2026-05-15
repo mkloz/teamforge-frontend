@@ -44,7 +44,7 @@ export function Step3Group({
   );
 
   return (
-    <div className="fade-in slide-in-from-bottom-4 flex animate-in flex-col gap-5 pb-4 duration-500">
+    <div className="flex flex-col gap-5 pb-4">
       <GroupIdentityFields
         groupName={groupName}
         onGroupNameChange={(v) => onGroupNameChange?.(v)}

@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 import { ArrowRight, Clock } from "lucide-react";
 import { buildActivityGroupNavigation } from "@/features/activity/lib/activity-route";
 import type { PlannedGroup } from "@/features/home/lib/home-contract";
@@ -14,10 +13,9 @@ import {
 
 interface PlanCardProps {
   group: PlannedGroup;
-  index: number;
 }
 
-export function PlanCard({ group, index }: PlanCardProps) {
+export function PlanCard({ group }: PlanCardProps) {
   const plan = group.plan;
   const status = planStatusConfig[plan.status] || planStatusConfig.DRAFT;
   const StatusIcon = status.icon;
@@ -31,14 +29,7 @@ export function PlanCard({ group, index }: PlanCardProps) {
   });
 
   return (
-    <motion.li
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: 0.4,
-        delay: index * 0.07,
-        ease: [0.23, 1, 0.32, 1],
-      }}
+    <li
       className={cn(
         "group relative border-border/55 border-b last:border-b-0",
         "transition-colors duration-150 hover:bg-forge-teal/5",
@@ -123,6 +114,6 @@ export function PlanCard({ group, index }: PlanCardProps) {
           </span>
         </div>
       </Link>
-    </motion.li>
+    </li>
   );
 }

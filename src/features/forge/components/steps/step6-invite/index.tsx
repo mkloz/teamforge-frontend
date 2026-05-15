@@ -21,7 +21,7 @@ export function Step6Invite({
   onCopyLink,
 }: Step6InviteProps) {
   return (
-    <div className="fade-in slide-in-from-bottom-2 flex animate-in flex-col gap-4 pb-10 duration-500">
+    <div className="flex flex-col gap-4 pb-10">
       <GroupSummaryCard
         activityTitle={activityTitle}
         avatarImage={avatarImage}

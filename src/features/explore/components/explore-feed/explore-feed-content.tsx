@@ -1,4 +1,3 @@
-import { AnimatePresence, motion } from "framer-motion";
 import { type ReactNode, useEffect, useRef } from "react";
 import type { ExploreGroup } from "@/shared/schemas";
 import { ExploreGroupPlanCard } from "./explore-group-plan-card";
@@ -29,9 +28,9 @@ export function ExploreFeedContent({
             title="Best opening right now"
             detail={`${totalGroups} ${totalGroups === 1 ? "group" : "groups"} available`}
           />
-          <ExploreGroupMotion index={0} groupId={featuredGroup.id}>
+          <ExploreGroupItem>
             <ExploreGroupPlanCard group={featuredGroup} />
-          </ExploreGroupMotion>
+          </ExploreGroupItem>
         </section>
       ) : null}
 
@@ -41,17 +40,11 @@ export function ExploreFeedContent({
             title="More openings"
             detail={`${remainingGroups.length} shown`}
           />
-          <AnimatePresence mode="popLayout">
-            {remainingGroups.map((group, index) => (
-              <ExploreGroupMotion
-                key={group.id}
-                index={index + 1}
-                groupId={group.id}
-              >
-                <ExploreGroupPlanCard group={group} />
-              </ExploreGroupMotion>
-            ))}
-          </AnimatePresence>
+          {remainingGroups.map((group) => (
+            <ExploreGroupItem key={group.id}>
+              <ExploreGroupPlanCard group={group} />
+            </ExploreGroupItem>
+          ))}
         </section>
       ) : null}
 
@@ -138,29 +131,6 @@ function FeedSectionLabel({
   );
 }
 
-function ExploreGroupMotion({
-  children,
-  groupId,
-  index,
-}: {
-  children: ReactNode;
-  groupId: string;
-  index: number;
-}) {
-  return (
-    <motion.div
-      key={groupId}
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.98 }}
-      transition={{
-        duration: 0.28,
-        delay: Math.min(index, 6) * 0.025,
-        ease: [0.21, 1.11, 0.81, 0.99],
-      }}
-      layout
-    >
-      {children}
-    </motion.div>
-  );
+function ExploreGroupItem({ children }: { children: ReactNode }) {
+  return <div>{children}</div>;
 }

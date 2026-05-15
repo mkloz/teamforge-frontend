@@ -1,20 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
 
-interface BrowseGroupsRowProps {
-  delay: number;
-}
-
-export function BrowseGroupsRow({ delay }: BrowseGroupsRowProps) {
+export function BrowseGroupsRow() {
   return (
-    <motion.li
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay }}
-    >
+    <li>
       <Link
         {...buildExploreNavigation()}
         className="group flex h-16 items-center justify-between rounded-xl border-border/55 border-b px-1 py-3 font-bold text-muted-foreground text-xs transition-all duration-150 hover:bg-card/45 hover:text-forge-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-3"
@@ -26,6 +17,6 @@ export function BrowseGroupsRow({ delay }: BrowseGroupsRowProps) {
           aria-hidden="true"
         />
       </Link>
-    </motion.li>
+    </li>
   );
 }

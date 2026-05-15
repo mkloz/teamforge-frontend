@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
 import { useHomeData } from "@/features/home/hooks/use-home-data";
@@ -16,7 +15,6 @@ import {
   SecondaryAction,
 } from "./home-hero-actions";
 import { getGreeting } from "./home-hero-copy";
-import { containerVariants, itemVariants } from "./home-hero-motion";
 import { HomeHeroNotificationButton } from "./home-hero-notification-button";
 import { HomeHeroQuickActions } from "./home-hero-quick-actions";
 import { HomeHeroSignalMap } from "./home-hero-signal-map";
@@ -79,16 +77,8 @@ export function HomeHeroView({
 
   return (
     <section aria-labelledby="home-hero-heading" className="w-full">
-      <motion.div
-        className="flex w-full flex-col gap-5"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <motion.div
-          variants={itemVariants}
-          className="flex items-start justify-between gap-3"
-        >
+      <div className="flex w-full flex-col gap-5">
+        <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <h1
               id="home-hero-heading"
@@ -102,12 +92,9 @@ export function HomeHeroView({
           </div>
 
           {notificationButton}
-        </motion.div>
+        </div>
 
-        <motion.div
-          variants={itemVariants}
-          className="relative grid gap-4 overflow-hidden rounded-xl px-4 py-4 sm:gap-6 sm:px-5 sm:py-5 lg:px-6 2xl:min-h-80 2xl:grid-cols-[minmax(0,1fr)_minmax(17rem,20rem)] 2xl:items-center 2xl:gap-10"
-        >
+        <div className="relative grid gap-4 overflow-hidden rounded-xl px-4 py-4 sm:gap-6 sm:px-5 sm:py-5 lg:px-6 2xl:min-h-80 2xl:grid-cols-[minmax(0,1fr)_minmax(17rem,20rem)] 2xl:items-center 2xl:gap-10">
           <div className="absolute inset-y-0 left-0 w-full [background:linear-gradient(112deg,color-mix(in_srgb,var(--color-forge-teal)_13%,transparent),color-mix(in_srgb,var(--color-forge-teal)_4%,transparent)_48%,transparent_76%)]" />
           <div className="absolute inset-y-5 left-2 w-px rounded-full bg-forge-teal/55 sm:inset-y-6 sm:left-3" />
 
@@ -143,8 +130,8 @@ export function HomeHeroView({
           </div>
 
           <HomeHeroSignalMap />
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </section>
   );
 }
