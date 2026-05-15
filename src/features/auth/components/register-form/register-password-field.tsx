@@ -11,6 +11,11 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
+import {
+  authFormItemClassName,
+  authFormLabelClassName,
+  authFormMessageClassName,
+} from "../auth-form-styles";
 
 import { getPasswordStrength } from "./password-strength";
 import { PasswordStrengthMeter } from "./password-strength-meter";
@@ -29,10 +34,8 @@ export function RegisterPasswordField() {
       control={control}
       name="password"
       render={({ field, formState }) => (
-        <FormItem className="gap-0">
-          <FormLabel className="font-sans font-semibold text-ink text-sm">
-            Password
-          </FormLabel>
+        <FormItem className={authFormItemClassName}>
+          <FormLabel className={authFormLabelClassName}>Password</FormLabel>
           <FormControl>
             <Input
               type={showPassword ? "text" : "password"}
@@ -57,7 +60,7 @@ export function RegisterPasswordField() {
           {passwordValue?.length > 0 && (
             <PasswordStrengthMeter strength={strength} />
           )}
-          <FormMessage className="font-medium text-destructive text-xs" />
+          <FormMessage className={authFormMessageClassName} />
         </FormItem>
       )}
     />

@@ -75,7 +75,7 @@ export function GroupPanelContent({
         />
       )}
 
-      <GroupPanelScrollArea isMobile={isMobile}>
+      <GroupPanelScrollArea isMobile={isMobile} resetKey={group.id}>
         <GroupCoverHeader group={group} isMobile={isMobile} onClose={onClose} />
 
         <GroupPanelMainSections

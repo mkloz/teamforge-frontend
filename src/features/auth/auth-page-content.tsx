@@ -5,6 +5,8 @@ import { BackgroundTexture } from "@/shared/components/common/background-texture
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { Button } from "@/shared/components/ui/button";
 import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
+import { voronoiSplitDividerClassName } from "@/shared/components/visuals/voronoi-split-divider";
+import { cn } from "@/shared/lib/utils";
 import type { VoronoiCatalystHandle } from "@/shared/lib/voronoi/voronoi-contract";
 
 interface AuthPageContentProps {
@@ -41,24 +43,28 @@ export function AuthPageContent({
         </Button>
       </div>
 
-      <div className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-border border-r bg-hero-bg lg:flex">
+      <div
+        className={cn(
+          "relative hidden h-full flex-1 items-center justify-center overflow-hidden border-r bg-hero-bg lg:flex",
+          voronoiSplitDividerClassName,
+        )}
+      >
         <VoronoiCatalyst ref={catalystRef} progress={progress} />
       </div>
 
       <div className="relative flex h-full flex-1 flex-col overflow-hidden">
         <BackgroundTexture />
+        <TopProgressBar
+          progress={progress}
+          className="absolute top-0 right-0 left-0 z-50 w-full"
+        />
 
         <div
           ref={scrollContainerRef}
-          className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth px-4 pb-4"
+          className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth pb-4"
           onInput={onInput}
         >
-          <TopProgressBar
-            progress={progress}
-            className="sticky top-0 z-50 -mx-4 -mt-2 w-full"
-          />
-
-          <div className="flex min-h-full w-full flex-col items-center justify-start pt-20 pb-10 lg:justify-center lg:py-8">
+          <div className="flex min-h-full w-full flex-col items-center justify-start px-4 pt-20 pb-10 lg:justify-center lg:py-8">
             <div className="relative w-full max-w-sm px-2 sm:px-10 lg:p-0">
               {children}
             </div>

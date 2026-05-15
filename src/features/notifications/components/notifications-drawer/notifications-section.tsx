@@ -1,3 +1,4 @@
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { Notification } from "@/shared/schemas";
 
 import { NotificationItem } from "./notification-item";
@@ -15,6 +16,8 @@ export function NotificationsSection({
   pendingNotificationId,
   onSelect,
 }: NotificationsSectionProps) {
+  const shouldReduceMotion = useReducedMotion();
+
   if (items.length === 0) {
     return null;
   }
@@ -30,14 +33,26 @@ export function NotificationsSection({
           {label}
         </p>
       </div>
-      {items.map((item) => (
-        <NotificationItem
-          key={item.id}
-          item={item}
-          onSelect={onSelect}
-          isPending={pendingNotificationId === item.id}
-        />
-      ))}
+      <AnimatePresence initial={false}>
+        {items.map((item) => (
+          <motion.div
+            key={item.id}
+            initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 4 }}
+            animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+            exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -2 }}
+            transition={{
+              duration: shouldReduceMotion ? 0.08 : 0.15,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            <NotificationItem
+              item={item}
+              onSelect={onSelect}
+              isPending={pendingNotificationId === item.id}
+            />
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </section>
   );
 }

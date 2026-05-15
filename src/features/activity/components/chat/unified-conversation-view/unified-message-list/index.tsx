@@ -10,6 +10,7 @@ import { LoadingOlderIndicator } from "./loading-older-indicator";
 import { MessageBlockList } from "./message-block-list";
 import { buildMessageBlocks } from "./message-list-blocks";
 import { MessageListBottomAnchor } from "./message-list-bottom-anchor";
+import { MessageListSkeleton } from "./message-list-skeleton";
 import { MessageListViewport } from "./message-list-viewport";
 import type { MessageScrollHandle } from "./message-scroll.types";
 import { ScrollActionButtons } from "./scroll-action-buttons";
@@ -21,8 +22,10 @@ import { usePendingProposalShortcut } from "./use-pending-proposal-shortcut";
 interface UnifiedMessageListProps {
   messages: UnifiedMessage[];
   kind: "dm" | "group";
+  conversationId: string;
   hasOlderMessages?: boolean;
   focusedMessageId?: string | null;
+  isInitialLoading?: boolean;
   isLoadingOlderMessages?: boolean;
   messagesEndRef: RefObject<HTMLDivElement | null>;
   containerRef?: RefObject<HTMLDivElement | null>;
@@ -38,8 +41,10 @@ interface UnifiedMessageListProps {
 export const UnifiedMessageList = memo(function UnifiedMessageList({
   messages,
   kind,
+  conversationId,
   hasOlderMessages = false,
   focusedMessageId = null,
+  isInitialLoading = false,
   isLoadingOlderMessages = false,
   messagesEndRef,
   containerRef,
@@ -48,7 +53,12 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
   typingUsers = [],
 }: UnifiedMessageListProps) {
   const { showScrollToBottom, handleScroll, isNearBottom, scrollToBottom } =
-    useChatScroll(messagesEndRef, containerRef, messages.length, kind);
+    useChatScroll(
+      messagesEndRef,
+      containerRef,
+      messages.length,
+      conversationId,
+    );
   const groupedMessages = useMessageGrouping(messages);
   const { getMessageElement, getMessageRef } = useMessageElementRegistry();
   const blocks = useMemo(
@@ -105,6 +115,7 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
       scrollToMessage,
     });
   const isEmpty = messages.length === 0;
+  const shouldShowInitialLoading = isInitialLoading && isEmpty;
 
   function handleViewportScroll(event: UIEvent<HTMLDivElement>) {
     handleScroll(event);
@@ -129,7 +140,12 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
         onScroll={handleViewportScroll}
         totalHeight={isEmpty ? 0 : totalHeight}
       >
-        {isEmpty ? (
+        {shouldShowInitialLoading ? (
+          <>
+            <MessageListSkeleton />
+            <div ref={messagesEndRef} className="h-0 w-full shrink-0" />
+          </>
+        ) : isEmpty ? (
           <div className="flex min-h-full flex-col items-center justify-center px-6 py-10 text-center">
             <div className="flex max-w-xs flex-col items-center">
               <EmptyMessageThreadVisual className="w-36 text-foreground" />

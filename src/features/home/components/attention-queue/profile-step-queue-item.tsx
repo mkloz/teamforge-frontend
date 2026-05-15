@@ -1,20 +1,26 @@
 import { Link } from "@tanstack/react-router";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 
 import type { HomeViewer } from "@/features/home/lib/home-contract";
 
+import { getAttentionQueueItemMotion } from "./attention-queue-motion";
 import { getProfileStepNavigation } from "./profile-step-action";
 
 export function ProfileStepQueueItem({
+  animateOnInsert,
   nextStep,
 }: {
+  animateOnInsert: boolean;
   nextStep: NonNullable<HomeViewer["nextStep"]>;
 }) {
   const navigation = getProfileStepNavigation(nextStep);
+  const shouldReduceMotion = useReducedMotion();
 
   return (
-    <li
+    <motion.li
       key="profile-step"
+      {...getAttentionQueueItemMotion({ animateOnInsert, shouldReduceMotion })}
       className="group border-border/55 border-b transition-colors duration-150 last:border-b-0 hover:bg-forge-teal/5"
     >
       <Link
@@ -40,6 +46,6 @@ export function ProfileStepQueueItem({
           <ArrowRight className="size-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
         </span>
       </Link>
-    </li>
+    </motion.li>
   );
 }

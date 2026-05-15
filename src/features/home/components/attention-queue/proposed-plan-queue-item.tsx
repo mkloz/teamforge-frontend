@@ -1,23 +1,31 @@
 import { Link } from "@tanstack/react-router";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, CalendarClock } from "lucide-react";
 
 import { buildActivityGroupNavigation } from "@/features/activity/lib/activity-route";
 import { getPlanTimingLabel } from "@/features/home/lib/home-insights";
 
 import type { AttentionQueuePlan } from "./attention-queue.types";
+import { getAttentionQueueItemMotion } from "./attention-queue-motion";
 
 export function ProposedPlanQueueItem({
+  animateOnInsert,
   group,
 }: {
+  animateOnInsert: boolean;
   group: AttentionQueuePlan;
 }) {
   const navigation = buildActivityGroupNavigation(group.id, {
     panel: "group",
     plan: group.plan.id,
   });
+  const shouldReduceMotion = useReducedMotion();
 
   return (
-    <li className="group border-border/55 border-b transition-colors duration-150 last:border-b-0 hover:bg-forge-teal/5">
+    <motion.li
+      {...getAttentionQueueItemMotion({ animateOnInsert, shouldReduceMotion })}
+      className="group border-border/55 border-b transition-colors duration-150 last:border-b-0 hover:bg-forge-teal/5"
+    >
       <Link
         {...navigation}
         aria-label={`Open proposed plan ${group.plan.title} in ${group.name}`}
@@ -44,6 +52,6 @@ export function ProposedPlanQueueItem({
           <ArrowRight className="size-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
         </span>
       </Link>
-    </li>
+    </motion.li>
   );
 }

@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { Button } from "@/shared/components/ui/button";
 import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
+import { voronoiSplitDividerClassName } from "@/shared/components/visuals/voronoi-split-divider";
+import { cn } from "@/shared/lib/utils";
 
 interface AuthSupportShellProps {
   title: string;
@@ -47,7 +49,12 @@ export function AuthSupportShell({
         </Button>
       </div>
 
-      <div className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-border border-r bg-hero-bg lg:flex">
+      <div
+        className={cn(
+          "relative hidden h-full flex-1 items-center justify-center overflow-hidden border-r bg-hero-bg lg:flex",
+          voronoiSplitDividerClassName,
+        )}
+      >
         <VoronoiCatalyst progress={0.68} />
       </div>
 

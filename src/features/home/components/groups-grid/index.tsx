@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 
 import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
+import { HomeGroupsSkeleton } from "@/features/home/components/home-skeletons";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { getActiveGroupPreview } from "@/features/home/lib/home-insights";
 import { useUnreadNotifications } from "@/features/notifications/hooks/use-notifications";
@@ -41,7 +42,7 @@ export function GroupsGridView({
   const unreadGroupIds = collectUnreadGroupIds(notifications, groups);
 
   if (isGroupsLoading && groups.length === 0) {
-    return null;
+    return <HomeGroupsSkeleton />;
   }
 
   return (

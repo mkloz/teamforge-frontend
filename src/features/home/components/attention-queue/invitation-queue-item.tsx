@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Check, X } from "lucide-react";
 
 import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
@@ -7,11 +8,13 @@ import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 import type { AttentionQueueInvitation } from "./attention-queue.types";
+import { getAttentionQueueItemMotion } from "./attention-queue-motion";
 
 interface InvitationQueueItemProps {
   invite: AttentionQueueInvitation;
   isFocused: boolean;
   acceptingInviteId: string | null;
+  animateOnInsert: boolean;
   decliningInviteId: string | null;
   isAccepting: boolean;
   isDeclining: boolean;
@@ -21,6 +24,7 @@ interface InvitationQueueItemProps {
 
 export function InvitationQueueItem({
   acceptingInviteId,
+  animateOnInsert,
   decliningInviteId,
   invite,
   isAccepting,
@@ -32,9 +36,11 @@ export function InvitationQueueItem({
   const detailsNavigation = buildGroupPlanDetailNavigation(invite.group.id, {
     source: "invite",
   });
+  const shouldReduceMotion = useReducedMotion();
 
   return (
-    <li
+    <motion.li
+      {...getAttentionQueueItemMotion({ animateOnInsert, shouldReduceMotion })}
       className={cn(
         "group flex min-w-0 items-center gap-3 border-border/55 border-b px-1 py-4 transition-colors duration-150 last:border-b-0 sm:px-3",
         isFocused ? "bg-forge-teal/8" : "hover:bg-forge-teal/5",
@@ -89,6 +95,6 @@ export function InvitationQueueItem({
           <X className="size-3.5" />
         </Button>
       </div>
-    </li>
+    </motion.li>
   );
 }

@@ -30,7 +30,7 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
   const [activityShakeRequestId, setActivityShakeRequestId] = useState(0);
   const hasProgress = fw.step > 1 || fw.selectedActivity !== null;
 
-  useScrollToTop([fw.step, fw.isForging]);
+  useScrollToTop([fw.step, fw.isForging], undefined, "auto");
 
   if (fw.invitesSent) {
     return <InvitesSentScreen fw={fw} />;

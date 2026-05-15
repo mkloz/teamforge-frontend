@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { EmptyHomePlansVisual } from "@/assets/empty-state/empty-home-plans";
 import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
+import { HomeUpcomingPlansSkeleton } from "@/features/home/components/home-skeletons";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import type { PlannedGroup } from "@/features/home/lib/home-contract";
 import { getUpcomingPreview } from "@/features/home/lib/home-insights";
@@ -44,7 +45,7 @@ export function UpcomingPlansView({
   const hiddenCount = Math.max(0, plans.length - visiblePlans.length);
 
   if (isPlansLoading && plans.length === 0) {
-    return null;
+    return <HomeUpcomingPlansSkeleton />;
   }
 
   return (

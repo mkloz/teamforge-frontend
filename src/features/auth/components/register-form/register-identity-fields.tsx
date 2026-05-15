@@ -8,6 +8,11 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
+import {
+  authFormItemClassName,
+  authFormLabelClassName,
+  authFormMessageClassName,
+} from "../auth-form-styles";
 
 export function RegisterIdentityFields() {
   const { control } = useFormContext<RegisterValues>();
@@ -18,10 +23,8 @@ export function RegisterIdentityFields() {
         control={control}
         name="name"
         render={({ field }) => (
-          <FormItem className="gap-0">
-            <FormLabel className="font-sans font-semibold text-ink text-sm">
-              Full Name
-            </FormLabel>
+          <FormItem className={authFormItemClassName}>
+            <FormLabel className={authFormLabelClassName}>Full Name</FormLabel>
             <FormControl>
               <Input
                 placeholder="Alex Johnson"
@@ -29,7 +32,7 @@ export function RegisterIdentityFields() {
                 {...field}
               />
             </FormControl>
-            <FormMessage className="font-medium text-destructive text-xs" />
+            <FormMessage className={authFormMessageClassName} />
           </FormItem>
         )}
       />
@@ -38,10 +41,8 @@ export function RegisterIdentityFields() {
         control={control}
         name="email"
         render={({ field }) => (
-          <FormItem className="gap-0">
-            <FormLabel className="font-sans font-semibold text-ink text-sm">
-              Email
-            </FormLabel>
+          <FormItem className={authFormItemClassName}>
+            <FormLabel className={authFormLabelClassName}>Email</FormLabel>
             <FormControl>
               <Input
                 placeholder="you@example.com"
@@ -50,7 +51,7 @@ export function RegisterIdentityFields() {
                 {...field}
               />
             </FormControl>
-            <FormMessage className="font-medium text-destructive text-xs" />
+            <FormMessage className={authFormMessageClassName} />
           </FormItem>
         )}
       />

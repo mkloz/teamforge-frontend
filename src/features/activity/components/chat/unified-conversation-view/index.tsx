@@ -30,6 +30,7 @@ interface BaseConversationProps {
   typingUsers?: { name: string; avatar: string | null }[];
   isActionOpen?: boolean;
   focusedMessageId?: string | null;
+  isLoadingMessages?: boolean;
   messageScrollHandleRef?: RefObject<MessageScrollHandle | null>;
   sendError?: string | null;
   onBack: () => void;
@@ -52,6 +53,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     typingUsers = [],
     isActionOpen = false,
     focusedMessageId,
+    isLoadingMessages = false,
     messageScrollHandleRef,
     sendError = null,
     hasOlderMessages = false,
@@ -63,6 +65,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     onSendMessage,
   } = props;
   const { kind, data } = props;
+  const conversationId = `${kind}:${data.id}`;
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -146,10 +149,13 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
       {/* Message area */}
       <div className="relative flex-1 overflow-hidden">
         <UnifiedMessageList
+          key={conversationId}
           messages={messages}
           kind={kind}
+          conversationId={conversationId}
           focusedMessageId={focusedMessageId}
           hasOlderMessages={hasOlderMessages}
+          isInitialLoading={isLoadingMessages}
           isLoadingOlderMessages={isLoadingOlderMessages}
           messagesEndRef={messagesEndRef}
           containerRef={messagesContainerRef}

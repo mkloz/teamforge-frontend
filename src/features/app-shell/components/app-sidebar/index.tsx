@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { motion, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 import { TeamForgeLogo } from "@/assets/logo";
 import { useActivePathname } from "@/features/app-shell/hooks/use-active-pathname";
@@ -7,6 +8,10 @@ import {
   getAppNavigationItem,
   isAppNavigationItemActive,
 } from "@/features/app-shell/lib/app-navigation";
+import {
+  appShellEase,
+  appShellMotionTiming,
+} from "@/features/app-shell/lib/app-shell-motion";
 import { buildHomeNavigation } from "@/features/home/lib/home-route";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -27,14 +32,31 @@ export function AppSidebar({
   notificationTrigger,
 }: AppSidebarProps) {
   const pathname = useActivePathname();
+  const shouldReduceMotion = useReducedMotion();
   const forgeItem = getAppNavigationItem("forge");
   const settingsItem = getAppNavigationItem("settings");
   const ForgeIcon = forgeItem.icon;
   const isForgeActive = isAppNavigationItemActive(forgeItem, pathname);
 
   return (
-    <aside
+    <motion.aside
       aria-label="Desktop navigation"
+      initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -8 }}
+      animate={
+        shouldReduceMotion
+          ? {
+              opacity: 1,
+              transition: { duration: appShellMotionTiming.reducedMotion },
+            }
+          : {
+              opacity: 1,
+              transition: {
+                duration: appShellMotionTiming.sidebarEnter,
+                ease: appShellEase.enter,
+              },
+              x: 0,
+            }
+      }
       className={cn(
         "fixed top-0 bottom-0 left-0 z-40",
         // Hidden on mobile, icon-only on tablet and desktop
@@ -112,6 +134,6 @@ export function AppSidebar({
           <TooltipContent side="right">Forge My Group</TooltipContent>
         </Tooltip>
       </div>
-    </aside>
+    </motion.aside>
   );
 }

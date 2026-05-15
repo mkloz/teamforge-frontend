@@ -1,7 +1,9 @@
 import { Outlet } from "@tanstack/react-router";
 import { Activity, type ReactNode, Suspense } from "react";
 import { AppBottomNav } from "@/features/app-shell/components/app-bottom-nav";
+import { AppRouteTransition } from "@/features/app-shell/components/app-route-transition";
 import { AppSidebar } from "@/features/app-shell/components/app-sidebar";
+import { useAppShellScrollReset } from "@/features/app-shell/hooks/use-app-shell-scroll-reset";
 import { RouteLoadingFallback } from "@/shared/components/loading/route-loading-fallback";
 import { useUiStore } from "@/shared/store/ui.store";
 
@@ -15,6 +17,8 @@ export function AppLayout({
   notificationDrawer,
 }: AppLayoutProps) {
   const bottomNavHidden = useUiStore((state) => state.bottomNavHidden);
+
+  useAppShellScrollReset();
 
   return (
     <div className="min-h-screen overflow-x-clip bg-canvas font-sans text-foreground">
@@ -33,9 +37,11 @@ export function AppLayout({
         tabIndex={-1}
       >
         <div>
-          <Suspense fallback={<RouteLoadingFallback />}>
-            <Outlet />
-          </Suspense>
+          <AppRouteTransition>
+            <Suspense fallback={<RouteLoadingFallback />}>
+              <Outlet />
+            </Suspense>
+          </AppRouteTransition>
         </div>
       </main>
 

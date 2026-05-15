@@ -44,6 +44,12 @@ export function useSelectedActivityConversation() {
       : selectedKind === "dm"
         ? (directQuery.data?.chatId ?? null)
         : null;
+  const isSelectedConversationLoading =
+    selectedKind === "group"
+      ? Boolean(selectedId) && groupQuery.isLoading && !groupQuery.data
+      : selectedKind === "dm"
+        ? Boolean(selectedId) && directQuery.isLoading && !directQuery.data
+        : false;
 
   return {
     selectedId,
@@ -56,6 +62,7 @@ export function useSelectedActivityConversation() {
       selectedKind === "group" ? (groupQuery.data?.group ?? null) : null,
     selectedChat:
       selectedKind === "dm" ? (directQuery.data?.chat ?? null) : null,
+    isSelectedConversationLoading,
     proposalMessages: groupQuery.data?.proposalMessages ?? [],
     activeTypingUsers: chatId ? (typingByChatId[chatId] ?? []) : [],
   };

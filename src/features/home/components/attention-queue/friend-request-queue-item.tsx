@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Check, UserPlus, X } from "lucide-react";
 
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
@@ -7,11 +8,13 @@ import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 import type { AttentionQueueFriendRequest } from "./attention-queue.types";
+import { getAttentionQueueItemMotion } from "./attention-queue-motion";
 
 interface FriendRequestQueueItemProps {
   request: AttentionQueueFriendRequest;
   isFocused: boolean;
   acceptingRequestId: string | null;
+  animateOnInsert: boolean;
   decliningRequestId: string | null;
   isAccepting: boolean;
   isDeclining: boolean;
@@ -21,6 +24,7 @@ interface FriendRequestQueueItemProps {
 
 export function FriendRequestQueueItem({
   acceptingRequestId,
+  animateOnInsert,
   decliningRequestId,
   isAccepting,
   isDeclining,
@@ -30,9 +34,11 @@ export function FriendRequestQueueItem({
   request,
 }: FriendRequestQueueItemProps) {
   const profileNavigation = buildProfileNavigation(request.counterpart.id);
+  const shouldReduceMotion = useReducedMotion();
 
   return (
-    <li
+    <motion.li
+      {...getAttentionQueueItemMotion({ animateOnInsert, shouldReduceMotion })}
       className={cn(
         "group flex min-w-0 items-center gap-3 border-border/55 border-b px-1 py-4 transition-colors duration-150 last:border-b-0 sm:px-3",
         isFocused ? "bg-forge-teal/8" : "hover:bg-forge-teal/5",
@@ -93,7 +99,7 @@ export function FriendRequestQueueItem({
           <X className="size-3.5" />
         </Button>
       </div>
-    </li>
+    </motion.li>
   );
 }
 

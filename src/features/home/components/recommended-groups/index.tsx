@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { EmptyRecommendationsVisual } from "@/assets/empty-state/empty-recommendations";
 import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
+import { HomeRecommendedGroupsSkeleton } from "@/features/home/components/home-skeletons";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { getRecommendationPreview } from "@/features/home/lib/home-insights";
 import { Button } from "@/shared/components/ui/button";
@@ -37,7 +38,7 @@ export function RecommendedGroupsView({
   const visibleRecommendations = getRecommendationPreview(recommendations, 3);
 
   if (isRecommendationsLoading && recommendations.length === 0) {
-    return null;
+    return <HomeRecommendedGroupsSkeleton />;
   }
 
   return (

@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { ActivityConversationStageSkeleton } from "@/features/activity/components/activity-page/activity-page-skeleton";
 import { UnifiedConversationView } from "@/features/activity/components/chat/unified-conversation-view";
 import type { MessageScrollHandle } from "@/features/activity/components/chat/unified-conversation-view/unified-message-list/message-scroll.types";
 import {
@@ -20,6 +21,16 @@ export function ActivityConversationStage({
   isMobile,
 }: ActivityConversationStageProps) {
   const groupMessageScrollHandleRef = useRef<MessageScrollHandle | null>(null);
+  const isSelectionLoading =
+    activity.hasSelection && activity.isSelectedConversationLoading;
+
+  if (isSelectionLoading) {
+    return (
+      <div className="flex flex-1 overflow-hidden">
+        <ActivityConversationStageSkeleton />
+      </div>
+    );
+  }
 
   if (
     activity.selectedKind === "group" &&
@@ -36,6 +47,7 @@ export function ActivityConversationStage({
             typingUsers={activity.typingUsers}
             focusedMessageId={activity.focusedMessageId}
             hasOlderMessages={activity.hasOlderMessages}
+            isLoadingMessages={activity.isMessageTimelineLoading}
             isLoadingOlderMessages={activity.isLoadingOlderMessages}
             isActionOpen={activity.groups.isDetailPanelOpen}
             messageScrollHandleRef={groupMessageScrollHandleRef}
@@ -78,6 +90,7 @@ export function ActivityConversationStage({
             isTyping={activity.isTyping}
             focusedMessageId={activity.focusedMessageId}
             hasOlderMessages={activity.hasOlderMessages}
+            isLoadingMessages={activity.isMessageTimelineLoading}
             isLoadingOlderMessages={activity.isLoadingOlderMessages}
             isActionOpen={activity.direct.isProfilePanelOpen}
             onBack={activity.handleBack}

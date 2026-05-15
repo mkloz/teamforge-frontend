@@ -11,6 +11,11 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
+import {
+  authFormItemClassName,
+  authFormLabelClassName,
+  authFormMessageClassName,
+} from "../auth-form-styles";
 
 interface ResetPasswordFieldProps {
   label: string;
@@ -27,10 +32,8 @@ export function ResetPasswordField({ label, name }: ResetPasswordFieldProps) {
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="gap-0 text-left">
-          <FormLabel className="font-sans font-semibold text-foreground text-sm">
-            {label}
-          </FormLabel>
+        <FormItem className={authFormItemClassName}>
+          <FormLabel className={authFormLabelClassName}>{label}</FormLabel>
           <FormControl>
             <Input
               type={isVisible ? "text" : "password"}
@@ -59,7 +62,7 @@ export function ResetPasswordField({ label, name }: ResetPasswordFieldProps) {
               {...field}
             />
           </FormControl>
-          <FormMessage className="mt-1 font-medium text-destructive text-xs" />
+          <FormMessage className={authFormMessageClassName} />
         </FormItem>
       )}
     />

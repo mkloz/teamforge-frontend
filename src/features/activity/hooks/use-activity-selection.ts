@@ -29,6 +29,8 @@ export function useActivitySelection() {
         : [],
     selectedChat: conversation.selectedChat,
     selectedDirectMessages: timeline.selectedDirectMessages,
+    isSelectedConversationLoading: conversation.isSelectedConversationLoading,
+    isMessageTimelineLoading: timeline.isMessageTimelineLoading,
     isTyping:
       conversation.selectedKind === "dm" &&
       conversation.activeTypingUsers.length > 0,

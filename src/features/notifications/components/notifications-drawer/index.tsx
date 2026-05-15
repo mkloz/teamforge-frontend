@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { EmptyNotificationsVisual } from "@/assets/empty-state/empty-notifications";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
 import { resolveNotificationDestination } from "@/features/notifications/lib/notification-destination";
@@ -13,6 +13,7 @@ import {
   DrawerTitle,
 } from "@/shared/components/ui/drawer";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
+import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
 import { cn } from "@/shared/lib/utils";
 import type { Notification } from "@/shared/schemas";
 import { NotificationsSection } from "./notifications-section";
@@ -37,9 +38,16 @@ export function NotificationsDrawer({
   } = useNotifications();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const navigate = useNavigate();
+  const scrollRef = useRef<HTMLDivElement | null>(null);
   const [pendingNotificationId, setPendingNotificationId] = useState<
     string | null
   >(null);
+
+  useResetScrollOnChange({
+    enabled: open,
+    ref: scrollRef,
+    resetKey: open,
+  });
 
   async function handleSelectNotification(notification: Notification) {
     setPendingNotificationId(notification.id);
@@ -103,7 +111,10 @@ export function NotificationsDrawer({
         </div>
 
         {/* Scrollable list */}
-        <div className="flex-1 overflow-y-auto overscroll-contain">
+        <div
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto overscroll-contain"
+        >
           {isLoading ? (
             <NotificationsDrawerSkeleton />
           ) : items.length === 0 ? (

@@ -29,6 +29,12 @@ export function useActivityMessageTimeline({
     enabled:
       !!chatId && selectedParticipants.length > 0 && currentUserId !== null,
   });
+  const isMessageTimelineLoading =
+    !!chatId &&
+    selectedParticipants.length > 0 &&
+    currentUserId !== null &&
+    messagesQuery.isLoading &&
+    !messagesQuery.data;
 
   const flattenedApiMessages = ActivityQueryFactory.flattenMessagePages(
     messagesQuery.data,
@@ -80,6 +86,7 @@ export function useActivityMessageTimeline({
     selectedGroupMessages,
     selectedDirectMessages,
     hasOlderMessages: messagesQuery.hasNextPage,
+    isMessageTimelineLoading,
     isLoadingOlderMessages: messagesQuery.isFetchingNextPage,
     loadOlderMessages,
   };

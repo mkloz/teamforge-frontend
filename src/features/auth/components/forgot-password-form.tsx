@@ -12,6 +12,11 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
+import {
+  authFormItemClassName,
+  authFormLabelClassName,
+  authFormMessageClassName,
+} from "./auth-form-styles";
 
 interface ForgotPasswordFormProps {
   form: UseFormReturn<ForgotPasswordValues>;
@@ -31,10 +36,8 @@ export function ForgotPasswordForm({
           control={form.control}
           name="email"
           render={({ field }) => (
-            <FormItem className="gap-0 text-left">
-              <FormLabel className="font-sans font-semibold text-foreground text-sm">
-                Email
-              </FormLabel>
+            <FormItem className={authFormItemClassName}>
+              <FormLabel className={authFormLabelClassName}>Email</FormLabel>
               <FormControl>
                 <Input
                   type="email"
@@ -43,7 +46,7 @@ export function ForgotPasswordForm({
                   {...field}
                 />
               </FormControl>
-              <FormMessage className="mt-1 font-medium text-destructive text-xs" />
+              <FormMessage className={authFormMessageClassName} />
             </FormItem>
           )}
         />

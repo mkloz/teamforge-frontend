@@ -31,10 +31,15 @@ export function useSearchHeaderFade({
     });
   }
 
+  function resetFade() {
+    setOpacity(1);
+  }
+
   return {
     scrollRef,
     opacity,
     handleScroll,
     isPointerEnabled: opacity > 0.05,
+    resetFade,
   };
 }

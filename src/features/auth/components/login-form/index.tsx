@@ -15,6 +15,11 @@ import {
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
 import { buildAuthRouteNavigation } from "@/shared/lib/auth-route";
+import {
+  authFormItemClassName,
+  authFormLabelClassName,
+  authFormMessageClassName,
+} from "../auth-form-styles";
 import { FormHeader } from "./form-header";
 import { GoogleAuthButton } from "./google-auth-button";
 import { SocialLoginDivider } from "./social-login-divider";
@@ -68,10 +73,8 @@ export function LoginForm({
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem className="gap-0 text-left">
-                <FormLabel className="font-sans font-semibold text-ink text-sm">
-                  Email
-                </FormLabel>
+              <FormItem className={authFormItemClassName}>
+                <FormLabel className={authFormLabelClassName}>Email</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="you@example.com"
@@ -80,7 +83,7 @@ export function LoginForm({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="mt-1 font-medium text-destructive text-xs" />
+                <FormMessage className={authFormMessageClassName} />
               </FormItem>
             )}
           />
@@ -89,9 +92,9 @@ export function LoginForm({
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem className="gap-0 text-left">
+              <FormItem className={authFormItemClassName}>
                 <div className="flex items-center justify-between">
-                  <FormLabel className="font-sans font-semibold text-ink text-sm">
+                  <FormLabel className={authFormLabelClassName}>
                     Password
                   </FormLabel>
                   <Link
@@ -131,7 +134,7 @@ export function LoginForm({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="mt-1 font-medium text-destructive text-xs" />
+                <FormMessage className={authFormMessageClassName} />
               </FormItem>
             )}
           />

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { HomeHeroSkeleton } from "@/features/home/components/home-skeletons";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { useHomeViewerState } from "@/features/home/hooks/use-home-viewer";
 import type {
@@ -31,7 +32,7 @@ export function HomeHero() {
     homeData.isRecommendationsLoading;
 
   if (viewerLoading || isHeroDataLoading) {
-    return null;
+    return <HomeHeroSkeleton />;
   }
 
   return (

@@ -109,6 +109,18 @@ function ActivitySidebarSkeleton() {
 function ActivityConversationSkeleton() {
   return (
     <main className="hidden min-w-0 flex-1 md:flex">
+      <ActivityConversationStageSkeleton />
+    </main>
+  );
+}
+
+export function ActivityConversationStageSkeleton({
+  showDetail = true,
+}: {
+  showDetail?: boolean;
+} = {}) {
+  return (
+    <>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="fade-in flex h-full animate-in flex-col bg-canvas/40 duration-300">
           <header className="flex h-16 items-center justify-between gap-4 border-border border-b bg-card px-4 py-3">
@@ -186,8 +198,8 @@ function ActivityConversationSkeleton() {
           </footer>
         </div>
       </div>
-      <ActivityDetailSkeleton />
-    </main>
+      {showDetail ? <ActivityDetailSkeleton /> : null}
+    </>
   );
 }
 

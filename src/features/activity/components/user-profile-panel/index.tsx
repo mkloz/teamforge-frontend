@@ -1,8 +1,10 @@
+import { useRef } from "react";
 import { buildActivityDmNavigation } from "@/features/activity/lib/activity-route";
 import {
   buildProfileNavigation,
   type ProfileNavigation,
 } from "@/features/profile/lib/profile-route";
+import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
 import { cn } from "@/shared/lib/utils";
 import { type MutualGroup, MutualGroupsSection } from "./mutual-groups-section";
 import { ProfilePanelInfo } from "./profile-panel-info";
@@ -52,10 +54,19 @@ export function UserProfilePanel({
     chat?.participants?.[0]?.user;
   const { isHydratingProfile, participant } =
     useHydratedProfilePanelParticipant(selectedParticipant);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const profileScrollResetKey =
+    participant?.id ?? chat?.id ?? "missing-profile";
 
   const mutualGroups = propMutualGroups || chat?.mutualGroups || [];
   const isMuted = propIsMuted ?? chat?.isMuted ?? false;
   const isBlocked = propIsBlocked ?? chat?.isBlocked ?? false;
+
+  useResetScrollOnChange({
+    enabled: Boolean(participant?.id || chat?.id),
+    ref: scrollRef,
+    resetKey: profileScrollResetKey,
+  });
 
   if (!participant) {
     return (
@@ -67,6 +78,7 @@ export function UserProfilePanel({
 
   return (
     <div
+      ref={scrollRef}
       className={cn(
         "flex flex-1 flex-col overflow-y-auto",
         isMobile

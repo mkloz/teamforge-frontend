@@ -1,3 +1,4 @@
+import { motion, useReducedMotion } from "framer-motion";
 import { Bell } from "lucide-react";
 import { useUnreadNotificationCount } from "@/features/notifications/hooks/use-notifications";
 import { Button } from "@/shared/components/ui/button";
@@ -16,6 +17,7 @@ export function NotificationsBellTrigger({
   onClick,
 }: NotificationsBellTriggerProps) {
   const { count } = useUnreadNotificationCount();
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <Tooltip>
@@ -34,12 +36,25 @@ export function NotificationsBellTrigger({
         >
           <Bell size={18} strokeWidth={2} aria-hidden="true" />
           {count > 0 && (
-            <span
+            <motion.span
+              key={count}
+              initial={
+                shouldReduceMotion
+                  ? { opacity: 0 }
+                  : { opacity: 0, scale: 0.92 }
+              }
+              animate={
+                shouldReduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1 }
+              }
+              transition={{
+                duration: shouldReduceMotion ? 0.08 : 0.14,
+                ease: [0.22, 1, 0.36, 1],
+              }}
               className="absolute top-0.5 right-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full border-2 border-sidebar bg-accent px-0.5 font-bold text-accent-foreground text-nano tabular-nums leading-none shadow-sm"
               aria-hidden="true"
             >
               {count > 9 ? "9+" : count}
-            </span>
+            </motion.span>
           )}
         </Button>
       </TooltipTrigger>

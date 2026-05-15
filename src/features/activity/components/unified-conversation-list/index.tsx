@@ -4,6 +4,7 @@ import type {
   FilterChip,
   UnifiedConversation,
 } from "@/features/activity/lib/activity-contract";
+import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
 import { EmptyState } from "./empty-state";
 import { FilterHeader } from "./filter-header";
 import { SearchHeader } from "./search-header";
@@ -47,10 +48,17 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
   onDensityChange,
   onSelectItem,
 }: UnifiedConversationListProps) {
-  const { scrollRef, opacity, handleScroll, isPointerEnabled } =
+  const { scrollRef, opacity, handleScroll, isPointerEnabled, resetFade } =
     useSearchHeaderFade({
       headerHeight: SEARCH_H,
     });
+  const scrollResetKey = `${activeFilter}:${searchQuery}`;
+
+  useResetScrollOnChange({
+    resetKey: scrollResetKey,
+    ref: scrollRef,
+    onReset: resetFade,
+  });
 
   const emptyLabel =
     activeFilter === "groups"

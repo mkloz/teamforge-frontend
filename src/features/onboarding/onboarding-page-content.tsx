@@ -3,6 +3,7 @@ import { OnboardingHomeLink } from "@/features/onboarding/components/onboarding-
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
+import { voronoiSplitDividerClassName } from "@/shared/components/visuals/voronoi-split-divider";
 import { cn } from "@/shared/lib/utils";
 import type { VoronoiCatalystHandle } from "@/shared/lib/voronoi/voronoi-contract";
 
@@ -23,7 +24,12 @@ export function ProfileBasicsPageContent({
 }: ProfileBasicsPageContentProps) {
   return (
     <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
-      <div className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-border border-r bg-hero-bg lg:flex">
+      <div
+        className={cn(
+          "relative hidden h-full flex-1 items-center justify-center overflow-hidden border-r bg-hero-bg lg:flex",
+          voronoiSplitDividerClassName,
+        )}
+      >
         <VoronoiCatalyst ref={catalystRef} progress={progress} />
       </div>
 
@@ -96,7 +102,12 @@ export function PersonalityPageContent({
         </div>
       </div>
 
-      <div className="hidden h-full flex-1 items-center justify-center overflow-hidden border-border border-l bg-hero-bg lg:flex">
+      <div
+        className={cn(
+          "hidden h-full flex-1 items-center justify-center overflow-hidden border-l bg-hero-bg lg:flex",
+          voronoiSplitDividerClassName,
+        )}
+      >
         <VoronoiCatalyst progress={catalystProgress} />
       </div>
     </div>
@@ -122,7 +133,12 @@ export function InterestsPageContent({
 }: InterestsPageContentProps) {
   return (
     <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
-      <aside className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-slate-muted/10 border-r bg-hero-bg lg:flex">
+      <aside
+        className={cn(
+          "relative hidden h-full flex-1 items-center justify-center overflow-hidden border-r bg-hero-bg lg:flex",
+          voronoiSplitDividerClassName,
+        )}
+      >
         <VoronoiCatalyst progress={progress} />
       </aside>
 

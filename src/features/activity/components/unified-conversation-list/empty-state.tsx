@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { motion, useReducedMotion } from "framer-motion";
 import { UsersRound } from "lucide-react";
 import { memo } from "react";
 import { EmptyConversationsVisual } from "@/assets/empty-state/empty-conversations";
@@ -23,6 +24,7 @@ export const EmptyState = memo(function EmptyState({
   showForgeCta = false,
   showExploreCta = false,
 }: EmptyStateProps) {
+  const shouldReduceMotion = useReducedMotion();
   const description = getEmptyStateDescription({
     showExploreCta,
     showForgeCta,
@@ -48,7 +50,15 @@ export const EmptyState = memo(function EmptyState({
       </div>
 
       {(showForgeCta || showExploreCta) && (
-        <div className="mt-6 flex w-full max-w-44 flex-col items-stretch gap-2.5">
+        <motion.div
+          initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 3 }}
+          animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+          transition={{
+            duration: shouldReduceMotion ? 0.08 : 0.12,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="mt-6 flex w-full max-w-44 flex-col items-stretch gap-2.5"
+        >
           {showExploreCta && (
             <Button
               asChild
@@ -73,7 +83,7 @@ export const EmptyState = memo(function EmptyState({
               </Link>
             </Button>
           )}
-        </div>
+        </motion.div>
       )}
     </div>
   );
