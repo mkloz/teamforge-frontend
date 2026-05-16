@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronRight } from "lucide-react";
 import { memo } from "react";
 import { UnifiedTypingIndicator } from "@/features/activity/components/chat/unified-typing-indicator";
 import type { ConversationDetailsNavigation } from "@/features/activity/hooks/use-conversation-data";
@@ -89,9 +88,6 @@ export const HeaderInfo = memo(
             <h2 className="min-w-0 flex-1 truncate font-bold text-foreground text-sm leading-tight tracking-tight">
               {title}
             </h2>
-            {isGroup && (
-              <ChevronRight className="size-3.5 shrink-0 text-slate-muted/30" />
-            )}
           </div>
 
           <AnimatePresence mode="wait">
