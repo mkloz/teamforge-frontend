@@ -41,10 +41,10 @@ export const SystemMessage = memo(function SystemMessage({
   const { container, icon: Icon, iconStroke } = styleMap[config.type];
 
   return (
-    <div className="pointer-events-none my-1 flex justify-center px-6">
+    <div className="pointer-events-none my-0.5 flex justify-center px-6">
       <div
         className={cn(
-          "max-w-full rounded-xl border px-3 py-1.5 font-bold text-micro leading-snug tracking-tight sm:max-w-lg md:max-w-xl",
+          "max-w-full rounded-full border px-2.5 py-1 font-bold text-micro leading-snug tracking-tight sm:max-w-lg md:max-w-xl",
           container,
           isHighlighted && "message-search-focus",
         )}

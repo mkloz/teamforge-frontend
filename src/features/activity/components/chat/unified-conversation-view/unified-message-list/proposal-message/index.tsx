@@ -108,7 +108,7 @@ export const ProposalMessage = memo(function ProposalMessage({
         >
           <div
             className={cn(
-              "group/proposal flex w-full min-w-0 max-w-full flex-col sm:w-fit sm:max-w-lg md:max-w-xl",
+              "group/proposal flex w-full min-w-0 max-w-full flex-col sm:max-w-lg md:max-w-xl",
               message.isOwn ? "ml-auto items-end" : "mr-auto items-start",
             )}
           >

@@ -53,7 +53,7 @@ export const MessageFooter = memo(
             content.length < 50 &&
             !content.includes(" ") &&
             reactionGroups.length === 0 &&
-            "absolute right-2 bottom-1.75",
+            "absolute right-2 bottom-1.5",
         )}
       >
         <MessageReactions
@@ -62,7 +62,7 @@ export const MessageFooter = memo(
           onToggleReaction={onToggleReaction}
         />
 
-        <div className="flex shrink-0 items-center gap-1 opacity-70">
+        <div className="flex shrink-0 items-center gap-1 whitespace-nowrap opacity-70">
           {isPinned && (
             <Pin
               aria-label="Pinned message"

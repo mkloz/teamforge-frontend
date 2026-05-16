@@ -36,7 +36,7 @@ export const MessageContent = memo(
               !hasReply &&
               !content.includes(" ") &&
               reactionGroupsLength === 0 &&
-              "pr-18",
+              "pr-24",
           )}
         >
           {highlightedContent}

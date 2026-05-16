@@ -69,6 +69,12 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
   const isInteractionFocused =
     isReplyTarget || isEditTarget || isContextMenuOpen;
   const shouldShowOuterFocus = isHighlighted || isInteractionFocused;
+  const usesInlineFooter =
+    content.trim().length > 0 &&
+    !replyTo &&
+    content.length < 50 &&
+    !content.includes(" ") &&
+    reactionGroups.length === 0;
 
   return (
     <MessageContextMenu
@@ -120,6 +126,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
                     ? "message-search-focus"
                     : isInteractionFocused && "message-action-focus",
                   !content && "min-w-30",
+                  usesInlineFooter && "min-w-40",
                 )}
               >
                 <ForwardedIndicator message={message} isOwn={isOwn} />

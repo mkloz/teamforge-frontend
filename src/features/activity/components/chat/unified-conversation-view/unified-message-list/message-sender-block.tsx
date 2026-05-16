@@ -23,9 +23,9 @@ interface MessageSenderBlockProps {
 }
 
 const spacingAfterClassName = {
-  compact: "mb-1.5",
-  normal: "mb-3",
-  related: "mb-2",
+  compact: "mb-1",
+  normal: "mb-2.5",
+  related: "mb-1.5",
 } satisfies Record<VirtualizedMessageBlock["spacingAfter"], string>;
 
 export function MessageSenderBlock({
@@ -50,7 +50,7 @@ export function MessageSenderBlock({
     <div
       ref={blockRef}
       data-message-block-key={block.key}
-      className="absolute right-0 left-0 flex min-w-0 max-w-full flex-col gap-0.5"
+      className="absolute right-0 left-0 flex min-w-0 max-w-full flex-col gap-0"
       style={{
         minHeight:
           block.measuredHeight === null ? `${block.height}px` : undefined,
@@ -97,7 +97,7 @@ export function MessageSenderBlock({
 
         <div
           className={cn(
-            "flex min-w-0 flex-1 flex-col gap-1",
+            "flex min-w-0 flex-1 flex-col gap-1.5",
             hasHighlightedMessage ? "overflow-visible" : "overflow-x-hidden",
             isSystemBlock
               ? "items-center"
@@ -129,7 +129,7 @@ export function MessageSenderBlock({
                     "min-w-0 max-w-full",
                     isSystemMessage
                       ? "w-full"
-                      : "w-fit sm:max-w-lg md:max-w-xl",
+                      : "w-full sm:max-w-lg md:max-w-xl",
                   )}
                 >
                   <MessageRenderer

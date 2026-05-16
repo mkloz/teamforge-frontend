@@ -1,6 +1,6 @@
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 
-const MESSAGE_SEQUENCE_GAP_MS = 5 * 60 * 1000;
+const MESSAGE_SEQUENCE_GAP_MS = 8 * 60 * 1000;
 
 function isStandaloneTimelineItem(message: UnifiedMessage) {
   return message.type === "SYSTEM";

@@ -100,7 +100,7 @@ function estimateAttachmentHeight(
 
 function estimateMessageHeight(message: UnifiedMessage, bubbleWidth: number) {
   if (message.type === "SYSTEM") {
-    return 28;
+    return 24;
   }
 
   const innerWidth = Math.max(120, bubbleWidth - 28);
@@ -111,8 +111,14 @@ function estimateMessageHeight(message: UnifiedMessage, bubbleWidth: number) {
       : 0;
   const replyHeight = message.replyTo ? 32 : 0;
   const attachmentHeight = estimateAttachmentHeight(message, bubbleWidth);
-  const footerHeight = 24;
-  const verticalChrome = 18;
+  const usesInlineFooter =
+    message.content.trim().length > 0 &&
+    !message.replyTo &&
+    message.content.length < 50 &&
+    !message.content.includes(" ") &&
+    (message.reactions?.length ?? 0) === 0;
+  const footerHeight = usesInlineFooter ? 0 : 24;
+  const verticalChrome = usesInlineFooter ? 16 : 18;
 
   return Math.max(
     38,
@@ -133,8 +139,8 @@ export function estimateSenderGroupHeight(
     senderGroup.items[0] && !senderGroup.items[0].isOwn && !isSystemGroup
       ? 20
       : 0;
-  const dateHeight = showDateSeparator ? 32 : 0;
-  const messageGap = senderGroup.items.length > 1 ? 4 : 0;
+  const dateHeight = showDateSeparator ? 28 : 0;
+  const messageGap = senderGroup.items.length > 1 ? 6 : 0;
   const messagesHeight = senderGroup.items.reduce(
     (sum, message, index) =>
       sum +
@@ -143,9 +149,9 @@ export function estimateSenderGroupHeight(
     0,
   );
   const spacingAfterHeight = {
-    compact: 6,
-    normal: 12,
-    related: 8,
+    compact: 4,
+    normal: 10,
+    related: 6,
   } satisfies Record<MessageBlockSpacing, number>;
 
   return (
