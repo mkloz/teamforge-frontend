@@ -39,8 +39,7 @@ export const FilterHeader = memo(function FilterHeader({
       (f.key !== "unread" || counts.unreadCount > 0) &&
       (f.key !== "pinned" ||
         counts.pinnedCount > 0 ||
-        activeFilter === "pinned") &&
-      (f.key !== "saved" || counts.savedCount > 0 || activeFilter === "saved"),
+        activeFilter === "pinned"),
   );
   const densityLabel = density === "default" ? "Compact view" : "Default view";
   const handleFilterChange = (value: string) => {

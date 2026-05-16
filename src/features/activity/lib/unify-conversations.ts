@@ -13,7 +13,7 @@ import {
   MY_NOTES_TITLE,
 } from "./my-notes-identity";
 
-function isNotesConversation(item: UnifiedConversation) {
+export function getConversationIsNotes(item: UnifiedConversation) {
   return item.kind === "dm" && item.chat?.type === "NOTES";
 }
 
@@ -42,7 +42,7 @@ export function getMessagePreviewText(message?: UnifiedMessage) {
 }
 
 export function getConversationTitle(item: UnifiedConversation) {
-  if (isNotesConversation(item)) {
+  if (getConversationIsNotes(item)) {
     return MY_NOTES_TITLE;
   }
 
@@ -54,7 +54,7 @@ export function getConversationTitle(item: UnifiedConversation) {
 }
 
 export function getConversationAvatarUrl(item: UnifiedConversation) {
-  if (isNotesConversation(item)) {
+  if (getConversationIsNotes(item)) {
     return MY_NOTES_AVATAR_URL;
   }
 
@@ -76,7 +76,7 @@ export function getConversationSecondaryAvatar(item: UnifiedConversation) {
 export function getConversationOnlineStatus(
   item: UnifiedConversation,
 ): OnlineStatus | undefined {
-  if (isNotesConversation(item)) {
+  if (getConversationIsNotes(item)) {
     return undefined;
   }
 
@@ -99,7 +99,7 @@ export function getConversationSubtitle(item: UnifiedConversation) {
   }
 
   if (!item.latestMessage) {
-    if (isNotesConversation(item)) {
+    if (getConversationIsNotes(item)) {
       return MY_NOTES_SUBTITLE;
     }
 

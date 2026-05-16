@@ -12,6 +12,7 @@ type ConversationEmptyArtwork = "default" | "filtered";
 
 interface EmptyStateProps {
   label: string;
+  description?: string | null;
   artwork?: ConversationEmptyArtwork;
   /** When true shows the Forge CTA — used for the "No conversations yet" base empty state */
   showForgeCta?: boolean;
@@ -20,15 +21,18 @@ interface EmptyStateProps {
 
 export const EmptyState = memo(function EmptyState({
   label,
+  description: descriptionProp,
   artwork = "default",
   showForgeCta = false,
   showExploreCta = false,
 }: EmptyStateProps) {
   const shouldReduceMotion = useReducedMotion();
-  const description = getEmptyStateDescription({
-    showExploreCta,
-    showForgeCta,
-  });
+  const description =
+    descriptionProp ??
+    getEmptyStateDescription({
+      showExploreCta,
+      showForgeCta,
+    });
 
   return (
     <div className="flex min-h-[calc(100dvh-8rem)] flex-col items-center justify-center px-6 py-12 text-center">

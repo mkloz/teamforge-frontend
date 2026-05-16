@@ -5,6 +5,7 @@ import { Input } from "@/shared/components/ui/input";
 interface SearchHeaderProps {
   opacity: number;
   isEnabled: boolean;
+  placeholder?: string;
   value: string;
   onChange: (val: string) => void;
 }
@@ -12,6 +13,7 @@ interface SearchHeaderProps {
 export const SearchHeader = memo(function SearchHeader({
   opacity,
   isEnabled,
+  placeholder = "Search conversations...",
   value,
   onChange,
 }: SearchHeaderProps) {
@@ -27,7 +29,7 @@ export const SearchHeader = memo(function SearchHeader({
         <Input
           type="search"
           name="activity-conversation-search"
-          placeholder="Search conversations..."
+          placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           leftIcon={<Search size={15} />}

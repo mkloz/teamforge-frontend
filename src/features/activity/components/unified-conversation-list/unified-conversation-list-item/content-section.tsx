@@ -1,4 +1,4 @@
-import { BellOff, Bookmark, Pin } from "lucide-react";
+import { BellOff, Bookmark, NotebookPen, Pin } from "lucide-react";
 import { memo } from "react";
 import { UnifiedTypingIndicator } from "@/features/activity/components/chat/unified-typing-indicator";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
@@ -8,6 +8,7 @@ import {
 } from "@/features/activity/lib/chat-utils";
 import {
   getConversationIsMuted,
+  getConversationIsNotes,
   getConversationPlanDateTime,
   getConversationPlanStatus,
   getConversationSubtitle,
@@ -52,6 +53,7 @@ export const ContentSection = memo(
     const countdown = planDateTime ? formatCountdown(planDateTime) : null;
     const isDraft = isGroup && getConversationPlanStatus(item) === "DRAFT";
     const isMuted = getConversationIsMuted(item);
+    const isNotes = getConversationIsNotes(item);
     const latestMessage = item.latestMessage;
     const timestampMessage = isSavedView ? previewMessage : latestMessage;
     const hasIndicatorRow =
@@ -99,6 +101,12 @@ export const ContentSection = memo(
               <span className="type-signature-label inline-flex shrink-0 items-center gap-0.5 rounded-full bg-forge-teal/8 px-1.5 py-0.5 font-bold text-forge-teal leading-none">
                 <Bookmark className="size-2.5 fill-forge-teal/15" />
                 {item.savedMessageCount}
+              </span>
+            ) : null}
+            {isNotes ? (
+              <span className="type-signature-label inline-flex shrink-0 items-center gap-0.5 rounded-full bg-spark-amber/10 px-1.5 py-0.5 font-bold text-spark-amber leading-none">
+                <NotebookPen className="size-2.5" strokeWidth={2.5} />
+                Private
               </span>
             ) : null}
             {item.isPinned || isMuted ? (

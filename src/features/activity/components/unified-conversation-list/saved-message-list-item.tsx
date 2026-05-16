@@ -125,24 +125,29 @@ export const SavedMessageListItem = memo(function SavedMessageListItem({
                 </span>
               </div>
               <time className="shrink-0 font-medium text-micro text-slate-muted tabular-nums">
-                {formatRelativeTime(snapshot.savedAt)}
+                Saved {formatRelativeTime(snapshot.savedAt)}
               </time>
             </div>
 
             <div
               className={cn(
-                "flex items-center gap-1.5",
+                "flex items-center gap-2",
                 isCompact ? "mt-0" : "mt-0.5",
               )}
             >
-              <p className="min-w-0 flex-1 truncate text-slate-muted/80 text-xs leading-tight group-hover/item:text-slate-muted">
-                {sender ? (
-                  <span className="font-bold text-forge-teal/90">
-                    {sender}:{" "}
-                  </span>
-                ) : null}
-                {preview}
-              </p>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-slate-muted/80 text-xs leading-tight group-hover/item:text-slate-muted">
+                  {sender ? (
+                    <span className="font-bold text-forge-teal/90">
+                      {sender}:{" "}
+                    </span>
+                  ) : null}
+                  {preview}
+                </p>
+                <p className="mt-0.5 truncate font-medium text-micro text-slate-muted/60">
+                  Opens in the original chat
+                </p>
+              </div>
               <button
                 type="button"
                 aria-label="Remove bookmark"
