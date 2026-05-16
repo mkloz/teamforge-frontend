@@ -10,6 +10,7 @@ import {
   ACTIVITY_CHATS_QUERY_KEY,
   ACTIVITY_SAVED_MESSAGES_QUERY_KEY,
 } from "@/features/activity/api/activity-query-keys";
+import { recoverMessageMutationCaches } from "@/features/activity/api/message-actions/message-mutation-recovery";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import {
   canReactToMessage,
@@ -55,7 +56,15 @@ export const ActivityMessageMutationActions = {
       {
         content,
       },
-    );
+    ).catch(async (error: unknown) => {
+      await recoverMessageMutationCaches({
+        chatId,
+        includeSavedMessages: true,
+        kind,
+        selectedId,
+      });
+      throw error;
+    });
     const mappedMessage = context.mapMessages(
       [updatedMessageResult.data],
       participants,
@@ -107,7 +116,17 @@ export const ActivityMessageMutationActions = {
       return messageId;
     }
 
-    await ActivityApi.deleteMessage(chatId, messageId);
+    await ActivityApi.deleteMessage(chatId, messageId).catch(
+      async (error: unknown) => {
+        await recoverMessageMutationCaches({
+          chatId,
+          includeSavedMessages: true,
+          kind,
+          selectedId,
+        });
+        throw error;
+      },
+    );
     forgetRetryableMessage(messageId);
     ActivityMessageCache.remove(chatId, messageId);
     context.removePinnedMessage(chatId, messageId);
@@ -146,9 +165,17 @@ export const ActivityMessageMutationActions = {
       (reaction) =>
         reaction.emoji === emoji && reaction.userId === currentUser.id,
     );
-    const updatedMessage = hasReaction
-      ? await ActivityApi.removeReaction(chatId, message.id, emoji)
-      : await ActivityApi.addReaction(chatId, message.id, emoji);
+    const updatedMessage = await (hasReaction
+      ? ActivityApi.removeReaction(chatId, message.id, emoji)
+      : ActivityApi.addReaction(chatId, message.id, emoji)
+    ).catch(async (error: unknown) => {
+      await recoverMessageMutationCaches({
+        chatId,
+        kind,
+        selectedId,
+      });
+      throw error;
+    });
     const mappedMessage = context.mapMessages(
       [updatedMessage],
       participants,
@@ -185,9 +212,18 @@ export const ActivityMessageMutationActions = {
       selectedId,
       currentUserParticipant,
     );
-    const updatedMessage = isSaved
-      ? await ActivityApi.unsaveMessage(chatId, message.id)
-      : await ActivityApi.saveMessage(chatId, message.id);
+    const updatedMessage = await (isSaved
+      ? ActivityApi.unsaveMessage(chatId, message.id)
+      : ActivityApi.saveMessage(chatId, message.id)
+    ).catch(async (error: unknown) => {
+      await recoverMessageMutationCaches({
+        chatId,
+        includeSavedMessages: true,
+        kind,
+        selectedId,
+      });
+      throw error;
+    });
     const mappedMessage = context.mapMessages(
       [updatedMessage],
       participants,
@@ -222,6 +258,12 @@ export const ActivityMessageMutationActions = {
 
     const result = await ActivityApi.forwardMessage(sourceChatId, message.id, {
       targetChatId,
+    }).catch(async (error: unknown) => {
+      await recoverMessageMutationCaches({
+        chatId: sourceChatId,
+        targetChatId,
+      });
+      throw error;
     });
 
     await Promise.all([

@@ -1,6 +1,7 @@
 import { ActivityApi } from "@/features/activity/api/activity.api";
 import type { ActivityActionContext } from "@/features/activity/api/activity-action-context";
 import { ActivityMessageCache } from "@/features/activity/api/activity-message-cache";
+import { recoverMessageMutationCaches } from "@/features/activity/api/message-actions/message-mutation-recovery";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { canPinMessage } from "@/features/activity/lib/message-action-capabilities";
 
@@ -28,7 +29,17 @@ export const ActivityPinnedMessageActions = {
       selectedId,
       currentUserParticipant,
     );
-    const updatedMessage = await ActivityApi.pinMessage(chatId, message.id);
+    const updatedMessage = await ActivityApi.pinMessage(
+      chatId,
+      message.id,
+    ).catch(async (error: unknown) => {
+      await recoverMessageMutationCaches({
+        chatId,
+        kind,
+        selectedId,
+      });
+      throw error;
+    });
     const mappedMessage = context.mapMessages(
       [updatedMessage],
       participants,
@@ -64,7 +75,17 @@ export const ActivityPinnedMessageActions = {
       selectedId,
       currentUserParticipant,
     );
-    const updatedMessage = await ActivityApi.unpinMessage(chatId, message.id);
+    const updatedMessage = await ActivityApi.unpinMessage(
+      chatId,
+      message.id,
+    ).catch(async (error: unknown) => {
+      await recoverMessageMutationCaches({
+        chatId,
+        kind,
+        selectedId,
+      });
+      throw error;
+    });
     const mappedMessage = context.mapMessages(
       [updatedMessage],
       participants,

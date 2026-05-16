@@ -10,6 +10,7 @@ import { useSwipeToReply } from "@/features/activity/hooks/use-swipe-to-reply";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { formatChatTime } from "@/features/activity/lib/chat-utils";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
+import { showAppErrorToast } from "@/shared/lib/error-toast";
 import { cn } from "@/shared/lib/utils";
 import { MessageContextMenu } from "../unified-message-item/message-actions-menu";
 import { MessageFooter } from "../unified-message-item/message-footer";
@@ -183,7 +184,14 @@ export const ProposalMessage = memo(function ProposalMessage({
                   isSaved={isSaved}
                   hasReply={Boolean(message.replyTo)}
                   onToggleReaction={(emoji) => {
-                    void messageActions.toggleReaction(message, emoji);
+                    void messageActions
+                      .toggleReaction(message, emoji)
+                      .catch((error) =>
+                        showAppErrorToast(error, {
+                          fallbackMessage:
+                            "We couldn't update that reaction.",
+                        }),
+                      );
                   }}
                 />
               </div>

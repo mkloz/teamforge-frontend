@@ -5,6 +5,7 @@ import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
 import { useSavedMessageIds } from "@/features/activity/hooks/use-saved-message-ids";
 import { formatChatTime } from "@/features/activity/lib/chat-utils";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { showAppErrorToast } from "@/shared/lib/error-toast";
 import { cn } from "@/shared/lib/utils";
 import type { User } from "@/shared/schemas";
 import { MessageContextMenu } from "./message-actions-menu";
@@ -179,7 +180,11 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
                   isSaved={isSaved}
                   hasReply={Boolean(replyTo)}
                   onToggleReaction={(emoji) => {
-                    void toggleReaction(message, emoji);
+                    void toggleReaction(message, emoji).catch((error) =>
+                      showAppErrorToast(error, {
+                        fallbackMessage: "We couldn't update that reaction.",
+                      }),
+                    );
                   }}
                 />
               </div>

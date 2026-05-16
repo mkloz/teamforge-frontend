@@ -59,6 +59,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 import { copyTextToClipboard } from "@/shared/lib/browser-capabilities";
+import { showAppErrorToast } from "@/shared/lib/error-toast";
 import { cn } from "@/shared/lib/utils";
 import type { ChatApi, FriendshipApi, GroupApi } from "@/shared/schemas";
 import { ChatEmojiPickerPanel } from "../../emoji-picker-panel";
@@ -590,7 +591,9 @@ function MessageActionList({
             action.tone === "danger" && MENU_DANGER_CLASS,
           )}
           onSelect={() => {
-            void action.onSelect();
+            void Promise.resolve(action.onSelect()).catch(
+              showMessageActionError,
+            );
           }}
         >
           <MessageActionRow action={action} />
@@ -652,8 +655,16 @@ async function copyMessageContent({
   toast.success(successMessage);
 }
 
-function showReactionError() {
-  toast.error("We couldn't update that reaction.");
+function showReactionError(error: unknown) {
+  showAppErrorToast(error, {
+    fallbackMessage: "We couldn't update that reaction.",
+  });
+}
+
+function showMessageActionError(error: unknown) {
+  showAppErrorToast(error, {
+    fallbackMessage: "That message action didn't go through.",
+  });
 }
 
 interface ForwardMessageDialogProps {
@@ -695,11 +706,18 @@ function ForwardMessageDialog({
     setPendingTargetId(target.chatId);
 
     try {
-      await onForward(message, target.chatId);
+      const result = await onForward(message, target.chatId);
+
+      if (!result) {
+        throw new Error("Forward target is no longer available.");
+      }
+
       toast.success(`Forwarded to ${target.title}.`);
       onOpenChange(false);
-    } catch {
-      toast.error("We couldn't forward that message.");
+    } catch (error) {
+      showAppErrorToast(error, {
+        fallbackMessage: "We couldn't forward that message.",
+      });
     } finally {
       setPendingTargetId(null);
     }

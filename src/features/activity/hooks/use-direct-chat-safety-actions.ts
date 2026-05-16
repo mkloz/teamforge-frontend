@@ -83,11 +83,22 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
                 ...current,
                 chat: {
                   ...current.chat,
+                  hasUnread: updatedChat.hasUnread,
+                  isPinned: updatedChat.isPinned,
                   isMuted: updatedChat.isMuted,
+                  unreadCount: updatedChat.unreadCount,
                 },
               }
             : current,
       );
+    },
+    onError: async () => {
+      await Promise.allSettled([
+        queryClient.invalidateQueries({ queryKey: ACTIVITY_CHATS_QUERY_KEY }),
+        queryClient.invalidateQueries({
+          queryKey: APP_QUERY_KEYS.activity.directSelectionByChatId(chat.id),
+        }),
+      ]);
     },
   });
 

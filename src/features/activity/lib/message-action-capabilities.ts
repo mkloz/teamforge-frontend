@@ -47,11 +47,7 @@ export function canPinMessage(message: MessageActionTarget) {
 }
 
 export function canSaveMessage(message: MessageActionTarget) {
-  return (
-    message.status !== "SENDING" &&
-    message.status !== "FAILED" &&
-    message.type !== "SYSTEM"
-  );
+  return canUsePersistedMessageMutation(message) && message.type !== "SYSTEM";
 }
 
 export function canEditMessage(message: MessageActionTarget) {
