@@ -10,16 +10,19 @@ import { GroupDetailPanel } from "@/features/activity/components/groups/group-de
 import type { ActivityWorkspace } from "@/features/activity/hooks/use-activity";
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
 
+import { ActivityConversationFeedback } from "./activity-conversation-feedback";
 import { ActivityEmptyState } from "./activity-empty-state";
 
 interface ActivityConversationStageProps {
   activity: ActivityWorkspace;
   isMobile: boolean;
+  isOnline: boolean;
 }
 
 export function ActivityConversationStage({
   activity,
   isMobile,
+  isOnline,
 }: ActivityConversationStageProps) {
   const groupMessageScrollHandleRef = useRef<MessageScrollHandle | null>(null);
   const [selectedGroupMemberProfile, setSelectedGroupMemberProfile] = useState<{
@@ -27,7 +30,16 @@ export function ActivityConversationStage({
     memberId: string;
   } | null>(null);
   const isSelectionLoading =
-    activity.hasSelection && activity.isSelectedConversationLoading;
+    activity.hasSelection && activity.isSelectedConversationLoading && isOnline;
+  const shouldShowSelectionError =
+    activity.hasSelection &&
+    (activity.isSelectedConversationError ||
+      (!isOnline && activity.isSelectedConversationLoading));
+  const isMessageInitialLoading =
+    isOnline && activity.isMessageTimelineLoading;
+  const isMessageInitialError =
+    activity.isMessageTimelineError ||
+    (!isOnline && activity.isMessageTimelineLoading);
   const selectedGroupId = activity.selectedGroup?.id ?? null;
   const selectedGroupMemberId =
     selectedGroupMemberProfile?.groupId === selectedGroupId
@@ -95,6 +107,43 @@ export function ActivityConversationStage({
     );
   }
 
+  if (shouldShowSelectionError) {
+    return (
+      <div className="flex h-full min-h-0 min-w-0 flex-1 overflow-hidden">
+        <ActivityConversationFeedback
+          actionLabel="Try again"
+          description={
+            isOnline
+              ? "Something interrupted this chat. Retry to load the latest details."
+              : "This chat needs a fresh load before it can open. Reconnect and try again."
+          }
+          title={isOnline ? "Conversation did not load" : "You are offline"}
+          variant={isOnline ? "error" : "offline"}
+          onAction={activity.retrySelectedConversation}
+        />
+      </div>
+    );
+  }
+
+  if (
+    activity.selectedKind &&
+    activity.selectedId &&
+    ((activity.selectedKind === "group" && !activity.selectedGroup) ||
+      (activity.selectedKind === "dm" && !activity.selectedChat))
+  ) {
+    return (
+      <div className="flex h-full min-h-0 min-w-0 flex-1 overflow-hidden">
+        <ActivityConversationFeedback
+          actionLabel="Back to list"
+          description="It may have been removed, or you may no longer have access to it."
+          title="Conversation unavailable"
+          variant="missing"
+          onAction={activity.handleBack}
+        />
+      </div>
+    );
+  }
+
   if (
     activity.selectedKind === "group" &&
     activity.selectedId &&
@@ -110,12 +159,15 @@ export function ActivityConversationStage({
             typingUsers={activity.typingUsers}
             focusedMessageId={activity.focusedMessageId}
             hasOlderMessages={activity.hasOlderMessages}
-            isLoadingMessages={activity.isMessageTimelineLoading}
+            isLoadingMessages={isMessageInitialLoading}
             isLoadingOlderMessages={activity.isLoadingOlderMessages}
+            isMessageError={isMessageInitialError}
+            isOnline={isOnline}
             isActionOpen={activity.groups.isDetailPanelOpen}
             messageScrollHandleRef={groupMessageScrollHandleRef}
             onBack={activity.handleBack}
             onLoadOlderMessages={activity.loadOlderMessages}
+            onRetryMessages={activity.retryMessageTimeline}
             onShowParticipantProfile={openGroupMemberProfile}
             onToggleAction={toggleGroupDetailPanel}
             onSendMessage={activity.handleSendMessage}
@@ -156,11 +208,14 @@ export function ActivityConversationStage({
             isTyping={activity.isTyping}
             focusedMessageId={activity.focusedMessageId}
             hasOlderMessages={activity.hasOlderMessages}
-            isLoadingMessages={activity.isMessageTimelineLoading}
+            isLoadingMessages={isMessageInitialLoading}
             isLoadingOlderMessages={activity.isLoadingOlderMessages}
+            isMessageError={isMessageInitialError}
+            isOnline={isOnline}
             isActionOpen={activity.direct.isProfilePanelOpen}
             onBack={activity.handleBack}
             onLoadOlderMessages={activity.loadOlderMessages}
+            onRetryMessages={activity.retryMessageTimeline}
             onShowParticipantProfile={openDirectProfilePanel}
             onToggleAction={activity.toggleProfilePanel}
             onSendMessage={activity.handleSendMessage}

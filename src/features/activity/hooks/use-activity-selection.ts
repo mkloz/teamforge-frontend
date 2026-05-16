@@ -30,12 +30,16 @@ export function useActivitySelection() {
     selectedChat: conversation.selectedChat,
     selectedDirectMessages: timeline.selectedDirectMessages,
     isSelectedConversationLoading: conversation.isSelectedConversationLoading,
+    isSelectedConversationError: conversation.isSelectedConversationError,
+    retrySelectedConversation: conversation.retrySelectedConversation,
     isMessageTimelineLoading: timeline.isMessageTimelineLoading,
+    isMessageTimelineError: timeline.isMessageTimelineError,
     isTyping:
       conversation.selectedKind === "dm" &&
       conversation.activeTypingUsers.length > 0,
     hasOlderMessages: timeline.hasOlderMessages,
     isLoadingOlderMessages: timeline.isLoadingOlderMessages,
     loadOlderMessages: timeline.loadOlderMessages,
+    retryMessageTimeline: timeline.retryMessageTimeline,
   };
 }

@@ -4,9 +4,12 @@ import { cn } from "@/shared/lib/utils";
 
 interface ActivitySidebarProps {
   activity: ActivityWorkspace;
+  isOnline: boolean;
 }
 
-export function ActivitySidebar({ activity }: ActivitySidebarProps) {
+export function ActivitySidebar({ activity, isOnline }: ActivitySidebarProps) {
+  const isOfflineInitialLoad = !isOnline && activity.isInitialLoading;
+
   return (
     <aside
       className={cn(
@@ -28,6 +31,9 @@ export function ActivitySidebar({ activity }: ActivitySidebarProps) {
         unreadCount={activity.unreadCount}
         pinnedCount={activity.pinnedCount}
         savedCount={activity.savedCount}
+        isFeedError={activity.isFeedError || isOfflineInitialLoad}
+        isFeedRetrying={activity.isFeedRetrying && !isOfflineInitialLoad}
+        isOnline={isOnline}
         onSearchChange={activity.setSearchQuery}
         onFilterChange={activity.setActiveFilter}
         onDensityChange={activity.setSidebarDensity}
@@ -35,6 +41,7 @@ export function ActivitySidebar({ activity }: ActivitySidebarProps) {
         onTogglePinnedItem={activity.togglePinnedConversation}
         onToggleMutedItem={activity.toggleMutedConversation}
         onMarkReadItem={activity.markConversationRead}
+        onRetryFeed={activity.retryFeed}
         onSelectItem={activity.handleSelectItem}
       />
     </aside>

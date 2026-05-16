@@ -58,6 +58,23 @@ export function useSelectedActivityConversation() {
       : selectedKind === "dm"
         ? Boolean(selectedId) && directQuery.isLoading && !directQuery.data
         : false;
+  const isSelectedConversationError =
+    selectedKind === "group"
+      ? Boolean(selectedId) && groupQuery.isError && !groupQuery.data
+      : selectedKind === "dm"
+        ? Boolean(selectedId) && directQuery.isError && !directQuery.data
+        : false;
+
+  async function retrySelectedConversation() {
+    if (selectedKind === "group") {
+      await groupQuery.refetch();
+      return;
+    }
+
+    if (selectedKind === "dm") {
+      await directQuery.refetch();
+    }
+  }
 
   return {
     selectedId,
@@ -71,6 +88,8 @@ export function useSelectedActivityConversation() {
     selectedChat:
       selectedKind === "dm" ? (directQuery.data?.chat ?? null) : null,
     isSelectedConversationLoading,
+    isSelectedConversationError,
+    retrySelectedConversation,
     proposalMessages: groupQuery.data?.proposalMessages ?? [],
     activeTypingUsers: chatId ? (typingByChatId[chatId] ?? []) : [],
   };

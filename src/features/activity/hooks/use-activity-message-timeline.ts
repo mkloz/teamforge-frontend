@@ -35,6 +35,12 @@ export function useActivityMessageTimeline({
     currentUserId !== null &&
     messagesQuery.isLoading &&
     !messagesQuery.data;
+  const isMessageTimelineError =
+    !!chatId &&
+    selectedParticipants.length > 0 &&
+    currentUserId !== null &&
+    messagesQuery.isError &&
+    !messagesQuery.data;
 
   const flattenedApiMessages = useMemo(
     () => ActivityQueryFactory.flattenMessagePages(messagesQuery.data),
@@ -93,12 +99,18 @@ export function useActivityMessageTimeline({
     }
   }
 
+  async function retryMessageTimeline() {
+    await messagesQuery.refetch();
+  }
+
   return {
     selectedGroupMessages,
     selectedDirectMessages,
     hasOlderMessages: messagesQuery.hasNextPage,
     isMessageTimelineLoading,
+    isMessageTimelineError,
     isLoadingOlderMessages: messagesQuery.isFetchingNextPage,
     loadOlderMessages,
+    retryMessageTimeline,
   };
 }

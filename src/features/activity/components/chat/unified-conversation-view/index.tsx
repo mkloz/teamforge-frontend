@@ -1,5 +1,6 @@
 import type { RefObject } from "react";
 import { memo, useEffect, useRef, useState } from "react";
+import { AlertTriangle, RefreshCw, WifiOff } from "lucide-react";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import { useConversationData } from "@/features/activity/hooks/use-conversation-data";
 import type {
@@ -9,6 +10,7 @@ import type {
   Group,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
+import { Button } from "@/shared/components/ui/button";
 import { ChatStatusBar } from "./chat-status-bar";
 import { CompletedReviewGate } from "./completed-banner";
 import { UnifiedChatHeader } from "./unified-chat-header";
@@ -26,6 +28,8 @@ interface BaseConversationProps {
   hasOlderMessages?: boolean;
   isTyping?: boolean;
   isLoadingOlderMessages?: boolean;
+  isMessageError?: boolean;
+  isOnline?: boolean;
   typingUsers?: { name: string; avatar: string | null }[];
   isActionOpen?: boolean;
   focusedMessageId?: string | null;
@@ -35,6 +39,7 @@ interface BaseConversationProps {
   onBack: () => void;
   onClearSendError?: () => void;
   onLoadOlderMessages?: () => Promise<void> | void;
+  onRetryMessages?: () => Promise<void> | void;
   onShowParticipantProfile?: (participant: ActivityParticipant) => void;
   onToggleAction: () => void;
   onSendMessage: (input: ActivitySendMessageInput) => Promise<void> | void;
@@ -54,6 +59,8 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     isActionOpen = false,
     focusedMessageId,
     isLoadingMessages = false,
+    isMessageError = false,
+    isOnline = true,
     messageScrollHandleRef,
     sendError = null,
     hasOlderMessages = false,
@@ -61,6 +68,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     onBack,
     onClearSendError,
     onLoadOlderMessages,
+    onRetryMessages,
     onShowParticipantProfile,
     onToggleAction,
     onSendMessage,
@@ -173,6 +181,11 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
         }
       />
 
+      {!isOnline ? <ConversationOfflineBanner /> : null}
+      {isOnline && isMessageError && messages.length > 0 ? (
+        <ConversationMessageErrorBanner onRetry={onRetryMessages} />
+      ) : null}
+
       {/* Message area */}
       <div className="relative flex-1 overflow-hidden">
         <UnifiedMessageList
@@ -184,11 +197,14 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
           focusedMessageId={focusedMessageId}
           hasOlderMessages={hasOlderMessages}
           isInitialLoading={isLoadingMessages}
+          isInitialError={isMessageError}
+          isOffline={!isOnline}
           isLoadingOlderMessages={isLoadingOlderMessages}
           messagesEndRef={messagesEndRef}
           containerRef={messagesContainerRef}
           messageScrollHandleRef={activeMessageScrollHandleRef}
           onLoadOlderMessages={onLoadOlderMessages}
+          onRetryInitialError={onRetryMessages}
           onShowParticipantProfile={onShowParticipantProfile}
           typingUsers={activeTypingUsers}
         />
@@ -227,3 +243,55 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     </div>
   );
 });
+
+function ConversationMessageErrorBanner({
+  onRetry,
+}: {
+  onRetry?: () => Promise<void> | void;
+}) {
+  return (
+    <div
+      className="flex items-center justify-between gap-3 border-border border-b bg-spark-amber/10 px-4 py-2 text-ink text-xs"
+      role="status"
+    >
+      <span className="flex min-w-0 items-center gap-2 font-medium">
+        <AlertTriangle
+          aria-hidden="true"
+          className="size-4 shrink-0 text-spark-amber"
+        />
+        <span className="truncate">
+          Some messages did not load. Retry to refresh this thread.
+        </span>
+      </span>
+      {onRetry ? (
+        <Button
+          className="h-7 shrink-0 rounded-full px-2 text-xs"
+          size="xs"
+          variant="accentGhost"
+          onClick={() => void onRetry()}
+        >
+          <RefreshCw size={13} />
+          Retry
+        </Button>
+      ) : null}
+    </div>
+  );
+}
+
+function ConversationOfflineBanner() {
+  return (
+    <div
+      className="flex items-center gap-2 border-border border-b bg-spark-amber/10 px-4 py-2 text-ink text-xs"
+      role="status"
+    >
+      <WifiOff
+        aria-hidden="true"
+        className="size-4 shrink-0 text-spark-amber"
+      />
+      <span className="font-medium">
+        <span className="font-black text-spark-amber">Offline.</span> Cached
+        messages stay visible; new updates resume when you reconnect.
+      </span>
+    </div>
+  );
+}

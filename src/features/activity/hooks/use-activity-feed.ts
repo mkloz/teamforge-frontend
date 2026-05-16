@@ -71,6 +71,21 @@ export function useActivityFeed() {
           },
         )
       : null;
+  const hasBaseDataError =
+    feedData === null &&
+    (currentUserQuery.isError ||
+      groupsQuery.isError ||
+      chatsQuery.isError ||
+      friendshipsQuery.isError);
+  const hasSavedMessagesError =
+    activeFilter === "saved" && savedMessagesQuery.isError;
+  const isFeedError = hasBaseDataError || hasSavedMessagesError;
+  const isFeedRetrying =
+    currentUserQuery.isFetching ||
+    groupsQuery.isFetching ||
+    chatsQuery.isFetching ||
+    friendshipsQuery.isFetching ||
+    savedMessagesQuery.isFetching;
   const isInitialLoading =
     feedData === null &&
     (currentUserQuery.isPending ||
@@ -142,11 +157,23 @@ export function useActivityFeed() {
     );
   }
 
+  async function retryFeed() {
+    await Promise.allSettled([
+      currentUserQuery.refetch(),
+      groupsQuery.refetch(),
+      chatsQuery.refetch(),
+      friendshipsQuery.refetch(),
+      savedMessagesQuery.refetch(),
+    ]);
+  }
+
   return {
     searchQuery,
     activeFilter,
     sidebarDensity,
     isInitialLoading,
+    isFeedError,
+    isFeedRetrying,
     allItems: feedData?.allItems ?? [],
     filteredItems: feedData?.items ?? [],
     groupCount: feedData?.groupCount ?? 0,
@@ -161,6 +188,7 @@ export function useActivityFeed() {
     toggleMutedConversation,
     markConversationRead,
     removeSavedMessage,
+    retryFeed,
     savedMessages,
   };
 }

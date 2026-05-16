@@ -1,6 +1,5 @@
 import type { RefObject, UIEvent } from "react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { EmptyMessageThreadVisual } from "@/assets/empty-state/empty-message-thread";
 import { useChatScroll } from "@/features/activity/hooks/use-chat-scroll";
 import { useMessageGrouping } from "@/features/activity/hooks/use-message-grouping";
 import { useVirtualizedMessageBlocks } from "@/features/activity/hooks/use-virtualized-message-blocks";
@@ -13,6 +12,10 @@ import { LoadingOlderIndicator } from "./loading-older-indicator";
 import { MessageBlockList } from "./message-block-list";
 import { buildMessageBlocks } from "./message-list-blocks";
 import { MessageListBottomAnchor } from "./message-list-bottom-anchor";
+import {
+  MessageListEmptyState,
+  MessageListErrorState,
+} from "./message-list-feedback-state";
 import { MessageListSkeleton } from "./message-list-skeleton";
 import { MessageListViewport } from "./message-list-viewport";
 import type { MessageScrollHandle } from "./message-scroll.types";
@@ -29,12 +32,15 @@ interface UnifiedMessageListProps {
   conversationId: string;
   hasOlderMessages?: boolean;
   focusedMessageId?: string | null;
+  isInitialError?: boolean;
   isInitialLoading?: boolean;
+  isOffline?: boolean;
   isLoadingOlderMessages?: boolean;
   messagesEndRef: RefObject<HTMLDivElement | null>;
   containerRef?: RefObject<HTMLDivElement | null>;
   messageScrollHandleRef?: RefObject<MessageScrollHandle | null>;
   onLoadOlderMessages?: () => Promise<void> | void;
+  onRetryInitialError?: () => Promise<void> | void;
   onShowParticipantProfile?: (participant: ActivityParticipant) => void;
   typingUsers?: { name: string; avatar: string | null }[];
 }
@@ -50,12 +56,15 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
   conversationId,
   hasOlderMessages = false,
   focusedMessageId = null,
+  isInitialError = false,
   isInitialLoading = false,
+  isOffline = false,
   isLoadingOlderMessages = false,
   messagesEndRef,
   containerRef,
   messageScrollHandleRef,
   onLoadOlderMessages,
+  onRetryInitialError,
   onShowParticipantProfile,
   typingUsers = [],
 }: UnifiedMessageListProps) {
@@ -200,6 +209,7 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
     });
   const isEmpty = messages.length === 0;
   const shouldShowInitialLoading = isInitialLoading && isEmpty;
+  const shouldShowInitialError = isInitialError && isEmpty;
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: conversationId intentionally resets per-thread scroll bookkeeping.
   useEffect(() => {
@@ -248,19 +258,17 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
             <MessageListSkeleton />
             <div ref={messagesEndRef} className="h-0 w-full shrink-0" />
           </>
+        ) : shouldShowInitialError ? (
+          <>
+            <MessageListErrorState
+              isOffline={isOffline}
+              onRetry={onRetryInitialError}
+            />
+            <div ref={messagesEndRef} className="h-0 w-full shrink-0" />
+          </>
         ) : isEmpty ? (
           <>
-            <div className="absolute inset-0 flex flex-col items-center justify-center px-6 py-10 text-center">
-              <div className="flex max-w-xs flex-col items-center">
-                <EmptyMessageThreadVisual className="h-32 w-auto text-foreground" />
-                <p className="mt-4 font-semibold text-foreground text-sm">
-                  No messages yet
-                </p>
-                <p className="mt-1 text-muted-foreground text-xs leading-relaxed">
-                  Start the thread when you are ready to plan together.
-                </p>
-              </div>
-            </div>
+            <MessageListEmptyState />
             <div ref={messagesEndRef} className="h-0 w-full shrink-0" />
           </>
         ) : (

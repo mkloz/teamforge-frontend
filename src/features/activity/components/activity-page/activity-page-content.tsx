@@ -7,6 +7,7 @@ interface ActivityPageContentProps {
   activity: ActivityWorkspace;
   contained?: boolean;
   isMobile: boolean;
+  isOnline: boolean;
 }
 
 function getFrameClassName(contained: boolean, hasSelection: boolean) {
@@ -21,10 +22,11 @@ export function ActivityPageContent({
   activity,
   contained = false,
   isMobile,
+  isOnline,
 }: ActivityPageContentProps) {
   return (
     <div className={getFrameClassName(contained, activity.hasSelection)}>
-      <ActivitySidebar activity={activity} />
+      <ActivitySidebar activity={activity} isOnline={isOnline} />
 
       <main
         className={cn(
@@ -32,7 +34,11 @@ export function ActivityPageContent({
           !activity.hasSelection && "hidden md:flex",
         )}
       >
-        <ActivityConversationStage activity={activity} isMobile={isMobile} />
+        <ActivityConversationStage
+          activity={activity}
+          isMobile={isMobile}
+          isOnline={isOnline}
+        />
       </main>
     </div>
   );

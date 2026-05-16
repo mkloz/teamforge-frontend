@@ -14,6 +14,10 @@ import {
 import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
 import { EmptyState } from "./empty-state";
 import { FilterHeader } from "./filter-header";
+import {
+  ConversationListErrorState,
+  ConversationListOfflineBanner,
+} from "./list-feedback-state";
 import { SavedMessageListItem } from "./saved-message-list-item";
 import {
   SavedMessagesHeader,
@@ -35,6 +39,9 @@ interface UnifiedConversationListProps {
   unreadCount: number;
   pinnedCount: number;
   savedCount: number;
+  isFeedError: boolean;
+  isFeedRetrying: boolean;
+  isOnline: boolean;
   onSearchChange: (q: string) => void;
   onFilterChange: (f: FilterChip) => void;
   onDensityChange: (d: "default" | "compact") => void;
@@ -45,6 +52,7 @@ interface UnifiedConversationListProps {
   ) => Promise<void> | void;
   onToggleMutedItem: (kind: "group" | "dm", id: string) => Promise<void> | void;
   onMarkReadItem: (kind: "group" | "dm", id: string) => Promise<void> | void;
+  onRetryFeed: () => Promise<void> | void;
   onSelectItem: (
     id: string,
     kind: "group" | "dm",
@@ -76,6 +84,9 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
   unreadCount,
   pinnedCount,
   savedCount,
+  isFeedError,
+  isFeedRetrying,
+  isOnline,
   onSearchChange,
   onFilterChange,
   onDensityChange,
@@ -83,6 +94,7 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
   onTogglePinnedItem,
   onToggleMutedItem,
   onMarkReadItem,
+  onRetryFeed,
   onSelectItem,
 }: UnifiedConversationListProps) {
   const { scrollRef, opacity, handleScroll, isPointerEnabled, resetFade } =
@@ -123,6 +135,8 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
   const emptyArtwork =
     searchQuery || activeFilter !== "all" ? "filtered" : "default";
   const showSavedShortcut = !isSavedFilter && savedCount > 0;
+  const shouldShowErrorState = isFeedError && visibleItemCount === 0;
+  const shouldShowOfflineBanner = !isOnline && !shouldShowErrorState;
   const savedShortcutIndex = getSavedShortcutIndex(items);
   const searchPlaceholder =
     activeFilter === "saved"
@@ -153,6 +167,8 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
           onChange={onSearchChange}
         />
 
+        {shouldShowOfflineBanner ? <ConversationListOfflineBanner /> : null}
+
         <FilterHeader
           filters={FILTERS}
           activeFilter={activeFilter}
@@ -165,7 +181,19 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
         {isSavedFilter ? <SavedMessagesHeader count={savedCount} /> : null}
 
         <div className="flex flex-col pb-8 sm:pb-0">
-          {visibleItemCount === 0 ? (
+          {shouldShowErrorState ? (
+            <ConversationListErrorState
+              description={
+                isSavedFilter
+                  ? "Retry to bring your saved messages back."
+                  : undefined
+              }
+              isOffline={!isOnline}
+              isRetrying={isFeedRetrying}
+              title={isSavedFilter ? "Saved messages did not load" : undefined}
+              onRetry={onRetryFeed}
+            />
+          ) : visibleItemCount === 0 ? (
             <EmptyState
               label={emptyLabel}
               description={emptyDescription}
