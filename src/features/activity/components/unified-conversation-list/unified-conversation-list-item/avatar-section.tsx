@@ -34,7 +34,7 @@ export const AvatarSection = memo(
           className={cn(
             "shadow-sm ring-1 ring-border/50 transition-colors duration-200 group-hover/item:ring-forge-teal/30",
             isGroup && "rounded-md",
-            isCompact ? "size-9" : "size-11",
+            isCompact ? "size-10 md:size-9" : "size-11",
           )}
         />
 

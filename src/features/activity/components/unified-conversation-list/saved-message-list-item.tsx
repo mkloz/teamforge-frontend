@@ -80,7 +80,9 @@ export const SavedMessageListItem = memo(function SavedMessageListItem({
           data-conversation-key={rowKey}
           className={cn(
             "group/item relative flex w-full select-none items-center text-left outline-none transition duration-200",
-            isCompact ? "gap-2.5 px-3 py-2" : "gap-3.5 px-4 py-3",
+            isCompact
+              ? "min-h-14 gap-2.5 px-3 py-2 md:min-h-0"
+              : "min-h-16 gap-3.5 px-4 py-3 md:min-h-0",
             isSelected ? "bg-muted/60" : "hover:bg-muted/30",
             canOpenOriginal && "cursor-pointer",
           )}
@@ -113,7 +115,7 @@ export const SavedMessageListItem = memo(function SavedMessageListItem({
               className={cn(
                 "shadow-sm ring-1 ring-border/50 transition-colors duration-200 group-hover/item:ring-forge-teal/30",
                 snapshot.conversationKind === "group" && "rounded-md",
-                isCompact ? "size-9" : "size-11",
+                isCompact ? "size-10 md:size-9" : "size-11",
               )}
             />
             <span
@@ -163,14 +165,14 @@ export const SavedMessageListItem = memo(function SavedMessageListItem({
               <button
                 type="button"
                 aria-label="Remove bookmark"
-                className="relative z-20 inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-transparent text-slate-muted/70 opacity-60 transition hover:border-destructive/20 hover:bg-destructive/8 hover:text-destructive focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/25 sm:opacity-0 sm:group-hover/item:opacity-100"
+                className="relative z-20 inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-transparent text-slate-muted/70 opacity-70 transition hover:border-destructive/20 hover:bg-destructive/8 hover:text-destructive focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/25 md:size-6 md:opacity-0 md:group-hover/item:opacity-100"
                 onClick={(event) => {
                   event.stopPropagation();
                   removeBookmark();
                 }}
                 onKeyDown={(event) => event.stopPropagation()}
               >
-                <X className="size-3.5" />
+                <X className="size-4 md:size-3.5" />
               </button>
             </div>
           </div>

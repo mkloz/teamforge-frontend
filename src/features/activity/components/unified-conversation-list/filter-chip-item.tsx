@@ -1,7 +1,10 @@
 import { memo } from "react";
 import { CategoryFilterChip } from "@/shared/components/ui/category-filter-chip";
+import { cn } from "@/shared/lib/utils";
 
 interface FilterChipItemProps {
+  ariaLabel?: string;
+  className?: string;
   label: string;
   isActive: boolean;
   value: string;
@@ -9,6 +12,8 @@ interface FilterChipItemProps {
 }
 
 export const FilterChipItem = memo(function FilterChipItem({
+  ariaLabel,
+  className,
   label,
   isActive,
   value,
@@ -18,11 +23,11 @@ export const FilterChipItem = memo(function FilterChipItem({
     <CategoryFilterChip
       as="radio"
       value={value}
-      aria-label={label}
+      aria-label={ariaLabel ?? label}
       label={label}
       selected={isActive}
       badge={badge}
-      className="h-8 px-3 md:h-6 md:px-2.5"
+      className={cn("h-11 snap-start px-3.5 md:h-6 md:px-2.5", className)}
     />
   );
 });
