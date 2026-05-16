@@ -47,6 +47,7 @@ interface UnifiedConversationListProps {
   ) => Promise<void> | void;
   onToggleMutedItem: (kind: "group" | "dm", id: string) => Promise<void> | void;
   onMarkReadItem: (kind: "group" | "dm", id: string) => Promise<void> | void;
+  onRemoveSavedMessage: (messageId: string) => Promise<void> | void;
   onRetryFeed: () => Promise<void> | void;
   onSelectItem: (
     id: string,
@@ -88,6 +89,7 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
   onTogglePinnedItem,
   onToggleMutedItem,
   onMarkReadItem,
+  onRemoveSavedMessage,
   onRetryFeed,
   onSelectItem,
 }: UnifiedConversationListProps) {
@@ -156,6 +158,11 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
         selectedKind === "saved" && selectedId === SAVED_MESSAGES_CONVERSATION_ID
       }
       latestSavedMessage={latestSavedMessage}
+      onRemoveLatest={
+        latestSavedMessage
+          ? () => onRemoveSavedMessage(latestSavedMessage.message.id)
+          : undefined
+      }
       onSelect={openSavedMessagesChat}
     />
   ) : null;

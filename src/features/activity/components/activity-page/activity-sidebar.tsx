@@ -40,6 +40,7 @@ export function ActivitySidebar({ activity, isOnline }: ActivitySidebarProps) {
         onTogglePinnedItem={activity.togglePinnedConversation}
         onToggleMutedItem={activity.toggleMutedConversation}
         onMarkReadItem={activity.markConversationRead}
+        onRemoveSavedMessage={activity.removeSavedMessage}
         onRetryFeed={activity.retryFeed}
         onSelectItem={activity.handleSelectItem}
       />

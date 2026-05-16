@@ -1,17 +1,22 @@
 import {
   Bookmark,
+  Forward,
   MessageCircle,
   RefreshCw,
   Search,
   Trash2,
 } from "lucide-react";
-import { memo, useMemo, useState } from "react";
+import {
+  memo,
+  useMemo,
+  useState,
+  type KeyboardEvent,
+  type MouseEvent,
+} from "react";
+import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
 import { getActivityConversationKey } from "@/features/activity/lib/activity-conversation-key";
-import {
-  formatChatTime,
-  formatRelativeTime,
-} from "@/features/activity/lib/chat-utils";
+import { formatRelativeTime } from "@/features/activity/lib/chat-utils";
 import type { SavedMessageSnapshot } from "@/features/activity/lib/saved-message";
 import {
   SAVED_MESSAGES_SUBTITLE,
@@ -21,10 +26,15 @@ import {
   getConversationTitle,
   getMessagePreviewText,
 } from "@/features/activity/lib/unify-conversations";
+import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { UnifiedChatHeader } from "./unified-conversation-view/unified-chat-header";
 import { ChatBackground } from "./unified-conversation-view/unified-message-list/chat-background";
+import { MessageContent } from "./unified-conversation-view/unified-message-list/unified-message-item/message-content";
+import { MessageFooter } from "./unified-conversation-view/unified-message-list/unified-message-item/message-footer";
+import { MessageMedia } from "./unified-conversation-view/unified-message-list/unified-message-item/message-media";
+import { ReplyReference } from "./unified-conversation-view/unified-message-list/unified-message-item/reply-reference";
 
 interface SavedMessagesConversationViewProps {
   conversations: UnifiedConversation[];
@@ -187,50 +197,145 @@ function SavedMessageBubble({
 }) {
   const { message, savedAt } = row.snapshot;
   const senderName = message.sender?.name ?? "Unknown sender";
-  const attachmentCount = message.attachments?.length ?? 0;
-  const body = message.content || getMessagePreviewText(message);
+  const isOwn = message.isOwn;
+  const attachments = message.attachments ?? [];
+  const displayContent =
+    message.content ||
+    (attachments.length > 0 ? "" : getMessagePreviewText(message));
+  const { galleryRounding, isReadByOthers, reactionGroups } = useMessageLayout({
+    message,
+    isOwn,
+  });
+  const usesInlineFooter =
+    displayContent.trim().length > 0 &&
+    !message.replyTo &&
+    displayContent.length < 50 &&
+    !displayContent.includes(" ") &&
+    reactionGroups.length === 0;
+
+  function handleOpenKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.currentTarget !== event.target) {
+      return;
+    }
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onOpen();
+    }
+  }
+
+  function handleRemove(event: MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation();
+    void onRemove();
+  }
 
   return (
-    <article className="group/saved-message flex justify-start">
-      <div className="w-full max-w-2xl">
-        <button
-          type="button"
+    <article
+      className={cn(
+        "group/saved-message flex w-full min-w-0 items-end gap-3",
+        isOwn ? "flex-row-reverse justify-start" : "justify-start",
+      )}
+    >
+      {!isOwn ? (
+        <Avatar
+          src={message.sender?.avatar}
+          name={senderName}
+          className="size-8 bg-muted text-muted-foreground text-xs shadow-sm ring-1 ring-border"
+          fallbackClassName="text-muted-foreground"
+        />
+      ) : null}
+
+      <div
+        className={cn(
+          "flex w-full min-w-0 max-w-xs flex-col sm:max-w-lg md:max-w-xl",
+          isOwn ? "ml-auto items-end" : "mr-auto items-start",
+        )}
+      >
+        <div
           className={cn(
-            "w-full rounded-2xl border border-border/70 bg-card/92 p-1 text-left shadow-sm backdrop-blur-md transition duration-200",
-            "hover:border-forge-teal/25 hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30",
+            "mb-1 flex min-w-0 max-w-full flex-wrap items-center gap-1.5 px-1.5",
+            isOwn ? "justify-end text-right" : "justify-start",
+          )}
+        >
+          <span className="inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-full border border-forge-teal/15 bg-forge-teal/8 px-2 py-1 font-bold text-forge-teal text-micro leading-none">
+            <MessageCircle className="size-3 shrink-0" strokeWidth={2.25} />
+            <span className="truncate">From {row.conversationTitle}</span>
+          </span>
+          <span className="font-bold text-micro text-slate-muted/75">
+            saved {formatRelativeTime(savedAt)}
+          </span>
+        </div>
+
+        {!isOwn ? (
+          <p className="mb-0.5 ml-1.5 font-bold text-forge-teal text-micro opacity-90">
+            {senderName}
+          </p>
+        ) : null}
+
+        <div
+          tabIndex={0}
+          role="button"
+          aria-label={`Open original saved message from ${senderName}`}
+          className={cn(
+            "relative flex w-fit min-w-0 max-w-full cursor-pointer flex-col rounded-xl px-1 py-1 text-left shadow-xs transition duration-300",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
+            isOwn
+              ? "rounded-br-none border border-forge-teal/15 bg-forge-teal/10 text-ink shadow-sm backdrop-blur-md"
+              : "rounded-bl-none border border-border/70 bg-card/90 text-ink shadow-sm backdrop-blur-md",
+            !displayContent && "min-w-30",
+            usesInlineFooter && "min-w-40",
           )}
           onClick={onOpen}
+          onKeyDown={handleOpenKeyDown}
         >
-          <div className="flex items-start justify-between gap-2 px-2 pt-1.5 pb-1">
-            <div className="min-w-0">
-              <p className="flex min-w-0 items-center gap-1.5 font-black text-forge-teal text-micro uppercase leading-tight">
-                <MessageCircle className="size-3 shrink-0" strokeWidth={2.25} />
-                <span className="truncate">From {row.conversationTitle}</span>
-              </p>
-              <p className="mt-0.5 truncate font-medium text-slate-muted text-xs leading-tight">
-                {senderName} - saved {formatRelativeTime(savedAt)}
-              </p>
-            </div>
-            <time className="shrink-0 pt-0.5 font-bold text-micro text-slate-muted/70 tabular-nums">
-              {formatChatTime(message.createdAt)}
-            </time>
-          </div>
+          <ForwardedIndicator message={message} isOwn={isOwn} />
 
-          <div className="rounded-xl bg-canvas/55">
-            {attachmentCount > 0 ? (
-              <div className="border-border/40 border-b px-2 py-1.5">
-                <span className="inline-flex items-center rounded-full bg-forge-teal/8 px-2 py-1 font-bold text-forge-teal text-micro">
-                  {attachmentCount} attachment{attachmentCount === 1 ? "" : "s"}
-                </span>
-              </div>
-            ) : null}
-            <p className="wrap-anywhere min-w-0 max-w-full whitespace-pre-wrap px-2 py-2 font-medium text-ink text-sm leading-snug">
-              {body}
-            </p>
-          </div>
-        </button>
+          <ReplyReference
+            replyTo={message.replyTo}
+            isOwn={isOwn}
+            onActivate={() => onOpen()}
+          />
 
-        <div className="mt-1 flex items-center justify-between gap-2 px-2">
+          <MessageMedia
+            attachments={message.attachments}
+            isOwn={isOwn}
+            content={displayContent}
+            createdAt={message.createdAt}
+            status={message.status}
+            isReadByOthers={isReadByOthers}
+            galleryRounding={galleryRounding}
+            reactionGroupsLength={reactionGroups.length}
+            replyTo={message.replyTo}
+          />
+
+          <MessageContent
+            content={displayContent}
+            hasReply={Boolean(message.replyTo)}
+            isOwn={isOwn}
+            reactionGroupsLength={reactionGroups.length}
+          />
+
+          <MessageFooter
+            attachments={message.attachments}
+            content={displayContent}
+            reactionGroups={reactionGroups}
+            isOwn={isOwn}
+            createdAt={message.createdAt}
+            status={message.status}
+            isReadByOthers={isReadByOthers}
+            isEdited={message.isEdited}
+            isPinned={message.isPinned}
+            isSaved
+            hasReply={Boolean(message.replyTo)}
+          />
+        </div>
+
+        <div
+          className={cn(
+            "mt-1 flex items-center gap-2 px-2",
+            isOwn ? "justify-end" : "justify-start",
+          )}
+        >
           <span className="inline-flex items-center gap-1 font-bold text-micro text-slate-muted/70">
             <Bookmark className="size-3 fill-current" aria-hidden="true" />
             Opens original message
@@ -238,7 +343,7 @@ function SavedMessageBubble({
           <button
             type="button"
             className="inline-flex items-center gap-1 rounded-full px-2 py-1 font-bold text-destructive/80 text-micro opacity-70 transition hover:bg-destructive/8 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/25 md:opacity-0 md:group-hover/saved-message:opacity-100"
-            onClick={() => void onRemove()}
+            onClick={handleRemove}
           >
             <Trash2 className="size-3" aria-hidden="true" />
             Remove
@@ -246,6 +351,36 @@ function SavedMessageBubble({
         </div>
       </div>
     </article>
+  );
+}
+
+function ForwardedIndicator({
+  message,
+  isOwn,
+}: {
+  message: SavedMessageSnapshot["message"];
+  isOwn: boolean;
+}) {
+  if (!message.forwardedFromMessageId) {
+    return null;
+  }
+
+  const sourceName = message.forwardedFromSenderName?.trim();
+
+  return (
+    <div
+      className={cn(
+        "mx-1.5 mt-1 mb-0.5 flex min-w-0 items-center gap-1.5 rounded-lg px-1.5 py-0.5 font-bold text-micro",
+        isOwn
+          ? "bg-forge-teal/8 text-forge-teal"
+          : "bg-muted/55 text-slate-muted",
+      )}
+    >
+      <Forward className="size-3 shrink-0" aria-hidden="true" />
+      <span className="min-w-0 truncate">
+        Forwarded{sourceName ? ` from ${sourceName}` : ""}
+      </span>
+    </div>
   );
 }
 
