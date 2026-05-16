@@ -40,15 +40,16 @@ export const ProposalMessageDetails = memo(function ProposalMessageDetails({
     totalVotes,
     voteProgress,
   } = viewState;
+  const shouldShowActions = isPending;
 
   return (
-    <div className="overflow-hidden px-2 pt-1 pb-2">
+    <div className="overflow-hidden px-2 pt-1 pb-1">
       <ProposalComparison
         current={formatProposalValue(proposal.field, proposal.currentValue)}
         proposed={formatProposalValue(proposal.field, proposal.proposedValue)}
       />
 
-      <div className="mt-3 flex flex-col gap-2">
+      <div className="mt-2 flex flex-col gap-1.5">
         <ProposalVoters
           voters={proposalVoters}
           score={`${totalVotes}/${eligibleVoterCount} votes`}
@@ -65,18 +66,20 @@ export const ProposalMessageDetails = memo(function ProposalMessageDetails({
         </div>
       </div>
 
-      <div className="mt-3 flex gap-2">
-        <ProposalActions
-          canVote={canVote}
-          hasVoted={hasVoted}
-          isPending={isPending}
-          isProposer={isProposer}
-          isSubmitting={isSubmitting}
-          onApprove={onApprove}
-          onReject={onReject}
-          onWithdraw={onWithdraw}
-        />
-      </div>
+      {shouldShowActions ? (
+        <div className="mt-2 flex gap-2">
+          <ProposalActions
+            canVote={canVote}
+            hasVoted={hasVoted}
+            isPending={isPending}
+            isProposer={isProposer}
+            isSubmitting={isSubmitting}
+            onApprove={onApprove}
+            onReject={onReject}
+            onWithdraw={onWithdraw}
+          />
+        </div>
+      ) : null}
     </div>
   );
 });
