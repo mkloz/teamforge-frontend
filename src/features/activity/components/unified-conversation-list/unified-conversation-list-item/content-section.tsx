@@ -64,7 +64,7 @@ export const ContentSection = memo(
           type="button"
           aria-label={item.isPinned ? "Unpin chat" : "Pin chat"}
           className={cn(
-            "inline-flex size-5 shrink-0 items-center justify-center rounded-full border border-transparent text-slate-muted/70 opacity-60 transition sm:opacity-0",
+            "relative z-20 inline-flex size-5 shrink-0 items-center justify-center rounded-full border border-transparent text-slate-muted/70 opacity-60 transition sm:opacity-0",
             "hover:border-forge-teal/20 hover:bg-forge-teal/8 hover:text-forge-teal",
             "focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/25",
             item.isPinned &&

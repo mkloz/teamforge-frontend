@@ -196,7 +196,11 @@ export const MessageContextMenu = memo(function MessageContextMenu({
     <>
       <ContextMenu modal={false} onOpenChange={handleOpenChange}>
         <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
-        <ContextMenuContent ref={contentRef} className={MENU_CONTENT_CLASS}>
+        <ContextMenuContent
+          ref={contentRef}
+          aria-label="Message actions"
+          className={MENU_CONTENT_CLASS}
+        >
           <MessageMenuSurface
             kind="context"
             menu={menu}
@@ -277,6 +281,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
+          aria-label="Message actions"
           align={message.isOwn ? "end" : "start"}
           className={MENU_CONTENT_CLASS}
           sideOffset={6}

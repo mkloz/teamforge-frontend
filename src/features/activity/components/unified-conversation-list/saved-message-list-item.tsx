@@ -1,5 +1,5 @@
 import { Bookmark, MessageCircle, X } from "lucide-react";
-import { type KeyboardEvent, memo } from "react";
+import { memo } from "react";
 import {
   ACTIVITY_MENU_ICON_CLASS,
   ACTIVITY_MENU_ITEM_CLASS,
@@ -61,15 +61,6 @@ export const SavedMessageListItem = memo(function SavedMessageListItem({
     snapshot.conversationId,
   );
 
-  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    if (event.key !== "Enter" && event.key !== " ") {
-      return;
-    }
-
-    event.preventDefault();
-    openOriginalMessage();
-  }
-
   function removeBookmark() {
     void onRemove(message.id);
   }
@@ -87,23 +78,28 @@ export const SavedMessageListItem = memo(function SavedMessageListItem({
       <ContextMenuTrigger asChild>
         <div
           data-conversation-key={rowKey}
-          onClick={openOriginalMessage}
-          onKeyDown={handleKeyDown}
-          role="button"
-          aria-current={isSelected ? "true" : undefined}
-          aria-disabled={!canOpenOriginal}
-          aria-label={`${title}, saved message${sender ? ` from ${sender}` : ""}: ${preview}${canOpenOriginal ? "" : ". Original chat is no longer available."}`}
-          tabIndex={0}
           className={cn(
-            "group/item relative flex w-full select-none items-center text-left outline-none transition duration-200 focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-inset",
+            "group/item relative flex w-full select-none items-center text-left outline-none transition duration-200",
             isCompact ? "gap-2.5 px-3 py-2" : "gap-3.5 px-4 py-3",
             isSelected ? "bg-muted/60" : "hover:bg-muted/30",
+            canOpenOriginal && "cursor-pointer",
           )}
         >
+          {canOpenOriginal ? (
+            <button
+              type="button"
+              aria-current={isSelected ? "true" : undefined}
+              aria-label={`${title}, saved message${sender ? ` from ${sender}` : ""}: ${preview}`}
+              className="absolute inset-0 z-10 cursor-pointer appearance-none rounded-none border-0 bg-transparent p-0 text-left outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-inset"
+              onClick={openOriginalMessage}
+            >
+              <span className="sr-only">Open saved message</span>
+            </button>
+          ) : null}
           <span
             aria-hidden="true"
             className={cn(
-              "absolute top-0 left-0 h-full w-1 bg-forge-teal opacity-0 transition-opacity duration-300",
+              "pointer-events-none absolute top-0 left-0 z-20 h-full w-1 bg-forge-teal opacity-0 transition-opacity duration-300",
               isSelected ? "opacity-100" : "group-hover/item:opacity-40",
             )}
           />
@@ -167,7 +163,7 @@ export const SavedMessageListItem = memo(function SavedMessageListItem({
               <button
                 type="button"
                 aria-label="Remove bookmark"
-                className="inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-transparent text-slate-muted/70 opacity-60 transition hover:border-destructive/20 hover:bg-destructive/8 hover:text-destructive focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/25 sm:opacity-0 sm:group-hover/item:opacity-100"
+                className="relative z-20 inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-transparent text-slate-muted/70 opacity-60 transition hover:border-destructive/20 hover:bg-destructive/8 hover:text-destructive focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/25 sm:opacity-0 sm:group-hover/item:opacity-100"
                 onClick={(event) => {
                   event.stopPropagation();
                   removeBookmark();
@@ -180,7 +176,10 @@ export const SavedMessageListItem = memo(function SavedMessageListItem({
           </div>
         </div>
       </ContextMenuTrigger>
-      <ContextMenuContent className={getActivityMenuContentClass("w-52")}>
+      <ContextMenuContent
+        aria-label="Saved message actions"
+        className={getActivityMenuContentClass("w-52")}
+      >
         <ContextMenuItem
           className={ACTIVITY_MENU_ITEM_CLASS}
           disabled={!canOpenOriginal}

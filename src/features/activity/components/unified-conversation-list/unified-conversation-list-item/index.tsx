@@ -6,7 +6,7 @@ import {
   Pin,
   PinOff,
 } from "lucide-react";
-import { type KeyboardEvent, memo } from "react";
+import { memo } from "react";
 import {
   ACTIVITY_MENU_ICON_CLASS,
   ACTIVITY_MENU_ITEM_CLASS,
@@ -59,35 +59,29 @@ export const UnifiedConversationListItem = memo(
     const isMuted = getConversationIsMuted(item);
     const optionLabel = getConversationOptionLabel(item, isMuted);
 
-    const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-      if (event.key !== "Enter" && event.key !== " ") {
-        return;
-      }
-
-      event.preventDefault();
-      onSelect();
-    };
-
     return (
       <ContextMenu modal={false}>
         <ContextMenuTrigger asChild>
           <div
-            onClick={onSelect}
-            onKeyDown={handleKeyDown}
-            role="button"
-            aria-current={isSelected ? "true" : undefined}
-            aria-label={optionLabel}
-            tabIndex={0}
             className={cn(
-              "group/item relative flex w-full select-none items-center text-left outline-none transition duration-200 focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-inset",
+              "group/item relative flex w-full cursor-pointer select-none items-center text-left outline-none transition duration-200",
               isCompact ? "gap-2.5 px-3 py-2" : "gap-3.5 px-4 py-3.5",
               isSelected ? "bg-muted/60" : "hover:bg-muted/30",
             )}
           >
+            <button
+              type="button"
+              aria-current={isSelected ? "true" : undefined}
+              aria-label={optionLabel}
+              className="absolute inset-0 z-10 cursor-pointer appearance-none rounded-none border-0 bg-transparent p-0 text-left outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-inset"
+              onClick={onSelect}
+            >
+              <span className="sr-only">{optionLabel}</span>
+            </button>
             <span
               aria-hidden="true"
               className={cn(
-                "absolute top-0 left-0 h-full w-1 bg-forge-teal opacity-0 transition-opacity duration-300",
+                "pointer-events-none absolute top-0 left-0 z-20 h-full w-1 bg-forge-teal opacity-0 transition-opacity duration-300",
                 isSelected ? "opacity-100" : "group-hover/item:opacity-40",
               )}
             />
@@ -106,7 +100,10 @@ export const UnifiedConversationListItem = memo(
             />
           </div>
         </ContextMenuTrigger>
-        <ContextMenuContent className={getActivityMenuContentClass("w-48")}>
+        <ContextMenuContent
+          aria-label="Conversation actions"
+          className={getActivityMenuContentClass("w-48")}
+        >
           <ContextMenuItem
             className={ACTIVITY_MENU_ITEM_CLASS}
             onSelect={onSelect}
