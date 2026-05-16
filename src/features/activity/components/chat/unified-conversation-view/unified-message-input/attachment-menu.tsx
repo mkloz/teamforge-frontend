@@ -5,6 +5,10 @@ import {
   Paperclip,
 } from "lucide-react";
 import { memo, useRef } from "react";
+import {
+  ACTIVITY_MENU_ITEM_CLASS,
+  getActivityMenuContentClass,
+} from "@/features/activity/components/activity-popup-styles";
 import { Button } from "@/shared/components/ui/button";
 import {
   DropdownMenu,
@@ -84,10 +88,10 @@ export const AttachmentMenu = memo(function AttachmentMenu({
         <DropdownMenuContent
           align="start"
           sideOffset={12}
-          className="w-52 rounded-2xl rounded-bl-none border-border/55 bg-canvas/97 p-1.5 text-ink shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)] backdrop-blur-xl dark:bg-forge-deep-surface/97"
+          className={getActivityMenuContentClass("w-52 p-1.5")}
         >
           <DropdownMenuItem
-            className="min-h-10 cursor-pointer rounded-xl px-2.5 py-2 transition-colors focus:bg-forge-teal/8 focus:text-ink data-[highlighted]:bg-forge-teal/8 data-[highlighted]:text-ink"
+            className={cn(ACTIVITY_MENU_ITEM_CLASS, "min-h-10 px-2.5 py-2")}
             onSelect={(event) => {
               event.preventDefault();
               imageInputRef.current?.click();
@@ -96,7 +100,7 @@ export const AttachmentMenu = memo(function AttachmentMenu({
             <AttachmentMenuRow icon={ImageIcon} label="Photos" />
           </DropdownMenuItem>
           <DropdownMenuItem
-            className="min-h-10 cursor-pointer rounded-xl px-2.5 py-2 transition-colors focus:bg-forge-teal/8 focus:text-ink data-[highlighted]:bg-forge-teal/8 data-[highlighted]:text-ink"
+            className={cn(ACTIVITY_MENU_ITEM_CLASS, "min-h-10 px-2.5 py-2")}
             onSelect={(event) => {
               event.preventDefault();
               fileInputRef.current?.click();

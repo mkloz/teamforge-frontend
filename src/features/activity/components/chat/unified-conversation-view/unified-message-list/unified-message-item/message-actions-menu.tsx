@@ -16,6 +16,14 @@ import {
 import { memo, type ReactNode, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import {
+  ACTIVITY_MENU_ICON_CLASS,
+  ACTIVITY_MENU_ITEM_CLASS,
+  ACTIVITY_MENU_SEPARATOR_CLASS,
+  getActivityMenuContentClass,
+  getActivityPopupPanelClass,
+  getActivityTransparentMenuContentClass,
+} from "@/features/activity/components/activity-popup-styles";
 import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import {
@@ -67,26 +75,28 @@ const QUICK_REACTION_EMOJIS = [
 ] as const;
 
 const MENU_CONTENT_CLASS =
-  "w-[16rem] overflow-visible border-0 bg-transparent p-0 text-ink shadow-none";
+  getActivityTransparentMenuContentClass("w-[16rem]");
 
 const MENU_CARD_CLASS =
-  "w-full rounded-lg border border-border/60 bg-canvas/97 p-1 text-ink shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)] backdrop-blur-xl dark:bg-forge-deep-surface/97";
+  getActivityMenuContentClass("w-full");
 
 const REACTION_DOCK_CLASS = "mb-1.5 w-full text-ink";
 
 const REACTION_DOCK_CLOUD_CLASS =
-  "flex items-center justify-between gap-0.5 rounded-full border border-border/55 bg-canvas/97 p-1 shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)] backdrop-blur-xl dark:bg-forge-deep-surface/97";
+  getActivityPopupPanelClass(
+    "flex items-center justify-between gap-0.5 rounded-full p-1",
+  );
 
 const REACTION_DOCK_PICKER_CLASS =
-  "overflow-hidden rounded-lg shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)] backdrop-blur-xl";
+  getActivityPopupPanelClass("overflow-hidden rounded-lg");
 
 const MENU_ACTION_CLASS =
-  "min-h-8 gap-2 rounded-md px-2 py-1.5 text-sm focus:bg-forge-teal/8 focus:text-ink data-[highlighted]:bg-forge-teal/8 data-[highlighted]:text-ink";
+  cn(ACTIVITY_MENU_ITEM_CLASS, "text-sm");
 
 const MENU_DANGER_CLASS =
   "text-destructive focus:bg-destructive/8 focus:text-destructive data-[highlighted]:bg-destructive/8 data-[highlighted]:text-destructive";
 
-const MENU_SEPARATOR_CLASS = "my-1 bg-border/55";
+const MENU_SEPARATOR_CLASS = ACTIVITY_MENU_SEPARATOR_CLASS;
 
 const EMOJI_ITEM_CLASS =
   "flex size-8 min-h-8 justify-center rounded-full p-0 text-base leading-none focus:bg-spark-amber/12 data-[highlighted]:bg-spark-amber/12 data-[state=open]:bg-spark-amber/12";
@@ -254,7 +264,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
 
   return (
     <>
-      <DropdownMenu open={open} onOpenChange={handleOpenChange}>
+      <DropdownMenu modal={false} open={open} onOpenChange={handleOpenChange}>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
@@ -592,7 +602,7 @@ function MessageActionRow({ action }: { action: MessageActionItem }) {
     <>
       <span
         className={cn(
-          "flex size-7 shrink-0 items-center justify-center rounded-sm border border-border/40 bg-background/65 text-muted-foreground",
+          ACTIVITY_MENU_ICON_CLASS,
           action.tone === "danger" &&
             "border-destructive/20 bg-destructive/8 text-destructive",
         )}
@@ -690,7 +700,11 @@ function ForwardMessageDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[min(30rem,calc(100dvh-2rem))] w-[calc(100%-2rem)] max-w-sm flex-col gap-0 overflow-hidden rounded-lg border-border/60 bg-canvas p-0 shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)] dark:bg-forge-deep-surface">
+      <DialogContent
+        className={getActivityPopupPanelClass(
+          "flex max-h-[min(30rem,calc(100dvh-2rem))] w-[calc(100%-2rem)] max-w-sm flex-col gap-0 overflow-hidden rounded-lg bg-canvas p-0 [&>button]:shadow-none",
+        )}
+      >
         <DialogHeader className="border-border/55 border-b px-4 py-3 pr-11 text-left">
           <DialogTitle className="font-bold text-base">
             Forward message

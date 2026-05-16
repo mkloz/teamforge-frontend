@@ -527,7 +527,7 @@ const EMOJI_PICKER_ROOT_CLASS =
   "w-full overflow-hidden bg-canvas/97 font-sans text-ink shadow-none dark:bg-forge-deep-surface/97";
 
 const EMOJI_PICKER_ROOT_COMPACT_CLASS =
-  "w-full overflow-hidden rounded-lg border border-border/55 bg-canvas/97 font-sans text-ink shadow-none dark:bg-forge-deep-surface/97";
+  "w-full overflow-hidden rounded-lg bg-transparent font-sans text-ink shadow-none";
 
 const DEFAULT_EMOJI_LIST_COMPONENTS = {
   CategoryHeader: EmojiCategoryHeader,

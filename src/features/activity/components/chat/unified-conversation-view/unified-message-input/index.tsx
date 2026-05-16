@@ -1,6 +1,7 @@
 import { memo } from "react";
 
 import { ErrorMessageSendFailedVisual } from "@/assets/error-state/error-message-send-failed";
+import { getActivityPopupPanelClass } from "@/features/activity/components/activity-popup-styles";
 import type { ActivitySendMessageInput } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 
@@ -69,7 +70,11 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
             </div>
           )}
           {hasContextPanel && (
-            <div className="absolute right-0 bottom-full left-0 z-20 mb-2 overflow-hidden rounded-2xl border border-border/55 bg-card/95 shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)] backdrop-blur-xl">
+            <div
+              className={getActivityPopupPanelClass(
+                "absolute right-0 bottom-full left-0 z-20 mb-2 overflow-hidden rounded-lg bg-card/95",
+              )}
+            >
               <ReplyPreview
                 replyingTo={composer.isEditing ? null : composer.replyingTo}
                 onClear={composer.clearReply}

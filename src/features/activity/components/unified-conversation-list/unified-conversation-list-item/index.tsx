@@ -7,6 +7,12 @@ import {
   PinOff,
 } from "lucide-react";
 import { type KeyboardEvent, memo } from "react";
+import {
+  ACTIVITY_MENU_ICON_CLASS,
+  ACTIVITY_MENU_ITEM_CLASS,
+  ACTIVITY_MENU_SEPARATOR_CLASS,
+  getActivityMenuContentClass,
+} from "@/features/activity/components/activity-popup-styles";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
 import { getConversationIsMuted } from "@/features/activity/lib/unify-conversations";
 import {
@@ -30,12 +36,6 @@ interface UnifiedConversationListItemProps {
   onToggleMuted: () => void;
   onMarkRead: () => void;
 }
-
-const MENU_CONTENT_CLASS =
-  "w-48 rounded-lg border border-border/60 bg-canvas/97 p-1 text-ink shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)] backdrop-blur-xl dark:bg-forge-deep-surface/97";
-
-const MENU_ITEM_CLASS =
-  "min-h-8 gap-2 rounded-md px-2 py-1.5 font-bold text-xs focus:bg-forge-teal/8 focus:text-ink data-[highlighted]:bg-forge-teal/8 data-[highlighted]:text-ink";
 
 /**
  * UnifiedConversationListItem - Renders a single conversation in the sidebar list.
@@ -101,21 +101,27 @@ export const UnifiedConversationListItem = memo(
             />
           </div>
         </ContextMenuTrigger>
-        <ContextMenuContent className={MENU_CONTENT_CLASS}>
-          <ContextMenuItem className={MENU_ITEM_CLASS} onSelect={onSelect}>
-            <span className="flex size-7 shrink-0 items-center justify-center rounded-sm border border-border/40 bg-background/65 text-muted-foreground">
+        <ContextMenuContent className={getActivityMenuContentClass("w-48")}>
+          <ContextMenuItem
+            className={ACTIVITY_MENU_ITEM_CLASS}
+            onSelect={onSelect}
+          >
+            <span className={ACTIVITY_MENU_ICON_CLASS}>
               <MessageCircle className="size-4" />
             </span>
             <span className="min-w-0 flex-1 truncate">Open chat</span>
           </ContextMenuItem>
-          <ContextMenuSeparator className="my-1 bg-border/55" />
+          <ContextMenuSeparator className={ACTIVITY_MENU_SEPARATOR_CLASS} />
           <ContextMenuItem
-            className={cn(MENU_ITEM_CLASS, item.isPinned && "text-forge-teal")}
+            className={cn(
+              ACTIVITY_MENU_ITEM_CLASS,
+              item.isPinned && "text-forge-teal",
+            )}
             onSelect={onTogglePinned}
           >
             <span
               className={cn(
-                "flex size-7 shrink-0 items-center justify-center rounded-sm border border-border/40 bg-background/65 text-muted-foreground",
+                ACTIVITY_MENU_ICON_CLASS,
                 item.isPinned &&
                   "border-forge-teal/20 bg-forge-teal/8 text-forge-teal",
               )}
@@ -131,12 +137,15 @@ export const UnifiedConversationListItem = memo(
             </span>
           </ContextMenuItem>
           <ContextMenuItem
-            className={cn(MENU_ITEM_CLASS, isMuted && "text-forge-teal")}
+            className={cn(
+              ACTIVITY_MENU_ITEM_CLASS,
+              isMuted && "text-forge-teal",
+            )}
             onSelect={onToggleMuted}
           >
             <span
               className={cn(
-                "flex size-7 shrink-0 items-center justify-center rounded-sm border border-border/40 bg-background/65 text-muted-foreground",
+                ACTIVITY_MENU_ICON_CLASS,
                 isMuted &&
                   "border-forge-teal/20 bg-forge-teal/8 text-forge-teal",
               )}
@@ -152,8 +161,11 @@ export const UnifiedConversationListItem = memo(
             </span>
           </ContextMenuItem>
           {item.unreadCount > 0 ? (
-            <ContextMenuItem className={MENU_ITEM_CLASS} onSelect={onMarkRead}>
-              <span className="flex size-7 shrink-0 items-center justify-center rounded-sm border border-border/40 bg-background/65 text-muted-foreground">
+            <ContextMenuItem
+              className={ACTIVITY_MENU_ITEM_CLASS}
+              onSelect={onMarkRead}
+            >
+              <span className={ACTIVITY_MENU_ICON_CLASS}>
                 <CheckCheck className="size-4" />
               </span>
               <span className="min-w-0 flex-1 truncate">Mark as read</span>

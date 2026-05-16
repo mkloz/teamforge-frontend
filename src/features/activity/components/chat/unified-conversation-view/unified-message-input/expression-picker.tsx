@@ -9,6 +9,7 @@ import {
 } from "react";
 
 import type { ActivityOutgoingGifAttachment } from "@/features/activity/lib/activity-contract";
+import { getActivityPopupPanelClass } from "@/features/activity/components/activity-popup-styles";
 import { Button } from "@/shared/components/ui/button";
 import {
   Popover,
@@ -115,7 +116,9 @@ export const ExpressionPicker = memo(function ExpressionPicker({
         side="top"
         sideOffset={14}
         aria-hidden={!open}
-        className="w-[min(calc(100vw-1.5rem),22rem)] overflow-hidden rounded-2xl rounded-bl-none border-border/55 bg-canvas/97 p-0 shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)] backdrop-blur-md will-change-transform data-[state=closed]:pointer-events-none data-[state=closed]:invisible data-[state=closed]:opacity-0 dark:bg-forge-deep-surface/97"
+        className={getActivityPopupPanelClass(
+          "w-[min(calc(100vw-1.5rem),22rem)] overflow-hidden rounded-lg p-0 will-change-transform data-[state=closed]:pointer-events-none data-[state=closed]:invisible data-[state=closed]:opacity-0",
+        )}
       >
         <div className="border-border/55 border-b px-1.5 py-1.5">
           <div className="grid grid-cols-2 gap-1">

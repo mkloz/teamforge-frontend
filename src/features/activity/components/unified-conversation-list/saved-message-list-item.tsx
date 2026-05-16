@@ -1,5 +1,11 @@
 import { Bookmark, MessageCircle, X } from "lucide-react";
 import { type KeyboardEvent, memo } from "react";
+import {
+  ACTIVITY_MENU_ICON_CLASS,
+  ACTIVITY_MENU_ITEM_CLASS,
+  ACTIVITY_MENU_SEPARATOR_CLASS,
+  getActivityMenuContentClass,
+} from "@/features/activity/components/activity-popup-styles";
 import type {
   UnifiedConversation,
   UnifiedMessage,
@@ -30,12 +36,6 @@ interface SavedMessageListItemProps {
   onSelect: () => void;
   snapshot: SavedMessageSnapshot;
 }
-
-const MENU_CONTENT_CLASS =
-  "w-52 rounded-lg border border-border/60 bg-canvas/97 p-1 text-ink shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)] backdrop-blur-xl dark:bg-forge-deep-surface/97";
-
-const MENU_ITEM_CLASS =
-  "min-h-8 gap-2 rounded-md px-2 py-1.5 font-bold text-xs focus:bg-forge-teal/8 focus:text-ink data-[highlighted]:bg-forge-teal/8 data-[highlighted]:text-ink";
 
 export const SavedMessageListItem = memo(function SavedMessageListItem({
   conversation,
@@ -164,22 +164,30 @@ export const SavedMessageListItem = memo(function SavedMessageListItem({
           </div>
         </div>
       </ContextMenuTrigger>
-      <ContextMenuContent className={MENU_CONTENT_CLASS}>
-        <ContextMenuItem className={MENU_ITEM_CLASS} onSelect={onSelect}>
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-sm border border-border/40 bg-background/65 text-muted-foreground">
+      <ContextMenuContent className={getActivityMenuContentClass("w-52")}>
+        <ContextMenuItem
+          className={ACTIVITY_MENU_ITEM_CLASS}
+          onSelect={onSelect}
+        >
+          <span className={ACTIVITY_MENU_ICON_CLASS}>
             <MessageCircle className="size-4" />
           </span>
           <span className="min-w-0 flex-1 truncate">Open message</span>
         </ContextMenuItem>
-        <ContextMenuSeparator className="my-1 bg-border/55" />
+        <ContextMenuSeparator className={ACTIVITY_MENU_SEPARATOR_CLASS} />
         <ContextMenuItem
           className={cn(
-            MENU_ITEM_CLASS,
+            ACTIVITY_MENU_ITEM_CLASS,
             "text-destructive focus:bg-destructive/8 data-[highlighted]:bg-destructive/8",
           )}
           onSelect={removeBookmark}
         >
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-sm border border-destructive/20 bg-destructive/8 text-destructive">
+          <span
+            className={cn(
+              ACTIVITY_MENU_ICON_CLASS,
+              "border-destructive/20 bg-destructive/8 text-destructive",
+            )}
+          >
             <X className="size-4" />
           </span>
           <span className="min-w-0 flex-1 truncate">Remove bookmark</span>
