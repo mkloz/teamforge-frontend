@@ -58,9 +58,9 @@ export function MemberCard({
       </div>
 
       {/* Info Section */}
-      <div className="min-w-0 flex-1">
-        <div className="mb-0.5 flex items-center gap-1.5">
-          <p className="truncate font-semibold text-foreground text-sm">
+      <div className="min-w-0 flex-1 overflow-hidden">
+        <div className="mb-0.5 flex min-w-0 items-center gap-1.5">
+          <p className="min-w-0 flex-1 truncate font-semibold text-foreground text-sm">
             {member.user?.name}
           </p>
           <Badge
@@ -70,17 +70,17 @@ export function MemberCard({
             {member.user?.personalityType}
           </Badge>
           {isHighCompatibility && (
-            <BadgeCheck size={12} className="text-forge-teal" />
+            <BadgeCheck size={12} className="shrink-0 text-forge-teal" />
           )}
         </div>
-        <div className="flex items-center gap-2.5">
-          <span className="font-bold text-muted-foreground text-xs">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="shrink-0 font-bold text-muted-foreground text-xs">
             Trust {member.user?.trustScore}%
           </span>
           <div className="h-2 w-px bg-border/50" />
           <span
             className={cn(
-              "font-bold text-xs",
+              "min-w-0 truncate font-bold text-xs",
               isHighCompatibility
                 ? "text-forge-teal"
                 : "text-muted-foreground/60",

@@ -56,8 +56,10 @@ export const ProposalMessageDetails = memo(function ProposalMessageDetails({
         />
 
         <div className="flex items-center justify-between gap-3 text-micro text-muted-foreground">
-          <span>{formatProposalDate(proposal.createdAt)}</span>
-          <span className="font-medium">
+          <span className="min-w-0 truncate">
+            {formatProposalDate(proposal.createdAt)}
+          </span>
+          <span className="shrink-0 font-medium">
             {approveCount} approve · {rejectCount} reject
           </span>
         </div>

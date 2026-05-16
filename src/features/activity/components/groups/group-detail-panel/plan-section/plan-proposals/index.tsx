@@ -53,17 +53,18 @@ export function PlanProposalCard({
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 flex-col gap-0.5">
-          <p className="font-bold text-foreground text-xs">
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <p className="truncate font-bold text-foreground text-xs">
             {PROPOSAL_FIELD_LABELS[proposal.field]}
           </p>
-          <p className="text-muted-foreground text-xs">
-            Proposed by {proposal.proposer.name}
+          <p className="min-w-0 truncate text-muted-foreground text-xs">
+            Proposed by{" "}
+            <span className="font-medium">{proposal.proposer.name}</span>
           </p>
         </div>
         <span
           className={cn(
-            "inline-flex items-center rounded-full px-2.5 py-1 font-bold text-xs",
+            "inline-flex shrink-0 items-center rounded-full px-2.5 py-1 font-bold text-xs",
             STATUS_STYLES[proposal.status],
           )}
         >
@@ -72,7 +73,7 @@ export function PlanProposalCard({
       </div>
 
       {shouldCompact ? (
-        <p className="text-muted-foreground text-xs leading-relaxed">
+        <p className="break-words text-muted-foreground text-xs leading-relaxed">
           Proposed{" "}
           <span className="font-semibold text-foreground">
             {formatProposalValue(proposal.field, proposal.proposedValue)}
@@ -89,13 +90,13 @@ export function PlanProposalCard({
             <p className="font-semibold text-muted-foreground text-xs">
               Current
             </p>
-            <p className="text-foreground/70 text-sm leading-snug">
+            <p className="break-words text-foreground/70 text-sm leading-snug">
               {formatProposalValue(proposal.field, proposal.currentValue)}
             </p>
           </div>
           <div className="py-2">
             <p className="font-semibold text-forge-teal text-xs">Proposed</p>
-            <p className="text-foreground text-sm leading-snug">
+            <p className="break-words text-foreground text-sm leading-snug">
               {formatProposalValue(proposal.field, proposal.proposedValue)}
             </p>
           </div>
@@ -103,8 +104,10 @@ export function PlanProposalCard({
       )}
 
       <div className="flex items-center justify-between gap-3 text-muted-foreground text-xs">
-        <span>{formatProposalDate(proposal.createdAt)}</span>
-        <span className="font-medium">{voteSummary}</span>
+        <span className="min-w-0 truncate">
+          {formatProposalDate(proposal.createdAt)}
+        </span>
+        <span className="shrink-0 font-medium">{voteSummary}</span>
       </div>
 
       {isPending && canAct ? (

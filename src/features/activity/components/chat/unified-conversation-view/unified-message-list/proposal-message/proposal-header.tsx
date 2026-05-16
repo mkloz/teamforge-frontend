@@ -37,11 +37,11 @@ export const ProposalHeader = memo(function ProposalHeader({
       className="flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-forge-teal/6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18"
       onClick={onToggle}
     >
-      <div className="flex min-w-0 items-center gap-2">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
         <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-spark-amber/14 text-spark-amber">
           <Icon className="size-3.5" />
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h4 className="mb-0.5 truncate font-bold text-micro text-spark-amber/80 leading-none">
             Plan change
           </h4>

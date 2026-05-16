@@ -11,12 +11,12 @@ export const ProposalComparison = memo(function ProposalComparison({
   proposed,
 }: ProposalComparisonProps) {
   return (
-    <div className="mt-1 flex min-w-0 items-start gap-2 px-1 py-1">
-      <div className="w-fit min-w-0 max-w-28 shrink">
+    <div className="mt-1 flex min-w-0 items-start gap-2 overflow-hidden px-1 py-1">
+      <div className="min-w-0 max-w-28 shrink basis-1/3">
         <span className="mb-1 block font-bold text-micro text-muted-foreground leading-none">
           Current
         </span>
-        <span className="wrap-break-word block min-w-0 font-semibold text-micro text-muted-foreground/80 leading-snug line-through">
+        <span className="wrap-break-word block min-w-0 break-words font-semibold text-micro text-muted-foreground/80 leading-snug line-through">
           {current}
         </span>
       </div>
@@ -27,7 +27,7 @@ export const ProposalComparison = memo(function ProposalComparison({
         <span className="mb-1 block font-bold text-micro text-spark-amber leading-none">
           New
         </span>
-        <span className="wrap-break-word block min-w-0 font-bold text-foreground text-micro leading-snug">
+        <span className="wrap-break-word block min-w-0 break-words font-bold text-foreground text-micro leading-snug">
           {proposed}
         </span>
       </div>

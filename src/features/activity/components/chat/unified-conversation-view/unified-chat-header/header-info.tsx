@@ -86,7 +86,7 @@ export const HeaderInfo = memo(
         {/* Title & Subtitle Section */}
         <div className="flex h-10 min-w-0 flex-1 flex-col justify-center">
           <div className="flex min-w-0 items-center gap-1.5 overflow-hidden">
-            <h2 className="truncate font-bold text-foreground text-sm leading-tight tracking-tight">
+            <h2 className="min-w-0 flex-1 truncate font-bold text-foreground text-sm leading-tight tracking-tight">
               {title}
             </h2>
             {isGroup && (
@@ -102,14 +102,14 @@ export const HeaderInfo = memo(
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -3 }}
                 transition={{ duration: 0.2 }}
-                className="mt-0.5 flex items-center gap-1.5"
+                className="mt-0.5 flex min-w-0 items-center gap-1.5"
               >
-                <p className="truncate font-bold text-forge-teal text-xs leading-tight">
+                <p className="min-w-0 truncate font-bold text-forge-teal text-xs leading-tight">
                   {typingText}
                 </p>
                 <UnifiedTypingIndicator
                   variant="minimal"
-                  className="h-2.5 opacity-80"
+                  className="h-2.5 shrink-0 opacity-80"
                 />
               </motion.div>
             ) : subtitle ? (

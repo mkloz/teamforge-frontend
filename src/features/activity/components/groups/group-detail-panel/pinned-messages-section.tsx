@@ -71,16 +71,16 @@ function PinnedMessageSummary({ message }: { message: UnifiedMessage }) {
   return (
     <>
       <div className="mb-1 flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <span className="font-semibold text-ink text-sm leading-none">
+        <div className="min-w-0 flex-1">
+          <span className="block truncate font-semibold text-ink text-sm leading-none">
             {message.sender?.name || "System"}
           </span>
         </div>
-        <span className="font-medium text-slate-muted text-xs">
+        <span className="shrink-0 font-medium text-slate-muted text-xs">
           {message.createdAt && dayjs(message.createdAt).format("MMM D")}
         </span>
       </div>
-      <p className="line-clamp-2 text-ink/80 text-sm leading-relaxed">
+      <p className="line-clamp-2 break-words text-ink/80 text-sm leading-relaxed">
         {message.content}
       </p>
     </>
