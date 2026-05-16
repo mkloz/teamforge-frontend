@@ -48,7 +48,9 @@ export function PreferenceGroup({
             onChange={onChange}
           />
         ) : (
-          <p className="py-4 text-slate-muted text-sm">{emptyMessage}</p>
+          <div className="flex min-h-32 items-center justify-center py-4 text-center">
+            <p className="text-slate-muted text-sm">{emptyMessage}</p>
+          </div>
         )}
       </div>
     </>

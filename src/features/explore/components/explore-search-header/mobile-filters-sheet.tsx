@@ -32,7 +32,7 @@ export function MobileFiltersSheet() {
               aria-label={
                 filtered ? "Open filters, filters active" : "Open filters"
               }
-              className="size-11 shrink-0 lg:hidden"
+              className="size-9 shrink-0 rounded-full lg:hidden"
             >
               <SlidersHorizontal className="size-3.5" />
             </Button>

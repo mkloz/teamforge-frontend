@@ -1,4 +1,4 @@
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Globe } from "lucide-react";
 
 import { Image } from "@/shared/components/common/image";
 import { cn } from "@/shared/lib/utils";
@@ -17,64 +17,92 @@ export function LinkPreviewMeta({
   hostname,
   isOwn,
 }: LinkPreviewMetaProps) {
+  const sourceLabel = data.siteName?.trim() || hostname;
+  const title = data.title?.trim();
+  const description = data.description?.trim();
+
   return (
-    <div className={cn("flex gap-2.5 px-2.5 py-2", !hasImage && "py-2.5")}>
-      {data.favicon && !hasImage && (
-        <Image
-          src={data.favicon}
-          alt=""
-          wrapperClassName="mt-0.5 size-5 shrink-0 rounded"
-          className="object-contain opacity-80"
-          loadingComponent={null}
-          fallbackComponent={null}
-          showNoImage={false}
-        />
+    <div
+      className={cn(
+        "flex min-w-0 gap-2.5 px-2.5 py-2",
+        hasImage ? "items-start" : "w-full items-center",
       )}
-
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span
-          className={cn(
-            "truncate font-semibold text-xs uppercase tracking-wider",
-            isOwn
-              ? "text-primary dark:text-primary-foreground/50"
-              : "text-forge-teal/80",
+    >
+      {!hasImage ? (
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-forge-teal/20 bg-forge-teal/10 text-forge-teal">
+          {data.favicon ? (
+            <Image
+              src={data.favicon}
+              alt=""
+              wrapperClassName="size-4 rounded-sm"
+              className="object-contain"
+              loadingComponent={null}
+              fallbackComponent={<Globe className="size-4" />}
+              showNoImage={false}
+            />
+          ) : (
+            <Globe className="size-4" />
           )}
-        >
-          {hostname}
         </span>
+      ) : null}
 
-        {data.title && (
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <div className="flex min-w-0 items-center gap-1.5">
+          <span
+            className={cn(
+              "truncate font-bold text-xs leading-tight",
+              hasImage && "uppercase tracking-wide",
+              isOwn ? "text-ink/80" : "text-slate-muted",
+            )}
+          >
+            {sourceLabel}
+          </span>
+
+          {!hasImage ? (
+            <ExternalLink
+              size={12}
+              strokeWidth={1.75}
+              className="shrink-0 text-slate-muted transition-colors duration-150 group-hover:text-forge-teal"
+              aria-hidden
+            />
+          ) : null}
+        </div>
+
+        {title ? (
           <p
             className={cn(
-              "line-clamp-2 font-semibold text-xs leading-snug",
+              "line-clamp-2 font-bold leading-snug",
+              hasImage ? "text-xs" : "text-sm",
               isOwn ? "text-foreground" : "text-ink",
             )}
           >
-            {data.title}
+            {title}
           </p>
-        )}
+        ) : null}
 
-        {data.description && (
+        {description ? (
           <p
             className={cn(
               "line-clamp-2 text-xs leading-relaxed",
-              isOwn ? "text-foreground/70" : "text-slate-muted",
+              isOwn ? "text-ink/75" : "text-slate-muted",
             )}
           >
-            {data.description}
+            {description}
           </p>
-        )}
+        ) : null}
       </div>
 
-      <ExternalLink
-        size={12}
-        strokeWidth={1.5}
-        className={cn(
-          "mt-0.5 shrink-0 self-start opacity-0 transition-opacity duration-150 group-hover:opacity-50",
-          isOwn ? "text-foreground" : "text-slate-muted",
-        )}
-        aria-hidden
-      />
+      {hasImage ? (
+        <ExternalLink
+          size={12}
+          strokeWidth={1.5}
+          className={cn(
+            "mt-0.5 shrink-0 self-start opacity-0 transition-opacity duration-150 group-hover:opacity-50",
+            isOwn ? "text-foreground" : "text-slate-muted",
+          )}
+          aria-hidden
+        />
+      ) : null}
     </div>
   );
 }

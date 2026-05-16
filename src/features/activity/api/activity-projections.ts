@@ -1,6 +1,8 @@
 import {
   buildDirectFeedItem,
+  buildNotesFeedItem,
   mapDirectChat,
+  mapNotesChat,
 } from "./projections/activity-direct-projections";
 import { deriveFeedData } from "./projections/activity-feed-projections";
 import {
@@ -25,6 +27,7 @@ export const ActivityProjections = {
   buildDirectFeedItem,
   buildGroupFeedItem,
   buildGroupParticipants,
+  buildNotesFeedItem,
   buildParticipantsFromChatSummary,
   buildProposalMessage,
   deriveFeedData,
@@ -34,6 +37,7 @@ export const ActivityProjections = {
   mapDirectChat,
   mapGroup,
   mapMessages,
+  mapNotesChat,
   mapSingleMessage,
   mergeConversationTimeline,
 };

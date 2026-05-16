@@ -7,18 +7,32 @@ import { UnifiedMessageItem } from "./unified-message-item";
 interface MessageRendererProps {
   message: UnifiedMessage;
   showSender: boolean;
+  isHighlighted: boolean;
   kind: "dm" | "group";
+  onActivateReplyTarget: (messageId: string) => void;
+  searchQuery: string;
 }
 
 export const MessageRenderer = memo(
-  ({ message, showSender, kind }: MessageRendererProps) => {
-    if (message.type === "SYSTEM") return <SystemMessage message={message} />;
+  ({
+    message,
+    showSender,
+    isHighlighted,
+    kind,
+    onActivateReplyTarget,
+    searchQuery,
+  }: MessageRendererProps) => {
+    if (message.type === "SYSTEM") {
+      return <SystemMessage message={message} isHighlighted={isHighlighted} />;
+    }
     if (message.type === "PLAN_UPDATE" && message.proposal) {
       return (
         <ProposalMessage
           message={message}
           showSender={showSender}
+          isHighlighted={isHighlighted}
           kind={kind}
+          onActivateReplyTarget={onActivateReplyTarget}
         />
       );
     }
@@ -26,7 +40,10 @@ export const MessageRenderer = memo(
       <UnifiedMessageItem
         message={message}
         showSender={showSender}
+        isHighlighted={isHighlighted}
         kind={kind}
+        onActivateReplyTarget={onActivateReplyTarget}
+        searchQuery={searchQuery}
       />
     );
   },

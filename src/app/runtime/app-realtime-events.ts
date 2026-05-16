@@ -9,8 +9,8 @@ import { shouldApplyRealtimeEvent } from "@/shared/lib/realtime-event-registry";
 import {
   realtimeGroupUpdatedPayloadSchema,
   realtimeNotificationPayloadSchema,
-  type User,
-} from "@/shared/schemas";
+} from "@/shared/schemas/realtime";
+import type { User } from "@/shared/schemas/user";
 
 function getCachedCurrentUser() {
   return appQueryClient.getQueryData<User>(CURRENT_USER_QUERY_KEY);

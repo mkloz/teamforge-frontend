@@ -4,11 +4,15 @@ import { useSyncExternalStore } from "react";
 import { apiClient, refreshAuthSession } from "@/shared/api/api";
 import { authSession } from "@/shared/api/auth-session";
 import { appQueryClient } from "@/shared/api/query-client";
-import { fullUserResponseSchema } from "@/shared/schemas";
+import { fullUserResponseSchema } from "@/shared/schemas/user-response";
 
-import { APP_QUERY_KEYS } from "./query-keys";
+import { CURRENT_USER_QUERY_KEY } from "./current-user-cache";
 
-export const CURRENT_USER_QUERY_KEY = APP_QUERY_KEYS.auth.currentUser;
+export {
+  CURRENT_USER_QUERY_KEY,
+  clearCurrentUserCache,
+} from "./current-user-cache";
+
 export const AUTH_SESSION_RESTORE_QUERY_KEY = [
   "auth",
   "session-restore",
@@ -66,10 +70,6 @@ export async function ensureCurrentUser() {
   }
 
   return appQueryClient.ensureQueryData(currentUserQueryOptions());
-}
-
-export function clearCurrentUserCache() {
-  appQueryClient.removeQueries({ queryKey: CURRENT_USER_QUERY_KEY });
 }
 
 export function useInvalidateCurrentUser() {

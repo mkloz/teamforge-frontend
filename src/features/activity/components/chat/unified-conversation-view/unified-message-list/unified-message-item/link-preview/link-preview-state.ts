@@ -14,6 +14,9 @@ export function getLinkPreviewState(
 ) {
   return {
     hasImage: Boolean(data?.image),
+    hasMetadata: Boolean(
+      data?.title || data?.description || data?.siteName || data?.favicon,
+    ),
     hostname: getLinkPreviewHostname(data?.url ?? fallbackUrl),
   };
 }

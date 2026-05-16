@@ -1,9 +1,14 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ActivityApi } from "@/features/activity/api/activity.api";
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
+import type { ActivityDirectSelectionData } from "@/features/activity/api/activity-query-data";
+import { ACTIVITY_CHATS_QUERY_KEY } from "@/features/activity/api/activity-query-keys";
 import type { DirectChat } from "@/features/activity/lib/activity-contract";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
+import type { ChatApi } from "@/shared/schemas";
 import { useClearActivityRouteSelection } from "./use-clear-activity-route-selection";
 
 type DirectChatSafetyAction = "block" | "unblock";
@@ -20,6 +25,7 @@ function getSafetyMutationName(action: DirectChatSafetyAction) {
 }
 
 export function useDirectChatSafetyActions(chat: DirectChat) {
+  const queryClient = useQueryClient();
   const currentUserQuery = useQuery(currentUserQueryOptions());
   const clearRouteSelection = useClearActivityRouteSelection();
 
@@ -53,6 +59,37 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
       });
     },
   });
+  const muteMutation = useMutation({
+    meta: {
+      errorToastMessage: "We couldn't update notifications for this chat.",
+    },
+    mutationFn: () =>
+      chat.isMuted
+        ? ActivityApi.unmuteChat(chat.id)
+        : ActivityApi.muteChat(chat.id),
+    onSuccess: (updatedChat) => {
+      queryClient.setQueryData<ChatApi[]>(
+        ACTIVITY_CHATS_QUERY_KEY,
+        (current) =>
+          current?.map((item) =>
+            item.id === updatedChat.id ? { ...item, ...updatedChat } : item,
+          ) ?? current,
+      );
+      queryClient.setQueryData<ActivityDirectSelectionData>(
+        APP_QUERY_KEYS.activity.directSelectionByChatId(updatedChat.id),
+        (current) =>
+          current?.chat
+            ? {
+                ...current,
+                chat: {
+                  ...current.chat,
+                  isMuted: updatedChat.isMuted,
+                },
+              }
+            : current,
+      );
+    },
+  });
 
   function toggleBlock() {
     if (!targetUser) {
@@ -68,6 +105,8 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
   return {
     canToggleBlock: Boolean(targetUser),
     isBlockActionPending: mutation.isPending,
+    isMuteActionPending: muteMutation.isPending,
     toggleBlock,
+    toggleMute: () => muteMutation.mutate(),
   };
 }

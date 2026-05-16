@@ -4,13 +4,14 @@ import {
   buildVirtualizedMessageBlocks,
   getVirtualizedMessageTotalHeight,
   type MessageBlockInput,
+  type MessageBlockSpacing,
   type VirtualizedMessageBlock,
 } from "@/features/activity/hooks/message-block-virtualization";
 import { findVisibleRange } from "@/features/activity/hooks/message-block-visible-range";
 import { useMessageBlockMeasurements } from "@/features/activity/hooks/use-message-block-measurements";
 import { useMessageContainerSize } from "@/features/activity/hooks/use-message-container-size";
 
-export type { MessageBlockInput, VirtualizedMessageBlock };
+export type { MessageBlockInput, MessageBlockSpacing, VirtualizedMessageBlock };
 
 interface UseVirtualizedMessageBlocksInput {
   blocks: MessageBlockInput[];

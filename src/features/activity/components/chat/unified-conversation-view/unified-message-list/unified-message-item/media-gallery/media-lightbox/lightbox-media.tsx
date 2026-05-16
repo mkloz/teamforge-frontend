@@ -3,6 +3,7 @@ import { memo, useState } from "react";
 import { ErrorMediaImageUnavailableVisual } from "@/assets/error-state/error-media-image-unavailable";
 import { ErrorMediaVideoUnavailableVisual } from "@/assets/error-state/error-media-video-unavailable";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
+import { isGiphyAttachment } from "@/features/activity/lib/gif-attachments";
 import { cacheMediaIntrinsicSize } from "@/features/activity/lib/media-intrinsic-size";
 import { Image } from "@/shared/components/common/image";
 import { useImageState } from "@/shared/hooks/use-image-state";
@@ -70,6 +71,7 @@ export const LightboxVideo = memo(function LightboxVideo({
 }) {
   const [hasMetadata, setHasMetadata] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const isGif = isGiphyAttachment(media);
 
   return (
     <div className="relative flex size-full items-center justify-center">
@@ -94,7 +96,10 @@ export const LightboxVideo = memo(function LightboxVideo({
       <video
         src={media.url}
         poster={media.thumbnailUrl || undefined}
-        controls
+        autoPlay={isGif}
+        controls={!isGif}
+        loop={isGif}
+        muted={isGif}
         playsInline
         preload="metadata"
         onLoadedMetadata={(event) => {

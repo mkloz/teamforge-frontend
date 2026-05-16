@@ -66,16 +66,23 @@ export function useActivityRouteActions({
     });
   }
 
-  function selectItem(id: string, kind: ActivityKind) {
+  function selectItem(
+    id: string,
+    kind: ActivityKind,
+    options: { messageId?: string | null } = {},
+  ) {
     const nextPanel = getPreferredActivityPanel(isDesktop, kind);
 
     selectConversation(id, kind, {
       shouldOpenSidePanel: nextPanel !== null,
     });
 
-    void setRouteState(getSelectionRoutePatch(id, kind, nextPanel), {
-      history: "push",
-    });
+    void setRouteState(
+      getSelectionRoutePatch(id, kind, nextPanel, options.messageId ?? null),
+      {
+        history: "push",
+      },
+    );
   }
 
   function clearSelection() {

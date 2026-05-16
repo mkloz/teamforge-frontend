@@ -6,6 +6,7 @@ import { Button } from "@/shared/components/ui/button";
 interface ScrollActionButtonsProps {
   showScrollToBottom: boolean;
   onScrollToBottom: () => void;
+  newMessageCount: number;
   hasProposalShortcut: boolean;
   onScrollToProposal: () => void;
 }
@@ -14,51 +15,61 @@ export const ScrollActionButtons = memo(
   ({
     showScrollToBottom,
     onScrollToBottom,
+    newMessageCount,
     hasProposalShortcut,
     onScrollToProposal,
-  }: ScrollActionButtonsProps) => (
-    <AnimatePresence mode="popLayout">
-      <div className="pointer-events-none absolute right-6 bottom-6 z-30 flex flex-col items-end gap-3">
-        {showScrollToBottom && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 10 }}
-            className="pointer-events-auto"
-          >
-            <Button
-              onClick={() => onScrollToBottom()}
-              variant="outline"
-              size="icon"
-              className="relative size-10 shrink-0 rounded-full"
-            >
-              <ChevronDown className="size-5 transition-transform group-hover:translate-y-0.5" />
-              <div className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full border-2 border-canvas bg-spark-amber font-black text-ink text-xs">
-                3
-              </div>
-            </Button>
-          </motion.div>
-        )}
+  }: ScrollActionButtonsProps) => {
+    const newMessageCountLabel =
+      newMessageCount > 98 ? "99+" : String(newMessageCount);
 
-        {hasProposalShortcut && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 10 }}
-            className="pointer-events-auto"
-          >
-            <Button
-              onClick={onScrollToProposal}
-              variant="secondary"
-              size="xs"
-              className="rounded-full px-2.5 py-1.5"
+    return (
+      <>
+        <AnimatePresence mode="popLayout">
+          {hasProposalShortcut && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: -8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: -8 }}
+              className="pointer-events-none absolute top-4 right-4 z-30"
             >
-              <AlertCircle className="size-3.5 animate-pulse" />
-              <span className="font-black text-xs tracking-wider">Vote</span>
-            </Button>
-          </motion.div>
-        )}
-      </div>
-    </AnimatePresence>
-  ),
+              <Button
+                onClick={onScrollToProposal}
+                variant="secondary"
+                size="xs"
+                className="pointer-events-auto rounded-full px-2.5 py-1.5 shadow-md"
+              >
+                <AlertCircle className="size-3.5 animate-pulse" />
+                <span className="font-black text-xs tracking-wider">Vote</span>
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence mode="popLayout">
+          {showScrollToBottom && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 10 }}
+              className="pointer-events-none absolute right-6 bottom-6 z-30"
+            >
+              <Button
+                onClick={() => onScrollToBottom()}
+                variant="outline"
+                size="icon"
+                className="pointer-events-auto relative size-10 shrink-0 rounded-full"
+              >
+                <ChevronDown className="size-5 transition-transform group-hover:translate-y-0.5" />
+                {newMessageCount > 0 && (
+                  <div className="type-signature-label absolute -top-1 -right-1 flex min-w-4 items-center justify-center rounded-full border-2 border-canvas bg-spark-amber px-1 font-black text-ink leading-4">
+                    {newMessageCountLabel}
+                  </div>
+                )}
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </>
+    );
+  },
 );

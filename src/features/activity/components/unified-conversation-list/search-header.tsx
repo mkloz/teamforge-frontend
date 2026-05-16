@@ -26,6 +26,7 @@ export const SearchHeader = memo(function SearchHeader({
       <div>
         <Input
           type="search"
+          name="activity-conversation-search"
           placeholder="Search conversations..."
           value={value}
           onChange={(e) => onChange(e.target.value)}

@@ -6,7 +6,18 @@ import {
   hasRetryableMessage,
   releaseOptimisticMessageResources,
 } from "@/features/activity/api/activity-outgoing-message";
+import {
+  ACTIVITY_CHATS_QUERY_KEY,
+  ACTIVITY_SAVED_MESSAGES_QUERY_KEY,
+} from "@/features/activity/api/activity-query-keys";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import {
+  canReactToMessage,
+  isOptimisticMessageId,
+  isSyntheticProposalMessageId,
+} from "@/features/activity/lib/message-action-capabilities";
+import { appQueryClient } from "@/shared/api/query-client";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 
 export const ActivityMessageMutationActions = {
   async updateMessage(
@@ -16,7 +27,12 @@ export const ActivityMessageMutationActions = {
     messageId: string,
     content: string,
   ) {
-    if (!kind || !selectedId) {
+    if (
+      !kind ||
+      !selectedId ||
+      isSyntheticProposalMessageId(messageId) ||
+      isOptimisticMessageId(messageId)
+    ) {
       return null;
     }
 
@@ -48,6 +64,11 @@ export const ActivityMessageMutationActions = {
 
     ActivityMessageCache.replace(chatId, messageId, mappedMessage);
     ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
+    if (mappedMessage.isSaved) {
+      await appQueryClient.invalidateQueries({
+        queryKey: ACTIVITY_SAVED_MESSAGES_QUERY_KEY,
+      });
+    }
     return {
       message: mappedMessage,
       requestId: updatedMessageResult.requestId,
@@ -60,7 +81,7 @@ export const ActivityMessageMutationActions = {
     selectedId: string | null,
     messageId: string,
   ) {
-    if (!kind || !selectedId) {
+    if (!kind || !selectedId || isSyntheticProposalMessageId(messageId)) {
       return null;
     }
 
@@ -91,6 +112,9 @@ export const ActivityMessageMutationActions = {
     ActivityMessageCache.remove(chatId, messageId);
     context.removePinnedMessage(chatId, messageId);
     ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
+    await appQueryClient.invalidateQueries({
+      queryKey: ACTIVITY_SAVED_MESSAGES_QUERY_KEY,
+    });
     return messageId;
   },
 
@@ -101,7 +125,7 @@ export const ActivityMessageMutationActions = {
     message: UnifiedMessage,
     emoji: string,
   ) {
-    if (!kind || !selectedId) {
+    if (!kind || !selectedId || !canReactToMessage(message)) {
       return null;
     }
 
@@ -135,5 +159,78 @@ export const ActivityMessageMutationActions = {
     context.syncPinnedMessage(chatId, mappedMessage);
     ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
     return mappedMessage;
+  },
+
+  async toggleSavedMessage(
+    context: ActivityActionContext,
+    kind: "group" | "dm" | null,
+    selectedId: string | null,
+    message: UnifiedMessage,
+    isSaved: boolean,
+  ) {
+    if (!kind || !selectedId || isSyntheticProposalMessageId(message.id)) {
+      return null;
+    }
+
+    const chatId = await context.resolveChatId(kind, selectedId);
+
+    if (!chatId) {
+      return null;
+    }
+
+    const { currentUser, currentUserParticipant } =
+      await context.ensureBaseData();
+    const participants = await context.resolveParticipants(
+      kind,
+      selectedId,
+      currentUserParticipant,
+    );
+    const updatedMessage = isSaved
+      ? await ActivityApi.unsaveMessage(chatId, message.id)
+      : await ActivityApi.saveMessage(chatId, message.id);
+    const mappedMessage = context.mapMessages(
+      [updatedMessage],
+      participants,
+      currentUser.id,
+    )[0];
+
+    ActivityMessageCache.replace(chatId, message.id, mappedMessage);
+    context.syncPinnedMessage(chatId, mappedMessage);
+    ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
+    await appQueryClient.invalidateQueries({
+      queryKey: ACTIVITY_SAVED_MESSAGES_QUERY_KEY,
+    });
+    return mappedMessage;
+  },
+
+  async forwardMessage(
+    context: ActivityActionContext,
+    kind: "group" | "dm" | null,
+    selectedId: string | null,
+    message: UnifiedMessage,
+    targetChatId: string,
+  ) {
+    if (!kind || !selectedId || isSyntheticProposalMessageId(message.id)) {
+      return null;
+    }
+
+    const sourceChatId = await context.resolveChatId(kind, selectedId);
+
+    if (!sourceChatId) {
+      return null;
+    }
+
+    const result = await ActivityApi.forwardMessage(sourceChatId, message.id, {
+      targetChatId,
+    });
+
+    await Promise.all([
+      appQueryClient.invalidateQueries({ queryKey: ACTIVITY_CHATS_QUERY_KEY }),
+      appQueryClient.invalidateQueries({
+        queryKey: APP_QUERY_KEYS.activity.messages(targetChatId),
+      }),
+    ]);
+
+    return result;
   },
 };

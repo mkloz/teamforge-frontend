@@ -12,7 +12,7 @@ import {
   reloadBrowserLocation,
   setBrowserSessionStorageItem,
 } from "@/shared/lib/browser-environment";
-import { captureException, trackEvent } from "@/shared/lib/telemetry";
+import { warnInDevelopment } from "@/shared/lib/development-warning";
 import type { RouteErrorScope } from "@/shared/lib/telemetry-contract";
 import {
   telemetryErrorScopes,
@@ -21,6 +21,8 @@ import {
 
 const DYNAMIC_IMPORT_RELOAD_KEY = "teamforge:dynamic-import-reload";
 const DYNAMIC_IMPORT_RELOAD_COOLDOWN_MS = 30_000;
+
+type RouteErrorTelemetryContext = Record<string, string | undefined>;
 
 interface RouteErrorStateProps {
   error: unknown;
@@ -71,6 +73,30 @@ function recoverDynamicImportError() {
   return true;
 }
 
+async function captureRouteException(
+  scope: string,
+  error: unknown,
+  context: RouteErrorTelemetryContext,
+) {
+  try {
+    const { captureException } = await import("@/shared/lib/telemetry");
+
+    captureException(scope, error, context);
+  } catch (telemetryError) {
+    warnInDevelopment("Route error telemetry failed.", telemetryError);
+  }
+}
+
+async function trackRouteRecovery(context: RouteErrorTelemetryContext) {
+  try {
+    const { trackEvent } = await import("@/shared/lib/telemetry");
+
+    trackEvent(trackedEventNames.routeErrorRecovery, context);
+  } catch (telemetryError) {
+    warnInDevelopment("Route recovery telemetry failed.", telemetryError);
+  }
+}
+
 export function RouteErrorState({
   error,
   scope,
@@ -91,7 +117,7 @@ export function RouteErrorState({
       return;
     }
 
-    captureException(telemetryErrorScopes.routeError, error, {
+    void captureRouteException(telemetryErrorScopes.routeError, error, {
       routeScope: scope,
     });
   }, [error, scope]);
@@ -102,7 +128,7 @@ export function RouteErrorState({
     }
 
     setIsRetrying(true);
-    trackEvent(trackedEventNames.routeErrorRecovery, {
+    void trackRouteRecovery({
       routeScope: scope,
       status: "started",
     });
@@ -111,17 +137,17 @@ export function RouteErrorState({
       queryErrorResetBoundary.reset();
       onRetry();
       await router.invalidate();
-      trackEvent(trackedEventNames.routeErrorRecovery, {
+      void trackRouteRecovery({
         routeScope: scope,
         status: "success",
       });
       setIsRetrying(false);
     } catch (retryError) {
-      captureException(telemetryErrorScopes.routeError, retryError, {
+      void captureRouteException(telemetryErrorScopes.routeError, retryError, {
         routeScope: scope,
         recovery: "retry",
       });
-      trackEvent(trackedEventNames.routeErrorRecovery, {
+      void trackRouteRecovery({
         routeScope: scope,
         status: "error",
       });

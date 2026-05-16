@@ -1,12 +1,13 @@
 import { type RefObject, useMemo } from "react";
 
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import type { ScrollToMessageOptions } from "./message-scroll.types";
 
 interface UsePendingProposalShortcutInput {
   containerRef?: RefObject<HTMLDivElement | null>;
   getMessageElement: (id: string) => HTMLDivElement | null;
   messages: UnifiedMessage[];
-  scrollToMessage: (id: string) => void;
+  scrollToMessage: (id: string, options?: ScrollToMessageOptions) => void;
 }
 
 export function usePendingProposalShortcut({
@@ -33,9 +34,10 @@ export function usePendingProposalShortcut({
     }
 
     const viewport = containerRef?.current;
+    const scrollOptions: ScrollToMessageOptions = { highlight: true };
 
     if (!viewport) {
-      scrollToMessage(targetIds[0]);
+      scrollToMessage(targetIds[0], scrollOptions);
       return;
     }
 
@@ -58,7 +60,7 @@ export function usePendingProposalShortcut({
       .flatMap((candidate) => (candidate ? [candidate] : []))
       .sort((left, right) => left.distance - right.distance)[0];
 
-    scrollToMessage(closestTarget?.id ?? targetIds[0]);
+    scrollToMessage(closestTarget?.id ?? targetIds[0], scrollOptions);
   }
 
   return {

@@ -6,7 +6,6 @@ import { UnifiedTypingIndicator } from "@/features/activity/components/chat/unif
 import type { ConversationDetailsNavigation } from "@/features/activity/hooks/use-conversation-data";
 import type { OnlineStatus } from "@/features/activity/lib/activity-contract";
 import { Avatar, AvatarStatus } from "@/shared/components/common/avatar";
-import { Button } from "@/shared/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
@@ -20,7 +19,6 @@ interface HeaderInfoProps {
   avatarUrl?: string | null;
   detailsNavigation?: ConversationDetailsNavigation;
   isGroup: boolean;
-  secondaryAvatar?: string | null;
   onlineStatus?: OnlineStatus;
   isTyping?: boolean;
   typingText?: string;
@@ -34,7 +32,6 @@ export const HeaderInfo = memo(
     avatarUrl,
     detailsNavigation,
     isGroup,
-    secondaryAvatar,
     onlineStatus,
     isTyping,
     typingText,
@@ -49,28 +46,17 @@ export const HeaderInfo = memo(
             name={title}
             shape={isGroup ? "rounded" : "circle"}
             className={cn(
-              "relative transition-all duration-300 group-hover/header-info:shadow-sm",
+              "relative transition-all duration-300",
               isGroup ? "size-10 rounded-md" : "size-10",
             )}
-            imageClassName="transition-transform duration-700 ease-out group-hover/header-info:scale-110"
+            imageClassName="transition-transform duration-700 ease-out"
             fallbackClassName="bg-muted text-xs text-muted-foreground"
             loading="eager"
           >
-            <div className="absolute inset-0 bg-ink/0 transition-colors group-hover/header-info:bg-ink/5" />
+            <div className="absolute inset-0 bg-ink/0" />
           </Avatar>
 
-          {/* Secondary indicator (Group member or Online Status) */}
-          {isGroup && secondaryAvatar ? (
-            <div className="absolute -right-0.5 -bottom-0.5 z-10 size-3 overflow-hidden rounded-lg shadow-sm transition-transform duration-300 group-hover/header-info:translate-x-0.5 group-hover/header-info:translate-y-0.5">
-              <Avatar
-                src={secondaryAvatar}
-                alt=""
-                fallback=""
-                shape="rounded"
-                className="size-full rounded-lg"
-              />
-            </div>
-          ) : !isGroup && onlineStatus ? (
+          {!isGroup && onlineStatus ? (
             <Tooltip>
               <TooltipTrigger asChild>
                 <AvatarStatus
@@ -96,11 +82,11 @@ export const HeaderInfo = memo(
         {/* Title & Subtitle Section */}
         <div className="flex h-10 min-w-0 flex-1 flex-col justify-center">
           <div className="flex min-w-0 items-center gap-1.5 overflow-hidden">
-            <h2 className="truncate font-bold text-foreground text-sm leading-tight tracking-tight transition-colors duration-300 group-hover/header-info:text-primary">
+            <h2 className="truncate font-bold text-foreground text-sm leading-tight tracking-tight">
               {title}
             </h2>
             {isGroup && (
-              <ChevronRight className="size-3.5 shrink-0 text-slate-muted/30 transition-all duration-300 group-hover/header-info:translate-x-0.5 group-hover/header-info:text-primary/60" />
+              <ChevronRight className="size-3.5 shrink-0 text-slate-muted/30" />
             )}
           </div>
 
@@ -122,7 +108,7 @@ export const HeaderInfo = memo(
                   className="h-2.5 opacity-80"
                 />
               </motion.div>
-            ) : !isGroup && subtitle ? (
+            ) : subtitle ? (
               <motion.p
                 key="subtitle"
                 initial={{ opacity: 0, y: 3 }}
@@ -152,19 +138,15 @@ export const HeaderInfo = memo(
     }
 
     return (
-      <Button
-        type="button"
-        variant="ghost"
-        onClick={onToggle}
-        className={headerInfoClassName}
-      >
+      <button type="button" onClick={onToggle} className={headerInfoClassName}>
         {content}
-      </Button>
+      </button>
     );
   },
 );
 
 const headerInfoClassName = cn(
-  "group/header-info -m-1 flex h-auto min-w-0 flex-1 justify-start gap-3 rounded-lg p-1 text-left transition-all duration-300",
-  "bg-transparent hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-985",
+  "group/header-info -m-1 flex h-auto min-w-0 flex-1 cursor-pointer items-center justify-start gap-3 rounded-lg border-0 bg-transparent p-1 text-left shadow-none transition-none",
+  "hover:bg-transparent hover:shadow-none active:bg-transparent active:shadow-none",
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
 );

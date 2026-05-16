@@ -74,7 +74,7 @@ export function ManualGroupDetails({
         {isLoadingFriends && <ManualFriendsSkeleton />}
 
         {!isLoadingFriends && friends.length === 0 && (
-          <div className="flex items-center gap-3 rounded-lg border border-border/40 bg-card p-4">
+          <div className="flex min-h-28 items-center justify-center gap-3 rounded-lg border border-border/40 bg-card p-4">
             <EmptyInviteCandidatesVisual className="h-10 w-auto shrink-0 text-foreground" />
             <p className="text-muted-foreground text-xs leading-relaxed">
               You do not have friends to invite yet. The group can still be

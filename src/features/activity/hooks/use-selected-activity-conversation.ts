@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
@@ -27,16 +28,23 @@ export function useSelectedActivityConversation() {
     enabled: selectedKind === "dm" && !!selectedId,
   });
 
-  const selectedParticipants =
-    selectedKind === "group"
-      ? (groupQuery.data?.group?.members
-          ?.map((member) => member.user)
-          .filter(isActivityParticipant) ?? [])
-      : selectedKind === "dm"
-        ? (directQuery.data?.chat?.participants
-            ?.map((participant) => participant.user)
+  const selectedParticipants = useMemo(
+    () =>
+      selectedKind === "group"
+        ? (groupQuery.data?.group?.members
+            ?.map((member) => member.user)
             .filter(isActivityParticipant) ?? [])
-        : [];
+        : selectedKind === "dm"
+          ? (directQuery.data?.chat?.participants
+              ?.map((participant) => participant.user)
+              .filter(isActivityParticipant) ?? [])
+          : [],
+    [
+      directQuery.data?.chat?.participants,
+      groupQuery.data?.group?.members,
+      selectedKind,
+    ],
+  );
 
   const chatId =
     selectedKind === "group"

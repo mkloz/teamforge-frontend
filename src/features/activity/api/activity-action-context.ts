@@ -1,5 +1,6 @@
 import type {
   ActivityOutgoingAttachment,
+  ActivityOutgoingGifAttachment,
   ActivityParticipant,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
@@ -13,6 +14,7 @@ import type {
 export interface SendActivityMessageInput {
   attachments?: ActivityOutgoingAttachment[];
   content: string;
+  gif?: ActivityOutgoingGifAttachment;
   replyTo?: UnifiedMessage | null;
   replyToId?: string | null;
 }

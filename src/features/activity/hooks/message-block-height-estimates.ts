@@ -4,6 +4,8 @@ import type { SenderGroup } from "@/features/activity/hooks/use-message-grouping
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { getCachedMediaIntrinsicSize } from "@/features/activity/lib/media-intrinsic-size";
 
+export type MessageBlockSpacing = "compact" | "normal" | "related";
+
 const preparedTextCache = new Map<string, PreparedText>();
 const BODY_FONT = "500 14px Inter";
 const BODY_LINE_HEIGHT = 20;
@@ -97,6 +99,10 @@ function estimateAttachmentHeight(
 }
 
 function estimateMessageHeight(message: UnifiedMessage, bubbleWidth: number) {
+  if (message.type === "SYSTEM") {
+    return 28;
+  }
+
   const innerWidth = Math.max(120, bubbleWidth - 28);
   const textHeight =
     message.content.trim().length > 0
@@ -118,14 +124,34 @@ export function estimateSenderGroupHeight(
   senderGroup: SenderGroup,
   bubbleWidth: number,
   showDateSeparator: boolean,
+  spacingAfter: MessageBlockSpacing,
 ) {
+  const isSystemGroup = senderGroup.items.every(
+    (message) => message.type === "SYSTEM",
+  );
   const senderLabelHeight =
-    senderGroup.items[0] && !senderGroup.items[0].isOwn ? 20 : 0;
-  const dateHeight = showDateSeparator ? 44 : 0;
+    senderGroup.items[0] && !senderGroup.items[0].isOwn && !isSystemGroup
+      ? 20
+      : 0;
+  const dateHeight = showDateSeparator ? 32 : 0;
+  const messageGap = senderGroup.items.length > 1 ? 4 : 0;
   const messagesHeight = senderGroup.items.reduce(
-    (sum, message) => sum + estimateMessageHeight(message, bubbleWidth) + 8,
+    (sum, message, index) =>
+      sum +
+      estimateMessageHeight(message, bubbleWidth) +
+      (index === 0 ? 0 : messageGap),
     0,
   );
+  const spacingAfterHeight = {
+    compact: 6,
+    normal: 12,
+    related: 8,
+  } satisfies Record<MessageBlockSpacing, number>;
 
-  return dateHeight + senderLabelHeight + messagesHeight + 12;
+  return (
+    dateHeight +
+    senderLabelHeight +
+    messagesHeight +
+    spacingAfterHeight[spacingAfter]
+  );
 }

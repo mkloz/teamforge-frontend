@@ -5,6 +5,8 @@ export const activityFilterValues = [
   "groups",
   "direct",
   "unread",
+  "pinned",
+  "saved",
 ] as const;
 export const activityDensityValues = ["default", "compact"] as const;
 export const activityKindValues = ["group", "dm"] as const;

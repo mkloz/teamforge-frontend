@@ -1,94 +1,9 @@
-import {
-  Bell,
-  CalendarDays,
-  Handshake,
-  Loader2,
-  type LucideIcon,
-  MessageCircle,
-  ShieldCheck,
-  Star,
-  UserPlus,
-  UsersRound,
-} from "lucide-react";
+import { Loader2, type LucideIcon } from "lucide-react";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import type { Notification } from "@/shared/schemas";
-
-function relativeTime(date: string): string {
-  const timestamp = new Date(date).getTime();
-
-  if (Number.isNaN(timestamp)) {
-    return "recently";
-  }
-
-  const diff = Math.max(0, Date.now() - timestamp);
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  const days = Math.floor(hrs / 24);
-  return `${days}d ago`;
-}
-
-function getTypeConfig(type: Notification["type"]) {
-  switch (type) {
-    case "GROUP_FORMED":
-    case "GROUP_INVITE":
-      return {
-        icon: Handshake,
-        iconClassName: "bg-spark-amber/12 text-spark-amber",
-      };
-    case "PLAN_CREATED":
-    case "PLAN_CONFIRMED":
-    case "PLAN_UPDATED":
-    case "PLAN_PROPOSAL":
-    case "PLAN_STARTING_SOON":
-    case "PLAN_COMPLETED":
-    case "PLAN_CANCELLED":
-      return {
-        icon: CalendarDays,
-        iconClassName: "bg-forge-teal/10 text-forge-teal",
-      };
-    case "GROUP_JOIN_REQUEST":
-    case "GROUP_JOIN_APPROVED":
-    case "GROUP_MEMBER_LEFT":
-    case "GROUP_DISBANDED":
-      return {
-        icon: UsersRound,
-        iconClassName: "bg-forge-teal/10 text-forge-teal",
-      };
-    case "NEW_MESSAGE":
-    case "MESSAGE_MENTION":
-      return {
-        icon: MessageCircle,
-        iconClassName: "bg-forge-teal/10 text-forge-teal",
-      };
-    case "RATING_REQUEST":
-    case "RATING_RECEIVED":
-      return {
-        icon: Star,
-        iconClassName: "bg-spark-amber/12 text-spark-amber",
-      };
-    case "FRIEND_REQUEST":
-    case "FRIEND_ACCEPTED":
-      return {
-        icon: UserPlus,
-        iconClassName: "bg-forge-teal/10 text-forge-teal",
-      };
-    case "ACCOUNT_SECURITY":
-      return {
-        icon: ShieldCheck,
-        iconClassName: "bg-spark-amber/12 text-spark-amber",
-      };
-    default:
-      return {
-        icon: Bell,
-        iconClassName: "bg-slate-muted/10 text-slate-muted",
-      };
-  }
-}
+import { getTypeConfig, relativeTime } from "./notification-display";
 
 interface NotificationItemProps {
   item: Notification;
@@ -109,7 +24,7 @@ export function NotificationItem({
       variant="ghost"
       onClick={() => onSelect(item)}
       disabled={isPending}
-      aria-label={`${item.isRead ? "Read" : "Unread"} notification. ${item.title}. ${item.message}`}
+      aria-label={`Open notification details. ${item.isRead ? "Read" : "Unread"} notification. ${item.title}. ${item.message}`}
       className={cn(
         "h-auto w-full justify-start rounded-none border-none p-0 text-left hover:bg-muted/35 focus-visible:ring-inset",
         !item.isRead && "bg-forge-teal/8 hover:bg-forge-teal/10",
@@ -140,18 +55,18 @@ export function NotificationItem({
                 aria-hidden="true"
               />
             )}
-          </div>
-          <p className="line-clamp-2 text-slate-muted text-sm leading-snug">
-            {item.message}
-          </p>
-          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
             <time
               dateTime={item.createdAt}
-              className="font-medium text-slate-muted/70 text-xs"
+              className="mt-0.5 shrink-0 font-medium text-slate-muted/70 text-xs"
             >
               {relativeTime(item.createdAt)}
             </time>
-            {isPending && (
+          </div>
+          <p className="min-w-0 truncate font-normal text-slate-muted text-sm leading-snug">
+            {item.message}
+          </p>
+          {isPending && (
+            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
               <span className="inline-flex items-center gap-1 font-semibold text-forge-teal text-xs">
                 <Loader2
                   className="size-3 shrink-0 animate-spin"
@@ -159,8 +74,8 @@ export function NotificationItem({
                 />
                 Opening
               </span>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </span>
     </Button>

@@ -37,7 +37,7 @@ export const MessageMedia = memo(
     return (
       <div
         className={cn(
-          "flex w-full shrink-0 flex-col gap-1 overflow-hidden",
+          "flex w-full min-w-0 max-w-full shrink-0 flex-col gap-1 overflow-hidden",
           content ? "mb-1" : "",
         )}
       >

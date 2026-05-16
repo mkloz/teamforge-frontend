@@ -103,6 +103,7 @@ export function AddressAutocomplete({
       <div ref={inputShellRef} className="relative">
         <Input
           id={inputId}
+          type="search"
           value={inputValue}
           onChange={handleInputChange}
           onFocus={handleInputFocus}

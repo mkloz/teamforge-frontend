@@ -34,7 +34,7 @@ export const DocumentMessage = memo(function DocumentMessage({
   return (
     <div
       className={cn(
-        "group/doc flex w-full min-w-48 items-center gap-2.5 rounded-xl border p-2 transition-colors",
+        "group/doc flex w-full min-w-0 max-w-full items-center gap-2.5 rounded-xl border p-2 transition-colors sm:min-w-48",
         isOwn
           ? "border-white/5 bg-white/10 hover:bg-white/15"
           : "border-border/40 bg-muted/30 hover:bg-muted/50",

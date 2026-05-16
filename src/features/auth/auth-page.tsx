@@ -1,6 +1,8 @@
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRef, useState } from "react";
+import { config } from "@/config/config";
 import { AuthPageContent } from "@/features/auth/auth-page-content";
 import { LoginForm } from "@/features/auth/components/login-form";
 import { RegisterForm } from "@/features/auth/components/register-form";
@@ -40,7 +42,7 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
     await navigate(buildPostAuthRedirectNavigation(user, returnTo));
   };
 
-  return (
+  const content = (
     <AuthPageContent
       catalystRef={catalystRef}
       onInput={handleInput}
@@ -83,5 +85,15 @@ export function AuthPage({ defaultView = "login" }: AuthPageProps) {
         </motion.div>
       </AnimatePresence>
     </AuthPageContent>
+  );
+
+  if (!config.googleClientId) {
+    return content;
+  }
+
+  return (
+    <GoogleOAuthProvider clientId={config.googleClientId}>
+      {content}
+    </GoogleOAuthProvider>
   );
 }

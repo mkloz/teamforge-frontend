@@ -16,6 +16,8 @@ export const chatApiSchema = z.object({
   type: chatTypeSchema,
   createdAt: z.string().datetime(),
   groupId: z.string().nullable(),
+  isPinned: z.boolean().optional().default(false),
+  isMuted: z.boolean().optional().default(false),
   group: z
     .object({
       id: z.string(),
@@ -32,6 +34,7 @@ export const chatApiSchema = z.object({
         userId: z.string(),
         isMuted: z.boolean(),
         isBlocked: z.boolean(),
+        isPinned: z.boolean().optional().default(false),
         joinedAt: z.string().datetime(),
         leftAt: z.string().datetime().nullable(),
         lastReadMessageId: z.string().nullable(),
@@ -137,6 +140,7 @@ export const messageApiSchema = z
     status: messageStatusSchema,
     isEdited: z.boolean(),
     isPinned: z.boolean(),
+    isSaved: z.boolean().optional().default(false),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime().optional(),
     editedAt: z.string().datetime().nullable(),
@@ -144,6 +148,10 @@ export const messageApiSchema = z
     chatId: z.string(),
     senderId: z.string(),
     replyToId: z.string().nullable(),
+    forwardedFromMessageId: z.string().nullable().optional(),
+    forwardedFromChatId: z.string().nullable().optional(),
+    forwardedFromSenderId: z.string().nullable().optional(),
+    forwardedFromSenderName: z.string().nullable().optional(),
     version: z.number().optional(),
     sender: messageSenderSummarySchema.optional(),
     replyTo: messageReplyPreviewSchema.nullable().optional(),
@@ -161,6 +169,20 @@ export const messageApiSchema = z
   });
 
 export type MessageApi = z.infer<typeof messageApiSchema>;
+
+export const savedMessageApiSchema = z.object({
+  messageId: z.string(),
+  userId: z.string(),
+  savedAt: z.string().datetime(),
+  chat: z.object({
+    id: z.string(),
+    type: chatTypeSchema,
+    groupId: z.string().nullable(),
+  }),
+  message: messageApiSchema,
+});
+
+export type SavedMessageApi = z.infer<typeof savedMessageApiSchema>;
 
 export const linkPreviewSchema = z.object({
   url: z.string().url(),

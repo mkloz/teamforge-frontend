@@ -69,7 +69,9 @@ export function directSelectionQueryOptions(
       const chatSummary = chats.find((item) => item.id === chatId) ?? null;
       const chat = friendship
         ? context.mapDirectChat(friendship, currentUserParticipant, chatSummary)
-        : null;
+        : chatSummary?.type === "NOTES"
+          ? context.mapNotesChat(chatSummary, currentUserParticipant)
+          : null;
 
       return {
         chat,

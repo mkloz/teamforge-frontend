@@ -115,6 +115,38 @@ export const ActivityActions = {
     );
   },
 
+  toggleSavedMessage(
+    context: ActivityActionContext,
+    kind: "group" | "dm" | null,
+    selectedId: string | null,
+    message: UnifiedMessage,
+    isSaved: boolean,
+  ) {
+    return ActivityMessageActions.toggleSavedMessage(
+      context,
+      kind,
+      selectedId,
+      message,
+      isSaved,
+    );
+  },
+
+  forwardMessage(
+    context: ActivityActionContext,
+    kind: "group" | "dm" | null,
+    selectedId: string | null,
+    message: UnifiedMessage,
+    targetChatId: string,
+  ) {
+    return ActivityMessageActions.forwardMessage(
+      context,
+      kind,
+      selectedId,
+      message,
+      targetChatId,
+    );
+  },
+
   ...ActivityInvitationActions,
 
   ...ActivityPlanProposalActions,

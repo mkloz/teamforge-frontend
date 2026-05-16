@@ -55,9 +55,11 @@ export function PeopleSection({ detail }: PeopleSectionProps) {
           ) : null}
         </>
       ) : (
-        <p className="text-muted-foreground text-sm">
-          No one is in yet. Be the first to join.
-        </p>
+        <div className="flex min-h-32 items-center justify-center py-4 text-center">
+          <p className="text-muted-foreground text-sm">
+            No one is in yet. Be the first to join.
+          </p>
+        </div>
       )}
     </Section>
   );

@@ -18,7 +18,7 @@ export function EmptyQueueItem({
     >
       <Link
         {...buildExploreNavigation()}
-        className="group flex min-w-0 items-center gap-3 px-1 py-4 transition-colors duration-150 hover:bg-forge-teal/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-3"
+        className="group flex min-h-28 min-w-0 items-center gap-3 px-1 py-4 transition-colors duration-150 hover:bg-forge-teal/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-3"
       >
         <div className="flex min-w-0 flex-1 items-center gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center text-forge-teal">

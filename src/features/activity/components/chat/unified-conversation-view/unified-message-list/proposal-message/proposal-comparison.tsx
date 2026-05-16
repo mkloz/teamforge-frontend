@@ -1,3 +1,4 @@
+import { ArrowRight } from "lucide-react";
 import { memo } from "react";
 
 interface ProposalComparisonProps {
@@ -10,20 +11,23 @@ export const ProposalComparison = memo(function ProposalComparison({
   proposed,
 }: ProposalComparisonProps) {
   return (
-    <div className="relative mt-1 flex flex-col gap-2">
-      <div className="grid grid-cols-[3.25rem_minmax(0,1fr)] items-baseline gap-2 rounded-lg border border-border border-dashed bg-muted/20 p-2">
-        <span className="font-bold text-micro text-muted-foreground leading-snug">
+    <div className="mt-1 flex min-w-0 items-start gap-2 px-1 py-1">
+      <div className="w-fit min-w-0 max-w-28 shrink">
+        <span className="mb-1 block font-bold text-micro text-muted-foreground leading-none">
           Current
         </span>
-        <span className="wrap-break-word min-w-0 text-right font-semibold text-micro text-muted-foreground leading-snug line-through">
+        <span className="wrap-break-word block min-w-0 font-semibold text-micro text-muted-foreground/80 leading-snug line-through">
           {current}
         </span>
       </div>
-      <div className="grid grid-cols-[3.25rem_minmax(0,1fr)] items-baseline gap-2 rounded-lg border border-spark-amber/20 bg-spark-amber/10 p-2">
-        <span className="font-bold text-micro text-spark-amber leading-snug">
+      <span className="mt-4 flex size-6 shrink-0 rounded-full bg-spark-amber/12 text-spark-amber">
+        <ArrowRight className="m-auto size-3.5" strokeWidth={2.25} />
+      </span>
+      <div className="min-w-0 flex-1">
+        <span className="mb-1 block font-bold text-micro text-spark-amber leading-none">
           New
         </span>
-        <span className="wrap-break-word min-w-0 text-right font-bold text-foreground text-micro leading-snug">
+        <span className="wrap-break-word block min-w-0 font-bold text-foreground text-micro leading-snug">
           {proposed}
         </span>
       </div>

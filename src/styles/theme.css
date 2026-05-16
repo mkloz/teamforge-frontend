@@ -121,7 +121,7 @@
 
   /* TeamForge Mechanical Shadows (Unblurred) */
   --shadow-button-primary: 0 4px 0 #0f5e56;
-  --shadow-button-secondary: 0 4px 0 #b45309;
+  --shadow-button-secondary: 0 4px 0 #ca8a04;
   --shadow-button-outline: 0 4px 0 #1c1c1a;
   --shadow-button-outline-dark: 0 4px 0 #ffffff;
   --shadow-button-destructive: 0 4px 0 color-mix(in srgb, var(--destructive) 48%, #3f0a0a);

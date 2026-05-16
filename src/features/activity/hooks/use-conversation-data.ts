@@ -7,6 +7,12 @@ import {
   formatTypingText,
   getStatusText,
 } from "@/features/activity/lib/chat-utils";
+import { getGroupAvatarUrl } from "@/features/activity/lib/group-identity";
+import {
+  MY_NOTES_AVATAR_URL,
+  MY_NOTES_SUBTITLE,
+  MY_NOTES_TITLE,
+} from "@/features/activity/lib/my-notes-identity";
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 
 export type ConversationDetailsNavigation = ReturnType<
@@ -79,9 +85,16 @@ function getConversationHeaderProps({
   if (isGroup && group) {
     return {
       title: group.name,
-      subtitle: `${group.members?.length || 0} members`,
-      avatarUrl: group.avatar,
-      secondaryAvatar: group.plan?.coverImage,
+      subtitle: getGroupPresenceText(group),
+      avatarUrl: getGroupAvatarUrl(group),
+    };
+  }
+
+  if (chat?.type === "NOTES") {
+    return {
+      title: MY_NOTES_TITLE,
+      subtitle: MY_NOTES_SUBTITLE,
+      avatarUrl: MY_NOTES_AVATAR_URL,
     };
   }
 
@@ -99,6 +112,21 @@ function getConversationHeaderProps({
   }
 
   return { title: "", avatarUrl: "" };
+}
+
+function getGroupPresenceText(group: Group) {
+  const members = group.members ?? [];
+  const memberCount = members.length;
+  const onlineCount = members.filter(
+    (member) => member.user?.onlineStatus === "ONLINE",
+  ).length;
+  const memberLabel = `${memberCount} ${memberCount === 1 ? "member" : "members"}`;
+
+  if (onlineCount === 0) {
+    return memberLabel;
+  }
+
+  return `${onlineCount} online · ${memberLabel}`;
 }
 
 interface ActiveTypingUsersInput {

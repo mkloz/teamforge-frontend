@@ -7,8 +7,9 @@ import type {
 
 function buildOptimisticAttachments(
   attachments: SendActivityMessageInput["attachments"],
+  gif: SendActivityMessageInput["gif"],
 ) {
-  return (
+  const fileAttachments =
     attachments?.map(({ file, duration }, index) => {
       const type = inferOutgoingAttachmentType(file);
       const objectUrl = URL.createObjectURL(file);
@@ -25,8 +26,27 @@ function buildOptimisticAttachments(
         waveform: [],
         createdAt: new Date().toISOString(),
       };
-    }) ?? []
-  );
+    }) ?? [];
+
+  if (!gif) {
+    return fileAttachments;
+  }
+
+  return [
+    ...fileAttachments,
+    {
+      id: `temp-gif:${gif.provider}:${gif.providerId}:${Date.now()}`,
+      type: "VIDEO" as const,
+      url: gif.url,
+      name: gif.title,
+      size: null,
+      mimeType: "video/mp4",
+      thumbnailUrl: gif.previewUrl ?? null,
+      duration: null,
+      waveform: [],
+      createdAt: new Date().toISOString(),
+    },
+  ];
 }
 
 export function buildOptimisticMessage(
@@ -35,18 +55,23 @@ export function buildOptimisticMessage(
   input: SendActivityMessageInput,
 ): UnifiedMessage {
   const createdAt = new Date().toISOString();
-  const optimisticAttachments = buildOptimisticAttachments(input.attachments);
+  const optimisticAttachments = buildOptimisticAttachments(
+    input.attachments,
+    input.gif,
+  );
 
   return {
     id: `temp-message:${chatId}:${Date.now()}`,
     type:
       optimisticAttachments[0]?.type === "IMAGE"
         ? "IMAGE"
-        : optimisticAttachments[0]?.type === "AUDIO"
-          ? "VOICE"
-          : optimisticAttachments.length > 0
-            ? "FILE"
-            : "TEXT",
+        : optimisticAttachments[0]?.type === "VIDEO"
+          ? "IMAGE"
+          : optimisticAttachments[0]?.type === "AUDIO"
+            ? "VOICE"
+            : optimisticAttachments.length > 0
+              ? "FILE"
+              : "TEXT",
     content: input.content,
     status: "SENDING",
     isEdited: false,

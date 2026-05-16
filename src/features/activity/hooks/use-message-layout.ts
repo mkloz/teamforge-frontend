@@ -70,7 +70,12 @@ function getGalleryRounding({
   reactionCount,
   replyTo,
 }: GalleryRoundingInput) {
-  if (!attachments?.some((attachment) => attachment.type === "IMAGE")) {
+  if (
+    !attachments?.some(
+      (attachment) =>
+        attachment.type === "IMAGE" || attachment.type === "VIDEO",
+    )
+  ) {
     return "";
   }
 

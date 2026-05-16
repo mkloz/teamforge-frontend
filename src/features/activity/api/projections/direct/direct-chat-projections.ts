@@ -59,8 +59,37 @@ export function mapDirectChat(
         .filter((item): item is ActivityParticipant => item !== undefined),
       currentUser.id,
     ),
-    isMuted: false,
+    isMuted: chatSummary?.isMuted ?? false,
     isBlocked: friendship.status === "BLOCKED",
+    mutualGroups: [],
+  };
+}
+
+export function mapNotesChat(
+  chatSummary: ChatApi,
+  currentUser: ActivityParticipant,
+): DirectChat {
+  const participants = [
+    {
+      userId: currentUser.id,
+      chatId: chatSummary.id,
+      user: currentUser,
+    },
+  ];
+
+  return {
+    id: chatSummary.id,
+    type: chatSummary.type,
+    createdAt: chatSummary.createdAt,
+    groupId: null,
+    participants,
+    pinnedMessages: mapMessages(
+      chatSummary.pinnedMessages ?? [],
+      [currentUser],
+      currentUser.id,
+    ),
+    isMuted: chatSummary.isMuted,
+    isBlocked: false,
     mutualGroups: [],
   };
 }

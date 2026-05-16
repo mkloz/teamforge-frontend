@@ -56,10 +56,10 @@ export function FriendsInvitation() {
         <div className="flex min-w-0 items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <p className="font-black text-foreground text-sm">
-              Share TeamForge with someone who would fit the room.
+              Share TeamForge
             </p>
-            <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">
-              Send the app now. Invite them to a group when the moment fits.
+            <p className="mt-1 font-medium text-muted-foreground text-xs leading-snug">
+              Send the link now. Invite them when it fits.
             </p>
           </div>
 

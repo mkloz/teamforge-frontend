@@ -27,8 +27,10 @@ import {
   planProposalSchema,
   type planSchema,
   ratingEntitySchema,
+  savedMessageApiSchema,
 } from "@/shared/schemas";
 import {
+  chatAttachmentUrlSchema,
   managedAssetReferenceSchema,
   managedUploadUrlSchema,
 } from "@/shared/validators/url.validator";
@@ -41,6 +43,9 @@ export const paginatedChatsSchema = createPaginatedSchema(chatApiSchema);
 export const paginatedFriendshipsSchema =
   createPaginatedSchema(friendshipApiSchema);
 export const paginatedMessagesSchema = createPaginatedSchema(messageApiSchema);
+export const paginatedSavedMessagesSchema = createPaginatedSchema(
+  savedMessageApiSchema,
+);
 export const planProposalsSchema = z.array(planProposalSchema);
 export const paginatedRatingsSchema = createPaginatedSchema(ratingEntitySchema);
 export { createRatingPayloadSchema, deferGroupReviewPayloadSchema };
@@ -54,7 +59,7 @@ export const createInvitePayloadSchema = z.object({
 
 const sendMessageAttachmentSchema = z.object({
   type: attachmentTypeSchema,
-  url: managedUploadUrlSchema,
+  url: chatAttachmentUrlSchema,
   name: z.string().optional(),
   size: z
     .number()
@@ -63,7 +68,7 @@ const sendMessageAttachmentSchema = z.object({
     .max(CHAT_ATTACHMENT_MAX_SIZE_BYTES)
     .optional(),
   mimeType: z.string().optional(),
-  thumbnailUrl: managedUploadUrlSchema.optional(),
+  thumbnailUrl: chatAttachmentUrlSchema.optional(),
   duration: z
     .number()
     .int()
@@ -88,6 +93,10 @@ export const updateMessagePayloadSchema = z.object({
 
 export const createReactionPayloadSchema = z.object({
   emoji: z.string().trim().min(1),
+});
+
+export const forwardMessagePayloadSchema = z.object({
+  targetChatId: z.string().trim().min(1).max(128),
 });
 
 export const updateGroupPayloadSchema = z.object({
@@ -170,9 +179,17 @@ export interface GetChatMessagesParams {
   page?: number;
 }
 
+export interface SearchChatMessagesParams extends GetChatMessagesParams {
+  query: string;
+}
+
 export type SendMessagePayload = z.infer<typeof sendMessagePayloadSchema>;
 export type UpdateMessagePayload = z.infer<typeof updateMessagePayloadSchema>;
+export type ForwardMessagePayload = z.infer<typeof forwardMessagePayloadSchema>;
 export type PaginatedMessagesResponse = z.infer<typeof paginatedMessagesSchema>;
+export type PaginatedSavedMessagesResponse = z.infer<
+  typeof paginatedSavedMessagesSchema
+>;
 export type CreateInvitePayload = z.infer<typeof createInvitePayloadSchema>;
 export type UpdateGroupPayload = z.infer<typeof updateGroupPayloadSchema>;
 export type UpdatePlanPayload = z.infer<typeof updatePlanPayloadSchema>;

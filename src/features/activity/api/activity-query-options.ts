@@ -5,6 +5,7 @@ import {
   groupReviewStateQueryOptions,
   groupsQueryOptions,
   linkPreviewQueryOptions,
+  savedMessagesQueryOptions,
 } from "@/features/activity/api/query-options/activity-base-query-options";
 import { conversationMessagesQueryOptions } from "@/features/activity/api/query-options/activity-message-query-options";
 import type { ActivityQueryOptionsContext } from "@/features/activity/api/query-options/activity-query-options-context";
@@ -26,6 +27,10 @@ export const ActivityQueryOptions = {
 
   friendships() {
     return friendshipsQueryOptions();
+  },
+
+  savedMessages() {
+    return savedMessagesQueryOptions();
   },
 
   groupRatings(groupId: string) {

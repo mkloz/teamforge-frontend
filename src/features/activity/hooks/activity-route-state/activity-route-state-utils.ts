@@ -68,11 +68,12 @@ export function getSelectionRoutePatch(
   id: string,
   kind: ActivityKind,
   panel: ActivityPanel | null,
+  messageId: string | null = null,
 ) {
   return {
     id,
     kind,
-    message: null,
+    message: messageId,
     panel,
     plan: null,
     proposal: null,

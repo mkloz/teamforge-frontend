@@ -1,7 +1,9 @@
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { isMessageFromCurrentUser } from "@/features/activity/lib/message-sender-identity";
 import type { MessageReplyPreview } from "@/shared/schemas";
 
 import {
+  getSenderParticipantBySummaryId,
   type MessageParticipantsIndex,
   mapMessageSenderParticipant,
 } from "./message-participant-index";
@@ -32,8 +34,13 @@ export function mapReplyPreview(
     version: replyTo.deletedAt ? new Date(replyTo.deletedAt).getTime() : 0,
     sender:
       participantsIndex.get(replyTo.senderId) ??
+      getSenderParticipantBySummaryId(participantsIndex, replyTo.sender?.id) ??
       mapMessageSenderParticipant(replyTo.sender),
-    isOwn: currentUserId !== null && replyTo.senderId === currentUserId,
+    isOwn: isMessageFromCurrentUser(
+      replyTo.senderId,
+      replyTo.sender?.id,
+      currentUserId,
+    ),
     isSystem: replyTo.type === "SYSTEM",
     reactions: [],
     attachments: [],

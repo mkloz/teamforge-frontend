@@ -56,7 +56,7 @@ export function FriendRequestQueueItem({
           className="size-11 shrink-0 border border-border/60 bg-canvas"
         />
         <div className="min-w-0 flex-1">
-          <div className="flex min-w-0 items-center gap-2">
+          <div className="flex min-w-0 items-center gap-1.5">
             <p className="truncate font-black text-foreground text-sm transition-colors duration-150 group-hover:text-forge-teal">
               {request.counterpart.name}
             </p>
@@ -65,15 +65,15 @@ export function FriendRequestQueueItem({
                 {request.counterpart.personalityType}
               </span>
             ) : null}
+            <ArrowRight
+              className="size-3.5 shrink-0 text-muted-foreground/70 opacity-0 transition duration-150 group-focus-within:translate-x-0.5 group-focus-within:text-forge-teal group-focus-within:opacity-100 group-hover:translate-x-0.5 group-hover:text-forge-teal group-hover:opacity-100"
+              aria-hidden="true"
+            />
           </div>
           <p className="mt-1 line-clamp-2 font-medium text-muted-foreground text-xs leading-relaxed">
             {getFirstName(request.counterpart.name)} wants to connect.
           </p>
         </div>
-        <ArrowRight
-          className="mt-1 size-4 shrink-0 text-muted-foreground opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:opacity-70"
-          aria-hidden="true"
-        />
       </Link>
       <div className="flex shrink-0 items-center gap-1">
         <Button

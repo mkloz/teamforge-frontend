@@ -36,11 +36,15 @@ export interface ActivityQueryOptionsContext {
     currentUser: ActivityParticipant,
     chatSummary?: ChatApi | null,
   ): DirectChat | null;
+  mapNotesChat(
+    chatSummary: ChatApi,
+    currentUser: ActivityParticipant,
+  ): DirectChat;
   mapGroup(
     group: GroupApi,
     currentUserId: string | null,
     proposals: PlanProposal[],
-    chatSummary?: Pick<ChatApi, "id" | "pinnedMessages"> | null,
+    chatSummary?: Pick<ChatApi, "id" | "isMuted" | "pinnedMessages"> | null,
   ): Group;
   mapMessages(
     items: MessageApi[],

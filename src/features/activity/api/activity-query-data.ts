@@ -6,10 +6,13 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 
 export interface ActivityFeedData {
+  allItems: UnifiedConversation[];
   items: UnifiedConversation[];
   groupCount: number;
   dmCount: number;
   unreadCount: number;
+  pinnedCount: number;
+  savedCount: number;
 }
 
 export interface ActivityGroupSelectionData {

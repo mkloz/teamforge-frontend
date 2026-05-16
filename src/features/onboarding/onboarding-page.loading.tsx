@@ -1,9 +1,5 @@
+import type { ReactNode } from "react";
 import { InterestsCatalogSkeleton } from "@/features/onboarding/components/interests/interests-page/interests-screen-renderer/interests-catalog-skeleton";
-import {
-  InterestsPageContent,
-  PersonalityPageContent,
-  ProfileBasicsPageContent,
-} from "@/features/onboarding/onboarding-page-content";
 import type { PageLoadingProps } from "@/shared/components/loading/page-loading";
 import {
   SkeletonButton,
@@ -44,7 +40,7 @@ export function OnboardingPageLoadingFixture({
 
 function ProfileBasicsLoadingFixture() {
   return (
-    <ProfileBasicsPageContent progress={0.24}>
+    <OnboardingLoadingShell maxWidthClassName="max-w-sm">
       <div
         aria-label="Loading profile basics"
         className="flex w-full flex-col"
@@ -63,18 +59,13 @@ function ProfileBasicsLoadingFixture() {
           <SkeletonButton className="mt-4 h-11 w-full" tone="teal" />
         </div>
       </div>
-    </ProfileBasicsPageContent>
+    </OnboardingLoadingShell>
   );
 }
 
 function PersonalityLoadingFixture() {
   return (
-    <PersonalityPageContent
-      catalystProgress={0.5}
-      displayProgress={0.5}
-      hasTopPadding
-      showHomeLink
-    >
+    <OnboardingLoadingShell maxWidthClassName="max-w-xl">
       <div
         aria-label="Loading personality"
         className="mt-10 flex flex-1 flex-col"
@@ -114,27 +105,74 @@ function PersonalityLoadingFixture() {
           </div>
         </div>
       </div>
-    </PersonalityPageContent>
+    </OnboardingLoadingShell>
   );
 }
 
 function InterestsLoadingFixture() {
   return (
-    <InterestsPageContent
-      progress={0.5}
-      header={<InterestsHeaderSkeleton />}
-      footer={<InterestsFooterSkeleton />}
-    >
-      <div
-        aria-busy="true"
-        aria-label="Loading interests"
-        className="grid gap-5"
-        role="status"
-      >
-        <span className="sr-only">Loading interests</span>
-        <InterestsCatalogSkeleton />
+    <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
+      <aside className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-r bg-hero-bg lg:flex">
+        <OnboardingVisualSkeleton />
+      </aside>
+
+      <main className="relative flex h-full flex-1 flex-col overflow-hidden bg-canvas">
+        <div className="relative z-10 flex-1 overflow-x-hidden overflow-y-scroll scroll-smooth pb-0">
+          <InterestsHeaderSkeleton />
+
+          <div className="flex min-h-full w-full flex-col items-center justify-start py-6 sm:py-0">
+            <div className="relative w-full max-w-xl px-4 sm:px-5 lg:px-0">
+              <div
+                aria-busy="true"
+                aria-label="Loading interests"
+                className="grid gap-5"
+                role="status"
+              >
+                <span className="sr-only">Loading interests</span>
+                <InterestsCatalogSkeleton />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <InterestsFooterSkeleton />
+      </main>
+    </div>
+  );
+}
+
+function OnboardingLoadingShell({
+  children,
+  maxWidthClassName,
+}: {
+  children: ReactNode;
+  maxWidthClassName: "max-w-sm" | "max-w-xl";
+}) {
+  return (
+    <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
+      <div className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-r bg-hero-bg lg:flex">
+        <OnboardingVisualSkeleton />
       </div>
-    </InterestsPageContent>
+
+      <div className="relative flex h-full flex-1 flex-col overflow-hidden bg-canvas">
+        <div className="relative h-full flex-1 overflow-y-auto overflow-x-hidden scroll-smooth px-4 pb-4">
+          <main className="relative z-10 flex min-h-full items-start justify-center pt-20 pb-10 lg:items-center lg:py-8">
+            <div className={`w-full ${maxWidthClassName} px-2 sm:px-10 lg:p-0`}>
+              {children}
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OnboardingVisualSkeleton() {
+  return (
+    <div className="relative flex size-72 items-center justify-center">
+      <Skeleton shape="circle" className="absolute inset-8" tone="teal" />
+      <Skeleton shape="circle" className="size-24" tone="teal" />
+    </div>
   );
 }
 

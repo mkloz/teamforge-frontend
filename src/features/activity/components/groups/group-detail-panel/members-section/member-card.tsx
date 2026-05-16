@@ -1,7 +1,5 @@
-import { Link } from "@tanstack/react-router";
 import { BadgeCheck, Crown, UserMinus, UserRound } from "lucide-react";
 import type { GroupMember } from "@/features/activity/lib/activity-contract";
-import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar, AvatarStatus } from "@/shared/components/common/avatar";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Badge } from "@/shared/components/ui/badge";
@@ -31,7 +29,6 @@ export function MemberCard({
   const isAdmin = member.role === "ADMIN";
   const isHighCompatibility = (member.compatibilityScore || 0) > 90;
   const onlineStatus = member.user?.onlineStatus;
-  const profileNavigation = buildProfileNavigation(member.userId);
 
   const memberSummary = (
     <>
@@ -99,13 +96,14 @@ export function MemberCard({
   return (
     <div className="group/member flex w-full items-center gap-2 px-1.5 py-1.5 text-left transition-colors duration-150 focus-within:bg-slate-muted/10 hover:bg-slate-muted/10">
       {onShowProfile ? (
-        <Link
-          {...profileNavigation}
+        <button
+          type="button"
           className="flex min-w-0 flex-1 items-center justify-start gap-3 rounded-lg text-left text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30"
-          aria-label={`View ${member.user?.name ?? "member"} profile`}
+          aria-label={`Open ${member.user?.name ?? "member"} details`}
+          onClick={() => onShowProfile(member)}
         >
           {memberSummary}
-        </Link>
+        </button>
       ) : (
         <div className="flex min-w-0 flex-1 items-center gap-3">
           {memberSummary}
@@ -116,19 +114,20 @@ export function MemberCard({
         {onShowProfile ? (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Link
-                {...profileNavigation}
+              <button
+                type="button"
                 className={cn(
                   "absolute inset-0 flex size-8 items-center justify-center rounded-lg text-muted-foreground opacity-80 transition-colors transition-opacity hover:bg-forge-teal/10 hover:text-forge-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 group-hover/member:opacity-100",
                   canRemove &&
                     "group-focus-within/member:opacity-0 group-hover/member:opacity-0",
                 )}
-                aria-label={`View ${member.user?.name ?? "member"} profile`}
+                aria-label={`Open ${member.user?.name ?? "member"} details`}
+                onClick={() => onShowProfile(member)}
               >
                 <UserRound className="size-4" />
-              </Link>
+              </button>
             </TooltipTrigger>
-            <TooltipContent>View profile</TooltipContent>
+            <TooltipContent>Open details</TooltipContent>
           </Tooltip>
         ) : null}
 

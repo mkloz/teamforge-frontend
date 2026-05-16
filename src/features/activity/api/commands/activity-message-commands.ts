@@ -100,4 +100,34 @@ export const ActivityMessageCommands = {
       message,
     );
   },
+
+  toggleSavedMessage(
+    kind: ActivityConversationKind,
+    selectedId: string | null,
+    message: UnifiedMessage,
+    isSaved: boolean,
+  ) {
+    return ActivityActions.toggleSavedMessage(
+      ACTIVITY_ACTION_CONTEXT,
+      kind,
+      selectedId,
+      message,
+      isSaved,
+    );
+  },
+
+  forwardMessage(
+    kind: ActivityConversationKind,
+    selectedId: string | null,
+    message: UnifiedMessage,
+    targetChatId: string,
+  ) {
+    return ActivityActions.forwardMessage(
+      ACTIVITY_ACTION_CONTEXT,
+      kind,
+      selectedId,
+      message,
+      targetChatId,
+    );
+  },
 };

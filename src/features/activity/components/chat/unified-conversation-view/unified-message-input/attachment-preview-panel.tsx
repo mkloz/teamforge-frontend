@@ -25,7 +25,7 @@ export const AttachmentPreviewPanel = memo(function AttachmentPreviewPanel({
   }
 
   return (
-    <div className="grid gap-2 px-3 pt-3">
+    <div className="grid gap-2 px-3 py-3">
       <FilePreviewList files={files} onRemove={onRemoveAttachment} />
       <FileDropzone
         variant="inline"

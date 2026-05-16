@@ -1,9 +1,4 @@
-import { HTTPError } from "ky";
-
-import {
-  type ApiException,
-  ApiExceptionSchema,
-} from "@/shared/types/api-error";
+import type { ApiException } from "@/shared/types/api-error";
 
 export interface ApiErrorMessageOptions {
   badRequestMessage?: string;
@@ -17,8 +12,33 @@ export interface ApiErrorMessageOptions {
 const DEFAULT_SERVER_ERROR_MESSAGE =
   "TeamForge is having trouble right now. Please try again in a moment.";
 
-export function readApiException(error: unknown): ApiException | null {
-  if (!(error instanceof HTTPError)) {
+function readStringProperty(value: object, key: string) {
+  const property = Object.entries(value).find(
+    ([propertyKey]) => propertyKey === key,
+  )?.[1];
+
+  return typeof property === "string" ? property : undefined;
+}
+
+export function getHttpErrorStatus(error: unknown) {
+  if (
+    !(error instanceof Error) ||
+    !("response" in error) ||
+    !error.response ||
+    typeof error.response !== "object" ||
+    !("status" in error.response) ||
+    typeof error.response.status !== "number"
+  ) {
+    return null;
+  }
+
+  return error.response.status;
+}
+
+export function readApiException(error: unknown): Partial<ApiException> | null {
+  const status = getHttpErrorStatus(error);
+
+  if (status === null || !(error instanceof Error)) {
     return null;
   }
 
@@ -28,9 +48,17 @@ export function readApiException(error: unknown): ApiException | null {
     return null;
   }
 
-  const parsed = ApiExceptionSchema.safeParse(cause);
-
-  return parsed.success ? parsed.data : null;
+  return {
+    status:
+      "status" in cause && typeof cause.status === "number"
+        ? cause.status
+        : status,
+    message: readStringProperty(cause, "message"),
+    timestamp: readStringProperty(cause, "timestamp"),
+    method: readStringProperty(cause, "method"),
+    path: readStringProperty(cause, "path"),
+    requestId: readStringProperty(cause, "requestId"),
+  };
 }
 
 export function getApiErrorMessage(
@@ -44,11 +72,13 @@ export function getApiErrorMessage(
     return apiException.message;
   }
 
-  if (!(error instanceof HTTPError)) {
+  const status = getHttpErrorStatus(error);
+
+  if (status === null) {
     return fallbackMessage;
   }
 
-  switch (error.response.status) {
+  switch (status) {
     case 400:
       return options.badRequestMessage ?? fallbackMessage;
     case 401:
@@ -60,7 +90,7 @@ export function getApiErrorMessage(
     case 409:
       return options.conflictMessage ?? fallbackMessage;
     default:
-      if (error.response.status >= 500) {
+      if (status >= 500) {
         return options.serverMessage ?? DEFAULT_SERVER_ERROR_MESSAGE;
       }
 

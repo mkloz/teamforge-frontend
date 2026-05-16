@@ -24,9 +24,11 @@ interface UserProfilePanelProps {
   isBlocked?: boolean;
   blockActionDisabled?: boolean;
   isBlockActionPending?: boolean;
+  isMuteActionPending?: boolean;
   isMobile?: boolean;
   isDirectChat?: boolean;
   onBack?: () => void;
+  onToggleMute?: () => void;
   onToggleBlock?: () => void;
 }
 
@@ -39,9 +41,11 @@ export function UserProfilePanel({
   isBlocked: propIsBlocked,
   blockActionDisabled = false,
   isBlockActionPending = false,
+  isMuteActionPending = false,
   isMobile = false,
   isDirectChat = true,
   onBack,
+  onToggleMute,
   onToggleBlock,
 }: UserProfilePanelProps) {
   const selectedParticipant =
@@ -80,7 +84,7 @@ export function UserProfilePanel({
     <div
       ref={scrollRef}
       className={cn(
-        "flex flex-1 flex-col overflow-y-auto",
+        "flex min-h-0 flex-1 flex-col overflow-y-auto",
         isMobile
           ? "scrollbar-hide pb-6"
           : "[scrollbar-color:var(--muted-foreground)_transparent] [scrollbar-width:thin]",
@@ -107,7 +111,9 @@ export function UserProfilePanel({
             isBlocked={isBlocked}
             blockActionDisabled={blockActionDisabled}
             isBlockActionPending={isBlockActionPending}
+            isMuteActionPending={isMuteActionPending}
             isMobile={isMobile}
+            onToggleMute={onToggleMute}
             onToggleBlock={onToggleBlock}
           />
         )}

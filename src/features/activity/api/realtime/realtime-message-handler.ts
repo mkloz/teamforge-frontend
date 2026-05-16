@@ -56,7 +56,7 @@ export async function applyRealtimeMessage(
     mappedMessage,
   );
   const isActiveChat = options.activeChatId === chatId;
-  const isOwnMessage = mappedMessage.senderId === currentUser.id;
+  const isOwnMessage = mappedMessage.isOwn;
 
   if (message.deletedAt) {
     ActivityMessageCache.remove(chatId, mappedMessage.id);

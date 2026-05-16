@@ -30,6 +30,7 @@ export function mapApiGroupFromSelection(group: Group): GroupApi {
           id: group.plan.id,
           title: group.plan.title,
           category: group.plan.category,
+          coverImage: group.plan.coverImage,
           status: group.plan.status,
           dateTime: group.plan.dateTime,
           locationMode: group.plan.locationMode,
@@ -42,6 +43,7 @@ export function mapApiGroupFromSelection(group: Group): GroupApi {
     chat: group.chat
       ? {
           id: group.chat.id,
+          isMuted: group.chat.isMuted,
           pinnedMessages: group.chat.pinnedMessages?.map((message) =>
             toMessageApi(message),
           ),

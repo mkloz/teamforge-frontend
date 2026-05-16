@@ -14,19 +14,27 @@ import { buildMemberProfileChat } from "@/features/activity/lib/activity-project
 interface UseGroupPanelContentOptions {
   group: Group;
   isMobile: boolean;
+  selectedMemberId?: string | null;
   onClose: () => void;
   onJumpToMessage?: (messageId: string) => void;
+  onSelectedMemberIdChange?: (memberId: string | null) => void;
 }
 
 export function useGroupPanelContent({
   group,
   isMobile,
+  selectedMemberId = null,
   onClose,
   onJumpToMessage,
+  onSelectedMemberIdChange,
 }: UseGroupPanelContentOptions) {
-  const [selectedMember, setSelectedMember] = useState<GroupMember | null>(
-    null,
-  );
+  const [localSelectedMemberId, setLocalSelectedMemberId] = useState<
+    string | null
+  >(null);
+  const activeSelectedMemberId =
+    onSelectedMemberIdChange === undefined
+      ? localSelectedMemberId
+      : selectedMemberId;
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isPlanEditOpen, setIsPlanEditOpen] = useState(false);
   const {
@@ -47,6 +55,13 @@ export function useGroupPanelContent({
   } = useActivityGroupActions(group.id);
   const { unpinMessage } = useActivityMessageActions();
   const friendshipsQuery = useActivityFriendships();
+  const members = useMemo(() => group.members ?? [], [group.members]);
+  const selectedMember = useMemo(
+    () =>
+      members.find((member) => member.userId === activeSelectedMemberId) ??
+      null,
+    [activeSelectedMemberId, members],
+  );
 
   const currentUserRole: MemberRole = useMemo(() => {
     const currentMember = group.members?.find(
@@ -56,7 +71,6 @@ export function useGroupPanelContent({
 
     return currentMember?.role ?? "MEMBER";
   }, [currentUserId, group.members]);
-  const members = useMemo(() => group.members ?? [], [group.members]);
   const memberCount = members.length;
 
   const memberChat: DirectChat | null = useMemo(() => {
@@ -94,6 +108,17 @@ export function useGroupPanelContent({
     }
 
     scroll();
+  }
+
+  function setSelectedMember(member: GroupMember | null) {
+    const nextMemberId = member?.userId ?? null;
+
+    if (onSelectedMemberIdChange) {
+      onSelectedMemberIdChange(nextMemberId);
+      return;
+    }
+
+    setLocalSelectedMemberId(nextMemberId);
   }
 
   return {

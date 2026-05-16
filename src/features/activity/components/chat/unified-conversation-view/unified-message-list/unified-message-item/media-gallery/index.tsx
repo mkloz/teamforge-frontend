@@ -37,10 +37,10 @@ export const MediaGallery = memo(function MediaGallery({
   if (count === 0) return null;
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full min-w-0 max-w-full">
       <div
         className={cn(
-          "grid gap-1 overflow-hidden transition-colors duration-500",
+          "grid min-w-0 max-w-full gap-1 overflow-hidden transition-colors duration-500",
           count === 1 ? "grid-cols-1" : "grid-cols-2",
           rounding ||
             "rounded-t-xl rounded-b-none border border-border/10 shadow-sm",

@@ -6,14 +6,16 @@ import { cn } from "@/shared/lib/utils";
 
 interface SystemMessageProps {
   message: UnifiedMessage;
+  isHighlighted?: boolean;
 }
 
 /**
- * SystemMessage - Renders a system message as a compact status pill.
+ * SystemMessage - Renders a system message as a compact status note.
  * Optimized for readability and consistent branding across themes.
  */
 export const SystemMessage = memo(function SystemMessage({
   message,
+  isHighlighted = false,
 }: SystemMessageProps) {
   const config = getSystemMessageConfig(message.content);
 
@@ -39,19 +41,22 @@ export const SystemMessage = memo(function SystemMessage({
   const { container, icon: Icon, iconStroke } = styleMap[config.type];
 
   return (
-    <div className="zoom-in-95 fade-in pointer-events-none mt-4 mb-2 flex animate-in justify-center px-6 duration-700">
+    <div className="pointer-events-none my-1 flex justify-center px-6">
       <div
         className={cn(
-          "flex items-center gap-2 rounded-full border px-3 py-1 font-bold text-micro tracking-tight",
+          "max-w-full rounded-xl border px-3 py-1.5 font-bold text-micro leading-snug tracking-tight sm:max-w-lg md:max-w-xl",
           container,
+          isHighlighted && "message-search-focus",
         )}
       >
-        <Icon
-          size={11}
-          strokeWidth={iconStroke}
-          className="shrink-0 opacity-80"
-        />
-        <span>{message.content}</span>
+        <span className="inline-flex size-4 items-center justify-center align-middle">
+          <Icon
+            strokeWidth={iconStroke}
+            className="size-2.5 opacity-80"
+            aria-hidden="true"
+          />
+        </span>{" "}
+        {message.content}
       </div>
     </div>
   );

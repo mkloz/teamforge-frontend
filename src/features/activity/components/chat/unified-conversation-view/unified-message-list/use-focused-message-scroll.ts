@@ -1,4 +1,10 @@
-import { type RefObject, useCallback, useEffect, useState } from "react";
+import {
+  type RefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import type { VirtualizedMessageBlock } from "@/features/activity/hooks/use-virtualized-message-blocks";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
@@ -22,6 +28,34 @@ export function useFocusedMessageScroll({
   const [highlightedMessageId, setHighlightedMessageId] = useState<
     string | null
   >(null);
+  const highlightFrameRef = useRef<number | null>(null);
+  const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+
+  const requestMessageHighlight = useCallback((id: string) => {
+    if (highlightFrameRef.current !== null) {
+      cancelAnimationFrame(highlightFrameRef.current);
+      highlightFrameRef.current = null;
+    }
+
+    if (highlightTimeoutRef.current !== null) {
+      clearTimeout(highlightTimeoutRef.current);
+      highlightTimeoutRef.current = null;
+    }
+
+    setHighlightedMessageId(null);
+
+    highlightFrameRef.current = requestAnimationFrame(() => {
+      setHighlightedMessageId(id);
+      highlightFrameRef.current = null;
+    });
+
+    highlightTimeoutRef.current = setTimeout(() => {
+      setHighlightedMessageId((current) => (current === id ? null : current));
+      highlightTimeoutRef.current = null;
+    }, 2200);
+  }, []);
 
   const scrollToMessage = useCallback(
     (id: string, options: ScrollToMessageOptions = {}) => {
@@ -31,7 +65,7 @@ export function useFocusedMessageScroll({
         element.scrollIntoView({ behavior: "smooth", block: "center" });
 
         if (options.highlight) {
-          setHighlightedMessageId(id);
+          requestMessageHighlight(id);
         }
 
         return;
@@ -48,11 +82,16 @@ export function useFocusedMessageScroll({
         });
 
         if (options.highlight) {
-          setHighlightedMessageId(id);
+          requestMessageHighlight(id);
         }
       }
     },
-    [containerRef, getMessageElement, virtualizedBlocks],
+    [
+      containerRef,
+      getMessageElement,
+      requestMessageHighlight,
+      virtualizedBlocks,
+    ],
   );
 
   useEffect(() => {
@@ -73,28 +112,34 @@ export function useFocusedMessageScroll({
         container: containerRef?.current ?? null,
         getMessageElement,
         id: focusedMessageId,
-        onHighlight: setHighlightedMessageId,
+        onHighlight: requestMessageHighlight,
         virtualizedBlocks,
       });
     });
 
-    const timeout = setTimeout(() => {
-      setHighlightedMessageId((current) =>
-        current === focusedMessageId ? null : current,
-      );
-    }, 2200);
-
     return () => {
       cancelAnimationFrame(frame);
-      clearTimeout(timeout);
     };
   }, [
     containerRef,
     focusedMessageId,
     getMessageElement,
     messages,
+    requestMessageHighlight,
     virtualizedBlocks,
   ]);
+
+  useEffect(() => {
+    return () => {
+      if (highlightFrameRef.current !== null) {
+        cancelAnimationFrame(highlightFrameRef.current);
+      }
+
+      if (highlightTimeoutRef.current !== null) {
+        clearTimeout(highlightTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return {
     highlightedMessageId,

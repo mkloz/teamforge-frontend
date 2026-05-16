@@ -88,13 +88,12 @@ export function useNotifications() {
     unreadItemsQuery.data?.length ??
     NotificationsCache.countUnread(items);
 
-  const { today, earlier } = groupNotificationsByRecency(items, referenceTime);
+  const notificationGroups = groupNotificationsByRecency(items, referenceTime);
 
   return {
     items,
     unreadItems,
-    today,
-    earlier,
+    notificationGroups,
     count,
     isLoading: listQuery.isLoading && items.length === 0,
     isMarkingAllRead: markAllReadMutation.isPending,

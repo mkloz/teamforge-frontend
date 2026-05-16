@@ -6,6 +6,7 @@ import type {
   GroupsPageState,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
+import type { SavedMessageSnapshot } from "@/features/activity/lib/saved-message";
 
 export type TypingParticipant = Pick<
   ActivityParticipant,
@@ -29,6 +30,8 @@ export interface ActivityState {
   replyingTo: UnifiedMessage | null;
   editingMessage: UnifiedMessage | null;
   typingByChatId: Record<string, TypingParticipant[]>;
+  pinnedConversationKeys: string[];
+  savedMessagesById: Record<string, SavedMessageSnapshot>;
 }
 
 export interface ActivityActions {
@@ -42,6 +45,26 @@ export interface ActivityActions {
   ) => void;
   setReplyingTo: (message: UnifiedMessage | null) => void;
   setEditingMessage: (message: UnifiedMessage | null) => void;
+  togglePinnedConversation: (
+    kind: ActivityConversationKind,
+    id: string,
+  ) => void;
+  saveMessage: (
+    kind: ActivityConversationKind,
+    conversationId: string,
+    message: UnifiedMessage,
+  ) => void;
+  removeSavedMessage: (messageId: string) => void;
+  toggleSavedMessage: (
+    kind: ActivityConversationKind,
+    conversationId: string,
+    message: UnifiedMessage,
+  ) => void;
+  syncSavedMessage: (
+    kind: ActivityConversationKind,
+    conversationId: string,
+    message: UnifiedMessage,
+  ) => void;
   setChatTypingState: (
     chatId: string,
     participant: TypingParticipant,

@@ -26,6 +26,7 @@ export function toMessageApi(message: UnifiedMessage): MessageApi {
     status: message.status,
     isEdited: message.isEdited,
     isPinned: message.isPinned,
+    isSaved: message.isSaved ?? false,
     createdAt: message.createdAt,
     updatedAt: message.updatedAt,
     editedAt: message.editedAt,
@@ -33,6 +34,10 @@ export function toMessageApi(message: UnifiedMessage): MessageApi {
     chatId: message.chatId,
     senderId: message.senderId,
     replyToId: message.replyToId,
+    forwardedFromMessageId: message.forwardedFromMessageId,
+    forwardedFromChatId: message.forwardedFromChatId,
+    forwardedFromSenderId: message.forwardedFromSenderId,
+    forwardedFromSenderName: message.forwardedFromSenderName,
     version: message.version,
     sender: message.sender
       ? {
@@ -88,6 +93,7 @@ export function toUnifiedMessage(message: MessageApi): UnifiedMessage {
     status: message.status,
     isEdited: message.isEdited,
     isPinned: message.isPinned,
+    isSaved: message.isSaved,
     createdAt: message.createdAt,
     updatedAt: message.updatedAt,
     editedAt: message.editedAt,
@@ -95,6 +101,10 @@ export function toUnifiedMessage(message: MessageApi): UnifiedMessage {
     chatId: message.chatId,
     senderId: message.senderId,
     replyToId: message.replyToId,
+    forwardedFromMessageId: message.forwardedFromMessageId,
+    forwardedFromChatId: message.forwardedFromChatId,
+    forwardedFromSenderId: message.forwardedFromSenderId,
+    forwardedFromSenderName: message.forwardedFromSenderName,
     version: message.version,
     sender: message.sender
       ? {

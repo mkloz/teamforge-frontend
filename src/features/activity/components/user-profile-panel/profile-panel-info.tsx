@@ -289,19 +289,18 @@ function ProfileMetaRow({
   }
 
   return (
-    <div className="mt-3 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-slate-muted">
-      {items.map((item, index) => (
-        <div key={item.kind} className="flex min-w-0 items-center gap-2">
-          {index > 0 ? (
-            <span className="size-1 rounded-full bg-border" />
-          ) : null}
+    <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-slate-muted">
+      {items.map((item) => (
+        <div key={item.kind} className="flex min-w-0 items-center">
           {item.kind === "city" ? (
-            <span className="flex min-w-0 items-center gap-1 font-bold text-micro uppercase tracking-widest">
+            <span className="flex min-w-0 items-center gap-1 font-bold text-micro uppercase leading-none tracking-widest">
               <MapPin className="size-3 shrink-0" />
               <span className="truncate">{item.value}</span>
             </span>
           ) : (
-            <span className="font-semibold text-sm">{item.value}</span>
+            <span className="font-semibold text-sm leading-none">
+              {item.value}
+            </span>
           )}
         </div>
       ))}

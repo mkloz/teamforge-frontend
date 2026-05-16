@@ -13,7 +13,7 @@ interface AppRouteTransitionProps {
 
 export function AppRouteTransition({ children }: AppRouteTransitionProps) {
   const pathname = useRouterState({
-    select: (state) => state.location.pathname,
+    select: (state) => (state.resolvedLocation ?? state.location).pathname,
   });
   const shouldReduceMotion = useReducedMotion();
   const hasMountedRef = useRef(false);
@@ -37,7 +37,7 @@ export function AppRouteTransition({ children }: AppRouteTransitionProps) {
         isInitialContent,
         shouldReduceMotion,
       })}
-      className="min-h-screen"
+      className={hasViewportFixedContent ? "h-0" : "min-h-screen"}
     >
       {children}
     </motion.div>

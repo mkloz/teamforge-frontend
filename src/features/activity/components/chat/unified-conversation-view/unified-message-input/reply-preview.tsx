@@ -17,7 +17,7 @@ export const ReplyPreview = memo(
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
-          className="overflow-hidden rounded-t-xl bg-muted/30"
+          className="overflow-hidden"
         >
           <div className="flex items-start gap-3 border-border/40 border-b px-4 py-2.5">
             <div className="flex min-w-0 flex-1 items-center gap-3">

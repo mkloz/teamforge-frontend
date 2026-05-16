@@ -1,8 +1,8 @@
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
-import { HTTPError } from "ky";
 
+import { getHttpErrorStatus } from "@/shared/lib/api-error-message";
+import { warnInDevelopment } from "@/shared/lib/development-warning";
 import { showAppErrorToast } from "@/shared/lib/error-toast";
-import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { telemetryErrorScopes } from "@/shared/lib/telemetry-contract";
 
 const DEFAULT_QUERY_STALE_TIME_MS = 60_000;
@@ -23,10 +23,9 @@ interface ErrorToastMeta {
 }
 
 function isNonRetryableHttpError(error: unknown) {
-  return (
-    error instanceof HTTPError &&
-    NON_RETRYABLE_HTTP_STATUSES.has(error.response.status)
-  );
+  const status = getHttpErrorStatus(error);
+
+  return status !== null && NON_RETRYABLE_HTTP_STATUSES.has(status);
 }
 
 function shouldRetry(failureCount: number, error: unknown) {
@@ -97,13 +96,41 @@ function shouldShowQueryErrorToast(
   return errorToastSetting === true || hasCachedData;
 }
 
+async function captureQueryClientException(
+  scope: string,
+  error: unknown,
+  context: Record<string, string | undefined>,
+) {
+  try {
+    const { captureException } = await import("@/shared/lib/telemetry");
+
+    captureException(scope, error, context);
+  } catch (telemetryError) {
+    warnInDevelopment("Query telemetry failed.", telemetryError);
+  }
+}
+
+async function trackMutationError(name: string) {
+  try {
+    const { trackMutationOutcome } = await import("@/shared/lib/telemetry");
+
+    trackMutationOutcome(name, "error");
+  } catch (telemetryError) {
+    warnInDevelopment("Mutation telemetry failed.", telemetryError);
+  }
+}
+
 export function createAppQueryClient() {
   return new QueryClient({
     queryCache: new QueryCache({
       onError: (error, query) => {
-        captureException(telemetryErrorScopes.queryError, error, {
-          queryKey: JSON.stringify(query.queryKey),
-        });
+        void captureQueryClientException(
+          telemetryErrorScopes.queryError,
+          error,
+          {
+            queryKey: JSON.stringify(query.queryKey),
+          },
+        );
 
         const errorToastMeta = readErrorToastMeta(query.meta);
 
@@ -132,13 +159,17 @@ export function createAppQueryClient() {
         const mutationName = getMutationTelemetryName(mutation.meta);
         const errorToastMeta = readErrorToastMeta(mutation.meta);
 
-        captureException(telemetryErrorScopes.mutationError, error, {
-          mutationKey: JSON.stringify(mutation.options.mutationKey ?? []),
-          mutationName,
-        });
+        void captureQueryClientException(
+          telemetryErrorScopes.mutationError,
+          error,
+          {
+            mutationKey: JSON.stringify(mutation.options.mutationKey ?? []),
+            mutationName,
+          },
+        );
 
         if (mutationName) {
-          trackMutationOutcome(mutationName, "error");
+          void trackMutationError(mutationName);
         }
 
         if (errorToastMeta.errorToast !== false) {

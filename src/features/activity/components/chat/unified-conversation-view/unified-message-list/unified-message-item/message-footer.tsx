@@ -1,3 +1,4 @@
+import { Bookmark, Pin } from "lucide-react";
 import { memo } from "react";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { formatChatTime } from "@/features/activity/lib/chat-utils";
@@ -14,6 +15,9 @@ interface MessageFooterProps {
   status: UnifiedMessage["status"];
   isReadByOthers: boolean;
   isEdited?: boolean;
+  isPinned?: boolean;
+  isSaved?: boolean;
+  hasReply?: boolean;
   onToggleReaction?: (emoji: string) => void;
 }
 
@@ -27,6 +31,9 @@ export const MessageFooter = memo(
     status,
     isReadByOthers,
     isEdited,
+    isPinned = false,
+    isSaved = false,
+    hasReply = false,
     onToggleReaction,
   }: MessageFooterProps) => {
     // If we show as part of media gallery (only image content), we don't render footer here
@@ -39,11 +46,10 @@ export const MessageFooter = memo(
     return (
       <div
         className={cn(
-          "flex items-end gap-3 px-2 pb-1",
-          reactionGroups.length > 0
-            ? "mt-1 mb-0.5 justify-between"
-            : "justify-end",
+          "flex min-h-5 items-center gap-2 px-2 pb-1",
+          reactionGroups.length > 0 ? "my-0.5 justify-between" : "justify-end",
           content &&
+            !hasReply &&
             content.length < 50 &&
             !content.includes(" ") &&
             reactionGroups.length === 0 &&
@@ -57,6 +63,15 @@ export const MessageFooter = memo(
         />
 
         <div className="flex shrink-0 items-center gap-1 opacity-70">
+          {isPinned && (
+            <Pin
+              aria-label="Pinned message"
+              className="size-3 rotate-45 text-forge-teal"
+            />
+          )}
+          {isSaved && (
+            <Bookmark className="size-3 fill-forge-teal/20 text-forge-teal" />
+          )}
           {isEdited && (
             <span className="mr-0.5 font-bold text-nano italic opacity-60">
               Edited

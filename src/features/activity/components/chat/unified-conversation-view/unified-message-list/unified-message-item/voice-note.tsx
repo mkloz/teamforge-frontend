@@ -22,6 +22,7 @@ export const VoiceNote = memo(function VoiceNote({
 }: VoiceNoteProps) {
   const {
     isPlaying,
+    hasError,
     progress,
     playbackSpeed,
     bars,
@@ -59,8 +60,11 @@ export const VoiceNote = memo(function VoiceNote({
           onClick={togglePlay}
           variant="ghost"
           size="icon"
+          disabled={hasError}
+          aria-label={hasError ? "Voice note unavailable" : "Play voice note"}
           className={cn(
             "size-10 shrink-0 rounded-full transition active:scale-90",
+            "disabled:cursor-not-allowed disabled:opacity-60",
             isOwn
               ? "border border-primary/10 bg-primary/10 text-primary hover:bg-primary/20 dark:border-white/10 dark:bg-white/10 dark:text-white hover:dark:bg-white/20"
               : "border border-forge-teal/10 bg-forge-teal/5 text-forge-teal hover:bg-forge-teal/10",
@@ -139,8 +143,10 @@ export const VoiceNote = memo(function VoiceNote({
           onClick={toggleSpeed}
           variant="subtle"
           size="xs"
+          disabled={hasError}
           className={cn(
             "h-8 shrink-0 rounded-lg border px-2 font-black text-xs tabular-nums transition",
+            "disabled:cursor-not-allowed disabled:opacity-60",
             isOwn
               ? "border-primary/10 bg-primary/5 text-primary/70 hover:bg-primary/10 dark:border-white/10 dark:bg-white/5 dark:text-white/70 hover:dark:bg-white/10"
               : "border-forge-teal/10 bg-forge-teal/5 text-forge-teal/70 hover:bg-forge-teal/10",
@@ -149,6 +155,12 @@ export const VoiceNote = memo(function VoiceNote({
           {playbackSpeed}x
         </Button>
       </div>
+
+      {hasError && (
+        <p className="w-full px-13 font-semibold text-destructive/70 text-micro">
+          Voice note unavailable
+        </p>
+      )}
 
       {/* Time Info */}
       <div

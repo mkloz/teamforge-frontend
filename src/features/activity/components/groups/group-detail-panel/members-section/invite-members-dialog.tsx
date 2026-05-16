@@ -107,6 +107,7 @@ export function InviteMembersDialog({
 
           <div>
             <Input
+              type="search"
               value={query}
               onChange={(event) => {
                 setQuery(event.target.value);
@@ -119,7 +120,7 @@ export function InviteMembersDialog({
 
           <div className="flex max-h-80 flex-col gap-2 overflow-y-auto pr-1">
             {filteredCandidates.length === 0 ? (
-              <div className="flex flex-col items-center rounded-lg border border-border/70 border-dashed bg-background/50 px-4 py-6 text-center">
+              <div className="flex min-h-48 flex-col items-center justify-center rounded-lg border border-border/70 border-dashed bg-background/50 px-4 py-6 text-center">
                 <EmptyInviteCandidatesVisual className="h-24 w-auto text-foreground" />
                 <p className="mt-3 text-slate-muted text-sm">
                   No eligible friends to invite right now.

@@ -13,6 +13,10 @@ export const ActivityBaseQueryFactory = {
     return ActivityQueryOptions.friendships();
   },
 
+  savedMessages() {
+    return ActivityQueryOptions.savedMessages();
+  },
+
   groupRatings(groupId: string) {
     return ActivityQueryOptions.groupRatings(groupId);
   },

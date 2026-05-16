@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { ActivityConversationStageSkeleton } from "@/features/activity/components/activity-page/activity-page-skeleton";
 import { UnifiedConversationView } from "@/features/activity/components/chat/unified-conversation-view";
 import type { MessageScrollHandle } from "@/features/activity/components/chat/unified-conversation-view/unified-message-list/message-scroll.types";
@@ -8,6 +8,7 @@ import {
 } from "@/features/activity/components/direct-chats/profile-panel";
 import { GroupDetailPanel } from "@/features/activity/components/groups/group-detail-panel";
 import type { ActivityWorkspace } from "@/features/activity/hooks/use-activity";
+import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
 
 import { ActivityEmptyState } from "./activity-empty-state";
 
@@ -21,12 +22,74 @@ export function ActivityConversationStage({
   isMobile,
 }: ActivityConversationStageProps) {
   const groupMessageScrollHandleRef = useRef<MessageScrollHandle | null>(null);
+  const [selectedGroupMemberProfile, setSelectedGroupMemberProfile] = useState<{
+    groupId: string;
+    memberId: string;
+  } | null>(null);
   const isSelectionLoading =
     activity.hasSelection && activity.isSelectedConversationLoading;
+  const selectedGroupId = activity.selectedGroup?.id ?? null;
+  const selectedGroupMemberId =
+    selectedGroupMemberProfile?.groupId === selectedGroupId
+      ? selectedGroupMemberProfile.memberId
+      : null;
+
+  function openGroupMemberProfile(participant: ActivityParticipant) {
+    const selectedGroup = activity.selectedGroup;
+
+    if (!selectedGroup) {
+      return;
+    }
+
+    const member = selectedGroup.members?.find(
+      (groupMember) => groupMember.userId === participant.id,
+    );
+
+    if (!member) {
+      return;
+    }
+
+    setSelectedGroupMemberProfile({
+      groupId: selectedGroup.id,
+      memberId: member.userId,
+    });
+
+    if (!activity.groups.isDetailPanelOpen) {
+      activity.toggleGroupDetail();
+    }
+  }
+
+  function toggleGroupDetailPanel() {
+    if (activity.groups.isDetailPanelOpen) {
+      setSelectedGroupMemberProfile(null);
+    }
+
+    activity.toggleGroupDetail();
+  }
+
+  function closeGroupDetailPanel() {
+    setSelectedGroupMemberProfile(null);
+    activity.closeGroupDetail();
+  }
+
+  function setSelectedGroupMemberId(memberId: string | null) {
+    if (!memberId || !selectedGroupId) {
+      setSelectedGroupMemberProfile(null);
+      return;
+    }
+
+    setSelectedGroupMemberProfile({ groupId: selectedGroupId, memberId });
+  }
+
+  function openDirectProfilePanel() {
+    if (!activity.direct.isProfilePanelOpen) {
+      activity.toggleProfilePanel();
+    }
+  }
 
   if (isSelectionLoading) {
     return (
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex h-full min-h-0 min-w-0 flex-1 overflow-hidden">
         <ActivityConversationStageSkeleton />
       </div>
     );
@@ -38,8 +101,8 @@ export function ActivityConversationStage({
     activity.selectedGroup
   ) {
     return (
-      <div className="flex flex-1 overflow-hidden">
-        <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex h-full min-h-0 min-w-0 flex-1 overflow-hidden">
+        <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
           <UnifiedConversationView
             kind="group"
             data={activity.selectedGroup}
@@ -53,7 +116,8 @@ export function ActivityConversationStage({
             messageScrollHandleRef={groupMessageScrollHandleRef}
             onBack={activity.handleBack}
             onLoadOlderMessages={activity.loadOlderMessages}
-            onToggleAction={activity.toggleGroupDetail}
+            onShowParticipantProfile={openGroupMemberProfile}
+            onToggleAction={toggleGroupDetailPanel}
             onSendMessage={activity.handleSendMessage}
             sendError={activity.sendError}
             onClearSendError={activity.clearSendError}
@@ -64,7 +128,9 @@ export function ActivityConversationStage({
           isOpen={activity.groups.isDetailPanelOpen}
           focusedPlanId={activity.focusedPlanId}
           focusedProposalId={activity.focusedProposalId}
-          onClose={activity.closeGroupDetail}
+          selectedMemberId={selectedGroupMemberId}
+          onSelectedMemberIdChange={setSelectedGroupMemberId}
+          onClose={closeGroupDetailPanel}
           onJumpToMessage={(messageId) =>
             groupMessageScrollHandleRef.current?.scrollToMessage(messageId, {
               highlight: true,
@@ -81,8 +147,8 @@ export function ActivityConversationStage({
     activity.selectedChat
   ) {
     return (
-      <div className="flex flex-1 overflow-hidden">
-        <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex h-full min-h-0 min-w-0 flex-1 overflow-hidden">
+        <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
           <UnifiedConversationView
             kind="dm"
             data={activity.selectedChat}
@@ -95,6 +161,7 @@ export function ActivityConversationStage({
             isActionOpen={activity.direct.isProfilePanelOpen}
             onBack={activity.handleBack}
             onLoadOlderMessages={activity.loadOlderMessages}
+            onShowParticipantProfile={openDirectProfilePanel}
             onToggleAction={activity.toggleProfilePanel}
             onSendMessage={activity.handleSendMessage}
             sendError={activity.sendError}
@@ -118,7 +185,7 @@ export function ActivityConversationStage({
   }
 
   return (
-    <div className="flex flex-1">
+    <div className="flex h-full min-h-0 min-w-0 flex-1">
       <ActivityEmptyState />
     </div>
   );

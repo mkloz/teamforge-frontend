@@ -23,7 +23,7 @@ interface RealtimeGroupUpdateOptions {
     group: GroupApi,
     currentUserId: string | null,
     proposals?: PlanProposal[],
-    chatSummary?: Pick<ChatApi, "id" | "pinnedMessages"> | null,
+    chatSummary?: Pick<ChatApi, "id" | "isMuted" | "pinnedMessages"> | null,
   ) => Group;
 }
 
@@ -113,10 +113,11 @@ export const ActivityGroupCache = {
             current.chatId
               ? ({
                   id: current.chatId,
+                  isMuted: current.group?.chat?.isMuted ?? false,
                   pinnedMessages: current.group?.chat?.pinnedMessages?.map(
                     (message) => toMessageApi(message),
                   ),
-                } satisfies Pick<ChatApi, "id" | "pinnedMessages">)
+                } satisfies Pick<ChatApi, "id" | "isMuted" | "pinnedMessages">)
               : null,
           ),
         };

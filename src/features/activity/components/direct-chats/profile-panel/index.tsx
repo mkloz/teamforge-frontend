@@ -30,7 +30,7 @@ export function ProfilePanel({ chat, isOpen, onClose }: ProfilePanelProps) {
   return (
     <aside
       className={cn(
-        "hidden h-full flex-col border-border border-l bg-canvas transition duration-300 ease-out lg:flex",
+        "hidden h-full min-h-0 flex-col overflow-hidden border-border border-l bg-canvas transition duration-300 ease-out lg:flex",
         isOpen ? "w-80 opacity-100" : "w-0 overflow-hidden opacity-0",
       )}
     >
@@ -39,6 +39,8 @@ export function ProfilePanel({ chat, isOpen, onClose }: ProfilePanelProps) {
         chat={chat}
         blockActionDisabled={!safetyActions.canToggleBlock}
         isBlockActionPending={safetyActions.isBlockActionPending}
+        isMuteActionPending={safetyActions.isMuteActionPending}
+        onToggleMute={safetyActions.toggleMute}
         onToggleBlock={safetyActions.toggleBlock}
       />
     </aside>
@@ -77,6 +79,8 @@ export function ProfilePanelMobile({
             isMobile={true}
             blockActionDisabled={!safetyActions.canToggleBlock}
             isBlockActionPending={safetyActions.isBlockActionPending}
+            isMuteActionPending={safetyActions.isMuteActionPending}
+            onToggleMute={safetyActions.toggleMute}
             onToggleBlock={safetyActions.toggleBlock}
           />
         </div>

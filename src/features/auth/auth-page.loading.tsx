@@ -1,5 +1,4 @@
-import { AuthPageContent } from "@/features/auth/auth-page-content";
-import { AuthSupportShell } from "@/features/auth/components/auth-support-shell";
+import type { ReactNode } from "react";
 import type { PageLoadingProps } from "@/shared/components/loading/page-loading";
 import {
   SkeletonButton,
@@ -47,9 +46,41 @@ export function AuthPageLoadingFixture({
   }
 
   return (
-    <AuthPageContent progress={variant === "register" ? 0.32 : 0.18}>
+    <AuthLoadingShell>
       <AuthFormSkeleton variant={variant} />
-    </AuthPageContent>
+    </AuthLoadingShell>
+  );
+}
+
+function AuthLoadingShell({ children }: { children: ReactNode }) {
+  return (
+    <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
+      <div className="pointer-events-none absolute top-0 right-0 left-0 z-30 flex h-16 items-center px-4 lg:h-24 lg:px-10">
+        <a
+          href="/"
+          className="pointer-events-auto inline-flex h-9 items-center rounded-full px-4 font-medium text-white/80 text-xs"
+        >
+          Back home
+        </a>
+      </div>
+
+      <div className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-r bg-hero-bg lg:flex">
+        <div className="relative flex size-72 items-center justify-center">
+          <Skeleton shape="circle" className="absolute inset-8" tone="teal" />
+          <Skeleton shape="circle" className="size-24" tone="teal" />
+        </div>
+      </div>
+
+      <div className="relative flex h-full flex-1 flex-col overflow-hidden bg-canvas">
+        <div className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth pb-4">
+          <div className="flex min-h-full w-full flex-col items-center justify-start px-4 pt-20 pb-10 lg:justify-center lg:py-8">
+            <div className="relative w-full max-w-sm px-2 sm:px-10 lg:p-0">
+              {children}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -129,34 +160,45 @@ function SupportLoadingFixture({
         : "This password will replace the old one for your TeamForge account.";
 
   return (
-    <AuthSupportShell
-      title={title}
-      description={description}
-      backNavigation={{ to: "/auth/login" }}
-      backLabel="Back to login"
-    >
-      <div
-        aria-busy="true"
-        aria-label={`Loading ${kind}`}
-        className="flex flex-col gap-4"
-        role="status"
-      >
-        <span className="sr-only">Loading {kind}</span>
-        {kind === "activate" ? (
-          <>
-            <Skeleton shape="circle" className="mx-auto size-12" tone="teal" />
-            <SkeletonText lines={2} widths={["w-full", "w-3/4"]} />
-          </>
-        ) : (
-          <>
-            <Skeleton className="h-12 w-full" />
-            {kind === "reset-password" ? (
+    <AuthLoadingShell>
+      <div className="rounded-xl border border-border/70 bg-card/95 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
+        <div className="flex flex-col gap-2 text-center">
+          <p className="font-semibold text-forge-teal text-xs uppercase tracking-widest">
+            TeamForge
+          </p>
+          <h1 className="font-semibold text-2xl text-foreground tracking-tight">
+            {title}
+          </h1>
+          <p className="text-slate-muted text-sm leading-6">{description}</p>
+        </div>
+
+        <div
+          aria-busy="true"
+          aria-label={`Loading ${kind}`}
+          className="mt-6 flex flex-col gap-4"
+          role="status"
+        >
+          <span className="sr-only">Loading {kind}</span>
+          {kind === "activate" ? (
+            <>
+              <Skeleton
+                shape="circle"
+                className="mx-auto size-12"
+                tone="teal"
+              />
+              <SkeletonText lines={2} widths={["w-full", "w-3/4"]} />
+            </>
+          ) : (
+            <>
               <Skeleton className="h-12 w-full" />
-            ) : null}
-            <SkeletonButton className="h-12 w-full" tone="teal" />
-          </>
-        )}
+              {kind === "reset-password" ? (
+                <Skeleton className="h-12 w-full" />
+              ) : null}
+              <SkeletonButton className="h-12 w-full" tone="teal" />
+            </>
+          )}
+        </div>
       </div>
-    </AuthSupportShell>
+    </AuthLoadingShell>
   );
 }

@@ -84,6 +84,8 @@ export const ChatStatusBar = memo(function ChatStatusBar({
           "group h-auto min-w-0 flex-1 justify-start gap-2 p-0 text-left",
           "select-none rounded-lg",
           "transition-colors duration-150",
+          "hover:enabled:bg-transparent hover:enabled:dark:bg-transparent",
+          "active:enabled:translate-y-0 active:enabled:scale-100 active:enabled:bg-transparent",
           "focus-visible:ring-forge-teal/40 focus-visible:ring-inset",
         )}
       >

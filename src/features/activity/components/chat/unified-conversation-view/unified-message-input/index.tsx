@@ -37,8 +37,14 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
     onSend,
   });
 
-  const containerClasses = cn(
-    "relative flex min-w-0 flex-1 flex-col rounded-xl border transition-colors duration-300",
+  const hasContextPanel =
+    (!composer.isEditing && composer.replyingTo) ||
+    composer.isEditing ||
+    composer.pendingAttachments.length > 0 ||
+    Boolean(composer.recordingError) ||
+    Boolean(errorMessage);
+  const inputPillClasses = cn(
+    "relative flex min-h-11 min-w-0 flex-1 rounded-full border transition-colors duration-300",
     composer.isRecording
       ? "border-destructive/20 bg-destructive/5"
       : composer.isFocused
@@ -48,40 +54,63 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
 
   return (
     <div className="safe-area-inset-bottom isolate z-30 min-h-16 shrink-0 overflow-visible border-border/60 border-t bg-canvas/90 px-3 pt-2 pb-2.5 backdrop-blur-xl">
-      <div className="mx-auto flex w-full items-end gap-2.5">
+      <div className="mx-auto flex w-full items-center gap-2.5">
         {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions: File drag/drop is pointer-only decoration around the actual message controls. */}
         {/* biome-ignore lint/a11y/noStaticElementInteractions: The keyboard-accessible controls live inside this drop zone. */}
         <div
-          className={containerClasses}
+          className="relative min-w-0 flex-1"
           onDragOver={composer.handleDragOver}
           onDragLeave={composer.handleDragLeave}
           onDrop={composer.handleDrop}
         >
           {composer.isDraggingFiles && (
-            <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-xl border-2 border-forge-teal border-dashed bg-forge-teal/10 font-semibold text-forge-teal text-sm">
+            <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-full border-2 border-forge-teal border-dashed bg-forge-teal/10 font-semibold text-forge-teal text-sm">
               Drop files to attach
             </div>
           )}
-          <ReplyPreview
-            replyingTo={composer.isEditing ? null : composer.replyingTo}
-            onClear={composer.clearReply}
-          />
+          {hasContextPanel && (
+            <div className="absolute right-0 bottom-full left-0 z-20 mb-2 overflow-hidden rounded-2xl border border-border/55 bg-card/95 shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)] backdrop-blur-xl">
+              <ReplyPreview
+                replyingTo={composer.isEditing ? null : composer.replyingTo}
+                onClear={composer.clearReply}
+              />
 
-          {composer.isEditing && composer.editingMessage && (
-            <EditingMessageBanner onCancel={composer.cancelEditing} />
+              {composer.isEditing && composer.editingMessage && (
+                <EditingMessageBanner onCancel={composer.cancelEditing} />
+              )}
+
+              <AttachmentPreviewPanel
+                disabled={composer.isDisabled}
+                files={composer.pendingAttachments.map(
+                  (attachment) => attachment.file,
+                )}
+                isEditing={composer.isEditing}
+                onAppendAttachments={composer.appendAttachments}
+                onRemoveAttachment={composer.removeAttachment}
+              />
+
+              {composer.recordingError && (
+                <p className="px-4 py-2 font-medium text-destructive/80 text-xs">
+                  {composer.recordingError === "permission-denied"
+                    ? "Microphone access denied. Check your browser settings."
+                    : composer.recordingError === "not-supported"
+                      ? "Voice recording isn't supported on this browser."
+                      : "Recording failed. Please try again."}
+                </p>
+              )}
+
+              {errorMessage && (
+                <div className="flex items-center gap-2 px-4 py-2">
+                  <ErrorMessageSendFailedVisual className="h-5 w-auto shrink-0 text-foreground" />
+                  <p className="font-medium text-destructive/80 text-xs">
+                    {errorMessage}
+                  </p>
+                </div>
+              )}
+            </div>
           )}
 
-          <AttachmentPreviewPanel
-            disabled={composer.isDisabled}
-            files={composer.pendingAttachments.map(
-              (attachment) => attachment.file,
-            )}
-            isEditing={composer.isEditing}
-            onAppendAttachments={composer.appendAttachments}
-            onRemoveAttachment={composer.removeAttachment}
-          />
-
-          <div className="relative z-10 flex min-h-11 w-full items-end">
+          <div className={inputPillClasses}>
             {composer.isRecording ? (
               <RecordingOverlay
                 timeLabel={composer.formatRecordingTime(composer.recordingTime)}
@@ -94,6 +123,8 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
                 onFocus={() => composer.setIsFocused(true)}
                 onBlur={() => composer.setIsFocused(false)}
                 textareaRef={composer.textareaRef}
+                onInsertEmoji={composer.insertEmoji}
+                onSelectGif={composer.sendGif}
                 placeholder={
                   composer.isEditing ? "Edit your message..." : placeholder
                 }
@@ -105,31 +136,13 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
                   composer.isEditing ? () => {} : composer.appendAttachments
                 }
                 canAttach={!composer.isEditing}
+                canSendGif={!composer.isEditing}
               />
             )}
           </div>
-
-          {composer.recordingError && (
-            <p className="-mt-1 px-4 pb-1.5 font-medium text-destructive/80 text-xs">
-              {composer.recordingError === "permission-denied"
-                ? "Microphone access denied. Check your browser settings."
-                : composer.recordingError === "not-supported"
-                  ? "Voice recording isn't supported on this browser."
-                  : "Recording failed. Please try again."}
-            </p>
-          )}
-
-          {errorMessage && (
-            <div className="flex items-center gap-2 px-3 pb-2">
-              <ErrorMessageSendFailedVisual className="h-5 w-auto shrink-0 text-foreground" />
-              <p className="font-medium text-destructive/80 text-xs">
-                {errorMessage}
-              </p>
-            </div>
-          )}
         </div>
 
-        <div className="mb-0.5 flex h-11 shrink-0 items-end">
+        <div className="flex h-11 shrink-0 items-center">
           <ActionTarget
             hasContent={composer.hasDraft}
             isRecording={composer.isRecording}

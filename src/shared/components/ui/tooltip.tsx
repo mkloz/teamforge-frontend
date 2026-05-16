@@ -48,7 +48,7 @@ function TooltipContent({
       >
         <div
           data-slot="tooltip-panel"
-          className="relative z-10 rounded-md border-2 border-popover-foreground bg-popover px-3 py-1.5 font-semibold text-popover-foreground text-xs leading-snug shadow-lg"
+          className="relative z-10 rounded-md border-2 border-popover-foreground bg-popover px-3 py-1.5 font-semibold text-popover-foreground text-xs leading-snug shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)]"
         >
           {children}
         </div>

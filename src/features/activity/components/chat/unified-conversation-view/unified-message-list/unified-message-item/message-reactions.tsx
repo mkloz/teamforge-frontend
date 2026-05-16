@@ -1,10 +1,6 @@
-import { memo } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { memo, useEffect, useState } from "react";
 import { Button } from "@/shared/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 
 export interface ReactionGroup {
@@ -12,6 +8,31 @@ export interface ReactionGroup {
   count: number;
   isActive?: boolean;
 }
+
+type CountDirection = -1 | 1;
+
+interface ReactionCountMotionState {
+  direction: CountDirection;
+  reducedMotion: boolean;
+}
+
+const REACTION_COUNT_VARIANTS = {
+  enter: ({ direction, reducedMotion }: ReactionCountMotionState) => ({
+    opacity: 0,
+    scale: reducedMotion ? 1 : 0.96,
+    y: reducedMotion ? 0 : direction > 0 ? "65%" : "-65%",
+  }),
+  center: {
+    opacity: 1,
+    scale: 1,
+    y: "0%",
+  },
+  exit: ({ direction, reducedMotion }: ReactionCountMotionState) => ({
+    opacity: 0,
+    scale: reducedMotion ? 1 : 0.96,
+    y: reducedMotion ? 0 : direction > 0 ? "-65%" : "65%",
+  }),
+};
 
 interface MessageReactionsProps {
   reactions?: ReactionGroup[];
@@ -31,38 +52,98 @@ export const MessageReactions = memo(function MessageReactions({
   return (
     <div
       className={cn(
-        "zoom-in-95 fade-in mt-1 flex animate-in flex-wrap gap-1 duration-500",
+        "zoom-in-95 fade-in flex animate-in flex-wrap items-center gap-0.5 duration-500",
         isOwn ? "justify-end" : "justify-start",
         className,
       )}
     >
-      {reactions.map((reaction) => (
-        <Tooltip key={reaction.emoji}>
-          <TooltipTrigger asChild>
-            <Button
-              variant={reaction.isActive ? "primary" : "subtle"}
-              size="xs"
+      {reactions.map((reaction) => {
+        const hasVisibleCount = reaction.count > 1;
+
+        return (
+          <Button
+            key={reaction.emoji}
+            variant="subtle"
+            size="xs"
+            className={cn(
+              "h-5 rounded-full border py-0 font-bold text-nano leading-none transition-all active:enabled:scale-95",
+              hasVisibleCount ? "min-w-7 px-1" : "size-5 px-0",
+              getReactionButtonTone({ isOwn, isActive: reaction.isActive }),
+            )}
+            contentClassName={hasVisibleCount ? "gap-0.5" : "gap-0"}
+            onClick={() => onToggleReaction?.(reaction.emoji)}
+          >
+            <span
               className={cn(
-                "h-auto rounded-full border px-1.5 py-0.5 font-bold text-xs transition-all",
-                reaction.isActive
-                  ? "border-forge-teal/20 bg-forge-teal/10 text-forge-teal shadow-sm"
-                  : "border-transparent",
+                "flex items-center justify-center text-xs leading-none",
+                hasVisibleCount ? "size-3.5" : "size-4",
               )}
-              onClick={() => onToggleReaction?.(reaction.emoji)}
             >
-              <span className="text-xs leading-none">{reaction.emoji}</span>
-              {reaction.count > 1 && (
-                <span className="tabular-nums opacity-80">
-                  {reaction.count}
-                </span>
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="top">
-            Reactions: {reaction.emoji}
-          </TooltipContent>
-        </Tooltip>
-      ))}
+              {reaction.emoji}
+            </span>
+            <AnimatedReactionCount count={reaction.count} />
+          </Button>
+        );
+      })}
     </div>
   );
 });
+
+function getReactionButtonTone({
+  isActive,
+  isOwn,
+}: {
+  isActive?: boolean;
+  isOwn?: boolean;
+}) {
+  if (isOwn) {
+    return isActive
+      ? "border-spark-amber/35 bg-spark-amber/18 text-spark-amber shadow-sm hover:enabled:bg-spark-amber/22"
+      : "border-white/10 bg-hero-bg/45 text-canvas shadow-sm hover:enabled:bg-hero-bg/55";
+  }
+
+  return isActive
+    ? "border-forge-teal/20 bg-forge-teal/10 text-forge-teal shadow-sm"
+    : "border-transparent";
+}
+
+function AnimatedReactionCount({ count }: { count: number }) {
+  const [previousCount, setPreviousCount] = useState(count);
+  const prefersReducedMotion = useReducedMotion();
+  const direction: CountDirection = count >= previousCount ? 1 : -1;
+  const isCounterMounted = count > 1 || previousCount > 1;
+  const motionState: ReactionCountMotionState = {
+    direction,
+    reducedMotion: Boolean(prefersReducedMotion),
+  };
+
+  useEffect(() => {
+    setPreviousCount(count);
+  }, [count]);
+
+  return (
+    <span
+      className={cn(
+        "relative inline-grid h-3 min-w-1.5 overflow-hidden tabular-nums leading-none transition-all duration-150",
+        !isCounterMounted && "w-0 min-w-0",
+      )}
+    >
+      <AnimatePresence custom={motionState} initial={false} mode="popLayout">
+        {count > 1 && (
+          <motion.span
+            key={count}
+            animate="center"
+            className="col-start-1 row-start-1 inline-block opacity-80"
+            custom={motionState}
+            exit="exit"
+            initial="enter"
+            transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+            variants={REACTION_COUNT_VARIANTS}
+          >
+            {count}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </span>
+  );
+}

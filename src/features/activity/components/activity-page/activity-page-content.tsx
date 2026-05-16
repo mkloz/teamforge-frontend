@@ -11,7 +11,7 @@ interface ActivityPageContentProps {
 
 function getFrameClassName(contained: boolean, hasSelection: boolean) {
   return cn(
-    "top-0 flex bg-canvas",
+    "top-0 flex h-dvh min-h-0 overflow-clip bg-canvas",
     hasSelection ? "pb-0" : "pb-12 md:pb-0",
     contained ? "absolute inset-0" : "fixed inset-0 md:left-14",
   );
@@ -28,7 +28,7 @@ export function ActivityPageContent({
 
       <main
         className={cn(
-          "flex min-w-0 flex-1 duration-300",
+          "flex h-full min-h-0 min-w-0 flex-1 duration-300",
           !activity.hasSelection && "hidden md:flex",
         )}
       >

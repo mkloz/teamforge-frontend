@@ -36,6 +36,7 @@ export function buildGroupFeedItem(
     kind: "group",
     unreadCount: chat?.unreadCount ?? 0,
     isTyping: chat ? (typingByChatId[chat.id]?.length ?? 0) > 0 : false,
+    isPinned: chat?.isPinned ?? false,
     latestMessage,
     group,
   };

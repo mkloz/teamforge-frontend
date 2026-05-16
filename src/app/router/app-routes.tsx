@@ -1,9 +1,11 @@
 import { createRoute } from "@tanstack/react-router";
-import { z } from "zod";
 
 import { AppShellWithNotifications } from "@/app/router/app-shell-with-notifications";
 import { createLazyPageRoute } from "@/app/router/lazy-page-route";
-import { createLazyRouteModule } from "@/app/router/lazy-route-module";
+import {
+  createLazyRouteModule,
+  type LazyRouteModule,
+} from "@/app/router/lazy-route-module";
 import { rootRoute } from "@/app/router/root-route";
 import { createRouteErrorComponent } from "@/app/router/route-error-component";
 import { requireCanonicalAppRoute } from "@/app/router/route-guards";
@@ -11,7 +13,11 @@ import { ActivityPageLoading } from "@/features/activity/activity-page.loading";
 import { ExplorePageLoading } from "@/features/explore/explore-page.loading";
 import { ForgePageLoading } from "@/features/forge/forge-page.loading";
 import { GroupPlanDetailPageLoading } from "@/features/group-plan-detail/group-plan-detail-page.loading";
-import { groupPlanDetailSourceValues } from "@/features/group-plan-detail/lib/group-plan-detail-route";
+import {
+  type GroupPlanDetailRouteSearch,
+  type GroupPlanDetailSource,
+  groupPlanDetailSourceValues,
+} from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import { HomePageLoading } from "@/features/home/home-page.loading";
 import { ProfilePageLoading } from "@/features/profile/profile-page/profile-page.loading";
 import { SettingsPageLoading } from "@/features/settings/settings-page/settings-page.loading";
@@ -63,6 +69,36 @@ const groupPlanDetailPageModule = createLazyRouteModule(() =>
   })),
 );
 
+function parseOptionalSearchString(value: unknown) {
+  return typeof value === "string" ? value : undefined;
+}
+
+function isGroupPlanDetailSource(
+  value: unknown,
+): value is GroupPlanDetailSource {
+  return (
+    typeof value === "string" &&
+    groupPlanDetailSourceValues.some((source) => source === value)
+  );
+}
+
+function validateGroupPlanDetailSearch(
+  search: Record<string, unknown>,
+): GroupPlanDetailRouteSearch {
+  return {
+    plan: parseOptionalSearchString(search.plan),
+    proposal: parseOptionalSearchString(search.proposal),
+    returnTo: parseOptionalSearchString(search.returnTo),
+    source: isGroupPlanDetailSource(search.source) ? search.source : undefined,
+  };
+}
+
+function createRouteModuleLoader(module: LazyRouteModule) {
+  return async () => {
+    await module.preload();
+  };
+}
+
 export const appShellRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "app-shell",
@@ -73,6 +109,9 @@ export const appShellRoute = createRoute({
 const homeRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/home",
+  loader: createRouteModuleLoader(homePageModule),
+  staleTime: Number.POSITIVE_INFINITY,
+  pendingComponent: () => <HomePageLoading mode="route" />,
   component: createLazyPageRoute(
     homePageModule.Component,
     <HomePageLoading mode="route" />,
@@ -90,6 +129,9 @@ const homeRoute = createRoute({
 const exploreRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/explore",
+  loader: createRouteModuleLoader(explorePageModule),
+  staleTime: Number.POSITIVE_INFINITY,
+  pendingComponent: () => <ExplorePageLoading mode="route" />,
   component: createLazyPageRoute(
     explorePageModule.Component,
     <ExplorePageLoading mode="route" />,
@@ -107,12 +149,10 @@ const exploreRoute = createRoute({
 const groupPlanDetailRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/groups/$groupId",
-  validateSearch: z.object({
-    plan: z.string().optional().catch(undefined),
-    proposal: z.string().optional().catch(undefined),
-    returnTo: z.string().optional().catch(undefined),
-    source: z.enum(groupPlanDetailSourceValues).optional().catch(undefined),
-  }),
+  validateSearch: validateGroupPlanDetailSearch,
+  loader: createRouteModuleLoader(groupPlanDetailPageModule),
+  staleTime: Number.POSITIVE_INFINITY,
+  pendingComponent: () => <GroupPlanDetailPageLoading mode="route" />,
   component: createLazyPageRoute(
     groupPlanDetailPageModule.Component,
     <GroupPlanDetailPageLoading mode="route" />,
@@ -130,6 +170,9 @@ const groupPlanDetailRoute = createRoute({
 const activityRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/activity",
+  loader: createRouteModuleLoader(activityPageModule),
+  staleTime: Number.POSITIVE_INFINITY,
+  pendingComponent: () => <ActivityPageLoading mode="route" />,
   component: createLazyPageRoute(
     activityPageModule.Component,
     <ActivityPageLoading mode="route" />,
@@ -147,6 +190,9 @@ const activityRoute = createRoute({
 const profileRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/profile",
+  loader: createRouteModuleLoader(profilePageModule),
+  staleTime: Number.POSITIVE_INFINITY,
+  pendingComponent: () => <ProfilePageLoading mode="route" />,
   component: createLazyPageRoute(
     profilePageModule.Component,
     <ProfilePageLoading mode="route" />,
@@ -164,6 +210,9 @@ const profileRoute = createRoute({
 const userDetailRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/users/$userId",
+  loader: createRouteModuleLoader(userDetailPageModule),
+  staleTime: Number.POSITIVE_INFINITY,
+  pendingComponent: () => <ProfilePageLoading mode="route" />,
   component: createLazyPageRoute(
     userDetailPageModule.Component,
     <ProfilePageLoading mode="route" />,
@@ -181,6 +230,9 @@ const userDetailRoute = createRoute({
 const settingsRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/settings",
+  loader: createRouteModuleLoader(settingsPageModule),
+  staleTime: Number.POSITIVE_INFINITY,
+  pendingComponent: () => <SettingsPageLoading mode="route" />,
   component: createLazyPageRoute(
     settingsPageModule.Component,
     <SettingsPageLoading mode="route" />,
@@ -198,6 +250,9 @@ const settingsRoute = createRoute({
 const forgeRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/forge",
+  loader: createRouteModuleLoader(forgePageModule),
+  staleTime: Number.POSITIVE_INFINITY,
+  pendingComponent: () => <ForgePageLoading mode="route" />,
   component: createLazyPageRoute(
     forgePageModule.Component,
     <ForgePageLoading mode="route" />,

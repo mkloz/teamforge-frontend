@@ -10,13 +10,15 @@ export function ActivitySidebar({ activity }: ActivitySidebarProps) {
   return (
     <aside
       className={cn(
-        "flex shrink-0 flex-col border-border border-r bg-canvas transition-colors duration-300",
+        "flex h-full min-h-0 shrink-0 flex-col border-border border-r bg-canvas transition-colors duration-300",
         "w-full md:w-72 lg:w-80",
         activity.hasSelection && "hidden md:flex",
       )}
     >
       <UnifiedConversationList
+        allItems={activity.allItems}
         items={activity.filteredItems}
+        savedMessages={activity.savedMessages}
         selectedId={activity.selectedId}
         searchQuery={activity.searchQuery}
         activeFilter={activity.activeFilter}
@@ -24,9 +26,15 @@ export function ActivitySidebar({ activity }: ActivitySidebarProps) {
         groupCount={activity.groupCount}
         dmCount={activity.dmCount}
         unreadCount={activity.unreadCount}
+        pinnedCount={activity.pinnedCount}
+        savedCount={activity.savedCount}
         onSearchChange={activity.setSearchQuery}
         onFilterChange={activity.setActiveFilter}
         onDensityChange={activity.setSidebarDensity}
+        onRemoveSavedMessage={activity.removeSavedMessage}
+        onTogglePinnedItem={activity.togglePinnedConversation}
+        onToggleMutedItem={activity.toggleMutedConversation}
+        onMarkReadItem={activity.markConversationRead}
         onSelectItem={activity.handleSelectItem}
       />
     </aside>

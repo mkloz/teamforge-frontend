@@ -121,9 +121,11 @@ export function MatchingSettingsSection({
               </span>
             ))
           ) : (
-            <p className="text-slate-muted text-sm">
-              No interests have been saved yet.
-            </p>
+            <div className="flex min-h-24 w-full items-center justify-center text-center">
+              <p className="text-slate-muted text-sm">
+                No interests have been saved yet.
+              </p>
+            </div>
           )}
         </div>
       </div>

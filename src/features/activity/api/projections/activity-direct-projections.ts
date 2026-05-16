@@ -1,2 +1,5 @@
-export { mapDirectChat } from "./direct/direct-chat-projections";
-export { buildDirectFeedItem } from "./direct/direct-feed-projections";
+export { mapDirectChat, mapNotesChat } from "./direct/direct-chat-projections";
+export {
+  buildDirectFeedItem,
+  buildNotesFeedItem,
+} from "./direct/direct-feed-projections";

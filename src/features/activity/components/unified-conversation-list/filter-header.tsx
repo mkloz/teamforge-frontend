@@ -18,6 +18,8 @@ interface FilterHeaderProps {
     groupCount: number;
     dmCount: number;
     unreadCount: number;
+    pinnedCount: number;
+    savedCount: number;
   };
   density?: "default" | "compact";
   onFilterChange: (f: FilterChip) => void;
@@ -33,7 +35,12 @@ export const FilterHeader = memo(function FilterHeader({
   onDensityChange,
 }: FilterHeaderProps) {
   const visibleFilters = filters.filter(
-    (f) => f.key !== "unread" || counts.unreadCount > 0,
+    (f) =>
+      (f.key !== "unread" || counts.unreadCount > 0) &&
+      (f.key !== "pinned" ||
+        counts.pinnedCount > 0 ||
+        activeFilter === "pinned") &&
+      (f.key !== "saved" || counts.savedCount > 0 || activeFilter === "saved"),
   );
   const densityLabel = density === "default" ? "Compact view" : "Default view";
   const handleFilterChange = (value: string) => {
@@ -96,10 +103,18 @@ export const FilterHeader = memo(function FilterHeader({
 
 function getBadgeCount(
   key: FilterChip,
-  counts: { groupCount: number; dmCount: number; unreadCount: number },
+  counts: {
+    groupCount: number;
+    dmCount: number;
+    unreadCount: number;
+    pinnedCount: number;
+    savedCount: number;
+  },
 ): number | null {
   if (key === "groups") return counts.groupCount;
   if (key === "direct") return counts.dmCount;
   if (key === "unread") return counts.unreadCount;
+  if (key === "pinned") return counts.pinnedCount;
+  if (key === "saved") return counts.savedCount;
   return null;
 }

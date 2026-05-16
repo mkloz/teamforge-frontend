@@ -243,7 +243,7 @@ function DateInput({
               id={panelId}
               ref={panelRef}
               style={panelStyle}
-              className="z-100 rounded-xl border border-border bg-card p-3 shadow-black/10 shadow-xl"
+              className="z-100 rounded-xl border border-border bg-card p-3 shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)]"
             >
               <div className="mb-3 flex items-center justify-between gap-2">
                 <Button

@@ -61,14 +61,20 @@ export const LightboxStage = memo(function LightboxStage({
       </AnimatePresence>
 
       {count > 1 && (
-        <div className="pointer-events-none absolute inset-x-0 hidden justify-between px-10 sm:flex">
+        <div className="pointer-events-none absolute inset-x-0 inset-y-0 hidden items-center justify-between px-6 sm:flex lg:px-10">
           <NavButton
             onClick={onPrev}
-            icon={<ChevronLeft className="size-7" strokeWidth={2.5} />}
+            label="Previous media"
+            icon={
+              <ChevronLeft className="size-8 sm:size-9" strokeWidth={2.75} />
+            }
           />
           <NavButton
             onClick={onNext}
-            icon={<ChevronRight className="size-7" strokeWidth={2.5} />}
+            label="Next media"
+            icon={
+              <ChevronRight className="size-8 sm:size-9" strokeWidth={2.75} />
+            }
           />
         </div>
       )}

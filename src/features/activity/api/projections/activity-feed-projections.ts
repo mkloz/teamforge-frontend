@@ -1,13 +1,26 @@
 import type { ActivityFeedData } from "@/features/activity/api/activity-query-data";
-import type { FilterChip } from "@/features/activity/lib/activity-contract";
+import type {
+  FilterChip,
+  UnifiedConversation,
+} from "@/features/activity/lib/activity-contract";
+import { getActivityConversationKey } from "@/features/activity/lib/activity-conversation-key";
+import type { SavedMessageSnapshot } from "@/features/activity/lib/saved-message";
 import {
   applyFilter,
-  sortByRecency,
+  sortByPinnedThenRecency,
 } from "@/features/activity/lib/unify-conversations";
 import type { ChatApi, FriendshipApi, GroupApi, User } from "@/shared/schemas";
-import { buildDirectFeedItem } from "./activity-direct-projections";
+import {
+  buildDirectFeedItem,
+  buildNotesFeedItem,
+} from "./activity-direct-projections";
 import { buildGroupFeedItem } from "./activity-group-projections";
 import { mapCurrentUserParticipant } from "./activity-participant-projections";
+
+export interface ActivityFeedStateMeta {
+  pinnedConversationKeys: string[];
+  savedMessagesById: Record<string, SavedMessageSnapshot>;
+}
 
 export function deriveFeedData(
   activeFilter: FilterChip,
@@ -20,6 +33,10 @@ export function deriveFeedData(
     string,
     Array<{ id: string; name: string; avatar: string | null }>
   >,
+  meta: ActivityFeedStateMeta = {
+    pinnedConversationKeys: [],
+    savedMessagesById: {},
+  },
 ): ActivityFeedData {
   const currentUserParticipant = mapCurrentUserParticipant(currentUser);
   const groupItems = groups.map((group) =>
@@ -35,12 +52,71 @@ export function deriveFeedData(
 
     return item ? [item] : [];
   });
-  const items = sortByRecency([...groupItems, ...directItems]);
+  const notesItems = chats
+    .filter((chat) => chat.type === "NOTES")
+    .map((chat) =>
+      buildNotesFeedItem(chat, currentUserParticipant, typingByChatId),
+    );
+  const items = sortByPinnedThenRecency(
+    enrichFeedItems([...notesItems, ...groupItems, ...directItems], meta),
+    meta.pinnedConversationKeys,
+  );
 
   return {
+    allItems: items,
     items: applyFilter(items, activeFilter, searchQuery),
     groupCount: groupItems.length,
-    dmCount: directItems.length,
+    dmCount: directItems.length + notesItems.length,
     unreadCount: items.filter((item) => item.unreadCount > 0).length,
+    pinnedCount: items.filter((item) => item.isPinned).length,
+    savedCount: Object.keys(meta.savedMessagesById).length,
   };
+}
+
+function enrichFeedItems(
+  items: UnifiedConversation[],
+  meta: ActivityFeedStateMeta,
+): UnifiedConversation[] {
+  const savedByConversation = groupSavedMessagesByConversation(
+    meta.savedMessagesById,
+  );
+
+  return items.map((item) => {
+    const key = getActivityConversationKey(item.kind, item.id);
+    const savedMessages = savedByConversation.get(key) ?? [];
+
+    return {
+      ...item,
+      isPinned: meta.pinnedConversationKeys.includes(key),
+      savedMessageCount: savedMessages.length,
+      latestSavedMessage: savedMessages[0]?.message,
+    };
+  });
+}
+
+function groupSavedMessagesByConversation(
+  savedMessagesById: Record<string, SavedMessageSnapshot>,
+) {
+  const grouped = new Map<string, SavedMessageSnapshot[]>();
+
+  for (const snapshot of Object.values(savedMessagesById)) {
+    const key = getActivityConversationKey(
+      snapshot.conversationKind,
+      snapshot.conversationId,
+    );
+    const current = grouped.get(key) ?? [];
+
+    grouped.set(key, [...current, snapshot]);
+  }
+
+  for (const [key, snapshots] of grouped) {
+    grouped.set(
+      key,
+      [...snapshots].sort(
+        (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime(),
+      ),
+    );
+  }
+
+  return grouped;
 }

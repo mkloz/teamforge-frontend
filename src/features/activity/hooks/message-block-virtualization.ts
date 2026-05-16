@@ -1,8 +1,11 @@
 import {
   estimateSenderGroupHeight,
   getBubbleWidth,
+  type MessageBlockSpacing,
 } from "@/features/activity/hooks/message-block-height-estimates";
 import type { SenderGroup } from "@/features/activity/hooks/use-message-grouping";
+
+export type { MessageBlockSpacing };
 
 export interface MessageBlockInput {
   date: string;
@@ -10,6 +13,7 @@ export interface MessageBlockInput {
   key: string;
   senderGroup: SenderGroup;
   showDateSeparator: boolean;
+  spacingAfter: MessageBlockSpacing;
 }
 
 export interface VirtualizedMessageBlock extends MessageBlockInput {
@@ -30,6 +34,7 @@ export function buildVirtualizedMessageBlocks(
       block.senderGroup,
       getBubbleWidth(containerWidth || 720, block.isOwn),
       block.showDateSeparator,
+      block.spacingAfter,
     );
     const measuredHeight = measuredHeights[block.key] ?? null;
     const height = measuredHeight ?? estimatedHeight;

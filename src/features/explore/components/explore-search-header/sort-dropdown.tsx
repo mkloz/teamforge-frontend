@@ -22,7 +22,7 @@ export function SortDropdown() {
           variant="outline"
           size="icon"
           aria-label="Sort groups"
-          className="size-11 shrink-0 rounded-lg border border-border/60 text-muted-foreground transition-all hover:border-border hover:text-foreground"
+          className="size-9 shrink-0 rounded-full border border-border/60 text-muted-foreground transition-all hover:border-border hover:text-foreground"
         >
           <ArrowDownWideNarrow className="size-3.5" />
         </Button>

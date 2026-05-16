@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
@@ -36,22 +36,33 @@ export function useActivityMessageTimeline({
     messagesQuery.isLoading &&
     !messagesQuery.data;
 
-  const flattenedApiMessages = ActivityQueryFactory.flattenMessagePages(
-    messagesQuery.data,
+  const flattenedApiMessages = useMemo(
+    () => ActivityQueryFactory.flattenMessagePages(messagesQuery.data),
+    [messagesQuery.data],
   );
-  const flattenedMessages = ActivityQueryFactory.mapMessages(
-    flattenedApiMessages,
-    selectedParticipants,
-    currentUserId,
+  const flattenedMessages = useMemo(
+    () =>
+      ActivityQueryFactory.mapMessages(
+        flattenedApiMessages,
+        selectedParticipants,
+        currentUserId,
+      ),
+    [currentUserId, flattenedApiMessages, selectedParticipants],
   );
-  const selectedGroupMessages =
-    selectedKind === "group"
-      ? ActivityQueryFactory.buildConversationTimeline(
-          flattenedMessages,
-          proposalMessages,
-        )
-      : [];
-  const selectedDirectMessages = selectedKind === "dm" ? flattenedMessages : [];
+  const selectedGroupMessages = useMemo(
+    () =>
+      selectedKind === "group"
+        ? ActivityQueryFactory.buildConversationTimeline(
+            flattenedMessages,
+            proposalMessages,
+          )
+        : [],
+    [flattenedMessages, proposalMessages, selectedKind],
+  );
+  const selectedDirectMessages = useMemo(
+    () => (selectedKind === "dm" ? flattenedMessages : []),
+    [flattenedMessages, selectedKind],
+  );
 
   const latestReadableMessageId =
     flattenedMessages[flattenedMessages.length - 1]?.id ?? null;

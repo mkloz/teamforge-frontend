@@ -131,10 +131,10 @@ function ActivityEmptyState({
   hasHiddenMemberProposals: boolean;
 }) {
   return (
-    <div className="grid gap-10">
+    <div className="grid min-h-72 content-center gap-10">
       <IcebreakerPrompt detail={detail} />
 
-      <div className="flex items-start gap-4 py-4">
+      <div className="flex items-center gap-4 py-4">
         <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-spark-amber/10 text-spark-amber">
           <Lightbulb className="size-5" aria-hidden="true" />
         </div>

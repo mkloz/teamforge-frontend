@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import { router } from "@/router";
 import { authSession } from "@/shared/api/auth-session";
-import { clearCurrentUserCache } from "@/shared/api/current-user-query";
+import { clearCurrentUserCache } from "@/shared/api/current-user-cache";
 import {
   buildAuthRouteNavigation,
   buildRouteLocationHref,

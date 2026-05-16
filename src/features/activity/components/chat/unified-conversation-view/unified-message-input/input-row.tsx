@@ -1,15 +1,9 @@
-import { Smile } from "lucide-react";
 import type React from "react";
 import { memo } from "react";
-import { Button } from "@/shared/components/ui/button";
-import { Textarea } from "@/shared/components/ui/textarea";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/shared/components/ui/tooltip";
+import type { ActivityOutgoingGifAttachment } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 import { AttachmentMenu } from "./attachment-menu";
+import { ExpressionPicker } from "./expression-picker";
 
 interface InputRowProps {
   value: string;
@@ -21,6 +15,9 @@ interface InputRowProps {
   placeholder: string;
   disabled: boolean;
   canAttach?: boolean;
+  canSendGif?: boolean;
+  onInsertEmoji: (emoji: string) => void;
+  onSelectGif: (gif: ActivityOutgoingGifAttachment) => void;
   onSelectImages: (files: File[]) => void;
   onSelectFiles: (files: File[]) => void;
 }
@@ -36,30 +33,33 @@ export const InputRow = memo(
     placeholder,
     disabled,
     canAttach = true,
+    canSendGif = true,
+    onInsertEmoji,
+    onSelectGif,
     onSelectImages,
     onSelectFiles,
   }: InputRowProps) => (
     <>
-      <div className="flex shrink-0 items-end pb-1 pl-2">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className="cursor-pointer rounded-full text-slate-muted outline-none transition-colors hover:text-spark-amber"
-              aria-label="Add emoji"
-              disabled={disabled}
-            >
-              <Smile className="size-5" strokeWidth={2} />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Add emoji</TooltipContent>
-        </Tooltip>
+      <div className="flex h-11 shrink-0 items-center gap-0.5 pl-1.5">
+        <ExpressionPicker
+          canSendGif={canSendGif}
+          disabled={disabled}
+          onInsertEmoji={onInsertEmoji}
+          onSelectGif={onSelectGif}
+        />
+        {canAttach && (
+          <AttachmentMenu
+            disabled={disabled}
+            onSelectImages={onSelectImages}
+            onSelectFiles={onSelectFiles}
+          />
+        )}
       </div>
 
-      <div className="relative flex min-h-11 flex-1 items-center px-2.5 py-2.75">
-        <Textarea
+      <div className="relative flex min-h-11 flex-1 items-center px-1.5 py-2">
+        <textarea
           ref={textareaRef}
+          name="chat-message"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
@@ -69,24 +69,14 @@ export const InputRow = memo(
           rows={1}
           disabled={disabled}
           className={cn(
-            "min-h-0 resize-none border-0 bg-transparent p-0 shadow-none",
+            "min-h-0 w-full resize-none rounded-none border-0 bg-transparent p-0 shadow-none outline-none",
             "font-medium text-base text-ink leading-snug caret-forge-teal placeholder:text-slate-muted/60",
-            "scrollbar-hide max-h-30 focus-visible:ring-0",
-            "transition-colors disabled:opacity-50",
+            "scrollbar-hide max-h-30 focus-visible:outline-none focus-visible:ring-0",
+            "transition-colors disabled:cursor-not-allowed disabled:opacity-50",
           )}
           aria-label="Type a message"
         />
       </div>
-
-      {canAttach && (
-        <div className="flex shrink-0 items-end pr-2 pb-1">
-          <AttachmentMenu
-            disabled={disabled}
-            onSelectImages={onSelectImages}
-            onSelectFiles={onSelectFiles}
-          />
-        </div>
-      )}
     </>
   ),
 );

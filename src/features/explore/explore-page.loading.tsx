@@ -1,5 +1,4 @@
 import { ExploreFeedSkeleton } from "@/features/explore/components/explore-feed/explore-feed-skeleton";
-import { ExplorePageContent } from "@/features/explore/explore-page-content";
 import type { PageLoadingProps } from "@/shared/components/loading/page-loading";
 import {
   SkeletonButton,
@@ -19,12 +18,34 @@ export function ExplorePageLoading(_props: PageLoadingProps = {}) {
 
 export function ExplorePageLoadingFixture() {
   return (
-    <ExplorePageContent
-      leftRail={<ExploreLoadingLeftRail />}
-      searchHeader={<ExploreSearchSkeleton />}
-      feed={<ExploreFeedSkeleton />}
-      filters={<ExploreFiltersSkeleton />}
-    />
+    <div className="w-full">
+      <div className="mx-auto grid w-full max-w-136 grid-cols-1 gap-6 px-4 pt-3 md:max-w-184 md:pt-6 lg:max-w-352 lg:grid-cols-12 lg:px-5 xl:grid-cols-[minmax(16rem,19rem)_minmax(0,46rem)_minmax(16rem,19rem)] xl:justify-center xl:gap-7">
+        <div className="relative hidden border-border/70 xl:block xl:border-r xl:pr-7">
+          <div className="scrollbar-hide sticky top-6 max-h-none self-start overflow-visible [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [@media(max-height:720px)]:max-h-[calc(100dvh-4rem)] [@media(max-height:720px)]:overflow-y-auto [@media(max-height:720px)]:overscroll-contain [@media(max-height:720px)]:pr-2">
+            <ExploreLoadingLeftRail />
+          </div>
+        </div>
+
+        <main className="col-span-1 flex min-h-96 min-w-0 flex-col pb-34 lg:col-span-8 lg:pb-32 xl:col-auto">
+          <div className="mb-4 xl:hidden">
+            <h1 className="font-black text-2xl text-foreground leading-tight tracking-tight">
+              Explore
+            </h1>
+            <p className="mt-1 max-w-2xl font-medium text-muted-foreground text-sm leading-relaxed">
+              Open groups ranked by fit, timing, and available seats.
+            </p>
+          </div>
+          <ExploreSearchSkeleton />
+          <ExploreFeedSkeleton />
+        </main>
+
+        <div className="relative hidden border-border/70 lg:col-span-4 lg:block lg:border-l lg:pl-6 xl:col-auto xl:pl-7">
+          <div className="scrollbar-hide sticky top-8 max-h-none self-start overflow-visible [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [@media(max-height:720px)]:max-h-[calc(100dvh-4rem)] [@media(max-height:720px)]:overflow-y-auto [@media(max-height:720px)]:overscroll-contain [@media(max-height:720px)]:pr-2">
+            <ExploreFiltersSkeleton />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -80,7 +101,7 @@ function ExploreSearchSkeleton() {
   return (
     <div className="sticky top-0 z-30 -mx-4 mb-4 border-border/10 border-b bg-canvas/96 px-4 pt-2 pb-2.5 backdrop-blur md:mx-0 md:mb-5 md:px-0 md:pt-0">
       <div className="mt-1 mb-1.5 grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-1.5 sm:gap-2">
-        <Skeleton className="h-11 min-w-0 rounded-xl" />
+        <Skeleton className="h-9 min-w-0 rounded-full" />
         <SkeletonButton className="h-11 w-14 rounded-xl sm:w-16" />
         <SkeletonButton className="size-11" />
       </div>

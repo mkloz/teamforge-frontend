@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import type { ActivitySendMessageInput } from "@/features/activity/lib/activity-contract";
+import { canReplyToMessage } from "@/features/activity/lib/message-action-capabilities";
 import { useActivityStore } from "@/features/activity/store/activity.store";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
@@ -24,7 +25,9 @@ export function useActivityComposer() {
     setSendError(null);
     const conversationKind = selectedKind ?? "unknown";
     const attachmentCount = input.attachments?.length ?? 0;
-    const hasReply = Boolean(replyingTo);
+    const replyTarget =
+      replyingTo && canReplyToMessage(replyingTo) ? replyingTo : null;
+    const hasReply = Boolean(replyTarget);
     const mutationName = editingMessage
       ? trackedMutationNames.activityMessageEdit
       : trackedMutationNames.activityMessageSend;
@@ -63,7 +66,7 @@ export function useActivityComposer() {
       }
     }
 
-    const replyToId = replyingTo ? replyingTo.id : null;
+    const replyToId = replyTarget ? replyTarget.id : null;
 
     try {
       const result = await ActivityCommands.sendMessage(
@@ -71,7 +74,7 @@ export function useActivityComposer() {
         selectedId,
         {
           ...input,
-          replyTo: replyingTo,
+          replyTo: replyTarget,
           replyToId,
         },
       );

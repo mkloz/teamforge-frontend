@@ -1,6 +1,5 @@
 import { track } from "@vercel/analytics";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
-import { ApiExceptionSchema } from "@/shared/types/api-error";
 
 type TelemetryValue = string | number | boolean | null | undefined;
 
@@ -27,9 +26,16 @@ function readApiException(error: Error) {
     return null;
   }
 
-  const parsed = ApiExceptionSchema.partial().safeParse(cause);
-
-  return parsed.success ? parsed.data : null;
+  return {
+    status:
+      "status" in cause && typeof cause.status === "number"
+        ? cause.status
+        : undefined,
+    requestId:
+      "requestId" in cause && typeof cause.requestId === "string"
+        ? cause.requestId
+        : undefined,
+  };
 }
 
 function toTelemetryValue(value: TelemetryContext[string]): TelemetryValue {

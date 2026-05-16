@@ -48,13 +48,13 @@ export const ProposalVoters = memo(function ProposalVoters({
                       index > 0 && "-ml-1.5",
                       voter.vote === "APPROVE"
                         ? "ring-forge-teal"
-                        : "ring-destructive",
+                        : "ring-slate-muted/60",
                     )}
                     fallbackClassName={cn(
                       "text-xs",
                       voter.vote === "APPROVE"
                         ? "text-forge-teal"
-                        : "text-destructive",
+                        : "text-slate-muted",
                     )}
                   />
                 </TooltipTrigger>
@@ -69,11 +69,11 @@ export const ProposalVoters = memo(function ProposalVoters({
           {score}
         </span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full border border-border/10 bg-muted/30">
+      <div className="h-1.5 w-full overflow-hidden rounded-full border border-border/10 bg-muted/30">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
-          className="h-full bg-spark-amber shadow-amber-glow"
+          className="h-full bg-spark-amber"
         />
       </div>
     </>

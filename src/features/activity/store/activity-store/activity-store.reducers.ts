@@ -1,3 +1,6 @@
+import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { getActivityConversationKey } from "@/features/activity/lib/activity-conversation-key";
+import type { SavedMessageSnapshot } from "@/features/activity/lib/saved-message";
 import type {
   ActivityConversationKind,
   ActivityState,
@@ -81,6 +84,96 @@ export function setDirectDraftState(
         ...state.direct.draftMessages,
         [chatId]: content,
       },
+    },
+  };
+}
+
+export function togglePinnedConversationState(
+  state: ActivityState,
+  kind: ActivityConversationKind,
+  id: string,
+): Pick<ActivityState, "pinnedConversationKeys"> {
+  const key = getActivityConversationKey(kind, id);
+  const isPinned = state.pinnedConversationKeys.includes(key);
+
+  return {
+    pinnedConversationKeys: isPinned
+      ? state.pinnedConversationKeys.filter((item) => item !== key)
+      : [key, ...state.pinnedConversationKeys],
+  };
+}
+
+export function saveMessageState(
+  state: ActivityState,
+  kind: ActivityConversationKind,
+  conversationId: string,
+  message: UnifiedMessage,
+): Pick<ActivityState, "savedMessagesById"> {
+  return {
+    savedMessagesById: {
+      ...state.savedMessagesById,
+      [message.id]: {
+        conversationId,
+        conversationKind: kind,
+        message,
+        savedAt:
+          state.savedMessagesById[message.id]?.savedAt ??
+          new Date().toISOString(),
+      },
+    },
+  };
+}
+
+export function removeSavedMessageState(
+  state: ActivityState,
+  messageId: string,
+): Pick<ActivityState, "savedMessagesById"> {
+  const { [messageId]: _removed, ...rest } = state.savedMessagesById;
+  void _removed;
+
+  return {
+    savedMessagesById: rest,
+  };
+}
+
+export function toggleSavedMessageState(
+  state: ActivityState,
+  kind: ActivityConversationKind,
+  conversationId: string,
+  message: UnifiedMessage,
+): Pick<ActivityState, "savedMessagesById"> {
+  if (state.savedMessagesById[message.id]) {
+    return removeSavedMessageState(state, message.id);
+  }
+
+  return saveMessageState(state, kind, conversationId, message);
+}
+
+export function syncSavedMessageState(
+  state: ActivityState,
+  kind: ActivityConversationKind,
+  conversationId: string,
+  message: UnifiedMessage,
+): Pick<ActivityState, "savedMessagesById"> {
+  const current = state.savedMessagesById[message.id];
+
+  if (!current) {
+    return {
+      savedMessagesById: state.savedMessagesById,
+    };
+  }
+
+  const snapshot: SavedMessageSnapshot = {
+    ...current,
+    conversationId,
+    conversationKind: kind,
+    message,
+  };
+
+  return {
+    savedMessagesById: {
+      ...state.savedMessagesById,
+      [message.id]: snapshot,
     },
   };
 }

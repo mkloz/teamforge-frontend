@@ -1,3 +1,4 @@
+import { Reply } from "lucide-react";
 import { memo } from "react";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
@@ -5,30 +6,49 @@ import { cn } from "@/shared/lib/utils";
 interface ReplyReferenceProps {
   replyTo: UnifiedMessage["replyTo"];
   isOwn: boolean;
+  onActivate?: (messageId: string) => void;
 }
 
 export const ReplyReference = memo(
-  ({ replyTo, isOwn }: ReplyReferenceProps) => {
+  ({ replyTo, isOwn, onActivate }: ReplyReferenceProps) => {
     if (!replyTo) return null;
-    return (
-      <div
-        className={cn(
-          "mb-1.5 flex min-w-30 max-w-full flex-col gap-0.5 overflow-hidden rounded-xl px-2.5 py-1.5",
-          isOwn ? "bg-white/15" : "border-forge-teal border-l-2 bg-muted/50",
-        )}
-      >
-        <div className="truncate font-bold text-forge-teal text-micro uppercase tracking-tighter opacity-90">
-          {replyTo.sender?.name}
-        </div>
-        <p
-          className={cn(
-            "truncate text-micro leading-tight opacity-90",
-            !isOwn && "text-slate-muted",
-          )}
-        >
-          {replyTo.content}
-        </p>
-      </div>
+
+    const className = cn(
+      "mb-1.5 flex min-w-30 max-w-full items-stretch gap-2 self-stretch overflow-hidden rounded-lg px-2 py-1.5 text-left transition",
+      isOwn ? "bg-canvas/45 dark:bg-white/7" : "bg-muted/45 dark:bg-white/6",
+      onActivate &&
+        "cursor-pointer hover:bg-forge-teal/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35",
     );
+    const content = (
+      <>
+        <div className="w-1 shrink-0 rounded-full bg-forge-teal opacity-80" />
+        <div className="min-w-0 flex-1">
+          <div className="mb-0.5 flex items-center gap-1.5">
+            <Reply className="size-3 text-forge-teal" />
+            <span className="truncate font-bold text-forge-teal text-micro uppercase tracking-tight">
+              {replyTo.sender?.name}
+            </span>
+          </div>
+          <p className="truncate font-medium text-micro text-slate-muted leading-relaxed">
+            {replyTo.content}
+          </p>
+        </div>
+      </>
+    );
+
+    if (onActivate) {
+      return (
+        <button
+          type="button"
+          aria-label="View original message"
+          className={className}
+          onClick={() => onActivate(replyTo.id)}
+        >
+          {content}
+        </button>
+      );
+    }
+
+    return <div className={className}>{content}</div>;
   },
 );

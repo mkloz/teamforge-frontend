@@ -1,11 +1,27 @@
 import { useEffect } from "react";
 
 import { addBrowserWindowEventListener } from "@/shared/lib/browser-environment";
-import { captureException } from "@/shared/lib/telemetry";
+import { warnInDevelopment } from "@/shared/lib/development-warning";
 import { telemetryErrorScopes } from "@/shared/lib/telemetry-contract";
 
+type ErrorTelemetryContext = Record<string, number | string | undefined>;
+
+async function captureWindowException(
+  scope: string,
+  error: unknown,
+  context: ErrorTelemetryContext = {},
+) {
+  try {
+    const { captureException } = await import("@/shared/lib/telemetry");
+
+    captureException(scope, error, context);
+  } catch (telemetryError) {
+    warnInDevelopment("Client error telemetry failed.", telemetryError);
+  }
+}
+
 function handleWindowError(event: ErrorEvent) {
-  captureException(
+  void captureWindowException(
     telemetryErrorScopes.windowError,
     event.error ?? new Error(event.message),
     {
@@ -17,7 +33,10 @@ function handleWindowError(event: ErrorEvent) {
 }
 
 function handleUnhandledRejection(event: PromiseRejectionEvent) {
-  captureException(telemetryErrorScopes.windowUnhandledRejection, event.reason);
+  void captureWindowException(
+    telemetryErrorScopes.windowUnhandledRejection,
+    event.reason,
+  );
 }
 
 function registerWindowErrorTelemetry() {

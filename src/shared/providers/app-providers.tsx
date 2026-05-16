@@ -1,19 +1,21 @@
-import { GoogleOAuthProvider } from "@react-oauth/google";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { Analytics } from "@vercel/analytics/react";
-import type { ReactNode } from "react";
+import { type ComponentType, type ReactNode, useEffect, useState } from "react";
 import { Toaster } from "sonner";
 
-import { config } from "@/config/config";
 import { appQueryClient } from "@/shared/api/query-client";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
+import {
+  cancelIdleTask,
+  scheduleIdleTask,
+} from "@/shared/lib/browser-scheduling";
+import { warnInDevelopment } from "@/shared/lib/development-warning";
 import { useInitializeTheme } from "@/shared/store/theme.store";
 
 export function AppProviders({ children }: { children: ReactNode }) {
   useInitializeTheme();
 
-  const app = (
+  return (
     <QueryClientProvider client={appQueryClient}>
       <TooltipProvider>{children}</TooltipProvider>
       {import.meta.env.DEV ? (
@@ -35,17 +37,39 @@ export function AppProviders({ children }: { children: ReactNode }) {
           },
         }}
       />
-      <Analytics />
+      <DeferredAnalytics />
     </QueryClientProvider>
   );
+}
 
-  if (!config.googleClientId) {
-    return app;
-  }
+function DeferredAnalytics() {
+  const [AnalyticsComponent, setAnalyticsComponent] =
+    useState<ComponentType | null>(null);
 
-  return (
-    <GoogleOAuthProvider clientId={config.googleClientId}>
-      {app}
-    </GoogleOAuthProvider>
-  );
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadAnalytics() {
+      try {
+        const { Analytics } = await import("@vercel/analytics/react");
+
+        if (!cancelled) {
+          setAnalyticsComponent(() => Analytics);
+        }
+      } catch (error) {
+        warnInDevelopment("Analytics failed to initialize.", error);
+      }
+    }
+
+    const task = scheduleIdleTask(() => {
+      void loadAnalytics();
+    });
+
+    return () => {
+      cancelled = true;
+      cancelIdleTask(task);
+    };
+  }, []);
+
+  return AnalyticsComponent ? <AnalyticsComponent /> : null;
 }

@@ -33,7 +33,7 @@ export const ProposalActions = memo(function ProposalActions({
       <Button
         variant="outline"
         size="sm"
-        className="h-9 flex-1 font-bold text-xs"
+        className="h-8 flex-1 font-bold text-xs"
         disabled={isSubmitting}
         onClick={onWithdraw}
       >
@@ -45,7 +45,7 @@ export const ProposalActions = memo(function ProposalActions({
 
   if (!canVote) {
     return (
-      <div className="inline-flex w-full items-center justify-center rounded-lg bg-muted px-3 py-2 font-bold text-micro text-muted-foreground">
+      <div className="inline-flex h-8 w-full items-center justify-center rounded-lg bg-muted px-3 font-bold text-micro text-muted-foreground">
         {hasVoted ? "Vote recorded" : "Waiting for group votes"}
       </div>
     );
@@ -56,7 +56,7 @@ export const ProposalActions = memo(function ProposalActions({
       <Button
         variant="secondary"
         size="sm"
-        className="h-9 flex-1 border-spark-amber/20 font-bold text-ink text-xs"
+        className="h-8 flex-1 border-spark-amber/20 font-bold text-xs"
         disabled={isSubmitting}
         onClick={onApprove}
       >
@@ -66,7 +66,7 @@ export const ProposalActions = memo(function ProposalActions({
       <Button
         variant="subtle"
         size="sm"
-        className="h-9 flex-1 border-slate-muted/20 font-bold text-xs"
+        className="h-8 flex-1 border-slate-muted/20 font-bold text-xs"
         disabled={isSubmitting}
         onClick={onReject}
       >

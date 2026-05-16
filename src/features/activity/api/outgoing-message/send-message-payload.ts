@@ -11,7 +11,7 @@ import {
 export async function buildSendMessagePayload(
   input: SendActivityMessageInput,
 ): Promise<SendMessagePayload> {
-  const attachments = input.attachments?.length
+  const uploadedAttachments = input.attachments?.length
     ? await Promise.all(
         input.attachments.map(async ({ file, duration }) => {
           const uploaded = await ActivityApi.uploadChatAttachment(file);
@@ -30,11 +30,26 @@ export async function buildSendMessagePayload(
         }),
       )
     : undefined;
+  const gifAttachment = input.gif
+    ? {
+        type: "VIDEO" as const,
+        url: input.gif.url,
+        name: input.gif.title,
+        mimeType: "video/mp4",
+        thumbnailUrl: input.gif.previewUrl ?? undefined,
+      }
+    : undefined;
+  const attachments = [
+    ...(uploadedAttachments ?? []),
+    ...(gifAttachment ? [gifAttachment] : []),
+  ];
 
   return {
     content: input.content.trim() || undefined,
     replyToId: input.replyTo?.id ?? input.replyToId ?? undefined,
-    type: inferOutgoingMessageType(attachments),
-    attachments,
+    type: inferOutgoingMessageType(
+      attachments.length ? attachments : undefined,
+    ),
+    attachments: attachments.length ? attachments : undefined,
   };
 }

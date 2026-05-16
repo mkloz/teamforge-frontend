@@ -9,6 +9,8 @@ export const initialActivityState: ActivityState = {
   replyingTo: null,
   editingMessage: null,
   typingByChatId: {},
+  pinnedConversationKeys: [],
+  savedMessagesById: {},
   groups: {
     selectedGroupId: null,
     isDetailPanelOpen: false,

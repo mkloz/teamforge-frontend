@@ -15,7 +15,7 @@ export const buttonVariants = cva(
         primary:
           "border-2 border-button-primary-border bg-forge-teal text-white after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-forge-teal active:enabled:translate-y-0 active:enabled:shadow-none hover:enabled:-translate-y-1 hover:enabled:shadow-button-primary",
         secondary:
-          "border-2 border-button-secondary-border bg-spark-amber text-ink after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-spark-amber active:enabled:translate-y-0 active:enabled:shadow-none hover:enabled:-translate-y-1 hover:enabled:shadow-button-secondary",
+          "border-2 border-button-secondary-border bg-spark-amber text-hero-bg after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-spark-amber active:enabled:translate-y-0 active:enabled:shadow-none hover:enabled:-translate-y-1 hover:enabled:shadow-button-secondary dark:border-spark-amber/25 dark:bg-spark-amber/12 dark:text-spark-amber hover:enabled:dark:bg-spark-amber/18",
         outline:
           "border-2 border-ink bg-transparent text-ink after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-ink active:enabled:translate-y-0! active:enabled:shadow-none! hover:enabled:-translate-y-1 hover:enabled:shadow-button-outline dark:border-white dark:text-white focus-visible:dark:ring-white hover:enabled:dark:shadow-button-outline-dark",
         destructive:

@@ -4,9 +4,20 @@ import type {
   UnifiedConversation,
   UnifiedMessage,
 } from "./activity-contract";
+import { getActivityConversationKey } from "./activity-conversation-key";
 import { getOtherChatParticipant } from "./activity-projections";
+import { getGroupAvatarUrl, getGroupCoverImage } from "./group-identity";
+import {
+  MY_NOTES_AVATAR_URL,
+  MY_NOTES_SUBTITLE,
+  MY_NOTES_TITLE,
+} from "./my-notes-identity";
 
-function formatMessageBody(message?: UnifiedMessage) {
+function isNotesConversation(item: UnifiedConversation) {
+  return item.kind === "dm" && item.chat?.type === "NOTES";
+}
+
+export function getMessagePreviewText(message?: UnifiedMessage) {
   if (!message) {
     return "No messages yet";
   }
@@ -31,6 +42,10 @@ function formatMessageBody(message?: UnifiedMessage) {
 }
 
 export function getConversationTitle(item: UnifiedConversation) {
+  if (isNotesConversation(item)) {
+    return MY_NOTES_TITLE;
+  }
+
   if (item.kind === "group") {
     return item.group?.name ?? "";
   }
@@ -39,8 +54,12 @@ export function getConversationTitle(item: UnifiedConversation) {
 }
 
 export function getConversationAvatarUrl(item: UnifiedConversation) {
+  if (isNotesConversation(item)) {
+    return MY_NOTES_AVATAR_URL;
+  }
+
   if (item.kind === "group") {
-    return item.group?.avatar ?? null;
+    return getGroupAvatarUrl(item.group);
   }
 
   return getOtherChatParticipant(item.chat)?.avatar ?? null;
@@ -51,12 +70,16 @@ export function getConversationSecondaryAvatar(item: UnifiedConversation) {
     return undefined;
   }
 
-  return item.group?.plan?.coverImage ?? item.group?.avatar ?? undefined;
+  return getGroupCoverImage(item.group) ?? undefined;
 }
 
 export function getConversationOnlineStatus(
   item: UnifiedConversation,
 ): OnlineStatus | undefined {
+  if (isNotesConversation(item)) {
+    return undefined;
+  }
+
   if (item.kind !== "dm") {
     return undefined;
   }
@@ -65,7 +88,9 @@ export function getConversationOnlineStatus(
 }
 
 export function getConversationIsMuted(item: UnifiedConversation) {
-  return item.kind === "dm" ? Boolean(item.chat?.isMuted) : false;
+  return item.kind === "group"
+    ? Boolean(item.group?.chat?.isMuted)
+    : Boolean(item.chat?.isMuted);
 }
 
 export function getConversationSubtitle(item: UnifiedConversation) {
@@ -74,6 +99,10 @@ export function getConversationSubtitle(item: UnifiedConversation) {
   }
 
   if (!item.latestMessage) {
+    if (isNotesConversation(item)) {
+      return MY_NOTES_SUBTITLE;
+    }
+
     return "No messages yet";
   }
 
@@ -86,10 +115,10 @@ export function getConversationSubtitle(item: UnifiedConversation) {
       ? `${item.latestMessage.sender.name}: `
       : "";
 
-    return `${senderPrefix}${formatMessageBody(item.latestMessage)}`;
+    return `${senderPrefix}${getMessagePreviewText(item.latestMessage)}`;
   }
 
-  return formatMessageBody(item.latestMessage);
+  return getMessagePreviewText(item.latestMessage);
 }
 
 export function getConversationPlanDateTime(item: UnifiedConversation) {
@@ -113,6 +142,38 @@ export function sortByRecency(
   });
 }
 
+export function sortByPinnedThenRecency(
+  items: UnifiedConversation[],
+  pinnedConversationKeys: string[],
+): UnifiedConversation[] {
+  const pinnedOrder = new Map(
+    pinnedConversationKeys.map((key, index) => [key, index]),
+  );
+
+  return sortByRecency(items).sort((a, b) => {
+    const aPinnedIndex = pinnedOrder.get(
+      getActivityConversationKey(a.kind, a.id),
+    );
+    const bPinnedIndex = pinnedOrder.get(
+      getActivityConversationKey(b.kind, b.id),
+    );
+
+    if (aPinnedIndex === undefined && bPinnedIndex === undefined) {
+      return 0;
+    }
+
+    if (aPinnedIndex === undefined) {
+      return 1;
+    }
+
+    if (bPinnedIndex === undefined) {
+      return -1;
+    }
+
+    return aPinnedIndex - bPinnedIndex;
+  });
+}
+
 /**
  * Applies filters and search query to conversation list
  */
@@ -132,6 +193,10 @@ export function applyFilter(
     result = result.filter((i) => i.kind === "dm");
   } else if (f === "unread") {
     result = result.filter((i) => (i.unreadCount || 0) > 0);
+  } else if (f === "pinned") {
+    result = result.filter((i) => i.isPinned);
+  } else if (f === "saved") {
+    result = result.filter((i) => (i.savedMessageCount ?? 0) > 0);
   }
 
   // Search filtering
@@ -140,7 +205,12 @@ export function applyFilter(
     result = result.filter(
       (i) =>
         getConversationTitle(i).toLowerCase().includes(q) ||
-        getConversationSubtitle(i).toLowerCase().includes(q),
+        getConversationSubtitle(i).toLowerCase().includes(q) ||
+        (i.latestSavedMessage
+          ? getMessagePreviewText(i.latestSavedMessage)
+              .toLowerCase()
+              .includes(q)
+          : false),
     );
   }
 

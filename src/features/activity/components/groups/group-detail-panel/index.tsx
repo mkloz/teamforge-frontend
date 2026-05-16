@@ -15,8 +15,10 @@ interface GroupDetailPanelProps {
   isOpen: boolean;
   focusedPlanId?: string | null;
   focusedProposalId?: string | null;
+  selectedMemberId?: string | null;
   onClose: () => void;
   onJumpToMessage?: (messageId: string) => void;
+  onSelectedMemberIdChange?: (memberId: string | null) => void;
 }
 
 export function GroupDetailPanel({
@@ -24,8 +26,10 @@ export function GroupDetailPanel({
   isOpen,
   focusedPlanId = null,
   focusedProposalId = null,
+  selectedMemberId = null,
   onClose,
   onJumpToMessage,
+  onSelectedMemberIdChange,
 }: GroupDetailPanelProps) {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   useEscapeKey({ enabled: isOpen, onEscape: onClose });
@@ -44,8 +48,10 @@ export function GroupDetailPanel({
           group={group}
           focusedPlanId={focusedPlanId}
           focusedProposalId={focusedProposalId}
+          selectedMemberId={selectedMemberId}
           onClose={onClose}
           onJumpToMessage={onJumpToMessage}
+          onSelectedMemberIdChange={onSelectedMemberIdChange}
         />
       </aside>
 
@@ -62,8 +68,10 @@ export function GroupDetailPanel({
             group={group}
             focusedPlanId={focusedPlanId}
             focusedProposalId={focusedProposalId}
+            selectedMemberId={selectedMemberId}
             onClose={onClose}
             onJumpToMessage={onJumpToMessage}
+            onSelectedMemberIdChange={onSelectedMemberIdChange}
             isMobile
           />
         </DrawerContent>

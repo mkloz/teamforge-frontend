@@ -22,6 +22,7 @@ import {
   mapDirectChat,
   mapGroup,
   mapMessages,
+  mapNotesChat,
   mergeActivityConversationTimeline,
 } from "@/features/activity/api/context/activity-context-projections";
 import {
@@ -29,6 +30,7 @@ import {
   resolveChatId,
   resolveParticipants,
 } from "@/features/activity/api/context/activity-context-resolvers";
+import type { ActivityFeedStateMeta } from "@/features/activity/api/projections/activity-feed-projections";
 import type {
   FilterChip,
   UnifiedMessage,
@@ -53,6 +55,7 @@ export function deriveActivityFeedDataForContext(
     string,
     Array<{ id: string; name: string; avatar: string | null }>
   >,
+  meta?: ActivityFeedStateMeta,
 ): ActivityFeedData {
   return deriveActivityFeedData(
     activeFilter,
@@ -62,6 +65,7 @@ export function deriveActivityFeedDataForContext(
     friendships,
     currentUser,
     typingByChatId,
+    meta,
   );
 }
 
@@ -83,6 +87,7 @@ export const ACTIVITY_QUERY_OPTIONS_CONTEXT: ActivityQueryOptionsContext = {
   ensureBaseData,
   findGroupChat,
   mapDirectChat,
+  mapNotesChat,
   mapGroup,
   mapMessages,
 };

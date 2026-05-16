@@ -1,5 +1,6 @@
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import { ActivityRealtimeHandlers } from "@/features/activity/api/activity-realtime-handlers";
+import { isMessageFromCurrentUser } from "@/features/activity/lib/message-sender-identity";
 import { shouldApplyRealtimeEvent } from "@/shared/lib/realtime-event-registry";
 import type { RealtimeMessagePayload } from "@/shared/schemas";
 import { realtimeMessagePayloadSchema } from "@/shared/schemas";
@@ -17,7 +18,13 @@ async function markIncomingActiveChatMessageRead(
     return;
   }
 
-  if (payload.message.senderId === currentUserId) {
+  if (
+    isMessageFromCurrentUser(
+      payload.message.senderId,
+      payload.message.sender?.id,
+      currentUserId,
+    )
+  ) {
     return;
   }
 

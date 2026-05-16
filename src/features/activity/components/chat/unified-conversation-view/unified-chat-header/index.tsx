@@ -15,11 +15,16 @@ interface UnifiedChatHeaderProps {
   detailsNavigation?: ConversationDetailsNavigation;
   kind: "dm" | "group";
   onlineStatus?: OnlineStatus;
-  secondaryAvatar?: string | null;
   isTyping?: boolean;
   typingText?: string;
   isActionOpen?: boolean;
+  searchQuery?: string;
+  searchResultLabel?: string;
+  isSearchNavigationDisabled?: boolean;
   onBack?: () => void;
+  onSearchQueryChange?: (query: string) => void;
+  onSearchNext?: () => void;
+  onSearchPrevious?: () => void;
   onToggleAction: () => void;
 }
 
@@ -34,21 +39,22 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
   detailsNavigation,
   kind,
   onlineStatus,
-  secondaryAvatar,
   isTyping,
   typingText,
   isActionOpen = false,
+  searchQuery = "",
+  searchResultLabel,
+  isSearchNavigationDisabled = true,
   onBack,
+  onSearchQueryChange,
+  onSearchNext,
+  onSearchPrevious,
   onToggleAction,
 }: UnifiedChatHeaderProps) {
   const isGroup = kind === "group";
-  const {
-    isSearching,
-    searchQuery,
-    setSearchQuery,
-    searchInputRef,
-    toggleSearch,
-  } = useHeaderSearch();
+  const { isSearching, searchInputRef, toggleSearch } = useHeaderSearch({
+    onClose: () => onSearchQueryChange?.(""),
+  });
 
   return (
     <header className="sticky top-0 z-100 flex shrink-0 items-center gap-2 border-border border-b bg-canvas/80 px-3 pt-2 pb-3 backdrop-blur-md md:pt-3">
@@ -72,7 +78,6 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
             avatarUrl={avatarUrl}
             detailsNavigation={detailsNavigation}
             isGroup={isGroup}
-            secondaryAvatar={secondaryAvatar}
             onlineStatus={onlineStatus}
             isTyping={isTyping}
             typingText={typingText}
@@ -82,7 +87,11 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
           <HeaderSearch
             ref={searchInputRef}
             query={searchQuery}
-            setQuery={setSearchQuery}
+            resultLabel={searchResultLabel}
+            isNavigationDisabled={isSearchNavigationDisabled}
+            setQuery={onSearchQueryChange ?? (() => {})}
+            onNextResult={onSearchNext}
+            onPreviousResult={onSearchPrevious}
           />
         )}
       </div>

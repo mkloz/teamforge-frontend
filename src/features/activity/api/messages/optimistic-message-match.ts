@@ -30,7 +30,7 @@ function areMessagesEquivalent(
 ) {
   if (
     optimisticMessage.chatId !== incomingMessage.chatId ||
-    optimisticMessage.senderId !== incomingMessage.senderId ||
+    !areMessagesFromSameSender(optimisticMessage, incomingMessage) ||
     optimisticMessage.type !== incomingMessage.type ||
     optimisticMessage.replyToId !== incomingMessage.replyToId
   ) {
@@ -58,6 +58,13 @@ function areMessagesEquivalent(
     ) <
     2 * 60 * 1000
   );
+}
+
+function areMessagesFromSameSender(
+  left: UnifiedMessage,
+  right: UnifiedMessage,
+) {
+  return left.senderId === right.senderId || (left.isOwn && right.isOwn);
 }
 
 export function findMatchingOptimisticMessage(

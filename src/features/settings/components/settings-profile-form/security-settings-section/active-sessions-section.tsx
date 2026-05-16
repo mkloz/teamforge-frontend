@@ -93,7 +93,9 @@ export function ActiveSessionsSection({
         {isLoadingSessions ? (
           <SettingsActiveSessionsSkeleton />
         ) : sessionsError ? (
-          <p className="py-4 text-destructive text-sm">{sessionsError}</p>
+          <div className="flex min-h-32 items-center justify-center py-4 text-center">
+            <p className="text-destructive text-sm">{sessionsError}</p>
+          </div>
         ) : sessions.length ? (
           sessions.map((session) => (
             <SessionRow
@@ -104,7 +106,7 @@ export function ActiveSessionsSection({
             />
           ))
         ) : (
-          <div className="flex flex-col items-start gap-3 py-5 sm:flex-row sm:items-center sm:gap-4">
+          <div className="flex min-h-36 flex-col items-center justify-center gap-3 py-5 text-center sm:flex-row sm:gap-4 sm:text-left">
             <EmptyActiveSessionsVisual className="h-6 w-auto shrink-0 text-foreground" />
             <p className="text-slate-muted text-sm">
               No active sessions are available right now.

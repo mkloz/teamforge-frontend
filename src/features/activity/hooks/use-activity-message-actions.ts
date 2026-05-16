@@ -1,5 +1,13 @@
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import {
+  canDeleteMessage,
+  canEditMessage,
+  canPinMessage,
+  canReactToMessage,
+  canReplyToMessage,
+  canSaveMessage,
+} from "@/features/activity/lib/message-action-capabilities";
 import { useActivityStore } from "@/features/activity/store/activity.store";
 
 export function useActivityMessageActions() {
@@ -13,11 +21,19 @@ export function useActivityMessageActions() {
   );
 
   function startReply(message: UnifiedMessage) {
+    if (!canReplyToMessage(message)) {
+      return;
+    }
+
     setEditingMessage(null);
     setReplyingTo(message);
   }
 
   function startEdit(message: UnifiedMessage) {
+    if (!canEditMessage(message)) {
+      return;
+    }
+
     setReplyingTo(null);
     setEditingMessage(message);
   }
@@ -27,6 +43,10 @@ export function useActivityMessageActions() {
   }
 
   async function deleteMessage(message: UnifiedMessage) {
+    if (!canDeleteMessage(message)) {
+      return;
+    }
+
     await ActivityCommands.deleteMessage(selectedKind, selectedId, message.id);
 
     if (replyingTo?.id === message.id) {
@@ -43,6 +63,10 @@ export function useActivityMessageActions() {
   }
 
   async function toggleReaction(message: UnifiedMessage, emoji: string) {
+    if (!canReactToMessage(message)) {
+      return;
+    }
+
     await ActivityCommands.toggleReaction(
       selectedKind,
       selectedId,
@@ -52,11 +76,45 @@ export function useActivityMessageActions() {
   }
 
   async function pinMessage(message: UnifiedMessage) {
+    if (!canPinMessage(message)) {
+      return;
+    }
+
     await ActivityCommands.pinMessage(selectedKind, selectedId, message);
   }
 
   async function unpinMessage(message: UnifiedMessage) {
+    if (!canPinMessage(message)) {
+      return;
+    }
+
     await ActivityCommands.unpinMessage(selectedKind, selectedId, message);
+  }
+
+  async function toggleSaved(message: UnifiedMessage, isSaved = false) {
+    if (!selectedKind || !selectedId || !canSaveMessage(message)) {
+      return;
+    }
+
+    await ActivityCommands.toggleSavedMessage(
+      selectedKind,
+      selectedId,
+      message,
+      isSaved,
+    );
+  }
+
+  async function forwardMessage(message: UnifiedMessage, targetChatId: string) {
+    if (!selectedKind || !selectedId || !canSaveMessage(message)) {
+      return null;
+    }
+
+    return ActivityCommands.forwardMessage(
+      selectedKind,
+      selectedId,
+      message,
+      targetChatId,
+    );
   }
 
   async function submitEdit(content: string) {
@@ -76,14 +134,17 @@ export function useActivityMessageActions() {
 
   return {
     editingMessage,
+    replyingTo,
     cancelEdit,
     deleteMessage,
     retryMessage,
     startEdit,
     startReply,
+    forwardMessage,
     pinMessage,
     submitEdit,
     toggleReaction,
+    toggleSaved,
     unpinMessage,
   };
 }

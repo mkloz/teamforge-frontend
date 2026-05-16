@@ -16,8 +16,10 @@ interface GroupPanelContentProps {
   group: Group;
   focusedPlanId?: string | null;
   focusedProposalId?: string | null;
+  selectedMemberId?: string | null;
   onClose: () => void;
   onJumpToMessage?: (messageId: string) => void;
+  onSelectedMemberIdChange?: (memberId: string | null) => void;
   isMobile?: boolean;
 }
 
@@ -25,8 +27,10 @@ export function GroupPanelContent({
   group,
   focusedPlanId = null,
   focusedProposalId = null,
+  selectedMemberId = null,
   onClose,
   onJumpToMessage,
+  onSelectedMemberIdChange,
   isMobile = false,
 }: GroupPanelContentProps) {
   const {
@@ -57,7 +61,14 @@ export function GroupPanelContent({
     setIsPlanEditOpen,
     setSelectedMember,
     unpinMessage,
-  } = useGroupPanelContent({ group, isMobile, onClose, onJumpToMessage });
+  } = useGroupPanelContent({
+    group,
+    isMobile,
+    selectedMemberId,
+    onClose,
+    onJumpToMessage,
+    onSelectedMemberIdChange,
+  });
 
   if (selectedMember && memberChat) {
     return (

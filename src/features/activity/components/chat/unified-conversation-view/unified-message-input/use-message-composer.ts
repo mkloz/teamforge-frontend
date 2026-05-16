@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useChatTypingSignal } from "@/features/activity/hooks/use-chat-typing-signal";
 import { useVoiceRecording } from "@/features/activity/hooks/use-voice-recording";
-import type { ActivitySendMessageInput } from "@/features/activity/lib/activity-contract";
+import type {
+  ActivityOutgoingGifAttachment,
+  ActivitySendMessageInput,
+} from "@/features/activity/lib/activity-contract";
 import { useAutoResize } from "@/shared/hooks/use-auto-resize";
+import { warnInDevelopment } from "@/shared/lib/development-warning";
 
 import { MAX_TEXTAREA_HEIGHT } from "./message-composer-utils";
 import {
@@ -31,6 +35,8 @@ export function useMessageComposer({
 }: UseMessageComposerOptions) {
   const [isFocused, setIsFocused] = useState(false);
   const [isSendingVoiceNote, setIsSendingVoiceNote] = useState(false);
+  const [isSendingGif, setIsSendingGif] = useState(false);
+  const previousActionFocusKeyRef = useRef<string | null>(null);
 
   const {
     isRecording,
@@ -56,6 +62,7 @@ export function useMessageComposer({
   const editingActive = draft.editingMessage !== null;
   const submit = useMessageComposerSubmit({
     disabled,
+    isEditing: editingActive,
     onClearComposer: draft.clearComposer,
     onSend,
     pendingAttachments: attachments.pendingAttachments,
@@ -64,7 +71,8 @@ export function useMessageComposer({
 
   const dropzone = useMessageComposerDropzone({
     appendAttachments: attachments.appendAttachments,
-    isDisabled: disabled || submit.isSubmitting || isSendingVoiceNote,
+    isDisabled:
+      disabled || submit.isSubmitting || isSendingVoiceNote || isSendingGif,
     isEditing: editingActive,
   });
 
@@ -73,6 +81,43 @@ export function useMessageComposer({
     maxHeight: MAX_TEXTAREA_HEIGHT,
   });
 
+  function insertEmoji(emoji: string) {
+    const textarea = textareaRef.current;
+    const selectionStart = textarea?.selectionStart ?? draft.value.length;
+    const selectionEnd = textarea?.selectionEnd ?? draft.value.length;
+    const nextValue = `${draft.value.slice(0, selectionStart)}${emoji}${draft.value.slice(selectionEnd)}`;
+    const nextCaretPosition = selectionStart + emoji.length;
+
+    draft.handleValueChange(nextValue);
+    setTimeout(() => {
+      textareaRef.current?.focus();
+      textareaRef.current?.setSelectionRange(
+        nextCaretPosition,
+        nextCaretPosition,
+      );
+    }, 80);
+  }
+
+  async function sendGif(gif: ActivityOutgoingGifAttachment) {
+    if (disabled || submit.isSubmitting || isSendingVoiceNote || isSendingGif) {
+      return;
+    }
+
+    setIsSendingGif(true);
+
+    try {
+      await onSend({
+        content: "",
+        gif,
+      });
+      draft.clearReply();
+    } catch (error) {
+      warnInDevelopment("GIF message send failed.", error);
+    } finally {
+      setIsSendingGif(false);
+    }
+  }
+
   const hasDraft =
     draft.value.trim().length > 0 || attachments.pendingAttachments.length > 0;
 
@@ -80,7 +125,11 @@ export function useMessageComposer({
     chatId,
     isFocused,
     isPaused:
-      isRecording || submit.isSubmitting || isSendingVoiceNote || editingActive,
+      isRecording ||
+      submit.isSubmitting ||
+      isSendingVoiceNote ||
+      isSendingGif ||
+      editingActive,
     text: draft.value,
   });
 
@@ -92,7 +141,55 @@ export function useMessageComposer({
     stopRecording,
   });
 
-  const isDisabled = submit.isDisabled || isSendingVoiceNote;
+  const isDisabled = submit.isDisabled || isSendingVoiceNote || isSendingGif;
+  const composerActionFocusKey = draft.editingMessage
+    ? `edit:${draft.editingMessage.id}`
+    : draft.replyingTo
+      ? `reply:${draft.replyingTo.id}`
+      : null;
+  const shouldMoveActionCaretToEnd = Boolean(draft.editingMessage);
+
+  useEffect(() => {
+    if (!composerActionFocusKey) {
+      previousActionFocusKeyRef.current = null;
+      return undefined;
+    }
+
+    if (
+      previousActionFocusKeyRef.current === composerActionFocusKey ||
+      isDisabled ||
+      isRecording
+    ) {
+      return undefined;
+    }
+
+    previousActionFocusKeyRef.current = composerActionFocusKey;
+
+    const timeoutId = window.setTimeout(() => {
+      const textarea = textareaRef.current;
+
+      if (!textarea || textarea.disabled) {
+        return;
+      }
+
+      textarea.focus({ preventScroll: true });
+
+      if (shouldMoveActionCaretToEnd) {
+        const caretPosition = textarea.value.length;
+        textarea.setSelectionRange(caretPosition, caretPosition);
+      }
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [
+    composerActionFocusKey,
+    isDisabled,
+    isRecording,
+    shouldMoveActionCaretToEnd,
+    textareaRef,
+  ]);
 
   return {
     appendAttachments: attachments.appendAttachments,
@@ -108,6 +205,8 @@ export function useMessageComposer({
     handleStopRecording,
     handleSubmit: submit.handleSubmit,
     handleValueChange: draft.handleValueChange,
+    insertEmoji,
+    sendGif,
     hasDraft,
     isDisabled,
     isDraggingFiles: dropzone.isDraggingFiles,

@@ -2,10 +2,12 @@ import type {
   ActivityParticipant,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
+import { isMessageFromCurrentUser } from "@/features/activity/lib/message-sender-identity";
 import type { MessageApi } from "@/shared/schemas";
 
 import {
   buildMessageParticipantsIndex,
+  getSenderParticipantBySummaryId,
   mapMessageSenderParticipant,
 } from "./message-participant-index";
 import { mapMessageReaction } from "./message-reaction-projections";
@@ -25,6 +27,7 @@ export function mapMessages(
     status: item.status,
     isEdited: item.isEdited,
     isPinned: item.isPinned,
+    isSaved: item.isSaved,
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
     editedAt: item.editedAt,
@@ -32,11 +35,20 @@ export function mapMessages(
     chatId: item.chatId,
     senderId: item.senderId,
     replyToId: item.replyToId,
+    forwardedFromMessageId: item.forwardedFromMessageId,
+    forwardedFromChatId: item.forwardedFromChatId,
+    forwardedFromSenderId: item.forwardedFromSenderId,
+    forwardedFromSenderName: item.forwardedFromSenderName,
     version: item.version,
     sender:
       participantsIndex.get(item.senderId) ??
+      getSenderParticipantBySummaryId(participantsIndex, item.sender?.id) ??
       mapMessageSenderParticipant(item.sender),
-    isOwn: currentUserId !== null && item.senderId === currentUserId,
+    isOwn: isMessageFromCurrentUser(
+      item.senderId,
+      item.sender?.id,
+      currentUserId,
+    ),
     isSystem: item.type === "SYSTEM",
     reactions:
       item.reactions?.map((reaction) =>

@@ -19,11 +19,11 @@ const SETTINGS_SCROLL_KEYS = ["section"] as const;
 
 export function useAppShellScrollReset() {
   const scrollResetKey = useRouterState({
-    select: (state) =>
-      getAppShellScrollResetKey(
-        state.location.pathname,
-        state.location.searchStr,
-      ),
+    select: (state) => {
+      const location = state.resolvedLocation ?? state.location;
+
+      return getAppShellScrollResetKey(location.pathname, location.searchStr);
+    },
   });
 
   useResetScrollOnChange({ resetKey: scrollResetKey });

@@ -2,6 +2,7 @@ import { ActivityApi } from "@/features/activity/api/activity.api";
 import type { ActivityActionContext } from "@/features/activity/api/activity-action-context";
 import { ActivityMessageCache } from "@/features/activity/api/activity-message-cache";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { canPinMessage } from "@/features/activity/lib/message-action-capabilities";
 
 export const ActivityPinnedMessageActions = {
   async pinMessage(
@@ -10,7 +11,7 @@ export const ActivityPinnedMessageActions = {
     selectedId: string | null,
     message: UnifiedMessage,
   ) {
-    if (!kind || !selectedId) {
+    if (!kind || !selectedId || !canPinMessage(message)) {
       return null;
     }
 
@@ -46,7 +47,7 @@ export const ActivityPinnedMessageActions = {
     selectedId: string | null,
     message: UnifiedMessage,
   ) {
-    if (!kind || !selectedId) {
+    if (!kind || !selectedId || !canPinMessage(message)) {
       return null;
     }
 

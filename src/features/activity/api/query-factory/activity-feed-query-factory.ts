@@ -1,5 +1,6 @@
 import { deriveActivityFeedData } from "@/features/activity/api/activity-context";
 import type { ActivityFeedData } from "@/features/activity/api/activity-query-data";
+import type { ActivityFeedStateMeta } from "@/features/activity/api/projections/activity-feed-projections";
 import type { FilterChip } from "@/features/activity/lib/activity-contract";
 import type { ChatApi, FriendshipApi, GroupApi, User } from "@/shared/schemas";
 
@@ -15,6 +16,7 @@ export const ActivityFeedQueryFactory = {
       string,
       Array<{ id: string; name: string; avatar: string | null }>
     >,
+    meta?: ActivityFeedStateMeta,
   ): ActivityFeedData {
     return deriveActivityFeedData(
       activeFilter,
@@ -24,6 +26,7 @@ export const ActivityFeedQueryFactory = {
       friendships,
       currentUser,
       typingByChatId,
+      meta,
     );
   },
 };

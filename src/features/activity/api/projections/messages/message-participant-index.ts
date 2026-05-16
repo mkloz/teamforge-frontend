@@ -25,3 +25,10 @@ export function mapMessageSenderParticipant(
     trustScore: 0,
   };
 }
+
+export function getSenderParticipantBySummaryId(
+  participantsIndex: MessageParticipantsIndex,
+  senderSummaryId: string | undefined,
+): ActivityParticipant | undefined {
+  return senderSummaryId ? participantsIndex.get(senderSummaryId) : undefined;
+}

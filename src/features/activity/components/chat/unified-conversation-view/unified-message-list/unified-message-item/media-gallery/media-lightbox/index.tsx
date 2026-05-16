@@ -1,7 +1,12 @@
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "framer-motion";
-import { memo } from "react";
+import { memo, type ReactNode } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
-import { Dialog, DialogContent } from "@/shared/components/ui/dialog";
+import {
+  Dialog,
+  DialogOverlay,
+  DialogPortal,
+} from "@/shared/components/ui/dialog";
 import { LightboxHeader } from "./lightbox-header";
 import { LightboxStage } from "./lightbox-stage";
 import { ThumbnailStrip } from "./thumbnail-strip";
@@ -32,7 +37,7 @@ export const MediaLightbox = memo(function MediaLightbox({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="pointer-events-auto flex h-dvh w-full max-w-full flex-col overflow-hidden border-none bg-black/98 p-0 shadow-none backdrop-blur-3xl [&>button]:top-6 [&>button]:right-6 [&>button]:flex [&>button]:h-10 [&>button]:w-10 [&>button]:items-center [&>button]:justify-center [&>button]:rounded-full [&>button]:bg-white/10 [&>button]:text-white [&>button]:opacity-100 [&>button]:transition-all hover:[&>button]:bg-white/20 [&>button_svg]:h-5 [&>button_svg]:w-5">
+      <LightboxDialogContent>
         <AnimatePresence mode="popLayout">
           <motion.div
             key="lightbox-container"
@@ -60,7 +65,18 @@ export const MediaLightbox = memo(function MediaLightbox({
             )}
           </motion.div>
         </AnimatePresence>
-      </DialogContent>
+      </LightboxDialogContent>
     </Dialog>
   );
 });
+
+function LightboxDialogContent({ children }: { children: ReactNode }) {
+  return (
+    <DialogPortal>
+      <DialogOverlay className="bg-black/70 backdrop-blur-md" />
+      <DialogPrimitive.Content className="data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 flex h-dvh w-full max-w-full flex-col overflow-hidden border-none bg-black/98 p-0 text-white opacity-0 shadow-none outline-none backdrop-blur-3xl duration-150 data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=open]:opacity-100 motion-reduce:animate-none">
+        {children}
+      </DialogPrimitive.Content>
+    </DialogPortal>
+  );
+}

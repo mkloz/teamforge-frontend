@@ -4,6 +4,8 @@ import { PLAN_COVER_PRESET_IDS } from "@/shared/lib/plan-cover";
 
 const MAX_URL_LENGTH = 2048;
 const MANAGED_UPLOAD_PREFIX = "uploads";
+const GIPHY_MEDIA_HOST_PATTERN =
+  /^(?:media(?:\d+)?\.giphy\.com|i\.giphy\.com)$/i;
 const ASSET_TOKEN_MAX_LENGTH = 64;
 const ASSET_TOKEN_PATTERN = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
 const PLAN_COVER_PRESET_ID_SET = new Set<string>(PLAN_COVER_PRESET_IDS);
@@ -87,6 +89,26 @@ export function isManagedAssetReference(value: unknown) {
   );
 }
 
+export function isGiphyMediaUrl(value: unknown) {
+  const url = parseUrl(value);
+
+  if (
+    url === null ||
+    url.protocol !== "https:" ||
+    url.hostname === "" ||
+    hasCredentials(url) ||
+    hasUnsafePathSegment(url.pathname)
+  ) {
+    return false;
+  }
+
+  return GIPHY_MEDIA_HOST_PATTERN.test(url.hostname);
+}
+
+export function isChatAttachmentUrl(value: unknown) {
+  return isManagedUploadUrl(value) || isGiphyMediaUrl(value);
+}
+
 export const publicHttpUrlSchema = z
   .string()
   .max(MAX_URL_LENGTH)
@@ -99,6 +121,13 @@ export const managedUploadUrlSchema = z
   .max(MAX_URL_LENGTH)
   .refine(isManagedUploadUrl, {
     message: "Use an uploaded TeamForge asset URL.",
+  });
+
+export const chatAttachmentUrlSchema = z
+  .string()
+  .max(MAX_URL_LENGTH)
+  .refine(isChatAttachmentUrl, {
+    message: "Use an uploaded TeamForge asset or a trusted GIPHY media URL.",
   });
 
 export const managedAssetReferenceSchema = z

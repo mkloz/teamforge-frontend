@@ -1,20 +1,21 @@
 import type { RefObject } from "react";
-import { memo, useRef } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import { useConversationData } from "@/features/activity/hooks/use-conversation-data";
 import type {
+  ActivityParticipant,
   ActivitySendMessageInput,
   DirectChat,
   Group,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
-import { useIsMobile } from "@/shared/hooks/use-breakpoint";
 import { ChatStatusBar } from "./chat-status-bar";
 import { CompletedReviewGate } from "./completed-banner";
 import { UnifiedChatHeader } from "./unified-chat-header";
 import { UnifiedMessageInput } from "./unified-message-input";
 import { UnifiedMessageList } from "./unified-message-list";
 import type { MessageScrollHandle } from "./unified-message-list/message-scroll.types";
+import { useConversationMessageSearch } from "./use-conversation-message-search";
 
 type UnifiedConversationViewProps =
   | (BaseConversationProps & { kind: "dm"; data: DirectChat })
@@ -34,6 +35,7 @@ interface BaseConversationProps {
   onBack: () => void;
   onClearSendError?: () => void;
   onLoadOlderMessages?: () => Promise<void> | void;
+  onShowParticipantProfile?: (participant: ActivityParticipant) => void;
   onToggleAction: () => void;
   onSendMessage: (input: ActivitySendMessageInput) => Promise<void> | void;
 }
@@ -59,11 +61,14 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     onBack,
     onClearSendError,
     onLoadOlderMessages,
+    onShowParticipantProfile,
     onToggleAction,
     onSendMessage,
   } = props;
   const { kind, data } = props;
   const conversationId = `${kind}:${data.id}`;
+  const chatId = kind === "group" ? (data.chat?.id ?? null) : data.id;
+  const [searchQuery, setSearchQuery] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -74,8 +79,8 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     messageScrollHandleRef ?? internalMessageScrollHandleRef;
 
   const { unpinMessage } = useActivityMessageActions();
-  const isMobile = useIsMobile();
   const isBlockedDirectChat = kind === "dm" && Boolean(data.isBlocked);
+  const isNotesChat = kind === "dm" && data.type === "NOTES";
 
   const conversationData = useConversationData(
     kind === "group"
@@ -85,6 +90,36 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
 
   const { headerProps, activeTypingUsers, typingText, isCompleted } =
     conversationData;
+  const {
+    activeMatchIndex,
+    goToNextMatch,
+    goToPreviousMatch,
+    isSearching,
+    matchCount,
+    normalizedQuery,
+  } = useConversationMessageSearch({
+    chatId,
+    hasOlderMessages,
+    isLoadingOlderMessages,
+    messages,
+    messageScrollHandleRef: activeMessageScrollHandleRef,
+    onLoadOlderMessages,
+    query: searchQuery,
+  });
+
+  useEffect(() => {
+    if (conversationId) {
+      setSearchQuery("");
+    }
+  }, [conversationId]);
+
+  const searchResultLabel = normalizedQuery
+    ? isSearching && matchCount === 0
+      ? "Searching..."
+      : matchCount > 0
+        ? `${Math.min(activeMatchIndex + 1, matchCount)}/${matchCount}`
+        : "No results"
+    : undefined;
 
   const pinnedMessagesFromData =
     kind === "group" ? data.chat?.pinnedMessages : data.pinnedMessages;
@@ -94,26 +129,31 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
   ).map((msg: UnifiedMessage) => Object.assign({}, msg, { isOwn: false }));
 
   return (
-    <div className="flex h-full flex-col bg-canvas/40">
+    <div className="flex min-h-0 flex-1 flex-col bg-canvas/40">
       <UnifiedChatHeader
         kind={kind}
         title={headerProps.title}
         subtitle={headerProps.subtitle}
         avatarUrl={headerProps.avatarUrl}
         detailsNavigation={headerProps.detailsNavigation}
-        secondaryAvatar={headerProps.secondaryAvatar}
         onlineStatus={headerProps.onlineStatus}
-        isTyping={isMobile && activeTypingUsers.length > 0}
+        isTyping={activeTypingUsers.length > 0}
         typingText={typingText}
         isActionOpen={isActionOpen}
+        searchQuery={searchQuery}
+        searchResultLabel={searchResultLabel}
+        isSearchNavigationDisabled={matchCount === 0}
         onBack={onBack}
-        onToggleAction={onToggleAction}
+        onSearchQueryChange={setSearchQuery}
+        onSearchNext={goToNextMatch}
+        onSearchPrevious={goToPreviousMatch}
+        onToggleAction={isNotesChat ? () => {} : onToggleAction}
       />
 
       <ChatStatusBar
         plan={kind === "group" ? (data.plan ?? undefined) : undefined}
         pinnedMessages={allPinnedMessages}
-        onViewDetails={onToggleAction}
+        onViewDetails={isNotesChat ? () => {} : onToggleAction}
         onUnpinPinnedMessage={(messageId) => {
           const targetMessage = allPinnedMessages.find(
             (message) => message.id === messageId,
@@ -137,6 +177,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
         <UnifiedMessageList
           key={conversationId}
           messages={messages}
+          searchQuery={normalizedQuery}
           kind={kind}
           conversationId={conversationId}
           focusedMessageId={focusedMessageId}
@@ -147,6 +188,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
           containerRef={messagesContainerRef}
           messageScrollHandleRef={activeMessageScrollHandleRef}
           onLoadOlderMessages={onLoadOlderMessages}
+          onShowParticipantProfile={onShowParticipantProfile}
           typingUsers={activeTypingUsers}
         />
       </div>
@@ -155,7 +197,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
       {isCompleted && kind === "group" && data.plan ? (
         <CompletedReviewGate group={data}>
           <UnifiedMessageInput
-            chatId={data.chat?.id ?? null}
+            chatId={chatId}
             errorMessage={sendError}
             disabled={isBlockedDirectChat}
             onSend={onSendMessage}
@@ -169,7 +211,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
         </CompletedReviewGate>
       ) : (
         <UnifiedMessageInput
-          chatId={kind === "group" ? (data.chat?.id ?? null) : data.id}
+          chatId={chatId}
           errorMessage={sendError}
           disabled={isBlockedDirectChat}
           onSend={onSendMessage}

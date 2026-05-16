@@ -12,7 +12,7 @@ export function mapGroup(
   group: GroupApi,
   currentUserId: string | null,
   proposals: PlanProposal[] = [],
-  chatSummary?: Pick<ChatApi, "id" | "pinnedMessages"> | null,
+  chatSummary?: Pick<ChatApi, "id" | "isMuted" | "pinnedMessages"> | null,
 ): Group {
   const members = group.members.map((member) =>
     mapGroupMember(member, group.id),
@@ -43,6 +43,7 @@ export function mapGroup(
     chat: chat
       ? {
           id: chat.id,
+          isMuted: chat.isMuted,
           pinnedMessages: mapGroupPinnedMessages(
             chat,
             participants,
@@ -90,7 +91,7 @@ function mapGroupPlan(
     title: plan.title,
     description: null,
     category: plan.category,
-    coverImage: group.avatar,
+    coverImage: plan.coverImage ?? null,
     status: plan.status,
     dateTime: plan.dateTime,
     locationMode: plan.locationMode,

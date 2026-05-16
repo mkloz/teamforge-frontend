@@ -44,7 +44,7 @@ export function NotFoundState({
 
         <SoloActivityScene className="absolute inset-0 lg:hidden" />
 
-        <div className="relative z-10 flex flex-1 items-end pb-8 sm:pb-12 lg:items-center lg:pb-0">
+        <div className="relative z-10 flex flex-1 items-center pb-0">
           <div className="relative grid w-full gap-10 lg:grid-cols-2 lg:items-stretch lg:gap-12">
             <SoloActivityScene className="hidden overflow-visible lg:block" />
             <div className="w-full max-w-lg lg:justify-self-end">

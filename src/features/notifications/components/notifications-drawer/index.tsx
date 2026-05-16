@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { CheckCheck, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { EmptyNotificationsVisual } from "@/assets/empty-state/empty-notifications";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
 import { resolveNotificationDestination } from "@/features/notifications/lib/notification-destination";
@@ -16,6 +16,7 @@ import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
 import { cn } from "@/shared/lib/utils";
 import type { Notification } from "@/shared/schemas";
+import { NotificationDetail } from "./notification-detail";
 import { NotificationsSection } from "./notifications-section";
 
 interface NotificationsDrawerProps {
@@ -29,8 +30,7 @@ export function NotificationsDrawer({
 }: NotificationsDrawerProps) {
   const {
     items,
-    today,
-    earlier,
+    notificationGroups,
     markReadAsync,
     markAllRead,
     isLoading,
@@ -43,25 +43,70 @@ export function NotificationsDrawer({
   const [pendingNotificationId, setPendingNotificationId] = useState<
     string | null
   >(null);
+  const [pendingDetailAction, setPendingDetailAction] = useState<
+    "mark-read" | "open" | null
+  >(null);
+  const [selectedNotificationId, setSelectedNotificationId] = useState<
+    string | null
+  >(null);
+  const selectedNotification =
+    items.find((item) => item.id === selectedNotificationId) ?? null;
 
   useResetScrollOnChange({
     enabled: open,
     ref: scrollRef,
-    resetKey: open,
+    resetKey: `${open ? "open" : "closed"}:${selectedNotificationId ?? "list"}`,
   });
 
-  async function handleSelectNotification(notification: Notification) {
+  useEffect(() => {
+    if (!open) {
+      setPendingNotificationId(null);
+      setPendingDetailAction(null);
+      setSelectedNotificationId(null);
+    }
+  }, [open]);
+
+  function handleSelectNotification(notification: Notification) {
+    setSelectedNotificationId(notification.id);
+  }
+
+  async function handleOpenNotification(notification: Notification) {
     setPendingNotificationId(notification.id);
+    setPendingDetailAction("open");
 
     try {
-      await markReadAsync(notification.id);
+      if (!notification.isRead) {
+        await markReadAsync(notification.id);
+      }
+
       const destination = await resolveNotificationDestination(notification);
 
       onClose();
       await navigate(destination);
       setPendingNotificationId(null);
+      setPendingDetailAction(null);
     } catch (error) {
       setPendingNotificationId(null);
+      setPendingDetailAction(null);
+      throw error;
+    }
+  }
+
+  async function handleMarkNotificationRead(notification: Notification) {
+    if (notification.isRead) {
+      return;
+    }
+
+    setPendingNotificationId(notification.id);
+    setPendingDetailAction("mark-read");
+
+    try {
+      await markReadAsync(notification.id);
+      setPendingNotificationId(null);
+      setPendingDetailAction(null);
+    } catch (error) {
+      setPendingNotificationId(null);
+      setPendingDetailAction(null);
       throw error;
     }
   }
@@ -132,7 +177,7 @@ export function NotificationsDrawer({
           {isLoading ? (
             <NotificationsDrawerSkeleton />
           ) : items.length === 0 ? (
-            <div className="flex flex-col items-center px-6 py-14 text-center sm:py-16">
+            <div className="flex min-h-full flex-col items-center justify-center px-6 py-14 text-center sm:py-16">
               <EmptyNotificationsVisual className="h-30 w-auto text-foreground" />
               <div className="mt-6 max-w-68">
                 <p className="font-bold text-base text-ink leading-tight">
@@ -143,21 +188,33 @@ export function NotificationsDrawer({
                 </p>
               </div>
             </div>
+          ) : selectedNotification ? (
+            <NotificationDetail
+              item={selectedNotification}
+              isMarkingRead={
+                pendingNotificationId === selectedNotification.id &&
+                pendingDetailAction === "mark-read"
+              }
+              isOpening={
+                pendingNotificationId === selectedNotification.id &&
+                pendingDetailAction === "open"
+              }
+              onBack={() => setSelectedNotificationId(null)}
+              onMarkRead={handleMarkNotificationRead}
+              onOpen={handleOpenNotification}
+            />
           ) : (
-            <>
+            notificationGroups.map((group) => (
               <NotificationsSection
-                label="Today"
-                items={today}
-                pendingNotificationId={pendingNotificationId}
+                key={group.key}
+                label={group.label}
+                items={group.items}
+                pendingNotificationId={
+                  pendingDetailAction ? pendingNotificationId : null
+                }
                 onSelect={handleSelectNotification}
               />
-              <NotificationsSection
-                label="Earlier"
-                items={earlier}
-                pendingNotificationId={pendingNotificationId}
-                onSelect={handleSelectNotification}
-              />
-            </>
+            ))
           )}
         </div>
       </DrawerContent>

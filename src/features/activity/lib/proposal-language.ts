@@ -142,3 +142,31 @@ export function buildProposalTimelineContent(proposal: PlanProposal) {
 export function buildProposalSummaryText(proposal: PlanProposal) {
   return `${PROPOSAL_FIELD_LABELS[proposal.field]} proposed: ${formatProposalValue(proposal.field, proposal.proposedValue)}`;
 }
+
+export function buildProposalClipboardText(
+  proposal: PlanProposal,
+  options: { eligibleVoterCount?: number } = {},
+) {
+  const fieldLabel = PROPOSAL_FIELD_LABELS[proposal.field];
+  const approveCount = proposal.votes.filter(
+    (vote) => vote.vote === "APPROVE",
+  ).length;
+  const rejectCount = proposal.votes.filter(
+    (vote) => vote.vote === "REJECT",
+  ).length;
+  const totalVotes = approveCount + rejectCount;
+  const eligibleVoterCount = Math.max(
+    options.eligibleVoterCount ?? proposal.votes.length,
+    proposal.votes.length,
+    1,
+  );
+
+  return [
+    `Plan change: ${fieldLabel}`,
+    `${proposal.proposer.name} proposed this update on ${formatProposalDate(proposal.createdAt)}.`,
+    `Current: ${formatProposalValue(proposal.field, proposal.currentValue)}`,
+    `New: ${formatProposalValue(proposal.field, proposal.proposedValue)}`,
+    `Status: ${PROPOSAL_STATUS_LABELS[proposal.status]}`,
+    `Votes: ${totalVotes}/${eligibleVoterCount} (${approveCount} approve, ${rejectCount} reject)`,
+  ].join("\n");
+}

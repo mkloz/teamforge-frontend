@@ -100,7 +100,7 @@ export type LocationMode = z.infer<typeof locationModeSchema>;
 export const costTypeSchema = z.enum(["FREE", "PAID"]);
 export type CostType = z.infer<typeof costTypeSchema>;
 
-export const chatTypeSchema = z.enum(["GROUP", "PRIVATE"]);
+export const chatTypeSchema = z.enum(["GROUP", "PRIVATE", "NOTES"]);
 export type ChatType = z.infer<typeof chatTypeSchema>;
 
 export const messageTypeSchema = z.enum([

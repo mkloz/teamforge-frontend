@@ -1,4 +1,3 @@
-import { ForgePageShell } from "@/features/forge/forge-page-content";
 import type { PageLoadingProps } from "@/shared/components/loading/page-loading";
 import {
   SkeletonButton,
@@ -17,7 +16,7 @@ export function ForgePageLoading(_props: PageLoadingProps = {}) {
 
 export function ForgePageLoadingFixture() {
   return (
-    <ForgePageShell>
+    <div className="mx-auto flex size-full max-w-5xl flex-col gap-8 px-4 md:px-8 md:pb-12">
       <div className="flex flex-col gap-8 py-6 md:py-10">
         <section className="grid gap-7 border-border border-b pb-8 md:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)] md:items-end md:pb-10">
           <div className="flex min-w-0 flex-col gap-7">
@@ -124,6 +123,6 @@ export function ForgePageLoadingFixture() {
           </div>
         </section>
       </div>
-    </ForgePageShell>
+    </div>
   );
 }

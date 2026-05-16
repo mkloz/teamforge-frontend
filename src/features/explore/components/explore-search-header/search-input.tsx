@@ -9,12 +9,11 @@ export function SearchInput() {
   return (
     <div className="flex-1">
       <Input
-        type="text"
+        type="search"
         value={searchQuery}
         onChange={(event) => setSearchQuery(event.target.value)}
         placeholder="Search groups or activities..."
         aria-label="Search groups"
-        className="h-11"
         leftIcon={<Search className="size-3.5" />}
       />
     </div>

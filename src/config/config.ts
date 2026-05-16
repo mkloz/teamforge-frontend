@@ -5,6 +5,7 @@ interface Config {
   apiUrl?: string;
   googleClientId?: string;
   googleMapsApiKey?: string;
+  giphyApiKey?: string;
 }
 export const config: Config = {
   environment: import.meta.env.MODE,
@@ -13,4 +14,5 @@ export const config: Config = {
   apiUrl: import.meta.env.VITE_API_URL,
   googleClientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
   googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+  giphyApiKey: import.meta.env.VITE_GIPHY_API_KEY,
 };

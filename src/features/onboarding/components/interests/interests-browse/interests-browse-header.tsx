@@ -50,7 +50,7 @@ export function InterestsBrowseHeader({
   return (
     <div className="mt-2 w-full">
       <Input
-        type="text"
+        type="search"
         value={searchQuery}
         onChange={(e) => onSetSearch(e.target.value)}
         placeholder="Search interests…"

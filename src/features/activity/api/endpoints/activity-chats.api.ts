@@ -2,9 +2,13 @@ import {
   createReactionPayloadSchema,
   DEFAULT_ACTIVITY_API_LIMIT,
   DEFAULT_ACTIVITY_API_MESSAGE_LIMIT,
+  type ForwardMessagePayload,
+  forwardMessagePayloadSchema,
   type GetChatMessagesParams,
   paginatedChatsSchema,
   paginatedMessagesSchema,
+  paginatedSavedMessagesSchema,
+  type SearchChatMessagesParams,
   type SendMessagePayload,
   sendMessagePayloadSchema,
   type UpdateMessagePayload,
@@ -44,6 +48,43 @@ export async function getChatMessages(
       searchParams: {
         limit: String(clampApiLimit(limit)),
         page: String(clampApiPage(page)),
+      },
+    })
+    .json<unknown>();
+
+  return paginatedMessagesSchema.parse(response);
+}
+
+export async function getSavedMessages({
+  limit = Number(DEFAULT_ACTIVITY_API_LIMIT),
+  page = 1,
+}: GetChatMessagesParams = {}) {
+  const response = await apiClient
+    .get("chats/saved-messages", {
+      searchParams: {
+        limit: String(clampApiLimit(limit)),
+        page: String(clampApiPage(page)),
+      },
+    })
+    .json<unknown>();
+
+  return paginatedSavedMessagesSchema.parse(response).items;
+}
+
+export async function searchChatMessages(
+  chatId: string,
+  {
+    limit = Number(DEFAULT_ACTIVITY_API_MESSAGE_LIMIT),
+    page = 1,
+    query,
+  }: SearchChatMessagesParams,
+) {
+  const response = await apiClient
+    .get(`chats/${chatId}/messages/search`, {
+      searchParams: {
+        limit: String(clampApiLimit(limit)),
+        page: String(clampApiPage(page)),
+        query,
       },
     })
     .json<unknown>();
@@ -100,6 +141,67 @@ export async function unpinMessage(chatId: string, messageId: string) {
     .json<unknown>();
 
   return messageApiSchema.parse(response);
+}
+
+export async function pinChat(chatId: string) {
+  const response = await apiClient.post(`chats/${chatId}/pin`).json<unknown>();
+
+  return chatApiSchema.parse(response);
+}
+
+export async function unpinChat(chatId: string) {
+  const response = await apiClient
+    .delete(`chats/${chatId}/pin`)
+    .json<unknown>();
+
+  return chatApiSchema.parse(response);
+}
+
+export async function muteChat(chatId: string) {
+  const response = await apiClient.post(`chats/${chatId}/mute`).json<unknown>();
+
+  return chatApiSchema.parse(response);
+}
+
+export async function unmuteChat(chatId: string) {
+  const response = await apiClient
+    .delete(`chats/${chatId}/mute`)
+    .json<unknown>();
+
+  return chatApiSchema.parse(response);
+}
+
+export async function saveMessage(chatId: string, messageId: string) {
+  const response = await apiClient
+    .post(`chats/${chatId}/messages/${messageId}/save`)
+    .json<unknown>();
+
+  return messageApiSchema.parse(response);
+}
+
+export async function unsaveMessage(chatId: string, messageId: string) {
+  const response = await apiClient
+    .delete(`chats/${chatId}/messages/${messageId}/save`)
+    .json<unknown>();
+
+  return messageApiSchema.parse(response);
+}
+
+export async function forwardMessage(
+  chatId: string,
+  messageId: string,
+  payload: ForwardMessagePayload,
+) {
+  const response = await apiClient.post(
+    `chats/${chatId}/messages/${messageId}/forward`,
+    {
+      json: forwardMessagePayloadSchema.parse(payload),
+    },
+  );
+
+  return parseJsonWithRequestId(response, (value) =>
+    messageApiSchema.parse(value),
+  );
 }
 
 export async function addReaction(

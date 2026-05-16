@@ -77,7 +77,7 @@ function ExploreFeedEmpty({
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section className="px-4 py-16 text-center">
+    <section className="grid min-h-[calc(100dvh-12rem)] place-items-center px-4 py-12 text-center">
       <div className="mx-auto flex max-w-lg flex-col items-center gap-6">
         {isFiltered ? (
           <EmptyExploreFilteredVisual className="h-36 w-auto text-foreground" />

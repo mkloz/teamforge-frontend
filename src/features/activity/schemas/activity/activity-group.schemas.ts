@@ -100,6 +100,7 @@ export const groupSchema = z.object({
     .object({
       id: z.string(),
       pinnedMessages: z.array(unifiedMessageSchema).optional(),
+      isMuted: z.boolean().optional(),
       mutualGroups: z.array(activityMutualGroupSchema).optional(),
     })
     .optional(),

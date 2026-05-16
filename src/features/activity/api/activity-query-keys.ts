@@ -7,6 +7,9 @@ export const ACTIVITY_CHATS_QUERY_KEY = APP_QUERY_KEYS.activity.chats;
 export const ACTIVITY_FRIENDSHIPS_QUERY_KEY =
   APP_QUERY_KEYS.activity.friendships;
 
+export const ACTIVITY_SAVED_MESSAGES_QUERY_KEY =
+  APP_QUERY_KEYS.activity.savedMessages;
+
 export const ACTIVITY_GROUP_SELECTION_QUERY_KEY =
   APP_QUERY_KEYS.activity.groupSelection;
 

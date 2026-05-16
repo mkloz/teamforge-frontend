@@ -8,7 +8,9 @@ interface ProfilePanelSettingsProps {
   isBlocked: boolean;
   blockActionDisabled?: boolean;
   isBlockActionPending?: boolean;
+  isMuteActionPending?: boolean;
   isMobile?: boolean;
+  onToggleMute?: () => void;
   onToggleBlock?: () => void;
 }
 
@@ -17,7 +19,9 @@ export function ProfilePanelSettings({
   isBlocked,
   blockActionDisabled = false,
   isBlockActionPending = false,
+  isMuteActionPending = false,
   isMobile = false,
+  onToggleMute,
   onToggleBlock,
 }: ProfilePanelSettingsProps) {
   const blockDialogTitle = isBlocked
@@ -46,14 +50,22 @@ export function ProfilePanelSettings({
           variant="ghost"
           className="group flex h-auto w-full items-center justify-start rounded-lg px-0 py-3"
           contentClassName="justify-start gap-3"
+          disabled={isMuteActionPending || !onToggleMute}
+          onClick={onToggleMute}
         >
-          {isMuted ? (
+          {isMuteActionPending ? (
+            <Loader2 className="size-4 shrink-0 animate-spin text-slate-muted" />
+          ) : isMuted ? (
             <BellOff className="size-4 shrink-0 text-slate-muted transition-colors group-hover:text-forge-teal" />
           ) : (
             <Bell className="size-4 shrink-0 text-slate-muted transition-colors group-hover:text-forge-teal" />
           )}
           <span className="font-medium text-ink text-sm">
-            {isMuted ? "Unmute notifications" : "Mute notifications"}
+            {isMuteActionPending
+              ? "Updating notifications..."
+              : isMuted
+                ? "Unmute notifications"
+                : "Mute notifications"}
           </span>
         </Button>
 

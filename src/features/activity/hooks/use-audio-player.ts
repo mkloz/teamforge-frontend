@@ -10,7 +10,9 @@ function formatTime(seconds: number) {
 
 export function useAudioPlayer(url: string) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const disposeAudioRef = useRef<(() => void) | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const [progress, setProgress] = useState(0);
   const [playbackSpeed, setPlaybackSpeed] = useState<1 | 1.5 | 2>(1);
   const [durationSeconds, setDurationSeconds] = useState(0);
@@ -31,12 +33,21 @@ export function useAudioPlayer(url: string) {
   });
 
   const handlePlay = useEffectEvent(() => {
+    setHasError(false);
     setIsPlaying(true);
   });
 
-  useEffect(() => {
+  const handleError = useEffectEvent(() => {
+    setHasError(true);
+    setIsPlaying(false);
+  });
+
+  function createAudio() {
+    disposeAudioRef.current?.();
+
     const audio = new Audio(url);
-    audio.preload = "metadata";
+    audio.preload = "none";
+    audio.playbackRate = playbackSpeed;
     audioRef.current = audio;
 
     const syncAudioProgress = () => syncProgress(audio);
@@ -44,19 +55,33 @@ export function useAudioPlayer(url: string) {
     audio.addEventListener("timeupdate", syncAudioProgress);
     audio.addEventListener("loadedmetadata", syncAudioProgress);
     audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("error", handleError);
     audio.addEventListener("pause", handlePause);
     audio.addEventListener("play", handlePlay);
 
-    return () => {
+    disposeAudioRef.current = () => {
       audio.pause();
       audio.removeEventListener("timeupdate", syncAudioProgress);
       audio.removeEventListener("loadedmetadata", syncAudioProgress);
       audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("error", handleError);
       audio.removeEventListener("pause", handlePause);
       audio.removeEventListener("play", handlePlay);
+      audio.src = "";
+    };
+
+    return {
+      audio,
+    };
+  }
+
+  useEffect(() => {
+    return () => {
+      disposeAudioRef.current?.();
+      disposeAudioRef.current = null;
       audioRef.current = null;
     };
-  }, [url]);
+  }, []);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -64,11 +89,28 @@ export function useAudioPlayer(url: string) {
     }
   }, [playbackSpeed]);
 
-  function togglePlay() {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: url intentionally tears down the previous audio element.
+  useEffect(() => {
     const audio = audioRef.current;
+
     if (!audio) {
+      setHasError(false);
+      setProgress(0);
+      setDurationSeconds(0);
       return;
     }
+
+    disposeAudioRef.current?.();
+    disposeAudioRef.current = null;
+    audioRef.current = null;
+    setHasError(false);
+    setProgress(0);
+    setDurationSeconds(0);
+  }, [url]);
+
+  function togglePlay() {
+    const currentAudio = audioRef.current;
+    const { audio } = currentAudio ? { audio: currentAudio } : createAudio();
 
     if (progress >= 1) {
       audio.currentTime = 0;
@@ -76,7 +118,10 @@ export function useAudioPlayer(url: string) {
     }
 
     if (audio.paused) {
-      void audio.play();
+      void audio.play().catch(() => {
+        setHasError(true);
+        setIsPlaying(false);
+      });
       return;
     }
 
@@ -85,7 +130,7 @@ export function useAudioPlayer(url: string) {
 
   function seek(newProgress: number) {
     const audio = audioRef.current;
-    if (!audio) {
+    if (!audio || hasError) {
       return;
     }
 
@@ -123,6 +168,7 @@ export function useAudioPlayer(url: string) {
 
   return {
     isPlaying,
+    hasError,
     progress,
     playbackSpeed,
     bars,

@@ -1,4 +1,5 @@
 import { ActivityProjections } from "@/features/activity/api/activity-projections";
+import type { ActivityFeedStateMeta } from "@/features/activity/api/projections/activity-feed-projections";
 import type {
   ActivityParticipant,
   DirectChat,
@@ -23,7 +24,7 @@ export function mapGroup(
   group: GroupApi,
   currentUserId: string | null,
   proposals: PlanProposal[] = [],
-  chatSummary?: Pick<ChatApi, "id" | "pinnedMessages"> | null,
+  chatSummary?: Pick<ChatApi, "id" | "isMuted" | "pinnedMessages"> | null,
 ): Group {
   return ActivityProjections.mapGroup(
     group,
@@ -47,6 +48,13 @@ export function mapDirectChat(
     currentUser,
     chatSummary,
   );
+}
+
+export function mapNotesChat(
+  chatSummary: ChatApi,
+  currentUser: ActivityParticipant,
+): DirectChat {
+  return ActivityProjections.mapNotesChat(chatSummary, currentUser);
 }
 
 export function mapMessages(
@@ -102,6 +110,7 @@ export function deriveActivityFeedData(
     string,
     Array<{ id: string; name: string; avatar: string | null }>
   >,
+  meta?: ActivityFeedStateMeta,
 ) {
   return ActivityProjections.deriveFeedData(
     activeFilter,
@@ -111,6 +120,7 @@ export function deriveActivityFeedData(
     friendships,
     currentUser,
     typingByChatId,
+    meta,
   );
 }
 

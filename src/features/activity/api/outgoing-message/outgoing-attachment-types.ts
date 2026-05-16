@@ -22,7 +22,7 @@ export function inferOutgoingMessageType(
     return undefined;
   }
 
-  if (firstAttachment.type === "IMAGE") {
+  if (firstAttachment.type === "IMAGE" || firstAttachment.type === "VIDEO") {
     return "IMAGE";
   }
 

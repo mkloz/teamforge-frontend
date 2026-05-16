@@ -22,8 +22,8 @@ export const AvatarSection = memo(
   }) => {
     const avatarUrl = getConversationAvatarUrl(item);
     const title = getConversationTitle(item);
-    const secondaryAvatar = getConversationSecondaryAvatar(item);
     const onlineStatus = getConversationOnlineStatus(item);
+    const secondaryAvatar = getConversationSecondaryAvatar(item);
 
     return (
       <div className="relative shrink-0">
@@ -38,21 +38,21 @@ export const AvatarSection = memo(
           )}
         />
 
-        {isGroup && secondaryAvatar && !isCompact && (
-          <div className="absolute -right-0.5 -bottom-0.5 overflow-hidden rounded-lg shadow-sm ring-2 ring-background">
-            <Avatar
-              src={secondaryAvatar}
-              alt=""
-              shape="rounded"
-              className="size-3 rounded-lg"
-              fallback=""
-            />
-          </div>
-        )}
-
         {!isGroup && onlineStatus && (
           <StatusIndicator status={onlineStatus} isCompact={isCompact} />
         )}
+
+        {isGroup && secondaryAvatar ? (
+          <div className="absolute -right-0.5 -bottom-0.5 z-10 size-3 overflow-hidden rounded-lg shadow-sm">
+            <Avatar
+              src={secondaryAvatar}
+              alt=""
+              fallback=""
+              shape="rounded"
+              className="size-full rounded-lg"
+            />
+          </div>
+        ) : null}
       </div>
     );
   },

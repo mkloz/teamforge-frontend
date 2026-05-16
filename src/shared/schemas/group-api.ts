@@ -34,6 +34,7 @@ export const groupPlanSummarySchema = z.object({
   id: z.string(),
   title: z.string(),
   category: planCategorySchema,
+  coverImage: z.string().nullable().optional(),
   status: planStatusSchema,
   dateTime: z.string().datetime().nullable(),
   locationMode: locationModeSchema,
@@ -98,6 +99,7 @@ export const groupApiSchema = z
     chat: z
       .object({
         id: z.string(),
+        isMuted: z.boolean().optional(),
         pinnedMessages: z.array(messageApiSchema).optional(),
       })
       .nullable()

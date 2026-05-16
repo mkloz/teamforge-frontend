@@ -47,6 +47,7 @@ export const unifiedMessageSchema: z.ZodType<{
   status: z.infer<typeof messageStatusSchema>;
   isEdited: boolean;
   isPinned: boolean;
+  isSaved?: boolean;
   createdAt: string;
   updatedAt: string;
   editedAt: string | null;
@@ -54,6 +55,10 @@ export const unifiedMessageSchema: z.ZodType<{
   chatId: string;
   senderId: string;
   replyToId: string | null;
+  forwardedFromMessageId?: string | null;
+  forwardedFromChatId?: string | null;
+  forwardedFromSenderId?: string | null;
+  forwardedFromSenderName?: string | null;
   version: number;
   pinnedInChatId?: string | null;
   sender?: ActivityParticipant;
@@ -79,6 +84,7 @@ export const unifiedMessageSchema: z.ZodType<{
     status: messageStatusSchema,
     isEdited: z.boolean(),
     isPinned: z.boolean(),
+    isSaved: z.boolean().optional(),
     createdAt: z.string(),
     updatedAt: z.string(),
     editedAt: z.string().nullable(),
@@ -86,6 +92,10 @@ export const unifiedMessageSchema: z.ZodType<{
     chatId: z.string(),
     senderId: z.string(),
     replyToId: z.string().nullable(),
+    forwardedFromMessageId: z.string().nullable().optional(),
+    forwardedFromChatId: z.string().nullable().optional(),
+    forwardedFromSenderId: z.string().nullable().optional(),
+    forwardedFromSenderName: z.string().nullable().optional(),
     version: z.number(),
     pinnedInChatId: z.string().nullable().optional(),
     sender: activityParticipantSchema.optional(),
