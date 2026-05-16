@@ -16,6 +16,7 @@ interface InputRowProps {
   disabled: boolean;
   canAttach?: boolean;
   canSendGif?: boolean;
+  onCreateProposal?: () => void;
   onInsertEmoji: (emoji: string) => void;
   onSelectGif: (gif: ActivityOutgoingGifAttachment) => void;
   onSelectImages: (files: File[]) => void;
@@ -34,6 +35,7 @@ export const InputRow = memo(
     disabled,
     canAttach = true,
     canSendGif = true,
+    onCreateProposal,
     onInsertEmoji,
     onSelectGif,
     onSelectImages,
@@ -50,6 +52,7 @@ export const InputRow = memo(
         {canAttach && (
           <AttachmentMenu
             disabled={disabled}
+            onCreateProposal={onCreateProposal}
             onSelectImages={onSelectImages}
             onSelectFiles={onSelectFiles}
           />

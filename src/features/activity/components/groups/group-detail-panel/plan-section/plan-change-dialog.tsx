@@ -1,4 +1,5 @@
 import { Lightbulb } from "lucide-react";
+import type { ReactElement } from "react";
 import type { Plan } from "@/features/activity/lib/activity-contract";
 import { LOCATION_MODE_LABELS } from "@/features/activity/lib/plan-location";
 import { Button } from "@/shared/components/ui/button";
@@ -30,11 +31,20 @@ import { usePlanProposalForm } from "./use-plan-proposal-form";
 
 interface PlanChangeDialogProps {
   className?: string;
+  onOpenChange?: (open: boolean) => void;
+  open?: boolean;
   plan: Plan;
+  trigger?: ReactElement | null;
 }
 
-export function PlanChangeDialog({ className, plan }: PlanChangeDialogProps) {
-  const form = usePlanProposalForm(plan);
+export function PlanChangeDialog({
+  className,
+  onOpenChange,
+  open,
+  plan,
+  trigger,
+}: PlanChangeDialogProps) {
+  const form = usePlanProposalForm(plan, { onOpenChange, open });
 
   function handleOpenChange(open: boolean) {
     if (open) {
@@ -65,17 +75,21 @@ export function PlanChangeDialog({ className, plan }: PlanChangeDialogProps) {
 
   return (
     <Dialog open={form.isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button
-          variant="primary"
-          size="xs"
-          className={className}
-          contentClassName="gap-1.5"
-        >
-          <Lightbulb className="size-3.5" aria-hidden="true" />
-          <span className="truncate">Suggest</span>
-        </Button>
-      </DialogTrigger>
+      {trigger !== null ? (
+        <DialogTrigger asChild>
+          {trigger ?? (
+            <Button
+              variant="primary"
+              size="xs"
+              className={className}
+              contentClassName="gap-1.5"
+            >
+              <Lightbulb className="size-3.5" aria-hidden="true" />
+              <span className="truncate">Suggest</span>
+            </Button>
+          )}
+        </DialogTrigger>
+      ) : null}
       <DialogContent className="max-h-screen overflow-y-auto sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Suggest a plan change</DialogTitle>

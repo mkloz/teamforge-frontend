@@ -37,7 +37,9 @@ export function canReactToMessage(message: MessageActionTarget) {
 }
 
 export function canReplyToMessage(message: MessageActionTarget) {
-  return canUsePersistedMessageMutation(message);
+  return (
+    canUsePersistedMessageMutation(message) && message.type !== "PLAN_UPDATE"
+  );
 }
 
 export function canPinMessage(message: MessageActionTarget) {
@@ -47,7 +49,11 @@ export function canPinMessage(message: MessageActionTarget) {
 }
 
 export function canSaveMessage(message: MessageActionTarget) {
-  return canUsePersistedMessageMutation(message) && message.type !== "SYSTEM";
+  return (
+    canUsePersistedMessageMutation(message) &&
+    message.type !== "SYSTEM" &&
+    message.type !== "PLAN_UPDATE"
+  );
 }
 
 export function canEditMessage(message: MessageActionTarget) {
@@ -62,6 +68,7 @@ export function canEditMessage(message: MessageActionTarget) {
 export function canDeleteMessage(message: MessageActionTarget) {
   return (
     message.isOwn &&
+    message.type !== "PLAN_UPDATE" &&
     !isSyntheticProposalMessageId(message.id) &&
     (message.status === "FAILED" || canUsePersistedMessageMutation(message))
   );

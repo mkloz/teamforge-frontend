@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Reply } from "lucide-react";
+import { Plus, Reply } from "lucide-react";
 import { memo, useState } from "react";
 
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
@@ -9,9 +9,16 @@ import { useSavedMessageIds } from "@/features/activity/hooks/use-saved-message-
 import { useSwipeToReply } from "@/features/activity/hooks/use-swipe-to-reply";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { formatChatTime } from "@/features/activity/lib/chat-utils";
+import { canReactToMessage } from "@/features/activity/lib/message-action-capabilities";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/shared/components/ui/popover";
 import { showAppErrorToast } from "@/shared/lib/error-toast";
 import { cn } from "@/shared/lib/utils";
+import { ChatEmojiPickerPanel } from "../../emoji-picker-panel";
 import { MessageContextMenu } from "../unified-message-item/message-actions-menu";
 import { MessageFooter } from "../unified-message-item/message-footer";
 import { ReplyReference } from "../unified-message-item/reply-reference";
@@ -26,6 +33,8 @@ interface ProposalMessageProps {
   kind: "dm" | "group";
   onActivateReplyTarget: (messageId: string) => void;
 }
+
+const PROPOSAL_QUICK_REACTIONS = ["👍", "🤝", "👀", "🎉", "✨"] as const;
 
 export const ProposalMessage = memo(function ProposalMessage({
   message,
@@ -65,6 +74,14 @@ export const ProposalMessage = memo(function ProposalMessage({
   const selectedReactionEmojis = reactionGroups
     .filter((reaction) => reaction.isActive)
     .map((reaction) => reaction.emoji);
+  const canReact = canReactToMessage(message);
+  const toggleReaction = (emoji: string) => {
+    void messageActions.toggleReaction(message, emoji).catch((error) =>
+      showAppErrorToast(error, {
+        fallbackMessage: "We couldn't update that reaction.",
+      }),
+    );
+  };
   const senderLabel = message.isOwn
     ? "You"
     : (message.sender?.name ?? proposal.proposer.name);
@@ -175,6 +192,13 @@ export const ProposalMessage = memo(function ProposalMessage({
                   />
                 )}
 
+                {isExpanded && canReact ? (
+                  <ProposalReactionStrip
+                    selectedEmojis={selectedReactionEmojis}
+                    onSelectEmoji={toggleReaction}
+                  />
+                ) : null}
+
                 <MessageFooter
                   attachments={message.attachments}
                   content={message.content}
@@ -187,16 +211,7 @@ export const ProposalMessage = memo(function ProposalMessage({
                   isPinned={message.isPinned}
                   isSaved={isSaved}
                   hasReply={Boolean(message.replyTo)}
-                  onToggleReaction={(emoji) => {
-                    void messageActions
-                      .toggleReaction(message, emoji)
-                      .catch((error) =>
-                        showAppErrorToast(error, {
-                          fallbackMessage:
-                            "We couldn't update that reaction.",
-                        }),
-                      );
-                  }}
+                  onToggleReaction={toggleReaction}
                 />
               </div>
             </div>
@@ -206,3 +221,69 @@ export const ProposalMessage = memo(function ProposalMessage({
     </MessageContextMenu>
   );
 });
+
+function ProposalReactionStrip({
+  onSelectEmoji,
+  selectedEmojis,
+}: {
+  onSelectEmoji: (emoji: string) => void;
+  selectedEmojis: readonly string[];
+}) {
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const selectedEmojiSet = new Set(selectedEmojis);
+
+  return (
+    <div className="mx-1.5 flex items-center justify-between gap-1 rounded-lg border border-border/45 bg-background/55 px-1.5 py-1">
+      <div className="flex min-w-0 flex-wrap items-center gap-0.5">
+        {PROPOSAL_QUICK_REACTIONS.map((emoji) => {
+          const isSelected = selectedEmojiSet.has(emoji);
+
+          return (
+            <button
+              key={emoji}
+              type="button"
+              aria-label={`${isSelected ? "Remove reaction" : "React with"} ${emoji}`}
+              aria-pressed={isSelected}
+              className={cn(
+                "flex size-7 items-center justify-center rounded-full border text-sm leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/20",
+                isSelected
+                  ? "border-spark-amber/35 bg-spark-amber/18 shadow-sm"
+                  : "border-transparent hover:bg-forge-teal/8",
+              )}
+              onClick={() => onSelectEmoji(emoji)}
+            >
+              <span aria-hidden="true">{emoji}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <Popover modal={false} open={pickerOpen} onOpenChange={setPickerOpen}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            aria-label="More proposal reactions"
+            className="flex size-7 shrink-0 items-center justify-center rounded-full border border-border/55 bg-card/80 text-slate-muted transition-colors hover:border-forge-teal/25 hover:bg-forge-teal/8 hover:text-forge-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/20"
+          >
+            <Plus className="size-3.5" strokeWidth={2.2} />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          align="end"
+          side="top"
+          sideOffset={8}
+          className="w-64 overflow-hidden rounded-lg border-border/60 bg-canvas/97 p-0 dark:bg-forge-deep-surface/97"
+        >
+          <ChatEmojiPickerPanel
+            compact
+            selectedEmojis={selectedEmojis}
+            onSelect={(emoji) => {
+              onSelectEmoji(emoji);
+              setPickerOpen(false);
+            }}
+          />
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}

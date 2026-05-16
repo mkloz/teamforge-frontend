@@ -32,18 +32,37 @@ function readProposalValues(
   };
 }
 
-export function usePlanProposalForm(plan: Plan) {
-  const [isOpen, setIsOpen] = useState(false);
+interface UsePlanProposalFormOptions {
+  onOpenChange?: (open: boolean) => void;
+  open?: boolean;
+}
+
+export function usePlanProposalForm(
+  plan: Plan,
+  options: UsePlanProposalFormOptions = {},
+) {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const [field, setField] = useState<ProposalField>("TITLE");
   const [value, setValue] = useState(plan.title);
   const [locationValue, setLocationValue] = useState(() =>
     getLocationProposalInput(plan),
   );
+  const isControlled = typeof options.open === "boolean";
+  const isOpen = isControlled ? Boolean(options.open) : uncontrolledOpen;
+
+  const setFormOpen = (nextOpen: boolean) => {
+    if (!isControlled) {
+      setUncontrolledOpen(nextOpen);
+    }
+
+    options.onOpenChange?.(nextOpen);
+  };
+
   const { createProposal, error, isCreating, setError } = useCreatePlanProposal(
     plan,
     {
       onCreated: () => {
-        setIsOpen(false);
+        setFormOpen(false);
         setField("TITLE");
         setValue(plan.title);
         setLocationValue(getLocationProposalInput(plan));
@@ -64,7 +83,7 @@ export function usePlanProposalForm(plan: Plan) {
   };
 
   const closeForm = () => {
-    setIsOpen(false);
+    setFormOpen(false);
     setError(null);
   };
 
@@ -115,7 +134,7 @@ export function usePlanProposalForm(plan: Plan) {
     isLocationField: field === "LOCATION",
     isOpen,
     locationValue,
-    openForm: () => setIsOpen(true),
+    openForm: () => setFormOpen(true),
     setLocationValue,
     setValue,
     value,

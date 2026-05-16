@@ -1,6 +1,7 @@
 import type { RefObject } from "react";
 import { memo, useEffect, useRef, useState } from "react";
 import { AlertTriangle, RefreshCw, WifiOff } from "lucide-react";
+import { PlanChangeDialog } from "@/features/activity/components/groups/group-detail-panel/plan-section/plan-change-dialog";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import { useConversationData } from "@/features/activity/hooks/use-conversation-data";
 import type {
@@ -77,6 +78,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
   const conversationId = `${kind}:${data.id}`;
   const chatId = kind === "group" ? (data.chat?.id ?? null) : data.id;
   const [searchQuery, setSearchQuery] = useState("");
+  const [isProposalDialogOpen, setIsProposalDialogOpen] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -98,6 +100,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
 
   const { headerProps, activeTypingUsers, typingText, isCompleted } =
     conversationData;
+  const activePlan = kind === "group" ? (data.plan ?? null) : null;
   const {
     activeMatchIndex,
     goToNextMatch,
@@ -135,9 +138,22 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
   const allPinnedMessages: UnifiedMessage[] = (
     pinnedMessagesFromData || []
   ).map((msg: UnifiedMessage) => Object.assign({}, msg, { isOwn: false }));
+  const handleCreateProposal =
+    kind === "group" && activePlan && !isCompleted
+      ? () => setIsProposalDialogOpen(true)
+      : undefined;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col bg-canvas/40">
+      {activePlan && !isCompleted ? (
+        <PlanChangeDialog
+          open={isProposalDialogOpen}
+          onOpenChange={setIsProposalDialogOpen}
+          plan={activePlan}
+          trigger={null}
+        />
+      ) : null}
+
       <UnifiedChatHeader
         kind={kind}
         title={headerProps.title}
@@ -219,6 +235,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
             disabled={isBlockedDirectChat}
             onSend={onSendMessage}
             onClearError={onClearSendError}
+            onCreateProposal={handleCreateProposal}
             placeholder={
               isBlockedDirectChat
                 ? "Unblock this person to send messages"
@@ -233,6 +250,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
           disabled={isBlockedDirectChat}
           onSend={onSendMessage}
           onClearError={onClearSendError}
+          onCreateProposal={handleCreateProposal}
           placeholder={
             isBlockedDirectChat
               ? "Unblock this person to send messages"

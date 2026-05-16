@@ -136,11 +136,28 @@ function formatCostAmount(value: number) {
 }
 
 export function buildProposalTimelineContent(proposal: PlanProposal) {
-  return `${proposal.proposer.name} proposed updating ${PROPOSAL_FIELD_LABELS[proposal.field].toLowerCase()}`;
+  return `${proposal.proposer.name} proposed updating ${getProposalTimelineFieldLabel(proposal.field)}`;
 }
 
 export function buildProposalSummaryText(proposal: PlanProposal) {
   return `${PROPOSAL_FIELD_LABELS[proposal.field]} proposed: ${formatProposalValue(proposal.field, proposal.proposedValue)}`;
+}
+
+function getProposalTimelineFieldLabel(field: PlanProposal["field"]) {
+  switch (field) {
+    case "TITLE":
+      return "the title";
+    case "DESCRIPTION":
+      return "the description";
+    case "DATE_TIME":
+      return "the date and time";
+    case "LOCATION":
+      return "the location";
+    case "CATEGORY":
+      return "the category";
+    case "COST":
+      return "the cost details";
+  }
 }
 
 export function buildProposalClipboardText(

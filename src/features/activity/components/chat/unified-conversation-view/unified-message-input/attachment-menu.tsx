@@ -1,6 +1,7 @@
 import {
   FileText,
   Image as ImageIcon,
+  Lightbulb,
   type LucideIcon,
   Paperclip,
 } from "lucide-react";
@@ -25,6 +26,7 @@ import { cn } from "@/shared/lib/utils";
 
 interface AttachmentMenuProps {
   disabled: boolean;
+  onCreateProposal?: () => void;
   onSelectImages: (files: File[]) => void;
   onSelectFiles: (files: File[]) => void;
 }
@@ -35,6 +37,7 @@ function toFiles(fileList: FileList | null) {
 
 export const AttachmentMenu = memo(function AttachmentMenu({
   disabled,
+  onCreateProposal,
   onSelectImages,
   onSelectFiles,
 }: AttachmentMenuProps) {
@@ -90,6 +93,14 @@ export const AttachmentMenu = memo(function AttachmentMenu({
           sideOffset={12}
           className={getActivityMenuContentClass("w-52 p-1.5")}
         >
+          {onCreateProposal ? (
+            <DropdownMenuItem
+              className={cn(ACTIVITY_MENU_ITEM_CLASS, "min-h-10 px-2.5 py-2")}
+              onSelect={() => onCreateProposal()}
+            >
+              <AttachmentMenuRow icon={Lightbulb} label="Create proposal" />
+            </DropdownMenuItem>
+          ) : null}
           <DropdownMenuItem
             className={cn(ACTIVITY_MENU_ITEM_CLASS, "min-h-10 px-2.5 py-2")}
             onSelect={(event) => {

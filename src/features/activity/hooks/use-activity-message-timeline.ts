@@ -56,16 +56,21 @@ export function useActivityMessageTimeline({
       ),
     [currentUserId, flattenedApiMessages, selectedParticipants],
   );
-  const selectedGroupMessages = useMemo(
-    () =>
-      selectedKind === "group"
-        ? ActivityQueryFactory.buildConversationTimeline(
-            flattenedMessages,
-            proposalMessages,
-          )
-        : [],
-    [flattenedMessages, proposalMessages, selectedKind],
-  );
+  const selectedGroupMessages = useMemo(() => {
+    if (selectedKind !== "group") {
+      return [];
+    }
+
+    const reconciledTimeline = reconcileProposalMessagesWithChatMessages(
+      flattenedMessages,
+      proposalMessages,
+    );
+
+    return ActivityQueryFactory.buildConversationTimeline(
+      reconciledTimeline.messages,
+      reconciledTimeline.proposalMessages,
+    );
+  }, [flattenedMessages, proposalMessages, selectedKind]);
   const selectedDirectMessages = useMemo(
     () => (selectedKind === "dm" ? flattenedMessages : []),
     [flattenedMessages, selectedKind],
@@ -114,4 +119,88 @@ export function useActivityMessageTimeline({
     loadOlderMessages,
     retryMessageTimeline,
   };
+}
+
+function reconcileProposalMessagesWithChatMessages(
+  messages: UnifiedMessage[],
+  proposalMessages: UnifiedMessage[],
+) {
+  if (proposalMessages.length === 0 || messages.length === 0) {
+    return { messages, proposalMessages };
+  }
+
+  const remainingMessages = [...messages];
+  const reconciledProposalMessages = proposalMessages.map((proposalMessage) => {
+    const backingMessageIndex = remainingMessages.findIndex((message) =>
+      isProposalBackingMessage(message, proposalMessage),
+    );
+
+    if (backingMessageIndex < 0) {
+      return proposalMessage;
+    }
+
+    const backingMessage = remainingMessages[backingMessageIndex];
+
+    remainingMessages.splice(backingMessageIndex, 1);
+
+    return {
+      ...proposalMessage,
+      attachments: backingMessage.attachments,
+      chatId: backingMessage.chatId,
+      createdAt: backingMessage.createdAt,
+      deletedAt: backingMessage.deletedAt,
+      editedAt: backingMessage.editedAt,
+      forwardedFromChatId: backingMessage.forwardedFromChatId,
+      forwardedFromMessageId: backingMessage.forwardedFromMessageId,
+      forwardedFromSenderId: backingMessage.forwardedFromSenderId,
+      forwardedFromSenderName: backingMessage.forwardedFromSenderName,
+      id: backingMessage.id,
+      isEdited: backingMessage.isEdited,
+      isPinned: backingMessage.isPinned,
+      isSaved: backingMessage.isSaved,
+      reactions: backingMessage.reactions,
+      replyTo: backingMessage.replyTo,
+      replyToId: backingMessage.replyToId,
+      sender: backingMessage.sender,
+      status: backingMessage.status,
+      updatedAt: backingMessage.updatedAt,
+      version: backingMessage.version,
+    };
+  });
+
+  return {
+    messages: remainingMessages,
+    proposalMessages: reconciledProposalMessages,
+  };
+}
+
+function isProposalBackingMessage(
+  message: UnifiedMessage,
+  proposalMessage: UnifiedMessage,
+) {
+  if (
+    message.type !== "SYSTEM" ||
+    message.chatId !== proposalMessage.chatId ||
+    message.senderId !== proposalMessage.senderId ||
+    normalizeTimelineContent(message.content) !==
+      normalizeTimelineContent(proposalMessage.content)
+  ) {
+    return false;
+  }
+
+  const messageTime = new Date(message.createdAt).getTime();
+  const proposalTime = new Date(proposalMessage.createdAt).getTime();
+
+  if (Number.isNaN(messageTime) || Number.isNaN(proposalTime)) {
+    return false;
+  }
+
+  return Math.abs(messageTime - proposalTime) <= 5 * 60 * 1000;
+}
+
+function normalizeTimelineContent(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[.!?]+$/u, "");
 }

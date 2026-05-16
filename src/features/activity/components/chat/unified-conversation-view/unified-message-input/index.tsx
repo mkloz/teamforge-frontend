@@ -19,6 +19,7 @@ interface UnifiedMessageInputProps {
   errorMessage?: string | null;
   onSend: (input: ActivitySendMessageInput) => Promise<void> | void;
   onClearError?: () => void;
+  onCreateProposal?: () => void;
   disabled?: boolean;
   placeholder?: string;
 }
@@ -28,6 +29,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
   errorMessage = null,
   onSend,
   onClearError,
+  onCreateProposal,
   disabled = false,
   placeholder = "Type a message...",
 }: UnifiedMessageInputProps) {
@@ -156,6 +158,9 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
                 }
                 canAttach={!composer.isEditing}
                 canSendGif={!composer.isEditing}
+                onCreateProposal={
+                  composer.isEditing ? undefined : onCreateProposal
+                }
               />
             )}
           </div>
