@@ -90,14 +90,14 @@ export function ProfilePanelInfo({
           ) : null}
         </div>
 
-        <div className="relative z-10 -mt-14 flex min-w-0 flex-row items-start gap-3 px-4 pb-4">
+        <div className="relative z-10 -mt-10 flex min-w-0 flex-row items-start gap-3 px-4 pb-3">
           <PanelProfileAvatar
             name={participant.name}
             src={participant.avatar}
             onlineStatus={onlineStatus}
           />
 
-          <div className="min-w-0 flex-1 pt-5 text-left">
+          <div className="min-w-0 flex-1 pt-2 text-left">
             <h3 className="truncate font-bold text-2xl text-white leading-tight tracking-tight">
               {participant.name}
             </h3>
@@ -289,22 +289,40 @@ function ProfileMetaRow({
   }
 
   return (
-    <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-slate-muted">
-      {items.map((item) => (
+    <div className="mt-2 flex min-w-0 items-center overflow-hidden text-slate-muted">
+      {items.map((item, index) => (
         <div key={item.kind} className="flex min-w-0 items-center">
-          {item.kind === "city" ? (
-            <span className="flex min-w-0 items-center gap-1 font-bold text-micro uppercase leading-none tracking-widest">
-              <MapPin className="size-3 shrink-0" />
-              <span className="truncate">{item.value}</span>
-            </span>
-          ) : (
-            <span className="font-semibold text-sm leading-none">
-              {item.value}
-            </span>
-          )}
+          {index > 0 ? (
+            <span
+              aria-hidden="true"
+              className="mx-2 h-3 w-px shrink-0 bg-slate-muted/35"
+            />
+          ) : null}
+          <ProfileMetaItem item={item} />
         </div>
       ))}
     </div>
+  );
+}
+
+function ProfileMetaItem({
+  item,
+}: {
+  item: { kind: string; value: string };
+}) {
+  if (item.kind === "city") {
+    return (
+      <span className="flex min-w-0 items-center gap-1 font-bold text-micro uppercase leading-none tracking-widest">
+        <MapPin className="size-3 shrink-0" />
+        <span className="truncate">{item.value}</span>
+      </span>
+    );
+  }
+
+  return (
+    <span className="shrink-0 font-semibold text-sm leading-none">
+      {item.value}
+    </span>
   );
 }
 
