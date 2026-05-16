@@ -1,3 +1,4 @@
+import { X } from "lucide-react";
 import { memo } from "react";
 
 import { ErrorMessageSendFailedVisual } from "@/assets/error-state/error-message-send-failed";
@@ -105,11 +106,24 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
               )}
 
               {errorMessage && (
-                <div className="flex items-center gap-2 px-4 py-2">
+                <div
+                  role="alert"
+                  className="flex items-center gap-2 px-3 py-2.5"
+                >
                   <ErrorMessageSendFailedVisual className="h-5 w-auto shrink-0 text-foreground" />
-                  <p className="font-medium text-destructive/80 text-xs">
+                  <p className="min-w-0 flex-1 font-medium text-destructive/80 text-xs">
                     {errorMessage}
                   </p>
+                  {onClearError ? (
+                    <button
+                      type="button"
+                      aria-label="Dismiss send error"
+                      className="inline-flex size-7 shrink-0 items-center justify-center rounded-full text-slate-muted transition hover:bg-destructive/8 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/25"
+                      onClick={onClearError}
+                    >
+                      <X className="size-3.5" />
+                    </button>
+                  ) : null}
                 </div>
               )}
             </div>

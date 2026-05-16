@@ -205,7 +205,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
             onClearError={onClearSendError}
             placeholder={
               isBlockedDirectChat
-                ? "Unblock this user to send messages"
+                ? "Unblock this person to send messages"
                 : undefined
             }
           />
@@ -219,7 +219,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
           onClearError={onClearSendError}
           placeholder={
             isBlockedDirectChat
-              ? "Unblock this user to send messages"
+              ? "Unblock this person to send messages"
               : undefined
           }
         />

@@ -17,11 +17,22 @@ export const MessageStatusIcon = memo(function MessageStatusIcon({
   className,
 }: MessageStatusIconProps) {
   if (!isOwn) return null;
+  if (!status) return null;
+
+  const label = getMessageStatusLabel(status, isReadByOthers);
 
   return (
-    <div className={cn("flex items-center", className)}>
+    <div
+      aria-label={label}
+      className={cn("flex items-center", className)}
+      role="img"
+      title={label}
+    >
       {status === "SENDING" && (
-        <Clock size={10} className="animate-pulse text-slate-muted/40" />
+        <Clock
+          size={10}
+          className="animate-pulse text-slate-muted/40 motion-reduce:animate-none"
+        />
       )}
       {status === "SENT" && (
         <Check size={10} className="text-slate-muted/40" strokeWidth={3} />
@@ -48,3 +59,14 @@ export const MessageStatusIcon = memo(function MessageStatusIcon({
     </div>
   );
 });
+
+function getMessageStatusLabel(
+  status: MessageStatus,
+  isReadByOthers?: boolean,
+) {
+  if (status === "SENDING") return "Sending";
+  if (status === "SENT") return "Sent";
+  if (status === "DELIVERED") return "Delivered";
+  if (status === "READ") return isReadByOthers ? "Read" : "Delivered";
+  return "Not sent";
+}

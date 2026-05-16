@@ -46,9 +46,10 @@ export const SavedMessageListItem = memo(function SavedMessageListItem({
   snapshot,
 }: SavedMessageListItemProps) {
   const isCompact = density === "compact";
+  const canOpenOriginal = Boolean(conversation);
   const title = conversation
     ? getConversationTitle(conversation)
-    : "Saved message";
+    : "Original chat unavailable";
   const avatarUrl = conversation
     ? getConversationAvatarUrl(conversation)
     : null;
@@ -66,11 +67,19 @@ export const SavedMessageListItem = memo(function SavedMessageListItem({
     }
 
     event.preventDefault();
-    onSelect();
+    openOriginalMessage();
   }
 
   function removeBookmark() {
     void onRemove(message.id);
+  }
+
+  function openOriginalMessage() {
+    if (!canOpenOriginal) {
+      return;
+    }
+
+    onSelect();
   }
 
   return (
@@ -78,11 +87,12 @@ export const SavedMessageListItem = memo(function SavedMessageListItem({
       <ContextMenuTrigger asChild>
         <div
           data-conversation-key={rowKey}
-          onClick={onSelect}
+          onClick={openOriginalMessage}
           onKeyDown={handleKeyDown}
           role="button"
           aria-current={isSelected ? "true" : undefined}
-          aria-label={`${title}, saved message${sender ? ` from ${sender}` : ""}: ${preview}`}
+          aria-disabled={!canOpenOriginal}
+          aria-label={`${title}, saved message${sender ? ` from ${sender}` : ""}: ${preview}${canOpenOriginal ? "" : ". Original chat is no longer available."}`}
           tabIndex={0}
           className={cn(
             "group/item relative flex w-full select-none items-center text-left outline-none transition duration-200 focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-inset",
@@ -149,7 +159,9 @@ export const SavedMessageListItem = memo(function SavedMessageListItem({
                   {preview}
                 </p>
                 <p className="mt-0.5 truncate font-medium text-micro text-slate-muted/60">
-                  Opens in the original chat
+                  {canOpenOriginal
+                    ? "Opens in the original chat"
+                    : "Original chat is no longer available"}
                 </p>
               </div>
               <button
@@ -171,7 +183,8 @@ export const SavedMessageListItem = memo(function SavedMessageListItem({
       <ContextMenuContent className={getActivityMenuContentClass("w-52")}>
         <ContextMenuItem
           className={ACTIVITY_MENU_ITEM_CLASS}
-          onSelect={onSelect}
+          disabled={!canOpenOriginal}
+          onSelect={openOriginalMessage}
         >
           <span className={ACTIVITY_MENU_ICON_CLASS}>
             <MessageCircle className="size-4" />

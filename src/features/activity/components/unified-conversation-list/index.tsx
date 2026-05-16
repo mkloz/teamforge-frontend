@@ -291,8 +291,8 @@ function getSavedShortcutIndex(items: UnifiedConversation[]) {
 function getEmptyDescription(activeFilter: FilterChip, searchQuery: string) {
   if (activeFilter === "saved") {
     return searchQuery
-      ? "Try a sender, chat name, or a word from the saved message."
-      : "Use Save message from any message menu. Bookmarks stay private and jump back to the original chat.";
+      ? "Try a sender, chat name, or a phrase from the message."
+      : "Use Save message from a message menu. Saved messages stay private and take you back to the original chat when it is still available.";
   }
 
   if (activeFilter === "pinned") {

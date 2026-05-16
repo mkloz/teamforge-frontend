@@ -43,6 +43,8 @@ export const MessageFooter = memo(
       reactionGroups.length === 0;
     if (hasOnlyImageMedia) return null;
 
+    const isFailedOwnMessage = isOwn && status === "FAILED";
+
     return (
       <div
         className={cn(
@@ -50,6 +52,7 @@ export const MessageFooter = memo(
           reactionGroups.length > 0 ? "my-0.5 justify-between" : "justify-end",
           content &&
             !hasReply &&
+            !isFailedOwnMessage &&
             content.length < 50 &&
             !content.includes(" ") &&
             reactionGroups.length === 0 &&
@@ -70,7 +73,15 @@ export const MessageFooter = memo(
             />
           )}
           {isSaved && (
-            <Bookmark className="size-3 fill-forge-teal/20 text-forge-teal" />
+            <Bookmark
+              aria-label="Saved message"
+              className="size-3 fill-forge-teal/20 text-forge-teal"
+            />
+          )}
+          {isFailedOwnMessage && (
+            <span className="mr-0.5 font-bold text-destructive text-nano">
+              Not sent
+            </span>
           )}
           {isEdited && (
             <span className="mr-0.5 font-bold text-nano italic opacity-60">

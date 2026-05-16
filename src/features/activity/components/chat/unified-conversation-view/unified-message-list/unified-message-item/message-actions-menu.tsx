@@ -679,6 +679,8 @@ function ForwardMessageDialog({
   });
   const isLoading =
     groupsQuery.isPending || chatsQuery.isPending || friendshipsQuery.isPending;
+  const hasLoadError =
+    groupsQuery.isError || chatsQuery.isError || friendshipsQuery.isError;
 
   async function handleForward(target: ForwardTarget) {
     if (!onForward) {
@@ -710,25 +712,35 @@ function ForwardMessageDialog({
             Forward message
           </DialogTitle>
           <DialogDescription className="text-muted-foreground text-xs">
-            Choose a conversation.
+            Pick where this message should go.
           </DialogDescription>
         </DialogHeader>
 
         <div className="min-h-0 overflow-y-auto p-1.5">
           {isLoading ? (
-            <p className="flex min-h-40 items-center justify-center px-3 py-4 text-center text-muted-foreground text-sm">
-              Loading conversations...
-            </p>
+            <ForwardDialogState
+              description="This usually takes a moment."
+              label="Finding conversations..."
+              role="status"
+            />
+          ) : hasLoadError ? (
+            <ForwardDialogState
+              description="Close this and try again in a moment."
+              label="We couldn't load your conversations."
+              role="alert"
+            />
           ) : targets.length === 0 ? (
-            <p className="flex min-h-40 items-center justify-center px-3 py-4 text-center text-muted-foreground text-sm">
-              No other conversations yet.
-            </p>
+            <ForwardDialogState
+              description="Start another chat before forwarding this message."
+              label="There is nowhere else to forward this yet."
+            />
           ) : (
             targets.map((target) => (
               <button
                 key={target.chatId}
                 type="button"
-                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left transition hover:bg-forge-teal/8 disabled:cursor-not-allowed disabled:opacity-60"
+                aria-busy={pendingTargetId === target.chatId}
+                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left transition hover:bg-forge-teal/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/25 disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={pendingTargetId !== null}
                 onClick={() => {
                   void handleForward(target);
@@ -754,8 +766,11 @@ function ForwardMessageDialog({
                   </span>
                 </span>
                 {pendingTargetId === target.chatId && (
-                  <span className="text-muted-foreground text-xs">
-                    Sending...
+                  <span
+                    aria-live="polite"
+                    className="text-muted-foreground text-xs"
+                  >
+                    Forwarding...
                   </span>
                 )}
               </button>
@@ -764,6 +779,28 @@ function ForwardMessageDialog({
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function ForwardDialogState({
+  description,
+  label,
+  role,
+}: {
+  description: string;
+  label: string;
+  role?: "alert" | "status";
+}) {
+  return (
+    <div
+      role={role}
+      className="flex min-h-40 flex-col items-center justify-center gap-1 px-4 py-6 text-center"
+    >
+      <p className="font-bold text-ink text-sm">{label}</p>
+      <p className="max-w-64 text-muted-foreground text-xs leading-relaxed">
+        {description}
+      </p>
+    </div>
   );
 }
 
