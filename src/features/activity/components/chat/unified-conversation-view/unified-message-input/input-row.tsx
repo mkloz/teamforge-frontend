@@ -40,7 +40,7 @@ export const InputRow = memo(
     onSelectFiles,
   }: InputRowProps) => (
     <>
-      <div className="flex h-11 shrink-0 items-center gap-0.5 pl-1.5">
+      <div className="flex h-11 shrink-0 items-center gap-0.5 pl-1 sm:pl-1.5">
         <ExpressionPicker
           canSendGif={canSendGif}
           disabled={disabled}

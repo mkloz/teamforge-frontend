@@ -27,6 +27,8 @@ function getPreparedText(text: string) {
 
 export function getBubbleWidth(containerWidth: number, isOwn: boolean) {
   const avatarColumnWidth = isOwn ? 24 : 64;
+  const responsiveMaxWidth =
+    containerWidth < 640 ? 320 : MAX_BUBBLE_WIDTH;
   const availableWidth = Math.max(
     containerWidth - avatarColumnWidth,
     MIN_BUBBLE_WIDTH,
@@ -35,7 +37,7 @@ export function getBubbleWidth(containerWidth: number, isOwn: boolean) {
 
   return Math.max(
     MIN_BUBBLE_WIDTH,
-    Math.min(MAX_BUBBLE_WIDTH, percentageWidth),
+    Math.min(responsiveMaxWidth, percentageWidth),
   );
 }
 

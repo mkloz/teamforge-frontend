@@ -22,7 +22,7 @@ export const FilterChipItem = memo(function FilterChipItem({
       label={label}
       selected={isActive}
       badge={badge}
-      className="h-6 px-2.5"
+      className="h-8 px-3 md:h-6 md:px-2.5"
     />
   );
 });

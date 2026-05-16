@@ -54,8 +54,8 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
   );
 
   return (
-    <div className="safe-area-inset-bottom isolate z-30 min-h-16 shrink-0 overflow-visible border-border/60 border-t bg-canvas/90 px-3 pt-2 pb-2.5 backdrop-blur-xl">
-      <div className="mx-auto flex w-full items-center gap-2.5">
+    <div className="safe-area-inset-bottom isolate z-30 min-h-16 shrink-0 overflow-visible border-border/60 border-t bg-canvas/90 px-2.5 pt-2 pb-2.5 backdrop-blur-xl sm:px-3">
+      <div className="mx-auto flex w-full items-center gap-2 sm:gap-2.5">
         {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions: File drag/drop is pointer-only decoration around the actual message controls. */}
         {/* biome-ignore lint/a11y/noStaticElementInteractions: The keyboard-accessible controls live inside this drop zone. */}
         <div
@@ -72,7 +72,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
           {hasContextPanel && (
             <div
               className={getActivityPopupPanelClass(
-                "absolute right-0 bottom-full left-0 z-20 mb-2 overflow-hidden rounded-lg bg-card/95",
+                "absolute right-0 bottom-full left-0 z-20 mb-2 max-h-96 overflow-y-auto rounded-lg bg-card/95",
               )}
             >
               <ReplyPreview

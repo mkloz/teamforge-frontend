@@ -75,7 +75,7 @@ export const AttachmentMenu = memo(function AttachmentMenu({
               <Button
                 variant="accentGhost"
                 size="icon-sm"
-                className="size-8 cursor-pointer rounded-full outline-none"
+                className="size-9 cursor-pointer rounded-full outline-none md:size-8"
                 aria-label="Add attachment"
                 disabled={disabled}
               >

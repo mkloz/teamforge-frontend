@@ -129,7 +129,7 @@ export function MessageSenderBlock({
                     "min-w-0 max-w-full",
                     isSystemMessage
                       ? "w-full"
-                      : "w-full sm:max-w-lg md:max-w-xl",
+                      : "w-full max-w-xs sm:max-w-lg md:max-w-xl",
                   )}
                 >
                   <MessageRenderer

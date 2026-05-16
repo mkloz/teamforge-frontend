@@ -105,7 +105,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
         >
           <div
             className={cn(
-              "flex w-full min-w-0 max-w-full flex-col sm:max-w-lg md:max-w-xl",
+              "flex w-full min-w-0 max-w-xs flex-col sm:max-w-lg md:max-w-xl",
               isOwn ? "ml-auto items-end" : "mr-auto items-start",
             )}
           >

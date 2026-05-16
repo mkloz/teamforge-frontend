@@ -53,7 +53,7 @@ export const FilterHeader = memo(function FilterHeader({
   return (
     <nav
       className={cn(
-        "sticky top-0 z-20 border-border/60 border-b px-4 py-1",
+        "sticky top-0 z-20 border-border/60 border-b px-3 py-1 md:px-4",
         "flex items-center justify-between bg-canvas/80 backdrop-blur-md",
       )}
     >
@@ -80,7 +80,7 @@ export const FilterHeader = memo(function FilterHeader({
             <Button
               variant="accentGhost"
               size="icon"
-              className="size-8"
+              className="size-9 md:size-8"
               onClick={() =>
                 onDensityChange?.(density === "default" ? "compact" : "default")
               }

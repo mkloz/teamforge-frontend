@@ -23,7 +23,7 @@ export const HeaderActions = memo(
     onToggleSearch,
     onToggleAction,
   }: HeaderActionsProps) => (
-    <div className="flex items-center gap-1.5 pr-1">
+    <div className="flex items-center gap-1 pr-0.5 md:gap-1.5 md:pr-1">
       {isSearching ? (
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
@@ -35,7 +35,7 @@ export const HeaderActions = memo(
                 variant="accentGhost"
                 size="icon-sm"
                 onClick={() => onToggleSearch(false)}
-                className="shrink-0"
+                className="size-10 shrink-0 md:size-9"
                 aria-label="Cancel search"
               >
                 <X className="size-4" strokeWidth={2.5} />
@@ -52,13 +52,10 @@ export const HeaderActions = memo(
                 variant="accentGhost"
                 size="icon-sm"
                 onClick={() => onToggleSearch(true)}
-                className="group/search shrink-0"
+                className="shrink-0 size-10 md:size-9"
                 aria-label="Search conversation"
               >
-                <Search
-                  className="size-4 transition-transform group-hover/search:scale-110"
-                  strokeWidth={2.5}
-                />
+                <Search className="size-4" strokeWidth={2.5} />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Search conversation</TooltipContent>
@@ -69,14 +66,14 @@ export const HeaderActions = memo(
                 variant="accentGhost"
                 size="icon-sm"
                 onClick={onToggleAction}
-                className="group/more shrink-0"
+                className="shrink-0 size-10 md:size-9"
                 aria-label="More options"
               >
                 <MoreVertical
                   strokeWidth={2.5}
                   className={cn(
-                    "size-4 transition-transform duration-300 group-hover/more:rotate-90",
-                    isActionOpen && "rotate-90 text-forge-teal",
+                    "size-4 transition-colors duration-200",
+                    isActionOpen && "text-forge-teal",
                   )}
                 />
               </Button>

@@ -101,7 +101,7 @@ export const ExpressionPicker = memo(function ExpressionPicker({
             <Button
               variant="ghost"
               size="icon-sm"
-              className="size-8 cursor-pointer rounded-full text-slate-muted outline-none transition-colors hover:text-spark-amber"
+              className="size-9 cursor-pointer rounded-full text-slate-muted outline-none transition-colors hover:text-spark-amber md:size-8"
               aria-label="Add emoji or GIF"
               disabled={disabled}
             >

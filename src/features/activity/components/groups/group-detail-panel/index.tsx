@@ -60,7 +60,7 @@ export function GroupDetailPanel({
         open={isOpen && !isDesktop}
         onOpenChange={(open) => !open && onClose()}
       >
-        <DrawerContent className="flex max-h-screen flex-col overflow-hidden rounded-t-xl border-t bg-canvas lg:hidden">
+        <DrawerContent className="flex h-dvh max-h-dvh flex-col overflow-hidden rounded-t-3xl border-t bg-canvas lg:hidden">
           <DrawerHeader className="sr-only">
             <DrawerTitle>{group.name} Details</DrawerTitle>
           </DrawerHeader>
