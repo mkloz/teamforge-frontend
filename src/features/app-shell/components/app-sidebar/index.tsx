@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { TeamForgeLogo } from "@/assets/logo";
 import { useActivePathname } from "@/features/app-shell/hooks/use-active-pathname";
 import {
+  applyAppNavigationBadges,
   appSidebarNavigation,
   getAppNavigationItem,
   isAppNavigationItemActive,
@@ -24,15 +25,20 @@ import { NavItem } from "./nav-item";
 
 interface AppSidebarProps {
   className?: string;
+  activityUnreadCount?: number;
   notificationTrigger?: ReactNode;
 }
 
 export function AppSidebar({
+  activityUnreadCount = 0,
   className,
   notificationTrigger,
 }: AppSidebarProps) {
   const pathname = useActivePathname();
   const shouldReduceMotion = useReducedMotion();
+  const sidebarItems = applyAppNavigationBadges(appSidebarNavigation, {
+    activity: activityUnreadCount,
+  });
   const forgeItem = getAppNavigationItem("forge");
   const settingsItem = getAppNavigationItem("settings");
   const ForgeIcon = forgeItem.icon;
@@ -84,7 +90,7 @@ export function AppSidebar({
         className="flex flex-1 flex-col items-center gap-1 px-1.5 pt-3 pb-2"
         aria-label="App navigation"
       >
-        {appSidebarNavigation.map((item) => (
+        {sidebarItems.map((item) => (
           <NavItem key={item.id} item={item} pathname={pathname} />
         ))}
       </nav>

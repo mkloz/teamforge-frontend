@@ -33,6 +33,8 @@ export interface AppNavigationItem {
     | ReturnType<typeof buildForgeLaunchNavigation>;
 }
 
+type AppNavigationBadgeMap = Partial<Record<AppNavigationItem["id"], number>>;
+
 const APP_NAVIGATION: Record<AppNavigationItem["id"], AppNavigationItem> = {
   home: {
     id: "home",
@@ -92,6 +94,20 @@ export function isAppNavigationItemActive(
   return item.matchMode === "prefix"
     ? pathname.startsWith(activePath)
     : pathname === activePath;
+}
+
+export function applyAppNavigationBadges(
+  items: readonly AppNavigationItem[],
+  badges: AppNavigationBadgeMap,
+) {
+  return items.map((item) => {
+    const badge = badges[item.id] ?? item.badge ?? 0;
+
+    return {
+      ...item,
+      badge: badge > 0 ? badge : undefined,
+    };
+  });
 }
 
 export const appSidebarNavigation = [

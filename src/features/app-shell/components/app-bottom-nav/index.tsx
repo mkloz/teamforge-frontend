@@ -1,6 +1,9 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useActivePathname } from "@/features/app-shell/hooks/use-active-pathname";
-import { appBottomNavigation } from "@/features/app-shell/lib/app-navigation";
+import {
+  applyAppNavigationBadges,
+  appBottomNavigation,
+} from "@/features/app-shell/lib/app-navigation";
 import {
   appShellEase,
   appShellMotionDelay,
@@ -10,12 +13,22 @@ import { cn } from "@/shared/lib/utils";
 import { TabButton } from "./tab-button";
 
 interface AppBottomNavProps {
+  activityUnreadCount?: number;
   className?: string;
+  notificationUnreadCount?: number;
 }
 
-export function AppBottomNav({ className }: AppBottomNavProps) {
+export function AppBottomNav({
+  activityUnreadCount = 0,
+  className,
+  notificationUnreadCount = 0,
+}: AppBottomNavProps) {
   const pathname = useActivePathname();
   const shouldReduceMotion = useReducedMotion();
+  const bottomNavigationItems = applyAppNavigationBadges(appBottomNavigation, {
+    activity: activityUnreadCount,
+    home: notificationUnreadCount,
+  });
 
   return (
     <motion.div
@@ -51,7 +64,7 @@ export function AppBottomNav({ className }: AppBottomNavProps) {
         )}
       >
         <div className="grid size-full grid-cols-5 items-stretch gap-1 p-1.5">
-          {appBottomNavigation.map((tab) => (
+          {bottomNavigationItems.map((tab) => (
             <TabButton key={tab.id} item={tab} pathname={pathname} />
           ))}
         </div>

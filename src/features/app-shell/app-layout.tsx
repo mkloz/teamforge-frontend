@@ -4,6 +4,7 @@ import { AppBottomNav } from "@/features/app-shell/components/app-bottom-nav";
 import { AppRouteTransition } from "@/features/app-shell/components/app-route-transition";
 import { AppSidebar } from "@/features/app-shell/components/app-sidebar";
 import { useAppShellScrollReset } from "@/features/app-shell/hooks/use-app-shell-scroll-reset";
+import { useAppNavbarCounters } from "@/features/app-shell/hooks/use-app-navbar-counters";
 import { RouteLoadingFallback } from "@/shared/components/loading/route-loading-fallback";
 import { useUiStore } from "@/shared/store/ui.store";
 
@@ -17,6 +18,7 @@ export function AppLayout({
   notificationDrawer,
 }: AppLayoutProps) {
   const bottomNavHidden = useUiStore((state) => state.bottomNavHidden);
+  const navbarCounters = useAppNavbarCounters();
 
   useAppShellScrollReset();
 
@@ -29,7 +31,10 @@ export function AppLayout({
         Skip to main content
       </a>
 
-      <AppSidebar notificationTrigger={notificationTrigger} />
+      <AppSidebar
+        activityUnreadCount={navbarCounters.activityUnreadCount}
+        notificationTrigger={notificationTrigger}
+      />
 
       <main
         id="main-content"
@@ -47,7 +52,10 @@ export function AppLayout({
 
       {/* Mobile bottom navigation */}
       <Activity mode={bottomNavHidden ? "hidden" : "visible"}>
-        <AppBottomNav />
+        <AppBottomNav
+          activityUnreadCount={navbarCounters.activityUnreadCount}
+          notificationUnreadCount={navbarCounters.notificationUnreadCount}
+        />
       </Activity>
 
       {notificationDrawer}

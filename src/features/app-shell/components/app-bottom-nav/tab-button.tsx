@@ -15,6 +15,9 @@ export function TabButton({ item, pathname }: TabButtonProps) {
   const ItemIcon = item.icon;
   const isForge = item.id === "forge";
   const active = isAppNavigationItemActive(item, pathname);
+  const badge = item.badge ?? 0;
+  const hasBadge = badge > 0;
+  const ariaLabel = hasBadge ? `${item.label}, ${badge} unread` : item.label;
 
   const activeColorText = isForge
     ? "text-accent stroke-[2.5]"
@@ -28,7 +31,7 @@ export function TabButton({ item, pathname }: TabButtonProps) {
     <Link
       {...item.navigation}
       aria-current={active ? "page" : undefined}
-      aria-label={item.label}
+      aria-label={ariaLabel}
       className={cn(
         "relative flex h-full min-w-0 items-center justify-center rounded-full",
         "transition-colors duration-200 hover:bg-muted/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
@@ -57,7 +60,7 @@ export function TabButton({ item, pathname }: TabButtonProps) {
               active ? activeColorText : inactiveColorText,
             )}
           />
-          {item.badge != null && item.badge > 0 && (
+          {hasBadge && (
             <span
               className={cn(
                 "absolute top-0.5 right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 font-bold text-accent-foreground text-xs shadow-sm",
@@ -65,7 +68,7 @@ export function TabButton({ item, pathname }: TabButtonProps) {
                 active && "scale-110",
               )}
             >
-              {item.badge > 9 ? "9+" : item.badge}
+              {badge > 9 ? "9+" : badge}
             </span>
           )}
         </motion.div>
