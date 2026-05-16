@@ -1,6 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRef } from "react";
 import { ActivityApi } from "@/features/activity/api/activity.api";
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
+import {
+  getActivityMutationKey,
+  runExclusiveActivityMutation,
+} from "@/features/activity/api/activity-mutation-lock";
 import type { ActivityDirectSelectionData } from "@/features/activity/api/activity-query-data";
 import { ACTIVITY_CHATS_QUERY_KEY } from "@/features/activity/api/activity-query-keys";
 import type { DirectChat } from "@/features/activity/lib/activity-contract";
@@ -26,6 +31,8 @@ function getSafetyMutationName(action: DirectChatSafetyAction) {
 
 export function useDirectChatSafetyActions(chat: DirectChat) {
   const queryClient = useQueryClient();
+  const blockSubmitPendingRef = useRef(false);
+  const muteSubmitPendingRef = useRef(false);
   const currentUserQuery = useQuery(currentUserQueryOptions());
   const clearRouteSelection = useClearActivityRouteSelection();
 
@@ -40,9 +47,13 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
       errorToastMessage: "We couldn't update that safety setting right now.",
     },
     mutationFn: ({ action, targetUserId }: DirectChatSafetyMutationInput) =>
-      action === "block"
-        ? ActivityCommands.blockUser(targetUserId)
-        : ActivityCommands.unblockUser(targetUserId),
+      runExclusiveActivityMutation(
+        getActivityMutationKey("friendship", targetUserId, "safety"),
+        () =>
+          action === "block"
+            ? ActivityCommands.blockUser(targetUserId)
+            : ActivityCommands.unblockUser(targetUserId),
+      ),
     onSuccess: async (result, { action }) => {
       trackMutationOutcome(getSafetyMutationName(action), "success", {
         chatId: chat.id,
@@ -64,9 +75,13 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
       errorToastMessage: "We couldn't update notifications for this chat.",
     },
     mutationFn: () =>
-      chat.isMuted
-        ? ActivityApi.unmuteChat(chat.id)
-        : ActivityApi.muteChat(chat.id),
+      runExclusiveActivityMutation(
+        getActivityMutationKey("chat", chat.id, "muted"),
+        () =>
+          chat.isMuted
+            ? ActivityApi.unmuteChat(chat.id)
+            : ActivityApi.muteChat(chat.id),
+      ),
     onSuccess: (updatedChat) => {
       queryClient.setQueryData<ChatApi[]>(
         ACTIVITY_CHATS_QUERY_KEY,
@@ -103,13 +118,34 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
   });
 
   function toggleBlock() {
-    if (!targetUser) {
+    if (!targetUser || mutation.isPending || blockSubmitPendingRef.current) {
       return;
     }
 
-    mutation.mutate({
-      action: chat.isBlocked ? "unblock" : "block",
-      targetUserId: targetUser.id,
+    blockSubmitPendingRef.current = true;
+    mutation.mutate(
+      {
+        action: chat.isBlocked ? "unblock" : "block",
+        targetUserId: targetUser.id,
+      },
+      {
+        onSettled: () => {
+          blockSubmitPendingRef.current = false;
+        },
+      },
+    );
+  }
+
+  function toggleMute() {
+    if (muteMutation.isPending || muteSubmitPendingRef.current) {
+      return;
+    }
+
+    muteSubmitPendingRef.current = true;
+    muteMutation.mutate(undefined, {
+      onSettled: () => {
+        muteSubmitPendingRef.current = false;
+      },
     });
   }
 
@@ -118,6 +154,6 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
     isBlockActionPending: mutation.isPending,
     isMuteActionPending: muteMutation.isPending,
     toggleBlock,
-    toggleMute: () => muteMutation.mutate(),
+    toggleMute,
   };
 }

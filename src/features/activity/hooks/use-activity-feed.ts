@@ -6,6 +6,10 @@ import {
 import { useDeferredValue } from "react";
 import { ActivityApi } from "@/features/activity/api/activity.api";
 import { ActivityMessageCache } from "@/features/activity/api/activity-message-cache";
+import {
+  getActivityMutationKey,
+  runExclusiveActivityMutation,
+} from "@/features/activity/api/activity-mutation-lock";
 import type {
   ActivityDirectSelectionData,
   ActivityGroupSelectionData,
@@ -102,22 +106,28 @@ export function useActivityFeed() {
       return;
     }
 
-    try {
-      const updatedChat = chat.isPinned
-        ? await ActivityApi.unpinChat(chat.id)
-        : await ActivityApi.pinChat(chat.id);
+    await runExclusiveActivityMutation(
+      getActivityMutationKey("chat", chat.id, "pinned"),
+      async () => {
+        try {
+          const updatedChat = chat.isPinned
+            ? await ActivityApi.unpinChat(chat.id)
+            : await ActivityApi.pinChat(chat.id);
 
-      queryClient.setQueryData<ChatApi[]>(ACTIVITY_CHATS_QUERY_KEY, (current) =>
-        updateChatInList(current, updatedChat),
-      );
-      syncChatSelectionCaches(queryClient, updatedChat);
-    } catch (error) {
-      await recoverChatMutation(queryClient, chat);
-      showAppErrorToast(error, {
-        fallbackMessage: "We couldn't update that pinned chat.",
-        id: `activity-chat-pin:${chat.id}`,
-      });
-    }
+          queryClient.setQueryData<ChatApi[]>(
+            ACTIVITY_CHATS_QUERY_KEY,
+            (current) => updateChatInList(current, updatedChat),
+          );
+          syncChatSelectionCaches(queryClient, updatedChat);
+        } catch (error) {
+          await recoverChatMutation(queryClient, chat);
+          showAppErrorToast(error, {
+            fallbackMessage: "We couldn't update that pinned chat.",
+            id: `activity-chat-pin:${chat.id}`,
+          });
+        }
+      },
+    );
   }
 
   async function toggleMutedConversation(kind: "group" | "dm", id: string) {
@@ -127,22 +137,28 @@ export function useActivityFeed() {
       return;
     }
 
-    try {
-      const updatedChat = chat.isMuted
-        ? await ActivityApi.unmuteChat(chat.id)
-        : await ActivityApi.muteChat(chat.id);
+    await runExclusiveActivityMutation(
+      getActivityMutationKey("chat", chat.id, "muted"),
+      async () => {
+        try {
+          const updatedChat = chat.isMuted
+            ? await ActivityApi.unmuteChat(chat.id)
+            : await ActivityApi.muteChat(chat.id);
 
-      queryClient.setQueryData<ChatApi[]>(ACTIVITY_CHATS_QUERY_KEY, (current) =>
-        updateChatInList(current, updatedChat),
-      );
-      syncChatSelectionCaches(queryClient, updatedChat);
-    } catch (error) {
-      await recoverChatMutation(queryClient, chat);
-      showAppErrorToast(error, {
-        fallbackMessage: "We couldn't update notifications for this chat.",
-        id: `activity-chat-mute:${chat.id}`,
-      });
-    }
+          queryClient.setQueryData<ChatApi[]>(
+            ACTIVITY_CHATS_QUERY_KEY,
+            (current) => updateChatInList(current, updatedChat),
+          );
+          syncChatSelectionCaches(queryClient, updatedChat);
+        } catch (error) {
+          await recoverChatMutation(queryClient, chat);
+          showAppErrorToast(error, {
+            fallbackMessage: "We couldn't update notifications for this chat.",
+            id: `activity-chat-mute:${chat.id}`,
+          });
+        }
+      },
+    );
   }
 
   async function markConversationRead(kind: "group" | "dm", id: string) {
@@ -152,20 +168,26 @@ export function useActivityFeed() {
       return;
     }
 
-    try {
-      const updatedChat = await ActivityApi.markChatRead(chat.id);
+    await runExclusiveActivityMutation(
+      getActivityMutationKey("chat", chat.id, "read"),
+      async () => {
+        try {
+          const updatedChat = await ActivityApi.markChatRead(chat.id);
 
-      queryClient.setQueryData<ChatApi[]>(ACTIVITY_CHATS_QUERY_KEY, (current) =>
-        updateChatInList(current, updatedChat),
-      );
-      syncChatSelectionCaches(queryClient, updatedChat);
-    } catch (error) {
-      await recoverChatMutation(queryClient, chat);
-      showAppErrorToast(error, {
-        fallbackMessage: "We couldn't mark that chat as read.",
-        id: `activity-chat-read:${chat.id}`,
-      });
-    }
+          queryClient.setQueryData<ChatApi[]>(
+            ACTIVITY_CHATS_QUERY_KEY,
+            (current) => updateChatInList(current, updatedChat),
+          );
+          syncChatSelectionCaches(queryClient, updatedChat);
+        } catch (error) {
+          await recoverChatMutation(queryClient, chat);
+          showAppErrorToast(error, {
+            fallbackMessage: "We couldn't mark that chat as read.",
+            id: `activity-chat-read:${chat.id}`,
+          });
+        }
+      },
+    );
   }
 
   async function removeSavedMessage(messageId: string) {
@@ -175,24 +197,30 @@ export function useActivityFeed() {
       return;
     }
 
-    try {
-      await ActivityApi.unsaveMessage(snapshot.message.chatId, messageId);
-      queryClient.setQueryData<SavedMessageApi[]>(
-        ACTIVITY_SAVED_MESSAGES_QUERY_KEY,
-        (current) =>
-          current?.filter((item) => item.messageId !== messageId) ?? current,
-      );
-      ActivityMessageCache.replace(snapshot.message.chatId, messageId, {
-        ...snapshot.message,
-        isSaved: false,
-      });
-    } catch (error) {
-      await recoverSavedMessageMutation(queryClient, snapshot);
-      showAppErrorToast(error, {
-        fallbackMessage: "We couldn't remove that saved message.",
-        id: `activity-saved-message-remove:${messageId}`,
-      });
-    }
+    await runExclusiveActivityMutation(
+      getActivityMutationKey("saved-message", messageId, "remove"),
+      async () => {
+        try {
+          await ActivityApi.unsaveMessage(snapshot.message.chatId, messageId);
+          queryClient.setQueryData<SavedMessageApi[]>(
+            ACTIVITY_SAVED_MESSAGES_QUERY_KEY,
+            (current) =>
+              current?.filter((item) => item.messageId !== messageId) ??
+              current,
+          );
+          ActivityMessageCache.replace(snapshot.message.chatId, messageId, {
+            ...snapshot.message,
+            isSaved: false,
+          });
+        } catch (error) {
+          await recoverSavedMessageMutation(queryClient, snapshot);
+          showAppErrorToast(error, {
+            fallbackMessage: "We couldn't remove that saved message.",
+            id: `activity-saved-message-remove:${messageId}`,
+          });
+        }
+      },
+    );
   }
 
   async function retryFeed() {
