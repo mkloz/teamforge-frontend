@@ -18,9 +18,11 @@ interface HeaderInfoProps {
   subtitle?: string;
   avatarUrl?: string | null;
   detailsNavigation?: ConversationDetailsNavigation;
+  canToggleAction?: boolean;
   isGroup: boolean;
   onlineStatus?: OnlineStatus;
   isTyping?: boolean;
+  isActionOpen?: boolean;
   typingText?: string;
   onToggle: () => void;
 }
@@ -31,9 +33,11 @@ export const HeaderInfo = memo(
     subtitle,
     avatarUrl,
     detailsNavigation,
+    canToggleAction = true,
     isGroup,
     onlineStatus,
     isTyping,
+    isActionOpen = false,
     typingText,
     onToggle,
   }: HeaderInfoProps) => {
@@ -137,8 +141,24 @@ export const HeaderInfo = memo(
       );
     }
 
+    if (!canToggleAction) {
+      return (
+        <div className={cn(headerInfoClassName, "cursor-default")}>
+          {content}
+        </div>
+      );
+    }
+
     return (
-      <button type="button" onClick={onToggle} className={headerInfoClassName}>
+      <button
+        type="button"
+        aria-expanded={isActionOpen}
+        aria-label={`${isActionOpen ? "Close" : "Open"} ${title} ${
+          isGroup ? "group details" : "profile"
+        }`}
+        onClick={onToggle}
+        className={headerInfoClassName}
+      >
         {content}
       </button>
     );

@@ -18,6 +18,7 @@ interface UnifiedChatHeaderProps {
   isTyping?: boolean;
   typingText?: string;
   isActionOpen?: boolean;
+  showAction?: boolean;
   searchQuery?: string;
   searchResultLabel?: string;
   isSearchNavigationDisabled?: boolean;
@@ -42,6 +43,7 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
   isTyping,
   typingText,
   isActionOpen = false,
+  showAction = true,
   searchQuery = "",
   searchResultLabel,
   isSearchNavigationDisabled = true,
@@ -77,9 +79,11 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
             subtitle={subtitle}
             avatarUrl={avatarUrl}
             detailsNavigation={detailsNavigation}
+            canToggleAction={showAction}
             isGroup={isGroup}
             onlineStatus={onlineStatus}
             isTyping={isTyping}
+            isActionOpen={isActionOpen}
             typingText={typingText}
             onToggle={onToggleAction}
           />
@@ -99,6 +103,8 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
       <HeaderActions
         isSearching={isSearching}
         isActionOpen={isActionOpen}
+        actionLabel={isGroup ? "group details" : "profile"}
+        showAction={showAction}
         onToggleSearch={(state) => toggleSearch(state)}
         onToggleAction={onToggleAction}
       />

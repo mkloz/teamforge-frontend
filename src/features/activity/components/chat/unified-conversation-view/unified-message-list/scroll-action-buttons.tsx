@@ -37,8 +37,9 @@ export const ScrollActionButtons = memo(
                 variant="secondary"
                 size="xs"
                 className="pointer-events-auto rounded-full px-2.5 py-1.5 shadow-md"
+                aria-label="Jump to proposal that needs your vote"
               >
-                <AlertCircle className="size-3.5 animate-pulse" />
+                <AlertCircle className="size-3.5 animate-pulse motion-reduce:animate-none" />
                 <span className="font-black text-xs tracking-wider">Vote</span>
               </Button>
             </motion.div>
@@ -58,6 +59,11 @@ export const ScrollActionButtons = memo(
                 variant="outline"
                 size="icon"
                 className="pointer-events-auto relative size-10 shrink-0 rounded-full"
+                aria-label={
+                  newMessageCount > 0
+                    ? `Scroll to latest messages, ${newMessageCountLabel} new`
+                    : "Scroll to latest messages"
+                }
               >
                 <ChevronDown className="size-5 transition-transform group-hover:translate-y-0.5" />
                 {newMessageCount > 0 && (

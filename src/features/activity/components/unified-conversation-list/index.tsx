@@ -143,8 +143,6 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        role="listbox"
-        aria-label="Conversations"
         className="flex-1 overflow-y-auto"
       >
         <SearchHeader

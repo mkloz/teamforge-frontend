@@ -3,6 +3,7 @@ import { memo, useState } from "react";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
 import { useSavedMessageIds } from "@/features/activity/hooks/use-saved-message-ids";
+import { formatChatTime } from "@/features/activity/lib/chat-utils";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { cn } from "@/shared/lib/utils";
 import type { User } from "@/shared/schemas";
@@ -75,6 +76,10 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
     content.length < 50 &&
     !content.includes(" ") &&
     reactionGroups.length === 0;
+  const senderLabel = isOwn ? "You" : (message.sender?.name ?? "Unknown");
+  const messageAriaLabel = `${senderLabel} message at ${formatChatTime(
+    timestamp,
+  )}. Press Shift and F10 for message actions.`;
 
   return (
     <MessageContextMenu
@@ -92,8 +97,12 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
       onOpenChange={setIsContextMenuOpen}
     >
       <div
+        tabIndex={0}
+        role="article"
+        aria-roledescription="message"
+        aria-label={messageAriaLabel}
         className={cn(
-          "group relative",
+          "group relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
           shouldShowOuterFocus ? "overflow-visible" : "overflow-hidden",
         )}
       >

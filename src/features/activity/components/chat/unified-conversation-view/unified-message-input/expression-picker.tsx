@@ -1,10 +1,12 @@
 import { Clapperboard, type LucideIcon, Smile } from "lucide-react";
 import {
+  type KeyboardEvent,
   lazy,
   memo,
   Suspense,
   startTransition,
   useEffect,
+  useId,
   useState,
 } from "react";
 
@@ -62,6 +64,11 @@ export const ExpressionPicker = memo(function ExpressionPicker({
   const [open, setOpen] = useState(false);
   const [renderEmojiPanel, setRenderEmojiPanel] = useState(false);
   const [mode, setMode] = useState<ExpressionMode>("emoji");
+  const pickerId = useId();
+  const emojiTabId = `${pickerId}-emoji-tab`;
+  const gifTabId = `${pickerId}-gif-tab`;
+  const emojiPanelId = `${pickerId}-emoji-panel`;
+  const gifPanelId = `${pickerId}-gif-panel`;
 
   useEffect(() => {
     if (!open || mode !== "emoji") {
@@ -92,6 +99,20 @@ export const ExpressionPicker = memo(function ExpressionPicker({
     setRenderEmojiPanel(false);
     setMode(nextMode);
   };
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") {
+      return;
+    }
+
+    event.preventDefault();
+    const nextMode = mode === "emoji" ? "gif" : "emoji";
+    const nextTabId = nextMode === "emoji" ? emojiTabId : gifTabId;
+
+    handleModeChange(nextMode);
+    window.requestAnimationFrame(() => {
+      document.getElementById(nextTabId)?.focus();
+    });
+  };
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
@@ -121,47 +142,63 @@ export const ExpressionPicker = memo(function ExpressionPicker({
         )}
       >
         <div className="border-border/55 border-b px-1.5 py-1.5">
-          <div className="grid grid-cols-2 gap-1">
+          <div
+            className="grid grid-cols-2 gap-1"
+            role="tablist"
+            aria-label="Message expression picker"
+          >
             <ExpressionTab
               active={mode === "emoji"}
+              controlsId={emojiPanelId}
               icon={Smile}
+              id={emojiTabId}
               label="Emoji"
+              onKeyDown={handleTabKeyDown}
               onClick={() => handleModeChange("emoji")}
             />
             <ExpressionTab
               active={mode === "gif"}
+              controlsId={gifPanelId}
               icon={Clapperboard}
+              id={gifTabId}
               label="GIF"
+              onKeyDown={handleTabKeyDown}
               onClick={() => handleModeChange("gif")}
             />
           </div>
         </div>
 
-        {mode === "emoji" ? (
-          renderEmojiPanel ? (
-            <Suspense fallback={<EmojiPickerSkeleton />}>
-              <LazyChatEmojiPickerPanel
-                height={EMOJI_PANEL_VIEWPORT_HEIGHT}
-                onSelect={(emoji) => {
-                  onInsertEmoji(emoji);
+        <div
+          id={mode === "emoji" ? emojiPanelId : gifPanelId}
+          role="tabpanel"
+          aria-labelledby={mode === "emoji" ? emojiTabId : gifTabId}
+        >
+          {mode === "emoji" ? (
+            renderEmojiPanel ? (
+              <Suspense fallback={<EmojiPickerSkeleton />}>
+                <LazyChatEmojiPickerPanel
+                  height={EMOJI_PANEL_VIEWPORT_HEIGHT}
+                  onSelect={(emoji) => {
+                    onInsertEmoji(emoji);
+                    setOpen(false);
+                  }}
+                />
+              </Suspense>
+            ) : (
+              <EmojiPickerSkeleton />
+            )
+          ) : (
+            <Suspense fallback={<GifPickerSkeleton />}>
+              <LazyGifPickerPanel
+                canSendGif={canSendGif}
+                onSelect={(gif) => {
+                  onSelectGif(gif);
                   setOpen(false);
                 }}
               />
             </Suspense>
-          ) : (
-            <EmojiPickerSkeleton />
-          )
-        ) : (
-          <Suspense fallback={<GifPickerSkeleton />}>
-            <LazyGifPickerPanel
-              canSendGif={canSendGif}
-              onSelect={(gif) => {
-                onSelectGif(gif);
-                setOpen(false);
-              }}
-            />
-          </Suspense>
-        )}
+          )}
+        </div>
       </PopoverContent>
     </Popover>
   );
@@ -169,25 +206,36 @@ export const ExpressionPicker = memo(function ExpressionPicker({
 
 function ExpressionTab({
   active,
+  controlsId,
+  id,
   icon: Icon,
   label,
+  onKeyDown,
   onClick,
 }: {
   active: boolean;
+  controlsId: string;
+  id: string;
   icon: LucideIcon;
   label: string;
+  onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => void;
   onClick: () => void;
 }) {
   return (
     <button
+      id={id}
       type="button"
-      aria-pressed={active}
+      role="tab"
+      aria-selected={active}
+      aria-controls={controlsId}
+      tabIndex={active ? 0 : -1}
       className={cn(
         "inline-flex h-9 items-center justify-center gap-2 rounded-full font-black text-xs transition-colors",
         active
           ? "bg-forge-teal/10 text-ink ring-1 ring-forge-teal/20"
           : "text-muted-foreground hover:bg-background/45 hover:text-ink",
       )}
+      onKeyDown={onKeyDown}
       onClick={onClick}
     >
       <Icon className="size-3.5" />

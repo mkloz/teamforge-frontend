@@ -29,6 +29,7 @@ export const SearchHeader = memo(function SearchHeader({
         <Input
           type="search"
           name="activity-conversation-search"
+          aria-label="Search conversations"
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}

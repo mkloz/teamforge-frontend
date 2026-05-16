@@ -10,16 +10,20 @@ import {
 import { cn } from "@/shared/lib/utils";
 
 interface HeaderActionsProps {
+  actionLabel: string;
   isSearching: boolean;
   isActionOpen: boolean;
+  showAction?: boolean;
   onToggleSearch: (state: boolean) => void;
   onToggleAction: () => void;
 }
 
 export const HeaderActions = memo(
   ({
+    actionLabel,
     isSearching,
     isActionOpen,
+    showAction = true,
     onToggleSearch,
     onToggleAction,
   }: HeaderActionsProps) => (
@@ -36,7 +40,8 @@ export const HeaderActions = memo(
                 size="icon-sm"
                 onClick={() => onToggleSearch(false)}
                 className="size-10 shrink-0 md:size-9"
-                aria-label="Cancel search"
+                aria-label="Close conversation search"
+                aria-expanded={isSearching}
               >
                 <X className="size-4" strokeWidth={2.5} />
               </Button>
@@ -54,32 +59,38 @@ export const HeaderActions = memo(
                 onClick={() => onToggleSearch(true)}
                 className="shrink-0 size-10 md:size-9"
                 aria-label="Search conversation"
+                aria-expanded={isSearching}
               >
                 <Search className="size-4" strokeWidth={2.5} />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Search conversation</TooltipContent>
           </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="accentGhost"
-                size="icon-sm"
-                onClick={onToggleAction}
-                className="shrink-0 size-10 md:size-9"
-                aria-label="More options"
-              >
-                <MoreVertical
-                  strokeWidth={2.5}
-                  className={cn(
-                    "size-4 transition-colors duration-200",
-                    isActionOpen && "text-forge-teal",
-                  )}
-                />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>More options</TooltipContent>
-          </Tooltip>
+          {showAction ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="accentGhost"
+                  size="icon-sm"
+                  onClick={onToggleAction}
+                  className="shrink-0 size-10 md:size-9"
+                  aria-expanded={isActionOpen}
+                  aria-label={`${
+                    isActionOpen ? "Close" : "Open"
+                  } ${actionLabel}`}
+                >
+                  <MoreVertical
+                    strokeWidth={2.5}
+                    className={cn(
+                      "size-4 transition-colors duration-200",
+                      isActionOpen && "text-forge-teal",
+                    )}
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{actionLabel}</TooltipContent>
+            </Tooltip>
+          ) : null}
         </>
       )}
     </div>

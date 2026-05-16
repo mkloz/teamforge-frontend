@@ -30,6 +30,10 @@ export const ProposalHeader = memo(function ProposalHeader({
   return (
     <button
       type="button"
+      aria-expanded={isExpanded}
+      aria-label={`${isExpanded ? "Collapse" : "Expand"} ${
+        FIELD_LABELS[field]
+      } proposal`}
       className="flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-forge-teal/6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18"
       onClick={onToggle}
     >

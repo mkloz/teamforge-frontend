@@ -30,6 +30,7 @@ export function HeaderSearch({
           ref={ref}
           type="search"
           name="conversation-message-search"
+          aria-label="Search messages in this conversation"
           placeholder="Search in conversation..."
           value={query}
           onChange={(event) => setQuery(event.target.value)}
@@ -37,7 +38,11 @@ export function HeaderSearch({
           className="pr-18"
         />
         {resultLabel && (
-          <span className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full bg-muted px-2 py-0.5 font-semibold text-micro text-slate-muted">
+          <span
+            className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full bg-muted px-2 py-0.5 font-semibold text-micro text-slate-muted"
+            role="status"
+            aria-live="polite"
+          >
             {resultLabel}
           </span>
         )}

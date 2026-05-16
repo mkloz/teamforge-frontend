@@ -14,7 +14,10 @@ import {
   getActivityMenuContentClass,
 } from "@/features/activity/components/activity-popup-styles";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
-import { getConversationIsMuted } from "@/features/activity/lib/unify-conversations";
+import {
+  getConversationIsMuted,
+  getConversationTitle,
+} from "@/features/activity/lib/unify-conversations";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -54,6 +57,7 @@ export const UnifiedConversationListItem = memo(
     const isGroup = item.kind === "group";
     const isCompact = density === "compact";
     const isMuted = getConversationIsMuted(item);
+    const optionLabel = getConversationOptionLabel(item, isMuted);
 
     const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
       if (event.key !== "Enter" && event.key !== " ") {
@@ -70,11 +74,12 @@ export const UnifiedConversationListItem = memo(
           <div
             onClick={onSelect}
             onKeyDown={handleKeyDown}
-            role="option"
-            aria-selected={isSelected}
+            role="button"
+            aria-current={isSelected ? "true" : undefined}
+            aria-label={optionLabel}
             tabIndex={0}
             className={cn(
-              "group/item relative flex w-full select-none items-center text-left outline-none transition duration-200",
+              "group/item relative flex w-full select-none items-center text-left outline-none transition duration-200 focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-inset",
               isCompact ? "gap-2.5 px-3 py-2" : "gap-3.5 px-4 py-3.5",
               isSelected ? "bg-muted/60" : "hover:bg-muted/30",
             )}
@@ -176,3 +181,24 @@ export const UnifiedConversationListItem = memo(
     );
   },
 );
+
+function getConversationOptionLabel(
+  item: UnifiedConversation,
+  isMuted: boolean,
+) {
+  const parts = [getConversationTitle(item)];
+
+  if (item.unreadCount > 0) {
+    parts.push(`${item.unreadCount} unread`);
+  }
+
+  if (item.isPinned) {
+    parts.push("pinned");
+  }
+
+  if (isMuted) {
+    parts.push("muted");
+  }
+
+  return parts.join(", ");
+}

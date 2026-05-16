@@ -476,6 +476,7 @@ export const ChatEmojiPickerPanel = memo(function ChatEmojiPickerPanel({
                   compact && "text-micro",
                 )}
                 name="emoji-search"
+                aria-label="Search emoji"
                 placeholder="Search emoji"
               />
             </div>
@@ -587,6 +588,7 @@ function CompactReactionEmojiPicker({
           <input
             type="search"
             name="emoji-search"
+            aria-label="Search emoji"
             value={search}
             className="h-8 w-full border-0 bg-transparent pr-2 pl-7 font-bold text-ink text-micro outline-none transition-colors placeholder:text-slate-muted/70 focus-visible:ring-0"
             placeholder="Search emoji"

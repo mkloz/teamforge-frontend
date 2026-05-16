@@ -143,6 +143,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
         searchQuery={searchQuery}
         searchResultLabel={searchResultLabel}
         isSearchNavigationDisabled={matchCount === 0}
+        showAction={!isNotesChat}
         onBack={onBack}
         onSearchQueryChange={setSearchQuery}
         onSearchNext={goToNextMatch}

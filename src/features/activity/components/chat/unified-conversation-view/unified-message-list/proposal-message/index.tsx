@@ -8,6 +8,7 @@ import { usePlanProposalActions } from "@/features/activity/hooks/use-plan-propo
 import { useSavedMessageIds } from "@/features/activity/hooks/use-saved-message-ids";
 import { useSwipeToReply } from "@/features/activity/hooks/use-swipe-to-reply";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { formatChatTime } from "@/features/activity/lib/chat-utils";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { cn } from "@/shared/lib/utils";
 import { MessageContextMenu } from "../unified-message-item/message-actions-menu";
@@ -60,6 +61,12 @@ export const ProposalMessage = memo(function ProposalMessage({
   const isInteractionFocused =
     isReplyTarget || isEditTarget || isContextMenuOpen;
   const shouldShowOuterFocus = isHighlighted || isInteractionFocused;
+  const senderLabel = message.isOwn
+    ? "You"
+    : (message.sender?.name ?? proposal.proposer.name);
+  const messageAriaLabel = `${senderLabel} proposal message at ${formatChatTime(
+    message.createdAt,
+  )}. Press Shift and F10 for message actions.`;
 
   return (
     <MessageContextMenu
@@ -77,8 +84,12 @@ export const ProposalMessage = memo(function ProposalMessage({
       onOpenChange={setIsContextMenuOpen}
     >
       <div
+        tabIndex={0}
+        role="article"
+        aria-roledescription="message"
+        aria-label={messageAriaLabel}
         className={cn(
-          "group relative",
+          "group relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
           shouldShowOuterFocus ? "overflow-visible" : "overflow-hidden",
         )}
       >

@@ -80,11 +80,12 @@ export const SavedMessageListItem = memo(function SavedMessageListItem({
           data-conversation-key={rowKey}
           onClick={onSelect}
           onKeyDown={handleKeyDown}
-          role="option"
-          aria-selected={isSelected}
+          role="button"
+          aria-current={isSelected ? "true" : undefined}
+          aria-label={`${title}, saved message${sender ? ` from ${sender}` : ""}: ${preview}`}
           tabIndex={0}
           className={cn(
-            "group/item relative flex w-full select-none items-center text-left outline-none transition duration-200",
+            "group/item relative flex w-full select-none items-center text-left outline-none transition duration-200 focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-inset",
             isCompact ? "gap-2.5 px-3 py-2" : "gap-3.5 px-4 py-3",
             isSelected ? "bg-muted/60" : "hover:bg-muted/30",
           )}
@@ -109,7 +110,10 @@ export const SavedMessageListItem = memo(function SavedMessageListItem({
                 isCompact ? "size-9" : "size-11",
               )}
             />
-            <span className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full border border-canvas bg-forge-teal text-canvas shadow-sm">
+            <span
+              className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full border border-canvas bg-forge-teal text-canvas shadow-sm"
+              aria-hidden="true"
+            >
               <Bookmark className="size-2.5 fill-current" />
             </span>
           </div>
