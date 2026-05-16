@@ -122,10 +122,7 @@ export function MessageSenderBlock({
               >
                 <div
                   className={cn(
-                    "min-w-0 max-w-full",
-                    isSystemMessage
-                      ? "w-full"
-                      : "w-full max-w-xs sm:max-w-lg md:max-w-xl",
+                    "w-full min-w-0 max-w-full",
                     message.isOwn && !isSystemMessage && "ml-auto",
                     !message.isOwn && !isSystemMessage && "mr-auto",
                   )}

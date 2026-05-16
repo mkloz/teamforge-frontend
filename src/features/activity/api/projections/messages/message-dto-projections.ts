@@ -20,45 +20,49 @@ export function mapMessages(
 ): UnifiedMessage[] {
   const participantsIndex = buildMessageParticipantsIndex(participants);
 
-  const messages = items.map<UnifiedMessage>((item) => ({
-    id: item.id,
-    type: item.type,
-    content: item.content,
-    status: item.status,
-    isEdited: item.isEdited,
-    isPinned: item.isPinned,
-    isSaved: item.isSaved,
-    createdAt: item.createdAt,
-    updatedAt: item.updatedAt,
-    editedAt: item.editedAt,
-    deletedAt: item.deletedAt,
-    chatId: item.chatId,
-    senderId: item.senderId,
-    replyToId: item.replyToId,
-    forwardedFromMessageId: item.forwardedFromMessageId,
-    forwardedFromChatId: item.forwardedFromChatId,
-    forwardedFromSenderId: item.forwardedFromSenderId,
-    forwardedFromSenderName: item.forwardedFromSenderName,
-    version: item.version,
-    sender:
+  const messages = items.map<UnifiedMessage>((item) => {
+    const sender =
       participantsIndex.get(item.senderId) ??
       getSenderParticipantBySummaryId(participantsIndex, item.sender?.id) ??
-      mapMessageSenderParticipant(item.sender),
-    isOwn: isMessageFromCurrentUser(
-      item.senderId,
-      item.sender?.id,
-      currentUserId,
-    ),
-    isSystem: item.type === "SYSTEM",
-    reactions:
-      item.reactions?.map((reaction) =>
-        mapMessageReaction(reaction, participantsIndex),
-      ) ?? [],
-    attachments: item.attachments ?? [],
-    replyTo: item.replyTo
-      ? mapReplyPreview(item.replyTo, participantsIndex, currentUserId)
-      : undefined,
-  }));
+      mapMessageSenderParticipant(item.sender);
+
+    return {
+      id: item.id,
+      type: item.type,
+      content: item.content,
+      status: item.status,
+      isEdited: item.isEdited,
+      isPinned: item.isPinned,
+      isSaved: item.isSaved,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+      editedAt: item.editedAt,
+      deletedAt: item.deletedAt,
+      chatId: item.chatId,
+      senderId: item.senderId,
+      replyToId: item.replyToId,
+      forwardedFromMessageId: item.forwardedFromMessageId,
+      forwardedFromChatId: item.forwardedFromChatId,
+      forwardedFromSenderId: item.forwardedFromSenderId,
+      forwardedFromSenderName: item.forwardedFromSenderName,
+      version: item.version,
+      sender,
+      isOwn: isMessageFromCurrentUser(
+        item.senderId,
+        item.sender?.id ?? sender?.id,
+        currentUserId,
+      ),
+      isSystem: item.type === "SYSTEM",
+      reactions:
+        item.reactions?.map((reaction) =>
+          mapMessageReaction(reaction, participantsIndex),
+        ) ?? [],
+      attachments: item.attachments ?? [],
+      replyTo: item.replyTo
+        ? mapReplyPreview(item.replyTo, participantsIndex, currentUserId)
+        : undefined,
+    };
+  });
 
   return resolveReplyReferences(messages);
 }

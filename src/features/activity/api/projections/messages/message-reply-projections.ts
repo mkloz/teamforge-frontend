@@ -16,6 +16,10 @@ export function mapReplyPreview(
   currentUserId: string | null,
 ): UnifiedMessage {
   const deletedAt = replyTo.deletedAt ?? DELETED_REPLY_FALLBACK_DATE;
+  const sender =
+    participantsIndex.get(replyTo.senderId) ??
+    getSenderParticipantBySummaryId(participantsIndex, replyTo.sender?.id) ??
+    mapMessageSenderParticipant(replyTo.sender);
 
   return {
     id: replyTo.id,
@@ -32,13 +36,10 @@ export function mapReplyPreview(
     senderId: replyTo.senderId,
     replyToId: null,
     version: replyTo.deletedAt ? new Date(replyTo.deletedAt).getTime() : 0,
-    sender:
-      participantsIndex.get(replyTo.senderId) ??
-      getSenderParticipantBySummaryId(participantsIndex, replyTo.sender?.id) ??
-      mapMessageSenderParticipant(replyTo.sender),
+    sender,
     isOwn: isMessageFromCurrentUser(
       replyTo.senderId,
-      replyTo.sender?.id,
+      replyTo.sender?.id ?? sender?.id,
       currentUserId,
     ),
     isSystem: replyTo.type === "SYSTEM",
