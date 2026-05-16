@@ -111,7 +111,7 @@ export const ProposalMessage = memo(function ProposalMessage({
         aria-roledescription="message"
         aria-label={messageAriaLabel}
         className={cn(
-          "group relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
+          "group relative w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
           shouldShowOuterFocus ? "overflow-visible" : "overflow-hidden",
         )}
       >

@@ -126,6 +126,8 @@ export function MessageSenderBlock({
                     isSystemMessage
                       ? "w-full"
                       : "w-full max-w-xs sm:max-w-lg md:max-w-xl",
+                    message.isOwn && !isSystemMessage && "ml-auto",
+                    !message.isOwn && !isSystemMessage && "mr-auto",
                   )}
                 >
                   <MessageRenderer
