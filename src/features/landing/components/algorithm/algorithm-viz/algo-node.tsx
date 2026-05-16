@@ -62,7 +62,7 @@ export function AlgoNode({
         return {
           fill: "#0D9488",
           r: size * 0.055,
-          textFill: "#fff",
+          textFill: "#FAFAF8",
           opacity: 1,
           glow: true,
           glowColor: "#0D9488",
@@ -71,16 +71,16 @@ export function AlgoNode({
         return {
           fill: "#F59E0B",
           r: isHovered ? size * 0.045 : size * 0.038,
-          textFill: "#111827",
+          textFill: "#1C1C1A",
           opacity: 1,
           glow: true,
           glowColor: "#F59E0B",
         };
       case "rejected":
         return {
-          fill: "#1f2937",
+          fill: "#6B7280",
           r: size * 0.025,
-          textFill: "#4b5563",
+          textFill: "#6B7280",
           opacity: isHovered ? 0.6 : 0.15,
           glow: false,
           glowColor: "",
@@ -89,7 +89,7 @@ export function AlgoNode({
         return {
           fill: "#0D9488",
           r: isHovered ? size * 0.04 : size * 0.032,
-          textFill: "#fff",
+          textFill: "#FAFAF8",
           opacity: phase === "idle" ? 0 : 0.8,
           glow: isHovered,
           glowColor: "#0D9488",

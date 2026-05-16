@@ -52,7 +52,7 @@ export function DataParticles({
               <motion.circle
                 key={`particle-${node.id}`}
                 r={size * 0.008}
-                fill="#FFF"
+                fill="#FAFAF8"
                 initial={{ cx, cy, opacity: 0 }}
                 animate={{ cx: targetX, cy: targetY, opacity: [0, 1, 0] }}
                 exit={{ opacity: 0, transition: { duration: 0.2 } }}

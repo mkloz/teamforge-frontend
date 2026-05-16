@@ -18,7 +18,7 @@ export function AlgoLine({ node, phase, cx, cy, size }: AlgoLineProps) {
   const getLineProps = () => {
     if (phase === "idle") return { opacity: 0, stroke: "#0D9488", width: 0.8 };
     if (node.type === "rejected")
-      return { opacity: 0.02, stroke: "#374151", width: 0.5 };
+      return { opacity: 0.04, stroke: "#6B7280", width: 0.5 };
     if (node.type === "selected")
       return {
         opacity: 0.65,
