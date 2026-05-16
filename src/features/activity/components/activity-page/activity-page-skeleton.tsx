@@ -1,3 +1,4 @@
+import { MessageListSkeletonPattern } from "@/features/activity/components/chat/unified-conversation-view/unified-message-list/message-list-skeleton-pattern";
 import {
   SkeletonAvatar,
   SkeletonButton,
@@ -22,13 +23,6 @@ const CONVERSATION_ROWS = [
   "run",
   "accessibility",
 ] as const;
-const MESSAGE_ROWS = [
-  "own-wide",
-  "system-one",
-  "own-short",
-  "own-card",
-  "system-two",
-] as const;
 const DETAIL_ROWS = ["members", "area", "joining", "created"] as const;
 
 export function ActivityPageSkeleton({
@@ -39,7 +33,7 @@ export function ActivityPageSkeleton({
       aria-busy="true"
       aria-label="Loading activity"
       className={cn(
-        "top-0 flex bg-canvas pb-12 md:pb-0",
+        "top-0 flex h-dvh min-h-0 overflow-clip bg-canvas pb-12 md:pb-0",
         contained ? "absolute inset-0" : "fixed inset-0 md:left-14",
       )}
       role="status"
@@ -53,18 +47,18 @@ export function ActivityPageSkeleton({
 
 function ActivitySidebarSkeleton() {
   return (
-    <aside className="flex w-full shrink-0 flex-col border-border border-r bg-canvas md:w-72 lg:w-80">
+    <aside className="flex h-full min-h-0 w-full shrink-0 flex-col border-border border-r bg-canvas md:w-72 lg:w-80">
       <div className="flex-1 overflow-hidden">
-        <div className="sticky top-0 z-10 bg-canvas/95 px-4 pt-4 pb-2 backdrop-blur">
-          <Skeleton className="h-12 w-full rounded-xl" />
+        <div className="sticky top-0 z-10 bg-canvas/95 px-4 pt-2.5 pb-0.5 backdrop-blur">
+          <Skeleton className="h-10 w-full rounded-full" />
         </div>
 
-        <div className="border-border border-b px-3 py-2">
-          <div className="flex items-center gap-2">
-            <Skeleton shape="pill" className="h-8 w-16" tone="teal" />
-            <Skeleton shape="pill" className="h-8 w-20" />
-            <Skeleton shape="pill" className="h-8 w-14" />
-            <SkeletonButton className="ml-auto size-8 rounded-lg" />
+        <div className="border-border border-b px-2 py-1.5 md:px-4 md:py-1">
+          <div className="flex items-center gap-1.5 overflow-hidden">
+            <Skeleton shape="pill" className="h-11 w-14 md:h-6" tone="teal" />
+            <Skeleton shape="pill" className="h-11 w-20 md:h-6" />
+            <Skeleton shape="pill" className="h-11 w-20 md:h-6" />
+            <SkeletonButton className="ml-auto size-11 rounded-lg md:size-8" />
           </div>
         </div>
 
@@ -73,7 +67,7 @@ function ActivitySidebarSkeleton() {
             <div
               key={row}
               className={cn(
-                "relative border-border border-b px-3 py-3",
+                "relative min-h-16 border-border border-b px-4 py-3",
                 index === 0 && "bg-forge-teal/6",
               )}
             >
@@ -82,7 +76,7 @@ function ActivitySidebarSkeleton() {
               ) : null}
               <div className="flex items-start gap-3">
                 <SkeletonAvatar
-                  className="size-12 rounded-lg"
+                  className="size-11 rounded-lg"
                   tone={index === 0 ? "teal" : "default"}
                 />
                 <div className="min-w-0 flex-1">
@@ -142,50 +136,8 @@ export function ActivityConversationStageSkeleton({
             </div>
           </div>
 
-          <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-hidden bg-[radial-gradient(circle_at_1px_1px,color-mix(in_srgb,var(--color-ink)_22%,transparent)_1px,transparent_0)] bg-forge-teal/5 bg-size-[14px_14px] px-4 py-5">
-            <div className="mx-auto">
-              <Skeleton shape="pill" className="h-7 w-20" />
-            </div>
-            {MESSAGE_ROWS.map((row, index) => (
-              <div
-                key={row}
-                className={cn(
-                  "flex gap-3",
-                  index !== 1 && index !== 4 ? "justify-end" : "justify-center",
-                )}
-              >
-                {index === 1 || index === 4 ? (
-                  <Skeleton shape="pill" className="h-6 w-96 max-w-full" />
-                ) : null}
-                <div
-                  className={cn(
-                    "max-w-lg rounded-xl border border-border bg-card p-3 shadow-sm",
-                    index !== 1 && index !== 4 && "bg-forge-teal/12",
-                    (index === 1 || index === 4) && "hidden",
-                    index === 3 && "w-96",
-                  )}
-                >
-                  {index === 3 ? (
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <Skeleton
-                          shape="circle"
-                          className="size-9"
-                          tone="amber"
-                        />
-                        <SkeletonText lines={2} widths={["w-28", "w-36"]} />
-                      </div>
-                      <Skeleton shape="pill" className="h-8 w-24" />
-                    </div>
-                  ) : (
-                    <SkeletonText
-                      lines={index === 0 ? 1 : 2}
-                      widths={["w-80", "w-56"]}
-                    />
-                  )}
-                </div>
-              </div>
-            ))}
+          <div className="min-h-0 flex-1 overflow-hidden bg-[radial-gradient(circle_at_1px_1px,color-mix(in_srgb,var(--color-ink)_22%,transparent)_1px,transparent_0)] bg-forge-teal/5 bg-size-[14px_14px]">
+            <MessageListSkeletonPattern className="px-4 py-5" />
           </div>
 
           <footer className="border-border border-t bg-card p-4">
