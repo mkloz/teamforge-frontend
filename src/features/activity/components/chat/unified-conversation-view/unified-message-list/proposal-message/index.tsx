@@ -62,6 +62,9 @@ export const ProposalMessage = memo(function ProposalMessage({
   const isInteractionFocused =
     isReplyTarget || isEditTarget || isContextMenuOpen;
   const shouldShowOuterFocus = isHighlighted || isInteractionFocused;
+  const selectedReactionEmojis = reactionGroups
+    .filter((reaction) => reaction.isActive)
+    .map((reaction) => reaction.emoji);
   const senderLabel = message.isOwn
     ? "You"
     : (message.sender?.name ?? proposal.proposer.name);
@@ -79,6 +82,7 @@ export const ProposalMessage = memo(function ProposalMessage({
       onStartEdit={messageActions.startEdit}
       onForward={messageActions.forwardMessage}
       onToggleReaction={messageActions.toggleReaction}
+      selectedReactionEmojis={selectedReactionEmojis}
       onUnpin={messageActions.unpinMessage}
       isSaved={isSaved}
       onToggleSaved={messageActions.toggleSaved}

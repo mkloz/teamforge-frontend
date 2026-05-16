@@ -117,6 +117,7 @@ interface MessageActionsMenuProps {
     message: UnifiedMessage,
     emoji: string,
   ) => Promise<void> | void;
+  selectedReactionEmojis?: readonly string[];
   onUnpin: (message: UnifiedMessage) => Promise<void> | void;
   isSaved?: boolean;
   onToggleSaved?: (
@@ -150,6 +151,7 @@ export const MessageContextMenu = memo(function MessageContextMenu({
   onStartEdit,
   onForward,
   onToggleReaction,
+  selectedReactionEmojis = [],
   onUnpin,
   isSaved = false,
   onToggleSaved,
@@ -165,6 +167,7 @@ export const MessageContextMenu = memo(function MessageContextMenu({
     onStartEdit,
     onForward,
     onToggleReaction,
+    selectedReactionEmojis,
     onUnpin,
     isSaved,
     onToggleSaved,
@@ -238,6 +241,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
   onStartEdit,
   onForward,
   onToggleReaction,
+  selectedReactionEmojis = [],
   onUnpin,
   isSaved = false,
   onToggleSaved,
@@ -253,6 +257,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
     onStartEdit,
     onForward,
     onToggleReaction,
+    selectedReactionEmojis,
     onUnpin,
     isSaved,
     onToggleSaved,
@@ -322,6 +327,7 @@ function useMessageActionMenu({
   onStartEdit,
   onForward,
   onToggleSaved,
+  selectedReactionEmojis = [],
   onUnpin,
   isSaved = false,
 }: MessageActionsMenuProps) {
@@ -454,6 +460,7 @@ function useMessageActionMenu({
     deleteDialogOpen,
     forwardDialogOpen,
     primaryActions,
+    selectedReactionEmojis,
     setDeleteDialogOpen,
     setForwardDialogOpen,
   };
@@ -478,6 +485,7 @@ function MessageMenuSurface({
       <MessageReactionPicker
         kind={kind}
         canReact={menu.canReact}
+        selectedReactionEmojis={menu.selectedReactionEmojis}
         onRequestClose={onRequestClose}
         onSelectReaction={onSelectReaction}
       />
@@ -497,6 +505,7 @@ function MessageMenuSurface({
 interface MessageReactionPickerProps {
   canReact: boolean;
   kind: MenuKind;
+  selectedReactionEmojis: readonly string[];
   onRequestClose: () => void;
   onSelectReaction: (emoji: string) => void;
 }
@@ -504,6 +513,7 @@ interface MessageReactionPickerProps {
 function MessageReactionPicker({
   canReact,
   kind,
+  selectedReactionEmojis,
   onRequestClose,
   onSelectReaction,
 }: MessageReactionPickerProps) {
@@ -514,6 +524,7 @@ function MessageReactionPicker({
   }
 
   const Item = kind === "context" ? ContextMenuItem : DropdownMenuItem;
+  const selectedReactionEmojiSet = new Set(selectedReactionEmojis);
 
   return (
     <div className={REACTION_DOCK_CLASS}>
@@ -521,6 +532,7 @@ function MessageReactionPicker({
         <div className={REACTION_DOCK_PICKER_CLASS}>
           <ChatEmojiPickerPanel
             compact
+            selectedEmojis={selectedReactionEmojis}
             onSelect={(emoji) => {
               onSelectReaction(emoji);
               onRequestClose();
@@ -529,17 +541,23 @@ function MessageReactionPicker({
         </div>
       ) : (
         <div className={REACTION_DOCK_CLOUD_CLASS}>
-          {QUICK_REACTION_EMOJIS.slice(0, 6).map((emoji) => (
-            <Item
-              key={emoji}
-              aria-label={`React with ${emoji}`}
-              className={EMOJI_ITEM_CLASS}
-              onSelect={() => onSelectReaction(emoji)}
-              title={emoji}
-            >
-              <span aria-hidden="true">{emoji}</span>
-            </Item>
-          ))}
+          {QUICK_REACTION_EMOJIS.slice(0, 6).map((emoji) => {
+            const isSelected = selectedReactionEmojiSet.has(emoji);
+
+            return (
+              <Item
+                key={emoji}
+                aria-label={`${
+                  isSelected ? "Remove reaction" : "React with"
+                } ${emoji}`}
+                className={getEmojiItemClass(isSelected)}
+                onSelect={() => onSelectReaction(emoji)}
+                title={emoji}
+              >
+                <span aria-hidden="true">{emoji}</span>
+              </Item>
+            );
+          })}
           <Item
             aria-label="More reactions"
             className="flex size-8 min-h-8 justify-center rounded-full border border-spark-amber/70 bg-spark-amber p-0 text-base text-ink leading-none shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-spark-amber)_18%,transparent)] transition hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-spark-amber/35"
@@ -569,6 +587,14 @@ function MessageReactionPicker({
         </div>
       )}
     </div>
+  );
+}
+
+function getEmojiItemClass(isSelected: boolean) {
+  return cn(
+    EMOJI_ITEM_CLASS,
+    isSelected &&
+      "bg-spark-amber/18 ring-1 ring-spark-amber/45 shadow-sm focus:bg-spark-amber/18 data-[highlighted]:bg-spark-amber/18",
   );
 }
 

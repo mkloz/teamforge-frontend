@@ -77,6 +77,9 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
     content.length < 50 &&
     !content.includes(" ") &&
     reactionGroups.length === 0;
+  const selectedReactionEmojis = reactionGroups
+    .filter((reaction) => reaction.isActive)
+    .map((reaction) => reaction.emoji);
   const senderLabel = isOwn ? "You" : (message.sender?.name ?? "Unknown");
   const messageAriaLabel = `${senderLabel} message at ${formatChatTime(
     timestamp,
@@ -92,6 +95,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
       onStartEdit={startEdit}
       onForward={forwardMessage}
       onToggleReaction={toggleReaction}
+      selectedReactionEmojis={selectedReactionEmojis}
       onUnpin={unpinMessage}
       isSaved={isSaved}
       onToggleSaved={toggleSaved}

@@ -6,7 +6,14 @@ import {
   type EmojiPickerListRowProps,
 } from "frimousse";
 import { ChevronLeft, Search } from "lucide-react";
-import { type ChangeEvent, memo, useState } from "react";
+import {
+  type ChangeEvent,
+  createContext,
+  memo,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 
 import { cn } from "@/shared/lib/utils";
 
@@ -16,6 +23,9 @@ const EMOJI_SKELETON_CELLS = Array.from(
 );
 
 const COMPACT_REACTION_COLUMNS = 9;
+const EMPTY_SELECTED_EMOJIS = new Set<string>();
+const SelectedEmojiContext =
+  createContext<ReadonlySet<string>>(EMPTY_SELECTED_EMOJIS);
 
 interface ReactionEmoji {
   emoji: string;
@@ -408,6 +418,7 @@ interface ChatEmojiPickerPanelProps {
   onCollapse?: () => void;
   onSelect: (emoji: string) => void;
   searchDisabled?: boolean;
+  selectedEmojis?: readonly string[];
   showPreview?: boolean;
   skinTonesDisabled?: boolean;
   suggestedEmojis?: readonly string[];
@@ -419,16 +430,24 @@ export const ChatEmojiPickerPanel = memo(function ChatEmojiPickerPanel({
   onCollapse,
   onSelect,
   searchDisabled = false,
+  selectedEmojis = [],
   showPreview = false,
   skinTonesDisabled = true,
   suggestedEmojis = [],
 }: ChatEmojiPickerPanelProps) {
+  const selectedEmojiSet = useMemo(
+    () => new Set(selectedEmojis),
+    [selectedEmojis],
+  );
+
   if (compact) {
     return (
-      <CompactReactionEmojiPicker
-        onSelect={onSelect}
-        suggestedEmojis={suggestedEmojis}
-      />
+      <SelectedEmojiContext.Provider value={selectedEmojiSet}>
+        <CompactReactionEmojiPicker
+          onSelect={onSelect}
+          suggestedEmojis={suggestedEmojis}
+        />
+      </SelectedEmojiContext.Provider>
     );
   }
 
@@ -438,89 +457,91 @@ export const ChatEmojiPickerPanel = memo(function ChatEmojiPickerPanel({
     : DEFAULT_EMOJI_LIST_COMPONENTS;
 
   return (
-    <EmojiPicker.Root
-      className={
-        compact ? EMOJI_PICKER_ROOT_COMPACT_CLASS : EMOJI_PICKER_ROOT_CLASS
-      }
-      columns={compact ? 8 : 9}
-      onEmojiSelect={({ emoji }) => onSelect(emoji)}
-      skinTone="none"
-    >
-      {!searchDisabled || !skinTonesDisabled ? (
-        <div
+    <SelectedEmojiContext.Provider value={selectedEmojiSet}>
+      <EmojiPicker.Root
+        className={
+          compact ? EMOJI_PICKER_ROOT_COMPACT_CLASS : EMOJI_PICKER_ROOT_CLASS
+        }
+        columns={compact ? 8 : 9}
+        onEmojiSelect={({ emoji }) => onSelect(emoji)}
+        skinTone="none"
+      >
+        {!searchDisabled || !skinTonesDisabled ? (
+          <div
+            className={cn(
+              "flex items-center gap-2 border-border/55 border-b",
+              compact ? "p-1.5" : "px-2 pt-1.5 pb-0",
+            )}
+          >
+            {onCollapse ? (
+              <button
+                type="button"
+                aria-label="Back to quick reactions"
+                className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/55 bg-background/65 text-slate-muted transition-colors hover:border-forge-teal/35 hover:bg-forge-teal/8 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18"
+                onClick={onCollapse}
+              >
+                <ChevronLeft className="size-4" />
+              </button>
+            ) : null}
+            {!searchDisabled ? (
+              <div className="relative min-w-0 flex-1">
+                <Search
+                  className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-muted"
+                  aria-hidden="true"
+                  strokeWidth={2}
+                />
+                <EmojiPicker.Search
+                  className={cn(
+                    "h-8 w-full border-0 bg-transparent pr-2 pl-8 font-bold text-ink text-xs outline-none transition-colors placeholder:text-slate-muted/70 focus-visible:ring-0",
+                    compact && "text-micro",
+                  )}
+                  name="emoji-search"
+                  aria-label="Search emoji"
+                  placeholder="Search emoji"
+                />
+              </div>
+            ) : null}
+            {!skinTonesDisabled ? (
+              <EmojiPicker.SkinToneSelector className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-background/65 text-base transition-colors hover:border-forge-teal/35 hover:bg-forge-teal/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18" />
+            ) : null}
+          </div>
+        ) : null}
+
+        <EmojiPicker.Viewport
           className={cn(
-            "flex items-center gap-2 border-border/55 border-b",
-            compact ? "p-1.5" : "px-2 pt-1.5 pb-0",
+            "scrollbar-hide min-h-0 px-1 pt-0 pb-1 outline-none",
+            viewportHeightClass,
           )}
         >
-          {onCollapse ? (
-            <button
-              type="button"
-              aria-label="Back to quick reactions"
-              className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/55 bg-background/65 text-slate-muted transition-colors hover:border-forge-teal/35 hover:bg-forge-teal/8 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18"
-              onClick={onCollapse}
-            >
-              <ChevronLeft className="size-4" />
-            </button>
-          ) : null}
-          {!searchDisabled ? (
-            <div className="relative min-w-0 flex-1">
-              <Search
-                className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-muted"
-                aria-hidden="true"
-                strokeWidth={2}
-              />
-              <EmojiPicker.Search
-                className={cn(
-                  "h-8 w-full border-0 bg-transparent pr-2 pl-8 font-bold text-ink text-xs outline-none transition-colors placeholder:text-slate-muted/70 focus-visible:ring-0",
-                  compact && "text-micro",
-                )}
-                name="emoji-search"
-                aria-label="Search emoji"
-                placeholder="Search emoji"
-              />
-            </div>
-          ) : null}
-          {!skinTonesDisabled ? (
-            <EmojiPicker.SkinToneSelector className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-background/65 text-base transition-colors hover:border-forge-teal/35 hover:bg-forge-teal/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18" />
-          ) : null}
-        </div>
-      ) : null}
+          <EmojiPicker.Loading className="block">
+            <EmojiPickerSkeleton compact={compact} />
+          </EmojiPicker.Loading>
+          <EmojiPicker.Empty className="flex h-full items-center justify-center px-6 text-center font-semibold text-slate-muted text-xs">
+            {({ search }) =>
+              search.trim()
+                ? `No emoji found for "${search.trim()}".`
+                : "No emoji found."
+            }
+          </EmojiPicker.Empty>
+          <EmojiPicker.List components={components} />
+        </EmojiPicker.Viewport>
 
-      <EmojiPicker.Viewport
-        className={cn(
-          "scrollbar-hide min-h-0 px-1 pt-0 pb-1 outline-none",
-          viewportHeightClass,
-        )}
-      >
-        <EmojiPicker.Loading className="block">
-          <EmojiPickerSkeleton compact={compact} />
-        </EmojiPicker.Loading>
-        <EmojiPicker.Empty className="flex h-full items-center justify-center px-6 text-center font-semibold text-slate-muted text-xs">
-          {({ search }) =>
-            search.trim()
-              ? `No emoji found for "${search.trim()}".`
-              : "No emoji found."
-          }
-        </EmojiPicker.Empty>
-        <EmojiPicker.List components={components} />
-      </EmojiPicker.Viewport>
-
-      {showPreview ? (
-        <EmojiPicker.ActiveEmoji>
-          {({ emoji }) => (
-            <div className="flex min-h-11 items-center gap-2 border-border/55 border-t px-2.5 py-2">
-              <span className="flex size-8 items-center justify-center rounded-lg bg-forge-teal/8 font-sans text-xl">
-                {emoji?.emoji}
-              </span>
-              <span className="min-w-0 truncate font-bold text-slate-muted text-xs">
-                {emoji?.label ?? "Pick an emoji"}
-              </span>
-            </div>
-          )}
-        </EmojiPicker.ActiveEmoji>
-      ) : null}
-    </EmojiPicker.Root>
+        {showPreview ? (
+          <EmojiPicker.ActiveEmoji>
+            {({ emoji }) => (
+              <div className="flex min-h-11 items-center gap-2 border-border/55 border-t px-2.5 py-2">
+                <span className="flex size-8 items-center justify-center rounded-lg bg-forge-teal/8 font-sans text-xl">
+                  {emoji?.emoji}
+                </span>
+                <span className="min-w-0 truncate font-bold text-slate-muted text-xs">
+                  {emoji?.label ?? "Pick an emoji"}
+                </span>
+              </div>
+            )}
+          </EmojiPicker.ActiveEmoji>
+        ) : null}
+      </EmojiPicker.Root>
+    </SelectedEmojiContext.Provider>
   );
 });
 
@@ -630,6 +651,8 @@ function CompactReactionEmojiGroup({
   group: ReactionEmojiGroup;
   onSelect: (emoji: string) => void;
 }) {
+  const selectedEmojiSet = useContext(SelectedEmojiContext);
+
   return (
     <section>
       <div className="sticky -top-px z-10 flex h-5 snap-start items-center bg-canvas/97 px-2 font-black text-micro text-slate-muted backdrop-blur-md dark:bg-forge-deep-surface/97">
@@ -641,18 +664,28 @@ function CompactReactionEmojiGroup({
             key={`${group.title}-${row.map((emoji) => emoji.emoji).join("")}`}
             className="grid h-7 snap-start grid-cols-9 gap-0 px-1"
           >
-            {row.map((emoji) => (
-              <button
-                key={`${group.title}-${emoji.emoji}-${emoji.label}`}
-                type="button"
-                aria-label={`Use ${emoji.label}`}
-                className="flex h-full items-center justify-center rounded-md text-base leading-none transition-colors hover:bg-forge-teal/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18"
-                title={emoji.label}
-                onClick={() => onSelect(emoji.emoji)}
-              >
-                <span aria-hidden="true">{emoji.emoji}</span>
-              </button>
-            ))}
+            {row.map((emoji) => {
+              const isSelected = selectedEmojiSet.has(emoji.emoji);
+
+              return (
+                <button
+                  key={`${group.title}-${emoji.emoji}-${emoji.label}`}
+                  type="button"
+                  aria-label={`Use ${emoji.label}`}
+                  aria-pressed={isSelected}
+                  className={cn(
+                    "flex h-full items-center justify-center rounded-md text-base leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18",
+                    isSelected
+                      ? "bg-spark-amber/18 ring-1 ring-spark-amber/45 shadow-sm hover:bg-spark-amber/22"
+                      : "hover:bg-forge-teal/10",
+                  )}
+                  title={emoji.label}
+                  onClick={() => onSelect(emoji.emoji)}
+                >
+                  <span aria-hidden="true">{emoji.emoji}</span>
+                </button>
+              );
+            })}
           </div>
         ))}
       </div>
@@ -787,14 +820,21 @@ function EmojiButtonBase({
   emoji,
   ...props
 }: EmojiPickerListEmojiProps & { compact: boolean }) {
+  const selectedEmojiSet = useContext(SelectedEmojiContext);
+  const isSelected = selectedEmojiSet.has(emoji.emoji);
+
   return (
     <button
       {...props}
       type="button"
+      aria-pressed={isSelected}
       className={cn(
-        "flex min-w-0 flex-1 items-center justify-center rounded-md text-lg leading-none transition-colors hover:bg-forge-teal/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18",
+        "flex min-w-0 flex-1 items-center justify-center rounded-md text-lg leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18",
         compact ? "h-7 text-base" : "h-8",
-        emoji.isActive && "bg-spark-amber/14",
+        isSelected
+          ? "bg-spark-amber/18 ring-1 ring-spark-amber/45 shadow-sm hover:bg-spark-amber/22"
+          : "hover:bg-forge-teal/10",
+        emoji.isActive && !isSelected && "bg-forge-teal/10",
         className,
       )}
     >
