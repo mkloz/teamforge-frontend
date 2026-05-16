@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import type { ActivityKind } from "@/features/activity/lib/activity-route";
 import { useActivityStore } from "@/features/activity/store/activity.store";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { useUiStore } from "@/shared/store/ui.store";
@@ -35,9 +36,9 @@ export function useActivityPanels() {
     };
   }, [hasSelection, isBottomNavViewport, setBottomNavHidden]);
 
-  function handleSelectItem(id: string, kind: "group" | "dm") {
+  function handleSelectItem(id: string, kind: ActivityKind) {
     selectConversation(id, kind, {
-      shouldOpenSidePanel: isDesktopPanelViewport,
+      shouldOpenSidePanel: kind !== "saved" && isDesktopPanelViewport,
     });
   }
 

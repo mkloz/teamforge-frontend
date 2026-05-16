@@ -9,7 +9,7 @@ export const activityFilterValues = [
   "saved",
 ] as const;
 export const activityDensityValues = ["default", "compact"] as const;
-export const activityKindValues = ["group", "dm"] as const;
+export const activityKindValues = ["group", "dm", "saved"] as const;
 export const activityPanelValues = ["group", "profile"] as const;
 
 export type ActivityFilter = (typeof activityFilterValues)[number];

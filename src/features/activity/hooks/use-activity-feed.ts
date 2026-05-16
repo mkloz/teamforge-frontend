@@ -85,6 +85,10 @@ export function useActivityFeed() {
       friendshipsQuery.isError);
   const hasSavedMessagesError =
     activeFilter === "saved" && savedMessagesQuery.isError;
+  const isSavedMessagesError =
+    savedMessagesQuery.isError && !savedMessagesQuery.data;
+  const isSavedMessagesLoading =
+    savedMessagesQuery.isPending && !savedMessagesQuery.data;
   const isFeedError = hasBaseDataError || hasSavedMessagesError;
   const isFeedRetrying =
     currentUserQuery.isFetching ||
@@ -233,6 +237,10 @@ export function useActivityFeed() {
     ]);
   }
 
+  async function retrySavedMessages() {
+    await savedMessagesQuery.refetch();
+  }
+
   return {
     searchQuery,
     activeFilter,
@@ -240,6 +248,9 @@ export function useActivityFeed() {
     isInitialLoading,
     isFeedError,
     isFeedRetrying,
+    isSavedMessagesError,
+    isSavedMessagesLoading,
+    isSavedMessagesRetrying: savedMessagesQuery.isFetching,
     allItems: feedData?.allItems ?? [],
     filteredItems: feedData?.items ?? [],
     groupCount: feedData?.groupCount ?? 0,
@@ -255,6 +266,7 @@ export function useActivityFeed() {
     markConversationRead,
     removeSavedMessage,
     retryFeed,
+    retrySavedMessages,
     savedMessages,
   };
 }

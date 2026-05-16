@@ -9,6 +9,13 @@ import {
   canSaveMessage,
 } from "@/features/activity/lib/message-action-capabilities";
 import { useActivityStore } from "@/features/activity/store/activity.store";
+import type { ActivitySelectionKind } from "@/features/activity/store/activity-store/activity-store.types";
+
+function isMessageConversationKind(
+  kind: ActivitySelectionKind | null,
+): kind is "group" | "dm" {
+  return kind === "group" || kind === "dm";
+}
 
 export function useActivityMessageActions() {
   const selectedKind = useActivityStore((state) => state.selectedKind);
@@ -43,7 +50,7 @@ export function useActivityMessageActions() {
   }
 
   async function deleteMessage(message: UnifiedMessage) {
-    if (!canDeleteMessage(message)) {
+    if (!isMessageConversationKind(selectedKind) || !canDeleteMessage(message)) {
       return;
     }
 
@@ -59,11 +66,15 @@ export function useActivityMessageActions() {
   }
 
   async function retryMessage(message: UnifiedMessage) {
+    if (!isMessageConversationKind(selectedKind)) {
+      return;
+    }
+
     await ActivityCommands.retryMessage(selectedKind, selectedId, message);
   }
 
   async function toggleReaction(message: UnifiedMessage, emoji: string) {
-    if (!canReactToMessage(message)) {
+    if (!isMessageConversationKind(selectedKind) || !canReactToMessage(message)) {
       return;
     }
 
@@ -76,7 +87,7 @@ export function useActivityMessageActions() {
   }
 
   async function pinMessage(message: UnifiedMessage) {
-    if (!canPinMessage(message)) {
+    if (!isMessageConversationKind(selectedKind) || !canPinMessage(message)) {
       return;
     }
 
@@ -84,7 +95,7 @@ export function useActivityMessageActions() {
   }
 
   async function unpinMessage(message: UnifiedMessage) {
-    if (!canPinMessage(message)) {
+    if (!isMessageConversationKind(selectedKind) || !canPinMessage(message)) {
       return;
     }
 
@@ -92,7 +103,11 @@ export function useActivityMessageActions() {
   }
 
   async function toggleSaved(message: UnifiedMessage, isSaved = false) {
-    if (!selectedKind || !selectedId || !canSaveMessage(message)) {
+    if (
+      !isMessageConversationKind(selectedKind) ||
+      !selectedId ||
+      !canSaveMessage(message)
+    ) {
       return;
     }
 
@@ -105,7 +120,11 @@ export function useActivityMessageActions() {
   }
 
   async function forwardMessage(message: UnifiedMessage, targetChatId: string) {
-    if (!selectedKind || !selectedId || !canSaveMessage(message)) {
+    if (
+      !isMessageConversationKind(selectedKind) ||
+      !selectedId ||
+      !canSaveMessage(message)
+    ) {
       return null;
     }
 
@@ -118,7 +137,7 @@ export function useActivityMessageActions() {
   }
 
   async function submitEdit(content: string) {
-    if (!editingMessage) {
+    if (!editingMessage || !isMessageConversationKind(selectedKind)) {
       return null;
     }
 

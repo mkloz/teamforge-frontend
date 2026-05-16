@@ -43,7 +43,11 @@ export function getPreferredActivityPanel(
     return null;
   }
 
-  return kind === "group" ? "group" : "profile";
+  if (kind === "group") {
+    return "group";
+  }
+
+  return kind === "dm" ? "profile" : null;
 }
 
 export function getSearchRoutePatch(nextQuery: string) {

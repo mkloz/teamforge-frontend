@@ -19,10 +19,10 @@ export function ActivitySidebar({ activity, isOnline }: ActivitySidebarProps) {
       )}
     >
       <UnifiedConversationList
-        allItems={activity.allItems}
         items={activity.filteredItems}
         savedMessages={activity.savedMessages}
         selectedId={activity.selectedId}
+        selectedKind={activity.selectedKind}
         searchQuery={activity.searchQuery}
         activeFilter={activity.activeFilter}
         sidebarDensity={activity.sidebarDensity}
@@ -37,7 +37,6 @@ export function ActivitySidebar({ activity, isOnline }: ActivitySidebarProps) {
         onSearchChange={activity.setSearchQuery}
         onFilterChange={activity.setActiveFilter}
         onDensityChange={activity.setSidebarDensity}
-        onRemoveSavedMessage={activity.removeSavedMessage}
         onTogglePinnedItem={activity.togglePinnedConversation}
         onToggleMutedItem={activity.toggleMutedConversation}
         onMarkReadItem={activity.markConversationRead}

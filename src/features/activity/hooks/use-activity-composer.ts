@@ -32,6 +32,10 @@ export function useActivityComposer() {
       ? trackedMutationNames.activityMessageEdit
       : trackedMutationNames.activityMessageSend;
 
+    if (selectedKind !== "group" && selectedKind !== "dm") {
+      return;
+    }
+
     if (editingMessage) {
       try {
         const result = await submitEdit(input.content);

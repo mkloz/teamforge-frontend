@@ -13,6 +13,7 @@ export type TypingParticipant = Pick<
   "id" | "name" | "avatar"
 >;
 export type ActivityConversationKind = "group" | "dm";
+export type ActivitySelectionKind = ActivityConversationKind | "saved";
 export type SidebarDensity = "default" | "compact";
 
 export interface SelectConversationOptions {
@@ -24,7 +25,7 @@ export interface ActivityState {
   activeFilter: FilterChip;
   sidebarDensity: SidebarDensity;
   selectedId: string | null;
-  selectedKind: ActivityConversationKind | null;
+  selectedKind: ActivitySelectionKind | null;
   groups: GroupsPageState;
   direct: DirectChatsState;
   replyingTo: UnifiedMessage | null;
@@ -40,7 +41,7 @@ export interface ActivityActions {
   setSidebarDensity: (density: SidebarDensity) => void;
   selectConversation: (
     id: string | null,
-    kind: ActivityConversationKind | null,
+    kind: ActivitySelectionKind | null,
     options?: SelectConversationOptions,
   ) => void;
   setReplyingTo: (message: UnifiedMessage | null) => void;

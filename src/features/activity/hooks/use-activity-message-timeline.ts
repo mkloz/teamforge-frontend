@@ -7,12 +7,13 @@ import type {
   ActivityParticipant,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
+import type { ActivityKind } from "@/features/activity/lib/activity-route";
 
 interface UseActivityMessageTimelineInput {
   chatId: string | null;
   currentUserId: string | null;
   proposalMessages: UnifiedMessage[];
-  selectedKind: "group" | "dm" | null;
+  selectedKind: ActivityKind | null;
   selectedParticipants: ActivityParticipant[];
 }
 

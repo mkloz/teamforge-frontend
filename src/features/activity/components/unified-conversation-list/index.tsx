@@ -4,11 +4,11 @@ import type {
   FilterChip,
   UnifiedConversation,
 } from "@/features/activity/lib/activity-contract";
-import { getActivityConversationKey } from "@/features/activity/lib/activity-conversation-key";
+import type { ActivityKind } from "@/features/activity/lib/activity-route";
 import type { SavedMessageSnapshot } from "@/features/activity/lib/saved-message";
+import { SAVED_MESSAGES_CONVERSATION_ID } from "@/features/activity/lib/saved-messages-identity";
 import {
   getConversationIsNotes,
-  getConversationTitle,
   getMessagePreviewText,
 } from "@/features/activity/lib/unify-conversations";
 import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
@@ -18,19 +18,15 @@ import {
   ConversationListErrorState,
   ConversationListOfflineBanner,
 } from "./list-feedback-state";
-import { SavedMessageListItem } from "./saved-message-list-item";
-import {
-  SavedMessagesHeader,
-  SavedMessagesShortcut,
-} from "./saved-messages-shortcut";
+import { SavedMessagesChatListItem } from "./saved-messages-chat-list-item";
 import { SearchHeader } from "./search-header";
 import { UnifiedConversationListItem } from "./unified-conversation-list-item";
 
 interface UnifiedConversationListProps {
-  allItems: UnifiedConversation[];
   items: UnifiedConversation[];
   savedMessages: SavedMessageSnapshot[];
   selectedId: string | null;
+  selectedKind: ActivityKind | null;
   searchQuery: string;
   activeFilter: FilterChip;
   sidebarDensity: "default" | "compact";
@@ -45,7 +41,6 @@ interface UnifiedConversationListProps {
   onSearchChange: (q: string) => void;
   onFilterChange: (f: FilterChip) => void;
   onDensityChange: (d: "default" | "compact") => void;
-  onRemoveSavedMessage: (messageId: string) => Promise<void> | void;
   onTogglePinnedItem: (
     kind: "group" | "dm",
     id: string,
@@ -55,7 +50,7 @@ interface UnifiedConversationListProps {
   onRetryFeed: () => Promise<void> | void;
   onSelectItem: (
     id: string,
-    kind: "group" | "dm",
+    kind: ActivityKind,
     options?: { messageId?: string | null },
   ) => void;
 }
@@ -72,10 +67,10 @@ const FILTERS: { key: FilterChip; label: string }[] = [
 const SEARCH_H = 56;
 
 export const UnifiedConversationList = memo(function UnifiedConversationList({
-  allItems,
   items,
   savedMessages,
   selectedId,
+  selectedKind,
   searchQuery,
   activeFilter,
   sidebarDensity,
@@ -88,9 +83,8 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
   isFeedRetrying,
   isOnline,
   onSearchChange,
-  onFilterChange,
   onDensityChange,
-  onRemoveSavedMessage,
+  onFilterChange,
   onTogglePinnedItem,
   onToggleMutedItem,
   onMarkReadItem,
@@ -110,11 +104,14 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
   });
 
   const isSavedFilter = activeFilter === "saved";
-  const savedRows = isSavedFilter
-    ? getSavedMessageRows(savedMessages, allItems, searchQuery)
-    : [];
   const latestSavedMessage = savedMessages[0];
-  const visibleItemCount = isSavedFilter ? savedRows.length : items.length;
+  const shouldShowSavedChat = shouldShowSavedMessagesChat({
+    activeFilter,
+    savedMessages,
+    searchQuery,
+  });
+  const visibleItemCount =
+    (isSavedFilter ? 0 : items.length) + (shouldShowSavedChat ? 1 : 0);
   const emptyLabel =
     activeFilter === "groups"
       ? "No groups found"
@@ -134,23 +131,34 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
   const emptyDescription = getEmptyDescription(activeFilter, searchQuery);
   const emptyArtwork =
     searchQuery || activeFilter !== "all" ? "filtered" : "default";
-  const showSavedShortcut = !isSavedFilter && savedCount > 0;
   const shouldShowErrorState = isFeedError && visibleItemCount === 0;
   const shouldShowOfflineBanner = !isOnline && !shouldShowErrorState;
-  const savedShortcutIndex = getSavedShortcutIndex(items);
+  const savedChatIndex = getSavedChatIndex(items);
   const searchPlaceholder =
     activeFilter === "saved"
       ? "Search saved messages..."
       : activeFilter === "pinned"
         ? "Search pinned chats..."
         : "Search conversations...";
-  function openSavedMessages() {
+  function openSavedMessagesChat() {
     if (searchQuery) {
       onSearchChange("");
     }
 
-    onFilterChange("saved");
+    onSelectItem(SAVED_MESSAGES_CONVERSATION_ID, "saved");
   }
+
+  const savedMessagesChatItem = shouldShowSavedChat ? (
+    <SavedMessagesChatListItem
+      count={savedCount}
+      density={sidebarDensity}
+      isSelected={
+        selectedKind === "saved" && selectedId === SAVED_MESSAGES_CONVERSATION_ID
+      }
+      latestSavedMessage={latestSavedMessage}
+      onSelect={openSavedMessagesChat}
+    />
+  ) : null;
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -177,8 +185,6 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
           density={sidebarDensity}
           onDensityChange={onDensityChange}
         />
-
-        {isSavedFilter ? <SavedMessagesHeader count={savedCount} /> : null}
 
         <div className="flex flex-col pb-8 sm:pb-0">
           {shouldShowErrorState ? (
@@ -207,39 +213,17 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
               }
             />
           ) : isSavedFilter ? (
-            savedRows.map(({ conversation, snapshot }) => (
-              <SavedMessageListItem
-                key={snapshot.message.id}
-                conversation={conversation}
-                density={sidebarDensity}
-                isSelected={snapshot.conversationId === selectedId}
-                snapshot={snapshot}
-                onRemove={onRemoveSavedMessage}
-                onSelect={() =>
-                  onSelectItem(
-                    snapshot.conversationId,
-                    snapshot.conversationKind,
-                    {
-                      messageId: snapshot.message.id,
-                    },
-                  )
-                }
-              />
-            ))
+            savedMessagesChatItem
           ) : (
             <>
-              {showSavedShortcut && savedShortcutIndex === 0 ? (
-                <SavedMessagesShortcut
-                  count={savedCount}
-                  latestSavedMessage={latestSavedMessage}
-                  onOpen={openSavedMessages}
-                />
-              ) : null}
+              {savedChatIndex === 0 ? savedMessagesChatItem : null}
               {items.map((item, index) => (
                 <Fragment key={`${item.kind}-${item.id}`}>
                   <UnifiedConversationListItem
                     item={item}
-                    isSelected={item.id === selectedId}
+                    isSelected={
+                      item.id === selectedId && item.kind === selectedKind
+                    }
                     density={sidebarDensity}
                     onTogglePinned={() => {
                       void onTogglePinnedItem(item.kind, item.id);
@@ -252,13 +236,7 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
                     }}
                     onSelect={() => onSelectItem(item.id, item.kind)}
                   />
-                  {showSavedShortcut && savedShortcutIndex === index + 1 ? (
-                    <SavedMessagesShortcut
-                      count={savedCount}
-                      latestSavedMessage={latestSavedMessage}
-                      onOpen={openSavedMessages}
-                    />
-                  ) : null}
+                  {savedChatIndex === index + 1 ? savedMessagesChatItem : null}
                 </Fragment>
               ))}
             </>
@@ -269,51 +247,48 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
   );
 });
 
-function getSavedMessageRows(
-  savedMessages: SavedMessageSnapshot[],
-  conversations: UnifiedConversation[],
-  query: string,
-) {
-  const conversationByKey = new Map(
-    conversations.map((item) => [
-      getActivityConversationKey(item.kind, item.id),
-      item,
-    ]),
-  );
-  const normalizedQuery = query.trim().toLowerCase();
-
-  return savedMessages
-    .map((snapshot) => {
-      const conversation = conversationByKey.get(
-        getActivityConversationKey(
-          snapshot.conversationKind,
-          snapshot.conversationId,
-        ),
-      );
-
-      return { conversation, snapshot };
-    })
-    .filter(({ conversation, snapshot }) => {
-      if (!normalizedQuery) {
-        return true;
-      }
-
-      const searchable = [
-        conversation ? getConversationTitle(conversation) : "",
-        snapshot.message.sender?.name ?? "",
-        getMessagePreviewText(snapshot.message),
-      ]
-        .join(" ")
-        .toLowerCase();
-
-      return searchable.includes(normalizedQuery);
-    });
-}
-
-function getSavedShortcutIndex(items: UnifiedConversation[]) {
+function getSavedChatIndex(items: UnifiedConversation[]) {
   const notesIndex = items.findIndex(getConversationIsNotes);
 
   return notesIndex >= 0 ? notesIndex + 1 : 0;
+}
+
+function shouldShowSavedMessagesChat({
+  activeFilter,
+  savedMessages,
+  searchQuery,
+}: {
+  activeFilter: FilterChip;
+  savedMessages: SavedMessageSnapshot[];
+  searchQuery: string;
+}) {
+  if (
+    activeFilter === "groups" ||
+    activeFilter === "direct" ||
+    activeFilter === "unread" ||
+    activeFilter === "pinned"
+  ) {
+    return false;
+  }
+
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+
+  if (!normalizedQuery) {
+    return activeFilter === "all" || activeFilter === "saved";
+  }
+
+  const searchable = [
+    "saved messages",
+    "private bookmarks",
+    ...savedMessages.flatMap((snapshot) => [
+      snapshot.message.sender?.name ?? "",
+      getMessagePreviewText(snapshot.message),
+    ]),
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  return searchable.includes(normalizedQuery);
 }
 
 function getEmptyDescription(activeFilter: FilterChip, searchQuery: string) {

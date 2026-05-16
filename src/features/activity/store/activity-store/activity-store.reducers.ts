@@ -3,6 +3,7 @@ import { getActivityConversationKey } from "@/features/activity/lib/activity-con
 import type { SavedMessageSnapshot } from "@/features/activity/lib/saved-message";
 import type {
   ActivityConversationKind,
+  ActivitySelectionKind,
   ActivityState,
   SelectConversationOptions,
   TypingParticipant,
@@ -11,7 +12,7 @@ import type {
 export function selectConversationState(
   state: ActivityState,
   id: string | null,
-  kind: ActivityConversationKind | null,
+  kind: ActivitySelectionKind | null,
   options: SelectConversationOptions = {},
 ): Pick<ActivityState, "selectedId" | "selectedKind" | "groups" | "direct"> {
   const shouldOpenSidePanel = options.shouldOpenSidePanel ?? false;

@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { ActivityConversationStageSkeleton } from "@/features/activity/components/activity-page/activity-page-skeleton";
+import { SavedMessagesConversationView } from "@/features/activity/components/chat/saved-messages-conversation-view";
 import { UnifiedConversationView } from "@/features/activity/components/chat/unified-conversation-view";
 import type { MessageScrollHandle } from "@/features/activity/components/chat/unified-conversation-view/unified-message-list/message-scroll.types";
 import {
@@ -9,6 +10,8 @@ import {
 import { GroupDetailPanel } from "@/features/activity/components/groups/group-detail-panel";
 import type { ActivityWorkspace } from "@/features/activity/hooks/use-activity";
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
+import { SAVED_MESSAGES_CONVERSATION_ID } from "@/features/activity/lib/saved-messages-identity";
+import type { SavedMessageSnapshot } from "@/features/activity/lib/saved-message";
 
 import { ActivityConversationFeedback } from "./activity-conversation-feedback";
 import { ActivityEmptyState } from "./activity-empty-state";
@@ -99,6 +102,16 @@ export function ActivityConversationStage({
     }
   }
 
+  function openSavedMessage(snapshot: SavedMessageSnapshot) {
+    activity.handleSelectItem(
+      snapshot.conversationId,
+      snapshot.conversationKind,
+      {
+        messageId: snapshot.message.id,
+      },
+    );
+  }
+
   if (isSelectionLoading) {
     return (
       <div className="flex h-full min-h-0 min-w-0 flex-1 overflow-hidden">
@@ -128,6 +141,7 @@ export function ActivityConversationStage({
   if (
     activity.selectedKind &&
     activity.selectedId &&
+    activity.selectedKind !== "saved" &&
     ((activity.selectedKind === "group" && !activity.selectedGroup) ||
       (activity.selectedKind === "dm" && !activity.selectedChat))
   ) {
@@ -139,6 +153,27 @@ export function ActivityConversationStage({
           title="Conversation unavailable"
           variant="missing"
           onAction={activity.handleBack}
+        />
+      </div>
+    );
+  }
+
+  if (
+    activity.selectedKind === "saved" &&
+    activity.selectedId === SAVED_MESSAGES_CONVERSATION_ID
+  ) {
+    return (
+      <div className="flex h-full min-h-0 min-w-0 flex-1 overflow-hidden">
+        <SavedMessagesConversationView
+          conversations={activity.allItems}
+          isError={activity.isSavedMessagesError}
+          isLoading={activity.isSavedMessagesLoading}
+          isRetrying={activity.isSavedMessagesRetrying}
+          savedMessages={activity.savedMessages}
+          onBack={activity.handleBack}
+          onOpenMessage={openSavedMessage}
+          onRemoveMessage={activity.removeSavedMessage}
+          onRetry={activity.retrySavedMessages}
         />
       </div>
     );
