@@ -15,12 +15,15 @@ export function getActivityCurrentUserId() {
   return getActivityCurrentUser()?.id ?? null;
 }
 
-export function isActivityCurrentUserId(userId?: string | null) {
-  const currentUserId = getActivityCurrentUserId();
-
+export function isLegacyActivityCurrentUserId(userId?: string | null) {
   return (
-    userId === currentUserId ||
     userId === LEGACY_ACTIVITY_CURRENT_USER_ID ||
     userId === LEGACY_ACTIVITY_CURRENT_USER_ID_ALT
   );
+}
+
+export function isActivityCurrentUserId(userId?: string | null) {
+  const currentUserId = getActivityCurrentUserId();
+
+  return userId === currentUserId || isLegacyActivityCurrentUserId(userId);
 }

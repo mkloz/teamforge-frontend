@@ -99,11 +99,7 @@ export function MessageSenderBlock({
           className={cn(
             "flex min-w-0 flex-1 flex-col gap-1.5",
             hasHighlightedMessage ? "overflow-visible" : "overflow-x-hidden",
-            isSystemBlock
-              ? "items-center"
-              : block.isOwn
-                ? "items-end"
-                : "items-start",
+            isSystemBlock ? "items-center" : "items-stretch",
           )}
         >
           {block.senderGroup.items.map((message, msgIdx) => {
