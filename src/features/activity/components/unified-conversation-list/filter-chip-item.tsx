@@ -27,7 +27,7 @@ export const FilterChipItem = memo(function FilterChipItem({
       label={label}
       selected={isActive}
       badge={badge}
-      className={cn("h-11 snap-start px-3.5 md:h-6 md:px-2.5", className)}
+      className={cn("h-8 snap-start px-3 md:h-6 md:px-2.5", className)}
     />
   );
 });

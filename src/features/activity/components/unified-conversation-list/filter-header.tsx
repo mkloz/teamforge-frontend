@@ -86,7 +86,7 @@ export const FilterHeader = memo(function FilterHeader({
             <Button
               variant="accentGhost"
               size="icon"
-              className="size-11 md:size-8"
+              className="size-9 md:size-8"
               onClick={() =>
                 onDensityChange?.(density === "default" ? "compact" : "default")
               }
