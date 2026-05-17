@@ -10,7 +10,7 @@ import {
 
 import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
 import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
-import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
+import { buildForgeNavigation } from "@/features/forge/lib/forge-route";
 import { buildHomeNavigation } from "@/features/home/lib/home-route";
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
@@ -30,7 +30,7 @@ export interface AppNavigationItem {
     | ReturnType<typeof buildActivityNavigation>
     | ReturnType<typeof buildProfileNavigation>
     | ReturnType<typeof buildSettingsNavigation>
-    | ReturnType<typeof buildForgeLaunchNavigation>;
+    | ReturnType<typeof buildForgeNavigation>;
 }
 
 type AppNavigationBadgeMap = Partial<Record<AppNavigationItem["id"], number>>;
@@ -73,7 +73,7 @@ const APP_NAVIGATION: Record<AppNavigationItem["id"], AppNavigationItem> = {
     id: "forge",
     label: "Forge",
     icon: Flame,
-    navigation: buildForgeLaunchNavigation(),
+    navigation: buildForgeNavigation(),
   },
 };
 
