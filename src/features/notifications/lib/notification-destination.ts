@@ -1,11 +1,17 @@
 import {
   type ActivityRouteSearch,
+  activityDensityValues,
+  activityFilterValues,
+  activityKindValues,
+  activityPanelValues,
   buildActivityDmNavigation,
   buildActivityGroupNavigation,
+  buildActivityNavigation,
 } from "@/features/activity/lib/activity-route";
 import {
   buildExploreNavigation,
   type ExploreRouteSearch,
+  explorePanelValues,
 } from "@/features/explore/lib/explore-route";
 import {
   buildForgeNavigation,
@@ -19,19 +25,30 @@ import {
 import {
   buildHomeNavigation,
   type HomeRouteSearch,
+  homeInvitationViewValues,
+  homePanelValues,
 } from "@/features/home/lib/home-route";
 import {
   extractProposalId,
+  matchLegacyChatMessagePath,
   matchLegacyChatPath,
+  matchLegacyExploreGroupPath,
   matchLegacyGroupPath,
+  matchLegacyGroupPlanPath,
   matchLegacyGroupRatingPath,
   matchLegacyPlanPath,
   matchLegacyPlanProposalPath,
+  matchLegacyUserPath,
   resolveFriendRequestIntent,
   resolveInviteIntent,
 } from "@/features/notifications/lib/notification-intent";
 import {
+  buildProfileNavigation,
+  type ProfileNavigation,
+} from "@/features/profile/lib/profile-route";
+import {
   buildSettingsNavigation,
+  normalizeSettingsSection,
   type SettingsSection,
 } from "@/features/settings/lib/settings-route";
 import { apiClient } from "@/shared/api/api";
@@ -43,12 +60,14 @@ import {
 
 const paginatedGroupsSchema = createPaginatedSchema(groupApiSchema);
 const planGroupCache = new Map<string, string>();
+const chatGroupCache = new Map<string, string>();
 
 export type NotificationDestination =
   | { to: "/activity"; search?: ActivityRouteSearch }
   | { to: "/home"; search?: HomeRouteSearch }
   | { to: "/explore"; search?: ExploreRouteSearch }
   | { to: "/forge"; search?: ForgeRouteSearch }
+  | ProfileNavigation
   | {
       to: "/groups/$groupId";
       params: { groupId: string };
@@ -67,6 +86,7 @@ function toGroupDestination(
 ): NotificationDestination {
   if (options?.message) {
     return buildActivityGroupNavigation(groupId, {
+      panel: "group",
       message: options.message,
     });
   }
@@ -90,6 +110,10 @@ function parseNotificationLink(link: string | null) {
   }
 }
 
+function normalizeNotificationPathname(pathname: string) {
+  return pathname.replace(/^\/api(?:\/v\d+)?(?=\/)/, "");
+}
+
 function extractProposalIdFromLink(link: string | null) {
   const parsedLink = parseNotificationLink(link);
 
@@ -103,7 +127,33 @@ function extractProposalIdFromLink(link: string | null) {
 }
 
 function extractPlanId(searchParams: URLSearchParams) {
-  return searchParams.get("plan") ?? searchParams.get("planId") ?? undefined;
+  return (
+    searchParams.get("plan") ??
+    searchParams.get("planId") ??
+    searchParams.get("currentPlanId") ??
+    undefined
+  );
+}
+
+function extractMessageId(searchParams: URLSearchParams) {
+  return (
+    searchParams.get("message") ?? searchParams.get("messageId") ?? undefined
+  );
+}
+
+function extractChatId(searchParams: URLSearchParams) {
+  return searchParams.get("chat") ?? searchParams.get("chatId") ?? undefined;
+}
+
+function extractGroupId(searchParams: URLSearchParams) {
+  return searchParams.get("group") ?? searchParams.get("groupId") ?? undefined;
+}
+
+function findLiteral<T extends readonly string[]>(
+  values: T,
+  value: string | null,
+): T[number] | undefined {
+  return values.find((candidate) => candidate === value);
 }
 
 function toDirectMessageDestination(
@@ -113,6 +163,81 @@ function toDirectMessageDestination(
   return buildActivityDmNavigation(chatId, {
     message: messageId,
   });
+}
+
+async function toChatDestination(
+  chatId: string,
+  messageId?: string,
+): Promise<NotificationDestination> {
+  const groupId = await resolveGroupIdByChatId(chatId);
+
+  if (groupId) {
+    return toGroupDestination(groupId, {
+      message: messageId,
+      panel: "group",
+    });
+  }
+
+  return toDirectMessageDestination(chatId, messageId);
+}
+
+function resolveActivitySearch(
+  searchParams: URLSearchParams,
+): ActivityRouteSearch {
+  const filter = findLiteral(activityFilterValues, searchParams.get("filter"));
+  const density = findLiteral(
+    activityDensityValues,
+    searchParams.get("density"),
+  );
+  const kind = findLiteral(activityKindValues, searchParams.get("kind"));
+  const panel = findLiteral(activityPanelValues, searchParams.get("panel"));
+
+  return {
+    density: density === "default" ? undefined : density,
+    filter: filter === "all" ? undefined : filter,
+    id: searchParams.get("id") ?? undefined,
+    kind,
+    message: extractMessageId(searchParams),
+    panel,
+    plan: extractPlanId(searchParams),
+    proposal: extractProposalId(searchParams) ?? undefined,
+    q: searchParams.get("q") ?? undefined,
+  };
+}
+
+function resolveHomeSearch(searchParams: URLSearchParams): HomeRouteSearch {
+  const panel = findLiteral(homePanelValues, searchParams.get("panel"));
+  const genericId = searchParams.get("id");
+
+  return {
+    invite:
+      searchParams.get("invite") ??
+      searchParams.get("inviteId") ??
+      (panel === "invitations" ? genericId : null) ??
+      undefined,
+    panel,
+    request:
+      searchParams.get("request") ??
+      searchParams.get("requestId") ??
+      (panel === "friends" ? genericId : null) ??
+      undefined,
+    view: findLiteral(homeInvitationViewValues, searchParams.get("view")),
+  };
+}
+
+function resolveExploreSearch(
+  searchParams: URLSearchParams,
+): ExploreRouteSearch {
+  const panel = findLiteral(explorePanelValues, searchParams.get("panel"));
+
+  return {
+    panel,
+    request:
+      searchParams.get("request") ??
+      searchParams.get("requestId") ??
+      (panel === "friends" ? searchParams.get("id") : null) ??
+      undefined,
+  };
 }
 
 function resolveForgeSearch(searchParams: URLSearchParams): ForgeRouteSearch {
@@ -129,6 +254,45 @@ function resolveForgeSearch(searchParams: URLSearchParams): ForgeRouteSearch {
   };
 }
 
+function resolveFromCurrentAppRoute(
+  pathname: string,
+  searchParams: URLSearchParams,
+): NotificationDestination | null {
+  if (pathname === "/activity") {
+    return buildActivityNavigation(resolveActivitySearch(searchParams));
+  }
+
+  if (pathname === "/home") {
+    return buildHomeNavigation(resolveHomeSearch(searchParams));
+  }
+
+  if (pathname === "/explore") {
+    return buildExploreNavigation(resolveExploreSearch(searchParams));
+  }
+
+  if (pathname === "/forge") {
+    return buildForgeNavigation(resolveForgeSearch(searchParams));
+  }
+
+  if (pathname === "/profile") {
+    return buildProfileNavigation();
+  }
+
+  if (pathname === "/settings") {
+    return buildSettingsNavigation(
+      normalizeSettingsSection(searchParams.get("section")),
+    );
+  }
+
+  const userId = matchLegacyUserPath(pathname);
+
+  if (userId) {
+    return buildProfileNavigation(userId);
+  }
+
+  return null;
+}
+
 async function resolveGroupIdByPlanId(planId: string) {
   const cachedGroupId = planGroupCache.get(planId);
 
@@ -136,18 +300,50 @@ async function resolveGroupIdByPlanId(planId: string) {
     return cachedGroupId;
   }
 
-  const response = await apiClient
+  const groupId = await apiClient
     .get("groups", {
       searchParams: {
         limit: 100,
       },
     })
-    .json<unknown>();
-  const groups = paginatedGroupsSchema.parse(response).items;
-  const groupId = groups.find((group) => group.plan?.id === planId)?.id ?? null;
+    .json<unknown>()
+    .then((response) => {
+      const groups = paginatedGroupsSchema.parse(response).items;
+
+      return groups.find((group) => group.plan?.id === planId)?.id ?? null;
+    })
+    .catch(() => null);
 
   if (groupId) {
     planGroupCache.set(planId, groupId);
+  }
+
+  return groupId;
+}
+
+async function resolveGroupIdByChatId(chatId: string) {
+  const cachedGroupId = chatGroupCache.get(chatId);
+
+  if (cachedGroupId) {
+    return cachedGroupId;
+  }
+
+  const groupId = await apiClient
+    .get("groups", {
+      searchParams: {
+        limit: 100,
+      },
+    })
+    .json<unknown>()
+    .then((response) => {
+      const groups = paginatedGroupsSchema.parse(response).items;
+
+      return groups.find((group) => group.chat?.id === chatId)?.id ?? null;
+    })
+    .catch(() => null);
+
+  if (groupId) {
+    chatGroupCache.set(chatId, groupId);
   }
 
   return groupId;
@@ -168,15 +364,34 @@ async function resolveFromLegacyLink(
     return null;
   }
 
-  const pathname = parsedLink.pathname;
+  const pathname = normalizeNotificationPathname(parsedLink.pathname);
   const proposalId = extractProposalId(parsedLink.searchParams);
   const planIdFromSearch = extractPlanId(parsedLink.searchParams);
+  const messageIdFromSearch = extractMessageId(parsedLink.searchParams);
 
-  if (pathname === "/forge") {
-    return buildForgeNavigation(resolveForgeSearch(parsedLink.searchParams));
+  const currentAppRoute = resolveFromCurrentAppRoute(
+    pathname,
+    parsedLink.searchParams,
+  );
+
+  if (currentAppRoute) {
+    return currentAppRoute;
   }
 
-  const groupId = matchLegacyGroupPath(pathname);
+  const groupPlanMatch = matchLegacyGroupPlanPath(pathname);
+
+  if (groupPlanMatch) {
+    return toGroupDestination(groupPlanMatch.groupId, {
+      panel: "group",
+      plan: groupPlanMatch.planId ?? planIdFromSearch,
+      proposal: proposalId ?? undefined,
+    });
+  }
+
+  const groupId =
+    extractGroupId(parsedLink.searchParams) ??
+    matchLegacyGroupPath(pathname) ??
+    matchLegacyExploreGroupPath(pathname);
 
   if (groupId) {
     return toGroupDestination(groupId, {
@@ -186,14 +401,25 @@ async function resolveFromLegacyLink(
     });
   }
 
-  const chatId = matchLegacyChatPath(pathname);
+  const chatMessageMatch = matchLegacyChatMessagePath(pathname);
+
+  if (chatMessageMatch) {
+    return toChatDestination(
+      chatMessageMatch.chatId,
+      chatMessageMatch.messageId,
+    );
+  }
+
+  const chatId =
+    extractChatId(parsedLink.searchParams) ?? matchLegacyChatPath(pathname);
 
   if (chatId) {
-    return toDirectMessageDestination(
+    return toChatDestination(
       chatId,
-      notification.entityType === "MESSAGE"
-        ? (notification.entityId ?? undefined)
-        : undefined,
+      messageIdFromSearch ??
+        (notification.entityType === "MESSAGE"
+          ? (notification.entityId ?? undefined)
+          : undefined),
     );
   }
 
@@ -297,6 +523,25 @@ export async function resolveNotificationDestination(
       activityId: notification.entityId,
       open: true,
     });
+  }
+
+  if (notification.entityType === "INVITE" && notification.entityId) {
+    return buildHomeNavigation({
+      invite: notification.entityId,
+      panel: "invitations",
+      view: "received",
+    });
+  }
+
+  if (notification.entityType === "USER" && notification.entityId) {
+    if (notification.type === "FRIEND_REQUEST") {
+      return buildHomeNavigation({
+        panel: "friends",
+        request: notification.entityId,
+      });
+    }
+
+    return buildProfileNavigation(notification.entityId);
   }
 
   switch (notification.type) {

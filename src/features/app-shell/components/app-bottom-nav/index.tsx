@@ -1,8 +1,8 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useActivePathname } from "@/features/app-shell/hooks/use-active-pathname";
 import {
-  applyAppNavigationBadges,
   appBottomNavigation,
+  applyAppNavigationBadges,
 } from "@/features/app-shell/lib/app-navigation";
 import {
   appShellEase,
@@ -51,7 +51,7 @@ export function AppBottomNav({
       }
       className={cn(
         "pointer-events-none fixed inset-x-0 bottom-0 isolate z-100 md:hidden",
-        "px-3 pb-4",
+        "px-3 pb-safe-bottom",
         className,
       )}
     >

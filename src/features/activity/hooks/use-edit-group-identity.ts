@@ -39,6 +39,12 @@ export function useEditGroupIdentity(
     initialValues.planLocationMode,
   );
   const [planLocation, setPlanLocation] = useState(initialValues.planLocation);
+  const [planLocationLat, setPlanLocationLat] = useState(
+    initialValues.planLocationLat,
+  );
+  const [planLocationLng, setPlanLocationLng] = useState(
+    initialValues.planLocationLng,
+  );
   const [planCost, setPlanCost] = useState(initialValues.planCost);
   const [planCostAmount, setPlanCostAmount] = useState(
     initialValues.planCostAmount,
@@ -61,6 +67,8 @@ export function useEditGroupIdentity(
     planDateTime,
     planDescription,
     planLocation,
+    planLocationLat,
+    planLocationLng,
     planLocationMode,
     planTitle,
   };
@@ -142,6 +150,8 @@ export function useEditGroupIdentity(
     planDateTime,
     planDescription,
     planLocation,
+    planLocationLat,
+    planLocationLng,
     planLocationMode,
     planTitle,
     save,
@@ -156,6 +166,8 @@ export function useEditGroupIdentity(
     setPlanDateTime,
     setPlanDescription,
     setPlanLocation,
+    setPlanLocationLat,
+    setPlanLocationLng,
     setPlanLocationMode,
     setPlanTitle,
   };

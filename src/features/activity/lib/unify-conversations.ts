@@ -6,6 +6,7 @@ import type {
 } from "./activity-contract";
 import { getActivityConversationKey } from "./activity-conversation-key";
 import { getOtherChatParticipant } from "./activity-projections";
+import { isGifAttachment } from "./gif-attachments";
 import { getGroupAvatarUrl, getGroupCoverImage } from "./group-identity";
 import {
   MY_NOTES_AVATAR_URL,
@@ -24,6 +25,10 @@ export function getMessagePreviewText(message?: UnifiedMessage) {
 
   if (message.content) {
     return message.content;
+  }
+
+  if (message.attachments?.some(isGifAttachment)) {
+    return "GIF";
   }
 
   if (message.type === "VOICE") {

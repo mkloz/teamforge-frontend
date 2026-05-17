@@ -11,7 +11,7 @@ export function ProfilePageLoading(_props: PageLoadingProps = {}) {
     <main
       aria-busy="true"
       aria-label="Loading profile"
-      className="relative min-h-full overflow-x-clip bg-canvas pb-32 md:pb-0"
+      className="relative min-h-full overflow-x-clip bg-canvas md:pb-0"
       role="status"
     >
       <span className="sr-only">Loading profile</span>
@@ -19,7 +19,7 @@ export function ProfilePageLoading(_props: PageLoadingProps = {}) {
       <div className="absolute top-4 right-4 z-50 md:top-6 md:right-8">
         <Skeleton shape="circle" className="size-10 border border-white/15" />
       </div>
-      <div className="relative z-10 mx-auto flex w-full max-w-lg flex-col gap-8 px-4 pt-14 pb-24 sm:max-w-6xl sm:px-6 sm:pt-16 md:px-8 md:pt-20 lg:gap-12 lg:pb-16">
+      <div className="relative z-10 mx-auto flex w-full max-w-lg flex-col gap-8 px-4 pt-14 pb-8 sm:max-w-6xl sm:px-6 sm:pt-16 md:px-8 md:pt-20 lg:gap-12 lg:pb-16">
         <ProfileHeroSkeleton />
         <ProfilePortraitSkeleton />
         <BestFirstGroupStripSkeleton />

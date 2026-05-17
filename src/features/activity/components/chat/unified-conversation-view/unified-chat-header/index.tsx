@@ -65,7 +65,7 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
           variant="ghost"
           size="icon-sm"
           onClick={onBack}
-          className="-ml-1 mr-0 size-10 shrink-0 text-slate-muted md:mr-1 md:size-9 lg:hidden"
+          className="mr-1 shrink-0 text-slate-muted lg:hidden"
           aria-label="Back to conversations"
         >
           <ArrowLeft size={20} strokeWidth={2.5} />

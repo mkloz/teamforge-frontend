@@ -51,9 +51,7 @@ export const SavedMessagesChatListItem = memo(
           <div
             className={cn(
               "group/item relative flex w-full cursor-pointer select-none items-center text-left outline-none transition duration-200",
-              isCompact
-                ? "min-h-14 gap-2.5 px-3 py-2 md:min-h-0"
-                : "min-h-16 gap-3.5 px-4 py-3.5 md:min-h-0",
+              isCompact ? "gap-2.5 px-3 py-2" : "gap-3.5 px-4 py-3.5",
               isSelected ? "bg-muted/60" : "hover:bg-muted/30",
             )}
           >
@@ -78,7 +76,7 @@ export const SavedMessagesChatListItem = memo(
             <span
               className={cn(
                 "relative flex shrink-0 items-center justify-center rounded-full border border-forge-teal/20 bg-forge-teal/10 text-forge-teal shadow-sm ring-1 ring-border/40",
-                isCompact ? "size-10 md:size-9" : "size-11",
+                isCompact ? "size-9" : "size-11",
               )}
               aria-hidden="true"
             >
@@ -138,18 +136,13 @@ export const SavedMessagesChatListItem = memo(
           </ContextMenuItem>
           {latestSavedMessage && onRemoveLatest ? (
             <>
-              <ContextMenuSeparator
-                className={ACTIVITY_MENU_SEPARATOR_CLASS}
-              />
+              <ContextMenuSeparator className={ACTIVITY_MENU_SEPARATOR_CLASS} />
               <ContextMenuItem
                 className={cn(ACTIVITY_MENU_ITEM_CLASS, "text-destructive")}
                 onSelect={() => void onRemoveLatest()}
               >
                 <span
-                  className={cn(
-                    ACTIVITY_MENU_ICON_CLASS,
-                    "text-destructive",
-                  )}
+                  className={cn(ACTIVITY_MENU_ICON_CLASS, "text-destructive")}
                 >
                   <Trash2 className="size-4" />
                 </span>

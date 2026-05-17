@@ -1,4 +1,5 @@
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { isVisualAttachment } from "@/features/activity/lib/gif-attachments";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { cn } from "@/shared/lib/utils";
 
@@ -70,12 +71,7 @@ function getGalleryRounding({
   reactionCount,
   replyTo,
 }: GalleryRoundingInput) {
-  if (
-    !attachments?.some(
-      (attachment) =>
-        attachment.type === "IMAGE" || attachment.type === "VIDEO",
-    )
-  ) {
+  if (!attachments?.some(isVisualAttachment)) {
     return "";
   }
 

@@ -24,8 +24,9 @@ const EMOJI_SKELETON_CELLS = Array.from(
 
 const COMPACT_REACTION_COLUMNS = 9;
 const EMPTY_SELECTED_EMOJIS = new Set<string>();
-const SelectedEmojiContext =
-  createContext<ReadonlySet<string>>(EMPTY_SELECTED_EMOJIS);
+const SelectedEmojiContext = createContext<ReadonlySet<string>>(
+  EMPTY_SELECTED_EMOJIS,
+);
 
 interface ReactionEmoji {
   emoji: string;
@@ -676,7 +677,7 @@ function CompactReactionEmojiGroup({
                   className={cn(
                     "flex h-full items-center justify-center rounded-md text-base leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18",
                     isSelected
-                      ? "bg-spark-amber/18 ring-1 ring-spark-amber/45 shadow-sm hover:bg-spark-amber/22"
+                      ? "bg-spark-amber/18 shadow-sm ring-1 ring-spark-amber/45 hover:bg-spark-amber/22"
                       : "hover:bg-forge-teal/10",
                   )}
                   title={emoji.label}
@@ -832,7 +833,7 @@ function EmojiButtonBase({
         "flex min-w-0 flex-1 items-center justify-center rounded-md text-lg leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18",
         compact ? "h-7 text-base" : "h-8",
         isSelected
-          ? "bg-spark-amber/18 ring-1 ring-spark-amber/45 shadow-sm hover:bg-spark-amber/22"
+          ? "bg-spark-amber/18 shadow-sm ring-1 ring-spark-amber/45 hover:bg-spark-amber/22"
           : "hover:bg-forge-teal/10",
         emoji.isActive && !isSelected && "bg-forge-teal/10",
         className,

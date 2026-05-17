@@ -163,8 +163,6 @@ export const updatePlanPayloadSchema = z
     }
   });
 
-export const createGroupPlanPayloadSchema = updatePlanPayloadSchema;
-
 export const createPlanProposalPayloadSchema = z.object({
   field: planProposalFieldSchema,
   proposedValue: z.string().trim().min(1),
@@ -193,9 +191,7 @@ export type PaginatedSavedMessagesResponse = z.infer<
 export type CreateInvitePayload = z.infer<typeof createInvitePayloadSchema>;
 export type UpdateGroupPayload = z.infer<typeof updateGroupPayloadSchema>;
 export type UpdatePlanPayload = z.infer<typeof updatePlanPayloadSchema>;
-export type CreateGroupPlanPayload = z.infer<
-  typeof createGroupPlanPayloadSchema
->;
+export type CreateGroupPlanPayload = z.infer<typeof updatePlanPayloadSchema>;
 export type CreatePlanProposalDto = z.infer<
   typeof createPlanProposalPayloadSchema
 >;

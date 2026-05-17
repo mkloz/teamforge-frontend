@@ -39,7 +39,7 @@ export const HeaderActions = memo(
                 variant="accentGhost"
                 size="icon-sm"
                 onClick={() => onToggleSearch(false)}
-                className="size-10 shrink-0 md:size-9"
+                className="shrink-0"
                 aria-label="Close conversation search"
                 aria-expanded={isSearching}
               >
@@ -57,7 +57,7 @@ export const HeaderActions = memo(
                 variant="accentGhost"
                 size="icon-sm"
                 onClick={() => onToggleSearch(true)}
-                className="shrink-0 size-10 md:size-9"
+                className="shrink-0"
                 aria-label="Search conversation"
                 aria-expanded={isSearching}
               >
@@ -73,7 +73,7 @@ export const HeaderActions = memo(
                   variant="accentGhost"
                   size="icon-sm"
                   onClick={onToggleAction}
-                  className="shrink-0 size-10 md:size-9"
+                  className="shrink-0"
                   aria-expanded={isActionOpen}
                   aria-label={`${
                     isActionOpen ? "Close" : "Open"

@@ -62,7 +62,10 @@ export function NavItem({ item, pathname }: NavItemProps) {
 
             {hasBadge && (
               <span
-                className="absolute -top-2 -right-2 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-sidebar bg-accent px-1 font-bold text-accent-foreground text-xs shadow-sm"
+                className={cn(
+                  "type-signature-label absolute -top-1.5 -right-1.5 flex items-center justify-center rounded-full border border-sidebar bg-accent font-black text-accent-foreground leading-none shadow-sm",
+                  badge > 9 ? "h-4 min-w-5 px-1" : "size-4 p-0",
+                )}
                 aria-hidden="true"
               >
                 {badge > 9 ? "9+" : badge}

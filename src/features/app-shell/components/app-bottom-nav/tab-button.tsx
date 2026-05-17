@@ -63,7 +63,8 @@ export function TabButton({ item, pathname }: TabButtonProps) {
           {hasBadge && (
             <span
               className={cn(
-                "absolute top-0.5 right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 font-bold text-accent-foreground text-xs shadow-sm",
+                "type-signature-label absolute top-0.5 right-0.5 flex items-center justify-center rounded-full bg-accent font-black text-accent-foreground leading-none shadow-sm",
+                badge > 9 ? "h-4 min-w-5 px-1" : "size-4 p-0",
                 "border-2 border-background",
                 active && "scale-110",
               )}

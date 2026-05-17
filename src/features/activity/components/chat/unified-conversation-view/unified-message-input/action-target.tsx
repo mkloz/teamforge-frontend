@@ -29,7 +29,9 @@ export const ActionTarget = memo(
     onStopRecording,
     disabled,
   }: ActionTargetProps) => {
-    const handleRecordingKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    const handleRecordingKeyDown = (
+      event: KeyboardEvent<HTMLButtonElement>,
+    ) => {
       if (event.key !== " " && event.key !== "Enter") {
         return;
       }

@@ -18,7 +18,7 @@ function HintText({ children }: { children: ReactNode }) {
 
 export function HintStrip({ fw }: ForgeFooterChildProps) {
   return (
-    <div className="sticky bottom-14 border-border/40 border-t bg-transparent px-4 py-2 backdrop-blur-sm md:px-12">
+    <div className="sticky bottom-app-bottom-nav border-border/40 border-t bg-transparent px-4 py-2 backdrop-blur-sm md:bottom-14 md:px-12">
       <div className="mx-auto flex min-h-5.5 max-w-2xl items-center justify-center">
         <AnimatePresence mode="wait">
           {fw.step === 1 && !fw.selectedActivity && (

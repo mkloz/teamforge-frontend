@@ -5,7 +5,7 @@ const OPTIMISTIC_MESSAGE_PREFIX = "temp-message:";
 
 type MessageActionTarget = Pick<
   UnifiedMessage,
-  "attachments" | "id" | "isOwn" | "status" | "type"
+  "attachments" | "id" | "isOwn" | "proposal" | "status" | "type"
 >;
 
 export function isSyntheticProposalMessageId(messageId: string) {
@@ -38,7 +38,8 @@ export function canReactToMessage(message: MessageActionTarget) {
 
 export function canReplyToMessage(message: MessageActionTarget) {
   return (
-    canUsePersistedMessageMutation(message) && message.type !== "PLAN_UPDATE"
+    canUsePersistedMessageMutation(message) &&
+    (message.type !== "PLAN_UPDATE" || Boolean(message.proposal))
   );
 }
 

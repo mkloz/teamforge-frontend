@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { memo, type ReactNode, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-
+import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import {
   ACTIVITY_MENU_ICON_CLASS,
   ACTIVITY_MENU_ITEM_CLASS,
@@ -24,7 +24,6 @@ import {
   getActivityPopupPanelClass,
   getActivityTransparentMenuContentClass,
 } from "@/features/activity/components/activity-popup-styles";
-import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import {
   canDeleteMessage,
@@ -75,24 +74,21 @@ const QUICK_REACTION_EMOJIS = [
   "✨",
 ] as const;
 
-const MENU_CONTENT_CLASS =
-  getActivityTransparentMenuContentClass("w-[16rem]");
+const MENU_CONTENT_CLASS = getActivityTransparentMenuContentClass("w-[16rem]");
 
-const MENU_CARD_CLASS =
-  getActivityMenuContentClass("w-full");
+const MENU_CARD_CLASS = getActivityMenuContentClass("w-full");
 
 const REACTION_DOCK_CLASS = "mb-1.5 w-full text-ink";
 
-const REACTION_DOCK_CLOUD_CLASS =
-  getActivityPopupPanelClass(
-    "flex items-center justify-between gap-0.5 rounded-full p-1",
-  );
+const REACTION_DOCK_CLOUD_CLASS = getActivityPopupPanelClass(
+  "flex items-center justify-between gap-0.5 rounded-full p-1",
+);
 
-const REACTION_DOCK_PICKER_CLASS =
-  getActivityPopupPanelClass("overflow-hidden rounded-lg");
+const REACTION_DOCK_PICKER_CLASS = getActivityPopupPanelClass(
+  "overflow-hidden rounded-lg",
+);
 
-const MENU_ACTION_CLASS =
-  cn(ACTIVITY_MENU_ITEM_CLASS, "text-sm");
+const MENU_ACTION_CLASS = cn(ACTIVITY_MENU_ITEM_CLASS, "text-sm");
 
 const MENU_DANGER_CLASS =
   "text-destructive focus:bg-destructive/8 focus:text-destructive data-[highlighted]:bg-destructive/8 data-[highlighted]:text-destructive";
@@ -593,8 +589,7 @@ function MessageReactionPicker({
 function getEmojiItemClass(isSelected: boolean) {
   return cn(
     EMOJI_ITEM_CLASS,
-    isSelected &&
-      "bg-spark-amber/18 ring-1 ring-spark-amber/45 shadow-sm focus:bg-spark-amber/18 data-[highlighted]:bg-spark-amber/18",
+    isSelected && "bg-spark-amber/18 shadow-sm ring-1 ring-spark-amber/45",
   );
 }
 

@@ -75,7 +75,7 @@ export const MessageReactions = memo(function MessageReactions({
           >
             <span
               className={cn(
-                "flex items-center justify-center text-xs leading-none",
+                "grid place-items-center self-center text-xs leading-none",
                 hasVisibleCount ? "size-3.5" : "size-4",
               )}
             >
@@ -124,7 +124,7 @@ function AnimatedReactionCount({ count }: { count: number }) {
   return (
     <span
       className={cn(
-        "relative inline-grid h-3 min-w-1.5 overflow-hidden tabular-nums leading-none transition-all duration-150",
+        "relative inline-grid h-3.5 min-w-1.5 place-items-center self-center overflow-hidden tabular-nums leading-none transition-all duration-150",
         !isCounterMounted && "w-0 min-w-0",
       )}
     >
@@ -133,7 +133,7 @@ function AnimatedReactionCount({ count }: { count: number }) {
           <motion.span
             key={count}
             animate="center"
-            className="col-start-1 row-start-1 inline-block opacity-80"
+            className="col-start-1 row-start-1 flex h-full items-center justify-center leading-none opacity-80"
             custom={motionState}
             exit="exit"
             initial="enter"

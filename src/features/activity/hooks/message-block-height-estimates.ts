@@ -2,9 +2,17 @@ import { layout, type PreparedText, prepare } from "@chenglou/pretext";
 
 import type { SenderGroup } from "@/features/activity/hooks/use-message-grouping";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import {
+  isGifAttachment,
+  isVisualAttachment,
+} from "@/features/activity/lib/gif-attachments";
 import { getCachedMediaIntrinsicSize } from "@/features/activity/lib/media-intrinsic-size";
 
-export type MessageBlockSpacing = "compact" | "normal" | "related";
+export type MessageBlockSpacing =
+  | "compact"
+  | "normal"
+  | "related"
+  | "system-boundary";
 
 const preparedTextCache = new Map<string, PreparedText>();
 const BODY_FONT = "500 14px Inter";
@@ -27,8 +35,7 @@ function getPreparedText(text: string) {
 
 export function getBubbleWidth(containerWidth: number, isOwn: boolean) {
   const avatarColumnWidth = isOwn ? 24 : 64;
-  const responsiveMaxWidth =
-    containerWidth < 640 ? 320 : MAX_BUBBLE_WIDTH;
+  const responsiveMaxWidth = containerWidth < 640 ? 320 : MAX_BUBBLE_WIDTH;
   const availableWidth = Math.max(
     containerWidth - avatarColumnWidth,
     MIN_BUBBLE_WIDTH,
@@ -53,9 +60,7 @@ function estimateAttachmentHeight(
     return 0;
   }
 
-  const mediaAttachments = message.attachments.filter(
-    (attachment) => attachment.type === "IMAGE" || attachment.type === "VIDEO",
-  );
+  const mediaAttachments = message.attachments.filter(isVisualAttachment);
 
   const nonMediaHeight = message.attachments.reduce((sum, attachment) => {
     if (attachment.type === "AUDIO") {
@@ -76,17 +81,18 @@ function estimateAttachmentHeight(
   if (mediaAttachments.length === 1) {
     const media = mediaAttachments[0];
     const cachedSize = getCachedMediaIntrinsicSize(media.id);
+    const isGif = isGifAttachment(media);
 
     if (cachedSize) {
       const estimatedMediaHeight = clamp(
         bubbleWidth / cachedSize.aspectRatio,
-        180,
+        isGif ? 188 : 180,
         480,
       );
       return nonMediaHeight + estimatedMediaHeight;
     }
 
-    return nonMediaHeight + 212;
+    return nonMediaHeight + (isGif ? 236 : 212);
   }
 
   if (mediaAttachments.length === 2) {
@@ -154,6 +160,7 @@ export function estimateSenderGroupHeight(
     compact: 4,
     normal: 10,
     related: 6,
+    "system-boundary": 16,
   } satisfies Record<MessageBlockSpacing, number>;
 
   return (

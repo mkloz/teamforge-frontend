@@ -1,7 +1,9 @@
+import { NotebookPen } from "lucide-react";
 import { memo } from "react";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
 import {
   getConversationAvatarUrl,
+  getConversationIsNotes,
   getConversationOnlineStatus,
   getConversationSecondaryAvatar,
   getConversationTitle,
@@ -24,19 +26,33 @@ export const AvatarSection = memo(
     const title = getConversationTitle(item);
     const onlineStatus = getConversationOnlineStatus(item);
     const secondaryAvatar = getConversationSecondaryAvatar(item);
+    const isNotes = getConversationIsNotes(item);
+    const avatarSizeClassName = isCompact ? "size-9" : "size-11";
 
     return (
       <div className="relative shrink-0">
-        <Avatar
-          src={avatarUrl}
-          name={title}
-          shape={isGroup ? "rounded" : "circle"}
-          className={cn(
-            "shadow-sm ring-1 ring-border/50 transition-colors duration-200 group-hover/item:ring-forge-teal/30",
-            isGroup && "rounded-md",
-            isCompact ? "size-10 md:size-9" : "size-11",
-          )}
-        />
+        {isNotes ? (
+          <span
+            className={cn(
+              "flex shrink-0 items-center justify-center rounded-full border border-forge-teal/20 bg-forge-teal/10 text-forge-teal shadow-sm ring-1 ring-border/40 transition-colors duration-200 group-hover/item:ring-forge-teal/30",
+              avatarSizeClassName,
+            )}
+            aria-hidden="true"
+          >
+            <NotebookPen className="size-4" strokeWidth={2.25} />
+          </span>
+        ) : (
+          <Avatar
+            src={avatarUrl}
+            name={title}
+            shape={isGroup ? "rounded" : "circle"}
+            className={cn(
+              "shadow-sm ring-1 ring-border/50 transition-colors duration-200 group-hover/item:ring-forge-teal/30",
+              isGroup && "rounded-md",
+              avatarSizeClassName,
+            )}
+          />
+        )}
 
         {!isGroup && onlineStatus && (
           <StatusIndicator status={onlineStatus} isCompact={isCompact} />

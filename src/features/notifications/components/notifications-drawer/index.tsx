@@ -130,7 +130,14 @@ export function NotificationsDrawer({
         </DrawerHeader>
 
         {/* Header */}
-        <div className="flex min-h-18 shrink-0 flex-wrap items-center justify-between gap-3 border-border border-b px-5 py-4">
+        <div
+          className={cn(
+            "flex shrink-0 flex-wrap items-center justify-between gap-3 px-5 pt-4",
+            selectedNotification
+              ? "min-h-16 pb-2"
+              : "min-h-18 border-border border-b pb-4",
+          )}
+        >
           <div className="min-w-0 flex-1">
             <h2 className="font-bold text-ink text-lg leading-tight tracking-tight">
               Notifications
@@ -142,17 +149,19 @@ export function NotificationsDrawer({
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <Button
-              variant="subtle"
-              size="sm"
-              onClick={markAllRead}
-              disabled={count === 0 || isMarkingAllRead}
-              className="px-3"
-              contentClassName="gap-1.5"
-            >
-              <CheckCheck className="size-3.5 shrink-0" aria-hidden="true" />
-              {isMarkingAllRead ? "Marking..." : "Mark all read"}
-            </Button>
+            {!selectedNotification && (
+              <Button
+                variant="subtle"
+                size="sm"
+                onClick={markAllRead}
+                disabled={count === 0 || isMarkingAllRead}
+                className="px-3"
+                contentClassName="gap-1.5"
+              >
+                <CheckCheck className="size-3.5 shrink-0" aria-hidden="true" />
+                {isMarkingAllRead ? "Marking..." : "Mark all read"}
+              </Button>
+            )}
             <Button
               variant="accentGhost"
               size="icon"

@@ -48,7 +48,7 @@ function GroupPlanDetailErrorState({
   return (
     <section
       aria-label="Group plan detail error"
-      className="mx-auto w-full max-w-screen-2xl px-4 pt-3 pb-28 sm:px-5 md:pt-6 lg:px-8"
+      className="mx-auto w-full max-w-screen-2xl px-4 pt-3 pb-6 sm:px-5 md:pt-6 lg:px-8"
     >
       <PageErrorState
         title="Group details could not load"

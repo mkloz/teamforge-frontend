@@ -136,6 +136,11 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
   const shouldShowErrorState = isFeedError && visibleItemCount === 0;
   const shouldShowOfflineBanner = !isOnline && !shouldShowErrorState;
   const savedChatIndex = getSavedChatIndex(items);
+  const notesIndex = items.findIndex(getConversationIsNotes);
+  const shouldShowPinnedNotesSeparator = getShouldShowPinnedNotesSeparator(
+    items,
+    notesIndex,
+  );
   const searchPlaceholder =
     activeFilter === "saved"
       ? "Search saved messages..."
@@ -155,7 +160,8 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
       count={savedCount}
       density={sidebarDensity}
       isSelected={
-        selectedKind === "saved" && selectedId === SAVED_MESSAGES_CONVERSATION_ID
+        selectedKind === "saved" &&
+        selectedId === SAVED_MESSAGES_CONVERSATION_ID
       }
       latestSavedMessage={latestSavedMessage}
       onRemoveLatest={
@@ -166,6 +172,10 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
       onSelect={openSavedMessagesChat}
     />
   ) : null;
+  const shouldPlacePinnedNotesSeparatorAfterSavedChat =
+    shouldShowPinnedNotesSeparator &&
+    Boolean(savedMessagesChatItem) &&
+    savedChatIndex === notesIndex + 1;
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -244,6 +254,12 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
                     onSelect={() => onSelectItem(item.id, item.kind)}
                   />
                   {savedChatIndex === index + 1 ? savedMessagesChatItem : null}
+                  {shouldShowPinnedNotesSeparator &&
+                  (shouldPlacePinnedNotesSeparatorAfterSavedChat
+                    ? savedChatIndex === index + 1
+                    : index === notesIndex) ? (
+                    <PinnedNotesSeparator density={sidebarDensity} />
+                  ) : null}
                 </Fragment>
               ))}
             </>
@@ -258,6 +274,28 @@ function getSavedChatIndex(items: UnifiedConversation[]) {
   const notesIndex = items.findIndex(getConversationIsNotes);
 
   return notesIndex >= 0 ? notesIndex + 1 : 0;
+}
+
+function getShouldShowPinnedNotesSeparator(
+  items: UnifiedConversation[],
+  notesIndex: number,
+) {
+  if (notesIndex < 0 || !items[notesIndex]?.isPinned) {
+    return false;
+  }
+
+  return items.slice(notesIndex + 1).some((item) => item.isPinned);
+}
+
+function PinnedNotesSeparator({ density }: { density: "default" | "compact" }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={density === "compact" ? "px-3 py-1" : "px-4 py-1.5"}
+    >
+      <div className="h-px bg-border/70" />
+    </div>
+  );
 }
 
 function shouldShowSavedMessagesChat({

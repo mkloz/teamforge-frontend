@@ -1,6 +1,14 @@
 import type { HomeRouteSearch } from "@/features/home/lib/home-route";
 import type { Notification } from "@/shared/schemas";
 
+function decodePathSegment(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 export function shouldOpenGroupPanelForNotificationType(
   type: Notification["type"],
 ) {
@@ -24,11 +32,55 @@ export function extractProposalId(searchParams: URLSearchParams) {
 }
 
 export function matchLegacyGroupPath(pathname: string) {
-  return pathname.match(/^\/groups\/([^/?#]+)/)?.[1] ?? null;
+  const groupId = pathname.match(/^\/groups\/([^/?#]+)/)?.[1];
+
+  return groupId ? decodePathSegment(groupId) : null;
+}
+
+export function matchLegacyExploreGroupPath(pathname: string) {
+  const groupId = pathname.match(/^\/explore\/groups\/([^/?#]+)/)?.[1];
+
+  return groupId ? decodePathSegment(groupId) : null;
+}
+
+export function matchLegacyGroupPlanPath(pathname: string) {
+  const match = pathname.match(/^\/groups\/([^/?#]+)\/plans(?:\/([^/?#]+))?/);
+
+  if (!match) {
+    return null;
+  }
+
+  return {
+    groupId: decodePathSegment(match[1]),
+    planId: match[2] ? decodePathSegment(match[2]) : null,
+  };
 }
 
 export function matchLegacyChatPath(pathname: string) {
-  return pathname.match(/^\/chats\/([^/?#]+)/)?.[1] ?? null;
+  const chatId = pathname.match(/^\/chats\/([^/?#]+)/)?.[1];
+
+  return chatId ? decodePathSegment(chatId) : null;
+}
+
+export function matchLegacyChatMessagePath(pathname: string) {
+  const match = pathname.match(/^\/chats\/([^/?#]+)\/messages\/([^/?#]+)/);
+
+  if (!match) {
+    return null;
+  }
+
+  return {
+    chatId: decodePathSegment(match[1]),
+    messageId: decodePathSegment(match[2]),
+  };
+}
+
+export function matchLegacyUserPath(pathname: string) {
+  const userId =
+    pathname.match(/^\/users\/([^/?#]+)/)?.[1] ??
+    pathname.match(/^\/profile\/([^/?#]+)/)?.[1];
+
+  return userId ? decodePathSegment(userId) : null;
 }
 
 export function matchLegacyPlanProposalPath(pathname: string) {
@@ -41,29 +93,42 @@ export function matchLegacyPlanProposalPath(pathname: string) {
   }
 
   return {
-    planId: match[1],
-    proposalId: match[2] ?? null,
+    planId: decodePathSegment(match[1]),
+    proposalId: match[2] ? decodePathSegment(match[2]) : null,
   };
 }
 
 export function matchLegacyPlanPath(pathname: string) {
-  return pathname.match(/^\/plans\/([^/?#]+)/)?.[1] ?? null;
+  const planId = pathname.match(/^\/plans\/([^/?#]+)/)?.[1];
+
+  return planId ? decodePathSegment(planId) : null;
 }
 
 export function matchLegacyGroupRatingPath(pathname: string) {
-  return pathname.match(/^\/ratings\/groups\/([^/?#]+)/)?.[1] ?? null;
+  const groupId = pathname.match(/^\/ratings\/groups\/([^/?#]+)/)?.[1];
+
+  return groupId ? decodePathSegment(groupId) : null;
 }
 
 export function resolveInviteIntent(
   pathname: string,
   searchParams: URLSearchParams,
 ): HomeRouteSearch | null {
-  if (pathname !== "/invites/received" && pathname !== "/invites/sent") {
+  if (
+    pathname !== "/invites" &&
+    pathname !== "/invitations" &&
+    pathname !== "/invites/received" &&
+    pathname !== "/invites/sent"
+  ) {
     return null;
   }
 
   return {
-    invite: searchParams.get("invite") ?? undefined,
+    invite:
+      searchParams.get("invite") ??
+      searchParams.get("inviteId") ??
+      searchParams.get("id") ??
+      undefined,
     panel: "invitations",
     view: pathname === "/invites/sent" ? "sent" : "received",
   };
@@ -73,7 +138,11 @@ export function resolveFriendRequestIntent(
   pathname: string,
   searchParams: URLSearchParams,
 ): HomeRouteSearch | null {
-  if (pathname !== "/friends" && pathname !== "/friends/requests/incoming") {
+  if (
+    pathname !== "/friends" &&
+    pathname !== "/friends/requests" &&
+    pathname !== "/friends/requests/incoming"
+  ) {
     return null;
   }
 

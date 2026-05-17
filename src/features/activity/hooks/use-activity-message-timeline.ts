@@ -178,24 +178,54 @@ function isProposalBackingMessage(
   message: UnifiedMessage,
   proposalMessage: UnifiedMessage,
 ) {
+  const proposal = proposalMessage.proposal;
+
   if (
-    message.type !== "SYSTEM" ||
+    (message.type !== "SYSTEM" && message.type !== "PLAN_UPDATE") ||
     message.chatId !== proposalMessage.chatId ||
-    message.senderId !== proposalMessage.senderId ||
-    normalizeTimelineContent(message.content) !==
-      normalizeTimelineContent(proposalMessage.content)
+    !proposal
   ) {
     return false;
   }
 
-  const messageTime = new Date(message.createdAt).getTime();
-  const proposalTime = new Date(proposalMessage.createdAt).getTime();
-
-  if (Number.isNaN(messageTime) || Number.isNaN(proposalTime)) {
+  if (!isNearProposalTimelineEvent(message.createdAt, proposalMessage)) {
     return false;
   }
 
-  return Math.abs(messageTime - proposalTime) <= 5 * 60 * 1000;
+  const messageContent = normalizeTimelineContent(message.content);
+  const proposalContent = normalizeTimelineContent(proposalMessage.content);
+
+  return (
+    messageContent === proposalContent ||
+    isProposalStatusMessage(
+      messageContent,
+      proposal.field,
+      proposal.proposer.name,
+    )
+  );
+}
+
+function isNearProposalTimelineEvent(
+  messageCreatedAt: string,
+  proposalMessage: UnifiedMessage,
+) {
+  const messageTime = new Date(messageCreatedAt).getTime();
+
+  if (Number.isNaN(messageTime)) {
+    return false;
+  }
+
+  const proposalTimes = [
+    proposalMessage.createdAt,
+    proposalMessage.updatedAt,
+    proposalMessage.editedAt,
+  ]
+    .map((value) => (value ? new Date(value).getTime() : Number.NaN))
+    .filter((value) => !Number.isNaN(value));
+
+  return proposalTimes.some(
+    (proposalTime) => Math.abs(messageTime - proposalTime) <= 5 * 60 * 1000,
+  );
 }
 
 function normalizeTimelineContent(value: string) {
@@ -203,4 +233,63 @@ function normalizeTimelineContent(value: string) {
     .trim()
     .toLowerCase()
     .replace(/[.!?]+$/u, "");
+}
+
+function isProposalStatusMessage(
+  normalizedContent: string,
+  field: NonNullable<UnifiedMessage["proposal"]>["field"],
+  proposerName: string,
+) {
+  return (
+    hasProposalLanguage(normalizedContent) &&
+    hasProposalActorLanguage(normalizedContent, proposerName) &&
+    hasProposalFieldLanguage(normalizedContent, field)
+  );
+}
+
+function hasProposalLanguage(normalizedContent: string) {
+  return (
+    normalizedContent.includes("proposal") ||
+    normalizedContent.includes("proposed")
+  );
+}
+
+function hasProposalActorLanguage(
+  normalizedContent: string,
+  proposerName: string,
+) {
+  const normalizedName = normalizeTimelineContent(proposerName);
+  const firstName = normalizedName.split(/\s+/)[0];
+
+  return (
+    normalizedContent.includes(normalizedName) ||
+    (firstName.length > 0 && normalizedContent.includes(firstName))
+  );
+}
+
+function hasProposalFieldLanguage(
+  normalizedContent: string,
+  field: NonNullable<UnifiedMessage["proposal"]>["field"],
+) {
+  switch (field) {
+    case "TITLE":
+      return normalizedContent.includes("title");
+    case "DESCRIPTION":
+      return normalizedContent.includes("description");
+    case "DATE_TIME":
+      return (
+        normalizedContent.includes("date") || normalizedContent.includes("time")
+      );
+    case "LOCATION":
+      return normalizedContent.includes("location");
+    case "COST":
+      return (
+        normalizedContent.includes("cost") ||
+        normalizedContent.includes("price")
+      );
+    case "CATEGORY":
+      return normalizedContent.includes("category");
+  }
+
+  return false;
 }

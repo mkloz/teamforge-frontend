@@ -1,10 +1,12 @@
+/* biome-ignore-all lint/a11y/noNoninteractiveTabindex: Message rows are focusable context-menu triggers. */
+// oxlint-disable jsx-a11y/no-noninteractive-tabindex -- Message rows are focusable context-menu triggers.
 import { Forward } from "lucide-react";
 import { memo, useState } from "react";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
 import { useSavedMessageIds } from "@/features/activity/hooks/use-saved-message-ids";
-import { formatChatTime } from "@/features/activity/lib/chat-utils";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
+import { formatChatTime } from "@/features/activity/lib/chat-utils";
 import { showAppErrorToast } from "@/shared/lib/error-toast";
 import { cn } from "@/shared/lib/utils";
 import type { User } from "@/shared/schemas";
@@ -101,9 +103,8 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
       onToggleSaved={toggleSaved}
       onOpenChange={setIsContextMenuOpen}
     >
-      <div
+      <article
         tabIndex={0}
-        role="article"
         aria-roledescription="message"
         aria-label={messageAriaLabel}
         className={cn(
@@ -129,13 +130,18 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
               </p>
             )}
 
-            <div className="flex w-full min-w-0 max-w-full flex-col gap-1">
+            <div
+              className={cn(
+                "flex w-full min-w-0 max-w-full flex-col gap-1",
+                isOwn ? "items-end" : "items-start",
+              )}
+            >
               <div
                 className={cn(
                   "relative flex w-fit min-w-0 max-w-full flex-col rounded-xl px-1 py-1 shadow-xs transition duration-300",
                   isOwn
-                    ? "rounded-br-none border border-forge-teal/15 bg-forge-teal/10 text-ink shadow-sm backdrop-blur-md"
-                    : "rounded-bl-none border border-border/70 bg-card/90 text-ink shadow-sm backdrop-blur-md",
+                    ? "rounded-br-none border border-forge-teal/15 bg-forge-teal/8 text-ink shadow-sm backdrop-blur-md"
+                    : "rounded-bl-none border border-border/60 bg-card/75 text-ink shadow-sm backdrop-blur-md",
                   isHighlighted
                     ? "message-search-focus"
                     : isInteractionFocused && "message-action-focus",
@@ -195,7 +201,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
             </div>
           </div>
         </div>
-      </div>
+      </article>
     </MessageContextMenu>
   );
 });

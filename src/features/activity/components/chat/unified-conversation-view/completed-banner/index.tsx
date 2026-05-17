@@ -252,5 +252,3 @@ function CompletedRatingsSkeleton() {
     </div>
   );
 }
-
-export const CompletedBanner = CompletedReviewGate;

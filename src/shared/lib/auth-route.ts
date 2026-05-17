@@ -17,11 +17,13 @@ const authReturnTargets = [
   "/onboarding/interests",
 ] as const;
 
+type StaticAuthReturnTarget = (typeof authReturnTargets)[number];
+type DynamicAuthReturnTarget = `/groups/${string}` | `/users/${string}`;
 type AuthEntryRoute =
   | "/auth/login"
   | "/auth/register"
   | "/auth/forgot-password";
-export type AuthReturnTarget = (typeof authReturnTargets)[number];
+export type AuthReturnTarget = StaticAuthReturnTarget | DynamicAuthReturnTarget;
 
 export interface RouteLocationLike {
   pathname: string;
@@ -34,8 +36,30 @@ export interface AuthReturnLocation {
   href: string;
 }
 
-function isAuthReturnTarget(pathname: string): pathname is AuthReturnTarget {
+function isStaticAuthReturnTarget(
+  pathname: string,
+): pathname is StaticAuthReturnTarget {
   return authReturnTargets.some((target) => target === pathname);
+}
+
+function isDynamicAuthReturnTarget(
+  pathname: string,
+): pathname is DynamicAuthReturnTarget {
+  return /^\/(?:groups|users)\/[^/]+$/.test(pathname);
+}
+
+function isAuthReturnTarget(pathname: string): pathname is AuthReturnTarget {
+  return (
+    isStaticAuthReturnTarget(pathname) || isDynamicAuthReturnTarget(pathname)
+  );
+}
+
+function decodeRouteParam(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
 }
 
 function normalizeReturnSearch(
@@ -72,6 +96,57 @@ function buildReturnSearchObject(search: string | null | undefined) {
   const entries = Object.fromEntries(new URLSearchParams(search).entries());
 
   return Object.keys(entries).length > 0 ? entries : undefined;
+}
+
+function getDynamicReturnParam(
+  pathname: string,
+  prefix: "/groups/" | "/users/",
+) {
+  if (!pathname.startsWith(prefix)) {
+    return null;
+  }
+
+  const param = pathname.slice(prefix.length);
+
+  return param && !param.includes("/") ? decodeRouteParam(param) : null;
+}
+
+function buildAuthenticatedReturnNavigation(
+  returnLocation: AuthReturnLocation | null,
+) {
+  if (!returnLocation) {
+    return null;
+  }
+
+  const search = buildReturnSearchObject(returnLocation.search);
+  const groupId = getDynamicReturnParam(returnLocation.pathname, "/groups/");
+
+  if (groupId) {
+    return {
+      to: "/groups/$groupId",
+      params: { groupId },
+      search,
+    } as const;
+  }
+
+  const userId = getDynamicReturnParam(returnLocation.pathname, "/users/");
+
+  if (userId) {
+    return {
+      to: "/users/$userId",
+      params: { userId },
+      search,
+    } as const;
+  }
+
+  if (isStaticAuthReturnTarget(returnLocation.pathname)) {
+    return {
+      to: returnLocation.pathname,
+      search,
+    } as const;
+  }
+
+  return null;
 }
 
 export function resolveAuthReturnLocation(
@@ -150,10 +225,12 @@ export function buildPostAuthRedirectNavigation(
   const returnLocation = resolveAuthReturnLocation(returnTo);
 
   if (canonicalDestination === "/home") {
-    return {
-      to: returnLocation?.pathname ?? canonicalDestination,
-      search: buildReturnSearchObject(returnLocation?.search),
-    } as const;
+    return (
+      buildAuthenticatedReturnNavigation(returnLocation) ??
+      ({
+        to: canonicalDestination,
+      } as const)
+    );
   }
 
   if (!returnLocation) {

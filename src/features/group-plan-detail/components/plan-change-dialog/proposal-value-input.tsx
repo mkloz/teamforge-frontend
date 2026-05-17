@@ -9,6 +9,7 @@ import {
   type PlanLocationValue,
   planCategoryLabels,
 } from "@/features/group-plan-detail/lib/group-plan-proposal-formatters";
+import { AddressAutocomplete } from "@/shared/components/maps/address-autocomplete";
 import { DateTimeInput } from "@/shared/components/ui/datetime-input";
 import { Input } from "@/shared/components/ui/input";
 import {
@@ -149,20 +150,44 @@ function LocationProposalInput({
           ))}
         </SelectContent>
       </Select>
-      {nextLocation.locationMode !== "TBD" ? (
+      {nextLocation.locationMode === "IN_PERSON" ? (
+        <AddressAutocomplete
+          label="Place or address"
+          badge="Plan location"
+          hint="Members will see this place if the group approves the change."
+          placeholder="Search address or venue name..."
+          value={
+            nextLocation.location
+              ? {
+                  address: nextLocation.location,
+                  city: nextLocation.location,
+                  lat: nextLocation.locationLat,
+                  lng: nextLocation.locationLng,
+                }
+              : null
+          }
+          onLocationSelect={(location) => {
+            onChange({
+              ...nextLocation,
+              location: location?.address ?? "",
+              locationLat: location?.lat ?? null,
+              locationLng: location?.lng ?? null,
+            });
+          }}
+          className="[&_label]:font-semibold [&_label]:text-muted-foreground [&_label]:text-xs"
+        />
+      ) : nextLocation.locationMode === "ONLINE" ? (
         <Input
           id="plan-change-location"
           aria-label="Location"
           value={nextLocation.location ?? ""}
-          placeholder={
-            nextLocation.locationMode === "ONLINE"
-              ? "Meeting link or platform"
-              : "Place or address"
-          }
+          placeholder="Meeting link or platform"
           onChange={(event) => {
             onChange({
               ...nextLocation,
               location: event.target.value,
+              locationLat: null,
+              locationLng: null,
             });
           }}
         />

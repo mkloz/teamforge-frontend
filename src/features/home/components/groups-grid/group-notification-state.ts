@@ -15,6 +15,24 @@ function getNotificationPath(link: string | null) {
   }
 }
 
+function decodePathSegment(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+function getPathId(pathname: string, pattern: RegExp) {
+  const id = pathname.match(pattern)?.[1];
+
+  return id ? decodePathSegment(id) : null;
+}
+
+function normalizeNotificationPathname(pathname: string) {
+  return pathname.replace(/^\/api(?:\/v\d+)?(?=\/)/, "");
+}
+
 export function collectUnreadGroupIds(
   notifications: Notification[],
   groups: GroupApi[],
@@ -61,10 +79,16 @@ function addNotificationLinkId(
     return;
   }
 
+  const pathname = normalizeNotificationPathname(parsedLink.pathname);
+  const activityKind = parsedLink.searchParams.get("kind");
+  const activityId = parsedLink.searchParams.get("id");
   const groupId =
+    parsedLink.searchParams.get("group") ??
     parsedLink.searchParams.get("groupId") ??
-    parsedLink.pathname.match(/^\/groups\/([^/?#]+)/)?.[1] ??
-    parsedLink.pathname.match(/^\/ratings\/groups\/([^/?#]+)/)?.[1] ??
+    (activityKind === "group" ? activityId : null) ??
+    getPathId(pathname, /^\/groups\/([^/?#]+)/) ??
+    getPathId(pathname, /^\/explore\/groups\/([^/?#]+)/) ??
+    getPathId(pathname, /^\/ratings\/groups\/([^/?#]+)/) ??
     null;
 
   if (groupId) {
@@ -75,7 +99,9 @@ function addNotificationLinkId(
   const planId =
     parsedLink.searchParams.get("plan") ??
     parsedLink.searchParams.get("planId") ??
-    parsedLink.pathname.match(/^\/plans\/([^/?#]+)/)?.[1] ??
+    parsedLink.searchParams.get("currentPlanId") ??
+    getPathId(pathname, /^\/plans\/([^/?#]+)/) ??
+    getPathId(pathname, /^\/groups\/[^/?#]+\/plans\/([^/?#]+)/) ??
     null;
 
   if (planId) {
@@ -87,7 +113,10 @@ function addNotificationLinkId(
     }
   }
 
-  const chatId = parsedLink.pathname.match(/^\/chats\/([^/?#]+)/)?.[1];
+  const chatId =
+    parsedLink.searchParams.get("chat") ??
+    parsedLink.searchParams.get("chatId") ??
+    getPathId(pathname, /^\/chats\/([^/?#]+)/);
 
   if (chatId) {
     const group = groups.find((candidate) => candidate.chat?.id === chatId);

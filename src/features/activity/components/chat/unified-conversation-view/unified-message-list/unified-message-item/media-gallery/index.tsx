@@ -3,6 +3,7 @@ import type {
   UnifiedAttachment,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
+import { isGifAttachment } from "@/features/activity/lib/gif-attachments";
 import { cn } from "@/shared/lib/utils";
 import { GalleryItem } from "./gallery-item";
 import { MediaLightbox } from "./media-lightbox";
@@ -33,11 +34,17 @@ export const MediaGallery = memo(function MediaGallery({
 }: MediaGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const count = attachments.length;
+  const hasSingleGif = count === 1 && isGifAttachment(attachments[0]);
 
   if (count === 0) return null;
 
   return (
-    <div className="relative w-full min-w-0 max-w-full">
+    <div
+      className={cn(
+        "relative min-w-0 max-w-full",
+        hasSingleGif ? "w-36 sm:w-56" : "w-full",
+      )}
+    >
       <div
         className={cn(
           "grid min-w-0 max-w-full gap-1 overflow-hidden transition-colors duration-500",

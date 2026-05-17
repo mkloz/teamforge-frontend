@@ -3,6 +3,7 @@ import type {
   UnifiedAttachment,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
+import { isVisualAttachment } from "@/features/activity/lib/gif-attachments";
 import { cn } from "@/shared/lib/utils";
 import { DocumentMessage } from "./document-message";
 import { MediaGallery } from "./media-gallery";
@@ -73,14 +74,9 @@ export const MessageMedia = memo(
         )}
 
         {/* Visual media / Gallery */}
-        {attachments.some(
-          (a: UnifiedAttachment) => a.type === "IMAGE" || a.type === "VIDEO",
-        ) && (
+        {attachments.some(isVisualAttachment) && (
           <MediaGallery
-            attachments={attachments.filter(
-              (a: UnifiedAttachment) =>
-                a.type === "IMAGE" || a.type === "VIDEO",
-            )}
+            attachments={attachments.filter(isVisualAttachment)}
             isOwn={isOwn}
             rounding={galleryRounding}
             isOnlyContent={!replyTo && !content && reactionGroupsLength === 0}

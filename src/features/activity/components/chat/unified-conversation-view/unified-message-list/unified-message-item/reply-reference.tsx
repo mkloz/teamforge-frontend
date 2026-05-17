@@ -14,7 +14,7 @@ export const ReplyReference = memo(
     if (!replyTo) return null;
 
     const className = cn(
-      "mb-1.5 flex min-w-30 max-w-full items-stretch gap-2 self-stretch overflow-hidden rounded-lg px-2 py-1.5 text-left transition",
+      "mb-1.5 flex w-0 min-w-full max-w-full items-stretch gap-2 overflow-hidden rounded-lg px-2 py-1.5 text-left transition",
       isOwn ? "bg-canvas/45 dark:bg-white/7" : "bg-muted/45 dark:bg-white/6",
       onActivate &&
         "cursor-pointer hover:bg-forge-teal/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35",

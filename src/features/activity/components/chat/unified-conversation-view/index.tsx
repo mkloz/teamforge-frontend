@@ -1,6 +1,6 @@
+import { AlertTriangle, RefreshCw, WifiOff } from "lucide-react";
 import type { RefObject } from "react";
 import { memo, useEffect, useRef, useState } from "react";
-import { AlertTriangle, RefreshCw, WifiOff } from "lucide-react";
 import { PlanChangeDialog } from "@/features/activity/components/groups/group-detail-panel/plan-section/plan-change-dialog";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import { useConversationData } from "@/features/activity/hooks/use-conversation-data";

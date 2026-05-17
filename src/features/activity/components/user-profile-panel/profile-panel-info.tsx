@@ -305,11 +305,7 @@ function ProfileMetaRow({
   );
 }
 
-function ProfileMetaItem({
-  item,
-}: {
-  item: { kind: string; value: string };
-}) {
+function ProfileMetaItem({ item }: { item: { kind: string; value: string } }) {
   if (item.kind === "city") {
     return (
       <span className="flex min-w-0 items-center gap-1 font-bold text-micro uppercase leading-none tracking-widest">

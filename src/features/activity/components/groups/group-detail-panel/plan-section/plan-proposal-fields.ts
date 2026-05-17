@@ -80,18 +80,22 @@ export function getLocationProposalInput(plan: Plan) {
   return {
     locationMode: current.locationMode,
     location: current.location ?? "",
+    locationLat: current.locationLat,
+    locationLng: current.locationLng,
   };
 }
 
 export function buildLocationProposalValue(input: {
   location: string;
+  locationLat: number | null;
+  locationLng: number | null;
   locationMode: LocationMode;
 }) {
   return serializePlanLocationValue({
     locationMode: input.locationMode,
     location: input.location,
-    locationLat: null,
-    locationLng: null,
+    locationLat: input.locationLat,
+    locationLng: input.locationLng,
   });
 }
 

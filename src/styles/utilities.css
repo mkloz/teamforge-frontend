@@ -28,6 +28,30 @@
   font-size: 0.625rem;
 }
 
+@utility pb-safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);
+}
+
+@utility pb-app-bottom-nav {
+  padding-bottom: calc(
+    4.25rem +
+    max(env(safe-area-inset-bottom), 0.75rem) +
+    0.75rem
+  );
+}
+
+@utility bottom-app-bottom-nav {
+  bottom: calc(4.25rem + max(env(safe-area-inset-bottom), 0.75rem) + 0.5rem);
+}
+
+@utility pb-app-bottom-dock {
+  padding-bottom: calc(
+    4.25rem +
+    max(env(safe-area-inset-bottom), 0.75rem) +
+    5.5rem
+  );
+}
+
 /* Custom scrollbar for webkit browsers - theme responsive */
 ::-webkit-scrollbar {
   width: 6px;

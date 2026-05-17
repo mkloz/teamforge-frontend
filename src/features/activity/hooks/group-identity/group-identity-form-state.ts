@@ -20,6 +20,8 @@ export interface GroupIdentityFormValues {
   planDateTime: string;
   planDescription: string;
   planLocation: string;
+  planLocationLat: number | null;
+  planLocationLng: number | null;
   planLocationMode: LocationMode;
   planTitle: string;
   name: string;
@@ -50,6 +52,8 @@ export function getInitialGroupIdentityValues(
     planDateTime: toDateTimeLocalValue(group.plan?.dateTime ?? null),
     planDescription: group.plan?.description ?? "",
     planLocation: group.plan?.location ?? "",
+    planLocationLat: group.plan?.locationLat ?? null,
+    planLocationLng: group.plan?.locationLng ?? null,
     planLocationMode: group.plan?.locationMode ?? "TBD",
     planTitle: group.plan?.title ?? "",
   };
@@ -134,8 +138,10 @@ function buildPlanPayload(values: GroupIdentityFormValues): UpdatePlanPayload {
     dateTime: normalizeDateTime(values.planDateTime),
     description: normalizeOptionalText(values.planDescription),
     location: normalizeLocation(values),
-    locationLat: null,
-    locationLng: null,
+    locationLat:
+      values.planLocationMode === "IN_PERSON" ? values.planLocationLat : null,
+    locationLng:
+      values.planLocationMode === "IN_PERSON" ? values.planLocationLng : null,
     locationMode: values.planLocationMode,
     title: values.planTitle.trim(),
   };

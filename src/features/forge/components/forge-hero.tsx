@@ -23,7 +23,7 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
           <p className="font-black text-muted-foreground text-sm uppercase">
             Forge
           </p>
-          <h1 className="max-w-3xl text-balance font-black text-4xl text-foreground leading-tight md:text-display-lg">
+          <h1 className="max-w-3xl text-balance text-center font-black text-4xl text-foreground leading-tight md:text-left md:text-display-lg">
             What are you trying to make happen?
           </h1>
           <p className="max-w-2xl text-pretty font-medium text-base text-muted-foreground leading-relaxed">

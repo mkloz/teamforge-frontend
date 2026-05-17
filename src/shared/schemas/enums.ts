@@ -122,7 +122,13 @@ export const messageStatusSchema = z.enum([
 ]);
 export type MessageStatus = z.infer<typeof messageStatusSchema>;
 
-export const attachmentTypeSchema = z.enum(["IMAGE", "VIDEO", "AUDIO", "FILE"]);
+export const attachmentTypeSchema = z.enum([
+  "IMAGE",
+  "VIDEO",
+  "AUDIO",
+  "FILE",
+  "GIF",
+]);
 export type AttachmentType = z.infer<typeof attachmentTypeSchema>;
 
 export const friendshipStatusSchema = z.enum([

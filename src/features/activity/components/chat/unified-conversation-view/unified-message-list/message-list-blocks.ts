@@ -23,12 +23,19 @@ function getSpacingAfter(
     return "compact";
   }
 
-  if (
-    isSystemBlock(block) ||
-    isSystemBlock(nextBlock) ||
-    nextBlock.showDateSeparator
-  ) {
+  if (nextBlock.showDateSeparator) {
     return "compact";
+  }
+
+  const isCurrentSystemBlock = isSystemBlock(block);
+  const isNextSystemBlock = isSystemBlock(nextBlock);
+
+  if (isCurrentSystemBlock && isNextSystemBlock) {
+    return "compact";
+  }
+
+  if (isCurrentSystemBlock || isNextSystemBlock) {
+    return "system-boundary";
   }
 
   return block.senderGroup.senderId === nextBlock.senderGroup.senderId

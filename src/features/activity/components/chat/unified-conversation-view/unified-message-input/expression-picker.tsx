@@ -9,9 +9,8 @@ import {
   useId,
   useState,
 } from "react";
-
-import type { ActivityOutgoingGifAttachment } from "@/features/activity/lib/activity-contract";
 import { getActivityPopupPanelClass } from "@/features/activity/components/activity-popup-styles";
+import type { ActivityOutgoingGifAttachment } from "@/features/activity/lib/activity-contract";
 import { Button } from "@/shared/components/ui/button";
 import {
   Popover,
@@ -122,7 +121,7 @@ export const ExpressionPicker = memo(function ExpressionPicker({
             <Button
               variant="ghost"
               size="icon-sm"
-              className="size-9 cursor-pointer rounded-full text-slate-muted outline-none transition-colors hover:text-spark-amber md:size-8"
+              className="size-8 cursor-pointer rounded-full text-slate-muted outline-none transition-colors hover:text-spark-amber"
               aria-label="Add emoji or GIF"
               disabled={disabled}
             >

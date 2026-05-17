@@ -4,12 +4,12 @@ export const ACTIVITY_POPUP_SHADOW_CLASS =
   "shadow-[0_1px_5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)]";
 
 export const ACTIVITY_MENU_ITEM_CLASS =
-  "min-h-10 gap-2 rounded-md px-2.5 py-2 font-bold text-xs focus:bg-forge-teal/8 focus:text-ink data-[highlighted]:bg-forge-teal/8 data-[highlighted]:text-ink md:min-h-8 md:px-2 md:py-1.5";
+  "min-h-8 gap-2 rounded-md px-2 py-1.5 font-bold text-xs focus:bg-forge-teal/8 focus:text-ink data-[highlighted]:bg-forge-teal/8 data-[highlighted]:text-ink";
 
 export const ACTIVITY_MENU_SEPARATOR_CLASS = "my-1 bg-border/55";
 
 export const ACTIVITY_MENU_ICON_CLASS =
-  "flex size-8 shrink-0 items-center justify-center rounded-sm border border-border/40 bg-background/65 text-muted-foreground md:size-7";
+  "flex size-7 shrink-0 items-center justify-center rounded-sm border border-border/40 bg-background/65 text-muted-foreground";
 
 export function getActivityPopupPanelClass(className?: string) {
   return cn(

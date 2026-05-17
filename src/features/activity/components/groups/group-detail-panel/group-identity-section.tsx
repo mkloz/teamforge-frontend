@@ -93,12 +93,12 @@ export function GroupIdentitySection({
         <div className="relative min-w-0 flex-1 pr-10 pb-1">
           <GroupStatusIcon label={statusLabel} status={status} />
 
-          <h2 className="line-clamp-2 break-words font-bold text-2xl text-ink leading-tight tracking-tight">
+          <h2 className="wrap-break-word line-clamp-2 font-bold text-2xl text-ink leading-tight tracking-tight">
             {displayName}
           </h2>
 
           {activityTitle ? (
-            <p className="mt-2 line-clamp-2 break-words font-semibold text-forge-teal text-xs leading-snug">
+            <p className="wrap-break-word mt-2 line-clamp-2 font-semibold text-forge-teal text-xs leading-snug">
               {activityTitle}
             </p>
           ) : null}
@@ -106,7 +106,7 @@ export function GroupIdentitySection({
       </div>
 
       {displayDescription && (
-        <p className="break-words text-pretty text-ink/75 text-sm leading-relaxed">
+        <p className="wrap-break-word text-pretty text-ink/75 text-sm leading-relaxed">
           {displayDescription}
         </p>
       )}

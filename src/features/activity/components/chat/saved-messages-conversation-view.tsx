@@ -7,16 +7,17 @@ import {
   Trash2,
 } from "lucide-react";
 import {
+  type KeyboardEvent,
+  type MouseEvent,
   memo,
   useMemo,
   useState,
-  type KeyboardEvent,
-  type MouseEvent,
 } from "react";
 import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
 import { getActivityConversationKey } from "@/features/activity/lib/activity-conversation-key";
 import { formatRelativeTime } from "@/features/activity/lib/chat-utils";
+import { isVisualAttachment } from "@/features/activity/lib/gif-attachments";
 import type { SavedMessageSnapshot } from "@/features/activity/lib/saved-message";
 import {
   SAVED_MESSAGES_SUBTITLE,
@@ -206,6 +207,17 @@ function SavedMessageBubble({
     message,
     isOwn,
   });
+  const savedGalleryRounding = getSavedMessageGalleryRounding(galleryRounding);
+  const hasVisualAttachments = attachments.some(isVisualAttachment);
+  const hasContextPreview = Boolean(
+    message.replyTo || message.forwardedFromMessageId,
+  );
+  const bubbleSizeClass = getSavedMessageBubbleSizeClass({
+    content: displayContent,
+    hasContextPreview,
+    hasVisualAttachments,
+    visualAttachmentCount: attachments.filter(isVisualAttachment).length,
+  });
   const usesInlineFooter =
     displayContent.trim().length > 0 &&
     !message.replyTo &&
@@ -230,34 +242,20 @@ function SavedMessageBubble({
   }
 
   return (
-    <article
-      className={cn(
-        "group/saved-message flex w-full min-w-0 items-end gap-3",
-        isOwn ? "flex-row-reverse justify-start" : "justify-start",
-      )}
-    >
-      {!isOwn ? (
-        <Avatar
-          src={message.sender?.avatar}
-          name={senderName}
-          className="size-8 bg-muted text-muted-foreground text-xs shadow-sm ring-1 ring-border"
-          fallbackClassName="text-muted-foreground"
-        />
-      ) : null}
+    <article className="group/saved-message flex w-full min-w-0 items-start gap-2.5 sm:gap-3">
+      <Avatar
+        src={message.sender?.avatar}
+        name={senderName}
+        className="mt-6 size-8 bg-muted text-muted-foreground text-xs shadow-sm ring-1 ring-border"
+        fallbackClassName="text-muted-foreground"
+      />
 
-      <div
-        className={cn(
-          "flex w-full min-w-0 max-w-xs flex-col sm:max-w-lg md:max-w-xl",
-          isOwn ? "ml-auto items-end" : "mr-auto items-start",
-        )}
-      >
-        <div
-          className={cn(
-            "mb-1 flex min-w-0 max-w-full flex-wrap items-center gap-1.5 px-1.5",
-            isOwn ? "justify-end text-right" : "justify-start",
-          )}
-        >
-          <span className="inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-full border border-forge-teal/15 bg-forge-teal/8 px-2 py-1 font-bold text-forge-teal text-micro leading-none">
+      <div className="flex min-w-0 flex-1 flex-col items-start">
+        <div className="mb-1 flex min-w-0 max-w-full flex-wrap items-center gap-x-2 gap-y-1 px-1">
+          <span className="max-w-32 shrink-0 truncate font-bold text-forge-teal text-micro">
+            {isOwn ? "You" : senderName}
+          </span>
+          <span className="inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-full border border-forge-teal/15 bg-forge-teal/8 px-2 py-1 font-bold text-forge-teal text-micro leading-none sm:max-w-72">
             <MessageCircle className="size-3 shrink-0" strokeWidth={2.25} />
             <span className="truncate">From {row.conversationTitle}</span>
           </span>
@@ -266,22 +264,18 @@ function SavedMessageBubble({
           </span>
         </div>
 
-        {!isOwn ? (
-          <p className="mb-0.5 ml-1.5 font-bold text-forge-teal text-micro opacity-90">
-            {senderName}
-          </p>
-        ) : null}
-
+        {/* biome-ignore lint/a11y/useSemanticElements: Saved bubbles contain nested action buttons, so they cannot be native buttons. */}
         <div
           tabIndex={0}
           role="button"
           aria-label={`Open original saved message from ${senderName}`}
           className={cn(
-            "relative flex w-fit min-w-0 max-w-full cursor-pointer flex-col rounded-xl px-1 py-1 text-left shadow-xs transition duration-300",
+            "relative flex min-w-0 cursor-pointer flex-col rounded-xl rounded-tl-none px-1 py-1 text-left shadow-xs transition duration-300",
+            bubbleSizeClass,
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
             isOwn
-              ? "rounded-br-none border border-forge-teal/15 bg-forge-teal/10 text-ink shadow-sm backdrop-blur-md"
-              : "rounded-bl-none border border-border/70 bg-card/90 text-ink shadow-sm backdrop-blur-md",
+              ? "border border-forge-teal/15 bg-forge-teal/8 text-ink shadow-sm backdrop-blur-md"
+              : "border border-border/60 bg-card/75 text-ink shadow-sm backdrop-blur-md",
             !displayContent && "min-w-30",
             usesInlineFooter && "min-w-40",
           )}
@@ -303,7 +297,7 @@ function SavedMessageBubble({
             createdAt={message.createdAt}
             status={message.status}
             isReadByOthers={isReadByOthers}
-            galleryRounding={galleryRounding}
+            galleryRounding={savedGalleryRounding}
             reactionGroupsLength={reactionGroups.length}
             replyTo={message.replyTo}
           />
@@ -330,12 +324,7 @@ function SavedMessageBubble({
           />
         </div>
 
-        <div
-          className={cn(
-            "mt-1 flex items-center gap-2 px-2",
-            isOwn ? "justify-end" : "justify-start",
-          )}
-        >
+        <div className="mt-1 flex w-full max-w-2xl flex-wrap items-center gap-x-2 gap-y-1 px-2">
           <span className="inline-flex items-center gap-1 font-bold text-micro text-slate-muted/70">
             <Bookmark className="size-3 fill-current" aria-hidden="true" />
             Opens original message
@@ -352,6 +341,46 @@ function SavedMessageBubble({
       </div>
     </article>
   );
+}
+
+function getSavedMessageBubbleSizeClass({
+  content,
+  hasContextPreview,
+  hasVisualAttachments,
+  visualAttachmentCount,
+}: {
+  content: string;
+  hasContextPreview: boolean;
+  hasVisualAttachments: boolean;
+  visualAttachmentCount: number;
+}) {
+  if (hasVisualAttachments && !content && !hasContextPreview) {
+    return visualAttachmentCount > 1
+      ? "w-72 max-w-full sm:w-96"
+      : "w-fit max-w-full";
+  }
+
+  if (hasContextPreview) {
+    return "w-fit min-w-72 max-w-full sm:max-w-xl md:max-w-2xl";
+  }
+
+  if (content.length > 80) {
+    return "w-fit max-w-full sm:max-w-xl md:max-w-2xl";
+  }
+
+  return "w-fit max-w-full";
+}
+
+function getSavedMessageGalleryRounding(rounding: string) {
+  const nextRounding = rounding
+    .split(" ")
+    .filter(
+      (className) =>
+        !["rounded-br-none", "rounded-bl-none"].includes(className),
+    )
+    .join(" ");
+
+  return cn(nextRounding, "rounded-tl-none");
 }
 
 function ForwardedIndicator({
@@ -385,11 +414,18 @@ function ForwardedIndicator({
 }
 
 function SavedMessagesLoadingState() {
+  const placeholders = [
+    "saved-message-loading-1",
+    "saved-message-loading-2",
+    "saved-message-loading-3",
+    "saved-message-loading-4",
+  ];
+
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-3">
-      {Array.from({ length: 4 }, (_, index) => (
+      {placeholders.map((key) => (
         <div
-          key={index}
+          key={key}
           className="h-28 animate-pulse rounded-2xl border border-border/60 bg-card/70 motion-reduce:animate-none"
         />
       ))}

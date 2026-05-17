@@ -2,6 +2,7 @@ import { Lightbulb } from "lucide-react";
 import type { ReactElement } from "react";
 import type { Plan } from "@/features/activity/lib/activity-contract";
 import { LOCATION_MODE_LABELS } from "@/features/activity/lib/plan-location";
+import { AddressAutocomplete } from "@/shared/components/maps/address-autocomplete";
 import { Button } from "@/shared/components/ui/button";
 import { DateTimeInput } from "@/shared/components/ui/datetime-input";
 import {
@@ -46,8 +47,8 @@ export function PlanChangeDialog({
 }: PlanChangeDialogProps) {
   const form = usePlanProposalForm(plan, { onOpenChange, open });
 
-  function handleOpenChange(open: boolean) {
-    if (open) {
+  function handleOpenChange(nextOpen: boolean) {
+    if (nextOpen) {
       form.openForm();
       return;
     }
@@ -69,6 +70,8 @@ export function PlanChangeDialog({
     form.setLocationValue((current) => ({
       ...current,
       location: locationMode === "TBD" ? "" : current.location,
+      locationLat: null,
+      locationLng: null,
       locationMode,
     }));
   }
@@ -161,20 +164,44 @@ export function PlanChangeDialog({
                     )}
                   </SelectContent>
                 </Select>
-                {form.locationValue.locationMode !== "TBD" ? (
+                {form.locationValue.locationMode === "IN_PERSON" ? (
+                  <AddressAutocomplete
+                    label="Place or address"
+                    badge="Plan location"
+                    hint="Members will see this place if the group approves the change."
+                    placeholder="Search address or venue name..."
+                    value={
+                      form.locationValue.location
+                        ? {
+                            address: form.locationValue.location,
+                            city: form.locationValue.location,
+                            lat: form.locationValue.locationLat,
+                            lng: form.locationValue.locationLng,
+                          }
+                        : null
+                    }
+                    onLocationSelect={(location) =>
+                      form.setLocationValue((current) => ({
+                        ...current,
+                        location: location?.address ?? "",
+                        locationLat: location?.lat ?? null,
+                        locationLng: location?.lng ?? null,
+                      }))
+                    }
+                    className="[&_label]:font-semibold [&_label]:text-muted-foreground [&_label]:text-xs"
+                  />
+                ) : form.locationValue.locationMode === "ONLINE" ? (
                   <Input
                     value={form.locationValue.location}
                     onChange={(event) =>
                       form.setLocationValue((current) => ({
                         ...current,
                         location: event.target.value,
+                        locationLat: null,
+                        locationLng: null,
                       }))
                     }
-                    placeholder={
-                      form.locationValue.locationMode === "ONLINE"
-                        ? "Meeting link or platform"
-                        : "Place or address"
-                    }
+                    placeholder="Meeting link or platform"
                   />
                 ) : null}
               </fieldset>

@@ -29,7 +29,7 @@ export function ProfilePageContent({
   const shouldShowUserMenu = showUserMenu ?? mode === "self";
 
   return (
-    <main className="relative min-h-full overflow-x-clip bg-canvas pb-32 md:pb-0">
+    <main className="relative min-h-full overflow-x-clip bg-canvas md:pb-0">
       <ProfileCoverBanner personalityType={profile.personalityType} />
 
       {shouldShowUserMenu ? (
@@ -38,7 +38,7 @@ export function ProfilePageContent({
         </div>
       ) : null}
 
-      <div className="relative z-10 mx-auto flex w-full max-w-lg flex-col gap-8 px-4 pt-14 pb-24 sm:max-w-6xl sm:px-6 sm:pt-16 md:px-8 md:pt-20 lg:gap-12 lg:pb-16">
+      <div className="relative z-10 mx-auto flex w-full max-w-lg flex-col gap-8 px-4 pt-14 pb-8 sm:max-w-6xl sm:px-6 sm:pt-16 md:px-8 md:pt-20 lg:gap-12 lg:pb-16">
         <ProfileHero
           user={profile}
           archetype={pageModel.archetype}

@@ -10,8 +10,8 @@ import {
 import { GroupDetailPanel } from "@/features/activity/components/groups/group-detail-panel";
 import type { ActivityWorkspace } from "@/features/activity/hooks/use-activity";
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
-import { SAVED_MESSAGES_CONVERSATION_ID } from "@/features/activity/lib/saved-messages-identity";
 import type { SavedMessageSnapshot } from "@/features/activity/lib/saved-message";
+import { SAVED_MESSAGES_CONVERSATION_ID } from "@/features/activity/lib/saved-messages-identity";
 
 import { ActivityConversationFeedback } from "./activity-conversation-feedback";
 import { ActivityEmptyState } from "./activity-empty-state";
@@ -38,8 +38,7 @@ export function ActivityConversationStage({
     activity.hasSelection &&
     (activity.isSelectedConversationError ||
       (!isOnline && activity.isSelectedConversationLoading));
-  const isMessageInitialLoading =
-    isOnline && activity.isMessageTimelineLoading;
+  const isMessageInitialLoading = isOnline && activity.isMessageTimelineLoading;
   const isMessageInitialError =
     activity.isMessageTimelineError ||
     (!isOnline && activity.isMessageTimelineLoading);

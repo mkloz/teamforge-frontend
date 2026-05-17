@@ -1,4 +1,5 @@
 import { LOCATION_MODE_LABELS } from "@/features/activity/lib/plan-location";
+import { AddressAutocomplete } from "@/shared/components/maps/address-autocomplete";
 import { DateTimeInput } from "@/shared/components/ui/datetime-input";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
@@ -133,6 +134,8 @@ export function EditPlanDetailsFields({ editor }: EditPlanDetailsFieldsProps) {
               }
 
               editor.setPlanLocationMode(value);
+              editor.setPlanLocationLat(null);
+              editor.setPlanLocationLng(null);
 
               if (value === "TBD") {
                 editor.setPlanLocation("");
@@ -152,7 +155,32 @@ export function EditPlanDetailsFields({ editor }: EditPlanDetailsFieldsProps) {
           </Select>
         </div>
 
-        {editor.planLocationMode !== "TBD" ? (
+        {editor.planLocationMode === "IN_PERSON" ? (
+          <div className="sm:col-span-2">
+            <AddressAutocomplete
+              label="Location"
+              badge="Plan location"
+              hint="Members will see this place on the plan."
+              placeholder="Search address or venue name..."
+              value={
+                editor.planLocation
+                  ? {
+                      address: editor.planLocation,
+                      city: editor.planLocation,
+                      lat: editor.planLocationLat,
+                      lng: editor.planLocationLng,
+                    }
+                  : null
+              }
+              onLocationSelect={(location) => {
+                editor.setPlanLocation(location?.address ?? "");
+                editor.setPlanLocationLat(location?.lat ?? null);
+                editor.setPlanLocationLng(location?.lng ?? null);
+              }}
+              className="[&_label]:font-semibold [&_label]:text-muted-foreground [&_label]:text-xs"
+            />
+          </div>
+        ) : editor.planLocationMode === "ONLINE" ? (
           <div className="flex flex-col gap-2">
             <Label
               htmlFor="plan-location"
@@ -163,12 +191,12 @@ export function EditPlanDetailsFields({ editor }: EditPlanDetailsFieldsProps) {
             <Input
               id="plan-location"
               value={editor.planLocation}
-              placeholder={
-                editor.planLocationMode === "ONLINE"
-                  ? "Meeting link or platform"
-                  : "Place or address"
-              }
-              onChange={(event) => editor.setPlanLocation(event.target.value)}
+              placeholder="Meeting link or platform"
+              onChange={(event) => {
+                editor.setPlanLocation(event.target.value);
+                editor.setPlanLocationLat(null);
+                editor.setPlanLocationLng(null);
+              }}
             />
           </div>
         ) : null}

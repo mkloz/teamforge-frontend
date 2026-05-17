@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { MouseEvent } from "react";
 import { memo } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
+import { isGifVideoAttachment } from "@/features/activity/lib/gif-attachments";
 
 import { LightboxImage, LightboxVideo } from "./lightbox-media";
 import { NavButton } from "./nav-button";
@@ -20,6 +21,10 @@ export const LightboxStage = memo(function LightboxStage({
   onNext,
   onPrev,
 }: LightboxStageProps) {
+  const shouldRenderVideo =
+    currentMedia?.type === "VIDEO" ||
+    (currentMedia ? isGifVideoAttachment(currentMedia) : false);
+
   return (
     <div className="pointer-events-auto relative flex flex-1 items-center justify-center overflow-hidden p-2 sm:p-10">
       <AnimatePresence mode="wait" initial={false}>
@@ -51,7 +56,7 @@ export const LightboxStage = memo(function LightboxStage({
             }}
             className="relative flex size-full items-center justify-center"
           >
-            {currentMedia.type === "VIDEO" ? (
+            {shouldRenderVideo ? (
               <LightboxVideo media={currentMedia} />
             ) : (
               <LightboxImage media={currentMedia} />

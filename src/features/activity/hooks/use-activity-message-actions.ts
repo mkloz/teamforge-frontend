@@ -50,7 +50,10 @@ export function useActivityMessageActions() {
   }
 
   async function deleteMessage(message: UnifiedMessage) {
-    if (!isMessageConversationKind(selectedKind) || !canDeleteMessage(message)) {
+    if (
+      !isMessageConversationKind(selectedKind) ||
+      !canDeleteMessage(message)
+    ) {
       return;
     }
 
@@ -74,7 +77,10 @@ export function useActivityMessageActions() {
   }
 
   async function toggleReaction(message: UnifiedMessage, emoji: string) {
-    if (!isMessageConversationKind(selectedKind) || !canReactToMessage(message)) {
+    if (
+      !isMessageConversationKind(selectedKind) ||
+      !canReactToMessage(message)
+    ) {
       return;
     }
 

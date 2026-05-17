@@ -1,3 +1,5 @@
+/* biome-ignore-all lint/a11y/noNoninteractiveTabindex: Message rows are focusable context-menu triggers. */
+// oxlint-disable jsx-a11y/no-noninteractive-tabindex -- Message rows are focusable context-menu triggers.
 import { motion } from "framer-motion";
 import { Plus, Reply } from "lucide-react";
 import { memo, useState } from "react";
@@ -35,6 +37,7 @@ interface ProposalMessageProps {
 }
 
 const PROPOSAL_QUICK_REACTIONS = ["👍", "🤝", "👀", "🎉", "✨"] as const;
+const PROPOSAL_REACTION_PLACEHOLDERS = ["👍", "👀"] as const;
 
 export const ProposalMessage = memo(function ProposalMessage({
   message,
@@ -105,9 +108,8 @@ export const ProposalMessage = memo(function ProposalMessage({
       onToggleSaved={messageActions.toggleSaved}
       onOpenChange={setIsContextMenuOpen}
     >
-      <div
+      <article
         tabIndex={0}
-        role="article"
         aria-roledescription="message"
         aria-label={messageAriaLabel}
         className={cn(
@@ -156,8 +158,8 @@ export const ProposalMessage = memo(function ProposalMessage({
                 className={cn(
                   "relative flex w-full min-w-0 max-w-full flex-col rounded-xl border px-1 py-1 shadow-sm backdrop-blur-md transition duration-300",
                   message.isOwn
-                    ? "rounded-br-none border-forge-teal/15 bg-forge-teal/10 text-ink"
-                    : "rounded-bl-none border-border/70 bg-card/90 text-ink",
+                    ? "rounded-br-none border-forge-teal/15 bg-forge-teal/8 text-ink"
+                    : "rounded-bl-none border-border/60 bg-card/75 text-ink",
                   isHighlighted
                     ? "message-search-focus"
                     : isInteractionFocused && "message-action-focus",
@@ -212,12 +214,17 @@ export const ProposalMessage = memo(function ProposalMessage({
                   isSaved={isSaved}
                   hasReply={Boolean(message.replyTo)}
                   onToggleReaction={toggleReaction}
+                  reactionPlaceholderEmojis={
+                    canReact && !isExpanded
+                      ? PROPOSAL_REACTION_PLACEHOLDERS
+                      : undefined
+                  }
                 />
               </div>
             </div>
           </div>
         </motion.div>
-      </div>
+      </article>
     </MessageContextMenu>
   );
 });

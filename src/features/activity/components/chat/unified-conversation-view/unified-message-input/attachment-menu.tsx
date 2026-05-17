@@ -78,7 +78,7 @@ export const AttachmentMenu = memo(function AttachmentMenu({
               <Button
                 variant="accentGhost"
                 size="icon-sm"
-                className="size-9 cursor-pointer rounded-full outline-none md:size-8"
+                className="size-8 cursor-pointer rounded-full outline-none"
                 aria-label="Add attachment"
                 disabled={disabled}
               >
@@ -95,14 +95,14 @@ export const AttachmentMenu = memo(function AttachmentMenu({
         >
           {onCreateProposal ? (
             <DropdownMenuItem
-              className={cn(ACTIVITY_MENU_ITEM_CLASS, "min-h-10 px-2.5 py-2")}
+              className={ACTIVITY_MENU_ITEM_CLASS}
               onSelect={() => onCreateProposal()}
             >
               <AttachmentMenuRow icon={Lightbulb} label="Create proposal" />
             </DropdownMenuItem>
           ) : null}
           <DropdownMenuItem
-            className={cn(ACTIVITY_MENU_ITEM_CLASS, "min-h-10 px-2.5 py-2")}
+            className={ACTIVITY_MENU_ITEM_CLASS}
             onSelect={(event) => {
               event.preventDefault();
               imageInputRef.current?.click();
@@ -111,7 +111,7 @@ export const AttachmentMenu = memo(function AttachmentMenu({
             <AttachmentMenuRow icon={ImageIcon} label="Photos" />
           </DropdownMenuItem>
           <DropdownMenuItem
-            className={cn(ACTIVITY_MENU_ITEM_CLASS, "min-h-10 px-2.5 py-2")}
+            className={ACTIVITY_MENU_ITEM_CLASS}
             onSelect={(event) => {
               event.preventDefault();
               fileInputRef.current?.click();

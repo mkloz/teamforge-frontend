@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import type { PageLoadingProps } from "@/shared/components/loading/page-loading";
 import {
@@ -56,12 +57,12 @@ function AuthLoadingShell({ children }: { children: ReactNode }) {
   return (
     <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
       <div className="pointer-events-none absolute top-0 right-0 left-0 z-30 flex h-16 items-center px-4 lg:h-24 lg:px-10">
-        <a
-          href="/"
+        <Link
+          to="/"
           className="pointer-events-auto inline-flex h-9 items-center rounded-full px-4 font-medium text-white/80 text-xs"
         >
           Back home
-        </a>
+        </Link>
       </div>
 
       <div className="relative hidden h-full flex-1 items-center justify-center overflow-hidden border-r bg-hero-bg lg:flex">

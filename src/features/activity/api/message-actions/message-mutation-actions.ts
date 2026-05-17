@@ -178,10 +178,20 @@ export const ActivityMessageMutationActions = {
           selectedId,
           currentUserParticipant,
         );
-        const hasReaction = message.reactions?.some(
-          (reaction) =>
-            reaction.emoji === emoji && reaction.userId === currentUser.id,
-        );
+        const baseMessage = getFreshReactionMessage(chatId, message);
+        const hasReaction = hasUserReaction(baseMessage, emoji, currentUser.id);
+        const optimisticMessage = toggleOptimisticReaction({
+          currentUserId: currentUser.id,
+          currentUserParticipant,
+          emoji,
+          hasReaction,
+          message: baseMessage,
+        });
+
+        ActivityMessageCache.replace(chatId, message.id, optimisticMessage);
+        context.syncPinnedMessage(chatId, optimisticMessage);
+        ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
+
         const updatedMessage = await (hasReaction
           ? ActivityApi.removeReaction(chatId, message.id, emoji)
           : ActivityApi.addReaction(chatId, message.id, emoji)
@@ -317,3 +327,81 @@ export const ActivityMessageMutationActions = {
     );
   },
 };
+
+function getFreshReactionMessage(
+  chatId: string,
+  message: UnifiedMessage,
+): UnifiedMessage {
+  const cachedMessage = ActivityMessageCache.getMessages(chatId).find(
+    (item) => item.id === message.id,
+  );
+
+  if (!cachedMessage) {
+    return message;
+  }
+
+  return {
+    ...message,
+    ...cachedMessage,
+    hasVoted: message.hasVoted ?? cachedMessage.hasVoted,
+    isOwn: message.isOwn,
+    isSystem: message.isSystem ?? cachedMessage.isSystem,
+    proposal: message.proposal ?? cachedMessage.proposal,
+    proposalEligibleVoterCount:
+      message.proposalEligibleVoterCount ??
+      cachedMessage.proposalEligibleVoterCount,
+    proposalVoters: message.proposalVoters ?? cachedMessage.proposalVoters,
+    replyTo: message.replyTo ?? cachedMessage.replyTo,
+    sender: message.sender ?? cachedMessage.sender,
+  };
+}
+
+function hasUserReaction(
+  message: UnifiedMessage,
+  emoji: string,
+  userId: string,
+) {
+  return message.reactions?.some(
+    (reaction) => reaction.emoji === emoji && reaction.userId === userId,
+  );
+}
+
+function toggleOptimisticReaction({
+  currentUserId,
+  currentUserParticipant,
+  emoji,
+  hasReaction,
+  message,
+}: {
+  currentUserId: string;
+  currentUserParticipant: NonNullable<UnifiedMessage["sender"]>;
+  emoji: string;
+  hasReaction: boolean | undefined;
+  message: UnifiedMessage;
+}): UnifiedMessage {
+  const reactions = message.reactions ?? [];
+
+  if (hasReaction) {
+    return {
+      ...message,
+      reactions: reactions.filter(
+        (reaction) =>
+          reaction.emoji !== emoji || reaction.userId !== currentUserId,
+      ),
+    };
+  }
+
+  return {
+    ...message,
+    reactions: [
+      ...reactions,
+      {
+        createdAt: new Date().toISOString(),
+        emoji,
+        messageId: message.id,
+        user: currentUserParticipant,
+        userId: currentUserId,
+      },
+    ],
+  };
+}

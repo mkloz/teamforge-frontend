@@ -67,11 +67,13 @@ export function buildOptimisticMessage(
         ? "IMAGE"
         : optimisticAttachments[0]?.type === "VIDEO"
           ? "IMAGE"
-          : optimisticAttachments[0]?.type === "AUDIO"
-            ? "VOICE"
-            : optimisticAttachments.length > 0
-              ? "FILE"
-              : "TEXT",
+          : optimisticAttachments[0]?.type === "GIF"
+            ? "IMAGE"
+            : optimisticAttachments[0]?.type === "AUDIO"
+              ? "VOICE"
+              : optimisticAttachments.length > 0
+                ? "FILE"
+                : "TEXT",
     content: input.content,
     status: "SENDING",
     isEdited: false,

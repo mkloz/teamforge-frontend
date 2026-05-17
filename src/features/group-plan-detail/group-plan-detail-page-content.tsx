@@ -51,7 +51,7 @@ function GroupPlanDetailPageShell({
   search: GroupPlanDetailRouteSearch;
 }) {
   return (
-    <div className="mx-auto w-full max-w-5xl overflow-x-clip px-4 pt-3 pb-32 sm:px-5 md:pt-6 md:pb-12 lg:px-8">
+    <div className="mx-auto w-full max-w-5xl overflow-x-clip px-4 pt-3 pb-app-bottom-dock sm:px-5 md:pt-6 md:pb-12 lg:px-8">
       <GroupPlanHero detail={detail} search={search} />
       <GroupPlanPitch detail={detail} />
       <GroupPlanDetailGrid detail={detail} focus={focus} />

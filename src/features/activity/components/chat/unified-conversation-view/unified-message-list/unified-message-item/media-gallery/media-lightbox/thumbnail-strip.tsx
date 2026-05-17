@@ -1,6 +1,10 @@
 import { ImageOff, Play } from "lucide-react";
 import { memo } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
+import {
+  isGifAttachment,
+  isGifVideoAttachment,
+} from "@/features/activity/lib/gif-attachments";
 import { cacheMediaIntrinsicSize } from "@/features/activity/lib/media-intrinsic-size";
 import { Image } from "@/shared/components/common/image";
 import { Button } from "@/shared/components/ui/button";
@@ -24,13 +28,16 @@ function ThumbnailItem({
   onSelect: () => void;
 }) {
   const { state, onLoad, onError } = useImageState();
+  const isGif = isGifAttachment(media);
+  const shouldRenderVideo =
+    media.type === "VIDEO" || isGifVideoAttachment(media);
 
   return (
     <Button
       type="button"
       variant="ghost"
       onClick={onSelect}
-      aria-label={`Open ${media.type === "VIDEO" ? "video" : "image"} thumbnail`}
+      aria-label={`Open ${isGif ? "GIF" : media.type === "VIDEO" ? "video" : "image"} thumbnail`}
       aria-current={isSelected ? "true" : undefined}
       className={cn(
         "relative size-12 shrink-0 overflow-hidden rounded-lg p-0",
@@ -56,11 +63,13 @@ function ThumbnailItem({
         </div>
       )}
 
-      {media.type === "VIDEO" ? (
+      {shouldRenderVideo ? (
         <>
           <video
             src={media.url}
             poster={media.thumbnailUrl || undefined}
+            autoPlay={isGif}
+            loop={isGif}
             preload="metadata"
             muted
             playsInline
@@ -80,7 +89,13 @@ function ThumbnailItem({
           />
           {state === "loaded" && (
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/20">
-              <Play className="size-3.5 fill-white text-white/90" />
+              {isGif ? (
+                <span className="rounded bg-black/35 px-1 font-black text-nano text-white/90 leading-3">
+                  GIF
+                </span>
+              ) : (
+                <Play className="size-3.5 fill-white text-white/90" />
+              )}
             </div>
           )}
         </>

@@ -3,6 +3,7 @@ import ky from "ky";
 import { Download, X } from "lucide-react";
 import { memo, useState } from "react";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
+import { isGifAttachment } from "@/features/activity/lib/gif-attachments";
 import { Button } from "@/shared/components/ui/button";
 import { DialogClose } from "@/shared/components/ui/dialog";
 import {
@@ -23,6 +24,10 @@ export const LightboxHeader = memo(function LightboxHeader({
   selectedIndex,
 }: LightboxHeaderProps) {
   const [isDownloading, setIsDownloading] = useState(false);
+  const fallbackTitle =
+    currentMedia && isGifAttachment(currentMedia)
+      ? "Shared GIF"
+      : "Shared media";
 
   async function handleDownload() {
     if (!currentMedia || isDownloading) {
@@ -50,7 +55,7 @@ export const LightboxHeader = memo(function LightboxHeader({
             {selectedIndex !== null ? selectedIndex + 1 : 0} / {count}
           </span>
           <span className="max-w-40 truncate font-bold text-sm text-white/80 tracking-tight sm:max-w-80">
-            {currentMedia?.name || "Shared memory"}
+            {currentMedia?.name || fallbackTitle}
           </span>
         </div>
       </div>
@@ -127,14 +132,17 @@ function triggerDownload(
 
 function getDownloadFileName(media: UnifiedAttachment) {
   const name = media.name?.trim();
-
-  if (name) {
-    return name;
-  }
-
   const extension = getExtensionFromMimeType(media.mimeType);
 
+  if (name) {
+    return hasFileExtension(name) ? name : `${name}${extension}`;
+  }
+
   return `teamforge-media-${media.id}${extension}`;
+}
+
+function hasFileExtension(name: string) {
+  return /\.[a-z0-9]{2,5}$/i.test(name);
 }
 
 function getExtensionFromMimeType(mimeType: string | null) {

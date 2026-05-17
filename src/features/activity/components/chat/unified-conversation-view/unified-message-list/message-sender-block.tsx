@@ -26,6 +26,7 @@ const spacingAfterClassName = {
   compact: "mb-1",
   normal: "mb-2.5",
   related: "mb-1.5",
+  "system-boundary": "mb-4",
 } satisfies Record<VirtualizedMessageBlock["spacingAfter"], string>;
 
 export function MessageSenderBlock({

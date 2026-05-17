@@ -3,9 +3,10 @@ import { Activity, type ReactNode, Suspense } from "react";
 import { AppBottomNav } from "@/features/app-shell/components/app-bottom-nav";
 import { AppRouteTransition } from "@/features/app-shell/components/app-route-transition";
 import { AppSidebar } from "@/features/app-shell/components/app-sidebar";
-import { useAppShellScrollReset } from "@/features/app-shell/hooks/use-app-shell-scroll-reset";
 import { useAppNavbarCounters } from "@/features/app-shell/hooks/use-app-navbar-counters";
+import { useAppShellScrollReset } from "@/features/app-shell/hooks/use-app-shell-scroll-reset";
 import { RouteLoadingFallback } from "@/shared/components/loading/route-loading-fallback";
+import { cn } from "@/shared/lib/utils";
 import { useUiStore } from "@/shared/store/ui.store";
 
 interface AppLayoutProps {
@@ -38,7 +39,10 @@ export function AppLayout({
 
       <main
         id="main-content"
-        className="min-h-screen pb-28 md:pb-4 md:pl-14"
+        className={cn(
+          "min-h-screen md:pb-4 md:pl-14",
+          bottomNavHidden ? "pb-0" : "pb-app-bottom-nav",
+        )}
         tabIndex={-1}
       >
         <div>
