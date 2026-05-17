@@ -94,7 +94,7 @@ export const SavedMessagesConversationView = memo(
 
         <div className="relative min-h-0 flex-1 overflow-hidden bg-canvas">
           <ChatBackground />
-          <div className="relative z-10 h-full overflow-y-auto px-3 py-4 sm:px-5">
+          <div className="relative z-10 h-full overflow-y-auto px-3 pt-4 pb-safe-bottom sm:px-5">
             {isError && savedMessages.length === 0 ? (
               <SavedMessagesState
                 icon="retry"

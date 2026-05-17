@@ -13,7 +13,7 @@ interface ActivityPageContentProps {
 function getFrameClassName(contained: boolean, hasSelection: boolean) {
   return cn(
     "top-0 flex h-dvh min-h-0 overflow-clip bg-canvas",
-    hasSelection ? "pb-0" : "pb-12 md:pb-0",
+    hasSelection ? "pb-0" : "pb-app-bottom-nav md:pb-0",
     contained ? "absolute inset-0" : "fixed inset-0 md:left-14",
   );
 }

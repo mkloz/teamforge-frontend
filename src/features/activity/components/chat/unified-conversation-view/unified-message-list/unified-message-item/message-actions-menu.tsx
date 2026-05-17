@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   Bookmark,
+  CheckSquare,
   Copy,
   Forward,
   type LucideIcon,
@@ -33,7 +34,7 @@ import {
   canReplyToMessage,
   canSaveMessage,
 } from "@/features/activity/lib/message-action-capabilities";
-import { buildProposalClipboardText } from "@/features/activity/lib/proposal-language";
+import { getMessageClipboardContent } from "@/features/activity/lib/message-clipboard";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -120,6 +121,7 @@ interface MessageActionsMenuProps {
     message: UnifiedMessage,
     isSaved: boolean,
   ) => Promise<unknown>;
+  onSelectMessage?: (message: UnifiedMessage) => void;
   onOpenChange?: (open: boolean) => void;
 }
 
@@ -151,6 +153,7 @@ export const MessageContextMenu = memo(function MessageContextMenu({
   onUnpin,
   isSaved = false,
   onToggleSaved,
+  onSelectMessage,
   onOpenChange,
 }: MessageContextMenuProps) {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -167,6 +170,7 @@ export const MessageContextMenu = memo(function MessageContextMenu({
     onUnpin,
     isSaved,
     onToggleSaved,
+    onSelectMessage,
   });
   const handleOpenChange = (nextOpen: boolean) => {
     onOpenChange?.(nextOpen);
@@ -241,6 +245,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
   onUnpin,
   isSaved = false,
   onToggleSaved,
+  onSelectMessage,
   onOpenChange,
 }: MessageActionsMenuProps) {
   const [open, setOpen] = useState(false);
@@ -257,6 +262,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
     onUnpin,
     isSaved,
     onToggleSaved,
+    onSelectMessage,
   });
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);
@@ -323,6 +329,7 @@ function useMessageActionMenu({
   onStartEdit,
   onForward,
   onToggleSaved,
+  onSelectMessage,
   selectedReactionEmojis = [],
   onUnpin,
   isSaved = false,
@@ -334,6 +341,7 @@ function useMessageActionMenu({
   const canReact = canReactToMessage(message);
   const canReply = canReplyToMessage(message);
   const canSave = canSaveMessage(message);
+  const canSelect = Boolean(onSelectMessage) && message.type !== "SYSTEM";
   const canPin = canPinMessage(message);
   const copyContent = getMessageClipboardContent(message);
   const canCopy = copyContent.length > 0;
@@ -357,6 +365,15 @@ function useMessageActionMenu({
         id: "reply",
         label: "Reply",
         onSelect: () => onReply(message),
+      });
+    }
+
+    if (canSelect) {
+      actions.push({
+        icon: CheckSquare,
+        id: "select",
+        label: "Select",
+        onSelect: () => onSelectMessage?.(message),
       });
     }
 
@@ -422,6 +439,7 @@ function useMessageActionMenu({
     canRetry,
     canReply,
     canSave,
+    canSelect,
     copyContent,
     isSaved,
     message,
@@ -429,6 +447,7 @@ function useMessageActionMenu({
     onPin,
     onReply,
     onRetry,
+    onSelectMessage,
     onStartEdit,
     onToggleSaved,
     onUnpin,
@@ -645,16 +664,6 @@ function MessageActionRow({ action }: { action: MessageActionItem }) {
   );
 }
 
-function getMessageClipboardContent(message: UnifiedMessage) {
-  if (message.proposal) {
-    return buildProposalClipboardText(message.proposal, {
-      eligibleVoterCount: message.proposalEligibleVoterCount,
-    });
-  }
-
-  return message.content.trim();
-}
-
 async function copyMessageContent({
   errorMessage,
   successMessage,
@@ -689,22 +698,28 @@ function showMessageActionError(error: unknown) {
 }
 
 interface ForwardMessageDialogProps {
-  message: UnifiedMessage;
+  message?: UnifiedMessage;
+  messages?: UnifiedMessage[];
   onForward?: (
     message: UnifiedMessage,
     targetChatId: string,
   ) => Promise<unknown>;
+  onForwardComplete?: () => void;
   onOpenChange: (open: boolean) => void;
   open: boolean;
 }
 
-function ForwardMessageDialog({
+export function ForwardMessageDialog({
   message,
+  messages,
   onForward,
+  onForwardComplete,
   onOpenChange,
   open,
 }: ForwardMessageDialogProps) {
   const [pendingTargetId, setPendingTargetId] = useState<string | null>(null);
+  const messagesToForward = messages ?? (message ? [message] : []);
+  const sourceChatId = messagesToForward[0]?.chatId ?? "";
   const groupsQuery = useQuery(ActivityQueryFactory.groups());
   const chatsQuery = useQuery(ActivityQueryFactory.chats());
   const friendshipsQuery = useQuery(ActivityQueryFactory.friendships());
@@ -712,7 +727,7 @@ function ForwardMessageDialog({
     chats: chatsQuery.data ?? [],
     friendships: friendshipsQuery.data ?? [],
     groups: groupsQuery.data ?? [],
-    sourceChatId: message.chatId,
+    sourceChatId,
   });
   const isLoading =
     groupsQuery.isPending || chatsQuery.isPending || friendshipsQuery.isPending;
@@ -720,21 +735,28 @@ function ForwardMessageDialog({
     groupsQuery.isError || chatsQuery.isError || friendshipsQuery.isError;
 
   async function handleForward(target: ForwardTarget) {
-    if (!onForward) {
+    if (!onForward || messagesToForward.length === 0) {
       return;
     }
 
     setPendingTargetId(target.chatId);
 
     try {
-      const result = await onForward(message, target.chatId);
+      for (const item of messagesToForward) {
+        const result = await onForward(item, target.chatId);
 
-      if (!result) {
-        throw new Error("Forward target is no longer available.");
+        if (!result) {
+          throw new Error("Forward target is no longer available.");
+        }
       }
 
-      toast.success(`Forwarded to ${target.title}.`);
+      toast.success(
+        messagesToForward.length === 1
+          ? `Forwarded to ${target.title}.`
+          : `Forwarded ${messagesToForward.length} messages to ${target.title}.`,
+      );
       onOpenChange(false);
+      onForwardComplete?.();
     } catch (error) {
       showAppErrorToast(error, {
         fallbackMessage: "We couldn't forward that message.",
@@ -753,10 +775,14 @@ function ForwardMessageDialog({
       >
         <DialogHeader className="border-border/55 border-b px-4 py-3 pr-11 text-left">
           <DialogTitle className="font-bold text-base">
-            Forward message
+            {messagesToForward.length > 1
+              ? "Forward messages"
+              : "Forward message"}
           </DialogTitle>
           <DialogDescription className="text-muted-foreground text-xs">
-            Pick where this message should go.
+            Pick where{" "}
+            {messagesToForward.length > 1 ? "these messages" : "this message"}{" "}
+            should go.
           </DialogDescription>
         </DialogHeader>
 

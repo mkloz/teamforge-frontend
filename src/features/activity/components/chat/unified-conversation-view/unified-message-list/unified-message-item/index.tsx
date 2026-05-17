@@ -1,7 +1,7 @@
 /* biome-ignore-all lint/a11y/noNoninteractiveTabindex: Message rows are focusable context-menu triggers. */
 // oxlint-disable jsx-a11y/no-noninteractive-tabindex -- Message rows are focusable context-menu triggers.
 import { Forward } from "lucide-react";
-import { memo, useState } from "react";
+import { type KeyboardEvent, type MouseEvent, memo, useState } from "react";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
 import { useSavedMessageIds } from "@/features/activity/hooks/use-saved-message-ids";
@@ -21,8 +21,13 @@ interface UnifiedMessageItemProps {
   showSender: boolean;
   showAvatar: boolean;
   isHighlighted?: boolean;
+  isSelectable?: boolean;
+  isSelected?: boolean;
+  isSelectionMode?: boolean;
   kind: "dm" | "group";
   onActivateReplyTarget: (messageId: string) => void;
+  onStartSelection?: (message: UnifiedMessage) => void;
+  onToggleSelected?: (message: UnifiedMessage) => void;
   searchQuery?: string;
   onAvatarClick?: (sender: User) => void;
 }
@@ -34,8 +39,13 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
   message,
   showSender,
   isHighlighted = false,
+  isSelectable = true,
+  isSelected = false,
+  isSelectionMode = false,
   kind,
   onActivateReplyTarget,
+  onStartSelection,
+  onToggleSelected,
   searchQuery = "",
 }: Omit<UnifiedMessageItemProps, "showAvatar" | "onAvatarClick">) {
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
@@ -73,6 +83,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
   const isInteractionFocused =
     isReplyTarget || isEditTarget || isContextMenuOpen;
   const shouldShowOuterFocus = isHighlighted || isInteractionFocused;
+  const canToggleSelection = isSelectionMode && isSelectable;
   const usesInlineFooter =
     content.trim().length > 0 &&
     !replyTo &&
@@ -86,6 +97,23 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
   const messageAriaLabel = `${senderLabel} message at ${formatChatTime(
     timestamp,
   )}. Press Shift and F10 for message actions.`;
+  const handleMessageClick = (event: MouseEvent<HTMLElement>) => {
+    if (!canToggleSelection) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    onToggleSelected?.(message);
+  };
+  const handleMessageKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (!canToggleSelection || (event.key !== "Enter" && event.key !== " ")) {
+      return;
+    }
+
+    event.preventDefault();
+    onToggleSelected?.(message);
+  };
 
   return (
     <MessageContextMenu
@@ -101,16 +129,21 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
       onUnpin={unpinMessage}
       isSaved={isSaved}
       onToggleSaved={toggleSaved}
+      onSelectMessage={isSelectable ? onStartSelection : undefined}
       onOpenChange={setIsContextMenuOpen}
     >
       <article
         tabIndex={0}
         aria-roledescription="message"
+        aria-selected={isSelectionMode ? isSelected : undefined}
         aria-label={messageAriaLabel}
         className={cn(
           "group relative w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
+          canToggleSelection && "cursor-pointer",
           shouldShowOuterFocus ? "overflow-visible" : "overflow-hidden",
         )}
+        onClickCapture={handleMessageClick}
+        onKeyDown={handleMessageKeyDown}
       >
         <div
           className={cn(
@@ -145,6 +178,8 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
                   isHighlighted
                     ? "message-search-focus"
                     : isInteractionFocused && "message-action-focus",
+                  isSelected &&
+                    "border-forge-teal/65 bg-forge-teal/12 ring-1 ring-forge-teal/35",
                   !content && "min-w-30",
                   usesInlineFooter && "min-w-40",
                 )}

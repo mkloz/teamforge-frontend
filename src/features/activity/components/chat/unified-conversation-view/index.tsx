@@ -1,6 +1,6 @@
 import { AlertTriangle, RefreshCw, WifiOff } from "lucide-react";
 import type { RefObject } from "react";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PlanChangeDialog } from "@/features/activity/components/groups/group-detail-panel/plan-section/plan-change-dialog";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import { useConversationData } from "@/features/activity/hooks/use-conversation-data";
@@ -17,6 +17,7 @@ import { CompletedReviewGate } from "./completed-banner";
 import { UnifiedChatHeader } from "./unified-chat-header";
 import { UnifiedMessageInput } from "./unified-message-input";
 import { UnifiedMessageList } from "./unified-message-list";
+import { MessageSelectionToolbar } from "./message-selection-toolbar";
 import type { MessageScrollHandle } from "./unified-message-list/message-scroll.types";
 import { useConversationMessageSearch } from "./use-conversation-message-search";
 
@@ -79,6 +80,9 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
   const chatId = kind === "group" ? (data.chat?.id ?? null) : data.id;
   const [searchQuery, setSearchQuery] = useState("");
   const [isProposalDialogOpen, setIsProposalDialogOpen] = useState(false);
+  const [selectedMessageIds, setSelectedMessageIds] = useState<
+    ReadonlySet<string>
+  >(() => new Set());
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -121,8 +125,80 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
   useEffect(() => {
     if (conversationId) {
       setSearchQuery("");
+      setSelectedMessageIds(new Set());
     }
   }, [conversationId]);
+
+  const clearMessageSelection = useCallback(() => {
+    setSelectedMessageIds(new Set());
+  }, []);
+
+  const startMessageSelection = useCallback((message: UnifiedMessage) => {
+    if (!canSelectChatMessage(message)) {
+      return;
+    }
+
+    setSelectedMessageIds(new Set([message.id]));
+  }, []);
+
+  const toggleMessageSelection = useCallback((message: UnifiedMessage) => {
+    if (!canSelectChatMessage(message)) {
+      return;
+    }
+
+    setSelectedMessageIds((current) => {
+      const next = new Set(current);
+
+      if (next.has(message.id)) {
+        next.delete(message.id);
+      } else {
+        next.add(message.id);
+      }
+
+      return next;
+    });
+  }, []);
+
+  const selectedMessages = useMemo(
+    () =>
+      messages.filter(
+        (message) =>
+          selectedMessageIds.has(message.id) && canSelectChatMessage(message),
+      ),
+    [messages, selectedMessageIds],
+  );
+  const isMessageSelectionMode = selectedMessages.length > 0;
+
+  useEffect(() => {
+    if (selectedMessageIds.size === 0) {
+      return;
+    }
+
+    const availableMessageIds = new Set(messages.map((message) => message.id));
+
+    setSelectedMessageIds((current) => {
+      const next = new Set(
+        [...current].filter((messageId) => availableMessageIds.has(messageId)),
+      );
+
+      return next.size === current.size ? current : next;
+    });
+  }, [messages, selectedMessageIds.size]);
+
+  useEffect(() => {
+    if (!isMessageSelectionMode) {
+      return undefined;
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        clearMessageSelection();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [clearMessageSelection, isMessageSelectionMode]);
 
   const searchResultLabel = normalizedQuery
     ? isSearching && matchCount === 0
@@ -215,19 +291,28 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
           isInitialLoading={isLoadingMessages}
           isInitialError={isMessageError}
           isOffline={!isOnline}
+          isSelectionMode={isMessageSelectionMode}
           isLoadingOlderMessages={isLoadingOlderMessages}
           messagesEndRef={messagesEndRef}
           containerRef={messagesContainerRef}
           messageScrollHandleRef={activeMessageScrollHandleRef}
           onLoadOlderMessages={onLoadOlderMessages}
           onRetryInitialError={onRetryMessages}
+          onStartSelection={startMessageSelection}
+          onToggleSelected={toggleMessageSelection}
           onShowParticipantProfile={onShowParticipantProfile}
+          selectedMessageIds={selectedMessageIds}
           typingUsers={activeTypingUsers}
         />
       </div>
 
       {/* Input area */}
-      {isCompleted && kind === "group" && data.plan ? (
+      {isMessageSelectionMode ? (
+        <MessageSelectionToolbar
+          selectedMessages={selectedMessages}
+          onClearSelection={clearMessageSelection}
+        />
+      ) : isCompleted && kind === "group" && data.plan ? (
         <CompletedReviewGate group={data}>
           <UnifiedMessageInput
             chatId={chatId}
@@ -261,6 +346,10 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     </div>
   );
 });
+
+function canSelectChatMessage(message: UnifiedMessage) {
+  return message.type !== "SYSTEM";
+}
 
 function ConversationMessageErrorBanner({
   onRetry,

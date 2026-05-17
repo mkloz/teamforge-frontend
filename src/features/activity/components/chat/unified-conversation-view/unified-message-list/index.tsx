@@ -35,13 +35,17 @@ interface UnifiedMessageListProps {
   isInitialError?: boolean;
   isInitialLoading?: boolean;
   isOffline?: boolean;
+  isSelectionMode?: boolean;
   isLoadingOlderMessages?: boolean;
   messagesEndRef: RefObject<HTMLDivElement | null>;
   containerRef?: RefObject<HTMLDivElement | null>;
   messageScrollHandleRef?: RefObject<MessageScrollHandle | null>;
   onLoadOlderMessages?: () => Promise<void> | void;
   onRetryInitialError?: () => Promise<void> | void;
+  onStartSelection?: (message: UnifiedMessage) => void;
+  onToggleSelected?: (message: UnifiedMessage) => void;
   onShowParticipantProfile?: (participant: ActivityParticipant) => void;
+  selectedMessageIds?: ReadonlySet<string>;
   typingUsers?: { name: string; avatar: string | null }[];
 }
 
@@ -59,13 +63,17 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
   isInitialError = false,
   isInitialLoading = false,
   isOffline = false,
+  isSelectionMode = false,
   isLoadingOlderMessages = false,
   messagesEndRef,
   containerRef,
   messageScrollHandleRef,
   onLoadOlderMessages,
   onRetryInitialError,
+  onStartSelection,
+  onToggleSelected,
   onShowParticipantProfile,
+  selectedMessageIds,
   typingUsers = [],
 }: UnifiedMessageListProps) {
   const latestMessage = messages[messages.length - 1] ?? null;
@@ -279,10 +287,14 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
               getBlockRef={getBlockRef}
               getMessageRef={getMessageRef}
               highlightedMessageId={highlightedMessageId}
+              isSelectionMode={isSelectionMode}
               kind={kind}
               onActivateReplyTarget={activateReplyTarget}
+              onStartSelection={onStartSelection}
+              onToggleSelected={onToggleSelected}
               onShowParticipantProfile={onShowParticipantProfile}
               searchQuery={searchQuery}
+              selectedMessageIds={selectedMessageIds}
             />
             <MessageListBottomAnchor
               messagesEndRef={messagesEndRef}

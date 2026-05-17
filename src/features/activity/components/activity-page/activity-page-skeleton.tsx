@@ -33,7 +33,7 @@ export function ActivityPageSkeleton({
       aria-busy="true"
       aria-label="Loading activity"
       className={cn(
-        "top-0 flex h-dvh min-h-0 overflow-clip bg-canvas pb-12 md:pb-0",
+        "top-0 flex h-dvh min-h-0 overflow-clip bg-canvas pb-app-bottom-nav md:pb-0",
         contained ? "absolute inset-0" : "fixed inset-0 md:left-14",
       )}
       role="status"

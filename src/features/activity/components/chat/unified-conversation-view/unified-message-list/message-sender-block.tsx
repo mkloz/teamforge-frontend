@@ -1,6 +1,10 @@
 import { Link } from "@tanstack/react-router";
+import { Check } from "lucide-react";
 import type { VirtualizedMessageBlock } from "@/features/activity/hooks/use-virtualized-message-blocks";
-import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
+import type {
+  ActivityParticipant,
+  UnifiedMessage,
+} from "@/features/activity/lib/activity-contract";
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
@@ -15,9 +19,13 @@ interface MessageSenderBlockProps {
   block: VirtualizedMessageBlock;
   kind: "dm" | "group";
   highlightedMessageId: string | null;
+  isSelectionMode?: boolean;
+  selectedMessageIds?: ReadonlySet<string>;
   blockRef: (node: HTMLDivElement | null) => void;
   getMessageRef: (messageId: string) => (node: HTMLDivElement | null) => void;
   onActivateReplyTarget: (messageId: string) => void;
+  onStartSelection?: (message: UnifiedMessage) => void;
+  onToggleSelected?: (message: UnifiedMessage) => void;
   onShowParticipantProfile?: (participant: ActivityParticipant) => void;
   searchQuery: string;
 }
@@ -33,9 +41,13 @@ export function MessageSenderBlock({
   block,
   kind,
   highlightedMessageId,
+  isSelectionMode = false,
+  selectedMessageIds,
   blockRef,
   getMessageRef,
   onActivateReplyTarget,
+  onStartSelection,
+  onToggleSelected,
   onShowParticipantProfile,
   searchQuery,
 }: MessageSenderBlockProps) {
@@ -107,13 +119,16 @@ export function MessageSenderBlock({
             const isFirstInGroup = msgIdx === 0;
             const isHighlighted = highlightedMessageId === message.id;
             const isSystemMessage = message.type === "SYSTEM";
+            const isSelectable = !isSystemMessage;
+            const isSelected = selectedMessageIds?.has(message.id) ?? false;
 
             return (
               <div
                 key={message.id}
                 ref={getMessageRef(message.id)}
                 className={cn(
-                  "flex w-full min-w-0 max-w-full",
+                  "relative flex w-full min-w-0 max-w-full",
+                  isSelectionMode && isSelectable && "pl-9",
                   isSystemMessage
                     ? "justify-center"
                     : message.isOwn
@@ -132,17 +147,56 @@ export function MessageSenderBlock({
                     message={message}
                     showSender={isFirstInGroup}
                     isHighlighted={isHighlighted}
+                    isSelectable={isSelectable}
+                    isSelected={isSelected}
+                    isSelectionMode={isSelectionMode}
                     kind={kind}
                     onActivateReplyTarget={onActivateReplyTarget}
+                    onStartSelection={onStartSelection}
+                    onToggleSelected={onToggleSelected}
                     searchQuery={searchQuery}
                   />
                 </div>
+                {isSelectionMode && isSelectable ? (
+                  <MessageSelectionToggle
+                    isSelected={isSelected}
+                    onToggle={() => onToggleSelected?.(message)}
+                  />
+                ) : null}
               </div>
             );
           })}
         </div>
       </div>
     </div>
+  );
+}
+
+function MessageSelectionToggle({
+  isSelected,
+  onToggle,
+}: {
+  isSelected: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={isSelected ? "Unselect message" : "Select message"}
+      aria-pressed={isSelected}
+      className={cn(
+        "absolute top-1/2 left-0 z-20 flex size-6 -translate-y-1/2 items-center justify-center rounded-full border text-forge-teal transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/25",
+        isSelected
+          ? "border-forge-teal bg-forge-teal text-white shadow-sm"
+          : "border-border/70 bg-canvas/90 text-slate-muted backdrop-blur-md hover:border-forge-teal/45 hover:text-forge-teal",
+      )}
+      onClick={(event) => {
+        event.stopPropagation();
+        onToggle();
+      }}
+    >
+      {isSelected ? <Check className="size-3.5" strokeWidth={3} /> : null}
+    </button>
   );
 }
 
