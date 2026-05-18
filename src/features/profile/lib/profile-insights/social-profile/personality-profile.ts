@@ -5,7 +5,9 @@ import type {
 } from "../types";
 
 export function parsePersonalityType(type: string | null): PersonalityProfile {
-  if (!type || type.length < 4) {
+  const normalizedType = type?.trim().toUpperCase() ?? "";
+
+  if (!PERSONALITY_TYPE_PATTERN.test(normalizedType)) {
     return {
       attention: "unknown",
       decision: "unknown",
@@ -16,11 +18,11 @@ export function parsePersonalityType(type: string | null): PersonalityProfile {
   }
 
   return {
-    attention: type[1] === "N" ? "possibility" : "practical",
-    decision: type[2] === "F" ? "people" : "logic",
-    energy: type[0] === "E" ? "outward" : "inward",
-    structure: type[3] === "J" ? "planned" : "open",
-    type,
+    attention: normalizedType[1] === "N" ? "possibility" : "practical",
+    decision: normalizedType[2] === "F" ? "people" : "logic",
+    energy: normalizedType[0] === "E" ? "outward" : "inward",
+    structure: normalizedType[3] === "J" ? "planned" : "open",
+    type: normalizedType,
   };
 }
 
@@ -90,3 +92,5 @@ export function buildPersonalityTensions(
 
   return tensions.slice(0, 2);
 }
+
+const PERSONALITY_TYPE_PATTERN = /^[EI][SN][TF][JP]$/;

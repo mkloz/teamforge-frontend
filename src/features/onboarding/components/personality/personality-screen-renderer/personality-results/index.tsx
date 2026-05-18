@@ -33,7 +33,7 @@ export function PersonalityResults({
       variants={resultsContainer}
       initial="hidden"
       animate="visible"
-      className="mx-auto flex min-h-dvh w-full max-w-xl flex-col gap-8 py-8 sm:py-10"
+      className="mx-auto flex min-h-0 w-full max-w-xl flex-1 flex-col gap-8 py-8 sm:py-10"
     >
       <PersonalityResultHero
         result={result}

@@ -49,7 +49,7 @@ export const CompletedReviewGate = memo(function CompletedReviewGate({
             Review checkpoint
           </span>
         </div>
-        <span className="shrink-0 rounded-md border border-forge-teal/20 bg-white/70 px-2 py-0.5 font-bold text-forge-teal text-micro">
+        <span className="inline-flex min-h-6 shrink-0 items-center rounded-full border border-spark-amber/70 bg-spark-amber px-2.5 py-0.5 font-black text-hero-bg text-xs tabular-nums leading-none shadow-sm">
           {rating.pendingCount || "No"} left
         </span>
       </div>

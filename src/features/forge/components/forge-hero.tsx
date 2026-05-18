@@ -52,9 +52,9 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
 
       <aside
         aria-label="Example forge brief"
-        className="rounded-xl border border-border bg-card"
+        className="rounded-xl border border-forge-teal/25 bg-forge-teal/10"
       >
-        <div className="flex items-center justify-between gap-4 border-border border-b px-4 py-3">
+        <div className="flex items-center justify-between gap-4 border-forge-teal/20 border-b px-4 py-3">
           <div>
             <p className="font-black text-foreground text-sm">Example brief</p>
             <p className="font-medium text-muted-foreground text-xs">
@@ -64,7 +64,7 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
           <ArrowRight size={17} className="text-forge-teal" />
         </div>
 
-        <dl className="divide-y divide-border">
+        <dl className="divide-y divide-forge-teal/20">
           {SAMPLE_BRIEF.map(([label, value]) => (
             <div key={label} className="flex items-baseline gap-4 px-4 py-3">
               <dt className="w-18 shrink-0 font-black text-muted-foreground text-xs uppercase">

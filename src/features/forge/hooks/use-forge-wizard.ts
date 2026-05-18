@@ -5,6 +5,11 @@ import { useForgeWizardRouteSync } from "@/features/forge/hooks/forge-wizard/use
 import { useForgeWizardSubmitActions } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-submit-actions";
 import { useForgeAnimation } from "@/features/forge/hooks/use-forge-animation";
 import type { ForgeMode } from "@/features/forge/lib/forge-contract";
+import {
+  buildForgeIdeaTemplate,
+  buildForgeIdeaTemplateId,
+} from "@/features/forge/lib/forge-idea-template";
+import type { ForgeIdeaLaunch } from "@/features/forge/lib/forge-route";
 import type { Step } from "@/features/forge/lib/forge-wizard";
 import {
   createInitialForgeWizardState,
@@ -19,6 +24,7 @@ interface UseForgeWizardOptions {
   routeMode: ForgeMode;
   routeActivityId: string | null;
   routeGroupId: string | null;
+  routeIdea: ForgeIdeaLaunch | null;
   syncStep: (step: Step, options?: { history?: "push" | "replace" }) => void;
   syncMode: (
     mode: ForgeMode,
@@ -37,6 +43,7 @@ export function useForgeWizard({
   routeMode,
   routeActivityId,
   routeGroupId,
+  routeIdea,
   syncStep,
   syncMode,
   syncTargets,
@@ -44,8 +51,12 @@ export function useForgeWizard({
 }: UseForgeWizardOptions) {
   const [state, dispatch] = useReducer(
     forgeWizardReducer,
-    undefined,
-    createInitialForgeWizardState,
+    {
+      routeIdea,
+      routeMode,
+      routeStep,
+    },
+    createInitialForgeWizardStateForRoute,
   );
   const { forgeStrikeCount, isForging, forgingProgress, runForgeAnimation } =
     useForgeAnimation();
@@ -60,6 +71,7 @@ export function useForgeWizard({
     dispatch,
     routeActivityId,
     routeGroupId,
+    routeIdea,
     routeMode,
     routeStep,
     state,
@@ -203,3 +215,25 @@ export function useForgeWizard({
 
 export type { Step } from "@/features/forge/lib/forge-wizard";
 export type ForgeWizardState = ReturnType<typeof useForgeWizard>;
+
+function createInitialForgeWizardStateForRoute(input: {
+  routeIdea: ForgeIdeaLaunch | null;
+  routeMode: ForgeMode;
+  routeStep: Step;
+}) {
+  const baseState = {
+    ...createInitialForgeWizardState(),
+    forgeMode: input.routeMode,
+    step: input.routeStep > 4 ? 4 : input.routeStep,
+  };
+
+  if (!input.routeIdea) {
+    return baseState;
+  }
+
+  return forgeWizardReducer(baseState, {
+    type: "apply-activity-template",
+    template: buildForgeIdeaTemplate(input.routeIdea),
+    templateId: buildForgeIdeaTemplateId(input.routeIdea),
+  });
+}

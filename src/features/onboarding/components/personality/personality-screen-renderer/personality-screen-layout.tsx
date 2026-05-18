@@ -37,7 +37,7 @@ export function PersonalityScreenShell({
       initial="hidden"
       animate="visible"
       className={cn(
-        "mx-auto flex min-h-dvh w-full flex-col justify-start gap-0 pt-4 sm:pt-0",
+        "mx-auto flex min-h-0 w-full flex-1 flex-col justify-start gap-0 pt-4 sm:pt-0",
         className,
       )}
     >

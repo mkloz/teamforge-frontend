@@ -656,7 +656,7 @@ function getSuggestionBadge(
   return "Flexible";
 }
 
-function buildTemplate(
+export function buildTemplateFromSeed(
   category: ActivityOption,
   seed: TemplateSeed,
   user: User | undefined,
@@ -694,7 +694,7 @@ export function buildTemplateSuggestions(
       originalIndex,
       score: getPersonalScore(seed, category, user),
       seed,
-      template: buildTemplate(category, seed, user),
+      template: buildTemplateFromSeed(category, seed, user),
     }))
     .sort((left, right) => {
       if (right.score !== left.score) {

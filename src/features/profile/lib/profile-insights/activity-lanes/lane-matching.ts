@@ -49,7 +49,7 @@ export function getLaneMatches(interest: Interest): LaneMatch[] {
   const rankedMatches = rankLaneRuleMatches(matches);
   const [best] = rankedMatches;
 
-  if (best.rawScore <= 0) {
+  if (!best || best.rawScore <= 0) {
     return [
       {
         key: "general",

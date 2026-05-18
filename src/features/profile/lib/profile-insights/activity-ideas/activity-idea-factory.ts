@@ -3,9 +3,11 @@ import type {
   ActivityIdeaContext,
   ActivityLaneConfidence,
 } from "../types";
+import { buildActivityEventDescription } from "./activity-event-description";
 
 interface CreateActivityIdeaOptions {
   detail: string;
+  eventDescription?: string;
   scoreBonus: number;
   title: string;
 }
@@ -19,6 +21,9 @@ export function createActivityIdea(
   return {
     confidence: getActivityIdeaConfidence(context),
     detail: options.detail,
+    eventDescription:
+      options.eventDescription ??
+      buildActivityEventDescription(context, options.title),
     laneKey: primaryLane.key,
     score:
       primaryLane.score +

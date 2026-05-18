@@ -21,6 +21,7 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
     routeMode: routeState.forgeMode,
     routeActivityId: routeState.activityId,
     routeGroupId: routeState.groupId,
+    routeIdea: routeState.idea,
     syncStep: routeState.setStep,
     syncMode: routeState.setForgeMode,
     syncTargets: routeState.setForgeTargets,

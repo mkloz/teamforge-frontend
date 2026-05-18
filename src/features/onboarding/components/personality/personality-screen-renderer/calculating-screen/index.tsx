@@ -17,7 +17,7 @@ export function CalculatingScreen({ vector, onDone }: CalculatingScreenProps) {
   });
 
   return (
-    <div className="flex min-h-dvh w-full flex-col items-center justify-center px-4 py-12 sm:px-6">
+    <div className="flex min-h-0 w-full flex-1 flex-col items-center justify-center px-4 py-12 sm:px-6">
       <p className="mb-8 font-bold font-sans text-forge-teal text-xs uppercase tracking-widest">
         Computing Personality Vector
       </p>

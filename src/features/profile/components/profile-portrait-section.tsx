@@ -60,6 +60,7 @@ function HowYouShowUpCard({
   candidates: ProfilePortraitInsight["candidates"];
 }) {
   const visibleCandidates = candidates.slice(0, 3);
+  const leaderScore = visibleCandidates[0]?.score ?? 0;
 
   if (visibleCandidates.length === 0) {
     return null;
@@ -77,8 +78,9 @@ function HowYouShowUpCard({
             key={candidate.key}
             rank={visibleCandidates.indexOf(candidate)}
             candidateKey={candidate.key}
+            leaderScore={leaderScore}
+            score={candidate.score}
             title={candidate.title}
-            share={candidate.share}
           />
         ))}
       </div>
@@ -88,17 +90,19 @@ function HowYouShowUpCard({
 
 function ShowUpMeter({
   candidateKey,
+  leaderScore,
   rank,
-  share,
+  score,
   title,
 }: {
   candidateKey: ProfilePortraitInsight["candidates"][number]["key"];
+  leaderScore: number;
   rank: number;
-  share: number;
+  score: number;
   title: string;
 }) {
-  const percent = formatSharePercent(share);
-  const filledSegments = Math.max(1, Math.min(6, Math.round(percent / 16.67)));
+  const percent = formatSignalStrengthPercent(score, leaderScore);
+  const filledSegments = getFilledSignalSegments(percent);
   const rankLabel = getShowUpRankLabel(rank);
   const compactTitle = getCompactShowUpTitle(candidateKey, title);
 
@@ -118,7 +122,7 @@ function ShowUpMeter({
         min={0}
         max={100}
         value={percent}
-        aria-label={`${rankLabel}: ${title}, ${percent} percent`}
+        aria-label={`${rankLabel}: ${title}, ${percent} percent signal strength`}
       />
       <div className="mt-2 grid grid-cols-6 gap-1.5" aria-hidden="true">
         {SHOW_UP_SEGMENTS.map((segment) => (
@@ -186,10 +190,36 @@ function getDetailIcon(label: string): LucideIcon {
   return Eye;
 }
 
-function formatSharePercent(share: number) {
-  const normalizedShare = share > 1 ? share : share * 100;
+function formatSignalStrengthPercent(score: number, leaderScore: number) {
+  if (
+    !Number.isFinite(score) ||
+    !Number.isFinite(leaderScore) ||
+    score <= 0 ||
+    leaderScore <= 0
+  ) {
+    return 0;
+  }
 
-  return Math.max(0, Math.min(100, Math.round(normalizedShare)));
+  const leaderPercent =
+    MIN_SIGNAL_STRENGTH_PERCENT +
+    (MAX_SIGNAL_STRENGTH_PERCENT - MIN_SIGNAL_STRENGTH_PERCENT) *
+      (1 - Math.exp(-leaderScore / SIGNAL_STRENGTH_SCORE_SCALE));
+  const relativeStrength = Math.min(Math.max(score / leaderScore, 0), 1);
+  const normalizedStrength =
+    SIGNAL_STRENGTH_FLOOR +
+    relativeStrength * (leaderPercent - SIGNAL_STRENGTH_FLOOR);
+
+  return Math.min(Math.max(Math.round(normalizedStrength), 0), 100);
+}
+
+function getFilledSignalSegments(percent: number) {
+  if (!Number.isFinite(percent) || percent <= 0) {
+    return 0;
+  }
+
+  const segmentCount = Math.round((percent / 100) * SHOW_UP_SEGMENTS.length);
+
+  return Math.max(1, Math.min(SHOW_UP_SEGMENTS.length, segmentCount));
 }
 
 function getShowUpRankLabel(rank: number) {
@@ -226,3 +256,7 @@ function getCompactShowUpTitle(
 }
 
 const SHOW_UP_SEGMENTS = [1, 2, 3, 4, 5, 6];
+const SIGNAL_STRENGTH_FLOOR = 20;
+const MIN_SIGNAL_STRENGTH_PERCENT = 48;
+const MAX_SIGNAL_STRENGTH_PERCENT = 88;
+const SIGNAL_STRENGTH_SCORE_SCALE = 6;

@@ -80,14 +80,14 @@ export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
           {STARTER_EXAMPLES.map(({ title, items }) => (
             <article
               key={title}
-              className="rounded-xl border border-border bg-card p-4"
+              className="rounded-xl border border-forge-teal/25 bg-forge-teal/10 p-4"
             >
               <h3 className="font-black text-foreground text-sm">{title}</h3>
               <ul className="mt-3 grid gap-2">
                 {items.map((item) => (
                   <li
                     key={item}
-                    className="border-border border-t pt-2 font-medium text-muted-foreground text-sm leading-relaxed first:border-t-0 first:pt-0"
+                    className="border-forge-teal/20 border-t pt-2 font-medium text-muted-foreground text-sm leading-relaxed first:border-t-0 first:pt-0"
                   >
                     {item}
                   </li>
@@ -100,7 +100,7 @@ export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
 
       <section
         aria-labelledby="forge-next-title"
-        className="rounded-xl border border-border bg-canvas p-5 md:p-6"
+        className="rounded-xl border border-forge-teal/25 bg-forge-teal/10 p-5 md:p-6"
       >
         <div className="lg:main-action-grid grid gap-6 lg:items-end">
           <div>
@@ -118,7 +118,7 @@ export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
               {FORGE_OUTCOMES.map(([title, body]) => (
                 <div
                   key={title}
-                  className="border-border border-t pt-4 first:border-t-0 first:pt-0 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-4 first:sm:border-l-0 first:sm:pl-0"
+                  className="border-forge-teal/20 border-t pt-4 first:border-t-0 first:pt-0 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-4 first:sm:border-l-0 first:sm:pl-0"
                 >
                   <p className="font-black text-foreground text-sm">{title}</p>
                   <p className="mt-1 font-medium text-muted-foreground text-sm leading-relaxed">

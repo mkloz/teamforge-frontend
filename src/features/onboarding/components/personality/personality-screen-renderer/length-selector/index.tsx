@@ -44,7 +44,7 @@ export function LengthSelector({
       variants={staggerContainer}
       initial="hidden"
       animate="visible"
-      className="mx-auto flex min-h-dvh w-full max-w-xl flex-col gap-0 sm:px-0"
+      className="mx-auto flex min-h-0 w-full max-w-xl flex-1 flex-col gap-0 sm:px-0"
     >
       <LengthSelectorHeader {...content} />
       <LengthSelectorOptionsList

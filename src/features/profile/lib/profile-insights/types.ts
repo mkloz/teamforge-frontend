@@ -48,6 +48,7 @@ export interface ActivityLaneEvidence {
 export interface ActivityIdea {
   confidence: ActivityLaneConfidence;
   detail: string;
+  eventDescription: string;
   laneKey: LaneKey;
   secondaryLaneKey: LaneKey | null;
   title: string;

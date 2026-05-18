@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
+import { buildForgeIdeaLaunchNavigation } from "@/features/forge/lib/forge-route";
 import { Button } from "@/shared/components/ui/button";
 
 import type { ActivityIdea } from "../lib/profile-insights";
@@ -15,6 +15,8 @@ export function BestFirstGroupStrip({
   const primaryIdea = activityIdeas[0] ?? {
     confidence: "soft",
     detail: "A neutral starting point while TeamForge learns the profile.",
+    eventDescription:
+      "Start with one broad shared-interest prompt and keep the first meetup small, public, and easy to adjust. Ask the group to choose one concrete activity, one simple meeting point, and one fallback option before the plan is confirmed.",
     laneKey: "general",
     secondaryLaneKey: null,
     title: "Interest-led small group",
@@ -25,10 +27,7 @@ export function BestFirstGroupStrip({
     <section className="border-border/60 border-y py-5">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="min-w-0">
-          <p className="font-extrabold text-sm text-spark-amber">
-            Good first plan
-          </p>
-          <h2 className="mt-1 font-black text-ink text-lg leading-tight md:text-xl">
+          <h2 className="font-black text-ink text-lg leading-tight md:text-xl">
             {primaryIdea.title}
           </h2>
           <p className="mt-1 max-w-2xl font-medium text-slate-muted text-sm leading-relaxed">
@@ -52,7 +51,7 @@ export function BestFirstGroupStrip({
           ) : null}
 
           <Button asChild variant="outline" size="sm">
-            <Link {...buildForgeLaunchNavigation()}>
+            <Link {...buildForgeIdeaLaunchNavigation(primaryIdea)}>
               Forge this kind of group
               <ArrowRight className="size-4" aria-hidden="true" />
             </Link>

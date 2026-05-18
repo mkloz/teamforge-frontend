@@ -4,11 +4,16 @@ import type {
   ForgeWizardRouteSyncOptions,
   ForgeWizardRouteSyncResult,
 } from "@/features/forge/hooks/forge-wizard/forge-wizard-hook.types";
+import {
+  buildForgeIdeaTemplate,
+  buildForgeIdeaTemplateId,
+} from "@/features/forge/lib/forge-idea-template";
 
 export function useForgeWizardRouteSync({
   dispatch,
   routeActivityId,
   routeGroupId,
+  routeIdea,
   routeMode,
   routeStep,
   state,
@@ -19,6 +24,11 @@ export function useForgeWizardRouteSync({
   const modeRef = useRef(state.forgeMode);
   const activityIdRef = useRef(state.activityId);
   const groupIdRef = useRef(state.groupId);
+  const consumedIdeaTemplateIdRef = useRef(
+    state.appliedTemplateId?.startsWith("idea:")
+      ? state.appliedTemplateId
+      : null,
+  );
   const forgeReadyRef = useRef({
     forgeResult: state.forgeResult,
     participantsLength: state.participants.length,
@@ -56,6 +66,26 @@ export function useForgeWizardRouteSync({
       });
     }
   }, [dispatch, routeMode]);
+
+  useEffect(() => {
+    if (!routeIdea) {
+      consumedIdeaTemplateIdRef.current = null;
+      return;
+    }
+
+    const templateId = buildForgeIdeaTemplateId(routeIdea);
+
+    if (consumedIdeaTemplateIdRef.current === templateId) {
+      return;
+    }
+
+    consumedIdeaTemplateIdRef.current = templateId;
+    dispatch({
+      type: "apply-activity-template",
+      template: buildForgeIdeaTemplate(routeIdea),
+      templateId,
+    });
+  }, [dispatch, routeIdea]);
 
   useEffect(() => {
     const hasLiveForgeState =

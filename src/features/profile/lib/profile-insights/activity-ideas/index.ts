@@ -25,6 +25,8 @@ export function buildActivityIdeas(
         confidence: "soft",
         detail:
           "Useful as a neutral first step while the profile gathers stronger interests.",
+        eventDescription:
+          "Start with one broad shared-interest prompt and keep the first meetup small, public, and easy to adjust. Ask the group to choose one concrete activity, one simple meeting point, and one fallback option before the plan is confirmed.",
         laneKey: "general",
         secondaryLaneKey: null,
         title: "Interest-led small group",

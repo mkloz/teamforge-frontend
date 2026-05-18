@@ -15,9 +15,6 @@ export function SectionCard({ children, accent = false }: SectionCardProps) {
         accent && "border-forge-teal/25",
       )}
     >
-      {accent && (
-        <div className="absolute top-0 -left-1 h-8 w-0.75 rounded-full bg-forge-teal/70" />
-      )}
       <div className="flex flex-col gap-3">{children}</div>
     </div>
   );

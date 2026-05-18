@@ -1,6 +1,7 @@
 import type { Dispatch, MutableRefObject } from "react";
 
 import type { ForgeMode } from "@/features/forge/lib/forge-contract";
+import type { ForgeIdeaLaunch } from "@/features/forge/lib/forge-route";
 import type {
   ForgeWizardAction,
   ForgeWizardData,
@@ -18,6 +19,7 @@ export interface ForgeWizardRouteSyncOptions {
   dispatch: ForgeWizardDispatch;
   routeActivityId: string | null;
   routeGroupId: string | null;
+  routeIdea: ForgeIdeaLaunch | null;
   routeMode: ForgeMode;
   routeStep: Step;
   state: ForgeWizardData;

@@ -77,24 +77,18 @@ export function getUserOceanScores(user: User): OceanScores | null {
 }
 
 export function getUserDimensionScores(user: User): DimensionScore[] | null {
-  const { oceanO, oceanC, oceanE, oceanA, oceanN } = user;
+  const oceanScores = getSharedUserOceanScores(user);
 
-  if (
-    oceanO === null ||
-    oceanO === undefined ||
-    oceanC === null ||
-    oceanC === undefined ||
-    oceanE === null ||
-    oceanE === undefined ||
-    oceanA === null ||
-    oceanA === undefined ||
-    oceanN === null ||
-    oceanN === undefined
-  ) {
+  if (!oceanScores) {
     return null;
   }
 
-  return createDimensionScores(oceanE, oceanO, oceanA, oceanC);
+  return createDimensionScores(
+    oceanScores.extraversion,
+    oceanScores.openness,
+    oceanScores.agreeableness,
+    oceanScores.conscientiousness,
+  );
 }
 
 export function getUserArchetype(user: User): string {

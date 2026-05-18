@@ -10,6 +10,7 @@ import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activit
 import { forgeSearchModeValues } from "@/features/forge/lib/forge-route";
 
 import type { ForgeMode } from "../lib/forge-contract";
+import type { ForgeIdeaLaunch } from "../lib/forge-route";
 import type { Step } from "../lib/forge-wizard";
 
 const stepValues: Step[] = [1, 2, 3, 4, 5, 6, 7];
@@ -41,6 +42,11 @@ export function useForgeRouteState() {
       mode: parseAsStringLiteral(forgeSearchModeValues),
       activityId: parseAsString,
       groupId: parseAsString,
+      ideaTitle: parseAsString,
+      ideaDetail: parseAsString,
+      ideaEventDescription: parseAsString,
+      ideaLane: parseAsString,
+      ideaSecondaryLane: parseAsString,
     },
     {
       history: "replace",
@@ -52,6 +58,13 @@ export function useForgeRouteState() {
   const forgeMode = mapSearchToMode(routeState.mode);
   const activityId = routeState.activityId ?? null;
   const groupId = routeState.groupId ?? null;
+  const idea = buildLaunchIdea({
+    detail: routeState.ideaDetail,
+    eventDescription: routeState.ideaEventDescription,
+    laneKey: routeState.ideaLane,
+    secondaryLaneKey: routeState.ideaSecondaryLane,
+    title: routeState.ideaTitle,
+  });
 
   function openWizard(options?: {
     step?: Step;
@@ -66,6 +79,11 @@ export function useForgeRouteState() {
           options?.mode && options.mode !== "AUTO"
             ? mapModeToSearch(options.mode)
             : null,
+        ideaTitle: null,
+        ideaDetail: null,
+        ideaEventDescription: null,
+        ideaLane: null,
+        ideaSecondaryLane: null,
       },
       { history: options?.history ?? "push" },
     );
@@ -79,6 +97,11 @@ export function useForgeRouteState() {
         mode: null,
         activityId: null,
         groupId: null,
+        ideaTitle: null,
+        ideaDetail: null,
+        ideaEventDescription: null,
+        ideaLane: null,
+        ideaSecondaryLane: null,
       },
       { history: options?.history ?? "push" },
     );
@@ -136,11 +159,34 @@ export function useForgeRouteState() {
     forgeMode,
     activityId,
     groupId,
+    idea,
     openWizard,
     closeWizard,
     setStep,
     setForgeMode,
     setForgeTargets,
     enterGroupHub,
+  };
+}
+
+function buildLaunchIdea(input: {
+  detail: string | null;
+  eventDescription: string | null;
+  laneKey: string | null;
+  secondaryLaneKey: string | null;
+  title: string | null;
+}): ForgeIdeaLaunch | null {
+  const title = input.title?.trim();
+
+  if (!title) {
+    return null;
+  }
+
+  return {
+    title,
+    detail: input.detail?.trim() ?? "",
+    eventDescription: input.eventDescription?.trim() || null,
+    laneKey: input.laneKey?.trim() || null,
+    secondaryLaneKey: input.secondaryLaneKey?.trim() || null,
   };
 }

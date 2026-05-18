@@ -1,5 +1,7 @@
 export function getFirstName(name: string) {
-  return name.trim().split(/\s+/)[0] ?? name;
+  const [firstName] = name.trim().split(/\s+/);
+
+  return firstName || "This profile";
 }
 
 export function scoreBool(value: boolean | undefined, score: number) {
