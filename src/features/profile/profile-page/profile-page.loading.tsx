@@ -223,8 +223,8 @@ function MatchingSnapshotSkeleton() {
 
 function PsychometricsSkeleton() {
   return (
-    <div className="flex min-w-0 shrink-0 flex-col">
-      <aside className="grid w-full gap-8 md:grid-cols-2 lg:sticky lg:top-4 lg:flex lg:flex-col lg:gap-10">
+    <div className="flex min-w-0 shrink-0 flex-col border-border/70 lg:sticky lg:top-4 lg:self-start lg:border-l lg:pl-8 xl:pl-10">
+      <aside className="grid w-full gap-8 md:grid-cols-2 lg:flex lg:flex-col lg:gap-10">
         <section className="flex min-w-0 flex-col border-border/60 border-t pt-6 lg:border-t-0 lg:pt-0">
           <div className="relative mx-auto aspect-square w-full max-w-72">
             <Skeleton className="absolute top-1/2 left-1/2 h-px w-4/5 -translate-x-1/2 -translate-y-1/2 rotate-12" />

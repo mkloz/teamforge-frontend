@@ -1,10 +1,17 @@
 import type { AutoForgeExecutionInput } from "@/features/forge/lib/forge-execution-schema";
-import { normalizeFixedGroupSize } from "@/features/forge/lib/forge-size";
+import {
+  getPreferredGroupSizeFromRange,
+  normalizeFixedGroupSize,
+} from "@/features/forge/lib/forge-size";
 
 export function resolveGroupSize(input: AutoForgeExecutionInput) {
   if (input.groupSizeMode === "FIXED") {
     return normalizeFixedGroupSize(input.fixedSize);
   }
 
-  return normalizeFixedGroupSize((input.autoMinSize + input.autoMaxSize) / 2);
+  return resolveRangeGroupSize(input.autoMinSize, input.autoMaxSize);
+}
+
+function resolveRangeGroupSize(minSize: number, maxSize: number) {
+  return getPreferredGroupSizeFromRange(minSize, maxSize);
 }

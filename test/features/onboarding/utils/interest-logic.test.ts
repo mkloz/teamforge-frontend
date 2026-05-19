@@ -14,11 +14,13 @@ function node(
   name: string,
   aliases: string[] = [],
   children: Interest[] = [],
+  overrides: Partial<Interest> = {},
 ): Interest {
   return createInterest(name, aliases, {
     children,
     id,
     slug: id,
+    ...overrides,
   });
 }
 
@@ -111,6 +113,32 @@ describe("getMbtiSuggestions", () => {
       [],
     );
   });
+
+  it("skips inactive MBTI suggestions before ranking selected items", () => {
+    const { leafById } = createCatalog();
+    const leafByIdWithInactive = {
+      ...leafById,
+      pc_gaming: {
+        ...leafById.pc_gaming,
+        isActive: false,
+      },
+    };
+
+    expect(
+      getMbtiSuggestions(
+        "INTJ",
+        leafByIdWithInactive,
+        new Set(["coding"]),
+        new Set(["software_eng"]),
+      ).map((interest) => interest.id),
+    ).toEqual([
+      "data_science",
+      "physics",
+      "chess",
+      "specialty_coffee",
+      "coding",
+    ]);
+  });
 });
 
 describe("getSearchResults", () => {
@@ -143,6 +171,58 @@ describe("getSearchResults", () => {
         tag: expect.objectContaining({ id: "baking" }),
       }),
     ]);
+  });
+
+  it("ranks exact tag names above alias hits and keeps matched alias detail", () => {
+    const { categories } = createCatalog();
+    const results = getSearchResults("coding", categories);
+
+    expect(results.tags.slice(0, 2)).toEqual([
+      expect.objectContaining({
+        matchedAlias: undefined,
+        tag: expect.objectContaining({ id: "coding" }),
+      }),
+      expect.objectContaining({
+        matchedAlias: "coding",
+        tag: expect.objectContaining({ id: "software_eng" }),
+      }),
+    ]);
+  });
+
+  it("ignores inactive categories, subcategories, and tags", () => {
+    const hiddenTag = node("hidden_tag", "Hidden tag", [], [], {
+      isActive: false,
+    });
+    const hiddenSubcategory = node(
+      "hidden_subcategory",
+      "Hidden subcategory",
+      [],
+      [node("visible_under_hidden", "Hidden child")],
+      { isActive: false },
+    );
+    const hiddenCategory = node(
+      "hidden_category",
+      "Hidden category",
+      [],
+      [node("visible_under_hidden_category", "Hidden child")],
+      { isActive: false },
+    );
+    const visibleCategory = node(
+      "visible_category",
+      "Visible category",
+      [],
+      [
+        node("visible_subcategory", "Visible subcategory", [], [hiddenTag]),
+        hiddenSubcategory,
+      ],
+    );
+
+    const results = getSearchResults("hidden", [
+      visibleCategory,
+      hiddenCategory,
+    ]);
+
+    expect(results).toEqual({ subcategories: [], tags: [] });
   });
 
   it("ignores queries that are too short after trimming", () => {
@@ -199,6 +279,37 @@ describe("getCorrelatedSuggestions", () => {
       ).map((interest) => interest.id),
     ).toEqual([]);
   });
+
+  it("requires two known active selected interests and skips inactive candidates before limiting", () => {
+    const { categories, leafById } = createCatalog();
+    const leafByIdWithInactive = {
+      ...leafById,
+      pc_gaming: {
+        ...leafById.pc_gaming,
+        isActive: false,
+      },
+    };
+
+    expect(
+      getCorrelatedSuggestions(
+        ["software_eng", "unknown_selected"],
+        new Set(),
+        new Set(),
+        leafByIdWithInactive,
+        categories,
+      ),
+    ).toEqual([]);
+
+    expect(
+      getCorrelatedSuggestions(
+        ["software_eng", "data_science"],
+        new Set(),
+        new Set(),
+        leafByIdWithInactive,
+        categories,
+      ).map((interest) => interest.id),
+    ).not.toContain("pc_gaming");
+  });
 });
 
 describe("getShouldShowBalanceNudge", () => {
@@ -248,5 +359,36 @@ describe("getShouldShowBalanceNudge", () => {
     ).toBe(false);
 
     expect(getShouldShowBalanceNudge(["software_eng"], categories)).toBe(false);
+  });
+
+  it("ignores inactive catalog branches when deciding whether selections are balanced", () => {
+    const inactiveLeaf = node("inactive_leaf", "Inactive leaf", [], [], {
+      isActive: false,
+    });
+    const activeLeaf = node("active_leaf", "Active leaf");
+    const category = node(
+      "category",
+      "Category",
+      [],
+      [node("subcategory", "Subcategory", [], [inactiveLeaf, activeLeaf])],
+    );
+
+    expect(
+      getShouldShowBalanceNudge(
+        [
+          "active_leaf",
+          "inactive_leaf",
+          "inactive_leaf",
+          "inactive_leaf",
+          "inactive_leaf",
+          "inactive_leaf",
+          "inactive_leaf",
+          "inactive_leaf",
+          "inactive_leaf",
+          "inactive_leaf",
+        ],
+        [category],
+      ),
+    ).toBe(false);
   });
 });

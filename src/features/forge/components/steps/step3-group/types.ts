@@ -3,6 +3,7 @@ import type {
   FixedGroupSize,
   ForgeMode,
   GroupSizeMode,
+  LocationType,
   Visibility,
 } from "@/features/forge/lib/forge-contract";
 import type { FriendshipApi } from "@/shared/schemas";
@@ -15,13 +16,17 @@ export interface Step3GroupProps {
   groupSizeMode: GroupSizeMode;
   onGroupSizeModeChange: (v: GroupSizeMode) => void;
   autoMinSize: number;
-  onAutoMinSizeChange: (v: number) => void;
   autoMaxSize: number;
-  onAutoMaxSizeChange: (v: number) => void;
+  onAutoSizeRangeChange: (minSize: number, maxSize: number) => void;
+  locationType: LocationType;
   compatibilityWeight: number;
   onCompatibilityWeightChange: (v: number) => void;
   diversityWeight: number;
   onDiversityWeightChange: (v: number) => void;
+  networkReachWeight: number;
+  onNetworkReachWeightChange: (v: number) => void;
+  maxDistanceKm: number;
+  onMaxDistanceKmChange: (v: number) => void;
   visibility: Visibility;
   onVisibilityChange: (v: Visibility) => void;
   groupName?: string;
@@ -60,13 +65,17 @@ export interface AutoGroupDetailsProps {
   diversityWeight: number;
   fixedSize: FixedGroupSize;
   groupSizeMode: GroupSizeMode;
+  locationType: LocationType;
+  maxDistanceKm: number;
   onAlgorithmsExpandedChange: (value: boolean) => void;
-  onAutoMaxSizeChange: (v: number) => void;
-  onAutoMinSizeChange: (v: number) => void;
+  onAutoSizeRangeChange: (minSize: number, maxSize: number) => void;
   onCompatibilityWeightChange: (v: number) => void;
   onDiversityWeightChange: (v: number) => void;
   onFixedSizeChange: (v: number) => void;
   onGroupSizeModeChange: (v: GroupSizeMode) => void;
+  onMaxDistanceKmChange: (v: number) => void;
+  onNetworkReachWeightChange: (v: number) => void;
+  networkReachWeight: number;
 }
 
 export interface WeightSliderProps {
@@ -78,4 +87,7 @@ export interface WeightSliderProps {
   step: number;
   warning?: string;
   subLabel?: string;
+  minLabel?: string;
+  maxLabel?: string;
+  formatValue?: (value: number) => string;
 }

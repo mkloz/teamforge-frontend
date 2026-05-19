@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
-import { InterestsCatalogSkeleton } from "@/features/onboarding/components/interests/interests-page/interests-screen-renderer/interests-catalog-skeleton";
+import { OnboardingHomeLink } from "@/features/onboarding/components/onboarding-home-link";
+import { BackgroundTexture } from "@/shared/components/common/background-texture";
+import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import type { PageLoadingProps } from "@/shared/components/loading/page-loading";
 import {
   SkeletonButton,
@@ -65,47 +67,69 @@ function ProfileBasicsLoadingFixture() {
 
 function PersonalityLoadingFixture() {
   return (
-    <OnboardingLoadingShell maxWidthClassName="max-w-xl">
-      <div
-        aria-label="Loading personality"
-        className="mt-10 flex flex-1 flex-col"
-        role="status"
-      >
-        <span className="sr-only">Loading personality</span>
-        <div className="flex flex-1 flex-col justify-center py-8">
-          <Skeleton className="h-3 w-24" tone="teal" />
-          <Skeleton className="mt-4 h-10 w-full max-w-lg" />
-          <SkeletonText
-            className="mt-4 max-w-lg"
-            lines={3}
-            widths={["w-full", "w-11/12", "w-3/4"]}
-          />
+    <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
+      <div className="relative flex h-full flex-1 flex-col overflow-hidden">
+        <BackgroundTexture />
+        <OnboardingHomeLink />
 
-          <div className="mt-8 grid gap-3">
-            {["strong-no", "no", "neutral", "yes", "strong-yes"].map(
-              (item, index) => (
-                <div
-                  key={item}
-                  className="flex min-h-14 items-center gap-3 border-border border-t px-1 py-3 first:border-t-0"
-                >
-                  <Skeleton
-                    shape="circle"
-                    className="size-8 shrink-0"
-                    tone={index === 2 ? "teal" : "default"}
-                  />
-                  <Skeleton className="h-4 min-w-0 flex-1" />
-                </div>
-              ),
-            )}
+        <div className="relative h-full flex-1 overflow-y-auto overflow-x-hidden scroll-smooth">
+          <div className="absolute top-0 right-0 left-0 z-50">
+            <TopProgressBar progress={0} />
           </div>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-between">
-            <SkeletonButton className="h-11 w-full sm:w-28" />
-            <SkeletonButton className="h-11 w-full sm:w-36" tone="teal" />
+          <div className="relative flex min-h-full flex-col items-center justify-start px-4 pt-7 pb-4 sm:px-6 sm:pt-12">
+            <div className="relative flex w-full max-w-xl flex-1 flex-col">
+              <div
+                aria-label="Loading personality"
+                className="flex flex-1 flex-col"
+                role="status"
+              >
+                <span className="sr-only">Loading personality</span>
+                <div className="flex flex-1 flex-col justify-center py-8">
+                  <Skeleton className="h-3 w-24" tone="teal" />
+                  <Skeleton className="mt-4 h-10 w-full max-w-lg" />
+                  <SkeletonText
+                    className="mt-4 max-w-lg"
+                    lines={3}
+                    widths={["w-full", "w-11/12", "w-3/4"]}
+                  />
+
+                  <div className="mt-8 grid gap-3">
+                    {["strong-no", "no", "neutral", "yes", "strong-yes"].map(
+                      (item, index) => (
+                        <div
+                          key={item}
+                          className="flex min-h-14 items-center gap-3 border-border border-t px-1 py-3 first:border-t-0"
+                        >
+                          <Skeleton
+                            shape="circle"
+                            className="size-8 shrink-0"
+                            tone={index === 2 ? "teal" : "default"}
+                          />
+                          <Skeleton className="h-4 min-w-0 flex-1" />
+                        </div>
+                      ),
+                    )}
+                  </div>
+
+                  <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-between">
+                    <SkeletonButton className="h-11 w-full sm:w-28" />
+                    <SkeletonButton
+                      className="h-11 w-full sm:w-36"
+                      tone="teal"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </OnboardingLoadingShell>
+
+      <div className="hidden h-full flex-1 items-center justify-center overflow-hidden border-l bg-hero-bg lg:flex">
+        <OnboardingVisualSkeleton />
+      </div>
+    </div>
   );
 }
 
@@ -117,19 +141,24 @@ function InterestsLoadingFixture() {
       </aside>
 
       <main className="relative flex h-full flex-1 flex-col overflow-hidden bg-canvas">
+        <BackgroundTexture />
+
         <div className="relative z-10 flex-1 overflow-x-hidden overflow-y-scroll scroll-smooth pb-0">
-          <InterestsHeaderSkeleton />
+          <TopProgressBar
+            progress={0}
+            className="sticky top-0 z-50 -mx-4 -mt-1 w-full sm:-mx-5"
+          />
 
           <div className="flex min-h-full w-full flex-col items-center justify-start py-6 sm:py-0">
             <div className="relative w-full max-w-xl px-4 sm:px-5 lg:px-0">
               <div
                 aria-busy="true"
                 aria-label="Loading interests"
-                className="grid gap-5"
+                className="relative w-full"
                 role="status"
               >
                 <span className="sr-only">Loading interests</span>
-                <InterestsCatalogSkeleton />
+                <InterestsIntroSkeleton />
               </div>
             </div>
           </div>
@@ -155,7 +184,15 @@ function OnboardingLoadingShell({
       </div>
 
       <div className="relative flex h-full flex-1 flex-col overflow-hidden bg-canvas">
+        <BackgroundTexture />
+        <OnboardingHomeLink />
+
         <div className="relative h-full flex-1 overflow-y-auto overflow-x-hidden scroll-smooth px-4 pb-4">
+          <TopProgressBar
+            progress={0}
+            className="sticky top-0 z-50 -mx-4 -mt-2 w-full"
+          />
+
           <main className="relative z-10 flex min-h-full items-start justify-center pt-20 pb-10 lg:items-center lg:py-8">
             <div className={`w-full ${maxWidthClassName} px-2 sm:px-10 lg:p-0`}>
               {children}
@@ -176,12 +213,43 @@ function OnboardingVisualSkeleton() {
   );
 }
 
-function InterestsHeaderSkeleton() {
+function InterestsIntroSkeleton() {
   return (
-    <div className="sticky top-0 z-30 border-border border-b bg-canvas/95 px-4 py-4 backdrop-blur">
-      <div className="mx-auto flex max-w-xl items-center justify-between gap-4">
-        <SkeletonText className="flex-1" lines={2} widths={["w-28", "w-44"]} />
-        <Skeleton shape="pill" className="h-8 w-20" tone="teal" />
+    <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col items-center gap-0 pt-10 text-center sm:pt-12">
+      <Skeleton className="mb-4 h-8 w-full max-w-80 sm:h-12" />
+      <SkeletonText
+        className="mb-3 w-full"
+        lines={3}
+        widths={["w-full", "w-11/12", "w-4/5"]}
+      />
+      <SkeletonText
+        className="mb-6 w-full"
+        lines={2}
+        widths={["w-full", "w-3/4"]}
+      />
+
+      <Skeleton className="mb-6 h-px w-full" />
+
+      <div className="mb-8 flex w-full flex-col gap-4 text-left">
+        {["first", "second", "third"].map((item, index) => (
+          <div key={item} className="flex items-start gap-3.5">
+            <Skeleton
+              shape="square"
+              className="mt-0.5 size-8 shrink-0 rounded-lg"
+              tone={index === 0 ? "teal" : "default"}
+            />
+            <SkeletonText
+              className="min-w-0 flex-1"
+              lines={2}
+              widths={["w-full", "w-4/5"]}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-auto flex w-full xs:flex-row flex-col-reverse xs:items-center items-stretch gap-3 pt-6">
+        <SkeletonButton className="h-10 w-full xs:w-36" />
+        <SkeletonButton className="h-10 w-full xs:flex-1" tone="teal" />
       </div>
     </div>
   );
@@ -189,11 +257,8 @@ function InterestsHeaderSkeleton() {
 
 function InterestsFooterSkeleton() {
   return (
-    <footer className="border-border border-t bg-card p-4">
-      <div className="mx-auto flex max-w-xl items-center justify-between gap-3">
-        <SkeletonButton className="w-24" />
-        <SkeletonButton className="w-32" tone="teal" />
-      </div>
+    <footer className="relative z-30 w-full shrink-0 border-slate-muted/10 border-t bg-canvas">
+      <div className="mx-auto w-full max-w-xl px-4 sm:px-5 lg:px-0" />
     </footer>
   );
 }

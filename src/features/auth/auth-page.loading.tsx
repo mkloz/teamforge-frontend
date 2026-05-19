@@ -1,11 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { BackgroundTexture } from "@/shared/components/common/background-texture";
+import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import type { PageLoadingProps } from "@/shared/components/loading/page-loading";
 import {
   SkeletonButton,
   SkeletonText,
 } from "@/shared/components/loading/skeleton-patterns";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { cn } from "@/shared/lib/utils";
 
 type AuthLoadingVariant =
   | "activate"
@@ -53,7 +56,15 @@ export function AuthPageLoadingFixture({
   );
 }
 
-function AuthLoadingShell({ children }: { children: ReactNode }) {
+function AuthLoadingShell({
+  children,
+  layout = "form",
+}: {
+  children: ReactNode;
+  layout?: "form" | "support";
+}) {
+  const isSupportLayout = layout === "support";
+
   return (
     <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
       <div className="pointer-events-none absolute top-0 right-0 left-0 z-30 flex h-16 items-center px-4 lg:h-24 lg:px-10">
@@ -73,9 +84,34 @@ function AuthLoadingShell({ children }: { children: ReactNode }) {
       </div>
 
       <div className="relative flex h-full flex-1 flex-col overflow-hidden bg-canvas">
-        <div className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth pb-4">
-          <div className="flex min-h-full w-full flex-col items-center justify-start px-4 pt-20 pb-10 lg:justify-center lg:py-8">
-            <div className="relative w-full max-w-sm px-2 sm:px-10 lg:p-0">
+        <BackgroundTexture />
+        {isSupportLayout ? null : (
+          <TopProgressBar
+            progress={0}
+            className="absolute top-0 right-0 left-0 z-50 w-full"
+          />
+        )}
+
+        <div
+          className={cn(
+            "relative z-10 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth pb-4",
+            isSupportLayout && "px-4",
+          )}
+        >
+          <div
+            className={cn(
+              "flex min-h-full w-full flex-col items-center pt-20 pb-10 lg:py-8",
+              isSupportLayout
+                ? "justify-center"
+                : "justify-start px-4 lg:justify-center",
+            )}
+          >
+            <div
+              className={cn(
+                "w-full max-w-sm px-2 sm:px-10 lg:p-0",
+                !isSupportLayout && "relative",
+              )}
+            >
               {children}
             </div>
           </div>
@@ -161,7 +197,7 @@ function SupportLoadingFixture({
         : "This password will replace the old one for your TeamForge account.";
 
   return (
-    <AuthLoadingShell>
+    <AuthLoadingShell layout="support">
       <div className="rounded-xl border border-border/70 bg-card/95 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
         <div className="flex flex-col gap-2 text-center">
           <p className="font-semibold text-forge-teal text-xs uppercase tracking-widest">

@@ -35,6 +35,8 @@ export interface ForgeWizardData {
   autoMaxSize: number;
   compatibilityWeight: number;
   diversityWeight: number;
+  networkReachWeight: number;
+  maxDistanceKm: number;
   visibility: Visibility;
   forgeResult: ForgeResult;
   participants: ForgeParticipant[];
@@ -74,6 +76,8 @@ export type ForgeWizardField =
   | "autoMaxSize"
   | "compatibilityWeight"
   | "diversityWeight"
+  | "networkReachWeight"
+  | "maxDistanceKm"
   | "visibility"
   | "groupName"
   | "groupDescription"

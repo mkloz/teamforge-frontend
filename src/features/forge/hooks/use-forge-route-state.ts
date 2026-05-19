@@ -11,9 +11,7 @@ import { forgeSearchModeValues } from "@/features/forge/lib/forge-route";
 
 import type { ForgeMode } from "../lib/forge-contract";
 import type { ForgeIdeaLaunch } from "../lib/forge-route";
-import type { Step } from "../lib/forge-wizard";
-
-const stepValues: Step[] = [1, 2, 3, 4, 5, 6, 7];
+import { normalizeStep, type Step } from "../lib/forge-wizard";
 
 function mapModeToSearch(mode: ForgeMode) {
   return mode === "MANUAL" ? "manual" : "auto";
@@ -23,14 +21,6 @@ function mapSearchToMode(
   mode: (typeof forgeSearchModeValues)[number] | null | undefined,
 ): ForgeMode {
   return mode === "manual" ? "MANUAL" : "AUTO";
-}
-
-function normalizeStep(step: number | null | undefined): Step {
-  if (!step || step < 1 || step > 7) {
-    return 1;
-  }
-
-  return stepValues.find((stepValue) => stepValue === step) ?? 1;
 }
 
 export function useForgeRouteState() {

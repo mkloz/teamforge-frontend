@@ -20,13 +20,17 @@ export function Step3Group({
   groupSizeMode,
   onGroupSizeModeChange,
   autoMinSize,
-  onAutoMinSizeChange,
   autoMaxSize,
-  onAutoMaxSizeChange,
+  onAutoSizeRangeChange,
+  locationType,
   compatibilityWeight,
   onCompatibilityWeightChange,
   diversityWeight,
   onDiversityWeightChange,
+  networkReachWeight,
+  onNetworkReachWeightChange,
+  maxDistanceKm,
+  onMaxDistanceKmChange,
   visibility,
   onVisibilityChange,
   groupName = "",
@@ -93,12 +97,16 @@ export function Step3Group({
             diversityWeight={diversityWeight}
             fixedSize={fixedSize}
             groupSizeMode={groupSizeMode}
-            onAutoMaxSizeChange={onAutoMaxSizeChange}
-            onAutoMinSizeChange={onAutoMinSizeChange}
+            locationType={locationType}
+            maxDistanceKm={maxDistanceKm}
+            onAutoSizeRangeChange={onAutoSizeRangeChange}
             onCompatibilityWeightChange={onCompatibilityWeightChange}
             onDiversityWeightChange={onDiversityWeightChange}
             onFixedSizeChange={onFixedSizeChange}
             onGroupSizeModeChange={onGroupSizeModeChange}
+            onMaxDistanceKmChange={onMaxDistanceKmChange}
+            onNetworkReachWeightChange={onNetworkReachWeightChange}
+            networkReachWeight={networkReachWeight}
           />
         )}
       </section>

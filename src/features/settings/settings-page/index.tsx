@@ -22,7 +22,13 @@ export function SettingsPage() {
   );
 
   if (profileFormState.isLoading) {
-    return <SettingsPageLoading activeSection={activeSection} mode="query" />;
+    return (
+      <SettingsPageLoading
+        activeSection={activeSection}
+        isMobileDetailOpen={mobileDetail.isMobileDetailOpen}
+        mode="query"
+      />
+    );
   }
 
   if (profileFormState.isError) {

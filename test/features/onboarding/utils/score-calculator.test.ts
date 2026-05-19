@@ -23,6 +23,21 @@ function question(
   };
 }
 
+function questionSet(itemsPerDimension: number): IpipQuestion[] {
+  const dimensions: Dimension[] = ["O", "C", "E", "A", "N"];
+  let id = 1;
+
+  return dimensions.flatMap((dimension) =>
+    Array.from({ length: itemsPerDimension }, () => question(id++, dimension)),
+  );
+}
+
+function answersFor(questions: IpipQuestion[], value: RawAnswers[number]) {
+  return Object.fromEntries(
+    questions.map((item) => [item.id, value]),
+  ) as RawAnswers;
+}
+
 describe("calculateVector", () => {
   it("scores keyed and reverse-keyed answers onto the -1..1 OCEAN range", () => {
     const vector = calculateVector(
@@ -46,9 +61,15 @@ describe("calculateVector", () => {
     expect(vector.C).toBe(-1);
     expect(vector.E).toBe(0);
     expect(vector.softBoundary).toEqual(["E", "A", "N"]);
+    expect(vector).toMatchObject({
+      answerCount: 5,
+      completionRatio: 1,
+      confidence: "low",
+      questionCount: 5,
+    });
   });
 
-  it("normalizes partial answers using only answered questions", () => {
+  it("normalizes partial answers using only answered questions and exposes completeness", () => {
     const vector = calculateVector(
       [question(1, "A", "+"), question(2, "A", "+"), question(3, "N", "-")],
       {
@@ -59,6 +80,24 @@ describe("calculateVector", () => {
 
     expect(vector.A).toBe(0.5);
     expect(vector.N).toBe(-1);
+    expect(vector).toMatchObject({
+      answerCount: 2,
+      completionRatio: 0.67,
+      confidence: "low",
+      questionCount: 3,
+    });
+    expect(vector.dimensionMeta.A).toEqual({
+      answerCount: 1,
+      completionRatio: 0.5,
+      confidence: "low",
+      questionCount: 2,
+    });
+    expect(vector.dimensionMeta.O).toEqual({
+      answerCount: 0,
+      completionRatio: 0,
+      confidence: "none",
+      questionCount: 0,
+    });
   });
 
   it("ignores invalid runtime answer values instead of skewing scores", () => {
@@ -74,6 +113,40 @@ describe("calculateVector", () => {
 
     expect(vector.O).toBe(1);
     expect(vector.C).toBe(0);
+    expect(vector.answerCount).toBe(1);
+    expect(vector.dimensionMeta.C).toEqual({
+      answerCount: 0,
+      completionRatio: 0,
+      confidence: "none",
+      questionCount: 1,
+    });
+  });
+
+  it("downgrades confidence for fully answered but boundary-level dimensions", () => {
+    const questions = questionSet(6);
+    const vector = calculateVector(questions, answersFor(questions, 3));
+
+    expect(vector.softBoundary).toEqual(["O", "C", "E", "A", "N"]);
+    expect(vector.confidence).toBe("medium");
+    expect(vector.dimensionMeta.O).toMatchObject({
+      answerCount: 6,
+      completionRatio: 1,
+      confidence: "medium",
+      questionCount: 6,
+    });
+  });
+
+  it("marks complete directional answers as high confidence", () => {
+    const questions = questionSet(6);
+    const vector = calculateVector(questions, answersFor(questions, 5));
+
+    expect(vector.confidence).toBe("high");
+    expect(vector.dimensionMeta.N).toEqual({
+      answerCount: 6,
+      completionRatio: 1,
+      confidence: "high",
+      questionCount: 6,
+    });
   });
 });
 

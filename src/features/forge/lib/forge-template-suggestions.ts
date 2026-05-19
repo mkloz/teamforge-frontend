@@ -3,7 +3,6 @@ import {
   type ActivityOption,
 } from "@/features/forge/constants/forge.constants";
 import {
-  ACTIVITY_BY_LABEL,
   CATEGORY_TRAITS,
   FALLBACK_CATEGORY,
   TRAIT_KEYWORDS,
@@ -13,6 +12,10 @@ import type {
   TemplateTrait,
 } from "@/features/forge/data/forge-template-seed-types";
 import { CATEGORY_TEMPLATES } from "@/features/forge/data/forge-template-seeds";
+import {
+  findActivityOption,
+  getActivitySemanticTerms,
+} from "@/features/forge/lib/forge-activity-builders/activity-option-resolution";
 import type { ForgePlanTemplate } from "@/features/forge/lib/forge-template";
 import {
   PLAN_COVER_PRESET_IDS,
@@ -51,6 +54,18 @@ const STOP_WORDS = new Set([
   "with",
   "your",
 ]);
+const TEMPLATE_TOKEN_ALIASES: Record<string, string[]> = {
+  biking: ["bike", "cycling"],
+  cinema: ["film", "movie"],
+  coding: ["code", "programming"],
+  football: ["soccer"],
+  gym: ["fitness", "workout"],
+  movie: ["film", "cinema"],
+  programming: ["code", "coding"],
+  run: ["running"],
+  soccer: ["football"],
+  workout: ["fitness", "gym"],
+};
 
 export interface SuggestedTemplate {
   id: string;
@@ -78,6 +93,10 @@ interface CategoryFit {
   coverageScore: number;
   directScore: number;
   topScore: number;
+}
+
+interface ActivityIntentSignals {
+  tokens: Set<string>;
 }
 
 type WeightedTraits = Map<TemplateTrait, number>;
@@ -153,22 +172,7 @@ function getCategory(selectedActivity: string | null) {
     return FALLBACK_CATEGORY;
   }
 
-  const normalizedActivity = normalizeText(selectedActivity).trim();
-  const idMatch = ACTIVITIES.find(
-    (activity) => normalizeText(activity.id) === normalizedActivity,
-  );
-
-  if (idMatch) {
-    return idMatch;
-  }
-
-  return (
-    ACTIVITY_BY_LABEL.get(selectedActivity) ??
-    ACTIVITIES.find(
-      (activity) => normalizeText(activity.label) === normalizedActivity,
-    ) ??
-    FALLBACK_CATEGORY
-  );
+  return findActivityOption(selectedActivity) ?? FALLBACK_CATEGORY;
 }
 
 function normalizeText(value: string) {
@@ -181,6 +185,10 @@ function normalizeText(value: string) {
 
 function normalizeToken(token: string) {
   const normalized = normalizeText(token).replace(/[^a-z0-9]/g, "");
+
+  if (normalized === "movies") {
+    return "movie";
+  }
 
   if (normalized.length > 5 && normalized.endsWith("ies")) {
     return `${normalized.slice(0, -3)}y`;
@@ -216,6 +224,24 @@ function getTextTokens(value: string) {
     );
 }
 
+function getExpandedTextTokens(value: string) {
+  return expandTokens(getTextTokens(value));
+}
+
+function expandTokens(tokens: Iterable<string>) {
+  const expandedTokens = new Set<string>();
+
+  for (const token of tokens) {
+    expandedTokens.add(token);
+
+    for (const alias of TEMPLATE_TOKEN_ALIASES[token] ?? []) {
+      expandedTokens.add(normalizeToken(alias));
+    }
+  }
+
+  return [...expandedTokens];
+}
+
 function getNormalizedPhrase(value: string) {
   return getTextTokens(value).join(" ");
 }
@@ -237,10 +263,25 @@ function getUserInterestSignals(user: User | undefined) {
       for (const token of getTextTokens(label)) {
         tokens.add(token);
       }
+
+      for (const token of getExpandedTextTokens(label)) {
+        tokens.add(token);
+      }
     }
   }
 
   return { phrases, tokens };
+}
+
+function getCategoryBaseText(category: ActivityOption) {
+  return [category.id, category.label, category.description].join(" ");
+}
+
+function getCategorySearchText(category: ActivityOption) {
+  return [
+    getCategoryBaseText(category),
+    ...getActivitySemanticTerms(category.id),
+  ].join(" ");
 }
 
 function getCandidateText(seed: TemplateSeed, category: ActivityOption) {
@@ -249,8 +290,7 @@ function getCandidateText(seed: TemplateSeed, category: ActivityOption) {
     seed.description,
     seed.groupName,
     seed.groupDescription,
-    category.label,
-    category.description,
+    getCategoryBaseText(category),
     ...(seed.interestHints ?? []),
   ]
     .join(" ")
@@ -309,8 +349,7 @@ function getInterestMatches(
     (seed.interestHints ?? []).flatMap((hint) => getTextTokens(hint)),
   );
   const candidateText = [
-    category.label,
-    category.description,
+    getCategoryBaseText(category),
     seed.title,
     seed.description,
     ...(seed.interestHints ?? []),
@@ -520,7 +559,7 @@ function getCategoryDirectScore(
   user: User | undefined,
 ) {
   const interestSignals = getUserInterestSignals(user);
-  const categoryText = `${category.id} ${category.label} ${category.description}`;
+  const categoryText = getCategorySearchText(category);
   const categoryPhrase = ` ${getNormalizedPhrase(categoryText)} `;
   const categoryTokens = new Set(getTextTokens(categoryText));
   let score = 0;
@@ -595,6 +634,83 @@ function hasEnoughCategoryEvidence(fit: CategoryFit) {
       fit.topScore >= MIN_CATEGORY_STRONG_TEMPLATE_SCORE ||
       fit.bestScore >= MIN_PERSONAL_FIT_SCORE * 1.8)
   );
+}
+
+function getActivityIntentSignals(
+  selectedActivity: string | null,
+  category: ActivityOption,
+): ActivityIntentSignals {
+  if (
+    !selectedActivity?.trim() ||
+    isCanonicalCategoryText(selectedActivity, category)
+  ) {
+    return {
+      tokens: new Set(),
+    };
+  }
+
+  return {
+    tokens: new Set(getExpandedTextTokens(selectedActivity)),
+  };
+}
+
+function isCanonicalCategoryText(
+  selectedActivity: string,
+  category: ActivityOption,
+) {
+  const normalizedActivity = normalizeText(selectedActivity).trim();
+
+  return (
+    normalizedActivity === normalizeText(category.id).trim() ||
+    normalizedActivity === normalizeText(category.label).trim()
+  );
+}
+
+function getActivityIntentScore(
+  seed: TemplateSeed,
+  category: ActivityOption,
+  signals: ActivityIntentSignals,
+) {
+  if (signals.tokens.size === 0) {
+    return 0;
+  }
+
+  const titleTokens = new Set(getTextTokens(seed.title));
+  const hintTokens = new Set(
+    (seed.interestHints ?? []).flatMap((hint) => getTextTokens(hint)),
+  );
+  const bodyTokens = new Set(
+    getTextTokens(
+      `${seed.description} ${seed.groupName} ${seed.groupDescription}`,
+    ),
+  );
+  const categoryTokens = new Set(
+    getTextTokens(getCategorySearchText(category)),
+  );
+  let score = 0;
+
+  for (const token of signals.tokens) {
+    if (titleTokens.has(token)) {
+      score += 2.4;
+      continue;
+    }
+
+    if (hintTokens.has(token)) {
+      score += 1.75;
+      continue;
+    }
+
+    if (bodyTokens.has(token)) {
+      score += 0.95;
+      continue;
+    }
+
+    if (categoryTokens.has(token)) {
+      score += 0.35;
+    }
+  }
+
+  return Math.min(score, 5);
 }
 
 function getCategorySeeds(categoryId: string) {
@@ -689,10 +805,16 @@ export function buildTemplateSuggestions(
   const category = getCategory(selectedActivity);
   const seeds = getCategorySeeds(category.id);
   const hasPersonalSignals = hasPersonalizationSignals(user);
+  const activityIntentSignals = getActivityIntentSignals(
+    selectedActivity,
+    category,
+  );
   const rankedSeeds = seeds
     .map<RankedTemplate>((seed, originalIndex) => ({
       originalIndex,
-      score: getPersonalScore(seed, category, user),
+      score:
+        getPersonalScore(seed, category, user) +
+        getActivityIntentScore(seed, category, activityIntentSignals),
       seed,
       template: buildTemplateFromSeed(category, seed, user),
     }))

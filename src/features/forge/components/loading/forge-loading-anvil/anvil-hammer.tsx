@@ -21,7 +21,7 @@ export function AnvilHammer() {
           width="52"
           height="7"
           rx="3.5"
-          fill="var(--color-background)"
+          fill="transparent"
           stroke="currentColor"
           strokeWidth="3.5"
         />

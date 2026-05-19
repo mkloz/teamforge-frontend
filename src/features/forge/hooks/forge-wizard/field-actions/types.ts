@@ -72,8 +72,11 @@ export interface IdentityFieldActions {
 export interface ForgeSettingsFieldActions {
   setAutoMaxSize: (value: number) => void;
   setAutoMinSize: (value: number) => void;
+  setAutoSizeRange: (minSize: number, maxSize: number) => void;
   setCompatibilityWeight: (value: number) => void;
   setDiversityWeight: (value: number) => void;
+  setNetworkReachWeight: (value: number) => void;
+  setMaxDistanceKm: (value: number) => void;
   setFixedSize: (value: number) => void;
   setForgeMode: (value: ForgeMode) => void;
   setGroupSizeMode: (value: GroupSizeMode) => void;

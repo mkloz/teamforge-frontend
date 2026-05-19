@@ -50,7 +50,7 @@ export function ReducedMotionAnvil({
             />
             <path
               d="M47 104h39l9 7H62c-9 0-16-2-21-6-2-1-1-1 6-1ZM154 104h22c6 0 8 3 3 7l-20 15-9-10 14-5h-16l6-7ZM80 138h60l-7 18H87l-7-18Z"
-              fill="var(--color-background)"
+              fill="transparent"
               stroke="currentColor"
               strokeLinejoin="round"
               strokeWidth="3.5"
@@ -69,7 +69,7 @@ export function ReducedMotionAnvil({
             />
             <path
               d="M112 91h52"
-              fill="var(--color-background)"
+              fill="transparent"
               stroke="currentColor"
               strokeLinecap="round"
               strokeWidth="3.5"

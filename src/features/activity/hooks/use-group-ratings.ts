@@ -53,13 +53,21 @@ export function useGroupRatings(groupId: string) {
     mutationFn: ActivityCommands.deferGroupReview.bind(null, groupId),
   });
 
-  const submittedRatings = useMemo(
-    () =>
+  const submittedRatings = useMemo(() => {
+    const currentPlanId = reviewStateQuery.data?.currentPlan?.id;
+
+    return (
       ratingsQuery.data?.filter(
-        (rating) => rating.raterId === currentUser?.id,
-      ) ?? [],
-    [currentUser?.id, ratingsQuery.data],
-  );
+        (rating) =>
+          rating.raterId === currentUser?.id &&
+          (!currentPlanId || rating.planId === currentPlanId),
+      ) ?? []
+    );
+  }, [
+    currentUser?.id,
+    ratingsQuery.data,
+    reviewStateQuery.data?.currentPlan?.id,
+  ]);
   const ratedUserIds = useMemo(
     () =>
       new Set(

@@ -16,6 +16,7 @@ export const PROPOSAL_STATUS_LABELS: Record<PlanProposal["status"], string> = {
   APPROVED: "Approved",
   REJECTED: "Rejected",
   WITHDRAWN: "Withdrawn",
+  CANCELLED: "Cancelled",
 };
 
 export function formatProposalDate(value: string) {
@@ -157,6 +158,10 @@ function getProposalTimelineFieldLabel(field: PlanProposal["field"]) {
       return "the category";
     case "COST":
       return "the cost details";
+    default: {
+      const exhaustiveField: never = field;
+      return exhaustiveField;
+    }
   }
 }
 

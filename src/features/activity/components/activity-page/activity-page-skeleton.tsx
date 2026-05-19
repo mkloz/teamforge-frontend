@@ -47,7 +47,7 @@ export function ActivityPageSkeleton({
 
 function ActivitySidebarSkeleton() {
   return (
-    <aside className="flex h-full min-h-0 w-full shrink-0 flex-col border-border border-r bg-canvas md:w-72 lg:w-80">
+    <aside className="flex size-full min-h-0 shrink-0 flex-col border-border border-r bg-canvas md:w-72 lg:w-80">
       <div className="flex-1 overflow-hidden">
         <div className="sticky top-0 z-10 bg-canvas/95 px-4 pt-2.5 pb-0.5 backdrop-blur">
           <Skeleton className="h-10 w-full rounded-full" />
@@ -102,7 +102,7 @@ function ActivitySidebarSkeleton() {
 
 function ActivityConversationSkeleton() {
   return (
-    <main className="hidden min-w-0 flex-1 md:flex">
+    <main className="hidden h-full min-h-0 min-w-0 flex-1 overflow-hidden md:flex">
       <ActivityConversationStageSkeleton />
     </main>
   );
@@ -115,8 +115,8 @@ export function ActivityConversationStageSkeleton({
 } = {}) {
   return (
     <>
-      <div className="flex min-w-0 flex-1 flex-col">
-        <div className="fade-in flex h-full animate-in flex-col bg-canvas/40 duration-300">
+      <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
+        <div className="fade-in flex h-full min-h-0 flex-1 animate-in flex-col overflow-hidden bg-canvas/40 duration-300">
           <header className="flex h-16 items-center justify-between gap-4 border-border border-b bg-card px-4 py-3">
             <div className="flex min-w-0 items-center gap-3">
               <SkeletonAvatar className="size-12 rounded-lg" tone="teal" />

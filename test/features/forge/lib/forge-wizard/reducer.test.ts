@@ -71,6 +71,33 @@ describe("forgeWizardReducer", () => {
     expect(nextState.removedIds.size).toBe(0);
   });
 
+  it("normalizes template fixed size only when the template provides one", () => {
+    const state = {
+      ...createInitialForgeWizardState(),
+      fixedSize: 4 as const,
+    };
+
+    const undersizedState = forgeWizardReducer(state, {
+      type: "apply-activity-template",
+      template: createForgePlanTemplate({ fixedSize: 0 }),
+      templateId: "template-undersized",
+    });
+    const missingSizeState = forgeWizardReducer(state, {
+      type: "apply-activity-template",
+      template: createForgePlanTemplate({ fixedSize: null }),
+      templateId: "template-missing-size",
+    });
+    const corruptedSizeState = forgeWizardReducer(state, {
+      type: "apply-activity-template",
+      template: createForgePlanTemplate({ fixedSize: Number.NaN }),
+      templateId: "template-corrupted-size",
+    });
+
+    expect(undersizedState.fixedSize).toBe(2);
+    expect(missingSizeState.fixedSize).toBe(4);
+    expect(corruptedSizeState.fixedSize).toBe(6);
+  });
+
   it("clears template-owned fields when the user selects a different activity", () => {
     const state = forgeWizardReducer(createInitialForgeWizardState(), {
       type: "apply-activity-template",
@@ -161,6 +188,32 @@ describe("forgeWizardReducer", () => {
       planId: "plan-1",
     });
     expect(nextState.removedIds.size).toBe(0);
+  });
+
+  it("keeps explicit step transitions bounded for unsafe runtime action values", () => {
+    const state = createInitialForgeWizardState();
+    const participant = createForgeParticipant({ userId: "user-2" });
+
+    const setStepState = forgeWizardReducer(state, {
+      navDirection: "forward",
+      // @ts-expect-error Exercise runtime input that can arrive outside TS.
+      step: 999,
+      type: "set-step",
+    });
+    const resultState = forgeWizardReducer(state, {
+      activityId: "activity-1",
+      chatId: "chat-1",
+      groupId: "group-1",
+      participants: [participant],
+      planId: "plan-1",
+      result: "SUCCESS",
+      // @ts-expect-error Exercise runtime input that can arrive outside TS.
+      step: Number.NaN,
+      type: "apply-forge-result",
+    });
+
+    expect(setStepState.step).toBe(7);
+    expect(resultState.step).toBe(5);
   });
 
   it("reforges from the result state without losing the selected plan setup", () => {

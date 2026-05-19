@@ -161,6 +161,21 @@ export const forgePlanInputSchema = z
 
 export type ForgePlanInput = z.infer<typeof forgePlanInputSchema>;
 
+const forgeMatchingPreferenceSchema = z.number().int().min(0).max(100);
+
+export const forgeMatchingPreferencesInputSchema = z
+  .object({
+    sharedGround: forgeMatchingPreferenceSchema.optional(),
+    freshPerspectives: forgeMatchingPreferenceSchema.optional(),
+    networkReach: forgeMatchingPreferenceSchema.optional(),
+    maxDistanceKm: z.number().int().min(15).max(80).optional(),
+  })
+  .strict();
+
+export type ForgeMatchingPreferencesInput = z.infer<
+  typeof forgeMatchingPreferencesInputSchema
+>;
+
 export const forgeActivityInputSchema = z
   .object({
     groupSize: z.number().int().min(2).max(8),
@@ -168,6 +183,7 @@ export const forgeActivityInputSchema = z
     groupDescription: z.string().trim().min(1).max(1000).nullable().optional(),
     groupAvatar: managedUploadUrlSchema.nullable().optional(),
     plan: forgePlanInputSchema,
+    matchingPreferences: forgeMatchingPreferencesInputSchema.optional(),
   })
   .strict();
 

@@ -21,6 +21,8 @@ const routeTree = rootRoute.addChildren([
 export const router = createRouter({
   routeTree,
   defaultPreload: "intent",
+  defaultPendingMs: 0,
+  defaultPendingMinMs: 150,
 });
 
 export const lazyRouteModules = [

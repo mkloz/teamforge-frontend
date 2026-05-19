@@ -114,7 +114,7 @@ export function useCompletedGroupRating(group: Group) {
   };
 
   const submitActiveRating = () => {
-    if (!activeUserId || activeDraft.score === 0) {
+    if (!activeUserId || !currentPlanId || activeDraft.score === 0) {
       return;
     }
 
@@ -122,6 +122,7 @@ export function useCompletedGroupRating(group: Group) {
     const submittedDraft = activeDraft;
     const ratingPayload = {
       groupId: group.id,
+      planId: currentPlanId,
       rateeId: reviewedUserId,
       score: submittedDraft.score,
       comment: submittedDraft.comment.trim() || undefined,

@@ -3,6 +3,21 @@ import React from "react";
 
 import { cn } from "@/shared/lib/utils";
 
+function getThumbKeys(count: number) {
+  if (count <= 1) {
+    return ["single"];
+  }
+
+  if (count === 2) {
+    return ["lower", "upper"];
+  }
+
+  return Array.from(
+    { length: count },
+    (_, position) => `position-${position + 1}`,
+  );
+}
+
 function Slider({
   className,
   defaultValue,
@@ -19,6 +34,10 @@ function Slider({
           ? defaultValue
           : [min, max],
     [value, defaultValue, min, max],
+  );
+  const thumbKeys = React.useMemo(
+    () => getThumbKeys(values.length),
+    [values.length],
   );
 
   return (
@@ -43,9 +62,9 @@ function Slider({
           className="absolute h-full bg-forge-teal"
         />
       </SliderPrimitive.Track>
-      {values.map((thumbValue) => (
+      {thumbKeys.map((thumbKey) => (
         <SliderPrimitive.Thumb
-          key={`slider-thumb-${thumbValue}`}
+          key={`slider-thumb-${thumbKey}`}
           data-slot="slider-thumb"
           className="block size-5 shrink-0 cursor-grab rounded-full border border-forge-teal bg-background shadow-sm ring-ring/50 transition-all hover:ring-4 focus-visible:outline-none focus-visible:ring-4 active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-50"
         />

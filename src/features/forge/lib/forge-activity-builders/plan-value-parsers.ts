@@ -1,27 +1,42 @@
 import type { AutoForgeExecutionInput } from "@/features/forge/lib/forge-execution-schema";
 
+import { parsePositiveCostAmount } from "./cost-amount-parser";
+
 const DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 const TIME_PATTERN = /^(\d{2}):(\d{2})$/;
 const MIN_LATITUDE = -90;
 const MAX_LATITUDE = 90;
 const MIN_LONGITUDE = -180;
 const MAX_LONGITUDE = 180;
+const MAX_TIMEZONE_OFFSET_MINUTES = 14 * 60;
 
-export function buildDateTime(planDate: string, planTime: string) {
+export interface BuildDateTimeOptions {
+  /**
+   * Same sign convention as Date#getTimezoneOffset:
+   * UTC+02:00 is -120, UTC-05:00 is 300.
+   * Omit to interpret the date-time in the browser's local timezone.
+   */
+  timezoneOffsetMinutes?: number;
+}
+
+export function buildDateTime(
+  planDate: string,
+  planTime: string,
+  options: BuildDateTimeOptions = {},
+) {
   const dateParts = parseDateParts(planDate);
   const timeParts = parseTimeParts(planTime);
-  const timestamp = new Date(`${planDate}T${planTime}`);
 
-  if (
-    !dateParts ||
-    !timeParts ||
-    Number.isNaN(timestamp.getTime()) ||
-    timestamp.getFullYear() !== dateParts.year ||
-    timestamp.getMonth() !== dateParts.month - 1 ||
-    timestamp.getDate() !== dateParts.day ||
-    timestamp.getHours() !== timeParts.hours ||
-    timestamp.getMinutes() !== timeParts.minutes
-  ) {
+  if (!dateParts || !timeParts || !isValidCalendarDate(dateParts)) {
+    throw new Error("Invalid forge plan date-time");
+  }
+
+  const timestamp =
+    options.timezoneOffsetMinutes === undefined
+      ? buildLocalDate(dateParts, timeParts)
+      : buildOffsetDate(dateParts, timeParts, options.timezoneOffsetMinutes);
+
+  if (!timestamp) {
     throw new Error("Invalid forge plan date-time");
   }
 
@@ -40,8 +55,7 @@ export function parseCostAmount(input: AutoForgeExecutionInput) {
     return null;
   }
 
-  const amount = Number(input.planCostAmount);
-  return Number.isFinite(amount) && amount > 0 ? amount : null;
+  return parsePositiveCostAmount(input.planCostAmount);
 }
 
 function parseDateParts(value: string) {
@@ -85,6 +99,81 @@ function parseTimeParts(value: string) {
   }
 
   return { hours, minutes };
+}
+
+function buildLocalDate(
+  dateParts: NonNullable<ReturnType<typeof parseDateParts>>,
+  timeParts: NonNullable<ReturnType<typeof parseTimeParts>>,
+) {
+  const timestamp = new Date(
+    dateParts.year,
+    dateParts.month - 1,
+    dateParts.day,
+    timeParts.hours,
+    timeParts.minutes,
+  );
+
+  return hasLocalDateTimeParts(timestamp, dateParts, timeParts)
+    ? timestamp
+    : null;
+}
+
+function buildOffsetDate(
+  dateParts: NonNullable<ReturnType<typeof parseDateParts>>,
+  timeParts: NonNullable<ReturnType<typeof parseTimeParts>>,
+  timezoneOffsetMinutes: number,
+) {
+  if (!isValidTimezoneOffset(timezoneOffsetMinutes)) {
+    return null;
+  }
+
+  return new Date(
+    Date.UTC(
+      dateParts.year,
+      dateParts.month - 1,
+      dateParts.day,
+      timeParts.hours,
+      timeParts.minutes,
+    ) +
+      timezoneOffsetMinutes * 60_000,
+  );
+}
+
+function isValidCalendarDate(
+  dateParts: NonNullable<ReturnType<typeof parseDateParts>>,
+) {
+  const timestamp = new Date(
+    Date.UTC(dateParts.year, dateParts.month - 1, dateParts.day),
+  );
+
+  return (
+    timestamp.getUTCFullYear() === dateParts.year &&
+    timestamp.getUTCMonth() === dateParts.month - 1 &&
+    timestamp.getUTCDate() === dateParts.day
+  );
+}
+
+function hasLocalDateTimeParts(
+  timestamp: Date,
+  dateParts: NonNullable<ReturnType<typeof parseDateParts>>,
+  timeParts: NonNullable<ReturnType<typeof parseTimeParts>>,
+) {
+  return (
+    !Number.isNaN(timestamp.getTime()) &&
+    timestamp.getFullYear() === dateParts.year &&
+    timestamp.getMonth() === dateParts.month - 1 &&
+    timestamp.getDate() === dateParts.day &&
+    timestamp.getHours() === timeParts.hours &&
+    timestamp.getMinutes() === timeParts.minutes
+  );
+}
+
+function isValidTimezoneOffset(value: unknown): value is number {
+  return (
+    typeof value === "number" &&
+    Number.isInteger(value) &&
+    Math.abs(value) <= MAX_TIMEZONE_OFFSET_MINUTES
+  );
 }
 
 function isValidLatitude(value: unknown): value is number {

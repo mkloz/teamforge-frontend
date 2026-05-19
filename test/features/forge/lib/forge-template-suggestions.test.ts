@@ -33,6 +33,18 @@ describe("forge template personalization", () => {
     expect(suggestions[0]?.template.selectedActivity).toBe("Tech & Build");
   });
 
+  it("uses semantic activity text to choose and rank concrete templates", () => {
+    const suggestions = buildTemplateSuggestions(
+      "football after class",
+      createUser({ city: null }),
+    );
+
+    expect(suggestions[0]?.categoryId).toBe("SPORTS");
+    expect(
+      suggestions.slice(0, 3).map((suggestion) => suggestion.title),
+    ).toContain("Five-a-side football");
+  });
+
   it("does not discard meaningful short interests", () => {
     const suggestions = buildTemplateSuggestions(
       "Tech & Build",
@@ -112,6 +124,16 @@ describe("forge template personalization", () => {
     );
 
     expect(highlights[0]?.categoryId).toBe("SPORTS");
+  });
+
+  it("uses activity synonyms when building category highlights", () => {
+    const highlights = buildCategoryFitHighlights(
+      createUser({
+        interests: [createInterest("Movies")],
+      }),
+    );
+
+    expect(highlights[0]?.categoryId).toBe("ARTS");
   });
 
   it("does not produce category highlights without real profile signals", () => {

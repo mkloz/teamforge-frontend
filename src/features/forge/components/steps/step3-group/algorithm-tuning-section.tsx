@@ -1,6 +1,6 @@
 import { ChevronDown } from "lucide-react";
 
-import { Button } from "@/shared/components/ui/button";
+import type { LocationType } from "@/features/forge/lib/forge-contract";
 import { cn } from "@/shared/lib/utils";
 
 import { WeightSlider } from "./weight-slider";
@@ -9,70 +9,113 @@ interface AlgorithmTuningSectionProps {
   algorithmsExpanded: boolean;
   compatibilityWeight: number;
   diversityWeight: number;
+  locationType: LocationType;
+  maxDistanceKm: number;
+  networkReachWeight: number;
   onAlgorithmsExpandedChange: (value: boolean) => void;
   onCompatibilityWeightChange: (v: number) => void;
   onDiversityWeightChange: (v: number) => void;
+  onMaxDistanceKmChange: (v: number) => void;
+  onNetworkReachWeightChange: (v: number) => void;
 }
 
 export function AlgorithmTuningSection({
   algorithmsExpanded,
   compatibilityWeight,
   diversityWeight,
+  locationType,
+  maxDistanceKm,
+  networkReachWeight,
   onAlgorithmsExpandedChange,
   onCompatibilityWeightChange,
   onDiversityWeightChange,
+  onMaxDistanceKmChange,
+  onNetworkReachWeightChange,
 }: AlgorithmTuningSectionProps) {
+  const usesDistancePreference = locationType === "IN_PERSON";
+  const summary = usesDistancePreference
+    ? `Ground ${compatibilityWeight}%, Mix ${diversityWeight}%, Reach ${networkReachWeight}%, Radius ${maxDistanceKm} km`
+    : `Ground ${compatibilityWeight}%, Mix ${diversityWeight}%, Reach ${networkReachWeight}%`;
+
   return (
     <div className="overflow-hidden rounded-lg border border-border/35 bg-card/65">
-      <Button
-        variant="ghost"
+      <button
         type="button"
         onClick={() => onAlgorithmsExpandedChange(!algorithmsExpanded)}
-        className="flex h-auto w-full items-center justify-between rounded-lg px-3 py-3 transition-colors hover:bg-forge-teal/5"
-        contentClassName="justify-between"
+        aria-expanded={algorithmsExpanded}
+        className="group flex w-full items-center justify-between gap-3 rounded-lg bg-transparent px-3 py-3 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <div className="flex flex-col gap-0.5 text-left">
-          <p className="font-semibold text-foreground text-xs">
-            Algorithm tuning
+          <p className="font-semibold text-foreground text-xs transition-colors group-hover:text-forge-teal">
+            Group balance
           </p>
-          <p className="text-muted-foreground/70 text-xs">
-            Match: {compatibilityWeight}% · Diversity: {diversityWeight}%
+          <p className="text-muted-foreground/70 text-xs transition-colors group-hover:text-muted-foreground">
+            {summary}
           </p>
         </div>
         <ChevronDown
           size={15}
           className={cn(
-            "text-muted-foreground/40 transition-transform duration-300",
+            "text-muted-foreground/40 transition-all duration-300 group-hover:text-forge-teal",
             algorithmsExpanded ? "rotate-180" : "",
           )}
         />
-      </Button>
+      </button>
 
       {algorithmsExpanded && (
         <div className="fade-in slide-in-from-top-2 flex animate-in flex-col gap-5 border-muted/15 border-t px-4 py-4 duration-300">
           <WeightSlider
-            label="Matching level"
-            subLabel="Prioritize behavioral compatibility"
+            label="Shared ground"
+            subLabel="Prioritize people with clear overlap"
             value={compatibilityWeight}
             onChange={onCompatibilityWeightChange}
             min={20}
             max={100}
             step={5}
+            minLabel="Flexible"
+            maxLabel="Very aligned"
           />
           <WeightSlider
-            label="Diversity focus"
-            subLabel="Encourage unique cognitive backgrounds"
+            label="Fresh perspectives"
+            subLabel="Leave room for different angles"
             value={diversityWeight}
             onChange={onDiversityWeightChange}
             min={0}
             max={100}
             step={5}
-            warning={
-              diversityWeight > 80
-                ? "High diversity values may take longer to match"
-                : undefined
-            }
+            minLabel="Familiar"
+            maxLabel="Mixed"
           />
+          <WeightSlider
+            label="Network reach"
+            subLabel="Decide how far beyond familiar circles to look"
+            value={networkReachWeight}
+            onChange={onNetworkReachWeightChange}
+            min={0}
+            max={100}
+            step={5}
+            minLabel="Friends-first"
+            maxLabel="New circles"
+          />
+          {usesDistancePreference && (
+            <WeightSlider
+              label="Search radius"
+              subLabel="Maximum distance from the plan location"
+              value={maxDistanceKm}
+              onChange={onMaxDistanceKmChange}
+              min={15}
+              max={80}
+              step={5}
+              minLabel="15 km"
+              maxLabel="80 km"
+              formatValue={(value) => `${value} km`}
+              warning={
+                maxDistanceKm > 60
+                  ? "A wider area may include longer travel"
+                  : undefined
+              }
+            />
+          )}
         </div>
       )}
     </div>

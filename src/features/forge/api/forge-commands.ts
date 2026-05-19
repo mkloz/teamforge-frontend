@@ -36,6 +36,9 @@ function buildModeForgeInput(
           groupSizeMode: "FIXED",
         }
       : input,
+    {
+      includeMatchingPreferences: forgeMode === "AUTO",
+    },
   );
 }
 

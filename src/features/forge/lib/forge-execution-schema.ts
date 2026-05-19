@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { parsePositiveCostAmount } from "@/features/forge/lib/forge-activity-builders/cost-amount-parser";
 import {
   activityVisibilitySchema,
   costTypeSchema,
@@ -9,6 +10,8 @@ import {
 const optionalTextSchema = z.string().max(1000);
 const optionalUrlSchema = z.string().trim().max(2048).nullable();
 const optionalCoordinateSchema = z.number().finite().nullable();
+const matchingPreferenceSchema = z.number().int().min(0).max(100);
+const distanceKmSchema = z.number().int().min(15).max(80);
 const isValidCoordinatePair = (lat: number | null, lng: number | null) =>
   (lat === null && lng === null) ||
   (lat !== null &&
@@ -75,6 +78,10 @@ export const forgeExecutionInputSchema = z
     fixedSize: z.number().int().min(2).max(8),
     autoMinSize: z.number().int().min(2).max(8),
     autoMaxSize: z.number().int().min(2).max(8),
+    compatibilityWeight: matchingPreferenceSchema,
+    diversityWeight: matchingPreferenceSchema,
+    networkReachWeight: matchingPreferenceSchema,
+    maxDistanceKm: distanceKmSchema,
     visibility: activityVisibilitySchema,
     groupName: z.string().max(120, "Group name is too long."),
     groupDescription: optionalTextSchema.max(
@@ -142,9 +149,9 @@ export const forgeExecutionInputSchema = z
     }
 
     if (input.planCost === "PAID") {
-      const amount = Number(input.planCostAmount);
+      const amount = parsePositiveCostAmount(input.planCostAmount);
 
-      if (!Number.isFinite(amount) || amount <= 0) {
+      if (amount === null) {
         ctx.addIssue({
           code: "custom",
           message: "Add a valid paid amount.",

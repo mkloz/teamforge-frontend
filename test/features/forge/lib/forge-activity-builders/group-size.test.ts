@@ -26,4 +26,59 @@ describe("resolveGroupSize", () => {
       ),
     ).toBe(6);
   });
+
+  it("normalizes range endpoints before averaging corrupted bounds", () => {
+    expect(
+      resolveGroupSize(
+        createAutoForgeExecutionInput({
+          autoMaxSize: 20,
+          autoMinSize: -20,
+          groupSizeMode: "RANGE",
+        }),
+      ),
+    ).toBe(5);
+  });
+
+  it("orders inverted range bounds before deriving the preferred group size", () => {
+    expect(
+      resolveGroupSize(
+        createAutoForgeExecutionInput({
+          autoMaxSize: 4,
+          autoMinSize: 7,
+          groupSizeMode: "RANGE",
+        }),
+      ),
+    ).toBe(6);
+  });
+
+  it("falls back to a safe bounded size for non-finite values", () => {
+    expect(
+      resolveGroupSize(
+        createAutoForgeExecutionInput({
+          fixedSize: Number.NaN,
+          groupSizeMode: "FIXED",
+        }),
+      ),
+    ).toBe(6);
+
+    expect(
+      resolveGroupSize(
+        createAutoForgeExecutionInput({
+          autoMaxSize: Number.POSITIVE_INFINITY,
+          autoMinSize: Number.NaN,
+          groupSizeMode: "RANGE",
+        }),
+      ),
+    ).toBe(6);
+
+    expect(
+      resolveGroupSize(
+        createAutoForgeExecutionInput({
+          autoMaxSize: 5,
+          autoMinSize: Number.NaN,
+          groupSizeMode: "RANGE",
+        }),
+      ),
+    ).toBe(5);
+  });
 });

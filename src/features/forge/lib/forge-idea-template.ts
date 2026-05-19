@@ -1,6 +1,7 @@
 import { ACTIVITIES } from "@/features/forge/constants/forge.constants";
 import type { TemplateSeed } from "@/features/forge/data/forge-template-seed-types";
 import { CATEGORY_TEMPLATES } from "@/features/forge/data/forge-template-seeds";
+import { resolvePlanCategory } from "@/features/forge/lib/forge-activity-builders/activity-option-resolution";
 import type { ForgeIdeaLaunch } from "@/features/forge/lib/forge-route";
 import type { ForgePlanTemplate } from "@/features/forge/lib/forge-template";
 import { buildTemplateFromSeed } from "@/features/forge/lib/forge-template-suggestions";
@@ -190,7 +191,9 @@ function getCandidateCategories(idea: ForgeIdeaLaunch) {
   const scoreById = new Map<PlanCategory, number>();
   const primaryId = mapLaneToCategoryId(idea.laneKey);
   const secondaryId = mapLaneToCategoryId(idea.secondaryLaneKey);
-  const text = `${idea.title} ${idea.detail} ${idea.eventDescription ?? ""}`;
+  const text = getIdeaSearchText(idea);
+  const resolvedCategoryId = resolvePlanCategory(text);
+  const resolvedTitleCategoryId = resolvePlanCategory(idea.title);
 
   if (primaryId) {
     addCategoryWeight(scoreById, primaryId, PRIMARY_LANE_CATEGORY_WEIGHT);
@@ -199,6 +202,17 @@ function getCandidateCategories(idea: ForgeIdeaLaunch) {
   if (secondaryId) {
     addCategoryWeight(scoreById, secondaryId, SECONDARY_LANE_CATEGORY_WEIGHT);
   }
+
+  addResolvedCategoryWeight(
+    scoreById,
+    resolvedCategoryId,
+    RESOLVED_ACTIVITY_CATEGORY_WEIGHT,
+  );
+  addResolvedCategoryWeight(
+    scoreById,
+    resolvedTitleCategoryId,
+    RESOLVED_TITLE_CATEGORY_WEIGHT,
+  );
 
   if (/\b(?:route|walk|photo|city|local|map)\b/i.test(text)) {
     addCategoryWeight(scoreById, "TRAVEL", TEXT_CATEGORY_WEIGHT);
@@ -240,6 +254,22 @@ function mapLaneToCategoryId(lane: ForgeIdeaLaunch["laneKey"]) {
   };
 
   return lane ? categoryByLane[lane] : null;
+}
+
+function getIdeaSearchText(idea: ForgeIdeaLaunch) {
+  return `${idea.title} ${idea.detail} ${idea.eventDescription ?? ""}`;
+}
+
+function addResolvedCategoryWeight(
+  scoreById: Map<PlanCategory, number>,
+  id: PlanCategory,
+  weight: number,
+) {
+  if (id === "OTHER") {
+    return;
+  }
+
+  addCategoryWeight(scoreById, id, weight);
 }
 
 function addCategoryWeight(
@@ -313,11 +343,19 @@ function getTextTokens(value: string) {
   return normalizeForMatching(value)
     .split(/[^a-z0-9]+/)
     .map((token) => normalizeToken(token))
-    .filter((token) => token.length >= 3 && !TEMPLATE_STOP_WORDS.has(token));
+    .filter(
+      (token) =>
+        (token.length >= 3 || MEANINGFUL_SHORT_TEMPLATE_TOKENS.has(token)) &&
+        !TEMPLATE_STOP_WORDS.has(token),
+    );
 }
 
 function normalizeForMatching(value: string) {
-  return value.toLowerCase().replace(/café/g, "cafe");
+  return value
+    .normalize("NFKD")
+    .replaceAll(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .replaceAll("&", " and ");
 }
 
 function normalizeToken(token: string) {
@@ -325,8 +363,20 @@ function normalizeToken(token: string) {
     return "photo";
   }
 
+  if (token === "movies") {
+    return "movie";
+  }
+
+  if (token.length > 5 && token.endsWith("ies")) {
+    return `${token.slice(0, -3)}y`;
+  }
+
   if (token.length > 5 && token.endsWith("ing")) {
-    return token.slice(0, -3);
+    return removeTrailingDoubleConsonant(token.slice(0, -3));
+  }
+
+  if (token.length > 4 && token.endsWith("ed")) {
+    return removeTrailingDoubleConsonant(token.slice(0, -2));
   }
 
   if (token.length > 4 && token.endsWith("s")) {
@@ -334,6 +384,21 @@ function normalizeToken(token: string) {
   }
 
   return token;
+}
+
+function removeTrailingDoubleConsonant(value: string) {
+  const lastCharacter = value.at(-1);
+  const previousCharacter = value.at(-2);
+
+  if (
+    lastCharacter &&
+    lastCharacter === previousCharacter &&
+    !/[aeiou]/.test(lastCharacter)
+  ) {
+    return value.slice(0, -1);
+  }
+
+  return value;
 }
 
 function truncateText(value: string, maxLength: number) {
@@ -347,11 +412,23 @@ function truncateText(value: string, maxLength: number) {
 const TEMPLATE_MATCH_THRESHOLD = 5;
 const PRIMARY_LANE_CATEGORY_WEIGHT = 3;
 const SECONDARY_LANE_CATEGORY_WEIGHT = 1.8;
+const RESOLVED_ACTIVITY_CATEGORY_WEIGHT = 2.35;
+const RESOLVED_TITLE_CATEGORY_WEIGHT = 2.15;
 const TEXT_CATEGORY_WEIGHT = 1.15;
 const FALLBACK_CATEGORY_WEIGHT = 0.6;
 const TITLE_TOKEN_WEIGHT = 2.4;
 const DETAIL_TOKEN_WEIGHT = 1.35;
 const EVENT_DESCRIPTION_TOKEN_WEIGHT = 0.55;
+const MEANINGFUL_SHORT_TEMPLATE_TOKENS = new Set([
+  "2d",
+  "3d",
+  "ai",
+  "ar",
+  "dj",
+  "ui",
+  "ux",
+  "vr",
+]);
 const PREFERRED_TEMPLATE_RULES: PreferredTemplateRule[] = [
   {
     patterns: [/\bphoto\b/, /\b(?:coffee|cafe)\b/],

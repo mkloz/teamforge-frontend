@@ -5,13 +5,16 @@ import {
   SkeletonText,
 } from "@/shared/components/loading/skeleton-patterns";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { cn } from "@/shared/lib/utils";
 
 interface SettingsPageLoadingProps extends PageLoadingProps {
   activeSection?: SettingsSection;
+  isMobileDetailOpen?: boolean;
 }
 
 export function SettingsPageLoading({
   activeSection = "account",
+  isMobileDetailOpen = false,
 }: SettingsPageLoadingProps = {}) {
   return (
     <div
@@ -21,7 +24,12 @@ export function SettingsPageLoading({
       role="status"
     >
       <span className="sr-only">Loading settings</span>
-      <aside className="lg:sticky lg:top-10 lg:self-start">
+      <aside
+        className={cn(
+          "lg:sticky lg:top-10 lg:block lg:self-start",
+          isMobileDetailOpen && "hidden",
+        )}
+      >
         <div className="mb-5 border-border border-b pb-5 lg:border-b-0 lg:pb-0">
           <SkeletonText lines={2} widths={["w-32", "w-64"]} />
         </div>
@@ -58,7 +66,12 @@ export function SettingsPageLoading({
         </div>
       </aside>
 
-      <section className="w-full min-w-0 border-border/70 pt-11 lg:block lg:max-w-4xl lg:border-l lg:pt-0 lg:pl-10 xl:pl-12">
+      <section
+        className={cn(
+          "w-full min-w-0 border-border/70 pt-11 lg:block lg:max-w-4xl lg:border-l lg:pt-0 lg:pl-10 xl:pl-12",
+          !isMobileDetailOpen && "hidden",
+        )}
+      >
         <div className="mb-7 border-border border-b pb-5 lg:mb-9 lg:pb-7">
           <SkeletonText lines={3} widths={["w-24", "w-3/5", "w-full"]} />
         </div>

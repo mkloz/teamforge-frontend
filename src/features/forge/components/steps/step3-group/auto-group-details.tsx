@@ -13,13 +13,17 @@ export function AutoGroupDetails({
   diversityWeight,
   fixedSize,
   groupSizeMode,
+  locationType,
+  maxDistanceKm,
   onAlgorithmsExpandedChange,
-  onAutoMaxSizeChange,
-  onAutoMinSizeChange,
+  onAutoSizeRangeChange,
   onCompatibilityWeightChange,
   onDiversityWeightChange,
   onFixedSizeChange,
   onGroupSizeModeChange,
+  onMaxDistanceKmChange,
+  onNetworkReachWeightChange,
+  networkReachWeight,
 }: AutoGroupDetailsProps) {
   return (
     <div className="flex flex-col gap-4">
@@ -78,8 +82,10 @@ export function AutoGroupDetails({
                   className="h-10"
                   value={[autoMinSize, autoMaxSize]}
                   onValueChange={(value) => {
-                    onAutoMinSizeChange(value[0] ?? autoMinSize);
-                    onAutoMaxSizeChange(value[1] ?? autoMaxSize);
+                    onAutoSizeRangeChange(
+                      value[0] ?? autoMinSize,
+                      value[1] ?? autoMaxSize,
+                    );
                   }}
                   min={2}
                   max={8}
@@ -132,6 +138,11 @@ export function AutoGroupDetails({
         onCompatibilityWeightChange={onCompatibilityWeightChange}
         diversityWeight={diversityWeight}
         onDiversityWeightChange={onDiversityWeightChange}
+        locationType={locationType}
+        maxDistanceKm={maxDistanceKm}
+        onMaxDistanceKmChange={onMaxDistanceKmChange}
+        networkReachWeight={networkReachWeight}
+        onNetworkReachWeightChange={onNetworkReachWeightChange}
       />
     </div>
   );

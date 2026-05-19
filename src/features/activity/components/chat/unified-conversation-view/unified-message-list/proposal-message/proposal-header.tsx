@@ -17,6 +17,7 @@ const STATUS_STYLES: Record<PlanProposalStatus, string> = {
   APPROVED: "bg-forge-teal/10 text-forge-teal border-forge-teal/20",
   REJECTED: "bg-slate-muted/10 text-slate-muted border-slate-muted/20",
   WITHDRAWN: "bg-muted text-muted-foreground border-border",
+  CANCELLED: "bg-muted text-muted-foreground border-border",
 };
 
 export const ProposalHeader = memo(function ProposalHeader({

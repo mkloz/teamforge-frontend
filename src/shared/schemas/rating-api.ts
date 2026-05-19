@@ -21,18 +21,21 @@ export const ratingEntitySchema = z
     raterId: z.string(),
     rateeId: z.string(),
     groupId: z.string(),
+    planId: z.string().nullable().optional(),
     rater: ratingUserEntitySchema,
     ratee: ratingUserEntitySchema,
   })
   .transform((rating) => ({
     ...rating,
     comment: rating.comment ?? null,
+    planId: rating.planId ?? null,
   }));
 
 export type RatingEntity = z.infer<typeof ratingEntitySchema>;
 
 export const createRatingPayloadSchema = z.object({
   groupId: z.string().min(1),
+  planId: z.string().min(1),
   rateeId: z.string().min(1),
   score: z.number().int().min(1).max(5),
   comment: z.string().trim().max(500).optional(),

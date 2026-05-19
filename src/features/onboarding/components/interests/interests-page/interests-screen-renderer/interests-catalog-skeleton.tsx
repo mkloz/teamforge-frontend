@@ -14,7 +14,7 @@ function InterestsCatalogSkeletonContent() {
       role="status"
     >
       <span className="sr-only">Loading interests</span>
-      <div className="mb-5 flex flex-col gap-2 pt-2">
+      <div className="mt-4 mb-6 flex flex-col gap-2 overflow-hidden pt-4">
         <Skeleton className="h-3 w-28" tone="teal" />
         <Skeleton className="h-8 w-80 max-w-full" />
         <SkeletonText lines={2} widths={["w-full", "w-4/5"]} />

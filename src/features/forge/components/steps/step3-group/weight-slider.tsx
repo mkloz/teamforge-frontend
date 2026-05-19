@@ -14,14 +14,11 @@ export function WeightSlider({
   step,
   warning,
   subLabel,
+  minLabel = "Low",
+  maxLabel = "High",
+  formatValue = (nextValue) => `${nextValue}%`,
 }: WeightSliderProps) {
-  const isHighDiversity =
-    label.toLowerCase().includes("diversity") && value > 75;
-  const semanticLabels =
-    label.toLowerCase().includes("personality") ||
-    label.toLowerCase().includes("matching")
-      ? { min: "Broad", max: "Exact" }
-      : { min: "Homogeneous", max: "Diverse" };
+  const hasWarning = Boolean(warning);
   const pct = ((value - min) / (max - min)) * 100;
 
   return (
@@ -38,10 +35,10 @@ export function WeightSlider({
         <div
           className={cn(
             "shrink-0 font-black text-sm italic tabular-nums transition-colors duration-300",
-            isHighDiversity ? "text-spark-amber" : "text-forge-teal",
+            hasWarning ? "text-spark-amber" : "text-forge-teal",
           )}
         >
-          {value}%
+          {formatValue(value)}
         </div>
       </div>
 
@@ -66,7 +63,7 @@ export function WeightSlider({
               className={cn(
                 "h-1 flex-1 rounded-full transition-colors duration-500",
                 active
-                  ? isHighDiversity
+                  ? hasWarning
                     ? "bg-spark-amber/40"
                     : "bg-forge-teal/40"
                   : "bg-muted/20",
@@ -77,8 +74,8 @@ export function WeightSlider({
       </div>
 
       <div className="-mt-1 flex justify-between font-medium text-micro text-muted-foreground/50">
-        <span>{semanticLabels.min}</span>
-        <span>{semanticLabels.max}</span>
+        <span>{minLabel}</span>
+        <span>{maxLabel}</span>
       </div>
 
       {warning && (

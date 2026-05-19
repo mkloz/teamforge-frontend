@@ -24,6 +24,8 @@ export function createInitialForgeWizardState(): ForgeWizardData {
     autoMaxSize: 8,
     compatibilityWeight: 70,
     diversityWeight: 50,
+    networkReachWeight: 40,
+    maxDistanceKm: 40,
     visibility: "FRIENDS_ONLY",
     forgeResult: "IDLE",
     participants: [],

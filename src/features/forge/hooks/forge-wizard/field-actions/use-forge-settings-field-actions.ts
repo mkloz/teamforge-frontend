@@ -5,7 +5,10 @@ import type {
   GroupSizeMode,
   Visibility,
 } from "@/features/forge/lib/forge-contract";
-import { normalizeFixedGroupSize } from "@/features/forge/lib/forge-size";
+import {
+  normalizeFixedGroupSize,
+  normalizeGroupSizeRange,
+} from "@/features/forge/lib/forge-size";
 
 import type { ForgeSettingsFieldActionOptions } from "./types";
 
@@ -49,12 +52,29 @@ export function useForgeSettingsFieldActions({
     (value: number) => setField("autoMaxSize", normalizeFixedGroupSize(value)),
     [setField],
   );
+  const setAutoSizeRange = useCallback(
+    (minSize: number, maxSize: number) => {
+      const range = normalizeGroupSizeRange(minSize, maxSize);
+
+      setField("autoMinSize", range.min);
+      setField("autoMaxSize", range.max);
+    },
+    [setField],
+  );
   const setCompatibilityWeight = useCallback(
     (value: number) => setField("compatibilityWeight", value),
     [setField],
   );
   const setDiversityWeight = useCallback(
     (value: number) => setField("diversityWeight", value),
+    [setField],
+  );
+  const setNetworkReachWeight = useCallback(
+    (value: number) => setField("networkReachWeight", value),
+    [setField],
+  );
+  const setMaxDistanceKm = useCallback(
+    (value: number) => setField("maxDistanceKm", value),
     [setField],
   );
   const setVisibility = useCallback(
@@ -78,11 +98,14 @@ export function useForgeSettingsFieldActions({
   return {
     setAutoMaxSize,
     setAutoMinSize,
+    setAutoSizeRange,
     setCompatibilityWeight,
     setDiversityWeight,
     setFixedSize,
     setForgeMode,
     setGroupSizeMode,
+    setMaxDistanceKm,
+    setNetworkReachWeight,
     setVisibility,
     toggleManualInvitee,
   };

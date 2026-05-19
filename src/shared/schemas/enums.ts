@@ -88,6 +88,7 @@ export const planProposalStatusSchema = z.enum([
   "APPROVED",
   "REJECTED",
   "WITHDRAWN",
+  "CANCELLED",
 ]);
 export type PlanProposalStatus = z.infer<typeof planProposalStatusSchema>;
 

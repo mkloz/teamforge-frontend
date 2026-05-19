@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   getNextStep,
   getPreviousStep,
+  normalizeStep,
   type Step,
 } from "@/features/forge/lib/forge-wizard";
 
@@ -37,5 +38,25 @@ describe("forge wizard navigation", () => {
     for (const [from, to] of transitions) {
       expect(getPreviousStep(from)).toBe(to);
     }
+  });
+
+  it("normalizes runtime step values into the supported wizard range", () => {
+    expect(normalizeStep(1)).toBe(1);
+    expect(normalizeStep(7)).toBe(7);
+    expect(normalizeStep(0)).toBe(1);
+    expect(normalizeStep(8)).toBe(7);
+    expect(normalizeStep(3.5)).toBe(1);
+    expect(normalizeStep(Number.NaN)).toBe(1);
+    expect(normalizeStep(null)).toBe(1);
+    expect(normalizeStep(undefined)).toBe(1);
+  });
+
+  it("keeps navigation bounded for unsafe runtime values", () => {
+    expect(getNextStep(0)).toBe(2);
+    expect(getNextStep(8)).toBe(7);
+    expect(getNextStep(Number.NaN)).toBe(2);
+    expect(getPreviousStep(0)).toBe(1);
+    expect(getPreviousStep(8)).toBe(6);
+    expect(getPreviousStep(Number.NaN)).toBe(1);
   });
 });

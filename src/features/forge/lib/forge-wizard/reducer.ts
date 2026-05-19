@@ -1,6 +1,6 @@
 import { normalizeFixedGroupSize } from "@/features/forge/lib/forge-size";
 import { createInitialForgeWizardState } from "./initial-state";
-import { getNextStep, getPreviousStep } from "./navigation";
+import { getNextStep, getPreviousStep, normalizeStep } from "./navigation";
 import type { ForgeWizardAction, ForgeWizardData } from "./types";
 
 function clearAppliedTemplateFields(
@@ -31,6 +31,8 @@ function clearAppliedTemplateFields(
     autoMaxSize: initial.autoMaxSize,
     compatibilityWeight: initial.compatibilityWeight,
     diversityWeight: initial.diversityWeight,
+    networkReachWeight: initial.networkReachWeight,
+    maxDistanceKm: initial.maxDistanceKm,
     visibility: initial.visibility,
     forgeResult: initial.forgeResult,
     participants: initial.participants,
@@ -78,9 +80,10 @@ export function forgeWizardReducer(
         planCostAmount: template.planCostAmount,
         planCostDetails: template.planCostDetails,
         forgeMode: template.forgeMode,
-        fixedSize: template.fixedSize
-          ? normalizeFixedGroupSize(template.fixedSize)
-          : state.fixedSize,
+        fixedSize:
+          template.fixedSize === null
+            ? state.fixedSize
+            : normalizeFixedGroupSize(template.fixedSize),
         visibility: template.visibility,
         groupName: template.groupName,
         groupDescription: template.groupDescription,
@@ -105,7 +108,7 @@ export function forgeWizardReducer(
       return {
         ...state,
         navDirection: action.navDirection,
-        step: action.step,
+        step: normalizeStep(action.step),
       };
     case "go-next":
       return {
@@ -128,7 +131,7 @@ export function forgeWizardReducer(
       return {
         ...state,
         navDirection: "forward",
-        step: action.step ?? 5,
+        step: normalizeStep(action.step, 5),
         forgeResult: action.result,
         participants: action.participants,
         activityId: action.activityId,

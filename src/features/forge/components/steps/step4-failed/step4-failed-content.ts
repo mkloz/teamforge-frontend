@@ -4,15 +4,15 @@ import type { Step4FailedContent } from "./types";
 
 const AUTO_FAILED_CONTENT = {
   description:
-    "The current pool did not produce a balanced group with these algorithm settings.",
-  context: "Only pool size and algorithm settings are considered here.",
+    "The current pool did not produce a balanced group with these preferences.",
+  context: "Only pool size and group balance preferences are considered here.",
   reasons: [
     "The current candidate pool is too small for this request.",
-    "Matching or diversity settings are too narrow for the available pool.",
+    "Group balance preferences are too narrow for the available pool.",
     "The group size range does not fit the candidates available right now.",
   ],
   suggestions: [
-    "Loosen matching or diversity settings",
+    "Loosen group balance preferences",
     "Expand the group size range",
     "Try again when more candidates are available",
   ],
@@ -30,7 +30,7 @@ const MANUAL_FAILED_CONTENT = {
   suggestions: [
     "Invite more people",
     "Lower the selected group size",
-    "Switch to Algorithmic mode to use the wider candidate pool",
+    "Switch to Automatic mode to use the wider candidate pool",
   ],
 } as const satisfies Step4FailedContent;
 
