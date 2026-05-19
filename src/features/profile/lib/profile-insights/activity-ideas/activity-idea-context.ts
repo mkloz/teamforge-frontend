@@ -5,6 +5,7 @@ import type {
   ActivityLane,
   SocialProfileModel,
 } from "../types";
+import { normalizeText } from "../utils";
 
 export function buildActivityIdeaContext(
   primaryLane: ActivityLane,
@@ -88,9 +89,28 @@ export function getActivityIdeaAnchorPool(
 }
 
 function getLaneAnchorNames(lane: ActivityLane, limit: number) {
-  return lane.evidence
-    .filter((evidence) => evidence.role === "primary")
-    .map((evidence) => evidence.interest.name.trim())
-    .filter(Boolean)
-    .slice(0, limit);
+  const names: string[] = [];
+  const seen = new Set<string>();
+
+  for (const evidence of lane.evidence) {
+    if (evidence.role !== "primary") {
+      continue;
+    }
+
+    const name = evidence.interest.name.trim();
+    const key = normalizeText([name]);
+
+    if (!name || seen.has(key)) {
+      continue;
+    }
+
+    names.push(name);
+    seen.add(key);
+
+    if (names.length === limit) {
+      break;
+    }
+  }
+
+  return names;
 }

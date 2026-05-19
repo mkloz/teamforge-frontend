@@ -1,54 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import type { User } from "@/shared/schemas";
-
 import {
   buildCategoryFitHighlights,
   buildTemplateSuggestions,
-} from "./forge-template-suggestions";
-
-function createUser(overrides: Partial<User> = {}): User {
-  return {
-    id: "user-1",
-    email: "test@example.com",
-    name: "Test User",
-    avatar: null,
-    bio: null,
-    authProvider: "EMAIL",
-    emailVerified: true,
-    createdAt: "2026-01-01T00:00:00.000Z",
-    updatedAt: "2026-01-01T00:00:00.000Z",
-    age: 24,
-    gender: null,
-    city: "London",
-    personalityType: null,
-    oceanO: null,
-    oceanC: null,
-    oceanE: null,
-    oceanA: null,
-    oceanN: null,
-    searchStatus: "IDLE",
-    trustScore: 80,
-    profileComplete: true,
-    interests: [],
-    ...overrides,
-  };
-}
-
-function createInterest(name: string, aliases: string[] = []) {
-  return {
-    id: name,
-    name,
-    slug: name.toLowerCase().replaceAll(" ", "-"),
-    description: null,
-    icon: null,
-    color: null,
-    sortOrder: 0,
-    isActive: true,
-    parentId: null,
-    aliases,
-  };
-}
+} from "@/features/forge/lib/forge-template-suggestions";
+import { createInterest, createUser } from "../../../factories/user";
 
 describe("forge template personalization", () => {
   it("keeps curated order when there are no personalization signals", () => {

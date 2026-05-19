@@ -2,7 +2,7 @@ import type { User } from "@/shared/schemas";
 import type { MatchingSignal } from "../types";
 
 export function buildStageSignal(user: User): MatchingSignal {
-  if (typeof user.age !== "number") {
+  if (!isUsableAge(user.age)) {
     return {
       detail:
         "Age is not set, so life-stage filtering cannot help narrow nearby groups.",
@@ -18,6 +18,10 @@ export function buildStageSignal(user: User): MatchingSignal {
     strength: "good",
     value: `${user.age}`,
   };
+}
+
+function isUsableAge(age: User["age"]): age is number {
+  return typeof age === "number" && Number.isFinite(age);
 }
 
 function getAgeAlignmentDetail(age: number) {

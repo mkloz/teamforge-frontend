@@ -1,4 +1,5 @@
 import type { ActivityIdeaCandidate, ActivityIdeaContext } from "../types";
+import { normalizeText } from "../utils";
 import { getActivityIdeaAnchorPool } from "./activity-idea-context";
 import { createActivityIdea } from "./activity-idea-factory";
 
@@ -8,7 +9,9 @@ export function buildSpecificActivityIdeas(
   const candidates: ActivityIdeaCandidate[] = [];
   const hasAnchor = (pattern: RegExp) =>
     getActivityIdeaAnchorPool(context).some((interest) =>
-      pattern.test(interest.name.toLowerCase()),
+      pattern.test(
+        normalizeText([interest.name, interest.slug, ...interest.aliases]),
+      ),
     );
 
   if (

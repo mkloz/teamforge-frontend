@@ -7,8 +7,13 @@ export function findActivityOption(selectedActivity: string | null) {
     return null;
   }
 
+  const normalizedActivity = normalizeActivityText(selectedActivity);
+  const normalizedActivityToken = normalizeActivityToken(selectedActivity);
   const directMatch = ACTIVITIES.find(
-    (activity) => activity.label === selectedActivity,
+    (activity) =>
+      normalizeActivityText(activity.id) === normalizedActivity ||
+      normalizeActivityText(activity.label) === normalizedActivity ||
+      normalizeActivityToken(activity.label) === normalizedActivityToken,
   );
 
   if (directMatch) {
@@ -32,4 +37,12 @@ export function resolveActivityAccess(visibility: Visibility): ActivityAccess {
   }
 
   return "BY_REQUEST";
+}
+
+function normalizeActivityText(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function normalizeActivityToken(value: string) {
+  return normalizeActivityText(value).replaceAll(/[^a-z0-9]+/g, "");
 }

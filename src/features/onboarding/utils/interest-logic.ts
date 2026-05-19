@@ -90,13 +90,16 @@ export function getCorrelatedSuggestions(
   leafById: Record<string, Interest>,
   categories: Interest[],
 ): Interest[] {
-  if (selectedIds.length < 2) return [];
+  const uniqueSelectedIds = [...new Set(selectedIds)];
 
-  const selectedSet = new Set(selectedIds);
+  if (uniqueSelectedIds.length < 2) return [];
+
+  const selectedSet = new Set(uniqueSelectedIds);
   const candidates = new Map<string, number>();
+  const subcategoryByLeafId = buildSubcategoryByLeafId(categories);
 
   // 1. Explicit correlations (weighted high)
-  for (const id of selectedIds) {
+  for (const id of uniqueSelectedIds) {
     const correlated = CORRELATED_TAGS[id] || [];
     for (const relatedId of correlated) {
       if (
@@ -110,19 +113,8 @@ export function getCorrelatedSuggestions(
   }
 
   // 2. Implicit subcategory siblings (weighted low)
-  for (const id of selectedIds) {
-    const leaf = leafById[id];
-    if (!leaf) continue;
-
-    const category = categories.find((categoryItem) =>
-      getSubcategories(categoryItem).some((subcategory) =>
-        getLeafInterests(subcategory).some((interest) => interest.id === id),
-      ),
-    );
-    if (!category) continue;
-    const subcategory = getSubcategories(category).find((subcategoryItem) =>
-      getLeafInterests(subcategoryItem).some((interest) => interest.id === id),
-    );
+  for (const id of uniqueSelectedIds) {
+    const subcategory = subcategoryByLeafId.get(id);
     if (!subcategory) continue;
 
     for (const sibling of getLeafInterests(subcategory)) {
@@ -151,15 +143,39 @@ export function getShouldShowBalanceNudge(
   selectedIds: string[],
   categories: Interest[],
 ): boolean {
-  const selectedCount = selectedIds.length;
+  const knownSelectedIds = getKnownSelectedIds(selectedIds, categories);
+  const selectedCount = knownSelectedIds.length;
+
   if (selectedCount < 10) return false;
 
   for (const category of categories) {
     const categoryLeafIds = new Set(getCategoryLeafIds(category));
-    const countInCat = selectedIds.filter((id) =>
+    const countInCat = knownSelectedIds.filter((id) =>
       categoryLeafIds.has(id),
     ).length;
     if (countInCat / selectedCount > 0.7) return true;
   }
   return false;
+}
+
+function buildSubcategoryByLeafId(categories: Interest[]) {
+  const subcategoryByLeafId = new Map<string, Interest>();
+
+  for (const category of categories) {
+    for (const subcategory of getSubcategories(category)) {
+      for (const interest of getLeafInterests(subcategory)) {
+        subcategoryByLeafId.set(interest.id, subcategory);
+      }
+    }
+  }
+
+  return subcategoryByLeafId;
+}
+
+function getKnownSelectedIds(selectedIds: string[], categories: Interest[]) {
+  const knownIds = new Set(
+    categories.flatMap((category) => getCategoryLeafIds(category)),
+  );
+
+  return [...new Set(selectedIds)].filter((id) => knownIds.has(id));
 }

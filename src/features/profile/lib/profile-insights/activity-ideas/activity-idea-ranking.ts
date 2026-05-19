@@ -3,6 +3,7 @@ import type {
   ActivityIdeaCandidate,
   ActivityLaneConfidence,
 } from "../types";
+import { normalizeText } from "../utils";
 
 export function rankActivityIdeas(
   candidates: ActivityIdeaCandidate[],
@@ -71,7 +72,7 @@ function getActivityIdeaConfidenceRank(confidence: ActivityLaneConfidence) {
 }
 
 function normalizeIdeaTitleKey(title: string) {
-  return title.trim().toLowerCase();
+  return normalizeText([title]);
 }
 
 function getSortableScore(score: number) {

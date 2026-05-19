@@ -5,17 +5,29 @@ export function getActivityLaneConfidence(
   primaryEvidenceCount: number,
   supportingEvidenceCount: number,
 ): ActivityLaneConfidence {
-  if (primaryEvidenceCount >= 3 && score >= 22) {
+  if (!Number.isFinite(score) || score <= 0) {
+    return "soft";
+  }
+
+  const safeScore = score;
+  const safePrimaryCount = getSafeEvidenceCount(primaryEvidenceCount);
+  const safeSupportingCount = getSafeEvidenceCount(supportingEvidenceCount);
+
+  if (safePrimaryCount >= 3 && safeScore >= 22) {
     return "strong";
   }
 
   if (
-    primaryEvidenceCount >= 2 ||
-    score >= 14 ||
-    (primaryEvidenceCount >= 1 && supportingEvidenceCount >= 2)
+    safePrimaryCount >= 2 ||
+    safeScore >= 14 ||
+    (safePrimaryCount >= 1 && safeSupportingCount >= 2)
   ) {
     return "clear";
   }
 
   return "soft";
+}
+
+function getSafeEvidenceCount(value: number) {
+  return Number.isFinite(value) ? Math.max(Math.floor(value), 0) : 0;
 }

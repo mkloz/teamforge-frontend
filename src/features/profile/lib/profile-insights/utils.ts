@@ -13,6 +13,10 @@ export function capitalize(value: string) {
 }
 
 export function clamp(value: number, min: number, max: number) {
+  if (!Number.isFinite(value)) {
+    return min;
+  }
+
   return Math.min(Math.max(value, min), max);
 }
 
@@ -21,12 +25,27 @@ export function roundScore(value: number) {
 }
 
 export function normalizeText(values: Array<string | null | undefined>) {
-  return values.filter(Boolean).join(" ").toLowerCase().trim();
+  return values
+    .map((value) => value?.trim())
+    .filter((value): value is string => Boolean(value))
+    .join(" ")
+    .normalize("NFKD")
+    .replaceAll(/\p{Diacritic}/gu, "")
+    .replaceAll(/\s+/g, " ")
+    .toLowerCase()
+    .trim();
 }
 
 export function normalizeTaxonomyId(value: string) {
-  const normalized = value.toLowerCase().trim();
-  const slug = normalized.replace(/[\s-]+/g, "_");
+  const normalized = normalizeText([value]);
+
+  if (!normalized) {
+    return [];
+  }
+
+  const slug = normalized
+    .replaceAll(/[^a-z0-9]+/g, "_")
+    .replaceAll(/^_+|_+$/g, "");
 
   return normalized === slug ? [normalized] : [normalized, slug];
 }

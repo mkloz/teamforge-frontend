@@ -25,7 +25,7 @@ export function getMatchingReadiness(socialProfile: SocialProfileModel): {
     clearLaneCount * 2 +
     strongLaneCount * 1.5 +
     getPersonalitySignalScore(context) +
-    (typeof context.user.age === "number" ? 1 : 0) +
+    (isUsableAge(context.user.age) ? 1 : 0) +
     getPortraitConfidenceScore(confidence) -
     context.tensions.length * 0.75 -
     (secondaryCandidate ? 0.5 : 0);
@@ -69,4 +69,8 @@ export function getMatchingReadiness(socialProfile: SocialProfileModel): {
     score,
     strength: "quiet",
   };
+}
+
+function isUsableAge(age: SocialProfileModel["context"]["user"]["age"]) {
+  return typeof age === "number" && Number.isFinite(age);
 }

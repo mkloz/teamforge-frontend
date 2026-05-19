@@ -74,9 +74,9 @@ export function forgeWizardReducer(
         planLocationLat: template.planLocationLat,
         planLocationLng: template.planLocationLng,
         locationType: template.locationType,
-        planCost: "FREE",
-        planCostAmount: "",
-        planCostDetails: "",
+        planCost: template.planCost,
+        planCostAmount: template.planCostAmount,
+        planCostDetails: template.planCostDetails,
         forgeMode: template.forgeMode,
         fixedSize: template.fixedSize
           ? normalizeFixedGroupSize(template.fixedSize)

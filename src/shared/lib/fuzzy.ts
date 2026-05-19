@@ -1,4 +1,4 @@
-/** Levenshtein distance (max checked up to 2 to keep it O(n)) */
+/** Levenshtein distance for short search tokens. */
 export function levenshtein(a: string, b: string): number {
   if (a === b) return 0;
   if (a.length === 0) return b.length;
@@ -25,10 +25,24 @@ export function levenshtein(a: string, b: string): number {
  * queries (≥4 chars) with edit distance ≤1 against any word in target.
  */
 export function fuzzyMatch(target: string, q: string): boolean {
-  const t = target.toLowerCase();
-  if (t.includes(q)) return true;
+  const t = normalizeSearchText(target);
+  const query = normalizeSearchText(q).trim();
+
+  if (query.length === 0) return false;
+  if (t.includes(query)) return true;
+
   // Only do fuzzy for single-word queries of 4+ chars
-  if (q.includes(" ") || q.length < 4) return false;
+  if (query.includes(" ") || query.length < 4) return false;
+
   const words = t.split(/[\s\-_/&]+/);
-  return words.some((w) => w.length >= q.length - 1 && levenshtein(w, q) <= 1);
+  return words.some(
+    (word) => word.length >= query.length - 1 && levenshtein(word, query) <= 1,
+  );
+}
+
+function normalizeSearchText(value: string): string {
+  return value
+    .normalize("NFKD")
+    .replaceAll(/\p{Diacritic}/gu, "")
+    .toLowerCase();
 }

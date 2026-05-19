@@ -34,7 +34,7 @@ export function buildPortraitNote(
     );
   }
 
-  if (typeof context.user.age === "number") {
+  if (isUsableAge(context.user.age)) {
     pieces.push(`${context.user.age} yrs`);
   }
 
@@ -76,4 +76,8 @@ export function buildPortraitConfidenceNote(socialProfile: SocialProfileModel) {
   }
 
   return "Good profile depth, but not enough separation for a hard label.";
+}
+
+function isUsableAge(age: PortraitContext["user"]["age"]): age is number {
+  return typeof age === "number" && Number.isFinite(age);
 }

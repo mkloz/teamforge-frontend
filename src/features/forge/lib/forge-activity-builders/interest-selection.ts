@@ -29,5 +29,9 @@ export function selectInterestIds(user: User, selectedActivity: string | null) {
 
   const source = matchingInterests.length > 0 ? matchingInterests : interests;
 
-  return source.slice(0, 10).map((interest) => interest.id);
+  return dedupeInterestIds(source.map((interest) => interest.id)).slice(0, 10);
+}
+
+function dedupeInterestIds(ids: string[]) {
+  return [...new Set(ids)];
 }
