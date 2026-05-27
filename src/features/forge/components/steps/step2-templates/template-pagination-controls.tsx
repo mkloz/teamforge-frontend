@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { Button } from "@/shared/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
@@ -21,29 +22,33 @@ export function TemplatePaginationControls({
     <div className="flex shrink-0 items-center gap-1">
       <Tooltip>
         <TooltipTrigger asChild>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon-xs"
             onClick={onPrevious}
             disabled={!canPage}
             aria-label="Previous templates"
-            className="flex size-8 items-center justify-center rounded-full border border-border/45 bg-card text-muted-foreground transition-colors duration-200 hover:border-forge-teal/35 hover:text-forge-teal disabled:cursor-not-allowed disabled:opacity-35"
+            className="size-8 rounded-full border border-border/45 bg-card text-muted-foreground hover:enabled:border-forge-teal/35 hover:enabled:text-forge-teal disabled:opacity-35"
           >
             <ChevronLeft size={15} />
-          </button>
+          </Button>
         </TooltipTrigger>
         <TooltipContent>Previous templates</TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon-xs"
             onClick={onNext}
             disabled={!canPage}
             aria-label="Next templates"
-            className="flex size-8 items-center justify-center rounded-full border border-border/45 bg-card text-muted-foreground transition-colors duration-200 hover:border-forge-teal/35 hover:text-forge-teal disabled:cursor-not-allowed disabled:opacity-35"
+            className="size-8 rounded-full border border-border/45 bg-card text-muted-foreground hover:enabled:border-forge-teal/35 hover:enabled:text-forge-teal disabled:opacity-35"
           >
             <ChevronRight size={15} />
-          </button>
+          </Button>
         </TooltipTrigger>
         <TooltipContent>Next templates</TooltipContent>
       </Tooltip>

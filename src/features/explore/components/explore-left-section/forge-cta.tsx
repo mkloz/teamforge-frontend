@@ -19,7 +19,7 @@ export function ForgeCTA() {
         </div>
 
         <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
-          <Button asChild size="md" className="w-full font-bold">
+          <Button asChild size="md" className="w-full">
             <Link {...buildForgeLaunchNavigation()}>
               <Plus className="size-4 transition-transform group-hover:rotate-90" />
               Forge my group

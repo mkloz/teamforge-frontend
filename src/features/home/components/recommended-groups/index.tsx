@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 import { EmptyRecommendationsVisual } from "@/assets/empty-state/empty-recommendations";
 import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
@@ -53,7 +54,10 @@ export function RecommendedGroupsView({
         description="A couple of openings to inspect, not automatic yeses."
         action={
           <Button asChild variant="ghost" size="sm">
-            <Link {...buildExploreNavigation()}>Explore</Link>
+            <Link {...buildExploreNavigation()}>
+              View all
+              <ArrowRight className="size-3.5" aria-hidden="true" />
+            </Link>
           </Button>
         }
       />

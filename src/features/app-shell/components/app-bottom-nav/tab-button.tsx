@@ -63,11 +63,11 @@ export function TabButton({ item, pathname }: TabButtonProps) {
           {hasBadge && (
             <span
               className={cn(
-                "type-signature-label absolute top-0.5 right-0.5 flex items-center justify-center rounded-full bg-accent font-black text-accent-foreground leading-none shadow-sm",
-                badge > 9 ? "h-4 min-w-5 px-1" : "size-4 p-0",
-                "border-2 border-background",
-                active && "scale-110",
+                "absolute -top-1.5 -right-2 z-10 flex items-center justify-center rounded-full border border-spark-amber/45 bg-canvas font-black text-micro text-spark-amber tabular-nums leading-none shadow-[inset_0_0_0_999px_color-mix(in_srgb,var(--color-spark-amber)_16%,transparent)]",
+                badge > 9 ? "h-4.5 min-w-5 px-1" : "size-4.5 p-0",
+                "ring-2 ring-canvas",
               )}
+              aria-hidden="true"
             >
               {badge > 9 ? "9+" : badge}
             </span>

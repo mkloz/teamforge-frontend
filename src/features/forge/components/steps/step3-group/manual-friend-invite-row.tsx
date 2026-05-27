@@ -63,7 +63,7 @@ export function ManualFriendInviteRow({
         className={cn(
           "size-8 shrink-0 rounded-full border transition-colors",
           selected
-            ? "border-spark-amber bg-spark-amber text-ink"
+            ? "border-spark-amber/35 bg-spark-amber/12 text-spark-amber"
             : "border-border/60 bg-background text-muted-foreground",
         )}
         aria-label={`${selected ? "Remove" : "Invite"} ${friend.name}`}

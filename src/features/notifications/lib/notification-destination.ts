@@ -54,11 +54,14 @@ import {
 import { apiClient } from "@/shared/api/api";
 import {
   createPaginatedSchema,
+  type GroupApi,
   groupApiSchema,
   type Notification,
 } from "@/shared/schemas";
 
 const paginatedGroupsSchema = createPaginatedSchema(groupApiSchema);
+const GROUP_LOOKUP_PAGE_LIMIT = 100;
+const MAX_GROUP_LOOKUP_PAGES = 10;
 const planGroupCache = new Map<string, string>();
 const chatGroupCache = new Map<string, string>();
 
@@ -300,19 +303,9 @@ async function resolveGroupIdByPlanId(planId: string) {
     return cachedGroupId;
   }
 
-  const groupId = await apiClient
-    .get("groups", {
-      searchParams: {
-        limit: 100,
-      },
-    })
-    .json<unknown>()
-    .then((response) => {
-      const groups = paginatedGroupsSchema.parse(response).items;
-
-      return groups.find((group) => group.plan?.id === planId)?.id ?? null;
-    })
-    .catch(() => null);
+  const groupId = await findGroupIdByPredicate(
+    (group) => group.plan?.id === planId,
+  );
 
   if (groupId) {
     planGroupCache.set(planId, groupId);
@@ -328,25 +321,68 @@ async function resolveGroupIdByChatId(chatId: string) {
     return cachedGroupId;
   }
 
-  const groupId = await apiClient
-    .get("groups", {
-      searchParams: {
-        limit: 100,
-      },
-    })
-    .json<unknown>()
-    .then((response) => {
-      const groups = paginatedGroupsSchema.parse(response).items;
-
-      return groups.find((group) => group.chat?.id === chatId)?.id ?? null;
-    })
-    .catch(() => null);
+  const groupId = await findGroupIdByPredicate(
+    (group) => group.chat?.id === chatId,
+  );
 
   if (groupId) {
     chatGroupCache.set(chatId, groupId);
   }
 
   return groupId;
+}
+
+async function findGroupIdByPredicate(predicate: (group: GroupApi) => boolean) {
+  try {
+    const firstPage = await getGroupLookupPage(1);
+    const firstPageGroupId = firstPage.items.find(predicate)?.id;
+
+    if (firstPageGroupId) {
+      return firstPageGroupId;
+    }
+
+    const totalPages = Math.min(
+      MAX_GROUP_LOOKUP_PAGES,
+      firstPage.meta.totalPages,
+    );
+
+    if (firstPage.items.length === 0 || totalPages <= 1) {
+      return null;
+    }
+
+    const remainingPages = Array.from(
+      { length: totalPages - 1 },
+      (_, index) => index + 2,
+    );
+    const remainingResults = await Promise.all(
+      remainingPages.map((page) => getGroupLookupPage(page)),
+    );
+
+    for (const result of remainingResults) {
+      const groupId = result.items.find(predicate)?.id;
+
+      if (groupId) {
+        return groupId;
+      }
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+async function getGroupLookupPage(page: number) {
+  const response = await apiClient
+    .get("groups", {
+      searchParams: {
+        limit: GROUP_LOOKUP_PAGE_LIMIT,
+        page,
+      },
+    })
+    .json<unknown>();
+
+  return paginatedGroupsSchema.parse(response);
 }
 
 async function resolveFromLegacyLink(
@@ -547,14 +583,14 @@ export async function resolveNotificationDestination(
   switch (notification.type) {
     case "NEW_MESSAGE":
     case "MESSAGE_MENTION":
-      return { to: "/activity" };
+      return buildActivityNavigation({ filter: "unread" });
     case "FRIEND_REQUEST":
       return buildHomeNavigation({
         panel: "friends",
         request: notification.entityId ?? undefined,
       });
     case "FRIEND_ACCEPTED":
-      return buildExploreNavigation();
+      return buildExploreNavigation({ panel: "friends" });
     case "ACCOUNT_SECURITY":
       return buildSettingsNavigation("security");
     default:

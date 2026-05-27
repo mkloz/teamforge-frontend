@@ -14,10 +14,10 @@ import type {
 import { Button } from "@/shared/components/ui/button";
 import { ChatStatusBar } from "./chat-status-bar";
 import { CompletedReviewGate } from "./completed-banner";
+import { MessageSelectionToolbar } from "./message-selection-toolbar";
 import { UnifiedChatHeader } from "./unified-chat-header";
 import { UnifiedMessageInput } from "./unified-message-input";
 import { UnifiedMessageList } from "./unified-message-list";
-import { MessageSelectionToolbar } from "./message-selection-toolbar";
 import type { MessageScrollHandle } from "./unified-message-list/message-scroll.types";
 import { useConversationMessageSearch } from "./use-conversation-message-search";
 
@@ -235,6 +235,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
         title={headerProps.title}
         subtitle={headerProps.subtitle}
         avatarUrl={headerProps.avatarUrl}
+        avatarKind={isNotesChat ? "notes" : "default"}
         detailsNavigation={headerProps.detailsNavigation}
         onlineStatus={headerProps.onlineStatus}
         isTyping={activeTypingUsers.length > 0}
@@ -286,6 +287,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
           searchQuery={normalizedQuery}
           kind={kind}
           conversationId={conversationId}
+          emptyStateVariant={isNotesChat ? "my-notes" : "default"}
           focusedMessageId={focusedMessageId}
           hasOlderMessages={hasOlderMessages}
           isInitialLoading={isLoadingMessages}
@@ -358,7 +360,7 @@ function ConversationMessageErrorBanner({
 }) {
   return (
     <div
-      className="flex items-center justify-between gap-3 border-border border-b bg-spark-amber/10 px-4 py-2 text-ink text-xs"
+      className="flex items-center justify-between gap-3 border-spark-amber/20 border-b bg-spark-amber/10 px-4 py-2 text-spark-amber text-xs"
       role="status"
     >
       <span className="flex min-w-0 items-center gap-2 font-medium">
@@ -372,7 +374,7 @@ function ConversationMessageErrorBanner({
       </span>
       {onRetry ? (
         <Button
-          className="h-7 shrink-0 rounded-full px-2 text-xs"
+          className="h-7 shrink-0 px-2"
           size="xs"
           variant="accentGhost"
           onClick={() => void onRetry()}
@@ -388,7 +390,7 @@ function ConversationMessageErrorBanner({
 function ConversationOfflineBanner() {
   return (
     <div
-      className="flex items-center gap-2 border-border border-b bg-spark-amber/10 px-4 py-2 text-ink text-xs"
+      className="flex items-center gap-2 border-spark-amber/20 border-b bg-spark-amber/10 px-4 py-2 text-spark-amber text-xs"
       role="status"
     >
       <WifiOff

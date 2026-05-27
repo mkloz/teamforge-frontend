@@ -48,7 +48,7 @@ export function ParticipantRow({
             removed
               ? "bg-muted text-muted-foreground"
               : highlight
-                ? "bg-spark-amber text-ink shadow-sm shadow-spark-amber/20"
+                ? "bg-spark-amber/12 text-spark-amber shadow-sm ring-1 ring-spark-amber/20"
                 : "border border-border/35 bg-muted/35 group-hover:bg-forge-teal/10",
           )}
         >
@@ -60,7 +60,7 @@ export function ParticipantRow({
             className="size-full rounded-lg bg-transparent"
             fallbackClassName={cn(
               "bg-transparent font-bold text-xs",
-              highlight ? "text-ink" : "text-foreground/80",
+              highlight ? "text-spark-amber" : "text-foreground/80",
             )}
           />
         </div>

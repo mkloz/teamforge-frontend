@@ -69,6 +69,7 @@ export function HeroSection() {
                 }
               >
                 See How It Works
+                <ChevronDown className="size-5" aria-hidden="true" />
               </Button>
             </div>
           </div>

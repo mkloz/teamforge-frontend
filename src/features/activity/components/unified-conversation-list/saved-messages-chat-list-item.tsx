@@ -1,5 +1,6 @@
-import { Bookmark, ChevronRight, MessageCircle, Trash2 } from "lucide-react";
+import { ChevronRight, MessageCircle, Trash2 } from "lucide-react";
 import { memo } from "react";
+import { SavedMessagesAvatarVisual } from "@/assets/activity/special-conversation-avatars";
 import {
   ACTIVITY_MENU_ICON_CLASS,
   ACTIVITY_MENU_ITEM_CLASS,
@@ -75,15 +76,12 @@ export const SavedMessagesChatListItem = memo(
 
             <span
               className={cn(
-                "relative flex shrink-0 items-center justify-center rounded-full border border-forge-teal/20 bg-forge-teal/10 text-forge-teal shadow-sm ring-1 ring-border/40",
+                "relative flex shrink-0 items-center justify-center rounded-full bg-transparent text-foreground",
                 isCompact ? "size-9" : "size-11",
               )}
               aria-hidden="true"
             >
-              <Bookmark
-                className="size-4 fill-forge-teal/15"
-                strokeWidth={2.25}
-              />
+              <SavedMessagesAvatarVisual className="size-full" />
               {count > 0 ? (
                 <span className="absolute -right-1 -bottom-1 flex h-4 min-w-4 items-center justify-center rounded-full border border-canvas bg-forge-teal px-1 font-black text-canvas text-micro leading-none shadow-sm">
                   {count > 9 ? "9+" : count}

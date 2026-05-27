@@ -1,3 +1,4 @@
+import { Save, X } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 
 import type { GroupIdentityEditor } from "./edit-group-identity-dialog.types";
@@ -20,6 +21,7 @@ export function EditGroupIdentityFooter({
   return (
     <>
       <Button type="button" variant="outline" onClick={onCancel}>
+        <X className="size-4" aria-hidden="true" />
         Cancel
       </Button>
       <Button
@@ -28,6 +30,7 @@ export function EditGroupIdentityFooter({
         disabled={saveDisabled}
         onClick={() => editor.save()}
       >
+        <Save className="size-4" aria-hidden="true" />
         {editor.isSaving ? "Saving..." : saveLabel}
       </Button>
     </>

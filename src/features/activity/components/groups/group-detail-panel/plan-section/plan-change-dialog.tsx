@@ -1,4 +1,4 @@
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, SendHorizontal, X } from "lucide-react";
 import type { ReactElement } from "react";
 import type { Plan } from "@/features/activity/lib/activity-contract";
 import { LOCATION_MODE_LABELS } from "@/features/activity/lib/plan-location";
@@ -227,6 +227,7 @@ export function PlanChangeDialog({
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={form.closeForm}>
+            <X className="size-4" aria-hidden="true" />
             Cancel
           </Button>
           <Button
@@ -235,6 +236,7 @@ export function PlanChangeDialog({
             loading={form.isCreating}
             onClick={() => void form.handleSubmit()}
           >
+            <SendHorizontal className="size-4" aria-hidden="true" />
             Send change
           </Button>
         </DialogFooter>

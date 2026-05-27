@@ -65,22 +65,18 @@ export function CategoryFilter() {
         );
       })}
       {!expanded && hiddenCategoryCount > 0 ? (
-        <button
-          type="button"
-          className="inline-flex h-7 items-center rounded-full border border-border bg-card px-2.5 font-bold text-muted-foreground text-xs transition-colors hover:border-border/90 hover:bg-muted/35 hover:text-foreground"
+        <CategoryFilterChip
+          label={`+${hiddenCategoryCount} more`}
+          className="h-7 px-2.5"
           onClick={() => setExpanded(true)}
-        >
-          +{hiddenCategoryCount} more
-        </button>
+        />
       ) : null}
       {expanded ? (
-        <button
-          type="button"
-          className="inline-flex h-7 items-center rounded-full border border-border bg-card px-2.5 font-bold text-muted-foreground text-xs transition-colors hover:border-border/90 hover:bg-muted/35 hover:text-foreground"
+        <CategoryFilterChip
+          label="Show less"
+          className="h-7 px-2.5"
           onClick={() => setExpanded(false)}
-        >
-          Show less
-        </button>
+        />
       ) : null}
     </div>
   );

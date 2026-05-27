@@ -41,23 +41,25 @@ export function Section({
       )}
     >
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-        <div className="min-w-0">
-          {eyebrow ? (
-            <p className="font-black text-forge-teal text-xs uppercase tracking-widest">
-              {eyebrow}
-            </p>
-          ) : null}
-          <h2
-            id={headingId}
-            className="mt-2 font-black text-2xl text-foreground tracking-tight md:text-3xl"
-          >
-            {heading}
-          </h2>
-          {description ? (
-            <p className="mt-2 max-w-2xl font-medium text-muted-foreground text-sm leading-relaxed">
-              {description}
-            </p>
-          ) : null}
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="min-w-0">
+            {eyebrow ? (
+              <p className="font-black text-forge-teal text-xs uppercase tracking-widest">
+                {eyebrow}
+              </p>
+            ) : null}
+            <h2
+              id={headingId}
+              className="mt-2 font-black text-2xl text-foreground tracking-tight md:text-3xl"
+            >
+              {heading}
+            </h2>
+            {description ? (
+              <p className="mt-2 max-w-2xl font-medium text-muted-foreground text-sm leading-relaxed">
+                {description}
+              </p>
+            ) : null}
+          </div>
         </div>
         {trailing ? <div className="shrink-0">{trailing}</div> : null}
       </div>

@@ -30,6 +30,7 @@ interface UnifiedMessageListProps {
   searchQuery?: string;
   kind: "dm" | "group";
   conversationId: string;
+  emptyStateVariant?: "default" | "my-notes";
   hasOlderMessages?: boolean;
   focusedMessageId?: string | null;
   isInitialError?: boolean;
@@ -58,6 +59,7 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
   searchQuery = "",
   kind,
   conversationId,
+  emptyStateVariant = "default",
   hasOlderMessages = false,
   focusedMessageId = null,
   isInitialError = false,
@@ -276,7 +278,7 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
           </>
         ) : isEmpty ? (
           <>
-            <MessageListEmptyState />
+            <MessageListEmptyState variant={emptyStateVariant} />
             <div ref={messagesEndRef} className="h-0 w-full shrink-0" />
           </>
         ) : (

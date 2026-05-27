@@ -1,4 +1,6 @@
+import { Loader2, RefreshCw } from "lucide-react";
 import { type ReactNode, useEffect, useRef } from "react";
+import { Button } from "@/shared/components/ui/button";
 import type { ExploreGroup } from "@/shared/schemas";
 import { ExploreGroupPlanCard } from "./explore-group-plan-card";
 
@@ -102,14 +104,21 @@ function ExploreInfiniteScrollSentinel({
 
   return (
     <div ref={sentinelRef} className="flex justify-center py-2">
-      <button
+      <Button
         type="button"
+        variant="subtle"
+        size="xs"
         onClick={onLoadMore}
         disabled={isFetchingNextPage}
-        className="rounded-full border border-border/70 bg-card/35 px-3 py-1.5 font-bold text-muted-foreground text-xs transition-colors hover:border-border hover:bg-muted/30 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40 disabled:cursor-wait disabled:opacity-70"
+        className="disabled:cursor-wait disabled:opacity-70"
       >
+        {isFetchingNextPage ? (
+          <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
+        ) : (
+          <RefreshCw className="size-3.5" aria-hidden="true" />
+        )}
         {isFetchingNextPage ? "Loading more..." : "Load more"}
-      </button>
+      </Button>
     </div>
   );
 }

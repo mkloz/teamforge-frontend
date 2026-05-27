@@ -100,6 +100,15 @@ export function AttentionQueueView({
   } = state;
   const queueHasSettledRef = useRef(false);
   const animateQueueInsertions = queueHasSettledRef.current;
+  const renderedInvitations = visibleInvitations.slice(0, 2);
+  const renderedRequests = visibleRequests.slice(0, 2);
+  const renderedPlans = proposedPlans.slice(0, 2);
+  const collapsedQueueSize =
+    Math.min(visibleInvitations.length, 2) +
+    Math.min(visibleRequests.length, 2) +
+    Math.min(proposedPlans.length, 2) +
+    (viewer.nextStep ? 1 : 0);
+  const hiddenItemCount = Math.max(queueSize - collapsedQueueSize, 0);
 
   useAttentionQueueFocus({
     focusedInviteId,
@@ -159,45 +168,41 @@ export function AttentionQueueView({
           ) : null}
 
           {!shouldShowSkeleton
-            ? visibleInvitations
-                .slice(0, 2)
-                .map((invite) => (
-                  <InvitationQueueItem
-                    key={invite.id}
-                    invite={invite}
-                    isFocused={focusedInviteId === invite.id}
-                    acceptingInviteId={acceptingInviteId}
-                    animateOnInsert={animateQueueInsertions}
-                    decliningInviteId={decliningInviteId}
-                    isAccepting={isAcceptingInvite}
-                    isDeclining={isDecliningInvite}
-                    onAccept={acceptVisibleInvite}
-                    onDecline={declineVisibleInvite}
-                  />
-                ))
+            ? renderedInvitations.map((invite) => (
+                <InvitationQueueItem
+                  key={invite.id}
+                  invite={invite}
+                  isFocused={focusedInviteId === invite.id}
+                  acceptingInviteId={acceptingInviteId}
+                  animateOnInsert={animateQueueInsertions}
+                  decliningInviteId={decliningInviteId}
+                  isAccepting={isAcceptingInvite}
+                  isDeclining={isDecliningInvite}
+                  onAccept={acceptVisibleInvite}
+                  onDecline={declineVisibleInvite}
+                />
+              ))
             : null}
 
           {!shouldShowSkeleton
-            ? visibleRequests
-                .slice(0, 2)
-                .map((request) => (
-                  <FriendRequestQueueItem
-                    key={request.requesterId}
-                    request={request}
-                    isFocused={focusedRequestId === request.requesterId}
-                    acceptingRequestId={acceptingRequestId}
-                    animateOnInsert={animateQueueInsertions}
-                    decliningRequestId={decliningRequestId}
-                    isAccepting={isAccepting}
-                    isDeclining={isDeclining}
-                    onAccept={acceptVisibleRequest}
-                    onDecline={declineVisibleRequest}
-                  />
-                ))
+            ? renderedRequests.map((request) => (
+                <FriendRequestQueueItem
+                  key={request.requesterId}
+                  request={request}
+                  isFocused={focusedRequestId === request.requesterId}
+                  acceptingRequestId={acceptingRequestId}
+                  animateOnInsert={animateQueueInsertions}
+                  decliningRequestId={decliningRequestId}
+                  isAccepting={isAccepting}
+                  isDeclining={isDeclining}
+                  onAccept={acceptVisibleRequest}
+                  onDecline={declineVisibleRequest}
+                />
+              ))
             : null}
 
           {!shouldShowSkeleton
-            ? proposedPlans.map((group) => (
+            ? renderedPlans.map((group) => (
                 <ProposedPlanQueueItem
                   key={group.plan.id}
                   animateOnInsert={animateQueueInsertions}
@@ -207,7 +212,9 @@ export function AttentionQueueView({
             : null}
         </AnimatePresence>
 
-        {!shouldShowSkeleton && queueSize > 4 ? <SeeRestButton /> : null}
+        {!shouldShowSkeleton && hiddenItemCount > 0 ? (
+          <SeeRestButton hiddenItemCount={hiddenItemCount} />
+        ) : null}
       </ul>
     </section>
   );

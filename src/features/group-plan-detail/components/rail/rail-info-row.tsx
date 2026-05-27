@@ -16,7 +16,7 @@ export function RailInfoRow({
 }: RailInfoRowProps) {
   return (
     <div className="flex items-center gap-3.5">
-      <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-forge-teal/10">
+      <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-forge-teal/10">
         <Icon className="size-4 text-forge-teal" aria-hidden="true" />
       </div>
       <div className="min-w-0">

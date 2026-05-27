@@ -61,7 +61,7 @@ export function SettingsSidebar({
             <Button
               type="button"
               variant="destructive"
-              className="h-auto w-full justify-start rounded-lg px-1 py-3 lg:px-4"
+              className="h-auto w-full justify-start px-1 py-3 lg:px-4"
               disabled={isSigningOut}
             >
               <LogOut size={16} />

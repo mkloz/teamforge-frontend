@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 import { EmptyHomePlansVisual } from "@/assets/empty-state/empty-home-plans";
 import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
@@ -42,7 +43,6 @@ export function UpcomingPlansView({
   plans,
 }: UpcomingPlansViewProps) {
   const visiblePlans = getUpcomingPreview(plans, 4);
-  const hiddenCount = Math.max(0, plans.length - visiblePlans.length);
 
   if (isPlansLoading && plans.length === 0) {
     return <HomeUpcomingPlansSkeleton />;
@@ -60,7 +60,10 @@ export function UpcomingPlansView({
         description="The next few things with a time attached."
         action={
           <Button asChild variant="ghost" size="sm">
-            <Link {...buildActivityNavigation()}>View all</Link>
+            <Link {...buildActivityNavigation({ filter: "groups" })}>
+              View all
+              <ArrowRight className="size-3.5" aria-hidden="true" />
+            </Link>
           </Button>
         }
       />
@@ -74,12 +77,6 @@ export function UpcomingPlansView({
           ))}
         </ul>
       )}
-
-      {hiddenCount > 0 ? (
-        <p className="font-medium text-muted-foreground text-xs">
-          {hiddenCount} more plan{hiddenCount === 1 ? "" : "s"} in Activity.
-        </p>
-      ) : null}
     </section>
   );
 }

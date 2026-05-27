@@ -7,6 +7,7 @@ import { createRouteErrorComponent } from "@/app/router/route-error-component";
 import { redirectAuthenticatedUser } from "@/app/router/route-guards";
 import { AuthPageLoading } from "@/features/auth/auth-page.loading";
 import { LandingPageLoading } from "@/features/landing/landing-page.loading";
+import { LegalPageLoading } from "@/features/legal/legal-page.loading";
 import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
 
 const landingPageModule = createLazyRouteModule(() =>
@@ -71,13 +72,19 @@ const landingRoute = createRoute({
 const privacyRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/privacy",
-  component: createLazyPageRoute(privacyPageModule.Component),
+  component: createLazyPageRoute(
+    privacyPageModule.Component,
+    <LegalPageLoading kind="privacy" mode="route" />,
+  ),
 });
 
 const termsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/terms",
-  component: createLazyPageRoute(termsPageModule.Component),
+  component: createLazyPageRoute(
+    termsPageModule.Component,
+    <LegalPageLoading kind="terms" mode="route" />,
+  ),
 });
 
 const loginRoute = createRoute({

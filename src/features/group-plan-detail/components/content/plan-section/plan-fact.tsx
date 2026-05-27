@@ -15,7 +15,7 @@ export function PlanFact({
 }: PlanFactProps) {
   return (
     <div className="flex min-w-0 items-start gap-4">
-      <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
+      <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-md bg-forge-teal/10 text-forge-teal">
         <Icon className="size-4" aria-hidden="true" />
       </div>
       <div className="min-w-0 pt-0.5">

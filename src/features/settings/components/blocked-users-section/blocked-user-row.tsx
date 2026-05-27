@@ -59,7 +59,7 @@ export function BlockedUserRow({
             type="button"
             variant="outline"
             disabled={isUnblocking}
-            className="w-full justify-center md:w-auto"
+            className="w-full md:w-auto"
           >
             {isUnblocking ? (
               <Loader2 size={14} className="animate-spin" />

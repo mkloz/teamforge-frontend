@@ -21,6 +21,13 @@ import {
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { appQueryClient } from "@/shared/api/query-client";
 
+export class MissingForgeInterestSignalsError extends Error {
+  constructor() {
+    super("Add at least one interest before forging a group.");
+    this.name = "MissingForgeInterestSignalsError";
+  }
+}
+
 async function getCurrentUser() {
   return appQueryClient.ensureQueryData(currentUserQueryOptions());
 }
@@ -66,7 +73,7 @@ async function executeForge(
   );
 
   if (createActivityInput.interestIds.length === 0) {
-    return buildFailedForgeResult();
+    throw new MissingForgeInterestSignalsError();
   }
 
   const activityResult = await ForgeApi.createActivity(createActivityInput);

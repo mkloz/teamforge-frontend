@@ -59,7 +59,7 @@ export function AreaFields({ currentUser, form }: AreaFieldsProps) {
         )}
       />
       <div className="flex min-h-10 gap-3 border-border border-t pt-4 lg:mt-7 lg:items-center lg:border-t-0 lg:border-l lg:pt-0 lg:pl-4">
-        <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-forge-teal/8 text-forge-teal">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-forge-teal/8 text-forge-teal">
           <MapPin size={16} strokeWidth={2} />
         </div>
         <div className="min-w-0">

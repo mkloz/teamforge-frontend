@@ -40,6 +40,7 @@ export type HomeNextMove =
       primaryLabel: string;
       secondaryLabel: string;
       signal: string;
+      groupId: string;
     }
   | {
       kind: "forge";

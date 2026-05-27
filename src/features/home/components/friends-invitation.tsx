@@ -52,7 +52,7 @@ export function FriendsInvitation() {
         description="For the group that needs one familiar face."
       />
 
-      <div className="rounded-xl border border-border/45 bg-forge-teal/5 px-3 py-3">
+      <div className="rounded-xl border border-forge-teal/25 bg-forge-teal/10 px-3 py-3">
         <div className="flex min-w-0 items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <p className="font-black text-foreground text-sm">
@@ -76,7 +76,7 @@ export function FriendsInvitation() {
         <div className="main-action-grid mt-3 grid items-center gap-2">
           <div
             className={cn(
-              "group flex h-11 min-w-0 items-center gap-2 rounded-md border border-border/45 bg-background/70 px-3",
+              "group relative flex h-11 min-w-0 items-center rounded-md border border-border/45 bg-background/70 py-0 pr-12 pl-3",
               "transition-colors duration-150 hover:bg-forge-teal/8",
             )}
           >
@@ -88,7 +88,7 @@ export function FriendsInvitation() {
               variant="accentGhost"
               size="icon-xs"
               onClick={handleCopy}
-              className="size-10 rounded-md"
+              className="absolute top-1/2 right-1 size-9 -translate-y-1/2 rounded-md"
               aria-label={copied ? "Invite link copied" : "Copy invite link"}
             >
               {copied ? (
@@ -101,7 +101,7 @@ export function FriendsInvitation() {
 
           <Button
             variant="primary"
-            className="h-11 rounded-md px-4 font-black text-xs"
+            className="rounded-md px-4 text-xs"
             onClick={async () => {
               const shareResult = await shareBrowserData({
                 title: "Join me on TeamForge",

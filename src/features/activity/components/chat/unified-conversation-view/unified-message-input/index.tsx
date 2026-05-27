@@ -4,6 +4,7 @@ import { memo } from "react";
 import { ErrorMessageSendFailedVisual } from "@/assets/error-state/error-message-send-failed";
 import { getActivityPopupPanelClass } from "@/features/activity/components/activity-popup-styles";
 import type { ActivitySendMessageInput } from "@/features/activity/lib/activity-contract";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 import { ActionTarget } from "./action-target";
@@ -117,14 +118,16 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
                     {errorMessage}
                   </p>
                   {onClearError ? (
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon-xs"
                       aria-label="Dismiss send error"
-                      className="inline-flex size-7 shrink-0 items-center justify-center rounded-full text-slate-muted transition hover:bg-destructive/8 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/25"
+                      className="size-7 shrink-0 rounded-full text-slate-muted focus-visible:ring-destructive/25 hover:enabled:bg-destructive/8 hover:enabled:text-destructive"
                       onClick={onClearError}
                     >
                       <X className="size-3.5" />
-                    </button>
+                    </Button>
                   ) : null}
                 </div>
               )}

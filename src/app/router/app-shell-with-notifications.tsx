@@ -2,7 +2,7 @@ import { Bell } from "lucide-react";
 import { lazy, Suspense } from "react";
 import { AppLayout } from "@/features/app-shell/app-layout";
 import { useNotificationsDrawerState } from "@/features/notifications/hooks/use-notifications-drawer-state";
-import { cn } from "@/shared/lib/utils";
+import { Button } from "@/shared/components/ui/button";
 
 const NotificationsBellTrigger = lazy(() =>
   import("@/features/notifications/components/notifications-bell-trigger").then(
@@ -46,17 +46,15 @@ export function AppShellWithNotifications() {
 
 function NotificationsBellFallback({ onClick }: { onClick: () => void }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
+      size="icon"
       onClick={onClick}
       aria-label="Notifications"
-      className={cn(
-        "relative flex size-10 shrink-0 items-center justify-center rounded-lg",
-        "text-slate-muted transition-colors duration-150 hover:bg-muted hover:text-ink",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-      )}
+      className="relative size-10 shrink-0 rounded-lg text-slate-muted hover:enabled:bg-muted hover:enabled:text-ink"
     >
       <Bell size={18} strokeWidth={2} aria-hidden="true" />
-    </button>
+    </Button>
   );
 }

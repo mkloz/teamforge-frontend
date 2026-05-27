@@ -1,5 +1,6 @@
 import { AlertTriangle, RefreshCw, WifiOff } from "lucide-react";
 import { EmptyMessageThreadVisual } from "@/assets/empty-state/empty-message-thread";
+import { MyNotesNoMessagesVisual } from "@/assets/empty-state/my-notes-no-messages";
 import { ErrorNetworkRetryVisual } from "@/assets/error-state/error-network-retry";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
@@ -9,19 +10,32 @@ interface MessageListErrorStateProps {
   onRetry?: () => Promise<void> | void;
 }
 
-export function MessageListEmptyState() {
+type MessageListEmptyVariant = "default" | "my-notes";
+
+interface MessageListEmptyStateProps {
+  variant?: MessageListEmptyVariant;
+}
+
+export function MessageListEmptyState({
+  variant = "default",
+}: MessageListEmptyStateProps) {
+  const isMyNotes = variant === "my-notes";
+  const Visual = isMyNotes ? MyNotesNoMessagesVisual : EmptyMessageThreadVisual;
+
   return (
     <div
       className="absolute inset-0 flex flex-col items-center justify-center px-6 py-10 text-center"
       role="status"
     >
       <div className="flex max-w-xs flex-col items-center">
-        <EmptyMessageThreadVisual className="h-32 w-auto text-foreground" />
+        <Visual className="h-32 w-auto text-foreground" />
         <p className="mt-4 font-semibold text-foreground text-sm">
           No messages yet
         </p>
         <p className="mt-1 text-muted-foreground text-xs leading-relaxed">
-          Start the thread when you are ready to plan together.
+          {isMyNotes
+            ? "Keep private thoughts here before they become a plan."
+            : "Start the thread when you are ready to plan together."}
         </p>
       </div>
     </div>

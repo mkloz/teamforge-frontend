@@ -24,7 +24,7 @@ export function HomeHeroNotificationButton() {
       <Bell className="size-5" aria-hidden="true" />
       {unreadNotifications > 0 ? (
         <span
-          className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-background bg-spark-amber px-1 font-black text-ink text-xs"
+          className="absolute -top-1.5 -right-1.5 z-10 flex h-5 min-w-5 items-center justify-center rounded-full border border-spark-amber/40 bg-canvas px-1 font-black text-spark-amber text-xs shadow-[inset_0_0_0_999px_color-mix(in_srgb,var(--color-spark-amber)_16%,transparent)] ring-2 ring-canvas"
           aria-hidden="true"
         >
           {unreadNotifications}

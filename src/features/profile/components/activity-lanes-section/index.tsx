@@ -1,6 +1,8 @@
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { ProfileSectionHeading } from "@/features/profile/components/profile-section-heading";
 import type { ActivityLane } from "@/features/profile/lib/profile-insights";
+import { Button } from "@/shared/components/ui/button";
 
 import { ActivityLaneRow } from "./activity-lane-row";
 import { EmptyActivityLanes } from "./empty-activity-lanes";
@@ -28,15 +30,22 @@ export function ActivityLanesSection({ lanes }: ActivityLanesSectionProps) {
             ))}
           </div>
           {lanes.length > defaultVisibleCount ? (
-            <button
+            <Button
               type="button"
-              className="inline-flex min-h-11 items-center text-left font-bold text-forge-teal text-sm transition-colors hover:text-forge-teal/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30"
+              variant="ghost"
+              size="sm"
+              className="h-auto min-h-0 self-start px-0 py-1.5 text-forge-teal active:enabled:translate-y-0 active:enabled:scale-100 active:enabled:bg-transparent! hover:enabled:bg-transparent! hover:enabled:text-forge-teal/80"
               onClick={() => setIsExpanded((value) => !value)}
             >
+              {isExpanded ? (
+                <ChevronUp className="size-4" aria-hidden="true" />
+              ) : (
+                <ChevronDown className="size-4" aria-hidden="true" />
+              )}
               {isExpanded
                 ? "Show fewer lanes"
                 : `Show ${hiddenLaneCount} more lane${hiddenLaneCount === 1 ? "" : "s"}`}
-            </button>
+            </Button>
           ) : null}
         </>
       ) : (

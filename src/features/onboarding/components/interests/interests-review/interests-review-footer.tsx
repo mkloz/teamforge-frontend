@@ -1,4 +1,4 @@
-import { CheckCircle2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 
 interface InterestsReviewFooterProps {
@@ -27,6 +27,7 @@ export function InterestsReviewFooter({
         disabled={isSaving}
         className="w-full xs:w-auto min-w-0 xs:shrink-0"
       >
+        <ArrowLeft className="size-4" aria-hidden="true" />
         <span className="truncate">{backLabel}</span>
       </Button>
       <Button

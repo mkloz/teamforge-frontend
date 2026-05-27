@@ -76,7 +76,6 @@ export function InvitationQueueItem({
       <div className="flex shrink-0 items-center gap-1">
         <Button
           size="xs"
-          className="px-3 text-xs"
           loading={acceptingInviteId === invite.id}
           disabled={isAccepting || isDeclining}
           onClick={() => void onAccept(invite.id)}
@@ -88,7 +87,6 @@ export function InvitationQueueItem({
           type="button"
           variant="destructive"
           size="icon-xs"
-          className="size-11 rounded-lg sm:size-8"
           loading={decliningInviteId === invite.id}
           disabled={isAccepting || isDeclining}
           onClick={() => void onDecline(invite.id)}

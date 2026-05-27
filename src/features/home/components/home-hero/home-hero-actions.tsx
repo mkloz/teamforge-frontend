@@ -8,12 +8,10 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-import {
-  buildActivityGroupNavigation,
-  buildActivityNavigation,
-} from "@/features/activity/lib/activity-route";
+import { buildActivityGroupNavigation } from "@/features/activity/lib/activity-route";
 import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
 import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
+import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import type { HomeNextMove } from "@/features/home/lib/home-insights";
 import { buildHomeNavigation } from "@/features/home/lib/home-route";
 import {
@@ -89,7 +87,9 @@ export function PrimaryAction({ move }: { move: HomeNextMove }) {
   if (move.kind === "recommendation") {
     return (
       <Button asChild variant="primary" className={heroActionClassName}>
-        <Link {...buildExploreNavigation()}>
+        <Link
+          {...buildGroupPlanDetailNavigation(move.groupId, { source: "home" })}
+        >
           {move.primaryLabel}
           <ArrowRight className="size-4" />
         </Link>
@@ -119,7 +119,9 @@ export function SecondaryAction({ move }: { move: HomeNextMove }) {
   if (move.kind === "plan") {
     return (
       <Button asChild variant="outline" className={heroActionClassName}>
-        <Link {...buildActivityNavigation()}>{move.secondaryLabel}</Link>
+        <Link {...buildActivityGroupNavigation(move.groupId)}>
+          {move.secondaryLabel}
+        </Link>
       </Button>
     );
   }

@@ -39,7 +39,8 @@ export const FilterHeader = memo(function FilterHeader({
       (f.key !== "unread" || counts.unreadCount > 0) &&
       (f.key !== "pinned" ||
         counts.pinnedCount > 0 ||
-        activeFilter === "pinned"),
+        activeFilter === "pinned") &&
+      (f.key !== "saved" || counts.savedCount > 0 || activeFilter === "saved"),
   );
   const densityLabel = density === "default" ? "Compact view" : "Default view";
   const handleFilterChange = (value: string) => {
@@ -53,15 +54,15 @@ export const FilterHeader = memo(function FilterHeader({
   return (
     <nav
       className={cn(
-        "sticky top-0 z-20 border-border/60 border-b px-2 py-1.5 md:px-4 md:py-1",
-        "flex items-center justify-between bg-canvas/80 backdrop-blur-md",
+        "sticky top-0 z-20 border-border/60 border-b px-3 py-2",
+        "flex items-center gap-2 bg-canvas/85 backdrop-blur-md",
       )}
     >
       <RadioGroup
         value={activeFilter}
         onValueChange={handleFilterChange}
         aria-label="Filter conversations"
-        className="scrollbar-hide flex flex-1 snap-x gap-1.5 overflow-x-auto scroll-px-2 px-0.5 py-1 outline-none md:py-1.5"
+        className="scrollbar-hide flex min-w-0 flex-1 snap-x scroll-px-3 gap-1.5 overflow-x-auto py-0.5 pr-1 outline-none"
       >
         {visibleFilters.map(({ key, label }) => {
           const badge = getBadgeCount(key, counts);
@@ -80,13 +81,13 @@ export const FilterHeader = memo(function FilterHeader({
         })}
       </RadioGroup>
 
-      <div className="ml-1.5 flex items-center border-border/40 border-l pl-1.5 md:ml-2 md:pl-2">
+      <div className="flex shrink-0 items-center border-border/40 border-l pl-2">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               variant="accentGhost"
               size="icon"
-              className="size-9 md:size-8"
+              className="size-8 rounded-full border border-border/55 bg-card/55 text-slate-muted hover:enabled:border-forge-teal/30 hover:enabled:bg-forge-teal/8 hover:enabled:text-forge-teal"
               onClick={() =>
                 onDensityChange?.(density === "default" ? "compact" : "default")
               }
@@ -134,9 +135,10 @@ function getFilterAriaLabel(label: string, count: number | null) {
 
 function getMobileFilterOrderClass(key: FilterChip) {
   if (key === "all") return "order-1 md:order-none";
-  if (key === "saved") return "order-2 md:order-none";
-  if (key === "pinned") return "order-3 md:order-none";
-  if (key === "groups") return "order-4 md:order-none";
-  if (key === "direct") return "order-5 md:order-none";
+  if (key === "groups") return "order-2 md:order-none";
+  if (key === "direct") return "order-3 md:order-none";
+  if (key === "unread") return "order-4 md:order-none";
+  if (key === "pinned") return "order-5 md:order-none";
+  if (key === "saved") return "order-6 md:order-none";
   return "order-6 md:order-none";
 }

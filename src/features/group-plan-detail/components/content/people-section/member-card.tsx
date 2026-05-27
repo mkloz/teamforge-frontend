@@ -71,7 +71,7 @@ function MemberAvatar({
         )}
       />
       {isHost ? (
-        <div className="absolute -top-1 -left-1 flex size-5 items-center justify-center rounded-md border-2 border-canvas bg-spark-amber text-white shadow-md">
+        <div className="absolute -top-1 -left-1 flex size-5 items-center justify-center rounded-md border border-spark-amber/35 bg-spark-amber/15 text-spark-amber shadow-sm ring-2 ring-canvas">
           <Crown className="size-2.5" aria-hidden="true" />
         </div>
       ) : null}

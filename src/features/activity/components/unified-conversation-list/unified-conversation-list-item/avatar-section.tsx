@@ -1,5 +1,5 @@
-import { NotebookPen } from "lucide-react";
 import { memo } from "react";
+import { MyNotesAvatarVisual } from "@/assets/activity/special-conversation-avatars";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
 import {
   getConversationAvatarUrl,
@@ -34,12 +34,12 @@ export const AvatarSection = memo(
         {isNotes ? (
           <span
             className={cn(
-              "flex shrink-0 items-center justify-center rounded-full border border-forge-teal/20 bg-forge-teal/10 text-forge-teal shadow-sm ring-1 ring-border/40 transition-colors duration-200 group-hover/item:ring-forge-teal/30",
+              "flex shrink-0 items-center justify-center rounded-full bg-transparent text-foreground transition-colors duration-200",
               avatarSizeClassName,
             )}
             aria-hidden="true"
           >
-            <NotebookPen className="size-4" strokeWidth={2.25} />
+            <MyNotesAvatarVisual className="size-full" />
           </span>
         ) : (
           <Avatar

@@ -32,6 +32,7 @@ export function NotificationItem({
     >
       <span className="flex w-full min-w-0 items-start gap-3 px-5 py-4 text-left transition-colors duration-200">
         <NotificationSource
+          avatarIconClassName={config.avatarIconClassName}
           icon={Icon}
           iconClassName={config.iconClassName}
           item={item}
@@ -83,12 +84,14 @@ export function NotificationItem({
 }
 
 interface NotificationSourceProps {
+  avatarIconClassName: string;
   icon: LucideIcon;
   iconClassName: string;
   item: Notification;
 }
 
 function NotificationSource({
+  avatarIconClassName,
   icon: Icon,
   iconClassName,
   item,
@@ -104,7 +107,7 @@ function NotificationSource({
         <span
           className={cn(
             "absolute -right-1 -bottom-1 flex size-5 items-center justify-center rounded-full border border-canvas",
-            iconClassName,
+            avatarIconClassName,
           )}
         >
           <Icon className="size-3 shrink-0" strokeWidth={2} />
@@ -116,7 +119,7 @@ function NotificationSource({
   return (
     <span
       className={cn(
-        "mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl",
+        "mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-md",
         iconClassName,
       )}
       aria-hidden="true"

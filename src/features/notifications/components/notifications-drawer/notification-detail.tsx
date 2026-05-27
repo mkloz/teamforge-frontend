@@ -49,6 +49,7 @@ export function NotificationDetail({
       <div className="flex flex-1 flex-col px-5 pt-5 pb-28">
         <div className="flex min-w-0 items-start gap-3">
           <NotificationDetailSource
+            avatarIconClassName={config.avatarIconClassName}
             icon={Icon}
             iconClassName={config.iconClassName}
             item={item}
@@ -129,12 +130,14 @@ export function NotificationDetail({
 }
 
 interface NotificationDetailSourceProps {
+  avatarIconClassName: string;
   icon: LucideIcon;
   iconClassName: string;
   item: Notification;
 }
 
 function NotificationDetailSource({
+  avatarIconClassName,
   icon: Icon,
   iconClassName,
   item,
@@ -150,7 +153,7 @@ function NotificationDetailSource({
         <span
           className={cn(
             "absolute -right-1 -bottom-1 flex size-5 items-center justify-center rounded-full border-2 border-canvas",
-            iconClassName,
+            avatarIconClassName,
           )}
         >
           <Icon className="size-3 shrink-0" strokeWidth={2} />
@@ -162,7 +165,7 @@ function NotificationDetailSource({
   return (
     <span
       className={cn(
-        "flex size-12 shrink-0 items-center justify-center rounded-full",
+        "flex size-12 shrink-0 items-center justify-center rounded-md",
         iconClassName,
       )}
       aria-hidden="true"

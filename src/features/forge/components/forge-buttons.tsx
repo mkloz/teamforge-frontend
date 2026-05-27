@@ -20,7 +20,7 @@ export function PrimaryButton({
       disabled={disabled}
       variant="primary"
       size="lg"
-      className="h-14 w-full rounded-xl font-bold"
+      className="h-14 w-full"
     >
       <span className="relative z-10 flex items-center gap-2.5">
         {label}
@@ -42,7 +42,7 @@ export function ManualForgeButton({ onClick }: { onClick: () => void }) {
         variant="secondary"
         size="lg"
         aria-label="Forge this group"
-        className="h-14 w-full rounded-xl font-bold"
+        className="h-14 w-full"
       >
         <UsersRound
           size={18}
@@ -64,7 +64,7 @@ export function AutoForgeButton({ onClick }: { onClick: () => void }) {
         variant="primary"
         size="lg"
         aria-label="Auto-forge with algorithm"
-        className="h-14 w-full rounded-xl font-bold"
+        className="h-14 w-full"
       >
         <Cpu
           size={18}
@@ -87,7 +87,7 @@ export function ReforgeButton({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       variant="secondary"
       size="lg"
-      className="h-14 w-full rounded-xl font-bold"
+      className="h-14 w-full"
     >
       <RefreshCw
         size={15}

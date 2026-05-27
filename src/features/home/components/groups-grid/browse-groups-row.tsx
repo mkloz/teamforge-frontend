@@ -5,15 +5,15 @@ import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
 
 export function BrowseGroupsRow() {
   return (
-    <li>
+    <li className="pt-3">
       <Link
         {...buildExploreNavigation()}
-        className="group flex h-16 items-center justify-between rounded-xl border-border/55 border-b px-1 py-3 font-bold text-muted-foreground text-xs transition-all duration-150 hover:bg-card/45 hover:text-forge-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-3"
+        className="group inline-flex min-h-10 items-center gap-2 rounded-lg px-1 py-1.5 font-bold text-forge-teal text-xs transition-colors duration-150 hover:text-forge-teal/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
         aria-label="Browse and discover new groups"
       >
-        <span>Browse more groups</span>
+        <span>Explore groups</span>
         <ArrowRight
-          className="size-4 opacity-70 transition-transform duration-150 group-hover:translate-x-0.5"
+          className="size-3.5 opacity-80 transition-transform duration-150 group-hover:translate-x-0.5"
           aria-hidden="true"
         />
       </Link>

@@ -52,12 +52,15 @@ export const ContentSection = memo(
     const planDateTime = isGroup ? getConversationPlanDateTime(item) : null;
     const countdown = planDateTime ? formatCountdown(planDateTime) : null;
     const isDraft = isGroup && getConversationPlanStatus(item) === "DRAFT";
+    const pendingProposalCount = getPendingProposalCount(item);
     const isMuted = getConversationIsMuted(item);
     const isNotes = getConversationIsNotes(item);
     const latestMessage = item.latestMessage;
     const timestampMessage = isSavedView ? previewMessage : latestMessage;
     const hasIndicatorRow =
-      isGroup && !isCompact && Boolean(countdown || isDraft);
+      isGroup &&
+      !isCompact &&
+      Boolean(countdown || isDraft || pendingProposalCount > 0);
     const pinButton =
       onTogglePinned && hasIndicatorRow ? (
         <button
@@ -214,9 +217,29 @@ export const ContentSection = memo(
             action={pinButton}
             countdown={countdown}
             isDraft={isDraft}
+            pendingProposalCount={pendingProposalCount}
           />
         )}
       </div>
     );
   },
 );
+
+function getPendingProposalCount(item: UnifiedConversation) {
+  if (item.kind !== "group") {
+    return 0;
+  }
+
+  const pendingProposalIds = new Set(
+    (item.group?.plan?.proposals ?? [])
+      .filter((proposal) => proposal.status === "PENDING")
+      .map((proposal) => proposal.id),
+  );
+  const latestProposal = item.latestMessage?.proposal;
+
+  if (latestProposal?.status === "PENDING") {
+    pendingProposalIds.add(latestProposal.id);
+  }
+
+  return pendingProposalIds.size;
+}

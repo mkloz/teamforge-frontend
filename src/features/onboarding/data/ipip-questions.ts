@@ -951,7 +951,7 @@ export const TEST_LENGTH_CONFIG: Record<
   },
   50: {
     label: "Standard",
-    sublabel: "17 pages – best accuracy / time balance",
+    sublabel: "17 pages – best clarity / time balance",
     estimatedMinutes: 5,
     itemsPerDimension: 10,
     questionsPerPage: 3,
@@ -959,7 +959,7 @@ export const TEST_LENGTH_CONFIG: Record<
   },
   150: {
     label: "Deep",
-    sublabel: "50 pages – for nearly perfect accuracy",
+    sublabel: "50 pages – highest-resolution profile read",
     estimatedMinutes: 15,
     itemsPerDimension: 30,
     questionsPerPage: 3,

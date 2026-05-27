@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Tags } from "lucide-react";
 import { EmptyProfileActivityLanesVisual } from "@/assets/empty-state/empty-profile-activity-lanes";
 import { buildInterestsEditNavigation } from "@/features/onboarding/lib/onboarding-route";
 import { Button } from "@/shared/components/ui/button";
@@ -17,6 +18,7 @@ export function EmptyActivityLanes() {
               returnTo: "/profile",
             })}
           >
+            <Tags className="size-4" aria-hidden="true" />
             Add interests
           </Link>
         </Button>

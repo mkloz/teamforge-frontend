@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { RefreshCw } from "lucide-react";
 
 import { ErrorOnboardingCatalogVisual } from "@/assets/error-state/error-onboarding-catalog";
 import { InterestsBrowse } from "@/features/onboarding/components/interests/interests-browse";
@@ -100,6 +101,7 @@ function InterestsBrowseScreen({
               void state.retryCatalog();
             }}
           >
+            <RefreshCw className="size-4" aria-hidden="true" />
             Retry
           </Button>
         }

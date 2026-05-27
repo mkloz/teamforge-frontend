@@ -56,9 +56,9 @@ export function useAttentionQueueState({
   const visibleRequests = requests.filter(
     (request) => !hiddenRequestIds.includes(request.requesterId),
   );
-  const proposedPlans = plans
-    .filter((group) => group.plan.status === "PROPOSED")
-    .slice(0, 2);
+  const proposedPlans = plans.filter(
+    (group) => group.plan.status === "PROPOSED",
+  );
   const queueSize =
     visibleInvitations.length +
     visibleRequests.length +

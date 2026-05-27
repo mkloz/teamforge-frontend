@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
 import { useLandingAuthActions } from "@/features/landing/hooks/use-landing-auth-actions";
 import { useMouseGlow } from "@/features/landing/hooks/use-mouse-glow";
@@ -87,6 +87,7 @@ export function CtaSection() {
             }
           >
             See how it works
+            <ChevronDown className="size-5" aria-hidden="true" />
           </Button>
         </motion.div>
         <motion.p

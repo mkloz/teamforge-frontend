@@ -1,4 +1,4 @@
-import { ChevronLeft, Network } from "lucide-react";
+import { ChevronLeft, Network, X } from "lucide-react";
 import { ForgeProgressBar } from "@/features/forge/components/forge-progress-bar";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
@@ -37,7 +37,7 @@ export function InlineForgeHeader({
               <ChevronLeft size={18} />
             </Button>
           ) : (
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent/10">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-accent/10">
               <Network size={14} className="text-accent" />
             </div>
           )}
@@ -73,6 +73,7 @@ export function InlineForgeHeader({
                   }}
                   className="h-8 px-3 font-black text-xs uppercase tracking-widest"
                 >
+                  <X className="size-3.5" aria-hidden="true" />
                   Cancel
                 </Button>
               }

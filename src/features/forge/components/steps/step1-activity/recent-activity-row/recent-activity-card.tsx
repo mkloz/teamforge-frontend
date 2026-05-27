@@ -69,7 +69,7 @@ export function RecentActivityCard({
           className={cn(
             "relative z-10 flex size-7 items-center justify-center rounded-full shadow-sm backdrop-blur transition-colors duration-200",
             active
-              ? "bg-spark-amber text-ink"
+              ? "bg-spark-amber/15 text-spark-amber ring-1 ring-spark-amber/20"
               : recommended
                 ? "bg-forge-teal text-white"
                 : hasCoverImage
@@ -102,7 +102,7 @@ export function RecentActivityCard({
         </div>
 
         {active && (
-          <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-spark-amber text-ink">
+          <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-spark-amber/25 bg-spark-amber/15 text-spark-amber">
             <Check size={12} strokeWidth={3} />
           </span>
         )}

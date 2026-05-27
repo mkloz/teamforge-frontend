@@ -33,6 +33,7 @@ export function invalidateGroupMembershipSurfaces() {
     invalidateActivityGroupSurfaces(),
     invalidateHomeGroupSurfaces(),
     invalidateQuery(APP_QUERY_KEYS.explore.groups),
+    invalidateGroupPlanDetailSurfaces(),
   ]);
 }
 
@@ -41,7 +42,12 @@ export function invalidateFriendshipSurfaces() {
     APP_QUERY_KEYS.activity.friendships,
     APP_QUERY_KEYS.activity.chats,
     APP_QUERY_KEYS.activity.directSelection,
+    APP_QUERY_KEYS.forge.friends,
   ]);
+}
+
+export function invalidateGroupPlanDetailSurfaces() {
+  return invalidateQuery(APP_QUERY_KEYS.groupPlanDetail.all);
 }
 
 export function invalidateInvitationSurfaces() {

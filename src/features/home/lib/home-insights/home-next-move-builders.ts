@@ -88,9 +88,10 @@ export function buildRecommendationMove(group: ExploreGroup): HomeNextMove {
     eyebrow: fitScore >= 75 ? "Strong fit nearby" : "Worth checking",
     title,
     body: `${getRecommendationFitLine(group)} Take a look before the room fills up.`,
-    primaryLabel: "See groups",
+    primaryLabel: "See group",
     secondaryLabel: "Forge instead",
     signal: `${fitScore}% fit`,
+    groupId: group.id,
   };
 }
 

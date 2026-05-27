@@ -1,21 +1,32 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 
-import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
+import { buildHomeNavigation } from "@/features/home/lib/home-route";
 import { Button } from "@/shared/components/ui/button";
 
-export function SeeRestButton() {
+interface SeeRestButtonProps {
+  hiddenItemCount: number;
+}
+
+export function SeeRestButton({ hiddenItemCount }: SeeRestButtonProps) {
   return (
-    <Button
-      asChild
-      variant="ghost"
-      size="sm"
-      className="m-2 justify-self-start"
-    >
-      <Link {...buildActivityNavigation()}>
-        See the rest
-        <ArrowRight className="size-4" />
-      </Link>
-    </Button>
+    <li className="px-1 py-3 sm:px-3">
+      <Button
+        asChild
+        variant="ghost"
+        size="sm"
+        className="justify-start hover:enabled:text-forge-teal"
+      >
+        <Link
+          {...buildHomeNavigation({ notifications: true })}
+          aria-label={`See ${hiddenItemCount} more attention ${
+            hiddenItemCount === 1 ? "item" : "items"
+          }`}
+        >
+          See the rest
+          <ArrowRight className="size-4" />
+        </Link>
+      </Button>
+    </li>
   );
 }

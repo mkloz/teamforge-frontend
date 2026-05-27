@@ -16,7 +16,7 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
   return (
     <section
       id="forge-hero"
-      className="grid gap-7 border-border border-b pb-8 md:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)] md:items-end md:pb-10"
+      className="grid gap-7 border-border border-b pb-8 md:grid-cols-[minmax(0,1fr)_minmax(16rem,25rem)] md:items-end md:pb-10 lg:gap-12"
     >
       <div className="flex min-w-0 flex-col gap-7">
         <div className="flex flex-col gap-4">
@@ -45,7 +45,7 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
             Forge my group
           </Button>
           <p className="max-w-sm font-medium text-muted-foreground text-sm leading-relaxed">
-            Best when you already have a rough activity, time, or place in mind.
+            Works best with a rough activity, time, or place.
           </p>
         </div>
       </div>

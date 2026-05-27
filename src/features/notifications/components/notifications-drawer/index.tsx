@@ -253,7 +253,7 @@ function NotificationsDrawerSkeleton() {
           >
             <LoadingBlock
               className={cn(
-                "mt-0.5 size-10 shrink-0 rounded-xl",
+                "mt-0.5 size-10 shrink-0 rounded-md",
                 index === 0 ? "bg-spark-amber/18" : "bg-forge-teal/12",
               )}
             />

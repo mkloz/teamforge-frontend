@@ -7,6 +7,7 @@ export type HomeInvitationView = (typeof homeInvitationViewValues)[number];
 export interface HomeRouteSearch {
   panel?: HomePanel;
   invite?: string;
+  notifications?: boolean;
   request?: string;
   view?: HomeInvitationView;
 }

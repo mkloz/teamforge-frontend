@@ -19,7 +19,7 @@ function AccountFact({
 }) {
   return (
     <div className="flex gap-3 border-border border-b py-4 last:border-b-0">
-      <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-slate-muted">
+      <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-slate-muted">
         <Icon size={16} strokeWidth={2} />
       </div>
       <div className="min-w-0">

@@ -16,9 +16,9 @@ export function ForgePageLoading(_props: PageLoadingProps = {}) {
 
 export function ForgePageLoadingFixture() {
   return (
-    <div className="mx-auto flex size-full max-w-5xl flex-col gap-8 px-4 md:px-8 md:pb-12">
-      <div className="flex flex-col gap-8 py-6 md:py-10">
-        <section className="grid gap-7 border-border border-b pb-8 md:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)] md:items-end md:pb-10">
+    <div className="mx-auto flex size-full max-w-6xl flex-col gap-8 px-4 sm:px-6 md:px-8 md:pb-12">
+      <div className="flex flex-col gap-8 py-5 lg:py-10">
+        <section className="grid gap-7 border-border border-b pb-8 md:grid-cols-[minmax(0,1fr)_minmax(16rem,25rem)] md:items-end md:pb-10 lg:gap-12">
           <div className="flex min-w-0 flex-col gap-7">
             <div className="flex flex-col gap-4">
               <Skeleton className="h-4 w-16" />
@@ -70,16 +70,16 @@ export function ForgePageLoadingFixture() {
           </aside>
         </section>
 
-        <section className="grid gap-5 lg:grid-cols-[minmax(0,0.8fr)_minmax(32rem,1.2fr)]">
+        <section className="grid gap-6 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-start">
           <div>
             <Skeleton className="h-4 w-24" />
             <Skeleton className="mt-2 h-8 w-96 max-w-full" />
           </div>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid overflow-hidden rounded-xl border border-border/50 bg-card/70 sm:grid-cols-3">
             {["low", "active", "focused"].map((item) => (
               <article
                 key={item}
-                className="rounded-xl border border-border bg-card p-4"
+                className="border-border/55 border-t p-4 first:border-t-0 sm:border-t-0 sm:border-l first:sm:border-l-0"
               >
                 <Skeleton className="h-4 w-20" tone="teal" />
                 <div className="mt-3 grid gap-2">
@@ -92,7 +92,7 @@ export function ForgePageLoadingFixture() {
           </div>
         </section>
 
-        <section className="rounded-xl border border-border bg-canvas p-5 md:p-6">
+        <section className="rounded-xl border border-border/50 bg-card/70 p-5 md:p-6">
           <div className="lg:main-action-grid grid gap-6 lg:items-end">
             <div>
               <Skeleton className="h-4 w-28" />
@@ -119,7 +119,7 @@ export function ForgePageLoadingFixture() {
               </div>
             </div>
 
-            <SkeletonButton className="h-12 w-full lg:w-44" tone="teal" />
+            <SkeletonButton className="h-12 w-full lg:w-44" />
           </div>
         </section>
       </div>

@@ -2,6 +2,7 @@ import {
   DEFAULT_FILTERS,
   FILTER_BOUNDARIES,
 } from "@/features/explore/constants/explore.constants";
+import { isValidExploreDateValue } from "@/features/explore/lib/explore-time-window";
 import type {
   ExploreAccessMode,
   ExploreCategory,
@@ -69,13 +70,13 @@ export function resolveExploreRouteState(
 }
 
 function normalizeDateTimeInput(value: string | null | undefined) {
-  if (!value?.trim()) {
+  const text = value?.trim();
+
+  if (!text) {
     return null;
   }
 
-  const date = new Date(value);
-
-  return Number.isNaN(date.getTime()) ? null : value;
+  return isValidExploreDateValue(text) ? text : null;
 }
 
 export function normalizeDistance(distance: number | null | undefined) {

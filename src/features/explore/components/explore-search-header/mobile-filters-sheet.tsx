@@ -1,4 +1,4 @@
-import { ListFilter, SlidersHorizontal } from "lucide-react";
+import { Check, ListFilter, SlidersHorizontal, X } from "lucide-react";
 import { ExploreRightFilters } from "@/features/explore/components/explore-right-filters";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 import { Button } from "@/shared/components/ui/button";
@@ -62,15 +62,19 @@ export function MobileFiltersSheet() {
 
           <div className="mt-8 flex flex-col gap-3 border-border/10 border-t pt-6">
             <SheetClose asChild>
-              <Button className="h-12 w-full font-bold">Show results</Button>
+              <Button className="w-full">
+                <Check className="size-4" aria-hidden="true" />
+                Show results
+              </Button>
             </SheetClose>
             <Button
               type="button"
               variant="ghost"
               disabled={!filtered}
               onClick={resetFilters}
-              className="h-11 w-full text-xs disabled:opacity-40"
+              className="w-full text-xs disabled:opacity-40"
             >
+              <X className="size-3.5" aria-hidden="true" />
               Clear filters
             </Button>
           </div>

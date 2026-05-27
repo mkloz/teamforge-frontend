@@ -41,6 +41,7 @@ export function MembersSection({
     currentUserRole !== "MEMBER" &&
     onInviteMember !== undefined;
   const memberCountString = `(${members.length}/${maxMembers})`;
+  const showMemberFit = members.length > 1;
 
   return (
     <section aria-labelledby="members-heading">
@@ -74,6 +75,7 @@ export function MembersSection({
             onRemove={onRemoveMember}
             onShowProfile={onShowProfile}
             removing={removingMemberId === member.userId}
+            showFit={showMemberFit}
           />
         ))}
       </div>

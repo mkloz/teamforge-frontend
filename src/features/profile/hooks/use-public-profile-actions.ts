@@ -5,6 +5,7 @@ import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import {
   invalidateExploreFriendRequestSurfaces,
   invalidateFriendshipSurfaces,
+  invalidateGroupPlanDetailSurfaces,
 } from "@/shared/api/query-invalidation";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import type { FriendshipApi, User } from "@/shared/schemas";
@@ -85,6 +86,7 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
       await Promise.all([
         invalidateFriendshipSurfaces(),
         invalidateExploreFriendRequestSurfaces(),
+        invalidateGroupPlanDetailSurfaces(),
       ]);
     },
   });

@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { ExternalLink, Save } from "lucide-react";
 
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Button } from "@/shared/components/ui/button";
@@ -15,15 +16,20 @@ export function AccountFormFooter({ isSaving }: AccountFormFooterProps) {
       </p>
 
       <div className="responsive-action-grid grid w-full gap-3 md:max-w-92">
-        <Button asChild variant="outline" className="min-w-0 px-3">
-          <Link {...buildProfileNavigation()}>View profile</Link>
+        <Button asChild variant="outline" size="compact" className="min-w-0">
+          <Link {...buildProfileNavigation()}>
+            <ExternalLink className="size-4" aria-hidden="true" />
+            View profile
+          </Link>
         </Button>
         <Button
           type="submit"
           variant="primary"
-          className="min-w-0 px-3"
+          size="compact"
+          className="min-w-0"
           disabled={isSaving}
         >
+          <Save className="size-4" aria-hidden="true" />
           {isSaving ? "Saving..." : "Save changes"}
         </Button>
       </div>

@@ -1,6 +1,10 @@
 import { useCallback } from "react";
 
-import { ForgeCommands } from "@/features/forge/api/forge-commands";
+import {
+  ForgeCommands,
+  MissingForgeInterestSignalsError,
+} from "@/features/forge/api/forge-commands";
+import { showAppErrorToast } from "@/shared/lib/error-toast";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
 import { buildForgeExecutionInput } from "../forge-execution-input";
@@ -53,6 +57,16 @@ export function useForgeExecutionActions({
       runForgeAnimation(async () => {
         const successStep = mode === "MANUAL" ? 6 : 5;
         const result = await executeForgeCommand(mode, state).catch((error) => {
+          if (error instanceof MissingForgeInterestSignalsError) {
+            showAppErrorToast(error, {
+              fallbackMessage:
+                "Add at least one interest first. It gives TeamForge enough signal to form a group.",
+              id: "forge-missing-interest-signals",
+              title: "Interests needed",
+            });
+            return null;
+          }
+
           applyForgeExecutionFailure(error, state, {
             dispatch,
             mutationName,

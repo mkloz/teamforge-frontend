@@ -67,7 +67,7 @@ function NextCard({
           "mb-2 flex size-8 shrink-0 items-center justify-center rounded-lg lg:mb-0",
           active
             ? isAmber
-              ? "bg-spark-amber text-ink"
+              ? "border border-spark-amber/25 bg-spark-amber/12 text-spark-amber"
               : "bg-forge-teal text-primary-foreground"
             : "bg-muted text-muted-foreground",
         )}

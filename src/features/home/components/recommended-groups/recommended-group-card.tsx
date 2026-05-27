@@ -1,4 +1,12 @@
 import { Link } from "@tanstack/react-router";
+import {
+  ArrowRight,
+  Check,
+  Clock3,
+  MessageCircle,
+  Send,
+  UsersRound,
+} from "lucide-react";
 
 import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
 import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
@@ -30,6 +38,15 @@ export function RecommendedGroupCard({ group }: RecommendedGroupCardProps) {
           : group.access === "BY_REQUEST"
             ? "Request"
             : "Join";
+  const ActionIcon = isFull
+    ? UsersRound
+    : joinResult === "JOINED"
+      ? Check
+      : joinResult === "REQUESTED" || joinMutation.isPending
+        ? Clock3
+        : group.access === "BY_REQUEST"
+          ? Send
+          : ArrowRight;
 
   const action =
     joinResult === "JOINED" && joinMutation.data?.data.groupId ? (
@@ -37,6 +54,7 @@ export function RecommendedGroupCard({ group }: RecommendedGroupCardProps) {
         <Link
           {...buildActivityGroupHubNavigation(joinMutation.data.data.groupId)}
         >
+          <MessageCircle className="size-3.5" aria-hidden="true" />
           Open group
         </Link>
       </Button>
@@ -48,6 +66,7 @@ export function RecommendedGroupCard({ group }: RecommendedGroupCardProps) {
         onClick={() => joinMutation.mutate()}
         className={cn("shrink-0", isFull && "opacity-60")}
       >
+        <ActionIcon className="size-3.5" aria-hidden="true" />
         {actionLabel}
       </Button>
     );

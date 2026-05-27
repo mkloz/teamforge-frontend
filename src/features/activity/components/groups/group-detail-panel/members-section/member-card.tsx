@@ -17,6 +17,7 @@ interface MemberCardProps {
   onRemove?: (memberId: string) => Promise<void> | void;
   onShowProfile?: (member: GroupMember) => void;
   removing?: boolean;
+  showFit?: boolean;
 }
 
 export function MemberCard({
@@ -25,9 +26,14 @@ export function MemberCard({
   onRemove,
   onShowProfile,
   removing = false,
+  showFit = true,
 }: MemberCardProps) {
   const isAdmin = member.role === "ADMIN";
-  const isHighCompatibility = (member.compatibilityScore || 0) > 90;
+  const fitScore =
+    showFit && typeof member.compatibilityScore === "number"
+      ? member.compatibilityScore
+      : null;
+  const isHighCompatibility = fitScore !== null && fitScore > 90;
   const onlineStatus = member.user?.onlineStatus;
 
   const memberSummary = (
@@ -48,7 +54,7 @@ export function MemberCard({
         {isAdmin && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="absolute -top-1 -left-1 flex size-5 items-center justify-center rounded-md border-2 border-canvas bg-spark-amber text-white shadow-md">
+              <div className="absolute -top-1 -left-1 flex size-5 items-center justify-center rounded-md border border-spark-amber/35 bg-spark-amber/15 text-spark-amber shadow-sm ring-2 ring-canvas">
                 <Crown className="size-3" fill="currentColor" />
               </div>
             </TooltipTrigger>
@@ -60,7 +66,7 @@ export function MemberCard({
       {/* Info Section */}
       <div className="min-w-0 flex-1 overflow-hidden">
         <div className="mb-0.5 flex min-w-0 items-center gap-1.5">
-          <p className="min-w-0 flex-1 truncate font-semibold text-foreground text-sm">
+          <p className="min-w-0 truncate font-semibold text-foreground text-sm">
             {member.user?.name}
           </p>
           <Badge
@@ -77,17 +83,21 @@ export function MemberCard({
           <span className="shrink-0 font-bold text-muted-foreground text-xs">
             Trust {member.user?.trustScore}%
           </span>
-          <div className="h-2 w-px bg-border/50" />
-          <span
-            className={cn(
-              "min-w-0 truncate font-bold text-xs",
-              isHighCompatibility
-                ? "text-forge-teal"
-                : "text-muted-foreground/60",
-            )}
-          >
-            {member.compatibilityScore}% fit
-          </span>
+          {fitScore !== null ? (
+            <>
+              <div className="h-2 w-px bg-border/50" />
+              <span
+                className={cn(
+                  "min-w-0 truncate font-bold text-xs",
+                  isHighCompatibility
+                    ? "text-forge-teal"
+                    : "text-muted-foreground/60",
+                )}
+              >
+                {fitScore}% fit
+              </span>
+            </>
+          ) : null}
         </div>
       </div>
     </>
@@ -111,16 +121,12 @@ export function MemberCard({
       )}
 
       <div className="relative size-8 shrink-0">
-        {onShowProfile ? (
+        {onShowProfile && !canRemove ? (
           <Tooltip>
             <TooltipTrigger asChild>
               <button
                 type="button"
-                className={cn(
-                  "absolute inset-0 flex size-8 items-center justify-center rounded-lg text-muted-foreground opacity-80 transition-colors transition-opacity hover:bg-forge-teal/10 hover:text-forge-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 group-hover/member:opacity-100",
-                  canRemove &&
-                    "group-focus-within/member:opacity-0 group-hover/member:opacity-0",
-                )}
+                className="absolute inset-0 flex size-8 items-center justify-center rounded-lg text-muted-foreground opacity-80 transition-all duration-150 hover:bg-forge-teal/10 hover:text-forge-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 group-hover/member:opacity-100"
                 aria-label={`Open ${member.user?.name ?? "member"} details`}
                 onClick={() => onShowProfile(member)}
               >
@@ -152,10 +158,10 @@ export function MemberCard({
                 onClick={(event) => {
                   event.stopPropagation();
                 }}
-                className="absolute inset-0 size-8 opacity-0 transition-opacity group-focus-within/member:opacity-100 group-hover/member:opacity-100"
+                className="absolute inset-0 size-8 max-md:opacity-100 md:opacity-0 md:transition-opacity md:duration-150 md:group-hover/member:opacity-100 focus-visible:md:opacity-100"
                 aria-label={`Remove ${member.user?.name ?? "member"} from group`}
               >
-                <UserMinus size={14} />
+                <UserMinus className="size-3.5" />
               </Button>
             }
           />

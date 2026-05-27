@@ -11,23 +11,22 @@ export const ProposalComparison = memo(function ProposalComparison({
   proposed,
 }: ProposalComparisonProps) {
   return (
-    <div className="mt-1 overflow-hidden px-1 py-1">
-      <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_1.5rem_minmax(0,1.45fr)] items-start gap-x-2 gap-y-1">
-        <span className="min-w-0 truncate font-bold text-micro text-muted-foreground leading-none">
-          Current
-        </span>
-        <span aria-hidden="true" />
-        <span className="min-w-0 truncate font-bold text-micro text-spark-amber leading-none">
-          New
-        </span>
-
-        <span className="wrap-break-word block min-w-0 break-words font-semibold text-micro text-muted-foreground/80 leading-snug line-through">
+    <div className="border-border/30 border-t px-1.5 pt-2">
+      <span className="sr-only">
+        Current value {current}. Proposed value {proposed}.
+      </span>
+      <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1.15fr)] items-center gap-2">
+        <span className="wrap-break-word block min-w-0 font-semibold text-micro text-muted-foreground/75 leading-snug line-through decoration-muted-foreground/50">
           {current}
         </span>
-        <span className="flex size-6 shrink-0 rounded-full bg-spark-amber/12 text-spark-amber">
-          <ArrowRight className="m-auto size-3.5" strokeWidth={2.25} />
+        <span className="flex size-5 shrink-0 items-center justify-center text-spark-amber">
+          <ArrowRight
+            className="size-3.5"
+            aria-hidden="true"
+            strokeWidth={2.25}
+          />
         </span>
-        <span className="wrap-break-word block min-w-0 break-words font-bold text-foreground text-micro leading-snug">
+        <span className="wrap-break-word block min-w-0 font-bold text-foreground text-micro leading-snug">
           {proposed}
         </span>
       </div>

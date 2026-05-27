@@ -20,23 +20,27 @@ export function SettingsDetailHeader({
           type="button"
           variant="ghost"
           size="sm"
-          className="-ml-2 h-9 px-2 text-slate-muted"
+          className="-ml-2 px-2 text-slate-muted"
           onClick={onMobileBack}
         >
           <ChevronLeft size={16} />
           Settings
         </Button>
       </div>
-      <p className="font-semibold text-slate-muted text-xs uppercase tracking-widest">
-        {activeSectionMeta?.label ?? "Settings"}
-      </p>
-      <h2 className="mt-2 font-bold text-2xl text-ink leading-tight lg:text-3xl">
-        {activeSectionMeta?.headline ?? "Manage your account"}
-      </h2>
-      <p className="mt-3 max-w-2xl text-slate-muted text-sm leading-relaxed">
-        {activeSectionMeta?.summary ??
-          "Keep your account preferences clear and current."}
-      </p>
+      <div className="flex items-start gap-3">
+        <div className="min-w-0">
+          <p className="font-semibold text-slate-muted text-xs uppercase tracking-widest">
+            {activeSectionMeta?.label ?? "Settings"}
+          </p>
+          <h2 className="mt-2 font-bold text-2xl text-ink leading-tight lg:text-3xl">
+            {activeSectionMeta?.headline ?? "Manage your account"}
+          </h2>
+          <p className="mt-3 max-w-2xl text-slate-muted text-sm leading-relaxed">
+            {activeSectionMeta?.summary ??
+              "Keep your account preferences clear and current."}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

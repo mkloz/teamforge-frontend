@@ -1,5 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { MessageCircle, UserRoundPlus } from "lucide-react";
+import {
+  Ban,
+  Clock3,
+  MessageCircle,
+  UserCheck,
+  UserRoundPlus,
+} from "lucide-react";
 import { buildActivityDmNavigation } from "@/features/activity/lib/activity-route";
 import { usePublicProfileActions } from "@/features/profile/hooks/use-public-profile-actions";
 import { Button } from "@/shared/components/ui/button";
@@ -18,25 +24,22 @@ export function PublicProfileActions({ user }: PublicProfileActionsProps) {
     messageDisabled,
     onConnect,
   } = usePublicProfileActions(user);
+  const ConnectIcon = getConnectIcon(connectLabel);
 
   return (
     <div className="grid w-full grid-cols-1 xxs:grid-cols-2 items-center gap-2 pr-0 sm:flex sm:w-auto sm:flex-row sm:gap-3">
       <Button
-        className="min-h-11 w-full shrink-0 sm:w-auto"
+        className="w-full shrink-0 sm:w-auto"
         disabled={connectDisabled}
         loading={connectLoading}
         onClick={() => onConnect()}
         aria-label={`${connectLabel} with ${user.name}`}
       >
-        <UserRoundPlus className="shrink-0" />
+        <ConnectIcon className="shrink-0" />
         <span>{connectLabel}</span>
       </Button>
       {messageChatId ? (
-        <Button
-          asChild
-          variant="outline"
-          className="min-h-11 w-full border-2 sm:w-auto"
-        >
+        <Button asChild variant="outline" className="w-full sm:w-auto">
           <Link
             {...buildActivityDmNavigation(messageChatId)}
             aria-label={`Message ${user.name}`}
@@ -48,7 +51,7 @@ export function PublicProfileActions({ user }: PublicProfileActionsProps) {
       ) : (
         <Button
           variant="outline"
-          className="min-h-11 w-full border-2 sm:w-auto"
+          className="w-full sm:w-auto"
           disabled={messageDisabled}
           aria-label={`Message ${user.name}`}
         >
@@ -58,4 +61,20 @@ export function PublicProfileActions({ user }: PublicProfileActionsProps) {
       )}
     </div>
   );
+}
+
+function getConnectIcon(label: string) {
+  if (label === "Accept" || label === "Connected") {
+    return UserCheck;
+  }
+
+  if (label === "Requested") {
+    return Clock3;
+  }
+
+  if (label === "Blocked") {
+    return Ban;
+  }
+
+  return UserRoundPlus;
 }

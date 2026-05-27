@@ -29,7 +29,8 @@ export function AvatarActions({
     <Button
       type="button"
       variant={selectedAvatarFile ? "outline" : "destructive"}
-      className="min-w-0 px-3"
+      size="compact"
+      className="min-w-0"
       disabled={isAvatarBusy || (!selectedAvatarFile && !canDeleteSavedAvatar)}
       onClick={selectedAvatarFile ? onDeleteOrReset : undefined}
     >
@@ -53,7 +54,8 @@ export function AvatarActions({
         <Button
           type="button"
           variant="primary"
-          className="min-w-0 px-3"
+          size="compact"
+          className="min-w-0"
           disabled={!selectedAvatarFile || isAvatarBusy}
           onClick={onUploadSelectedAvatar}
         >

@@ -1,10 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import {
+  Ban,
   CalendarClock,
   CheckCircle,
+  Clock3,
   ExternalLink,
   MessageCircle,
+  RefreshCw,
   Star,
+  UserCheck,
   UserRoundPlus,
 } from "lucide-react";
 import { memo, type ReactNode, useMemo } from "react";
@@ -49,7 +53,7 @@ export const CompletedReviewGate = memo(function CompletedReviewGate({
             Review checkpoint
           </span>
         </div>
-        <span className="inline-flex min-h-6 shrink-0 items-center rounded-full border border-spark-amber/70 bg-spark-amber px-2.5 py-0.5 font-black text-hero-bg text-xs tabular-nums leading-none shadow-sm">
+        <span className="inline-flex min-h-6 shrink-0 items-center rounded-full border border-spark-amber/30 bg-spark-amber/12 px-2.5 py-0.5 font-black text-spark-amber text-xs tabular-nums leading-none shadow-sm">
           {rating.pendingCount || "No"} left
         </span>
       </div>
@@ -114,7 +118,6 @@ export const CompletedReviewGate = memo(function CompletedReviewGate({
                 <Button
                   variant="subtle"
                   size="sm"
-                  className="justify-center"
                   disabled={rating.isSubmitting}
                   loading={rating.isDeferring}
                   onClick={() => rating.deferActiveReview("NOT_PRESENT")}
@@ -125,7 +128,6 @@ export const CompletedReviewGate = memo(function CompletedReviewGate({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="justify-center"
                   disabled={rating.isSubmitting}
                   loading={rating.isDeferring}
                   onClick={() => rating.deferActiveReview("NEED_MORE_TIME")}
@@ -137,7 +139,7 @@ export const CompletedReviewGate = memo(function CompletedReviewGate({
 
               <Button
                 size="sm"
-                className="ml-auto justify-center gap-1.5"
+                className="ml-auto gap-1.5"
                 disabled={!rating.activeUserId || rating.score === 0}
                 loading={rating.isSubmitting}
                 onClick={rating.submitActiveRating}
@@ -164,24 +166,24 @@ function ReviewMemberActions({ member }: { member: GroupMember }) {
     onConnect,
   } = usePublicProfileActions(profileUser);
   const memberName = member.user?.name ?? "teammate";
+  const ConnectIcon = getConnectIcon(connectLabel);
 
   return (
     <div className="flex flex-wrap gap-2 sm:justify-end">
       <Button
         variant="subtle"
         size="xs"
-        className="justify-center"
         disabled={connectDisabled}
         loading={connectLoading}
         onClick={() => onConnect()}
         aria-label={`${connectLabel} with ${memberName}`}
       >
-        <UserRoundPlus className="size-3.5" />
+        <ConnectIcon className="size-3.5" />
         <span>{connectLabel}</span>
       </Button>
 
       {messageChatId ? (
-        <Button asChild variant="subtle" size="xs" className="justify-center">
+        <Button asChild variant="subtle" size="xs">
           <Link
             {...buildActivityDmNavigation(messageChatId)}
             aria-label={`Message ${memberName}`}
@@ -194,7 +196,6 @@ function ReviewMemberActions({ member }: { member: GroupMember }) {
         <Button
           variant="subtle"
           size="xs"
-          className="justify-center"
           disabled={messageDisabled}
           aria-label={`Message ${memberName}`}
         >
@@ -203,7 +204,7 @@ function ReviewMemberActions({ member }: { member: GroupMember }) {
         </Button>
       )}
 
-      <Button asChild variant="subtle" size="xs" className="justify-center">
+      <Button asChild variant="subtle" size="xs">
         <Link
           {...buildProfileNavigation(member.userId)}
           aria-label={`Open ${memberName}'s profile`}
@@ -216,6 +217,22 @@ function ReviewMemberActions({ member }: { member: GroupMember }) {
   );
 }
 
+function getConnectIcon(label: string) {
+  if (label === "Accept" || label === "Connected") {
+    return UserCheck;
+  }
+
+  if (label === "Requested") {
+    return Clock3;
+  }
+
+  if (label === "Blocked") {
+    return Ban;
+  }
+
+  return UserRoundPlus;
+}
+
 function ReviewErrorState({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="flex min-h-32 flex-col items-center justify-center rounded-lg border border-destructive/15 bg-destructive/5 p-3 text-center">
@@ -223,6 +240,7 @@ function ReviewErrorState({ onRetry }: { onRetry: () => void }) {
         Reviews could not load.
       </p>
       <Button className="mt-2" variant="outline" size="sm" onClick={onRetry}>
+        <RefreshCw className="size-4" aria-hidden="true" />
         Try again
       </Button>
     </div>

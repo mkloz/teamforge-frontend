@@ -114,6 +114,7 @@ interface MessageActionsMenuProps {
     message: UnifiedMessage,
     emoji: string,
   ) => Promise<void> | void;
+  reactionPickerDisabled?: boolean;
   selectedReactionEmojis?: readonly string[];
   onUnpin: (message: UnifiedMessage) => Promise<void> | void;
   isSaved?: boolean;
@@ -149,6 +150,7 @@ export const MessageContextMenu = memo(function MessageContextMenu({
   onStartEdit,
   onForward,
   onToggleReaction,
+  reactionPickerDisabled = false,
   selectedReactionEmojis = [],
   onUnpin,
   isSaved = false,
@@ -166,6 +168,7 @@ export const MessageContextMenu = memo(function MessageContextMenu({
     onStartEdit,
     onForward,
     onToggleReaction,
+    reactionPickerDisabled,
     selectedReactionEmojis,
     onUnpin,
     isSaved,
@@ -241,6 +244,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
   onStartEdit,
   onForward,
   onToggleReaction,
+  reactionPickerDisabled = false,
   selectedReactionEmojis = [],
   onUnpin,
   isSaved = false,
@@ -258,6 +262,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
     onStartEdit,
     onForward,
     onToggleReaction,
+    reactionPickerDisabled,
     selectedReactionEmojis,
     onUnpin,
     isSaved,
@@ -330,6 +335,7 @@ function useMessageActionMenu({
   onForward,
   onToggleSaved,
   onSelectMessage,
+  reactionPickerDisabled = false,
   selectedReactionEmojis = [],
   onUnpin,
   isSaved = false,
@@ -338,7 +344,7 @@ function useMessageActionMenu({
   const [forwardDialogOpen, setForwardDialogOpen] = useState(false);
   const canEdit = canEditMessage(message);
   const canRetry = message.isOwn && message.status === "FAILED";
-  const canReact = canReactToMessage(message);
+  const canReact = !reactionPickerDisabled && canReactToMessage(message);
   const canReply = canReplyToMessage(message);
   const canSave = canSaveMessage(message);
   const canSelect = Boolean(onSelectMessage) && message.type !== "SYSTEM";
@@ -575,7 +581,7 @@ function MessageReactionPicker({
           })}
           <Item
             aria-label="More reactions"
-            className="flex size-8 min-h-8 justify-center rounded-full border border-spark-amber/70 bg-spark-amber p-0 text-base text-ink leading-none shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-spark-amber)_18%,transparent)] transition hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-spark-amber/35"
+            className="flex size-8 min-h-8 justify-center rounded-full border border-spark-amber/35 bg-spark-amber/12 p-0 text-base text-spark-amber leading-none shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-spark-amber)_14%,transparent)] transition hover:bg-spark-amber/18 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-spark-amber/35"
             onMouseDown={(event) => {
               event.preventDefault();
               event.stopPropagation();
@@ -742,13 +748,18 @@ export function ForwardMessageDialog({
     setPendingTargetId(target.chatId);
 
     try {
-      for (const item of messagesToForward) {
-        const result = await onForward(item, target.chatId);
+      await messagesToForward.reduce<Promise<void>>(
+        async (previousForward, item) => {
+          await previousForward;
 
-        if (!result) {
-          throw new Error("Forward target is no longer available.");
-        }
-      }
+          const result = await onForward(item, target.chatId);
+
+          if (!result) {
+            throw new Error("Forward target is no longer available.");
+          }
+        },
+        Promise.resolve(),
+      );
 
       toast.success(
         messagesToForward.length === 1

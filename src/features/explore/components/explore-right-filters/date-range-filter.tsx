@@ -1,4 +1,6 @@
+import { X } from "lucide-react";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
+import { Button } from "@/shared/components/ui/button";
 import { DateInput } from "@/shared/components/ui/date-input";
 
 function getTodayDateValue() {
@@ -44,13 +46,15 @@ export function DateRangeFilter() {
       <div className="flex items-center justify-between gap-3">
         <h4 className="font-bold text-foreground text-sm">Date range</h4>
         {hasDateRange ? (
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="xs"
             onClick={clearDateRange}
-            className="font-bold text-muted-foreground text-xs transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40"
           >
+            <X className="size-3" aria-hidden="true" />
             Clear
-          </button>
+          </Button>
         ) : null}
       </div>
 

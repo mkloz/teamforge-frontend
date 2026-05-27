@@ -67,7 +67,6 @@ export function ProfilePanelInfo({
               size="icon-sm"
               variant="inverseGhost"
               onClick={onBack}
-              className="rounded-full"
               aria-label="Go back"
             >
               <ChevronLeft size={18} />
@@ -77,12 +76,7 @@ export function ProfilePanelInfo({
           )}
 
           {profileNavigation ? (
-            <Button
-              asChild
-              size="icon-sm"
-              variant="inverseGhost"
-              className="rounded-full"
-            >
+            <Button asChild size="icon-sm" variant="inverseGhost">
               <Link {...profileNavigation} aria-label="View full profile">
                 <ExternalLink size={14} />
               </Link>
@@ -178,12 +172,7 @@ function ProfileActionButtons({
       )}
     >
       {profileNavigation ? (
-        <Button
-          asChild
-          variant="outline"
-          size="xs"
-          className="min-w-0 flex-1 px-3"
-        >
+        <Button asChild variant="outline" size="xs" className="min-w-0 flex-1">
           <Link {...profileNavigation}>
             <ExternalLink className="size-4" />
             <span className="truncate">View profile</span>
@@ -192,12 +181,7 @@ function ProfileActionButtons({
       ) : null}
 
       {chatNavigation ? (
-        <Button
-          asChild
-          variant="primary"
-          size="xs"
-          className="min-w-0 flex-1 px-3"
-        >
+        <Button asChild variant="primary" size="xs" className="min-w-0 flex-1">
           <Link {...chatNavigation}>
             <MessageSquareText className="size-4" />
             <span className="truncate">Message</span>

@@ -15,7 +15,7 @@ export function ActivityLaneRow({ lane }: ActivityLaneRowProps) {
   return (
     <div className="flex min-w-0 flex-col gap-3 py-5 first:pt-0 last:pb-0 sm:py-4">
       <div className="flex items-start gap-3">
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-forge-teal/10 text-forge-teal">
           <Icon size={18} />
         </div>
         <div>

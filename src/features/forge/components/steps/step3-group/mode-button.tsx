@@ -33,7 +33,7 @@ export function ModeButton({
             active
               ? activeColor === "primary"
                 ? "bg-forge-teal text-white shadow-forge-teal/25 shadow-sm"
-                : "bg-spark-amber text-ink shadow-sm shadow-spark-amber/25"
+                : "bg-spark-amber/15 text-spark-amber shadow-sm ring-1 ring-spark-amber/20"
               : "bg-muted text-muted-foreground",
           )}
         >

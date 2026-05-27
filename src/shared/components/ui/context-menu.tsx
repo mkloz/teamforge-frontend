@@ -27,7 +27,7 @@ const ContextMenuSubTrigger = React.forwardRef<
   <ContextMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      "flex min-h-9 cursor-pointer select-none items-center rounded-lg px-2.5 py-1.5 text-sm outline-none transition-colors focus:bg-accent data-[highlighted]:bg-accent data-[state=open]:bg-accent",
+      "flex min-h-9 cursor-pointer select-none items-center rounded-lg px-2.5 py-1.5 text-sm outline-none transition-colors focus:bg-accent/12 focus:text-accent data-[highlighted]:bg-accent/12 data-[state=open]:bg-accent/12 data-[highlighted]:text-accent data-[state=open]:text-accent",
       inset && "pl-8",
       className,
     )}
@@ -82,7 +82,7 @@ const ContextMenuItem = React.forwardRef<
   <ContextMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex min-h-9 cursor-pointer select-none items-center rounded-lg px-2.5 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:cursor-not-allowed data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:opacity-50",
+      "relative flex min-h-9 cursor-pointer select-none items-center rounded-lg px-2.5 py-1.5 text-sm outline-none transition-colors focus:bg-accent/12 focus:text-accent data-[disabled]:cursor-not-allowed data-[highlighted]:bg-accent/12 data-[highlighted]:text-accent data-[disabled]:opacity-50",
       inset && "pl-8",
       className,
     )}
@@ -98,7 +98,7 @@ const ContextMenuCheckboxItem = React.forwardRef<
   <ContextMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
-      "relative flex min-h-9 cursor-pointer select-none items-center rounded-lg py-1.5 pr-2.5 pl-8 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:cursor-not-allowed data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:opacity-50",
+      "relative flex min-h-9 cursor-pointer select-none items-center rounded-lg py-1.5 pr-2.5 pl-8 text-sm outline-none transition-colors focus:bg-accent/12 focus:text-accent data-[disabled]:cursor-not-allowed data-[highlighted]:bg-accent/12 data-[highlighted]:text-accent data-[disabled]:opacity-50",
       className,
     )}
     checked={checked}
@@ -122,7 +122,7 @@ const ContextMenuRadioItem = React.forwardRef<
   <ContextMenuPrimitive.RadioItem
     ref={ref}
     className={cn(
-      "relative flex min-h-9 cursor-pointer select-none items-center rounded-lg py-1.5 pr-2.5 pl-8 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:cursor-not-allowed data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[disabled]:opacity-50",
+      "relative flex min-h-9 cursor-pointer select-none items-center rounded-lg py-1.5 pr-2.5 pl-8 text-sm outline-none transition-colors focus:bg-accent/12 focus:text-accent data-[disabled]:cursor-not-allowed data-[highlighted]:bg-accent/12 data-[highlighted]:text-accent data-[disabled]:opacity-50",
       className,
     )}
     {...props}

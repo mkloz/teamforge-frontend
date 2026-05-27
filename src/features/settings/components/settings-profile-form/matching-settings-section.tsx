@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Brain, Tags } from "lucide-react";
 import {
   buildInterestsEditNavigation,
   buildPersonalityEditNavigation,
@@ -136,23 +137,25 @@ export function MatchingSettingsSection({
         </p>
 
         <div className="responsive-action-grid grid w-full gap-3 md:max-w-92">
-          <Button asChild variant="outline" className="min-w-0 px-3">
+          <Button asChild variant="outline" size="compact" className="min-w-0">
             <Link
               {...buildPersonalityEditNavigation({
                 returnTo: "/settings",
                 returnSection: "matching",
               })}
             >
+              <Brain className="size-4" aria-hidden="true" />
               Update personality
             </Link>
           </Button>
-          <Button asChild variant="outline" className="min-w-0 px-3">
+          <Button asChild variant="outline" size="compact" className="min-w-0">
             <Link
               {...buildInterestsEditNavigation({
                 returnTo: "/settings",
                 returnSection: "matching",
               })}
             >
+              <Tags className="size-4" aria-hidden="true" />
               Update interests
             </Link>
           </Button>

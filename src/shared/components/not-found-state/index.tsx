@@ -42,18 +42,17 @@ export function NotFoundState({
           <span className="font-black">TeamForge</span>
         </Link>
 
-        <SoloActivityScene className="absolute inset-0 lg:hidden" />
-
-        <div className="relative z-10 flex flex-1 items-center pb-0">
-          <div className="relative grid w-full gap-10 lg:grid-cols-2 lg:items-stretch lg:gap-12">
+        <div className="relative z-10 flex flex-1 items-center py-8 lg:py-0">
+          <div className="relative mx-auto grid w-full max-w-5xl justify-items-center gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,32rem)] lg:items-stretch lg:justify-items-stretch xl:gap-8">
+            <SoloActivityScene inline className="h-52 sm:h-60 lg:hidden" />
             <SoloActivityScene className="hidden overflow-visible lg:block" />
-            <div className="w-full max-w-lg lg:justify-self-end">
+            <div className="w-full max-w-lg text-center lg:justify-self-start lg:text-left">
               <p className="mb-4 font-black text-slate-muted text-sm uppercase tracking-widest">
                 404
               </p>
               <h1
                 id="not-found-heading"
-                className="max-w-96 font-black text-5xl text-ink leading-none tracking-tight sm:text-6xl lg:text-7xl"
+                className="mx-auto max-w-96 font-black text-5xl text-ink leading-none tracking-tight sm:text-6xl lg:mx-0 lg:text-7xl"
               >
                 A group of one.
               </h1>
@@ -62,7 +61,7 @@ export function NotFoundState({
                 TeamForge is about shared experiences, so let's get you back.
               </p>
 
-              <div className="mt-8 grid gap-3 sm:flex">
+              <div className="mt-8 grid gap-3 sm:flex sm:justify-center lg:justify-start">
                 {primaryAction}
                 <Button asChild variant="outline" size="lg">
                   <Link to="/">

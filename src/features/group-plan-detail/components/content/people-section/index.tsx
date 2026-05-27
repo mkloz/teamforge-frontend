@@ -1,3 +1,4 @@
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { Section } from "@/features/group-plan-detail/components/section";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
@@ -47,6 +48,11 @@ export function PeopleSection({ detail }: PeopleSectionProps) {
                 size="sm"
                 onClick={() => setExpanded((value) => !value)}
               >
+                {expanded ? (
+                  <ChevronUp className="size-4" aria-hidden="true" />
+                ) : (
+                  <ChevronDown className="size-4" aria-hidden="true" />
+                )}
                 {expanded
                   ? "Show fewer members"
                   : `Show all ${people.regularCount} more members`}

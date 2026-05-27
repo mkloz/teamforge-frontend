@@ -59,9 +59,10 @@ export function FailureRecoveryActions({
           <Button
             variant="outline"
             size="xs"
-            className="h-8 shrink-0 px-3 font-bold text-xs"
+            className="h-8 shrink-0"
             onClick={onSwitchToManual}
           >
+            <UserPlus className="size-3.5" aria-hidden="true" />
             Invite
           </Button>
         </div>

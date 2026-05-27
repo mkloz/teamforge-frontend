@@ -1,4 +1,12 @@
 import { Link } from "@tanstack/react-router";
+import {
+  ArrowRight,
+  Check,
+  Clock3,
+  MessageCircle,
+  Send,
+  UsersRound,
+} from "lucide-react";
 import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
 import { useJoinExploreGroup } from "@/features/explore/hooks/use-join-explore-group";
 import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
@@ -36,6 +44,15 @@ export function ExploreGroupPlanCard({
           : group.access === "BY_REQUEST"
             ? "Request to join"
             : "Join";
+  const ActionIcon = isFull
+    ? UsersRound
+    : joinResult === "JOINED"
+      ? Check
+      : joinResult === "REQUESTED" || joinMutation.isPending
+        ? Clock3
+        : group.access === "BY_REQUEST"
+          ? Send
+          : ArrowRight;
 
   function handleJoin() {
     joinMutation.mutate();
@@ -45,6 +62,7 @@ export function ExploreGroupPlanCard({
     joinResult === "JOINED" && joinedGroupId ? (
       <Button asChild variant="primary" size={isCompact ? "sm" : "default"}>
         <Link {...buildActivityGroupHubNavigation(joinedGroupId)}>
+          <MessageCircle className="size-4" aria-hidden="true" />
           Open group
         </Link>
       </Button>
@@ -59,6 +77,7 @@ export function ExploreGroupPlanCard({
           isFull && "pointer-events-none opacity-50",
         )}
       >
+        <ActionIcon className="size-4" aria-hidden="true" />
         {actionLabel}
       </Button>
     );

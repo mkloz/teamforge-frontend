@@ -13,11 +13,11 @@ interface ProposalHeaderProps {
 }
 
 const STATUS_STYLES: Record<PlanProposalStatus, string> = {
-  PENDING: "bg-spark-amber/12 text-spark-amber border-spark-amber/20",
-  APPROVED: "bg-forge-teal/10 text-forge-teal border-forge-teal/20",
-  REJECTED: "bg-slate-muted/10 text-slate-muted border-slate-muted/20",
-  WITHDRAWN: "bg-muted text-muted-foreground border-border",
-  CANCELLED: "bg-muted text-muted-foreground border-border",
+  PENDING: "text-spark-amber",
+  APPROVED: "text-forge-teal",
+  REJECTED: "text-slate-muted",
+  WITHDRAWN: "text-slate-muted",
+  CANCELLED: "text-slate-muted",
 };
 
 export const ProposalHeader = memo(function ProposalHeader({
@@ -35,7 +35,7 @@ export const ProposalHeader = memo(function ProposalHeader({
       aria-label={`${isExpanded ? "Collapse" : "Expand"} ${
         FIELD_LABELS[field]
       } proposal`}
-      className="flex w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-forge-teal/6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18"
+      className="group/header flex w-full items-center justify-between gap-2 px-2 py-1.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18"
       onClick={onToggle}
     >
       <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -55,16 +55,16 @@ export const ProposalHeader = memo(function ProposalHeader({
       <div className="flex shrink-0 items-center gap-1.5">
         <span
           className={cn(
-            "inline-flex items-center rounded-full border px-2 py-0.5 font-bold text-micro",
+            "font-bold text-micro leading-none transition-colors",
             STATUS_STYLES[status],
           )}
         >
           {PROPOSAL_STATUS_LABELS[status]}
         </span>
         {isExpanded ? (
-          <ChevronUp className="size-3.5 text-muted-foreground" />
+          <ChevronUp className="size-3.5 text-muted-foreground transition-colors group-hover/header:text-foreground" />
         ) : (
-          <ChevronDown className="size-3.5 text-muted-foreground" />
+          <ChevronDown className="size-3.5 text-muted-foreground transition-colors group-hover/header:text-foreground" />
         )}
       </div>
     </button>

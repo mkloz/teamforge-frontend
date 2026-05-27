@@ -63,7 +63,7 @@ export function NavItem({ item, pathname }: NavItemProps) {
             {hasBadge && (
               <span
                 className={cn(
-                  "type-signature-label absolute -top-1.5 -right-1.5 flex items-center justify-center rounded-full border border-sidebar bg-accent font-black text-accent-foreground leading-none shadow-sm",
+                  "type-signature-label absolute -top-1.5 -right-1.5 z-10 flex items-center justify-center rounded-full border border-spark-amber/40 bg-canvas font-black text-spark-amber leading-none shadow-[inset_0_0_0_999px_color-mix(in_srgb,var(--color-spark-amber)_16%,transparent)] ring-2 ring-canvas",
                   badge > 9 ? "h-4 min-w-5 px-1" : "size-4 p-0",
                 )}
                 aria-hidden="true"

@@ -23,6 +23,7 @@ export const router = createRouter({
   defaultPreload: "intent",
   defaultPendingMs: 0,
   defaultPendingMinMs: 150,
+  scrollRestoration: true,
 });
 
 export const lazyRouteModules = [

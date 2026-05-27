@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 
 import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
@@ -56,7 +57,10 @@ export function GroupsGridView({
         description="The rooms with recent movement."
         action={
           <Button asChild variant="ghost" size="sm">
-            <Link {...buildActivityNavigation()}>View all</Link>
+            <Link {...buildActivityNavigation({ filter: "groups" })}>
+              View all
+              <ArrowRight className="size-3.5" aria-hidden="true" />
+            </Link>
           </Button>
         }
       />

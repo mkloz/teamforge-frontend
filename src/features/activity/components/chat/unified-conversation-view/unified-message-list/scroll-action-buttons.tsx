@@ -36,7 +36,7 @@ export const ScrollActionButtons = memo(
                 onClick={onScrollToProposal}
                 variant="secondary"
                 size="xs"
-                className="pointer-events-auto rounded-full px-2.5 py-1.5 shadow-md"
+                className="pointer-events-auto px-2.5 py-1.5 shadow-md"
                 aria-label="Jump to proposal that needs your vote"
               >
                 <AlertCircle className="size-3.5 animate-pulse motion-reduce:animate-none" />
@@ -67,7 +67,7 @@ export const ScrollActionButtons = memo(
               >
                 <ChevronDown className="size-5 transition-transform group-hover:translate-y-0.5" />
                 {newMessageCount > 0 && (
-                  <div className="type-signature-label absolute -top-1 -right-1 flex min-w-4 items-center justify-center rounded-full border-2 border-canvas bg-spark-amber px-1 font-black text-ink leading-4">
+                  <div className="type-signature-label absolute -top-1 -right-1 z-10 flex min-w-4 items-center justify-center rounded-full border border-spark-amber/40 bg-canvas px-1 font-black text-spark-amber leading-4 shadow-[inset_0_0_0_999px_color-mix(in_srgb,var(--color-spark-amber)_16%,transparent)] ring-2 ring-canvas">
                     {newMessageCountLabel}
                   </div>
                 )}

@@ -20,7 +20,17 @@ const MOBILE_NAV_LINK_DELAYS = [
   "delay-100",
   "delay-200",
   "delay-300",
+  "delay-400",
+  "delay-500",
 ];
+
+const LEGAL_NAV_LINKS = [
+  { to: "/privacy", label: "Privacy" },
+  { to: "/terms", label: "Terms" },
+] as const;
+
+const NAV_LINK_CLASS =
+  "group relative whitespace-nowrap rounded-sm font-medium font-sans text-sm text-text-dark-secondary transition-colors duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-transparent";
 
 export function Navbar() {
   const scrolled = useWindowScrollThreshold(60);
@@ -82,7 +92,7 @@ export function Navbar() {
           </button>
 
           <nav
-            className="hidden items-center gap-8 md:flex"
+            className="hidden min-w-0 flex-1 items-center justify-center gap-4 lg:flex xl:gap-6"
             aria-label="Main navigation"
           >
             {LANDING_NAV_LINKS.map((link) => (
@@ -90,15 +100,21 @@ export function Navbar() {
                 key={link.id}
                 href={`#${link.id}`}
                 onClick={(e) => handleNavClick(e, link.id)}
-                className="group relative rounded-sm font-medium font-sans text-sm text-text-dark-secondary transition-colors duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                className={NAV_LINK_CLASS}
               >
                 {link.label}
                 <span className="absolute right-0 -bottom-0.5 left-0 h-px origin-left scale-x-0 bg-forge-teal transition-transform duration-200 group-hover:scale-x-100" />
               </a>
             ))}
+            {LEGAL_NAV_LINKS.map((link) => (
+              <Link key={link.to} to={link.to} className={NAV_LINK_CLASS}>
+                {link.label}
+                <span className="absolute right-0 -bottom-0.5 left-0 h-px origin-left scale-x-0 bg-forge-teal transition-transform duration-200 group-hover:scale-x-100" />
+              </Link>
+            ))}
           </nav>
 
-          <div className="hidden items-center gap-3 md:flex">
+          <div className="hidden shrink-0 items-center gap-3 lg:flex">
             {isResolvingAuthAction && !isAuthenticated ? (
               <Button
                 variant="outline"
@@ -156,7 +172,7 @@ export function Navbar() {
           <Button
             variant="ghost"
             size="icon"
-            className="text-text-dark-secondary hover:text-white md:hidden"
+            className="text-text-dark-secondary hover:text-white lg:hidden"
             onClick={toggleMenu}
             aria-controls="landing-mobile-navigation"
             aria-expanded={menuOpen}
@@ -171,7 +187,7 @@ export function Navbar() {
         id="landing-mobile-navigation"
         ref={menuRef}
         className={cn(
-          "dark fixed inset-0 z-40 flex flex-col items-center justify-center gap-8 bg-hero-bg/98 backdrop-blur-lg transition-opacity duration-150",
+          "dark fixed inset-0 z-40 flex flex-col items-center justify-center gap-8 bg-hero-bg/98 backdrop-blur-lg transition-opacity duration-150 lg:hidden",
           menuOpen
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none opacity-0",
@@ -186,21 +202,41 @@ export function Navbar() {
           className="flex flex-col items-center gap-6"
           aria-label="Mobile navigation links"
         >
-          {LANDING_NAV_LINKS.map((link, i) => (
-            <a
-              key={link.id}
-              href={`#${link.id}`}
-              onClick={(e) => handleNavClick(e, link.id)}
+          {LANDING_NAV_LINKS.map((link, i) => {
+            const mobileLinkClass = cn(
+              "rounded-md px-4 py-2 font-sans font-semibold text-2xl text-text-dark-secondary transition-all duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-4",
+              menuOpen
+                ? "translate-y-0 opacity-100"
+                : "translate-y-4 opacity-0",
+              MOBILE_NAV_LINK_DELAYS[i],
+            );
+
+            return (
+              <a
+                key={link.id}
+                href={`#${link.id}`}
+                onClick={(e) => handleNavClick(e, link.id)}
+                className={mobileLinkClass}
+              >
+                {link.label}
+              </a>
+            );
+          })}
+          {LEGAL_NAV_LINKS.map((link, i) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              onClick={closeMenu}
               className={cn(
                 "rounded-md px-4 py-2 font-sans font-semibold text-2xl text-text-dark-secondary transition-all duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-4",
                 menuOpen
                   ? "translate-y-0 opacity-100"
                   : "translate-y-4 opacity-0",
-                MOBILE_NAV_LINK_DELAYS[i],
+                MOBILE_NAV_LINK_DELAYS[LANDING_NAV_LINKS.length + i],
               )}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
         <div className="flex w-48 flex-col items-center gap-4">
@@ -210,7 +246,7 @@ export function Navbar() {
               size="lg"
               loading
               className={cn(
-                "w-full bg-transparent transition-all delay-300 duration-300",
+                "w-full transition-all delay-300 duration-300",
                 "hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none",
                 menuOpen
                   ? "translate-y-0 opacity-100"
@@ -227,7 +263,7 @@ export function Navbar() {
               loading={isSigningOut}
               onClick={handleSignOut}
               className={cn(
-                "w-full bg-transparent transition-all delay-300 duration-300",
+                "w-full transition-all delay-300 duration-300",
                 "hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none",
                 menuOpen
                   ? "translate-y-0 opacity-100"
@@ -242,7 +278,7 @@ export function Navbar() {
               asChild
               size="lg"
               className={cn(
-                "w-full bg-transparent transition-all delay-300 duration-300",
+                "w-full transition-all delay-300 duration-300",
                 "hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none",
                 menuOpen
                   ? "translate-y-0 opacity-100"

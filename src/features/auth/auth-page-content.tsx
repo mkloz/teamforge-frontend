@@ -31,7 +31,7 @@ export function AuthPageContent({
           variant="inverseGhost"
           asChild
           size="sm"
-          className="pointer-events-auto h-9 rounded-full px-4"
+          className="pointer-events-auto"
         >
           <Link to="/" className="flex items-center gap-2">
             <ArrowLeft

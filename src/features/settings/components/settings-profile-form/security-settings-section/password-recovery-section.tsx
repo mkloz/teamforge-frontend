@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { ExternalLink, KeyRound, Mail } from "lucide-react";
 
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
@@ -60,9 +61,11 @@ export function PasswordRecoverySection({
               <Button
                 type="button"
                 variant="primary"
-                className="min-w-0 px-3"
+                size="compact"
+                className="min-w-0"
                 disabled={isSendingPasswordResetLink}
               >
+                <Mail className="size-4" aria-hidden="true" />
                 {isSendingPasswordResetLink
                   ? "Sending link..."
                   : "Send reset link"}
@@ -73,15 +76,20 @@ export function PasswordRecoverySection({
           <Button
             type="button"
             variant="outline"
-            className="min-w-0 px-3"
+            size="compact"
+            className="min-w-0"
             disabled
           >
+            <KeyRound className="size-4" aria-hidden="true" />
             Password managed by Google
           </Button>
         )}
 
-        <Button asChild variant="outline" className="min-w-0 px-3">
-          <Link {...buildProfileNavigation()}>View public profile</Link>
+        <Button asChild variant="outline" size="compact" className="min-w-0">
+          <Link {...buildProfileNavigation()}>
+            <ExternalLink className="size-4" aria-hidden="true" />
+            View public profile
+          </Link>
         </Button>
       </div>
     </div>

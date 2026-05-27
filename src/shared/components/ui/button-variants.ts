@@ -15,7 +15,7 @@ export const buttonVariants = cva(
         primary:
           "border-2 border-button-primary-border bg-forge-teal text-white after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-forge-teal active:enabled:translate-y-0 active:enabled:shadow-none hover:enabled:-translate-y-1 hover:enabled:shadow-button-primary",
         secondary:
-          "border-2 border-button-secondary-border bg-spark-amber text-hero-bg after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-spark-amber active:enabled:translate-y-0 active:enabled:shadow-none hover:enabled:-translate-y-1 hover:enabled:shadow-button-secondary dark:border-spark-amber/25 dark:bg-spark-amber/12 dark:text-spark-amber hover:enabled:dark:bg-spark-amber/18",
+          "border-2 border-spark-amber/35 bg-spark-amber/12 text-spark-amber after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-spark-amber active:enabled:translate-y-0 active:enabled:shadow-none hover:enabled:-translate-y-1 hover:enabled:border-spark-amber/45 hover:enabled:bg-spark-amber/18 hover:enabled:shadow-button-secondary",
         outline:
           "border-2 border-ink bg-transparent text-ink after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-ink active:enabled:translate-y-0! active:enabled:shadow-none! hover:enabled:-translate-y-1 hover:enabled:shadow-button-outline dark:border-white dark:text-white focus-visible:dark:ring-white hover:enabled:dark:shadow-button-outline-dark",
         destructive:
@@ -32,14 +32,15 @@ export const buttonVariants = cva(
       },
       size: {
         default: "h-11 rounded-lg px-6",
-        xs: "h-9 rounded-lg px-3 text-xs",
-        sm: "h-9 rounded-lg px-4",
+        compact: "h-11 rounded-lg px-3",
+        xs: "h-9 rounded-full px-3 text-xs",
+        sm: "h-9 rounded-full px-4",
         md: "h-11 rounded-lg px-6",
         lg: "h-13 rounded-xl px-5 text-base sm:px-8",
         hero: "h-14 rounded-xl px-6 text-base sm:h-16 sm:px-10 sm:text-lg",
-        icon: "size-11 rounded-xl",
-        "icon-sm": "size-9 rounded-lg",
-        "icon-xs": "size-9 rounded-lg",
+        icon: "size-11 rounded-md",
+        "icon-sm": "size-9 rounded-full",
+        "icon-xs": "size-9 rounded-full",
       },
       disabled: {
         true: "opacity-50",

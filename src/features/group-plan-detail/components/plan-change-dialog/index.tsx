@@ -1,4 +1,4 @@
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, SendHorizontal, X } from "lucide-react";
 import { useState } from "react";
 import type { CreateGroupPlanProposalPayload } from "@/features/group-plan-detail/api/group-plan-detail.api";
 import { ProposalValueInput } from "@/features/group-plan-detail/components/plan-change-dialog/proposal-value-input";
@@ -130,6 +130,7 @@ export function PlanChangeDialog({
               setOpen(false);
             }}
           >
+            <X className="size-4" aria-hidden="true" />
             Cancel
           </Button>
           <Button
@@ -138,6 +139,7 @@ export function PlanChangeDialog({
             disabled={disabled || !form.plan}
             onClick={() => void form.submit()}
           >
+            <SendHorizontal className="size-4" aria-hidden="true" />
             Send change
           </Button>
         </DialogFooter>

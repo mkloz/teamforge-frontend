@@ -80,7 +80,6 @@ export function InviteMembersDialog({
           variant="outline"
           size="xs"
           disabled={disabled}
-          className="px-3 font-bold text-xs"
           contentClassName="gap-1.5"
         >
           <UserPlus className="size-3.5" />
@@ -164,13 +163,13 @@ export function InviteMembersDialog({
                     </Link>
 
                     <Button
-                      size="sm"
+                      size="xs"
                       disabled={isInviting}
                       onClick={() => {
                         void handleInvite(candidate.id);
                       }}
-                      className="rounded-full px-3 font-semibold text-xs"
                     >
+                      <UserPlus className="size-3.5" aria-hidden="true" />
                       {isInviting ? "Inviting..." : "Invite"}
                     </Button>
                   </div>

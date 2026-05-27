@@ -284,7 +284,7 @@ export function HomeInviteSkeleton() {
   return (
     <section className="flex w-full flex-col gap-4">
       <HomeSectionHeadingSkeleton actionWidth="w-0" eyebrow={false} />
-      <div className="rounded-xl border border-border/45 bg-forge-teal/5 px-3 py-3">
+      <div className="rounded-xl border border-forge-teal/25 bg-forge-teal/10 px-3 py-3">
         <div className="flex min-w-0 items-start justify-between gap-3">
           <SkeletonText
             className="min-w-0 flex-1"
@@ -308,9 +308,9 @@ export function HomeInviteSkeleton() {
         </div>
 
         <div className="main-action-grid mt-3 grid items-center gap-2">
-          <div className="flex h-11 min-w-0 items-center gap-2 rounded-md border border-border/45 bg-background/70 px-3">
+          <div className="relative flex h-11 min-w-0 items-center rounded-md border border-border/45 bg-background/70 py-0 pr-12 pl-3">
             <Skeleton className="h-3 min-w-0 flex-1" />
-            <SkeletonButton className="size-10 rounded-md" />
+            <SkeletonButton className="absolute top-1/2 right-1 size-9 -translate-y-1/2 rounded-md" />
           </div>
           <SkeletonButton className="h-11 rounded-md px-4" tone="teal" />
         </div>

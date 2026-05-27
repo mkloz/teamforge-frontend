@@ -1,11 +1,35 @@
 import { Link } from "@tanstack/react-router";
+import type { LucideIcon } from "lucide-react";
 import {
+  Activity,
+  Archive,
   ArrowLeft,
   BadgeCheck,
-  FileText,
+  Ban,
+  Brain,
+  CircleAlert,
+  Copyright,
+  Database,
+  ExternalLink,
+  Eye,
+  Gavel,
+  Handshake,
+  KeyRound,
+  ListChecks,
   LockKeyhole,
+  Map as MapIcon,
+  MessageSquareText,
+  Network,
+  RefreshCw,
   Scale,
+  Settings2,
+  ShieldAlert,
   ShieldCheck,
+  SlidersHorizontal,
+  Star,
+  UserCheck,
+  UsersRound,
+  WalletCards,
 } from "lucide-react";
 import { TeamForgeLogo } from "@/assets/logo";
 import { Button } from "@/shared/components/ui/button";
@@ -325,6 +349,34 @@ const legalPageCopy: Record<LegalPageKind, LegalPageCopy> = {
   },
 };
 
+const legalSectionIcons: Record<string, LucideIcon> = {
+  "acceptable-use": ListChecks,
+  accounts: KeyRound,
+  agreement: Handshake,
+  availability: Activity,
+  changes: RefreshCw,
+  choices: SlidersHorizontal,
+  content: MessageSquareText,
+  "data-collected": Database,
+  eligibility: UserCheck,
+  groups: UsersRound,
+  "inferred-data": Brain,
+  ip: Copyright,
+  limits: CircleAlert,
+  moderation: Gavel,
+  payments: WalletCards,
+  providers: Network,
+  ratings: Star,
+  retention: Archive,
+  safety: ShieldAlert,
+  scope: MapIcon,
+  security: ShieldCheck,
+  termination: Ban,
+  "third-party": ExternalLink,
+  use: Settings2,
+  visibility: Eye,
+};
+
 export function LegalPage({ kind }: LegalPageProps) {
   const copy = legalPageCopy[kind];
   const alternate = kind === "privacy" ? "terms" : "privacy";
@@ -431,27 +483,29 @@ function LegalBadge({ kind }: { kind: LegalPageKind }) {
 }
 
 function LegalSectionBlock({ section }: { section: LegalSection }) {
+  const SectionIcon = legalSectionIcons[section.id] ?? BadgeCheck;
+
   return (
     <section
       id={section.id}
-      className="grid scroll-mt-24 gap-4 border-border/70 border-b py-7 lg:grid-cols-3"
+      className="grid scroll-mt-24 gap-5 border-border/70 border-b py-7 lg:grid-cols-[minmax(16rem,20rem)_minmax(0,1fr)] lg:gap-10"
     >
-      <div className="flex min-w-0 gap-3">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-forge-teal/10 text-forge-teal">
-          <FileText className="size-4" aria-hidden="true" />
+      <div className="flex min-w-0 items-start gap-3">
+        <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
+          <SectionIcon className="size-3" aria-hidden="true" />
         </span>
-        <h2 className="text-balance font-black text-ink text-xl leading-tight">
+        <h2 className="max-w-sm text-balance font-black text-ink text-xl leading-tight">
           {section.heading}
         </h2>
       </div>
 
-      <div className="grid gap-4 lg:col-span-2">
+      <div className="grid max-w-3xl gap-4">
         <p className="font-medium text-base text-slate-muted leading-relaxed">
           {section.body}
         </p>
         <ul className="grid gap-2">
           {section.bullets.map((bullet) => (
-            <li key={bullet} className="flex gap-2.5">
+            <li key={bullet} className="flex items-start gap-2.5">
               <LockKeyhole
                 className="mt-1 size-3.5 shrink-0 text-forge-teal"
                 aria-hidden="true"

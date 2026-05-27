@@ -1,6 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
+import {
+  MyNotesAvatarVisual,
+  SavedMessagesAvatarVisual,
+} from "@/assets/activity/special-conversation-avatars";
 import { UnifiedTypingIndicator } from "@/features/activity/components/chat/unified-typing-indicator";
 import type { ConversationDetailsNavigation } from "@/features/activity/hooks/use-conversation-data";
 import type { OnlineStatus } from "@/features/activity/lib/activity-contract";
@@ -16,6 +20,7 @@ interface HeaderInfoProps {
   title: string;
   subtitle?: string;
   avatarUrl?: string | null;
+  avatarKind?: "default" | "notes" | "saved";
   detailsNavigation?: ConversationDetailsNavigation;
   canToggleAction?: boolean;
   isGroup: boolean;
@@ -31,6 +36,7 @@ export const HeaderInfo = memo(
     title,
     subtitle,
     avatarUrl,
+    avatarKind = "default",
     detailsNavigation,
     canToggleAction = true,
     isGroup,
@@ -44,22 +50,14 @@ export const HeaderInfo = memo(
       <>
         {/* Avatar Section - Premium Rounded Squares for Groups, Circles for Users */}
         <div className="relative flex shrink-0 items-center justify-center">
-          <Avatar
-            src={avatarUrl}
-            name={title}
-            shape={isGroup ? "rounded" : "circle"}
-            className={cn(
-              "relative transition-all duration-300",
-              isGroup ? "size-10 rounded-md" : "size-10",
-            )}
-            imageClassName="transition-transform duration-700 ease-out"
-            fallbackClassName="bg-muted text-xs text-muted-foreground"
-            loading="eager"
-          >
-            <div className="absolute inset-0 bg-ink/0" />
-          </Avatar>
+          <HeaderAvatar
+            avatarKind={avatarKind}
+            avatarUrl={avatarUrl}
+            isGroup={isGroup}
+            title={title}
+          />
 
-          {!isGroup && onlineStatus ? (
+          {avatarKind === "default" && !isGroup && onlineStatus ? (
             <Tooltip>
               <TooltipTrigger asChild>
                 <AvatarStatus
@@ -160,6 +158,57 @@ export const HeaderInfo = memo(
     );
   },
 );
+
+function HeaderAvatar({
+  avatarKind,
+  avatarUrl,
+  isGroup,
+  title,
+}: {
+  avatarKind: "default" | "notes" | "saved";
+  avatarUrl?: string | null;
+  isGroup: boolean;
+  title: string;
+}) {
+  if (avatarKind === "notes") {
+    return (
+      <span
+        className="flex size-10 shrink-0 items-center justify-center rounded-full bg-transparent text-foreground"
+        aria-hidden="true"
+      >
+        <MyNotesAvatarVisual className="size-full" />
+      </span>
+    );
+  }
+
+  if (avatarKind === "saved") {
+    return (
+      <span
+        className="flex size-10 shrink-0 items-center justify-center rounded-full bg-transparent text-foreground"
+        aria-hidden="true"
+      >
+        <SavedMessagesAvatarVisual className="size-full" />
+      </span>
+    );
+  }
+
+  return (
+    <Avatar
+      src={avatarUrl}
+      name={title}
+      shape={isGroup ? "rounded" : "circle"}
+      className={cn(
+        "relative transition-all duration-300",
+        isGroup ? "size-10 rounded-md" : "size-10",
+      )}
+      imageClassName="transition-transform duration-700 ease-out"
+      fallbackClassName="bg-muted text-xs text-muted-foreground"
+      loading="eager"
+    >
+      <div className="absolute inset-0 bg-ink/0" />
+    </Avatar>
+  );
+}
 
 const headerInfoClassName = cn(
   "group/header-info -m-1 flex h-auto min-w-0 flex-1 cursor-pointer items-center justify-start gap-3 rounded-lg border-0 bg-transparent p-1 text-left shadow-none transition-none",

@@ -84,10 +84,10 @@ export function getUserDimensionScores(user: User): DimensionScore[] | null {
   }
 
   return createDimensionScores(
-    oceanScores.extraversion,
+    100 - oceanScores.extraversion,
     oceanScores.openness,
     oceanScores.agreeableness,
-    oceanScores.conscientiousness,
+    100 - oceanScores.conscientiousness,
   );
 }
 

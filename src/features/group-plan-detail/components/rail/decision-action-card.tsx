@@ -79,7 +79,6 @@ function SecondaryDecisionAction({
       action={action}
       variant="outline"
       className="w-full"
-      showIcon={false}
     />
   );
 }

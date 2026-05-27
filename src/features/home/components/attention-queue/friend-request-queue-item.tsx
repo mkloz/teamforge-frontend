@@ -78,7 +78,6 @@ export function FriendRequestQueueItem({
       <div className="flex shrink-0 items-center gap-1">
         <Button
           size="xs"
-          className="h-11 px-3 text-xs sm:h-8"
           loading={acceptingRequestId === request.requesterId}
           disabled={isAccepting || isDeclining}
           onClick={() => void onAccept(request.requesterId)}
@@ -90,7 +89,6 @@ export function FriendRequestQueueItem({
           type="button"
           variant="destructive"
           size="icon-xs"
-          className="size-11 rounded-lg sm:size-8"
           loading={decliningRequestId === request.requesterId}
           disabled={isAccepting || isDeclining}
           onClick={() => void onDecline(request.requesterId)}

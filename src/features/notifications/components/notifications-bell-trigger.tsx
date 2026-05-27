@@ -50,7 +50,7 @@ export function NotificationsBellTrigger({
                 duration: shouldReduceMotion ? 0.08 : 0.14,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="absolute top-0.5 right-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full border-2 border-sidebar bg-accent px-0.5 font-bold text-accent-foreground text-nano tabular-nums leading-none shadow-sm"
+              className="absolute top-0.5 right-0.5 z-10 flex h-3.5 min-w-3.5 items-center justify-center rounded-full border border-spark-amber/40 bg-canvas px-0.5 font-bold text-nano text-spark-amber tabular-nums leading-none shadow-[inset_0_0_0_999px_color-mix(in_srgb,var(--color-spark-amber)_16%,transparent)] ring-2 ring-canvas"
               aria-hidden="true"
             >
               {count > 9 ? "9+" : count}

@@ -86,7 +86,7 @@ export function ActivityCategoryGrid({
                     className={cn(
                       "flex size-7 shrink-0 items-center justify-center rounded-lg transition-colors duration-200",
                       selected
-                        ? "bg-spark-amber text-ink shadow-sm shadow-spark-amber/25"
+                        ? "bg-spark-amber/15 text-spark-amber shadow-sm ring-1 ring-spark-amber/20"
                         : personalised
                           ? "bg-forge-teal/10 text-forge-teal group-hover:bg-forge-teal/15"
                           : "bg-muted text-muted-foreground group-hover:bg-forge-teal/10 group-hover:text-forge-teal",
@@ -110,7 +110,7 @@ export function ActivityCategoryGrid({
                 </div>
 
                 {selected && (
-                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-spark-amber text-ink">
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-spark-amber/25 bg-spark-amber/15 text-spark-amber">
                     <Check size={12} strokeWidth={3} />
                   </span>
                 )}

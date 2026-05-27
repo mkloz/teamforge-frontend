@@ -6,6 +6,7 @@ import {
   SlidersHorizontal,
   Unlock,
   Users,
+  X,
 } from "lucide-react";
 import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
@@ -14,6 +15,7 @@ import type {
   ExploreLocationMode,
   ExploreSortOption,
 } from "@/features/explore/schemas/explore-filters.schema";
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 const QUICK_FILTERS = [
@@ -127,7 +129,7 @@ export function ExploreQuickFilters() {
       className="flex flex-col gap-3 px-1 py-1"
     >
       <div className="flex items-center gap-2.5">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-forge-teal/10 text-forge-teal">
           <SlidersHorizontal size={16} aria-hidden="true" />
         </span>
 
@@ -177,13 +179,16 @@ export function ExploreQuickFilters() {
       </fieldset>
 
       {activeCount > 0 ? (
-        <button
+        <Button
           type="button"
+          variant="subtle"
+          size="xs"
           onClick={clearQuickFilters}
-          className="h-8 w-full rounded-lg border border-border/70 px-3 font-bold text-muted-foreground text-xs transition-colors hover:border-border hover:bg-muted/30 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40"
+          className="w-full"
         >
+          <X className="size-3" aria-hidden="true" />
           Clear quick filters
-        </button>
+        </Button>
       ) : null}
     </section>
   );

@@ -14,7 +14,7 @@ export function GoogleAuthButton({ loading, onClick }: GoogleAuthButtonProps) {
       size="lg"
       disabled={loading}
       onClick={onClick}
-      className="flex w-full items-center justify-center gap-2.5"
+      className="w-full gap-2.5"
     >
       <GoogleIcon />
       <span>Continue with Google</span>

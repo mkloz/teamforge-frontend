@@ -1,4 +1,4 @@
-import { PencilLine } from "lucide-react";
+import { PencilLine, X } from "lucide-react";
 import { memo } from "react";
 import { Button } from "@/shared/components/ui/button";
 
@@ -29,6 +29,7 @@ export const EditingMessageBanner = memo(function EditingMessageBanner({
         className="h-8 rounded-full px-3 text-slate-muted hover:text-ink"
         onClick={onCancel}
       >
+        <X className="size-3.5" aria-hidden="true" />
         Cancel
       </Button>
     </div>

@@ -10,11 +10,14 @@ export function BlockedUsersSection({
 }: BlockedUsersSectionProps) {
   return (
     <section>
-      <div className="max-w-2xl">
-        <h2 className="font-bold text-ink text-xl">Blocked users</h2>
-        <p className="mt-1 text-slate-muted text-sm leading-relaxed">
-          Review people you have blocked and restore access when you are ready.
-        </p>
+      <div className="flex max-w-2xl items-start gap-3">
+        <div className="min-w-0">
+          <h2 className="font-bold text-ink text-xl">Blocked users</h2>
+          <p className="mt-1 text-slate-muted text-sm leading-relaxed">
+            Review people you have blocked and restore access when you are
+            ready.
+          </p>
+        </div>
       </div>
 
       <div className="mt-6 border-border border-t">

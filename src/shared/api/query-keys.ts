@@ -31,6 +31,7 @@ export const APP_QUERY_KEYS = {
     friendRequests: ["explore", "friend-requests"] as const,
   },
   groupPlanDetail: {
+    all: ["group-plan-detail"] as const,
     byId: (groupId: string) => ["group-plan-detail", groupId] as const,
   },
   home: {

@@ -47,7 +47,7 @@ export function ForgePageShell({
         "mx-auto flex h-full flex-col md:pb-12",
         isOpen
           ? "w-full max-w-none gap-0 px-0"
-          : "w-full max-w-5xl gap-8 px-4 md:px-8",
+          : "w-full max-w-6xl gap-8 px-4 sm:px-6 md:px-8",
       )}
     >
       {children}
@@ -57,12 +57,12 @@ export function ForgePageShell({
 
 export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
   return (
-    <div className="flex flex-col gap-8 py-6 md:py-10">
+    <div className="flex flex-col gap-8 py-5 lg:py-10">
       <ForgeHero onForgeClick={onForgeClick} />
 
       <section
         aria-labelledby="starter-examples-title"
-        className="grid gap-5 lg:grid-cols-[minmax(0,0.8fr)_minmax(32rem,1.2fr)]"
+        className="grid gap-6 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-start"
       >
         <div>
           <p className="font-black text-muted-foreground text-sm uppercase">
@@ -76,18 +76,18 @@ export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
           </h2>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-3 lg:min-w-0">
+        <div className="grid overflow-hidden rounded-xl border border-border/50 bg-card/70 sm:grid-cols-3 lg:min-w-0">
           {STARTER_EXAMPLES.map(({ title, items }) => (
             <article
               key={title}
-              className="rounded-xl border border-forge-teal/25 bg-forge-teal/10 p-4"
+              className="border-border/55 border-t p-4 first:border-t-0 sm:border-t-0 sm:border-l first:sm:border-l-0"
             >
               <h3 className="font-black text-foreground text-sm">{title}</h3>
               <ul className="mt-3 grid gap-2">
                 {items.map((item) => (
                   <li
                     key={item}
-                    className="border-forge-teal/20 border-t pt-2 font-medium text-muted-foreground text-sm leading-relaxed first:border-t-0 first:pt-0"
+                    className="border-border/55 border-t pt-2 font-medium text-muted-foreground text-sm leading-relaxed first:border-t-0 first:pt-0"
                   >
                     {item}
                   </li>
@@ -100,7 +100,7 @@ export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
 
       <section
         aria-labelledby="forge-next-title"
-        className="rounded-xl border border-forge-teal/25 bg-forge-teal/10 p-5 md:p-6"
+        className="rounded-xl border border-border/50 bg-card/70 p-5 md:p-6"
       >
         <div className="lg:main-action-grid grid gap-6 lg:items-end">
           <div>
@@ -118,7 +118,7 @@ export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
               {FORGE_OUTCOMES.map(([title, body]) => (
                 <div
                   key={title}
-                  className="border-forge-teal/20 border-t pt-4 first:border-t-0 first:pt-0 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-4 first:sm:border-l-0 first:sm:pl-0"
+                  className="border-border/55 border-t pt-4 first:border-t-0 first:pt-0 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-4 first:sm:border-l-0 first:sm:pl-0"
                 >
                   <p className="font-black text-foreground text-sm">{title}</p>
                   <p className="mt-1 font-medium text-muted-foreground text-sm leading-relaxed">
@@ -131,9 +131,9 @@ export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
 
           <Button
             onClick={onForgeClick}
-            variant="primary"
+            variant="accentGhost"
             size="lg"
-            className="w-full lg:w-auto"
+            className="w-full border border-forge-teal/25 bg-forge-teal/8 text-forge-teal hover:enabled:bg-forge-teal/12 lg:w-auto"
             aria-label="Forge my group"
           >
             <Plus size={18} />

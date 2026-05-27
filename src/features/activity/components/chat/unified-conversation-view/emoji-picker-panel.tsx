@@ -15,6 +15,7 @@ import {
   useState,
 } from "react";
 
+import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 const EMOJI_SKELETON_CELLS = Array.from(
@@ -22,7 +23,7 @@ const EMOJI_SKELETON_CELLS = Array.from(
   (_, index) => `emoji-skeleton-${index}`,
 );
 
-const COMPACT_REACTION_COLUMNS = 9;
+const COMPACT_REACTION_COLUMNS = 8;
 const EMPTY_SELECTED_EMOJIS = new Set<string>();
 const SelectedEmojiContext = createContext<ReadonlySet<string>>(
   EMPTY_SELECTED_EMOJIS,
@@ -475,14 +476,16 @@ export const ChatEmojiPickerPanel = memo(function ChatEmojiPickerPanel({
             )}
           >
             {onCollapse ? (
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon-xs"
                 aria-label="Back to quick reactions"
-                className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/55 bg-background/65 text-slate-muted transition-colors hover:border-forge-teal/35 hover:bg-forge-teal/8 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18"
+                className="size-8 shrink-0 rounded-lg border border-border/55 bg-background/65 text-slate-muted focus-visible:ring-forge-teal/18 hover:enabled:border-forge-teal/35 hover:enabled:bg-forge-teal/8 hover:enabled:text-ink"
                 onClick={onCollapse}
               >
                 <ChevronLeft className="size-4" />
-              </button>
+              </Button>
             ) : null}
             {!searchDisabled ? (
               <div className="relative min-w-0 flex-1">
@@ -663,7 +666,7 @@ function CompactReactionEmojiGroup({
         {chunkReactionEmojis(group.emojis).map((row) => (
           <div
             key={`${group.title}-${row.map((emoji) => emoji.emoji).join("")}`}
-            className="grid h-7 snap-start grid-cols-9 gap-0 px-1"
+            className="grid h-8 snap-start grid-cols-8 gap-0.5 px-1"
           >
             {row.map((emoji) => {
               const isSelected = selectedEmojiSet.has(emoji.emoji);
@@ -675,7 +678,7 @@ function CompactReactionEmojiGroup({
                   aria-label={`Use ${emoji.label}`}
                   aria-pressed={isSelected}
                   className={cn(
-                    "flex h-full items-center justify-center rounded-md text-base leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18",
+                    "flex size-7 min-w-0 items-center justify-center self-center justify-self-center rounded-md text-base leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18",
                     isSelected
                       ? "bg-spark-amber/18 shadow-sm ring-1 ring-spark-amber/45 hover:bg-spark-amber/22"
                       : "hover:bg-forge-teal/10",

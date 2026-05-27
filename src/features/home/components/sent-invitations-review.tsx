@@ -1,4 +1,4 @@
-import { BellRing } from "lucide-react";
+import { BellRing, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
@@ -60,6 +60,7 @@ export function SentInvitationsReview({
           className="shrink-0"
           onClick={onClose}
         >
+          <X className="size-3.5" aria-hidden="true" />
           Close
         </Button>
       </div>

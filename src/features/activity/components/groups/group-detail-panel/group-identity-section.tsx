@@ -124,7 +124,7 @@ export function GroupIdentitySection({
           asChild
           variant="outline"
           size="xs"
-          className="min-w-0 flex-1 basis-32 px-3"
+          className="min-w-0 flex-1 basis-32"
           contentClassName="gap-1.5"
         >
           <Link
@@ -142,7 +142,7 @@ export function GroupIdentitySection({
               type="button"
               variant="outline"
               size="xs"
-              className="min-w-0 flex-1 basis-32 px-3"
+              className="min-w-0 flex-1 basis-32"
               contentClassName="gap-1.5"
               onClick={onEditGroup}
             >
@@ -150,10 +150,7 @@ export function GroupIdentitySection({
               <span className="truncate">Edit details</span>
             </Button>
           ) : plan ? (
-            <PlanChangeDialog
-              plan={plan}
-              className="min-w-0 flex-1 basis-32 px-3"
-            />
+            <PlanChangeDialog plan={plan} className="min-w-0 flex-1 basis-32" />
           ) : null
         ) : null}
       </div>

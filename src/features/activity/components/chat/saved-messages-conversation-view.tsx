@@ -13,6 +13,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { NoSavedMessagesVisual } from "@/assets/empty-state/no-saved-messages";
 import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
 import { getActivityConversationKey } from "@/features/activity/lib/activity-conversation-key";
@@ -81,6 +82,7 @@ export const SavedMessagesConversationView = memo(
           kind="dm"
           title={SAVED_MESSAGES_TITLE}
           subtitle={subtitle}
+          avatarKind="saved"
           showAction={false}
           searchQuery={searchQuery}
           searchResultLabel={
@@ -108,7 +110,7 @@ export const SavedMessagesConversationView = memo(
               <SavedMessagesLoadingState />
             ) : rows.length === 0 ? (
               <SavedMessagesState
-                icon="search"
+                icon={searchQuery.trim() ? "search" : "saved"}
                 title={
                   searchQuery.trim()
                     ? "No saved messages found"
@@ -329,14 +331,17 @@ function SavedMessageBubble({
             <Bookmark className="size-3 fill-current" aria-hidden="true" />
             Opens original message
           </span>
-          <button
+          <Button
             type="button"
-            className="inline-flex items-center gap-1 rounded-full px-2 py-1 font-bold text-destructive/80 text-micro opacity-70 transition hover:bg-destructive/8 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/25 md:opacity-0 md:group-hover/saved-message:opacity-100"
+            variant="ghost"
+            size="xs"
+            className="h-7 px-2 text-destructive/80 text-micro opacity-70 focus-visible:ring-destructive/25 hover:enabled:bg-destructive/8 hover:enabled:text-destructive md:opacity-0 md:group-hover/saved-message:opacity-100"
+            contentClassName="gap-1"
             onClick={handleRemove}
           >
             <Trash2 className="size-3" aria-hidden="true" />
             Remove
-          </button>
+          </Button>
         </div>
       </div>
     </article>
@@ -444,7 +449,7 @@ function SavedMessagesState({
   actionDisabled?: boolean;
   actionLabel?: string;
   description: string;
-  icon: "retry" | "search";
+  icon: "retry" | "saved" | "search";
   onAction?: () => Promise<void> | void;
   title: string;
 }) {
@@ -453,9 +458,13 @@ function SavedMessagesState({
   return (
     <div className="flex h-full min-h-80 items-center justify-center px-4 text-center">
       <div className="flex max-w-sm flex-col items-center gap-3">
-        <span className="flex size-12 items-center justify-center rounded-full border border-forge-teal/15 bg-forge-teal/8 text-forge-teal">
-          <Icon className="size-5" strokeWidth={2.25} />
-        </span>
+        {icon === "saved" ? (
+          <NoSavedMessagesVisual className="h-36 w-auto text-foreground" />
+        ) : (
+          <span className="flex size-12 items-center justify-center rounded-full border border-forge-teal/15 bg-forge-teal/8 text-forge-teal">
+            <Icon className="size-5" strokeWidth={2.25} />
+          </span>
+        )}
         <div>
           <h2 className="font-black text-ink text-lg tracking-tight">
             {title}
@@ -466,7 +475,6 @@ function SavedMessagesState({
         </div>
         {actionLabel && onAction ? (
           <Button
-            className="rounded-full"
             disabled={actionDisabled}
             size="sm"
             variant="primary"

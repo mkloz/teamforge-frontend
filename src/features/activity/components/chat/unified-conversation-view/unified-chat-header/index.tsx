@@ -12,6 +12,7 @@ interface UnifiedChatHeaderProps {
   title: string;
   subtitle?: string;
   avatarUrl?: string | null;
+  avatarKind?: "default" | "notes" | "saved";
   detailsNavigation?: ConversationDetailsNavigation;
   kind: "dm" | "group";
   onlineStatus?: OnlineStatus;
@@ -37,6 +38,7 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
   title,
   subtitle,
   avatarUrl,
+  avatarKind = "default",
   detailsNavigation,
   kind,
   onlineStatus,
@@ -59,7 +61,7 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
   });
 
   return (
-    <header className="sticky top-0 z-100 flex shrink-0 items-center gap-1.5 border-border border-b bg-canvas/80 px-2.5 pt-2 pb-2.5 backdrop-blur-md md:gap-2 md:px-3 md:pt-3 md:pb-3">
+    <header className="sticky top-0 z-100 flex min-h-15 shrink-0 items-center gap-1.5 border-border border-b bg-canvas/80 px-2.5 pt-2 pb-2.5 backdrop-blur-md md:min-h-16 md:gap-2 md:px-3 md:pt-3 md:pb-3">
       {onBack && (
         <Button
           variant="ghost"
@@ -78,6 +80,7 @@ export const UnifiedChatHeader = memo(function UnifiedChatHeader({
             title={title}
             subtitle={subtitle}
             avatarUrl={avatarUrl}
+            avatarKind={avatarKind}
             detailsNavigation={detailsNavigation}
             canToggleAction={showAction}
             isGroup={isGroup}

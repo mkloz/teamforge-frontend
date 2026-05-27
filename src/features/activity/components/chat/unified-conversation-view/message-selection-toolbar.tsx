@@ -17,9 +17,9 @@ import {
 } from "@/features/activity/lib/message-action-capabilities";
 import { getMessagesClipboardContent } from "@/features/activity/lib/message-clipboard";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
+import { Button } from "@/shared/components/ui/button";
 import { copyTextToClipboard } from "@/shared/lib/browser-capabilities";
 import { showAppErrorToast } from "@/shared/lib/error-toast";
-import { cn } from "@/shared/lib/utils";
 import { ForwardMessageDialog } from "./unified-message-list/unified-message-item/message-actions-menu";
 
 interface MessageSelectionToolbarProps {
@@ -58,9 +58,7 @@ export function MessageSelectionToolbar({
       return;
     }
 
-    toast.success(
-      selectedCount === 1 ? "Message copied." : "Messages copied.",
-    );
+    toast.success(selectedCount === 1 ? "Message copied." : "Messages copied.");
     onClearSelection();
   }
 
@@ -72,13 +70,15 @@ export function MessageSelectionToolbar({
     setIsSaving(true);
 
     try {
-      for (const message of saveableMessages) {
-        const isSaved = isMessageSaved(message, savedMessageIds);
+      await Promise.all(
+        saveableMessages.map(async (message) => {
+          const isSaved = isMessageSaved(message, savedMessageIds);
 
-        if (allSaveableMessagesSaved ? isSaved : !isSaved) {
-          await messageActions.toggleSaved(message, isSaved);
-        }
-      }
+          if (allSaveableMessagesSaved ? isSaved : !isSaved) {
+            await messageActions.toggleSaved(message, isSaved);
+          }
+        }),
+      );
 
       toast.success(
         allSaveableMessagesSaved
@@ -103,9 +103,11 @@ export function MessageSelectionToolbar({
     setIsDeleting(true);
 
     try {
-      for (const message of selectedMessages) {
-        await messageActions.deleteMessage(message);
-      }
+      await Promise.all(
+        selectedMessages.map((message) =>
+          messageActions.deleteMessage(message),
+        ),
+      );
 
       toast.success(
         selectedCount === 1 ? "Message deleted." : "Messages deleted.",
@@ -122,16 +124,18 @@ export function MessageSelectionToolbar({
 
   return (
     <>
-      <div className="border-border/70 border-t bg-canvas/95 px-3 pt-2 pb-safe-bottom backdrop-blur-xl">
-        <div className="mx-auto flex min-h-10 w-full max-w-4xl items-center gap-2">
-          <button
+      <div className="isolate z-30 min-h-17 shrink-0 overflow-visible border-border/60 border-t bg-canvas/90 px-2.5 pt-2 pb-safe-bottom backdrop-blur-xl sm:px-3">
+        <div className="mx-auto flex h-12 w-full max-w-4xl items-center gap-2 sm:gap-2.5">
+          <Button
             type="button"
+            variant="accentGhost"
+            size="icon-sm"
             aria-label="Cancel message selection"
-            className="flex size-8 shrink-0 items-center justify-center rounded-full border border-border/60 bg-card/70 text-slate-muted transition hover:border-forge-teal/30 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/25"
+            className="shrink-0 rounded-full"
             onClick={onClearSelection}
           >
             <X className="size-4" aria-hidden="true" />
-          </button>
+          </Button>
 
           <span className="min-w-0 flex-1 truncate font-bold text-ink text-sm">
             {selectedCount} selected
@@ -210,21 +214,19 @@ function SelectionActionButton({
   onClick: () => void;
 }) {
   return (
-    <button
+    <Button
       type="button"
+      variant={danger ? "destructive" : "accentGhost"}
+      size="xs"
       aria-label={label}
-      className={cn(
-        "flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-2.5 font-bold text-xs transition focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-45",
-        danger
-          ? "border-destructive/25 bg-destructive/8 text-destructive hover:bg-destructive/12 focus-visible:ring-destructive/25"
-          : "border-border/60 bg-card/70 text-slate-muted hover:border-forge-teal/30 hover:bg-forge-teal/8 hover:text-forge-teal focus-visible:ring-forge-teal/25",
-      )}
+      className="shrink-0 disabled:opacity-45"
+      contentClassName="gap-1.5"
       disabled={disabled}
       onClick={onClick}
     >
       <Icon className="size-3.5" aria-hidden="true" />
       <span className="hidden sm:inline">{label}</span>
-    </button>
+    </Button>
   );
 }
 
