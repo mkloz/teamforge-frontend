@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { appQueryClient } from "@/shared/api/query-client";
 import {
   cancelDelay,
   cancelIdleTask,
@@ -29,12 +30,10 @@ export function useGroupPlanDetailRealtime({
 
     async function initializeRealtime() {
       const [
-        { appQueryClient },
         { APP_QUERY_KEYS },
         { realtimeClient },
         { realtimeGroupUpdatedPayloadSchema, realtimePlanUpdatedPayloadSchema },
       ] = await Promise.all([
-        import("@/shared/api/query-client"),
         import("@/shared/api/query-keys"),
         import("@/shared/api/realtime-client"),
         import("@/shared/schemas"),

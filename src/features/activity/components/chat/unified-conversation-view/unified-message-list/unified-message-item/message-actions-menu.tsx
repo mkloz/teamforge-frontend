@@ -14,7 +14,15 @@ import {
   RotateCcw,
   Trash2,
 } from "lucide-react";
-import { memo, type ReactNode, useMemo, useRef, useState } from "react";
+import {
+  lazy,
+  memo,
+  type ReactNode,
+  Suspense,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { toast } from "sonner";
 import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import {
@@ -62,7 +70,12 @@ import { copyTextToClipboard } from "@/shared/lib/browser-capabilities";
 import { showAppErrorToast } from "@/shared/lib/error-toast";
 import { cn } from "@/shared/lib/utils";
 import type { ChatApi, FriendshipApi, GroupApi } from "@/shared/schemas";
-import { ChatEmojiPickerPanel } from "../../emoji-picker-panel";
+
+const LazyChatEmojiPickerPanel = lazy(() =>
+  import("../../emoji-picker-panel").then((module) => ({
+    default: module.ChatEmojiPickerPanel,
+  })),
+);
 
 const QUICK_REACTION_EMOJIS = [
   "👍",
@@ -551,14 +564,16 @@ function MessageReactionPicker({
     <div className={REACTION_DOCK_CLASS}>
       {expanded ? (
         <div className={REACTION_DOCK_PICKER_CLASS}>
-          <ChatEmojiPickerPanel
-            compact
-            selectedEmojis={selectedReactionEmojis}
-            onSelect={(emoji) => {
-              onSelectReaction(emoji);
-              onRequestClose();
-            }}
-          />
+          <Suspense fallback={<CompactEmojiPickerSkeleton />}>
+            <LazyChatEmojiPickerPanel
+              compact
+              selectedEmojis={selectedReactionEmojis}
+              onSelect={(emoji) => {
+                onSelectReaction(emoji);
+                onRequestClose();
+              }}
+            />
+          </Suspense>
         </div>
       ) : (
         <div className={REACTION_DOCK_CLOUD_CLASS}>
@@ -607,6 +622,16 @@ function MessageReactionPicker({
           </Item>
         </div>
       )}
+    </div>
+  );
+}
+
+function CompactEmojiPickerSkeleton() {
+  return (
+    <div className="grid grid-cols-8 gap-0.5 p-1.5" aria-hidden="true">
+      {QUICK_REACTION_EMOJIS.map((emoji) => (
+        <div key={emoji} className="size-7 rounded-md bg-muted/50" />
+      ))}
     </div>
   );
 }

@@ -21,6 +21,7 @@ import {
 import { HomePageLoading } from "@/features/home/home-page.loading";
 import { ProfilePageLoading } from "@/features/profile/profile-page/profile-page.loading";
 import { SettingsPageLoading } from "@/features/settings/settings-page/settings-page.loading";
+import { appQueryClient } from "@/shared/api/query-client";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
 import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
 
@@ -109,12 +110,10 @@ function createRouteModuleLoader(module: LazyRouteModule) {
 }
 
 async function preloadDefaultExploreGroups() {
-  const [{ appQueryClient }, { ExploreQueryFactory }, { DEFAULT_FILTERS }] =
-    await Promise.all([
-      import("@/shared/api/query-client"),
-      import("@/features/explore/api/explore-query-factory"),
-      import("@/features/explore/constants/explore.constants"),
-    ]);
+  const [{ ExploreQueryFactory }, { DEFAULT_FILTERS }] = await Promise.all([
+    import("@/features/explore/api/explore-query-factory"),
+    import("@/features/explore/constants/explore.constants"),
+  ]);
 
   await appQueryClient.prefetchInfiniteQuery(
     ExploreQueryFactory.groups(DEFAULT_FILTERS, ""),
@@ -130,13 +129,9 @@ function createExploreRouteLoader(module: LazyRouteModule) {
 }
 
 async function preloadGroupPlanDetail(groupId: string) {
-  const [{ appQueryClient }, { GroupPlanDetailQueryFactory }] =
-    await Promise.all([
-      import("@/shared/api/query-client"),
-      import(
-        "@/features/group-plan-detail/api/group-plan-detail-query-factory"
-      ),
-    ]);
+  const { GroupPlanDetailQueryFactory } = await import(
+    "@/features/group-plan-detail/api/group-plan-detail-query-factory"
+  );
 
   const detail = await appQueryClient.fetchQuery(
     GroupPlanDetailQueryFactory.detail(groupId),
@@ -151,11 +146,8 @@ async function preloadGroupPlanDetail(groupId: string) {
 }
 
 async function preloadUserDetail(userId: string) {
-  const [{ appQueryClient }, { publicProfileQueryOptions }] = await Promise.all(
-    [
-      import("@/shared/api/query-client"),
-      import("@/features/profile/api/profile-query-options"),
-    ],
+  const { publicProfileQueryOptions } = await import(
+    "@/features/profile/api/profile-query-options"
   );
 
   const profile = await appQueryClient.fetchQuery(
