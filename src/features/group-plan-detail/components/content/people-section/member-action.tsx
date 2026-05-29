@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import {
   Ban,
-  Clock3,
+  CircleDashed,
   ExternalLink,
   UserCheck,
   UserRoundPlus,
@@ -88,7 +88,7 @@ function ConnectIcon({ label }: { label: string }) {
   }
 
   if (label === "Requested") {
-    return <Clock3 className="size-4" />;
+    return <CircleDashed className="size-4" />;
   }
 
   if (label === "Blocked") {

@@ -61,7 +61,7 @@ export function MembersSection({
         ) : null}
       </div>
 
-      <div className="divide-y divide-border/70 border-border/70 border-y">
+      <div className="grid gap-1.5">
         {members.map((member) => (
           <MemberCard
             key={member.userId}
@@ -71,6 +71,7 @@ export function MembersSection({
               currentUserId !== null &&
               member.userId !== currentUserId
             }
+            isViewer={currentUserId !== null && member.userId === currentUserId}
             member={member}
             onRemove={onRemoveMember}
             onShowProfile={onShowProfile}

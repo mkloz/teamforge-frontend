@@ -1,6 +1,7 @@
 import {
   ArrowRight,
   Check,
+  CircleDashed,
   type LucideIcon,
   MessageCircle,
   Send,
@@ -238,7 +239,7 @@ function buildRequestedState({
     primary: {
       kind: "button",
       label: "Request sent",
-      icon: Send,
+      icon: CircleDashed,
       onClick: () => undefined,
       disabled: true,
     },

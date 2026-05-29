@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { Crown } from "lucide-react";
+import { Handshake, type LucideIcon, ShieldCheck, Target } from "lucide-react";
 import type { GroupPlanDetailMember } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
+import { AdminCrownBadge } from "@/shared/components/common/admin-crown-badge";
 import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import { MemberAction } from "./member-action";
@@ -24,7 +25,7 @@ export function MemberCard({
   return (
     <article
       className={cn(
-        "group relative flex items-center gap-3 px-2 py-2 transition-colors duration-150 hover:bg-muted/50",
+        "group relative flex min-h-16 items-center gap-3 rounded-xl px-2 py-2 transition-colors duration-150 hover:bg-muted/50",
         isHost && "bg-forge-teal/5",
       )}
     >
@@ -38,11 +39,11 @@ export function MemberCard({
       <MemberAvatar member={member} isHost={isHost} />
 
       <div className="min-w-0 flex-1">
-        <MemberIdentity member={member} isHost={isHost} isViewer={isViewer} />
+        <MemberIdentity member={member} isViewer={isViewer} />
         <MemberMeta member={member} />
       </div>
 
-      {isMember && !isViewer ? (
+      {isMember && !isViewer && !member.knownConnection ? (
         <div className="relative z-20">
           <MemberAction member={member} />
         </div>
@@ -71,20 +72,20 @@ function MemberAvatar({
         )}
       />
       {isHost ? (
-        <div className="absolute -top-1 -left-1 flex size-5 items-center justify-center rounded-md border border-spark-amber/35 bg-spark-amber/15 text-spark-amber shadow-sm ring-2 ring-canvas">
-          <Crown className="size-2.5" aria-hidden="true" />
-        </div>
+        <AdminCrownBadge
+          aria-label={member.role === "ADMIN" ? "Host" : "Moderator"}
+          className="absolute -top-1 -left-1"
+          iconClassName="size-2.5"
+        />
       ) : null}
     </div>
   );
 }
 
 function MemberIdentity({
-  isHost,
   isViewer,
   member,
 }: {
-  isHost: boolean;
   isViewer: boolean;
   member: GroupPlanDetailMember;
 }) {
@@ -103,11 +104,6 @@ function MemberIdentity({
           {member.personalityType}
         </span>
       ) : null}
-      {isHost ? (
-        <span className="shrink-0 font-bold text-forge-teal text-micro">
-          {member.role === "ADMIN" ? "Host" : "Mod"}
-        </span>
-      ) : null}
     </div>
   );
 }
@@ -115,35 +111,69 @@ function MemberIdentity({
 function MemberMeta({ member }: { member: GroupPlanDetailMember }) {
   const trustPercent = formatPercent(member.trustScore);
   const compatibilityPercent = formatPercent(member.compatibilityScore);
+  const isHighTrust = typeof trustPercent === "number" && trustPercent >= 80;
   const isHighCompatibility =
     typeof compatibilityPercent === "number" && compatibilityPercent >= 80;
 
   return (
-    <div className="mt-0.5 flex min-w-0 items-center gap-2.5">
-      <span className="shrink-0 font-bold text-muted-foreground text-xs">
-        Trust {trustPercent}%
-      </span>
+    <div className="mt-1.5 flex min-w-0 items-center gap-1.5">
+      {typeof trustPercent === "number" ? (
+        <MemberMetric
+          icon={ShieldCheck}
+          label="Trust"
+          tone={isHighTrust ? "teal" : "muted"}
+          value={`${trustPercent}%`}
+        />
+      ) : null}
       {typeof compatibilityPercent === "number" ? (
-        <>
-          <div className="h-2 w-px shrink-0 bg-border/50" />
-          <span
-            className={cn(
-              "shrink-0 font-bold text-xs",
-              isHighCompatibility
-                ? "text-forge-teal"
-                : "text-muted-foreground/60",
-            )}
-          >
-            {compatibilityPercent}% fit
-          </span>
-        </>
+        <MemberMetric
+          icon={Target}
+          label="Fit"
+          tone={isHighCompatibility ? "teal" : "muted"}
+          value={`${compatibilityPercent}%`}
+        />
       ) : null}
       {member.knownConnection ? (
-        <span className="min-w-0 truncate font-medium text-muted-foreground/70 text-xs">
-          {member.knownConnection}
-        </span>
+        <KnownConnectionIndicator label={member.knownConnection} />
       ) : null}
     </div>
+  );
+}
+
+interface MemberMetricProps {
+  icon: LucideIcon;
+  label: string;
+  tone: "muted" | "teal";
+  value: string;
+}
+
+function MemberMetric({ icon: Icon, label, tone, value }: MemberMetricProps) {
+  return (
+    <span
+      className={cn(
+        "inline-flex h-5 shrink-0 items-center gap-1 rounded-full px-1.5 font-bold text-xs",
+        tone === "teal"
+          ? "bg-forge-teal/10 text-forge-teal"
+          : "bg-muted/50 text-muted-foreground",
+      )}
+      title={`${label} ${value}`}
+    >
+      <Icon className="size-3.5" strokeWidth={1.75} aria-hidden="true" />
+      <span className="sr-only">{label}</span>
+      <span>{value}</span>
+    </span>
+  );
+}
+
+function KnownConnectionIndicator({ label }: { label: string }) {
+  return (
+    <span
+      className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-spark-amber/12 text-spark-amber"
+      title={label}
+    >
+      <Handshake className="size-3.5" strokeWidth={1.75} aria-hidden="true" />
+      <span className="sr-only">{label}</span>
+    </span>
   );
 }
 

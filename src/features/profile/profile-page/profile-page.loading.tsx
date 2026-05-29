@@ -11,7 +11,7 @@ export function ProfilePageLoading(_props: PageLoadingProps = {}) {
     <main
       aria-busy="true"
       aria-label="Loading profile"
-      className="relative min-h-full overflow-x-clip bg-canvas md:pb-0"
+      className="relative min-h-full overflow-x-clip bg-canvas [--profile-cover-collapsed-height:80px] [--profile-cover-expanded-height:160px] [--profile-sidebar-sticky-top:var(--profile-cover-collapsed-height)] md:pb-0 sm:[--profile-cover-expanded-height:168px] md:[--profile-cover-expanded-height:152px] lg:[--profile-cover-collapsed-height:64px]"
       role="status"
     >
       <span className="sr-only">Loading profile</span>
@@ -223,7 +223,7 @@ function MatchingSnapshotSkeleton() {
 
 function PsychometricsSkeleton() {
   return (
-    <div className="flex min-w-0 shrink-0 flex-col border-border/70 lg:sticky lg:top-4 lg:self-start lg:border-l lg:pl-8 xl:pl-10">
+    <div className="flex min-w-0 shrink-0 flex-col border-border/70 lg:sticky lg:top-(--profile-sidebar-sticky-top) lg:self-start lg:border-l lg:pl-8 xl:pl-10">
       <aside className="grid w-full gap-8 md:grid-cols-2 lg:flex lg:flex-col lg:gap-10">
         <section className="flex min-w-0 flex-col border-border/60 border-t pt-6 lg:border-t-0 lg:pt-0">
           <div className="relative mx-auto aspect-square w-full max-w-72">

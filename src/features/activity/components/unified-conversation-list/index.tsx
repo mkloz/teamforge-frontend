@@ -30,10 +30,11 @@ interface UnifiedConversationListProps {
   searchQuery: string;
   activeFilter: FilterChip;
   sidebarDensity: "default" | "compact";
-  groupCount: number;
-  dmCount: number;
-  unreadCount: number;
   pinnedCount: number;
+  allUnreadMessageCount: number;
+  groupUnreadMessageCount: number;
+  dmUnreadMessageCount: number;
+  pinnedUnreadMessageCount: number;
   savedCount: number;
   isFeedError: boolean;
   isFeedRetrying: boolean;
@@ -62,7 +63,6 @@ const FILTERS: { key: FilterChip; label: string }[] = [
   { key: "direct", label: "DMs" },
   { key: "unread", label: "Unread" },
   { key: "pinned", label: "Pinned" },
-  { key: "saved", label: "Saved" },
 ];
 
 const SEARCH_H = 56;
@@ -75,10 +75,11 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
   searchQuery,
   activeFilter,
   sidebarDensity,
-  groupCount,
-  dmCount,
-  unreadCount,
   pinnedCount,
+  allUnreadMessageCount,
+  groupUnreadMessageCount,
+  dmUnreadMessageCount,
+  pinnedUnreadMessageCount,
   savedCount,
   isFeedError,
   isFeedRetrying,
@@ -197,7 +198,13 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
         <FilterHeader
           filters={FILTERS}
           activeFilter={activeFilter}
-          counts={{ groupCount, dmCount, unreadCount, pinnedCount, savedCount }}
+          counts={{
+            pinnedCount,
+            allUnreadMessageCount,
+            groupUnreadMessageCount,
+            dmUnreadMessageCount,
+            pinnedUnreadMessageCount,
+          }}
           onFilterChange={onFilterChange}
           density={sidebarDensity}
           onDensityChange={onDensityChange}

@@ -55,6 +55,7 @@ export function useActivityRouteState() {
     handleSelectItem: routeActions.selectItem,
     handleBack: routeActions.clearSelection,
     toggleGroupDetail: routeActions.toggleGroupPanel,
+    focusGroupPlan: routeActions.focusGroupPlan,
     closeGroupDetail: routeActions.closeGroupPanel,
     toggleProfilePanel: routeActions.toggleProfilePanel,
     closeProfilePanel: routeActions.closeProfilePanel,

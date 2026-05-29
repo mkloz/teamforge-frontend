@@ -6,8 +6,8 @@ import { formatChatFullDate } from "@/features/activity/lib/chat-utils";
 import { formatPlanLocation } from "@/features/activity/lib/plan-location";
 import type { PinnedEntry } from "./chat-status-bar-types";
 import {
+  getPlanStatusConfig,
   PINNED_MESSAGE_CONFIG,
-  PLAN_STATUS_CONFIG,
 } from "./chat-status-plan-config";
 
 export function buildPinnedEntries(
@@ -17,7 +17,7 @@ export function buildPinnedEntries(
   const entries: PinnedEntry[] = [];
 
   if (plan) {
-    const config = PLAN_STATUS_CONFIG[plan.status];
+    const config = getPlanStatusConfig(plan);
     entries.push({
       id: `plan-${plan.id}`,
       label: config.label,

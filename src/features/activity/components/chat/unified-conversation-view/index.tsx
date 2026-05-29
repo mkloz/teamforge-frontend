@@ -34,6 +34,7 @@ interface BaseConversationProps {
   isOnline?: boolean;
   typingUsers?: { name: string; avatar: string | null }[];
   isActionOpen?: boolean;
+  openHeaderDetailsInPanel?: boolean;
   focusedMessageId?: string | null;
   isLoadingMessages?: boolean;
   messageScrollHandleRef?: RefObject<MessageScrollHandle | null>;
@@ -44,6 +45,7 @@ interface BaseConversationProps {
   onRetryMessages?: () => Promise<void> | void;
   onShowParticipantProfile?: (participant: ActivityParticipant) => void;
   onToggleAction: () => void;
+  onViewPlan?: () => void;
   onSendMessage: (input: ActivitySendMessageInput) => Promise<void> | void;
 }
 
@@ -64,6 +66,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     isMessageError = false,
     isOnline = true,
     messageScrollHandleRef,
+    openHeaderDetailsInPanel = false,
     sendError = null,
     hasOlderMessages = false,
     isLoadingOlderMessages = false,
@@ -73,6 +76,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
     onRetryMessages,
     onShowParticipantProfile,
     onToggleAction,
+    onViewPlan,
     onSendMessage,
   } = props;
   const { kind, data } = props;
@@ -236,7 +240,9 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
         subtitle={headerProps.subtitle}
         avatarUrl={headerProps.avatarUrl}
         avatarKind={isNotesChat ? "notes" : "default"}
-        detailsNavigation={headerProps.detailsNavigation}
+        detailsNavigation={
+          openHeaderDetailsInPanel ? undefined : headerProps.detailsNavigation
+        }
         onlineStatus={headerProps.onlineStatus}
         isTyping={activeTypingUsers.length > 0}
         typingText={typingText}
@@ -255,7 +261,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
       <ChatStatusBar
         plan={kind === "group" ? (data.plan ?? undefined) : undefined}
         pinnedMessages={allPinnedMessages}
-        onViewDetails={isNotesChat ? () => {} : onToggleAction}
+        onViewDetails={isNotesChat ? () => {} : (onViewPlan ?? onToggleAction)}
         onUnpinPinnedMessage={(messageId) => {
           const targetMessage = allPinnedMessages.find(
             (message) => message.id === messageId,

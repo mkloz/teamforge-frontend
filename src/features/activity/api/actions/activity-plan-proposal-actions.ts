@@ -21,6 +21,9 @@ export const ActivityPlanProposalActions = {
     const proposal = await ActivityApi.createPlanProposal(planId, payload);
 
     await appQueryClient.invalidateQueries({
+      queryKey: APP_QUERY_KEYS.activity.planProposals(planId),
+    });
+    await appQueryClient.invalidateQueries({
       queryKey: APP_QUERY_KEYS.activity.groupSelectionById(groupId),
     });
 
@@ -35,6 +38,9 @@ export const ActivityPlanProposalActions = {
     const proposal = await ActivityApi.votePlanProposal(proposalId, payload);
 
     await appQueryClient.invalidateQueries({
+      queryKey: APP_QUERY_KEYS.activity.planProposals(proposal.planId),
+    });
+    await appQueryClient.invalidateQueries({
       queryKey: getGroupSelectionQueryKey(groupId),
     });
 
@@ -44,6 +50,9 @@ export const ActivityPlanProposalActions = {
   async withdrawPlanProposal(proposalId: string, groupId?: string) {
     const proposal = await ActivityApi.withdrawPlanProposal(proposalId);
 
+    await appQueryClient.invalidateQueries({
+      queryKey: APP_QUERY_KEYS.activity.planProposals(proposal.planId),
+    });
     await appQueryClient.invalidateQueries({
       queryKey: getGroupSelectionQueryKey(groupId),
     });

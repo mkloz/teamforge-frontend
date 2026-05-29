@@ -3,14 +3,13 @@ import type {
   Group,
   GroupMember,
   MemberRole,
-  UnifiedMessage,
+  PlanHistoryItem,
 } from "@/features/activity/lib/activity-contract";
 
 import { ActionsSection } from "../actions-section";
 import { isGroupActionsLocked } from "../actions-section/group-action-rules";
 import { GroupIdentitySection } from "../group-identity-section";
 import { MembersSection } from "../members-section";
-import { PinnedMessagesSection } from "../pinned-messages-section";
 import { PlanHistorySection } from "../plan-history-section";
 import { PlanSection } from "../plan-section";
 
@@ -23,6 +22,7 @@ interface GroupPanelMainSectionsProps {
   createNextGroupPlan: (
     plan: NonNullable<Group["plan"]>,
   ) => Promise<void> | void;
+  createPlanFromHistory: (plan: PlanHistoryItem) => Promise<void> | void;
   disbandGroup: () => Promise<void> | void;
   focusedPlanId: string | null;
   focusedProposalId: string | null;
@@ -32,7 +32,6 @@ interface GroupPanelMainSectionsProps {
   invitingMemberId: string | null;
   isDisbanding: boolean;
   isLeaving: boolean;
-  jumpToPinnedMessage: (messageId: string) => void;
   leaveGroup: () => Promise<void> | void;
   memberCount: number;
   members: GroupMember[];
@@ -42,7 +41,6 @@ interface GroupPanelMainSectionsProps {
   removeMember: (memberId: string) => Promise<void> | void;
   removingMemberId: string | null;
   setSelectedMember: (member: GroupMember) => void;
-  unpinMessage: (message: UnifiedMessage) => Promise<void> | void;
 }
 
 export function GroupPanelMainSections({
@@ -52,6 +50,7 @@ export function GroupPanelMainSections({
   completePlan,
   confirmPlan,
   createNextGroupPlan,
+  createPlanFromHistory,
   disbandGroup,
   focusedPlanId,
   focusedProposalId,
@@ -61,7 +60,6 @@ export function GroupPanelMainSections({
   invitingMemberId,
   isDisbanding,
   isLeaving,
-  jumpToPinnedMessage,
   leaveGroup,
   memberCount,
   members,
@@ -71,7 +69,6 @@ export function GroupPanelMainSections({
   removeMember,
   removingMemberId,
   setSelectedMember,
-  unpinMessage,
 }: GroupPanelMainSectionsProps) {
   const isGroupLocked = isGroupActionsLocked(group.status);
   const currentPlan = group.plan;
@@ -111,14 +108,6 @@ export function GroupPanelMainSections({
         />
       )}
 
-      {group.chat?.pinnedMessages && group.chat.pinnedMessages.length > 0 && (
-        <PinnedMessagesSection
-          onJumpToMessage={jumpToPinnedMessage}
-          onUnpinMessage={unpinMessage}
-          pinnedMessages={group.chat.pinnedMessages}
-        />
-      )}
-
       {members.length > 0 && (
         <MembersSection
           members={members}
@@ -136,8 +125,12 @@ export function GroupPanelMainSections({
       )}
 
       <PlanHistorySection
+        focusedPlanId={focusedPlanId}
         groupId={group.id}
         history={group.planHistory ?? []}
+        isTemplateActionDisabled={pendingPlanAction !== null || isGroupLocked}
+        isTemplateActionPending={pendingPlanAction === "create-next-plan"}
+        onUseAsTemplate={createPlanFromHistory}
       />
 
       {!isGroupLocked ? (

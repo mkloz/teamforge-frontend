@@ -44,13 +44,10 @@ export function buildProposalMessage(
     reactions: [],
     attachments: [],
     isOwn,
-    hasVoted: !isPending || isOwn || hasUserVoted,
+    hasVoted: !isPending || hasUserVoted,
     isSystem: false,
     proposal,
-    proposalEligibleVoterCount: countEligibleProposalVoters(
-      proposal,
-      participants,
-    ),
+    proposalEligibleVoterCount: countEligibleProposalVoters(participants),
     proposalVoters: proposal.votes.map((vote) => {
       const participant = participantsIndex.get(vote.userId);
 
@@ -68,11 +65,6 @@ export function buildProposalMessage(
   };
 }
 
-function countEligibleProposalVoters(
-  proposal: PlanProposal,
-  participants: ActivityParticipant[],
-) {
-  return participants.filter(
-    (participant) => participant.id !== proposal.proposerId,
-  ).length;
+function countEligibleProposalVoters(participants: ActivityParticipant[]) {
+  return participants.length;
 }

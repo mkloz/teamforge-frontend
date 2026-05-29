@@ -17,7 +17,6 @@ interface GroupDetailPanelProps {
   focusedProposalId?: string | null;
   selectedMemberId?: string | null;
   onClose: () => void;
-  onJumpToMessage?: (messageId: string) => void;
   onSelectedMemberIdChange?: (memberId: string | null) => void;
 }
 
@@ -28,7 +27,6 @@ export function GroupDetailPanel({
   focusedProposalId = null,
   selectedMemberId = null,
   onClose,
-  onJumpToMessage,
   onSelectedMemberIdChange,
 }: GroupDetailPanelProps) {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
@@ -50,7 +48,6 @@ export function GroupDetailPanel({
           focusedProposalId={focusedProposalId}
           selectedMemberId={selectedMemberId}
           onClose={onClose}
-          onJumpToMessage={onJumpToMessage}
           onSelectedMemberIdChange={onSelectedMemberIdChange}
         />
       </aside>
@@ -60,7 +57,7 @@ export function GroupDetailPanel({
         open={isOpen && !isDesktop}
         onOpenChange={(open) => !open && onClose()}
       >
-        <DrawerContent className="flex h-dvh max-h-dvh flex-col overflow-hidden rounded-t-3xl border-t bg-canvas lg:hidden">
+        <DrawerContent className="flex h-dvh max-h-dvh flex-col overflow-hidden rounded-t-3xl border-t-0 bg-canvas lg:hidden [&>div:first-child]:hidden">
           <DrawerHeader className="sr-only">
             <DrawerTitle>{group.name} Details</DrawerTitle>
           </DrawerHeader>
@@ -70,7 +67,6 @@ export function GroupDetailPanel({
             focusedProposalId={focusedProposalId}
             selectedMemberId={selectedMemberId}
             onClose={onClose}
-            onJumpToMessage={onJumpToMessage}
             onSelectedMemberIdChange={onSelectedMemberIdChange}
             isMobile
           />

@@ -14,9 +14,48 @@ import {
 } from "@/shared/lib/maps/google-places-service";
 import type { LocationValue } from "@/shared/lib/maps/location.types";
 
+type AddressAutocompleteMessageTone = "error" | "info";
+
+interface AddressAutocompleteMessage {
+  text: string;
+  tone: AddressAutocompleteMessageTone;
+}
+
 interface UseAddressAutocompleteOptions {
   value: LocationValue | null;
   onLocationSelect: (value: LocationValue | null) => void;
+}
+
+function isGeolocationPositionError(
+  error: unknown,
+): error is GeolocationPositionError {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    typeof (error as { code?: unknown }).code === "number"
+  );
+}
+
+function getCurrentAreaErrorMessage(error: unknown) {
+  if (!window.isSecureContext) {
+    return "Current location needs HTTPS or a trusted localhost URL.";
+  }
+
+  if (!isGeolocationPositionError(error)) {
+    return "We couldn't get your location. Try again or search manually.";
+  }
+
+  switch (error.code) {
+    case error.PERMISSION_DENIED:
+      return "Location is blocked for this site. Check browser permissions or search manually.";
+    case error.POSITION_UNAVAILABLE:
+      return "Your browser couldn't get a location fix. Try again or search manually.";
+    case error.TIMEOUT:
+      return "Location lookup timed out. Try again or search manually.";
+    default:
+      return "We couldn't get your location. Try again or search manually.";
+  }
 }
 
 export function useAddressAutocomplete({
@@ -34,7 +73,10 @@ export function useAddressAutocomplete({
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
   const [isResolvingPlace, setIsResolvingPlace] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<AddressAutocompleteMessage | null>(
+    null,
+  );
+  const [hasCurrentAreaError, setHasCurrentAreaError] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const hasTypedInSessionRef = useRef(false);
@@ -54,6 +96,14 @@ export function useAddressAutocomplete({
     Boolean(value?.address) &&
     inputValue === value?.address &&
     (Boolean(value?.placeId) || value?.lat != null || value?.lng != null);
+
+  function showMessage(text: string, tone: AddressAutocompleteMessageTone) {
+    setMessage({ text, tone });
+  }
+
+  function clearMessage() {
+    setMessage(null);
+  }
 
   useEffect(() => {
     setActiveSuggestionIndex((currentIndex) => {
@@ -125,7 +175,8 @@ export function useAddressAutocomplete({
     hasTypedInSessionRef.current = true;
     skipPredictionsForValueRef.current = null;
     setDraftInput({ baseValue: externalInputValue, value: nextValue });
-    setMessage(null);
+    clearMessage();
+    setHasCurrentAreaError(false);
     if (nextValue.trim().length < 3) {
       setSuggestions([]);
       setIsSuggestionsOpen(false);
@@ -147,7 +198,8 @@ export function useAddressAutocomplete({
     setSuggestions([]);
     setIsSuggestionsOpen(false);
     setActiveSuggestionIndex(-1);
-    setMessage(null);
+    clearMessage();
+    setHasCurrentAreaError(false);
     onLocationSelect(null);
   }
 
@@ -178,7 +230,8 @@ export function useAddressAutocomplete({
     }
 
     setIsResolvingPlace(true);
-    setMessage(null);
+    clearMessage();
+    setHasCurrentAreaError(false);
     hasTypedInSessionRef.current = false;
     skipPredictionsForValueRef.current = prediction.description;
     setSuggestions([]);
@@ -200,7 +253,10 @@ export function useAddressAutocomplete({
       onLocationSelect(nextLocation);
       return;
     } catch {
-      setMessage("We couldn't read that location. Try another result.");
+      showMessage(
+        "We couldn't read that location. Try another result.",
+        "error",
+      );
       closeSuggestions();
       setIsResolvingPlace(false);
     }
@@ -261,12 +317,14 @@ export function useAddressAutocomplete({
 
   async function useCurrentArea() {
     if (!mapsReady || !isGeolocationAvailable()) {
-      setMessage("Location access is unavailable in this browser.");
+      showMessage("Location access is unavailable in this browser.", "error");
+      setHasCurrentAreaError(true);
       return;
     }
 
     setIsLocating(true);
-    setMessage(null);
+    showMessage("Finding your location...", "info");
+    setHasCurrentAreaError(false);
     hasTypedInSessionRef.current = false;
     setSuggestions([]);
     closeSuggestions();
@@ -276,9 +334,10 @@ export function useAddressAutocomplete({
       const nextLocation = await reverseGeocodeCoordinates(coordinates);
 
       if (!nextLocation) {
-        setMessage("We found your area, but couldn't label it.");
+        showMessage("We found your area, but couldn't label it.", "info");
         skipPredictionsForValueRef.current = "Current area";
         setIsLocating(false);
+        setHasCurrentAreaError(false);
         onLocationSelect({
           address: "Current area",
           city: "Current area",
@@ -291,6 +350,8 @@ export function useAddressAutocomplete({
 
       skipPredictionsForValueRef.current = nextLocation.address;
       setIsLocating(false);
+      setHasCurrentAreaError(false);
+      clearMessage();
       onLocationSelect({
         ...nextLocation,
         lat: coordinates.lat,
@@ -298,8 +359,9 @@ export function useAddressAutocomplete({
       });
       setDraftInput(null);
       return;
-    } catch {
-      setMessage("Allow location access or search manually.");
+    } catch (error) {
+      showMessage(getCurrentAreaErrorMessage(error), "error");
+      setHasCurrentAreaError(true);
       setIsLocating(false);
     }
   }
@@ -314,7 +376,9 @@ export function useAddressAutocomplete({
     activeSuggestionIndex,
     isResolvingPlace,
     isLocating,
-    message,
+    message: message?.text ?? null,
+    messageTone: message?.tone ?? null,
+    hasCurrentAreaError,
     setActiveSuggestionIndex,
     handleInputFocus,
     handleInputChange,

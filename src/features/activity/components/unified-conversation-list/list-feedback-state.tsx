@@ -1,4 +1,4 @@
-import { AlertTriangle, RefreshCw, WifiOff } from "lucide-react";
+import { RefreshCw, WifiOff } from "lucide-react";
 import { ErrorNetworkRetryVisual } from "@/assets/error-state/error-network-retry";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
@@ -22,7 +22,6 @@ export function ConversationListErrorState({
   title: titleProp,
   onRetry,
 }: ConversationListErrorStateProps) {
-  const Icon = isOffline ? WifiOff : AlertTriangle;
   const defaultDescription =
     "Something interrupted the chat list. Retry to bring everything back.";
   const title = isOffline
@@ -39,18 +38,7 @@ export function ConversationListErrorState({
     >
       <ErrorNetworkRetryVisual className="h-28 w-auto text-foreground" />
       <div className="mt-5 max-w-60">
-        <span
-          className={cn(
-            "mx-auto flex size-10 items-center justify-center rounded-full border",
-            isOffline
-              ? "border-spark-amber/35 bg-spark-amber/10 text-spark-amber"
-              : "border-destructive/30 bg-destructive/10 text-destructive",
-          )}
-          aria-hidden="true"
-        >
-          <Icon size={18} />
-        </span>
-        <p className="mt-3 font-black text-base text-foreground leading-tight">
+        <p className="font-black text-base text-foreground leading-tight">
           {title}
         </p>
         <p className="mt-2 font-medium text-muted-foreground text-sm leading-relaxed">

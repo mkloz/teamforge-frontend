@@ -59,7 +59,7 @@ export const SavedMessagesChatListItem = memo(
             <button
               type="button"
               aria-current={isSelected ? "true" : undefined}
-              aria-label={`${SAVED_MESSAGES_TITLE}, ${count} saved messages`}
+              aria-label={SAVED_MESSAGES_TITLE}
               className="absolute inset-0 z-10 cursor-pointer appearance-none rounded-none border-0 bg-transparent p-0 text-left outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-inset"
               onClick={onSelect}
             >
@@ -82,11 +82,6 @@ export const SavedMessagesChatListItem = memo(
               aria-hidden="true"
             >
               <SavedMessagesAvatarVisual className="size-full" />
-              {count > 0 ? (
-                <span className="absolute -right-1 -bottom-1 flex h-4 min-w-4 items-center justify-center rounded-full border border-canvas bg-forge-teal px-1 font-black text-canvas text-micro leading-none shadow-sm">
-                  {count > 9 ? "9+" : count}
-                </span>
-              ) : null}
             </span>
 
             <div className="flex min-w-0 flex-1 flex-col justify-center">

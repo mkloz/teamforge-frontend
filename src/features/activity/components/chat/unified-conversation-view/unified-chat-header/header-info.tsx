@@ -199,10 +199,14 @@ function HeaderAvatar({
       shape={isGroup ? "rounded" : "circle"}
       className={cn(
         "relative transition-all duration-300",
-        isGroup ? "size-10 rounded-md" : "size-10",
+        isGroup
+          ? "size-10 rounded-md bg-forge-teal/10 ring-1 ring-border/50"
+          : "size-10",
       )}
       imageClassName="transition-transform duration-700 ease-out"
-      fallbackClassName="bg-muted text-xs text-muted-foreground"
+      fallbackClassName={
+        isGroup ? "bg-forge-teal/10 text-forge-teal" : undefined
+      }
       loading="eager"
     >
       <div className="absolute inset-0 bg-ink/0" />

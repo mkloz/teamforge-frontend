@@ -9,7 +9,13 @@ import {
   applyFilter,
   sortByPinnedThenRecency,
 } from "@/features/activity/lib/unify-conversations";
-import type { ChatApi, FriendshipApi, GroupApi, User } from "@/shared/schemas";
+import type {
+  ChatApi,
+  FriendshipApi,
+  GroupApi,
+  PlanProposal,
+  User,
+} from "@/shared/schemas";
 import {
   buildDirectFeedItem,
   buildNotesFeedItem,
@@ -19,6 +25,7 @@ import { mapCurrentUserParticipant } from "./activity-participant-projections";
 
 export interface ActivityFeedStateMeta {
   pinnedConversationKeys: string[];
+  planProposalsByGroupId?: Record<string, PlanProposal[]>;
   savedMessagesById: Record<string, SavedMessageSnapshot>;
 }
 
@@ -35,6 +42,7 @@ export function deriveFeedData(
   >,
   meta: ActivityFeedStateMeta = {
     pinnedConversationKeys: [],
+    planProposalsByGroupId: {},
     savedMessagesById: {},
   },
 ): ActivityFeedData {
@@ -58,7 +66,11 @@ export function deriveFeedData(
       buildNotesFeedItem(chat, currentUserParticipant, typingByChatId),
     );
   const items = sortByPinnedThenRecency(
-    enrichFeedItems([...notesItems, ...groupItems, ...directItems], meta),
+    enrichFeedItems(
+      [...notesItems, ...groupItems, ...directItems],
+      meta,
+      currentUser.id,
+    ),
     meta.pinnedConversationKeys,
   );
 
@@ -69,13 +81,28 @@ export function deriveFeedData(
     dmCount: directItems.length + notesItems.length,
     unreadCount: items.filter((item) => item.unreadCount > 0).length,
     pinnedCount: items.filter((item) => item.isPinned).length,
+    allUnreadMessageCount: countUnreadMessages(items),
+    groupUnreadMessageCount: countUnreadMessages(
+      items.filter((item) => item.kind === "group"),
+    ),
+    dmUnreadMessageCount: countUnreadMessages(
+      items.filter((item) => item.kind === "dm"),
+    ),
+    pinnedUnreadMessageCount: countUnreadMessages(
+      items.filter((item) => item.isPinned),
+    ),
     savedCount: Object.keys(meta.savedMessagesById).length,
   };
+}
+
+function countUnreadMessages(items: UnifiedConversation[]) {
+  return items.reduce((total, item) => total + item.unreadCount, 0);
 }
 
 function enrichFeedItems(
   items: UnifiedConversation[],
   meta: ActivityFeedStateMeta,
+  currentUserId: string,
 ): UnifiedConversation[] {
   const savedByConversation = groupSavedMessagesByConversation(
     meta.savedMessagesById,
@@ -84,14 +111,45 @@ function enrichFeedItems(
   return items.map((item) => {
     const key = getActivityConversationKey(item.kind, item.id);
     const savedMessages = savedByConversation.get(key) ?? [];
+    const planProposals =
+      item.kind === "group"
+        ? (meta.planProposalsByGroupId?.[item.id] ??
+          item.group?.plan?.proposals ??
+          [])
+        : [];
 
     return {
       ...item,
+      activeProposalCount:
+        item.kind === "group"
+          ? countPendingUnvotedProposals(planProposals, currentUserId)
+          : undefined,
+      group:
+        item.kind === "group" && item.group?.plan
+          ? {
+              ...item.group,
+              plan: {
+                ...item.group.plan,
+                proposals: planProposals,
+              },
+            }
+          : item.group,
       isPinned: meta.pinnedConversationKeys.includes(key),
       savedMessageCount: savedMessages.length,
       latestSavedMessage: savedMessages[0]?.message,
     };
   });
+}
+
+function countPendingUnvotedProposals(
+  proposals: PlanProposal[],
+  currentUserId: string,
+) {
+  return proposals.filter(
+    (proposal) =>
+      proposal.status === "PENDING" &&
+      !proposal.votes.some((vote) => vote.userId === currentUserId),
+  ).length;
 }
 
 function groupSavedMessagesByConversation(

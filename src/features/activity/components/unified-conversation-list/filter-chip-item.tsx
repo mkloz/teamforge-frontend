@@ -1,5 +1,5 @@
+import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
 import { memo } from "react";
-import { CategoryFilterChip } from "@/shared/components/ui/category-filter-chip";
 import { cn } from "@/shared/lib/utils";
 
 interface FilterChipItemProps {
@@ -20,21 +20,35 @@ export const FilterChipItem = memo(function FilterChipItem({
   badge,
 }: FilterChipItemProps) {
   return (
-    <CategoryFilterChip
-      as="radio"
+    <RadioGroupPrimitive.Item
       value={value}
       aria-label={ariaLabel ?? label}
-      label={label}
-      selected={isActive}
-      selectedVariant="soft"
-      badge={badge}
-      badgeClassName="border border-current/10 bg-current/10 text-current group-data-[state=checked]/chip:bg-current/10 group-data-[state=checked]/chip:text-current"
       className={cn(
-        "h-8 snap-start px-3 shadow-none md:h-7",
-        !isActive &&
-          "border-border/70 bg-transparent text-slate-muted hover:border-forge-teal/35 hover:bg-forge-teal/6 hover:text-ink",
+        "group/chip relative h-8 w-auto min-w-fit snap-start rounded-full px-3 md:h-7",
+        "aspect-auto whitespace-nowrap",
+        "inline-flex shrink-0 cursor-pointer select-none items-center justify-center gap-1.5 border font-bold text-xs leading-none outline-none",
+        "transition-all duration-150 ease-out",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-1",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        "border-border/45 bg-card/35 text-slate-muted hover:-translate-y-1 hover:border-button-primary-border hover:bg-forge-teal hover:text-white hover:shadow-button-primary active:translate-y-0 active:shadow-none",
+        isActive &&
+          "z-10 border-button-primary-border bg-forge-teal text-white",
         className,
       )}
-    />
+    >
+      <span className="relative z-10">{label}</span>
+      {badge != null && badge > 0 ? (
+        <span
+          className={cn(
+            "relative z-10 inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 font-bold text-micro tabular-nums leading-none transition-colors",
+            isActive
+              ? "bg-white/20 text-white"
+              : "bg-slate-muted/15 text-slate-muted group-hover/chip:bg-white/20 group-hover/chip:text-white",
+          )}
+        >
+          {badge > 99 ? "99+" : badge}
+        </span>
+      ) : null}
+    </RadioGroupPrimitive.Item>
   );
 });

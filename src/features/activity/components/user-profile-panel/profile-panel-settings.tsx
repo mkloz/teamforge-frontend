@@ -14,6 +14,9 @@ interface ProfilePanelSettingsProps {
   onToggleBlock?: () => void;
 }
 
+const actionButtonClassName =
+  "group flex h-auto min-h-12 w-full items-center justify-start rounded-lg border border-border/70 bg-card/55 px-3 py-2.5 shadow-none hover:enabled:border-forge-teal/30 hover:enabled:bg-card/85 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-0";
+
 export function ProfilePanelSettings({
   isMuted,
   isBlocked,
@@ -45,20 +48,21 @@ export function ProfilePanelSettings({
       className={cn("border-border/70 border-t px-5 py-5", isMobile && "pb-6")}
     >
       <h4 className="font-bold text-slate-muted text-xs">Account & safety</h4>
-      <div className="mt-3 flex flex-col divide-y divide-border/70 border-border/70 border-y">
+      <div className="mt-3 flex flex-col gap-2">
         <Button
           variant="ghost"
-          className="group flex h-auto w-full items-center justify-start rounded-lg px-0 py-3"
+          className={actionButtonClassName}
           contentClassName="justify-start gap-3"
           disabled={isMuteActionPending || !onToggleMute}
+          aria-pressed={isMuted}
           onClick={onToggleMute}
         >
           {isMuteActionPending ? (
             <Loader2 className="size-4 shrink-0 animate-spin text-slate-muted" />
           ) : isMuted ? (
-            <BellOff className="size-4 shrink-0 text-slate-muted transition-colors group-hover:text-forge-teal" />
+            <BellOff className="size-4 shrink-0 text-forge-teal" />
           ) : (
-            <Bell className="size-4 shrink-0 text-slate-muted transition-colors group-hover:text-forge-teal" />
+            <Bell className="size-4 shrink-0 text-forge-teal" />
           )}
           <span className="font-medium text-ink text-sm">
             {isMuteActionPending
@@ -84,7 +88,10 @@ export function ProfilePanelSettings({
           trigger={
             <Button
               variant="ghost"
-              className="group flex h-auto w-full items-center justify-start rounded-lg px-0 py-3 text-destructive"
+              className={cn(
+                actionButtonClassName,
+                "border-destructive/25 text-destructive hover:enabled:border-destructive/35 hover:enabled:bg-destructive/8",
+              )}
               contentClassName="justify-start gap-3"
               disabled={
                 blockActionDisabled || isBlockActionPending || !onToggleBlock

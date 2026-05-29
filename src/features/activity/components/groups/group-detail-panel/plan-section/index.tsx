@@ -3,7 +3,9 @@ import {
   Calendar,
   CheckCircle2,
   CircleDashed,
+  CircleDot,
   MapPin,
+  MessageSquareDiff,
   Pencil,
   PlusCircle,
   XCircle,
@@ -152,13 +154,8 @@ function PlanCategoryPill({ category }: { category: Plan["category"] }) {
 }
 
 function PlanStatusPill({ status }: { status: Plan["status"] }) {
-  const Icon =
-    status === "CONFIRMED"
-      ? CheckCircle2
-      : status === "CANCELLED"
-        ? XCircle
-        : CircleDashed;
-  const label = status === "DRAFT" ? "Pending" : formatPanelToken(status);
+  const Icon = getPlanStatusPillIcon(status);
+  const label = formatPanelToken(status);
 
   return (
     <span
@@ -171,6 +168,30 @@ function PlanStatusPill({ status }: { status: Plan["status"] }) {
       {label}
     </span>
   );
+}
+
+function getPlanStatusPillIcon(status: Plan["status"]) {
+  if (status === "DRAFT") {
+    return Pencil;
+  }
+
+  if (status === "CONFIRMED" || status === "COMPLETED") {
+    return CheckCircle2;
+  }
+
+  if (status === "CANCELLED") {
+    return XCircle;
+  }
+
+  if (status === "IN_PROGRESS") {
+    return CircleDot;
+  }
+
+  if (status === "PROPOSED") {
+    return MessageSquareDiff;
+  }
+
+  return CircleDashed;
 }
 
 function PlanFactList({

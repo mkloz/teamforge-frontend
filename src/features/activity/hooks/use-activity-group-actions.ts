@@ -2,7 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import type { CreateGroupPlanPayload } from "@/features/activity/api/activity.api";
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
-import type { Plan } from "@/features/activity/lib/activity-contract";
+import type {
+  Plan,
+  PlanHistoryItem,
+} from "@/features/activity/lib/activity-contract";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
@@ -157,14 +160,19 @@ export function useActivityGroupActions(groupId: string) {
     );
   }
 
+  async function createPlanFromHistory(plan: PlanHistoryItem) {
+    await runPlanAction("create-next-plan", () =>
+      ActivityCommands.createNextGroupPlan(
+        groupId,
+        buildCreateHistoryTemplatePayload(plan),
+      ),
+    );
+  }
+
   async function runPlanAction(
     action: Exclude<PendingAction, "disband" | "leave" | null>,
     execute: () => Promise<unknown>,
   ) {
-    if (!currentUserQuery.data) {
-      return;
-    }
-
     setPendingAction(action);
 
     try {
@@ -210,10 +218,26 @@ export function useActivityGroupActions(groupId: string) {
     completePlan,
     confirmPlan,
     createNextGroupPlan,
+    createPlanFromHistory,
     disbandGroup,
     inviteMember,
     leaveGroup,
     removeMember,
+  };
+}
+
+function buildCreateHistoryTemplatePayload(
+  plan: PlanHistoryItem,
+): CreateGroupPlanPayload {
+  const location = plan.location?.trim() || null;
+
+  return {
+    category: plan.category,
+    coverImage: plan.coverImage,
+    dateTime: null,
+    location,
+    locationMode: location ? "IN_PERSON" : "TBD",
+    title: plan.title,
   };
 }
 

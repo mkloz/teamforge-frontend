@@ -18,7 +18,6 @@ interface GroupPanelContentProps {
   focusedProposalId?: string | null;
   selectedMemberId?: string | null;
   onClose: () => void;
-  onJumpToMessage?: (messageId: string) => void;
   onSelectedMemberIdChange?: (memberId: string | null) => void;
   isMobile?: boolean;
 }
@@ -29,7 +28,6 @@ export function GroupPanelContent({
   focusedProposalId = null,
   selectedMemberId = null,
   onClose,
-  onJumpToMessage,
   onSelectedMemberIdChange,
   isMobile = false,
 }: GroupPanelContentProps) {
@@ -40,6 +38,7 @@ export function GroupPanelContent({
     completePlan,
     confirmPlan,
     createNextGroupPlan,
+    createPlanFromHistory,
     disbandGroup,
     inviteCandidates,
     inviteMember,
@@ -48,7 +47,6 @@ export function GroupPanelContent({
     isEditOpen,
     isLeaving,
     isPlanEditOpen,
-    jumpToPinnedMessage,
     leaveGroup,
     memberChat,
     memberCount,
@@ -60,13 +58,9 @@ export function GroupPanelContent({
     setIsEditOpen,
     setIsPlanEditOpen,
     setSelectedMember,
-    unpinMessage,
   } = useGroupPanelContent({
     group,
-    isMobile,
     selectedMemberId,
-    onClose,
-    onJumpToMessage,
     onSelectedMemberIdChange,
   });
 
@@ -97,36 +91,45 @@ export function GroupPanelContent({
       )}
 
       <GroupPanelScrollArea isMobile={isMobile} resetKey={group.id}>
-        <GroupCoverHeader group={group} isMobile={isMobile} onClose={onClose} />
+        {({ isCompactVisible, scrollToTop }) => (
+          <>
+            <GroupCoverHeader
+              group={group}
+              isCompactVisible={isCompactVisible}
+              isMobile={isMobile}
+              onClose={onClose}
+              onCompactHeaderClick={scrollToTop}
+            />
 
-        <GroupPanelMainSections
-          currentUserId={currentUserId}
-          currentUserRole={currentUserRole}
-          cancelPlan={cancelPlan}
-          completePlan={completePlan}
-          confirmPlan={confirmPlan}
-          createNextGroupPlan={createNextGroupPlan}
-          disbandGroup={disbandGroup}
-          focusedPlanId={focusedPlanId}
-          focusedProposalId={focusedProposalId}
-          group={group}
-          inviteCandidates={inviteCandidates}
-          inviteMember={inviteMember}
-          invitingMemberId={invitingMemberId}
-          isDisbanding={isDisbanding}
-          isLeaving={isLeaving}
-          jumpToPinnedMessage={jumpToPinnedMessage}
-          leaveGroup={leaveGroup}
-          memberCount={memberCount}
-          members={members}
-          pendingPlanAction={pendingPlanAction}
-          onEditGroup={() => setIsEditOpen(true)}
-          onEditPlan={() => setIsPlanEditOpen(true)}
-          removeMember={removeMember}
-          removingMemberId={removingMemberId}
-          setSelectedMember={setSelectedMember}
-          unpinMessage={unpinMessage}
-        />
+            <GroupPanelMainSections
+              currentUserId={currentUserId}
+              currentUserRole={currentUserRole}
+              cancelPlan={cancelPlan}
+              completePlan={completePlan}
+              confirmPlan={confirmPlan}
+              createNextGroupPlan={createNextGroupPlan}
+              createPlanFromHistory={createPlanFromHistory}
+              disbandGroup={disbandGroup}
+              focusedPlanId={focusedPlanId}
+              focusedProposalId={focusedProposalId}
+              group={group}
+              inviteCandidates={inviteCandidates}
+              inviteMember={inviteMember}
+              invitingMemberId={invitingMemberId}
+              isDisbanding={isDisbanding}
+              isLeaving={isLeaving}
+              leaveGroup={leaveGroup}
+              memberCount={memberCount}
+              members={members}
+              pendingPlanAction={pendingPlanAction}
+              onEditGroup={() => setIsEditOpen(true)}
+              onEditPlan={() => setIsPlanEditOpen(true)}
+              removeMember={removeMember}
+              removingMemberId={removingMemberId}
+              setSelectedMember={setSelectedMember}
+            />
+          </>
+        )}
       </GroupPanelScrollArea>
 
       {currentUserRole === "ADMIN" && (

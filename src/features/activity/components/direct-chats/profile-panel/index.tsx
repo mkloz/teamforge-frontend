@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { UserProfilePanel as ProfilePanelContent } from "@/features/activity/components/user-profile-panel";
 import { useDirectChatSafetyActions } from "@/features/activity/hooks/use-direct-chat-safety-actions";
 import type { DirectChat } from "@/features/activity/lib/activity-contract";
@@ -9,7 +8,6 @@ import {
   DrawerTitle,
 } from "@/shared/components/ui/drawer";
 import { useEscapeKey } from "@/shared/hooks/use-escape-key";
-import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
 import { cn } from "@/shared/lib/utils";
 import { ProfilePanelHeader } from "./profile-panel-header";
 
@@ -57,33 +55,22 @@ export function ProfilePanelMobile({
   onClose,
 }: ProfilePanelProps) {
   const safetyActions = useDirectChatSafetyActions(chat);
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-
-  useResetScrollOnChange({
-    ref: scrollRef,
-    resetKey: chat.id,
-  });
 
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="h-dvh overflow-hidden rounded-t-3xl border-t bg-canvas">
+      <DrawerContent className="h-dvh max-h-dvh overflow-hidden rounded-t-3xl border-t bg-canvas">
         <DrawerHeader className="sr-only">
           <DrawerTitle>User Profile</DrawerTitle>
         </DrawerHeader>
-        <div
-          ref={scrollRef}
-          className="scrollbar-hide min-h-0 flex-1 overflow-y-auto pb-10"
-        >
-          <ProfilePanelContent
-            chat={chat}
-            isMobile={true}
-            blockActionDisabled={!safetyActions.canToggleBlock}
-            isBlockActionPending={safetyActions.isBlockActionPending}
-            isMuteActionPending={safetyActions.isMuteActionPending}
-            onToggleMute={safetyActions.toggleMute}
-            onToggleBlock={safetyActions.toggleBlock}
-          />
-        </div>
+        <ProfilePanelContent
+          chat={chat}
+          isMobile={true}
+          blockActionDisabled={!safetyActions.canToggleBlock}
+          isBlockActionPending={safetyActions.isBlockActionPending}
+          isMuteActionPending={safetyActions.isMuteActionPending}
+          onToggleMute={safetyActions.toggleMute}
+          onToggleBlock={safetyActions.toggleBlock}
+        />
       </DrawerContent>
     </Drawer>
   );

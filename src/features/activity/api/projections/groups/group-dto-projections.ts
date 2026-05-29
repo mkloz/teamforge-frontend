@@ -6,13 +6,20 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 import type { ChatApi, GroupApi, PlanProposal } from "@/shared/schemas";
 
+import {
+  type ChatPreferenceSummary,
+  getChatIsMutedForUser,
+} from "../chat-user-preferences";
 import { mapGroupPinnedMessages } from "./group-chat-projections";
+
+type GroupChatSummary = Pick<ChatApi, "id" | "pinnedMessages"> &
+  ChatPreferenceSummary;
 
 export function mapGroup(
   group: GroupApi,
   currentUserId: string | null,
   proposals: PlanProposal[] = [],
-  chatSummary?: Pick<ChatApi, "id" | "isMuted" | "pinnedMessages"> | null,
+  chatSummary?: GroupChatSummary | null,
 ): Group {
   const members = group.members.map((member) =>
     mapGroupMember(member, group.id),
@@ -43,7 +50,7 @@ export function mapGroup(
     chat: chat
       ? {
           id: chat.id,
-          isMuted: chat.isMuted,
+          isMuted: getChatIsMutedForUser(chat, currentUserId),
           pinnedMessages: mapGroupPinnedMessages(
             chat,
             participants,

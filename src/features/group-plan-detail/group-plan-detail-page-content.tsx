@@ -1,4 +1,4 @@
-import type { Ref } from "react";
+import { type Ref, useRef } from "react";
 import { FitSection } from "@/features/group-plan-detail/components/content/fit-section";
 import { GroupSection } from "@/features/group-plan-detail/components/content/group-section";
 import { PeopleSection } from "@/features/group-plan-detail/components/content/people-section";
@@ -7,6 +7,7 @@ import { PlanSection } from "@/features/group-plan-detail/components/content/pla
 import { GroupPlanHero } from "@/features/group-plan-detail/components/hero/group-plan-hero";
 import { MobileActionDock } from "@/features/group-plan-detail/components/mobile-action-dock";
 import { DecisionRail } from "@/features/group-plan-detail/components/rail/decision-rail";
+import { useGroupPlanDetailCollapsibleHero } from "@/features/group-plan-detail/hooks/use-group-plan-detail-collapsible-hero";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import type { GroupPlanDetailRouteSearch } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 
@@ -50,9 +51,21 @@ function GroupPlanDetailPageShell({
   focus: GroupPlanSectionFocusProps;
   search: GroupPlanDetailRouteSearch;
 }) {
+  const shellRef = useRef<HTMLDivElement | null>(null);
+  const { isCompactVisible } = useGroupPlanDetailCollapsibleHero({
+    ref: shellRef,
+  });
+
   return (
-    <div className="mx-auto w-full max-w-5xl overflow-x-clip px-4 pt-3 pb-app-bottom-dock sm:px-5 md:pt-6 md:pb-12 lg:px-8">
-      <GroupPlanHero detail={detail} search={search} />
+    <div
+      ref={shellRef}
+      className="mx-auto w-full max-w-5xl overflow-x-clip px-4 pt-3 pb-app-bottom-dock [--group-detail-compact-opacity:0] [--group-detail-compact-y:-8px] [--group-detail-cover-collapsed-height:72px] [--group-detail-cover-expanded-height:280px] [--group-detail-cover-image-scale:1] [--group-detail-cover-image-y:0px] [--group-detail-cover-original-delay:0ms] [--group-detail-cover-original-opacity:1] [--group-detail-cover-original-y:0px] [--group-detail-cover-y:0px] sm:px-5 md:pt-6 md:pb-12 lg:px-8 sm:[--group-detail-cover-expanded-height:340px] md:[--group-detail-cover-expanded-height:400px] lg:[--group-detail-cover-expanded-height:440px]"
+    >
+      <GroupPlanHero
+        detail={detail}
+        isCompactVisible={isCompactVisible}
+        search={search}
+      />
       <GroupPlanPitch detail={detail} />
       <GroupPlanDetailGrid detail={detail} focus={focus} />
     </div>

@@ -3,16 +3,12 @@ import dayjs from "dayjs";
 import {
   ArrowRight,
   CalendarDays,
-  CheckCircle2,
-  CircleDot,
-  Clock3,
   Globe2,
   Lock,
   MapPin,
   Pencil,
   UserCheck,
   UsersRound,
-  XCircle,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import type {
@@ -77,23 +73,24 @@ export function GroupIdentitySection({
   );
 
   return (
-    <section className="relative -mt-12 flex flex-col gap-4">
-      <div className="flex items-end gap-4">
+    <section className="relative flex flex-col gap-4 pt-5">
+      <div
+        className="transform-[translate3d(0,var(--collapsible-panel-original-card-y,0px),0)] flex items-center gap-4 opacity-(--collapsible-panel-original-card-opacity,1) transition-[opacity,transform] duration-300 ease-out [pointer-events:var(--collapsible-panel-original-pointer-events,auto)] [transition-delay:var(--collapsible-panel-original-card-delay,0ms)] motion-reduce:transition-none"
+        data-collapsible-panel-original-card=""
+      >
         <div className="group pointer-events-auto shrink-0">
           <Avatar
             src={avatarSrc}
             name={displayName}
             alt={`${displayName} avatar`}
             shape="rounded"
-            className="size-20 rounded-xl bg-muted shadow-lg ring-4 ring-canvas"
+            className="size-16 rounded-xl bg-muted ring-1 ring-border/70"
             imageClassName="transition-transform duration-500 group-hover:scale-105"
           />
         </div>
 
-        <div className="relative min-w-0 flex-1 pr-10 pb-1">
-          <GroupStatusIcon label={statusLabel} status={status} />
-
-          <h2 className="wrap-break-word line-clamp-2 font-bold text-2xl text-ink leading-tight tracking-tight">
+        <div className="min-w-0 flex-1">
+          <h2 className="wrap-break-word line-clamp-2 font-bold text-ink text-xl leading-tight tracking-tight">
             {displayName}
           </h2>
 
@@ -155,32 +152,6 @@ export function GroupIdentitySection({
         ) : null}
       </div>
     </section>
-  );
-}
-
-function GroupStatusIcon({
-  label,
-  status,
-}: {
-  label: string;
-  status: GroupStatus;
-}) {
-  const Icon = GROUP_STATUS_ICONS[status];
-
-  return (
-    <span
-      aria-label={`Group status: ${label}`}
-      className={cn(
-        "absolute top-0 right-0 flex size-8 items-center justify-center rounded-lg border",
-        status === "ACTIVE"
-          ? "border-forge-teal/20 bg-forge-teal/10 text-forge-teal"
-          : "border-slate-muted/15 bg-slate-muted/10 text-slate-muted",
-      )}
-      role="img"
-      title={label}
-    >
-      <Icon className="size-3.5" strokeWidth={2} />
-    </span>
   );
 }
 
@@ -280,15 +251,6 @@ function GroupFactList({
 }
 
 const CAPACITY_SEGMENT_KEYS = ["1", "2", "3", "4", "5", "6", "7", "8"];
-
-const GROUP_STATUS_ICONS = {
-  ACTIVE: CheckCircle2,
-  COMPLETED: CheckCircle2,
-  DISBANDED: XCircle,
-  FORMING: CircleDot,
-  PENDING: Clock3,
-  PLANNING: Clock3,
-} satisfies Record<GroupStatus, typeof Clock3>;
 
 interface CompactFactProps {
   icon: ReactNode;

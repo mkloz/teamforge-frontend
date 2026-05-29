@@ -31,6 +31,7 @@ export function AddressAutocomplete({
   className,
 }: AddressAutocompleteProps) {
   const inputId = useId();
+  const hintId = `${inputId}-hint`;
   const suggestionsId = `${inputId}-suggestions`;
   const {
     containerRef,
@@ -43,6 +44,8 @@ export function AddressAutocomplete({
     isResolvingPlace,
     isLocating,
     message,
+    messageTone,
+    hasCurrentAreaError,
     setActiveSuggestionIndex,
     handleInputFocus,
     handleInputChange,
@@ -54,12 +57,14 @@ export function AddressAutocomplete({
   } = useAddressAutocomplete({ value, onLocationSelect });
   const showManualHint = mapsStatus === "unavailable";
   const isBusy = mapsStatus === "loading" || isResolvingPlace || isLocating;
-  const describedBy = message || showManualHint ? `${inputId}-hint` : undefined;
+  const showBusyIndicator = isBusy && !isLocating;
+  const hasErrorMessage = messageTone === "error";
+  const describedBy = message || showManualHint ? hintId : undefined;
   const hasRightControls = mapsReady || isBusy || Boolean(inputValue);
   const rightPaddingClassName = getAddressInputRightPaddingClassName({
     inputValue,
-    isBusy,
     mapsReady,
+    showBusyIndicator,
   });
   const activeSuggestionId = getActiveSuggestionId({
     activeSuggestionIndex,
@@ -118,16 +123,19 @@ export function AddressAutocomplete({
           aria-controls={suggestionsId}
           aria-activedescendant={activeSuggestionId}
           aria-describedby={describedBy}
+          aria-invalid={hasErrorMessage || undefined}
           className={rightPaddingClassName}
-          leftIcon={<Search size={17} strokeWidth={1.5} />}
+          leftIcon={<Search className="size-3.5" strokeWidth={2} />}
           rightIcon={
             hasRightControls ? (
               <AddressInputControls
                 disabled={disabled}
+                hasCurrentAreaError={hasCurrentAreaError}
                 inputValue={inputValue}
                 isBusy={isBusy}
                 isLocating={isLocating}
                 mapsReady={mapsReady}
+                messageId={hintId}
                 onClearLocation={clearLocation}
                 onUseCurrentArea={useCurrentArea}
               />
@@ -156,8 +164,13 @@ export function AddressAutocomplete({
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <p
-          id={`${inputId}-hint`}
-          className="text-slate-muted text-xs leading-5"
+          id={hintId}
+          aria-live={message ? "polite" : undefined}
+          role={hasErrorMessage ? "alert" : undefined}
+          className={cn(
+            "text-slate-muted text-xs leading-5",
+            hasErrorMessage && "font-medium text-destructive",
+          )}
         >
           {getLocationHintMessage({ hint, message, showManualHint })}
         </p>

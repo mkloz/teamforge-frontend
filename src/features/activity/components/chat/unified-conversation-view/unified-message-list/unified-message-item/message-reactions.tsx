@@ -99,7 +99,7 @@ function getReactionButtonTone({
   if (isOwn) {
     return isActive
       ? "border-spark-amber/35 bg-spark-amber/18 text-spark-amber shadow-sm hover:enabled:bg-spark-amber/22"
-      : "border-white/10 bg-hero-bg/45 text-canvas shadow-sm hover:enabled:bg-hero-bg/55";
+      : "border-white/10 bg-hero-bg/45 text-white shadow-sm hover:enabled:bg-hero-bg/55";
   }
 
   return isActive
@@ -133,7 +133,7 @@ function AnimatedReactionCount({ count }: { count: number }) {
           <motion.span
             key={count}
             animate="center"
-            className="col-start-1 row-start-1 flex h-full items-center justify-center leading-none opacity-80"
+            className="col-start-1 row-start-1 flex h-full items-center justify-center leading-none opacity-95"
             custom={motionState}
             exit="exit"
             initial="enter"

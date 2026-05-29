@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { type LucideIcon, Settings, UserPlus } from "lucide-react";
 import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
 import { PlanChangeDialog } from "@/features/group-plan-detail/components/plan-change-dialog";
-import { RailCard } from "@/features/group-plan-detail/components/rail/rail-card";
 import { useGroupPlanProposalActions } from "@/features/group-plan-detail/hooks/use-group-plan-proposal-actions";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { Button } from "@/shared/components/ui/button";
@@ -21,8 +20,17 @@ export function MemberQuickActions({ detail }: MemberQuickActionsProps) {
   if (!capabilities.hasAnyAction) return null;
 
   return (
-    <RailCard eyebrow="Quick actions">
-      <div className="grid gap-2">
+    <section
+      className="flex flex-col gap-2"
+      aria-labelledby="member-quick-actions"
+    >
+      <h3
+        id="member-quick-actions"
+        className="type-signature-label px-1 font-black text-forge-teal uppercase tracking-widest"
+      >
+        Quick actions
+      </h3>
+      <div className="grid gap-1">
         {capabilities.canSuggestPlanChange ? (
           <PlanChangeDialog
             detail={detail}
@@ -46,7 +54,7 @@ export function MemberQuickActions({ detail }: MemberQuickActionsProps) {
           />
         ) : null}
       </div>
-    </RailCard>
+    </section>
   );
 }
 

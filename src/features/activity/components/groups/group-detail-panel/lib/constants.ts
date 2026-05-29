@@ -19,7 +19,7 @@ export const categoryColors: Record<PlanCategory, string> = {
 };
 
 export const statusColors: Record<PlanStatus, string> = {
-  DRAFT: "border-slate-muted/20 bg-slate-muted/10 text-slate-muted",
+  DRAFT: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
   PROPOSED: "border-spark-amber/25 bg-spark-amber/12 text-spark-amber",
   CONFIRMED: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
   IN_PROGRESS: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",

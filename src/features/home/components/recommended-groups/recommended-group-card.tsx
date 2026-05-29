@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   Check,
-  Clock3,
+  CircleDashed,
   MessageCircle,
   Send,
   UsersRound,
@@ -43,7 +43,7 @@ export function RecommendedGroupCard({ group }: RecommendedGroupCardProps) {
     : joinResult === "JOINED"
       ? Check
       : joinResult === "REQUESTED" || joinMutation.isPending
-        ? Clock3
+        ? CircleDashed
         : group.access === "BY_REQUEST"
           ? Send
           : ArrowRight;

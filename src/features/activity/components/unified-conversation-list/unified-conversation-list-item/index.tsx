@@ -65,7 +65,7 @@ export const UnifiedConversationListItem = memo(
           <div
             className={cn(
               "group/item relative flex w-full cursor-pointer select-none items-center text-left outline-none transition duration-200",
-              isCompact ? "gap-2.5 px-3 py-2" : "gap-3.5 px-4 py-3.5",
+              isCompact ? "gap-2.5 px-3 py-1" : "gap-3.5 px-4 py-2",
               isSelected ? "bg-muted/60" : "hover:bg-muted/30",
             )}
           >

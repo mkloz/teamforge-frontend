@@ -1,4 +1,4 @@
-import { AlertTriangle, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 
 import { ErrorPageDataLoadVisual } from "@/assets/error-state/error-page-data-load";
 import { FeedbackState } from "@/shared/components/feedback-state";
@@ -23,8 +23,6 @@ export function PageErrorState({
   return (
     <FeedbackState
       headingId="page-error-heading"
-      icon={<AlertTriangle size={20} />}
-      iconClassName="bg-destructive/10 text-destructive size-11"
       visual={
         <ErrorPageDataLoadVisual className="h-32 w-auto text-foreground" />
       }

@@ -26,10 +26,11 @@ export function ActivitySidebar({ activity, isOnline }: ActivitySidebarProps) {
         searchQuery={activity.searchQuery}
         activeFilter={activity.activeFilter}
         sidebarDensity={activity.sidebarDensity}
-        groupCount={activity.groupCount}
-        dmCount={activity.dmCount}
-        unreadCount={activity.unreadCount}
         pinnedCount={activity.pinnedCount}
+        allUnreadMessageCount={activity.allUnreadMessageCount}
+        groupUnreadMessageCount={activity.groupUnreadMessageCount}
+        dmUnreadMessageCount={activity.dmUnreadMessageCount}
+        pinnedUnreadMessageCount={activity.pinnedUnreadMessageCount}
         savedCount={activity.savedCount}
         isFeedError={activity.isFeedError || isOfflineInitialLoad}
         isFeedRetrying={activity.isFeedRetrying && !isOfflineInitialLoad}

@@ -62,7 +62,6 @@ export const AttachmentMenu = memo(function AttachmentMenu({
         ref={fileInputRef}
         type="file"
         name="chat-files"
-        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip"
         multiple
         className="hidden"
         onChange={(event) => {

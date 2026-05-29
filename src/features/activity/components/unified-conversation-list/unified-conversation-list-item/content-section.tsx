@@ -1,4 +1,4 @@
-import { BellOff, Bookmark, NotebookPen, Pin } from "lucide-react";
+import { BellOff, Bookmark, Pin } from "lucide-react";
 import { memo } from "react";
 import { UnifiedTypingIndicator } from "@/features/activity/components/chat/unified-typing-indicator";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
@@ -9,8 +9,6 @@ import {
 import {
   getConversationIsMuted,
   getConversationIsNotes,
-  getConversationPlanDateTime,
-  getConversationPlanStatus,
   getConversationSubtitle,
   getConversationTitle,
   getMessagePreviewText,
@@ -49,30 +47,60 @@ export const ContentSection = memo(
       isSavedView && item.latestSavedMessage
         ? getMessagePreviewText(item.latestSavedMessage)
         : getConversationSubtitle(item);
-    const planDateTime = isGroup ? getConversationPlanDateTime(item) : null;
-    const countdown = planDateTime ? formatCountdown(planDateTime) : null;
-    const isDraft = isGroup && getConversationPlanStatus(item) === "DRAFT";
-    const pendingProposalCount = getPendingProposalCount(item);
+    const plan = isGroup ? item.group?.plan : null;
+    const countdown =
+      plan?.status === "CONFIRMED" && plan.dateTime
+        ? formatCountdown(plan.dateTime)
+        : null;
+    const pendingProposalCount =
+      item.activeProposalCount ?? getPendingProposalCount(item);
+    const hasCountdownIndicator = Boolean(countdown);
+    const hasPlanStatusIndicator = Boolean(!countdown && plan?.status);
+    const hasSavedMessages = Boolean(item.savedMessageCount);
+    const hasPendingProposal = pendingProposalCount > 0;
+    const visibleGroupIndicatorCount =
+      Number(hasCountdownIndicator) +
+      Number(hasPlanStatusIndicator) +
+      Number(hasSavedMessages) +
+      Number(hasPendingProposal);
     const isMuted = getConversationIsMuted(item);
+    const showInlineGroupIndicators =
+      isGroup && !isCompact && !isMuted && visibleGroupIndicatorCount === 1;
     const isNotes = getConversationIsNotes(item);
     const latestMessage = item.latestMessage;
     const timestampMessage = isSavedView ? previewMessage : latestMessage;
     const hasIndicatorRow =
       isGroup &&
       !isCompact &&
-      Boolean(countdown || isDraft || pendingProposalCount > 0);
-    const pinButton =
-      onTogglePinned && hasIndicatorRow ? (
+      (visibleGroupIndicatorCount > 1 ||
+        (isMuted && visibleGroupIndicatorCount > 0));
+    const showSavedCountInIndicatorRow = hasIndicatorRow && hasSavedMessages;
+    const showStaticPinnedIcon = item.isPinned && !onTogglePinned;
+    const showInlineMutedIndicator = isMuted;
+    const showTitlePinButton = Boolean(
+      onTogglePinned &&
+        (item.isPinned ||
+          showInlineMutedIndicator ||
+          showInlineGroupIndicators),
+    );
+    const hasTitleUtilityCluster =
+      showInlineGroupIndicators ||
+      showInlineMutedIndicator ||
+      showTitlePinButton ||
+      showStaticPinnedIcon;
+    const titlePinButton =
+      showTitlePinButton && onTogglePinned ? (
         <button
           type="button"
           aria-label={item.isPinned ? "Unpin chat" : "Pin chat"}
           className={cn(
-            "relative z-20 inline-flex size-5 shrink-0 items-center justify-center rounded-full border border-transparent text-slate-muted/70 opacity-60 transition sm:opacity-0",
+            "relative z-20 size-4 shrink-0 items-center justify-center rounded-full border border-transparent text-slate-muted/70 transition",
             "hover:border-forge-teal/20 hover:bg-forge-teal/8 hover:text-forge-teal",
             "focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/25",
             item.isPinned &&
-              "border-forge-teal/20 bg-forge-teal/10 text-forge-teal opacity-100",
-            !item.isPinned && "sm:group-hover/item:opacity-100",
+              "inline-flex border-forge-teal/20 bg-forge-teal/10 text-forge-teal opacity-100",
+            !item.isPinned &&
+              "hidden opacity-100 group-focus-within/item:inline-flex group-hover/item:inline-flex",
           )}
           onClick={(event) => {
             event.stopPropagation();
@@ -80,7 +108,10 @@ export const ContentSection = memo(
           }}
           onKeyDown={(event) => event.stopPropagation()}
         >
-          <Pin className={cn("size-3", item.isPinned && "rotate-45")} />
+          <Pin
+            className={cn("size-2.5", item.isPinned && "rotate-45")}
+            strokeWidth={2.2}
+          />
         </button>
       ) : null;
 
@@ -100,46 +131,49 @@ export const ContentSection = memo(
             >
               {title}
             </h3>
-            {item.savedMessageCount ? (
+            {item.savedMessageCount &&
+            !isCompact &&
+            !showSavedCountInIndicatorRow &&
+            !showInlineGroupIndicators ? (
               <span className="type-signature-label inline-flex shrink-0 items-center gap-0.5 rounded-full bg-forge-teal/8 px-1.5 py-0.5 font-bold text-forge-teal leading-none">
                 <Bookmark className="size-2.5 fill-forge-teal/15" />
                 {item.savedMessageCount}
               </span>
             ) : null}
             {isNotes ? (
-              <span className="type-signature-label inline-flex shrink-0 items-center gap-0.5 rounded-full bg-spark-amber/10 px-1.5 py-0.5 font-bold text-spark-amber leading-none">
-                <NotebookPen className="size-2.5" strokeWidth={2.5} />
+              <span className="type-signature-label inline-flex shrink-0 items-center rounded-full bg-spark-amber/10 px-1.5 py-0.5 font-bold text-spark-amber leading-none">
                 Private
               </span>
             ) : null}
-            {item.isPinned || isMuted ? (
+            {hasTitleUtilityCluster ? (
               <span className="ml-auto flex shrink-0 items-center gap-1">
-                {item.isPinned ? (
+                {!item.isPinned ? titlePinButton : null}
+                {showInlineGroupIndicators ? (
+                  <GroupIndicators
+                    countdown={countdown}
+                    pendingProposalCount={pendingProposalCount}
+                    planStatus={countdown ? null : plan?.status}
+                    savedMessageCount={
+                      hasSavedMessages ? item.savedMessageCount : undefined
+                    }
+                    variant="inline"
+                  />
+                ) : null}
+                {showInlineMutedIndicator ? <MutedIndicator /> : null}
+                {item.isPinned ? titlePinButton : null}
+                {showStaticPinnedIcon ? (
                   <>
                     <Pin
                       className={cn(
                         "shrink-0 rotate-45 text-forge-teal",
-                        isCompact ? "size-3" : "size-3.5",
+                        isCompact ? "size-2.5" : "size-3",
                       )}
                       aria-hidden="true"
-                      strokeWidth={2.25}
+                      strokeWidth={2}
                     />
                     <span className="sr-only">Pinned chat</span>
                   </>
                 ) : null}
-                {isMuted && (
-                  <>
-                    <BellOff
-                      className={cn(
-                        "shrink-0 text-slate-muted/60",
-                        isCompact ? "size-3" : "size-3.5",
-                      )}
-                      aria-hidden="true"
-                      strokeWidth={2.25}
-                    />
-                    <span className="sr-only">Notifications muted</span>
-                  </>
-                )}
               </span>
             ) : null}
           </div>
@@ -214,10 +248,12 @@ export const ContentSection = memo(
         {/* Group-specific indicators footer — Hidden in compact */}
         {hasIndicatorRow && (
           <GroupIndicators
-            action={pinButton}
             countdown={countdown}
-            isDraft={isDraft}
             pendingProposalCount={pendingProposalCount}
+            planStatus={countdown ? null : plan?.status}
+            savedMessageCount={
+              showSavedCountInIndicatorRow ? item.savedMessageCount : undefined
+            }
           />
         )}
       </div>
@@ -242,4 +278,16 @@ function getPendingProposalCount(item: UnifiedConversation) {
   }
 
   return pendingProposalIds.size;
+}
+
+function MutedIndicator() {
+  return (
+    <span
+      className="inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-slate-muted/10 text-slate-muted/70"
+      title="Notifications muted"
+    >
+      <BellOff aria-hidden="true" className="size-2.5" strokeWidth={2.2} />
+      <span className="sr-only">Notifications muted</span>
+    </span>
+  );
 }

@@ -1,24 +1,67 @@
 import { CalendarCheck2, ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import type { PlanHistoryItem } from "@/features/activity/lib/activity-contract";
 import { Button } from "@/shared/components/ui/button";
+import { showAppErrorToast } from "@/shared/lib/error-toast";
 import { cn } from "@/shared/lib/utils";
 import { HistoryCard } from "./history-card";
 
 interface PlanHistorySectionProps {
+  focusedPlanId?: string | null;
   groupId: string;
   history: PlanHistoryItem[];
+  isTemplateActionDisabled?: boolean;
+  isTemplateActionPending?: boolean;
+  onUseAsTemplate?: (item: PlanHistoryItem) => Promise<void> | void;
 }
 
 export function PlanHistorySection({
+  focusedPlanId = null,
   groupId,
   history,
+  isTemplateActionDisabled = false,
+  isTemplateActionPending = false,
+  onUseAsTemplate,
 }: PlanHistorySectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [pendingTemplateId, setPendingTemplateId] = useState<string | null>(
+    null,
+  );
   const visibleHistory = isExpanded ? history : history.slice(0, 2);
   const historyCount = history.length;
+  const hasLocalTemplateAction = pendingTemplateId !== null;
+
+  useEffect(() => {
+    const focusedHistoryIndex = history.findIndex(
+      (item) => item.id === focusedPlanId,
+    );
+
+    if (focusedHistoryIndex > 1) {
+      setIsExpanded(true);
+    }
+  }, [focusedPlanId, history]);
 
   if (historyCount === 0) return null;
+
+  async function handleUseAsTemplate(item: PlanHistoryItem) {
+    if (!onUseAsTemplate) {
+      return;
+    }
+
+    setPendingTemplateId(item.id);
+
+    try {
+      await onUseAsTemplate(item);
+      toast.success("Plan copied into a new draft.");
+    } catch (error) {
+      showAppErrorToast(error, {
+        fallbackMessage: "We couldn't reuse that plan.",
+      });
+    } finally {
+      setPendingTemplateId(null);
+    }
+  }
 
   return (
     <section aria-labelledby="previous-plans-heading">
@@ -43,7 +86,25 @@ export function PlanHistorySection({
 
       <div className="divide-y divide-border/70 border-border/70 border-y">
         {visibleHistory.map((item) => (
-          <HistoryCard key={item.id} groupId={groupId} item={item} />
+          <HistoryCard
+            key={item.id}
+            groupId={groupId}
+            isFocused={focusedPlanId === item.id}
+            item={item}
+            isUseAsTemplateDisabled={
+              isTemplateActionDisabled ||
+              ((isTemplateActionPending || hasLocalTemplateAction) &&
+                pendingTemplateId !== item.id)
+            }
+            isUseAsTemplateLoading={pendingTemplateId === item.id}
+            onUseAsTemplate={
+              onUseAsTemplate
+                ? () => {
+                    void handleUseAsTemplate(item);
+                  }
+                : undefined
+            }
+          />
         ))}
 
         {historyCount > 2 && (

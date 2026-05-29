@@ -70,6 +70,7 @@ export interface UnifiedConversation {
   isTyping: boolean;
   isPinned?: boolean;
   savedMessageCount?: number;
+  activeProposalCount?: number;
   latestSavedMessage?: import("../schemas/activity.schemas").UnifiedMessage;
   latestMessage?: import("../schemas/activity.schemas").UnifiedMessage;
   group?: import("../schemas/activity.schemas").Group;

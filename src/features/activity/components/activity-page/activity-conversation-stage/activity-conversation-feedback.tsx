@@ -1,7 +1,6 @@
-import { AlertTriangle, ArrowLeft, RefreshCw, WifiOff } from "lucide-react";
+import { ArrowLeft, RefreshCw } from "lucide-react";
 import { ErrorNetworkRetryVisual } from "@/assets/error-state/error-network-retry";
 import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
 
 type ActivityConversationFeedbackVariant = "error" | "missing" | "offline";
 
@@ -14,17 +13,6 @@ interface ActivityConversationFeedbackProps {
   onAction: () => Promise<void> | void;
 }
 
-function getFeedbackIcon(variant: ActivityConversationFeedbackVariant) {
-  switch (variant) {
-    case "missing":
-      return ArrowLeft;
-    case "offline":
-      return WifiOff;
-    default:
-      return AlertTriangle;
-  }
-}
-
 export function ActivityConversationFeedback({
   actionLabel,
   description,
@@ -33,8 +21,7 @@ export function ActivityConversationFeedback({
   variant,
   onAction,
 }: ActivityConversationFeedbackProps) {
-  const Icon = getFeedbackIcon(variant);
-  const isOffline = variant === "offline";
+  const ActionIcon = variant === "missing" ? ArrowLeft : RefreshCw;
 
   return (
     <section
@@ -43,19 +30,6 @@ export function ActivityConversationFeedback({
     >
       <div className="flex w-full max-w-sm flex-col items-center">
         <ErrorNetworkRetryVisual className="h-36 w-auto text-foreground" />
-        <span
-          className={cn(
-            "mt-5 flex size-11 items-center justify-center rounded-full border",
-            isOffline
-              ? "border-spark-amber/35 bg-spark-amber/10 text-spark-amber"
-              : "border-destructive/30 bg-destructive/10 text-destructive",
-            variant === "missing" &&
-              "border-forge-teal/30 bg-forge-teal/10 text-forge-teal",
-          )}
-          aria-hidden="true"
-        >
-          <Icon size={19} />
-        </span>
         <h2 className="mt-4 font-bold text-ink text-lg leading-tight">
           {title}
         </h2>
@@ -69,11 +43,7 @@ export function ActivityConversationFeedback({
           variant={variant === "missing" ? "outline" : "primary"}
           onClick={() => void onAction()}
         >
-          {variant === "missing" ? (
-            <ArrowLeft size={14} />
-          ) : (
-            <RefreshCw size={14} />
-          )}
+          <ActionIcon size={14} />
           {actionLabel}
         </Button>
       </div>

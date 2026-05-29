@@ -9,6 +9,7 @@ import type {
   FriendshipApi,
   FriendshipPrivateChatApi,
 } from "@/shared/schemas";
+import { getChatIsMutedForUser } from "../chat-user-preferences";
 
 function buildDirectChatParticipants(
   privateChat: FriendshipPrivateChatApi,
@@ -59,7 +60,7 @@ export function mapDirectChat(
         .filter((item): item is ActivityParticipant => item !== undefined),
       currentUser.id,
     ),
-    isMuted: chatSummary?.isMuted ?? false,
+    isMuted: getChatIsMutedForUser(chatSummary, currentUser.id),
     isBlocked: friendship.status === "BLOCKED",
     mutualGroups: [],
   };
@@ -88,7 +89,7 @@ export function mapNotesChat(
       [currentUser],
       currentUser.id,
     ),
-    isMuted: chatSummary.isMuted,
+    isMuted: getChatIsMutedForUser(chatSummary, currentUser.id),
     isBlocked: false,
     mutualGroups: [],
   };

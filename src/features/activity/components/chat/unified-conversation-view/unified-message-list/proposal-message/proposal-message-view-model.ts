@@ -34,7 +34,7 @@ export function getProposalMessageViewState(
 
   return {
     approveCount,
-    canVote: isPending && !isProposer && !hasVoted,
+    canVote: isPending && Boolean(currentUserId) && !hasVoted,
     eligibleVoterCount,
     hasVoted,
     isPending,

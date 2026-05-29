@@ -9,6 +9,7 @@ import type { buildActivityDmNavigation } from "@/features/activity/lib/activity
 import { getArchetype } from "@/features/profile/lib/archetypes";
 import type { ProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar, AvatarStatus } from "@/shared/components/common/avatar";
+import { AvatarPreviewDialog } from "@/shared/components/common/avatar-preview-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import type { OnlineStatus } from "@/shared/schemas/enums";
@@ -19,8 +20,10 @@ interface ProfilePanelInfoProps {
   participant: UserProfilePanelParticipant;
   isHydratingProfile?: boolean;
   chatNavigation?: ReturnType<typeof buildActivityDmNavigation>;
+  compactHeaderVisible?: boolean;
   profileNavigation?: ProfileNavigation;
   onBack?: () => void;
+  onCompactHeaderClick?: () => void;
 }
 
 function formatPercent(score: number | null | undefined): number {
@@ -35,8 +38,10 @@ export function ProfilePanelInfo({
   participant,
   isHydratingProfile = false,
   chatNavigation,
+  compactHeaderVisible = false,
   profileNavigation,
   onBack,
+  onCompactHeaderClick,
 }: ProfilePanelInfoProps) {
   const onlineStatus = participant.onlineStatus || "OFFLINE";
   const personalitySignals = buildShowUpSignals(participant);
@@ -47,44 +52,63 @@ export function ProfilePanelInfo({
     : "Open";
 
   return (
-    <div className="flex w-full flex-col">
-      <section className="relative border-border/70 border-b bg-canvas">
-        <div className="relative h-28 overflow-hidden bg-forge-teal px-4 pt-3">
-          <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-            <div className="absolute inset-0 bg-linear-to-b from-black/5 to-black/20" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle,var(--color-canvas)_1px,transparent_1px)] bg-size-[24px_24px] opacity-15" />
-            {participant.personalityType ? (
-              <span className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 select-none font-black text-8xl text-white/10 leading-none tracking-tighter mix-blend-overlay">
-                {participant.personalityType}
-              </span>
-            ) : null}
+    <div className="relative flex w-full flex-col">
+      <div className="pointer-events-none sticky top-0 z-30 h-(--panel-cover-expanded-height) overflow-visible">
+        <div className="transform-[translate3d(0,var(--panel-cover-y,0px),0)] absolute inset-x-0 top-0 h-(--panel-cover-expanded-height) origin-[center_top] overflow-hidden bg-forge-teal transition-transform duration-300 ease-out will-change-transform motion-reduce:transition-none">
+          <div
+            className="absolute inset-0 bg-linear-to-b from-black/5 to-black/20"
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 bg-[radial-gradient(circle,var(--color-canvas)_1px,transparent_1px)] bg-size-[24px_24px] opacity-15" />
+        </div>
+
+        {participant.personalityType ? (
+          <div
+            className="transform-[translate3d(0,var(--panel-cover-type-y,0px),0)] absolute inset-x-0 top-0 flex h-(--panel-cover-expanded-height) items-center justify-end px-4 transition-transform duration-300 ease-out motion-reduce:transition-none"
+            aria-hidden="true"
+          >
+            <span className="transform-[scale(var(--panel-cover-type-scale,1))] origin-right select-none font-black text-8xl text-white leading-none tracking-tighter opacity-(--panel-cover-type-opacity) mix-blend-overlay transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none">
+              {participant.personalityType}
+            </span>
           </div>
-        </div>
+        ) : null}
 
-        <div className="absolute inset-x-4 top-3 z-40 flex items-center justify-between">
-          {onBack ? (
-            <Button
-              size="icon-sm"
-              variant="inverseGhost"
-              onClick={onBack}
-              aria-label="Go back"
-            >
-              <ChevronLeft size={18} />
-            </Button>
-          ) : (
-            <div />
-          )}
+        <PanelCompactProfileHeader
+          participant={participant}
+          onlineStatus={onlineStatus}
+          onClick={onCompactHeaderClick}
+          visible={compactHeaderVisible}
+        />
+      </div>
 
-          {profileNavigation ? (
-            <Button asChild size="icon-sm" variant="inverseGhost">
-              <Link {...profileNavigation} aria-label="View full profile">
-                <ExternalLink size={14} />
-              </Link>
-            </Button>
-          ) : null}
-        </div>
+      <div className="absolute inset-x-4 top-3 z-40 flex items-center justify-between">
+        {onBack ? (
+          <Button
+            size="icon-sm"
+            variant="inverseGhost"
+            onClick={onBack}
+            aria-label="Go back"
+          >
+            <ChevronLeft size={18} />
+          </Button>
+        ) : (
+          <div />
+        )}
 
-        <div className="relative z-10 -mt-10 flex min-w-0 flex-row items-start gap-3 px-4 pb-3">
+        {profileNavigation ? (
+          <Button asChild size="icon-sm" variant="inverseGhost">
+            <Link {...profileNavigation} aria-label="View full profile">
+              <ExternalLink size={14} />
+            </Link>
+          </Button>
+        ) : null}
+      </div>
+
+      <section
+        className="relative border-border/70 border-b bg-canvas opacity-(--profile-panel-original-opacity) transition-opacity duration-150 ease-out [pointer-events:var(--profile-panel-original-pointer-events,auto)] motion-reduce:transition-none"
+        data-profile-panel-original-card=""
+      >
+        <div className="relative z-10 flex min-w-0 flex-row items-start gap-3 px-4 pt-6 pb-3">
           <PanelProfileAvatar
             name={participant.name}
             src={participant.avatar}
@@ -151,6 +175,60 @@ export function ProfilePanelInfo({
   );
 }
 
+function PanelCompactProfileHeader({
+  onlineStatus,
+  onClick,
+  participant,
+  visible,
+}: {
+  onlineStatus: OnlineStatus;
+  onClick?: () => void;
+  participant: UserProfilePanelParticipant;
+  visible: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "pointer-events-none absolute inset-x-0 top-0 z-10 flex h-18 items-center gap-3 px-4 text-white transition-[opacity,transform] duration-200 ease-out motion-reduce:transition-none",
+        visible ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0",
+      )}
+      aria-hidden={!visible}
+    >
+      {onClick ? (
+        <button
+          type="button"
+          aria-label="Scroll profile panel to top"
+          tabIndex={visible ? 0 : -1}
+          onClick={onClick}
+          className="pointer-events-auto absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-inset"
+        />
+      ) : null}
+
+      <div className="pointer-events-none relative z-10 shrink-0">
+        <Avatar
+          src={participant.avatar}
+          name={participant.name}
+          className="size-12 border-2 border-canvas bg-muted text-lg shadow-sm ring-1 ring-border/70"
+          fallbackClassName="bg-muted text-forge-teal"
+          loading="eager"
+        />
+        <AvatarStatus
+          status={onlineStatus}
+          borderClassName="border-forge-teal"
+          sizeClassName="size-3"
+        />
+      </div>
+
+      <div className="pointer-events-none relative z-10 min-w-0">
+        <p className="truncate font-bold text-xl leading-tight tracking-tight">
+          {participant.name}
+        </p>
+        <ProfileCompactMetaRow participant={participant} />
+      </div>
+    </div>
+  );
+}
+
 function ProfileActionButtons({
   chatNavigation,
   profileNavigation,
@@ -202,24 +280,30 @@ function PanelProfileAvatar({
   src: string | null;
 }) {
   return (
-    <div className="group relative shrink-0">
-      <div className="absolute inset-0 rounded-full bg-spark-amber/20 opacity-0 blur-xl transition-opacity duration-700 group-hover:opacity-100" />
-      <div className="absolute -inset-1.5 rounded-full border-2 border-forge-teal/30 opacity-0 transition duration-700 group-hover:rotate-180 group-hover:scale-105 group-hover:opacity-100" />
-      <div className="relative z-10 size-20 transition-transform duration-300 group-hover:scale-105">
-        <Avatar
-          src={src}
-          name={name}
-          className="size-full border-canvas border-thick bg-muted text-2xl shadow-lg ring-1 ring-border/70"
-          fallbackClassName="bg-muted text-forge-teal text-2xl"
-          loading="eager"
-        />
-        <AvatarStatus
-          status={onlineStatus}
-          borderClassName="border-canvas"
-          sizeClassName="size-4"
-        />
-      </div>
-    </div>
+    <AvatarPreviewDialog name={name} src={src}>
+      <button
+        type="button"
+        className="group relative shrink-0 cursor-zoom-in appearance-none rounded-full border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+        aria-label={`Expand ${name} avatar`}
+      >
+        <div className="absolute inset-0 rounded-full bg-spark-amber/20 opacity-0 blur-xl transition-opacity duration-700 group-hover:opacity-100" />
+        <div className="absolute -inset-1.5 rounded-full border-2 border-forge-teal/30 opacity-0 transition duration-700 group-hover:rotate-180 group-hover:scale-105 group-hover:opacity-100" />
+        <div className="relative z-10 size-20 transition-transform duration-300 group-hover:scale-105">
+          <Avatar
+            src={src}
+            name={name}
+            className="size-full border-canvas border-thick bg-muted text-2xl shadow-lg ring-1 ring-border/70"
+            fallbackClassName="bg-muted text-forge-teal text-2xl"
+            loading="eager"
+          />
+          <AvatarStatus
+            status={onlineStatus}
+            borderClassName="border-canvas"
+            sizeClassName="size-4"
+          />
+        </div>
+      </button>
+    </AvatarPreviewDialog>
   );
 }
 
@@ -289,18 +373,52 @@ function ProfileMetaRow({
   );
 }
 
+function ProfileCompactMetaRow({
+  participant,
+}: {
+  participant: UserProfilePanelParticipant;
+}) {
+  const hasAge = typeof participant.age === "number";
+  const hasCity = Boolean(participant.city);
+
+  if (!(hasAge || hasCity)) {
+    return null;
+  }
+
+  return (
+    <div className="mt-1 flex min-w-0 items-center gap-1.5 font-semibold text-white/82 text-xs leading-4">
+      {hasAge ? <span className="shrink-0">{participant.age} yrs</span> : null}
+      {hasAge && hasCity ? (
+        <span className="size-1 rounded-full bg-white/45" />
+      ) : null}
+      {hasCity ? (
+        <span className="flex min-w-0 items-center gap-1">
+          <MapPin
+            aria-hidden="true"
+            className="size-3 shrink-0 text-white/85"
+          />
+          <span className="truncate">{participant.city}</span>
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
 function ProfileMetaItem({ item }: { item: { kind: string; value: string } }) {
   if (item.kind === "city") {
     return (
-      <span className="flex min-w-0 items-center gap-1 font-bold text-micro uppercase leading-none tracking-widest">
-        <MapPin className="size-3 shrink-0" />
-        <span className="truncate">{item.value}</span>
+      <span className="flex h-4 min-w-0 items-center gap-1 font-semibold text-sm leading-4">
+        <MapPin
+          aria-hidden="true"
+          className="size-3 shrink-0 -translate-y-px"
+        />
+        <span className="truncate leading-4">{item.value}</span>
       </span>
     );
   }
 
   return (
-    <span className="shrink-0 font-semibold text-sm leading-none">
+    <span className="flex h-4 shrink-0 items-center font-semibold text-sm leading-4">
       {item.value}
     </span>
   );

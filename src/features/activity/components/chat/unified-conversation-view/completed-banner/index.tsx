@@ -3,7 +3,7 @@ import {
   Ban,
   CalendarClock,
   CheckCircle,
-  Clock3,
+  CircleDashed,
   ExternalLink,
   MessageCircle,
   RefreshCw,
@@ -223,7 +223,7 @@ function getConnectIcon(label: string) {
   }
 
   if (label === "Requested") {
-    return Clock3;
+    return CircleDashed;
   }
 
   if (label === "Blocked") {

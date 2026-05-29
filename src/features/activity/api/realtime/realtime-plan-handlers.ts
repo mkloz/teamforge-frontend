@@ -26,6 +26,13 @@ export function applyRealtimePlanUpdate(
     APP_QUERY_KEYS.auth.currentUser,
   );
 
+  if (proposal) {
+    appQueryClient.setQueryData<PlanProposal[]>(
+      APP_QUERY_KEYS.activity.planProposals(proposal.planId),
+      (current) => context.mergeProposalIntoList(current ?? [], proposal, kind),
+    );
+  }
+
   appQueryClient.setQueryData<ActivityGroupSelectionData | undefined>(
     APP_QUERY_KEYS.activity.groupSelectionById(groupId),
     (current) => {

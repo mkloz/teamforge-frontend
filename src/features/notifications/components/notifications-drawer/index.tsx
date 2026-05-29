@@ -1,10 +1,10 @@
 import { useNavigate } from "@tanstack/react-router";
-import { CheckCheck, X } from "lucide-react";
+import { CheckCheck, RefreshCw, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { EmptyNotificationsVisual } from "@/assets/empty-state/empty-notifications";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
 import { resolveNotificationDestination } from "@/features/notifications/lib/notification-destination";
-import { LoadingBlock } from "@/shared/components/loading/loading-block";
+import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import {
   Drawer,
@@ -12,11 +12,17 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/shared/components/ui/drawer";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
 import { cn } from "@/shared/lib/utils";
 import type { Notification } from "@/shared/schemas";
 import { NotificationDetail } from "./notification-detail";
+import { NotificationsDrawerSkeleton } from "./notifications-drawer-skeleton";
 import { NotificationsSection } from "./notifications-section";
 
 interface NotificationsDrawerProps {
@@ -32,11 +38,13 @@ export function NotificationsDrawer({
     items,
     notificationGroups,
     markReadAsync,
-    markAllRead,
+    markAllReadAsync,
+    refreshNotifications,
     isLoading,
+    isRefreshing,
     isMarkingAllRead,
     count,
-  } = useNotifications();
+  } = useNotifications({ enabled: open });
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -49,6 +57,7 @@ export function NotificationsDrawer({
   const [selectedNotificationId, setSelectedNotificationId] = useState<
     string | null
   >(null);
+  const [markAllReadDialogOpen, setMarkAllReadDialogOpen] = useState(false);
   const selectedNotification =
     items.find((item) => item.id === selectedNotificationId) ?? null;
 
@@ -63,6 +72,7 @@ export function NotificationsDrawer({
       setPendingNotificationId(null);
       setPendingDetailAction(null);
       setSelectedNotificationId(null);
+      setMarkAllReadDialogOpen(false);
     }
   }, [open]);
 
@@ -111,6 +121,10 @@ export function NotificationsDrawer({
     }
   }
 
+  function handleRefreshNotifications() {
+    void refreshNotifications();
+  }
+
   return (
     <Drawer
       open={open}
@@ -149,19 +163,69 @@ export function NotificationsDrawer({
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            {!selectedNotification && (
-              <Button
-                variant="subtle"
-                size="sm"
-                onClick={markAllRead}
-                disabled={count === 0 || isMarkingAllRead}
-                className="px-3"
-                contentClassName="gap-1.5"
-              >
-                <CheckCheck className="size-3.5 shrink-0" aria-hidden="true" />
-                {isMarkingAllRead ? "Marking..." : "Mark all read"}
-              </Button>
-            )}
+            {!selectedNotification ? (
+              <>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="subtle"
+                      size="icon"
+                      onClick={() => setMarkAllReadDialogOpen(true)}
+                      disabled={count === 0 || isMarkingAllRead}
+                      loading={isMarkingAllRead}
+                      aria-label="Mark all notifications as read"
+                      className="size-10 p-0"
+                    >
+                      <CheckCheck
+                        className="size-4 shrink-0"
+                        aria-hidden="true"
+                      />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    Mark all notifications as read
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="accentGhost"
+                      size="icon"
+                      onClick={handleRefreshNotifications}
+                      disabled={isRefreshing}
+                      loading={isRefreshing}
+                      aria-label="Refresh notifications"
+                      className="size-10 p-0"
+                    >
+                      <RefreshCw
+                        className="size-4 shrink-0"
+                        aria-hidden="true"
+                      />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    Refresh notifications
+                  </TooltipContent>
+                </Tooltip>
+              </>
+            ) : null}
+            <ActionDialog
+              cancelLabel="Not now"
+              confirmLabel={
+                isMarkingAllRead ? "Marking..." : "Mark all as read"
+              }
+              description="This clears the unread badges from every notification in the drawer."
+              details={[
+                "The notifications stay in your history.",
+                "New updates will still appear as unread.",
+              ]}
+              loading={isMarkingAllRead}
+              onConfirm={markAllReadAsync}
+              onOpenChange={setMarkAllReadDialogOpen}
+              open={markAllReadDialogOpen}
+              title="Mark every notification as read?"
+              tone="info"
+            />
             <Button
               variant="accentGhost"
               size="icon"
@@ -228,54 +292,5 @@ export function NotificationsDrawer({
         </div>
       </DrawerContent>
     </Drawer>
-  );
-}
-
-const NOTIFICATION_SKELETON_ROWS = [
-  "invite",
-  "reply",
-  "plan",
-  "group",
-] as const;
-
-function NotificationsDrawerSkeleton() {
-  return (
-    <div>
-      <span className="sr-only">Loading notifications</span>
-      <div className="sticky top-0 z-10 border-border/60 border-b bg-canvas px-5 py-3">
-        <LoadingBlock className="h-3 w-16 rounded-md" />
-      </div>
-      <div className="divide-y divide-border/55">
-        {NOTIFICATION_SKELETON_ROWS.map((row, index) => (
-          <div
-            className="flex w-full items-start gap-3 px-5 py-4 text-left"
-            key={row}
-          >
-            <LoadingBlock
-              className={cn(
-                "mt-0.5 size-10 shrink-0 rounded-md",
-                index === 0 ? "bg-spark-amber/18" : "bg-forge-teal/12",
-              )}
-            />
-            <div className="min-w-0 flex-1 flex-col gap-0.5">
-              <LoadingBlock className="h-3.5 w-32 rounded-md" />
-              <LoadingBlock className="h-3 w-full rounded-md" />
-              <LoadingBlock
-                className={cn(
-                  "mt-1.5 h-3 rounded-md",
-                  index % 2 === 0 ? "w-3/4" : "w-1/2",
-                )}
-              />
-              <div className="mt-2 flex items-center gap-2">
-                <LoadingBlock className="h-2.5 w-12 rounded-md" />
-                {index === 0 ? (
-                  <LoadingBlock className="size-2 rounded-full bg-forge-teal/35" />
-                ) : null}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
   );
 }

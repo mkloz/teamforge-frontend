@@ -13,15 +13,17 @@ import { ProposalVoters } from "./proposal-voters";
 type AvailableProposalMessageViewState = NonNullable<ProposalMessageViewState>;
 
 interface ProposalMessageDetailsProps {
-  isSubmitting: boolean;
+  isVoting: boolean;
+  isWithdrawing: boolean;
   onApprove: () => void;
   onReject: () => void;
-  onWithdraw: () => void;
+  onWithdraw: () => Promise<void> | void;
   viewState: AvailableProposalMessageViewState;
 }
 
 export const ProposalMessageDetails = memo(function ProposalMessageDetails({
-  isSubmitting,
+  isVoting,
+  isWithdrawing,
   onApprove,
   onReject,
   onWithdraw,
@@ -43,7 +45,7 @@ export const ProposalMessageDetails = memo(function ProposalMessageDetails({
   const shouldShowActions = isPending;
 
   return (
-    <div className="overflow-hidden px-2 pt-1 pb-1">
+    <div className="overflow-hidden px-2 py-1">
       <ProposalComparison
         current={formatProposalValue(proposal.field, proposal.currentValue)}
         proposed={formatProposalValue(proposal.field, proposal.proposedValue)}
@@ -67,13 +69,14 @@ export const ProposalMessageDetails = memo(function ProposalMessageDetails({
       </div>
 
       {shouldShowActions ? (
-        <div className="mt-2 flex gap-2">
+        <div className="mt-2 flex flex-wrap justify-end gap-2">
           <ProposalActions
             canVote={canVote}
             hasVoted={hasVoted}
             isPending={isPending}
             isProposer={isProposer}
-            isSubmitting={isSubmitting}
+            isVoting={isVoting}
+            isWithdrawing={isWithdrawing}
             onApprove={onApprove}
             onReject={onReject}
             onWithdraw={onWithdraw}

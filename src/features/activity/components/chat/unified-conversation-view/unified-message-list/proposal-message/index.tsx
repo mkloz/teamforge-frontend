@@ -82,7 +82,7 @@ export const ProposalMessage = memo(function ProposalMessage({
   const selectedReactionEmojis = reactionGroups
     .filter((reaction) => reaction.isActive)
     .map((reaction) => reaction.emoji);
-  const canQuickReact = canReactToMessage(message);
+  const canShowQuickReactions = !message.isOwn && canReactToMessage(message);
   const toggleReaction = (emoji: string) => {
     void messageActions.toggleReaction(message, emoji).catch((error) =>
       showAppErrorToast(error, {
@@ -173,7 +173,7 @@ export const ProposalMessage = memo(function ProposalMessage({
         >
           <div
             className={cn(
-              "group/proposal flex w-full min-w-0 max-w-xs flex-col sm:max-w-lg md:max-w-xl",
+              "group/proposal flex w-full min-w-0 max-w-xs flex-col sm:max-w-md",
               message.isOwn ? "ml-auto items-end" : "mr-auto items-start",
             )}
           >
@@ -183,7 +183,12 @@ export const ProposalMessage = memo(function ProposalMessage({
               </p>
             )}
 
-            <div className="flex w-full min-w-0 max-w-full flex-col gap-1">
+            <div
+              className={cn(
+                "flex w-full min-w-0 max-w-full flex-col gap-1",
+                message.isOwn ? "items-end" : "items-start",
+              )}
+            >
               <div
                 className={cn(
                   "relative flex w-full min-w-0 max-w-full flex-col rounded-xl border px-1 py-1 shadow-sm backdrop-blur-md transition duration-300",
@@ -212,15 +217,16 @@ export const ProposalMessage = memo(function ProposalMessage({
 
                 {isExpanded && (
                   <ProposalMessageDetails
-                    isSubmitting={proposalActions.isSubmitting}
+                    isVoting={proposalActions.isVoting}
+                    isWithdrawing={proposalActions.isWithdrawing}
                     onApprove={() => {
                       void proposalActions.approveProposal(proposal.id);
                     }}
                     onReject={() => {
                       void proposalActions.rejectProposal(proposal.id);
                     }}
-                    onWithdraw={() => {
-                      void proposalActions.withdrawProposal(proposal.id);
+                    onWithdraw={async () => {
+                      await proposalActions.withdrawProposal(proposal.id);
                     }}
                     viewState={viewState}
                   />
@@ -240,7 +246,7 @@ export const ProposalMessage = memo(function ProposalMessage({
                   hasReply={Boolean(message.replyTo)}
                   onToggleReaction={toggleReaction}
                   reactionPlaceholderEmojis={
-                    canQuickReact ? PROPOSAL_QUICK_REACTIONS : undefined
+                    canShowQuickReactions ? PROPOSAL_QUICK_REACTIONS : undefined
                   }
                 />
               </div>

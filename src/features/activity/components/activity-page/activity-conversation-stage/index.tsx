@@ -81,6 +81,21 @@ export function ActivityConversationStage({
     activity.toggleGroupDetail();
   }
 
+  function openCurrentPlanInGroupPanel() {
+    const currentPlanId = activity.selectedGroup?.plan?.id;
+
+    if (!currentPlanId) {
+      if (!activity.groups.isDetailPanelOpen) {
+        activity.toggleGroupDetail();
+      }
+
+      return;
+    }
+
+    setSelectedGroupMemberProfile(null);
+    activity.focusGroupPlan(currentPlanId);
+  }
+
   function closeGroupDetailPanel() {
     setSelectedGroupMemberProfile(null);
     activity.closeGroupDetail();
@@ -204,6 +219,7 @@ export function ActivityConversationStage({
             onRetryMessages={activity.retryMessageTimeline}
             onShowParticipantProfile={openGroupMemberProfile}
             onToggleAction={toggleGroupDetailPanel}
+            onViewPlan={openCurrentPlanInGroupPanel}
             onSendMessage={activity.handleSendMessage}
             sendError={activity.sendError}
             onClearSendError={activity.clearSendError}
@@ -217,11 +233,6 @@ export function ActivityConversationStage({
           selectedMemberId={selectedGroupMemberId}
           onSelectedMemberIdChange={setSelectedGroupMemberId}
           onClose={closeGroupDetailPanel}
-          onJumpToMessage={(messageId) =>
-            groupMessageScrollHandleRef.current?.scrollToMessage(messageId, {
-              highlight: true,
-            })
-          }
         />
       </div>
     );
@@ -247,6 +258,7 @@ export function ActivityConversationStage({
             isMessageError={isMessageInitialError}
             isOnline={isOnline}
             isActionOpen={activity.direct.isProfilePanelOpen}
+            openHeaderDetailsInPanel={isMobile}
             onBack={activity.handleBack}
             onLoadOlderMessages={activity.loadOlderMessages}
             onRetryMessages={activity.retryMessageTimeline}

@@ -1,4 +1,7 @@
-import { SkeletonText } from "@/shared/components/loading/skeleton-patterns";
+import {
+  SkeletonAvatar,
+  SkeletonText,
+} from "@/shared/components/loading/skeleton-patterns";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { cn } from "@/shared/lib/utils";
 
@@ -70,11 +73,11 @@ export function MessageListSkeletonPattern({
   return (
     <div
       aria-hidden="true"
-      className={cn("flex min-h-full flex-col gap-5 px-3 py-2", className)}
+      className={cn("flex min-h-full flex-col gap-4", className)}
     >
       {includeDatePill ? (
         <div className="mx-auto">
-          <Skeleton shape="pill" className="h-7 w-24" />
+          <Skeleton shape="pill" className="h-6 w-16" />
         </div>
       ) : null}
 
@@ -84,34 +87,62 @@ export function MessageListSkeletonPattern({
           className={cn("flex gap-3", getAlignmentClass(row.align))}
         >
           {row.kind === "system" ? (
-            <Skeleton shape="pill" className="h-6 w-72 max-w-full" />
+            <Skeleton shape="pill" className="h-6 w-80 max-w-full" />
           ) : (
-            <div
-              className={cn(
-                "max-w-lg rounded-xl border border-border bg-card p-3 shadow-sm",
-                row.tone === "own" && "bg-forge-teal/12",
-                row.kind === "proposal" && "w-96 max-w-full",
-              )}
-            >
-              {row.kind === "proposal" ? (
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <Skeleton shape="circle" className="size-9" tone="amber" />
-                    <SkeletonText
-                      className="min-w-0 flex-1"
-                      lines={2}
-                      widths={["w-28", "w-36"]}
-                    />
+            <>
+              {row.align === "start" ? (
+                <SkeletonAvatar className="mt-auto size-8" />
+              ) : null}
+              <div
+                className={cn(
+                  "flex max-w-xs flex-col rounded-xl border px-1 py-1 shadow-sm backdrop-blur-md sm:max-w-lg md:max-w-xl",
+                  row.tone === "own"
+                    ? "rounded-br-none border-forge-teal/15 bg-forge-teal/8"
+                    : "rounded-bl-none border-border/60 bg-card/75",
+                  row.kind === "proposal" && "w-full",
+                )}
+              >
+                {row.kind === "proposal" ? (
+                  <div className="flex items-center justify-between gap-3 px-2 py-1.5">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <Skeleton
+                        shape="circle"
+                        className="size-8"
+                        tone="amber"
+                      />
+                      <SkeletonText
+                        className="min-w-0 flex-1 gap-1.5"
+                        lineClassName="max-w-full"
+                        lines={2}
+                        size="sm"
+                        widths={["w-28", "w-36"]}
+                      />
+                    </div>
+                    <Skeleton shape="pill" className="h-7 w-16 shrink-0" />
                   </div>
-                  <Skeleton shape="pill" className="h-8 w-20 shrink-0" />
-                </div>
-              ) : (
-                <SkeletonText
-                  lines={row.lines}
-                  widths={row.widths ?? ["w-80", "w-56"]}
-                />
-              )}
-            </div>
+                ) : (
+                  <div className="flex min-w-0 flex-col gap-2 px-2 py-1.5">
+                    <SkeletonText
+                      className="gap-2"
+                      lineClassName="max-w-full"
+                      lines={row.lines}
+                      widths={row.widths ?? ["w-80", "w-56"]}
+                    />
+                    <div
+                      className={cn(
+                        "flex min-h-5 items-center justify-end gap-1 px-0 pb-0.5",
+                        row.tone === "own" ? "ml-auto" : "mr-auto",
+                      )}
+                    >
+                      <Skeleton className="h-2 w-9" />
+                      {row.tone === "own" ? (
+                        <Skeleton shape="circle" className="size-2.5" />
+                      ) : null}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
       ))}

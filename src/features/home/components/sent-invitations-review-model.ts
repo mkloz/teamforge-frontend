@@ -1,4 +1,10 @@
-import { CheckCircle2, Clock3, MailWarning, XCircle } from "lucide-react";
+import {
+  CheckCircle2,
+  CircleDashed,
+  Clock3,
+  MailWarning,
+  XCircle,
+} from "lucide-react";
 
 import type { Invite } from "@/shared/schemas";
 
@@ -30,7 +36,7 @@ export function getInviteStatusCopy(status: Invite["status"]) {
       };
     default:
       return {
-        icon: Clock3,
+        icon: CircleDashed,
         label: "Pending",
         tone: "text-spark-amber bg-spark-amber/10 border-spark-amber/20",
       };

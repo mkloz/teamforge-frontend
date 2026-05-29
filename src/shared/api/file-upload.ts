@@ -2,8 +2,6 @@ import { z } from "zod";
 
 import { apiClient } from "@/shared/api/api";
 import {
-  CHAT_ATTACHMENT_ACCEPTED_EXTENSIONS,
-  CHAT_ATTACHMENT_ACCEPTED_TYPES,
   CHAT_ATTACHMENT_MAX_SIZE_BYTES,
   IMAGE_UPLOAD_ACCEPTED_EXTENSIONS,
   IMAGE_UPLOAD_ACCEPTED_TYPES,
@@ -23,6 +21,18 @@ export function buildFileUploadBody(file: File, fieldName = "file") {
   return body;
 }
 
+export function assertFileSize(
+  file: File,
+  options: {
+    maxSizeBytes: number;
+    sizeLabel: string;
+  },
+) {
+  if (file.size > options.maxSizeBytes) {
+    throw new Error(`File must be ${options.sizeLabel} or smaller.`);
+  }
+}
+
 export function assertAcceptedFile(
   file: File,
   options: {
@@ -32,21 +42,18 @@ export function assertAcceptedFile(
     sizeLabel: string;
   },
 ) {
-  if (file.size > options.maxSizeBytes) {
-    throw new Error(`File must be ${options.sizeLabel} or smaller.`);
-  }
+  assertFileSize(file, options);
 
   const extensionIndex = file.name.lastIndexOf(".");
   const extension =
     extensionIndex >= 0 ? file.name.slice(extensionIndex).toLowerCase() : "";
+  const fileType = file.type.trim().toLowerCase();
   const hasAcceptedType =
-    file.type !== "" && options.acceptedTypes.includes(file.type);
+    fileType !== "" && options.acceptedTypes.includes(fileType);
   const hasAcceptedExtension = options.acceptedExtensions.includes(extension);
 
   if (
-    file.type
-      ? !hasAcceptedType || !hasAcceptedExtension
-      : !hasAcceptedExtension
+    fileType ? !hasAcceptedType || !hasAcceptedExtension : !hasAcceptedExtension
   ) {
     throw new Error("This file type is not supported.");
   }
@@ -71,9 +78,7 @@ export class FileUploadApi {
   }
 
   static async uploadChatAttachment(file: File): Promise<UploadedFileUrl> {
-    assertAcceptedFile(file, {
-      acceptedExtensions: CHAT_ATTACHMENT_ACCEPTED_EXTENSIONS,
-      acceptedTypes: CHAT_ATTACHMENT_ACCEPTED_TYPES,
+    assertFileSize(file, {
       maxSizeBytes: CHAT_ATTACHMENT_MAX_SIZE_BYTES,
       sizeLabel: "40 MB",
     });

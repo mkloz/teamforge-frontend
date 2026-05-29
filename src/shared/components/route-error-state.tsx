@@ -1,6 +1,6 @@
 import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 import { Link, useRouter } from "@tanstack/react-router";
-import { AlertTriangle, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { ErrorAuthLinkVisual } from "@/assets/error-state/error-auth-link";
@@ -159,8 +159,6 @@ export function RouteErrorState({
     <FeedbackState
       fullPage={fullPage}
       headingId="route-error-heading"
-      icon={<AlertTriangle size={22} />}
-      iconClassName="bg-destructive/10 text-destructive"
       visual={getRouteErrorVisual(scope)}
       title={title}
       description={description}

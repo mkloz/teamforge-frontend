@@ -78,7 +78,11 @@ export function ProposalValueInput({
   if (field === "CATEGORY") {
     return (
       <Select value={value} onValueChange={onValueChange}>
-        <SelectTrigger id="plan-change-value" aria-labelledby={labelId}>
+        <SelectTrigger
+          id="plan-change-value"
+          aria-labelledby={labelId}
+          className="bg-card"
+        >
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -99,6 +103,7 @@ export function ProposalValueInput({
       value={value}
       rows={field === "DESCRIPTION" ? 4 : 2}
       onChange={(event) => onValueChange(event.target.value)}
+      className="resize-none bg-card"
     />
   );
 }
@@ -139,7 +144,7 @@ function LocationProposalInput({
           });
         }}
       >
-        <SelectTrigger aria-label="Location type">
+        <SelectTrigger aria-label="Location type" className="bg-card">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -182,6 +187,7 @@ function LocationProposalInput({
           aria-label="Location"
           value={nextLocation.location ?? ""}
           placeholder="Meeting link or platform"
+          className="bg-card"
           onChange={(event) => {
             onChange({
               ...nextLocation,
@@ -234,7 +240,7 @@ function CostProposalInput({
           });
         }}
       >
-        <SelectTrigger aria-label="Cost type">
+        <SelectTrigger aria-label="Cost type" className="bg-card">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -253,6 +259,7 @@ function CostProposalInput({
           min={0}
           value={nextCost.costAmount ?? ""}
           placeholder="Estimated cost"
+          className="bg-card"
           onChange={(event) => {
             const amount = Number(event.target.value);
 
@@ -269,6 +276,7 @@ function CostProposalInput({
         value={nextCost.costDetails ?? ""}
         rows={2}
         placeholder="Useful cost detail"
+        className="resize-none bg-card"
         onChange={(event) => {
           onChange({
             ...nextCost,

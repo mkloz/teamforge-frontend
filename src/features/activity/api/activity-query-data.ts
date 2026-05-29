@@ -12,6 +12,10 @@ export interface ActivityFeedData {
   dmCount: number;
   unreadCount: number;
   pinnedCount: number;
+  allUnreadMessageCount: number;
+  groupUnreadMessageCount: number;
+  dmUnreadMessageCount: number;
+  pinnedUnreadMessageCount: number;
   savedCount: number;
 }
 

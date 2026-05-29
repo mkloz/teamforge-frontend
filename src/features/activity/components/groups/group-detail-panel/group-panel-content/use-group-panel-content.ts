@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 
 import { useActivityFriendships } from "@/features/activity/hooks/use-activity-friendships";
 import { useActivityGroupActions } from "@/features/activity/hooks/use-activity-group-actions";
-import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import type {
   DirectChat,
   Group,
@@ -13,19 +12,13 @@ import { buildMemberProfileChat } from "@/features/activity/lib/activity-project
 
 interface UseGroupPanelContentOptions {
   group: Group;
-  isMobile: boolean;
   selectedMemberId?: string | null;
-  onClose: () => void;
-  onJumpToMessage?: (messageId: string) => void;
   onSelectedMemberIdChange?: (memberId: string | null) => void;
 }
 
 export function useGroupPanelContent({
   group,
-  isMobile,
   selectedMemberId = null,
-  onClose,
-  onJumpToMessage,
   onSelectedMemberIdChange,
 }: UseGroupPanelContentOptions) {
   const [localSelectedMemberId, setLocalSelectedMemberId] = useState<
@@ -43,6 +36,7 @@ export function useGroupPanelContent({
     confirmPlan,
     currentUserId,
     createNextGroupPlan,
+    createPlanFromHistory,
     disbandGroup,
     inviteMember,
     isDisbanding,
@@ -53,7 +47,6 @@ export function useGroupPanelContent({
     removeMember,
     removingMemberId,
   } = useActivityGroupActions(group.id);
-  const { unpinMessage } = useActivityMessageActions();
   const friendshipsQuery = useActivityFriendships();
   const members = useMemo(() => group.members ?? [], [group.members]);
   const selectedMember = useMemo(
@@ -98,18 +91,6 @@ export function useGroupPanelContent({
       }));
   }, [friendshipsQuery.data, members]);
 
-  function jumpToPinnedMessage(messageId: string) {
-    const scroll = () => onJumpToMessage?.(messageId);
-
-    if (isMobile) {
-      onClose();
-      setTimeout(scroll, 220);
-      return;
-    }
-
-    scroll();
-  }
-
   function setSelectedMember(member: GroupMember | null) {
     const nextMemberId = member?.userId ?? null;
 
@@ -128,6 +109,7 @@ export function useGroupPanelContent({
     completePlan,
     confirmPlan,
     createNextGroupPlan,
+    createPlanFromHistory,
     disbandGroup,
     inviteCandidates,
     inviteMember,
@@ -136,7 +118,6 @@ export function useGroupPanelContent({
     isEditOpen,
     isLeaving,
     isPlanEditOpen,
-    jumpToPinnedMessage,
     leaveGroup,
     memberChat,
     memberCount,
@@ -148,6 +129,5 @@ export function useGroupPanelContent({
     setIsEditOpen,
     setIsPlanEditOpen,
     setSelectedMember,
-    unpinMessage,
   };
 }

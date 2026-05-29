@@ -49,11 +49,15 @@ function getContentJustificationClass(classes: string) {
 }
 
 function getLoaderSizeClass(size: ButtonV2Props["size"]) {
+  if (size === "icon-xs") {
+    return "size-3.5";
+  }
+
   if (size === "xs") {
     return "size-3.5";
   }
 
-  if (size === "sm") {
+  if (size === "sm" || size === "icon-sm") {
     return "size-4";
   }
 

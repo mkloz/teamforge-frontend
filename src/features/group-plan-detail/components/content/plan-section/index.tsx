@@ -1,9 +1,12 @@
 import {
   Banknote,
   CalendarClock,
+  CheckCircle2,
+  CircleDashed,
   CircleDot,
   MapPinned,
   Wifi,
+  XCircle,
 } from "lucide-react";
 import type { Ref } from "react";
 import { Section } from "@/features/group-plan-detail/components/section";
@@ -77,7 +80,7 @@ export function PlanSection({
             supporting={plan.costDetails ?? undefined}
           />
           <PlanFact
-            icon={CircleDot}
+            icon={getPlanStatusIcon(plan.status)}
             label="Status"
             value={formatStatusLabel(plan.status)}
             supporting={getStatusContext(
@@ -89,4 +92,22 @@ export function PlanSection({
       </div>
     </Section>
   );
+}
+
+function getPlanStatusIcon(
+  status: NonNullable<GroupPlanDetail["plan"]>["status"],
+) {
+  if (status === "DRAFT" || status === "PROPOSED") {
+    return CircleDashed;
+  }
+
+  if (status === "CONFIRMED" || status === "COMPLETED") {
+    return CheckCircle2;
+  }
+
+  if (status === "CANCELLED") {
+    return XCircle;
+  }
+
+  return CircleDot;
 }

@@ -100,6 +100,20 @@ export function useActivityRouteActions({
     });
   }
 
+  function focusGroupPlan(planId: string) {
+    setGroupDetailOpen(true);
+    setRouteState(
+      {
+        panel: "group",
+        plan: planId,
+        proposal: null,
+      },
+      {
+        history: "replace",
+      },
+    );
+  }
+
   function closeGroupPanel() {
     setGroupDetailOpen(false);
     void setRouteState(getPanelRoutePatch(null), {
@@ -126,6 +140,7 @@ export function useActivityRouteActions({
     clearSelection,
     closeGroupPanel,
     closeProfilePanel,
+    focusGroupPlan,
     selectItem,
     toggleGroupPanel,
     toggleProfilePanel,

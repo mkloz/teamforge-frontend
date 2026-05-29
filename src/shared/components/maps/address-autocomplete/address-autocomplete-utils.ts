@@ -1,14 +1,14 @@
 export function getAddressInputRightPaddingClassName({
   inputValue,
-  isBusy,
   mapsReady,
+  showBusyIndicator,
 }: {
   inputValue: string;
-  isBusy: boolean;
   mapsReady: boolean;
+  showBusyIndicator: boolean;
 }) {
   const rightControlCount =
-    Number(mapsReady) + Number(isBusy) + Number(Boolean(inputValue));
+    Number(mapsReady) + Number(showBusyIndicator) + Number(Boolean(inputValue));
 
   if (rightControlCount >= 3) {
     return "pr-24";

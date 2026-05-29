@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import {
   Ban,
-  Clock3,
+  CircleDashed,
   MessageCircle,
   UserCheck,
   UserRoundPlus,
@@ -69,7 +69,7 @@ function getConnectIcon(label: string) {
   }
 
   if (label === "Requested") {
-    return Clock3;
+    return CircleDashed;
   }
 
   if (label === "Blocked") {

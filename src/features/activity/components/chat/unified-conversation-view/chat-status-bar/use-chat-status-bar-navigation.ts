@@ -42,6 +42,11 @@ export function useChatStatusBarNavigation({
 
     const current = entries[safeActiveIndex];
 
+    if (current.isPlan) {
+      activateEntry(current);
+      return;
+    }
+
     if (total === 1) {
       activateEntry(current);
       return;

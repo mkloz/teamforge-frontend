@@ -16,7 +16,7 @@ export function DecisionRail({ detail }: DecisionRailProps) {
   return (
     <aside
       aria-label="Group decision panel"
-      className="flex flex-col gap-3 lg:sticky lg:top-6"
+      className="flex flex-col gap-3 lg:sticky lg:top-[calc(var(--group-detail-cover-collapsed-height,72px)+1.5rem)]"
     >
       <DecisionActionCard detail={detail} action={action} />
 

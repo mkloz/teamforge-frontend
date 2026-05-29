@@ -24,10 +24,25 @@ export function useUnreadNotifications() {
   };
 }
 
-export function useNotifications() {
-  const listQuery = useQuery(NotificationsQueryFactory.list());
-  const unreadItemsQuery = useQuery(NotificationsQueryFactory.unreadList());
-  const unreadCountQuery = useQuery(NotificationsQueryFactory.unreadCount());
+interface UseNotificationsOptions {
+  enabled?: boolean;
+}
+
+export function useNotifications({
+  enabled = true,
+}: UseNotificationsOptions = {}) {
+  const listQuery = useQuery({
+    ...NotificationsQueryFactory.list(),
+    enabled,
+  });
+  const unreadItemsQuery = useQuery({
+    ...NotificationsQueryFactory.unreadList(),
+    enabled,
+  });
+  const unreadCountQuery = useQuery({
+    ...NotificationsQueryFactory.unreadCount(),
+    enabled,
+  });
   const items = listQuery.data ?? [];
   const unreadItems =
     unreadItemsQuery.data ?? items.filter((item) => !item.isRead);
@@ -96,9 +111,19 @@ export function useNotifications() {
     notificationGroups,
     count,
     isLoading: listQuery.isLoading && items.length === 0,
+    isRefreshing:
+      listQuery.isFetching ||
+      unreadItemsQuery.isFetching ||
+      unreadCountQuery.isFetching,
     isMarkingAllRead: markAllReadMutation.isPending,
     markRead: (id: string) => markReadMutation.mutate(id),
     markReadAsync: (id: string) => markReadMutation.mutateAsync(id),
-    markAllRead: () => markAllReadMutation.mutate(),
+    markAllReadAsync: () => markAllReadMutation.mutateAsync(),
+    refreshNotifications: () =>
+      Promise.all([
+        listQuery.refetch(),
+        unreadItemsQuery.refetch(),
+        unreadCountQuery.refetch(),
+      ]),
   };
 }

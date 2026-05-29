@@ -10,8 +10,8 @@ interface FeedbackStateProps {
   descriptionClassName?: string;
   fullPage?: boolean;
   headingId: string;
-  icon: ReactNode;
-  iconClassName: string;
+  icon?: ReactNode;
+  iconClassName?: string;
   title: string;
   visual?: ReactNode;
 }
@@ -51,7 +51,7 @@ export function FeedbackState({
           >
             {visual}
           </div>
-        ) : (
+        ) : icon ? (
           <div
             className={cn(
               "mx-auto mb-5 flex size-12 items-center justify-center rounded-2xl",
@@ -61,7 +61,7 @@ export function FeedbackState({
           >
             {icon}
           </div>
-        )}
+        ) : null}
 
         <h1 id={headingId} className="font-bold text-2xl text-ink">
           {title}

@@ -29,7 +29,7 @@ export function ProfileIdentity({
         {user.name}
       </h1>
 
-      <div className="mt-1.5 flex flex-wrap items-center justify-start gap-x-2 gap-y-1 font-medium text-white/80">
+      <div className="flex flex-wrap items-center justify-start gap-x-2 gap-y-1 font-medium text-white/80">
         {hasAge ? (
           <span className="font-semibold text-sm">{user.age} yrs</span>
         ) : null}
@@ -37,9 +37,12 @@ export function ProfileIdentity({
           <span className="size-1 rounded-full bg-white/40" />
         ) : null}
         {hasCity ? (
-          <div className="flex min-w-0 items-center gap-1 font-bold text-micro uppercase tracking-widest">
-            <MapPin size={12} className="shrink-0 text-white/90" />
-            <span className="truncate">{user.city}</span>
+          <div className="flex min-w-0 items-center gap-1 font-semibold text-sm leading-4">
+            <MapPin
+              aria-hidden="true"
+              className="size-3 shrink-0 -translate-y-px text-white/90"
+            />
+            <span className="truncate leading-4">{user.city}</span>
           </div>
         ) : null}
         {!hasAge && !hasCity ? (

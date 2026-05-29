@@ -15,11 +15,11 @@ interface FilterHeaderProps {
   filters: { key: FilterChip; label: string }[];
   activeFilter: FilterChip;
   counts: {
-    groupCount: number;
-    dmCount: number;
-    unreadCount: number;
     pinnedCount: number;
-    savedCount: number;
+    allUnreadMessageCount: number;
+    groupUnreadMessageCount: number;
+    dmUnreadMessageCount: number;
+    pinnedUnreadMessageCount: number;
   };
   density?: "default" | "compact";
   onFilterChange: (f: FilterChip) => void;
@@ -36,11 +36,7 @@ export const FilterHeader = memo(function FilterHeader({
 }: FilterHeaderProps) {
   const visibleFilters = filters.filter(
     (f) =>
-      (f.key !== "unread" || counts.unreadCount > 0) &&
-      (f.key !== "pinned" ||
-        counts.pinnedCount > 0 ||
-        activeFilter === "pinned") &&
-      (f.key !== "saved" || counts.savedCount > 0 || activeFilter === "saved"),
+      f.key !== "pinned" || counts.pinnedCount > 0 || activeFilter === "pinned",
   );
   const densityLabel = density === "default" ? "Compact view" : "Default view";
   const handleFilterChange = (value: string) => {
@@ -54,7 +50,7 @@ export const FilterHeader = memo(function FilterHeader({
   return (
     <nav
       className={cn(
-        "sticky top-0 z-20 border-border/60 border-b px-3 py-2",
+        "sticky top-0 z-20 border-border/60 border-b px-3 pt-3 pb-2",
         "flex items-center gap-2 bg-canvas/85 backdrop-blur-md",
       )}
     >
@@ -62,7 +58,7 @@ export const FilterHeader = memo(function FilterHeader({
         value={activeFilter}
         onValueChange={handleFilterChange}
         aria-label="Filter conversations"
-        className="scrollbar-hide flex min-w-0 flex-1 snap-x scroll-px-3 gap-1.5 overflow-x-auto py-0.5 pr-1 outline-none"
+        className="scrollbar-hide flex min-w-0 flex-1 snap-x scroll-px-3 gap-1.5 overflow-x-auto pt-1.5 pr-1 pb-2 outline-none"
       >
         {visibleFilters.map(({ key, label }) => {
           const badge = getBadgeCount(key, counts);
@@ -110,18 +106,18 @@ export const FilterHeader = memo(function FilterHeader({
 function getBadgeCount(
   key: FilterChip,
   counts: {
-    groupCount: number;
-    dmCount: number;
-    unreadCount: number;
     pinnedCount: number;
-    savedCount: number;
+    allUnreadMessageCount: number;
+    groupUnreadMessageCount: number;
+    dmUnreadMessageCount: number;
+    pinnedUnreadMessageCount: number;
   },
 ): number | null {
-  if (key === "groups") return counts.groupCount;
-  if (key === "direct") return counts.dmCount;
-  if (key === "unread") return counts.unreadCount;
-  if (key === "pinned") return counts.pinnedCount;
-  if (key === "saved") return counts.savedCount;
+  if (key === "all") return counts.allUnreadMessageCount;
+  if (key === "groups") return counts.groupUnreadMessageCount;
+  if (key === "direct") return counts.dmUnreadMessageCount;
+  if (key === "unread") return counts.allUnreadMessageCount;
+  if (key === "pinned") return counts.pinnedUnreadMessageCount;
   return null;
 }
 
@@ -130,7 +126,7 @@ function getFilterAriaLabel(label: string, count: number | null) {
     return label;
   }
 
-  return `${label}, ${count}`;
+  return `${label}, ${count} unread`;
 }
 
 function getMobileFilterOrderClass(key: FilterChip) {
