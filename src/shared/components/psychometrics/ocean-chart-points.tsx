@@ -54,6 +54,8 @@ export function ChartDot({
       <g
         key={`dotgroup-${payload.trait}`}
         className="cursor-pointer"
+        aria-label={`Select ${traitLabel} trait`}
+        aria-pressed={Boolean(isSelected)}
         role="button"
         tabIndex={0}
         onClick={handleActivate}
@@ -146,6 +148,8 @@ export function ChartTick({
       // biome-ignore lint/a11y/useSemanticElements: SVG chart groups cannot be replaced by HTML buttons inside an SVG.
       <g
         className="cursor-pointer"
+        aria-label={`Select ${traitLabel} trait`}
+        aria-pressed={Boolean(isSelected)}
         role="button"
         tabIndex={0}
         onClick={handleActivate}

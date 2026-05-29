@@ -55,10 +55,13 @@ export default defineConfig({
 
           if (
             id.includes("/react-hook-form/") ||
-            id.includes("/@hookform/resolvers/") ||
-            id.includes("/zod/")
+            id.includes("/@hookform/resolvers/")
           ) {
             return "forms";
+          }
+
+          if (id.includes("/zod/")) {
+            return "validation";
           }
 
           if (
@@ -104,7 +107,7 @@ export default defineConfig({
           }
 
           if (id.includes("/lucide-react/")) {
-            return undefined;
+            return "icons";
           }
 
           if (id.includes("/ky/")) {

@@ -17,11 +17,13 @@ import type { ExploreGroup } from "@/shared/schemas";
 
 interface ExploreGroupPlanCardProps {
   group: ExploreGroup;
+  imagePriority?: "auto" | "high";
   variant?: "default" | "compact";
 }
 
 export function ExploreGroupPlanCard({
   group,
+  imagePriority = "auto",
   variant = "default",
 }: ExploreGroupPlanCardProps) {
   const joinMutation = useJoinExploreGroup(group.id);
@@ -98,6 +100,7 @@ export function ExploreGroupPlanCard({
       variant={variant}
       action={action}
       detailsLink={detailsLink}
+      imagePriority={imagePriority}
     />
   );
 }

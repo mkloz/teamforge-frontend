@@ -3,6 +3,10 @@ interface RouteLocationLike {
   searchStr: string;
 }
 
+interface RequireAuthenticatedUserOptions {
+  onSessionRestored?: () => void | Promise<void>;
+}
+
 interface PublicAuthRouteLoadContext {
   location: {
     searchStr: string;
@@ -17,10 +21,13 @@ export async function redirectAuthenticatedUser({
   return routeGuards.redirectAuthenticatedUser({ location });
 }
 
-export async function requireCanonicalAppRoute(location: RouteLocationLike) {
+export async function requireCanonicalAppRoute(
+  location: RouteLocationLike,
+  options?: RequireAuthenticatedUserOptions,
+) {
   const routeGuards = await import("@/app/router/route-guards.impl");
 
-  return routeGuards.requireCanonicalAppRoute(location);
+  return routeGuards.requireCanonicalAppRoute(location, options);
 }
 
 export async function requireCanonicalOnboardingRoute(

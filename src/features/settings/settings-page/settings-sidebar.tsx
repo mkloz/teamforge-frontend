@@ -1,15 +1,21 @@
 import { Link } from "@tanstack/react-router";
 import { ChevronRight, LogOut } from "lucide-react";
+import { lazy, Suspense, useState } from "react";
 
 import {
   buildSettingsNavigation,
   type SettingsSection,
 } from "@/features/settings/lib/settings-route";
-import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 import { SETTINGS_SECTIONS } from "./settings-sections";
+
+const ActionDialog = lazy(() =>
+  import("@/shared/components/ui/action-dialog").then((module) => ({
+    default: module.ActionDialog,
+  })),
+);
 
 interface SettingsSidebarProps {
   activeSection: SettingsSection;
@@ -26,6 +32,8 @@ export function SettingsSidebar({
   onSectionSelect,
   onSignOut,
 }: SettingsSidebarProps) {
+  const [signOutDialogOpen, setSignOutDialogOpen] = useState(false);
+
   return (
     <aside
       className={cn(
@@ -48,27 +56,33 @@ export function SettingsSidebar({
       />
 
       <div className="mt-5 border-border border-y py-1 lg:border-x-0 lg:border-t lg:border-b-0 lg:py-4">
-        <ActionDialog
-          cancelLabel="Stay signed in"
-          confirmLabel={isSigningOut ? "Signing out..." : "Sign out"}
-          description="This ends the current session and returns you to the login screen."
-          details={["You can come back with the same email and password."]}
-          loading={isSigningOut}
-          onConfirm={onSignOut}
-          title="Sign out of TeamForge?"
-          tone="warning"
-          trigger={
-            <Button
-              type="button"
-              variant="destructive"
-              className="h-auto w-full justify-start px-1 py-3 lg:px-4"
-              disabled={isSigningOut}
-            >
-              <LogOut size={16} />
-              {isSigningOut ? "Signing out..." : "Sign out"}
-            </Button>
-          }
-        />
+        <Button
+          type="button"
+          variant="destructive"
+          className="h-auto w-full justify-start px-1 py-3 lg:px-4"
+          disabled={isSigningOut}
+          onClick={() => setSignOutDialogOpen(true)}
+        >
+          <LogOut size={16} />
+          {isSigningOut ? "Signing out..." : "Sign out"}
+        </Button>
+
+        {signOutDialogOpen ? (
+          <Suspense fallback={null}>
+            <ActionDialog
+              cancelLabel="Stay signed in"
+              confirmLabel={isSigningOut ? "Signing out..." : "Sign out"}
+              description="This ends the current session and returns you to the login screen."
+              details={["You can come back with the same email and password."]}
+              loading={isSigningOut}
+              onConfirm={onSignOut}
+              onOpenChange={setSignOutDialogOpen}
+              open={signOutDialogOpen}
+              title="Sign out of TeamForge?"
+              tone="warning"
+            />
+          </Suspense>
+        ) : null}
       </div>
     </aside>
   );

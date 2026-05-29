@@ -12,6 +12,8 @@ import { cn } from "@/shared/lib/utils";
 interface AvatarPreviewDialogProps {
   children: ReactNode;
   name: string;
+  onOpenChange?: (open: boolean) => void;
+  open?: boolean;
   src?: string | null;
   shape?: "circle" | "rounded";
 }
@@ -19,11 +21,13 @@ interface AvatarPreviewDialogProps {
 export function AvatarPreviewDialog({
   children,
   name,
+  onOpenChange,
+  open,
   src,
   shape = "circle",
 }: AvatarPreviewDialogProps) {
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="w-auto max-w-[calc(100vw-2rem)] gap-0 border-0 bg-transparent p-0 shadow-none [&>button]:top-1 [&>button]:right-1 [&>button]:rounded-full [&>button]:border [&>button]:border-border/70 [&>button]:bg-card/90 [&>button]:shadow-sm">
         <DialogTitle className="sr-only">{name} avatar</DialogTitle>

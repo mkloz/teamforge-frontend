@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { type LucideIcon, Settings, UserPlus } from "lucide-react";
+import { lazy, Suspense, useState } from "react";
 import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
-import { PlanChangeDialog } from "@/features/group-plan-detail/components/plan-change-dialog";
 import { useGroupPlanProposalActions } from "@/features/group-plan-detail/hooks/use-group-plan-proposal-actions";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { Button } from "@/shared/components/ui/button";
@@ -9,6 +9,12 @@ import { Button } from "@/shared/components/ui/button";
 interface MemberQuickActionsProps {
   detail: GroupPlanDetail;
 }
+
+const PlanChangeDialog = lazy(() =>
+  import("@/features/group-plan-detail/components/plan-change-dialog").then(
+    (module) => ({ default: module.PlanChangeDialog }),
+  ),
+);
 
 export function MemberQuickActions({ detail }: MemberQuickActionsProps) {
   const proposalActions = useGroupPlanProposalActions({
@@ -32,7 +38,7 @@ export function MemberQuickActions({ detail }: MemberQuickActionsProps) {
       </h3>
       <div className="grid gap-1">
         {capabilities.canSuggestPlanChange ? (
-          <PlanChangeDialog
+          <DeferredPlanChangeDialog
             detail={detail}
             disabled={proposalActions.isSubmitting}
             isCreating={proposalActions.isCreating}
@@ -71,6 +77,62 @@ function getMemberQuickActionCapabilities(detail: GroupPlanDetail) {
     canSuggestPlanChange,
     hasAnyAction: canSuggestPlanChange || canInviteMembers || canManageGroup,
   };
+}
+
+type CreateProposalAction = ReturnType<
+  typeof useGroupPlanProposalActions
+>["createProposal"];
+
+function DeferredPlanChangeDialog({
+  detail,
+  disabled,
+  isCreating,
+  onCreate,
+}: {
+  detail: GroupPlanDetail;
+  disabled: boolean;
+  isCreating: boolean;
+  onCreate: CreateProposalAction;
+}) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const isDisabled = disabled || !detail.plan;
+  const trigger = (
+    <Button
+      variant="outline"
+      size="sm"
+      disabled={isDisabled}
+      onClick={() => {
+        setIsLoaded(true);
+        setIsOpen(true);
+      }}
+    >
+      What would you change?
+    </Button>
+  );
+
+  if (!isLoaded) {
+    return trigger;
+  }
+
+  return (
+    <Suspense
+      fallback={
+        <Button variant="outline" size="sm" loading disabled>
+          What would you change?
+        </Button>
+      }
+    >
+      <PlanChangeDialog
+        detail={detail}
+        disabled={disabled}
+        isCreating={isCreating}
+        onCreate={onCreate}
+        open={isOpen}
+        onOpenChange={setIsOpen}
+      />
+    </Suspense>
+  );
 }
 
 interface QuickActionLinkProps {

@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 
-import { useActivityComposer } from "./use-activity-composer";
 import { useActivityFeed } from "./use-activity-feed";
 import { useActivityPanels } from "./use-activity-panels";
 import { useActivityRealtimeSync } from "./use-activity-realtime-sync";
@@ -15,7 +14,6 @@ export function useActivity() {
   const feed = useActivityFeed();
   const selection = useActivitySelection();
   const panels = useActivityPanels();
-  const composer = useActivityComposer();
 
   useActivityRealtimeSync({
     activeChatId:
@@ -39,7 +37,6 @@ export function useActivity() {
     ...feed,
     ...selection,
     ...panels,
-    ...composer,
     ...routeState,
   };
 }

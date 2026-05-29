@@ -1,7 +1,17 @@
-import { ActivityConversationStage } from "@/features/activity/components/activity-page/activity-conversation-stage";
+import { lazy, Suspense } from "react";
+import { ActivityEmptyState } from "@/features/activity/components/activity-page/activity-conversation-stage/activity-empty-state";
+import { ActivityConversationStageSkeleton } from "@/features/activity/components/activity-page/activity-page-skeleton";
 import { ActivitySidebar } from "@/features/activity/components/activity-page/activity-sidebar";
 import type { ActivityWorkspace } from "@/features/activity/hooks/use-activity";
 import { cn } from "@/shared/lib/utils";
+
+const ActivityConversationStage = lazy(() =>
+  import(
+    "@/features/activity/components/activity-page/activity-conversation-stage"
+  ).then((module) => ({
+    default: module.ActivityConversationStage,
+  })),
+);
 
 interface ActivityPageContentProps {
   activity: ActivityWorkspace;
@@ -34,11 +44,23 @@ export function ActivityPageContent({
           !activity.hasSelection && "hidden md:flex",
         )}
       >
-        <ActivityConversationStage
-          activity={activity}
-          isMobile={isMobile}
-          isOnline={isOnline}
-        />
+        {activity.hasSelection ? (
+          <Suspense
+            fallback={
+              <div className="flex h-full min-h-0 min-w-0 flex-1 overflow-hidden">
+                <ActivityConversationStageSkeleton />
+              </div>
+            }
+          >
+            <ActivityConversationStage
+              activity={activity}
+              isMobile={isMobile}
+              isOnline={isOnline}
+            />
+          </Suspense>
+        ) : (
+          <ActivityEmptyState />
+        )}
       </main>
     </div>
   );

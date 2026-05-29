@@ -45,8 +45,11 @@ const FIELD_ICON: Record<PlanProposalField, LucideIcon> = {
 interface PlanChangeDialogProps {
   detail: GroupPlanDetail;
   disabled?: boolean;
+  initialOpen?: boolean;
   isCreating: boolean;
   onCreate: (payload: CreateGroupPlanProposalPayload) => Promise<unknown>;
+  onOpenChange?: (open: boolean) => void;
+  open?: boolean;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -54,16 +57,21 @@ interface PlanChangeDialogProps {
 export function PlanChangeDialog({
   detail,
   disabled = false,
+  initialOpen = false,
   isCreating,
   onCreate,
+  onOpenChange,
+  open,
 }: PlanChangeDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(initialOpen);
   const [expanded, setExpanded] = useState<PlanProposalField | null>(null);
+  const isControlled = open !== undefined;
+  const dialogOpen = open ?? internalOpen;
 
   const form = usePlanChangeForm({
     detail,
     onCreate,
-    onSubmitted: () => setOpen(false),
+    onSubmitted: () => handleOpenChange(false),
   });
 
   function toggleField(field: PlanProposalField) {
@@ -76,15 +84,18 @@ export function PlanChangeDialog({
   }
 
   function handleOpenChange(isOpen: boolean) {
-    setOpen(isOpen);
+    if (!isControlled) {
+      setInternalOpen(isOpen);
+    }
     if (!isOpen) {
       form.resetForm();
       setExpanded(null);
     }
+    onOpenChange?.(isOpen);
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" disabled={disabled || !form.plan}>
           What would you change?
@@ -105,7 +116,7 @@ export function PlanChangeDialog({
           <button
             type="button"
             aria-label="Close"
-            onClick={() => setOpen(false)}
+            onClick={() => handleOpenChange(false)}
             className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full text-slate-muted transition-colors hover:bg-black/8 hover:text-ink"
           >
             <X className="size-3.5" strokeWidth={2.5} />

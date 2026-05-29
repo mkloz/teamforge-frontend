@@ -1,6 +1,7 @@
 import { getCategoryCover } from "@/features/group-plan-detail/lib/category-cover";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { Image } from "@/shared/components/common/image";
+import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
 import {
   getGroupFallbackDescription,
   resolveGroupImage,
@@ -10,13 +11,14 @@ export function GroupIdentity({ detail }: { detail: GroupPlanDetail }) {
   const category = getCategoryCover(detail.plan?.category);
   const CategoryIcon = category.icon;
   const coverSrc = resolveGroupImage(detail);
+  const imageSrc = getSizedImageUrl(coverSrc, 160) ?? coverSrc;
 
   return (
     <div className="flex gap-5">
       <div className="relative size-16 shrink-0 overflow-hidden rounded-xl sm:size-20">
         {coverSrc ? (
           <Image
-            src={coverSrc}
+            src={imageSrc ?? undefined}
             alt={`${detail.group.name} group`}
             wrapperClassName="absolute inset-0"
             className="size-full object-cover"

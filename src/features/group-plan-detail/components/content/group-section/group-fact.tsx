@@ -20,12 +20,12 @@ export function GroupFact({
         aria-hidden="true"
       />
       <div className="min-w-0">
-        <dt className="type-signature-label font-bold text-muted-foreground uppercase tracking-widest">
+        <p className="type-signature-label font-bold text-muted-foreground uppercase tracking-widest">
           {label}
-        </dt>
-        <dd className="mt-0.5 font-black text-foreground text-sm leading-snug">
+        </p>
+        <p className="mt-0.5 font-black text-foreground text-sm leading-snug">
           {value}
-        </dd>
+        </p>
         {supporting ? (
           <p className="mt-0.5 font-medium text-muted-foreground text-xs">
             {supporting}

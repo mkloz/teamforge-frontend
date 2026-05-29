@@ -19,7 +19,7 @@ export function ActivityLaneRow({ lane }: ActivityLaneRowProps) {
           <Icon size={18} />
         </div>
         <div>
-          <h4 className="font-extrabold text-ink text-sm">{lane.label}</h4>
+          <h3 className="font-extrabold text-ink text-sm">{lane.label}</h3>
           <p className="mt-1 font-semibold text-slate-muted text-xs">
             {evidenceLabel}
           </p>

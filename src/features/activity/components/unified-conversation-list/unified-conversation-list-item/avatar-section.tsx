@@ -28,6 +28,7 @@ export const AvatarSection = memo(
     const secondaryAvatar = getConversationSecondaryAvatar(item);
     const isNotes = getConversationIsNotes(item);
     const avatarSizeClassName = isCompact ? "size-9" : "size-11";
+    const avatarImageSize = isCompact ? 48 : 64;
 
     return (
       <div className="relative shrink-0">
@@ -45,6 +46,7 @@ export const AvatarSection = memo(
           <Avatar
             src={avatarUrl}
             name={title}
+            imageSize={avatarImageSize}
             shape={isGroup ? "rounded" : "circle"}
             className={cn(
               "shadow-sm ring-1 ring-border/50 transition-colors duration-200 group-hover/item:ring-forge-teal/30",
@@ -64,6 +66,7 @@ export const AvatarSection = memo(
               src={secondaryAvatar}
               alt=""
               fallback=""
+              imageSize={32}
               shape="rounded"
               className="size-full rounded-lg"
             />

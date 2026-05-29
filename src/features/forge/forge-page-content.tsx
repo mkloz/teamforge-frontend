@@ -133,7 +133,7 @@ export function ForgeIntroContent({ onForgeClick }: ForgeIntroContentProps) {
             onClick={onForgeClick}
             variant="accentGhost"
             size="lg"
-            className="w-full border border-forge-teal/25 bg-forge-teal/8 text-forge-teal hover:enabled:bg-forge-teal/12 lg:w-auto"
+            className="w-full border border-forge-teal/25 text-forge-teal hover:enabled:bg-forge-teal/12 lg:w-auto"
             aria-label="Forge my group"
           >
             <Plus size={18} />

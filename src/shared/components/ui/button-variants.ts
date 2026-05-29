@@ -13,7 +13,7 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "border-2 border-button-primary-border bg-forge-teal text-white after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-forge-teal active:enabled:translate-y-0 active:enabled:shadow-none hover:enabled:-translate-y-1 hover:enabled:shadow-button-primary",
+          "border-2 border-button-primary-border bg-button-primary-border text-white after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-forge-teal active:enabled:translate-y-0 active:enabled:shadow-none hover:enabled:-translate-y-1 hover:enabled:shadow-button-primary",
         secondary:
           "border-2 border-spark-amber/35 bg-spark-amber/12 text-spark-amber after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-spark-amber active:enabled:translate-y-0 active:enabled:shadow-none hover:enabled:-translate-y-1 hover:enabled:border-spark-amber/45 hover:enabled:bg-spark-amber/18 hover:enabled:shadow-button-secondary",
         outline:

@@ -1,15 +1,23 @@
 import { Image } from "@/shared/components/common/image";
 import type { GroupPlanCardVariant } from "@/shared/components/group-plan-card/group-plan-card-types";
+import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
 import { cn } from "@/shared/lib/utils";
 
 interface CardImageProps {
   alt: string;
+  priority?: "auto" | "high";
   src?: string;
   variant?: GroupPlanCardVariant;
 }
 
-export function CardImage({ alt, src, variant = "default" }: CardImageProps) {
+export function CardImage({
+  alt,
+  priority = "auto",
+  src,
+  variant = "default",
+}: CardImageProps) {
   const isCompact = variant === "compact";
+  const imageSrc = getSizedImageUrl(src, isCompact ? 640 : 480);
 
   return (
     <div
@@ -21,8 +29,10 @@ export function CardImage({ alt, src, variant = "default" }: CardImageProps) {
       )}
     >
       <Image
-        src={src}
+        src={imageSrc ?? undefined}
         alt={alt}
+        fetchPriority={priority}
+        loading={priority === "high" ? "eager" : "lazy"}
         wrapperClassName="absolute inset-0"
         className="transition-transform duration-700 ease-out will-change-transform group-hover:scale-105"
         noImageComponent={<NoImagePlaceholder />}

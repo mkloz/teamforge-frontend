@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 import {
   type AppNavigationItem,
   isAppNavigationItemActive,
@@ -37,16 +36,15 @@ export function TabButton({ item, pathname }: TabButtonProps) {
         "transition-colors duration-200 hover:bg-muted/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
       )}
     >
-      <motion.div
-        layout
-        whileTap={{ scale: 0.85 }}
-        transition={{ type: "spring", stiffness: 400, damping: 17 }}
-        className="relative z-10 flex size-full min-w-0 flex-col items-center justify-center gap-0.5"
+      <div
+        className={cn(
+          "relative z-10 flex size-full min-w-0 flex-col items-center justify-center gap-0.5",
+          "transition-transform duration-150 active:scale-90",
+        )}
       >
-        <motion.div
-          layout
+        <div
           className={cn(
-            "relative flex items-center justify-center transition-colors duration-300",
+            "relative flex items-center justify-center transition-[background-color,border-color,box-shadow,width,height] duration-300 ease-out",
             active
               ? `size-10 rounded-full border ${activeColorBg}`
               : "size-8 rounded-full bg-transparent shadow-none",
@@ -72,22 +70,21 @@ export function TabButton({ item, pathname }: TabButtonProps) {
               {badge > 9 ? "9+" : badge}
             </span>
           )}
-        </motion.div>
+        </div>
 
-        <motion.span
-          animate={
-            active
-              ? { height: 0, opacity: 0, y: -2 }
-              : { height: "auto", opacity: 1, y: 0 }
-          }
+        <span
           aria-hidden={active}
-          className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-muted-foreground text-xs leading-none tracking-tight"
-          initial={false}
-          transition={{ duration: 0.2, ease: "easeOut" }}
+          className={cn(
+            "max-w-full overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-muted-foreground text-xs leading-none tracking-tight",
+            "transition-[max-height,opacity,transform] duration-200 ease-out",
+            active
+              ? "max-h-0 -translate-y-0.5 opacity-0"
+              : "max-h-4 translate-y-0 opacity-100",
+          )}
         >
           {item.label}
-        </motion.span>
-      </motion.div>
+        </span>
+      </div>
     </Link>
   );
 }

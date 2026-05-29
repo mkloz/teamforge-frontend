@@ -1,72 +1,104 @@
-import { useEffect, useEffectEvent } from "react";
-import { appQueryClient } from "@/shared/api/query-client";
-import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-import { realtimeClient } from "@/shared/api/realtime-client";
+import { useEffect } from "react";
 import {
-  realtimeGroupUpdatedPayloadSchema,
-  realtimePlanUpdatedPayloadSchema,
-} from "@/shared/schemas";
+  cancelDelay,
+  cancelIdleTask,
+  scheduleDelay,
+  scheduleIdleTask,
+} from "@/shared/lib/browser-scheduling";
 
 interface UseGroupPlanDetailRealtimeInput {
   groupId: string;
   planId?: string | null;
 }
 
-function invalidateGroupPlanDetail(groupId: string) {
-  void appQueryClient.invalidateQueries({
-    queryKey: APP_QUERY_KEYS.groupPlanDetail.byId(groupId),
-  });
-}
+const GROUP_PLAN_DETAIL_REALTIME_DELAY_MS = 12_000;
 
 export function useGroupPlanDetailRealtime({
   groupId,
   planId,
 }: UseGroupPlanDetailRealtimeInput) {
-  const handlePlanUpdated = useEffectEvent((payload: unknown) => {
-    const parsed = realtimePlanUpdatedPayloadSchema.safeParse(payload);
-
-    if (!parsed.success || parsed.data.groupId !== groupId) {
-      return;
-    }
-
-    invalidateGroupPlanDetail(groupId);
-  });
-
-  const handleGroupUpdated = useEffectEvent((payload: unknown) => {
-    const parsed = realtimeGroupUpdatedPayloadSchema.safeParse(payload);
-
-    if (!parsed.success || parsed.data.group.id !== groupId) {
-      return;
-    }
-
-    invalidateGroupPlanDetail(groupId);
-  });
-
   useEffect(() => {
-    if (!planId) {
-      return undefined;
-    }
+    let cleanup: (() => void) | undefined;
+    let cancelled = false;
+    let idleTask: ReturnType<typeof scheduleIdleTask> | undefined;
+    const delayTask = scheduleDelay(() => {
+      idleTask = scheduleIdleTask(() => {
+        void initializeRealtime();
+      });
+    }, GROUP_PLAN_DETAIL_REALTIME_DELAY_MS);
 
-    realtimeClient.emit("plan.subscribe", { planId });
+    async function initializeRealtime() {
+      const [
+        { appQueryClient },
+        { APP_QUERY_KEYS },
+        { realtimeClient },
+        { realtimeGroupUpdatedPayloadSchema, realtimePlanUpdatedPayloadSchema },
+      ] = await Promise.all([
+        import("@/shared/api/query-client"),
+        import("@/shared/api/query-keys"),
+        import("@/shared/api/realtime-client"),
+        import("@/shared/schemas"),
+      ]);
+
+      if (cancelled) {
+        return;
+      }
+
+      function invalidateGroupPlanDetail() {
+        void appQueryClient.invalidateQueries({
+          queryKey: APP_QUERY_KEYS.groupPlanDetail.byId(groupId),
+        });
+      }
+
+      function handlePlanUpdated(payload: unknown) {
+        const parsed = realtimePlanUpdatedPayloadSchema.safeParse(payload);
+
+        if (!parsed.success || parsed.data.groupId !== groupId) {
+          return;
+        }
+
+        invalidateGroupPlanDetail();
+      }
+
+      function handleGroupUpdated(payload: unknown) {
+        const parsed = realtimeGroupUpdatedPayloadSchema.safeParse(payload);
+
+        if (!parsed.success || parsed.data.group.id !== groupId) {
+          return;
+        }
+
+        invalidateGroupPlanDetail();
+      }
+
+      if (planId) {
+        realtimeClient.emit("plan.subscribe", { planId });
+      }
+
+      const unsubscribePlanUpdated = realtimeClient.on(
+        "plan.updated",
+        handlePlanUpdated,
+      );
+      const unsubscribeGroupUpdated = realtimeClient.on(
+        "group.updated",
+        handleGroupUpdated,
+      );
+
+      cleanup = () => {
+        unsubscribeGroupUpdated();
+        unsubscribePlanUpdated();
+        if (planId) {
+          realtimeClient.emit("plan.unsubscribe", { planId });
+        }
+      };
+    }
 
     return () => {
-      realtimeClient.emit("plan.unsubscribe", { planId });
+      cancelled = true;
+      cancelDelay(delayTask);
+      if (idleTask) {
+        cancelIdleTask(idleTask);
+      }
+      cleanup?.();
     };
-  }, [planId]);
-
-  useEffect(() => {
-    const unsubscribePlanUpdated = realtimeClient.on(
-      "plan.updated",
-      handlePlanUpdated,
-    );
-    const unsubscribeGroupUpdated = realtimeClient.on(
-      "group.updated",
-      handleGroupUpdated,
-    );
-
-    return () => {
-      unsubscribeGroupUpdated();
-      unsubscribePlanUpdated();
-    };
-  }, []);
+  }, [groupId, planId]);
 }

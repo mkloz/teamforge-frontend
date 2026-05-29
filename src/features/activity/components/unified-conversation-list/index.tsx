@@ -1,4 +1,4 @@
-import { Fragment, memo } from "react";
+import { Fragment, lazy, memo, Suspense } from "react";
 import { useSearchHeaderFade } from "@/features/activity/hooks/use-search-header-fade";
 import type {
   FilterChip,
@@ -12,7 +12,6 @@ import {
   getMessagePreviewText,
 } from "@/features/activity/lib/unify-conversations";
 import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
-import { EmptyState } from "./empty-state";
 import { FilterHeader } from "./filter-header";
 import {
   ConversationListErrorState,
@@ -21,6 +20,12 @@ import {
 import { SavedMessagesChatListItem } from "./saved-messages-chat-list-item";
 import { SearchHeader } from "./search-header";
 import { UnifiedConversationListItem } from "./unified-conversation-list-item";
+
+const EmptyState = lazy(() =>
+  import("./empty-state").then((module) => ({
+    default: module.EmptyState,
+  })),
+);
 
 interface UnifiedConversationListProps {
   items: UnifiedConversation[];
@@ -224,18 +229,20 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
               onRetry={onRetryFeed}
             />
           ) : visibleItemCount === 0 ? (
-            <EmptyState
-              label={emptyLabel}
-              description={emptyDescription}
-              artwork={emptyArtwork}
-              showForgeCta={!searchQuery && activeFilter === "all"}
-              showExploreCta={
-                !searchQuery &&
-                (activeFilter === "all" ||
-                  activeFilter === "groups" ||
-                  activeFilter === "unread")
-              }
-            />
+            <Suspense fallback={null}>
+              <EmptyState
+                label={emptyLabel}
+                description={emptyDescription}
+                artwork={emptyArtwork}
+                showForgeCta={!searchQuery && activeFilter === "all"}
+                showExploreCta={
+                  !searchQuery &&
+                  (activeFilter === "all" ||
+                    activeFilter === "groups" ||
+                    activeFilter === "unread")
+                }
+              />
+            </Suspense>
           ) : isSavedFilter ? (
             savedMessagesChatItem
           ) : (

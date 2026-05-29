@@ -1,19 +1,35 @@
 import { SettingsProfileForm } from "@/features/settings/components/settings-profile-form";
-import type { useSettingsBlockedUsers } from "@/features/settings/hooks/use-settings-blocked-users";
-import type { useSettingsProfileForm } from "@/features/settings/hooks/use-settings-profile-form";
+import { useSettingsBlockedUsers } from "@/features/settings/hooks/use-settings-blocked-users";
+import { useSettingsProfileForm } from "@/features/settings/hooks/use-settings-profile-form";
 import type { SettingsSection } from "@/features/settings/lib/settings-route";
+import { PageErrorState } from "@/shared/components/page-error-state";
+import { SettingsSectionContentLoading } from "./settings-page.loading";
 
 interface SettingsFormBridgeProps {
   activeSection: SettingsSection;
-  blockedUsersState: ReturnType<typeof useSettingsBlockedUsers>;
-  profileFormState: ReturnType<typeof useSettingsProfileForm>;
 }
 
-export function SettingsFormBridge({
-  activeSection,
-  blockedUsersState,
-  profileFormState,
-}: SettingsFormBridgeProps) {
+export function SettingsFormBridge({ activeSection }: SettingsFormBridgeProps) {
+  const profileFormState = useSettingsProfileForm({ activeSection });
+  const blockedUsersState = useSettingsBlockedUsers(
+    Boolean(profileFormState.currentUser) && activeSection === "safety",
+  );
+
+  if (profileFormState.isLoading) {
+    return <SettingsSectionContentLoading activeSection={activeSection} />;
+  }
+
+  if (profileFormState.isError) {
+    return (
+      <PageErrorState
+        className="w-full"
+        title="Settings could not load"
+        description="Your account settings could not be refreshed right now."
+        onRetry={() => profileFormState.refetch()}
+      />
+    );
+  }
+
   const notificationPreferenceState = {
     notificationPreferences: profileFormState.notificationPreferences,
     isLoadingNotificationPreferences:

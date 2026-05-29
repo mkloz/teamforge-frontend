@@ -61,22 +61,6 @@ const TOASTER_PROPS = {
   },
 } satisfies ToasterProps;
 
-function isPublicUnauthenticatedPathname(pathname: string) {
-  return (
-    pathname === "/" ||
-    pathname === "/privacy" ||
-    pathname === "/terms" ||
-    pathname.startsWith("/auth/")
-  );
-}
-
-function shouldWarmToaster(pathname: string) {
-  return (
-    !isPublicUnauthenticatedPathname(pathname) &&
-    !pathname.startsWith("/onboarding/")
-  );
-}
-
 export function AppProviders({ children }: { children: ReactNode }) {
   useInitializeTheme();
 
@@ -96,11 +80,7 @@ function DeferredToaster() {
   const theme = useThemeStore((state) => state.theme);
   const [ToasterComponent, setToasterComponent] =
     useState<ComponentType<ToasterProps> | null>(null);
-  const [shouldLoadToaster, setShouldLoadToaster] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      shouldWarmToaster(window.location.pathname),
-  );
+  const [shouldLoadToaster, setShouldLoadToaster] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") {

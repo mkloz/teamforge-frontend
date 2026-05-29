@@ -1,10 +1,10 @@
 import { LogOut } from "lucide-react";
+import { lazy, Suspense, useState } from "react";
 import { GroupPlanActionButton } from "@/features/group-plan-detail/components/group-plan-action-button";
 import { RailCard } from "@/features/group-plan-detail/components/rail/rail-card";
 import type { useGroupPlanActionState } from "@/features/group-plan-detail/hooks/use-group-plan-action-state";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { getSeatsLabel } from "@/features/group-plan-detail/lib/group-plan-detail-formatters";
-import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 
 interface DecisionActionCardProps {
@@ -15,6 +15,12 @@ interface DecisionActionCardProps {
 type GroupPlanActionState = ReturnType<typeof useGroupPlanActionState>;
 type GroupPlanActionMode = GroupPlanActionState["mode"];
 type SecondaryGroupPlanAction = NonNullable<GroupPlanActionState["secondary"]>;
+
+const ActionDialog = lazy(() =>
+  import("@/shared/components/ui/action-dialog").then((module) => ({
+    default: module.ActionDialog,
+  })),
+);
 
 interface DecisionActionCopy {
   headline: string;
@@ -88,22 +94,42 @@ function LeaveGroupConfirmationAction({
 }: {
   action: SecondaryGroupPlanAction;
 }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const trigger = (
+    <Button
+      variant="outline"
+      className="w-full"
+      disabled={action.loading}
+      onClick={() => {
+        setIsLoaded(true);
+        setIsOpen(true);
+      }}
+    >
+      <LogOut className="size-4" aria-hidden="true" />
+      {action.label}
+    </Button>
+  );
+
+  if (!isLoaded) {
+    return trigger;
+  }
+
   return (
-    <ActionDialog
-      cancelLabel="Stay in group"
-      confirmLabel="Leave group"
-      description="You will lose access to the group chat and planning workspace."
-      loading={action.loading}
-      onConfirm={() => action.onClick?.()}
-      title="Leave this group?"
-      tone="danger"
-      trigger={
-        <Button variant="outline" className="w-full" disabled={action.loading}>
-          <LogOut className="size-4" aria-hidden="true" />
-          {action.label}
-        </Button>
-      }
-    />
+    <Suspense fallback={trigger}>
+      <ActionDialog
+        cancelLabel="Stay in group"
+        confirmLabel="Leave group"
+        description="You will lose access to the group chat and planning workspace."
+        loading={action.loading}
+        onConfirm={() => action.onClick?.()}
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        title="Leave this group?"
+        tone="danger"
+        trigger={trigger}
+      />
+    </Suspense>
   );
 }
 

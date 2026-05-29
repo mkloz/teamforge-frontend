@@ -31,7 +31,7 @@ export function ExploreFeedContent({
             detail={`${totalGroups} ${totalGroups === 1 ? "group" : "groups"} available`}
           />
           <ExploreGroupItem>
-            <ExploreGroupPlanCard group={featuredGroup} />
+            <ExploreGroupPlanCard group={featuredGroup} imagePriority="high" />
           </ExploreGroupItem>
         </section>
       ) : null}
@@ -132,8 +132,8 @@ function FeedSectionLabel({
 }) {
   return (
     <div className="flex items-center justify-between gap-4 px-1 max-compact:flex-col max-compact:items-start max-compact:gap-1">
-      <p className="font-semibold text-muted-foreground text-sm">{title}</p>
-      <span className="shrink-0 font-bold text-muted-foreground/70 text-sm">
+      <h2 className="font-semibold text-muted-foreground text-sm">{title}</h2>
+      <span className="shrink-0 font-bold text-muted-foreground text-sm">
         {detail}
       </span>
     </div>

@@ -8,6 +8,7 @@ interface AdminCrownBadgeProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 export function AdminCrownBadge({
+  "aria-label": ariaLabel,
   className,
   iconClassName = "size-3",
   ref,
@@ -16,11 +17,13 @@ export function AdminCrownBadge({
   return (
     <span
       ref={ref}
+      {...props}
+      aria-label={ariaLabel}
+      role="img"
       className={cn(
         "flex size-5 items-center justify-center rounded-md border border-spark-amber/40 bg-canvas text-ink shadow-[inset_0_0_0_999px_color-mix(in_srgb,var(--color-spark-amber)_16%,transparent)] ring-2 ring-canvas",
         className,
       )}
-      {...props}
     >
       <Crown
         className={cn("shrink-0 fill-current", iconClassName)}

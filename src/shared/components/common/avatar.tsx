@@ -1,6 +1,7 @@
 import type { HTMLAttributes, ImgHTMLAttributes, ReactNode } from "react";
 import { Image } from "@/shared/components/common/image";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
 import { cn } from "@/shared/lib/utils";
 import type { OnlineStatus } from "@/shared/schemas/enums";
 
@@ -24,6 +25,7 @@ interface AvatarProps
   fallback?: ReactNode;
   imageClassName?: string;
   fallbackClassName?: string;
+  imageSize?: number;
   loading?: ImgHTMLAttributes<HTMLImageElement>["loading"];
   shape?: "circle" | "rounded";
 }
@@ -69,6 +71,7 @@ export function Avatar({
   className,
   imageClassName,
   fallbackClassName,
+  imageSize,
   loading = "lazy",
   shape = "circle",
   children,
@@ -76,6 +79,7 @@ export function Avatar({
 }: AvatarProps) {
   const initials = fallback ?? getAvatarInitials(name);
   const radiusClass = shape === "circle" ? "rounded-full" : "rounded-xl";
+  const imageSrc = imageSize ? getSizedImageUrl(src, imageSize) : src;
   const fallbackNode = (
     <div
       className={cn(
@@ -97,7 +101,7 @@ export function Avatar({
       {...props}
     >
       <Image
-        src={src ?? undefined}
+        src={imageSrc ?? undefined}
         alt={alt ?? name ?? "Avatar"}
         loading={loading}
         wrapperClassName="absolute inset-0"

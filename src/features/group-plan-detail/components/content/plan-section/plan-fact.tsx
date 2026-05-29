@@ -19,12 +19,12 @@ export function PlanFact({
         <Icon className="size-4" aria-hidden="true" />
       </div>
       <div className="min-w-0 pt-0.5">
-        <dt className="type-signature-label font-bold text-muted-foreground uppercase tracking-widest">
+        <p className="type-signature-label font-bold text-muted-foreground uppercase tracking-widest">
           {label}
-        </dt>
-        <dd className="mt-0.5 font-black text-foreground text-sm leading-snug">
+        </p>
+        <p className="mt-0.5 font-black text-foreground text-sm leading-snug">
           {value}
-        </dd>
+        </p>
         {supporting ? (
           <p className="mt-0.5 font-medium text-muted-foreground text-xs">
             {supporting}

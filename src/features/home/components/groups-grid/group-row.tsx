@@ -46,7 +46,6 @@ export function GroupRow({ group, hasNotification = false }: GroupRowProps) {
     <li>
       <Link
         {...buildActivityGroupHubNavigation(group.id)}
-        aria-label={`${group.name}. Last active ${lastActivity}.`}
         className={cn(
           "group flex h-16 cursor-pointer items-center gap-3 border-border/55 border-b px-1 py-3 sm:px-3",
           "transition-all duration-150",
@@ -60,6 +59,7 @@ export function GroupRow({ group, hasNotification = false }: GroupRowProps) {
           <Avatar
             src={group.avatar}
             name={group.name}
+            imageSize={72}
             className={cn(
               "size-9 border-2 bg-canvas transition-colors duration-150",
               hasNotification

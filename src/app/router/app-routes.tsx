@@ -21,13 +21,16 @@ import {
 import { HomePageLoading } from "@/features/home/home-page.loading";
 import { ProfilePageLoading } from "@/features/profile/profile-page/profile-page.loading";
 import { SettingsPageLoading } from "@/features/settings/settings-page/settings-page.loading";
+import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
 import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
 
-const AppShellWithNotifications = lazy(() =>
-  import("@/app/router/app-shell-with-notifications").then((module) => ({
+function loadAppShellWithNotifications() {
+  return import("@/app/router/app-shell-with-notifications").then((module) => ({
     default: module.AppShellWithNotifications,
-  })),
-);
+  }));
+}
+
+const AppShellWithNotifications = lazy(loadAppShellWithNotifications);
 
 const homePageModule = createLazyRouteModule(() =>
   import("@/features/home/home-page").then((m) => ({ default: m.HomePage })),
@@ -105,6 +108,160 @@ function createRouteModuleLoader(module: LazyRouteModule) {
   };
 }
 
+async function preloadDefaultExploreGroups() {
+  const [{ appQueryClient }, { ExploreQueryFactory }, { DEFAULT_FILTERS }] =
+    await Promise.all([
+      import("@/shared/api/query-client"),
+      import("@/features/explore/api/explore-query-factory"),
+      import("@/features/explore/constants/explore.constants"),
+    ]);
+
+  await appQueryClient.prefetchInfiniteQuery(
+    ExploreQueryFactory.groups(DEFAULT_FILTERS, ""),
+  );
+}
+
+function createExploreRouteLoader(module: LazyRouteModule) {
+  return async () => {
+    const exploreGroupsTask = preloadDefaultExploreGroups().catch(() => null);
+
+    await Promise.all([module.preload(), exploreGroupsTask]);
+  };
+}
+
+async function preloadGroupPlanDetail(groupId: string) {
+  const [{ appQueryClient }, { GroupPlanDetailQueryFactory }] =
+    await Promise.all([
+      import("@/shared/api/query-client"),
+      import(
+        "@/features/group-plan-detail/api/group-plan-detail-query-factory"
+      ),
+    ]);
+
+  const detail = await appQueryClient.fetchQuery(
+    GroupPlanDetailQueryFactory.detail(groupId),
+  );
+  const coverSrc =
+    detail.plan?.coverImage ??
+    detail.group.avatar ??
+    detail.members.find((member) => member.avatar)?.avatar ??
+    null;
+
+  preloadRouteImage(getSizedImageUrl(coverSrc, 800) ?? coverSrc);
+}
+
+async function preloadUserDetail(userId: string) {
+  const [{ appQueryClient }, { publicProfileQueryOptions }] = await Promise.all(
+    [
+      import("@/shared/api/query-client"),
+      import("@/features/profile/api/profile-query-options"),
+    ],
+  );
+
+  const profile = await appQueryClient.fetchQuery(
+    publicProfileQueryOptions(userId),
+  );
+
+  preloadRouteImage(getSizedImageUrl(profile.avatar, 128) ?? profile.avatar);
+}
+
+function preloadRouteImage(src: string | null | undefined) {
+  if (!src || typeof globalThis.Image !== "function") {
+    return;
+  }
+
+  const image = new globalThis.Image();
+  image.decoding = "async";
+  image.src = src;
+}
+
+function createGroupPlanDetailRouteLoader(module: LazyRouteModule) {
+  return async ({ params }: { params: { groupId: string } }) => {
+    const detailTask = preloadGroupPlanDetail(params.groupId).catch(() => null);
+
+    await Promise.all([module.preload(), detailTask]);
+  };
+}
+
+function createUserDetailRouteLoader(module: LazyRouteModule) {
+  return async ({ params }: { params: { userId: string } }) => {
+    const userTask = preloadUserDetail(params.userId).catch(() => null);
+
+    await Promise.all([module.preload(), userTask]);
+  };
+}
+
+function getGroupPlanIdFromPathname(pathname: string) {
+  const match = /^\/groups\/([^/?#]+)/.exec(pathname);
+  const groupId = match?.[1];
+
+  return groupId ? decodeURIComponent(groupId) : null;
+}
+
+function getUserIdFromPathname(pathname: string) {
+  const match = /^\/users\/([^/?#]+)/.exec(pathname);
+  const userId = match?.[1];
+
+  return userId ? decodeURIComponent(userId) : null;
+}
+
+function createSessionRestoredRoutePreload(pathname: string) {
+  const groupId = getGroupPlanIdFromPathname(pathname);
+
+  if (groupId) {
+    return () => preloadGroupPlanDetail(groupId);
+  }
+
+  const userId = getUserIdFromPathname(pathname);
+
+  if (userId) {
+    return () => preloadUserDetail(userId);
+  }
+
+  return undefined;
+}
+
+function preloadMatchedAppRouteModule(pathname: string) {
+  if (pathname === "/home") {
+    void homePageModule.preload().catch(() => null);
+    return;
+  }
+
+  if (pathname === "/explore") {
+    void explorePageModule.preload().catch(() => null);
+    return;
+  }
+
+  if (pathname === "/activity" || pathname.startsWith("/activity/")) {
+    void activityPageModule.preload().catch(() => null);
+    return;
+  }
+
+  if (pathname === "/profile") {
+    void profilePageModule.preload().catch(() => null);
+    return;
+  }
+
+  if (pathname.startsWith("/users/")) {
+    void userDetailPageModule.preload().catch(() => null);
+    return;
+  }
+
+  if (pathname === "/settings" || pathname.startsWith("/settings/")) {
+    void settingsPageModule.preload().catch(() => null);
+    return;
+  }
+
+  if (pathname === "/forge") {
+    void forgePageModule.preload().catch(() => null);
+    return;
+  }
+
+  if (pathname.startsWith("/groups/")) {
+    void groupPlanDetailPageModule.preload().catch(() => null);
+  }
+}
+
 function AppShellRouteComponent() {
   return (
     <Suspense fallback={null}>
@@ -116,7 +273,14 @@ function AppShellRouteComponent() {
 export const appShellRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "app-shell",
-  beforeLoad: ({ location }) => requireCanonicalAppRoute(location),
+  beforeLoad: ({ location }) => {
+    void loadAppShellWithNotifications().catch(() => null);
+    preloadMatchedAppRouteModule(location.pathname);
+
+    return requireCanonicalAppRoute(location, {
+      onSessionRestored: createSessionRestoredRoutePreload(location.pathname),
+    });
+  },
   component: AppShellRouteComponent,
 });
 
@@ -143,7 +307,7 @@ const homeRoute = createRoute({
 const exploreRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/explore",
-  loader: createRouteModuleLoader(explorePageModule),
+  loader: createExploreRouteLoader(explorePageModule),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: () => <ExplorePageLoading mode="route" />,
   component: createLazyPageRoute(
@@ -164,7 +328,7 @@ const groupPlanDetailRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/groups/$groupId",
   validateSearch: validateGroupPlanDetailSearch,
-  loader: createRouteModuleLoader(groupPlanDetailPageModule),
+  loader: createGroupPlanDetailRouteLoader(groupPlanDetailPageModule),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: () => <GroupPlanDetailPageLoading mode="route" />,
   component: createLazyPageRoute(
@@ -224,7 +388,7 @@ const profileRoute = createRoute({
 const userDetailRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/users/$userId",
-  loader: createRouteModuleLoader(userDetailPageModule),
+  loader: createUserDetailRouteLoader(userDetailPageModule),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: () => <ProfilePageLoading mode="route" />,
   component: createLazyPageRoute(

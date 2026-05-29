@@ -44,7 +44,15 @@ function SignalPill({ signal }: { signal: MatchingSignal }) {
           )}
         >
           <span className="text-ink/80">{signal.label}</span>
-          <span>{signal.value}</span>
+          <span
+            className={
+              signal.strength === "ready"
+                ? "text-forge-teal dark:text-slate-muted"
+                : undefined
+            }
+          >
+            {signal.value}
+          </span>
         </button>
       </TooltipTrigger>
       <TooltipContent>{signal.detail}</TooltipContent>

@@ -1,6 +1,5 @@
 import { redirect } from "@tanstack/react-router";
 
-import { parseOnboardingFlowSearch } from "@/features/onboarding/lib/onboarding-flow-state";
 import { refreshAuthSession } from "@/shared/api/api";
 import { authSession } from "@/shared/api/auth-session";
 import { ensureCurrentUser } from "@/shared/api/current-user-query";
@@ -23,6 +22,10 @@ interface PublicAuthRouteLoadContext {
   };
 }
 
+interface RequireAuthenticatedUserOptions {
+  onSessionRestored?: () => void | Promise<void>;
+}
+
 async function restoreAuthSessionIfNeeded() {
   if (!authSession.hasTokens()) {
     await refreshAuthSession().catch(() => null);
@@ -33,6 +36,10 @@ async function restoreAuthSessionIfNeeded() {
 
 function redirectToLogin(returnHref: string | null): never {
   throw redirect(buildAuthRouteNavigation("/auth/login", returnHref));
+}
+
+function isOnboardingEditMode(searchStr: string) {
+  return new URLSearchParams(searchStr).get("mode") === "edit";
 }
 
 export async function redirectAuthenticatedUser({
@@ -55,12 +62,19 @@ export async function redirectAuthenticatedUser({
   throw redirect(buildPostAuthRedirectNavigation(currentUser, returnTo));
 }
 
-export async function requireAuthenticatedUser(location?: RouteLocationLike) {
+export async function requireAuthenticatedUser(
+  location?: RouteLocationLike,
+  options?: RequireAuthenticatedUserOptions,
+) {
   const returnHref = buildRouteLocationHref(location);
   const hasSession = await restoreAuthSessionIfNeeded();
 
   if (!hasSession) {
     return redirectToLogin(returnHref);
+  }
+
+  if (options?.onSessionRestored) {
+    void Promise.resolve(options.onSessionRestored()).catch(() => null);
   }
 
   try {
@@ -76,8 +90,11 @@ export async function requireAuthenticatedUser(location?: RouteLocationLike) {
   }
 }
 
-export async function requireCanonicalAppRoute(location: RouteLocationLike) {
-  const currentUser = await requireAuthenticatedUser(location);
+export async function requireCanonicalAppRoute(
+  location: RouteLocationLike,
+  options?: RequireAuthenticatedUserOptions,
+) {
+  const currentUser = await requireAuthenticatedUser(location, options);
   const canonicalDestination = getPostAuthRedirectPath(currentUser);
 
   if (canonicalDestination !== "/home") {
@@ -105,10 +122,9 @@ export async function requireEditableOnboardingRoute(
   expectedDestination: "/onboarding/personality" | "/onboarding/interests",
 ) {
   const currentUser = await requireAuthenticatedUser(location);
-  const { isEditMode } = parseOnboardingFlowSearch(location.searchStr);
   const canonicalDestination = getPostAuthRedirectPath(currentUser);
 
-  if (isEditMode) {
+  if (isOnboardingEditMode(location.searchStr)) {
     if (canonicalDestination !== "/home") {
       throw redirect({ to: canonicalDestination });
     }

@@ -28,9 +28,9 @@ export function GroupFitSection({ insight }: GroupFitSectionProps) {
         <div className="flex min-h-48 max-w-3xl flex-col items-center justify-center gap-4 sm:flex-row">
           <EmptyGroupFitVisual className="h-20 w-auto shrink-0 text-foreground" />
           <div className="flex min-w-0 flex-col gap-3 text-center sm:text-left">
-            <h2 className="font-black text-2xl text-ink tracking-tight md:text-3xl">
+            <h3 className="font-black text-2xl text-ink tracking-tight md:text-3xl">
               {insight.title}
-            </h2>
+            </h3>
             <p className="text-pretty font-medium text-base text-ink/85 leading-relaxed md:text-lg">
               {getCompactSummary(insight.summary)}
             </p>
@@ -46,9 +46,9 @@ export function GroupFitSection({ insight }: GroupFitSectionProps) {
         <div className="flex min-w-0 flex-col gap-4">
           <ProfileSectionHeading>How they fit</ProfileSectionHeading>
           <div className="flex max-w-3xl flex-col gap-3">
-            <h2 className="font-black text-2xl text-ink tracking-tight md:text-3xl">
+            <h3 className="font-black text-2xl text-ink tracking-tight md:text-3xl">
               {insight.title}
-            </h2>
+            </h3>
             <p className="text-pretty font-semibold text-base text-ink/85 leading-relaxed">
               {getCompactSummary(insight.summary)}
             </p>

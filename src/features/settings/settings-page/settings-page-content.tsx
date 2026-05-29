@@ -1,4 +1,3 @@
-import { motion, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 import type { SettingsSection } from "@/features/settings/lib/settings-route";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
@@ -29,9 +28,7 @@ export function SettingsPageContent({
 }: SettingsPageContentProps) {
   const activeSectionMeta = getSettingsSectionMeta(activeSection);
   const isMobile = useMediaQuery("(max-width: 1023px)");
-  const shouldReduceMotion = useReducedMotion();
-  const shouldAnimateMobileDetail =
-    isMobile && isMobileDetailOpen && !shouldReduceMotion;
+  const shouldRenderDetail = !isMobile || isMobileDetailOpen;
 
   return (
     <div className="mx-auto grid w-full max-w-6xl gap-7 px-4 py-5 md:px-8 lg:grid-cols-[14rem_minmax(0,56rem)] lg:gap-12 lg:py-10 xl:gap-18">
@@ -43,27 +40,22 @@ export function SettingsPageContent({
         onSignOut={onSignOut}
       />
 
-      <motion.section
-        key={isMobile ? `${isMobileDetailOpen}-${activeSection}` : "desktop"}
-        initial={
-          shouldAnimateMobileDetail ? { opacity: 0, x: 8 } : { opacity: 1 }
-        }
-        animate={{ opacity: 1, x: 0 }}
-        transition={{
-          duration: shouldAnimateMobileDetail ? 0.17 : 0.08,
-          ease: [0.22, 1, 0.36, 1],
-        }}
+      <section
         className={cn(
           "w-full min-w-0 border-border/70 pt-11 lg:block lg:max-w-4xl lg:border-l lg:pt-0 lg:pl-10 xl:pl-12",
           !isMobileDetailOpen && "hidden",
         )}
       >
-        <SettingsDetailHeader
-          activeSectionMeta={activeSectionMeta}
-          onMobileBack={onMobileBack}
-        />
-        {children}
-      </motion.section>
+        {shouldRenderDetail && (
+          <>
+            <SettingsDetailHeader
+              activeSectionMeta={activeSectionMeta}
+              onMobileBack={onMobileBack}
+            />
+            {children}
+          </>
+        )}
+      </section>
     </div>
   );
 }

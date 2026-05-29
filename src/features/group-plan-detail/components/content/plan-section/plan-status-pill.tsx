@@ -21,10 +21,10 @@ export function PlanStatusPill({ status }: { status: PlanStatus }) {
   return (
     <span
       className={cn(
-        "type-signature-label inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-bold uppercase tracking-widest",
-        (isConfirmed || isInProgress) && "bg-forge-teal/12 text-forge-teal",
-        (isDraft || isProposed) && "bg-spark-amber/12 text-spark-amber",
-        isTerminal && "bg-muted text-muted-foreground",
+        "type-signature-label inline-flex items-center gap-1 rounded-full border border-transparent px-2 py-0.5 font-bold uppercase tracking-widest",
+        (isConfirmed || isInProgress) && "border-forge-teal/25 text-forge-teal",
+        (isDraft || isProposed) && "border-spark-amber/25 text-spark-amber",
+        isTerminal && "border-border/60 text-muted-foreground",
       )}
     >
       <Icon className="size-3" aria-hidden="true" strokeWidth={2} />

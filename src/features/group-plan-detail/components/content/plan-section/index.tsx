@@ -60,7 +60,7 @@ export function PlanSection({
           </p>
         ) : null}
 
-        <dl className="grid gap-6 sm:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-2">
           <PlanFact
             icon={CalendarClock}
             label="Date & time"
@@ -88,7 +88,7 @@ export function PlanSection({
               detail.planning.pendingProposalCount,
             )}
           />
-        </dl>
+        </div>
       </div>
     </Section>
   );

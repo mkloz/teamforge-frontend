@@ -12,10 +12,12 @@ import type { AuthSession, User } from "@/shared/schemas";
 
 interface UseSettingsSecurityActionsOptions {
   currentUser: User | undefined;
+  enabled: boolean;
 }
 
 export function useSettingsSecurityActions({
   currentUser,
+  enabled,
 }: UseSettingsSecurityActionsOptions) {
   const navigate = useNavigate();
   const currentLocation = useRouterState({
@@ -29,7 +31,7 @@ export function useSettingsSecurityActions({
 
   const sessionsQuery = useQuery({
     ...SettingsQueryFactory.sessions(),
-    enabled: Boolean(currentUser),
+    enabled: Boolean(currentUser) && enabled,
   });
 
   const passwordResetMutation = useMutation({

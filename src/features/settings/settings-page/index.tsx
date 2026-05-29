@@ -1,13 +1,16 @@
 import { useRouterState } from "@tanstack/react-router";
-import { useSettingsBlockedUsers } from "@/features/settings/hooks/use-settings-blocked-users";
-import { useSettingsProfileForm } from "@/features/settings/hooks/use-settings-profile-form";
+import { lazy, Suspense } from "react";
 import { useSettingsRouteState } from "@/features/settings/hooks/use-settings-route-state";
-import { PageErrorState } from "@/shared/components/page-error-state";
-import { SettingsFormBridge } from "./settings-form-bridge";
-import { SettingsPageLoading } from "./settings-page.loading";
+import { SettingsSectionContentLoading } from "./settings-page.loading";
 import { SettingsPageContent } from "./settings-page-content";
 import { useSettingsMobileDetail } from "./use-settings-mobile-detail";
 import { useSettingsSignOut } from "./use-settings-sign-out";
+
+const SettingsFormBridge = lazy(() =>
+  import("./settings-form-bridge").then((module) => ({
+    default: module.SettingsFormBridge,
+  })),
+);
 
 export function SettingsPage() {
   const { activeSection } = useSettingsRouteState();
@@ -16,31 +19,6 @@ export function SettingsPage() {
   });
   const mobileDetail = useSettingsMobileDetail({ currentLocation });
   const signOut = useSettingsSignOut({ currentLocation });
-  const profileFormState = useSettingsProfileForm();
-  const blockedUsersState = useSettingsBlockedUsers(
-    Boolean(profileFormState.currentUser),
-  );
-
-  if (profileFormState.isLoading) {
-    return (
-      <SettingsPageLoading
-        activeSection={activeSection}
-        isMobileDetailOpen={mobileDetail.isMobileDetailOpen}
-        mode="query"
-      />
-    );
-  }
-
-  if (profileFormState.isError) {
-    return (
-      <PageErrorState
-        className="mx-auto w-full max-w-5xl"
-        title="Settings could not load"
-        description="Your account settings could not be refreshed right now."
-        onRetry={() => profileFormState.refetch()}
-      />
-    );
-  }
 
   function handleSectionSelect() {
     mobileDetail.openMobileDetail();
@@ -55,11 +33,13 @@ export function SettingsPage() {
       onSignOut={signOut.signOut}
       onMobileBack={mobileDetail.closeMobileDetail}
     >
-      <SettingsFormBridge
-        activeSection={activeSection}
-        blockedUsersState={blockedUsersState}
-        profileFormState={profileFormState}
-      />
+      <Suspense
+        fallback={
+          <SettingsSectionContentLoading activeSection={activeSection} />
+        }
+      >
+        <SettingsFormBridge activeSection={activeSection} />
+      </Suspense>
     </SettingsPageContent>
   );
 }

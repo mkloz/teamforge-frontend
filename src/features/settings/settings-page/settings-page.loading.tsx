@@ -81,6 +81,19 @@ export function SettingsPageLoading({
   );
 }
 
+export function SettingsSectionContentLoading({
+  activeSection,
+}: {
+  activeSection: SettingsSection;
+}) {
+  return (
+    <div aria-busy="true" aria-label="Loading settings section" role="status">
+      <span className="sr-only">Loading settings section</span>
+      <SettingsSectionSkeleton activeSection={activeSection} />
+    </div>
+  );
+}
+
 function SettingsSectionSkeleton({
   activeSection,
 }: {

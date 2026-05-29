@@ -1,17 +1,29 @@
+import type { SettingsSection } from "@/features/settings/lib/settings-route";
 import { useDeleteAccountAction } from "./use-delete-account-action";
 import { useSettingsAvatarActions } from "./use-settings-avatar-actions";
 import { useSettingsPreferencesActions } from "./use-settings-preferences-actions";
 import { useSettingsProfileBase } from "./use-settings-profile-base";
 import { useSettingsSecurityActions } from "./use-settings-security-actions";
 
-export function useSettingsProfileForm() {
+interface UseSettingsProfileFormOptions {
+  activeSection: SettingsSection;
+}
+
+export function useSettingsProfileForm({
+  activeSection,
+}: UseSettingsProfileFormOptions) {
   const profile = useSettingsProfileBase();
+  const shouldLoadPreferences =
+    activeSection === "matching" ||
+    activeSection === "privacy" ||
+    activeSection === "notifications";
   const avatar = useSettingsAvatarActions();
   const security = useSettingsSecurityActions({
     currentUser: profile.currentUser,
+    enabled: activeSection === "security",
   });
   const preferences = useSettingsPreferencesActions({
-    enabled: Boolean(profile.currentUser),
+    enabled: Boolean(profile.currentUser) && shouldLoadPreferences,
   });
   const deleteAccount = useDeleteAccountAction();
 

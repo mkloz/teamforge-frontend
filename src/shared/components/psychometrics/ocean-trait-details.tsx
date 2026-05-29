@@ -13,7 +13,7 @@ export function OceanTraitDetails({
 }: OceanTraitDetailsProps) {
   if (!selectedInfo) {
     return (
-      <p className="type-signature-label text-center font-bold text-slate-muted/60 uppercase tracking-widest">
+      <p className="type-signature-label text-center font-bold text-slate-muted uppercase tracking-widest">
         Tap any trait to explore
       </p>
     );
@@ -23,7 +23,7 @@ export function OceanTraitDetails({
     <div className="fade-in slide-in-from-bottom-2 flex animate-in flex-col gap-3 duration-300">
       <div className="flex items-center justify-between">
         <div>
-          <h5 className="font-black text-ink text-sm">{selectedInfo.label}</h5>
+          <p className="font-black text-ink text-sm">{selectedInfo.label}</p>
           <span className="type-signature-label font-bold text-slate-muted uppercase tracking-tight">
             {selectedInfo.level} ({selectedInfo.score}%)
           </span>

@@ -48,12 +48,12 @@ export function InvitationQueueItem({
     >
       <Link
         {...detailsNavigation}
-        aria-label={`Review invitation to ${invite.group.name}`}
         className="flex min-w-0 flex-1 items-start gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Avatar
           src={invite.group.avatar}
           name={invite.group.name}
+          imageSize={96}
           className="size-11 shrink-0 border border-border/60 bg-canvas"
           fallbackClassName="text-xs"
         />

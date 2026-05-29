@@ -94,7 +94,7 @@ export const ContentSection = memo(
           type="button"
           aria-label={item.isPinned ? "Unpin chat" : "Pin chat"}
           className={cn(
-            "relative z-20 size-4 shrink-0 items-center justify-center rounded-full border border-transparent text-slate-muted/70 transition",
+            "relative z-20 size-6 shrink-0 items-center justify-center rounded-full border border-transparent text-slate-muted/70 transition",
             "hover:border-forge-teal/20 hover:bg-forge-teal/8 hover:text-forge-teal",
             "focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/25",
             item.isPinned &&
@@ -109,7 +109,7 @@ export const ContentSection = memo(
           onKeyDown={(event) => event.stopPropagation()}
         >
           <Pin
-            className={cn("size-2.5", item.isPinned && "rotate-45")}
+            className={cn("size-3", item.isPinned && "rotate-45")}
             strokeWidth={2.2}
           />
         </button>

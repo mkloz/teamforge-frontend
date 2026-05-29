@@ -25,7 +25,7 @@ export function GroupSection({ detail }: GroupSectionProps) {
       <div className="flex flex-col gap-8">
         <GroupIdentity detail={detail} />
 
-        <dl className="grid gap-6 sm:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-2">
           <GroupFact
             icon={UsersRound}
             label="Spots"
@@ -38,7 +38,7 @@ export function GroupSection({ detail }: GroupSectionProps) {
             value={accessLabel}
             supporting={visibilityLabel}
           />
-        </dl>
+        </div>
       </div>
     </Section>
   );

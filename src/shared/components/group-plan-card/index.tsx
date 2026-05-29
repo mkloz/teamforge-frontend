@@ -11,6 +11,7 @@ export function GroupPlanCard({
   group,
   action,
   detailsLink,
+  imagePriority = "auto",
   variant = "default",
 }: GroupPlanCardProps) {
   const isCompact = variant === "compact";
@@ -37,7 +38,12 @@ export function GroupPlanCard({
         {detailsLink ? (
           <div className="absolute inset-0 z-30 rounded-xl">{detailsLink}</div>
         ) : null}
-        <CardImage alt={imageAlt} src={imageSrc} variant={variant} />
+        <CardImage
+          alt={imageAlt}
+          priority={imagePriority}
+          src={imageSrc}
+          variant={variant}
+        />
 
         <div
           className={cn(

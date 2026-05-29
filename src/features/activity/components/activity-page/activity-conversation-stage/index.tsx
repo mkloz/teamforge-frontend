@@ -9,6 +9,7 @@ import {
 } from "@/features/activity/components/direct-chats/profile-panel";
 import { GroupDetailPanel } from "@/features/activity/components/groups/group-detail-panel";
 import type { ActivityWorkspace } from "@/features/activity/hooks/use-activity";
+import { useActivityComposer } from "@/features/activity/hooks/use-activity-composer";
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
 import type { SavedMessageSnapshot } from "@/features/activity/lib/saved-message";
 import { SAVED_MESSAGES_CONVERSATION_ID } from "@/features/activity/lib/saved-messages-identity";
@@ -27,6 +28,7 @@ export function ActivityConversationStage({
   isMobile,
   isOnline,
 }: ActivityConversationStageProps) {
+  const composer = useActivityComposer();
   const groupMessageScrollHandleRef = useRef<MessageScrollHandle | null>(null);
   const [selectedGroupMemberProfile, setSelectedGroupMemberProfile] = useState<{
     groupId: string;
@@ -220,9 +222,9 @@ export function ActivityConversationStage({
             onShowParticipantProfile={openGroupMemberProfile}
             onToggleAction={toggleGroupDetailPanel}
             onViewPlan={openCurrentPlanInGroupPanel}
-            onSendMessage={activity.handleSendMessage}
-            sendError={activity.sendError}
-            onClearSendError={activity.clearSendError}
+            onSendMessage={composer.handleSendMessage}
+            sendError={composer.sendError}
+            onClearSendError={composer.clearSendError}
           />
         </div>
         <GroupDetailPanel
@@ -264,9 +266,9 @@ export function ActivityConversationStage({
             onRetryMessages={activity.retryMessageTimeline}
             onShowParticipantProfile={openDirectProfilePanel}
             onToggleAction={activity.toggleProfilePanel}
-            onSendMessage={activity.handleSendMessage}
-            sendError={activity.sendError}
-            onClearSendError={activity.clearSendError}
+            onSendMessage={composer.handleSendMessage}
+            sendError={composer.sendError}
+            onClearSendError={composer.clearSendError}
           />
         </div>
         <ProfilePanel

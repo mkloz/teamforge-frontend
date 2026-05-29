@@ -170,6 +170,7 @@ function HomeHeroCompactHeader({
   return (
     <div
       aria-hidden={!isVisible}
+      inert={!isVisible}
       className={cn(
         "pointer-events-none fixed top-0 right-0 left-0 z-40 md:left-14",
         "transform-[translate3d(0,var(--home-compact-y,-10px),0)] opacity-(--home-compact-opacity) transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none",

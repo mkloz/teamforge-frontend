@@ -1,4 +1,3 @@
-import { ChatBackground } from "@/features/activity/components/chat/unified-conversation-view/unified-message-list/chat-background";
 import { MessageListSkeletonPattern } from "@/features/activity/components/chat/unified-conversation-view/unified-message-list/message-list-skeleton-pattern";
 import {
   SkeletonAvatar,
@@ -25,6 +24,11 @@ const CONVERSATION_ROWS = [
   "accessibility",
 ] as const;
 const DETAIL_ROWS = ["members", "area", "joining", "created"] as const;
+const skeletonMessageBackgroundClassName = [
+  "pointer-events-none absolute inset-0 z-0 select-none overflow-hidden bg-canvas [contain:paint]",
+  "bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-forge-teal)_3%,transparent)_0%,transparent_34%,transparent_68%,color-mix(in_srgb,var(--color-spark-amber)_3%,transparent)_100%)]",
+  "dark:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-forge-teal)_4%,transparent)_0%,transparent_36%,transparent_70%,color-mix(in_srgb,var(--color-spark-amber)_4%,transparent)_100%)]",
+].join(" ");
 
 export function ActivityPageSkeleton({
   contained = false,
@@ -160,7 +164,10 @@ export function ActivityConversationStageSkeleton({
           </div>
 
           <div className="relative min-h-0 flex-1 overflow-hidden bg-canvas">
-            <ChatBackground />
+            <div
+              aria-hidden="true"
+              className={skeletonMessageBackgroundClassName}
+            />
             <MessageListSkeletonPattern className="relative z-10 px-2 pt-2.5 pb-0 sm:px-3 md:px-4 md:pt-3" />
           </div>
 

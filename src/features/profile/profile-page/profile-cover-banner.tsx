@@ -25,9 +25,10 @@ export function ProfileCoverBanner({
             className="transform-[translate3d(0,var(--profile-cover-type-y,0px),0)] absolute inset-x-0 top-0 mx-auto flex h-(--profile-cover-expanded-height) w-full max-w-lg items-center justify-end px-4 transition-transform duration-300 ease-out motion-reduce:transition-none sm:max-w-6xl sm:px-6 md:px-8"
             aria-hidden="true"
           >
-            <span className="transform-[scale(var(--profile-cover-type-scale,1))] origin-right select-none font-black text-[5.5rem] text-white leading-none tracking-tighter opacity-(--profile-cover-type-opacity) mix-blend-overlay transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none sm:text-[7.5rem] md:text-[9rem]">
-              {personalityType}
-            </span>
+            <span
+              className="transform-[scale(var(--profile-cover-type-scale,1))] hidden origin-right select-none font-black text-[5.5rem] text-white leading-none tracking-tighter opacity-(--profile-cover-type-opacity) mix-blend-overlay transition-[opacity,transform] duration-300 ease-out before:content-[attr(data-profile-type)] motion-reduce:transition-none sm:block sm:text-[7.5rem] md:text-[9rem]"
+              data-profile-type={personalityType}
+            />
           </div>
         ) : null}
       </div>

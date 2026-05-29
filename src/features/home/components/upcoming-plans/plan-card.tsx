@@ -37,7 +37,6 @@ export function PlanCard({ group }: PlanCardProps) {
     >
       <Link
         {...navigation}
-        aria-label={`Open ${plan.title} in ${group.name}`}
         className="grid grid-cols-[4.25rem_minmax(0,1fr)] items-center gap-x-3 gap-y-2 py-3.5 pr-2 pl-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[4.25rem_minmax(0,1fr)_auto] sm:pr-3 md:gap-4"
       >
         <div className="relative flex h-full min-h-16 flex-col justify-center pl-9">
@@ -91,6 +90,7 @@ export function PlanCard({ group }: PlanCardProps) {
                 key={member.id}
                 src={member.avatar}
                 name={member.name}
+                imageSize={64}
                 className="size-7 border-2 border-card bg-muted shadow-xs sm:size-8"
                 fallbackClassName="text-xs"
               />

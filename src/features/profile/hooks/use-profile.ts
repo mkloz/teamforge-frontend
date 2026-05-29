@@ -3,23 +3,29 @@ import { publicProfileQueryOptions } from "@/features/profile/api/profile-query-
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import type { User } from "@/shared/schemas";
 
-export function useProfile(userId?: string) {
+export function useProfile() {
   const currentUserQuery = useCurrentUserQuery();
+
+  return {
+    profile: currentUserQuery.data ?? null,
+    isLoading: currentUserQuery.isLoading,
+    error: currentUserQuery.error,
+    refetch: currentUserQuery.refetch,
+  };
+}
+
+export function usePublicProfile(userId: string) {
   const publicProfileQuery = useQuery({
-    ...publicProfileQueryOptions(userId ?? ""),
-    enabled: !!userId,
+    ...publicProfileQueryOptions(userId),
+    enabled: Boolean(userId),
   });
 
-  const profile: User | null = userId
-    ? (publicProfileQuery.data ?? null)
-    : (currentUserQuery.data ?? null);
+  const profile: User | null = publicProfileQuery.data ?? null;
 
   return {
     profile,
-    isLoading: userId
-      ? publicProfileQuery.isLoading
-      : currentUserQuery.isLoading,
-    error: userId ? publicProfileQuery.error : currentUserQuery.error,
-    refetch: userId ? publicProfileQuery.refetch : currentUserQuery.refetch,
+    isLoading: publicProfileQuery.isLoading,
+    error: publicProfileQuery.error,
+    refetch: publicProfileQuery.refetch,
   };
 }

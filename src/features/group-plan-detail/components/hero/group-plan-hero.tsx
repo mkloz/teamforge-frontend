@@ -18,6 +18,7 @@ import {
 import { Image } from "@/shared/components/common/image";
 import { Button } from "@/shared/components/ui/button";
 import { scrollWindowToTop } from "@/shared/lib/scroll-to-top";
+import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
 import { cn } from "@/shared/lib/utils";
 
 interface GroupPlanHeroProps {
@@ -96,6 +97,7 @@ function GroupPlanCompactHero({
   visible: boolean;
 }) {
   const imageSrc = getHeroCoverImage(detail);
+  const compactImageSrc = imageSrc ? getSizedImageUrl(imageSrc, 640) : null;
 
   return (
     <div
@@ -112,11 +114,11 @@ function GroupPlanCompactHero({
             visible ? "pointer-events-auto" : "pointer-events-none",
           )}
         >
-          {imageSrc ? (
+          {visible && imageSrc ? (
             <Image
-              src={imageSrc}
+              src={compactImageSrc ?? imageSrc}
               alt=""
-              loading="eager"
+              loading="lazy"
               wrapperClassName="absolute inset-0"
               className="size-full object-cover"
               noImageComponent={null}

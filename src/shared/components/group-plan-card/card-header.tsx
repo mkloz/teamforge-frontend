@@ -31,6 +31,7 @@ export function CardHeader({
         <Avatar
           src={imageSrc}
           name={groupName}
+          imageSize={64}
           className={cn(
             "border border-border bg-muted",
             isCompact ? "size-7" : "size-6",

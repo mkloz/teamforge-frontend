@@ -7,5 +7,6 @@ export interface GroupPlanCardProps {
   group: ExploreGroup;
   action: ReactNode;
   detailsLink?: ReactNode;
+  imagePriority?: "auto" | "high";
   variant?: GroupPlanCardVariant;
 }

@@ -27,6 +27,7 @@ export function CardMemberStack({
           src={member.avatar}
           name={member.name}
           fallback={member.name ? undefined : fallbackInitial}
+          imageSize={64}
           className={cn(
             "border-canvas border-thin bg-canvas transition-transform duration-300 hover:z-20 hover:-translate-y-1",
             index > 0 && "-ml-2",

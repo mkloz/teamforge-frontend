@@ -30,9 +30,9 @@ export function ProfilePortraitSection({
                 {readLabel}
               </span>
             </div>
-            <h2 className="max-w-3xl font-black text-2xl text-ink leading-tight tracking-tight md:text-3xl">
+            <h3 className="max-w-3xl font-black text-2xl text-ink leading-tight tracking-tight md:text-3xl">
               {portrait.title}
-            </h2>
+            </h3>
             <p className="max-w-2xl text-pretty font-semibold text-base text-ink/82 leading-relaxed">
               {getCompactLead(portrait.lead)}
             </p>

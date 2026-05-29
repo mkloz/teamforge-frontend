@@ -3,13 +3,27 @@ import { useEffect, useSyncExternalStore } from "react";
 import { router } from "@/router";
 import { authSession } from "@/shared/api/auth-session";
 import {
+  cancelDelay,
   cancelIdleTask,
+  scheduleDelay,
   scheduleIdleTask,
 } from "@/shared/lib/browser-scheduling";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 
+const DEFERRED_REALTIME_DELAY_MS = 12_000;
+
 const realtimeRoutePrefixes = [
   "/activity",
+  "/explore",
+  "/forge",
+  "/groups/",
+  "/home",
+  "/profile",
+  "/settings",
+  "/users/",
+] as const;
+
+const deferredRealtimeRoutePrefixes = [
   "/explore",
   "/forge",
   "/groups/",
@@ -29,31 +43,49 @@ function useHasAuthSession() {
 
 function isRealtimeRoute(pathname: string) {
   return realtimeRoutePrefixes.some((prefix) =>
-    prefix.endsWith("/")
-      ? pathname.startsWith(prefix)
-      : pathname === prefix || pathname.startsWith(`${prefix}/`),
+    doesPathMatchRoutePrefix(pathname, prefix),
   );
 }
 
-function useIsRealtimeRoute() {
+function doesPathMatchRoutePrefix(pathname: string, prefix: string) {
+  return prefix.endsWith("/")
+    ? pathname.startsWith(prefix)
+    : pathname === prefix || pathname.startsWith(`${prefix}/`);
+}
+
+function getRealtimeRouteDelayMs(pathname: string) {
+  if (!isRealtimeRoute(pathname)) {
+    return null;
+  }
+
+  const isDeferredRoute = deferredRealtimeRoutePrefixes.some((prefix) =>
+    doesPathMatchRoutePrefix(pathname, prefix),
+  );
+
+  return isDeferredRoute ? DEFERRED_REALTIME_DELAY_MS : 0;
+}
+
+function useRealtimeRouteDelayMs() {
   return useSyncExternalStore(
     (listener) => router.subscribe("onResolved", listener),
-    () => isRealtimeRoute(router.state.location.pathname),
-    () => false,
+    () => getRealtimeRouteDelayMs(router.state.location.pathname),
+    () => null,
   );
 }
 
 export function AppRealtimeSync() {
   const hasAuthSession = useHasAuthSession();
-  const isRealtimeEligible = useIsRealtimeRoute();
+  const realtimeDelayMs = useRealtimeRouteDelayMs();
 
   useEffect(() => {
-    if (!hasAuthSession || !isRealtimeEligible) {
+    if (!hasAuthSession || realtimeDelayMs === null) {
       return undefined;
     }
 
     let cleanup: (() => void) | undefined;
     let cancelled = false;
+    let idleTask: ReturnType<typeof scheduleIdleTask> | undefined;
+    let delayTask: ReturnType<typeof scheduleDelay> | undefined;
 
     async function initializeRealtimeSync() {
       try {
@@ -61,6 +93,7 @@ export function AppRealtimeSync() {
           disconnectRealtimeSession,
           subscribeAppRealtimeEvents,
           subscribeRealtimeSessionSync,
+          syncRealtimeSession,
         } = await import("@/app/runtime/app-realtime-events");
 
         if (cancelled) {
@@ -69,8 +102,21 @@ export function AppRealtimeSync() {
 
         const unsubscribeSession = subscribeRealtimeSessionSync();
         const unsubscribeRealtimeEvents = subscribeAppRealtimeEvents();
+        const handlePageHide = () => {
+          disconnectRealtimeSession();
+        };
+        const handlePageShow = (event: PageTransitionEvent) => {
+          if (event.persisted) {
+            syncRealtimeSession();
+          }
+        };
+
+        window.addEventListener("pagehide", handlePageHide);
+        window.addEventListener("pageshow", handlePageShow);
 
         cleanup = () => {
+          window.removeEventListener("pagehide", handlePageHide);
+          window.removeEventListener("pageshow", handlePageShow);
           unsubscribeRealtimeEvents();
           unsubscribeSession();
           disconnectRealtimeSession();
@@ -80,16 +126,29 @@ export function AppRealtimeSync() {
       }
     }
 
-    const idleTask = scheduleIdleTask(() => {
-      void initializeRealtimeSync();
-    });
+    function scheduleRealtimeImport() {
+      idleTask = scheduleIdleTask(() => {
+        void initializeRealtimeSync();
+      });
+    }
+
+    if (realtimeDelayMs > 0) {
+      delayTask = scheduleDelay(scheduleRealtimeImport, realtimeDelayMs);
+    } else {
+      scheduleRealtimeImport();
+    }
 
     return () => {
       cancelled = true;
-      cancelIdleTask(idleTask);
+      if (delayTask) {
+        cancelDelay(delayTask);
+      }
+      if (idleTask) {
+        cancelIdleTask(idleTask);
+      }
       cleanup?.();
     };
-  }, [hasAuthSession, isRealtimeEligible]);
+  }, [hasAuthSession, realtimeDelayMs]);
 
   return null;
 }

@@ -35,20 +35,23 @@ export function ProfileCompactHeader({
           className="pointer-events-auto absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-offset-2 focus-visible:ring-offset-forge-teal"
         />
 
-        <div className="pointer-events-none relative z-10 shrink-0">
-          <Avatar
-            src={user.avatar}
-            name={user.name}
-            className="size-14 border-2 border-canvas bg-muted text-2xl shadow-sm ring-1 ring-border/70 sm:size-16 sm:text-3xl lg:size-11 lg:text-lg"
-            fallbackClassName="bg-muted text-forge-teal"
-            loading="eager"
-          />
-          <AvatarStatus
-            status={user.onlineStatus ?? "ONLINE"}
-            borderClassName="border-forge-teal"
-            sizeClassName="size-3.5 sm:size-4 lg:size-3"
-          />
-        </div>
+        {visible ? (
+          <div className="pointer-events-none relative z-10 shrink-0">
+            <Avatar
+              src={user.avatar}
+              name={user.name}
+              className="size-14 border-2 border-canvas bg-muted text-2xl shadow-sm ring-1 ring-border/70 sm:size-16 sm:text-3xl lg:size-11 lg:text-lg"
+              fallbackClassName="bg-muted text-forge-teal"
+              imageSize={80}
+              loading="eager"
+            />
+            <AvatarStatus
+              status={user.onlineStatus ?? "ONLINE"}
+              borderClassName="border-forge-teal"
+              sizeClassName="size-3.5 sm:size-4 lg:size-3"
+            />
+          </div>
+        ) : null}
 
         <div className="pointer-events-none relative z-10 flex min-w-0 flex-col justify-center">
           <p className="truncate font-bold text-2xl leading-tight tracking-tight sm:text-3xl lg:text-xl">

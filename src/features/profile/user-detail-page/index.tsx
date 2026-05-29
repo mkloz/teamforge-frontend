@@ -1,15 +1,30 @@
 import { useParams } from "@tanstack/react-router";
-import { PublicProfileActions } from "@/features/profile/components/profile-hero/public-profile-actions";
-import { useProfile } from "@/features/profile/hooks/use-profile";
+import { MessageCircle, UserRoundPlus } from "lucide-react";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { usePublicProfile } from "@/features/profile/hooks/use-profile";
 import { ProfilePageLoading } from "@/features/profile/profile-page/profile-page.loading";
 import { ProfilePageContent } from "@/features/profile/profile-page/profile-page-content";
-import { ProfilePageError } from "@/features/profile/profile-page/profile-page-error";
+import { Button } from "@/shared/components/ui/button";
+import type { User } from "@/shared/schemas";
 
 const USER_DETAIL_ROUTE = "/app-shell/users/$userId";
+const PUBLIC_PROFILE_ACTION_DELAY_MS = 5_000;
+
+const LazyProfilePageError = lazy(() =>
+  import("@/features/profile/profile-page/profile-page-error").then(
+    (module) => ({ default: module.ProfilePageError }),
+  ),
+);
+
+const LazyPublicProfileActions = lazy(() =>
+  import(
+    "@/features/profile/components/profile-hero/public-profile-actions"
+  ).then((module) => ({ default: module.PublicProfileActions })),
+);
 
 export function UserDetailPage() {
   const { userId } = useParams({ from: USER_DETAIL_ROUTE });
-  const { profile, isLoading, error, refetch } = useProfile(userId);
+  const { profile, isLoading, error, refetch } = usePublicProfile(userId);
 
   if (error || !profile) {
     if (isLoading) {
@@ -17,11 +32,13 @@ export function UserDetailPage() {
     }
 
     return (
-      <ProfilePageError
-        title="Profile could not load"
-        description="This public profile could not be refreshed right now."
-        onRetry={() => void refetch()}
-      />
+      <Suspense fallback={<ProfilePageLoading mode="query" />}>
+        <LazyProfilePageError
+          title="Profile could not load"
+          description="This public profile could not be refreshed right now."
+          onRetry={() => void refetch()}
+        />
+      </Suspense>
     );
   }
 
@@ -29,8 +46,59 @@ export function UserDetailPage() {
     <ProfilePageContent
       profile={profile}
       mode="public"
-      renderActions={() => <PublicProfileActions user={profile} />}
+      renderActions={() => <DeferredPublicProfileActions user={profile} />}
       showUserMenu={false}
     />
+  );
+}
+
+function DeferredPublicProfileActions({ user }: { user: User }) {
+  const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    const timer = globalThis.setTimeout(() => {
+      setShouldRender(true);
+    }, PUBLIC_PROFILE_ACTION_DELAY_MS);
+
+    return () => {
+      globalThis.clearTimeout(timer);
+    };
+  }, []);
+
+  if (!shouldRender) {
+    return <PublicProfileActionsFallback userName={user.name} />;
+  }
+
+  return (
+    <Suspense fallback={<PublicProfileActionsFallback userName={user.name} />}>
+      <LazyPublicProfileActions user={user} />
+    </Suspense>
+  );
+}
+
+function PublicProfileActionsFallback({ userName }: { userName: string }) {
+  return (
+    <div
+      aria-busy="true"
+      className="grid w-full grid-cols-1 xxs:grid-cols-2 items-center gap-2 pr-0 sm:flex sm:w-auto sm:flex-row sm:gap-3"
+    >
+      <Button
+        className="w-full shrink-0 sm:w-auto"
+        disabled
+        aria-label={`Loading connection actions for ${userName}`}
+      >
+        <UserRoundPlus className="shrink-0" />
+        <span>Connect</span>
+      </Button>
+      <Button
+        variant="outline"
+        className="w-full sm:w-auto"
+        disabled
+        aria-label={`Loading message action for ${userName}`}
+      >
+        <MessageCircle className="shrink-0" />
+        <span>Message</span>
+      </Button>
+    </div>
   );
 }

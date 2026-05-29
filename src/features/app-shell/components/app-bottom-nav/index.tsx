@@ -1,14 +1,8 @@
-import { motion, useReducedMotion } from "framer-motion";
 import { useActivePathname } from "@/features/app-shell/hooks/use-active-pathname";
 import {
   appBottomNavigation,
   applyAppNavigationBadges,
 } from "@/features/app-shell/lib/app-navigation";
-import {
-  appShellEase,
-  appShellMotionDelay,
-  appShellMotionTiming,
-} from "@/features/app-shell/lib/app-shell-motion";
 import { cn } from "@/shared/lib/utils";
 import { TabButton } from "./tab-button";
 
@@ -24,31 +18,13 @@ export function AppBottomNav({
   notificationUnreadCount = 0,
 }: AppBottomNavProps) {
   const pathname = useActivePathname();
-  const shouldReduceMotion = useReducedMotion();
   const bottomNavigationItems = applyAppNavigationBadges(appBottomNavigation, {
     activity: activityUnreadCount,
     home: notificationUnreadCount,
   });
 
   return (
-    <motion.div
-      initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
-      animate={
-        shouldReduceMotion
-          ? {
-              opacity: 1,
-              transition: { duration: appShellMotionTiming.reducedMotion },
-            }
-          : {
-              opacity: 1,
-              transition: {
-                delay: appShellMotionDelay.navEnter,
-                duration: appShellMotionTiming.navEnter,
-                ease: appShellEase.enter,
-              },
-              y: 0,
-            }
-      }
+    <div
       className={cn(
         "pointer-events-none fixed inset-x-0 bottom-0 isolate z-100 md:hidden",
         "px-3 pb-safe-bottom",
@@ -69,6 +45,6 @@ export function AppBottomNav({
           ))}
         </div>
       </nav>
-    </motion.div>
+    </div>
   );
 }

@@ -28,7 +28,6 @@ export function ProposedPlanQueueItem({
     >
       <Link
         {...navigation}
-        aria-label={`Open proposed plan ${group.plan.title} in ${group.name}`}
         className="flex min-w-0 items-center gap-3 px-1 py-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-3"
       >
         <div className="flex min-w-0 flex-1 items-start gap-3">

@@ -1,13 +1,19 @@
 import { Outlet } from "@tanstack/react-router";
-import { Activity, type ReactNode, Suspense } from "react";
+import { Activity, lazy, type ReactNode, Suspense } from "react";
 import { AppBottomNav } from "@/features/app-shell/components/app-bottom-nav";
 import { AppRouteTransition } from "@/features/app-shell/components/app-route-transition";
-import { AppSidebar } from "@/features/app-shell/components/app-sidebar";
 import { useAppNavbarCounters } from "@/features/app-shell/hooks/use-app-navbar-counters";
 import { useAppShellScrollReset } from "@/features/app-shell/hooks/use-app-shell-scroll-reset";
 import { RouteLoadingFallback } from "@/shared/components/loading/route-loading-fallback";
+import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { cn } from "@/shared/lib/utils";
 import { useUiStore } from "@/shared/store/ui.store";
+
+const AppSidebar = lazy(() =>
+  import("@/features/app-shell/components/app-sidebar").then((module) => ({
+    default: module.AppSidebar,
+  })),
+);
 
 interface AppLayoutProps {
   notificationTrigger?: ReactNode;
@@ -20,6 +26,7 @@ export function AppLayout({
 }: AppLayoutProps) {
   const bottomNavHidden = useUiStore((state) => state.bottomNavHidden);
   const navbarCounters = useAppNavbarCounters();
+  const shouldRenderSidebar = useMediaQuery("(min-width: 768px)");
 
   useAppShellScrollReset();
 
@@ -32,10 +39,14 @@ export function AppLayout({
         Skip to main content
       </a>
 
-      <AppSidebar
-        activityUnreadCount={navbarCounters.activityUnreadCount}
-        notificationTrigger={notificationTrigger}
-      />
+      {shouldRenderSidebar ? (
+        <Suspense fallback={null}>
+          <AppSidebar
+            activityUnreadCount={navbarCounters.activityUnreadCount}
+            notificationTrigger={notificationTrigger}
+          />
+        </Suspense>
+      ) : null}
 
       <main
         id="main-content"

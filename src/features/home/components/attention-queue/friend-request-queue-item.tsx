@@ -46,13 +46,13 @@ export function FriendRequestQueueItem({
     >
       <Link
         {...profileNavigation}
-        aria-label={`View ${request.counterpart.name}'s profile`}
         className="flex min-w-0 flex-1 items-start gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Avatar
           src={request.counterpart.avatar}
           name={request.counterpart.name}
           fallback={<UserPlus className="size-4 text-muted-foreground" />}
+          imageSize={96}
           className="size-11 shrink-0 border border-border/60 bg-canvas"
         />
         <div className="min-w-0 flex-1">

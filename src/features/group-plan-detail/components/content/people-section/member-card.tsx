@@ -64,6 +64,7 @@ function MemberAvatar({
       <Avatar
         src={member.avatar}
         name={member.name}
+        imageSize={64}
         className={cn(
           "size-10 ring-1 ring-border/20",
           member.trustScore >= 0.8
