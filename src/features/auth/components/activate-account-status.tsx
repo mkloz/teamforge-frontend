@@ -18,7 +18,7 @@ export function ActivateAccountStatus({
 }: ActivateAccountStatusProps) {
   if (state === "loading") {
     return (
-      <div className="rounded-xl border border-border bg-background px-4 py-6 text-center">
+      <div className="flex min-h-64 flex-col justify-center rounded-xl border border-border bg-background px-4 py-6 text-center">
         <span className="sr-only">
           Confirming your email and preparing your TeamForge account.
         </span>
@@ -31,7 +31,7 @@ export function ActivateAccountStatus({
 
   if (state === "error") {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex min-h-64 flex-col justify-center gap-4">
         <div className="rounded-xl border border-destructive/20 bg-destructive/8 px-4 py-5 text-center text-foreground text-sm">
           <ErrorAuthLinkVisual className="mx-auto mb-3 h-28 w-auto text-foreground" />
           <p>{errorMessage}</p>
@@ -46,7 +46,7 @@ export function ActivateAccountStatus({
   }
 
   return (
-    <div className="rounded-xl border border-forge-teal/20 bg-forge-teal/8 px-4 py-3 text-foreground text-sm">
+    <div className="flex min-h-64 items-center rounded-xl border border-forge-teal/20 bg-forge-teal/8 px-4 py-3 text-foreground text-sm">
       Your account is ready. Taking you back into TeamForge now.
     </div>
   );

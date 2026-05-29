@@ -4,6 +4,7 @@ import {
   type ApiErrorMessageOptions,
   getApiErrorMessage,
 } from "@/shared/lib/api-error-message";
+import { requestAppToastHost } from "@/shared/lib/toast-host-events";
 
 const DEFAULT_ERROR_TOAST_TITLE = "Something didn't go through";
 const DEFAULT_ERROR_TOAST_MESSAGE =
@@ -64,6 +65,7 @@ export function showAppErrorToast(
 
   const message = getApiErrorMessage(error, fallbackMessage, messageOptions);
 
+  requestAppToastHost();
   toast.error(title, {
     description: message,
     duration: 6000,

@@ -12,17 +12,7 @@ export function GroupCard() {
   const memberStackOrder = ["z-40", "z-30", "z-20", "z-10"];
 
   return (
-    <ForgeOrbPanel
-      initial={{ y: 0, rotate: 0 }}
-      animate={{ y: [-8, 0], rotate: [1, 0] }}
-      transition={{
-        duration: 3.5,
-        repeat: Infinity,
-        repeatType: "mirror",
-        ease: "easeInOut",
-      }}
-      className="w-45"
-    >
+    <ForgeOrbPanel className="w-45 animate-forge-card-float-b motion-reduce:animate-none">
       <div className="mb-2.5 flex items-center justify-between">
         <ForgeOrbEyebrow>Your Group</ForgeOrbEyebrow>
         <span className="rounded-full border border-spark-amber/20 bg-spark-amber/10 px-2 py-0.5 font-bold font-sans text-nano text-spark-amber">

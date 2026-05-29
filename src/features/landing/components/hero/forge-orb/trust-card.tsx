@@ -5,17 +5,7 @@ export function TrustCard() {
   const score = 4.2;
 
   return (
-    <ForgeOrbPanel
-      initial={{ y: 0, rotate: 2 }}
-      animate={{ y: [-10, 0], rotate: [1, 2] }}
-      transition={{
-        duration: 5,
-        repeat: Infinity,
-        repeatType: "mirror",
-        ease: "easeInOut",
-      }}
-      className="w-37.5"
-    >
+    <ForgeOrbPanel className="w-37.5 animate-forge-card-float-c motion-reduce:animate-none">
       <ForgeOrbEyebrow className="mb-2.5">Trust Score</ForgeOrbEyebrow>
       <div className="flex items-center gap-2.5">
         <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">

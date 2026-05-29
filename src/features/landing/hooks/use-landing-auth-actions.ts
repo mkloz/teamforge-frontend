@@ -15,7 +15,6 @@ export function useLandingAuthActions(
   const { isAuthenticated } = useAuthSessionState();
   const sessionRestoreQuery = useRestoreAuthSessionQuery();
   const currentUserQuery = useCurrentUserQuery();
-
   const isRestoringSession = !isAuthenticated && sessionRestoreQuery.isPending;
   const isLoadingCurrentUser =
     isAuthenticated &&

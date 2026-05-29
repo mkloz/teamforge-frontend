@@ -10,7 +10,6 @@ import {
   scrollToLandingSection,
   scrollToLandingTop,
 } from "@/features/landing/lib/landing-scroll";
-import { logoutCurrentSession } from "@/shared/api/auth-session-commands";
 import { Button } from "@/shared/components/ui/button";
 import { useWindowScrollThreshold } from "@/shared/hooks/use-window-scroll-threshold";
 import { cn } from "@/shared/lib/utils";
@@ -57,6 +56,10 @@ export function Navbar() {
 
     try {
       closeMenu();
+      const { logoutCurrentSession } = await import(
+        "@/shared/api/auth-session-commands"
+      );
+
       await logoutCurrentSession();
       setIsSigningOut(false);
     } catch (error) {
@@ -82,7 +85,6 @@ export function Navbar() {
               scrollToLandingTop();
             }}
             className="group -ml-2 flex select-none items-center gap-2 rounded-lg border-0 bg-transparent px-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-hero-bg"
-            aria-label="TeamForge home"
           >
             <TeamForgeLogo className="size-8" showBackground={false} />
             <span className="font-sans font-semibold text-lg tracking-tight">

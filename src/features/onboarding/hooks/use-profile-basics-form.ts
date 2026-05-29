@@ -26,6 +26,19 @@ import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { getPostAuthRedirectPath } from "@/shared/lib/post-auth-route";
 
+function areProfileBasicsValuesEqual(
+  currentValues: ProfileBasicsValues,
+  nextValues: ProfileBasicsValues,
+) {
+  return (
+    currentValues.age === nextValues.age &&
+    currentValues.gender === nextValues.gender &&
+    currentValues.city === nextValues.city &&
+    currentValues.locationLat === nextValues.locationLat &&
+    currentValues.locationLng === nextValues.locationLng
+  );
+}
+
 export function useProfileBasicsForm() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -46,7 +59,10 @@ export function useProfileBasicsForm() {
       return;
     }
 
-    form.reset(getProfileBasicsValuesFromUser(currentUser));
+    const nextValues = getProfileBasicsValuesFromUser(currentUser);
+    if (!areProfileBasicsValuesEqual(form.getValues(), nextValues)) {
+      form.reset(nextValues);
+    }
   }, [currentUser, form]);
 
   const profileBasicsMutation = useMutation({

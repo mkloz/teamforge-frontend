@@ -2,17 +2,7 @@ import { ForgeOrbEyebrow, ForgeOrbPanel } from "./forge-orb-panel";
 
 export function MbtiCard() {
   return (
-    <ForgeOrbPanel
-      initial={{ y: 0, rotate: -2 }}
-      animate={{ y: [-12, 0], rotate: [-1, -2] }}
-      transition={{
-        duration: 4,
-        repeat: Infinity,
-        repeatType: "mirror",
-        ease: "easeInOut",
-      }}
-      className="w-45"
-    >
+    <ForgeOrbPanel className="w-45 animate-forge-card-float-a motion-reduce:animate-none">
       <ForgeOrbEyebrow className="mb-1.5">Personality</ForgeOrbEyebrow>
       <p className="mb-2.5 font-extrabold font-sans text-2xl text-white tracking-tight">
         ENTJ

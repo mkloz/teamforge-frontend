@@ -1,5 +1,8 @@
-import { Tooltip as TooltipPrimitive } from "radix-ui";
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import type React from "react";
+import { createContext, useContext } from "react";
+
+const TooltipProviderContext = createContext(false);
 
 function TooltipProvider({
   delayDuration = 250,
@@ -7,19 +10,24 @@ function TooltipProvider({
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Provider>) {
   return (
-    <TooltipPrimitive.Provider
-      data-slot="tooltip-provider"
-      delayDuration={delayDuration}
-      skipDelayDuration={skipDelayDuration}
-      {...props}
-    />
+    <TooltipProviderContext.Provider value={true}>
+      <TooltipPrimitive.Provider
+        data-slot="tooltip-provider"
+        delayDuration={delayDuration}
+        skipDelayDuration={skipDelayDuration}
+        {...props}
+      />
+    </TooltipProviderContext.Provider>
   );
 }
 
 function Tooltip({
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Root>) {
-  return <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
+  const hasProvider = useContext(TooltipProviderContext);
+  const tooltip = <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
+
+  return hasProvider ? tooltip : <TooltipProvider>{tooltip}</TooltipProvider>;
 }
 
 function TooltipTrigger({

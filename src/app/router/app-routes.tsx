@@ -1,6 +1,6 @@
 import { createRoute } from "@tanstack/react-router";
+import { lazy, Suspense } from "react";
 
-import { AppShellWithNotifications } from "@/app/router/app-shell-with-notifications";
 import { createLazyPageRoute } from "@/app/router/lazy-page-route";
 import {
   createLazyRouteModule,
@@ -22,6 +22,12 @@ import { HomePageLoading } from "@/features/home/home-page.loading";
 import { ProfilePageLoading } from "@/features/profile/profile-page/profile-page.loading";
 import { SettingsPageLoading } from "@/features/settings/settings-page/settings-page.loading";
 import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
+
+const AppShellWithNotifications = lazy(() =>
+  import("@/app/router/app-shell-with-notifications").then((module) => ({
+    default: module.AppShellWithNotifications,
+  })),
+);
 
 const homePageModule = createLazyRouteModule(() =>
   import("@/features/home/home-page").then((m) => ({ default: m.HomePage })),
@@ -99,11 +105,19 @@ function createRouteModuleLoader(module: LazyRouteModule) {
   };
 }
 
+function AppShellRouteComponent() {
+  return (
+    <Suspense fallback={null}>
+      <AppShellWithNotifications />
+    </Suspense>
+  );
+}
+
 export const appShellRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "app-shell",
   beforeLoad: ({ location }) => requireCanonicalAppRoute(location),
-  component: AppShellWithNotifications,
+  component: AppShellRouteComponent,
 });
 
 const homeRoute = createRoute({

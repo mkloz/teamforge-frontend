@@ -7,6 +7,10 @@
     font-family: var(--font-sans);
   }
 
+  ::selection {
+    @apply bg-forge-teal text-white;
+  }
+
   :where(
     a[href],
     button:not(:disabled),

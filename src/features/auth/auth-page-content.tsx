@@ -1,13 +1,20 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import type { ReactNode, RefObject } from "react";
+import { lazy, Suspense } from "react";
+import { useDesktopAuthVisualEnabled } from "@/features/auth/hooks/use-desktop-auth-visual-enabled";
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
 import { Button } from "@/shared/components/ui/button";
-import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
 import { voronoiSplitDividerClassName } from "@/shared/components/visuals/voronoi-split-divider";
 import { cn } from "@/shared/lib/utils";
 import type { VoronoiCatalystHandle } from "@/shared/lib/voronoi/voronoi-contract";
+
+const LazyVoronoiCatalyst = lazy(() =>
+  import("@/shared/components/visuals/voronoi-catalyst").then((module) => ({
+    default: module.VoronoiCatalyst,
+  })),
+);
 
 interface AuthPageContentProps {
   catalystRef?: RefObject<VoronoiCatalystHandle | null>;
@@ -24,6 +31,8 @@ export function AuthPageContent({
   progress,
   scrollContainerRef,
 }: AuthPageContentProps) {
+  const isDesktopAuthVisualEnabled = useDesktopAuthVisualEnabled();
+
   return (
     <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
       <div className="pointer-events-none absolute top-0 right-0 left-0 z-30 flex h-16 items-center px-4 lg:h-24 lg:px-10">
@@ -49,7 +58,11 @@ export function AuthPageContent({
           voronoiSplitDividerClassName,
         )}
       >
-        <VoronoiCatalyst ref={catalystRef} progress={progress} />
+        {isDesktopAuthVisualEnabled ? (
+          <Suspense fallback={null}>
+            <LazyVoronoiCatalyst ref={catalystRef} progress={progress} />
+          </Suspense>
+        ) : null}
       </div>
 
       <div className="relative flex h-full flex-1 flex-col overflow-hidden">

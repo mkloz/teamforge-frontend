@@ -18,6 +18,8 @@
 
   --animate-pulse-glow: pulse-glow 2.5s ease-in-out infinite;
   --animate-fade-up: fade-up 0.6s ease-out forwards;
+  --animate-auth-form-enter: auth-form-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-auth-step-enter: auth-step-enter 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-hero-fade-in: hero-fade-in 0.8s ease-out forwards;
   --animate-hero-fade-in-right: hero-fade-in-right 1s ease-out forwards;
   --animate-card-reveal: card-reveal 0.6s ease-out forwards;
@@ -28,6 +30,12 @@
   --animate-skeleton-shimmer: skeleton-shimmer 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
   --animate-collapsible-down: collapsible-down 0.24s cubic-bezier(0.22, 1, 0.36, 1);
   --animate-collapsible-up: collapsible-up 0.2s cubic-bezier(0.4, 0, 1, 1);
+  --animate-forge-orb-rotate: forge-orb-rotate 20s linear infinite;
+  --animate-forge-orb-breathe: forge-orb-breathe 4s ease-in-out infinite;
+  --animate-forge-card-float-a: forge-card-float-a 4s ease-in-out infinite alternate;
+  --animate-forge-card-float-b: forge-card-float-b 3.5s ease-in-out infinite alternate;
+  --animate-forge-card-float-c: forge-card-float-c 5s ease-in-out infinite alternate;
+  --animate-side-nav-reveal: side-nav-reveal 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

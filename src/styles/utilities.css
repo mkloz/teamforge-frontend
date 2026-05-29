@@ -28,6 +28,11 @@
   font-size: 0.625rem;
 }
 
+@utility legal-section-containment {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 14rem;
+}
+
 @utility pb-safe-bottom {
   padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);
 }

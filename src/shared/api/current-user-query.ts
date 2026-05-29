@@ -1,13 +1,14 @@
 import { queryOptions, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useSyncExternalStore } from "react";
 
 import { apiClient, refreshAuthSession } from "@/shared/api/api";
 import { authSession } from "@/shared/api/auth-session";
+import { useAuthSessionState } from "@/shared/api/auth-session-state";
 import { appQueryClient } from "@/shared/api/query-client";
 import { fullUserResponseSchema } from "@/shared/schemas/user-response";
 
 import { CURRENT_USER_QUERY_KEY } from "./current-user-cache";
 
+export { useAuthSessionState } from "./auth-session-state";
 export {
   CURRENT_USER_QUERY_KEY,
   clearCurrentUserCache,
@@ -28,19 +29,6 @@ export function currentUserQueryOptions() {
     },
     staleTime: 60_000,
   });
-}
-
-export function useAuthSessionState() {
-  const tokens = useSyncExternalStore(
-    (listener) => authSession.subscribe(listener),
-    () => authSession.getTokens(),
-    () => authSession.getTokens(),
-  );
-
-  return {
-    tokens,
-    isAuthenticated: tokens !== null,
-  };
 }
 
 export function useRestoreAuthSessionQuery() {

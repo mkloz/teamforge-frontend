@@ -82,6 +82,7 @@ export function AlgorithmViz({ inView }: AlgorithmVizProps) {
               <motion.circle
                 cx={cx}
                 cy={cy}
+                r={size * 0.05}
                 fill="none"
                 stroke="#0D9488"
                 strokeWidth="1"

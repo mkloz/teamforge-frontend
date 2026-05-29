@@ -1,6 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
 import { PersonalityScreenRenderer } from "@/features/onboarding/components/personality/personality-screen-renderer";
-import { personalityScreenTransition } from "@/features/onboarding/constants/motion";
 import { usePersonalityTestPageFlow } from "@/features/onboarding/hooks/use-personality-test-page-flow";
 import { QUESTIONS_PER_PAGE } from "@/features/onboarding/lib/personality-test-page-constants";
 import { PersonalityPageContent } from "@/features/onboarding/onboarding-page-content";
@@ -32,26 +30,17 @@ export function PersonalityTestPage() {
       scrollContainerRef={scrollContainerRef}
       showHomeLink={testState.screen.id !== "questions"}
     >
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={screenTransitionKey}
-          variants={personalityScreenTransition}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          className="flex flex-1 flex-col"
-        >
-          <PersonalityScreenRenderer
-            state={testState}
-            backLabel={backLabel}
-            onBack={goBack}
-            onSelectionChange={setPendingLength}
-            onContinue={continueToInterests}
-            continueLabel={continueLabel}
-            questionsPerPage={QUESTIONS_PER_PAGE}
-          />
-        </motion.div>
-      </AnimatePresence>
+      <div key={screenTransitionKey} className="flex flex-1 flex-col">
+        <PersonalityScreenRenderer
+          state={testState}
+          backLabel={backLabel}
+          onBack={goBack}
+          onSelectionChange={setPendingLength}
+          onContinue={continueToInterests}
+          continueLabel={continueLabel}
+          questionsPerPage={QUESTIONS_PER_PAGE}
+        />
+      </div>
     </PersonalityPageContent>
   );
 }

@@ -1,11 +1,7 @@
-import { AboutSection } from "@/features/landing/components/about";
-import { AlgorithmSection } from "@/features/landing/components/algorithm";
-import { CtaSection } from "@/features/landing/components/cta";
-import { Footer } from "@/features/landing/components/footer";
 import { HeroSection } from "@/features/landing/components/hero";
-import { HowItWorksSection } from "@/features/landing/components/how-it-works";
 import { Navbar } from "@/features/landing/components/navbar";
 import { SideNav } from "@/features/landing/components/side-nav";
+import { DeferredLandingBelowFoldSections } from "@/features/landing/deferred-landing-below-fold-sections";
 
 export function LandingPageContent() {
   return (
@@ -21,13 +17,8 @@ export function LandingPageContent() {
 
       <main id="main-content">
         <HeroSection />
-        <HowItWorksSection />
-        <AlgorithmSection />
-        <AboutSection />
-        <CtaSection />
+        <DeferredLandingBelowFoldSections />
       </main>
-
-      <Footer />
     </div>
   );
 }

@@ -1,6 +1,4 @@
-import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Brain, Lock, RefreshCcw } from "lucide-react";
-import { fadeUpItem } from "@/features/onboarding/constants/motion";
 import { Button } from "@/shared/components/ui/button";
 import { PersonalityScreenShell } from "./personality-screen-layout";
 
@@ -32,21 +30,15 @@ export function PersonalityIntro({
 }: PersonalityIntroProps) {
   return (
     <PersonalityScreenShell className="max-w-md pt-10 sm:pt-12">
-      <motion.p
-        variants={fadeUpItem}
-        className="mb-3 text-center font-bold font-sans text-forge-teal text-xs uppercase tracking-widest"
-      >
+      <p className="mb-3 text-center font-bold font-sans text-forge-teal text-xs uppercase tracking-widest">
         Personality Assessment
-      </motion.p>
+      </p>
 
-      <motion.h1
-        variants={fadeUpItem}
-        className="mb-4 text-balance text-center font-extrabold font-sans text-2xl text-ink leading-tight sm:text-display-lg"
-      >
+      <h1 className="mb-4 text-balance text-center font-extrabold font-sans text-2xl text-ink leading-tight sm:text-display-lg">
         What makes you, you?
-      </motion.h1>
+      </h1>
 
-      <motion.div variants={fadeUpItem} className="text-left">
+      <div className="text-left">
         <p className="mb-3 text-pretty font-medium font-sans text-muted-foreground text-sm leading-relaxed sm:text-base">
           Before we build your group, we want to understand how your mind works
           – the core of your personality.
@@ -57,17 +49,11 @@ export function PersonalityIntro({
           scientifically validated framework. The result shapes your group
           matches and gives you a framework for understanding yourself.
         </p>
-      </motion.div>
+      </div>
 
-      <motion.div
-        variants={fadeUpItem}
-        className="mb-6 h-px w-full bg-muted dark:bg-white/10"
-      />
+      <div className="mb-6 h-px w-full bg-muted dark:bg-white/10" />
 
-      <motion.div
-        variants={fadeUpItem}
-        className="mb-8 flex w-full flex-col gap-4 text-left"
-      >
+      <div className="mb-8 flex w-full flex-col gap-4 text-left">
         {BENEFITS.map(({ icon: Icon, text }) => (
           <div key={text} className="flex items-start gap-3.5">
             <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10">
@@ -78,12 +64,9 @@ export function PersonalityIntro({
             </p>
           </div>
         ))}
-      </motion.div>
+      </div>
 
-      <motion.div
-        variants={fadeUpItem}
-        className="mt-auto flex w-full xs:flex-row flex-col-reverse xs:items-center items-stretch gap-3 pt-6"
-      >
+      <div className="mt-auto flex w-full xs:flex-row flex-col-reverse xs:items-center items-stretch gap-3 pt-6">
         <Button
           size="md"
           variant="outline"
@@ -101,7 +84,7 @@ export function PersonalityIntro({
           <span className="truncate">Let's find out</span>
           <ArrowRight size={16} strokeWidth={2.5} />
         </Button>
-      </motion.div>
+      </div>
     </PersonalityScreenShell>
   );
 }

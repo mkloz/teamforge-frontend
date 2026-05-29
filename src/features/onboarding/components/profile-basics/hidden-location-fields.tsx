@@ -13,14 +13,24 @@ export function HiddenLocationFields({ form }: HiddenLocationFieldsProps) {
         control={form.control}
         name="locationLat"
         render={({ field }) => (
-          <input type="hidden" value={field.value ?? ""} readOnly />
+          <input
+            type="hidden"
+            name={field.name}
+            value={field.value ?? ""}
+            readOnly
+          />
         )}
       />
       <FormField
         control={form.control}
         name="locationLng"
         render={({ field }) => (
-          <input type="hidden" value={field.value ?? ""} readOnly />
+          <input
+            type="hidden"
+            name={field.name}
+            value={field.value ?? ""}
+            readOnly
+          />
         )}
       />
     </>

@@ -62,6 +62,37 @@ export default defineConfig({
           }
 
           if (
+            id.includes("/@radix-ui/react-slot/") ||
+            id.includes("/@radix-ui/react-compose-refs/")
+          ) {
+            return "radix-slot";
+          }
+
+          if (
+            id.includes("/@radix-ui/react-label/") ||
+            id.includes("/@radix-ui/react-tooltip/") ||
+            id.includes("/@radix-ui/react-arrow/") ||
+            id.includes("/@radix-ui/react-context/") ||
+            id.includes("/@radix-ui/react-dismissable-layer/") ||
+            id.includes("/@radix-ui/react-id/") ||
+            id.includes("/@radix-ui/react-popper/") ||
+            id.includes("/@radix-ui/react-portal/") ||
+            id.includes("/@radix-ui/react-presence/") ||
+            id.includes("/@radix-ui/react-primitive/") ||
+            id.includes("/@radix-ui/react-use-callback-ref/") ||
+            id.includes("/@radix-ui/react-use-controllable-state/") ||
+            id.includes("/@radix-ui/react-use-escape-keydown/") ||
+            id.includes("/@radix-ui/react-use-layout-effect/") ||
+            id.includes("/@radix-ui/react-use-rect/") ||
+            id.includes("/@radix-ui/react-use-size/") ||
+            id.includes("/@radix-ui/react-visually-hidden/") ||
+            id.includes("/@radix-ui/primitive/") ||
+            id.includes("/@radix-ui/rect/")
+          ) {
+            return "radix-overlay-core";
+          }
+
+          if (
             id.includes("/@radix-ui/") ||
             id.includes("/radix-ui/") ||
             id.includes("/vaul/") ||
@@ -73,19 +104,28 @@ export default defineConfig({
           }
 
           if (id.includes("/lucide-react/")) {
-            return "icons";
+            return undefined;
+          }
+
+          if (id.includes("/ky/")) {
+            return "http-client";
           }
 
           if (
-            id.includes("/@react-oauth/google/") ||
-            id.includes("/@vercel/analytics/") ||
             id.includes("/socket.io-client/") ||
             id.includes("/socket.io-parser/") ||
             id.includes("/engine.io-client/") ||
-            id.includes("/engine.io-parser/") ||
-            id.includes("/ky/")
+            id.includes("/engine.io-parser/")
           ) {
-            return "app-integrations";
+            return "realtime-vendor";
+          }
+
+          if (id.includes("/@react-oauth/google/")) {
+            return "auth-integrations";
+          }
+
+          if (id.includes("/@vercel/analytics/")) {
+            return "analytics";
           }
 
           if (id.includes("/nuqs/") || id.includes("/zustand/")) {

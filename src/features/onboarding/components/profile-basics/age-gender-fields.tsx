@@ -56,7 +56,11 @@ export function AgeGenderFields({ form }: AgeGenderFieldsProps) {
               <FormLabel className="font-sans font-semibold text-ink text-sm">
                 Gender
               </FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select
+                name={field.name}
+                onValueChange={field.onChange}
+                value={field.value}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select gender" />

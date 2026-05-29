@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import type { FormEventHandler } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import { ErrorProfileSaveVisual } from "@/assets/error-state/error-profile-save";
@@ -25,12 +24,7 @@ export function ProfileBasicsCard({
   watchedValues,
 }: ProfileBasicsCardProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-      className="flex w-full flex-col"
-    >
+    <div className="flex w-full flex-col">
       <div className="mb-6 flex flex-col items-center sm:mb-8">
         <h1 className="text-balance text-center font-extrabold font-sans text-2xl text-ink leading-tight tracking-tight sm:text-4xl">
           Tell us about yourself
@@ -65,6 +59,6 @@ export function ProfileBasicsCard({
           </Button>
         </form>
       </Form>
-    </motion.div>
+    </div>
   );
 }

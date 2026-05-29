@@ -1,13 +1,20 @@
-import { createRoute } from "@tanstack/react-router";
+import { createRoute, redirect } from "@tanstack/react-router";
 
 import { createLazyPageRoute } from "@/app/router/lazy-page-route";
-import { createLazyRouteModule } from "@/app/router/lazy-route-module";
+import {
+  createLazyRouteModule,
+  type LazyRouteModule,
+} from "@/app/router/lazy-route-module";
 import { rootRoute } from "@/app/router/root-route";
 import { createRouteErrorComponent } from "@/app/router/route-error-component";
 import { redirectAuthenticatedUser } from "@/app/router/route-guards";
 import { AuthPageLoading } from "@/features/auth/auth-page.loading";
 import { LandingPageLoading } from "@/features/landing/landing-page.loading";
 import { LegalPageLoading } from "@/features/legal/legal-page.loading";
+import {
+  buildAuthRouteNavigation,
+  parseAuthReturnSearch,
+} from "@/shared/lib/auth-route";
 import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
 
 const landingPageModule = createLazyRouteModule(() =>
@@ -28,17 +35,15 @@ const termsPageModule = createLazyRouteModule(() =>
   })),
 );
 
-const authPageLoader = () => import("@/features/auth/auth-page");
-
 const loginPageModule = createLazyRouteModule(() =>
-  authPageLoader().then((m) => ({
-    default: () => <m.AuthPage defaultView="login" />,
+  import("@/features/auth/login-page").then((m) => ({
+    default: m.LoginPage,
   })),
 );
 
 const registerPageModule = createLazyRouteModule(() =>
-  authPageLoader().then((m) => ({
-    default: () => <m.AuthPage defaultView="register" />,
+  import("@/features/auth/register-page").then((m) => ({
+    default: m.RegisterPage,
   })),
 );
 
@@ -60,6 +65,12 @@ const activateAccountPageModule = createLazyRouteModule(() =>
   })),
 );
 
+function createRouteModuleLoader(module: LazyRouteModule) {
+  return async () => {
+    await module.preload();
+  };
+}
+
 const landingRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
@@ -72,6 +83,9 @@ const landingRoute = createRoute({
 const privacyRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/privacy",
+  loader: createRouteModuleLoader(privacyPageModule),
+  staleTime: Number.POSITIVE_INFINITY,
+  pendingComponent: () => <LegalPageLoading kind="privacy" mode="route" />,
   component: createLazyPageRoute(
     privacyPageModule.Component,
     <LegalPageLoading kind="privacy" mode="route" />,
@@ -81,10 +95,23 @@ const privacyRoute = createRoute({
 const termsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/terms",
+  loader: createRouteModuleLoader(termsPageModule),
+  staleTime: Number.POSITIVE_INFINITY,
+  pendingComponent: () => <LegalPageLoading kind="terms" mode="route" />,
   component: createLazyPageRoute(
     termsPageModule.Component,
     <LegalPageLoading kind="terms" mode="route" />,
   ),
+});
+
+const authRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/auth",
+  beforeLoad: ({ location }) => {
+    const { returnTo } = parseAuthReturnSearch(location.searchStr);
+
+    throw redirect(buildAuthRouteNavigation("/auth/login", returnTo));
+  },
 });
 
 const loginRoute = createRoute({
@@ -179,6 +206,7 @@ export const publicRoutes = [
   landingRoute,
   privacyRoute,
   termsRoute,
+  authRoute,
   loginRoute,
   registerRoute,
   forgotPasswordRoute,

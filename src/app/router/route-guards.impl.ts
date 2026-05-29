@@ -40,7 +40,9 @@ export async function redirectAuthenticatedUser({
 }: PublicAuthRouteLoadContext) {
   const hasSession = await restoreAuthSessionIfNeeded();
 
-  if (!hasSession) return;
+  if (!hasSession) {
+    return;
+  }
 
   const currentUser = await ensureCurrentUser().catch(() => null);
 

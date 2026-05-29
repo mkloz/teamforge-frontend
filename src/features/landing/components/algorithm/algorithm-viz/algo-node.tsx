@@ -181,11 +181,10 @@ export function AlgoNode({
           <motion.circle
             cx={0}
             cy={0}
-            animate={{ r: ns.r }}
+            r={ns.r}
             fill="var(--color-forge-deep-surface)"
             stroke={ns.fill}
             strokeWidth={node.type === "selected" || isHovered ? 2.5 : 1}
-            transition={{ duration: 0.4 }}
           />
           <foreignObject
             x={-ns.r}
@@ -207,7 +206,8 @@ export function AlgoNode({
           <motion.circle
             cx={0}
             cy={0}
-            animate={{ r: ns.r, fill: ns.fill }}
+            r={ns.r}
+            animate={{ fill: ns.fill }}
             transition={{ duration: 0.6 }}
           />
           <motion.text

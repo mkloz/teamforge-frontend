@@ -1,10 +1,5 @@
-import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { ReactNode } from "react";
-import {
-  fadeUpItem,
-  staggerContainer,
-} from "@/features/onboarding/constants/motion";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
@@ -32,17 +27,14 @@ export function PersonalityScreenShell({
   className,
 }: PersonalityScreenShellProps) {
   return (
-    <motion.div
-      variants={staggerContainer}
-      initial="hidden"
-      animate="visible"
+    <div
       className={cn(
         "mx-auto flex min-h-0 w-full flex-1 flex-col justify-start gap-0 pt-4 sm:pt-0",
         className,
       )}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 
@@ -50,11 +42,7 @@ export function MotionStep({
   children,
   className,
 }: PersonalityScreenShellProps) {
-  return (
-    <motion.div variants={fadeUpItem} className={className}>
-      {children}
-    </motion.div>
-  );
+  return <div className={className}>{children}</div>;
 }
 
 export function BackLink({ label = "Back", onBack }: BackLinkProps) {

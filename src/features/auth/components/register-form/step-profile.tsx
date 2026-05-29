@@ -30,9 +30,14 @@ const GENDER_OPTIONS = [
 interface StepProfileProps {
   onNext: () => void;
   onBack: () => void;
+  onNextIntent?: () => void;
 }
 
-export function StepProfile({ onNext, onBack }: StepProfileProps) {
+export function StepProfile({
+  onNext,
+  onBack,
+  onNextIntent,
+}: StepProfileProps) {
   const { control } = useFormContext<RegisterValues>();
 
   return (
@@ -135,7 +140,14 @@ export function StepProfile({ onNext, onBack }: StepProfileProps) {
         )}
       />
 
-      <Button type="button" onClick={onNext} size="lg" className="mt-4 w-full">
+      <Button
+        type="button"
+        onClick={onNext}
+        onFocus={onNextIntent}
+        onPointerEnter={onNextIntent}
+        size="lg"
+        className="mt-4 w-full"
+      >
         Looks good
         <ArrowRightAnimated />
       </Button>

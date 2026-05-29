@@ -37,7 +37,10 @@ export function useInterests({
     error: catalogError,
     isLoading: isCatalogLoading,
     refetch: retryCatalog,
-  } = useQuery(onboardingInterestTreeQueryOptions());
+  } = useQuery({
+    ...onboardingInterestTreeQueryOptions(),
+    enabled: store.screen !== "intro",
+  });
 
   const [searchQuery, setSearchQuery] = useState("");
   const deferredSearchQuery = useDeferredValue(searchQuery);

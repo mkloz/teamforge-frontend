@@ -21,7 +21,7 @@ export const STEPS: Step[] = [
         {["Introverted", "Analytical", "Open", "Calm"].map((tag) => (
           <span
             key={tag}
-            className="rounded-full border border-forge-teal/20 bg-forge-teal/10 px-3 py-1 font-bold text-forge-teal text-xs"
+            className="rounded-full border border-forge-teal bg-forge-teal px-3 py-1 font-bold text-primary-foreground text-xs"
           >
             {tag}
           </span>
@@ -82,7 +82,7 @@ export const STEPS: Step[] = [
             loading="lazy"
           />
         ))}
-        <div className="-ml-4 flex size-10 items-center justify-center rounded-full border-2 border-canvas bg-forge-teal font-bold text-white text-xs shadow-sm">
+        <div className="-ml-4 flex size-10 items-center justify-center rounded-full border-2 border-canvas bg-forge-teal font-bold text-primary-foreground text-xs shadow-sm">
           +2
         </div>
       </div>

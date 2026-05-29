@@ -53,6 +53,7 @@ export function LoginForm({
   } = useLoginForm({ onSuccess, onProgress });
   const {
     loading: googleLoading,
+    preloadGoogleAuth,
     rootError: googleError,
     startGoogleAuth,
   } = useGoogleAuth({ intent: "login", onSuccess });
@@ -153,6 +154,7 @@ export function LoginForm({
           <GoogleAuthButton
             loading={loading || googleLoading}
             onClick={startGoogleAuth}
+            onIntent={preloadGoogleAuth}
           />
         </form>
       </Form>

@@ -2,7 +2,7 @@ import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 
 import { getHttpErrorStatus } from "@/shared/lib/api-error-message";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
-import { showAppErrorToast } from "@/shared/lib/error-toast";
+import type { AppErrorToastOptions } from "@/shared/lib/error-toast";
 import { telemetryErrorScopes } from "@/shared/lib/telemetry-contract";
 
 const DEFAULT_QUERY_STALE_TIME_MS = 60_000;
@@ -120,6 +120,19 @@ async function trackMutationError(name: string) {
   }
 }
 
+async function showDeferredAppErrorToast(
+  error: unknown,
+  options: AppErrorToastOptions,
+) {
+  try {
+    const { showAppErrorToast } = await import("@/shared/lib/error-toast");
+
+    showAppErrorToast(error, options);
+  } catch (toastError) {
+    warnInDevelopment("Error toast failed.", toastError);
+  }
+}
+
 export function createAppQueryClient() {
   return new QueryClient({
     queryCache: new QueryCache({
@@ -140,7 +153,7 @@ export function createAppQueryClient() {
             errorToastMeta.errorToast,
           )
         ) {
-          showAppErrorToast(error, {
+          void showDeferredAppErrorToast(error, {
             fallbackMessage:
               errorToastMeta.errorToastMessage ??
               DEFAULT_QUERY_ERROR_TOAST_MESSAGE,
@@ -173,7 +186,7 @@ export function createAppQueryClient() {
         }
 
         if (errorToastMeta.errorToast !== false) {
-          showAppErrorToast(error, {
+          void showDeferredAppErrorToast(error, {
             fallbackMessage:
               errorToastMeta.errorToastMessage ??
               DEFAULT_MUTATION_ERROR_TOAST_MESSAGE,

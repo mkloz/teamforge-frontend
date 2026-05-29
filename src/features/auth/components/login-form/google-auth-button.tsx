@@ -4,9 +4,14 @@ import { Button } from "@/shared/components/ui/button";
 interface GoogleAuthButtonProps {
   loading: boolean;
   onClick: () => void;
+  onIntent?: () => void;
 }
 
-export function GoogleAuthButton({ loading, onClick }: GoogleAuthButtonProps) {
+export function GoogleAuthButton({
+  loading,
+  onClick,
+  onIntent,
+}: GoogleAuthButtonProps) {
   return (
     <Button
       type="button"
@@ -14,6 +19,8 @@ export function GoogleAuthButton({ loading, onClick }: GoogleAuthButtonProps) {
       size="lg"
       disabled={loading}
       onClick={onClick}
+      onFocus={onIntent}
+      onPointerEnter={onIntent}
       className="w-full gap-2.5"
     >
       <GoogleIcon />

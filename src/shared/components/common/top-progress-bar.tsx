@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import type { CSSProperties } from "react";
 import { cn } from "@/shared/lib/utils";
 
 interface TopProgressBarProps {
@@ -16,6 +16,10 @@ export function TopProgressBar({
   className,
   isGradient = false, // Default to false now
 }: TopProgressBarProps) {
+  const progressStyle = {
+    "--top-progress-width": `${Math.min(Math.max(progress, 0), 1) * 100}%`,
+  } satisfies CSSProperties & Record<`--${string}`, string>;
+
   return (
     <div
       className={cn(
@@ -24,16 +28,14 @@ export function TopProgressBar({
       )}
       aria-hidden="true"
     >
-      <motion.div
+      <div
         className={cn(
-          "h-full transition-all duration-300 ease-out",
+          "h-full w-(--top-progress-width) transition-[width] duration-300 ease-out",
           isGradient
             ? "bg-linear-to-r from-forge-teal via-forge-teal to-spark-amber"
             : "bg-forge-teal",
         )}
-        initial={{ width: "0%" }}
-        animate={{ width: `${progress * 100}%` }}
-        transition={{ type: "spring", stiffness: 50, damping: 20 }}
+        style={progressStyle}
       />
     </div>
   );

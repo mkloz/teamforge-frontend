@@ -1,11 +1,24 @@
-import { AnimatePresence } from "framer-motion";
-import { CompletionBlueprint } from "@/features/onboarding/components/interests/interests-page/completion-blueprint";
-import { InterestsFooter } from "@/features/onboarding/components/interests/interests-page/interests-footer";
-import { InterestsPersistentHeader } from "@/features/onboarding/components/interests/interests-page/interests-persistent-header";
+import { lazy, Suspense } from "react";
 import { InterestsProgressDecoration } from "@/features/onboarding/components/interests/interests-page/interests-progress-decoration";
 import { InterestsScreenRenderer } from "@/features/onboarding/components/interests/interests-page/interests-screen-renderer";
 import { useInterestsPageFlow } from "@/features/onboarding/hooks/use-interests-page-flow";
 import { InterestsPageContent } from "@/features/onboarding/onboarding-page-content";
+
+const CompletionBlueprint = lazy(() =>
+  import(
+    "@/features/onboarding/components/interests/interests-page/completion-blueprint"
+  ).then((module) => ({ default: module.CompletionBlueprint })),
+);
+const InterestsFooter = lazy(() =>
+  import(
+    "@/features/onboarding/components/interests/interests-page/interests-footer"
+  ).then((module) => ({ default: module.InterestsFooter })),
+);
+const InterestsPersistentHeader = lazy(() =>
+  import(
+    "@/features/onboarding/components/interests/interests-page/interests-persistent-header"
+  ).then((module) => ({ default: module.InterestsPersistentHeader })),
+);
 
 export function InterestsPage() {
   const {
@@ -26,30 +39,38 @@ export function InterestsPage() {
       header={
         <>
           <InterestsProgressDecoration progress={progress} />
-          <InterestsPersistentHeader
-            state={state}
-            scrollRef={scrollContainerRef}
-          />
+          {state.screen !== "intro" ? (
+            <Suspense fallback={null}>
+              <InterestsPersistentHeader
+                state={state}
+                scrollRef={scrollContainerRef}
+              />
+            </Suspense>
+          ) : null}
         </>
       }
       footer={
-        <InterestsFooter
-          state={state}
-          backLabel={backLabel}
-          isEditMode={isEditMode}
-          onBack={goBack}
-        />
+        state.screen !== "intro" ? (
+          <Suspense fallback={null}>
+            <InterestsFooter
+              state={state}
+              backLabel={backLabel}
+              isEditMode={isEditMode}
+              onBack={goBack}
+            />
+          </Suspense>
+        ) : null
       }
       completion={
-        <AnimatePresence>
-          {isDone && (
+        isDone ? (
+          <Suspense fallback={null}>
             <CompletionBlueprint
               personalityType={state.personalityType}
               interestCount={state.selectedCount}
               onEnter={enterApp}
             />
-          )}
-        </AnimatePresence>
+          </Suspense>
+        ) : null
       }
     >
       <InterestsScreenRenderer

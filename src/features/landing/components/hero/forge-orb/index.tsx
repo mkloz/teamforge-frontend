@@ -1,4 +1,3 @@
-import { motion, useReducedMotion } from "framer-motion";
 import type { CSSProperties } from "react";
 import { useRef } from "react";
 import { TeamForgeLogo } from "@/assets/logo";
@@ -7,11 +6,12 @@ import { MbtiCard } from "./mbti-card";
 import { TrustCard } from "./trust-card";
 import { useForgeOrbAnimation } from "./use-forge-orb-animation";
 import { useForgeOrbTilt } from "./use-forge-orb-tilt";
+import { usePrefersReducedMotion } from "./use-prefers-reduced-motion";
 
 export function ForgeOrb() {
   const containerRef = useRef<HTMLDivElement>(null);
   const orbContainerRef = useRef<HTMLDivElement>(null);
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = usePrefersReducedMotion();
 
   const dotRefs = useRef<(HTMLDivElement | null)[]>([]);
   const tailRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -36,29 +36,13 @@ export function ForgeOrb() {
           transformStyle: "preserve-3d",
         }}
       >
-        <motion.div
-          animate={shouldReduceMotion ? { rotate: 0 } : { rotate: 360 }}
-          transition={
-            shouldReduceMotion
-              ? { duration: 0 }
-              : { duration: 20, repeat: Infinity, ease: "linear" }
-          }
-          className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,rgba(13,148,136,0.25),rgba(13,148,136,0.08),rgba(13,148,136,0.15),rgba(13,148,136,0.25))] blur-subtle"
+        <div
+          className="absolute inset-0 animate-forge-orb-rotate rounded-full bg-[conic-gradient(from_0deg,rgba(13,148,136,0.25),rgba(13,148,136,0.08),rgba(13,148,136,0.15),rgba(13,148,136,0.25))] blur-subtle motion-reduce:animate-none"
           aria-hidden="true"
         />
 
-        <motion.div
-          animate={
-            shouldReduceMotion
-              ? { scale: 1, opacity: 0.8 }
-              : { scale: [1, 1.04, 1], opacity: [0.6, 1, 0.6] }
-          }
-          transition={
-            shouldReduceMotion
-              ? { duration: 0 }
-              : { duration: 4, repeat: Infinity, ease: "easeInOut" }
-          }
-          className="absolute inset-3 rounded-full bg-[radial-gradient(circle_at_40%_40%,rgba(13,148,136,0.15),rgba(9,9,9,0.95)_70%)]"
+        <div
+          className="absolute inset-3 animate-forge-orb-breathe rounded-full bg-[radial-gradient(circle_at_40%_40%,rgba(13,148,136,0.15),rgba(9,9,9,0.95)_70%)] motion-reduce:animate-none"
           aria-hidden="true"
         />
 

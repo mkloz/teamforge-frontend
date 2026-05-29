@@ -69,10 +69,10 @@ function AuthLoadingShell({
     <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
       <div className="pointer-events-none absolute top-0 right-0 left-0 z-30 flex h-16 items-center px-4 lg:h-24 lg:px-10">
         <Link
-          to="/"
+          to={isSupportLayout ? "/auth/login" : "/"}
           className="pointer-events-auto inline-flex h-9 items-center rounded-full px-4 font-medium text-white/80 text-xs"
         >
-          Back home
+          {isSupportLayout ? "Back to login" : "Back home"}
         </Link>
       </div>
 
@@ -108,7 +108,8 @@ function AuthLoadingShell({
           >
             <div
               className={cn(
-                "w-full max-w-sm px-2 sm:px-10 lg:p-0",
+                "w-full max-w-sm px-2",
+                isSupportLayout ? "sm:px-0" : "sm:px-10 lg:p-0",
                 !isSupportLayout && "relative",
               )}
             >
@@ -198,43 +199,34 @@ function SupportLoadingFixture({
 
   return (
     <AuthLoadingShell layout="support">
-      <div className="rounded-xl border border-border/70 bg-card/95 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
-        <div className="flex flex-col gap-2 text-center">
-          <p className="font-semibold text-forge-teal text-xs uppercase tracking-widest">
-            TeamForge
-          </p>
-          <h1 className="font-semibold text-2xl text-foreground tracking-tight">
-            {title}
-          </h1>
-          <p className="text-slate-muted text-sm leading-6">{description}</p>
-        </div>
+      <div className="flex flex-col gap-2 text-center">
+        <h1 className="font-semibold text-2xl text-foreground tracking-tight">
+          {title}
+        </h1>
+        <p className="text-slate-muted text-sm leading-6">{description}</p>
+      </div>
 
-        <div
-          aria-busy="true"
-          aria-label={`Loading ${kind}`}
-          className="mt-6 flex flex-col gap-4"
-          role="status"
-        >
-          <span className="sr-only">Loading {kind}</span>
-          {kind === "activate" ? (
-            <>
-              <Skeleton
-                shape="circle"
-                className="mx-auto size-12"
-                tone="teal"
-              />
-              <SkeletonText lines={2} widths={["w-full", "w-3/4"]} />
-            </>
-          ) : (
-            <>
-              <Skeleton className="h-12 w-full" />
-              {kind === "reset-password" ? (
-                <Skeleton className="h-12 w-full" />
-              ) : null}
-              <SkeletonButton className="h-12 w-full" tone="teal" />
-            </>
-          )}
-        </div>
+      <div
+        aria-busy="true"
+        aria-label={`Loading ${kind}`}
+        className="mt-6 flex flex-col gap-4"
+        role="status"
+      >
+        <span className="sr-only">Loading {kind}</span>
+        {kind === "activate" ? (
+          <div className="flex min-h-64 flex-col justify-center rounded-xl border border-border bg-background px-4 py-6 text-center">
+            <Skeleton shape="circle" className="mx-auto size-12" tone="teal" />
+            <SkeletonText lines={2} widths={["w-full", "w-3/4"]} />
+          </div>
+        ) : (
+          <>
+            <AuthInputSkeleton hasTrailingAction={kind === "reset-password"} />
+            {kind === "reset-password" ? (
+              <AuthInputSkeleton hasTrailingAction />
+            ) : null}
+            <SkeletonButton className="h-12 w-full" tone="teal" />
+          </>
+        )}
       </div>
     </AuthLoadingShell>
   );

@@ -9,14 +9,17 @@ import { RegisterPasswordField } from "./register-password-field";
 interface StepCredentialsProps {
   onNext: () => void;
   onGoogleSuccess?: () => void | Promise<void>;
+  onNextIntent?: () => void;
 }
 
 export function StepCredentials({
   onNext,
   onGoogleSuccess,
+  onNextIntent,
 }: StepCredentialsProps) {
   const {
     loading: googleLoading,
+    preloadGoogleAuth,
     rootError: googleError,
     startGoogleAuth,
   } = useGoogleAuth({
@@ -29,7 +32,14 @@ export function StepCredentials({
       <RegisterIdentityFields />
       <RegisterPasswordField />
 
-      <Button type="button" onClick={onNext} size="lg" className="mt-2 w-full">
+      <Button
+        type="button"
+        onClick={onNext}
+        onFocus={onNextIntent}
+        onPointerEnter={onNextIntent}
+        size="lg"
+        className="mt-2 w-full"
+      >
         Next step
         <ArrowRightAnimated />
       </Button>
@@ -48,6 +58,8 @@ export function StepCredentials({
         size="lg"
         className="w-full"
         onClick={startGoogleAuth}
+        onFocus={preloadGoogleAuth}
+        onPointerEnter={preloadGoogleAuth}
         disabled={googleLoading}
       >
         <GoogleIcon />

@@ -1,11 +1,17 @@
-import type { ReactNode, RefObject } from "react";
+import { lazy, type ReactNode, type RefObject, Suspense } from "react";
 import { OnboardingHomeLink } from "@/features/onboarding/components/onboarding-home-link";
+import { useDesktopOnboardingVisualEnabled } from "@/features/onboarding/hooks/use-desktop-onboarding-visual-enabled";
 import { BackgroundTexture } from "@/shared/components/common/background-texture";
 import { TopProgressBar } from "@/shared/components/common/top-progress-bar";
-import { VoronoiCatalyst } from "@/shared/components/visuals/voronoi-catalyst";
 import { voronoiSplitDividerClassName } from "@/shared/components/visuals/voronoi-split-divider";
 import { cn } from "@/shared/lib/utils";
 import type { VoronoiCatalystHandle } from "@/shared/lib/voronoi/voronoi-contract";
+
+const VoronoiCatalyst = lazy(() =>
+  import("@/shared/components/visuals/voronoi-catalyst").then((module) => ({
+    default: module.VoronoiCatalyst,
+  })),
+);
 
 interface ProfileBasicsPageContentProps {
   catalystRef?: RefObject<VoronoiCatalystHandle | null>;
@@ -22,6 +28,8 @@ export function ProfileBasicsPageContent({
   progress,
   scrollContainerRef,
 }: ProfileBasicsPageContentProps) {
+  const showVisual = useDesktopOnboardingVisualEnabled();
+
   return (
     <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
       <div
@@ -30,7 +38,11 @@ export function ProfileBasicsPageContent({
           voronoiSplitDividerClassName,
         )}
       >
-        <VoronoiCatalyst ref={catalystRef} progress={progress} />
+        {showVisual ? (
+          <Suspense fallback={null}>
+            <VoronoiCatalyst ref={catalystRef} progress={progress} />
+          </Suspense>
+        ) : null}
       </div>
 
       <div className="relative flex h-full flex-1 flex-col overflow-hidden">
@@ -75,6 +87,8 @@ export function PersonalityPageContent({
   scrollContainerRef,
   showHomeLink,
 }: PersonalityPageContentProps) {
+  const showVisual = useDesktopOnboardingVisualEnabled();
+
   return (
     <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
       <div className="relative flex h-full flex-1 flex-col overflow-hidden">
@@ -108,7 +122,11 @@ export function PersonalityPageContent({
           voronoiSplitDividerClassName,
         )}
       >
-        <VoronoiCatalyst progress={catalystProgress} />
+        {showVisual ? (
+          <Suspense fallback={null}>
+            <VoronoiCatalyst progress={catalystProgress} />
+          </Suspense>
+        ) : null}
       </div>
     </div>
   );
@@ -131,6 +149,8 @@ export function InterestsPageContent({
   progress,
   scrollContainerRef,
 }: InterestsPageContentProps) {
+  const showVisual = useDesktopOnboardingVisualEnabled();
+
   return (
     <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
       <aside
@@ -139,7 +159,11 @@ export function InterestsPageContent({
           voronoiSplitDividerClassName,
         )}
       >
-        <VoronoiCatalyst progress={progress} />
+        {showVisual ? (
+          <Suspense fallback={null}>
+            <VoronoiCatalyst progress={progress} />
+          </Suspense>
+        ) : null}
       </aside>
 
       <main className="relative flex h-full flex-1 flex-col overflow-hidden bg-canvas">

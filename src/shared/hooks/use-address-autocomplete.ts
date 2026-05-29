@@ -81,7 +81,9 @@ export function useAddressAutocomplete({
   const containerRef = useRef<HTMLDivElement>(null);
   const hasTypedInSessionRef = useRef(false);
   const skipPredictionsForValueRef = useRef<string | null>(null);
-  const { mapsStatus, mapsReady } = useGoogleMapsStatus();
+  const { mapsStatus, mapsReady, requestGoogleMaps } = useGoogleMapsStatus({
+    loadOnMount: false,
+  });
 
   const inputValue =
     draftInput && draftInput.baseValue === externalInputValue
@@ -174,6 +176,9 @@ export function useAddressAutocomplete({
 
     hasTypedInSessionRef.current = true;
     skipPredictionsForValueRef.current = null;
+    if (nextValue.trim().length >= 3) {
+      void requestGoogleMaps();
+    }
     setDraftInput({ baseValue: externalInputValue, value: nextValue });
     clearMessage();
     setHasCurrentAreaError(false);
@@ -221,6 +226,7 @@ export function useAddressAutocomplete({
   }
 
   function handleInputFocus() {
+    void requestGoogleMaps();
     openSuggestions();
   }
 
@@ -316,7 +322,9 @@ export function useAddressAutocomplete({
   }
 
   async function useCurrentArea() {
-    if (!mapsReady || !isGeolocationAvailable()) {
+    const isMapsReady = mapsReady || (await requestGoogleMaps());
+
+    if (!isMapsReady || !isGeolocationAvailable()) {
       showMessage("Location access is unavailable in this browser.", "error");
       setHasCurrentAreaError(true);
       return;

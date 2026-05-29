@@ -1,5 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { FormLevelError } from "@/features/auth/components/form-level-error";
 import {
   type Step,
@@ -8,8 +7,6 @@ import {
 import { Form } from "@/shared/components/ui/form";
 import { StepCredentials } from "./step-credentials";
 import { StepHeader } from "./step-header";
-import { StepOtp } from "./step-otp";
-import { StepProfile } from "./step-profile";
 import { SwitchViewPrompt } from "./switch-view-prompt";
 
 interface RegisterFormProps {
@@ -19,22 +16,22 @@ interface RegisterFormProps {
   onStepChange?: (step: Step) => void;
 }
 
-const variants = {
-  enter: (direction: number) => ({
-    y: direction > 0 ? 30 : -30,
-    opacity: 0,
-  }),
-  center: {
-    zIndex: 1,
-    y: 0,
-    opacity: 1,
-  },
-  exit: (direction: number) => ({
-    zIndex: 0,
-    y: direction < 0 ? 30 : -30,
-    opacity: 0,
-  }),
-};
+const loadStepProfile = () =>
+  import("./step-profile").then((module) => ({
+    default: module.StepProfile,
+  }));
+
+const loadStepOtp = () =>
+  import("./step-otp").then((module) => ({
+    default: module.StepOtp,
+  }));
+
+const LazyStepProfile = lazy(loadStepProfile);
+const LazyStepOtp = lazy(loadStepOtp);
+
+function RegisterStepFallback() {
+  return <div className="min-h-80" aria-hidden="true" />;
+}
 
 /**
  * RegisterForm
@@ -50,7 +47,6 @@ export function RegisterForm({
   const {
     form,
     step,
-    direction,
     loading,
     resendLoading,
     rootError,
@@ -79,28 +75,24 @@ export function RegisterForm({
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-4"
         >
-          <AnimatePresence mode="wait" custom={direction} initial={false}>
-            <motion.div
-              key={step}
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              className="w-full"
-            >
+          <Suspense fallback={<RegisterStepFallback />}>
+            <div key={step} className="w-full animate-auth-step-enter">
               {step === 1 && (
                 <StepCredentials
                   onNext={goToStep2}
                   onGoogleSuccess={onSuccess}
+                  onNextIntent={loadStepProfile}
                 />
               )}
               {step === 2 && (
-                <StepProfile onNext={goToStep3} onBack={goBackToStep1} />
+                <LazyStepProfile
+                  onNext={goToStep3}
+                  onBack={goBackToStep1}
+                  onNextIntent={loadStepOtp}
+                />
               )}
               {step === 3 && (
-                <StepOtp
+                <LazyStepOtp
                   onBack={goBackToStep2}
                   loading={loading}
                   resendLoading={resendLoading}
@@ -109,8 +101,8 @@ export function RegisterForm({
                   onResend={resendOtp}
                 />
               )}
-            </motion.div>
-          </AnimatePresence>
+            </div>
+          </Suspense>
         </form>
       </Form>
 
