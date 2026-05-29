@@ -75,7 +75,11 @@ export const planHistoryItemSchema = z.object({
   dateTime: z.string().nullable(),
   coverImage: z.string().nullable(),
   status: planStatusSchema,
-  location: z.string().optional(),
+  locationMode: locationModeSchema,
+  location: z.string().nullable(),
+  locationLat: z.number().nullable(),
+  locationLng: z.number().nullable(),
+  cost: costTypeSchema,
   rating: z.number().optional(),
 });
 

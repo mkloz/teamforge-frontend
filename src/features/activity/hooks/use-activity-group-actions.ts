@@ -229,16 +229,30 @@ export function useActivityGroupActions(groupId: string) {
 function buildCreateHistoryTemplatePayload(
   plan: PlanHistoryItem,
 ): CreateGroupPlanPayload {
-  const location = plan.location?.trim() || null;
-
-  return {
+  const location =
+    plan.locationMode === "TBD" ? null : plan.location?.trim() || null;
+  const payload: CreateGroupPlanPayload = {
     category: plan.category,
     coverImage: plan.coverImage,
     dateTime: null,
     location,
-    locationMode: location ? "IN_PERSON" : "TBD",
+    locationLat:
+      plan.locationMode === "IN_PERSON" && plan.locationLat !== null
+        ? plan.locationLat
+        : null,
+    locationLng:
+      plan.locationMode === "IN_PERSON" && plan.locationLng !== null
+        ? plan.locationLng
+        : null,
+    locationMode: location ? plan.locationMode : "TBD",
     title: plan.title,
   };
+
+  if (plan.cost === "FREE") {
+    payload.cost = "FREE";
+  }
+
+  return payload;
 }
 
 function buildCreateNextPlanPayload(plan: Plan): CreateGroupPlanPayload {

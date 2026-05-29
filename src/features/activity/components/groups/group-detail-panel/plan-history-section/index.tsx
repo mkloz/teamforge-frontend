@@ -1,4 +1,4 @@
-import { CalendarCheck2, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { PlanHistoryItem } from "@/features/activity/lib/activity-contract";
@@ -9,7 +9,6 @@ import { HistoryCard } from "./history-card";
 
 interface PlanHistorySectionProps {
   focusedPlanId?: string | null;
-  groupId: string;
   history: PlanHistoryItem[];
   isTemplateActionDisabled?: boolean;
   isTemplateActionPending?: boolean;
@@ -18,7 +17,6 @@ interface PlanHistorySectionProps {
 
 export function PlanHistorySection({
   focusedPlanId = null,
-  groupId,
   history,
   isTemplateActionDisabled = false,
   isTemplateActionPending = false,
@@ -28,6 +26,9 @@ export function PlanHistorySection({
   const [pendingTemplateId, setPendingTemplateId] = useState<string | null>(
     null,
   );
+  const [expandedPlanId, setExpandedPlanId] = useState<string | null>(
+    focusedPlanId,
+  );
   const visibleHistory = isExpanded ? history : history.slice(0, 2);
   const historyCount = history.length;
   const hasLocalTemplateAction = pendingTemplateId !== null;
@@ -36,6 +37,12 @@ export function PlanHistorySection({
     const focusedHistoryIndex = history.findIndex(
       (item) => item.id === focusedPlanId,
     );
+
+    if (focusedHistoryIndex === -1) {
+      return;
+    }
+
+    setExpandedPlanId(focusedPlanId);
 
     if (focusedHistoryIndex > 1) {
       setIsExpanded(true);
@@ -63,33 +70,50 @@ export function PlanHistorySection({
     }
   }
 
+  function handleToggleHistoryItem(itemId: string) {
+    setExpandedPlanId((currentItemId) =>
+      currentItemId === itemId ? null : itemId,
+    );
+  }
+
+  function handleToggleHistoryList() {
+    setIsExpanded((currentIsExpanded) => {
+      const nextIsExpanded = !currentIsExpanded;
+
+      if (!nextIsExpanded) {
+        setExpandedPlanId((currentItemId) =>
+          history.slice(0, 2).some((item) => item.id === currentItemId)
+            ? currentItemId
+            : null,
+        );
+      }
+
+      return nextIsExpanded;
+    });
+  }
+
   return (
     <section aria-labelledby="previous-plans-heading">
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <div className="flex min-w-0 gap-2.5">
-          <CalendarCheck2 className="mt-0.5 size-4 shrink-0 text-forge-teal" />
-          <div className="min-w-0">
-            <h3
-              id="previous-plans-heading"
-              className="font-bold text-foreground text-sm"
-            >
-              Previous plans
-            </h3>
-            <p className="mt-1 text-slate-muted text-xs leading-relaxed">
-              {historyCount === 1
-                ? "1 past plan from this group."
-                : `${historyCount} past plans from this group.`}
-            </p>
-          </div>
-        </div>
+      <div className="mb-3 flex flex-col gap-1">
+        <h3
+          id="previous-plans-heading"
+          className="font-bold text-foreground text-sm"
+        >
+          Previous plans{" "}
+          <span className="ml-1 font-medium text-muted-foreground/60">
+            ({historyCount})
+          </span>
+        </h3>
+        <p className="text-slate-muted text-xs leading-relaxed">
+          Completed and cancelled plans from this group.
+        </p>
       </div>
 
       <div className="divide-y divide-border/70 border-border/70 border-y">
         {visibleHistory.map((item) => (
           <HistoryCard
             key={item.id}
-            groupId={groupId}
-            isFocused={focusedPlanId === item.id}
+            isExpanded={expandedPlanId === item.id}
             item={item}
             isUseAsTemplateDisabled={
               isTemplateActionDisabled ||
@@ -104,6 +128,7 @@ export function PlanHistorySection({
                   }
                 : undefined
             }
+            onToggle={() => handleToggleHistoryItem(item.id)}
           />
         ))}
 
@@ -111,7 +136,7 @@ export function PlanHistorySection({
           <Button
             type="button"
             variant="ghost"
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={handleToggleHistoryList}
             className={cn("h-auto w-full gap-1.5 py-2.5", "text-xs")}
             aria-expanded={isExpanded}
           >

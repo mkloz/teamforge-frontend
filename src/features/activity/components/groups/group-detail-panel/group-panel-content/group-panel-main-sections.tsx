@@ -126,7 +126,6 @@ export function GroupPanelMainSections({
 
       <PlanHistorySection
         focusedPlanId={focusedPlanId}
-        groupId={group.id}
         history={group.planHistory ?? []}
         isTemplateActionDisabled={pendingPlanAction !== null || isGroupLocked}
         isTemplateActionPending={pendingPlanAction === "create-next-plan"}

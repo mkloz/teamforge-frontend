@@ -64,9 +64,13 @@ export function mapGroup(
         title: plan.title,
         category: plan.category,
         dateTime: plan.dateTime,
-        coverImage: null,
+        coverImage: plan.coverImage ?? null,
         status: plan.status,
-        location: plan.location ?? undefined,
+        locationMode: plan.locationMode,
+        location: plan.location,
+        locationLat: plan.locationLat,
+        locationLng: plan.locationLng,
+        cost: plan.cost,
       })) ?? [],
   };
 }
