@@ -15,9 +15,14 @@ export function CardMemberStack({
   variant = "default",
 }: CardMemberStackProps) {
   const isCompact = variant === "compact";
-  const visibleMembers = group.members.slice(0, 4);
-  const hiddenMemberCount = Math.max(0, group.activeMembersCount - 4);
-  const sizeClassName = isCompact ? "size-7" : "size-7";
+  const visibleMemberLimit = isCompact ? 3 : 4;
+  const visibleMembers = group.members.slice(0, visibleMemberLimit);
+  const hiddenMemberCount = Math.max(
+    0,
+    group.activeMembersCount - visibleMemberLimit,
+  );
+  const shouldShowHiddenCount = hiddenMemberCount > 0 && !isCompact;
+  const sizeClassName = isCompact ? "size-6" : "size-7";
 
   return (
     <div className="flex shrink-0">
@@ -37,7 +42,7 @@ export function CardMemberStack({
         />
       ))}
 
-      {hiddenMemberCount > 0 ? (
+      {shouldShowHiddenCount ? (
         <div
           className={cn(
             "relative z-10 flex items-center justify-center rounded-full border-canvas border-thin bg-muted font-extrabold text-muted-foreground text-xs transition-transform duration-300 hover:z-20 hover:-translate-y-1",

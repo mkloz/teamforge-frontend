@@ -10,12 +10,12 @@ interface SeeRestButtonProps {
 
 export function SeeRestButton({ hiddenItemCount }: SeeRestButtonProps) {
   return (
-    <li className="px-1 py-3 sm:px-3">
+    <li className="px-1 py-2 sm:px-3">
       <Button
         asChild
         variant="ghost"
         size="sm"
-        className="justify-start hover:enabled:text-forge-teal"
+        className="w-full justify-between hover:enabled:text-forge-teal"
       >
         <Link
           {...buildHomeNavigation({ notifications: true })}
@@ -23,7 +23,7 @@ export function SeeRestButton({ hiddenItemCount }: SeeRestButtonProps) {
             hiddenItemCount === 1 ? "item" : "items"
           }`}
         >
-          See the rest
+          View {hiddenItemCount} more
           <ArrowRight className="size-4" />
         </Link>
       </Button>

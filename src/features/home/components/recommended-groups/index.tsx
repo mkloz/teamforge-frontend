@@ -63,7 +63,7 @@ export function RecommendedGroupsView({
       />
 
       {visibleRecommendations.length === 0 ? (
-        <div className="flex min-h-36 items-center justify-center gap-3 border-border/70 border-y border-dashed bg-card/40 px-3 py-5 sm:px-4">
+        <div className="flex min-h-36 items-center justify-center gap-3 border-border/70 border-y border-dashed px-3 py-5 sm:px-4">
           <EmptyRecommendationsVisual className="h-11 w-auto shrink-0 text-foreground sm:h-12" />
           <div className="min-w-0">
             <p className="font-black text-foreground text-sm">
@@ -76,22 +76,22 @@ export function RecommendedGroupsView({
         </div>
       ) : (
         <>
-          <div className="w-full overflow-hidden md:hidden">
+          <div className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden md:hidden">
             <Carousel
               opts={{
-                align: "center",
+                align: "start",
                 loop: visibleRecommendations.length > 1,
               }}
               className="w-full"
             >
-              <CarouselContent className="-ml-3 pt-1 pb-2">
+              <CarouselContent className="-ml-3 pt-1 pb-2 pl-4 sm:pl-5">
                 {visibleRecommendations.map((recommendation) => (
                   <CarouselItem
                     key={recommendation.id}
                     className={
                       visibleRecommendations.length > 1
-                        ? "min-w-0 basis-80 pl-3"
-                        : "min-w-0 basis-full pl-3"
+                        ? "min-w-0 basis-[calc(100vw-2.5rem)] pl-3"
+                        : "min-w-0 basis-[calc(100vw-2rem)] pl-3"
                     }
                   >
                     <div className="w-full min-w-0">
@@ -103,7 +103,7 @@ export function RecommendedGroupsView({
             </Carousel>
           </div>
 
-          <ul className="hidden list-none p-0 md:grid md:grid-cols-2 md:gap-5 xl:grid-cols-3">
+          <ul className="responsive-card-grid hidden list-none gap-5 p-0 md:grid">
             {visibleRecommendations.map((recommendation) => (
               <li key={recommendation.id} className="min-w-0">
                 <RecommendedGroupCard group={recommendation} />

@@ -8,6 +8,7 @@ import type {
 } from "@/features/home/lib/home-route";
 
 import { ActionErrorBanner } from "./action-error-banner";
+import { formatQueueCount } from "./attention-queue-formatters";
 import { EmptyQueueItem } from "./empty-queue-item";
 import { FriendRequestQueueItem } from "./friend-request-queue-item";
 import { InvitationQueueItem } from "./invitation-queue-item";
@@ -109,6 +110,12 @@ export function AttentionQueueView({
     Math.min(proposedPlans.length, 2) +
     (viewer.nextStep ? 1 : 0);
   const hiddenItemCount = Math.max(queueSize - collapsedQueueSize, 0);
+  const queueSummary = [
+    formatQueueCount(visibleInvitations.length, "invite"),
+    formatQueueCount(visibleRequests.length, "request"),
+    formatQueueCount(proposedPlans.length, "plan"),
+    viewer.nextStep ? "1 setup" : null,
+  ].filter(Boolean);
 
   useAttentionQueueFocus({
     focusedInviteId,
@@ -138,13 +145,20 @@ export function AttentionQueueView({
       <HomeSectionHeading
         id="attention-queue-heading"
         eyebrow="Right now"
-        title="Needs your attention"
-        description="The small things that keep a group moving."
+        title="Action queue"
+        description="Invites, requests, and plan details waiting on a clear decision."
         action={
-          queueSize > 0 ? (
-            <span className="font-black text-forge-teal text-xs">
-              {queueSize} open item{queueSize === 1 ? "" : "s"}
-            </span>
+          queueSummary.length > 0 ? (
+            <div className="flex max-w-72 flex-wrap justify-end gap-1.5">
+              {queueSummary.map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-forge-teal/25 bg-forge-teal/8 px-2 py-1 font-black text-forge-teal text-xs leading-none"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
           ) : null
         }
       />
@@ -158,13 +172,6 @@ export function AttentionQueueView({
         <AnimatePresence initial={false}>
           {!shouldShowSkeleton && queueSize === 0 ? (
             <EmptyQueueItem animateOnInsert={animateQueueInsertions} />
-          ) : null}
-
-          {!shouldShowSkeleton && viewer.nextStep ? (
-            <ProfileStepQueueItem
-              animateOnInsert={animateQueueInsertions}
-              nextStep={viewer.nextStep}
-            />
           ) : null}
 
           {!shouldShowSkeleton
@@ -210,6 +217,13 @@ export function AttentionQueueView({
                 />
               ))
             : null}
+
+          {!shouldShowSkeleton && viewer.nextStep ? (
+            <ProfileStepQueueItem
+              animateOnInsert={animateQueueInsertions}
+              nextStep={viewer.nextStep}
+            />
+          ) : null}
         </AnimatePresence>
 
         {!shouldShowSkeleton && hiddenItemCount > 0 ? (

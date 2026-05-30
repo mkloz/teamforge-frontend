@@ -1,13 +1,23 @@
 import { Link } from "@tanstack/react-router";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Check, UserPlus, X } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Clock3,
+  MapPin,
+  ShieldCheck,
+  UserPlus,
+  X,
+} from "lucide-react";
 
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
-import { Avatar } from "@/shared/components/common/avatar";
+import { AvatarWithBadge } from "@/shared/components/common/avatar-with-badge";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 
 import type { AttentionQueueFriendRequest } from "./attention-queue.types";
+import { getFriendRequestMeta } from "./attention-queue-formatters";
+import { AttentionQueueMeta } from "./attention-queue-meta";
 import { getAttentionQueueItemMotion } from "./attention-queue-motion";
 
 interface FriendRequestQueueItemProps {
@@ -35,67 +45,87 @@ export function FriendRequestQueueItem({
 }: FriendRequestQueueItemProps) {
   const profileNavigation = buildProfileNavigation(request.counterpart.id);
   const shouldReduceMotion = useReducedMotion();
+  const [cityLabel, trustLabel, sentLabel] = getFriendRequestMeta(request);
+  const requestMeta = [
+    { icon: MapPin, label: cityLabel },
+    { icon: ShieldCheck, label: trustLabel },
+    { icon: Clock3, label: sentLabel },
+  ].filter((item) => item.label);
 
   return (
     <motion.li
       {...getAttentionQueueItemMotion({ animateOnInsert, shouldReduceMotion })}
       className={cn(
-        "group flex min-w-0 items-center gap-3 border-border/55 border-b px-1 py-4 transition-colors duration-150 last:border-b-0 sm:px-3",
+        "group border-border/55 border-b px-1 py-3 transition-colors duration-150 last:border-b-0 sm:px-3",
         isFocused ? "bg-forge-teal/8" : "hover:bg-forge-teal/5",
       )}
     >
-      <Link
-        {...profileNavigation}
-        className="flex min-w-0 flex-1 items-start gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        <Avatar
-          src={request.counterpart.avatar}
-          name={request.counterpart.name}
-          fallback={<UserPlus className="size-4 text-muted-foreground" />}
-          imageSize={96}
-          className="size-11 shrink-0 border border-border/60 bg-canvas"
-        />
-        <div className="min-w-0 flex-1">
-          <div className="flex min-w-0 items-center gap-1.5">
-            <p className="truncate font-black text-foreground text-sm transition-colors duration-150 group-hover:text-forge-teal">
-              {request.counterpart.name}
+      <div className="flex min-w-0 items-center justify-between gap-3">
+        <Link
+          {...profileNavigation}
+          className="flex min-w-0 flex-1 items-start gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <AvatarWithBadge
+            src={request.counterpart.avatar}
+            name={request.counterpart.name}
+            fallback={<UserPlus className="size-4 text-muted-foreground" />}
+            imageSize={96}
+            avatarClassName="size-10 border-border/60"
+            icon={UserPlus}
+            badgeTone="teal"
+          />
+          <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 items-center gap-2">
+              <p className="truncate font-black text-foreground text-sm transition-colors duration-150 group-hover:text-forge-teal">
+                {request.counterpart.name}
+              </p>
+              {request.counterpart.personalityType ? (
+                <span className="rounded-full bg-forge-teal/8 px-2 py-0.5 font-black text-forge-teal text-micro leading-none">
+                  {request.counterpart.personalityType}
+                </span>
+              ) : null}
+              <ArrowRight
+                className="size-3.5 shrink-0 text-muted-foreground/70 opacity-0 transition duration-150 group-focus-within:translate-x-0.5 group-focus-within:text-forge-teal group-focus-within:opacity-100 group-hover:translate-x-0.5 group-hover:text-forge-teal group-hover:opacity-100"
+                aria-hidden="true"
+              />
+            </div>
+            <p className="mt-1 truncate font-medium text-muted-foreground text-xs">
+              {getFirstName(request.counterpart.name)} wants to connect with
+              you.
             </p>
-            {request.counterpart.personalityType ? (
-              <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 font-black text-muted-foreground text-xs">
-                {request.counterpart.personalityType}
-              </span>
-            ) : null}
-            <ArrowRight
-              className="size-3.5 shrink-0 text-muted-foreground/70 opacity-0 transition duration-150 group-focus-within:translate-x-0.5 group-focus-within:text-forge-teal group-focus-within:opacity-100 group-hover:translate-x-0.5 group-hover:text-forge-teal group-hover:opacity-100"
-              aria-hidden="true"
-            />
+            <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1.5">
+              {requestMeta.map((item) => (
+                <AttentionQueueMeta key={item.label} icon={item.icon}>
+                  {item.label}
+                </AttentionQueueMeta>
+              ))}
+            </div>
           </div>
-          <p className="mt-1 line-clamp-2 font-medium text-muted-foreground text-xs leading-relaxed">
-            {getFirstName(request.counterpart.name)} wants to connect.
-          </p>
+        </Link>
+        <div className="flex shrink-0 items-center justify-end gap-1.5">
+          <Button
+            size="icon-xs"
+            className="sm:w-auto sm:px-3"
+            loading={acceptingRequestId === request.requesterId}
+            disabled={isAccepting || isDeclining}
+            onClick={() => void onAccept(request.requesterId)}
+            aria-label={`Accept ${request.counterpart.name}'s friend request`}
+          >
+            <Check className="size-3" />
+            <span className="hidden sm:inline">Accept</span>
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            size="icon-xs"
+            loading={decliningRequestId === request.requesterId}
+            disabled={isAccepting || isDeclining}
+            onClick={() => void onDecline(request.requesterId)}
+            aria-label={`Decline ${request.counterpart.name}'s friend request`}
+          >
+            <X className="size-3.5" />
+          </Button>
         </div>
-      </Link>
-      <div className="flex shrink-0 items-center gap-1">
-        <Button
-          size="xs"
-          loading={acceptingRequestId === request.requesterId}
-          disabled={isAccepting || isDeclining}
-          onClick={() => void onAccept(request.requesterId)}
-        >
-          <Check className="size-3" />
-          Accept
-        </Button>
-        <Button
-          type="button"
-          variant="destructive"
-          size="icon-xs"
-          loading={decliningRequestId === request.requesterId}
-          disabled={isAccepting || isDeclining}
-          onClick={() => void onDecline(request.requesterId)}
-          aria-label={`Decline ${request.counterpart.name}'s friend request`}
-        >
-          <X className="size-3.5" />
-        </Button>
       </div>
     </motion.li>
   );

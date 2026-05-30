@@ -115,8 +115,13 @@ async function preloadDefaultExploreGroups() {
     import("@/features/explore/constants/explore.constants"),
   ]);
 
-  await appQueryClient.prefetchInfiniteQuery(
+  const data = await appQueryClient.fetchInfiniteQuery(
     ExploreQueryFactory.groups(DEFAULT_FILTERS, ""),
+  );
+  const firstGroupAvatar = data.pages[0]?.groups[0]?.avatar;
+
+  preloadRouteImage(
+    getSizedImageUrl(firstGroupAvatar, 480) ?? firstGroupAvatar,
   );
 }
 
@@ -164,6 +169,7 @@ function preloadRouteImage(src: string | null | undefined) {
 
   const image = new globalThis.Image();
   image.decoding = "async";
+  image.fetchPriority = "high";
   image.src = src;
 }
 
@@ -198,6 +204,10 @@ function getUserIdFromPathname(pathname: string) {
 }
 
 function createSessionRestoredRoutePreload(pathname: string) {
+  if (pathname === "/explore") {
+    return () => preloadDefaultExploreGroups();
+  }
+
   const groupId = getGroupPlanIdFromPathname(pathname);
 
   if (groupId) {

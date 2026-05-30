@@ -113,7 +113,7 @@ export function GroupRow({
           .filter(Boolean)
           .join(", ")}
         className={cn(
-          "group relative grid min-h-20 cursor-pointer grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-x-3 overflow-hidden rounded-xl px-2.5 py-2.5",
+          "group relative grid min-h-16 cursor-pointer grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-x-3 overflow-hidden rounded-md px-2.5 py-2.5",
           "transition-all duration-150 hover:translate-x-0.5",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
           hasUnreadMessages
@@ -144,7 +144,7 @@ export function GroupRow({
           />
         </div>
 
-        <div className="flex min-w-0 flex-col gap-1">
+        <div className="flex min-w-0 flex-col gap-0">
           <span className="truncate font-black text-foreground text-sm leading-tight transition-colors duration-150 group-hover:text-primary">
             {group.name}
           </span>

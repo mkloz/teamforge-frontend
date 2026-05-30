@@ -32,7 +32,7 @@ export function GroupPlanCard({
       <div
         className={cn(
           "relative isolate z-10 flex w-full cursor-pointer overflow-hidden rounded-xl border-2 border-border bg-card transition-all duration-150 ease-out hover:-translate-y-1 hover:border-ink hover:shadow-button-outline hover:dark:border-white hover:dark:shadow-button-outline-dark",
-          isCompact ? "max-w-80 flex-col" : "flex-col md:flex-row",
+          isCompact ? "flex-col" : "flex-col md:flex-row",
         )}
       >
         {detailsLink ? (

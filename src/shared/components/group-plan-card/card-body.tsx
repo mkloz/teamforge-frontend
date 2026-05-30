@@ -21,7 +21,7 @@ export function CardBody({
       <h3
         className={cn(
           "line-clamp-2 font-extrabold text-foreground leading-tight tracking-tight transition-colors duration-300 group-hover:text-primary md:pr-6",
-          isCompact ? "text-xl" : "text-xl sm:text-2xl",
+          isCompact ? "text-lg sm:text-xl" : "text-xl sm:text-2xl",
         )}
       >
         {title}

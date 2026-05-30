@@ -20,6 +20,10 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
 }
 
+@utility responsive-card-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+
 @utility landing-story-scroll {
   height: 300vh;
 }
@@ -60,14 +64,6 @@
 
 @utility bottom-app-bottom-nav {
   bottom: calc(4.25rem + max(env(safe-area-inset-bottom), 0.75rem) + 0.5rem);
-}
-
-@utility pb-app-bottom-dock {
-  padding-bottom: calc(
-    4.25rem +
-    max(env(safe-area-inset-bottom), 0.75rem) +
-    5.5rem
-  );
 }
 
 /* Custom scrollbar for webkit browsers - theme responsive */

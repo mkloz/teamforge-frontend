@@ -27,7 +27,7 @@ export function CardHeader({
         isCompact ? "mb-3" : "mb-3",
       )}
     >
-      <div className="flex items-center gap-2.5">
+      <div className="flex min-w-0 flex-1 items-center gap-2.5">
         <Avatar
           src={imageSrc}
           name={groupName}
@@ -49,9 +49,14 @@ export function CardHeader({
       </div>
 
       {access === "BY_REQUEST" ? (
-        <span className="flex shrink-0 items-center gap-1 rounded-full border border-border/80 bg-background/50 px-2 py-0.5 font-bold text-muted-foreground text-xs">
+        <span
+          className={cn(
+            "flex shrink-0 items-center gap-1 rounded-full border border-border/80 bg-background/50 py-0.5 font-bold text-muted-foreground text-xs",
+            isCompact ? "px-1.5" : "px-2",
+          )}
+        >
           <Handshake className="size-3" aria-hidden="true" />
-          Request
+          <span className={cn(isCompact && "sr-only")}>Request</span>
         </span>
       ) : null}
     </div>

@@ -7,7 +7,6 @@ import type {
   ActivityParticipant,
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
-import { ChatBackground } from "./chat-background";
 import { LoadingOlderIndicator } from "./loading-older-indicator";
 import { MessageBlockList } from "./message-block-list";
 import { buildMessageBlocks } from "./message-list-blocks";
@@ -256,8 +255,7 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
   }
 
   return (
-    <div className="relative flex h-full min-h-0 flex-col bg-canvas">
-      <ChatBackground />
+    <div className="relative flex h-full min-h-0 flex-col">
       <MessageListViewport
         containerRef={containerRef}
         onScroll={handleViewportScroll}

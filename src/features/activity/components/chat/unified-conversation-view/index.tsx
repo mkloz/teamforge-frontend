@@ -18,6 +18,7 @@ import { MessageSelectionToolbar } from "./message-selection-toolbar";
 import { UnifiedChatHeader } from "./unified-chat-header";
 import { UnifiedMessageInput } from "./unified-message-input";
 import { UnifiedMessageList } from "./unified-message-list";
+import { ChatBackground } from "./unified-message-list/chat-background";
 import type { MessageScrollHandle } from "./unified-message-list/message-scroll.types";
 import { useConversationMessageSearch } from "./use-conversation-message-search";
 
@@ -224,7 +225,9 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
       : undefined;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col bg-canvas/40">
+    <div className="relative isolate flex min-h-0 flex-1 flex-col overflow-hidden bg-canvas/40">
+      <ChatBackground />
+
       {activePlan && !isCompleted ? (
         <PlanChangeDialog
           open={isProposalDialogOpen}
@@ -286,7 +289,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
       ) : null}
 
       {/* Message area */}
-      <div className="relative flex-1 overflow-hidden">
+      <div className="relative z-10 flex-1 overflow-hidden">
         <UnifiedMessageList
           key={conversationId}
           messages={messages}

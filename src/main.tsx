@@ -10,7 +10,7 @@ if (!rootElement) {
   throw new Error("Root element not found.");
 }
 
-if (!isRedirectingToLocalhost && !rootElement.innerHTML) {
+if (!isRedirectingToLocalhost) {
   ReactDOM.createRoot(rootElement).render(
     <StrictMode>
       <App />

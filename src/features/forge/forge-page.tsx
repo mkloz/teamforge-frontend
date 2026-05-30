@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { ForgeLoadingMark } from "@/shared/components/loading/forge-loading-mark";
 import { ForgeIntroContent, ForgePageShell } from "./forge-page-content";
 import { useForgeRouteState } from "./hooks/use-forge-route-state";
 
@@ -15,9 +16,7 @@ function ForgeWizardFallback() {
       role="status"
       className="flex size-full min-h-[60vh] items-center justify-center px-4"
     >
-      <div className="h-2 w-32 overflow-hidden rounded-full bg-border">
-        <div className="h-full w-1/2 animate-pulse rounded-full bg-forge-teal/70" />
-      </div>
+      <ForgeLoadingMark label="Opening Forge" showLabel size="lg" />
     </div>
   );
 }

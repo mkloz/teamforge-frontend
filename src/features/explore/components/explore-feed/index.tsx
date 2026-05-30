@@ -1,7 +1,6 @@
 "use client";
 
 import { Link } from "@tanstack/react-router";
-import { motion, useReducedMotion } from "framer-motion";
 import { SlidersHorizontal, UsersRound } from "lucide-react";
 import { EmptyExploreFilteredVisual } from "@/assets/empty-state/empty-explore-filtered";
 import { EmptyExploreOpenVisual } from "@/assets/empty-state/empty-explore-open";
@@ -74,8 +73,6 @@ function ExploreFeedEmpty({
   isFiltered: boolean;
   resetFilters: () => void;
 }) {
-  const shouldReduceMotion = useReducedMotion();
-
   return (
     <section className="grid min-h-[calc(100dvh-12rem)] place-items-center px-4 py-12 text-center">
       <div className="mx-auto flex max-w-lg flex-col items-center gap-6">
@@ -98,15 +95,7 @@ function ExploreFeedEmpty({
           </p>
         </div>
 
-        <motion.div
-          initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 3 }}
-          animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-          transition={{
-            duration: shouldReduceMotion ? 0.08 : 0.12,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="flex flex-wrap items-center justify-center gap-3"
-        >
+        <div className="flex flex-wrap items-center justify-center gap-3">
           {isFiltered ? (
             <Button variant="outline" size="sm" onClick={resetFilters}>
               <SlidersHorizontal className="size-4" aria-hidden="true" />
@@ -122,7 +111,7 @@ function ExploreFeedEmpty({
               Forge a group
             </Link>
           </Button>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

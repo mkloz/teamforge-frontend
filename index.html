@@ -4,6 +4,202 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (() => {
+        const root = document.documentElement;
+        const prefersLight =
+          window.matchMedia?.("(prefers-color-scheme: light)").matches ?? false;
+        const theme = prefersLight ? "light" : "dark";
+
+        root.dataset.theme = theme;
+        root.classList.add(theme);
+      })();
+    </script>
+    <style>
+      :root {
+        color-scheme: dark;
+        --tf-boot-background: #0e0e0d;
+        --tf-boot-foreground: #ededed;
+        --tf-boot-canvas: #141413;
+        --tf-boot-teal: #0d9488;
+        --tf-boot-amber: #f59e0b;
+      }
+
+      :root.light {
+        color-scheme: light;
+        --tf-boot-background: #f4f4f2;
+        --tf-boot-foreground: #1c1c1a;
+        --tf-boot-canvas: #fafaf8;
+      }
+
+      html,
+      body,
+      #root {
+        min-height: 100%;
+        margin: 0;
+        background: var(--tf-boot-background);
+        color: var(--tf-boot-foreground);
+      }
+
+      body {
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      .tf-boot {
+        display: grid;
+        min-height: 100dvh;
+        place-items: center;
+        background:
+          radial-gradient(
+            circle at 50% 44%,
+            color-mix(in srgb, var(--tf-boot-teal) 10%, transparent),
+            transparent 28%
+          ),
+          var(--tf-boot-canvas);
+      }
+
+      .tf-boot__mark {
+        width: 7rem;
+        overflow: visible;
+      }
+
+      .tf-boot__hammer,
+      .tf-boot__anvil,
+      .tf-boot__spark-core,
+      .tf-boot__spark {
+        transform-box: fill-box;
+      }
+
+      .tf-boot__hammer {
+        animation: tf-boot-hammer 1.45s infinite;
+        transform-box: view-box;
+        transform-origin: 151px 94.5px;
+      }
+
+      .tf-boot__anvil {
+        animation: tf-boot-anvil 1.45s infinite;
+        transform-box: view-box;
+        transform-origin: 110px 148px;
+      }
+
+      .tf-boot__spark-core {
+        animation: tf-boot-core-spark 1.45s infinite;
+        transform-box: view-box;
+        transform-origin: 110px 107.75px;
+      }
+
+      .tf-boot__spark {
+        animation: tf-boot-spark 1.45s infinite;
+        animation-delay: var(--spark-delay);
+        opacity: 0;
+        transform-origin: center;
+      }
+
+      .tf-boot__sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+      }
+
+      @keyframes tf-boot-hammer {
+        0% {
+          transform: rotate(0deg);
+        }
+        28% {
+          transform: rotate(55deg);
+        }
+        50% {
+          transform: rotate(60deg);
+        }
+        54% {
+          transform: rotate(-3deg);
+        }
+        64% {
+          transform: rotate(3deg);
+        }
+        100% {
+          transform: rotate(0deg);
+        }
+      }
+
+      @keyframes tf-boot-anvil {
+        0%,
+        50%,
+        100% {
+          transform: translateY(0) scaleY(1);
+        }
+        54% {
+          transform: translateY(1.25px) scaleY(0.965);
+        }
+        64% {
+          transform: translateY(-0.25px) scaleY(1.01);
+        }
+      }
+
+      @keyframes tf-boot-core-spark {
+        0%,
+        28%,
+        50%,
+        100% {
+          opacity: 0.65;
+          transform: scaleX(1);
+        }
+        54% {
+          opacity: 1;
+          transform: scaleX(1.34);
+        }
+        64% {
+          opacity: 0.82;
+          transform: scaleX(1.08);
+        }
+      }
+
+      @keyframes tf-boot-spark {
+        0%,
+        50% {
+          opacity: 0;
+          transform: translate(0, 0) scale(0);
+        }
+        53% {
+          opacity: 1;
+          transform: translate(var(--spark-x), var(--spark-y)) scale(1);
+        }
+        75% {
+          opacity: 0.82;
+          transform: translate(
+              calc(var(--spark-x) * 1.08),
+              calc(var(--spark-y) + 10px)
+            )
+            scale(0.82);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(
+              calc(var(--spark-x) * 1.18),
+              calc(var(--spark-y) + 25px)
+            )
+            scale(0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .tf-boot__hammer,
+        .tf-boot__anvil,
+        .tf-boot__spark-core,
+        .tf-boot__spark {
+          animation: none;
+        }
+
+        .tf-boot__spark {
+          opacity: 0;
+        }
+      }
+    </style>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="%VITE_API_URL%" crossorigin />
@@ -31,7 +227,144 @@
     <meta name="twitter:description" content="TeamForge forms small, compatible groups for shared real-world activities using personality, interests, and social context." />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="tf-boot" role="status" aria-label="Preparing TeamForge">
+        <svg
+          class="tf-boot__mark"
+          viewBox="32 32 156 142"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path
+            d="M58 160C75.5 151 143.5 151 162 160"
+            stroke="var(--tf-boot-teal)"
+            stroke-linecap="round"
+            stroke-width="3"
+            opacity="0.32"
+          />
+          <ellipse
+            cx="110"
+            cy="156"
+            rx="48"
+            ry="8"
+            fill="var(--tf-boot-teal)"
+            opacity="0.08"
+          />
+          <g class="tf-boot__anvil">
+            <path
+              d="M63 111h91c5 0 8 5 5 9l-10 13c-2 3-6 5-10 5H82c-4 0-8-2-10-5l-13-16c-2-3 0-6 4-6Z"
+              fill="var(--tf-boot-teal)"
+              stroke="currentColor"
+              stroke-linejoin="round"
+              stroke-width="3.5"
+            />
+            <path
+              d="M47 104h39l9 7H62c-9 0-16-2-21-6-2-1-1-1 6-1ZM154 104h22c6 0 8 3 3 7l-20 15-9-10 14-5h-16l6-7Z"
+              fill="transparent"
+              stroke="currentColor"
+              stroke-linejoin="round"
+              stroke-width="3.5"
+            />
+            <path
+              d="M80 138h60l-7 18H87l-7-18Z"
+              fill="transparent"
+              stroke="currentColor"
+              stroke-linejoin="round"
+              stroke-width="3.5"
+            />
+            <path
+              d="M72 111h72M88 156h44"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-width="3.5"
+            />
+          </g>
+          <path
+            class="tf-boot__spark-core"
+            d="M99 107.75h22"
+            stroke="var(--tf-boot-amber)"
+            stroke-linecap="round"
+            stroke-width="3"
+          />
+          <circle
+            class="tf-boot__spark"
+            cx="110"
+            cy="108"
+            r="4"
+            fill="var(--tf-boot-amber)"
+            style="--spark-x: -22px; --spark-y: -5px; --spark-delay: 0ms"
+          />
+          <circle
+            class="tf-boot__spark"
+            cx="110"
+            cy="108"
+            r="3.5"
+            fill="var(--tf-boot-amber)"
+            style="--spark-x: 18px; --spark-y: -8px; --spark-delay: 0ms"
+          />
+          <circle
+            class="tf-boot__spark"
+            cx="110"
+            cy="108"
+            r="4.5"
+            fill="var(--tf-boot-amber)"
+            style="--spark-x: -12px; --spark-y: 6px; --spark-delay: 0ms"
+          />
+          <circle
+            class="tf-boot__spark"
+            cx="110"
+            cy="108"
+            r="3"
+            fill="var(--tf-boot-amber)"
+            style="--spark-x: 26px; --spark-y: 2px; --spark-delay: 0ms"
+          />
+          <circle
+            class="tf-boot__spark"
+            cx="110"
+            cy="108"
+            r="3"
+            fill="var(--tf-boot-amber)"
+            style="--spark-x: -32px; --spark-y: 0px; --spark-delay: 0ms"
+          />
+          <circle
+            class="tf-boot__spark"
+            cx="110"
+            cy="108"
+            r="4"
+            fill="var(--tf-boot-amber)"
+            style="--spark-x: 12px; --spark-y: 10px; --spark-delay: 0ms"
+          />
+          <g class="tf-boot__hammer">
+            <g transform="translate(4 -9.5)">
+              <rect
+                x="112"
+                y="91"
+                width="52"
+                height="7"
+                rx="3.5"
+                fill="transparent"
+                stroke="currentColor"
+                stroke-width="3.5"
+              />
+              <path
+                d="M101 78h12c2.761 0 5 2.239 5 5v24c0 2.761-2.239 5-5 5h-12c-2.761 0-5-2.239-5-5V83c0-2.761 2.239-5 5-5Z"
+                fill="var(--tf-boot-teal)"
+                stroke="currentColor"
+                stroke-width="3.5"
+              />
+              <path
+                d="M103 83v24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-width="3"
+              />
+            </g>
+          </g>
+        </svg>
+        <span class="tf-boot__sr">Preparing TeamForge</span>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -1,12 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  Banknote,
-  Clock,
-  MapPinned,
-  Tag,
-  Wifi,
-} from "lucide-react";
+import { Clock, MapPinned, Tag, Wifi } from "lucide-react";
 import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import type { PlannedGroup } from "@/features/home/lib/home-contract";
 import { getPlanTimingLabel } from "@/features/home/lib/home-insights";
@@ -45,8 +38,8 @@ export function PlanCard({ plannedGroup }: PlanCardProps) {
     >
       <Link
         {...navigation}
-        aria-label={`Open ${plan.title} plan`}
-        className="grid grid-cols-[4.25rem_minmax(0,1fr)] items-center gap-x-3 gap-y-2 py-3.5 pr-2 pl-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[4.25rem_minmax(0,1fr)_auto] sm:pr-3 md:gap-4"
+        aria-label={`View ${plan.title} plan, ${status.label}`}
+        className="grid grid-cols-[4.25rem_minmax(0,1fr)] items-center gap-x-3 gap-y-2 py-3.5 pr-2 pl-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:pr-3 md:gap-4"
       >
         <div className="relative flex h-full min-h-16 flex-col justify-center pl-9">
           <span
@@ -68,49 +61,34 @@ export function PlanCard({ plannedGroup }: PlanCardProps) {
         </div>
 
         <div className="min-w-0">
-          <p className="truncate font-bold text-foreground text-sm leading-snug transition-colors duration-200 group-hover:text-forge-teal">
-            {plan.title}
+          <p className="flex min-w-0 items-center gap-1.5 font-bold text-foreground text-sm leading-snug transition-colors duration-200 group-hover:text-forge-teal">
+            <span className="truncate">{plan.title}</span>
+            <StatusIcon
+              className={cn("size-3.5 shrink-0", status.classes)}
+              aria-hidden="true"
+            />
           </p>
-          <p className="mt-0.5 flex min-w-0 items-center gap-1 truncate font-medium text-muted-foreground text-xs">
+          <p className="mt-0.5 flex min-w-0 items-center gap-1 font-medium text-muted-foreground text-xs">
             <LocationIcon className="size-3 shrink-0" aria-hidden="true" />
             <span className="truncate">{locationLabel}</span>
+            <span
+              className="shrink-0 text-muted-foreground/65"
+              aria-hidden="true"
+            >
+              ·
+            </span>
+            <span className="shrink-0">{getHomePlanCostLabel(plan)}</span>
           </p>
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
             <span className="flex items-center gap-1 font-semibold text-muted-foreground text-xs">
               <Clock className="size-3" aria-hidden="true" />
               {timeStr}
             </span>
-            <span
-              className={cn(
-                "inline-flex items-center gap-1 font-bold text-xs",
-                status.classes,
-              )}
-            >
-              <StatusIcon className="size-3" aria-hidden="true" />
-              {status.label}
-            </span>
             <span className="flex items-center gap-1 font-semibold text-muted-foreground text-xs">
               <Tag className="size-3" aria-hidden="true" />
               {getHomePlanCategoryLabel(plan)}
             </span>
-            <span className="flex items-center gap-1 font-semibold text-muted-foreground text-xs">
-              <Banknote className="size-3" aria-hidden="true" />
-              {getHomePlanCostLabel(plan)}
-            </span>
           </div>
-        </div>
-
-        <div className="col-start-2 flex items-center justify-end sm:col-start-3">
-          <span
-            className={cn(
-              "ml-auto inline-flex h-8 shrink-0 items-center gap-1 rounded-md px-2.5 py-1 font-black text-xs sm:ml-0",
-              "text-forge-teal transition-colors duration-150 group-hover:bg-forge-teal/10",
-            )}
-            aria-hidden="true"
-          >
-            Open
-            <ArrowRight className="size-3 transition-transform duration-150 group-hover:translate-x-0.5" />
-          </span>
         </div>
       </Link>
     </li>

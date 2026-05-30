@@ -118,14 +118,14 @@ export function HomeAttentionQueueRowsSkeleton() {
       ].map((item, index) => (
         <li
           key={item}
-          className="flex min-w-0 items-center gap-3 border-border/55 border-b px-1 py-3 last:border-b-0 sm:px-3"
+          className="flex min-w-0 flex-col gap-3 border-border/55 border-b px-1 py-3 last:border-b-0 sm:flex-row sm:items-center sm:justify-between sm:px-3"
         >
-          <div className="flex min-w-0 flex-1 items-center gap-3">
-            {index >= 4 ? (
+          <div className="flex min-w-0 flex-1 items-start gap-3">
+            {index < 2 || index >= 4 ? (
               <Skeleton
-                shape="circle"
-                className="size-8 shrink-0"
-                tone="amber"
+                shape="square"
+                className="size-10 shrink-0 rounded-lg"
+                tone={index >= 4 ? "amber" : "teal"}
               />
             ) : (
               <SkeletonAvatar
@@ -133,25 +133,31 @@ export function HomeAttentionQueueRowsSkeleton() {
                 tone={index < 2 ? "teal" : "default"}
               />
             )}
-            <SkeletonText
-              className="min-w-0 flex-1"
-              lines={2}
-              size="sm"
-              widths={
-                index >= 4
-                  ? ["w-44", "w-28"]
-                  : index < 2
-                    ? ["w-40", "w-72"]
-                    : ["w-32", "w-56"]
-              }
-            />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-4 w-36" />
+              </div>
+              <SkeletonText
+                className="mt-1 min-w-0 flex-1"
+                lines={1}
+                size="sm"
+                widths={index >= 4 ? ["w-56"] : index < 2 ? ["w-72"] : ["w-56"]}
+              />
+              <div className="mt-2 flex flex-wrap gap-3">
+                <Skeleton className="h-3 w-12" />
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-3 w-20" />
+              </div>
+            </div>
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <SkeletonButton
-              className={index >= 4 ? "h-8 w-20" : "h-8 w-20"}
+              className="h-9 w-24 rounded-full"
               tone={index >= 4 ? "default" : "teal"}
             />
-            <Skeleton shape="circle" className="size-8" tone="amber" />
+            {index < 4 ? (
+              <Skeleton shape="circle" className="size-9" tone="amber" />
+            ) : null}
           </div>
         </li>
       ))}
@@ -222,9 +228,9 @@ export function HomeRecommendedGroupsSkeleton() {
       <span className="sr-only">Loading recommended groups</span>
       <HomeSectionHeadingSkeleton actionWidth="w-16" />
       <div className="w-full overflow-hidden md:hidden">
-        <HomeRecommendedGroupCardSkeleton className="max-w-80" />
+        <HomeRecommendedGroupCardSkeleton className="w-full" />
       </div>
-      <ul className="hidden list-none p-0 md:grid md:grid-cols-2 md:gap-5 xl:grid-cols-3">
+      <ul className="responsive-card-grid hidden list-none gap-5 p-0 md:grid">
         {["first", "second", "third"].map((item, index) => (
           <li key={item} className="min-w-0">
             <HomeRecommendedGroupCardSkeleton
@@ -364,7 +370,7 @@ function HomeRecommendedGroupCardSkeleton({
                 <SkeletonAvatar className="size-7" tone={tone} />
                 <Skeleton className="h-3 w-24" />
               </div>
-              <Skeleton shape="pill" className="h-6 w-20" />
+              <Skeleton shape="pill" className="h-6 w-7" />
             </div>
             <SkeletonText lines={3} widths={["w-full", "w-5/6", "w-2/3"]} />
             <div className="mt-4 h-px w-full bg-border/60" />

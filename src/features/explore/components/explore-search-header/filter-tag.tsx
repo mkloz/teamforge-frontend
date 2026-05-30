@@ -1,11 +1,6 @@
 import { X } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/shared/components/ui/tooltip";
 
 interface FilterTagProps {
   label: string;
@@ -16,21 +11,17 @@ export function FilterTag({ label, onRemove }: FilterTagProps) {
   return (
     <div className="group/tag flex h-6 shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-border/60 bg-canvas pr-0.5 pl-2.5 font-semibold text-foreground text-micro transition-all duration-150 hover:border-primary/30 hover:bg-primary/5">
       <span className="whitespace-nowrap">{label}</span>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            type="button"
-            variant="accentGhost"
-            size="icon-xs"
-            onClick={onRemove}
-            className="size-5 rounded-full"
-            aria-label={`Remove ${label} filter`}
-          >
-            <X className="size-2.5" strokeWidth={2.25} />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Remove filter</TooltipContent>
-      </Tooltip>
+      <Button
+        type="button"
+        variant="accentGhost"
+        size="icon-xs"
+        onClick={onRemove}
+        className="size-5 rounded-full"
+        aria-label={`Remove ${label} filter`}
+        title="Remove filter"
+      >
+        <X className="size-2.5" strokeWidth={2.25} />
+      </Button>
     </div>
   );
 }

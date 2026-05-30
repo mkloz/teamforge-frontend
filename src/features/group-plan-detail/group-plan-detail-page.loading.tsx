@@ -16,7 +16,7 @@ export function GroupPlanDetailPageLoadingFixture() {
     <div
       aria-busy="true"
       aria-label="Loading group plan"
-      className="mx-auto w-full max-w-5xl overflow-x-clip px-4 pt-3 pb-app-bottom-dock sm:px-5 md:pt-6 md:pb-12 lg:px-8"
+      className="mx-auto w-full max-w-5xl overflow-x-clip px-4 pt-3 pb-10 sm:px-5 md:pt-6 md:pb-12 lg:px-8"
       role="status"
     >
       <span className="sr-only">Loading group plan</span>

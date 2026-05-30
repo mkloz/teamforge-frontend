@@ -28,11 +28,16 @@ export function CardFooter({
   return (
     <div
       className={cn(
-        "pointer-events-none relative z-40 mt-auto flex min-w-0 flex-wrap items-center justify-between gap-3",
-        isCompact ? "pt-3" : "pt-3",
+        "pointer-events-none relative z-40 mt-auto flex min-w-0 items-center justify-between pt-3",
+        isCompact ? "gap-2" : "flex-wrap gap-3",
       )}
     >
-      <div className="flex min-w-0 items-center gap-2.5">
+      <div
+        className={cn(
+          "flex min-w-0 items-center",
+          isCompact ? "gap-2" : "gap-2.5",
+        )}
+      >
         <CardMemberStack
           group={group}
           fallbackInitial={fallbackInitial}
@@ -47,7 +52,7 @@ export function CardFooter({
         />
       </div>
 
-      <div className="pointer-events-auto shrink-0">{action}</div>
+      <div className="pointer-events-auto ml-auto shrink-0">{action}</div>
     </div>
   );
 }

@@ -69,6 +69,7 @@ export function RecommendedGroupCard({ group }: RecommendedGroupCardProps) {
         disabled={isFull || joinMutation.isPending || joinResult !== undefined}
         onClick={() => joinMutation.mutate()}
         className={cn("shrink-0", isFull && "opacity-60")}
+        contentClassName="whitespace-nowrap"
       >
         <ActionIcon className="size-3.5" aria-hidden="true" />
         {actionLabel}

@@ -1,5 +1,8 @@
 import { ArrowLeft, Check, ExternalLink, type LucideIcon } from "lucide-react";
-import { Avatar } from "@/shared/components/common/avatar";
+import {
+  type AvatarBadgeTone,
+  AvatarWithBadge,
+} from "@/shared/components/common/avatar-with-badge";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import type { Notification } from "@/shared/schemas";
@@ -49,7 +52,7 @@ export function NotificationDetail({
       <div className="flex flex-1 flex-col px-5 pt-5 pb-28">
         <div className="flex min-w-0 items-start gap-3">
           <NotificationDetailSource
-            avatarIconClassName={config.avatarIconClassName}
+            avatarBadgeTone={config.avatarBadgeTone}
             icon={Icon}
             iconClassName={config.iconClassName}
             item={item}
@@ -130,35 +133,27 @@ export function NotificationDetail({
 }
 
 interface NotificationDetailSourceProps {
-  avatarIconClassName: string;
+  avatarBadgeTone: AvatarBadgeTone;
   icon: LucideIcon;
   iconClassName: string;
   item: Notification;
 }
 
 function NotificationDetailSource({
-  avatarIconClassName,
+  avatarBadgeTone,
   icon: Icon,
   iconClassName,
   item,
 }: NotificationDetailSourceProps) {
   if (item.avatarUrl) {
     return (
-      <span className="relative shrink-0" aria-hidden="true">
-        <Avatar
-          src={item.avatarUrl}
-          name={item.title}
-          className="size-12 border border-border/70 bg-canvas"
-        />
-        <span
-          className={cn(
-            "absolute -right-1 -bottom-1 flex size-5 items-center justify-center rounded-full border-2 border-canvas",
-            avatarIconClassName,
-          )}
-        >
-          <Icon className="size-3 shrink-0" strokeWidth={2} />
-        </span>
-      </span>
+      <AvatarWithBadge
+        src={item.avatarUrl}
+        name={item.title}
+        icon={Icon}
+        badgeTone={avatarBadgeTone}
+        avatarClassName="size-12"
+      />
     );
   }
 

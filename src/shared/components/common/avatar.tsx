@@ -78,7 +78,7 @@ export function Avatar({
   ...props
 }: AvatarProps) {
   const initials = fallback ?? getAvatarInitials(name);
-  const radiusClass = shape === "circle" ? "rounded-full" : "rounded-xl";
+  const radiusClass = shape === "circle" ? "rounded-full" : "rounded-lg";
   const imageSrc = imageSize ? getSizedImageUrl(src, imageSize) : src;
   const fallbackNode = (
     <div
@@ -94,7 +94,7 @@ export function Avatar({
   return (
     <div
       className={cn(
-        "relative flex shrink-0 items-center justify-center overflow-hidden bg-muted",
+        "relative flex shrink-0 items-center justify-center overflow-visible bg-muted",
         radiusClass,
         className,
       )}
@@ -104,7 +104,7 @@ export function Avatar({
         src={imageSrc ?? undefined}
         alt={alt ?? name ?? "Avatar"}
         loading={loading}
-        wrapperClassName="absolute inset-0"
+        wrapperClassName={cn("absolute inset-0", radiusClass)}
         className={cn("size-full object-cover", imageClassName)}
         noImageComponent={fallbackNode}
         fallbackComponent={fallbackNode}

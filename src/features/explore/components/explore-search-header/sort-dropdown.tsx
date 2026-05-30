@@ -1,64 +1,43 @@
 import { ArrowDownWideNarrow } from "lucide-react";
 import { SORTS } from "@/features/explore/constants/explore.constants";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
-import { Button } from "@/shared/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu";
 import { cn } from "@/shared/lib/utils";
 
 export function SortDropdown() {
   const { sortBy, setSortBy } = useExploreRouteState();
+  const activeSort = SORTS.find((sort) => sort.id === sortBy);
+
+  function handleSortChange(value: string) {
+    const nextSort = SORTS.find((sort) => sort.id === value);
+
+    if (nextSort) {
+      setSortBy(nextSort.id);
+    }
+  }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          aria-label="Sort groups"
-          className="size-9 shrink-0 rounded-full border border-border/60 text-muted-foreground transition-all hover:border-border hover:text-foreground"
-        >
-          <ArrowDownWideNarrow className="size-3.5" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        className="w-52 rounded-xl border-border/40 bg-background p-1.5 shadow-xl"
+    <div className="relative size-9 shrink-0">
+      <select
+        aria-label={`Sort groups${activeSort ? `, ${activeSort.label}` : ""}`}
+        value={sortBy}
+        onChange={(event) => handleSortChange(event.target.value)}
+        className="absolute inset-0 z-10 size-full cursor-pointer rounded-full opacity-0"
       >
-        <DropdownMenuLabel className="px-3 py-1.5 font-semibold text-muted-foreground text-xs">
-          Feed priority
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator className="mx-1 bg-border/10" />
-        {SORTS.map(({ id, label, icon: Icon }) => (
-          <DropdownMenuItem
-            key={id}
-            onClick={() => setSortBy(id)}
-            className={cn(
-              "flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 transition-colors",
-              sortBy === id
-                ? "bg-primary/10 font-bold text-primary"
-                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-            )}
-          >
-            <Icon
-              className={cn(
-                "size-3.5",
-                sortBy === id ? "text-primary" : "opacity-50",
-              )}
-            />
-            <span className="text-xs">{label}</span>
-            {sortBy === id && (
-              <div className="ml-auto size-1 rounded-full bg-primary" />
-            )}
-          </DropdownMenuItem>
+        {SORTS.map(({ id, label }) => (
+          <option key={id} value={id}>
+            {label}
+          </option>
         ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </select>
+      <div
+        aria-hidden="true"
+        className={cn(
+          "flex size-9 items-center justify-center rounded-full border border-border/60 bg-background text-muted-foreground transition-all",
+          "hover:border-border hover:text-foreground",
+        )}
+      >
+        <ArrowDownWideNarrow className="size-3.5" />
+      </div>
+    </div>
   );
 }

@@ -45,7 +45,7 @@ export const CompletedReviewGate = memo(function CompletedReviewGate({
   }
 
   return (
-    <div className="shrink-0 border-border border-t bg-canvas">
+    <div className="relative z-10 shrink-0 border-border border-t bg-canvas/60 backdrop-blur-sm">
       <div className="flex items-center justify-between gap-3 border-forge-teal/20 border-b bg-forge-teal/8 px-4 py-2">
         <div className="flex min-w-0 items-center gap-2">
           <CheckCircle className="size-4 shrink-0 text-forge-teal" />

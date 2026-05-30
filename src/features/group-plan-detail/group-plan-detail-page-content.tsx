@@ -3,7 +3,6 @@ import { GroupSection } from "@/features/group-plan-detail/components/content/gr
 import { PitchSection } from "@/features/group-plan-detail/components/content/pitch-section";
 import { PlanSection } from "@/features/group-plan-detail/components/content/plan-section";
 import { GroupPlanHero } from "@/features/group-plan-detail/components/hero/group-plan-hero";
-import { MobileActionDock } from "@/features/group-plan-detail/components/mobile-action-dock";
 import { DecisionRail } from "@/features/group-plan-detail/components/rail/decision-rail";
 import { useGroupPlanDetailCollapsibleHero } from "@/features/group-plan-detail/hooks/use-group-plan-detail-collapsible-hero";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
@@ -46,10 +45,7 @@ export function GroupPlanDetailPageContent({
   };
 
   return (
-    <>
-      <GroupPlanDetailPageShell detail={detail} focus={focus} search={search} />
-      <MobileActionDock detail={detail} />
-    </>
+    <GroupPlanDetailPageShell detail={detail} focus={focus} search={search} />
   );
 }
 
@@ -70,7 +66,7 @@ function GroupPlanDetailPageShell({
   return (
     <div
       ref={shellRef}
-      className="mx-auto w-full max-w-5xl overflow-x-clip px-4 pt-3 pb-app-bottom-dock [--group-detail-compact-opacity:0] [--group-detail-compact-y:-8px] [--group-detail-cover-collapsed-height:72px] [--group-detail-cover-expanded-height:280px] [--group-detail-cover-image-scale:1] [--group-detail-cover-image-y:0px] [--group-detail-cover-original-delay:0ms] [--group-detail-cover-original-opacity:1] [--group-detail-cover-original-y:0px] [--group-detail-cover-y:0px] sm:px-5 md:pt-6 md:pb-12 lg:px-8 sm:[--group-detail-cover-expanded-height:340px] md:[--group-detail-cover-expanded-height:400px] lg:[--group-detail-cover-expanded-height:440px]"
+      className="mx-auto w-full max-w-5xl overflow-x-clip px-4 pt-3 pb-10 [--group-detail-compact-opacity:0] [--group-detail-compact-y:-8px] [--group-detail-cover-collapsed-height:72px] [--group-detail-cover-expanded-height:280px] [--group-detail-cover-image-scale:1] [--group-detail-cover-image-y:0px] [--group-detail-cover-original-delay:0ms] [--group-detail-cover-original-opacity:1] [--group-detail-cover-original-y:0px] [--group-detail-cover-y:0px] sm:px-5 md:pt-6 md:pb-12 lg:px-8 sm:[--group-detail-cover-expanded-height:340px] md:[--group-detail-cover-expanded-height:400px] lg:[--group-detail-cover-expanded-height:440px]"
     >
       <GroupPlanHero
         detail={detail}

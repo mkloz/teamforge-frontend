@@ -1,4 +1,15 @@
-import { CircleCheck, Info, UserPlus } from "lucide-react";
+import {
+  BadgeCheck,
+  CalendarPlus,
+  CircleAlert,
+  CircleX,
+  Clock3,
+  Info,
+  MapPin,
+  RefreshCcw,
+  UserRoundPlus,
+  UsersRound,
+} from "lucide-react";
 import { memo } from "react";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { getSystemMessageConfig } from "@/features/activity/lib/chat-utils";
@@ -20,25 +31,38 @@ export const SystemMessage = memo(function SystemMessage({
   const config = getSystemMessageConfig(message.content);
 
   const styleMap = {
-    positive: {
-      container:
-        "bg-forge-teal/5 border-forge-teal/15 text-forge-teal/90 shadow-sm",
-      icon: CircleCheck,
-      iconStroke: 3,
-    },
-    "user-event": {
-      container: "bg-slate-muted/5 border-slate-muted/10 text-slate-muted",
-      icon: UserPlus,
+    error: {
+      container: "border-destructive/25 bg-destructive/8 text-destructive",
       iconStroke: 2.5,
     },
     info: {
-      container: "bg-slate-muted/5 border-slate-muted/10 text-slate-muted",
-      icon: Info,
+      container: "border-forge-teal/20 bg-forge-teal/5 text-forge-teal",
+      iconStroke: 2.5,
+    },
+    success: {
+      container: "border-forge-teal/25 bg-forge-teal/8 text-forge-teal",
+      iconStroke: 3,
+    },
+    warning: {
+      container: "border-spark-amber/30 bg-spark-amber/12 text-spark-amber",
       iconStroke: 2.5,
     },
   } as const;
+  const iconMap = {
+    cancelled: CircleX,
+    confirmed: BadgeCheck,
+    declined: CircleX,
+    default: Info,
+    details: CalendarPlus,
+    invite: UserRoundPlus,
+    location: MapPin,
+    member: UsersRound,
+    rescheduled: RefreshCcw,
+    time: Clock3,
+  } as const;
 
-  const { container, icon: Icon, iconStroke } = styleMap[config.type];
+  const { container, iconStroke } = styleMap[config.tone];
+  const Icon = iconMap[config.kind] ?? CircleAlert;
 
   return (
     <div className="pointer-events-none my-0.5 flex justify-center px-6">

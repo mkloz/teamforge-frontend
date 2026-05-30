@@ -21,7 +21,7 @@ export function CardCapacitySummary({
   return (
     <div
       className={cn(
-        "flex flex-col justify-center leading-tight",
+        "flex shrink-0 flex-col justify-center whitespace-nowrap leading-tight",
         isCompact ? "text-xs" : "text-xs",
       )}
     >
