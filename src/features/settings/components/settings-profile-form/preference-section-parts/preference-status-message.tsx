@@ -1,19 +1,13 @@
 interface PreferenceStatusMessageProps {
-  message: string | null;
   error: string | null;
 }
 
 export function PreferenceStatusMessage({
-  message,
   error,
 }: PreferenceStatusMessageProps) {
-  if (!message && !error) {
+  if (!error) {
     return null;
   }
 
-  return (
-    <p className={`text-sm ${error ? "text-destructive" : "text-forge-teal"}`}>
-      {error ?? message}
-    </p>
-  );
+  return <p className="text-destructive text-sm">{error}</p>;
 }

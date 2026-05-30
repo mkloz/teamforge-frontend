@@ -3,16 +3,37 @@ import type { ExploreGroup, GroupApi } from "@/shared/schemas";
 
 import { normalizeScore } from "./recommendation-insights";
 
+interface ActiveGroupPreviewOptions {
+  lastActivityByGroupId?: ReadonlyMap<string, string>;
+  unreadCountsByGroupId?: ReadonlyMap<string, number>;
+}
+
 export function getUpcomingPreview(plans: PlannedGroup[], limit = 4) {
   return plans.slice(0, limit);
 }
 
-export function getActiveGroupPreview(groups: GroupApi[], limit = 6) {
+export function getActiveGroupPreview(
+  groups: GroupApi[],
+  limit = 6,
+  options: ActiveGroupPreviewOptions = {},
+) {
   return [...groups]
     .filter(
       (group) => group.status !== "COMPLETED" && group.status !== "DISBANDED",
     )
-    .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt))
+    .sort((a, b) => {
+      const unreadPriority =
+        getUnreadPriority(b, options) - getUnreadPriority(a, options);
+
+      if (unreadPriority !== 0) {
+        return unreadPriority;
+      }
+
+      return (
+        getActiveGroupTimestamp(b, options) -
+        getActiveGroupTimestamp(a, options)
+      );
+    })
     .slice(0, limit);
 }
 
@@ -36,4 +57,21 @@ export function getRecommendationPreview(
       );
     })
     .slice(0, limit);
+}
+
+function getUnreadPriority(
+  group: GroupApi,
+  options: ActiveGroupPreviewOptions,
+) {
+  return options.unreadCountsByGroupId?.get(group.id) ?? 0;
+}
+
+function getActiveGroupTimestamp(
+  group: GroupApi,
+  options: ActiveGroupPreviewOptions,
+) {
+  const value = options.lastActivityByGroupId?.get(group.id) ?? group.updatedAt;
+  const timestamp = Date.parse(value);
+
+  return Number.isNaN(timestamp) ? 0 : timestamp;
 }

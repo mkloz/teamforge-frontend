@@ -18,9 +18,7 @@ export function AccountSettingsSection({
   isSaving,
   isUploadingAvatar,
   isDeletingAvatar,
-  saveMessage,
   saveError,
-  avatarMessage,
   avatarError,
 }: AccountSettingsSectionProps) {
   return (
@@ -28,7 +26,6 @@ export function AccountSettingsSection({
       <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-start">
         <AvatarProfileSection
           currentUser={currentUser}
-          avatarMessage={avatarMessage}
           avatarError={avatarError}
           isUploadingAvatar={isUploadingAvatar}
           isDeletingAvatar={isDeletingAvatar}
@@ -62,20 +59,10 @@ export function AccountSettingsSection({
             <AreaFields currentUser={currentUser} form={form} />
           </FormGroup>
 
-          {(saveMessage || saveError) && (
-            <div
-              className={
-                saveError
-                  ? "flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/5 px-3 py-3"
-                  : "text-forge-teal text-sm"
-              }
-            >
-              {saveError ? (
-                <ErrorProfileSaveVisual className="h-6 w-auto shrink-0 text-foreground" />
-              ) : null}
-              <p className={saveError ? "text-destructive text-sm" : ""}>
-                {saveError ?? saveMessage}
-              </p>
+          {saveError && (
+            <div className="flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/5 px-3 py-3">
+              <ErrorProfileSaveVisual className="h-6 w-auto shrink-0 text-foreground" />
+              <p className="text-destructive text-sm">{saveError}</p>
             </div>
           )}
 

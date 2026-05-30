@@ -8,13 +8,13 @@ import {
   type ForgotPasswordValues,
   forgotPasswordSchema,
 } from "@/features/auth/schemas/auth-schemas";
+import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
 export function useForgotPasswordForm() {
   const [loading, setLoading] = useState(false);
   const [rootError, setRootError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const form = useForm<ForgotPasswordValues>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -30,7 +30,6 @@ export function useForgotPasswordForm() {
 
     setLoading(true);
     setRootError(null);
-    setSuccessMessage(null);
 
     try {
       const result = await AuthCommands.sendResetPasswordLink(values.email);
@@ -38,9 +37,12 @@ export function useForgotPasswordForm() {
         emailDomain,
         requestId: result.requestId,
       });
-      setSuccessMessage(
-        "If that email belongs to a verified account, a reset link is on its way.",
-      );
+      showAppSuccessToast("Reset link sent.", {
+        description:
+          "If that email belongs to a verified account, a reset link is on its way.",
+        duration: 6000,
+        id: "auth-forgot-password-link",
+      });
       setLoading(false);
     } catch (error) {
       captureException(trackedMutationNames.authForgotPassword, error, {
@@ -68,6 +70,5 @@ export function useForgotPasswordForm() {
     loading,
     onSubmit,
     rootError,
-    successMessage,
   };
 }

@@ -3,12 +3,12 @@ import { useState } from "react";
 import { SettingsCommands } from "@/features/settings/api/settings-commands";
 import { useInvalidateCurrentUser } from "@/shared/api/current-user-query";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
+import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
 export function useSettingsAvatarActions() {
   const invalidateCurrentUser = useInvalidateCurrentUser();
-  const [avatarMessage, setAvatarMessage] = useState<string | null>(null);
   const [avatarError, setAvatarError] = useState<string | null>(null);
 
   const avatarMutation = useMutation({
@@ -20,7 +20,9 @@ export function useSettingsAvatarActions() {
     onSuccess: async (result) => {
       await invalidateCurrentUser();
       setAvatarError(null);
-      setAvatarMessage("Profile photo updated.");
+      showAppSuccessToast("Profile photo updated.", {
+        id: "settings-profile-photo",
+      });
       trackMutationOutcome(
         trackedMutationNames.settingsUploadAvatar,
         "success",
@@ -30,7 +32,6 @@ export function useSettingsAvatarActions() {
       );
     },
     onError: (error) => {
-      setAvatarMessage(null);
       setAvatarError(
         getApiErrorMessage(
           error,
@@ -49,7 +50,9 @@ export function useSettingsAvatarActions() {
     onSuccess: async (result) => {
       await invalidateCurrentUser();
       setAvatarError(null);
-      setAvatarMessage("Profile photo removed.");
+      showAppSuccessToast("Profile photo removed.", {
+        id: "settings-profile-photo",
+      });
       trackMutationOutcome(
         trackedMutationNames.settingsUploadAvatar,
         "success",
@@ -59,7 +62,6 @@ export function useSettingsAvatarActions() {
       );
     },
     onError: (error) => {
-      setAvatarMessage(null);
       setAvatarError(
         getApiErrorMessage(
           error,
@@ -72,15 +74,12 @@ export function useSettingsAvatarActions() {
   return {
     isUploadingAvatar: avatarMutation.isPending,
     isDeletingAvatar: deleteAvatarMutation.isPending,
-    avatarMessage,
     avatarError,
     uploadAvatar: (file: File) => {
-      setAvatarMessage(null);
       setAvatarError(null);
       return avatarMutation.mutateAsync(file);
     },
     deleteAvatar: () => {
-      setAvatarMessage(null);
       setAvatarError(null);
       return deleteAvatarMutation.mutateAsync();
     },

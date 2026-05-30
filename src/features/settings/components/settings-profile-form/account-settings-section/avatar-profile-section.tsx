@@ -6,7 +6,6 @@ import { useAvatarPreview } from "./use-avatar-preview";
 
 interface AvatarProfileSectionProps {
   currentUser: User | undefined;
-  avatarMessage: string | null;
   avatarError: string | null;
   isUploadingAvatar: boolean;
   isDeletingAvatar: boolean;
@@ -16,7 +15,6 @@ interface AvatarProfileSectionProps {
 
 export function AvatarProfileSection({
   currentUser,
-  avatarMessage,
   avatarError,
   isUploadingAvatar,
   isDeletingAvatar,
@@ -95,10 +93,6 @@ export function AvatarProfileSection({
           void handleAvatarDeleteOrReset();
         }}
       />
-
-      {avatarMessage && !avatarError ? (
-        <p className="font-medium text-forge-teal text-sm">{avatarMessage}</p>
-      ) : null}
     </div>
   );
 }

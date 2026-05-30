@@ -14,7 +14,6 @@ interface NotificationSettingsSectionProps {
   notificationPreferences: NotificationPreferences | null;
   isLoadingNotificationPreferences: boolean;
   isSavingNotificationPreferences: boolean;
-  message: string | null;
   error: string | null;
   onChange: (
     key: BooleanSettingsPreferenceKey,
@@ -26,7 +25,6 @@ export function NotificationSettingsSection({
   notificationPreferences,
   isLoadingNotificationPreferences,
   isSavingNotificationPreferences,
-  message,
   error,
   onChange,
 }: NotificationSettingsSectionProps) {
@@ -40,7 +38,7 @@ export function NotificationSettingsSection({
         description="Choose which updates stay inside TeamForge and which ones should also land in your inbox."
       />
 
-      <PreferenceStatusMessage message={message} error={error} />
+      <PreferenceStatusMessage error={error} />
 
       <PreferenceGroup
         title="In-app notifications"

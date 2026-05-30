@@ -8,6 +8,7 @@ import {
   type RegisterValues,
   registerSchema,
 } from "@/features/auth/schemas/auth-schemas";
+import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
@@ -83,6 +84,10 @@ export function useRegisterForm({
         requestId: result.requestId,
       });
       setOtpMessage(`We sent a 6-digit verification code to ${email}.`);
+      showAppSuccessToast("Verification code sent.", {
+        description: `Check ${email} to finish your account.`,
+        id: "auth-register-otp",
+      });
       setDirection(1);
       setStep(3);
       setLoading(false);
@@ -153,6 +158,10 @@ export function useRegisterForm({
         requestId: result.requestId,
       });
       setOtpMessage(`A fresh verification code is on its way to ${email}.`);
+      showAppSuccessToast("Fresh code sent.", {
+        description: `Check ${email} for the new verification code.`,
+        id: "auth-register-otp",
+      });
       setResendLoading(false);
     } catch (error) {
       captureException(trackedMutationNames.authResendEmailOtp, error, {

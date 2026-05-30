@@ -3,10 +3,10 @@ import type { IGif } from "@giphy/js-types";
 import { Grid } from "@giphy/react-components";
 import { Clapperboard, Search } from "lucide-react";
 import { useDeferredValue, useMemo, useState } from "react";
-import { toast } from "sonner";
 
 import { config } from "@/config/config";
 import type { ActivityOutgoingGifAttachment } from "@/features/activity/lib/activity-contract";
+import { showAppErrorMessageToast } from "@/shared/lib/app-toast";
 
 interface GifPickerPanelProps {
   canSendGif: boolean;
@@ -96,7 +96,7 @@ export function GifPickerPanel({ canSendGif, onSelect }: GifPickerPanelProps) {
             const attachment = toOutgoingGiphyAttachment(gif);
 
             if (!attachment) {
-              toast.error("That GIF cannot be sent.");
+              showAppErrorMessageToast("That GIF cannot be sent.");
               return;
             }
 

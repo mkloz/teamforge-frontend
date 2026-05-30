@@ -61,9 +61,7 @@ export function SettingsProfileForm({
           isSaving={account.isSaving}
           isUploadingAvatar={account.isUploadingAvatar}
           isDeletingAvatar={account.isDeletingAvatar}
-          saveMessage={account.saveMessage}
           saveError={account.saveError}
-          avatarMessage={account.avatarMessage}
           avatarError={account.avatarError}
           profileSummary={account.profileSummary}
         />
@@ -86,7 +84,6 @@ export function SettingsProfileForm({
             isSavingNotificationPreferences={
               matching.isSavingNotificationPreferences
             }
-            message={matching.message}
             error={matching.error}
             onChange={matching.onChange}
           />
@@ -103,7 +100,6 @@ export function SettingsProfileForm({
             isSavingNotificationPreferences={
               privacy.isSavingNotificationPreferences
             }
-            message={privacy.message}
             error={privacy.error}
             onChange={privacy.onChange}
           />
@@ -120,7 +116,6 @@ export function SettingsProfileForm({
             isRevokingOtherSessions={security.isRevokingOtherSessions}
             isDeletingAccount={security.isDeletingAccount}
             revokingSessionId={security.revokingSessionId}
-            securityMessage={security.securityMessage}
             securityError={security.securityError}
             sessionsError={security.sessionsError}
             deleteAccountError={security.deleteAccountError}
@@ -154,7 +149,6 @@ export function SettingsProfileForm({
             isSavingNotificationPreferences={
               notifications.isSavingNotificationPreferences
             }
-            message={notifications.message}
             error={notifications.error}
             onChange={notifications.onChange}
           />

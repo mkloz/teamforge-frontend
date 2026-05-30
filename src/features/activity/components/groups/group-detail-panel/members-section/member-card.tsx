@@ -76,24 +76,30 @@ export function MemberCard({
             </span>
           ) : null}
         </div>
-        <div className="mt-1.5 flex min-w-0 items-center gap-1.5">
-          {typeof trustPercent === "number" ? (
-            <MemberMetric
-              icon={ShieldCheck}
-              label="Trust"
-              tone={isHighTrust ? "teal" : "muted"}
-              value={`${trustPercent}%`}
-            />
-          ) : null}
-          {typeof fitScore === "number" ? (
-            <MemberMetric
-              icon={Target}
-              label="Fit"
-              tone={isHighCompatibility ? "teal" : "muted"}
-              value={`${fitScore}%`}
-            />
-          ) : null}
-        </div>
+        {typeof trustPercent === "number" || typeof fitScore === "number" ? (
+          <div className="mt-1.5 flex min-w-0 items-center gap-1.5">
+            {typeof trustPercent === "number" ? (
+              <MemberMetric
+                icon={ShieldCheck}
+                label="Trust"
+                tone={isHighTrust ? "teal" : "muted"}
+                value={`${trustPercent}%`}
+              />
+            ) : null}
+            {typeof trustPercent === "number" &&
+            typeof fitScore === "number" ? (
+              <MetricSeparator />
+            ) : null}
+            {typeof fitScore === "number" ? (
+              <MemberMetric
+                icon={Target}
+                label="Fit"
+                tone={isHighCompatibility ? "teal" : "muted"}
+                value={`${fitScore}%`}
+              />
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </>
   );
@@ -166,10 +172,8 @@ function MemberMetric({ icon: Icon, label, tone, value }: MemberMetricProps) {
   return (
     <span
       className={cn(
-        "inline-flex h-5 shrink-0 items-center gap-1 rounded-full px-1.5 font-bold text-xs",
-        tone === "teal"
-          ? "bg-forge-teal/10 text-forge-teal"
-          : "bg-muted/50 text-muted-foreground",
+        "inline-flex shrink-0 items-center gap-1 font-bold text-xs leading-tight",
+        tone === "teal" ? "text-forge-teal" : "text-muted-foreground",
       )}
       title={`${label} ${value}`}
     >
@@ -177,6 +181,15 @@ function MemberMetric({ icon: Icon, label, tone, value }: MemberMetricProps) {
       <span className="sr-only">{label}</span>
       <span>{value}</span>
     </span>
+  );
+}
+
+function MetricSeparator() {
+  return (
+    <span
+      className="size-1 shrink-0 rounded-full bg-muted-foreground/35"
+      aria-hidden="true"
+    />
   );
 }
 

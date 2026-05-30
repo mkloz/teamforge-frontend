@@ -1,6 +1,10 @@
 import { Check, Copy, Link2 } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
+import {
+  showAppErrorMessageToast,
+  showAppSuccessToast,
+} from "@/shared/lib/app-toast";
 import { copyTextToClipboard } from "@/shared/lib/browser-capabilities";
 import { cn } from "@/shared/lib/utils";
 
@@ -15,9 +19,16 @@ export function InviteLinkSection({
   inviteCopied,
   onCopyLink,
 }: InviteLinkSectionProps) {
-  const handleCopy = () => {
-    void copyTextToClipboard(INVITE_LINK);
+  const handleCopy = async () => {
+    if (!(await copyTextToClipboard(INVITE_LINK))) {
+      showAppErrorMessageToast("We couldn't copy that link in this browser.");
+      return;
+    }
+
     onCopyLink();
+    showAppSuccessToast("Invite link copied.", {
+      id: "forge-invite-link-copy",
+    });
   };
 
   return (
@@ -43,7 +54,9 @@ export function InviteLinkSection({
         <Button
           variant="ghost"
           size="sm"
-          onClick={handleCopy}
+          onClick={() => {
+            void handleCopy();
+          }}
           aria-label="Copy invite link"
           className={cn(
             "h-8 shrink-0 rounded-lg px-3 font-semibold text-xs transition-colors active:scale-95",

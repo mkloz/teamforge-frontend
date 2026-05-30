@@ -252,26 +252,31 @@ export function HomeGroupsSkeleton() {
       <HomeSectionHeadingSkeleton actionWidth="w-14" eyebrow={false} />
       <ul
         aria-label="Loading your groups"
-        className="flex list-none flex-col p-0"
+        className="flex list-none flex-col gap-2 p-0"
       >
         {["first", "second", "third", "fourth"].map((item, index) => (
           <li
             key={item}
-            className="flex h-14 items-center gap-3 border-border/55 border-b px-1 py-3 sm:px-3"
+            className="grid min-h-20 grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-x-3 rounded-xl px-2.5 py-2.5"
           >
             <SkeletonAvatar
-              className="size-9"
+              className="size-11"
               tone={index === 0 ? "teal" : "default"}
             />
             <SkeletonText
               className="min-w-0 flex-1"
-              lines={2}
+              lines={3}
               size="sm"
-              widths={index % 2 === 0 ? ["w-32", "w-16"] : ["w-36", "w-20"]}
+              widths={
+                index % 2 === 0
+                  ? ["w-32", "w-44", "w-16"]
+                  : ["w-36", "w-40", "w-20"]
+              }
             />
+            <Skeleton shape="square" className="h-7 w-12 rounded-lg" />
           </li>
         ))}
-        <li className="flex h-12 items-center justify-between gap-3 rounded-b-xl border-border/55 border-b px-3 py-3">
+        <li className="flex h-12 items-center justify-between gap-3 rounded-xl px-3 py-3">
           <Skeleton className="h-3 w-32" />
           <Skeleton shape="circle" className="size-4" />
         </li>

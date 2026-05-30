@@ -4,7 +4,7 @@ import type React from "react";
 import { cn } from "@/shared/lib/utils";
 
 const skeletonVariants = cva(
-  "relative isolate overflow-hidden bg-clip-padding after:absolute after:inset-0 after:animate-skeleton-shimmer after:bg-[linear-gradient(105deg,transparent_25%,color-mix(in_srgb,var(--color-canvas)_62%,transparent)_46%,color-mix(in_srgb,var(--color-canvas)_28%,transparent)_52%,transparent_74%)] after:bg-size-[240%_100%] after:bg-no-repeat after:opacity-80 after:content-[''] motion-reduce:after:hidden dark:after:bg-[linear-gradient(105deg,transparent_25%,color-mix(in_srgb,var(--color-canvas)_10%,transparent)_46%,color-mix(in_srgb,var(--color-canvas)_5%,transparent)_52%,transparent_74%)] forced-colors:bg-slate-muted/40 forced-colors:after:hidden",
+  "relative isolate overflow-hidden bg-clip-padding after:absolute after:inset-0 after:animate-skeleton-shimmer after:bg-[linear-gradient(105deg,transparent_22%,color-mix(in_srgb,var(--color-canvas)_82%,transparent)_46%,color-mix(in_srgb,var(--color-canvas)_44%,transparent)_54%,transparent_78%)] after:bg-size-[240%_100%] after:bg-no-repeat after:opacity-90 after:content-[''] motion-reduce:after:hidden dark:after:bg-[linear-gradient(105deg,transparent_22%,color-mix(in_srgb,var(--color-foreground)_13%,transparent)_46%,color-mix(in_srgb,var(--color-foreground)_7%,transparent)_54%,transparent_78%)] forced-colors:bg-slate-muted/40 forced-colors:after:hidden",
   {
     variants: {
       shape: {

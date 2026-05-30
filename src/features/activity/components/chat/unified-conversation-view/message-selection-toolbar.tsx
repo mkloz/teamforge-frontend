@@ -7,7 +7,6 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
 import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import { useSavedMessageIds } from "@/features/activity/hooks/use-saved-message-ids";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
@@ -18,6 +17,10 @@ import {
 import { getMessagesClipboardContent } from "@/features/activity/lib/message-clipboard";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
+import {
+  showAppErrorMessageToast,
+  showAppSuccessToast,
+} from "@/shared/lib/app-toast";
 import { copyTextToClipboard } from "@/shared/lib/browser-capabilities";
 import { showAppErrorToast } from "@/shared/lib/error-toast";
 import { ForwardMessageDialog } from "./unified-message-list/unified-message-item/message-actions-menu";
@@ -54,11 +57,16 @@ export function MessageSelectionToolbar({
     const text = getMessagesClipboardContent(selectedMessages);
 
     if (!(await copyTextToClipboard(text))) {
-      toast.error("We couldn't copy those messages in this browser.");
+      showAppErrorMessageToast(
+        "We couldn't copy those messages in this browser.",
+      );
       return;
     }
 
-    toast.success(selectedCount === 1 ? "Message copied." : "Messages copied.");
+    showAppSuccessToast(
+      selectedCount === 1 ? "Message copied." : "Messages copied.",
+      { id: "selected-messages-copied" },
+    );
     onClearSelection();
   }
 
@@ -80,10 +88,11 @@ export function MessageSelectionToolbar({
         }),
       );
 
-      toast.success(
+      showAppSuccessToast(
         allSaveableMessagesSaved
           ? "Removed from saved messages."
           : "Saved messages.",
+        { id: "selected-messages-saved" },
       );
       onClearSelection();
     } catch (error) {
@@ -109,8 +118,9 @@ export function MessageSelectionToolbar({
         ),
       );
 
-      toast.success(
+      showAppSuccessToast(
         selectedCount === 1 ? "Message deleted." : "Messages deleted.",
+        { id: "selected-messages-deleted" },
       );
       onClearSelection();
     } catch (error) {

@@ -1,9 +1,12 @@
 import { Check, Copy, Share2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
 
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { Button } from "@/shared/components/ui/button";
+import {
+  showAppErrorMessageToast,
+  showAppSuccessToast,
+} from "@/shared/lib/app-toast";
 import {
   copyTextToClipboard,
   getCurrentBrowserOrigin,
@@ -29,11 +32,12 @@ export function FriendsInvitation() {
 
   const handleCopy = async () => {
     if (!(await copyTextToClipboard(inviteLink))) {
-      toast.error("We couldn't copy that link in this browser.");
+      showAppErrorMessageToast("We couldn't copy that link in this browser.");
       return;
     }
 
     setCopied(true);
+    showAppSuccessToast("Invite link copied.", { id: "home-invite-link-copy" });
 
     if (copiedTimeoutRef.current) {
       clearTimeout(copiedTimeoutRef.current);

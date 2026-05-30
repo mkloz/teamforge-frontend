@@ -12,7 +12,6 @@ export function SecuritySettingsSection({
   isRevokingOtherSessions,
   isDeletingAccount,
   revokingSessionId,
-  securityMessage,
   securityError,
   sessionsError,
   deleteAccountError,
@@ -39,7 +38,6 @@ export function SecuritySettingsSection({
         <PasswordRecoverySection
           currentUser={currentUser}
           isSendingPasswordResetLink={isSendingPasswordResetLink}
-          securityMessage={securityMessage}
           securityError={securityError}
           onSendPasswordResetLink={onSendPasswordResetLink}
         />

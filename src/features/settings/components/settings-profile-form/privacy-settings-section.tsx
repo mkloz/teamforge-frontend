@@ -34,7 +34,6 @@ interface PrivacySettingsSectionProps {
   notificationPreferences: NotificationPreferences | null;
   isLoadingNotificationPreferences: boolean;
   isSavingNotificationPreferences: boolean;
-  message: string | null;
   error: string | null;
   onChange: (
     values: Pick<
@@ -48,7 +47,6 @@ export function PrivacySettingsSection({
   notificationPreferences,
   isLoadingNotificationPreferences,
   isSavingNotificationPreferences,
-  message,
   error,
   onChange,
 }: PrivacySettingsSectionProps) {
@@ -96,7 +94,7 @@ export function PrivacySettingsSection({
         </p>
       </div>
 
-      <PreferenceStatusMessage message={message} error={error} />
+      <PreferenceStatusMessage error={error} />
     </section>
   );
 }

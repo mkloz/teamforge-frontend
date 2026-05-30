@@ -9,7 +9,6 @@ import type { User } from "@/shared/schemas";
 interface PasswordRecoverySectionProps {
   currentUser: User | undefined;
   isSendingPasswordResetLink: boolean;
-  securityMessage: string | null;
   securityError: string | null;
   onSendPasswordResetLink: () => Promise<unknown>;
 }
@@ -17,7 +16,6 @@ interface PasswordRecoverySectionProps {
 export function PasswordRecoverySection({
   currentUser,
   isSendingPasswordResetLink,
-  securityMessage,
   securityError,
   onSendPasswordResetLink,
 }: PasswordRecoverySectionProps) {
@@ -30,12 +28,8 @@ export function PasswordRecoverySection({
           : "Send a secure password reset link to your email if you want to rotate your password."}
       </p>
 
-      {(securityMessage || securityError) && (
-        <p
-          className={`mt-4 text-sm ${securityError ? "text-destructive" : "text-forge-teal"}`}
-        >
-          {securityError ?? securityMessage}
-        </p>
+      {securityError && (
+        <p className="mt-4 text-destructive text-sm">{securityError}</p>
       )}
 
       <div className="responsive-action-grid mt-5 grid gap-3">

@@ -22,9 +22,7 @@ export interface AccountSettingsState {
   isSaving: boolean;
   isUploadingAvatar: boolean;
   isDeletingAvatar: boolean;
-  saveMessage: string | null;
   saveError: string | null;
-  avatarMessage: string | null;
   avatarError: string | null;
   profileSummary: Array<{ label: string; value: string }>;
 }
@@ -33,7 +31,6 @@ interface NotificationPreferenceState {
   notificationPreferences: NotificationPreferences | null;
   isLoadingNotificationPreferences: boolean;
   isSavingNotificationPreferences: boolean;
-  message: string | null;
   error: string | null;
 }
 
@@ -71,7 +68,6 @@ export interface SecuritySettingsState {
   isRevokingOtherSessions: boolean;
   isDeletingAccount: boolean;
   revokingSessionId: string | null;
-  securityMessage: string | null;
   securityError: string | null;
   sessionsError: string | null;
   deleteAccountError: string | null;

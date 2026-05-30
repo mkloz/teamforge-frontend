@@ -4,6 +4,7 @@ import { SettingsCache } from "@/features/settings/api/settings-cache";
 import { SettingsCommands } from "@/features/settings/api/settings-commands";
 import { SettingsQueryFactory } from "@/features/settings/api/settings-query-factory";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
+import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import type { NotificationPreferences } from "@/shared/schemas";
@@ -17,9 +18,6 @@ interface UseSettingsPreferencesActionsOptions {
 export function useSettingsPreferencesActions({
   enabled,
 }: UseSettingsPreferencesActionsOptions) {
-  const [preferencesMessage, setPreferencesMessage] = useState<string | null>(
-    null,
-  );
   const [preferencesError, setPreferencesError] = useState<string | null>(null);
 
   const notificationPreferencesQuery = useQuery({
@@ -41,7 +39,9 @@ export function useSettingsPreferencesActions({
     onSuccess: (result) => {
       SettingsCache.setNotificationPreferences(result.data);
       setPreferencesError(null);
-      setPreferencesMessage("Notification preferences updated.");
+      showAppSuccessToast("Settings updated.", {
+        id: "settings-preferences-updated",
+      });
       trackMutationOutcome(
         trackedMutationNames.settingsNotificationPreferences,
         "success",
@@ -51,7 +51,6 @@ export function useSettingsPreferencesActions({
       );
     },
     onError: (error) => {
-      setPreferencesMessage(null);
       setPreferencesError(
         getApiErrorMessage(
           error,
@@ -71,7 +70,6 @@ export function useSettingsPreferencesActions({
       return;
     }
 
-    setPreferencesMessage(null);
     setPreferencesError(null);
 
     await preferencesMutation.mutateAsync({
@@ -92,7 +90,6 @@ export function useSettingsPreferencesActions({
       return;
     }
 
-    setPreferencesMessage(null);
     setPreferencesError(null);
 
     await preferencesMutation.mutateAsync({
@@ -113,7 +110,6 @@ export function useSettingsPreferencesActions({
       return;
     }
 
-    setPreferencesMessage(null);
     setPreferencesError(null);
 
     await preferencesMutation.mutateAsync({
@@ -130,7 +126,6 @@ export function useSettingsPreferencesActions({
       (notificationPreferencesQuery.isError
         ? "We couldn't load your notification preferences right now."
         : null),
-    notificationPreferencesMessage: preferencesMessage,
     updateNotificationPreference,
     updateMatchingPreference,
     updatePrivacyPreference,

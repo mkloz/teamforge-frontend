@@ -1,13 +1,18 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, MessageCircle, Users } from "lucide-react";
+import { BellOff, Pin, Users } from "lucide-react";
 import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
 import { Avatar } from "@/shared/components/common/avatar";
+import { UnreadBadge } from "@/shared/components/common/unread-badge";
 import { cn } from "@/shared/lib/utils";
 import type { GroupApi } from "@/shared/schemas";
 
 interface GroupRowProps {
   group: GroupApi;
-  hasNotification?: boolean;
+  isMuted?: boolean;
+  isPinned?: boolean;
+  lastActivityAt?: string;
+  messagePreview?: string;
+  unreadCount?: number;
 }
 
 function formatRelativeTime(value: string) {
@@ -39,63 +44,158 @@ function formatRelativeTime(value: string) {
   return `${Math.floor(diffDays / 7)}w ago`;
 }
 
-export function GroupRow({ group, hasNotification = false }: GroupRowProps) {
-  const lastActivity = formatRelativeTime(group.updatedAt);
+function getUnreadLabel(count: number) {
+  return count === 1 ? "1 unread message" : `${count} unread messages`;
+}
+
+function formatMetaStatus({ isMuted, isPinned }: GroupRowProps) {
+  if (isMuted) {
+    return "Muted";
+  }
+
+  if (isPinned) {
+    return "Pinned";
+  }
+
+  return null;
+}
+
+function getGroupContextLine(group: GroupApi, messagePreview?: string) {
+  if (messagePreview) {
+    return messagePreview;
+  }
+
+  if (group.plan?.locationMode === "ONLINE") {
+    return "Online plan in progress";
+  }
+
+  if (group.plan?.location) {
+    return `Plan near ${group.plan.location}`;
+  }
+
+  const interests = group.activity.interests
+    .map((interest) => interest.name)
+    .slice(0, 2);
+
+  if (interests.length > 0) {
+    return `Around ${interests.join(" + ")}`;
+  }
+
+  return group.activity.title;
+}
+
+export function GroupRow({
+  group,
+  isMuted = false,
+  isPinned = false,
+  lastActivityAt = group.updatedAt,
+  messagePreview,
+  unreadCount = 0,
+}: GroupRowProps) {
+  const lastActivity = formatRelativeTime(lastActivityAt);
+  const hasUnreadMessages = unreadCount > 0;
+  const unreadLabel = hasUnreadMessages ? getUnreadLabel(unreadCount) : null;
+  const contextLine = getGroupContextLine(group, messagePreview);
+  const metaStatus = formatMetaStatus({ group, isMuted, isPinned });
 
   return (
     <li>
       <Link
         {...buildActivityGroupHubNavigation(group.id)}
+        aria-label={[
+          group.name,
+          contextLine,
+          `${group.members.length} members`,
+          `last active ${lastActivity}`,
+          metaStatus,
+          unreadLabel,
+        ]
+          .filter(Boolean)
+          .join(", ")}
         className={cn(
-          "group flex h-16 cursor-pointer items-center gap-3 border-border/55 border-b px-1 py-3 sm:px-3",
-          "transition-all duration-150",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          hasNotification
-            ? "rounded-xl bg-forge-teal/8 hover:border-forge-teal/20 hover:bg-forge-teal/12"
-            : "bg-transparent hover:bg-card/45",
+          "group relative grid min-h-20 cursor-pointer grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-x-3 overflow-hidden rounded-xl px-2.5 py-2.5",
+          "transition-all duration-150 hover:translate-x-0.5",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
+          hasUnreadMessages
+            ? "bg-forge-teal/8 hover:bg-forge-teal/12"
+            : "bg-transparent hover:bg-card/55",
         )}
       >
+        {hasUnreadMessages ? (
+          <span
+            className="absolute inset-y-2 left-0 w-1 rounded-r-md bg-forge-teal"
+            aria-hidden="true"
+          />
+        ) : null}
+
         <div className="relative shrink-0">
           <Avatar
             src={group.avatar}
             name={group.name}
             imageSize={72}
+            shape="rounded"
             className={cn(
-              "size-9 border-2 bg-canvas transition-colors duration-150",
-              hasNotification
-                ? "border-forge-teal/35 group-hover:border-forge-teal/45"
-                : "border-border group-hover:border-forge-teal/30",
+              "size-11 rounded-md bg-canvas shadow-sm ring-1 ring-border/50 transition-all duration-150 group-hover:scale-105 group-hover:ring-forge-teal/30",
+              hasUnreadMessages
+                ? "ring-2 ring-forge-teal/35 group-hover:ring-forge-teal/50"
+                : null,
             )}
             fallbackClassName="text-xs"
           />
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-0">
-          <span className="truncate font-bold text-foreground text-sm leading-tight transition-colors duration-150 group-hover:text-primary">
+        <div className="flex min-w-0 flex-col gap-1">
+          <span className="truncate font-black text-foreground text-sm leading-tight transition-colors duration-150 group-hover:text-primary">
             {group.name}
           </span>
-          <div className="mt-0.5 flex items-center gap-2">
-            <span className="flex items-center gap-1 font-medium text-muted-foreground text-xs">
+          <span
+            className={cn(
+              "truncate text-xs leading-4",
+              hasUnreadMessages
+                ? "font-bold text-foreground/85"
+                : "font-semibold text-slate-muted",
+            )}
+          >
+            {contextLine}
+          </span>
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="flex shrink-0 items-center gap-1 font-semibold text-slate-muted text-xs">
               <Users className="size-2.5 shrink-0" aria-hidden="true" />
               {group.members.length}
             </span>
             <span
-              className="size-0.5 rounded-full bg-border"
+              className="size-1 rounded-full bg-border"
               aria-hidden="true"
             />
-            <span className="truncate font-medium text-muted-foreground text-xs">
+            <span className="truncate font-semibold text-slate-muted text-xs">
               {lastActivity}
             </span>
+            {metaStatus ? (
+              <>
+                <span
+                  className="size-1 rounded-full bg-border"
+                  aria-hidden="true"
+                />
+                <span className="flex shrink-0 items-center gap-1 font-semibold text-slate-muted text-xs">
+                  {isMuted ? (
+                    <BellOff className="size-2.5" aria-hidden="true" />
+                  ) : (
+                    <Pin className="size-2.5" aria-hidden="true" />
+                  )}
+                  {metaStatus}
+                </span>
+              </>
+            ) : null}
           </div>
         </div>
 
-        <div className="shrink-0" aria-hidden="true">
-          {hasNotification ? (
-            <MessageCircle className="size-4 text-forge-teal/85" />
-          ) : (
-            <ArrowRight className="size-4 text-muted-foreground opacity-0 transition-all duration-150 group-hover:translate-x-0.5 group-hover:opacity-70" />
-          )}
-        </div>
+        {hasUnreadMessages ? (
+          <UnreadBadge
+            count={unreadCount}
+            className="justify-self-end"
+            aria-hidden="true"
+          />
+        ) : null}
       </Link>
     </li>
   );

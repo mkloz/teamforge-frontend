@@ -10,8 +10,7 @@ import {
 
 export function ForgotPasswordPage() {
   const { returnTo } = useAuthReturnState();
-  const { form, loading, onSubmit, rootError, successMessage } =
-    useForgotPasswordForm();
+  const { form, loading, onSubmit, rootError } = useForgotPasswordForm();
 
   return (
     <AuthSupportShell
@@ -33,12 +32,6 @@ export function ForgotPasswordPage() {
       }
     >
       {rootError ? <FormLevelError message={rootError} /> : null}
-
-      {successMessage ? (
-        <div className="rounded-xl border border-forge-teal/20 bg-forge-teal/8 px-4 py-3 text-foreground text-sm">
-          {successMessage}
-        </div>
-      ) : null}
 
       <ForgotPasswordForm form={form} loading={loading} onSubmit={onSubmit} />
     </AuthSupportShell>

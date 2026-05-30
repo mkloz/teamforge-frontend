@@ -1,8 +1,8 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import type { PlanHistoryItem } from "@/features/activity/lib/activity-contract";
 import { Button } from "@/shared/components/ui/button";
+import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { showAppErrorToast } from "@/shared/lib/error-toast";
 import { cn } from "@/shared/lib/utils";
 import { HistoryCard } from "./history-card";
@@ -60,7 +60,9 @@ export function PlanHistorySection({
 
     try {
       await onUseAsTemplate(item);
-      toast.success("Plan copied into a new draft.");
+      showAppSuccessToast("Plan copied into a new draft.", {
+        id: "plan-template-copied",
+      });
     } catch (error) {
       showAppErrorToast(error, {
         fallbackMessage: "We couldn't reuse that plan.",

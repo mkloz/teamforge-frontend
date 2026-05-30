@@ -8,7 +8,6 @@ export interface SecuritySettingsSectionProps {
   isRevokingOtherSessions: boolean;
   isDeletingAccount: boolean;
   revokingSessionId: string | null;
-  securityMessage: string | null;
   securityError: string | null;
   sessionsError: string | null;
   deleteAccountError: string | null;

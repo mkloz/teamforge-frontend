@@ -6,6 +6,7 @@ import { SettingsCommands } from "@/features/settings/api/settings-commands";
 import { SettingsQueryFactory } from "@/features/settings/api/settings-query-factory";
 import { buildSettingsLoginNavigation } from "@/features/settings/lib/settings-auth-navigation";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
+import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import type { AuthSession, User } from "@/shared/schemas";
@@ -23,7 +24,6 @@ export function useSettingsSecurityActions({
   const currentLocation = useRouterState({
     select: (state) => state.location,
   });
-  const [securityMessage, setSecurityMessage] = useState<string | null>(null);
   const [securityError, setSecurityError] = useState<string | null>(null);
   const [revokingSessionId, setRevokingSessionId] = useState<string | null>(
     null,
@@ -42,10 +42,11 @@ export function useSettingsSecurityActions({
       SettingsCommands.sendResetPasswordLink(email),
     onSuccess: () => {
       setSecurityError(null);
-      setSecurityMessage("Password reset link sent to your email.");
+      showAppSuccessToast("Password reset link sent to your email.", {
+        id: "settings-password-reset-link",
+      });
     },
     onError: (error) => {
-      setSecurityMessage(null);
       setSecurityError(
         getApiErrorMessage(error, "We couldn't send the reset link right now."),
       );
@@ -70,7 +71,9 @@ export function useSettingsSecurityActions({
     onSuccess: async (result) => {
       await SettingsCache.invalidateSessions();
       setSecurityError(null);
-      setSecurityMessage("Other devices were signed out.");
+      showAppSuccessToast("Other devices were signed out.", {
+        id: "settings-session-revoked",
+      });
       trackMutationOutcome(
         trackedMutationNames.settingsRevokeOtherSessions,
         "success",
@@ -80,7 +83,6 @@ export function useSettingsSecurityActions({
       );
     },
     onError: (error) => {
-      setSecurityMessage(null);
       setSecurityError(
         getApiErrorMessage(
           error,
@@ -95,13 +97,11 @@ export function useSettingsSecurityActions({
       return;
     }
 
-    setSecurityMessage(null);
     setSecurityError(null);
     await passwordResetMutation.mutateAsync(currentUser.email);
   }
 
   async function revokeSession(session: AuthSession) {
-    setSecurityMessage(null);
     setSecurityError(null);
     setRevokingSessionId(session.id);
     const previousSessions = SettingsCache.getSessionsSnapshot() ?? [];
@@ -117,7 +117,9 @@ export function useSettingsSecurityActions({
         return;
       }
 
-      setSecurityMessage("That session was signed out.");
+      showAppSuccessToast("That session was signed out.", {
+        id: "settings-session-revoked",
+      });
       trackMutationOutcome(
         trackedMutationNames.settingsRevokeSession,
         "success",
@@ -128,7 +130,6 @@ export function useSettingsSecurityActions({
       setRevokingSessionId(null);
     } catch (error) {
       SettingsCache.restoreSessions(previousSessions);
-      setSecurityMessage(null);
       setSecurityError(
         getApiErrorMessage(error, "We couldn't revoke that session right now."),
       );
@@ -137,7 +138,6 @@ export function useSettingsSecurityActions({
   }
 
   async function revokeOtherSessions() {
-    setSecurityMessage(null);
     setSecurityError(null);
     const previousSessions = SettingsCache.getSessionsSnapshot() ?? [];
     SettingsCache.keepOnlyCurrentSession();
@@ -151,7 +151,6 @@ export function useSettingsSecurityActions({
   }
 
   return {
-    securityMessage,
     securityError,
     sendPasswordResetLink,
     isSendingPasswordResetLink: passwordResetMutation.isPending,

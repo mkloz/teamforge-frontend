@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 import { AuthCommands } from "@/features/auth/api/auth-commands";
 import { ensureCurrentUser } from "@/shared/api/current-user-query";
+import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { buildPostAuthRedirectNavigation } from "@/shared/lib/auth-route";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
@@ -38,6 +39,10 @@ export function useActivateAccount(returnTo?: string | null) {
           },
         );
         setState("success");
+        showAppSuccessToast("Your account is ready.", {
+          description: "Taking you back into TeamForge now.",
+          id: "auth-activate-account",
+        });
         await navigate(buildPostAuthRedirectNavigation(user, returnTo));
       } catch (error) {
         if (!active) {

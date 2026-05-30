@@ -17,6 +17,7 @@ import {
   useInvalidateCurrentUser,
 } from "@/shared/api/current-user-query";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
+import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
@@ -28,7 +29,6 @@ export function useSettingsProfileBase() {
     refetch,
   } = useCurrentUserQuery();
   const invalidateCurrentUser = useInvalidateCurrentUser();
-  const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const form = useForm<SettingsProfileValues>({
@@ -65,7 +65,7 @@ export function useSettingsProfileBase() {
     onSuccess: async (result) => {
       await invalidateCurrentUser();
       setSaveError(null);
-      setSaveMessage("Profile updated.");
+      showAppSuccessToast("Profile updated.", { id: "settings-profile-save" });
       trackMutationOutcome(
         trackedMutationNames.settingsUpdateProfile,
         "success",
@@ -75,7 +75,6 @@ export function useSettingsProfileBase() {
       );
     },
     onError: (error) => {
-      setSaveMessage(null);
       setSaveError(
         getApiErrorMessage(
           error,
@@ -86,7 +85,6 @@ export function useSettingsProfileBase() {
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
-    setSaveMessage(null);
     setSaveError(null);
 
     await profileMutation.mutateAsync(buildSettingsProfilePayload(values));
@@ -108,7 +106,6 @@ export function useSettingsProfileBase() {
     refetch,
     onSubmit,
     isSaving: profileMutation.isPending,
-    saveMessage,
     saveError,
     profileSummary,
   };

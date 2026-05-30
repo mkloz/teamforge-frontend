@@ -11,9 +11,7 @@ export interface AccountSettingsSectionProps {
   isSaving: boolean;
   isUploadingAvatar: boolean;
   isDeletingAvatar: boolean;
-  saveMessage: string | null;
   saveError: string | null;
-  avatarMessage: string | null;
   avatarError: string | null;
   profileSummary: Array<{ label: string; value: string }>;
 }

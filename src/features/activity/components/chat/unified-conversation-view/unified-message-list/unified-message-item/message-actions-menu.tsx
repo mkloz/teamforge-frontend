@@ -23,7 +23,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { toast } from "sonner";
 import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import {
   ACTIVITY_MENU_ICON_CLASS,
@@ -66,6 +65,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
+import {
+  showAppErrorMessageToast,
+  showAppSuccessToast,
+} from "@/shared/lib/app-toast";
 import { copyTextToClipboard } from "@/shared/lib/browser-capabilities";
 import { showAppErrorToast } from "@/shared/lib/error-toast";
 import { cn } from "@/shared/lib/utils";
@@ -709,11 +712,11 @@ async function copyMessageContent({
   }
 
   if (!(await copyTextToClipboard(text))) {
-    toast.error(errorMessage);
+    showAppErrorMessageToast(errorMessage);
     return;
   }
 
-  toast.success(successMessage);
+  showAppSuccessToast(successMessage, { id: "message-content-copied" });
 }
 
 function showReactionError(error: unknown) {
@@ -786,10 +789,11 @@ export function ForwardMessageDialog({
         Promise.resolve(),
       );
 
-      toast.success(
+      showAppSuccessToast(
         messagesToForward.length === 1
           ? `Forwarded to ${target.title}.`
           : `Forwarded ${messagesToForward.length} messages to ${target.title}.`,
+        { id: "message-forwarded" },
       );
       onOpenChange(false);
       onForwardComplete?.();

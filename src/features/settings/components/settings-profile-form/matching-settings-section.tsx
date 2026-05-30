@@ -22,7 +22,6 @@ interface MatchingSettingsSectionProps {
   notificationPreferences: NotificationPreferences | null;
   isLoadingNotificationPreferences: boolean;
   isSavingNotificationPreferences: boolean;
-  message: string | null;
   error: string | null;
   onChange: (
     values: Pick<
@@ -37,7 +36,6 @@ export function MatchingSettingsSection({
   notificationPreferences,
   isLoadingNotificationPreferences,
   isSavingNotificationPreferences,
-  message,
   error,
   onChange,
 }: MatchingSettingsSectionProps) {
@@ -105,7 +103,7 @@ export function MatchingSettingsSection({
         />
       </div>
 
-      <PreferenceStatusMessage message={message} error={error} />
+      <PreferenceStatusMessage error={error} />
 
       <div className="border-border border-t pt-6">
         <p className="font-semibold text-slate-muted text-xs uppercase tracking-widest">

@@ -36,7 +36,6 @@ export function SettingsFormBridge({ activeSection }: SettingsFormBridgeProps) {
       profileFormState.isLoadingNotificationPreferences,
     isSavingNotificationPreferences:
       profileFormState.isSavingNotificationPreferences,
-    message: profileFormState.notificationPreferencesMessage,
     error: profileFormState.notificationPreferencesError,
   };
 
@@ -52,9 +51,7 @@ export function SettingsFormBridge({ activeSection }: SettingsFormBridgeProps) {
         isSaving: profileFormState.isSaving,
         isUploadingAvatar: profileFormState.isUploadingAvatar,
         isDeletingAvatar: profileFormState.isDeletingAvatar,
-        saveMessage: profileFormState.saveMessage,
         saveError: profileFormState.saveError,
-        avatarMessage: profileFormState.avatarMessage,
         avatarError: profileFormState.avatarError,
         profileSummary: profileFormState.profileSummary,
       }}
@@ -75,7 +72,6 @@ export function SettingsFormBridge({ activeSection }: SettingsFormBridgeProps) {
         isRevokingOtherSessions: profileFormState.isRevokingOtherSessions,
         isDeletingAccount: profileFormState.isDeletingAccount,
         revokingSessionId: profileFormState.revokingSessionId,
-        securityMessage: profileFormState.securityMessage,
         securityError: profileFormState.securityError,
         sessionsError: profileFormState.sessionsError,
         deleteAccountError: profileFormState.deleteAccountError,

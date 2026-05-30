@@ -8,6 +8,7 @@ import {
   type ResetPasswordValues,
   resetPasswordSchema,
 } from "@/features/auth/schemas/auth-schemas";
+import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
@@ -38,6 +39,10 @@ export function useResetPasswordForm() {
         requestId: result.requestId,
       });
       setSuccess(true);
+      showAppSuccessToast("Password updated.", {
+        description: "You can sign in with the new password now.",
+        id: "auth-reset-password",
+      });
       setLoading(false);
     } catch (error) {
       captureException(trackedMutationNames.authResetPassword, error);
