@@ -36,6 +36,15 @@ export const ActivityPinnedMessageActions = {
           selectedId,
           currentUserParticipant,
         );
+        const optimisticMessage = {
+          ...message,
+          isPinned: true,
+        };
+
+        ActivityMessageCache.replace(chatId, message.id, optimisticMessage);
+        context.syncPinnedMessage(chatId, optimisticMessage);
+        ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
+
         const updatedMessage = await ActivityApi.pinMessage(
           chatId,
           message.id,
@@ -87,6 +96,15 @@ export const ActivityPinnedMessageActions = {
           selectedId,
           currentUserParticipant,
         );
+        const optimisticMessage = {
+          ...message,
+          isPinned: false,
+        };
+
+        ActivityMessageCache.replace(chatId, message.id, optimisticMessage);
+        context.syncPinnedMessage(chatId, optimisticMessage);
+        ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
+
         const updatedMessage = await ActivityApi.unpinMessage(
           chatId,
           message.id,

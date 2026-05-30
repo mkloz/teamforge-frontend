@@ -84,6 +84,9 @@ export function SettingsProfileForm({
             isSavingNotificationPreferences={
               matching.isSavingNotificationPreferences
             }
+            savingNotificationPreferenceKeys={
+              matching.savingNotificationPreferenceKeys
+            }
             error={matching.error}
             onChange={matching.onChange}
           />
@@ -99,6 +102,9 @@ export function SettingsProfileForm({
             }
             isSavingNotificationPreferences={
               privacy.isSavingNotificationPreferences
+            }
+            savingNotificationPreferenceKeys={
+              privacy.savingNotificationPreferenceKeys
             }
             error={privacy.error}
             onChange={privacy.onChange}
@@ -148,6 +154,9 @@ export function SettingsProfileForm({
             }
             isSavingNotificationPreferences={
               notifications.isSavingNotificationPreferences
+            }
+            savingNotificationPreferenceKeys={
+              notifications.savingNotificationPreferenceKeys
             }
             error={notifications.error}
             onChange={notifications.onChange}

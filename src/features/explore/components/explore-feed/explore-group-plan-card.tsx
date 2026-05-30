@@ -31,7 +31,11 @@ export function ExploreGroupPlanCard({
   const isFull =
     group.maxMembers > 0 && group.activeMembersCount >= group.maxMembers;
   const confirmedJoin = joinMutation.data?.data;
-  const joinResult = confirmedJoin?.status;
+  const joinResult =
+    confirmedJoin?.status ??
+    (joinMutation.isPending && group.access === "BY_REQUEST"
+      ? "REQUESTED"
+      : undefined);
   const joinedGroupId = confirmedJoin?.groupId;
   const actionLabel = isFull
     ? "Full"

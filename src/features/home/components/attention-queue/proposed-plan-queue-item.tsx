@@ -2,8 +2,9 @@ import { Link } from "@tanstack/react-router";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, CalendarClock } from "lucide-react";
 
-import { buildActivityGroupNavigation } from "@/features/activity/lib/activity-route";
+import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import { getPlanTimingLabel } from "@/features/home/lib/home-insights";
+import { getHomePlanLocationLabel } from "@/features/home/lib/home-plan-presenters";
 
 import type { AttentionQueuePlan } from "./attention-queue.types";
 import { getAttentionQueueItemMotion } from "./attention-queue-motion";
@@ -15,10 +16,11 @@ export function ProposedPlanQueueItem({
   animateOnInsert: boolean;
   group: AttentionQueuePlan;
 }) {
-  const navigation = buildActivityGroupNavigation(group.id, {
-    panel: "group",
+  const navigation = buildGroupPlanDetailNavigation(group.id, {
+    source: "home",
     plan: group.plan.id,
   });
+  const locationLabel = getHomePlanLocationLabel(group.plan);
   const shouldReduceMotion = useReducedMotion();
 
   return (
@@ -39,7 +41,7 @@ export function ProposedPlanQueueItem({
               {group.plan.title}
             </p>
             <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">
-              {group.name}
+              {locationLabel}
             </p>
             <p className="mt-0.5 font-black text-spark-amber text-xs">
               {getPlanTimingLabel(group.plan)}

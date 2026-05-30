@@ -36,6 +36,8 @@ export function SettingsFormBridge({ activeSection }: SettingsFormBridgeProps) {
       profileFormState.isLoadingNotificationPreferences,
     isSavingNotificationPreferences:
       profileFormState.isSavingNotificationPreferences,
+    savingNotificationPreferenceKeys:
+      profileFormState.savingNotificationPreferenceKeys,
     error: profileFormState.notificationPreferencesError,
   };
 

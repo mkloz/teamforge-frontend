@@ -31,6 +31,7 @@ interface NotificationPreferenceState {
   notificationPreferences: NotificationPreferences | null;
   isLoadingNotificationPreferences: boolean;
   isSavingNotificationPreferences: boolean;
+  savingNotificationPreferenceKeys: ReadonlySet<keyof NotificationPreferences>;
   error: string | null;
 }
 

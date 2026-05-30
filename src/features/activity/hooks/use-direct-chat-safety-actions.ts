@@ -82,6 +82,48 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
             ? ActivityApi.unmuteChat(chat.id)
             : ActivityApi.muteChat(chat.id),
       ),
+    onMutate: async () => {
+      await Promise.all([
+        queryClient.cancelQueries({ queryKey: ACTIVITY_CHATS_QUERY_KEY }),
+        queryClient.cancelQueries({
+          queryKey: APP_QUERY_KEYS.activity.directSelectionByChatId(chat.id),
+        }),
+      ]);
+
+      const previousChats = queryClient.getQueryData<ChatApi[]>(
+        ACTIVITY_CHATS_QUERY_KEY,
+      );
+      const previousSelection =
+        queryClient.getQueryData<ActivityDirectSelectionData>(
+          APP_QUERY_KEYS.activity.directSelectionByChatId(chat.id),
+        );
+      const optimisticChat = { ...chat, isMuted: !chat.isMuted };
+
+      queryClient.setQueryData<ChatApi[]>(
+        ACTIVITY_CHATS_QUERY_KEY,
+        (current) =>
+          current?.map((item) =>
+            item.id === optimisticChat.id
+              ? { ...item, isMuted: optimisticChat.isMuted }
+              : item,
+          ) ?? current,
+      );
+      queryClient.setQueryData<ActivityDirectSelectionData>(
+        APP_QUERY_KEYS.activity.directSelectionByChatId(chat.id),
+        (current) =>
+          current?.chat
+            ? {
+                ...current,
+                chat: {
+                  ...current.chat,
+                  isMuted: optimisticChat.isMuted,
+                },
+              }
+            : current,
+      );
+
+      return { previousChats, previousSelection };
+    },
     onSuccess: (updatedChat) => {
       queryClient.setQueryData<ChatApi[]>(
         ACTIVITY_CHATS_QUERY_KEY,
@@ -107,7 +149,17 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
             : current,
       );
     },
-    onError: async () => {
+    onError: async (_error, _variables, context) => {
+      queryClient.setQueryData(
+        ACTIVITY_CHATS_QUERY_KEY,
+        context?.previousChats,
+      );
+      queryClient.setQueryData(
+        APP_QUERY_KEYS.activity.directSelectionByChatId(chat.id),
+        context?.previousSelection,
+      );
+    },
+    onSettled: async () => {
       await Promise.allSettled([
         queryClient.invalidateQueries({ queryKey: ACTIVITY_CHATS_QUERY_KEY }),
         queryClient.invalidateQueries({

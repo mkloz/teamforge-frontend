@@ -146,6 +146,14 @@ export function useActivityFeed() {
     await runExclusiveActivityMutation(
       getActivityMutationKey("chat", chat.id, "pinned"),
       async () => {
+        const optimisticChat = { ...chat, isPinned: !chat.isPinned };
+
+        queryClient.setQueryData<ChatApi[]>(
+          ACTIVITY_CHATS_QUERY_KEY,
+          (current) => updateChatInList(current, optimisticChat),
+        );
+        syncChatSelectionCaches(queryClient, optimisticChat);
+
         try {
           const updatedChat = chat.isPinned
             ? await ActivityApi.unpinChat(chat.id)
@@ -177,6 +185,14 @@ export function useActivityFeed() {
     await runExclusiveActivityMutation(
       getActivityMutationKey("chat", chat.id, "muted"),
       async () => {
+        const optimisticChat = { ...chat, isMuted: !chat.isMuted };
+
+        queryClient.setQueryData<ChatApi[]>(
+          ACTIVITY_CHATS_QUERY_KEY,
+          (current) => updateChatInList(current, optimisticChat),
+        );
+        syncChatSelectionCaches(queryClient, optimisticChat);
+
         try {
           const updatedChat = chat.isMuted
             ? await ActivityApi.unmuteChat(chat.id)
@@ -208,6 +224,18 @@ export function useActivityFeed() {
     await runExclusiveActivityMutation(
       getActivityMutationKey("chat", chat.id, "read"),
       async () => {
+        const optimisticChat = {
+          ...chat,
+          hasUnread: false,
+          unreadCount: 0,
+        };
+
+        queryClient.setQueryData<ChatApi[]>(
+          ACTIVITY_CHATS_QUERY_KEY,
+          (current) => updateChatInList(current, optimisticChat),
+        );
+        syncChatSelectionCaches(queryClient, optimisticChat);
+
         try {
           const updatedChat = await ActivityApi.markChatRead(chat.id);
 
@@ -237,18 +265,18 @@ export function useActivityFeed() {
     await runExclusiveActivityMutation(
       getActivityMutationKey("saved-message", messageId, "remove"),
       async () => {
+        queryClient.setQueryData<SavedMessageApi[]>(
+          ACTIVITY_SAVED_MESSAGES_QUERY_KEY,
+          (current) =>
+            current?.filter((item) => item.messageId !== messageId) ?? current,
+        );
+        ActivityMessageCache.replace(snapshot.message.chatId, messageId, {
+          ...snapshot.message,
+          isSaved: false,
+        });
+
         try {
           await ActivityApi.unsaveMessage(snapshot.message.chatId, messageId);
-          queryClient.setQueryData<SavedMessageApi[]>(
-            ACTIVITY_SAVED_MESSAGES_QUERY_KEY,
-            (current) =>
-              current?.filter((item) => item.messageId !== messageId) ??
-              current,
-          );
-          ActivityMessageCache.replace(snapshot.message.chatId, messageId, {
-            ...snapshot.message,
-            isSaved: false,
-          });
         } catch (error) {
           await recoverSavedMessageMutation(queryClient, snapshot);
           showAppErrorToast(error, {

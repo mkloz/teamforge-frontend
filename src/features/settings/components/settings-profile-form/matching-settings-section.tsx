@@ -22,6 +22,7 @@ interface MatchingSettingsSectionProps {
   notificationPreferences: NotificationPreferences | null;
   isLoadingNotificationPreferences: boolean;
   isSavingNotificationPreferences: boolean;
+  savingNotificationPreferenceKeys: ReadonlySet<keyof NotificationPreferences>;
   error: string | null;
   onChange: (
     values: Pick<
@@ -35,14 +36,12 @@ export function MatchingSettingsSection({
   currentUser,
   notificationPreferences,
   isLoadingNotificationPreferences,
-  isSavingNotificationPreferences,
+  savingNotificationPreferenceKeys,
   error,
   onChange,
 }: MatchingSettingsSectionProps) {
   const isDisabled =
-    isLoadingNotificationPreferences ||
-    isSavingNotificationPreferences ||
-    !notificationPreferences;
+    isLoadingNotificationPreferences || !notificationPreferences;
 
   return (
     <section className="flex flex-col gap-8">
@@ -73,7 +72,10 @@ export function MatchingSettingsSection({
           checked={notificationPreferences?.autoMatchingEnabled ?? true}
           title="Automatic group forming"
           description="Allow TeamForge to include you when someone else forges an automatic group."
-          disabled={isDisabled}
+          disabled={
+            isDisabled ||
+            savingNotificationPreferenceKeys.has("autoMatchingEnabled")
+          }
           onToggle={() => {
             if (!notificationPreferences) {
               return;
@@ -89,7 +91,10 @@ export function MatchingSettingsSection({
 
         <MatchingThresholdControl
           value={notificationPreferences?.minCompatibilityScore ?? 0}
-          disabled={isDisabled}
+          disabled={
+            isDisabled ||
+            savingNotificationPreferenceKeys.has("minCompatibilityScore")
+          }
           onChange={(value) => {
             if (!notificationPreferences) {
               return;

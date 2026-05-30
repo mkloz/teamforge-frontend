@@ -12,7 +12,7 @@ interface PreferenceGroupProps {
   items: readonly BooleanPreferenceItem[];
   notificationPreferences: NotificationPreferences | null;
   isLoading?: boolean;
-  isSaving: boolean;
+  savingPreferenceKeys: ReadonlySet<keyof NotificationPreferences>;
   emptyMessage: string;
   onChange: (
     key: BooleanSettingsPreferenceKey,
@@ -26,7 +26,7 @@ export function PreferenceGroup({
   items,
   notificationPreferences,
   isLoading = false,
-  isSaving,
+  savingPreferenceKeys,
   emptyMessage,
   onChange,
 }: PreferenceGroupProps) {
@@ -44,7 +44,7 @@ export function PreferenceGroup({
           <PreferenceRowList
             items={items}
             notificationPreferences={notificationPreferences}
-            disabled={isSaving}
+            savingPreferenceKeys={savingPreferenceKeys}
             onChange={onChange}
           />
         ) : (

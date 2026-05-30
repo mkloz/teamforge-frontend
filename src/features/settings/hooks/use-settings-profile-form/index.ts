@@ -61,6 +61,8 @@ export function useSettingsProfileForm({
     updatePrivacyPreference: preferences.updatePrivacyPreference,
     isSavingNotificationPreferences:
       preferences.isSavingNotificationPreferences,
+    savingNotificationPreferenceKeys:
+      preferences.savingNotificationPreferenceKeys,
     deleteAccount: deleteAccount.deleteAccount,
     isDeletingAccount: deleteAccount.isDeletingAccount,
     deleteAccountError: deleteAccount.deleteAccountError,

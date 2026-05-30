@@ -57,6 +57,19 @@ export const ActivityMessageMutationActions = {
           selectedId,
           currentUserParticipant,
         );
+        const cachedMessage = ActivityMessageCache.getMessages(chatId).find(
+          (item) => item.id === messageId,
+        );
+
+        if (cachedMessage) {
+          ActivityMessageCache.replace(chatId, messageId, {
+            ...cachedMessage,
+            content,
+            updatedAt: new Date().toISOString(),
+          });
+          ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
+        }
+
         const updatedMessageResult = await ActivityApi.updateMessage(
           chatId,
           messageId,
@@ -128,6 +141,10 @@ export const ActivityMessageMutationActions = {
           return messageId;
         }
 
+        ActivityMessageCache.remove(chatId, messageId);
+        context.removePinnedMessage(chatId, messageId);
+        ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
+
         await ActivityApi.deleteMessage(chatId, messageId).catch(
           async (error: unknown) => {
             await recoverMessageMutationCaches({
@@ -140,9 +157,6 @@ export const ActivityMessageMutationActions = {
           },
         );
         forgetRetryableMessage(messageId);
-        ActivityMessageCache.remove(chatId, messageId);
-        context.removePinnedMessage(chatId, messageId);
-        ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
         await appQueryClient.invalidateQueries({
           queryKey: ACTIVITY_SAVED_MESSAGES_QUERY_KEY,
         });
@@ -244,6 +258,15 @@ export const ActivityMessageMutationActions = {
           selectedId,
           currentUserParticipant,
         );
+        const optimisticMessage = {
+          ...message,
+          isSaved: !isSaved,
+        };
+
+        ActivityMessageCache.replace(chatId, message.id, optimisticMessage);
+        context.syncPinnedMessage(chatId, optimisticMessage);
+        ActivityMessageCache.syncChatLastMessageFromMessagesCache(chatId);
+
         const updatedMessage = await (isSaved
           ? ActivityApi.unsaveMessage(chatId, message.id)
           : ActivityApi.saveMessage(chatId, message.id)

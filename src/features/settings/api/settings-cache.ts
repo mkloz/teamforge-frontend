@@ -39,6 +39,33 @@ export const SettingsCache = {
     );
   },
 
+  async cancelNotificationPreferences() {
+    await appQueryClient.cancelQueries({
+      queryKey: SETTINGS_NOTIFICATION_PREFERENCES_QUERY_KEY,
+    });
+  },
+
+  getNotificationPreferencesSnapshot() {
+    return appQueryClient.getQueryData<NotificationPreferences>(
+      SETTINGS_NOTIFICATION_PREFERENCES_QUERY_KEY,
+    );
+  },
+
+  restoreNotificationPreferences(
+    preferences: NotificationPreferences | undefined,
+  ) {
+    appQueryClient.setQueryData(
+      SETTINGS_NOTIFICATION_PREFERENCES_QUERY_KEY,
+      preferences,
+    );
+  },
+
+  invalidateNotificationPreferences() {
+    return appQueryClient.invalidateQueries({
+      queryKey: SETTINGS_NOTIFICATION_PREFERENCES_QUERY_KEY,
+    });
+  },
+
   invalidateSessions() {
     return appQueryClient.invalidateQueries({
       queryKey: SETTINGS_SESSIONS_QUERY_KEY,

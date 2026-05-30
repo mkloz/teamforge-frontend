@@ -1,30 +1,38 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Clock } from "lucide-react";
-import { buildActivityGroupNavigation } from "@/features/activity/lib/activity-route";
+import {
+  ArrowRight,
+  Banknote,
+  Clock,
+  MapPinned,
+  Tag,
+  Wifi,
+} from "lucide-react";
+import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import type { PlannedGroup } from "@/features/home/lib/home-contract";
 import { getPlanTimingLabel } from "@/features/home/lib/home-insights";
-import { Avatar } from "@/shared/components/common/avatar";
-import { cn } from "@/shared/lib/utils";
 import {
-  getPlanCalendarParts,
-  getPlanMemberPreviews,
-  planStatusConfig,
-} from "./plan-card-model";
+  getHomePlanCategoryLabel,
+  getHomePlanCostLabel,
+  getHomePlanLocationLabel,
+} from "@/features/home/lib/home-plan-presenters";
+import { cn } from "@/shared/lib/utils";
+import { getPlanCalendarParts, planStatusConfig } from "./plan-card-model";
 
 interface PlanCardProps {
-  group: PlannedGroup;
+  plannedGroup: PlannedGroup;
 }
 
-export function PlanCard({ group }: PlanCardProps) {
-  const plan = group.plan;
+export function PlanCard({ plannedGroup }: PlanCardProps) {
+  const plan = plannedGroup.plan;
   const status = planStatusConfig[plan.status] || planStatusConfig.DRAFT;
   const StatusIcon = status.icon;
   const { dayName, dayNum, month } = getPlanCalendarParts(plan);
   const timeStr = getPlanTimingLabel(plan);
   const isActionable = plan.status === "PROPOSED";
-  const memberPreviews = getPlanMemberPreviews(group);
-  const navigation = buildActivityGroupNavigation(group.id, {
-    panel: "group",
+  const locationLabel = getHomePlanLocationLabel(plan);
+  const LocationIcon = plan.locationMode === "ONLINE" ? Wifi : MapPinned;
+  const navigation = buildGroupPlanDetailNavigation(plannedGroup.id, {
+    source: "home",
     plan: plan.id,
   });
 
@@ -37,6 +45,7 @@ export function PlanCard({ group }: PlanCardProps) {
     >
       <Link
         {...navigation}
+        aria-label={`Open ${plan.title} plan`}
         className="grid grid-cols-[4.25rem_minmax(0,1fr)] items-center gap-x-3 gap-y-2 py-3.5 pr-2 pl-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:grid-cols-[4.25rem_minmax(0,1fr)_auto] sm:pr-3 md:gap-4"
       >
         <div className="relative flex h-full min-h-16 flex-col justify-center pl-9">
@@ -62,8 +71,9 @@ export function PlanCard({ group }: PlanCardProps) {
           <p className="truncate font-bold text-foreground text-sm leading-snug transition-colors duration-200 group-hover:text-forge-teal">
             {plan.title}
           </p>
-          <p className="mt-0.5 truncate font-medium text-muted-foreground text-xs">
-            {group.name}
+          <p className="mt-0.5 flex min-w-0 items-center gap-1 truncate font-medium text-muted-foreground text-xs">
+            <LocationIcon className="size-3 shrink-0" aria-hidden="true" />
+            <span className="truncate">{locationLabel}</span>
           </p>
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
             <span className="flex items-center gap-1 font-semibold text-muted-foreground text-xs">
@@ -79,29 +89,18 @@ export function PlanCard({ group }: PlanCardProps) {
               <StatusIcon className="size-3" aria-hidden="true" />
               {status.label}
             </span>
+            <span className="flex items-center gap-1 font-semibold text-muted-foreground text-xs">
+              <Tag className="size-3" aria-hidden="true" />
+              {getHomePlanCategoryLabel(plan)}
+            </span>
+            <span className="flex items-center gap-1 font-semibold text-muted-foreground text-xs">
+              <Banknote className="size-3" aria-hidden="true" />
+              {getHomePlanCostLabel(plan)}
+            </span>
           </div>
         </div>
 
-        <div className="col-start-2 flex items-center justify-between gap-4 sm:col-start-3 sm:min-w-30 sm:justify-end">
-          <div className="flex gap-1 sm:justify-end">
-            <span className="sr-only">{memberPreviews.length} members</span>
-            {memberPreviews.slice(0, 3).map((member) => (
-              <Avatar
-                key={member.id}
-                src={member.avatar}
-                name={member.name}
-                imageSize={64}
-                className="size-7 border-2 border-card bg-muted shadow-xs sm:size-8"
-                fallbackClassName="text-xs"
-              />
-            ))}
-            {memberPreviews.length > 3 && (
-              <div className="flex size-7 items-center justify-center rounded-full border-2 border-card bg-muted font-extrabold text-muted-foreground text-xs shadow-xs sm:size-8">
-                +{memberPreviews.length - 3}
-              </div>
-            )}
-          </div>
-
+        <div className="col-start-2 flex items-center justify-end sm:col-start-3">
           <span
             className={cn(
               "ml-auto inline-flex h-8 shrink-0 items-center gap-1 rounded-md px-2.5 py-1 font-black text-xs sm:ml-0",

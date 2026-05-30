@@ -1,8 +1,13 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { ExploreCache } from "@/features/explore/api/explore-cache";
 import { ExploreCommands } from "@/features/explore/api/explore-commands";
 import { ExploreQueryFactory } from "@/features/explore/api/explore-query-factory";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
+
+interface FriendRequestMutationContext {
+  previousRequests: ReturnType<typeof ExploreCache.getFriendRequestsSnapshot>;
+}
 
 export function useExploreFriendRequests() {
   const requestsQuery = useQuery(ExploreQueryFactory.friendRequests());
@@ -14,6 +19,14 @@ export function useExploreFriendRequests() {
     mutationKey: ["explore", "friend-request", "accept"],
     mutationFn: (requesterId: string) =>
       ExploreCommands.acceptFriendRequest(requesterId),
+    onMutate: async (requesterId) => {
+      await ExploreCache.cancelFriendRequests();
+
+      const previousRequests = ExploreCache.getFriendRequestsSnapshot();
+      ExploreCache.removeFriendRequest(requesterId);
+
+      return { previousRequests } satisfies FriendRequestMutationContext;
+    },
     onSuccess: (result) => {
       trackMutationOutcome(
         trackedMutationNames.exploreAcceptFriendRequest,
@@ -23,7 +36,8 @@ export function useExploreFriendRequests() {
         },
       );
     },
-    onError: (_error) => {
+    onError: (_error, _requesterId, context) => {
+      ExploreCache.restoreFriendRequests(context?.previousRequests);
       trackMutationOutcome(
         trackedMutationNames.exploreAcceptFriendRequest,
         "error",
@@ -38,6 +52,14 @@ export function useExploreFriendRequests() {
     mutationKey: ["explore", "friend-request", "decline"],
     mutationFn: (requesterId: string) =>
       ExploreCommands.declineFriendRequest(requesterId),
+    onMutate: async (requesterId) => {
+      await ExploreCache.cancelFriendRequests();
+
+      const previousRequests = ExploreCache.getFriendRequestsSnapshot();
+      ExploreCache.removeFriendRequest(requesterId);
+
+      return { previousRequests } satisfies FriendRequestMutationContext;
+    },
     onSuccess: (result) => {
       trackMutationOutcome(
         trackedMutationNames.exploreDeclineFriendRequest,
@@ -47,7 +69,8 @@ export function useExploreFriendRequests() {
         },
       );
     },
-    onError: (_error) => {
+    onError: (_error, _requesterId, context) => {
+      ExploreCache.restoreFriendRequests(context?.previousRequests);
       trackMutationOutcome(
         trackedMutationNames.exploreDeclineFriendRequest,
         "error",

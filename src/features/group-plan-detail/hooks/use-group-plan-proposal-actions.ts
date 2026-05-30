@@ -1,11 +1,15 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type {
   CreateGroupPlanProposalPayload,
   VoteGroupPlanProposalPayload,
 } from "@/features/group-plan-detail/api/group-plan-detail.api";
 import { GroupPlanDetailCommands } from "@/features/group-plan-detail/api/group-plan-detail-commands";
+import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
+import { useCurrentUserQuery } from "@/shared/api/current-user-query";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
+import type { PlanProposal } from "@/shared/schemas";
 
 interface UseGroupPlanProposalActionsOptions {
   groupId: string;
@@ -17,10 +21,87 @@ interface ProposalVoteInput {
   vote: VoteGroupPlanProposalPayload["vote"];
 }
 
+interface ProposalMutationContext {
+  previousDetail: GroupPlanDetail | undefined;
+}
+
+function applyOptimisticProposalVote(
+  proposal: PlanProposal,
+  userId: string,
+  vote: VoteGroupPlanProposalPayload["vote"],
+) {
+  const now = new Date().toISOString();
+
+  return {
+    ...proposal,
+    updatedAt: now,
+    version: Date.parse(now),
+    votes: [
+      ...proposal.votes.filter((item) => item.userId !== userId),
+      {
+        userId,
+        vote,
+        createdAt: now,
+      },
+    ],
+  } satisfies PlanProposal;
+}
+
+function applyOptimisticProposalWithdraw(proposal: PlanProposal) {
+  const now = new Date().toISOString();
+
+  return {
+    ...proposal,
+    resolvedAt: now,
+    status: "WITHDRAWN",
+    updatedAt: now,
+    version: Date.parse(now),
+  } satisfies PlanProposal;
+}
+
 export function useGroupPlanProposalActions({
   groupId,
   planId,
 }: UseGroupPlanProposalActionsOptions) {
+  const queryClient = useQueryClient();
+  const currentUserQuery = useCurrentUserQuery();
+  const detailQueryKey = APP_QUERY_KEYS.groupPlanDetail.byId(groupId);
+
+  async function optimisticallyUpdateProposal(
+    updater: (proposal: PlanProposal) => PlanProposal,
+  ) {
+    await queryClient.cancelQueries({ queryKey: detailQueryKey });
+
+    const previousDetail =
+      queryClient.getQueryData<GroupPlanDetail>(detailQueryKey);
+
+    queryClient.setQueryData<GroupPlanDetail>(detailQueryKey, (current) => {
+      if (!current) {
+        return current;
+      }
+
+      const nextProposals = current.planning.proposals.map(updater);
+      const pendingProposalCount = nextProposals.filter(
+        (proposal) => proposal.status === "PENDING",
+      ).length;
+
+      return {
+        ...current,
+        planning: {
+          ...current.planning,
+          pendingProposalCount,
+          proposals: nextProposals,
+        },
+      };
+    });
+
+    return { previousDetail } satisfies ProposalMutationContext;
+  }
+
+  function restoreDetail(context: ProposalMutationContext | undefined) {
+    queryClient.setQueryData(detailQueryKey, context?.previousDetail);
+  }
+
   const createMutation = useMutation({
     meta: {
       errorToastMessage: "We couldn't suggest that change right now.",
@@ -70,6 +151,16 @@ export function useGroupPlanProposalActions({
     mutationKey: ["group-plan-detail", "proposal", "vote", groupId],
     mutationFn: ({ proposalId, vote }: ProposalVoteInput) =>
       GroupPlanDetailCommands.votePlanProposal(groupId, proposalId, { vote }),
+    onMutate: ({ proposalId, vote }) =>
+      optimisticallyUpdateProposal((proposal) =>
+        proposal.id === proposalId && currentUserQuery.data?.id
+          ? applyOptimisticProposalVote(
+              proposal,
+              currentUserQuery.data.id,
+              vote,
+            )
+          : proposal,
+      ),
     onSuccess: (result, input) => {
       trackMutationOutcome(
         trackedMutationNames.groupPlanVoteProposal,
@@ -82,7 +173,8 @@ export function useGroupPlanProposalActions({
         },
       );
     },
-    onError: (_error) => {
+    onError: (_error, _input, context) => {
+      restoreDetail(context);
       trackMutationOutcome(
         trackedMutationNames.groupPlanVoteProposal,
         "error",
@@ -101,6 +193,12 @@ export function useGroupPlanProposalActions({
     mutationKey: ["group-plan-detail", "proposal", "withdraw", groupId],
     mutationFn: (proposalId: string) =>
       GroupPlanDetailCommands.withdrawPlanProposal(groupId, proposalId),
+    onMutate: (proposalId) =>
+      optimisticallyUpdateProposal((proposal) =>
+        proposal.id === proposalId
+          ? applyOptimisticProposalWithdraw(proposal)
+          : proposal,
+      ),
     onSuccess: (result) => {
       trackMutationOutcome(
         trackedMutationNames.groupPlanWithdrawProposal,
@@ -112,7 +210,8 @@ export function useGroupPlanProposalActions({
         },
       );
     },
-    onError: (_error) => {
+    onError: (_error, _proposalId, context) => {
+      restoreDetail(context);
       trackMutationOutcome(
         trackedMutationNames.groupPlanWithdrawProposal,
         "error",

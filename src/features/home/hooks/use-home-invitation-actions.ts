@@ -1,7 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import { HomeCache } from "@/features/home/api/home-cache";
 import { HomeCommands } from "@/features/home/api/home-commands";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
+
+interface InvitationMutationContext {
+  previousInvitations: ReturnType<typeof HomeCache.getInvitationsSnapshot>;
+}
 
 export function useHomeInvitationActions() {
   const [actionError, setActionError] = useState<string | null>(null);
@@ -16,6 +21,17 @@ export function useHomeInvitationActions() {
     },
     mutationKey: ["home", "invitation", "accept"],
     mutationFn: (inviteId: string) => HomeCommands.acceptInvitation(inviteId),
+    onMutate: async (inviteId) => {
+      await HomeCache.cancelInvitations();
+
+      const previousInvitations = HomeCache.getInvitationsSnapshot();
+      HomeCache.removeInvitation(inviteId);
+
+      return { previousInvitations } satisfies InvitationMutationContext;
+    },
+    onError: (_error, _inviteId, context) => {
+      HomeCache.restoreInvitations(context?.previousInvitations);
+    },
   });
 
   const {
@@ -28,6 +44,17 @@ export function useHomeInvitationActions() {
     },
     mutationKey: ["home", "invitation", "decline"],
     mutationFn: (inviteId: string) => HomeCommands.declineInvitation(inviteId),
+    onMutate: async (inviteId) => {
+      await HomeCache.cancelInvitations();
+
+      const previousInvitations = HomeCache.getInvitationsSnapshot();
+      HomeCache.removeInvitation(inviteId);
+
+      return { previousInvitations } satisfies InvitationMutationContext;
+    },
+    onError: (_error, _inviteId, context) => {
+      HomeCache.restoreInvitations(context?.previousInvitations);
+    },
   });
 
   async function acceptInvitation(inviteId: string) {

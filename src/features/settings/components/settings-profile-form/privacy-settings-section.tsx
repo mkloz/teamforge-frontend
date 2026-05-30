@@ -34,6 +34,7 @@ interface PrivacySettingsSectionProps {
   notificationPreferences: NotificationPreferences | null;
   isLoadingNotificationPreferences: boolean;
   isSavingNotificationPreferences: boolean;
+  savingNotificationPreferenceKeys: ReadonlySet<keyof NotificationPreferences>;
   error: string | null;
   onChange: (
     values: Pick<
@@ -46,14 +47,12 @@ interface PrivacySettingsSectionProps {
 export function PrivacySettingsSection({
   notificationPreferences,
   isLoadingNotificationPreferences,
-  isSavingNotificationPreferences,
+  savingNotificationPreferenceKeys,
   error,
   onChange,
 }: PrivacySettingsSectionProps) {
   const isDisabled =
-    isLoadingNotificationPreferences ||
-    isSavingNotificationPreferences ||
-    !notificationPreferences;
+    isLoadingNotificationPreferences || !notificationPreferences;
 
   return (
     <section className="flex flex-col gap-6">
@@ -69,7 +68,9 @@ export function PrivacySettingsSection({
             checked={notificationPreferences?.[item.key] ?? true}
             title={item.title}
             description={item.description}
-            disabled={isDisabled}
+            disabled={
+              isDisabled || savingNotificationPreferenceKeys.has(item.key)
+            }
             onToggle={() => {
               if (!notificationPreferences) {
                 return;

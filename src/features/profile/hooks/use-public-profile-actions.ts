@@ -11,9 +11,10 @@ import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import type { FriendshipApi, User } from "@/shared/schemas";
 
 type PublicProfileActionUser = Pick<User, "id">;
+type FriendshipLabelState = Pick<FriendshipApi, "receiverId" | "status">;
 
 function isIncomingRequest(
-  friendship: FriendshipApi | null | undefined,
+  friendship: FriendshipLabelState | null | undefined,
   currentUserId: string | null,
 ) {
   return (
@@ -22,7 +23,7 @@ function isIncomingRequest(
 }
 
 function getConnectLabel(
-  friendship: FriendshipApi | null | undefined,
+  friendship: FriendshipLabelState | null | undefined,
   currentUserId: string | null,
 ) {
   if (friendship?.status === "ACCEPTED") {
@@ -91,15 +92,22 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
     },
   });
 
-  const connectLabel = getConnectLabel(friendship, currentUserId);
+  const displayFriendship: FriendshipLabelState | null =
+    connectMutation.isPending && currentUserId
+      ? incomingRequest
+        ? { receiverId: currentUserId, status: "ACCEPTED" }
+        : { receiverId: user.id, status: "PENDING" }
+      : friendship;
+  const connectLabel = getConnectLabel(displayFriendship, currentUserId);
   const connectDisabled =
     !currentUserId ||
     currentUserQuery.isLoading ||
+    connectMutation.isPending ||
     isViewerProfile ||
     friendshipQuery.isLoading ||
-    friendship?.status === "ACCEPTED" ||
-    (friendship?.status === "PENDING" && !incomingRequest) ||
-    friendship?.status === "BLOCKED";
+    displayFriendship?.status === "ACCEPTED" ||
+    (displayFriendship?.status === "PENDING" && !incomingRequest) ||
+    displayFriendship?.status === "BLOCKED";
 
   return {
     connectDisabled,

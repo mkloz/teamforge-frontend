@@ -24,7 +24,11 @@ interface RecommendedGroupCardProps {
 export function RecommendedGroupCard({ group }: RecommendedGroupCardProps) {
   const joinMutation = useJoinHomeRecommendedGroup(group.id);
   const isFull = isExploreGroupFull(group);
-  const joinResult = joinMutation.data?.data.status;
+  const joinResult =
+    joinMutation.data?.data.status ??
+    (joinMutation.isPending && group.access === "BY_REQUEST"
+      ? "REQUESTED"
+      : undefined);
   const actionLabel = isFull
     ? "Full"
     : joinResult === "JOINED"

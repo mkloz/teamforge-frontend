@@ -72,8 +72,8 @@ export function PrimaryAction({ move }: { move: HomeNextMove }) {
     return (
       <Button asChild variant="primary" className={heroActionClassName}>
         <Link
-          {...buildActivityGroupNavigation(move.groupId, {
-            panel: "group",
+          {...buildGroupPlanDetailNavigation(move.groupId, {
+            source: "home",
             plan: move.planId,
           })}
         >

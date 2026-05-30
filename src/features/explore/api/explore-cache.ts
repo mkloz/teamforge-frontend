@@ -86,6 +86,31 @@ export const ExploreCache = {
     );
   },
 
+  async cancelFriendRequests() {
+    await appQueryClient.cancelQueries({
+      queryKey: EXPLORE_FRIEND_REQUESTS_QUERY_KEY,
+    });
+  },
+
+  getFriendRequestsSnapshot() {
+    return appQueryClient.getQueryData<FriendshipApi[]>(
+      EXPLORE_FRIEND_REQUESTS_QUERY_KEY,
+    );
+  },
+
+  removeFriendRequest(requesterId: string) {
+    appQueryClient.setQueryData<FriendshipApi[] | undefined>(
+      EXPLORE_FRIEND_REQUESTS_QUERY_KEY,
+      (current) =>
+        current?.filter((request) => request.requesterId !== requesterId) ??
+        current,
+    );
+  },
+
+  restoreFriendRequests(requests: FriendshipApi[] | undefined) {
+    appQueryClient.setQueryData(EXPLORE_FRIEND_REQUESTS_QUERY_KEY, requests);
+  },
+
   removeJoinedGroup(
     result: ExploreJoinResult | ApiResponseWithRequestId<ExploreJoinResult>,
   ) {

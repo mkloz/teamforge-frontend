@@ -14,6 +14,7 @@ interface NotificationSettingsSectionProps {
   notificationPreferences: NotificationPreferences | null;
   isLoadingNotificationPreferences: boolean;
   isSavingNotificationPreferences: boolean;
+  savingNotificationPreferenceKeys: ReadonlySet<keyof NotificationPreferences>;
   error: string | null;
   onChange: (
     key: BooleanSettingsPreferenceKey,
@@ -24,7 +25,7 @@ interface NotificationSettingsSectionProps {
 export function NotificationSettingsSection({
   notificationPreferences,
   isLoadingNotificationPreferences,
-  isSavingNotificationPreferences,
+  savingNotificationPreferenceKeys,
   error,
   onChange,
 }: NotificationSettingsSectionProps) {
@@ -46,7 +47,7 @@ export function NotificationSettingsSection({
         items={NOTIFICATION_PREFERENCE_ITEMS}
         notificationPreferences={notificationPreferences}
         isLoading={isLoadingNotificationPreferences}
-        isSaving={isSavingNotificationPreferences}
+        savingPreferenceKeys={savingNotificationPreferenceKeys}
         emptyMessage="We couldn't load your notification preferences right now."
         onChange={onChange}
       />
@@ -57,7 +58,7 @@ export function NotificationSettingsSection({
           description="These control which alerts TeamForge is allowed to send to your inbox."
           items={EMAIL_PREFERENCE_ITEMS}
           notificationPreferences={notificationPreferences}
-          isSaving={isSavingNotificationPreferences}
+          savingPreferenceKeys={savingNotificationPreferenceKeys}
           emptyMessage="We couldn't load your email preferences right now."
           onChange={onChange}
         />
