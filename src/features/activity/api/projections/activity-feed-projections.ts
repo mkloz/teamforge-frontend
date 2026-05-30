@@ -114,14 +114,13 @@ function enrichFeedItems(
     const planProposals =
       item.kind === "group"
         ? (meta.planProposalsByGroupId?.[item.id] ??
-          item.group?.plan?.proposals ??
-          [])
-        : [];
+          item.group?.plan?.proposals)
+        : undefined;
 
     return {
       ...item,
       activeProposalCount:
-        item.kind === "group"
+        item.kind === "group" && planProposals
           ? countPendingUnvotedProposals(planProposals, currentUserId)
           : undefined,
       group:
@@ -130,7 +129,7 @@ function enrichFeedItems(
               ...item.group,
               plan: {
                 ...item.group.plan,
-                proposals: planProposals,
+                proposals: planProposals ?? item.group.plan.proposals,
               },
             }
           : item.group,

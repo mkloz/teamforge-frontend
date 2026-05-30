@@ -51,7 +51,7 @@ export const SavedMessagesChatListItem = memo(
         <ContextMenuTrigger asChild>
           <div
             className={cn(
-              "group/item relative flex w-full cursor-pointer select-none items-center text-left outline-none transition duration-200",
+              "activity-list-row-containment group/item relative flex w-full cursor-pointer select-none items-center text-left outline-none transition duration-200",
               isCompact ? "gap-2.5 px-3 py-2" : "gap-3.5 px-4 py-3.5",
               isSelected ? "bg-muted/60" : "hover:bg-muted/30",
             )}

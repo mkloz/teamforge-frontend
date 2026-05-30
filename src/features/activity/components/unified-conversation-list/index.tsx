@@ -1,4 +1,4 @@
-import { Fragment, lazy, memo, Suspense } from "react";
+import { Fragment, lazy, memo, Suspense, useEffect, useState } from "react";
 import { useSearchHeaderFade } from "@/features/activity/hooks/use-search-header-fade";
 import type {
   FilterChip,
@@ -71,6 +71,8 @@ const FILTERS: { key: FilterChip; label: string }[] = [
 ];
 
 const SEARCH_H = 56;
+const INITIAL_CONVERSATION_RENDER_LIMIT = 24;
+const FULL_LIST_REVEAL_DELAY_MS = 900;
 
 export const UnifiedConversationList = memo(function UnifiedConversationList({
   items,
@@ -153,6 +155,39 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
       : activeFilter === "pinned"
         ? "Search pinned chats..."
         : "Search conversations...";
+  const shouldStageConversationItems =
+    !isSavedFilter &&
+    activeFilter === "all" &&
+    searchQuery.trim().length === 0 &&
+    items.length > INITIAL_CONVERSATION_RENDER_LIMIT;
+  const [isFullListVisible, setIsFullListVisible] = useState(
+    !shouldStageConversationItems,
+  );
+  const renderedItems =
+    shouldStageConversationItems && !isFullListVisible
+      ? items.slice(0, INITIAL_CONVERSATION_RENDER_LIMIT)
+      : items;
+
+  useEffect(() => {
+    let timeoutId: number | undefined;
+
+    if (!shouldStageConversationItems) {
+      setIsFullListVisible(true);
+    } else {
+      setIsFullListVisible(false);
+
+      timeoutId = window.setTimeout(() => {
+        setIsFullListVisible(true);
+      }, FULL_LIST_REVEAL_DELAY_MS);
+    }
+
+    return () => {
+      if (timeoutId !== undefined) {
+        window.clearTimeout(timeoutId);
+      }
+    };
+  }, [shouldStageConversationItems]);
+
   function openSavedMessagesChat() {
     if (searchQuery) {
       onSearchChange("");
@@ -248,7 +283,7 @@ export const UnifiedConversationList = memo(function UnifiedConversationList({
           ) : (
             <>
               {savedChatIndex === 0 ? savedMessagesChatItem : null}
-              {items.map((item, index) => (
+              {renderedItems.map((item, index) => (
                 <Fragment key={`${item.kind}-${item.id}`}>
                   <UnifiedConversationListItem
                     item={item}

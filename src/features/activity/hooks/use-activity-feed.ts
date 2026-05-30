@@ -1,10 +1,9 @@
 import {
   type QueryClient,
-  useQueries,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useDeferredValue } from "react";
+import { useDeferredValue, useEffect, useState } from "react";
 import { ActivityApi } from "@/features/activity/api/activity.api";
 import { ActivityMessageCache } from "@/features/activity/api/activity-message-cache";
 import {
@@ -29,12 +28,9 @@ import { useActivityStore } from "@/features/activity/store/activity.store";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { showAppErrorToast } from "@/shared/lib/error-toast";
-import type {
-  ChatApi,
-  GroupApi,
-  PlanProposal,
-  SavedMessageApi,
-} from "@/shared/schemas";
+import type { ChatApi, SavedMessageApi } from "@/shared/schemas";
+
+const FEED_ENHANCEMENT_DELAY_MS = 2500;
 
 export function useActivityFeed() {
   const queryClient = useQueryClient();
@@ -53,19 +49,18 @@ export function useActivityFeed() {
   const groupsQuery = useQuery(ActivityQueryFactory.groups());
   const chatsQuery = useQuery(ActivityQueryFactory.chats());
   const friendshipsQuery = useQuery(ActivityQueryFactory.friendships());
-  const savedMessagesQuery = useQuery(ActivityQueryFactory.savedMessages());
-  const groupsWithPlan = (groupsQuery.data ?? []).filter(hasCurrentPlan);
-  const planProposalQueries = useQueries({
-    queries: groupsWithPlan.map((group) => ({
-      queryKey: APP_QUERY_KEYS.activity.planProposals(group.plan.id),
-      queryFn: () => ActivityApi.getPlanProposals(group.plan.id),
-      staleTime: 30_000,
-    })),
-  });
-  const planProposalsByGroupId = mapPlanProposalsByGroupId(
-    groupsWithPlan,
-    planProposalQueries.map((query) => query.data),
+  const hasFeedBaseData = Boolean(
+    currentUserQuery.data &&
+      groupsQuery.data &&
+      chatsQuery.data &&
+      friendshipsQuery.data,
   );
+  const [shouldLoadFeedEnhancements, setShouldLoadFeedEnhancements] =
+    useState(false);
+  const savedMessagesQuery = useQuery({
+    ...ActivityQueryFactory.savedMessages(),
+    enabled: activeFilter === "saved" || shouldLoadFeedEnhancements,
+  });
   const savedMessages = currentUserQuery.data
     ? mapSavedMessages(savedMessagesQuery.data ?? [], currentUserQuery.data.id)
     : [];
@@ -75,6 +70,24 @@ export function useActivityFeed() {
   const pinnedConversationKeys = getPinnedConversationKeys(
     chatsQuery.data ?? [],
   );
+
+  useEffect(() => {
+    let timeoutId: number | undefined;
+
+    if (!hasFeedBaseData) {
+      setShouldLoadFeedEnhancements(false);
+    } else {
+      timeoutId = window.setTimeout(() => {
+        setShouldLoadFeedEnhancements(true);
+      }, FEED_ENHANCEMENT_DELAY_MS);
+    }
+
+    return () => {
+      if (timeoutId !== undefined) {
+        window.clearTimeout(timeoutId);
+      }
+    };
+  }, [hasFeedBaseData]);
 
   const feedData =
     currentUserQuery.data &&
@@ -91,7 +104,6 @@ export function useActivityFeed() {
           typingByChatId,
           {
             pinnedConversationKeys,
-            planProposalsByGroupId,
             savedMessagesById,
           },
         )
@@ -107,7 +119,9 @@ export function useActivityFeed() {
   const isSavedMessagesError =
     savedMessagesQuery.isError && !savedMessagesQuery.data;
   const isSavedMessagesLoading =
-    savedMessagesQuery.isPending && !savedMessagesQuery.data;
+    activeFilter === "saved" &&
+    savedMessagesQuery.isPending &&
+    !savedMessagesQuery.data;
   const isFeedError = hasBaseDataError || hasSavedMessagesError;
   const isFeedRetrying =
     currentUserQuery.isFetching ||
@@ -304,21 +318,6 @@ function mapSavedMessages(
     .sort(
       (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime(),
     );
-}
-
-function hasCurrentPlan(
-  group: GroupApi,
-): group is GroupApi & { plan: NonNullable<GroupApi["plan"]> } {
-  return group.plan != null;
-}
-
-function mapPlanProposalsByGroupId(
-  groups: Array<GroupApi & { plan: NonNullable<GroupApi["plan"]> }>,
-  proposalResults: Array<PlanProposal[] | undefined>,
-) {
-  return Object.fromEntries(
-    groups.map((group, index) => [group.id, proposalResults[index] ?? []]),
-  );
 }
 
 function getPinnedConversationKeys(chats: ChatApi[]) {

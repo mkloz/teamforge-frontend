@@ -30,9 +30,9 @@ export const FilterChipItem = memo(function FilterChipItem({
         "transition-all duration-150 ease-out",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-1",
         "disabled:cursor-not-allowed disabled:opacity-50",
-        "border-border/45 bg-card/35 text-slate-muted hover:-translate-y-1 hover:border-button-primary-border hover:bg-forge-teal hover:text-white hover:shadow-button-primary active:translate-y-0 active:shadow-none",
+        "border-border/45 bg-card/35 text-slate-muted hover:-translate-y-1 hover:border-button-primary-border hover:bg-forge-teal-readable hover:text-white hover:shadow-button-primary active:translate-y-0 active:shadow-none",
         isActive &&
-          "z-10 border-button-primary-border bg-forge-teal text-white",
+          "z-10 border-button-primary-border bg-forge-teal-readable text-white",
         className,
       )}
     >

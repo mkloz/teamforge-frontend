@@ -33,6 +33,19 @@
   contain-intrinsic-size: auto 14rem;
 }
 
+@utility activity-list-row-containment {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 4.75rem;
+}
+
+@utility bg-forge-teal-readable {
+  background-color: color-mix(
+    in srgb,
+    var(--color-forge-teal) 85%,
+    var(--color-forge-deep-surface)
+  );
+}
+
 @utility pb-safe-bottom {
   padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);
 }
