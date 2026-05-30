@@ -1,12 +1,19 @@
-import { useQuery } from "@tanstack/react-query";
+import {
+  type QueryClient,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useState } from "react";
 import type { CreateGroupPlanPayload } from "@/features/activity/api/activity.api";
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
+import type { ActivityGroupSelectionData } from "@/features/activity/api/activity-query-data";
 import type {
+  Group,
   Plan,
   PlanHistoryItem,
 } from "@/features/activity/lib/activity-contract";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import { useClearActivityRouteSelection } from "./use-clear-activity-route-selection";
@@ -30,6 +37,7 @@ function trackGroupAction(
 }
 
 export function useActivityGroupActions(groupId: string) {
+  const queryClient = useQueryClient();
   const currentUserQuery = useQuery(currentUserQueryOptions());
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
   const [invitingMemberId, setInvitingMemberId] = useState<string | null>(null);
@@ -104,6 +112,11 @@ export function useActivityGroupActions(groupId: string) {
     }
 
     setRemovingMemberId(memberId);
+    const snapshot = await optimisticallyUpdateSelectedGroup(
+      queryClient,
+      groupId,
+      (group) => removeMemberFromGroup(group, memberId),
+    );
 
     try {
       const result = await ActivityCommands.removeGroupMember(
@@ -121,6 +134,7 @@ export function useActivityGroupActions(groupId: string) {
       );
       setRemovingMemberId(null);
     } catch (error) {
+      restoreGroupSelection(queryClient, groupId, snapshot);
       trackMutationOutcome(
         trackedMutationNames.activityGroupRemoveMember,
         "error",
@@ -134,20 +148,26 @@ export function useActivityGroupActions(groupId: string) {
   }
 
   async function confirmPlan(planId: string) {
-    await runPlanAction("confirm-plan", () =>
-      ActivityCommands.confirmPlan(planId, groupId),
+    await runPlanAction(
+      "confirm-plan",
+      () => ActivityCommands.confirmPlan(planId, groupId),
+      (group) => updateGroupPlanStatus(group, planId, "CONFIRMED"),
     );
   }
 
   async function completePlan(planId: string) {
-    await runPlanAction("complete-plan", () =>
-      ActivityCommands.completePlan(planId, groupId),
+    await runPlanAction(
+      "complete-plan",
+      () => ActivityCommands.completePlan(planId, groupId),
+      (group) => updateGroupPlanStatus(group, planId, "COMPLETED"),
     );
   }
 
   async function cancelPlan(planId: string) {
-    await runPlanAction("cancel-plan", () =>
-      ActivityCommands.cancelPlan(planId, groupId),
+    await runPlanAction(
+      "cancel-plan",
+      () => ActivityCommands.cancelPlan(planId, groupId),
+      (group) => updateGroupPlanStatus(group, planId, "CANCELLED"),
     );
   }
 
@@ -172,13 +192,22 @@ export function useActivityGroupActions(groupId: string) {
   async function runPlanAction(
     action: Exclude<PendingAction, "disband" | "leave" | null>,
     execute: () => Promise<unknown>,
+    optimisticUpdate?: (group: Group) => Group,
   ) {
     setPendingAction(action);
+    const snapshot = optimisticUpdate
+      ? await optimisticallyUpdateSelectedGroup(
+          queryClient,
+          groupId,
+          optimisticUpdate,
+        )
+      : undefined;
 
     try {
       await execute();
       setPendingAction(null);
     } catch (error) {
+      restoreGroupSelection(queryClient, groupId, snapshot);
       setPendingAction(null);
       throw error;
     }
@@ -223,6 +252,88 @@ export function useActivityGroupActions(groupId: string) {
     inviteMember,
     leaveGroup,
     removeMember,
+  };
+}
+
+type GroupSelectionSnapshot = ActivityGroupSelectionData | undefined;
+
+async function optimisticallyUpdateSelectedGroup(
+  queryClient: QueryClient,
+  groupId: string,
+  updateGroup: (group: Group) => Group,
+): Promise<GroupSelectionSnapshot> {
+  const queryKey = APP_QUERY_KEYS.activity.groupSelectionById(groupId);
+
+  await queryClient.cancelQueries({ queryKey });
+
+  const previousSelection =
+    queryClient.getQueryData<ActivityGroupSelectionData>(queryKey);
+
+  queryClient.setQueryData<ActivityGroupSelectionData>(queryKey, (current) =>
+    current?.group
+      ? {
+          ...current,
+          group: updateGroup(current.group),
+        }
+      : current,
+  );
+
+  return previousSelection;
+}
+
+function restoreGroupSelection(
+  queryClient: QueryClient,
+  groupId: string,
+  snapshot: GroupSelectionSnapshot,
+) {
+  if (snapshot === undefined) {
+    return;
+  }
+
+  queryClient.setQueryData(
+    APP_QUERY_KEYS.activity.groupSelectionById(groupId),
+    snapshot,
+  );
+}
+
+function removeMemberFromGroup(group: Group, memberId: string): Group {
+  return {
+    ...touchGroup(group),
+    members:
+      group.members?.filter((member) => member.userId !== memberId) ??
+      group.members,
+  };
+}
+
+function updateGroupPlanStatus(
+  group: Group,
+  planId: string,
+  status: Plan["status"],
+): Group {
+  if (!group.plan || group.plan.id !== planId) {
+    return group;
+  }
+
+  const now = new Date().toISOString();
+
+  return {
+    ...touchGroup(group, now),
+    plan: {
+      ...group.plan,
+      cancelledAt: status === "CANCELLED" ? now : group.plan.cancelledAt,
+      completedAt: status === "COMPLETED" ? now : group.plan.completedAt,
+      status,
+      updatedAt: now,
+      version: Date.parse(now),
+    },
+  };
+}
+
+function touchGroup(group: Group, now = new Date().toISOString()): Group {
+  return {
+    ...group,
+    updatedAt: now,
+    version: Date.parse(now),
   };
 }
 

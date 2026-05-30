@@ -55,11 +55,3 @@ export function getPlanCalendarParts(plan: PlannedGroup["plan"]) {
         : "TBD",
   };
 }
-
-export function getPlanMemberPreviews(group: PlannedGroup) {
-  return group.members.map((member) => ({
-    id: member.userId,
-    avatar: member.user.avatar,
-    name: member.user.name,
-  }));
-}

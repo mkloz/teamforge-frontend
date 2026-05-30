@@ -73,7 +73,7 @@ export function UpcomingPlansView({
       ) : (
         <ul className="relative grid list-none border-border/55 border-y p-0 before:absolute before:top-4 before:bottom-4 before:left-4 before:w-px before:bg-border/45">
           {visiblePlans.map((plan) => (
-            <PlanCard key={plan.plan.id} group={plan} />
+            <PlanCard key={plan.plan.id} plannedGroup={plan} />
           ))}
         </ul>
       )}

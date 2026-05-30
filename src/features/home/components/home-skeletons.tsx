@@ -196,15 +196,12 @@ export function HomeUpcomingPlansSkeleton() {
               <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
                 <Skeleton className="h-3 w-24" />
                 <Skeleton className="h-3 w-20" tone="teal" />
+                <Skeleton className="h-3 w-14" />
+                <Skeleton className="h-3 w-10" />
               </div>
             </div>
 
-            <div className="col-start-2 flex items-center justify-between gap-4 sm:col-start-3 sm:min-w-30 sm:justify-end">
-              <div className="flex">
-                <SkeletonAvatar className="size-7 border-2 border-card sm:size-8" />
-                <SkeletonAvatar className="-ml-2 size-7 border-2 border-card sm:size-8" />
-                <SkeletonAvatar className="-ml-2 size-7 border-2 border-card sm:size-8" />
-              </div>
+            <div className="col-start-2 flex items-center justify-end sm:col-start-3">
               <Skeleton className="h-4 w-14" tone="teal" />
             </div>
           </li>
