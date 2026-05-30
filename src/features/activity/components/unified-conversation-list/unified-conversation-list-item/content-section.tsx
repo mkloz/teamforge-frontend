@@ -75,13 +75,12 @@ export const ContentSection = memo(
       (visibleGroupIndicatorCount > 1 ||
         (isMuted && visibleGroupIndicatorCount > 0));
     const showSavedCountInIndicatorRow = hasIndicatorRow && hasSavedMessages;
-    const showStaticPinnedIcon = item.isPinned && !onTogglePinned;
+    const showStaticPinnedIcon = item.isPinned;
     const showInlineMutedIndicator = isMuted;
     const showTitlePinButton = Boolean(
       onTogglePinned &&
-        (item.isPinned ||
-          showInlineMutedIndicator ||
-          showInlineGroupIndicators),
+        !item.isPinned &&
+        (showInlineMutedIndicator || showInlineGroupIndicators),
     );
     const hasTitleUtilityCluster =
       showInlineGroupIndicators ||
@@ -92,15 +91,12 @@ export const ContentSection = memo(
       showTitlePinButton && onTogglePinned ? (
         <button
           type="button"
-          aria-label={item.isPinned ? "Unpin chat" : "Pin chat"}
+          aria-label="Pin chat"
           className={cn(
-            "relative z-20 size-6 shrink-0 items-center justify-center rounded-full border border-transparent text-slate-muted/70 transition",
-            "hover:border-forge-teal/20 hover:bg-forge-teal/8 hover:text-forge-teal",
+            "relative z-20 hidden size-4 shrink-0 items-center justify-center rounded-full text-slate-muted/70 transition",
+            "hover:bg-forge-teal/8 hover:text-forge-teal",
             "focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/25",
-            item.isPinned &&
-              "inline-flex border-forge-teal/20 bg-forge-teal/10 text-forge-teal opacity-100",
-            !item.isPinned &&
-              "hidden opacity-100 group-focus-within/item:inline-flex group-hover/item:inline-flex",
+            "opacity-100 group-focus-within/item:inline-flex group-hover/item:inline-flex",
           )}
           onClick={(event) => {
             event.stopPropagation();
@@ -108,10 +104,7 @@ export const ContentSection = memo(
           }}
           onKeyDown={(event) => event.stopPropagation()}
         >
-          <Pin
-            className={cn("size-3", item.isPinned && "rotate-45")}
-            strokeWidth={2.2}
-          />
+          <Pin className="size-3" strokeWidth={2.2} />
         </button>
       ) : null;
 
@@ -163,14 +156,13 @@ export const ContentSection = memo(
                 {item.isPinned ? titlePinButton : null}
                 {showStaticPinnedIcon ? (
                   <>
-                    <Pin
-                      className={cn(
-                        "shrink-0 rotate-45 text-forge-teal",
-                        isCompact ? "size-2.5" : "size-3",
-                      )}
-                      aria-hidden="true"
-                      strokeWidth={2}
-                    />
+                    <span className="inline-flex size-4 shrink-0 items-center justify-center text-forge-teal">
+                      <Pin
+                        className="size-3 rotate-45"
+                        aria-hidden="true"
+                        strokeWidth={2.2}
+                      />
+                    </span>
                     <span className="sr-only">Pinned chat</span>
                   </>
                 ) : null}

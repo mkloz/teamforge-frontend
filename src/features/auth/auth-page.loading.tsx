@@ -64,15 +64,17 @@ function AuthLoadingShell({
   layout?: "form" | "support";
 }) {
   const isSupportLayout = layout === "support";
+  const backLabel = isSupportLayout ? "Back to login" : "Back home";
 
   return (
     <div className="relative flex h-screen max-h-dvh w-full flex-col overflow-hidden lg:flex-row">
       <div className="pointer-events-none absolute top-0 right-0 left-0 z-30 flex h-16 items-center px-4 lg:h-24 lg:px-10">
         <Link
           to={isSupportLayout ? "/auth/login" : "/"}
-          className="pointer-events-auto inline-flex h-9 items-center rounded-full px-4 font-medium text-white/80 text-xs"
+          aria-label={backLabel}
+          className="pointer-events-auto inline-flex h-9 w-28 items-center rounded-full px-4"
         >
-          {isSupportLayout ? "Back to login" : "Back home"}
+          <Skeleton className="h-3 w-full" />
         </Link>
       </div>
 
@@ -184,26 +186,19 @@ function SupportLoadingFixture({
 }: {
   kind: "activate" | "forgot-password" | "reset-password";
 }) {
-  const title =
-    kind === "activate"
-      ? "Activating your account"
-      : kind === "forgot-password"
-        ? "Reset your password"
-        : "Choose a new password";
-  const description =
-    kind === "activate"
-      ? "We're checking your verification link and signing you in securely."
-      : kind === "forgot-password"
-        ? "Enter your email and we'll send you a secure link to choose a new password."
-        : "This password will replace the old one for your TeamForge account.";
-
   return (
     <AuthLoadingShell layout="support">
-      <div className="flex flex-col gap-2 text-center">
-        <h1 className="font-semibold text-2xl text-foreground tracking-tight">
-          {title}
-        </h1>
-        <p className="text-slate-muted text-sm leading-6">{description}</p>
+      <div
+        className="flex flex-col items-center gap-2 text-center"
+        aria-hidden="true"
+      >
+        <Skeleton className="h-8 w-60 max-w-full" tone="teal" />
+        <SkeletonText
+          className="w-full"
+          lines={2}
+          size="sm"
+          widths={["mx-auto w-full", "mx-auto w-4/5"]}
+        />
       </div>
 
       <div
@@ -214,7 +209,7 @@ function SupportLoadingFixture({
       >
         <span className="sr-only">Loading {kind}</span>
         {kind === "activate" ? (
-          <div className="flex min-h-64 flex-col justify-center rounded-xl border border-border bg-background px-4 py-6 text-center">
+          <div className="flex min-h-64 flex-col justify-center gap-4 rounded-xl border border-border bg-background px-4 py-6 text-center">
             <Skeleton shape="circle" className="mx-auto size-12" tone="teal" />
             <SkeletonText lines={2} widths={["w-full", "w-3/4"]} />
           </div>

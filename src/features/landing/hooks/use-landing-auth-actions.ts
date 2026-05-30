@@ -13,9 +13,9 @@ export function useLandingAuthActions(
   secondaryGuestLabel = "Log In",
 ) {
   const { isAuthenticated } = useAuthSessionState();
-  const sessionRestoreQuery = useRestoreAuthSessionQuery();
+  const sessionRestoreQuery = useRestoreAuthSessionQuery({ enabled: false });
   const currentUserQuery = useCurrentUserQuery();
-  const isRestoringSession = !isAuthenticated && sessionRestoreQuery.isPending;
+  const isRestoringSession = !isAuthenticated && sessionRestoreQuery.isFetching;
   const isLoadingCurrentUser =
     isAuthenticated &&
     currentUserQuery.data === undefined &&

@@ -50,6 +50,7 @@ export function SkeletonText({
       {lineKeys.map((key, index) => (
         <Skeleton
           key={key}
+          shape="pill"
           className={cn(
             getSkeletonTextHeight(size),
             widths[index % widths.length],
@@ -92,7 +93,7 @@ export function SkeletonCard({
     <div
       aria-hidden="true"
       className={cn(
-        "rounded-xl border border-border bg-card/95 p-4 shadow-sm",
+        "rounded-2xl border border-border/70 bg-card/80 p-4 shadow-sm",
         className,
       )}
       {...props}

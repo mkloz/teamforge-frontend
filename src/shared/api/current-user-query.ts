@@ -31,13 +31,20 @@ export function currentUserQueryOptions() {
   });
 }
 
-export function useRestoreAuthSessionQuery() {
+interface RestoreAuthSessionQueryOptions {
+  enabled?: boolean;
+}
+
+export function useRestoreAuthSessionQuery(
+  options?: RestoreAuthSessionQueryOptions,
+) {
   const { isAuthenticated } = useAuthSessionState();
+  const shouldRestore = options?.enabled ?? !isAuthenticated;
 
   return useQuery({
     queryKey: AUTH_SESSION_RESTORE_QUERY_KEY,
     queryFn: async () => (await refreshAuthSession()) !== null,
-    enabled: !isAuthenticated,
+    enabled: shouldRestore && !isAuthenticated,
     retry: false,
     staleTime: 30_000,
   });

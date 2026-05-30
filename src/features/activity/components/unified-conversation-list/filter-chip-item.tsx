@@ -30,9 +30,9 @@ export const FilterChipItem = memo(function FilterChipItem({
         "transition-all duration-150 ease-out",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-1",
         "disabled:cursor-not-allowed disabled:opacity-50",
-        "border-border/45 bg-card/35 text-slate-muted hover:-translate-y-1 hover:border-button-primary-border hover:bg-forge-teal hover:text-ink hover:shadow-button-primary active:translate-y-0 active:shadow-none hover:dark:text-primary-foreground",
+        "border-border/45 bg-card/35 text-slate-muted hover:-translate-y-1 hover:border-button-primary-border hover:bg-forge-teal hover:text-white hover:shadow-button-primary active:translate-y-0 active:shadow-none",
         isActive &&
-          "z-10 border-button-primary-border bg-forge-teal text-ink dark:text-primary-foreground",
+          "z-10 border-button-primary-border bg-forge-teal text-white",
         className,
       )}
     >
@@ -42,8 +42,8 @@ export const FilterChipItem = memo(function FilterChipItem({
           className={cn(
             "relative z-10 inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 font-bold text-micro tabular-nums leading-none transition-colors",
             isActive
-              ? "bg-ink/10 text-ink dark:bg-primary-foreground/10 dark:text-primary-foreground"
-              : "bg-slate-muted/15 text-slate-muted group-hover/chip:bg-ink/10 group-hover/chip:text-ink dark:group-hover/chip:bg-primary-foreground/10 dark:group-hover/chip:text-primary-foreground",
+              ? "bg-white/20 text-white"
+              : "bg-slate-muted/15 text-slate-muted group-hover/chip:bg-white/20 group-hover/chip:text-white",
           )}
         >
           {badge > 99 ? "99+" : badge}

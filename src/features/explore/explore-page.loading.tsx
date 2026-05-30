@@ -27,13 +27,14 @@ export function ExplorePageLoadingFixture() {
         </div>
 
         <main className="col-span-1 flex min-h-96 min-w-0 flex-col pb-34 lg:col-span-8 lg:pb-32 xl:col-auto">
-          <div className="mb-4 xl:hidden">
-            <h1 className="font-black text-2xl text-foreground leading-tight tracking-tight">
-              Explore
-            </h1>
-            <p className="mt-1 max-w-2xl font-medium text-muted-foreground text-sm leading-relaxed">
-              Open groups ranked by fit, timing, and available seats.
-            </p>
+          <div className="mb-4 xl:hidden" aria-hidden="true">
+            <Skeleton className="h-8 w-32" tone="teal" />
+            <SkeletonText
+              className="mt-2 max-w-2xl"
+              lines={2}
+              size="sm"
+              widths={["w-full", "w-3/4"]}
+            />
           </div>
           <ExploreSearchSkeleton />
           <ExploreFeedSkeleton />

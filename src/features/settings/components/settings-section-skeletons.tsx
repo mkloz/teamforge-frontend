@@ -31,17 +31,35 @@ function SettingsActiveSessionsSkeletonContent() {
           key={item}
           className="md:main-action-grid grid gap-4 border-border border-b py-5 last:border-b-0 md:items-center"
         >
-          <div className="flex min-w-0 items-center gap-3">
+          <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-4">
             <Skeleton
-              shape="square"
+              shape="circle"
               className="size-10"
               tone={index === 0 ? "teal" : "default"}
             />
-            <SkeletonText
-              className="min-w-0 flex-1"
-              lines={2}
-              widths={["w-44", "w-64"]}
-            />
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <Skeleton
+                  className="h-5 w-32"
+                  tone={index === 0 ? "teal" : "default"}
+                />
+                {index === 0 ? (
+                  <Skeleton shape="pill" className="h-5 w-16" tone="teal" />
+                ) : null}
+              </div>
+              <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                {[0, 1, 2].map((metaItem) => (
+                  <div
+                    key={metaItem}
+                    className="flex min-w-0 items-center gap-2"
+                  >
+                    <Skeleton shape="circle" className="size-3.5 shrink-0" />
+                    <Skeleton className="h-3 min-w-0 flex-1" />
+                  </div>
+                ))}
+              </div>
+              <Skeleton className="mt-3 h-3 w-full max-w-80" />
+            </div>
           </div>
           <SkeletonButton className="h-10 w-24" />
         </div>
@@ -55,18 +73,19 @@ function SettingsPreferencesSkeletonContent() {
     <div
       aria-busy="true"
       aria-label="Loading preferences"
-      className="grid gap-0 border-border border-t lg:grid-cols-3 lg:gap-8"
+      className="border-border border-t"
       role="status"
     >
       <span className="sr-only">Loading preferences</span>
       {["one", "two", "three", "four", "five"].map((item, index) => (
         <div
           key={item}
-          className="flex items-start justify-between gap-4 border-border border-b py-5 lg:border-b-0"
+          className="flex w-full items-center justify-between gap-4 border-border border-b py-4 text-left"
         >
           <SkeletonText
             className="min-w-0 flex-1"
             lines={2}
+            size="sm"
             widths={index % 2 === 0 ? ["w-40", "w-full"] : ["w-32", "w-5/6"]}
           />
           <Skeleton
@@ -92,15 +111,16 @@ function SettingsBlockedUsersSkeletonContent() {
       {["first", "second"].map((item) => (
         <div
           key={item}
-          className="flex items-center gap-3 border-border border-b py-5 last:border-b-0"
+          className="flex items-center gap-4 border-border border-b py-5 last:border-b-0"
         >
           <SkeletonAvatar className="size-11" />
           <SkeletonText
-            className="flex-1"
+            className="min-w-0 flex-1"
             lines={2}
+            size="sm"
             widths={["w-36", "w-48"]}
           />
-          <SkeletonButton className="h-10 w-24" />
+          <SkeletonButton className="hidden h-10 w-24 sm:block" />
         </div>
       ))}
     </div>

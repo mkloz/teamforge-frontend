@@ -4,7 +4,7 @@ import type React from "react";
 import { cn } from "@/shared/lib/utils";
 
 const skeletonVariants = cva(
-  "relative overflow-hidden after:absolute after:inset-0 after:animate-skeleton-shimmer after:bg-[linear-gradient(100deg,transparent_30%,color-mix(in_srgb,var(--color-canvas)_58%,transparent)_50%,transparent_70%)] after:bg-size-[260%_100%] after:bg-no-repeat after:opacity-85 after:content-[''] motion-reduce:after:hidden dark:after:bg-[linear-gradient(100deg,transparent_30%,color-mix(in_srgb,var(--color-ink)_10%,transparent)_50%,transparent_70%)] forced-colors:bg-slate-muted/40 forced-colors:after:hidden",
+  "relative isolate overflow-hidden bg-clip-padding after:absolute after:inset-0 after:animate-skeleton-shimmer after:bg-[linear-gradient(105deg,transparent_25%,color-mix(in_srgb,var(--color-canvas)_62%,transparent)_46%,color-mix(in_srgb,var(--color-canvas)_28%,transparent)_52%,transparent_74%)] after:bg-size-[240%_100%] after:bg-no-repeat after:opacity-80 after:content-[''] motion-reduce:after:hidden dark:after:bg-[linear-gradient(105deg,transparent_25%,color-mix(in_srgb,var(--color-canvas)_10%,transparent)_46%,color-mix(in_srgb,var(--color-canvas)_5%,transparent)_52%,transparent_74%)] forced-colors:bg-slate-muted/40 forced-colors:after:hidden",
   {
     variants: {
       shape: {
@@ -16,11 +16,11 @@ const skeletonVariants = cva(
       },
       tone: {
         default:
-          "bg-slate-muted/10 ring-1 ring-ink/5 dark:bg-slate-muted/20 dark:ring-slate-muted/10",
-        muted: "bg-muted ring-1 ring-ink/5 dark:ring-slate-muted/10",
-        teal: "bg-forge-teal/10 ring-1 ring-forge-teal/10 dark:bg-forge-teal/15",
+          "bg-slate-muted/12 ring-1 ring-ink/5 dark:bg-slate-muted/18 dark:ring-slate-muted/10",
+        muted: "bg-muted/90 ring-1 ring-ink/5 dark:ring-slate-muted/10",
+        teal: "bg-forge-teal/12 ring-1 ring-forge-teal/10 dark:bg-forge-teal/16",
         amber:
-          "bg-spark-amber/15 ring-1 ring-spark-amber/10 dark:bg-spark-amber/20",
+          "bg-spark-amber/16 ring-1 ring-spark-amber/10 dark:bg-spark-amber/20",
       },
     },
     defaultVariants: {

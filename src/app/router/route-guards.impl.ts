@@ -45,6 +45,10 @@ function isOnboardingEditMode(searchStr: string) {
 export async function redirectAuthenticatedUser({
   location,
 }: PublicAuthRouteLoadContext) {
+  if (!authSession.hasTokens()) {
+    return;
+  }
+
   const hasSession = await restoreAuthSessionIfNeeded();
 
   if (!hasSession) {

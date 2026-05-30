@@ -1,4 +1,3 @@
-import { TeamForgeLogo } from "@/assets/logo";
 import type { PageLoadingProps } from "@/shared/components/loading/page-loading";
 import { SkeletonText } from "@/shared/components/loading/skeleton-patterns";
 import { Skeleton } from "@/shared/components/ui/skeleton";
@@ -23,7 +22,7 @@ export function LegalPageLoading({ kind }: LegalPageLoadingProps) {
       <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8 lg:px-10">
         <header className="flex items-center justify-between gap-4">
           <div className="inline-flex min-w-0 items-center gap-2">
-            <TeamForgeLogo className="size-8" showBackground={false} />
+            <Skeleton shape="square" className="size-8" tone="teal" />
             <Skeleton className="h-5 w-24" tone="teal" />
           </div>
           <Skeleton shape="pill" className="h-9 w-28" />
