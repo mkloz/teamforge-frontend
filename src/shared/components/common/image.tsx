@@ -24,6 +24,7 @@ export interface ImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   fallbackComponent?: ReactNode;
   wrapperClassName?: string;
   showNoImage?: boolean;
+  showLoadingState?: boolean;
 }
 
 const DefaultLoader = () => (
@@ -47,6 +48,7 @@ export function Image({
   fallbackComponent = DEFAULT_IMAGE_PLACEHOLDER,
   wrapperClassName,
   showNoImage = true,
+  showLoadingState = true,
   style,
   loading = "lazy",
   decoding = "async",
@@ -55,7 +57,7 @@ export function Image({
   ...props
 }: ImageProps) {
   const isSrcProvided = Boolean(src?.trim());
-  const [isLoading, setIsLoading] = useState(isSrcProvided);
+  const [isLoading, setIsLoading] = useState(showLoadingState && isSrcProvided);
   const [error, setError] = useState(false);
   const [fallbackFailed, setFallbackFailed] = useState(false);
   const imageRef = useRef<HTMLImageElement | null>(null);
@@ -65,8 +67,10 @@ export function Image({
   useEffect(() => {
     setError(false);
     setFallbackFailed(false);
-    setIsLoading(isSrcProvided && !imageRef.current?.complete);
-  }, [isSrcProvided, src]);
+    setIsLoading(
+      showLoadingState && isSrcProvided && !imageRef.current?.complete,
+    );
+  }, [isSrcProvided, showLoadingState, src]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: actualSrc changes when fallback handling swaps image URLs.
   useEffect(() => {
@@ -117,7 +121,7 @@ export function Image({
             style={style}
             className={cn(
               "size-full object-cover transition-all duration-700 ease-out",
-              isLoading ? "blur-sm" : "blur-none",
+              showLoadingState && isLoading ? "blur-sm" : "blur-none",
               className,
             )}
             loading={loading}
@@ -144,7 +148,7 @@ export function Image({
         </div>
       ) : null}
 
-      {isLoading && isSrcProvided && !fallbackFailed ? (
+      {showLoadingState && isLoading && isSrcProvided && !fallbackFailed ? (
         <div
           className={cn(
             "absolute inset-0 flex items-center justify-center bg-background/20",

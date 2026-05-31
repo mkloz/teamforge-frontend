@@ -17,7 +17,7 @@ export function CardImage({
   variant = "default",
 }: CardImageProps) {
   const isCompact = variant === "compact";
-  const imageSrc = getSizedImageUrl(src, isCompact ? 480 : 480);
+  const imageSrc = getSizedImageUrl(src, isCompact ? 384 : 384);
 
   return (
     <div
@@ -33,6 +33,7 @@ export function CardImage({
         alt={alt}
         fetchPriority={priority === "high" ? "high" : "low"}
         loading={priority === "high" ? "eager" : "lazy"}
+        showLoadingState={priority !== "high"}
         wrapperClassName="absolute inset-0"
         className="transition-transform duration-700 ease-out will-change-transform group-hover:scale-105"
         noImageComponent={<NoImagePlaceholder />}

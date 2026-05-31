@@ -121,7 +121,7 @@ async function preloadDefaultExploreGroups() {
   const firstGroupAvatar = data.pages[0]?.groups[0]?.avatar;
 
   preloadRouteImage(
-    getSizedImageUrl(firstGroupAvatar, 480) ?? firstGroupAvatar,
+    getSizedImageUrl(firstGroupAvatar, 384) ?? firstGroupAvatar,
   );
 }
 
@@ -185,6 +185,24 @@ async function preloadUserDetail(userId: string) {
 function preloadRouteImage(src: string | null | undefined) {
   if (!src || typeof globalThis.Image !== "function") {
     return;
+  }
+
+  if (typeof document !== "undefined") {
+    const absoluteSrc = new URL(src, document.baseURI).href;
+    const existingPreload = Array.from(
+      document.head.querySelectorAll<HTMLLinkElement>(
+        'link[rel="preload"][as="image"]',
+      ),
+    ).some((link) => link.href === absoluteSrc);
+
+    if (!existingPreload) {
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.as = "image";
+      link.href = src;
+      link.setAttribute("fetchpriority", "high");
+      document.head.append(link);
+    }
   }
 
   const image = new globalThis.Image();

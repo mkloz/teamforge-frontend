@@ -1,6 +1,4 @@
 import { useMutation } from "@tanstack/react-query";
-import { ExploreCommands } from "@/features/explore/api/explore-commands";
-import { invalidateNotificationSurfaces } from "@/shared/api/query-invalidation";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
@@ -11,7 +9,13 @@ export function useJoinExploreGroup(groupId: string) {
       telemetryName: trackedMutationNames.exploreJoinGroup,
     },
     mutationKey: ["explore", "join-group", groupId],
-    mutationFn: () => ExploreCommands.joinGroup(groupId),
+    mutationFn: async () => {
+      const { ExploreCommands } = await import(
+        "@/features/explore/api/explore-commands"
+      );
+
+      return ExploreCommands.joinGroup(groupId);
+    },
     onSuccess: (result) => {
       trackMutationOutcome(trackedMutationNames.exploreJoinGroup, "success", {
         requestId: result.requestId,
@@ -24,6 +28,10 @@ export function useJoinExploreGroup(groupId: string) {
       });
     },
     onSettled: async () => {
+      const { invalidateNotificationSurfaces } = await import(
+        "@/shared/api/query-invalidation"
+      );
+
       await invalidateNotificationSurfaces();
     },
   });
