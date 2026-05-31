@@ -1,6 +1,5 @@
 import { getCategoryCover } from "@/features/group-plan-detail/lib/category-cover";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
-import { Image } from "@/shared/components/common/image";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
 import {
   getGroupFallbackDescription,
@@ -17,14 +16,12 @@ export function GroupIdentity({ detail }: { detail: GroupPlanDetail }) {
     <div className="flex gap-5">
       <div className="relative size-16 shrink-0 overflow-hidden rounded-xl sm:size-20">
         {coverSrc ? (
-          <Image
+          <img
             src={imageSrc ?? undefined}
             alt={`${detail.group.name} group`}
-            wrapperClassName="absolute inset-0"
-            className="size-full object-cover"
-            showNoImage={false}
-            fallbackComponent={null}
-            noImageComponent={null}
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 size-full object-cover"
           />
         ) : (
           <div

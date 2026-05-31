@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { getCategoryCover } from "@/features/group-plan-detail/lib/category-cover";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
-import { Image } from "@/shared/components/common/image";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
 
 interface HeroCoverProps {
@@ -20,18 +19,15 @@ export function HeroCover({ detail, alt, children }: HeroCoverProps) {
     <div className="relative overflow-hidden rounded-t-3xl bg-canvas">
       <div className="transform-[translate3d(0,var(--group-detail-cover-y,0px),0)] relative h-(--group-detail-cover-expanded-height) w-full bg-canvas transition-transform duration-300 ease-out will-change-transform motion-reduce:transition-none">
         {imageSrc ? (
-          <Image
+          <img
             src={imageSources?.src}
             srcSet={imageSources?.srcSet}
             sizes="(max-width: 640px) calc(100vw - 2rem), (max-width: 1024px) calc(100vw - 2.5rem), 1024px"
             alt={alt}
             fetchPriority="high"
             loading="eager"
-            wrapperClassName="absolute inset-0"
-            className="transform-[translate3d(0,var(--group-detail-cover-image-y,0px),0)_scale(var(--group-detail-cover-image-scale,1))] size-full object-cover transition-transform duration-300 ease-out motion-reduce:transition-none"
-            noImageComponent={null}
-            fallbackComponent={null}
-            showNoImage={false}
+            decoding="async"
+            className="transform-[translate3d(0,var(--group-detail-cover-image-y,0px),0)_scale(var(--group-detail-cover-image-scale,1))] absolute inset-0 size-full object-cover transition-transform duration-300 ease-out motion-reduce:transition-none"
           />
         ) : (
           <div

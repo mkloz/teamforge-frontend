@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   Check,
@@ -23,13 +22,11 @@ import {
   getQueueMomentLabel,
 } from "./attention-queue-formatters";
 import { AttentionQueueMeta } from "./attention-queue-meta";
-import { getAttentionQueueItemMotion } from "./attention-queue-motion";
 
 interface InvitationQueueItemProps {
   invite: AttentionQueueInvitation;
   isFocused: boolean;
   acceptingInviteId: string | null;
-  animateOnInsert: boolean;
   decliningInviteId: string | null;
   isAccepting: boolean;
   isDeclining: boolean;
@@ -39,7 +36,6 @@ interface InvitationQueueItemProps {
 
 export function InvitationQueueItem({
   acceptingInviteId,
-  animateOnInsert,
   decliningInviteId,
   invite,
   isAccepting,
@@ -51,7 +47,6 @@ export function InvitationQueueItem({
   const detailsNavigation = buildGroupPlanDetailNavigation(invite.group.id, {
     source: "invite",
   });
-  const shouldReduceMotion = useReducedMotion();
   const InviteBadgeIcon = getInviteBadgeIcon(invite.type);
   const inviteMeta = [
     {
@@ -71,8 +66,7 @@ export function InvitationQueueItem({
   ].filter((item) => item.label);
 
   return (
-    <motion.li
-      {...getAttentionQueueItemMotion({ animateOnInsert, shouldReduceMotion })}
+    <li
       className={cn(
         "group border-border/55 border-b px-1 py-3 transition-colors duration-150 last:border-b-0 sm:px-3",
         isFocused ? "bg-forge-teal/8" : "hover:bg-forge-teal/5",
@@ -140,7 +134,7 @@ export function InvitationQueueItem({
           </Button>
         </div>
       </div>
-    </motion.li>
+    </li>
   );
 }
 

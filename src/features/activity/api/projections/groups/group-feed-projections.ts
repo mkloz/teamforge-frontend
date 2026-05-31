@@ -6,21 +6,19 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 import type { ChatApi, GroupApi } from "@/shared/schemas";
 
-import { findGroupChat } from "./group-chat-projections";
 import { mapGroup } from "./group-dto-projections";
 
 type ActivityFeedItem = UnifiedConversation;
 
 export function buildGroupFeedItem(
   groupDto: GroupApi,
-  chats: ChatApi[],
+  chat: ChatApi | null,
   currentUserParticipant: ActivityParticipant,
   typingByChatId: Record<
     string,
     Array<{ id: string; name: string; avatar: string | null }>
   >,
 ): ActivityFeedItem {
-  const chat = findGroupChat(chats, groupDto.id);
   const group = mapGroup(groupDto, currentUserParticipant.id, [], chat ?? null);
   const participants = buildGroupParticipants(group, currentUserParticipant);
   const latestMessage = chat?.lastMessage

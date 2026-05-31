@@ -42,6 +42,11 @@
   contain-intrinsic-size: auto 4.75rem;
 }
 
+@utility profile-deferred-containment {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 38rem;
+}
+
 @utility bg-forge-teal-readable {
   background-color: color-mix(
     in srgb,

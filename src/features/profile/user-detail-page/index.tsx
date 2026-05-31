@@ -1,10 +1,9 @@
 import { useParams } from "@tanstack/react-router";
-import { MessageCircle, UserRoundPlus } from "lucide-react";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { usePublicProfile } from "@/features/profile/hooks/use-profile";
 import { ProfilePageLoading } from "@/features/profile/profile-page/profile-page.loading";
 import { ProfilePageContent } from "@/features/profile/profile-page/profile-page-content";
-import { Button } from "@/shared/components/ui/button";
+import { SkeletonButton } from "@/shared/components/loading/skeleton-patterns";
 import type { User } from "@/shared/schemas";
 
 const USER_DETAIL_ROUTE = "/app-shell/users/$userId";
@@ -80,25 +79,12 @@ function PublicProfileActionsFallback({ userName }: { userName: string }) {
   return (
     <div
       aria-busy="true"
+      aria-label={`Loading profile actions for ${userName}`}
+      role="status"
       className="grid w-full grid-cols-1 xxs:grid-cols-2 items-center gap-2 pr-0 sm:flex sm:w-auto sm:flex-row sm:gap-3"
     >
-      <Button
-        className="w-full shrink-0 sm:w-auto"
-        disabled
-        aria-label={`Loading connection actions for ${userName}`}
-      >
-        <UserRoundPlus className="shrink-0" />
-        <span>Connect</span>
-      </Button>
-      <Button
-        variant="outline"
-        className="w-full sm:w-auto"
-        disabled
-        aria-label={`Loading message action for ${userName}`}
-      >
-        <MessageCircle className="shrink-0" />
-        <span>Message</span>
-      </Button>
+      <SkeletonButton className="h-11 w-full shrink-0 sm:w-32" tone="teal" />
+      <SkeletonButton className="h-11 w-full sm:w-28" />
     </div>
   );
 }

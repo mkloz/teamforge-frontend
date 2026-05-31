@@ -10,15 +10,6 @@ import { mapDirectChat, mapNotesChat } from "./direct-chat-projections";
 
 type ActivityFeedItem = UnifiedConversation;
 
-function findDirectChatSummary(
-  friendship: FriendshipApi,
-  chats: ChatApi[],
-): ChatApi | null {
-  return friendship.privateChat
-    ? (chats.find((chat) => chat.id === friendship.privateChat?.id) ?? null)
-    : null;
-}
-
 function getDirectChatParticipants(chat: DirectChat) {
   return (
     chat.participants
@@ -32,14 +23,13 @@ function getDirectChatParticipants(chat: DirectChat) {
 
 export function buildDirectFeedItem(
   friendship: FriendshipApi,
-  chats: ChatApi[],
+  chatSummary: ChatApi | null,
   currentUserParticipant: ActivityParticipant,
   typingByChatId: Record<
     string,
     Array<{ id: string; name: string; avatar: string | null }>
   >,
 ): ActivityFeedItem | null {
-  const chatSummary = findDirectChatSummary(friendship, chats);
   const chat = mapDirectChat(friendship, currentUserParticipant, chatSummary);
 
   if (!chat) {

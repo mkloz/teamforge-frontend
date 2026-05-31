@@ -15,7 +15,6 @@ import {
   type GroupPlanDetailRouteSearch,
   getGroupPlanDetailBackLink,
 } from "@/features/group-plan-detail/lib/group-plan-detail-route";
-import { Image } from "@/shared/components/common/image";
 import { Button } from "@/shared/components/ui/button";
 import { scrollWindowToTop } from "@/shared/lib/scroll-to-top";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
@@ -115,15 +114,12 @@ function GroupPlanCompactHero({
           )}
         >
           {visible && imageSrc ? (
-            <Image
+            <img
               src={compactImageSrc ?? imageSrc}
               alt=""
               loading="lazy"
-              wrapperClassName="absolute inset-0"
-              className="size-full object-cover"
-              noImageComponent={null}
-              fallbackComponent={null}
-              showNoImage={false}
+              decoding="async"
+              className="absolute inset-0 size-full object-cover"
             />
           ) : null}
 

@@ -1,6 +1,5 @@
 import { BellOff, Bookmark, Pin } from "lucide-react";
-import { memo } from "react";
-import { UnifiedTypingIndicator } from "@/features/activity/components/chat/unified-typing-indicator";
+import { lazy, memo, Suspense } from "react";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
 import {
   formatCountdown,
@@ -18,6 +17,14 @@ import { GroupIndicators } from "./group-indicators";
 import { MsgStatusIcon } from "./msg-status-icon";
 import { SubtitleIcon } from "./subtitle-icon";
 import { UnreadBadge } from "./unread-badge";
+
+const UnifiedTypingIndicator = lazy(() =>
+  import("@/features/activity/components/chat/unified-typing-indicator").then(
+    (module) => ({
+      default: module.UnifiedTypingIndicator,
+    }),
+  ),
+);
 
 interface ContentSectionProps {
   item: UnifiedConversation;
@@ -210,10 +217,18 @@ export const ContentSection = memo(
                   >
                     typing
                   </span>
-                  <UnifiedTypingIndicator
-                    variant="minimal"
-                    className={isCompact ? "h-2" : "h-2.5"}
-                  />
+                  <Suspense
+                    fallback={
+                      <TypingDotsFallback
+                        className={isCompact ? "h-2" : "h-2.5"}
+                      />
+                    }
+                  >
+                    <UnifiedTypingIndicator
+                      variant="minimal"
+                      className={isCompact ? "h-2" : "h-2.5"}
+                    />
+                  </Suspense>
                 </div>
               ) : (
                 <p
@@ -280,6 +295,19 @@ function MutedIndicator() {
     >
       <BellOff aria-hidden="true" className="size-2.5" strokeWidth={2.2} />
       <span className="sr-only">Notifications muted</span>
+    </span>
+  );
+}
+
+function TypingDotsFallback({ className }: { className?: string }) {
+  return (
+    <span className={cn("flex items-end justify-start gap-1", className)}>
+      {[0, 1, 2].map((index) => (
+        <span
+          key={index}
+          className="mb-0.5 size-1 rounded-full bg-forge-teal/70 opacity-60"
+        />
+      ))}
     </span>
   );
 }

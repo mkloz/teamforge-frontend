@@ -1,5 +1,4 @@
-import { AnimatePresence } from "framer-motion";
-import { type RefObject, useEffect, useRef } from "react";
+import { type RefObject, useRef } from "react";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { HomeAttentionQueueRowsSkeleton } from "@/features/home/components/home-skeletons";
 import type {
@@ -99,8 +98,6 @@ export function AttentionQueueView({
     visibleInvitations,
     visibleRequests,
   } = state;
-  const queueHasSettledRef = useRef(false);
-  const animateQueueInsertions = queueHasSettledRef.current;
   const renderedInvitations = visibleInvitations.slice(0, 2);
   const renderedRequests = visibleRequests.slice(0, 2);
   const renderedPlans = proposedPlans.slice(0, 2);
@@ -128,12 +125,6 @@ export function AttentionQueueView({
     visibleInvitations,
     visibleRequests,
   });
-
-  useEffect(() => {
-    if (!shouldShowSkeleton) {
-      queueHasSettledRef.current = true;
-    }
-  }, [shouldShowSkeleton]);
 
   return (
     <section
@@ -169,62 +160,49 @@ export function AttentionQueueView({
       >
         {actionError ? <ActionErrorBanner error={actionError} /> : null}
         {shouldShowSkeleton ? <HomeAttentionQueueRowsSkeleton /> : null}
-        <AnimatePresence initial={false}>
-          {!shouldShowSkeleton && queueSize === 0 ? (
-            <EmptyQueueItem animateOnInsert={animateQueueInsertions} />
-          ) : null}
+        {!shouldShowSkeleton && queueSize === 0 ? <EmptyQueueItem /> : null}
 
-          {!shouldShowSkeleton
-            ? renderedInvitations.map((invite) => (
-                <InvitationQueueItem
-                  key={invite.id}
-                  invite={invite}
-                  isFocused={focusedInviteId === invite.id}
-                  acceptingInviteId={acceptingInviteId}
-                  animateOnInsert={animateQueueInsertions}
-                  decliningInviteId={decliningInviteId}
-                  isAccepting={isAcceptingInvite}
-                  isDeclining={isDecliningInvite}
-                  onAccept={acceptVisibleInvite}
-                  onDecline={declineVisibleInvite}
-                />
-              ))
-            : null}
+        {!shouldShowSkeleton
+          ? renderedInvitations.map((invite) => (
+              <InvitationQueueItem
+                key={invite.id}
+                invite={invite}
+                isFocused={focusedInviteId === invite.id}
+                acceptingInviteId={acceptingInviteId}
+                decliningInviteId={decliningInviteId}
+                isAccepting={isAcceptingInvite}
+                isDeclining={isDecliningInvite}
+                onAccept={acceptVisibleInvite}
+                onDecline={declineVisibleInvite}
+              />
+            ))
+          : null}
 
-          {!shouldShowSkeleton
-            ? renderedRequests.map((request) => (
-                <FriendRequestQueueItem
-                  key={request.requesterId}
-                  request={request}
-                  isFocused={focusedRequestId === request.requesterId}
-                  acceptingRequestId={acceptingRequestId}
-                  animateOnInsert={animateQueueInsertions}
-                  decliningRequestId={decliningRequestId}
-                  isAccepting={isAccepting}
-                  isDeclining={isDeclining}
-                  onAccept={acceptVisibleRequest}
-                  onDecline={declineVisibleRequest}
-                />
-              ))
-            : null}
+        {!shouldShowSkeleton
+          ? renderedRequests.map((request) => (
+              <FriendRequestQueueItem
+                key={request.requesterId}
+                request={request}
+                isFocused={focusedRequestId === request.requesterId}
+                acceptingRequestId={acceptingRequestId}
+                decliningRequestId={decliningRequestId}
+                isAccepting={isAccepting}
+                isDeclining={isDeclining}
+                onAccept={acceptVisibleRequest}
+                onDecline={declineVisibleRequest}
+              />
+            ))
+          : null}
 
-          {!shouldShowSkeleton
-            ? renderedPlans.map((group) => (
-                <ProposedPlanQueueItem
-                  key={group.plan.id}
-                  animateOnInsert={animateQueueInsertions}
-                  group={group}
-                />
-              ))
-            : null}
+        {!shouldShowSkeleton
+          ? renderedPlans.map((group) => (
+              <ProposedPlanQueueItem key={group.plan.id} group={group} />
+            ))
+          : null}
 
-          {!shouldShowSkeleton && viewer.nextStep ? (
-            <ProfileStepQueueItem
-              animateOnInsert={animateQueueInsertions}
-              nextStep={viewer.nextStep}
-            />
-          ) : null}
-        </AnimatePresence>
+        {!shouldShowSkeleton && viewer.nextStep ? (
+          <ProfileStepQueueItem nextStep={viewer.nextStep} />
+        ) : null}
 
         {!shouldShowSkeleton && hiddenItemCount > 0 ? (
           <SeeRestButton hiddenItemCount={hiddenItemCount} />

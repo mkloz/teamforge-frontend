@@ -1,4 +1,5 @@
 import type { ReactNode, Ref } from "react";
+import { SkeletonText } from "@/shared/components/loading/skeleton-patterns";
 import type { User } from "@/shared/schemas";
 import { ProfileActions } from "./profile-actions";
 import { ProfileAvatar } from "./profile-avatar";
@@ -7,7 +8,7 @@ import { ProfileIdentity } from "./profile-identity";
 interface ProfileHeroProps {
   user: User;
   archetype: string;
-  socialRead: string;
+  socialRead?: string | null;
   renderActions?: () => ReactNode;
   showMissingDetailsAction?: boolean;
   heroRowRef?: Ref<HTMLDivElement>;
@@ -62,7 +63,7 @@ export function ProfileHero({
 interface ExpandedProfileSummaryProps {
   children: ReactNode;
   hasBio: boolean;
-  socialRead: string;
+  socialRead?: string | null;
   userBio?: string | null;
 }
 
@@ -72,17 +73,22 @@ function ExpandedProfileSummary({
   socialRead,
   userBio,
 }: ExpandedProfileSummaryProps) {
+  const summary = hasBio ? userBio : socialRead;
+
   return (
     <div className="flex flex-col gap-5 sm:gap-6">
       <blockquote className="relative max-w-136 sm:mx-0 sm:max-w-2xl">
-        {hasBio ? (
+        {summary ? (
           <p className="relative z-10 text-pretty font-medium text-base text-ink/82 leading-relaxed md:text-xl">
-            {userBio}
+            {summary}
           </p>
         ) : (
-          <p className="relative z-10 text-pretty font-medium text-base text-ink/82 leading-relaxed md:text-xl">
-            {socialRead}
-          </p>
+          <SkeletonText
+            className="relative z-10 w-full max-w-xl"
+            lineClassName="h-4 md:h-5"
+            lines={2}
+            widths={["w-full", "w-4/5"]}
+          />
         )}
       </blockquote>
 

@@ -125,11 +125,31 @@ async function preloadDefaultExploreGroups() {
   );
 }
 
+async function preloadActivityFeed() {
+  const { ActivityQueryFactory } = await import(
+    "@/features/activity/api/activity-query-factory"
+  );
+
+  await Promise.allSettled([
+    appQueryClient.prefetchQuery(ActivityQueryFactory.groups()),
+    appQueryClient.prefetchQuery(ActivityQueryFactory.chats()),
+    appQueryClient.prefetchQuery(ActivityQueryFactory.friendships()),
+  ]);
+}
+
 function createExploreRouteLoader(module: LazyRouteModule) {
   return async () => {
     const exploreGroupsTask = preloadDefaultExploreGroups().catch(() => null);
 
     await Promise.all([module.preload(), exploreGroupsTask]);
+  };
+}
+
+function createActivityRouteLoader(module: LazyRouteModule) {
+  return async () => {
+    const feedTask = preloadActivityFeed().catch(() => null);
+
+    await Promise.all([module.preload(), feedTask]);
   };
 }
 
@@ -206,6 +226,10 @@ function getUserIdFromPathname(pathname: string) {
 function createSessionRestoredRoutePreload(pathname: string) {
   if (pathname === "/explore") {
     return () => preloadDefaultExploreGroups();
+  }
+
+  if (pathname === "/activity" || pathname.startsWith("/activity/")) {
+    return () => preloadActivityFeed();
   }
 
   const groupId = getGroupPlanIdFromPathname(pathname);
@@ -350,7 +374,7 @@ const groupPlanDetailRoute = createRoute({
 const activityRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/activity",
-  loader: createRouteModuleLoader(activityPageModule),
+  loader: createActivityRouteLoader(activityPageModule),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: () => <ActivityPageLoading mode="route" />,
   component: createLazyPageRoute(

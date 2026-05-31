@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   Check,
@@ -18,13 +17,11 @@ import { cn } from "@/shared/lib/utils";
 import type { AttentionQueueFriendRequest } from "./attention-queue.types";
 import { getFriendRequestMeta } from "./attention-queue-formatters";
 import { AttentionQueueMeta } from "./attention-queue-meta";
-import { getAttentionQueueItemMotion } from "./attention-queue-motion";
 
 interface FriendRequestQueueItemProps {
   request: AttentionQueueFriendRequest;
   isFocused: boolean;
   acceptingRequestId: string | null;
-  animateOnInsert: boolean;
   decliningRequestId: string | null;
   isAccepting: boolean;
   isDeclining: boolean;
@@ -34,7 +31,6 @@ interface FriendRequestQueueItemProps {
 
 export function FriendRequestQueueItem({
   acceptingRequestId,
-  animateOnInsert,
   decliningRequestId,
   isAccepting,
   isDeclining,
@@ -44,7 +40,6 @@ export function FriendRequestQueueItem({
   request,
 }: FriendRequestQueueItemProps) {
   const profileNavigation = buildProfileNavigation(request.counterpart.id);
-  const shouldReduceMotion = useReducedMotion();
   const [cityLabel, trustLabel, sentLabel] = getFriendRequestMeta(request);
   const requestMeta = [
     { icon: MapPin, label: cityLabel },
@@ -53,8 +48,7 @@ export function FriendRequestQueueItem({
   ].filter((item) => item.label);
 
   return (
-    <motion.li
-      {...getAttentionQueueItemMotion({ animateOnInsert, shouldReduceMotion })}
+    <li
       className={cn(
         "group border-border/55 border-b px-1 py-3 transition-colors duration-150 last:border-b-0 sm:px-3",
         isFocused ? "bg-forge-teal/8" : "hover:bg-forge-teal/5",
@@ -127,7 +121,7 @@ export function FriendRequestQueueItem({
           </Button>
         </div>
       </div>
-    </motion.li>
+    </li>
   );
 }
 

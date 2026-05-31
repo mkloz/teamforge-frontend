@@ -6,7 +6,6 @@ import { HomeHero } from "@/features/home/components/home-hero";
 import { RecommendedGroups } from "@/features/home/components/recommended-groups";
 import { SentInvitationsReview } from "@/features/home/components/sent-invitations-review";
 import { UpcomingPlans } from "@/features/home/components/upcoming-plans";
-import { HomePageLoading } from "@/features/home/home-page.loading";
 import { HomePageContent } from "@/features/home/home-page-content";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { useHomeRouteState } from "@/features/home/hooks/use-home-route-state";
@@ -15,7 +14,8 @@ import { PageErrorState } from "@/shared/components/page-error-state";
 
 export function HomePage() {
   const { sentInvitations, isLoading, isError, refetchAll } = useHomeData();
-  const { isLoading: viewerLoading } = useHomeViewerState();
+  const { isError: viewerError, isLoading: viewerLoading } =
+    useHomeViewerState();
   const {
     focusedInviteId,
     focusedPanel,
@@ -37,11 +37,7 @@ export function HomePage() {
     });
   }, [focusedPanel]);
 
-  if (isLoading || viewerLoading) {
-    return <HomePageLoading mode="query" />;
-  }
-
-  if (isError) {
+  if ((isError && !isLoading) || (viewerError && !viewerLoading)) {
     return (
       <section
         aria-label="Home error"

@@ -1,22 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
-import { getAttentionQueueItemMotion } from "./attention-queue-motion";
 
-export function EmptyQueueItem({
-  animateOnInsert,
-}: {
-  animateOnInsert: boolean;
-}) {
-  const shouldReduceMotion = useReducedMotion();
-
+export function EmptyQueueItem() {
   return (
-    <motion.li
-      {...getAttentionQueueItemMotion({ animateOnInsert, shouldReduceMotion })}
-      className="border-border/55 border-b last:border-b-0"
-    >
+    <li className="border-border/55 border-b last:border-b-0">
       <Link
         {...buildExploreNavigation()}
         className="group flex min-h-24 min-w-0 items-center justify-between gap-3 px-1 py-3 transition-colors duration-150 hover:bg-forge-teal/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-3"
@@ -39,6 +28,6 @@ export function EmptyQueueItem({
           <ArrowRight className="size-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
         </span>
       </Link>
-    </motion.li>
+    </li>
   );
 }

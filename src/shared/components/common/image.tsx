@@ -54,18 +54,18 @@ export function Image({
   onError,
   ...props
 }: ImageProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const isSrcProvided = Boolean(src?.trim());
+  const [isLoading, setIsLoading] = useState(isSrcProvided);
   const [error, setError] = useState(false);
   const [fallbackFailed, setFallbackFailed] = useState(false);
   const imageRef = useRef<HTMLImageElement | null>(null);
-  const isSrcProvided = Boolean(src?.trim());
   const actualSrc = error && fallbackSrc ? fallbackSrc : src;
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: src changes must reset image state even when isSrcProvided stays true.
   useEffect(() => {
     setError(false);
     setFallbackFailed(false);
-    setIsLoading(isSrcProvided);
+    setIsLoading(isSrcProvided && !imageRef.current?.complete);
   }, [isSrcProvided, src]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: actualSrc changes when fallback handling swaps image URLs.

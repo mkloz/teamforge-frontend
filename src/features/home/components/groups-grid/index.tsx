@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
@@ -9,6 +10,12 @@ import { HomeGroupsSkeleton } from "@/features/home/components/home-skeletons";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { getActiveGroupPreview } from "@/features/home/lib/home-insights";
 import { Button } from "@/shared/components/ui/button";
+import {
+  cancelDelay,
+  cancelIdleTask,
+  scheduleDelay,
+  scheduleIdleTask,
+} from "@/shared/lib/browser-scheduling";
 import type { GroupApi } from "@/shared/schemas";
 
 import { BrowseGroupsRow } from "./browse-groups-row";
@@ -16,9 +23,15 @@ import { collectGroupChatState } from "./group-chat-state";
 import { GroupRow } from "./group-row";
 import { GroupsGridEmpty } from "./groups-grid-empty";
 
+const HOME_CHAT_STATE_DELAY_MS = 12_000;
+
 export function GroupsGrid() {
   const { groups, isGroupsLoading } = useHomeData();
-  const chatsQuery = useQuery(ActivityQueryFactory.chats());
+  const shouldLoadChatState = useDeferredChatState();
+  const chatsQuery = useQuery({
+    ...ActivityQueryFactory.chats(),
+    enabled: shouldLoadChatState,
+  });
   const groupChatState = collectGroupChatState(chatsQuery.data ?? []);
 
   return (
@@ -28,6 +41,28 @@ export function GroupsGrid() {
       isGroupsLoading={isGroupsLoading}
     />
   );
+}
+
+function useDeferredChatState() {
+  const [shouldLoad, setShouldLoad] = useState(false);
+
+  useEffect(() => {
+    let idleTask: ReturnType<typeof scheduleIdleTask> | undefined;
+    const delayTask = scheduleDelay(() => {
+      idleTask = scheduleIdleTask(() => {
+        setShouldLoad(true);
+      });
+    }, HOME_CHAT_STATE_DELAY_MS);
+
+    return () => {
+      cancelDelay(delayTask);
+      if (idleTask) {
+        cancelIdleTask(idleTask);
+      }
+    };
+  }, []);
+
+  return shouldLoad;
 }
 
 interface GroupsGridViewProps {

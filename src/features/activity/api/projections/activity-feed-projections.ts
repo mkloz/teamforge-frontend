@@ -47,13 +47,29 @@ export function deriveFeedData(
   },
 ): ActivityFeedData {
   const currentUserParticipant = mapCurrentUserParticipant(currentUser);
+  const chatsByGroupId = new Map<string, ChatApi>();
+  const chatsById = new Map(chats.map((chat) => [chat.id, chat]));
+
+  for (const chat of chats) {
+    if (chat.groupId) {
+      chatsByGroupId.set(chat.groupId, chat);
+    }
+  }
   const groupItems = groups.map((group) =>
-    buildGroupFeedItem(group, chats, currentUserParticipant, typingByChatId),
+    buildGroupFeedItem(
+      group,
+      chatsByGroupId.get(group.id) ?? null,
+      currentUserParticipant,
+      typingByChatId,
+    ),
   );
   const directItems = friendships.flatMap((friendship) => {
+    const chatSummary = friendship.privateChat
+      ? (chatsById.get(friendship.privateChat.id) ?? null)
+      : null;
     const item = buildDirectFeedItem(
       friendship,
-      chats,
+      chatSummary,
       currentUserParticipant,
       typingByChatId,
     );

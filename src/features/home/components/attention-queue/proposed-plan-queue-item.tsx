@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   CalendarClock,
@@ -22,13 +21,10 @@ import {
   type PlanAttentionKind,
 } from "./attention-queue-formatters";
 import { AttentionQueueMeta } from "./attention-queue-meta";
-import { getAttentionQueueItemMotion } from "./attention-queue-motion";
 
 export function ProposedPlanQueueItem({
-  animateOnInsert,
   group,
 }: {
-  animateOnInsert: boolean;
   group: AttentionQueuePlan;
 }) {
   const navigation = buildGroupPlanDetailNavigation(group.id, {
@@ -45,13 +41,9 @@ export function ProposedPlanQueueItem({
     { field: "category" as const, icon: Tag, label: categoryLabel },
     { field: "cost" as const, icon: CreditCard, label: costLabel },
   ];
-  const shouldReduceMotion = useReducedMotion();
 
   return (
-    <motion.li
-      {...getAttentionQueueItemMotion({ animateOnInsert, shouldReduceMotion })}
-      className="group border-border/55 border-b px-1 py-3 transition-colors duration-150 last:border-b-0 hover:bg-spark-amber/5 sm:px-3"
-    >
+    <li className="group border-border/55 border-b px-1 py-3 transition-colors duration-150 last:border-b-0 hover:bg-spark-amber/5 sm:px-3">
       <Link
         {...navigation}
         className="flex min-w-0 items-center justify-between gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -101,7 +93,7 @@ export function ProposedPlanQueueItem({
           />
         </span>
       </Link>
-    </motion.li>
+    </li>
   );
 }
 
