@@ -1,5 +1,6 @@
 import type { PlannedGroup } from "@/features/home/lib/home-contract";
-import type { ExploreGroup, GroupApi } from "@/shared/schemas";
+import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
+import type { ExploreGroup } from "@/shared/schemas";
 
 import { normalizeScore } from "./recommendation-insights";
 
@@ -13,7 +14,7 @@ export function getUpcomingPreview(plans: PlannedGroup[], limit = 4) {
 }
 
 export function getActiveGroupPreview(
-  groups: GroupApi[],
+  groups: HomeGroup[],
   limit = 6,
   options: ActiveGroupPreviewOptions = {},
 ) {
@@ -60,14 +61,14 @@ export function getRecommendationPreview(
 }
 
 function getUnreadPriority(
-  group: GroupApi,
+  group: HomeGroup,
   options: ActiveGroupPreviewOptions,
 ) {
   return options.unreadCountsByGroupId?.get(group.id) ?? 0;
 }
 
 function getActiveGroupTimestamp(
-  group: GroupApi,
+  group: HomeGroup,
   options: ActiveGroupPreviewOptions,
 ) {
   const value = options.lastActivityByGroupId?.get(group.id) ?? group.updatedAt;

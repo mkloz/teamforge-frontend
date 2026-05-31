@@ -1,16 +1,47 @@
-import { useEffect, useRef } from "react";
+import {
+  lazy,
+  type ReactNode,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { AttentionQueue } from "@/features/home/components/attention-queue";
-import { FriendsInvitation } from "@/features/home/components/friends-invitation";
 import { GroupsGrid } from "@/features/home/components/groups-grid";
 import { HomeHero } from "@/features/home/components/home-hero";
-import { RecommendedGroups } from "@/features/home/components/recommended-groups";
-import { SentInvitationsReview } from "@/features/home/components/sent-invitations-review";
-import { UpcomingPlans } from "@/features/home/components/upcoming-plans";
+import {
+  HomeInviteSkeleton,
+  HomeRecommendedGroupsSkeleton,
+  HomeUpcomingPlansSkeleton,
+} from "@/features/home/components/home-skeletons";
 import { HomePageContent } from "@/features/home/home-page-content";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { useHomeRouteState } from "@/features/home/hooks/use-home-route-state";
 import { useHomeViewerState } from "@/features/home/hooks/use-home-viewer";
 import { PageErrorState } from "@/shared/components/page-error-state";
+
+const LazyFriendsInvitation = lazy(() =>
+  import("@/features/home/components/friends-invitation").then((module) => ({
+    default: module.FriendsInvitation,
+  })),
+);
+const LazyRecommendedGroups = lazy(() =>
+  import("@/features/home/components/recommended-groups").then((module) => ({
+    default: module.RecommendedGroups,
+  })),
+);
+const LazySentInvitationsReview = lazy(() =>
+  import("@/features/home/components/sent-invitations-review").then(
+    (module) => ({
+      default: module.SentInvitationsReview,
+    }),
+  ),
+);
+const LazyUpcomingPlans = lazy(() =>
+  import("@/features/home/components/upcoming-plans").then((module) => ({
+    default: module.UpcomingPlans,
+  })),
+);
 
 export function HomePage() {
   const { sentInvitations, isLoading, isError, refetchAll } = useHomeData();
@@ -57,11 +88,13 @@ export function HomePage() {
       hero={<HomeHero />}
       sentInvitationsReview={
         focusedPanel === "invitations" && invitationView === "sent" ? (
-          <SentInvitationsReview
-            focusedInviteId={focusedInviteId}
-            invitations={sentInvitations}
-            onClose={clearInvitationFocus}
-          />
+          <Suspense fallback={null}>
+            <LazySentInvitationsReview
+              focusedInviteId={focusedInviteId}
+              invitations={sentInvitations}
+              onClose={clearInvitationFocus}
+            />
+          </Suspense>
         ) : null
       }
       attentionQueue={
@@ -75,10 +108,72 @@ export function HomePage() {
           onClearFriendRequestFocus={clearFriendRequestFocus}
         />
       }
-      upcomingPlans={<UpcomingPlans />}
-      recommendedGroups={<RecommendedGroups />}
+      upcomingPlans={
+        <DeferredHomePanel fallback={<HomeUpcomingPlansSkeleton />}>
+          <Suspense fallback={<HomeUpcomingPlansSkeleton />}>
+            <LazyUpcomingPlans />
+          </Suspense>
+        </DeferredHomePanel>
+      }
+      recommendedGroups={
+        <DeferredHomePanel fallback={<HomeRecommendedGroupsSkeleton />}>
+          <Suspense fallback={<HomeRecommendedGroupsSkeleton />}>
+            <LazyRecommendedGroups />
+          </Suspense>
+        </DeferredHomePanel>
+      }
       groupsGrid={<GroupsGrid />}
-      friendsInvitation={<FriendsInvitation />}
+      friendsInvitation={
+        <DeferredHomePanel fallback={<HomeInviteSkeleton />} rootMargin="160px">
+          <Suspense fallback={<HomeInviteSkeleton />}>
+            <LazyFriendsInvitation />
+          </Suspense>
+        </DeferredHomePanel>
+      }
     />
   );
+}
+
+function DeferredHomePanel({
+  children,
+  fallback,
+  rootMargin = "240px",
+}: {
+  children: ReactNode;
+  fallback: ReactNode;
+  rootMargin?: string;
+}) {
+  const [shouldRender, setShouldRender] = useState(false);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (shouldRender) {
+      return undefined;
+    }
+
+    const node = panelRef.current;
+
+    if (!node || typeof window.IntersectionObserver !== "function") {
+      setShouldRender(true);
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) {
+          return;
+        }
+
+        setShouldRender(true);
+        observer.disconnect();
+      },
+      { rootMargin },
+    );
+
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, [rootMargin, shouldRender]);
+
+  return <div ref={panelRef}>{shouldRender ? children : fallback}</div>;
 }

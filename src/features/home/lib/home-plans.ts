@@ -1,7 +1,7 @@
 import type { PlannedGroup } from "@/features/home/lib/home-contract";
-import type { GroupApi } from "@/shared/schemas";
+import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
 
-function hasPlan(group: GroupApi): group is PlannedGroup {
+function hasPlan(group: HomeGroup): group is PlannedGroup {
   return group.plan !== null;
 }
 
@@ -9,7 +9,7 @@ function isActivePlan(group: PlannedGroup) {
   return group.plan.status !== "COMPLETED" && group.plan.status !== "CANCELLED";
 }
 
-export function getActivePlannedGroups(groups: GroupApi[]): PlannedGroup[] {
+export function getActivePlannedGroups(groups: HomeGroup[]): PlannedGroup[] {
   return groups
     .filter(hasPlan)
     .filter(isActivePlan)

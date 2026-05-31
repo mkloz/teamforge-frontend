@@ -1,24 +1,24 @@
+import { homeGroupSchema } from "@/features/home/schemas/home-group.schema";
 import { apiClient, parseJsonWithRequestId } from "@/shared/api/api";
 import { EXPLORE_DEFAULT_DISTANCE_KM } from "@/shared/api/api-constraints";
 import {
   createPaginatedSchema,
   exploreGroupSchema,
   exploreJoinResultSchema,
-  groupApiSchema,
   inviteSchema,
 } from "@/shared/schemas";
 
 export class HomeApi {
   static async getGroups() {
     const response = await apiClient
-      .get("groups", {
+      .get("groups/home-summary", {
         searchParams: {
           limit: 100,
         },
       })
       .json<unknown>();
 
-    return createPaginatedSchema(groupApiSchema).parse(response).items;
+    return createPaginatedSchema(homeGroupSchema).parse(response).items;
   }
 
   static async getInvitations() {

@@ -1,4 +1,5 @@
-import type { GroupApi, User } from "@/shared/schemas";
+import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
+import type { User } from "@/shared/schemas";
 
 export interface UserStats {
   trustScore: number;
@@ -39,6 +40,6 @@ export interface HomeViewer {
     | null;
 }
 
-export type PlannedGroup = GroupApi & {
-  plan: NonNullable<GroupApi["plan"]>;
+export type PlannedGroup = HomeGroup & {
+  plan: NonNullable<HomeGroup["plan"]>;
 };

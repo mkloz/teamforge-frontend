@@ -10,9 +10,10 @@ import type {
   UserStats,
 } from "@/features/home/lib/home-contract";
 import { buildHomeNextMove } from "@/features/home/lib/home-insights";
+import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
 import { scrollWindowToTop } from "@/shared/lib/scroll-to-top";
 import { cn } from "@/shared/lib/utils";
-import type { ExploreGroup, GroupApi, Invite } from "@/shared/schemas";
+import type { ExploreGroup, Invite } from "@/shared/schemas";
 import {
   HomeHeroMoveIcon,
   PrimaryAction,
@@ -52,7 +53,7 @@ export function HomeHero() {
 
 interface HomeHeroViewProps {
   compactNotificationButton?: ReactNode;
-  groups: GroupApi[];
+  groups: HomeGroup[];
   invitations: Invite[];
   notificationButton?: ReactNode;
   plans: PlannedGroup[];

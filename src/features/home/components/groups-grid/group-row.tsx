@@ -1,13 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { BellOff, Pin, Users } from "lucide-react";
 import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
+import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
 import { Avatar } from "@/shared/components/common/avatar";
 import { UnreadBadge } from "@/shared/components/common/unread-badge";
 import { cn } from "@/shared/lib/utils";
-import type { GroupApi } from "@/shared/schemas";
 
 interface GroupRowProps {
-  group: GroupApi;
+  group: HomeGroup;
   isMuted?: boolean;
   isPinned?: boolean;
   lastActivityAt?: string;
@@ -44,10 +44,6 @@ function formatRelativeTime(value: string) {
   return `${Math.floor(diffDays / 7)}w ago`;
 }
 
-function getUnreadLabel(count: number) {
-  return count === 1 ? "1 unread message" : `${count} unread messages`;
-}
-
 function formatMetaStatus({ isMuted, isPinned }: GroupRowProps) {
   if (isMuted) {
     return "Muted";
@@ -60,7 +56,7 @@ function formatMetaStatus({ isMuted, isPinned }: GroupRowProps) {
   return null;
 }
 
-function getGroupContextLine(group: GroupApi, messagePreview?: string) {
+function getGroupContextLine(group: HomeGroup, messagePreview?: string) {
   if (messagePreview) {
     return messagePreview;
   }
@@ -94,7 +90,6 @@ export function GroupRow({
 }: GroupRowProps) {
   const lastActivity = formatRelativeTime(lastActivityAt);
   const hasUnreadMessages = unreadCount > 0;
-  const unreadLabel = hasUnreadMessages ? getUnreadLabel(unreadCount) : null;
   const contextLine = getGroupContextLine(group, messagePreview);
   const metaStatus = formatMetaStatus({ group, isMuted, isPinned });
 
@@ -102,16 +97,6 @@ export function GroupRow({
     <li>
       <Link
         {...buildActivityGroupHubNavigation(group.id)}
-        aria-label={[
-          group.name,
-          contextLine,
-          `${group.members.length} members`,
-          `last active ${lastActivity}`,
-          metaStatus,
-          unreadLabel,
-        ]
-          .filter(Boolean)
-          .join(", ")}
         className={cn(
           "group relative grid min-h-16 cursor-pointer grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-x-3 overflow-hidden rounded-md px-2.5 py-2.5",
           "transition-all duration-150 hover:translate-x-0.5",
@@ -140,7 +125,7 @@ export function GroupRow({
                 ? "ring-2 ring-forge-teal/35 group-hover:ring-forge-teal/50"
                 : null,
             )}
-            fallbackClassName="text-xs"
+            fallbackClassName="text-foreground text-xs"
           />
         </div>
 

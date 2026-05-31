@@ -3,7 +3,8 @@ import type {
   PlannedGroup,
   UserStats,
 } from "@/features/home/lib/home-contract";
-import type { ExploreGroup, GroupApi, Invite } from "@/shared/schemas";
+import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
+import type { ExploreGroup, Invite } from "@/shared/schemas";
 import type { HomeNextMove } from "./home-next-move.types";
 import {
   buildDraftPlanMove,
@@ -23,7 +24,7 @@ interface BuildHomeNextMoveInput {
   stats: UserStats;
   invitations: Invite[];
   plans: PlannedGroup[];
-  groups: GroupApi[];
+  groups: HomeGroup[];
   recommendations: ExploreGroup[];
 }
 

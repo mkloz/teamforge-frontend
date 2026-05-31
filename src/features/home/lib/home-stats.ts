@@ -1,5 +1,6 @@
 import type { UserStats } from "@/features/home/lib/home-contract";
-import type { GroupApi, User } from "@/shared/schemas";
+import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
+import type { User } from "@/shared/schemas";
 
 export const EMPTY_HOME_STATS: UserStats = {
   trustScore: 0,
@@ -30,7 +31,7 @@ function getProfileCompleteness(user: User) {
   return Math.round((fields.filter(Boolean).length / fields.length) * 100);
 }
 
-function countUniqueConnections(groups: GroupApi[], currentUserId: string) {
+function countUniqueConnections(groups: HomeGroup[], currentUserId: string) {
   const connectionIds = new Set<string>();
 
   for (const group of groups) {
@@ -44,7 +45,7 @@ function countUniqueConnections(groups: GroupApi[], currentUserId: string) {
   return connectionIds.size;
 }
 
-export function buildHomeStats(user: User, groups: GroupApi[]): UserStats {
+export function buildHomeStats(user: User, groups: HomeGroup[]): UserStats {
   return {
     trustScore: normalizeScore(user.trustScore),
     groupsJoined: groups.length,

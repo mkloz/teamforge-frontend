@@ -19,7 +19,7 @@ export function SeeRestButton({ hiddenItemCount }: SeeRestButtonProps) {
       >
         <Link
           {...buildHomeNavigation({ notifications: true })}
-          aria-label={`See the rest: ${hiddenItemCount} more attention ${
+          aria-label={`View ${hiddenItemCount} more attention ${
             hiddenItemCount === 1 ? "item" : "items"
           }`}
         >
