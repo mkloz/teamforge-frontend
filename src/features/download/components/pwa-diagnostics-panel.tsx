@@ -195,7 +195,7 @@ function getPermissionItem(
 function getBackendPushItem(
   push: ReturnType<typeof useWebPushSubscription>,
 ): DiagnosticItem {
-  if (!push.isOnline) {
+  if (!push.isOnline || push.isPublicKeyNetworkError) {
     return {
       detail: "Reconnect to check the backend public-key endpoint.",
       icon: Server,

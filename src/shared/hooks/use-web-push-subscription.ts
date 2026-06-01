@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
+import { isApiNetworkError } from "@/shared/api/api-network-error";
 import { useAuthSessionState } from "@/shared/api/auth-session-state";
 import {
   WEB_PUSH_SUBSCRIPTIONS_QUERY_KEY,
@@ -128,10 +129,13 @@ export function useWebPushSubscription() {
   const [isCheckingBrowserSubscription, setIsCheckingBrowserSubscription] =
     useState(false);
 
-  const publicKeyQuery = useQuery(WebPushQueryOptions.publicKeyState());
+  const publicKeyQuery = useQuery({
+    ...WebPushQueryOptions.publicKeyState(),
+    enabled: isOnline,
+  });
   const subscriptionsQuery = useQuery({
     ...WebPushQueryOptions.subscriptions(),
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && isOnline,
   });
 
   const refreshBrowserSubscription = useCallback(async () => {
@@ -373,7 +377,10 @@ export function useWebPushSubscription() {
       )
     : undefined;
   const isSubscribed = Boolean(browserEndpoint && activeServerSubscription);
-  const isWebPushEnabled = publicKeyState?.enabled ?? false;
+  const isPublicKeyNetworkError = isApiNetworkError(publicKeyQuery.error);
+  const isWebPushEnabled = isOnline
+    ? (publicKeyState?.enabled ?? false)
+    : false;
   const canRequestPermission =
     support.isSupported &&
     isAuthenticated &&
@@ -426,8 +433,10 @@ export function useWebPushSubscription() {
     isAuthenticated,
     isCheckingBrowserSubscription,
     isOnline,
-    isPublicKeyError: publicKeyQuery.isError,
-    isPublicKeyLoading: publicKeyQuery.isLoading,
+    isPublicKeyError:
+      isOnline && publicKeyQuery.isError && !isPublicKeyNetworkError,
+    isPublicKeyLoading: isOnline && publicKeyQuery.isLoading,
+    isPublicKeyNetworkError,
     isSubscribed,
     isSendingTest: testMutation.isPending,
     isTurningOff: unsubscribeMutation.isPending,

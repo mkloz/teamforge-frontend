@@ -75,6 +75,7 @@ export const WebPushQueryOptions = {
       queryKey: WEB_PUSH_PUBLIC_KEY_QUERY_KEY,
       queryFn: () => WebPushApi.getPublicKeyState(),
       staleTime: 5 * 60_000,
+      retry: false,
       meta: {
         errorToast: false,
       },
@@ -86,6 +87,7 @@ export const WebPushQueryOptions = {
       queryKey: WEB_PUSH_SUBSCRIPTIONS_QUERY_KEY,
       queryFn: () => WebPushApi.getSubscriptions(),
       staleTime: 30_000,
+      retry: false,
       meta: {
         errorToast: false,
       },

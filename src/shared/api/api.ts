@@ -2,6 +2,7 @@ import ky, { type Options } from "ky";
 
 import { config } from "@/config/config";
 import { parseApiError } from "@/shared/api/api-errors";
+import { isApiNetworkError } from "@/shared/api/api-network-error";
 import {
   type ApiAuthMode,
   readApiRequestContext,
@@ -131,7 +132,11 @@ async function refreshTokens(options: RefreshTokensOptions = {}) {
 
         return nextTokens;
       })
-      .catch(() => {
+      .catch((error: unknown) => {
+        if (isApiNetworkError(error)) {
+          throw error;
+        }
+
         authSession.clear();
         return null;
       })
@@ -212,7 +217,15 @@ export const apiClient = ky.create({
           return response;
         }
 
-        const nextTokens = await refreshTokens({ allowCookieRefresh: true });
+        let nextTokens: AuthTokens | null = null;
+
+        try {
+          nextTokens = await refreshTokens({ allowCookieRefresh: true });
+        } catch (error) {
+          if (isApiNetworkError(error)) {
+            throw error;
+          }
+        }
 
         if (!nextTokens) {
           authSession.handleUnauthorized();

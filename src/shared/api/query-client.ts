@@ -1,5 +1,6 @@
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 
+import { isApiNetworkError } from "@/shared/api/api-network-error";
 import { getHttpErrorStatus } from "@/shared/lib/api-error-message";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 import type { AppErrorToastOptions } from "@/shared/lib/error-toast";
@@ -29,6 +30,10 @@ function isNonRetryableHttpError(error: unknown) {
 }
 
 function shouldRetry(failureCount: number, error: unknown) {
+  if (isApiNetworkError(error)) {
+    return false;
+  }
+
   if (isNonRetryableHttpError(error)) {
     return false;
   }
@@ -137,6 +142,10 @@ export function createAppQueryClient() {
   return new QueryClient({
     queryCache: new QueryCache({
       onError: (error, query) => {
+        if (isApiNetworkError(error)) {
+          return;
+        }
+
         void captureQueryClientException(
           telemetryErrorScopes.queryError,
           error,

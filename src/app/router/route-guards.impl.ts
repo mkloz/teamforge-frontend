@@ -1,6 +1,7 @@
 import { redirect } from "@tanstack/react-router";
 
 import { refreshAuthSession } from "@/shared/api/api";
+import { isApiNetworkError } from "@/shared/api/api-network-error";
 import { authSession } from "@/shared/api/auth-session";
 import { getCachedCurrentUser } from "@/shared/api/current-user-cache";
 import {
@@ -26,12 +27,18 @@ interface RequireAuthenticatedUserOptions {
   onSessionRestored?: () => void | Promise<void>;
 }
 
-async function restoreAuthSessionIfNeeded() {
+type AuthSessionRestoreState = "authenticated" | "missing" | "offline";
+
+async function restoreAuthSessionIfNeeded(): Promise<AuthSessionRestoreState> {
   if (!authSession.hasTokens()) {
-    await refreshAuthSession().catch(() => null);
+    try {
+      await refreshAuthSession();
+    } catch (error) {
+      return isApiNetworkError(error) ? "offline" : "missing";
+    }
   }
 
-  return authSession.hasTokens();
+  return authSession.hasTokens() ? "authenticated" : "missing";
 }
 
 async function resolveCurrentUser() {
@@ -50,6 +57,10 @@ function redirectToLogin(returnHref: string | null): never {
   throw redirect(buildAuthRouteNavigation("/auth/login", returnHref));
 }
 
+function getOfflineCurrentUserFallback() {
+  return getCachedCurrentUser();
+}
+
 function isOnboardingEditMode(searchStr: string) {
   return new URLSearchParams(searchStr).get("mode") === "edit";
 }
@@ -63,7 +74,7 @@ export async function redirectAuthenticatedUser({
 
   const hasSession = await restoreAuthSessionIfNeeded();
 
-  if (!hasSession) {
+  if (hasSession !== "authenticated") {
     return;
   }
 
@@ -83,10 +94,14 @@ export async function requireAuthenticatedUser(
   options?: RequireAuthenticatedUserOptions,
 ) {
   const returnHref = buildRouteLocationHref(location);
-  const hasSession = await restoreAuthSessionIfNeeded();
+  const sessionState = await restoreAuthSessionIfNeeded();
 
-  if (!hasSession) {
+  if (sessionState === "missing") {
     return redirectToLogin(returnHref);
+  }
+
+  if (sessionState === "offline") {
+    return getOfflineCurrentUserFallback();
   }
 
   if (options?.onSessionRestored) {
@@ -101,7 +116,11 @@ export async function requireAuthenticatedUser(
     }
 
     return currentUser;
-  } catch {
+  } catch (error) {
+    if (isApiNetworkError(error)) {
+      return getOfflineCurrentUserFallback();
+    }
+
     return redirectToLogin(returnHref);
   }
 }
@@ -111,6 +130,11 @@ export async function requireCanonicalAppRoute(
   options?: RequireAuthenticatedUserOptions,
 ) {
   const currentUser = await requireAuthenticatedUser(location, options);
+
+  if (!currentUser) {
+    return;
+  }
+
   const canonicalDestination = getPostAuthRedirectPath(currentUser);
 
   if (canonicalDestination !== "/home") {
@@ -126,6 +150,11 @@ export async function requireCanonicalOnboardingRoute(
     | "/onboarding/interests",
 ) {
   const currentUser = await requireAuthenticatedUser(location);
+
+  if (!currentUser) {
+    return;
+  }
+
   const canonicalDestination = getPostAuthRedirectPath(currentUser);
 
   if (canonicalDestination !== expectedDestination) {
@@ -138,6 +167,11 @@ export async function requireEditableOnboardingRoute(
   expectedDestination: "/onboarding/personality" | "/onboarding/interests",
 ) {
   const currentUser = await requireAuthenticatedUser(location);
+
+  if (!currentUser) {
+    return;
+  }
+
   const canonicalDestination = getPostAuthRedirectPath(currentUser);
 
   if (isOnboardingEditMode(location.searchStr)) {

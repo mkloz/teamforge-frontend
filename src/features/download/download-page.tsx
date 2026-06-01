@@ -396,7 +396,7 @@ function getPushCopy(push: PushState) {
       body: "This browser can still install TeamForge, but it cannot receive push notifications.",
     };
   }
-  if (!push.isOnline) {
+  if (!push.isOnline || push.isPublicKeyNetworkError) {
     return {
       title: "Reconnect to manage alerts",
       body: "Push settings need the network. Existing device alerts stay as they are until you are back online.",

@@ -4,6 +4,7 @@ import { apiClient, refreshAuthSession } from "@/shared/api/api";
 import { authSession } from "@/shared/api/auth-session";
 import { useAuthSessionState } from "@/shared/api/auth-session-state";
 import { appQueryClient } from "@/shared/api/query-client";
+import { useNetworkStatus } from "@/shared/hooks/use-network-status";
 import { fullUserResponseSchema } from "@/shared/schemas/user-response";
 
 import { CURRENT_USER_QUERY_KEY } from "./current-user-cache";
@@ -39,12 +40,13 @@ export function useRestoreAuthSessionQuery(
   options?: RestoreAuthSessionQueryOptions,
 ) {
   const { isAuthenticated } = useAuthSessionState();
+  const isOnline = useNetworkStatus();
   const shouldRestore = options?.enabled ?? !isAuthenticated;
 
   return useQuery({
     queryKey: AUTH_SESSION_RESTORE_QUERY_KEY,
     queryFn: async () => (await refreshAuthSession()) !== null,
-    enabled: shouldRestore && !isAuthenticated,
+    enabled: shouldRestore && !isAuthenticated && isOnline,
     retry: false,
     staleTime: 30_000,
   });

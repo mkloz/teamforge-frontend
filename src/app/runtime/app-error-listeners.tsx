@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 
+import { isApiNetworkError } from "@/shared/api/api-network-error";
 import { addBrowserWindowEventListener } from "@/shared/lib/browser-environment";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 import { telemetryErrorScopes } from "@/shared/lib/telemetry-contract";
@@ -33,6 +34,11 @@ function handleWindowError(event: ErrorEvent) {
 }
 
 function handleUnhandledRejection(event: PromiseRejectionEvent) {
+  if (isApiNetworkError(event.reason)) {
+    event.preventDefault();
+    return;
+  }
+
   void captureWindowException(
     telemetryErrorScopes.windowUnhandledRejection,
     event.reason,
