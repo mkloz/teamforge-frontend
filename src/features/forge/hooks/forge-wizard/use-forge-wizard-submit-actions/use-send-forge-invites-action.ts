@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 
 import { ForgeCommands } from "@/features/forge/api/forge-commands";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { captureException } from "@/shared/lib/telemetry";
 
 import type { UseForgeWizardSubmitActionsOptions } from "./types";
@@ -15,6 +16,7 @@ export function useSendForgeInvitesAction({
   state,
 }: UseSendForgeInvitesActionOptions) {
   const [isSendingInvites, setIsSendingInvites] = useState(false);
+  const { guardOfflineAction } = useOfflineActionGuard();
 
   const handleSendInvites = useCallback(async () => {
     if (!state.groupId) {
@@ -25,6 +27,15 @@ export function useSendForgeInvitesAction({
           groupId: "missing",
         },
       );
+      return;
+    }
+
+    if (
+      guardOfflineAction({
+        id: "forge-manual-invites-offline",
+        description: "Reconnect before sending invites.",
+      })
+    ) {
       return;
     }
 
@@ -52,6 +63,7 @@ export function useSendForgeInvitesAction({
     state.groupId,
     state.manualInviteeIds,
     state.planName,
+    guardOfflineAction,
   ]);
 
   return {

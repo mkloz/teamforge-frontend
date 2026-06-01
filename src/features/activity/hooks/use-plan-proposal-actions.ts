@@ -5,6 +5,7 @@ import type { ActivityGroupSelectionData } from "@/features/activity/api/activit
 import { useActivityStore } from "@/features/activity/store/activity.store";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import type { PlanProposal, User } from "@/shared/schemas";
 
 type ProposalVote = "APPROVE" | "REJECT";
@@ -29,6 +30,7 @@ export function usePlanProposalActions({
     state.selectedKind === "group" ? state.selectedId : null,
   );
   const effectiveGroupId = groupId ?? selectedGroupId ?? undefined;
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   const voteMutation = useMutation({
     meta: {
@@ -93,14 +95,38 @@ export function usePlanProposalActions({
     },
   });
 
+  async function submitVote(proposalId: string, vote: ProposalVote) {
+    if (
+      guardOfflineAction({
+        id: "activity-plan-proposal-vote-offline",
+        description: "Reconnect before voting on plan changes.",
+      })
+    ) {
+      return null;
+    }
+
+    return voteMutation.mutateAsync({ proposalId, vote });
+  }
+
+  async function withdrawProposal(proposalId: string) {
+    if (
+      guardOfflineAction({
+        id: "activity-plan-proposal-withdraw-offline",
+        description: "Reconnect before withdrawing that proposal.",
+      })
+    ) {
+      return null;
+    }
+
+    return withdrawMutation.mutateAsync(proposalId);
+  }
+
   return {
-    approveProposal: (proposalId: string) =>
-      voteMutation.mutateAsync({ proposalId, vote: "APPROVE" }),
-    rejectProposal: (proposalId: string) =>
-      voteMutation.mutateAsync({ proposalId, vote: "REJECT" }),
-    withdrawProposal: (proposalId: string) =>
-      withdrawMutation.mutateAsync(proposalId),
+    approveProposal: (proposalId: string) => submitVote(proposalId, "APPROVE"),
+    rejectProposal: (proposalId: string) => submitVote(proposalId, "REJECT"),
+    withdrawProposal,
     isVoting: voteMutation.isPending,
+    isOnline,
     isWithdrawing: withdrawMutation.isPending,
     isSubmitting: voteMutation.isPending || withdrawMutation.isPending,
   };

@@ -1,13 +1,25 @@
 import { useState } from "react";
 
 import { FileUploadApi } from "@/shared/api/file-upload";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 
 export function useImageUploadField(onUploaded: (url: string) => void) {
   const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const { guardOfflineAction } = useOfflineActionGuard();
 
   async function uploadImage(file: File) {
+    if (
+      guardOfflineAction({
+        id: "activity-group-image-upload-offline",
+        description: "Reconnect before uploading group images.",
+      })
+    ) {
+      setError("You are offline. Reconnect before uploading that image.");
+      return;
+    }
+
     setIsUploading(true);
     setError(null);
 

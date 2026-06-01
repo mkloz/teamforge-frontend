@@ -14,6 +14,7 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import { useClearActivityRouteSelection } from "./use-clear-activity-route-selection";
@@ -43,9 +44,23 @@ export function useActivityGroupActions(groupId: string) {
   const [invitingMemberId, setInvitingMemberId] = useState<string | null>(null);
   const [removingMemberId, setRemovingMemberId] = useState<string | null>(null);
   const clearRouteSelection = useClearActivityRouteSelection();
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
+
+  function guardGroupAction(id: string, description: string) {
+    return guardOfflineAction({ id, description });
+  }
 
   async function leaveGroup() {
     if (!currentUserQuery.data) {
+      return;
+    }
+
+    if (
+      guardGroupAction(
+        "activity-group-leave-offline",
+        "Reconnect before leaving this group.",
+      )
+    ) {
       return;
     }
 
@@ -80,6 +95,15 @@ export function useActivityGroupActions(groupId: string) {
       return;
     }
 
+    if (
+      guardGroupAction(
+        "activity-group-disband-offline",
+        "Reconnect before disbanding this group.",
+      )
+    ) {
+      return;
+    }
+
     setPendingAction("disband");
 
     try {
@@ -108,6 +132,15 @@ export function useActivityGroupActions(groupId: string) {
 
   async function removeMember(memberId: string) {
     if (!currentUserQuery.data) {
+      return;
+    }
+
+    if (
+      guardGroupAction(
+        "activity-group-remove-member-offline",
+        "Reconnect before removing a group member.",
+      )
+    ) {
       return;
     }
 
@@ -194,6 +227,15 @@ export function useActivityGroupActions(groupId: string) {
     execute: () => Promise<unknown>,
     optimisticUpdate?: (group: Group) => Group,
   ) {
+    if (
+      guardGroupAction(
+        "activity-plan-action-offline",
+        "Reconnect before changing this plan.",
+      )
+    ) {
+      return;
+    }
+
     setPendingAction(action);
     const snapshot = optimisticUpdate
       ? await optimisticallyUpdateSelectedGroup(
@@ -214,6 +256,15 @@ export function useActivityGroupActions(groupId: string) {
   }
 
   async function inviteMember(inviteeId: string) {
+    if (
+      guardGroupAction(
+        "activity-group-invite-offline",
+        "Reconnect before inviting someone to this group.",
+      )
+    ) {
+      return;
+    }
+
     setInvitingMemberId(inviteeId);
 
     try {
@@ -238,6 +289,7 @@ export function useActivityGroupActions(groupId: string) {
 
   return {
     currentUserId: currentUserQuery.data?.id ?? null,
+    isOnline,
     pendingPlanAction: pendingAction,
     isDisbanding: pendingAction === "disband",
     isLeaving: pendingAction === "leave",

@@ -3,6 +3,7 @@ import { useState } from "react";
 import type { CreatePlanProposalDto } from "@/features/activity/api/activity.api";
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import type { Plan } from "@/features/activity/lib/activity-contract";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 
 interface UseCreatePlanProposalOptions {
@@ -14,6 +15,7 @@ export function useCreatePlanProposal(
   { onCreated }: UseCreatePlanProposalOptions = {},
 ) {
   const [error, setError] = useState<string | null>(null);
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const createMutation = useMutation({
     meta: {
       errorToastMessage: "We couldn't submit that proposal. Please try again.",
@@ -35,10 +37,27 @@ export function useCreatePlanProposal(
     },
   });
 
+  async function createProposal(payload: CreatePlanProposalDto) {
+    setError(null);
+
+    if (
+      guardOfflineAction({
+        id: "activity-plan-proposal-create-offline",
+        description: "Reconnect before suggesting plan changes.",
+      })
+    ) {
+      setError("You are offline. Reconnect before suggesting plan changes.");
+      return null;
+    }
+
+    return createMutation.mutateAsync(payload);
+  }
+
   return {
-    createProposal: createMutation.mutateAsync,
+    createProposal,
     error,
     isCreating: createMutation.isPending,
+    isOnline,
     setError,
   };
 }

@@ -41,6 +41,7 @@ export function useAttentionQueueState({
     decliningRequestId,
     isAccepting,
     isDeclining,
+    isOnline: isFriendRequestOnline,
   } = useExploreFriendRequests();
   const {
     acceptInvitation,
@@ -51,6 +52,7 @@ export function useAttentionQueueState({
     decliningInviteId,
     actionError,
     clearActionError,
+    isOnline: isInviteActionOnline,
   } = useHomeInvitationActions();
   const [hiddenInviteIds, setHiddenInviteIds] = useState<string[]>([]);
   const [hiddenRequestIds, setHiddenRequestIds] = useState<string[]>([]);
@@ -97,6 +99,11 @@ export function useAttentionQueueState({
 
   async function acceptVisibleInvite(inviteId: string) {
     clearActionError();
+    if (!isInviteActionOnline) {
+      await acceptInvitation(inviteId);
+      return;
+    }
+
     hideInvite(inviteId);
 
     try {
@@ -111,6 +118,11 @@ export function useAttentionQueueState({
 
   async function declineVisibleInvite(inviteId: string) {
     clearActionError();
+    if (!isInviteActionOnline) {
+      await declineInvitation(inviteId);
+      return;
+    }
+
     hideInvite(inviteId);
 
     try {
@@ -124,6 +136,11 @@ export function useAttentionQueueState({
   }
 
   async function acceptVisibleRequest(requesterId: string) {
+    if (!isFriendRequestOnline) {
+      await acceptRequest(requesterId);
+      return;
+    }
+
     hideRequest(requesterId);
 
     try {
@@ -137,6 +154,11 @@ export function useAttentionQueueState({
   }
 
   async function declineVisibleRequest(requesterId: string) {
+    if (!isFriendRequestOnline) {
+      await declineRequest(requesterId);
+      return;
+    }
+
     hideRequest(requesterId);
 
     try {

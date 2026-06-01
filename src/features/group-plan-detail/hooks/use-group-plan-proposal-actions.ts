@@ -7,6 +7,7 @@ import { GroupPlanDetailCommands } from "@/features/group-plan-detail/api/group-
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import type { PlanProposal } from "@/shared/schemas";
@@ -66,6 +67,7 @@ export function useGroupPlanProposalActions({
   const queryClient = useQueryClient();
   const currentUserQuery = useCurrentUserQuery();
   const detailQueryKey = APP_QUERY_KEYS.groupPlanDetail.byId(groupId);
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   async function optimisticallyUpdateProposal(
     updater: (proposal: PlanProposal) => PlanProposal,
@@ -222,15 +224,53 @@ export function useGroupPlanProposalActions({
     },
   });
 
+  async function createProposal(payload: CreateGroupPlanProposalPayload) {
+    if (
+      guardOfflineAction({
+        id: "group-plan-proposal-create-offline",
+        description: "Reconnect before suggesting plan changes.",
+      })
+    ) {
+      throw new Error("You are offline. Reconnect before suggesting changes.");
+    }
+
+    return createMutation.mutateAsync(payload);
+  }
+
+  function submitVote(proposalId: string, vote: ProposalVoteInput["vote"]) {
+    if (
+      guardOfflineAction({
+        id: "group-plan-proposal-vote-offline",
+        description: "Reconnect before voting on plan changes.",
+      })
+    ) {
+      return;
+    }
+
+    voteMutation.mutate({ proposalId, vote });
+  }
+
+  function withdrawProposal(proposalId: string) {
+    if (
+      guardOfflineAction({
+        id: "group-plan-proposal-withdraw-offline",
+        description: "Reconnect before withdrawing this plan change.",
+      })
+    ) {
+      return;
+    }
+
+    withdrawMutation.mutate(proposalId);
+  }
+
   return {
-    approveProposal: (proposalId: string) =>
-      voteMutation.mutate({ proposalId, vote: "APPROVE" }),
-    createProposal: createMutation.mutateAsync,
-    rejectProposal: (proposalId: string) =>
-      voteMutation.mutate({ proposalId, vote: "REJECT" }),
-    withdrawProposal: withdrawMutation.mutate,
+    approveProposal: (proposalId: string) => submitVote(proposalId, "APPROVE"),
+    createProposal,
+    rejectProposal: (proposalId: string) => submitVote(proposalId, "REJECT"),
+    withdrawProposal,
     creatingField: createMutation.variables?.field ?? null,
     isCreating: createMutation.isPending,
+    isOnline,
     isSubmitting: voteMutation.isPending || withdrawMutation.isPending,
     pendingVote: voteMutation.variables ?? null,
     withdrawingProposalId: withdrawMutation.variables ?? null,

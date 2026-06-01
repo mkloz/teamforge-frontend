@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { GroupPlanDetailCommands } from "@/features/group-plan-detail/api/group-plan-detail-commands";
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
@@ -78,6 +79,11 @@ function updateViewerRelationship(
 export function useGroupPlanDetailActions(groupId: string) {
   const queryClient = useQueryClient();
   const detailQueryKey = APP_QUERY_KEYS.groupPlanDetail.byId(groupId);
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
+
+  function guardGroupAction(id: string, description: string) {
+    return guardOfflineAction({ id, description });
+  }
 
   async function optimisticallySetRelationship(
     relationship: ViewerRelationship,
@@ -240,16 +246,72 @@ export function useGroupPlanDetailActions(groupId: string) {
   });
 
   return {
-    acceptInvite: acceptInviteMutation.mutate,
-    cancelRequest: cancelRequestMutation.mutate,
-    declineInvite: declineInviteMutation.mutate,
+    acceptInvite: (inviteId: string) => {
+      if (
+        guardGroupAction(
+          "group-plan-accept-invite-offline",
+          "Reconnect before accepting this invite.",
+        )
+      ) {
+        return;
+      }
+
+      acceptInviteMutation.mutate(inviteId);
+    },
+    cancelRequest: () => {
+      if (
+        guardGroupAction(
+          "group-plan-cancel-request-offline",
+          "Reconnect before changing your join request.",
+        )
+      ) {
+        return;
+      }
+
+      cancelRequestMutation.mutate();
+    },
+    declineInvite: (inviteId: string) => {
+      if (
+        guardGroupAction(
+          "group-plan-decline-invite-offline",
+          "Reconnect before declining this invite.",
+        )
+      ) {
+        return;
+      }
+
+      declineInviteMutation.mutate(inviteId);
+    },
     isAcceptingInvite: acceptInviteMutation.isPending,
     isCancellingRequest: cancelRequestMutation.isPending,
     isDecliningInvite: declineInviteMutation.isPending,
     isJoining: joinMutation.isPending,
     isLeaving: leaveMutation.isPending,
-    joinGroup: joinMutation.mutate,
+    isOnline,
+    joinGroup: () => {
+      if (
+        guardGroupAction(
+          "group-plan-join-offline",
+          "Reconnect before joining or requesting to join this group.",
+        )
+      ) {
+        return;
+      }
+
+      joinMutation.mutate();
+    },
     joinResult: joinMutation.data?.data,
-    leaveGroup: leaveMutation.mutate,
+    leaveGroup: () => {
+      if (
+        guardGroupAction(
+          "group-plan-leave-offline",
+          "Reconnect before leaving this group.",
+        )
+      ) {
+        return;
+      }
+
+      leaveMutation.mutate();
+    },
   };
 }

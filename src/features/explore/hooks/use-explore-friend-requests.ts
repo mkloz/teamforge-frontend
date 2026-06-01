@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { ExploreCache } from "@/features/explore/api/explore-cache";
 import { ExploreCommands } from "@/features/explore/api/explore-commands";
 import { ExploreQueryFactory } from "@/features/explore/api/explore-query-factory";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
@@ -11,6 +12,7 @@ interface FriendRequestMutationContext {
 
 export function useExploreFriendRequests() {
   const requestsQuery = useQuery(ExploreQueryFactory.friendRequests());
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const acceptMutation = useMutation({
     meta: {
       errorToastMessage: "We couldn't accept that friend request right now.",
@@ -78,15 +80,42 @@ export function useExploreFriendRequests() {
     },
   });
 
+  async function acceptRequest(requesterId: string) {
+    if (
+      guardOfflineAction({
+        id: "explore-friend-request-offline",
+        description: "Reconnect before responding to friend requests.",
+      })
+    ) {
+      return null;
+    }
+
+    return acceptMutation.mutateAsync(requesterId);
+  }
+
+  async function declineRequest(requesterId: string) {
+    if (
+      guardOfflineAction({
+        id: "explore-friend-request-offline",
+        description: "Reconnect before responding to friend requests.",
+      })
+    ) {
+      return null;
+    }
+
+    return declineMutation.mutateAsync(requesterId);
+  }
+
   return {
     requests: requestsQuery.data ?? [],
     isLoading: requestsQuery.isLoading,
     isError: requestsQuery.isError,
-    acceptRequest: acceptMutation.mutateAsync,
-    declineRequest: declineMutation.mutateAsync,
+    acceptRequest,
+    declineRequest,
     acceptingRequestId: acceptMutation.variables ?? null,
     decliningRequestId: declineMutation.variables ?? null,
     isAccepting: acceptMutation.isPending,
     isDeclining: declineMutation.isPending,
+    isOnline,
   };
 }
