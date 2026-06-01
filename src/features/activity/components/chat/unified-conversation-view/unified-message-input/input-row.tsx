@@ -14,6 +14,7 @@ interface InputRowProps {
   textareaRef: React.RefObject<HTMLTextAreaElement | null>;
   placeholder: string;
   disabled: boolean;
+  controlsDisabled?: boolean;
   canAttach?: boolean;
   canSendGif?: boolean;
   onCreateProposal?: () => void;
@@ -33,6 +34,7 @@ export const InputRow = memo(
     textareaRef,
     placeholder,
     disabled,
+    controlsDisabled = disabled,
     canAttach = true,
     canSendGif = true,
     onCreateProposal,
@@ -45,13 +47,13 @@ export const InputRow = memo(
       <div className="flex h-11 shrink-0 items-center gap-0.5 pl-1 sm:pl-1.5">
         <ExpressionPicker
           canSendGif={canSendGif}
-          disabled={disabled}
+          disabled={controlsDisabled}
           onInsertEmoji={onInsertEmoji}
           onSelectGif={onSelectGif}
         />
         {canAttach && (
           <AttachmentMenu
-            disabled={disabled}
+            disabled={controlsDisabled}
             onCreateProposal={onCreateProposal}
             onSelectImages={onSelectImages}
             onSelectFiles={onSelectFiles}

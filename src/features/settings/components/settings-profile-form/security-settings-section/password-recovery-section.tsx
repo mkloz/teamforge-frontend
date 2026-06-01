@@ -8,6 +8,7 @@ import type { User } from "@/shared/schemas";
 
 interface PasswordRecoverySectionProps {
   currentUser: User | undefined;
+  isOnline: boolean;
   isSendingPasswordResetLink: boolean;
   securityError: string | null;
   onSendPasswordResetLink: () => Promise<unknown>;
@@ -15,6 +16,7 @@ interface PasswordRecoverySectionProps {
 
 export function PasswordRecoverySection({
   currentUser,
+  isOnline,
   isSendingPasswordResetLink,
   securityError,
   onSendPasswordResetLink,
@@ -46,7 +48,7 @@ export function PasswordRecoverySection({
               "Your current password stays active until you change it.",
               "You can ignore the email if you did not mean to request it.",
             ]}
-            disabled={isSendingPasswordResetLink}
+            disabled={!isOnline || isSendingPasswordResetLink}
             loading={isSendingPasswordResetLink}
             onConfirm={onSendPasswordResetLink}
             title="Send a reset link?"
@@ -57,7 +59,7 @@ export function PasswordRecoverySection({
                 variant="primary"
                 size="compact"
                 className="min-w-0"
-                disabled={isSendingPasswordResetLink}
+                disabled={!isOnline || isSendingPasswordResetLink}
               >
                 <Mail className="size-4" aria-hidden="true" />
                 {isSendingPasswordResetLink

@@ -22,11 +22,13 @@ export type WebPushSupport =
     };
 
 export type WebPushBrowserErrorCode =
+  | "permission-timeout"
   | "permission-denied"
   | "subscription-missing-keys"
   | "unsupported";
 
 const SERVICE_WORKER_READY_TIMEOUT_MS = 8000;
+const NOTIFICATION_PERMISSION_TIMEOUT_MS = 30_000;
 
 export class WebPushBrowserError extends Error {
   readonly code: WebPushBrowserErrorCode;
@@ -90,6 +92,26 @@ async function withServiceWorkerTimeout<T>(promise: Promise<T>, fallback: T) {
   }
 }
 
+async function requestNotificationPermissionWithTimeout() {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  try {
+    return await Promise.race([
+      Notification.requestPermission(),
+      new Promise<"timeout">((resolve) => {
+        timeoutId = setTimeout(
+          () => resolve("timeout"),
+          NOTIFICATION_PERMISSION_TIMEOUT_MS,
+        );
+      }),
+    ]);
+  } finally {
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+    }
+  }
+}
+
 async function getReadableServiceWorkerRegistration() {
   const registration = await withServiceWorkerTimeout(
     navigator.serviceWorker.getRegistration(),
@@ -128,7 +150,14 @@ export async function subscribeBrowserToWebPush(publicKey: string) {
   const permission =
     Notification.permission === "granted"
       ? "granted"
-      : await Notification.requestPermission();
+      : await requestNotificationPermissionWithTimeout();
+
+  if (permission === "timeout") {
+    throw new WebPushBrowserError(
+      "permission-timeout",
+      "Notification permission did not finish. Try again from the browser permission prompt.",
+    );
+  }
 
   if (permission !== "granted") {
     throw new WebPushBrowserError(

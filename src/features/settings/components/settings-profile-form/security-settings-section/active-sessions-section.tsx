@@ -12,6 +12,7 @@ import { formatShortSessionTime } from "./security-formatters";
 
 interface ActiveSessionsSectionProps {
   sessions: AuthSession[];
+  isOnline: boolean;
   isLoadingSessions: boolean;
   isRevokingOtherSessions: boolean;
   revokingSessionId: string | null;
@@ -22,6 +23,7 @@ interface ActiveSessionsSectionProps {
 
 export function ActiveSessionsSection({
   sessions,
+  isOnline,
   isLoadingSessions,
   isRevokingOtherSessions,
   revokingSessionId,
@@ -59,7 +61,9 @@ export function ActiveSessionsSection({
             "Anyone using those sessions will need to sign in again.",
             "This is useful after using a shared computer or losing a device.",
           ]}
-          disabled={isRevokingOtherSessions || sessions.length <= 1}
+          disabled={
+            !isOnline || isRevokingOtherSessions || sessions.length <= 1
+          }
           loading={isRevokingOtherSessions}
           onConfirm={onRevokeOtherSessions}
           title="Sign out other devices?"
@@ -69,7 +73,9 @@ export function ActiveSessionsSection({
               type="button"
               variant="outline"
               className="w-full md:w-auto"
-              disabled={isRevokingOtherSessions || sessions.length <= 1}
+              disabled={
+                !isOnline || isRevokingOtherSessions || sessions.length <= 1
+              }
             >
               <Shield size={14} />
               {isRevokingOtherSessions
@@ -101,6 +107,7 @@ export function ActiveSessionsSection({
             <SessionRow
               key={session.id}
               session={session}
+              isOnline={isOnline}
               isRevoking={revokingSessionId === session.id}
               onRevoke={onRevokeSession}
             />

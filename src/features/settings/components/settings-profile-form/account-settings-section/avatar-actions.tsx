@@ -8,6 +8,7 @@ interface AvatarActionsProps {
   isAvatarBusy: boolean;
   isUploadingAvatar: boolean;
   isDeletingAvatar: boolean;
+  isOnline: boolean;
   canDeleteSavedAvatar: boolean;
   onUploadSelectedAvatar: () => void;
   onDeleteOrReset: () => void;
@@ -18,6 +19,7 @@ export function AvatarActions({
   isAvatarBusy,
   isUploadingAvatar,
   isDeletingAvatar,
+  isOnline,
   canDeleteSavedAvatar,
   onUploadSelectedAvatar,
   onDeleteOrReset,
@@ -31,7 +33,10 @@ export function AvatarActions({
       variant={selectedAvatarFile ? "outline" : "destructive"}
       size="compact"
       className="min-w-0"
-      disabled={isAvatarBusy || (!selectedAvatarFile && !canDeleteSavedAvatar)}
+      disabled={
+        isAvatarBusy ||
+        (!selectedAvatarFile && (!canDeleteSavedAvatar || !isOnline))
+      }
       onClick={selectedAvatarFile ? onDeleteOrReset : undefined}
     >
       {selectedAvatarFile ? <X size={14} /> : <Trash2 size={14} />}
@@ -56,7 +61,7 @@ export function AvatarActions({
           variant="primary"
           size="compact"
           className="min-w-0"
-          disabled={!selectedAvatarFile || isAvatarBusy}
+          disabled={!selectedAvatarFile || isAvatarBusy || !isOnline}
           onClick={onUploadSelectedAvatar}
         >
           <Upload size={14} />
@@ -70,7 +75,7 @@ export function AvatarActions({
             confirmLabel={isDeletingAvatar ? "Deleting..." : "Delete avatar"}
             description="This removes your saved profile photo from TeamForge."
             details={["You can upload a new avatar whenever you want."]}
-            disabled={isAvatarBusy || !canDeleteSavedAvatar}
+            disabled={isAvatarBusy || !canDeleteSavedAvatar || !isOnline}
             loading={isDeletingAvatar}
             onConfirm={onDeleteOrReset}
             title="Delete your avatar?"

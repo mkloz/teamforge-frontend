@@ -58,6 +58,7 @@ export function SettingsProfileForm({
           onSubmit={account.onSubmit}
           onAvatarSelect={account.onAvatarSelect}
           onAvatarDelete={account.onAvatarDelete}
+          isOnline={account.isOnline}
           isSaving={account.isSaving}
           isUploadingAvatar={account.isUploadingAvatar}
           isDeletingAvatar={account.isDeletingAvatar}
@@ -88,6 +89,7 @@ export function SettingsProfileForm({
               matching.savingNotificationPreferenceKeys
             }
             error={matching.error}
+            isOnline={matching.isOnline}
             onChange={matching.onChange}
           />
         </Suspense>
@@ -107,6 +109,7 @@ export function SettingsProfileForm({
               privacy.savingNotificationPreferenceKeys
             }
             error={privacy.error}
+            isOnline={privacy.isOnline}
             onChange={privacy.onChange}
           />
         </Suspense>
@@ -117,6 +120,7 @@ export function SettingsProfileForm({
           <SecuritySettingsSection
             currentUser={security.currentUser}
             sessions={security.sessions}
+            isOnline={security.isOnline}
             isLoadingSessions={security.isLoadingSessions}
             isSendingPasswordResetLink={security.isSendingPasswordResetLink}
             isRevokingOtherSessions={security.isRevokingOtherSessions}
@@ -138,6 +142,7 @@ export function SettingsProfileForm({
           <BlockedUsersSection
             blockedUsers={safety.blockedUsers}
             errorMessage={safety.blockedUsersError}
+            isOnline={safety.isOnline}
             isLoading={safety.isLoadingBlockedUsers}
             unblockingUserId={safety.unblockingUserId}
             onUnblockUser={safety.onUnblockUser}
@@ -159,6 +164,7 @@ export function SettingsProfileForm({
               notifications.savingNotificationPreferenceKeys
             }
             error={notifications.error}
+            isOnline={notifications.isOnline}
             onChange={notifications.onChange}
           />
         </Suspense>

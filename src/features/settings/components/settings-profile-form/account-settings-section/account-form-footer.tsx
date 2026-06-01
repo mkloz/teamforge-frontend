@@ -5,10 +5,14 @@ import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Button } from "@/shared/components/ui/button";
 
 interface AccountFormFooterProps {
+  isOnline: boolean;
   isSaving: boolean;
 }
 
-export function AccountFormFooter({ isSaving }: AccountFormFooterProps) {
+export function AccountFormFooter({
+  isOnline,
+  isSaving,
+}: AccountFormFooterProps) {
   return (
     <div className="flex flex-col gap-3 border-border border-t pt-5 md:flex-row md:items-center md:justify-between">
       <p className="text-slate-muted text-sm">
@@ -27,10 +31,14 @@ export function AccountFormFooter({ isSaving }: AccountFormFooterProps) {
           variant="primary"
           size="compact"
           className="min-w-0"
-          disabled={isSaving}
+          disabled={isSaving || !isOnline}
         >
           <Save className="size-4" aria-hidden="true" />
-          {isSaving ? "Saving..." : "Save changes"}
+          {isSaving
+            ? "Saving..."
+            : isOnline
+              ? "Save changes"
+              : "Reconnect to save"}
         </Button>
       </div>
     </div>

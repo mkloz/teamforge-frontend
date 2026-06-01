@@ -4,6 +4,7 @@ import type { ChatApi } from "@/shared/schemas";
 
 export interface AppNavbarCounters {
   activityUnreadCount: number;
+  isNotificationUnreadCountReady: boolean;
   notificationUnreadCount: number;
 }
 
@@ -23,6 +24,7 @@ export function useAppNavbarCounters(): AppNavbarCounters {
 
   return {
     activityUnreadCount: countUnreadChatMessages(chatsQuery.data ?? []),
+    isNotificationUnreadCountReady: notificationUnreadCountQuery.isSuccess,
     notificationUnreadCount: notificationUnreadCountQuery.data ?? 0,
   };
 }

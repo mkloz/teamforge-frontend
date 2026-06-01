@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { SettingsCommands } from "@/features/settings/api/settings-commands";
 import { useInvalidateCurrentUser } from "@/shared/api/current-user-query";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
@@ -10,6 +11,7 @@ import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 export function useSettingsAvatarActions() {
   const invalidateCurrentUser = useInvalidateCurrentUser();
   const [avatarError, setAvatarError] = useState<string | null>(null);
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   const avatarMutation = useMutation({
     meta: {
@@ -74,13 +76,36 @@ export function useSettingsAvatarActions() {
   return {
     isUploadingAvatar: avatarMutation.isPending,
     isDeletingAvatar: deleteAvatarMutation.isPending,
+    isOnline,
     avatarError,
     uploadAvatar: (file: File) => {
       setAvatarError(null);
+      if (
+        guardOfflineAction({
+          id: "settings-avatar-upload-offline",
+          description: "Reconnect before uploading a profile photo.",
+        })
+      ) {
+        setAvatarError("You are offline. Reconnect before uploading a photo.");
+        return Promise.resolve(null);
+      }
+
       return avatarMutation.mutateAsync(file);
     },
     deleteAvatar: () => {
       setAvatarError(null);
+      if (
+        guardOfflineAction({
+          id: "settings-avatar-delete-offline",
+          description: "Reconnect before deleting your profile photo.",
+        })
+      ) {
+        setAvatarError(
+          "You are offline. Reconnect before deleting your photo.",
+        );
+        return Promise.resolve(null);
+      }
+
       return deleteAvatarMutation.mutateAsync();
     },
   };

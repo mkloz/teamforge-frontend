@@ -8,6 +8,7 @@ export interface AccountSettingsSectionProps {
   onSubmit: () => void;
   onAvatarSelect: (file: File) => Promise<unknown>;
   onAvatarDelete: () => Promise<unknown>;
+  isOnline: boolean;
   isSaving: boolean;
   isUploadingAvatar: boolean;
   isDeletingAvatar: boolean;

@@ -139,6 +139,15 @@ function hasPurpose(icon, purpose) {
     .includes(purpose);
 }
 
+function hasWorkboxNavigationFallback(swText, fallbackUrl) {
+  const escapedFallbackUrl = fallbackUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const fallbackPattern = new RegExp(
+    `createHandlerBoundToURL\\(["']${escapedFallbackUrl}["']\\)`,
+  );
+
+  return fallbackPattern.test(swText);
+}
+
 function parseManifestSizes(value) {
   return String(value)
     .split(/\s+/)
@@ -516,6 +525,26 @@ async function validateServiceWorker() {
         : `dist/sw.js does not contain ${marker}.`,
     );
   }
+
+  const hasIndexHtmlNavigationFallback = hasWorkboxNavigationFallback(
+    swText,
+    "/index.html",
+  );
+  const hasRootNavigationFallback = hasWorkboxNavigationFallback(swText, "/");
+  const navigationFallbackDetail = hasIndexHtmlNavigationFallback
+    ? hasRootNavigationFallback
+      ? "Navigation fallback includes /index.html, but also still binds /."
+      : "Navigation fallback is bound to the precached /index.html shell."
+    : hasRootNavigationFallback
+      ? "Navigation fallback is bound to /; use /index.html so offline SPA navigations hit the precache."
+      : "Navigation fallback target could not be found in dist/sw.js.";
+
+  addCheck(
+    "Service Worker",
+    "Navigation fallback target",
+    hasIndexHtmlNavigationFallback && !hasRootNavigationFallback,
+    navigationFallbackDetail,
+  );
 
   const workboxFiles = (await readdir(DIST_DIR)).filter((file) =>
     /^workbox-.*\.js$/.test(file),

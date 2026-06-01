@@ -3,6 +3,7 @@ import { useState } from "react";
 import { SettingsCache } from "@/features/settings/api/settings-cache";
 import { SettingsCommands } from "@/features/settings/api/settings-commands";
 import { SettingsQueryFactory } from "@/features/settings/api/settings-query-factory";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
@@ -84,6 +85,7 @@ export function useSettingsPreferencesActions({
   const [savingPreferenceKeys, setSavingPreferenceKeys] = useState<
     ReadonlySet<SettingsPreferenceKey>
   >(new Set());
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   const notificationPreferencesQuery = useQuery({
     ...SettingsQueryFactory.notificationPreferences(),
@@ -161,6 +163,18 @@ export function useSettingsPreferencesActions({
     );
 
     if (changedKeys.length === 0) {
+      return;
+    }
+
+    if (
+      guardOfflineAction({
+        id: "settings-preferences-offline",
+        description: "Reconnect before saving settings changes.",
+      })
+    ) {
+      setPreferencesError(
+        "You are offline. Reconnect before saving settings changes.",
+      );
       return;
     }
 
@@ -251,5 +265,6 @@ export function useSettingsPreferencesActions({
     updatePrivacyPreference,
     isSavingNotificationPreferences: preferencesMutation.isPending,
     savingNotificationPreferenceKeys: savingPreferenceKeys,
+    isOnline,
   };
 }

@@ -1,9 +1,11 @@
+import { OfflineSettingsNotice } from "@/features/settings/components/settings-profile-form/preference-section-parts";
 import { BlockedUsersList } from "./blocked-users-list";
 import type { BlockedUsersSectionProps } from "./types";
 
 export function BlockedUsersSection({
   blockedUsers,
   errorMessage,
+  isOnline,
   isLoading,
   unblockingUserId,
   onUnblockUser,
@@ -20,10 +22,17 @@ export function BlockedUsersSection({
         </div>
       </div>
 
+      {!isOnline ? (
+        <div className="mt-6">
+          <OfflineSettingsNotice message="Reconnect before changing your blocked users list." />
+        </div>
+      ) : null}
+
       <div className="mt-6 border-border border-t">
         <BlockedUsersList
           blockedUsers={blockedUsers}
           errorMessage={errorMessage}
+          isOnline={isOnline}
           isLoading={isLoading}
           unblockingUserId={unblockingUserId}
           onUnblockUser={onUnblockUser}

@@ -1,4 +1,4 @@
-import { Check, ChevronRight, UserPlus } from "lucide-react";
+import { Check, ChevronRight, UserPlus, WifiOff } from "lucide-react";
 
 import {
   AutoForgeButton,
@@ -6,6 +6,7 @@ import {
   PrimaryButton,
   ReforgeButton,
 } from "@/features/forge/components/forge-buttons";
+import { useNetworkStatus } from "@/shared/hooks/use-network-status";
 import {
   getStep1ContinueLabel,
   getStep6ContinueLabel,
@@ -76,13 +77,27 @@ export function Step3FooterAction({ fw }: ForgeFooterChildProps) {
 }
 
 export function Step4FooterAction({ fw }: ForgeFooterChildProps) {
+  const isOnline = useNetworkStatus();
+
   return (
     <FooterActionMotion motionKey="s4">
       {fw.forgeMode === "MANUAL" ? (
-        <ManualForgeButton onClick={fw.handleManualForge} />
+        <ManualForgeButton
+          onClick={fw.handleManualForge}
+          disabled={!isOnline}
+        />
       ) : (
-        <AutoForgeButton onClick={fw.handleAutoForge} />
+        <AutoForgeButton onClick={fw.handleAutoForge} disabled={!isOnline} />
       )}
+      {!isOnline ? (
+        <p
+          role="status"
+          className="mt-3 flex items-center justify-center gap-2 text-center font-medium text-spark-amber text-xs"
+        >
+          <WifiOff size={14} aria-hidden="true" />
+          Reconnect before forming a group.
+        </p>
+      ) : null}
     </FooterActionMotion>
   );
 }

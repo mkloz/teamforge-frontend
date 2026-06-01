@@ -4,6 +4,7 @@ import {
   ForgeCommands,
   MissingForgeInterestSignalsError,
 } from "@/features/forge/api/forge-commands";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { showAppErrorToast } from "@/shared/lib/error-toast";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
@@ -50,8 +51,19 @@ export function useForgeExecutionActions({
   syncStep,
   syncTargets,
 }: UseForgeExecutionActionsOptions) {
+  const { guardOfflineAction } = useOfflineActionGuard();
+
   const executeForge = useCallback(
     (mode: ForgeExecutionMode) => {
+      if (
+        guardOfflineAction({
+          id: "forge-execution-offline",
+          description: "Reconnect before forming a TeamForge group.",
+        })
+      ) {
+        return;
+      }
+
       const mutationName = getForgeMutationName(mode);
 
       runForgeAnimation(async () => {
@@ -93,7 +105,15 @@ export function useForgeExecutionActions({
         }
       });
     },
-    [dispatch, markSearchKept, runForgeAnimation, state, syncStep, syncTargets],
+    [
+      dispatch,
+      guardOfflineAction,
+      markSearchKept,
+      runForgeAnimation,
+      state,
+      syncStep,
+      syncTargets,
+    ],
   );
 
   const handleManualForge = useCallback(() => {

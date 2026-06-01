@@ -7,6 +7,7 @@ import type {
   ActivitySendMessageInput,
 } from "@/features/activity/lib/activity-contract";
 import { useAutoResize } from "@/shared/hooks/use-auto-resize";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 
 import { MAX_TEXTAREA_HEIGHT } from "./message-composer-utils";
@@ -17,6 +18,11 @@ import {
 import { useMessageComposerDraft } from "./use-message-composer-draft";
 import { useMessageComposerSubmit } from "./use-message-composer-submit";
 import { useVoiceNoteSender } from "./use-voice-note-sender";
+
+const OFFLINE_MESSAGE_DESCRIPTION =
+  "Reconnect before sending messages or adding attachments.";
+const OFFLINE_UPLOAD_DESCRIPTION =
+  "Reconnect before adding files to this message.";
 
 interface UseMessageComposerOptions {
   chatId: string | null;
@@ -37,6 +43,7 @@ export function useMessageComposer({
   const [isSendingVoiceNote, setIsSendingVoiceNote] = useState(false);
   const [isSendingGif, setIsSendingGif] = useState(false);
   const previousActionFocusKeyRef = useRef<string | null>(null);
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   const {
     isRecording,
@@ -62,17 +69,45 @@ export function useMessageComposer({
   const editingActive = draft.editingMessage !== null;
   const submit = useMessageComposerSubmit({
     disabled,
+    isOnline,
     isEditing: editingActive,
     onClearComposer: draft.clearComposer,
+    onOfflineSubmit: () => {
+      guardOfflineAction({
+        id: "chat-message-offline",
+        description: OFFLINE_MESSAGE_DESCRIPTION,
+      });
+    },
     onSend,
     pendingAttachments: attachments.pendingAttachments,
     value: draft.value,
   });
 
+  function appendAttachments(files: File[]) {
+    if (files.length === 0) {
+      return;
+    }
+
+    if (
+      guardOfflineAction({
+        id: "chat-attachments-offline",
+        description: OFFLINE_UPLOAD_DESCRIPTION,
+      })
+    ) {
+      return;
+    }
+
+    attachments.appendAttachments(files);
+  }
+
   const dropzone = useMessageComposerDropzone({
-    appendAttachments: attachments.appendAttachments,
+    appendAttachments,
     isDisabled:
-      disabled || submit.isSubmitting || isSendingVoiceNote || isSendingGif,
+      !isOnline ||
+      disabled ||
+      submit.isSubmitting ||
+      isSendingVoiceNote ||
+      isSendingGif,
     isEditing: editingActive,
   });
 
@@ -99,6 +134,15 @@ export function useMessageComposer({
   }
 
   async function sendGif(gif: ActivityOutgoingGifAttachment) {
+    if (
+      guardOfflineAction({
+        id: "chat-gif-offline",
+        description: OFFLINE_MESSAGE_DESCRIPTION,
+      })
+    ) {
+      return;
+    }
+
     if (disabled || submit.isSubmitting || isSendingVoiceNote || isSendingGif) {
       return;
     }
@@ -125,6 +169,7 @@ export function useMessageComposer({
     chatId,
     isFocused,
     isPaused:
+      !isOnline ||
       isRecording ||
       submit.isSubmitting ||
       isSendingVoiceNote ||
@@ -134,7 +179,8 @@ export function useMessageComposer({
   });
 
   const handleStopRecording = useVoiceNoteSender({
-    isDisabled: disabled || submit.isSubmitting || isSendingVoiceNote,
+    isDisabled:
+      !isOnline || disabled || submit.isSubmitting || isSendingVoiceNote,
     onSend,
     onSent: draft.clearReply,
     setIsSubmitting: setIsSendingVoiceNote,
@@ -142,6 +188,7 @@ export function useMessageComposer({
   });
 
   const isDisabled = submit.isDisabled || isSendingVoiceNote || isSendingGif;
+  const areNetworkActionsDisabled = isDisabled || !isOnline;
   const composerActionFocusKey = draft.editingMessage
     ? `edit:${draft.editingMessage.id}`
     : draft.replyingTo
@@ -192,7 +239,8 @@ export function useMessageComposer({
   ]);
 
   return {
-    appendAttachments: attachments.appendAttachments,
+    appendAttachments,
+    areNetworkActionsDisabled,
     cancelEditing: draft.cancelEditing,
     cancelRecording,
     clearReply: draft.clearReply,
@@ -212,6 +260,7 @@ export function useMessageComposer({
     isDraggingFiles: dropzone.isDraggingFiles,
     isEditing: editingActive,
     isFocused,
+    isOnline,
     isRecording,
     pendingAttachments: attachments.pendingAttachments,
     recordingError,

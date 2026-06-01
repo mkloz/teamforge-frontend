@@ -9,8 +9,10 @@ import { warnInDevelopment } from "@/shared/lib/development-warning";
 
 interface UseMessageComposerSubmitOptions {
   disabled: boolean;
+  isOnline: boolean;
   isEditing: boolean;
   onClearComposer: () => void;
+  onOfflineSubmit: () => void;
   onSend: (input: ActivitySendMessageInput) => Promise<void> | void;
   pendingAttachments: ActivityOutgoingAttachment[];
   value: string;
@@ -23,8 +25,10 @@ interface MessageSubmitPayload {
 
 export function useMessageComposerSubmit({
   disabled,
+  isOnline,
   isEditing,
   onClearComposer,
+  onOfflineSubmit,
   onSend,
   pendingAttachments,
   value,
@@ -64,6 +68,11 @@ export function useMessageComposerSubmit({
     const trimmed = value.trim();
 
     if ((!trimmed && pendingAttachments.length === 0) || isDisabled) {
+      return;
+    }
+
+    if (!isOnline) {
+      onOfflineSubmit();
       return;
     }
 

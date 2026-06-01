@@ -15,6 +15,7 @@ export function AccountSettingsSection({
   onSubmit,
   onAvatarSelect,
   onAvatarDelete,
+  isOnline,
   isSaving,
   isUploadingAvatar,
   isDeletingAvatar,
@@ -29,6 +30,7 @@ export function AccountSettingsSection({
           avatarError={avatarError}
           isUploadingAvatar={isUploadingAvatar}
           isDeletingAvatar={isDeletingAvatar}
+          isOnline={isOnline}
           onAvatarSelect={onAvatarSelect}
           onAvatarDelete={onAvatarDelete}
         />
@@ -66,7 +68,16 @@ export function AccountSettingsSection({
             </div>
           )}
 
-          <AccountFormFooter isSaving={isSaving} />
+          {!isOnline ? (
+            <div
+              role="status"
+              className="rounded-xl border border-spark-amber/25 bg-spark-amber/8 px-3 py-3 font-medium text-sm text-spark-amber"
+            >
+              You are offline. Reconnect before saving profile changes.
+            </div>
+          ) : null}
+
+          <AccountFormFooter isOnline={isOnline} isSaving={isSaving} />
         </form>
       </Form>
     </div>

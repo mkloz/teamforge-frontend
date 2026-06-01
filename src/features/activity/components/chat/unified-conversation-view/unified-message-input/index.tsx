@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { WifiOff, X } from "lucide-react";
 import { memo } from "react";
 
 import { ErrorMessageSendFailedVisual } from "@/assets/error-state/error-message-send-failed";
@@ -46,6 +46,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
     (!composer.isEditing && composer.replyingTo) ||
     composer.isEditing ||
     composer.pendingAttachments.length > 0 ||
+    !composer.isOnline ||
     Boolean(composer.recordingError) ||
     Boolean(errorMessage);
   const inputPillClasses = cn(
@@ -89,7 +90,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
               )}
 
               <AttachmentPreviewPanel
-                disabled={composer.isDisabled}
+                disabled={composer.areNetworkActionsDisabled}
                 files={composer.pendingAttachments.map(
                   (attachment) => attachment.file,
                 )}
@@ -97,6 +98,19 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
                 onAppendAttachments={composer.appendAttachments}
                 onRemoveAttachment={composer.removeAttachment}
               />
+
+              {!composer.isOnline && (
+                <div
+                  role="status"
+                  className="flex items-center gap-2 px-3 py-2.5 text-spark-amber"
+                >
+                  <WifiOff className="size-4 shrink-0" aria-hidden="true" />
+                  <p className="min-w-0 flex-1 font-medium text-xs">
+                    You are offline. Reconnect before sending messages or adding
+                    attachments.
+                  </p>
+                </div>
+              )}
 
               {composer.recordingError && (
                 <p className="px-4 py-2 font-medium text-destructive/80 text-xs">
@@ -159,8 +173,9 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
                 onSelectFiles={
                   composer.isEditing ? () => {} : composer.appendAttachments
                 }
+                controlsDisabled={composer.areNetworkActionsDisabled}
                 canAttach={!composer.isEditing}
-                canSendGif={!composer.isEditing}
+                canSendGif={!composer.isEditing && composer.isOnline}
                 onCreateProposal={
                   composer.isEditing ? undefined : onCreateProposal
                 }
@@ -178,12 +193,16 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
             }}
             onCancelRecording={composer.cancelRecording}
             onStartRecording={() => {
-              if (!composer.isDisabled) void composer.startRecording();
+              if (!composer.areNetworkActionsDisabled) {
+                void composer.startRecording();
+              }
             }}
             onStopRecording={() => {
-              if (!composer.isDisabled) void composer.handleStopRecording();
+              if (!composer.areNetworkActionsDisabled) {
+                void composer.handleStopRecording();
+              }
             }}
-            disabled={composer.isDisabled}
+            disabled={composer.areNetworkActionsDisabled}
           />
         </div>
       </div>

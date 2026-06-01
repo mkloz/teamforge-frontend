@@ -10,6 +10,7 @@ type BlockedUsersListProps = Pick<
   BlockedUsersSectionProps,
   | "blockedUsers"
   | "errorMessage"
+  | "isOnline"
   | "isLoading"
   | "unblockingUserId"
   | "onUnblockUser"
@@ -18,6 +19,7 @@ type BlockedUsersListProps = Pick<
 export function BlockedUsersList({
   blockedUsers,
   errorMessage,
+  isOnline,
   isLoading,
   unblockingUserId,
   onUnblockUser,
@@ -40,6 +42,7 @@ export function BlockedUsersList({
         <BlockedUserRow
           key={`${friendship.requesterId}-${friendship.receiverId}`}
           friendship={friendship}
+          isOnline={isOnline}
           isUnblocking={unblockingUserId === friendship.counterpart.id}
           onUnblockUser={onUnblockUser}
         />

@@ -7,6 +7,7 @@ import type { User } from "@/shared/schemas";
 
 interface DeleteAccountSectionProps {
   currentUser: User | undefined;
+  isOnline: boolean;
   isDeleting: boolean;
   error: string | null;
   onDelete: () => Promise<void>;
@@ -14,12 +15,13 @@ interface DeleteAccountSectionProps {
 
 export function DeleteAccountSection({
   currentUser,
+  isOnline,
   isDeleting,
   error,
   onDelete,
 }: DeleteAccountSectionProps) {
   const [confirmation, setConfirmation] = useState("");
-  const canDelete = confirmation === "DELETE";
+  const canDelete = isOnline && confirmation === "DELETE";
 
   return (
     <section className="border-destructive/30 border-t pt-7">
@@ -63,7 +65,12 @@ export function DeleteAccountSection({
           title="Delete your TeamForge account?"
           tone="danger"
           trigger={
-            <Button type="button" variant="destructive" className="shrink-0">
+            <Button
+              type="button"
+              variant="destructive"
+              className="shrink-0"
+              disabled={!isOnline || isDeleting}
+            >
               <Trash2 size={14} />
               Delete account
             </Button>
@@ -72,6 +79,7 @@ export function DeleteAccountSection({
           <Input
             value={confirmation}
             onChange={(event) => setConfirmation(event.target.value)}
+            disabled={!isOnline || isDeleting}
             placeholder="DELETE"
             aria-label="Type DELETE to confirm account deletion"
           />

@@ -5,6 +5,7 @@ import { SettingsCache } from "@/features/settings/api/settings-cache";
 import { SettingsCommands } from "@/features/settings/api/settings-commands";
 import { SettingsQueryFactory } from "@/features/settings/api/settings-query-factory";
 import { buildSettingsLoginNavigation } from "@/features/settings/lib/settings-auth-navigation";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
@@ -28,6 +29,7 @@ export function useSettingsSecurityActions({
   const [revokingSessionId, setRevokingSessionId] = useState<string | null>(
     null,
   );
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   const sessionsQuery = useQuery({
     ...SettingsQueryFactory.sessions(),
@@ -97,11 +99,35 @@ export function useSettingsSecurityActions({
       return;
     }
 
+    if (
+      guardOfflineAction({
+        id: "settings-security-offline",
+        description: "Reconnect before changing security settings.",
+      })
+    ) {
+      setSecurityError(
+        "You are offline. Reconnect before changing security settings.",
+      );
+      return;
+    }
+
     setSecurityError(null);
     await passwordResetMutation.mutateAsync(currentUser.email);
   }
 
   async function revokeSession(session: AuthSession) {
+    if (
+      guardOfflineAction({
+        id: "settings-session-offline",
+        description: "Reconnect before signing out device sessions.",
+      })
+    ) {
+      setSecurityError(
+        "You are offline. Reconnect before signing out device sessions.",
+      );
+      return;
+    }
+
     setSecurityError(null);
     setRevokingSessionId(session.id);
     const previousSessions = SettingsCache.getSessionsSnapshot() ?? [];
@@ -138,6 +164,18 @@ export function useSettingsSecurityActions({
   }
 
   async function revokeOtherSessions() {
+    if (
+      guardOfflineAction({
+        id: "settings-session-offline",
+        description: "Reconnect before signing out device sessions.",
+      })
+    ) {
+      setSecurityError(
+        "You are offline. Reconnect before signing out device sessions.",
+      );
+      return;
+    }
+
     setSecurityError(null);
     const previousSessions = SettingsCache.getSessionsSnapshot() ?? [];
     SettingsCache.keepOnlyCurrentSession();
@@ -163,5 +201,6 @@ export function useSettingsSecurityActions({
     revokingSessionId,
     revokeOtherSessions,
     isRevokingOtherSessions: revokeOtherSessionsMutation.isPending,
+    isOnline,
   };
 }

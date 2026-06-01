@@ -123,6 +123,7 @@ export function trackPwaPushTestOutcome(context: {
   disabledCount?: number;
   enabled?: boolean;
   errorName?: string;
+  issue?: string | null;
   sentCount?: number;
   source: PwaTelemetrySource;
   status: "api-error" | "delivered" | "disabled" | "not-delivered";

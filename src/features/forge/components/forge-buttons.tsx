@@ -34,11 +34,18 @@ export function PrimaryButton({
   );
 }
 
-export function ManualForgeButton({ onClick }: { onClick: () => void }) {
+export function ManualForgeButton({
+  disabled = false,
+  onClick,
+}: {
+  disabled?: boolean;
+  onClick: () => void;
+}) {
   return (
     <div className="flex flex-col gap-4">
       <Button
         onClick={onClick}
+        disabled={disabled}
         variant="secondary"
         size="lg"
         aria-label="Forge this group"
@@ -56,11 +63,18 @@ export function ManualForgeButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-export function AutoForgeButton({ onClick }: { onClick: () => void }) {
+export function AutoForgeButton({
+  disabled = false,
+  onClick,
+}: {
+  disabled?: boolean;
+  onClick: () => void;
+}) {
   return (
     <div className="flex flex-col gap-4">
       <Button
         onClick={onClick}
+        disabled={disabled}
         variant="primary"
         size="lg"
         aria-label="Auto-forge with algorithm"

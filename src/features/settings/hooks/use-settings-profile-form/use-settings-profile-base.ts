@@ -16,6 +16,7 @@ import {
   useCurrentUserQuery,
   useInvalidateCurrentUser,
 } from "@/shared/api/current-user-query";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
@@ -30,6 +31,7 @@ export function useSettingsProfileBase() {
   } = useCurrentUserQuery();
   const invalidateCurrentUser = useInvalidateCurrentUser();
   const [saveError, setSaveError] = useState<string | null>(null);
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   const form = useForm<SettingsProfileValues>({
     resolver: zodResolver(settingsProfileSchema),
@@ -87,6 +89,16 @@ export function useSettingsProfileBase() {
   const onSubmit = form.handleSubmit(async (values) => {
     setSaveError(null);
 
+    if (
+      guardOfflineAction({
+        id: "settings-profile-offline",
+        description: "Reconnect before saving profile changes.",
+      })
+    ) {
+      setSaveError("You are offline. Reconnect before saving profile changes.");
+      return;
+    }
+
     await profileMutation.mutateAsync(buildSettingsProfilePayload(values));
   });
 
@@ -105,6 +117,7 @@ export function useSettingsProfileBase() {
     isError,
     refetch,
     onSubmit,
+    isOnline,
     isSaving: profileMutation.isPending,
     saveError,
     profileSummary,

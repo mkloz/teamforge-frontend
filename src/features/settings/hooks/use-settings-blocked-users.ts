@@ -2,10 +2,12 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { SettingsCache } from "@/features/settings/api/settings-cache";
 import { SettingsCommands } from "@/features/settings/api/settings-commands";
 import { SettingsQueryFactory } from "@/features/settings/api/settings-query-factory";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
 export function useSettingsBlockedUsers(enabled: boolean) {
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const blockedUsersQuery = useQuery({
     ...SettingsQueryFactory.blockedUsers(),
     enabled,
@@ -48,9 +50,21 @@ export function useSettingsBlockedUsers(enabled: boolean) {
     blockedUsersError: blockedUsersQuery.isError
       ? "We couldn't load your blocked users right now."
       : null,
-    unblockBlockedUser: (userId: string) => unblockMutation.mutateAsync(userId),
+    unblockBlockedUser: async (userId: string) => {
+      if (
+        guardOfflineAction({
+          id: "settings-blocked-users-offline",
+          description: "Reconnect before changing your blocked users list.",
+        })
+      ) {
+        return;
+      }
+
+      await unblockMutation.mutateAsync(userId);
+    },
     unblockingBlockedUserId: unblockMutation.isPending
       ? (unblockMutation.variables ?? null)
       : null,
+    isOnline,
   };
 }

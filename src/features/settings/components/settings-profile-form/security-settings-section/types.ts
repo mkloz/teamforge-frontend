@@ -3,6 +3,7 @@ import type { AuthSession, User } from "@/shared/schemas";
 export interface SecuritySettingsSectionProps {
   currentUser: User | undefined;
   sessions: AuthSession[];
+  isOnline: boolean;
   isLoadingSessions: boolean;
   isSendingPasswordResetLink: boolean;
   isRevokingOtherSessions: boolean;

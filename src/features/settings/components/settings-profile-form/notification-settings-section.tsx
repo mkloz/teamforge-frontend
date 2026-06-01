@@ -2,6 +2,7 @@ import { BellOff, BellRing, Send } from "lucide-react";
 import { useId } from "react";
 
 import {
+  OfflineSettingsNotice,
   PreferenceGroup,
   PreferenceStatusMessage,
   SectionHeading,
@@ -24,6 +25,7 @@ interface NotificationSettingsSectionProps {
   isSavingNotificationPreferences: boolean;
   savingNotificationPreferenceKeys: ReadonlySet<keyof NotificationPreferences>;
   error: string | null;
+  isOnline: boolean;
   onChange: (
     key: BooleanSettingsPreferenceKey,
     value: boolean,
@@ -35,6 +37,7 @@ export function NotificationSettingsSection({
   isLoadingNotificationPreferences,
   savingNotificationPreferenceKeys,
   error,
+  isOnline,
   onChange,
 }: NotificationSettingsSectionProps) {
   const shouldShowEmailDelivery =
@@ -49,7 +52,11 @@ export function NotificationSettingsSection({
 
       <PreferenceStatusMessage error={error} />
 
-      <WebPushDevicePreference />
+      {!isOnline ? (
+        <OfflineSettingsNotice message="Reconnect before changing notification delivery." />
+      ) : null}
+
+      <WebPushDevicePreference isOnline={isOnline} />
 
       <PreferenceGroup
         title="In-app notifications"
@@ -57,6 +64,7 @@ export function NotificationSettingsSection({
         items={NOTIFICATION_PREFERENCE_ITEMS}
         notificationPreferences={notificationPreferences}
         isLoading={isLoadingNotificationPreferences}
+        disabled={!isOnline}
         savingPreferenceKeys={savingNotificationPreferenceKeys}
         emptyMessage="We couldn't load your notification preferences right now."
         onChange={onChange}
@@ -68,6 +76,7 @@ export function NotificationSettingsSection({
           description="These control which alerts TeamForge is allowed to send to your inbox."
           items={EMAIL_PREFERENCE_ITEMS}
           notificationPreferences={notificationPreferences}
+          disabled={!isOnline}
           savingPreferenceKeys={savingNotificationPreferenceKeys}
           emptyMessage="We couldn't load your email preferences right now."
           onChange={onChange}
@@ -93,6 +102,15 @@ function getWebPushDeviceStatus(push: WebPushDeviceState) {
       label: "Sign in needed",
       description: "Sign in before turning on push notifications.",
       tone: "muted",
+    } as const;
+  }
+
+  if (!push.isOnline) {
+    return {
+      label: "Offline",
+      description:
+        "Reconnect before changing push notifications for this device.",
+      tone: "attention",
     } as const;
   }
 
@@ -148,15 +166,21 @@ function getWebPushDeviceStatus(push: WebPushDeviceState) {
   } as const;
 }
 
-function WebPushDevicePreference() {
+function WebPushDevicePreference({ isOnline }: { isOnline: boolean }) {
   const switchId = useId();
   const push = useWebPushSubscription();
   const status = getWebPushDeviceStatus(push);
   const StatusIcon = push.isSubscribed ? BellRing : BellOff;
   const isBusy =
     push.isTurningOn || push.isTurningOff || push.isCheckingBrowserSubscription;
-  const canToggle = push.isSubscribed || push.canRequestPermission;
-  const isDisabled = isBusy || push.isPublicKeyLoading || !canToggle;
+  const canToggle =
+    push.isOnline && (push.isSubscribed || push.canRequestPermission);
+  const isDisabled =
+    !isOnline ||
+    !push.isOnline ||
+    isBusy ||
+    push.isPublicKeyLoading ||
+    !canToggle;
 
   async function handleToggle(checked: boolean) {
     if (checked) {
@@ -233,7 +257,7 @@ function WebPushDevicePreference() {
                 variant="outline"
                 size="sm"
                 loading={push.isSendingTest}
-                disabled={isBusy}
+                disabled={!isOnline || !push.isOnline || isBusy}
                 onClick={() => {
                   void push.sendTest("settings");
                 }}

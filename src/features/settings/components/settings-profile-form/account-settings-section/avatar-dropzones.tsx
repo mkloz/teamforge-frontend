@@ -8,6 +8,7 @@ interface AvatarDropzonesProps {
   selectedAvatarFile: File | null;
   isAvatarBusy: boolean;
   isUploadingAvatar: boolean;
+  isOnline: boolean;
   avatarError: string | null;
   onFiles: (files: File[]) => void;
 }
@@ -18,6 +19,7 @@ export function AvatarDropzones({
   selectedAvatarFile,
   isAvatarBusy,
   isUploadingAvatar,
+  isOnline,
   avatarError,
   onFiles,
 }: AvatarDropzonesProps) {
@@ -46,7 +48,7 @@ export function AvatarDropzones({
           description="Drop a square image here or tap to browse."
           helper="PNG, JPG, WEBP up to 30 MB"
           actionLabel="Browse"
-          disabled={isAvatarBusy}
+          disabled={isAvatarBusy || !isOnline}
           isUploading={isUploadingAvatar}
           error={avatarError}
           onFiles={onFiles}
@@ -60,7 +62,7 @@ export function AvatarDropzones({
         description="Drop a new profile image here or browse from your device."
         helper="PNG, JPG, WEBP up to 30 MB"
         actionLabel="Browse"
-        disabled={isAvatarBusy}
+        disabled={isAvatarBusy || !isOnline}
         isUploading={isUploadingAvatar}
         error={avatarError}
         className="hidden sm:block"

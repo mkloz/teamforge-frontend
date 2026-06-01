@@ -1,4 +1,5 @@
 import {
+  OfflineSettingsNotice,
   PreferenceStatusMessage,
   SectionHeading,
 } from "@/features/settings/components/settings-profile-form/preference-section-parts";
@@ -36,6 +37,7 @@ interface PrivacySettingsSectionProps {
   isSavingNotificationPreferences: boolean;
   savingNotificationPreferenceKeys: ReadonlySet<keyof NotificationPreferences>;
   error: string | null;
+  isOnline: boolean;
   onChange: (
     values: Pick<
       NotificationPreferences,
@@ -49,10 +51,11 @@ export function PrivacySettingsSection({
   isLoadingNotificationPreferences,
   savingNotificationPreferenceKeys,
   error,
+  isOnline,
   onChange,
 }: PrivacySettingsSectionProps) {
   const isDisabled =
-    isLoadingNotificationPreferences || !notificationPreferences;
+    !isOnline || isLoadingNotificationPreferences || !notificationPreferences;
 
   return (
     <section className="flex flex-col gap-6">
@@ -60,6 +63,10 @@ export function PrivacySettingsSection({
         title="Profile privacy"
         description="Choose which personal details appear on your public profile. These details can still quietly help TeamForge place you in better groups."
       />
+
+      {!isOnline ? (
+        <OfflineSettingsNotice message="Reconnect before changing profile privacy." />
+      ) : null}
 
       <div className="grid gap-0 border-border border-t lg:grid-cols-3 lg:gap-8">
         {PRIVACY_TOGGLE_ITEMS.map((item) => (

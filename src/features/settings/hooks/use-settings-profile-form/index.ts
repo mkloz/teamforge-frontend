@@ -34,6 +34,7 @@ export function useSettingsProfileForm({
     isError: profile.isError,
     refetch: profile.refetch,
     onSubmit: profile.onSubmit,
+    isOnline: profile.isOnline,
     isSaving: profile.isSaving,
     isUploadingAvatar: avatar.isUploadingAvatar,
     isDeletingAvatar: avatar.isDeletingAvatar,

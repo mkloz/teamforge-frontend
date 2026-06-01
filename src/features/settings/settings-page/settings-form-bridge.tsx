@@ -39,6 +39,7 @@ export function SettingsFormBridge({ activeSection }: SettingsFormBridgeProps) {
     savingNotificationPreferenceKeys:
       profileFormState.savingNotificationPreferenceKeys,
     error: profileFormState.notificationPreferencesError,
+    isOnline: profileFormState.isOnline,
   };
 
   return (
@@ -50,6 +51,7 @@ export function SettingsFormBridge({ activeSection }: SettingsFormBridgeProps) {
         onSubmit: profileFormState.onSubmit,
         onAvatarSelect: profileFormState.uploadAvatar,
         onAvatarDelete: profileFormState.deleteAvatar,
+        isOnline: profileFormState.isOnline,
         isSaving: profileFormState.isSaving,
         isUploadingAvatar: profileFormState.isUploadingAvatar,
         isDeletingAvatar: profileFormState.isDeletingAvatar,
@@ -69,6 +71,7 @@ export function SettingsFormBridge({ activeSection }: SettingsFormBridgeProps) {
       security={{
         currentUser: profileFormState.currentUser,
         sessions: profileFormState.sessions,
+        isOnline: profileFormState.isOnline,
         isLoadingSessions: profileFormState.isLoadingSessions,
         isSendingPasswordResetLink: profileFormState.isSendingPasswordResetLink,
         isRevokingOtherSessions: profileFormState.isRevokingOtherSessions,
@@ -84,6 +87,7 @@ export function SettingsFormBridge({ activeSection }: SettingsFormBridgeProps) {
       }}
       safety={{
         blockedUsers: blockedUsersState.blockedUsers,
+        isOnline: blockedUsersState.isOnline,
         isLoadingBlockedUsers: blockedUsersState.isLoadingBlockedUsers,
         blockedUsersError: blockedUsersState.blockedUsersError,
         unblockingUserId: blockedUsersState.unblockingBlockedUserId,

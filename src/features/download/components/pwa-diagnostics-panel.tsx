@@ -3,6 +3,7 @@ import {
   Download,
   type LucideIcon,
   RefreshCw,
+  Send,
   Server,
   ShieldCheck,
   Smartphone,
@@ -14,13 +15,26 @@ import { Button } from "@/shared/components/ui/button";
 import { usePwaDisplayMode } from "@/shared/hooks/use-pwa-display-mode";
 import { usePwaInstallPrompt } from "@/shared/hooks/use-pwa-install-prompt";
 import { useServiceWorkerDiagnostics } from "@/shared/hooks/use-service-worker-diagnostics";
-import { useWebPushSubscription } from "@/shared/hooks/use-web-push-subscription";
+import {
+  getWebPushTestFailureDescription,
+  getWebPushTestStatus,
+  useWebPushSubscription,
+} from "@/shared/hooks/use-web-push-subscription";
 import { trackPwaServiceWorkerUpdateCheck } from "@/shared/lib/pwa-telemetry";
 import { cn } from "@/shared/lib/utils";
 
 type DiagnosticTone = "blocked" | "neutral" | "ready" | "warning";
 
+interface DiagnosticAction {
+  disabled?: boolean;
+  icon?: LucideIcon;
+  label: string;
+  loading?: boolean;
+  onClick: () => void;
+}
+
 interface DiagnosticItem {
+  action?: DiagnosticAction;
   detail: string;
   icon: LucideIcon;
   label: string;
@@ -181,6 +195,16 @@ function getPermissionItem(
 function getBackendPushItem(
   push: ReturnType<typeof useWebPushSubscription>,
 ): DiagnosticItem {
+  if (!push.isOnline) {
+    return {
+      detail: "Reconnect to check the backend public-key endpoint.",
+      icon: Server,
+      label: "Backend push",
+      tone: "warning",
+      value: "Offline",
+    };
+  }
+
   if (push.isPublicKeyLoading) {
     return {
       detail: "Checking the backend public-key endpoint.",
@@ -236,6 +260,17 @@ function getSubscriptionItem(
     };
   }
 
+  if (!push.isOnline) {
+    return {
+      detail:
+        "Reconnect to verify this browser's subscription against TeamForge.",
+      icon: Bell,
+      label: "This device",
+      tone: "warning",
+      value: "Offline",
+    };
+  }
+
   if (push.isCheckingBrowserSubscription) {
     return {
       detail: "Reading this browser's active push subscription.",
@@ -273,6 +308,134 @@ function getSubscriptionItem(
     label: "This device",
     tone: "neutral",
     value: "Not subscribed",
+  };
+}
+
+function getDeliveryTestItem(
+  push: ReturnType<typeof useWebPushSubscription>,
+): DiagnosticItem {
+  const action: DiagnosticAction = {
+    disabled:
+      !push.isAuthenticated ||
+      !push.isOnline ||
+      !push.isWebPushEnabled ||
+      !push.isSubscribed,
+    icon: Send,
+    label: "Send test",
+    loading: push.isSendingTest,
+    onClick: () => {
+      void push.sendTest("download-diagnostics");
+    },
+  };
+
+  if (!push.isAuthenticated) {
+    return {
+      detail: "Sign in before running a real push delivery test.",
+      icon: Send,
+      label: "Test push",
+      tone: "neutral",
+      value: "Sign in to test",
+    };
+  }
+
+  if (!push.isOnline) {
+    return {
+      detail: "Reconnect before checking backend-to-device push delivery.",
+      icon: Send,
+      label: "Test push",
+      tone: "warning",
+      value: "Offline",
+    };
+  }
+
+  if (!push.isWebPushEnabled) {
+    return {
+      detail: "The backend must expose a VAPID key before test pushes can run.",
+      icon: Send,
+      label: "Test push",
+      tone: "warning",
+      value: "Backend disabled",
+    };
+  }
+
+  if (!push.isSubscribed) {
+    return {
+      detail: "Turn on alerts for this device before testing delivery.",
+      icon: Send,
+      label: "Test push",
+      tone: "neutral",
+      value: "Not ready",
+    };
+  }
+
+  if (push.isSendingTest) {
+    return {
+      action,
+      detail: "TeamForge is sending a test push to this browser.",
+      icon: Send,
+      label: "Test push",
+      tone: "neutral",
+      value: "Sending",
+    };
+  }
+
+  if (!push.lastTestResult) {
+    return {
+      action,
+      detail: "Run a test to verify backend delivery to this device.",
+      icon: Send,
+      label: "Test push",
+      tone: "neutral",
+      value: "Not run",
+    };
+  }
+
+  const testStatus = getWebPushTestStatus(push.lastTestResult);
+
+  if (testStatus === "delivered") {
+    return {
+      action,
+      detail:
+        "The latest test was accepted by the push service for this device.",
+      icon: Send,
+      label: "Test push",
+      tone: "ready",
+      value: "Delivered",
+    };
+  }
+
+  if (push.lastTestResult.issue === "no-subscriptions") {
+    return {
+      action,
+      detail: "The backend did not find an active subscription for this user.",
+      icon: Send,
+      label: "Test push",
+      tone: "warning",
+      value: "No device",
+    };
+  }
+
+  if (push.lastTestResult.issue === "push-disabled") {
+    return {
+      action,
+      detail: "Push delivery is disabled in this backend environment.",
+      icon: Send,
+      label: "Test push",
+      tone: "warning",
+      value: "Disabled",
+    };
+  }
+
+  return {
+    action,
+    detail: getWebPushTestFailureDescription(push.lastTestResult),
+    icon: Send,
+    label: "Test push",
+    tone:
+      push.lastTestResult.issue === "subscription-expired"
+        ? "warning"
+        : "blocked",
+    value: "Failed",
   };
 }
 
@@ -372,6 +535,7 @@ export function PwaDiagnosticsPanel() {
     getPermissionItem(push),
     getBackendPushItem(push),
     getSubscriptionItem(push),
+    getDeliveryTestItem(push),
   ];
 
   async function handleRefreshDiagnostics() {
@@ -389,8 +553,11 @@ export function PwaDiagnosticsPanel() {
     });
 
     try {
+      const serviceWorkerRefresh = push.isOnline
+        ? serviceWorker.checkForUpdate()
+        : serviceWorker.refresh();
       const [serviceWorkerResult] = await Promise.allSettled([
-        serviceWorker.checkForUpdate(),
+        serviceWorkerRefresh,
         push.refreshBrowserSubscription(),
       ]);
 
@@ -480,13 +647,30 @@ export function PwaDiagnosticsPanel() {
 }
 
 function getDiagnosticCellBorderClasses(index: number, total: number) {
+  const isBeforeLastSmRow = isBeforeLastGridRow(index, total, 2);
+  const isBeforeLastLgRow = isBeforeLastGridRow(index, total, 4);
+
   return cn(
     index < total - 1 ? "border-b" : "border-b-0",
-    index % 2 === 0 ? "sm:border-r" : "sm:border-r-0",
-    index < total - 2 ? "sm:border-b" : "sm:border-b-0",
-    index % 4 !== 3 ? "lg:border-r" : "lg:border-r-0",
-    index < total - 4 ? "lg:border-b" : "lg:border-b-0",
+    isBeforeLastGridColumn(index, total, 2) ? "sm:border-r" : "sm:border-r-0",
+    isBeforeLastSmRow ? "sm:border-b" : "sm:border-b-0",
+    isBeforeLastGridColumn(index, total, 4) ? "lg:border-r" : "lg:border-r-0",
+    isBeforeLastLgRow ? "lg:border-b" : "lg:border-b-0",
   );
+}
+
+function isBeforeLastGridColumn(index: number, total: number, columns: number) {
+  const rowStart = Math.floor(index / columns) * columns;
+  const itemsInRow = Math.min(columns, total - rowStart);
+
+  return index - rowStart < itemsInRow - 1;
+}
+
+function isBeforeLastGridRow(index: number, total: number, columns: number) {
+  const lastRowItemCount = total % columns || columns;
+  const lastRowStart = total - lastRowItemCount;
+
+  return index < lastRowStart;
 }
 
 function DiagnosticRow({
@@ -531,6 +715,27 @@ function DiagnosticRow({
       <p className="mt-3 text-pretty text-slate-muted text-sm leading-relaxed">
         {item.detail}
       </p>
+      {item.action ? <DiagnosticActionButton action={item.action} /> : null}
     </li>
+  );
+}
+
+function DiagnosticActionButton({ action }: { action: DiagnosticAction }) {
+  const ActionIcon = action.icon;
+
+  return (
+    <Button
+      className="mt-4 min-h-10"
+      disabled={action.disabled}
+      loading={action.loading}
+      onClick={action.onClick}
+      size="sm"
+      variant="outline"
+    >
+      {ActionIcon ? (
+        <ActionIcon size={15} strokeWidth={2} aria-hidden="true" />
+      ) : null}
+      {action.label}
+    </Button>
   );
 }

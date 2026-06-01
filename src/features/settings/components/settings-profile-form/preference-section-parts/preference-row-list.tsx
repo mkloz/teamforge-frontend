@@ -11,6 +11,7 @@ export interface BooleanPreferenceItem {
 interface PreferenceRowListProps {
   items: readonly BooleanPreferenceItem[];
   notificationPreferences: NotificationPreferences;
+  disabled?: boolean;
   savingPreferenceKeys: ReadonlySet<keyof NotificationPreferences>;
   onChange: (
     key: BooleanSettingsPreferenceKey,
@@ -21,6 +22,7 @@ interface PreferenceRowListProps {
 export function PreferenceRowList({
   items,
   notificationPreferences,
+  disabled = false,
   savingPreferenceKeys,
   onChange,
 }: PreferenceRowListProps) {
@@ -32,7 +34,7 @@ export function PreferenceRowList({
           checked={notificationPreferences[item.key]}
           title={item.title}
           description={item.description}
-          disabled={savingPreferenceKeys.has(item.key)}
+          disabled={disabled || savingPreferenceKeys.has(item.key)}
           onToggle={() => {
             void onChange(item.key, !notificationPreferences[item.key]);
           }}

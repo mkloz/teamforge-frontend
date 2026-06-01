@@ -13,11 +13,17 @@ import { formatSessionTime } from "./settings-control-formatters";
 
 interface SessionRowProps {
   session: AuthSession;
+  isOnline: boolean;
   isRevoking: boolean;
   onRevoke: (session: AuthSession) => Promise<void>;
 }
 
-export function SessionRow({ session, isRevoking, onRevoke }: SessionRowProps) {
+export function SessionRow({
+  session,
+  isOnline,
+  isRevoking,
+  onRevoke,
+}: SessionRowProps) {
   const device = describeSessionDevice(session);
   const DeviceIcon = device.icon;
   const actionTitle = session.isCurrent
@@ -100,6 +106,7 @@ export function SessionRow({ session, isRevoking, onRevoke }: SessionRowProps) {
           `Expires ${formatSessionTime(session.expiresAt)}`,
           session.ipAddress ? `IP ${session.ipAddress}` : "IP unknown",
         ]}
+        disabled={!isOnline || isRevoking}
         loading={isRevoking}
         onConfirm={() => onRevoke(session)}
         title={actionTitle}
@@ -110,7 +117,7 @@ export function SessionRow({ session, isRevoking, onRevoke }: SessionRowProps) {
             variant={session.isCurrent ? "destructive" : "outline"}
             size="sm"
             className="w-full md:w-auto"
-            disabled={isRevoking}
+            disabled={!isOnline || isRevoking}
           >
             <LogOut size={14} />
             {isRevoking

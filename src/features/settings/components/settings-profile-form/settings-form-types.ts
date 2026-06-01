@@ -19,6 +19,7 @@ export interface AccountSettingsState {
   onSubmit: () => void;
   onAvatarSelect: (file: File) => Promise<unknown>;
   onAvatarDelete: () => Promise<unknown>;
+  isOnline: boolean;
   isSaving: boolean;
   isUploadingAvatar: boolean;
   isDeletingAvatar: boolean;
@@ -33,6 +34,7 @@ interface NotificationPreferenceState {
   isSavingNotificationPreferences: boolean;
   savingNotificationPreferenceKeys: ReadonlySet<keyof NotificationPreferences>;
   error: string | null;
+  isOnline: boolean;
 }
 
 export interface MatchingSettingsState extends NotificationPreferenceState {
@@ -64,6 +66,7 @@ export interface NotificationSettingsState extends NotificationPreferenceState {
 export interface SecuritySettingsState {
   currentUser: User | undefined;
   sessions: AuthSession[];
+  isOnline: boolean;
   isLoadingSessions: boolean;
   isSendingPasswordResetLink: boolean;
   isRevokingOtherSessions: boolean;
@@ -80,6 +83,7 @@ export interface SecuritySettingsState {
 
 export interface SafetySettingsState {
   blockedUsers: FriendshipApi[];
+  isOnline: boolean;
   isLoadingBlockedUsers: boolean;
   blockedUsersError: string | null;
   unblockingUserId: string | null;

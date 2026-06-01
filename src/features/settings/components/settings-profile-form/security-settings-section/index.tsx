@@ -1,3 +1,4 @@
+import { OfflineSettingsNotice } from "@/features/settings/components/settings-profile-form/preference-section-parts";
 import { DeleteAccountSection } from "@/features/settings/components/settings-profile-form/settings-form-controls";
 import { ActiveSessionsSection } from "./active-sessions-section";
 import { PasswordRecoverySection } from "./password-recovery-section";
@@ -7,6 +8,7 @@ import type { SecuritySettingsSectionProps } from "./types";
 export function SecuritySettingsSection({
   currentUser,
   sessions,
+  isOnline,
   isLoadingSessions,
   isSendingPasswordResetLink,
   isRevokingOtherSessions,
@@ -35,8 +37,15 @@ export function SecuritySettingsSection({
 
         <SecuritySummary currentUser={currentUser} />
 
+        {!isOnline ? (
+          <div className="mt-6">
+            <OfflineSettingsNotice message="Reconnect before changing security settings." />
+          </div>
+        ) : null}
+
         <PasswordRecoverySection
           currentUser={currentUser}
+          isOnline={isOnline}
           isSendingPasswordResetLink={isSendingPasswordResetLink}
           securityError={securityError}
           onSendPasswordResetLink={onSendPasswordResetLink}
@@ -45,6 +54,7 @@ export function SecuritySettingsSection({
 
       <ActiveSessionsSection
         sessions={sessions}
+        isOnline={isOnline}
         isLoadingSessions={isLoadingSessions}
         isRevokingOtherSessions={isRevokingOtherSessions}
         revokingSessionId={revokingSessionId}
@@ -55,6 +65,7 @@ export function SecuritySettingsSection({
 
       <DeleteAccountSection
         currentUser={currentUser}
+        isOnline={isOnline}
         isDeleting={isDeletingAccount}
         error={deleteAccountError}
         onDelete={onDeleteAccount}

@@ -26,6 +26,8 @@ import { TeamForgeLogo } from "@/assets/logo";
 import { PwaDiagnosticsPanel } from "@/features/download/components/pwa-diagnostics-panel";
 import { Footer } from "@/features/landing/components/footer";
 import { Navbar } from "@/features/landing/components/navbar";
+import { useLandingAuthActions } from "@/features/landing/hooks/use-landing-auth-actions";
+import { useRestoreAuthSessionQuery } from "@/shared/api/current-user-query";
 import { Button } from "@/shared/components/ui/button";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { usePwaDisplayMode } from "@/shared/hooks/use-pwa-display-mode";
@@ -394,6 +396,12 @@ function getPushCopy(push: PushState) {
       body: "This browser can still install TeamForge, but it cannot receive push notifications.",
     };
   }
+  if (!push.isOnline) {
+    return {
+      title: "Reconnect to manage alerts",
+      body: "Push settings need the network. Existing device alerts stay as they are until you are back online.",
+    };
+  }
   if (!push.isAuthenticated) {
     return {
       title: "Unlock mobile alerts",
@@ -434,6 +442,7 @@ function getPushCopy(push: PushState) {
 
 export function DownloadPage() {
   usePageMetadata(DOWNLOAD_PAGE_METADATA);
+  useRestoreAuthSessionQuery();
 
   const { detected, desktopBrowser } = useDeviceDetection();
   const { isStandalone } = usePwaDisplayMode();
@@ -801,6 +810,32 @@ function HeroCTAButtons({
     "w-full hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none sm:w-auto";
   const outlineBase = "w-full sm:w-auto";
   const row = "flex w-full flex-col gap-3 sm:w-auto sm:flex-row";
+  const { isResolvingAuthAction, secondaryAction } = useLandingAuthActions(
+    "Get started",
+    "Sign in",
+  );
+
+  function renderSecondaryActionButton() {
+    if (isResolvingAuthAction) {
+      return (
+        <Button
+          variant="outline"
+          size="hero"
+          loading
+          className={outlineBase}
+          aria-label="Checking TeamForge session"
+        >
+          {secondaryAction.label}
+        </Button>
+      );
+    }
+
+    return (
+      <Button variant="outline" size="hero" asChild className={outlineBase}>
+        <Link {...secondaryAction.navigation}>{secondaryAction.label}</Link>
+      </Button>
+    );
+  }
 
   // Already installed
   if (isStandalone) {
@@ -825,9 +860,7 @@ function HeroCTAButtons({
         >
           Install TeamForge
         </Button>
-        <Button variant="outline" size="hero" asChild className={outlineBase}>
-          <Link to="/auth/login">Sign in</Link>
-        </Button>
+        {renderSecondaryActionButton()}
       </div>
     );
   }
@@ -839,9 +872,7 @@ function HeroCTAButtons({
         <Button size="hero" className={btnBase} onClick={scrollToSteps}>
           See install steps ↓
         </Button>
-        <Button variant="outline" size="hero" asChild className={outlineBase}>
-          <Link to="/auth/login">Sign in</Link>
-        </Button>
+        {renderSecondaryActionButton()}
       </div>
     );
   }
@@ -853,9 +884,7 @@ function HeroCTAButtons({
         <Button size="hero" className={btnBase} onClick={scrollToSteps}>
           How to switch to Safari ↓
         </Button>
-        <Button variant="outline" size="hero" asChild className={outlineBase}>
-          <Link to="/auth/login">Sign in</Link>
-        </Button>
+        {renderSecondaryActionButton()}
       </div>
     );
   }
@@ -867,9 +896,7 @@ function HeroCTAButtons({
         <Button size="hero" className={btnBase} onClick={scrollToSteps}>
           See install options ↓
         </Button>
-        <Button variant="outline" size="hero" asChild className={outlineBase}>
-          <Link to="/auth/login">Sign in</Link>
-        </Button>
+        {renderSecondaryActionButton()}
       </div>
     );
   }
@@ -881,9 +908,7 @@ function HeroCTAButtons({
         <Button size="hero" className={btnBase} onClick={scrollToSteps}>
           See install steps ↓
         </Button>
-        <Button variant="outline" size="hero" asChild className={outlineBase}>
-          <Link to="/auth/login">Sign in</Link>
-        </Button>
+        {renderSecondaryActionButton()}
       </div>
     );
   }
@@ -894,9 +919,7 @@ function HeroCTAButtons({
       <Button size="hero" className={btnBase} onClick={scrollToSteps}>
         See install steps ↓
       </Button>
-      <Button variant="outline" size="hero" asChild className={outlineBase}>
-        <Link to="/auth/login">Sign in</Link>
-      </Button>
+      {renderSecondaryActionButton()}
     </div>
   );
 }
@@ -1708,6 +1731,7 @@ function PushNotificationBand() {
   const canTurnOn =
     push.canRequestPermission && !push.isSubscribed && !push.isPublicKeyLoading;
   const isActionDisabled =
+    !push.isOnline ||
     isBusy ||
     push.isPublicKeyLoading ||
     (!push.isSubscribed && !push.canRequestPermission);
@@ -1762,6 +1786,7 @@ function PushNotificationBand() {
               variant="outline"
               size="sm"
               className="min-h-11 lg:min-h-9"
+              disabled={!push.isOnline || isBusy}
               loading={push.isTurningOff}
               onClick={() => {
                 void push.turnOff("download");

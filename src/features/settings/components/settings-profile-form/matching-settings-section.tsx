@@ -5,6 +5,7 @@ import {
   buildPersonalityEditNavigation,
 } from "@/features/onboarding/lib/onboarding-route";
 import {
+  OfflineSettingsNotice,
   PreferenceStatusMessage,
   SectionHeading,
 } from "@/features/settings/components/settings-profile-form/preference-section-parts";
@@ -24,6 +25,7 @@ interface MatchingSettingsSectionProps {
   isSavingNotificationPreferences: boolean;
   savingNotificationPreferenceKeys: ReadonlySet<keyof NotificationPreferences>;
   error: string | null;
+  isOnline: boolean;
   onChange: (
     values: Pick<
       NotificationPreferences,
@@ -38,10 +40,11 @@ export function MatchingSettingsSection({
   isLoadingNotificationPreferences,
   savingNotificationPreferenceKeys,
   error,
+  isOnline,
   onChange,
 }: MatchingSettingsSectionProps) {
   const isDisabled =
-    isLoadingNotificationPreferences || !notificationPreferences;
+    !isOnline || isLoadingNotificationPreferences || !notificationPreferences;
 
   return (
     <section className="flex flex-col gap-8">
@@ -66,6 +69,10 @@ export function MatchingSettingsSection({
           />
         </div>
       </div>
+
+      {!isOnline ? (
+        <OfflineSettingsNotice message="Reconnect before changing group forming settings." />
+      ) : null}
 
       <div className="grid gap-0 border-border border-t lg:grid-cols-[1fr_1.4fr] lg:gap-8">
         <NotificationPreferenceRow

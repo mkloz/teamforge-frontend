@@ -9,6 +9,7 @@ interface AvatarProfileSectionProps {
   avatarError: string | null;
   isUploadingAvatar: boolean;
   isDeletingAvatar: boolean;
+  isOnline: boolean;
   onAvatarSelect: (file: File) => Promise<unknown>;
   onAvatarDelete: () => Promise<unknown>;
 }
@@ -18,6 +19,7 @@ export function AvatarProfileSection({
   avatarError,
   isUploadingAvatar,
   isDeletingAvatar,
+  isOnline,
   onAvatarSelect,
   onAvatarDelete,
 }: AvatarProfileSectionProps) {
@@ -76,15 +78,26 @@ export function AvatarProfileSection({
         selectedAvatarFile={selectedAvatarFile}
         isAvatarBusy={isAvatarBusy}
         isUploadingAvatar={isUploadingAvatar}
+        isOnline={isOnline}
         avatarError={avatarError}
         onFiles={handleAvatarFiles}
       />
+
+      {!isOnline ? (
+        <p
+          role="status"
+          className="rounded-xl border border-spark-amber/25 bg-spark-amber/8 px-3 py-2.5 font-medium text-sm text-spark-amber"
+        >
+          Reconnect before uploading or deleting a profile photo.
+        </p>
+      ) : null}
 
       <AvatarActions
         selectedAvatarFile={selectedAvatarFile}
         isAvatarBusy={isAvatarBusy}
         isUploadingAvatar={isUploadingAvatar}
         isDeletingAvatar={isDeletingAvatar}
+        isOnline={isOnline}
         canDeleteSavedAvatar={canDeleteSavedAvatar}
         onUploadSelectedAvatar={() => {
           void uploadSelectedAvatar();

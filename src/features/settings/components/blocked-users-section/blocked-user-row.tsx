@@ -9,12 +9,14 @@ import { formatBlockedDate } from "./blocked-users-formatters";
 
 interface BlockedUserRowProps {
   friendship: FriendshipApi;
+  isOnline: boolean;
   isUnblocking: boolean;
   onUnblockUser: (userId: string) => Promise<unknown>;
 }
 
 export function BlockedUserRow({
   friendship,
+  isOnline,
   isUnblocking,
   onUnblockUser,
 }: BlockedUserRowProps) {
@@ -50,6 +52,7 @@ export function BlockedUserRow({
         confirmLabel={isUnblocking ? "Unblocking..." : "Unblock"}
         description={`${user.name} will leave your blocked people list and can contact you again.`}
         details={["You can block them again from their profile panel."]}
+        disabled={!isOnline || isUnblocking}
         loading={isUnblocking}
         onConfirm={() => onUnblockUser(user.id)}
         title="Unblock this user?"
@@ -58,7 +61,7 @@ export function BlockedUserRow({
           <Button
             type="button"
             variant="outline"
-            disabled={isUnblocking}
+            disabled={!isOnline || isUnblocking}
             className="w-full md:w-auto"
           >
             {isUnblocking ? (

@@ -135,7 +135,7 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,svg,woff2}"],
         globIgnores: ["**/avatars/**", "**/group-covers/**"],
         importScripts: ["sw-push.js"],
-        navigateFallback: "/",
+        navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
