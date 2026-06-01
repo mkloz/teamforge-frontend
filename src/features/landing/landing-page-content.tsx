@@ -1,9 +1,42 @@
+import { useEffect } from "react";
 import { HeroSection } from "@/features/landing/components/hero";
 import { Navbar } from "@/features/landing/components/navbar";
 import { SideNav } from "@/features/landing/components/side-nav";
+import {
+  LANDING_SECTIONS,
+  type LandingSectionId,
+} from "@/features/landing/constants/landing-sections";
 import { DeferredLandingBelowFoldSections } from "@/features/landing/deferred-landing-below-fold-sections";
+import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
+
+function isLandingSectionId(id: string): id is LandingSectionId {
+  return LANDING_SECTIONS.some((section) => section.id === id);
+}
 
 export function LandingPageContent() {
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined;
+    }
+
+    const targetId = window.location.hash.slice(1);
+
+    if (!isLandingSectionId(targetId)) {
+      return undefined;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      scrollToLandingSection(targetId, {
+        behavior: "auto",
+        block: "start",
+      });
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
   return (
     <div className="bg-canvas font-sans text-ink antialiased">
       <a

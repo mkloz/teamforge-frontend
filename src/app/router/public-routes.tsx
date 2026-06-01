@@ -29,6 +29,20 @@ const LandingRouteLoading = createLazyRouteLoading(
   { mode: "route" },
 );
 
+const downloadPageModule = createLazyRouteModule(() =>
+  import("@/features/download/download-page").then((m) => ({
+    default: m.DownloadPage,
+  })),
+);
+
+const DownloadRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/download/download-page.loading").then((m) => ({
+      default: m.DownloadPageLoading,
+    })),
+  { mode: "route" },
+);
+
 const privacyPageModule = createLazyRouteModule(() =>
   import("@/features/legal/legal-page").then((m) => ({
     default: () => <m.LegalPage kind="privacy" />,
@@ -140,6 +154,27 @@ const landingRoute = createRoute({
     landingPageModule.Component,
     <LandingRouteLoading />,
   ),
+});
+
+const downloadRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/download",
+  loader: createRouteModuleLoader(downloadPageModule),
+  staleTime: Number.POSITIVE_INFINITY,
+  pendingComponent: DownloadRouteLoading,
+  component: createLazyPageRoute(
+    downloadPageModule.Component,
+    <DownloadRouteLoading />,
+  ),
+  errorComponent: createRouteErrorComponent({
+    scope: routeErrorScopes.download,
+    fullPage: true,
+    title: "Download page could not finish loading",
+    description:
+      "TeamForge couldn't finish loading install guidance right now.",
+    fallbackTo: "/",
+    fallbackLabel: "Back home",
+  }),
 });
 
 const privacyRoute = createRoute({
@@ -266,6 +301,7 @@ const activateAccountRoute = createRoute({
 
 export const publicRoutes = [
   landingRoute,
+  downloadRoute,
   privacyRoute,
   termsRoute,
   authRoute,
@@ -278,6 +314,7 @@ export const publicRoutes = [
 
 export const publicRouteModules = [
   landingPageModule,
+  downloadPageModule,
   privacyPageModule,
   termsPageModule,
   loginPageModule,

@@ -14,6 +14,8 @@ const SIZE_CLASS = {
   lg: "w-36",
 } as const;
 
+const LOADING_ANIMATION_DURATION_MS = 1_450;
+
 const SPARKS = [
   { id: 1, x: -22, y: -5, size: 4 },
   { id: 2, x: 18, y: -8, size: 3.5 },
@@ -28,18 +30,47 @@ const SPARKS = [
 type SparkStyle = CSSProperties &
   Record<"--spark-x" | "--spark-y" | "--spark-delay", string>;
 
+type ForgeLoadingMarkStyle = CSSProperties &
+  Record<"--forge-loading-animation-offset", string>;
+
+type BootWindow = Window & {
+  __TEAMFORGE_BOOT_STARTED_AT?: number;
+};
+
+function getSyncedAnimationOffset() {
+  if (typeof window === "undefined") {
+    return "0ms";
+  }
+
+  const bootStartedAt = (window as BootWindow).__TEAMFORGE_BOOT_STARTED_AT;
+
+  if (typeof bootStartedAt !== "number") {
+    return "0ms";
+  }
+
+  const elapsedMs = Math.max(0, performance.now() - bootStartedAt);
+  const phaseMs = elapsedMs % LOADING_ANIMATION_DURATION_MS;
+
+  return `${-phaseMs}ms`;
+}
+
 export function ForgeLoadingMark({
   className,
   label = "Preparing TeamForge",
   showLabel = false,
   size = "md",
 }: ForgeLoadingMarkProps) {
+  const animationStyle = {
+    "--forge-loading-animation-offset": getSyncedAnimationOffset(),
+  } satisfies ForgeLoadingMarkStyle;
+
   return (
     <div
       className={cn(
         "forge-loading-mark flex select-none flex-col items-center justify-center gap-3 text-foreground",
         className,
       )}
+      style={animationStyle}
       role="status"
       aria-live="polite"
       aria-label={label}

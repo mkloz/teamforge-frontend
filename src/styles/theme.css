@@ -40,6 +40,7 @@
   --animate-collapsible-up: collapsible-up 0.2s cubic-bezier(0.4, 0, 1, 1);
   --animate-forge-orb-rotate: forge-orb-rotate 20s linear infinite;
   --animate-forge-orb-breathe: forge-orb-breathe 4s ease-in-out infinite;
+  --animate-download-device-drift: download-device-drift 10s cubic-bezier(0.45, 0, 0.55, 1) infinite;
   --animate-forge-card-float-a: forge-card-float-a 4s ease-in-out infinite alternate;
   --animate-forge-card-float-b: forge-card-float-b 3.5s ease-in-out infinite alternate;
   --animate-forge-card-float-c: forge-card-float-c 5s ease-in-out infinite alternate;

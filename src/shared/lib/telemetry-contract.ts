@@ -45,11 +45,20 @@ export const telemetryErrorScopes = {
 } as const;
 
 export const trackedEventNames = {
+  pwaAppInstalled: "pwa_app_installed",
+  pwaInstallPromptAvailable: "pwa_install_prompt_available",
+  pwaInstallPromptOutcome: "pwa_install_prompt_outcome",
+  pwaPushSubscriptionOutcome: "pwa_push_subscription_outcome",
+  pwaPushTestOutcome: "pwa_push_test_outcome",
+  pwaServiceWorkerOfflineReady: "pwa_service_worker_offline_ready",
+  pwaServiceWorkerUpdateCheck: "pwa_service_worker_update_check",
+  pwaServiceWorkerUpdateReady: "pwa_service_worker_update_ready",
   routeErrorRecovery: "route_error_recovery",
 } as const;
 
 export const routeErrorScopes = {
   root: "root",
+  download: "download",
   authLogin: "auth.login",
   authRegister: "auth.register",
   authForgotPassword: "auth.forgot-password",

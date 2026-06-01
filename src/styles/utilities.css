@@ -55,8 +55,44 @@
   );
 }
 
+@utility loading-canvas-glow {
+  background:
+    radial-gradient(
+      circle at 50% 44%,
+      color-mix(in srgb, var(--color-forge-teal) 10%, transparent),
+      transparent 28%
+    ),
+    var(--color-canvas);
+}
+
+@utility download-hero-grid {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-forge-teal) 12%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-forge-teal) 12%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 1.75rem 1.75rem;
+  mask-image: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.9),
+    rgb(0 0 0 / 0.55) 54%,
+    transparent
+  );
+  opacity: 0.42;
+}
+
 @utility pb-safe-bottom {
   padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);
+}
+
+@utility top-safe-banner {
+  top: max(env(safe-area-inset-top), 0.75rem);
 }
 
 @utility pb-app-bottom-nav {

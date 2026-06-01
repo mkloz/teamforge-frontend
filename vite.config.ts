@@ -1,8 +1,111 @@
 import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
+import type { Plugin } from "vite";
 import { defineConfig } from "vite";
+import type { ManifestOptions } from "vite-plugin-pwa";
+import { VitePWA } from "vite-plugin-pwa";
 import { changedFileLintPlugin } from "./scripts/vite-changed-file-lint-plugin";
+
+const teamForgeManifest = {
+  id: "/",
+  name: "TeamForge",
+  short_name: "TeamForge",
+  description:
+    "TeamForge forms small, compatible groups for shared real-world activities using personality, interests, and social context.",
+  lang: "en",
+  start_url: "/home?source=pwa",
+  scope: "/",
+  display: "standalone",
+  orientation: "portrait-primary",
+  background_color: "#FAFAF8",
+  theme_color: "#0D9488",
+  categories: ["social", "lifestyle"],
+  icons: [
+    {
+      src: "/icons/pwa-192x192.png",
+      sizes: "192x192",
+      type: "image/png",
+      purpose: "any",
+    },
+    {
+      src: "/icons/pwa-512x512.png",
+      sizes: "512x512",
+      type: "image/png",
+      purpose: "any",
+    },
+    {
+      src: "/icons/pwa-maskable-512x512.png",
+      sizes: "512x512",
+      type: "image/png",
+      purpose: "maskable",
+    },
+  ],
+  prefer_related_applications: false,
+  shortcuts: [
+    {
+      name: "Forge my group",
+      short_name: "Forge",
+      description: "Start forming a compatible group.",
+      url: "/forge?source=pwa-shortcut",
+      icons: [
+        {
+          src: "/icons/pwa-192x192.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+      ],
+    },
+    {
+      name: "Open activity",
+      short_name: "Activity",
+      description: "Open conversations and group plans.",
+      url: "/activity?source=pwa-shortcut",
+      icons: [
+        {
+          src: "/icons/pwa-192x192.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+      ],
+    },
+    {
+      name: "Explore groups",
+      short_name: "Explore",
+      description: "Browse people and group options.",
+      url: "/explore?source=pwa-shortcut",
+      icons: [
+        {
+          src: "/icons/pwa-192x192.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+      ],
+    },
+  ],
+} satisfies Partial<ManifestOptions>;
+
+function teamForgeManifestDevPlugin(): Plugin {
+  return {
+    apply: "serve",
+    name: "teamforge-dev-manifest",
+    configureServer(server) {
+      server.middlewares.use((request, response, next) => {
+        if (request.url?.split("?")[0] !== "/manifest.webmanifest") {
+          next();
+          return;
+        }
+
+        response.statusCode = 200;
+        response.setHeader(
+          "Content-Type",
+          "application/manifest+json; charset=utf-8",
+        );
+        response.end(JSON.stringify(teamForgeManifest));
+      });
+    },
+  };
+}
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -13,6 +116,64 @@ export default defineConfig({
       },
     }),
     tailwindcss(),
+    teamForgeManifestDevPlugin(),
+    VitePWA({
+      registerType: "prompt",
+      injectRegister: null,
+      includeAssets: [
+        "favicon.svg",
+        "robots.txt",
+        "fonts/inter-latin-var.woff2",
+        "icons/apple-touch-icon.png",
+        "icons/pwa-192x192.png",
+        "icons/pwa-512x512.png",
+        "icons/pwa-maskable-512x512.png",
+      ],
+      manifest: teamForgeManifest,
+      workbox: {
+        cleanupOutdatedCaches: true,
+        globPatterns: ["**/*.{js,css,html,svg,woff2}"],
+        globIgnores: ["**/avatars/**", "**/group-covers/**"],
+        importScripts: ["sw-push.js"],
+        navigateFallback: "/",
+        navigateFallbackDenylist: [/^\/api\//],
+        runtimeCaching: [
+          {
+            urlPattern: ({ request, url }) =>
+              request.destination === "image" &&
+              (url.pathname.startsWith("/avatars/") ||
+                url.pathname.startsWith("/group-covers/")),
+            handler: "CacheFirst",
+            options: {
+              cacheName: "teamforge-public-images",
+              expiration: {
+                maxAgeSeconds: 60 * 60 * 24 * 14,
+                maxEntries: 60,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: ({ request, url }) =>
+              request.destination === "font" &&
+              url.pathname.startsWith("/fonts/"),
+            handler: "CacheFirst",
+            options: {
+              cacheName: "teamforge-fonts",
+              expiration: {
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+                maxEntries: 4,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
+      },
+    }),
     changedFileLintPlugin(),
   ],
   server: {

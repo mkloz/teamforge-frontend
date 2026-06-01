@@ -373,7 +373,7 @@ function AppShellRouteComponent() {
 
 function AppShellRouteLoading() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-canvas px-6 text-ink">
+    <div className="loading-canvas-glow flex min-h-dvh items-center justify-center px-6 text-ink">
       <ForgeLoadingMark label="Loading TeamForge" size="md" />
     </div>
   );

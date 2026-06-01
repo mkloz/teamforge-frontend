@@ -50,6 +50,10 @@ export const APP_QUERY_KEYS = {
     unreadList: ["notifications", "unread"] as const,
     unreadCount: ["notifications", "unread-count"] as const,
   },
+  webPush: {
+    publicKey: ["web-push", "public-key"] as const,
+    subscriptions: ["web-push", "subscriptions"] as const,
+  },
   settings: {
     notificationPreferences: ["settings", "notification-preferences"] as const,
     sessions: ["settings", "sessions"] as const,

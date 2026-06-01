@@ -18,3 +18,4 @@ export * from "./realtime";
 export * from "./social";
 export * from "./user";
 export * from "./user-response";
+export * from "./web-push";

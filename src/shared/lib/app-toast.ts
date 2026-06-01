@@ -7,6 +7,11 @@ export function showAppSuccessToast(message: string, options?: ExternalToast) {
   return toast.success(message, options);
 }
 
+export function showAppInfoToast(message: string, options?: ExternalToast) {
+  requestAppToastHost();
+  return toast.info(message, options);
+}
+
 export function showAppErrorMessageToast(
   message: string,
   options?: ExternalToast,

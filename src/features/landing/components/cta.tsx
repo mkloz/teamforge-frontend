@@ -1,10 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowRight, ChevronDown } from "lucide-react";
-import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
+import { ArrowRight, Download } from "lucide-react";
 import { useLandingAuthActions } from "@/features/landing/hooks/use-landing-auth-actions";
 import { useMouseGlow } from "@/features/landing/hooks/use-mouse-glow";
-import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
 import { Button } from "@/shared/components/ui/button";
 
 export function CtaSection() {
@@ -79,15 +77,15 @@ export function CtaSection() {
           )}
 
           <Button
+            asChild
             variant="outline"
             size="hero"
             className="w-full hover:-translate-y-1 hover:shadow-button-outline-dark active:translate-y-0 active:shadow-none sm:w-auto"
-            onClick={() =>
-              scrollToLandingSection(LANDING_SECTION_IDS.howItWorks)
-            }
           >
-            See how it works
-            <ChevronDown className="size-5" aria-hidden="true" />
+            <Link to="/download" aria-label="Download TeamForge">
+              Download TeamForge
+              <Download className="size-5" aria-hidden="true" />
+            </Link>
           </Button>
         </motion.div>
         <motion.p

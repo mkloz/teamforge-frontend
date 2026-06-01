@@ -190,25 +190,31 @@
 
 .forge-loading-mark__hammer {
   animation: forge-loading-hammer 1.45s infinite;
+  animation-delay: var(--forge-loading-animation-offset, 0ms);
   transform-box: view-box;
   transform-origin: 151px 94.5px;
 }
 
 .forge-loading-mark__anvil {
   animation: forge-loading-anvil 1.45s infinite;
+  animation-delay: var(--forge-loading-animation-offset, 0ms);
   transform-box: view-box;
   transform-origin: 110px 148px;
 }
 
 .forge-loading-mark__spark-core {
   animation: forge-loading-core-spark 1.45s infinite;
+  animation-delay: var(--forge-loading-animation-offset, 0ms);
   transform-box: view-box;
   transform-origin: 110px 107.75px;
 }
 
 .forge-loading-mark__spark {
   animation: forge-loading-spark 1.45s infinite;
-  animation-delay: var(--spark-delay);
+  animation-delay: calc(
+    var(--forge-loading-animation-offset, 0ms) +
+    var(--spark-delay)
+  );
   opacity: 0;
   transform-origin: center;
 }
@@ -305,6 +311,18 @@
   50% {
     opacity: 1;
     transform: scale(1.04);
+  }
+}
+
+@keyframes download-device-drift {
+  0%,
+  100% {
+    opacity: 0.98;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-0.2rem);
   }
 }
 

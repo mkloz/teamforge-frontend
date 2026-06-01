@@ -1,12 +1,34 @@
 import { Link } from "@tanstack/react-router";
+import type { LucideIcon } from "lucide-react";
 import {
-  ArrowLeft,
   BadgeCheck,
+  BookOpenCheck,
+  CircleHelp,
+  CircleSlash,
+  ClipboardList,
+  Copyright,
+  Eye,
+  FileCheck2,
+  Fingerprint,
+  History,
+  KeyRound,
+  Link2,
   LockKeyhole,
+  MessageSquareText,
+  RefreshCw,
   Scale,
+  ServerCog,
+  Settings2,
+  ShieldAlert,
   ShieldCheck,
+  Sparkles,
+  Trash2,
+  UserCheck,
+  UsersRound,
+  WalletCards,
 } from "lucide-react";
-import { TeamForgeLogo } from "@/assets/logo";
+import { Footer } from "@/features/landing/components/footer";
+import { Navbar } from "@/features/landing/components/navbar";
 import { buttonVariants } from "@/shared/components/ui/button-variants";
 import { cn } from "@/shared/lib/utils";
 
@@ -325,6 +347,34 @@ const legalPageCopy: Record<LegalPageKind, LegalPageCopy> = {
   },
 };
 
+const legalSectionIcons: Record<string, LucideIcon> = {
+  scope: BookOpenCheck,
+  "data-collected": ClipboardList,
+  "inferred-data": Fingerprint,
+  use: Sparkles,
+  visibility: Eye,
+  providers: ServerCog,
+  retention: Trash2,
+  security: ShieldCheck,
+  choices: Settings2,
+  changes: RefreshCw,
+  agreement: FileCheck2,
+  eligibility: UserCheck,
+  accounts: KeyRound,
+  content: MessageSquareText,
+  groups: UsersRound,
+  safety: ShieldAlert,
+  "acceptable-use": BadgeCheck,
+  moderation: Scale,
+  ratings: BadgeCheck,
+  "third-party": Link2,
+  payments: WalletCards,
+  ip: Copyright,
+  availability: History,
+  termination: CircleSlash,
+  limits: CircleHelp,
+};
+
 function legalLinkButtonClassName(className?: string) {
   return cn(
     buttonVariants({ variant: "outline", size: "sm", className }).replace(
@@ -340,94 +390,86 @@ export function LegalPage({ kind }: LegalPageProps) {
   const alternateCopy = legalPageCopy[alternate];
 
   return (
-    <main className="min-h-screen bg-canvas text-ink">
-      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8 lg:px-10">
-        <header className="flex items-center justify-between gap-4">
-          <Link
-            to="/"
-            aria-label="Back to TeamForge"
-            className="inline-flex min-w-0 items-center gap-2 rounded-xl font-black text-ink transition-colors hover:text-forge-teal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35"
-          >
-            <TeamForgeLogo className="size-8" showBackground={false} />
-            <span>TeamForge</span>
-          </Link>
+    <div className="bg-canvas font-sans text-ink antialiased">
+      <a
+        href="#main-content"
+        className="fixed top-4 left-4 z-100 -translate-y-24 rounded-lg bg-forge-teal px-4 py-2 text-white opacity-0 transition focus:translate-y-0 focus:opacity-100 focus:outline-none"
+      >
+        Skip to main content
+      </a>
+      <Navbar actionSet={kind} forceSolid />
+      <main id="main-content" className="min-h-screen bg-canvas pt-16 text-ink">
+        <div className="mx-auto flex w-full max-w-6xl flex-col px-5 sm:px-8 lg:px-10">
+          <section className="py-14 sm:py-18">
+            <div className="grid gap-8 lg:grid-cols-3 lg:items-start">
+              <div className="lg:col-span-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <LegalBadge kind={kind} />
+                  <p className="font-black text-slate-muted text-xs uppercase tracking-widest">
+                    Effective {copy.updatedAt}
+                  </p>
+                </div>
 
-          <Link to="/" className={legalLinkButtonClassName()}>
-            <span className="flex size-full items-center justify-center gap-2">
-              <ArrowLeft className="size-4" aria-hidden="true" />
-              Back home
-            </span>
-          </Link>
-        </header>
+                <h1 className="mt-4 max-w-4xl text-balance font-black text-4xl leading-none tracking-tight sm:text-5xl">
+                  {copy.title}
+                </h1>
+                <p className="mt-5 max-w-3xl font-medium text-base text-slate-muted leading-relaxed sm:text-lg">
+                  {copy.summary}
+                </p>
 
-        <section className="py-14 sm:py-18">
-          <div className="grid gap-8 lg:grid-cols-3 lg:items-start">
-            <div className="lg:col-span-2">
-              <div className="flex flex-wrap items-center gap-2">
-                <LegalBadge kind={kind} />
+                <div className="mt-6 flex max-w-3xl items-start gap-3 rounded-2xl border border-spark-amber/25 bg-spark-amber/8 p-4">
+                  <BadgeCheck
+                    className="mt-0.5 size-4 shrink-0 text-spark-amber"
+                    aria-hidden="true"
+                  />
+                  <p className="font-semibold text-ink/80 text-sm leading-relaxed">
+                    {copy.notice}
+                  </p>
+                </div>
+              </div>
+
+              <aside className="rounded-2xl border border-border/70 bg-card/55 p-4 lg:sticky lg:top-6">
                 <p className="font-black text-slate-muted text-xs uppercase tracking-widest">
-                  Effective {copy.updatedAt}
+                  On this page
                 </p>
-              </div>
-
-              <h1 className="mt-4 max-w-4xl text-balance font-black text-4xl leading-none tracking-tight sm:text-5xl">
-                {copy.title}
-              </h1>
-              <p className="mt-5 max-w-3xl font-medium text-base text-slate-muted leading-relaxed sm:text-lg">
-                {copy.summary}
-              </p>
-
-              <div className="mt-6 flex max-w-3xl items-start gap-3 rounded-2xl border border-spark-amber/25 bg-spark-amber/8 p-4">
-                <BadgeCheck
-                  className="mt-0.5 size-4 shrink-0 text-spark-amber"
-                  aria-hidden="true"
-                />
-                <p className="font-semibold text-ink/80 text-sm leading-relaxed">
-                  {copy.notice}
-                </p>
-              </div>
-            </div>
-
-            <aside className="rounded-2xl border border-border/70 bg-card/55 p-4 lg:sticky lg:top-6">
-              <p className="font-black text-slate-muted text-xs uppercase tracking-widest">
-                On this page
-              </p>
-              <nav
-                aria-label={`${copy.eyebrow} sections`}
-                className="mt-3 grid max-h-48 gap-1 overflow-y-auto pr-1"
-              >
-                {copy.sections.map((section) => (
-                  <a
-                    key={section.id}
-                    href={`#${section.id}`}
-                    className="rounded-lg px-2 py-1.5 font-semibold text-slate-muted text-xs leading-snug transition-colors hover:bg-muted/60 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    {section.heading}
-                  </a>
-                ))}
-              </nav>
-
-              <div className="mt-4 border-border/70 border-t pt-4">
-                <Link
-                  to={alternate === "privacy" ? "/privacy" : "/terms"}
-                  className={legalLinkButtonClassName("w-full")}
+                <nav
+                  aria-label={`${copy.eyebrow} sections`}
+                  className="mt-3 grid max-h-48 gap-1 overflow-y-auto pr-1"
                 >
-                  <span className="flex size-full items-center justify-center gap-2">
-                    {alternateCopy.eyebrow}
-                  </span>
-                </Link>
-              </div>
-            </aside>
-          </div>
-        </section>
+                  {copy.sections.map((section) => (
+                    <a
+                      key={section.id}
+                      href={`#${section.id}`}
+                      className="rounded-lg px-2 py-1.5 font-semibold text-slate-muted text-xs leading-snug transition-colors hover:bg-muted/60 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      {section.heading}
+                    </a>
+                  ))}
+                </nav>
 
-        <div className="grid gap-4 border-border/70 border-t pb-16">
-          {copy.sections.map((section) => (
-            <LegalSectionBlock key={section.id} section={section} />
-          ))}
+                <div className="mt-4 border-border/70 border-t pt-4">
+                  <Link
+                    to={alternate === "privacy" ? "/privacy" : "/terms"}
+                    className={legalLinkButtonClassName("w-full")}
+                  >
+                    <span className="flex size-full items-center justify-center gap-2">
+                      {alternateCopy.eyebrow}
+                    </span>
+                  </Link>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          <div className="grid gap-4 border-border/70 border-t pb-16">
+            {copy.sections.map((section) => (
+              <LegalSectionBlock key={section.id} section={section} />
+            ))}
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }
 
@@ -443,15 +485,18 @@ function LegalBadge({ kind }: { kind: LegalPageKind }) {
 }
 
 function LegalSectionBlock({ section }: { section: LegalSection }) {
+  const SectionIcon = legalSectionIcons[section.id] ?? FileCheck2;
+
   return (
     <section
       id={section.id}
       className="legal-section-containment grid scroll-mt-24 gap-5 border-border/70 border-b py-7 lg:grid-cols-[minmax(16rem,20rem)_minmax(0,1fr)] lg:gap-10"
     >
       <div className="flex min-w-0 items-start gap-3">
-        <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
-          <span
-            className="size-1.5 rounded-full bg-current"
+        <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-xl border border-forge-teal/20 bg-forge-teal/8 text-forge-teal">
+          <SectionIcon
+            className="size-3.5"
+            strokeWidth={1.5}
             aria-hidden="true"
           />
         </span>
