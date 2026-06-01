@@ -44,9 +44,6 @@ const LazyUpcomingPlans = lazy(() =>
 );
 
 export function HomePage() {
-  const { sentInvitations, isLoading, isError, refetchAll } = useHomeData();
-  const { isError: viewerError, isLoading: viewerLoading } =
-    useHomeViewerState();
   const {
     focusedInviteId,
     focusedPanel,
@@ -55,6 +52,31 @@ export function HomePage() {
     clearFriendRequestFocus,
     clearInvitationFocus,
   } = useHomeRouteState();
+  const shouldLoadSentInvitations =
+    focusedPanel === "invitations" && invitationView === "sent";
+  const {
+    isLoading: isCoreHomeDataLoading,
+    isError: isCoreHomeDataError,
+    refetchAll,
+  } = useHomeData({
+    include: {
+      groups: true,
+      invitations: true,
+      plans: true,
+      stats: true,
+    },
+  });
+  const {
+    sentInvitations,
+    isLoading: isSentInvitationsLoading,
+    isError: isSentInvitationsError,
+  } = useHomeData({
+    include: {
+      sentInvitations: shouldLoadSentInvitations,
+    },
+  });
+  const { isError: viewerError, isLoading: viewerLoading } =
+    useHomeViewerState();
   const invitationsRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -68,7 +90,13 @@ export function HomePage() {
     });
   }, [focusedPanel]);
 
-  if ((isError && !isLoading) || (viewerError && !viewerLoading)) {
+  if (
+    (isCoreHomeDataError && !isCoreHomeDataLoading) ||
+    (shouldLoadSentInvitations &&
+      isSentInvitationsError &&
+      !isSentInvitationsLoading) ||
+    (viewerError && !viewerLoading)
+  ) {
     return (
       <section
         aria-label="Home error"

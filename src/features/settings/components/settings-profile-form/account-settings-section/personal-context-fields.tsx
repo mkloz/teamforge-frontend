@@ -53,7 +53,7 @@ export function PersonalContextFields({ form }: PersonalContextFieldsProps) {
             <FormLabel>Gender</FormLabel>
             <Select value={field.value} onValueChange={field.onChange}>
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger className="data-[placeholder]:text-slate-muted">
                   <SelectValue placeholder="Select gender" />
                 </SelectTrigger>
               </FormControl>

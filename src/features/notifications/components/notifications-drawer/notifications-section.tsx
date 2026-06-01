@@ -7,14 +7,18 @@ interface NotificationsSectionProps {
   label: string;
   items: Notification[];
   pendingNotificationId: string | null;
+  pendingReadToggleNotificationId: string | null;
   onSelect: (item: Notification) => void;
+  onToggleRead: (item: Notification) => void;
 }
 
 export function NotificationsSection({
   label,
   items,
   pendingNotificationId,
+  pendingReadToggleNotificationId,
   onSelect,
+  onToggleRead,
 }: NotificationsSectionProps) {
   const shouldReduceMotion = useReducedMotion();
 
@@ -56,7 +60,9 @@ export function NotificationsSection({
               <NotificationItem
                 item={item}
                 onSelect={onSelect}
+                onToggleRead={onToggleRead}
                 isPending={pendingNotificationId === item.id}
+                isTogglingRead={pendingReadToggleNotificationId === item.id}
               />
             </motion.li>
           ))}

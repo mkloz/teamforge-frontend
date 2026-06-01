@@ -38,6 +38,7 @@ export function NotificationsDrawer({
     items,
     notificationGroups,
     markReadAsync,
+    markUnreadAsync,
     markAllReadAsync,
     refreshNotifications,
     isLoading,
@@ -52,8 +53,10 @@ export function NotificationsDrawer({
     string | null
   >(null);
   const [pendingDetailAction, setPendingDetailAction] = useState<
-    "mark-read" | "open" | null
+    "mark-read" | "mark-unread" | "open" | null
   >(null);
+  const [pendingReadToggleNotificationId, setPendingReadToggleNotificationId] =
+    useState<string | null>(null);
   const [selectedNotificationId, setSelectedNotificationId] = useState<
     string | null
   >(null);
@@ -71,6 +74,7 @@ export function NotificationsDrawer({
     if (!open) {
       setPendingNotificationId(null);
       setPendingDetailAction(null);
+      setPendingReadToggleNotificationId(null);
       setSelectedNotificationId(null);
       setMarkAllReadDialogOpen(false);
     }
@@ -102,22 +106,35 @@ export function NotificationsDrawer({
     }
   }
 
-  async function handleMarkNotificationRead(notification: Notification) {
-    if (notification.isRead) {
-      return;
-    }
-
-    setPendingNotificationId(notification.id);
-    setPendingDetailAction("mark-read");
+  async function handleToggleNotificationRead(notification: Notification) {
+    setPendingReadToggleNotificationId(notification.id);
 
     try {
-      await markReadAsync(notification.id);
+      if (notification.isRead) {
+        await markUnreadAsync(notification.id);
+      } else {
+        await markReadAsync(notification.id);
+      }
+    } finally {
+      setPendingReadToggleNotificationId(null);
+    }
+  }
+
+  async function handleToggleSelectedNotificationRead(
+    notification: Notification,
+  ) {
+    setPendingNotificationId(notification.id);
+    setPendingDetailAction(notification.isRead ? "mark-unread" : "mark-read");
+
+    try {
+      if (notification.isRead) {
+        await markUnreadAsync(notification.id);
+      } else {
+        await markReadAsync(notification.id);
+      }
+    } finally {
       setPendingNotificationId(null);
       setPendingDetailAction(null);
-    } catch (error) {
-      setPendingNotificationId(null);
-      setPendingDetailAction(null);
-      throw error;
     }
   }
 
@@ -264,16 +281,17 @@ export function NotificationsDrawer({
           ) : selectedNotification ? (
             <NotificationDetail
               item={selectedNotification}
-              isMarkingRead={
+              isTogglingRead={
                 pendingNotificationId === selectedNotification.id &&
-                pendingDetailAction === "mark-read"
+                (pendingDetailAction === "mark-read" ||
+                  pendingDetailAction === "mark-unread")
               }
               isOpening={
                 pendingNotificationId === selectedNotification.id &&
                 pendingDetailAction === "open"
               }
               onBack={() => setSelectedNotificationId(null)}
-              onMarkRead={handleMarkNotificationRead}
+              onToggleRead={handleToggleSelectedNotificationRead}
               onOpen={handleOpenNotification}
             />
           ) : (
@@ -285,7 +303,11 @@ export function NotificationsDrawer({
                 pendingNotificationId={
                   pendingDetailAction ? pendingNotificationId : null
                 }
+                pendingReadToggleNotificationId={
+                  pendingReadToggleNotificationId
+                }
                 onSelect={handleSelectNotification}
+                onToggleRead={handleToggleNotificationRead}
               />
             ))
           )}

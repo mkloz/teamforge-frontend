@@ -5,7 +5,7 @@ import { ActivitySidebar } from "@/features/activity/components/activity-page/ac
 import type { ActivityWorkspace } from "@/features/activity/hooks/use-activity";
 import { cn } from "@/shared/lib/utils";
 
-const ACTIVITY_REALTIME_IDLE_DELAY_MS = 2500;
+const ACTIVITY_REALTIME_IDLE_DELAY_MS = 12_000;
 
 const ActivityConversationStage = lazy(() =>
   import(

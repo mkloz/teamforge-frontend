@@ -1,4 +1,10 @@
-import { ArrowLeft, Check, ExternalLink, type LucideIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  ExternalLink,
+  type LucideIcon,
+  Mail,
+} from "lucide-react";
 import {
   type AvatarBadgeTone,
   AvatarWithBadge,
@@ -14,24 +20,25 @@ import {
 
 interface NotificationDetailProps {
   item: Notification;
-  isMarkingRead: boolean;
+  isTogglingRead: boolean;
   isOpening: boolean;
   onBack: () => void;
-  onMarkRead: (item: Notification) => void;
+  onToggleRead: (item: Notification) => void;
   onOpen: (item: Notification) => void;
 }
 
 export function NotificationDetail({
   item,
-  isMarkingRead,
+  isTogglingRead,
   isOpening,
   onBack,
-  onMarkRead,
+  onToggleRead,
   onOpen,
 }: NotificationDetailProps) {
   const config = getTypeConfig(item.type);
   const Icon = config.icon;
-  const isBusy = isMarkingRead || isOpening;
+  const isBusy = isTogglingRead || isOpening;
+  const ReadStateIcon = item.isRead ? Mail : Check;
 
   return (
     <article className="flex min-h-full flex-col">
@@ -100,20 +107,18 @@ export function NotificationDetail({
 
       <div className="sticky bottom-0 bg-canvas/95 px-5 pt-3 pb-5 backdrop-blur">
         <div className="flex items-center gap-2">
-          {!item.isRead && (
-            <Button
-              variant="accentGhost"
-              size="sm"
-              onClick={() => onMarkRead(item)}
-              disabled={isBusy}
-              loading={isMarkingRead}
-              className="min-w-0 flex-1"
-              contentClassName="gap-1.5"
-            >
-              <Check className="size-4 shrink-0" aria-hidden="true" />
-              Mark read
-            </Button>
-          )}
+          <Button
+            variant="accentGhost"
+            size="sm"
+            onClick={() => onToggleRead(item)}
+            disabled={isBusy}
+            loading={isTogglingRead}
+            className="min-w-0 flex-1"
+            contentClassName="gap-1.5"
+          >
+            <ReadStateIcon className="size-4 shrink-0" aria-hidden="true" />
+            {item.isRead ? "Mark unread" : "Mark read"}
+          </Button>
           <Button
             variant="primary"
             size="sm"

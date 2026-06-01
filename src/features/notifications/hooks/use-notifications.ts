@@ -6,15 +6,6 @@ import { NotificationsCommands } from "@/features/notifications/api/notification
 import { NotificationsQueryFactory } from "@/features/notifications/api/notifications-query-factory";
 import { groupNotificationsByRecency } from "@/features/notifications/lib/notification-groups";
 
-export function useUnreadNotificationCount() {
-  const unreadCountQuery = useQuery(NotificationsQueryFactory.unreadCount());
-
-  return {
-    count: unreadCountQuery.data ?? 0,
-    isLoading: unreadCountQuery.isLoading,
-  };
-}
-
 export function useUnreadNotifications() {
   const unreadItemsQuery = useQuery(NotificationsQueryFactory.unreadList());
 
@@ -59,6 +50,31 @@ export function useNotifications({
 
       const snapshot = NotificationsCache.snapshot();
       NotificationsCache.optimisticallyMarkRead(id);
+
+      return snapshot;
+    },
+    onSuccess: (notification) => {
+      NotificationsCache.applyNotificationUpdate(notification);
+    },
+    onError: (_error, _id, snapshot) => {
+      NotificationsCache.restore(snapshot);
+    },
+    onSettled: async () => {
+      await NotificationsCache.invalidateQueries();
+    },
+  });
+
+  const markUnreadMutation = useMutation({
+    meta: {
+      errorToastMessage: "We couldn't update that notification right now.",
+    },
+    mutationKey: ["notifications", "mark-unread"],
+    mutationFn: (id: string) => NotificationsCommands.markUnread(id),
+    onMutate: async (id) => {
+      await NotificationsCache.cancelQueries();
+
+      const snapshot = NotificationsCache.snapshot();
+      NotificationsCache.optimisticallyMarkUnread(id);
 
       return snapshot;
     },
@@ -118,6 +134,8 @@ export function useNotifications({
     isMarkingAllRead: markAllReadMutation.isPending,
     markRead: (id: string) => markReadMutation.mutate(id),
     markReadAsync: (id: string) => markReadMutation.mutateAsync(id),
+    markUnread: (id: string) => markUnreadMutation.mutate(id),
+    markUnreadAsync: (id: string) => markUnreadMutation.mutateAsync(id),
     markAllReadAsync: () => markAllReadMutation.mutateAsync(),
     refreshNotifications: () =>
       Promise.all([

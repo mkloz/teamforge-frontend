@@ -26,7 +26,7 @@ import { publicHttpUrlSchema } from "@/shared/validators/url.validator";
 
 export async function getChats() {
   const response = await apiClient
-    .get("chats", {
+    .get("chats/activity-feed", {
       searchParams: {
         limit: DEFAULT_ACTIVITY_API_LIMIT,
       },
@@ -34,6 +34,12 @@ export async function getChats() {
     .json<unknown>();
 
   return paginatedChatsSchema.parse(response).items;
+}
+
+export async function getChat(chatId: string) {
+  const response = await apiClient.get(`chats/${chatId}`).json<unknown>();
+
+  return chatApiSchema.parse(response);
 }
 
 export async function getChatMessages(

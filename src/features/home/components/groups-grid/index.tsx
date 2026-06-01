@@ -18,7 +18,11 @@ const LazyGroupsGridChatStateLoader = lazy(() =>
 );
 
 export function GroupsGrid() {
-  const { groups, isGroupsLoading } = useHomeData();
+  const { groups, isGroupsLoading } = useHomeData({
+    include: {
+      groups: true,
+    },
+  });
   const shouldLoadChatState = useDeferredChatState();
 
   if (shouldLoadChatState) {

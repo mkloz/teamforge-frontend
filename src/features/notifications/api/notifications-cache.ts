@@ -171,6 +171,40 @@ export const NotificationsCache = {
     }
   },
 
+  optimisticallyMarkUnread(id: string) {
+    let unreadDelta = 0;
+    let unreadNotification: Notification | null = null;
+
+    updateNotificationsQuery((items) =>
+      items.map((item) => {
+        if (item.id !== id || !item.isRead) {
+          return item;
+        }
+
+        unreadDelta = 1;
+        unreadNotification = {
+          ...item,
+          isRead: false,
+        };
+
+        return unreadNotification;
+      }),
+    );
+
+    const nextUnreadNotification = unreadNotification;
+
+    if (nextUnreadNotification) {
+      appQueryClient.setQueryData<Notification[] | undefined>(
+        NOTIFICATIONS_UNREAD_QUERY_KEY,
+        (current) => mergeNotifications(current, nextUnreadNotification),
+      );
+    }
+
+    if (unreadDelta > 0) {
+      updateUnreadCountQuery((count) => count + unreadDelta);
+    }
+  },
+
   optimisticallyMarkAllRead() {
     updateNotificationsQuery((items) =>
       items.map((item) => ({

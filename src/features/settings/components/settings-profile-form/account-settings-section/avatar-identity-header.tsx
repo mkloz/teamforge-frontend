@@ -18,6 +18,7 @@ export function AvatarIdentityHeader({
           <Avatar
             src={displayedAvatarUrl}
             name={currentUser?.name}
+            imageSize={128}
             className="size-28 border border-border bg-card text-2xl shadow-sm"
             loading="eager"
           />

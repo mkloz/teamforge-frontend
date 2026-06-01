@@ -24,6 +24,7 @@ const realtimeRoutePrefixes = [
 ] as const;
 
 const deferredRealtimeRoutePrefixes = [
+  "/activity",
   "/explore",
   "/forge",
   "/groups/",

@@ -4,10 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { Button } from "@/shared/components/ui/button";
 import {
-  showAppErrorMessageToast,
-  showAppSuccessToast,
-} from "@/shared/lib/app-toast";
-import {
   copyTextToClipboard,
   getCurrentBrowserOrigin,
   shareBrowserData,
@@ -32,13 +28,11 @@ export function FriendsInvitation() {
 
   const handleCopy = async () => {
     if (!(await copyTextToClipboard(inviteLink))) {
-      showAppErrorMessageToast("We couldn't copy that link in this browser.");
+      void showInviteCopyError().catch(() => undefined);
       return;
     }
 
     setCopied(true);
-    showAppSuccessToast("Invite link copied.", { id: "home-invite-link-copy" });
-
     if (copiedTimeoutRef.current) {
       clearTimeout(copiedTimeoutRef.current);
     }
@@ -47,6 +41,7 @@ export function FriendsInvitation() {
       setCopied(false);
       copiedTimeoutRef.current = null;
     }, 2000);
+    void showInviteCopySuccess().catch(() => undefined);
   };
 
   return (
@@ -127,4 +122,16 @@ export function FriendsInvitation() {
       </div>
     </section>
   );
+}
+
+async function showInviteCopyError() {
+  const { showAppErrorMessageToast } = await import("@/shared/lib/app-toast");
+
+  showAppErrorMessageToast("We couldn't copy that link in this browser.");
+}
+
+async function showInviteCopySuccess() {
+  const { showAppSuccessToast } = await import("@/shared/lib/app-toast");
+
+  showAppSuccessToast("Invite link copied.", { id: "home-invite-link-copy" });
 }

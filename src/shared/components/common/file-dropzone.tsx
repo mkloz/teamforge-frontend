@@ -10,6 +10,7 @@ import {
   type DragEvent,
   type ReactNode,
   type RefObject,
+  useId,
   useRef,
   useState,
 } from "react";
@@ -114,6 +115,7 @@ export function FileDropzone({
 }: FileDropzoneProps) {
   const internalInputRef = useRef<HTMLInputElement | null>(null);
   const resolvedInputRef = inputRef ?? internalInputRef;
+  const inputId = useId();
   const [isDragging, setIsDragging] = useState(false);
   const fileLimit = maxFiles ?? (multiple ? 10 : 1);
   const isInactive = disabled || isUploading;
@@ -274,7 +276,7 @@ export function FileDropzone({
                 "ml-auto hidden shrink-0 items-center rounded-full border px-3 py-1 font-semibold text-xs transition-colors duration-200 sm:inline-flex",
                 variant === "cover"
                   ? "border-white/28 bg-white/14 text-white group-hover:bg-white/20"
-                  : "border-forge-teal/20 bg-forge-teal/8 text-forge-teal group-hover:bg-forge-teal/12",
+                  : "border-forge-teal/20 bg-forge-teal/8 text-forge-teal group-hover:bg-forge-teal/12 dark:bg-transparent dark:group-hover:bg-transparent",
               )}
             >
               {actionLabel}
@@ -284,8 +286,10 @@ export function FileDropzone({
       </Button>
 
       <input
+        id={inputId}
         ref={resolvedInputRef}
         type="file"
+        aria-label={title}
         accept={accept}
         multiple={multiple}
         disabled={isInactive}

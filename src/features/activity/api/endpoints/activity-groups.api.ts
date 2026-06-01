@@ -12,7 +12,7 @@ import { groupApiSchema } from "@/shared/schemas";
 
 export async function getGroups() {
   const response = await apiClient
-    .get("groups", {
+    .get("groups/activity-feed", {
       searchParams: {
         limit: DEFAULT_ACTIVITY_API_LIMIT,
       },

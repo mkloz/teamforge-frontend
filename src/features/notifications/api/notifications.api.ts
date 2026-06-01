@@ -44,6 +44,13 @@ export class NotificationsApi {
     return notificationSchema.parse(response);
   }
 
+  static async markUnread(id: string) {
+    const response = await apiClient
+      .post(`notifications/${id}/unread`)
+      .json<unknown>();
+    return notificationSchema.parse(response);
+  }
+
   static async markAllRead() {
     const response = await apiClient
       .post("notifications/read-all")

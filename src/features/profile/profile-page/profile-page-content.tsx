@@ -42,6 +42,7 @@ const LazyProfileDeferredInsights = lazy(() =>
 );
 
 const PROFILE_USER_MENU_DELAY_MS = 3000;
+const PROFILE_DEFERRED_INSIGHTS_DELAY_MS = 12_000;
 
 interface ProfilePageContentProps {
   profile: User;
@@ -205,6 +206,18 @@ function DeferredProfileInsights({
 }: ComponentProps<typeof LazyProfileDeferredInsights>) {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    if (shouldRender) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setShouldRender(true);
+    }, PROFILE_DEFERRED_INSIGHTS_DELAY_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [shouldRender]);
 
   useEffect(() => {
     if (shouldRender) {

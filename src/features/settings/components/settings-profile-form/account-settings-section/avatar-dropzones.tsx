@@ -33,6 +33,7 @@ export function AvatarDropzones({
             src={displayedAvatarUrl}
             name={currentUser?.name}
             shape="rounded"
+            imageSize={128}
             className="size-full rounded-xl text-xl"
             loading="eager"
           />

@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
+import { warnInDevelopment } from "@/shared/lib/development-warning";
 
 import {
   buildInterestsFlowSearch,
@@ -16,7 +17,6 @@ import {
   buildBackToLabel,
   getOnboardingReturnDestinationLabel,
 } from "../lib/onboarding-navigation-labels";
-import { usePersonalityTestStore } from "../store/personality-test-store";
 import { useInterests } from "./use-interests";
 
 export function useInterestsPageFlow() {
@@ -73,7 +73,8 @@ export function useInterestsPageFlow() {
 
   function enterApp() {
     state.reset();
-    usePersonalityTestStore.getState().reset();
+    resetPersonalityTestStoreAfterExit();
+
     void navigate(
       resolveInterestsExitNavigation(
         {
@@ -125,4 +126,18 @@ export function useInterestsPageFlow() {
     scrollContainerRef,
     state,
   };
+}
+
+function resetPersonalityTestStoreAfterExit() {
+  void import("../store/personality-test-store")
+    .then(({ usePersonalityTestStore }) => {
+      usePersonalityTestStore.getState().reset();
+      return undefined;
+    })
+    .catch((error: unknown) => {
+      warnInDevelopment(
+        "Personality test store reset failed after interests completion.",
+        error,
+      );
+    });
 }

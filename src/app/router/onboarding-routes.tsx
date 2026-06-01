@@ -1,6 +1,7 @@
 import { createRoute } from "@tanstack/react-router";
 
 import { createLazyPageRoute } from "@/app/router/lazy-page-route";
+import { createLazyRouteLoading } from "@/app/router/lazy-route-loading";
 import {
   createLazyRouteModule,
   type LazyRouteModule,
@@ -11,7 +12,6 @@ import {
   requireCanonicalOnboardingRoute,
   requireEditableOnboardingRoute,
 } from "@/app/router/route-guards";
-import { OnboardingPageLoading } from "@/features/onboarding/onboarding-page.loading";
 import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
 
 const profileBasicsPageModule = createLazyRouteModule(() =>
@@ -20,16 +20,40 @@ const profileBasicsPageModule = createLazyRouteModule(() =>
   })),
 );
 
+const ProfileBasicsRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/onboarding/onboarding-page.loading").then((m) => ({
+      default: m.OnboardingPageLoading,
+    })),
+  { mode: "route", step: "profile" },
+);
+
 const personalityTestPageModule = createLazyRouteModule(() =>
   import("@/features/onboarding/personality-test-page").then((m) => ({
     default: m.PersonalityTestPage,
   })),
 );
 
+const PersonalityRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/onboarding/onboarding-page.loading").then((m) => ({
+      default: m.OnboardingPageLoading,
+    })),
+  { mode: "route", step: "personality" },
+);
+
 const interestsPageModule = createLazyRouteModule(() =>
   import("@/features/onboarding/interests-page").then((m) => ({
     default: m.InterestsPage,
   })),
+);
+
+const InterestsRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/onboarding/onboarding-page.loading").then((m) => ({
+      default: m.OnboardingPageLoading,
+    })),
+  { mode: "route", step: "interests" },
 );
 
 async function preloadPageWhileGuardRuns<T>(
@@ -49,10 +73,10 @@ const profileBasicsRoute = createRoute({
       requireCanonicalOnboardingRoute(location, "/onboarding/profile"),
       profileBasicsPageModule,
     ),
-  pendingComponent: () => <OnboardingPageLoading mode="route" step="profile" />,
+  pendingComponent: ProfileBasicsRouteLoading,
   component: createLazyPageRoute(
     profileBasicsPageModule.Component,
-    <OnboardingPageLoading mode="route" step="profile" />,
+    <ProfileBasicsRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.onboardingProfile,
@@ -73,12 +97,10 @@ const personalityRoute = createRoute({
       requireEditableOnboardingRoute(location, "/onboarding/personality"),
       personalityTestPageModule,
     ),
-  pendingComponent: () => (
-    <OnboardingPageLoading mode="route" step="personality" />
-  ),
+  pendingComponent: PersonalityRouteLoading,
   component: createLazyPageRoute(
     personalityTestPageModule.Component,
-    <OnboardingPageLoading mode="route" step="personality" />,
+    <PersonalityRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.onboardingPersonality,
@@ -99,12 +121,10 @@ const interestsRoute = createRoute({
       requireEditableOnboardingRoute(location, "/onboarding/interests"),
       interestsPageModule,
     ),
-  pendingComponent: () => (
-    <OnboardingPageLoading mode="route" step="interests" />
-  ),
+  pendingComponent: InterestsRouteLoading,
   component: createLazyPageRoute(
     interestsPageModule.Component,
-    <OnboardingPageLoading mode="route" step="interests" />,
+    <InterestsRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.onboardingInterests,

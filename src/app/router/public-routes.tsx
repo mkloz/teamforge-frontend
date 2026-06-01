@@ -1,6 +1,7 @@
 import { createRoute, redirect } from "@tanstack/react-router";
 
 import { createLazyPageRoute } from "@/app/router/lazy-page-route";
+import { createLazyRouteLoading } from "@/app/router/lazy-route-loading";
 import {
   createLazyRouteModule,
   type LazyRouteModule,
@@ -8,9 +9,6 @@ import {
 import { rootRoute } from "@/app/router/root-route";
 import { createRouteErrorComponent } from "@/app/router/route-error-component";
 import { redirectAuthenticatedUser } from "@/app/router/route-guards";
-import { AuthPageLoading } from "@/features/auth/auth-page.loading";
-import { LandingPageLoading } from "@/features/landing/landing-page.loading";
-import { LegalPageLoading } from "@/features/legal/legal-page.loading";
 import {
   buildAuthRouteNavigation,
   parseAuthReturnSearch,
@@ -23,10 +21,26 @@ const landingPageModule = createLazyRouteModule(() =>
   })),
 );
 
+const LandingRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/landing/landing-page.loading").then((m) => ({
+      default: m.LandingPageLoading,
+    })),
+  { mode: "route" },
+);
+
 const privacyPageModule = createLazyRouteModule(() =>
   import("@/features/legal/legal-page").then((m) => ({
     default: () => <m.LegalPage kind="privacy" />,
   })),
+);
+
+const PrivacyRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/legal/legal-page.loading").then((m) => ({
+      default: m.LegalPageLoading,
+    })),
+  { kind: "privacy", mode: "route" },
 );
 
 const termsPageModule = createLazyRouteModule(() =>
@@ -35,10 +49,26 @@ const termsPageModule = createLazyRouteModule(() =>
   })),
 );
 
+const TermsRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/legal/legal-page.loading").then((m) => ({
+      default: m.LegalPageLoading,
+    })),
+  { kind: "terms", mode: "route" },
+);
+
 const loginPageModule = createLazyRouteModule(() =>
   import("@/features/auth/login-page").then((m) => ({
     default: m.LoginPage,
   })),
+);
+
+const LoginRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/auth/auth-page.loading").then((m) => ({
+      default: m.AuthPageLoading,
+    })),
+  { mode: "route", variant: "login" },
 );
 
 const registerPageModule = createLazyRouteModule(() =>
@@ -47,10 +77,26 @@ const registerPageModule = createLazyRouteModule(() =>
   })),
 );
 
+const RegisterRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/auth/auth-page.loading").then((m) => ({
+      default: m.AuthPageLoading,
+    })),
+  { mode: "route", variant: "register" },
+);
+
 const forgotPasswordPageModule = createLazyRouteModule(() =>
   import("@/features/auth/forgot-password-page").then((m) => ({
     default: m.ForgotPasswordPage,
   })),
+);
+
+const ForgotPasswordRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/auth/auth-page.loading").then((m) => ({
+      default: m.AuthPageLoading,
+    })),
+  { mode: "route", variant: "forgot-password" },
 );
 
 const resetPasswordPageModule = createLazyRouteModule(() =>
@@ -59,10 +105,26 @@ const resetPasswordPageModule = createLazyRouteModule(() =>
   })),
 );
 
+const ResetPasswordRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/auth/auth-page.loading").then((m) => ({
+      default: m.AuthPageLoading,
+    })),
+  { mode: "route", variant: "reset-password" },
+);
+
 const activateAccountPageModule = createLazyRouteModule(() =>
   import("@/features/auth/activate-account-page").then((m) => ({
     default: m.ActivateAccountPage,
   })),
+);
+
+const ActivateAccountRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/auth/auth-page.loading").then((m) => ({
+      default: m.AuthPageLoading,
+    })),
+  { mode: "route", variant: "activate" },
 );
 
 function createRouteModuleLoader(module: LazyRouteModule) {
@@ -76,7 +138,7 @@ const landingRoute = createRoute({
   path: "/",
   component: createLazyPageRoute(
     landingPageModule.Component,
-    <LandingPageLoading mode="route" />,
+    <LandingRouteLoading />,
   ),
 });
 
@@ -85,10 +147,10 @@ const privacyRoute = createRoute({
   path: "/privacy",
   loader: createRouteModuleLoader(privacyPageModule),
   staleTime: Number.POSITIVE_INFINITY,
-  pendingComponent: () => <LegalPageLoading kind="privacy" mode="route" />,
+  pendingComponent: PrivacyRouteLoading,
   component: createLazyPageRoute(
     privacyPageModule.Component,
-    <LegalPageLoading kind="privacy" mode="route" />,
+    <PrivacyRouteLoading />,
   ),
 });
 
@@ -97,10 +159,10 @@ const termsRoute = createRoute({
   path: "/terms",
   loader: createRouteModuleLoader(termsPageModule),
   staleTime: Number.POSITIVE_INFINITY,
-  pendingComponent: () => <LegalPageLoading kind="terms" mode="route" />,
+  pendingComponent: TermsRouteLoading,
   component: createLazyPageRoute(
     termsPageModule.Component,
-    <LegalPageLoading kind="terms" mode="route" />,
+    <TermsRouteLoading />,
   ),
 });
 
@@ -120,7 +182,7 @@ const loginRoute = createRoute({
   beforeLoad: redirectAuthenticatedUser,
   component: createLazyPageRoute(
     loginPageModule.Component,
-    <AuthPageLoading mode="route" variant="login" />,
+    <LoginRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.authLogin,
@@ -138,7 +200,7 @@ const registerRoute = createRoute({
   beforeLoad: redirectAuthenticatedUser,
   component: createLazyPageRoute(
     registerPageModule.Component,
-    <AuthPageLoading mode="route" variant="register" />,
+    <RegisterRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.authRegister,
@@ -156,7 +218,7 @@ const forgotPasswordRoute = createRoute({
   beforeLoad: redirectAuthenticatedUser,
   component: createLazyPageRoute(
     forgotPasswordPageModule.Component,
-    <AuthPageLoading mode="route" variant="forgot-password" />,
+    <ForgotPasswordRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.authForgotPassword,
@@ -173,7 +235,7 @@ const resetPasswordRoute = createRoute({
   path: "/auth/reset-password/$token",
   component: createLazyPageRoute(
     resetPasswordPageModule.Component,
-    <AuthPageLoading mode="route" variant="reset-password" />,
+    <ResetPasswordRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.authResetPassword,
@@ -190,7 +252,7 @@ const activateAccountRoute = createRoute({
   path: "/auth/activate/$token",
   component: createLazyPageRoute(
     activateAccountPageModule.Component,
-    <AuthPageLoading mode="route" variant="activate" />,
+    <ActivateAccountRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.authActivateAccount,

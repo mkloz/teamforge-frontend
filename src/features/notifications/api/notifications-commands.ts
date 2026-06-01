@@ -5,6 +5,10 @@ export const NotificationsCommands = {
     return NotificationsApi.markRead(id);
   },
 
+  markUnread(id: string) {
+    return NotificationsApi.markUnread(id);
+  },
+
   markAllRead() {
     return NotificationsApi.markAllRead();
   },

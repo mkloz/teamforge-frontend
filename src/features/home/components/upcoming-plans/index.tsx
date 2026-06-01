@@ -28,7 +28,11 @@ function EmptyPlans() {
 }
 
 export function UpcomingPlans() {
-  const { plans, isPlansLoading } = useHomeData();
+  const { plans, isPlansLoading } = useHomeData({
+    include: {
+      plans: true,
+    },
+  });
 
   return <UpcomingPlansView isPlansLoading={isPlansLoading} plans={plans} />;
 }

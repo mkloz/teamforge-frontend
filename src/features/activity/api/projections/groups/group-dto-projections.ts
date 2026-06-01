@@ -31,6 +31,8 @@ export function mapGroup(
         participant !== undefined,
     );
   const chat = chatSummary ?? group.chat ?? null;
+  const pinnedMessages =
+    chatSummary?.pinnedMessages ?? group.chat?.pinnedMessages;
 
   return {
     id: group.id,
@@ -52,7 +54,9 @@ export function mapGroup(
           id: chat.id,
           isMuted: getChatIsMutedForUser(chat, currentUserId),
           pinnedMessages: mapGroupPinnedMessages(
-            chat,
+            {
+              pinnedMessages,
+            },
             participants,
             currentUserId,
           ),

@@ -26,7 +26,12 @@ export function useAttentionQueueState({
 }: UseAttentionQueueStateInput) {
   const viewer = useHomeViewer();
   const { invitations, plans, isInvitationsLoading, isPlansLoading } =
-    useHomeData();
+    useHomeData({
+      include: {
+        invitations: true,
+        plans: true,
+      },
+    });
   const {
     requests,
     isLoading: friendRequestsLoading,

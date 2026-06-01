@@ -17,7 +17,11 @@ import type { ExploreGroup } from "@/shared/schemas";
 import { RecommendedGroupCard } from "./recommended-group-card";
 
 export function RecommendedGroups() {
-  const { recommendations, isRecommendationsLoading } = useHomeData();
+  const { recommendations, isRecommendationsLoading } = useHomeData({
+    include: {
+      recommendations: true,
+    },
+  });
 
   return (
     <RecommendedGroupsView

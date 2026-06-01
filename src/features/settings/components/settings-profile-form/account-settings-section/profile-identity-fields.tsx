@@ -41,10 +41,14 @@ export function ProfileIdentityFields({
         />
 
         <div className="grid gap-2 md:contents">
-          <Label className="min-h-4 font-medium text-ink text-sm md:col-start-2 md:row-start-1">
+          <Label
+            htmlFor="settings-profile-email"
+            className="min-h-4 font-medium text-ink text-sm md:col-start-2 md:row-start-1"
+          >
             Email
           </Label>
           <Input
+            id="settings-profile-email"
             value={currentUser?.email ?? ""}
             disabled
             readOnly

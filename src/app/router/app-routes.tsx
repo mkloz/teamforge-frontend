@@ -2,6 +2,7 @@ import { createRoute } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 
 import { createLazyPageRoute } from "@/app/router/lazy-page-route";
+import { createLazyRouteLoading } from "@/app/router/lazy-route-loading";
 import {
   createLazyRouteModule,
   type LazyRouteModule,
@@ -9,19 +10,13 @@ import {
 import { rootRoute } from "@/app/router/root-route";
 import { createRouteErrorComponent } from "@/app/router/route-error-component";
 import { requireCanonicalAppRoute } from "@/app/router/route-guards";
-import { ActivityPageLoading } from "@/features/activity/activity-page.loading";
-import { ExplorePageLoading } from "@/features/explore/explore-page.loading";
-import { ForgePageLoading } from "@/features/forge/forge-page.loading";
-import { GroupPlanDetailPageLoading } from "@/features/group-plan-detail/group-plan-detail-page.loading";
 import {
   type GroupPlanDetailRouteSearch,
   type GroupPlanDetailSource,
   groupPlanDetailSourceValues,
 } from "@/features/group-plan-detail/lib/group-plan-detail-route";
-import { HomePageLoading } from "@/features/home/home-page.loading";
-import { ProfilePageLoading } from "@/features/profile/profile-page/profile-page.loading";
-import { SettingsPageLoading } from "@/features/settings/settings-page/settings-page.loading";
 import { appQueryClient } from "@/shared/api/query-client";
+import { ForgeLoadingMark } from "@/shared/components/loading/forge-loading-mark";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
 import { routeErrorScopes } from "@/shared/lib/telemetry-contract";
 
@@ -37,10 +32,26 @@ const homePageModule = createLazyRouteModule(() =>
   import("@/features/home/home-page").then((m) => ({ default: m.HomePage })),
 );
 
+const HomeRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/home/home-page.loading").then((m) => ({
+      default: m.HomePageLoading,
+    })),
+  { mode: "route" },
+);
+
 const explorePageModule = createLazyRouteModule(() =>
   import("@/features/explore/explore-page").then((m) => ({
     default: m.ExplorePage,
   })),
+);
+
+const ExploreRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/explore/explore-page.loading").then((m) => ({
+      default: m.ExplorePageLoading,
+    })),
+  { mode: "route" },
 );
 
 const activityPageModule = createLazyRouteModule(() =>
@@ -49,10 +60,28 @@ const activityPageModule = createLazyRouteModule(() =>
   })),
 );
 
+const ActivityRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/activity/activity-page.loading").then((m) => ({
+      default: m.ActivityPageLoading,
+    })),
+  { mode: "route" },
+);
+
 const profilePageModule = createLazyRouteModule(() =>
   import("@/features/profile/profile-page").then((m) => ({
     default: m.ProfilePage,
   })),
+);
+
+const ProfileRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/profile/profile-page/profile-page.loading").then(
+      (m) => ({
+        default: m.ProfilePageLoading,
+      }),
+    ),
+  { mode: "route" },
 );
 
 const userDetailPageModule = createLazyRouteModule(() =>
@@ -67,16 +96,44 @@ const settingsPageModule = createLazyRouteModule(() =>
   })),
 );
 
+const SettingsRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/settings/settings-page/settings-page.loading").then(
+      (m) => ({
+        default: m.SettingsPageLoading,
+      }),
+    ),
+  { mode: "route" },
+);
+
 const forgePageModule = createLazyRouteModule(() =>
   import("@/features/forge/forge-page").then((m) => ({
     default: m.ForgePage,
   })),
 );
 
+const ForgeRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/forge/forge-page.loading").then((m) => ({
+      default: m.ForgePageLoading,
+    })),
+  { mode: "route" },
+);
+
 const groupPlanDetailPageModule = createLazyRouteModule(() =>
   import("@/features/group-plan-detail/group-plan-detail-page").then((m) => ({
     default: m.GroupPlanDetailPage,
   })),
+);
+
+const GroupPlanDetailRouteLoading = createLazyRouteLoading(
+  () =>
+    import("@/features/group-plan-detail/group-plan-detail-page.loading").then(
+      (m) => ({
+        default: m.GroupPlanDetailPageLoading,
+      }),
+    ),
+  { mode: "route" },
 );
 
 function parseOptionalSearchString(value: unknown) {
@@ -147,9 +204,9 @@ function createExploreRouteLoader(module: LazyRouteModule) {
 
 function createActivityRouteLoader(module: LazyRouteModule) {
   return async () => {
-    const feedTask = preloadActivityFeed().catch(() => null);
+    void preloadActivityFeed().catch(() => null);
 
-    await Promise.all([module.preload(), feedTask]);
+    await module.preload();
   };
 }
 
@@ -308,9 +365,17 @@ function preloadMatchedAppRouteModule(pathname: string) {
 
 function AppShellRouteComponent() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<AppShellRouteLoading />}>
       <AppShellWithNotifications />
     </Suspense>
+  );
+}
+
+function AppShellRouteLoading() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-6 text-ink">
+      <ForgeLoadingMark label="Loading TeamForge" size="md" />
+    </div>
   );
 }
 
@@ -325,6 +390,7 @@ export const appShellRoute = createRoute({
       onSessionRestored: createSessionRestoredRoutePreload(location.pathname),
     });
   },
+  pendingComponent: AppShellRouteLoading,
   component: AppShellRouteComponent,
 });
 
@@ -333,10 +399,10 @@ const homeRoute = createRoute({
   path: "/home",
   loader: createRouteModuleLoader(homePageModule),
   staleTime: Number.POSITIVE_INFINITY,
-  pendingComponent: () => <HomePageLoading mode="route" />,
+  pendingComponent: HomeRouteLoading,
   component: createLazyPageRoute(
     homePageModule.Component,
-    <HomePageLoading mode="route" />,
+    <HomeRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.home,
@@ -353,10 +419,10 @@ const exploreRoute = createRoute({
   path: "/explore",
   loader: createExploreRouteLoader(explorePageModule),
   staleTime: Number.POSITIVE_INFINITY,
-  pendingComponent: () => <ExplorePageLoading mode="route" />,
+  pendingComponent: ExploreRouteLoading,
   component: createLazyPageRoute(
     explorePageModule.Component,
-    <ExplorePageLoading mode="route" />,
+    <ExploreRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.explore,
@@ -374,10 +440,10 @@ const groupPlanDetailRoute = createRoute({
   validateSearch: validateGroupPlanDetailSearch,
   loader: createGroupPlanDetailRouteLoader(groupPlanDetailPageModule),
   staleTime: Number.POSITIVE_INFINITY,
-  pendingComponent: () => <GroupPlanDetailPageLoading mode="route" />,
+  pendingComponent: GroupPlanDetailRouteLoading,
   component: createLazyPageRoute(
     groupPlanDetailPageModule.Component,
-    <GroupPlanDetailPageLoading mode="route" />,
+    <GroupPlanDetailRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.groupPlanDetail,
@@ -394,10 +460,10 @@ const activityRoute = createRoute({
   path: "/activity",
   loader: createActivityRouteLoader(activityPageModule),
   staleTime: Number.POSITIVE_INFINITY,
-  pendingComponent: () => <ActivityPageLoading mode="route" />,
+  pendingComponent: ActivityRouteLoading,
   component: createLazyPageRoute(
     activityPageModule.Component,
-    <ActivityPageLoading mode="route" />,
+    <ActivityRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.activity,
@@ -414,10 +480,10 @@ const profileRoute = createRoute({
   path: "/profile",
   loader: createRouteModuleLoader(profilePageModule),
   staleTime: Number.POSITIVE_INFINITY,
-  pendingComponent: () => <ProfilePageLoading mode="route" />,
+  pendingComponent: ProfileRouteLoading,
   component: createLazyPageRoute(
     profilePageModule.Component,
-    <ProfilePageLoading mode="route" />,
+    <ProfileRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.profile,
@@ -434,10 +500,10 @@ const userDetailRoute = createRoute({
   path: "/users/$userId",
   loader: createUserDetailRouteLoader(userDetailPageModule),
   staleTime: Number.POSITIVE_INFINITY,
-  pendingComponent: () => <ProfilePageLoading mode="route" />,
+  pendingComponent: ProfileRouteLoading,
   component: createLazyPageRoute(
     userDetailPageModule.Component,
-    <ProfilePageLoading mode="route" />,
+    <ProfileRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.userDetail,
@@ -454,10 +520,10 @@ const settingsRoute = createRoute({
   path: "/settings",
   loader: createRouteModuleLoader(settingsPageModule),
   staleTime: Number.POSITIVE_INFINITY,
-  pendingComponent: () => <SettingsPageLoading mode="route" />,
+  pendingComponent: SettingsRouteLoading,
   component: createLazyPageRoute(
     settingsPageModule.Component,
-    <SettingsPageLoading mode="route" />,
+    <SettingsRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.settings,
@@ -474,10 +540,10 @@ const forgeRoute = createRoute({
   path: "/forge",
   loader: createRouteModuleLoader(forgePageModule),
   staleTime: Number.POSITIVE_INFINITY,
-  pendingComponent: () => <ForgePageLoading mode="route" />,
+  pendingComponent: ForgeRouteLoading,
   component: createLazyPageRoute(
     forgePageModule.Component,
-    <ForgePageLoading mode="route" />,
+    <ForgeRouteLoading />,
   ),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.forge,

@@ -1,5 +1,4 @@
 import { QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   type ComponentType,
   type CSSProperties,
@@ -19,6 +18,9 @@ import { APP_TOAST_HOST_REQUEST_EVENT } from "@/shared/lib/toast-host-events";
 import { useInitializeTheme, useThemeStore } from "@/shared/store/theme.store";
 
 type ToasterCssProperties = CSSProperties & Record<`--${string}`, string>;
+type ReactQueryDevtoolsProps = {
+  initialIsOpen?: boolean;
+};
 
 const TOASTER_STYLE = {
   "--border-radius": "0.75rem",
@@ -67,13 +69,69 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={appQueryClient}>
       {children}
-      {import.meta.env.DEV ? (
-        <ReactQueryDevtools initialIsOpen={false} />
-      ) : null}
+      {import.meta.env.DEV ? <DeferredReactQueryDevtools /> : null}
       <DeferredToaster />
       <DeferredAnalytics />
     </QueryClientProvider>
   );
+}
+
+function DeferredReactQueryDevtools() {
+  const [DevtoolsComponent, setDevtoolsComponent] =
+    useState<ComponentType<ReactQueryDevtoolsProps> | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || DevtoolsComponent) {
+      return undefined;
+    }
+
+    let cancelled = false;
+    let requested = false;
+    let idleTask: ReturnType<typeof scheduleIdleTask> | undefined;
+
+    async function loadDevtools() {
+      try {
+        const { ReactQueryDevtools } = await import(
+          "@tanstack/react-query-devtools"
+        );
+
+        if (!cancelled) {
+          setDevtoolsComponent(() => ReactQueryDevtools);
+        }
+      } catch (error) {
+        warnInDevelopment("React Query devtools failed to initialize.", error);
+      }
+    }
+
+    function requestDevtools() {
+      if (requested) {
+        return;
+      }
+
+      requested = true;
+      window.clearTimeout(delayTask);
+      idleTask = scheduleIdleTask(() => {
+        void loadDevtools();
+      });
+    }
+
+    const delayTask = window.setTimeout(requestDevtools, 60_000);
+
+    window.addEventListener("keydown", requestDevtools, { once: true });
+    window.addEventListener("pointerdown", requestDevtools, { once: true });
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(delayTask);
+      window.removeEventListener("keydown", requestDevtools);
+      window.removeEventListener("pointerdown", requestDevtools);
+      if (idleTask) {
+        cancelIdleTask(idleTask);
+      }
+    };
+  }, [DevtoolsComponent]);
+
+  return DevtoolsComponent ? <DevtoolsComponent initialIsOpen={false} /> : null;
 }
 
 function DeferredToaster() {

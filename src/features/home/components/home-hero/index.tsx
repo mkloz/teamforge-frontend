@@ -1,5 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import { type ReactNode, useRef } from "react";
 
+import { HomeQueryFactory } from "@/features/home/api/home-query-factory";
 import { HomeHeroSkeleton } from "@/features/home/components/home-skeletons";
 import { useHomeCollapsibleHero } from "@/features/home/hooks/use-home-collapsible-hero";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
@@ -24,16 +26,39 @@ import { HomeHeroNotificationButton } from "./home-hero-notification-button";
 import { HomeHeroQuickActions } from "./home-hero-quick-actions";
 import { HomeHeroSignalMap } from "./home-hero-signal-map";
 
+const EMPTY_RECOMMENDATIONS: ExploreGroup[] = [];
+
 export function HomeHero() {
   const { viewer, isLoading: viewerLoading } = useHomeViewerState();
-  const homeData = useHomeData();
-  const { stats, invitations, plans, groups, recommendations } = homeData;
-  const isHeroDataLoading =
+  const homeData = useHomeData({
+    include: {
+      groups: true,
+      invitations: true,
+      plans: true,
+      stats: true,
+    },
+  });
+  const { stats, invitations, plans, groups } = homeData;
+  const isCoreHeroDataLoading =
     homeData.isStatsLoading ||
     homeData.isInvitationsLoading ||
     homeData.isPlansLoading ||
-    homeData.isGroupsLoading ||
-    homeData.isRecommendationsLoading;
+    homeData.isGroupsLoading;
+  const hasPriorityMove =
+    Boolean(viewer.nextStep) ||
+    invitations.length > 0 ||
+    plans.length > 0 ||
+    groups.length > 0;
+  const shouldLoadRecommendations =
+    !viewerLoading && !isCoreHeroDataLoading && !hasPriorityMove;
+  const recommendationsQuery = useQuery({
+    ...HomeQueryFactory.recommendations(),
+    enabled: shouldLoadRecommendations,
+  });
+  const recommendations = recommendationsQuery.data ?? EMPTY_RECOMMENDATIONS;
+  const isHeroDataLoading =
+    isCoreHeroDataLoading ||
+    (shouldLoadRecommendations && recommendationsQuery.isLoading);
 
   if (viewerLoading || isHeroDataLoading) {
     return <HomeHeroSkeleton />;
