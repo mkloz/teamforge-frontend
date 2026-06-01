@@ -1,11 +1,24 @@
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
+import { getImageMediaVariant } from "@/shared/lib/image-media";
 
 export function resolveGroupImage(detail: GroupPlanDetail): string | null {
   return (
-    detail.group.avatar ??
-    detail.members.find((member) => member.avatar)?.avatar ??
+    getImageMediaVariant(
+      detail.group.avatarMedia,
+      "avatar128",
+      detail.group.avatar,
+    ) ??
+    getMemberGroupImage(detail) ??
     null
   );
+}
+
+function getMemberGroupImage(detail: GroupPlanDetail) {
+  const member = detail.members.find(
+    (candidate) => candidate.avatarMedia ?? candidate.avatar,
+  );
+
+  return getImageMediaVariant(member?.avatarMedia, "avatar128", member?.avatar);
 }
 
 export function getGroupFallbackDescription(detail: GroupPlanDetail): string {

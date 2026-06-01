@@ -16,6 +16,7 @@ export function getGroupPlanCardModel(group: ExploreGroup) {
     fitReason: getExploreGroupFitReason(group),
     groupName: getExploreGroupDisplayName(group),
     imageAlt: title,
+    imageMedia: group.avatarMedia ?? null,
     imageSrc: group.avatar ?? undefined,
     isFull: isExploreGroupFull(group),
     title,

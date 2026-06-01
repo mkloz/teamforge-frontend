@@ -5,11 +5,13 @@ import {
   onlineStatusSchema,
   personalityTypeSchema,
 } from "@/shared/schemas/enums";
+import { imageMediaSchema } from "@/shared/schemas/media";
 
 export const activityParticipantSchema = z.object({
   id: z.string(),
   name: z.string(),
   avatar: z.string().nullable(),
+  avatarMedia: imageMediaSchema.nullable().optional(),
   bio: z.string().nullable().optional(),
   age: z.number().nullable().optional(),
   gender: genderSchema.nullable().optional(),

@@ -116,6 +116,7 @@ export function GroupRow({
         <div className="relative shrink-0">
           <Avatar
             src={group.avatar}
+            media={group.avatarMedia ?? null}
             name={group.name}
             imageSize={72}
             shape="rounded"

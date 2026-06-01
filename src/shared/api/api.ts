@@ -7,6 +7,9 @@ import {
   readApiRequestContext,
 } from "@/shared/api/api-request-context";
 import { type AuthTokens, authSession } from "@/shared/api/auth-session";
+import { CURRENT_USER_QUERY_KEY } from "@/shared/api/current-user-cache";
+import { appQueryClient } from "@/shared/api/query-client";
+import { fullUserResponseSchema } from "@/shared/schemas/user-response";
 
 export {
   type ApiResponseWithRequestId,
@@ -73,6 +76,27 @@ function buildRetryOptions(
   };
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function parseAuthRefreshPayload(payload: unknown) {
+  if (!isRecord(payload) || typeof payload.accessToken !== "string") {
+    throw new Error("Refresh response did not include an access token.");
+  }
+
+  return {
+    accessToken: payload.accessToken,
+    refreshToken:
+      typeof payload.refreshToken === "string"
+        ? payload.refreshToken
+        : undefined,
+    currentUser: payload.currentUser
+      ? fullUserResponseSchema.parse(payload.currentUser)
+      : undefined,
+  };
+}
+
 async function refreshTokens(options: RefreshTokensOptions = {}) {
   const refreshToken = authSession.getRefreshToken();
 
@@ -88,9 +112,23 @@ async function refreshTokens(options: RefreshTokensOptions = {}) {
           retryOnUnauthorized: false,
         },
       })
-      .json<AuthTokens>()
-      .then((nextTokens) => {
+      .json<unknown>()
+      .then((payload) => {
+        const refreshResponse = parseAuthRefreshPayload(payload);
+        const nextTokens: AuthTokens = {
+          accessToken: refreshResponse.accessToken,
+          refreshToken: refreshResponse.refreshToken,
+        };
+
         authSession.setTokens(nextTokens);
+
+        if (refreshResponse.currentUser) {
+          appQueryClient.setQueryData(
+            CURRENT_USER_QUERY_KEY,
+            refreshResponse.currentUser,
+          );
+        }
+
         return nextTokens;
       })
       .catch(() => {

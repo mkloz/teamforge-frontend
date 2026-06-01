@@ -19,15 +19,17 @@ const NotificationsBellTrigger = lazy(() =>
 export function AppShellWithNotifications() {
   const { open, openDrawer, closeDrawer } = useNotificationsDrawerState();
 
+  const openNotifications = () => {
+    void openDrawer();
+  };
+
   return (
     <AppLayout
       notificationTrigger={
         <Suspense
-          fallback={
-            <NotificationsBellFallback onClick={() => void openDrawer()} />
-          }
+          fallback={<NotificationsBellFallback onClick={openNotifications} />}
         >
-          <NotificationsBellTrigger onClick={() => void openDrawer()} />
+          <NotificationsBellTrigger onClick={openNotifications} />
         </Suspense>
       }
       notificationDrawer={
@@ -44,7 +46,13 @@ export function AppShellWithNotifications() {
   );
 }
 
-function NotificationsBellFallback({ onClick }: { onClick: () => void }) {
+interface NotificationsBellFallbackProps {
+  onClick: () => void;
+}
+
+function NotificationsBellFallback({
+  onClick,
+}: NotificationsBellFallbackProps) {
   return (
     <Button
       type="button"

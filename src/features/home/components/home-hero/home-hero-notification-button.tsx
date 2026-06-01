@@ -1,14 +1,10 @@
 import { Bell } from "lucide-react";
-import { useNotificationCountEnabled } from "@/features/notifications/hooks/use-notification-count-enabled";
 import { useNotificationsDrawerState } from "@/features/notifications/hooks/use-notifications-drawer-state";
 import { useUnreadNotificationCount } from "@/features/notifications/hooks/use-unread-notification-count";
 import { Button } from "@/shared/components/ui/button";
 
 export function HomeHeroNotificationButton() {
-  const [countEnabled, enableCount] = useNotificationCountEnabled();
-  const { count: unreadNotifications } = useUnreadNotificationCount({
-    enabled: countEnabled,
-  });
+  const { count: unreadNotifications } = useUnreadNotificationCount();
   const { openDrawer } = useNotificationsDrawerState();
 
   return (
@@ -16,11 +12,7 @@ export function HomeHeroNotificationButton() {
       type="button"
       variant="outline"
       size="icon"
-      onPointerEnter={enableCount}
-      onPointerDown={enableCount}
-      onFocus={enableCount}
       onClick={() => {
-        enableCount();
         void openDrawer();
       }}
       aria-label={

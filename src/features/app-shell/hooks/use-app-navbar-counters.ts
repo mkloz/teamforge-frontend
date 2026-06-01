@@ -1,7 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { AppNavbarCountersQueryOptions } from "@/features/app-shell/api/app-navbar-counters-query-options";
-import { cancelDelay, scheduleDelay } from "@/shared/lib/browser-scheduling";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import type { ChatApi } from "@/shared/schemas";
 
 export interface AppNavbarCounters {
@@ -9,17 +7,18 @@ export interface AppNavbarCounters {
   notificationUnreadCount: number;
 }
 
-const NAVBAR_COUNTERS_DELAY_MS = 12_000;
+const NAVBAR_COUNTERS_STALE_TIME = 30_000;
 
 export function useAppNavbarCounters(): AppNavbarCounters {
-  const countersEnabled = useDelayedNavbarCountersEnabled();
   const chatsQuery = useQuery({
-    ...AppNavbarCountersQueryOptions.chats(),
-    enabled: countersEnabled,
+    queryKey: APP_QUERY_KEYS.activity.chats,
+    queryFn: loadChatsForNavbarCounters,
+    staleTime: NAVBAR_COUNTERS_STALE_TIME,
   });
   const notificationUnreadCountQuery = useQuery({
-    ...AppNavbarCountersQueryOptions.notificationUnreadCount(),
-    enabled: countersEnabled,
+    queryKey: APP_QUERY_KEYS.notifications.unreadCount,
+    queryFn: loadUnreadNotificationCount,
+    staleTime: NAVBAR_COUNTERS_STALE_TIME,
   });
 
   return {
@@ -28,20 +27,20 @@ export function useAppNavbarCounters(): AppNavbarCounters {
   };
 }
 
-function useDelayedNavbarCountersEnabled() {
-  const [enabled, setEnabled] = useState(false);
+async function loadChatsForNavbarCounters() {
+  const { getChatsForNavbarCounters } = await import(
+    "@/features/app-shell/api/app-navbar-counters-query-options"
+  );
 
-  useEffect(() => {
-    const delayTask = scheduleDelay(() => {
-      setEnabled(true);
-    }, NAVBAR_COUNTERS_DELAY_MS);
+  return getChatsForNavbarCounters();
+}
 
-    return () => {
-      cancelDelay(delayTask);
-    };
-  }, []);
+async function loadUnreadNotificationCount() {
+  const { getUnreadNotificationCount } = await import(
+    "@/features/app-shell/api/app-navbar-counters-query-options"
+  );
 
-  return enabled;
+  return getUnreadNotificationCount();
 }
 
 function countUnreadChatMessages(chats: ChatApi[]) {

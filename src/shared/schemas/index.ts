@@ -8,6 +8,7 @@ export * from "./friendship-api";
 export * from "./group";
 export * from "./group-api";
 export * from "./invite";
+export * from "./media";
 export * from "./notification";
 export * from "./notification-preferences";
 export * from "./pagination";

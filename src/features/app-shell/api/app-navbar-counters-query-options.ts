@@ -11,9 +11,9 @@ const navbarChatsSchema = createPaginatedSchema(chatApiSchema);
 const NAVBAR_CHATS_LIMIT = 100;
 const NAVBAR_COUNTERS_STALE_TIME = 30_000;
 
-async function getChatsForNavbarCounters() {
+export async function getChatsForNavbarCounters() {
   const response = await apiClient
-    .get("chats", {
+    .get("chats/activity-feed", {
       searchParams: {
         limit: String(NAVBAR_CHATS_LIMIT),
       },
@@ -23,7 +23,7 @@ async function getChatsForNavbarCounters() {
   return navbarChatsSchema.parse(response).items;
 }
 
-async function getUnreadNotificationCount() {
+export async function getUnreadNotificationCount() {
   const response = await apiClient
     .get("notifications/unread-count")
     .json<unknown>();

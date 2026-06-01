@@ -30,6 +30,7 @@ export function CardMemberStack({
         <Avatar
           key={member.id}
           src={member.avatar}
+          media={member.avatarMedia ?? null}
           name={member.name}
           fallback={member.name ? undefined : fallbackInitial}
           imageSize={64}

@@ -1,9 +1,7 @@
 import { useEffect } from "react";
 import { appQueryClient } from "@/shared/api/query-client";
 import {
-  cancelDelay,
   cancelIdleTask,
-  scheduleDelay,
   scheduleIdleTask,
 } from "@/shared/lib/browser-scheduling";
 
@@ -12,8 +10,6 @@ interface UseGroupPlanDetailRealtimeInput {
   planId?: string | null;
 }
 
-const GROUP_PLAN_DETAIL_REALTIME_DELAY_MS = 12_000;
-
 export function useGroupPlanDetailRealtime({
   groupId,
   planId,
@@ -21,12 +17,9 @@ export function useGroupPlanDetailRealtime({
   useEffect(() => {
     let cleanup: (() => void) | undefined;
     let cancelled = false;
-    let idleTask: ReturnType<typeof scheduleIdleTask> | undefined;
-    const delayTask = scheduleDelay(() => {
-      idleTask = scheduleIdleTask(() => {
-        void initializeRealtime();
-      });
-    }, GROUP_PLAN_DETAIL_REALTIME_DELAY_MS);
+    const idleTask = scheduleIdleTask(() => {
+      void initializeRealtime();
+    });
 
     async function initializeRealtime() {
       const [
@@ -93,10 +86,7 @@ export function useGroupPlanDetailRealtime({
 
     return () => {
       cancelled = true;
-      cancelDelay(delayTask);
-      if (idleTask) {
-        cancelIdleTask(idleTask);
-      }
+      cancelIdleTask(idleTask);
       cleanup?.();
     };
   }, [groupId, planId]);

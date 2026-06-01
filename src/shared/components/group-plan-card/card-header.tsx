@@ -4,10 +4,12 @@ import { Avatar } from "@/shared/components/common/avatar";
 import type { GroupPlanCardVariant } from "@/shared/components/group-plan-card/group-plan-card-types";
 import { cn } from "@/shared/lib/utils";
 import type { ExploreGroup } from "@/shared/schemas";
+import type { ImageMedia } from "@/shared/schemas/media";
 
 interface CardHeaderProps {
   access: ExploreGroup["access"];
   groupName: string;
+  imageMedia?: ImageMedia | null;
   imageSrc?: string;
   variant?: GroupPlanCardVariant;
 }
@@ -15,6 +17,7 @@ interface CardHeaderProps {
 export function CardHeader({
   access,
   groupName,
+  imageMedia,
   imageSrc,
   variant = "default",
 }: CardHeaderProps) {
@@ -30,6 +33,7 @@ export function CardHeader({
       <div className="flex min-w-0 flex-1 items-center gap-2.5">
         <Avatar
           src={imageSrc}
+          media={imageMedia}
           name={groupName}
           imageSize={64}
           className={cn(

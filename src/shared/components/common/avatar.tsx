@@ -1,9 +1,11 @@
 import type { HTMLAttributes, ImgHTMLAttributes, ReactNode } from "react";
 import { Image } from "@/shared/components/common/image";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { getImageMediaVariant } from "@/shared/lib/image-media";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
 import { cn } from "@/shared/lib/utils";
 import type { OnlineStatus } from "@/shared/schemas/enums";
+import type { ImageMedia } from "@/shared/schemas/media";
 
 function getAvatarInitials(name?: string | null) {
   const initials = (name ?? "")
@@ -26,6 +28,7 @@ interface AvatarProps
   imageClassName?: string;
   fallbackClassName?: string;
   imageSize?: number;
+  media?: ImageMedia | null;
   loading?: ImgHTMLAttributes<HTMLImageElement>["loading"];
   shape?: "circle" | "rounded";
 }
@@ -72,6 +75,7 @@ export function Avatar({
   imageClassName,
   fallbackClassName,
   imageSize,
+  media,
   loading = "lazy",
   shape = "circle",
   children,
@@ -79,7 +83,10 @@ export function Avatar({
 }: AvatarProps) {
   const initials = fallback ?? getAvatarInitials(name);
   const radiusClass = shape === "circle" ? "rounded-full" : "rounded-lg";
-  const imageSrc = imageSize ? getSizedImageUrl(src, imageSize) : src;
+  const resolvedSrc = getImageMediaVariant(media, "avatar128", src);
+  const imageSrc = imageSize
+    ? getSizedImageUrl(resolvedSrc, imageSize)
+    : resolvedSrc;
   const fallbackNode = (
     <div
       className={cn(

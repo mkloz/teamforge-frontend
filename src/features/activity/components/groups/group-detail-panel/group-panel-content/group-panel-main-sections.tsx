@@ -78,6 +78,7 @@ export function GroupPanelMainSections({
       <GroupIdentitySection
         activity={group.activity}
         avatar={group.avatar}
+        avatarMedia={group.avatarMedia ?? null}
         coverImage={group.plan?.coverImage ?? null}
         createdAt={group.createdAt}
         currentUserRole={currentUserRole}

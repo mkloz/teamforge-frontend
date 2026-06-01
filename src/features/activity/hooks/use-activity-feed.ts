@@ -49,12 +49,10 @@ export function useActivityFeed() {
   const groupsQuery = useQuery(ActivityQueryFactory.groups());
   const chatsQuery = useQuery(ActivityQueryFactory.chats());
   const friendshipsQuery = useQuery(ActivityQueryFactory.friendships());
-  const hasFeedBaseData = Boolean(
-    currentUserQuery.data &&
-      groupsQuery.data &&
-      chatsQuery.data &&
-      friendshipsQuery.data,
+  const hasConversationBaseData = Boolean(
+    currentUserQuery.data && groupsQuery.data && chatsQuery.data,
   );
+  const needsFriendshipData = activeFilter === "direct";
   const [shouldLoadFeedEnhancements, setShouldLoadFeedEnhancements] =
     useState(false);
   const savedMessagesQuery = useQuery({
@@ -74,7 +72,7 @@ export function useActivityFeed() {
   useEffect(() => {
     let timeoutId: number | undefined;
 
-    if (!hasFeedBaseData) {
+    if (!hasConversationBaseData) {
       setShouldLoadFeedEnhancements(false);
     } else {
       timeoutId = window.setTimeout(() => {
@@ -87,19 +85,19 @@ export function useActivityFeed() {
         window.clearTimeout(timeoutId);
       }
     };
-  }, [hasFeedBaseData]);
+  }, [hasConversationBaseData]);
 
   const feedData =
     currentUserQuery.data &&
     groupsQuery.data &&
     chatsQuery.data &&
-    friendshipsQuery.data
+    (!needsFriendshipData || friendshipsQuery.data)
       ? ActivityQueryFactory.deriveFeedData(
           activeFilter,
           deferredSearchQuery,
           groupsQuery.data,
           chatsQuery.data,
-          friendshipsQuery.data,
+          friendshipsQuery.data ?? [],
           currentUserQuery.data,
           typingByChatId,
           {
@@ -108,12 +106,18 @@ export function useActivityFeed() {
           },
         )
       : null;
-  const hasBaseDataError =
+  const hasBlockingBaseDataError =
     feedData === null &&
     (currentUserQuery.isError ||
       groupsQuery.isError ||
       chatsQuery.isError ||
-      friendshipsQuery.isError);
+      (needsFriendshipData && friendshipsQuery.isError));
+  const hasPartialFriendshipsError =
+    !needsFriendshipData &&
+    friendshipsQuery.isError &&
+    (feedData?.allItems.length ?? 0) === 0;
+  const hasBaseDataError =
+    hasBlockingBaseDataError || hasPartialFriendshipsError;
   const hasSavedMessagesError =
     activeFilter === "saved" && savedMessagesQuery.isError;
   const isSavedMessagesError =
@@ -134,7 +138,7 @@ export function useActivityFeed() {
     (currentUserQuery.isPending ||
       groupsQuery.isPending ||
       chatsQuery.isPending ||
-      friendshipsQuery.isPending);
+      (needsFriendshipData && friendshipsQuery.isPending));
 
   async function togglePinnedConversation(kind: "group" | "dm", id: string) {
     const chat = findChatForConversation(chatsQuery.data ?? [], kind, id);

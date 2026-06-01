@@ -3,27 +3,12 @@ import { useEffect, useSyncExternalStore } from "react";
 import { router } from "@/router";
 import { authSession } from "@/shared/api/auth-session";
 import {
-  cancelDelay,
   cancelIdleTask,
-  scheduleDelay,
   scheduleIdleTask,
 } from "@/shared/lib/browser-scheduling";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 
-const DEFERRED_REALTIME_DELAY_MS = 12_000;
-
 const realtimeRoutePrefixes = [
-  "/activity",
-  "/explore",
-  "/forge",
-  "/groups/",
-  "/home",
-  "/profile",
-  "/settings",
-  "/users/",
-] as const;
-
-const deferredRealtimeRoutePrefixes = [
   "/activity",
   "/explore",
   "/forge",
@@ -55,15 +40,7 @@ function doesPathMatchRoutePrefix(pathname: string, prefix: string) {
 }
 
 function getRealtimeRouteDelayMs(pathname: string) {
-  if (!isRealtimeRoute(pathname)) {
-    return null;
-  }
-
-  const isDeferredRoute = deferredRealtimeRoutePrefixes.some((prefix) =>
-    doesPathMatchRoutePrefix(pathname, prefix),
-  );
-
-  return isDeferredRoute ? DEFERRED_REALTIME_DELAY_MS : 0;
+  return isRealtimeRoute(pathname) ? 0 : null;
 }
 
 function useRealtimeRouteDelayMs() {
@@ -86,7 +63,6 @@ export function AppRealtimeSync() {
     let cleanup: (() => void) | undefined;
     let cancelled = false;
     let idleTask: ReturnType<typeof scheduleIdleTask> | undefined;
-    let delayTask: ReturnType<typeof scheduleDelay> | undefined;
 
     async function initializeRealtimeSync() {
       try {
@@ -133,17 +109,10 @@ export function AppRealtimeSync() {
       });
     }
 
-    if (realtimeDelayMs > 0) {
-      delayTask = scheduleDelay(scheduleRealtimeImport, realtimeDelayMs);
-    } else {
-      scheduleRealtimeImport();
-    }
+    scheduleRealtimeImport();
 
     return () => {
       cancelled = true;
-      if (delayTask) {
-        cancelDelay(delayTask);
-      }
       if (idleTask) {
         cancelIdleTask(idleTask);
       }

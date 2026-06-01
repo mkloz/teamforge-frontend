@@ -16,6 +16,7 @@ import {
   planStatusSchema,
 } from "./enums";
 import { exploreInterestSchema } from "./explore";
+import { imageMediaSchema } from "./media";
 
 export const groupActivitySummarySchema = z.object({
   id: z.string(),
@@ -35,6 +36,7 @@ export const groupPlanSummarySchema = z.object({
   title: z.string(),
   category: planCategorySchema,
   coverImage: z.string().nullable().optional(),
+  coverImageMedia: imageMediaSchema.nullable().optional(),
   status: planStatusSchema,
   dateTime: z.string().datetime().nullable(),
   locationMode: locationModeSchema,
@@ -50,6 +52,7 @@ export const groupMemberUserSummarySchema = z.object({
   id: z.string(),
   name: z.string(),
   avatar: z.string().nullable(),
+  avatarMedia: imageMediaSchema.nullable().optional(),
   bio: z.string().nullable().optional(),
   age: z.number().nullable().optional(),
   gender: genderSchema.nullable().optional(),
@@ -85,6 +88,7 @@ export const groupApiSchema = z
     name: z.string(),
     description: z.string().nullable(),
     avatar: z.string().nullable(),
+    avatarMedia: imageMediaSchema.nullable().optional(),
     status: groupStatusSchema,
     maxMembers: z.number(),
     createdAt: z.string().datetime(),

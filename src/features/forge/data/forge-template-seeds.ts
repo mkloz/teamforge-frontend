@@ -7,7 +7,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Mixed pickup game",
       description: "A friendly game where mixed skill levels actually fit.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/MJ7XGR7K4C.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/pickup/original.webp",
       groupName: "Pickup Crew",
       groupDescription: "A casual group for active sessions and easy planning.",
       fixedSize: 6,
@@ -18,7 +18,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Training pact",
       description: "A small workout crew with one clear goal.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/training/original.webp",
       groupName: "Training Circle",
       groupDescription: "A focused group for workouts, progress, and momentum.",
       fixedSize: 4,
@@ -29,7 +29,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Court rotation",
       description: "Book a court, rotate partners, keep the rallies moving.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/court-booking/original.webp",
       groupName: "Court Crew",
       groupDescription: "A group for booked games and regular court time.",
       fixedSize: 4,
@@ -40,7 +40,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Friendly run loop",
       description: "Choose a local route with a pace people can keep.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/running-loop/original.webp",
       groupName: "Run Loop",
       groupDescription: "A group for local runs and steady accountability.",
       fixedSize: 5,
@@ -51,7 +51,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Bouldering slot",
       description: "Try problems together without making it intimidating.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/L0INSR8RS3.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/climbing-wall/original.webp",
       groupName: "Climbing Circle",
       groupDescription: "A group for climbing sessions and shared progress.",
       fixedSize: 4,
@@ -62,7 +62,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Weekend kickabout",
       description: "A casual pitch booking with teams sorted on arrival.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/BB76EYQM84.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/weekend-match/original.webp",
       groupName: "Weekend Match",
       groupDescription: "A group for friendly games and weekend energy.",
       fixedSize: 6,
@@ -73,7 +73,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Social cycle ride",
       description: "A steady ride with no-drop pacing and a stop built in.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/58J8C5U2L3.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/cycle-ride/original.webp",
       groupName: "Cycle Circle",
       groupDescription: "A group for social rides and weekend routes.",
       fixedSize: 5,
@@ -84,7 +84,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Recovery swim",
       description: "Easy lanes, light movement, and a calm reset.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/EQOZK44067.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/recovery-swim/original.webp",
       groupName: "Swim Reset",
       groupDescription: "A group for easy swims and active recovery.",
       fixedSize: 4,
@@ -95,7 +95,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Five-a-side football",
       description: "A friendly pitch booking with balanced teams.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/9HGW75ZPQC.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/five-a-side/original.webp",
       groupName: "Five-a-Side Crew",
       groupDescription: "A group for casual football and easy team games.",
       fixedSize: 6,
@@ -106,7 +106,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Hoops shootaround",
       description: "Warm up, shoot around, then play a short half-court game.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/1ZOXD2YD1H.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/basketball-shootaround/original.webp",
       groupName: "Hoops Circle",
       groupDescription: "A group for basketball, practice, and friendly games.",
       fixedSize: 5,
@@ -117,7 +117,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Badminton ladder",
       description: "Rotate partners and keep the games light.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9zdGF0aWMvaW1hZ2Uvd2Vic2l0ZS8yMDIyLTA0L2xyL3B4MTA2MDgyNC1pbWFnZS1rd3Z3ZHY4eS5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/badminton-ladder/original.webp",
       groupName: "Badminton Ladder",
       groupDescription: "A group for court bookings and rotating doubles.",
       fixedSize: 4,
@@ -128,7 +128,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Park circuit",
       description: "A simple outdoor workout where nobody has to guess.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/XLGET53CAN.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/park-bootcamp/original.webp",
       groupName: "Park Bootcamp",
       groupDescription: "A group for outdoor fitness and steady effort.",
       fixedSize: 6,
@@ -139,7 +139,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Mobility reset",
       description: "Stretch, loosen up, and leave feeling less stiff.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/T3JL9DM56G.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/mobility-flow/original.webp",
       groupName: "Mobility Flow",
       groupDescription: "A group for movement, recovery, and active routines.",
       fixedSize: 4,
@@ -150,7 +150,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Table tennis rally",
       description: "Quick games, rotating partners, and easy chat.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9zdGF0aWMvaW1hZ2Uvd2Vic2l0ZS8yMDIyLTA0L2xyL3B4MTA1Mjg3Mi1pbWFnZS1rd3Z3Z2QzNy5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/table-tennis/original.webp",
       groupName: "Table Tennis Rally",
       groupDescription: "A group for quick games and casual competition.",
       fixedSize: 4,
@@ -161,7 +161,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Steady swim lanes",
       description: "Book a lane for laps, technique, or easy recovery.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/HQ87QXHCZ6.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/swim-lanes/original.webp",
       groupName: "Swim Lanes",
       groupDescription: "A group for swimming, recovery, and light training.",
       fixedSize: 4,
@@ -172,7 +172,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "First-timer boulder",
       description: "A patient climb for people still learning the wall.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/KEO8AR2T02.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/beginner-climb/original.webp",
       groupName: "Beginner Climb",
       groupDescription: "A group for climbing basics and shared confidence.",
       fixedSize: 4,
@@ -183,7 +183,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Cafe cycle loop",
       description: "A manageable ride with the cafe stop treated seriously.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/MWL2LBZHBB.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/cycle-loop/original.webp",
       groupName: "Cycle Loop",
       groupDescription: "A group for social rides and local routes.",
       fixedSize: 5,
@@ -194,7 +194,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Park frisbee",
       description: "Easy throws, light movement, and room for park games.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1665699018294-93629b73530b?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/sports/frisbee-park/original.webp",
       groupName: "Frisbee Park",
       groupDescription: "A group for playful outdoor activity and easy games.",
       fixedSize: 6,
@@ -207,7 +207,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Board game rotation",
       description: "Rotate through quick games before choosing the main one.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/QDNG1EOEU4.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/party/original.webp",
       groupName: "Game Night Table",
       groupDescription: "A relaxed group for games, snacks, and good rounds.",
       fixedSize: 5,
@@ -218,7 +218,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Co-op squad",
       description: "A reliable team for voice chat and coordinated runs.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/UXVE8KR1TN.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/co-op/original.webp",
       groupName: "Co-op Squad",
       groupDescription: "A small squad for shared games and voice chat.",
       locationType: "ONLINE",
@@ -230,7 +230,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Board game cafe",
       description: "Pick from the shelf and settle into a proper table.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/6DDCC9ZELA.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/board-game-cafe/original.webp",
       groupName: "Board Game Table",
       groupDescription: "A group for thoughtful turns and easy table talk.",
       fixedSize: 5,
@@ -241,7 +241,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Retro arcade run",
       description: "Quick rounds, old machines, and low-stakes competition.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/NRI5VQ95W0.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/retro-arcade/original.webp",
       groupName: "Arcade Crew",
       groupDescription: "A group for arcade nights and casual competition.",
       fixedSize: 4,
@@ -252,7 +252,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Finals watch party",
       description: "Watch the bracket, call the plays, compare strategy.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/6MQCVSOWVZ.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/watch-party/original.webp",
       groupName: "Watch Party",
       groupDescription: "A group for esports streams and shared reactions.",
       locationType: "ONLINE",
@@ -264,7 +264,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Puzzle room team",
       description: "Solve an escape room or mystery game without chaos.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/INAKF0ZV5X.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/puzzle-room/original.webp",
       groupName: "Puzzle Table",
       groupDescription: "A group for puzzles, teamwork, and smart detours.",
       fixedSize: 4,
@@ -275,7 +275,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "LAN table",
       description: "Bring a setup, pick the game, and lock in.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/3SB40Y1R8T.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/lan-session/original.webp",
       groupName: "LAN Table",
       groupDescription: "A group for local gaming sessions and co-op energy.",
       fixedSize: 5,
@@ -286,7 +286,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "RPG one-shot",
       description: "A single-session tabletop story with clear roles.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/TXIMMZTQ7O.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/rpg-one-shot/original.webp",
       groupName: "One-Shot Party",
       groupDescription: "A group for tabletop stories and cooperative play.",
       fixedSize: 5,
@@ -297,7 +297,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Chess cafe",
       description: "Casual boards, quick games, and patient analysis.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/NUAITIXILP.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/chess-cafe/original.webp",
       groupName: "Chess Cafe",
       groupDescription: "A group for chess, coffee, and thoughtful games.",
       fixedSize: 4,
@@ -308,7 +308,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "VR team slot",
       description: "Book a VR bay and try fast team modes.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/vr-arena/original.webp",
       groupName: "VR Arena",
       groupDescription: "A group for VR games and shared tech experiences.",
       fixedSize: 4,
@@ -319,7 +319,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Strategy table",
       description: "Choose one longer game and give it room to breathe.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/CYM76QR0MT.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/strategy-night/original.webp",
       groupName: "Strategy Table",
       groupDescription: "A group for thoughtful board games and longer rounds.",
       fixedSize: 5,
@@ -330,7 +330,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Controller swap",
       description: "Trade favourite games and rotate through short rounds.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9zdGF0aWMvaW1hZ2Uvd2Vic2l0ZS8yMDIyLTA0L2xyL2ZyY29yZGxlc3NfZjcxMF9nYW1lcGFkX2dhbWVzLWltYWdlLWt5YmJ0ZnFrLmpwZw.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/controller-swap/original.webp",
       groupName: "Controller Swap",
       groupDescription: "A group for casual console games and shared picks.",
       fixedSize: 5,
@@ -341,7 +341,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Game idea jam",
       description: "Invent a rule twist, tiny mechanic, or playable sketch.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/game-dev-jam/original.webp",
       groupName: "Game Idea Jam",
       groupDescription: "A group for playful mechanics and rough prototypes.",
       fixedSize: 4,
@@ -352,7 +352,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Raid run",
       description: "Set roles, join voice, and make the run clean.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/online-raid/original.webp",
       groupName: "Raid Team",
       groupDescription: "A group for online coordination and team play.",
       locationType: "ONLINE",
@@ -364,7 +364,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Hidden-role night",
       description: "Deduction games, suspicion, and a table that talks.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/mystery-board-night/original.webp",
       groupName: "Mystery Table",
       groupDescription: "A group for deduction games and social puzzles.",
       fixedSize: 6,
@@ -375,7 +375,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Speedrun watch",
       description: "Watch a run, learn the tricks, and talk routes.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/speedrun-watch/original.webp",
       groupName: "Speedrun Watch",
       groupDescription: "A group for gaming streams and smart route talk.",
       locationType: "ONLINE",
@@ -387,7 +387,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Card draft table",
       description: "Draft, trade ideas, then play a few sharp rounds.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/01NL1BZUS0.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/card-draft/original.webp",
       groupName: "Card Draft",
       groupDescription: "A group for card games, drafting, and friendly play.",
       fixedSize: 4,
@@ -398,7 +398,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Sandbox world",
       description: "Start a shared world for building, exploring, and chat.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/YW42GWMV03.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/gaming/casual-minecraft/original.webp",
       groupName: "Sandbox Crew",
       groupDescription: "A group for relaxed building and online co-op.",
       locationType: "ONLINE",
@@ -412,7 +412,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "First coffee",
       description: "A simple first meet with enough structure to feel easy.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/8C35014CE3.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/coffee/original.webp",
       groupName: "Coffee Circle",
       groupDescription: "A friendly group for low-pressure social plans.",
       fixedSize: 4,
@@ -423,7 +423,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "After-hours drinks",
       description: "A relaxed evening plan that still leaves room to talk.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/EI9BBWFMXB.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/after-hours/original.webp",
       groupName: "After-Hours Group",
       groupDescription: "A social group for easy evening plans.",
       fixedSize: 6,
@@ -434,7 +434,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Lunch break table",
       description: "Meet nearby, eat something simple, keep it low-pressure.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/RRSDBIHUMS.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/lunch-break/original.webp",
       groupName: "Lunch Break Group",
       groupDescription: "A practical group for quick local social plans.",
       fixedSize: 4,
@@ -445,7 +445,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "New-in-town circle",
       description: "A gentle first plan for people still finding their people.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/PGSMMXDJCC.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/new-in-town/original.webp",
       groupName: "New Faces Circle",
       groupDescription: "A welcoming group for low-pressure introductions.",
       fixedSize: 5,
@@ -456,7 +456,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Walk and talk",
       description: "A moving conversation for people who dislike stiff intros.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/I1R1CWCB19.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/conversation-walk/original.webp",
       groupName: "Walk and Talk",
       groupDescription: "A group for casual walks and relaxed conversation.",
       fixedSize: 4,
@@ -468,7 +468,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "A scenic meet with conversation before the night gets loud.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1704409040681-d514740682b4?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/rooftop-chat/original.webp",
       groupName: "Rooftop Circle",
       groupDescription: "A group for relaxed views and sociable evenings.",
       fixedSize: 5,
@@ -479,7 +479,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "No-pressure brunch",
       description: "A soft social table with time to settle in.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/boardless-brunch/original.webp",
       groupName: "Easy Brunch",
       groupDescription: "A group for simple brunches and warm introductions.",
       fixedSize: 4,
@@ -490,7 +490,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Pub quiz team",
       description: "Team up for trivia, snacks, and a little harmless chaos.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/community-quiz/original.webp",
       groupName: "Quiz Table",
       groupDescription: "A group for trivia nights and friendly teamwork.",
       fixedSize: 6,
@@ -501,7 +501,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Tea chat",
       description: "A quiet cafe plan for unhurried conversation.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/tea-chat/original.webp",
       groupName: "Tea Chat",
       groupDescription: "A group for gentle cafe plans and calm conversation.",
       fixedSize: 4,
@@ -512,7 +512,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Campus catch-up",
       description: "Meet nearby for coffee, a walk, or a reset between things.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/452RWQUM4W.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/campus-catch-up/original.webp",
       groupName: "Campus Catch-Up",
       groupDescription: "A group for nearby social plans and easy intros.",
       fixedSize: 5,
@@ -524,7 +524,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Simple snacks, open space, and conversation that can breathe.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/3IVBNKC2JH.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/picnic-circle/original.webp",
       groupName: "Picnic Circle",
       groupDescription: "A group for easy outdoor social plans.",
       fixedSize: 6,
@@ -535,7 +535,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Newcomer dinner",
       description: "A welcoming table for people still settling into the city.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/OZQYQOCG3K.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/newcomer-dinner/original.webp",
       groupName: "Newcomer Dinner",
       groupDescription: "A group for warm introductions and shared meals.",
       fixedSize: 5,
@@ -546,7 +546,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Conversation games",
       description: "Light prompts and quick games for easier group chemistry.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/Y2AHVPYB51.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/boardless-games/original.webp",
       groupName: "Conversation Games",
       groupDescription: "A group for playful chat and easy icebreakers.",
       fixedSize: 6,
@@ -557,7 +557,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Mocktail evening",
       description: "A relaxed evening without needing a loud bar to carry it.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYxNjY4MjIyLXdpa2ltZWRpYS1pbWFnZS1rb3dhb291Mi5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/mocktail-evening/original.webp",
       groupName: "Mocktail Evening",
       groupDescription: "A group for relaxed evenings and sociable drinks.",
       fixedSize: 5,
@@ -568,7 +568,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Co-working break",
       description: "Step away from work for coffee, fresh air, and a reset.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/co-working-break/original.webp",
       groupName: "Co-Working Break",
       groupDescription: "A group for quick breaks and low-pressure chat.",
       fixedSize: 4,
@@ -579,7 +579,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Sunday stroll",
       description: "A gentle walk for slow conversation and a cleaner head.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/COQUJR31GM.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/sunday-stroll/original.webp",
       groupName: "Sunday Stroll",
       groupDescription: "A group for easy walks and relaxed social time.",
       fixedSize: 5,
@@ -590,7 +590,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Small table",
       description: "Four people, one table, and an easier first plan.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/small-table/original.webp",
       groupName: "Small Table",
       groupDescription: "A group for smaller social plans and easy talk.",
       fixedSize: 4,
@@ -601,7 +601,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Late lunch",
       description: "A simple food plan without committing to the evening.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/WM3J4YX5TK.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/social/late-lunch/original.webp",
       groupName: "Late Lunch",
       groupDescription: "A group for lunch plans and friendly conversation.",
       fixedSize: 4,
@@ -614,7 +614,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Gallery slow-look",
       description: "Browse at an easy pace and compare what stuck.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/7B52AC0C5F.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/gallery/original.webp",
       groupName: "Culture Crew",
       groupDescription: "A group for museums, galleries, and arts plans.",
       fixedSize: 4,
@@ -626,7 +626,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Bring a small creative task and leave with something started.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/creative/original.webp",
       groupName: "Creative Table",
       groupDescription: "A hands-on group for making and sharing ideas.",
       fixedSize: 5,
@@ -638,7 +638,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Watch something interesting, then talk through the choices.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvaXMxNjgwNS1pbWFnZS1rd3Z5Z3h1OS5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/cinema-chat/original.webp",
       groupName: "Cinema Circle",
       groupDescription: "A group for films, reactions, and thoughtful chat.",
       fixedSize: 4,
@@ -649,7 +649,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Photo walk",
       description: "Follow a route and notice details worth framing.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvZmw1MDEzNDUyMjI4Ni1pbWFnZS1rdHdteXZ6Yy5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/photo-walk/original.webp",
       groupName: "Photo Walkers",
       groupDescription: "A group for photography walks and creative practice.",
       fixedSize: 5,
@@ -661,7 +661,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "A calm sketching slot where practice matters more than polish.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1452860606245-08befc0ff44b?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/life-drawing/original.webp",
       groupName: "Drawing Table",
       groupDescription: "A group for sketching, practice, and creative focus.",
       fixedSize: 4,
@@ -673,7 +673,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Find murals, public art, and strange corners worth noticing.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcHgxNTg1MzQxLWltYWdlLWt3dnh2azB4LmpwZw.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/street-art-walk/original.webp",
       groupName: "Street Art Walk",
       groupDescription: "A group for public art, photography, and wandering.",
       fixedSize: 5,
@@ -684,7 +684,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Pottery taster",
       description: "Book a wheel or hand-building class and get messy.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/SWDR6XR7YS.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/pottery-session/original.webp",
       groupName: "Clay Table",
       groupDescription: "A group for hands-on art and slow creative focus.",
       fixedSize: 4,
@@ -695,7 +695,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Theatre night",
       description: "See a show, then compare notes while it is still fresh.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1503095396549-807759245b35?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/theatre-night/original.webp",
       groupName: "Theatre Circle",
       groupDescription:
         "A group for performance, culture, and good discussion.",
@@ -707,7 +707,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Collage table",
       description: "Bring scraps, images, and one loose theme to build from.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYyMTIxOTM4LXdpa2ltZWRpYS1pbWFnZS1rb3dncWFicy5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/collage-night/original.webp",
       groupName: "Collage Night",
       groupDescription: "A group for hands-on art and easy creative flow.",
       fixedSize: 5,
@@ -718,7 +718,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Zine workshop",
       description: "Turn rough ideas into a tiny publication in one sitting.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/zine-workshop/original.webp",
       groupName: "Zine Workshop",
       groupDescription: "A group for small publications and creative sharing.",
       fixedSize: 5,
@@ -729,7 +729,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Architecture walk",
       description: "Look up, compare details, and let the route lead.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/XNADXB7CTE.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/architecture-walk/original.webp",
       groupName: "Architecture Walk",
       groupDescription: "A group for buildings, design, and visual exploring.",
       fixedSize: 5,
@@ -740,7 +740,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Craft cafe",
       description: "Bring a portable project and make progress beside people.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/NCZGRBZZQI.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/craft-cafe/original.webp",
       groupName: "Craft Cafe",
       groupDescription: "A group for portable crafts and relaxed making.",
       fixedSize: 4,
@@ -751,7 +751,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Film club",
       description: "Pick one film and give the discussion proper room.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9zdGF0aWMvaW1hZ2Uvd2Vic2l0ZS8yMDIyLTA0L2xyL2ZsNDEyNjEzMTg4MjItaW1hZ2Uta3liZWh5bWwuanBn.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/film-club/original.webp",
       groupName: "Film Club",
       groupDescription: "A group for cinema, reactions, and good discussion.",
       fixedSize: 5,
@@ -762,7 +762,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Poetry open mic",
       description: "Go to listen, read, or support people trying things aloud.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTAxL3ljYmF0bXM2NDQwLWltYWdlLmpwZw.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/poetry-open-mic/original.webp",
       groupName: "Poetry Table",
       groupDescription: "A group for spoken word, writing, and performance.",
       fixedSize: 4,
@@ -774,7 +774,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Bring work and trade feedback that is useful, not performative.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/design-critique/original.webp",
       groupName: "Design Critique",
       groupDescription: "A group for creative feedback and sharper ideas.",
       fixedSize: 4,
@@ -786,7 +786,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Try stamps, lino, or simple prints without overplanning it.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/ZO9LEFYSMW.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/printmaking-session/original.webp",
       groupName: "Printmaking Session",
       groupDescription: "A group for hands-on art and practical experiments.",
       fixedSize: 4,
@@ -797,7 +797,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Museum late",
       description: "Evening galleries with enough time to talk afterwards.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/481AD95CF9.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/museum-late/original.webp",
       groupName: "Museum Late",
       groupDescription: "A group for evening culture and gallery wandering.",
       fixedSize: 5,
@@ -808,7 +808,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Sculpture garden",
       description: "Outdoor art, slow looking, and a route that stays relaxed.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/EVER6IWC1F.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/arts/sculpture-garden/original.webp",
       groupName: "Sculpture Garden",
       groupDescription: "A group for public art and gentle exploring.",
       fixedSize: 4,
@@ -821,7 +821,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Local gig night",
       description: "Find people for a show before buying the ticket alone.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/L695JG265J.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/gig/original.webp",
       groupName: "Live Music Crew",
       groupDescription: "A group for concerts, performances, and shared music.",
       fixedSize: 4,
@@ -832,7 +832,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Loose jam",
       description: "Bring an instrument, a loop, or just enough nerve to try.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/L3L1V89NLF.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/jam/original.webp",
       groupName: "Jam Circle",
       groupDescription: "A casual group for playing and discovering music.",
       fixedSize: 5,
@@ -844,7 +844,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Bring favourites, strange discoveries, and honest reactions.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/HYZFVDZ7LK.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/playlist-swap/original.webp",
       groupName: "Playlist Circle",
       groupDescription: "A group for sharing music and finding new sounds.",
       fixedSize: 5,
@@ -855,7 +855,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Karaoke table",
       description: "Pick songs, back each other up, and commit to the bit.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1517230878791-4d28214057c2?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/karaoke/original.webp",
       groupName: "Karaoke Crew",
       groupDescription: "A group for relaxed singing and big choruses.",
       fixedSize: 6,
@@ -866,7 +866,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Record store dig",
       description: "Browse shelves, pull odd finds, and compare taste.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/5IWPD5X5XJ.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/record-store/original.webp",
       groupName: "Record Browsers",
       groupDescription: "A group for music discovery and crate digging.",
       fixedSize: 4,
@@ -877,7 +877,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Album listening",
       description: "Pick one album and give it more attention than usual.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/0NOS06CDVI.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/listening-room/original.webp",
       groupName: "Listening Room",
       groupDescription: "A group for focused listening and music discoveries.",
       fixedSize: 4,
@@ -889,7 +889,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Bring rough lines, hooks, or melodies and build from there.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/songwriting-table/original.webp",
       groupName: "Songwriting Table",
       groupDescription: "A group for musical ideas and gentle feedback.",
       fixedSize: 4,
@@ -900,7 +900,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "DJ practice",
       description: "Swap tracks, try transitions, and sketch a tiny set.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/45C794A760.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/dj-practice/original.webp",
       groupName: "DJ Practice",
       groupDescription:
         "A group for mixing, playlists, and shared music taste.",
@@ -912,7 +912,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Acoustic circle",
       description: "Bring songs, instruments, or calm listening energy.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/HP2GGWWPIN.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/acoustic-circle/original.webp",
       groupName: "Acoustic Circle",
       groupDescription: "A group for acoustic music and casual sharing.",
       fixedSize: 5,
@@ -924,7 +924,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Trade favourite records, finds, and the stories behind them.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/record-swap/original.webp",
       groupName: "Record Swap",
       groupDescription: "A group for music discovery and shared collections.",
       fixedSize: 4,
@@ -935,7 +935,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Gig shortlist",
       description: "Compare upcoming shows and pick one worth committing to.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/D14AE6DFF7.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/gig-planning/original.webp",
       groupName: "Gig Planning",
       groupDescription: "A group for concert plans and live music.",
       fixedSize: 4,
@@ -946,7 +946,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Open mic crew",
       description: "Go to listen, perform, or cheer properly from the front.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1501162115905-677eaee37f46?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/open-mic-crew/original.webp",
       groupName: "Open Mic Crew",
       groupDescription: "A group for open mics and supportive performance.",
       fixedSize: 5,
@@ -957,7 +957,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Vinyl listening",
       description: "Put on one record and actually stay with it.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/OTOSZLA6WF.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/vinyl-listening/original.webp",
       groupName: "Vinyl Listening",
       groupDescription: "A group for focused listening and album talk.",
       fixedSize: 4,
@@ -968,7 +968,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Beat sketching",
       description: "Build loops, compare textures, and keep the ideas rough.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/5WFFFULB4G.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/beat-making/original.webp",
       groupName: "Beat Table",
       groupDescription: "A group for music production and creative practice.",
       fixedSize: 4,
@@ -980,7 +980,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Try warmups and simple harmony without pretending it is formal.",
       coverImageSource:
-        "https://upload.wikimedia.org/wikipedia/commons/7/73/Thomson_TV_women_singing_karaoke_PICT1309_%2814120342%29.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/choir-taster/original.webp",
       groupName: "Choir Taster",
       groupDescription: "A group for singing, harmony, and relaxed practice.",
       fixedSize: 6,
@@ -991,7 +991,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Pre-gig meet",
       description: "Meet before the show so arriving together feels easy.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/4LZRZTD1MC.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/concert-pregame/original.webp",
       groupName: "Concert Pregame",
       groupDescription: "A group for live music nights and shared plans.",
       fixedSize: 5,
@@ -1002,7 +1002,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Lyric workshop",
       description: "Bring loose lines, unfinished themes, or a chorus problem.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/7EIUMARFHB.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/lyric-workshop/original.webp",
       groupName: "Lyric Workshop",
       groupDescription: "A group for songwriting, words, and feedback.",
       fixedSize: 4,
@@ -1014,7 +1014,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Team up around tracks, eras, and strange facts nobody needs.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/music/music-trivia/original.webp",
       groupName: "Music Trivia",
       groupDescription: "A group for music knowledge and playful competition.",
       fixedSize: 6,
@@ -1027,7 +1027,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Scenic walk",
       description: "A relaxed route with enough quiet for conversation.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/YX4VKJVLQ2.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/walk/original.webp",
       groupName: "Outdoor Circle",
       groupDescription: "A group for walks, parks, and fresh-air plans.",
       fixedSize: 5,
@@ -1038,7 +1038,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Green escape",
       description: "Pick a nearby outdoor spot and make a small escape of it.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/day-trip/original.webp",
       groupName: "Day Trip Crew",
       groupDescription: "A group for short trips and outdoor plans.",
       fixedSize: 4,
@@ -1049,7 +1049,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Park picnic",
       description: "Simple food, open space, and no heavy agenda.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/OIUD9DEKPG.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/park-picnic/original.webp",
       groupName: "Park Picnic Group",
       groupDescription: "A group for easy outdoor plans and shared snacks.",
       fixedSize: 6,
@@ -1060,7 +1060,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Sunset viewpoint",
       description: "Choose a view and make the evening feel intentional.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9zdGF0aWMvaW1hZ2Uvd2Vic2l0ZS8yMDIyLTA0L2xyL2ZyZWVyYW5nZXBleGVsczAzNTgzLWltYWdlLWt3dnd5aXcyLmpwZw.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/sunset-view/original.webp",
       groupName: "Sunset Crew",
       groupDescription: "A group for evening walks and scenic views.",
       fixedSize: 4,
@@ -1071,7 +1071,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Beach day",
       description: "A coastal plan for walking, food, games, or doing little.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/9Y7B28HZD1.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/beach-day/original.webp",
       groupName: "Beach Day Group",
       groupDescription: "A group for beach plans and fresh air.",
       fixedSize: 5,
@@ -1082,7 +1082,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Trail hike",
       description: "A clear route, sensible pace, and a shared finish.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/M7FXFSIDOG.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/trail-hike/original.webp",
       groupName: "Trail Group",
       groupDescription: "A group for hikes, steady pace, and open air.",
       fixedSize: 5,
@@ -1093,7 +1093,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Botanical walk",
       description: "Visit a garden, greenhouse, or route with actual leaves.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/LSS4NV4LFV.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/botanical-walk/original.webp",
       groupName: "Botanical Walk",
       groupDescription: "A group for nature, quiet routes, and fresh air.",
       fixedSize: 4,
@@ -1104,7 +1104,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Park games",
       description: "Bring frisbee, cards, or anything easy to join.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcGQyMDctMi01MjJfMS5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/outdoor-games/original.webp",
       groupName: "Park Games",
       groupDescription: "A group for playful outdoor plans and easy movement.",
       fixedSize: 6,
@@ -1115,7 +1115,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Canal walk",
       description: "A flat route, easy pace, and plenty of side-by-side talk.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/VD6UM98X8P.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/canal-walk/original.webp",
       groupName: "Canal Walk",
       groupDescription: "A group for relaxed routes and fresh-air plans.",
       fixedSize: 5,
@@ -1126,7 +1126,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Nature sketch",
       description: "Bring a notebook and slow down long enough to notice.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/F6S6FIDJJ6.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/nature-sketch/original.webp",
       groupName: "Nature Sketch",
       groupDescription: "A group for outdoor creativity and calm focus.",
       fixedSize: 4,
@@ -1137,7 +1137,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "City park loop",
       description: "A manageable loop through green space close to home.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/A6B6CBA891.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/city-park-loop/original.webp",
       groupName: "Park Loop",
       groupDescription: "A group for local parks and low-pressure walks.",
       fixedSize: 5,
@@ -1148,7 +1148,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Wild swim plan",
       description: "Plan a safe dip, warm drink, and recovery time.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/XTCWT42K1X.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/wild-swim-plan/original.webp",
       groupName: "Wild Swim Plan",
       groupDescription: "A group for careful outdoor swims and recovery.",
       fixedSize: 4,
@@ -1159,7 +1159,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Sunrise walk",
       description: "An early route with good light and quiet streets.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/GTPALYUEJM.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/sunrise-walk/original.webp",
       groupName: "Sunrise Walk",
       groupDescription: "A group for early walks and calm outdoor starts.",
       fixedSize: 4,
@@ -1171,7 +1171,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Plan an outdoor meal, camping night, or fire-safe gathering.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/HRLU7ZESP0.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/campfire-ideas/original.webp",
       groupName: "Campfire Ideas",
       groupDescription: "A group for camping ideas and outdoor planning.",
       fixedSize: 5,
@@ -1182,7 +1182,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Birdwatching walk",
       description: "A quiet route for people who can slow down together.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/XJGWNPOJ3G.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/birdwatching/original.webp",
       groupName: "Birdwatching Walk",
       groupDescription: "A group for quiet nature plans and slow looking.",
       fixedSize: 4,
@@ -1193,7 +1193,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Outdoor reading",
       description: "Read in a park, then share the lines that stayed.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/CLDFSWK525.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/outdoor-reading/original.webp",
       groupName: "Outdoor Reading",
       groupDescription: "A group for books, parks, and calm conversation.",
       fixedSize: 4,
@@ -1204,7 +1204,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Bike and brunch",
       description: "A short ride ending somewhere worth sitting down.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/U75QCQN721.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/bike-and-brunch/original.webp",
       groupName: "Bike and Brunch",
       groupDescription: "A group for social cycling and food stops.",
       fixedSize: 5,
@@ -1215,7 +1215,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Sunset photo walk",
       description: "Follow the light and stop when the view earns it.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/outdoors/photo-sunset-walk/original.webp",
       groupName: "Sunset Photo Walk",
       groupDescription: "A group for outdoor photos and scenic routes.",
       fixedSize: 4,
@@ -1228,7 +1228,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Focused study block",
       description: "Quiet work, shared goals, and a finish line that exists.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/N444PJYUP9.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/study/original.webp",
       groupName: "Study Circle",
       groupDescription: "A group for focused study and skill-building.",
       fixedSize: 4,
@@ -1239,7 +1239,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Skill swap",
       description: "Teach one practical thing and learn one back.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/43JYGRS06H.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/workshop/original.webp",
       groupName: "Skill Swap",
       groupDescription:
         "A group for learning, sharing, and practical sessions.",
@@ -1251,7 +1251,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Language table",
       description: "Practice conversation with people at a similar level.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTExL2JzMTE0MS1pbWFnZS5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/language-table/original.webp",
       groupName: "Language Table",
       groupDescription: "A group for language practice and patient learning.",
       fixedSize: 5,
@@ -1262,7 +1262,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Short-read club",
       description: "Pick something readable and bring a few good questions.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/book-club/original.webp",
       groupName: "Book Circle",
       groupDescription:
         "A group for reading, notes, and thoughtful discussion.",
@@ -1274,7 +1274,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Portfolio review",
       description: "Share work, trade feedback, and leave with next steps.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/FSPLFPQBCZ.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/portfolio-review/original.webp",
       groupName: "Portfolio Table",
       groupDescription: "A group for feedback, craft, and practical progress.",
       fixedSize: 4,
@@ -1286,7 +1286,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "One person explains a topic, everyone asks better questions.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvbG9jMjAyMDczNjM0OS1pbWFnZS5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/mini-lecture/original.webp",
       groupName: "Mini Lecture Group",
       groupDescription: "A group for short talks and practical learning.",
       fixedSize: 6,
@@ -1297,7 +1297,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Exam sprint",
       description: "A focused block with breaks, targets, and no drifting.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvYnMxMTM4LWltYWdlLWt3dng1ZXVwLmpwZw.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/exam-sprint/original.webp",
       groupName: "Exam Sprint",
       groupDescription: "A group for structured study and steady progress.",
       fixedSize: 4,
@@ -1308,7 +1308,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Tutorial lab",
       description: "Watch, pause, discuss, then actually try the thing.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/DJ7F99AVL7.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/tutorial-watch/original.webp",
       groupName: "Tutorial Table",
       groupDescription: "A group for practical tutorials and shared practice.",
       locationType: "ONLINE",
@@ -1320,7 +1320,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Coding kata",
       description: "Solve one small challenge and compare approaches.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/DZ1EFM9PIK.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/coding-kata/original.webp",
       groupName: "Coding Kata",
       groupDescription: "A group for coding practice and shared thinking.",
       fixedSize: 4,
@@ -1331,7 +1331,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Reading sprint",
       description: "Read quietly, then share what stuck and why.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/reading-sprint/original.webp",
       groupName: "Reading Sprint",
       groupDescription: "A group for focused reading and useful notes.",
       fixedSize: 4,
@@ -1343,7 +1343,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Practice framing, light, and one repeatable shooting habit.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/photo-basics/original.webp",
       groupName: "Photo Basics",
       groupDescription: "A group for learning photography through practice.",
       fixedSize: 5,
@@ -1354,7 +1354,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Public speaking reps",
       description: "Practice short talks in a supportive, useful circle.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/1QH1QRSAF2.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/public-speaking/original.webp",
       groupName: "Speaking Circle",
       groupDescription: "A group for speaking practice and confidence.",
       fixedSize: 5,
@@ -1366,7 +1366,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Compare simple budgets, habits, and questions without judgement.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/finance-basics/original.webp",
       groupName: "Finance Basics",
       groupDescription: "A group for practical money habits and learning.",
       fixedSize: 4,
@@ -1377,7 +1377,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Language walk",
       description: "Practice phrases while moving so it feels less formal.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcHg3MzEwMzgtaW1hZ2Uta3d5b3BpMmcuanBn.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/language-walk/original.webp",
       groupName: "Language Walk",
       groupDescription: "A group for casual language practice and movement.",
       fixedSize: 4,
@@ -1389,7 +1389,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Swap notes, planning setups, and routines that actually hold.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTExL2xyL2ZsMzY5MDczMzI1NzQtaW1hZ2UuanBn.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/notion-systems/original.webp",
       groupName: "Study Systems",
       groupDescription: "A group for practical learning systems and habits.",
       fixedSize: 4,
@@ -1400,7 +1400,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Debate table",
       description: "Pick a topic and practice sharper, fairer arguments.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTExL2ZsMTQ2MTQ3MjQxODMtaW1hZ2UuanBn.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/debate-table/original.webp",
       groupName: "Debate Table",
       groupDescription: "A group for ideas, discussion, and careful thinking.",
       fixedSize: 5,
@@ -1411,7 +1411,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Career skills",
       description: "Practice interviews, CV notes, or the next concrete step.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYxODI0NjQ5LXdpa2ltZWRpYS1pbWFnZS1rb3djNm41ci5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/career-skills/original.webp",
       groupName: "Career Skills",
       groupDescription: "A group for practical career learning and feedback.",
       fixedSize: 4,
@@ -1423,7 +1423,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Follow local stories, plaques, and the context people miss.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/NV4VIXMK2E.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/learning/history-walk/original.webp",
       groupName: "History Walk",
       groupDescription: "A group for local history and curious routes.",
       fixedSize: 5,
@@ -1436,7 +1436,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Brunch table",
       description: "A simple table plan where conversation comes naturally.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/80C03C2071.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/brunch/original.webp",
       groupName: "Brunch Table",
       groupDescription: "A group for food plans and easy conversation.",
       fixedSize: 4,
@@ -1447,7 +1447,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "New spot vote",
       description: "Shortlist a restaurant, market, or cafe and commit.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/AWJD4WV6W1.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/new-place/original.webp",
       groupName: "Food Finders",
       groupDescription: "A group for trying new places and sharing dishes.",
       fixedSize: 5,
@@ -1458,7 +1458,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Cook together",
       description: "Choose one dish and make the plan hands-on.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/CFBFE8F090.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/cook-together/original.webp",
       groupName: "Kitchen Circle",
       groupDescription: "A group for cooking, sharing, and learning recipes.",
       fixedSize: 4,
@@ -1469,7 +1469,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Market walk",
       description: "Browse stalls, try small bites, and compare finds.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/ABFRSZL8XB.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/market-walk/original.webp",
       groupName: "Market Walkers",
       groupDescription: "A group for food markets and casual exploring.",
       fixedSize: 5,
@@ -1480,7 +1480,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Dessert crawl",
       description: "Pick two or three sweet spots and rank them seriously.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/QBHWAXIHDI.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/dessert-crawl/original.webp",
       groupName: "Dessert Crew",
       groupDescription: "A group for dessert plans and light-hearted opinions.",
       fixedSize: 4,
@@ -1491,7 +1491,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Supper club",
       description: "A relaxed dinner around one shared table.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/A6FE2C3A25.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/supper-club/original.webp",
       groupName: "Supper Club",
       groupDescription: "A group for dinner plans and easy conversation.",
       fixedSize: 6,
@@ -1502,7 +1502,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Street food loop",
       description: "Try stalls, split bites, and compare favourites.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/VBQSBXBAO8.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/street-food/original.webp",
       groupName: "Street Food Run",
       groupDescription: "A group for markets, snacks, and food exploring.",
       fixedSize: 5,
@@ -1513,7 +1513,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Coffee tasting",
       description: "Try a few brews and talk flavour without fuss.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/B099ABEC5E.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/coffee-tasting/original.webp",
       groupName: "Coffee Tasting",
       groupDescription: "A group for cafes, coffee, and relaxed conversation.",
       fixedSize: 4,
@@ -1524,7 +1524,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Ramen run",
       description: "Try a local bowl and compare toppings like it matters.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9zdGF0aWMvaW1hZ2Uvd2Vic2l0ZS8yMDIyLTA0L2xyL3B1MjMxOTY0NC1pbWFnZS1rd3Z5N3Bkbi5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/ramen-run/original.webp",
       groupName: "Ramen Run",
       groupDescription: "A group for casual food plans and warm bowls.",
       fixedSize: 4,
@@ -1535,7 +1535,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Pizza ranking",
       description: "Try slices and make a very serious list.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/9D0F9026F8.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/pizza-ranking/original.webp",
       groupName: "Pizza Ranking",
       groupDescription: "A group for pizza plans and light-hearted opinions.",
       fixedSize: 5,
@@ -1546,7 +1546,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Baking swap",
       description: "Bring bakes, recipes, or a useful mistake.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/04USGA6ASM.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/baking-swap/original.webp",
       groupName: "Baking Swap",
       groupDescription: "A group for baking, recipes, and shared treats.",
       fixedSize: 5,
@@ -1557,7 +1557,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Veggie table",
       description: "Try a vegetarian spot or cook a shared dish.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/UQFSNYXB9C.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/veggie-table/original.webp",
       groupName: "Veggie Table",
       groupDescription: "A group for vegetarian food and easy meals.",
       fixedSize: 4,
@@ -1568,7 +1568,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Taco night",
       description: "Pick fillings, share sides, and keep it unfussy.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/MPCLZSMZJB.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/taco-night/original.webp",
       groupName: "Taco Night",
       groupDescription: "A group for casual dinner plans and shared plates.",
       fixedSize: 5,
@@ -1579,7 +1579,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Breakfast club",
       description: "Start early with coffee, eggs, or pastries.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/BT5N1WHKER.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/breakfast-club/original.webp",
       groupName: "Breakfast Club",
       groupDescription: "A group for morning food and calm conversation.",
       fixedSize: 4,
@@ -1590,7 +1590,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Soup season",
       description: "Find a cosy bowl or swap simple recipes.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/5SBBBGM9KH.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/soup-season/original.webp",
       groupName: "Soup Season",
       groupDescription: "A group for cosy food plans and simple cooking.",
       fixedSize: 4,
@@ -1601,7 +1601,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Food truck loop",
       description: "Browse trucks, split bites, and compare favourites.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/E6A55845C9.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/food-truck-loop/original.webp",
       groupName: "Food Truck Loop",
       groupDescription: "A group for street food and casual exploring.",
       fixedSize: 5,
@@ -1612,7 +1612,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Picnic potluck",
       description: "Bring one simple thing and share the table.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1557964712-bdc9f1f10ea1?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/picnic-potluck/original.webp",
       groupName: "Picnic Potluck",
       groupDescription: "A group for shared food and park plans.",
       fixedSize: 6,
@@ -1623,7 +1623,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Tea and cake",
       description: "A sweet, quiet plan for easier conversation.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/NOXXUWUBGJ.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/food/tea-and-cake/original.webp",
       groupName: "Tea and Cake",
       groupDescription: "A group for cafe plans, desserts, and calm talk.",
       fixedSize: 4,
@@ -1636,7 +1636,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Build night",
       description: "Make visible progress on a prototype or side project.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/DWLWL9USBG.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/build/original.webp",
       groupName: "Build Circle",
       groupDescription:
         "A group for builders, experiments, and practical ideas.",
@@ -1648,7 +1648,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Product brainstorm",
       description: "Stress-test an idea before anyone overbuilds it.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/UNB7V2H5L4.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/brainstorm/original.webp",
       groupName: "Product Brainstorm",
       groupDescription:
         "A group for product ideas and technical collaboration.",
@@ -1660,7 +1660,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Demo night",
       description: "Show what you are building and get specific feedback.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/PBTF1NEBCG.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/demo-night/original.webp",
       groupName: "Demo Night",
       groupDescription:
         "A group for demos, experiments, and practical critique.",
@@ -1672,7 +1672,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "AI workflow lab",
       description: "Try tools on real tasks and compare what actually helps.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/DUAHA1V312.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/ai-lab/original.webp",
       groupName: "AI Lab",
       groupDescription: "A group for practical AI experiments and ideas.",
       fixedSize: 4,
@@ -1683,7 +1683,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Tech career lab",
       description: "Polish a portfolio, prep interviews, or review a CV.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/F164KBFZ95.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/career-sprint/original.webp",
       groupName: "Tech Career Lab",
       groupDescription:
         "A group for technical portfolios and sharper next steps.",
@@ -1695,7 +1695,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Code review table",
       description: "Bring a branch, snippet, or architecture question.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/R66E2T133W.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/code-review/original.webp",
       groupName: "Code Review Table",
       groupDescription: "A group for technical feedback and cleaner builds.",
       fixedSize: 4,
@@ -1706,7 +1706,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Founder chat",
       description: "Compare ideas, early customers, and the next honest move.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/7ULJ7GRFDB.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/founder-chat/original.webp",
       groupName: "Founder Chat",
       groupDescription: "A group for startups, product thinking, and momentum.",
       fixedSize: 5,
@@ -1718,7 +1718,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Swap workflows, apps, plugins, and shortcuts worth stealing.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/F7OLW2SG0C.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/tool-share/original.webp",
       groupName: "Tool Share",
       groupDescription: "A group for useful tools and practical tech habits.",
       fixedSize: 5,
@@ -1729,7 +1729,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Tiny hack night",
       description: "Build something rough enough to exist by the end.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/LV2IUQNTZ5.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/hack-night/original.webp",
       groupName: "Hack Night",
       groupDescription:
         "A group for coding, prototypes, and quick experiments.",
@@ -1742,7 +1742,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Pick a product and dissect what works, breaks, and converts.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/MJZPCHLERD.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/app-teardown/original.webp",
       groupName: "App Teardown",
       groupDescription: "A group for product thinking and practical critique.",
       fixedSize: 5,
@@ -1754,7 +1754,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Run the same task through different tools and compare results.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/ai-tool-test/original.webp",
       groupName: "AI Tool Test",
       groupDescription: "A group for practical AI workflows and experiments.",
       fixedSize: 4,
@@ -1765,7 +1765,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Portfolio build",
       description: "Make progress on a site, case study, or demo.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/YRUO4LCSLB.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/portfolio-build/original.webp",
       groupName: "Portfolio Build",
       groupDescription: "A group for focused portfolio work and feedback.",
       fixedSize: 4,
@@ -1776,7 +1776,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Startup case table",
       description: "Discuss one product story, teardown, or strategy idea.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/2UXCQG5Q7W.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/startup-reading/original.webp",
       groupName: "Startup Case Table",
       groupDescription: "A group for product judgment and founder thinking.",
       fixedSize: 5,
@@ -1788,7 +1788,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Prototype something useful without turning it into a stack.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/PHE63L27S6.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/no-code-build/original.webp",
       groupName: "No-Code Build",
       groupDescription: "A group for practical tools and fast prototypes.",
       fixedSize: 4,
@@ -1799,7 +1799,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Robotics table",
       description: "Talk hardware, sensors, kits, or project ideas.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/robotics-table/original.webp",
       groupName: "Robotics Table",
       groupDescription: "A group for hardware ideas and technical curiosity.",
       fixedSize: 5,
@@ -1810,7 +1810,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Design systems",
       description: "Compare components, tokens, and the tradeoffs underneath.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/X0R5VP6BSB.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/design-systems/original.webp",
       groupName: "Design Systems",
       groupDescription: "A group for UI systems and product craft.",
       fixedSize: 4,
@@ -1821,7 +1821,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Data night",
       description: "Explore a small dataset and turn it into a useful view.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/JVSII4KCCK.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/data-night/original.webp",
       groupName: "Data Night",
       groupDescription: "A group for data projects and shared analysis.",
       fixedSize: 4,
@@ -1832,7 +1832,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Security tool check",
       description: "Compare safer habits, tools, and realistic threat models.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/0E0M5W9O3V.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/tech/security-basics/original.webp",
       groupName: "Security Tool Check",
       groupDescription: "A group for practical security habits and tools.",
       fixedSize: 4,
@@ -1845,7 +1845,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Reset circle",
       description: "A calm plan for movement, reflection, or recovery.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/reset/original.webp",
       groupName: "Wellness Circle",
       groupDescription: "A group for calm plans and healthy routines.",
       fixedSize: 4,
@@ -1856,7 +1856,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Gentle walk and talk",
       description: "Gentle movement with relaxed conversation.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/GG3SROJUUS.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/walk-talk/original.webp",
       groupName: "Reset Walkers",
       groupDescription: "A group for low-pressure wellness plans.",
       fixedSize: 5,
@@ -1867,7 +1867,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Yoga taster",
       description: "Book a class or make a calm self-led plan.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/yoga-session/original.webp",
       groupName: "Yoga Circle",
       groupDescription: "A group for movement, balance, and calm routines.",
       fixedSize: 4,
@@ -1878,7 +1878,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Mindful cafe",
       description: "A gentle catch-up built around reflection and tea.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYyMTc5Nzk2LXdpa2ltZWRpYS1pbWFnZS1rb3duY3B2Yi5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/mindful-cafe/original.webp",
       groupName: "Mindful Cafe",
       groupDescription:
         "A group for calm conversation and softer social plans.",
@@ -1891,7 +1891,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Share realistic routines, recipes, and small health habits.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/28VMIPXPQ4.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/meal-prep/original.webp",
       groupName: "Healthy Habits",
       groupDescription: "A group for practical wellness and routine-building.",
       fixedSize: 5,
@@ -1902,7 +1902,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Meditation reset",
       description: "A short guided session and calmer conversation.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9zdGF0aWMvaW1hZ2Uvd2Vic2l0ZS8yMDIyLTA0L2xyL2ZyYm93bHNfa2xhbmtzY2hhYWxfa25vY2tlcl9zb3VuZC1pbWFnZS1reWJjMHYxZy5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/meditation-reset/original.webp",
       groupName: "Meditation Reset",
       groupDescription: "A group for quiet resets and mindful routines.",
       fixedSize: 4,
@@ -1913,7 +1913,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Sleep routine swap",
       description: "Share gentle routines and small evening habits.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/JF6DZWDDO3.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/sleep-routine/original.webp",
       groupName: "Sleep Routine",
       groupDescription: "A group for calm routines and practical wellbeing.",
       fixedSize: 4,
@@ -1924,7 +1924,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Stretch break",
       description: "A short mobility reset between busy days.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/IJ5FMCOR7O.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/stretch-break/original.webp",
       groupName: "Stretch Break",
       groupDescription: "A group for gentle movement and healthy pauses.",
       fixedSize: 5,
@@ -1935,7 +1935,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Breathwork reset",
       description: "A short calming session with gentle reflection.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA1L21kNjAzMi1pbWFnZS1rd3Z5ZTk3Ny5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/breathwork/original.webp",
       groupName: "Breathwork Reset",
       groupDescription: "A group for calm routines and mindful pauses.",
       fixedSize: 4,
@@ -1946,7 +1946,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Gentle hike",
       description: "Fresh air, manageable pace, and no rush.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/R33JKIGGWW.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/gentle-hike/original.webp",
       groupName: "Gentle Hike",
       groupDescription: "A group for easy outdoor movement and wellbeing.",
       fixedSize: 5,
@@ -1957,7 +1957,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Journaling cafe",
       description: "Quiet prompts, coffee, and optional sharing.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/journaling-cafe/original.webp",
       groupName: "Journaling Cafe",
       groupDescription: "A group for reflective writing and calm company.",
       fixedSize: 4,
@@ -1969,7 +1969,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       description:
         "Try beginner-friendly strength and mobility without pressure.",
       coverImageSource:
-        "https://upload.wikimedia.org/wikipedia/commons/d/d4/Yoga_classes_Soham_Yoga_.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/pilates-taster/original.webp",
       groupName: "Pilates Taster",
       groupDescription: "A group for gentle strength and body awareness.",
       fixedSize: 4,
@@ -1980,7 +1980,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Nourishing brunch",
       description: "A food plan built around easy healthier choices.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/X0JDEONCQF.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/healthy-brunch/original.webp",
       groupName: "Healthy Brunch",
       groupDescription: "A group for nourishing food and relaxed chat.",
       fixedSize: 4,
@@ -1991,7 +1991,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Digital detox",
       description: "A phone-light walk, cafe, or quiet reset.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/3QVNJ49GPD.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/digital-detox/original.webp",
       groupName: "Digital Detox",
       groupDescription: "A group for quieter plans and mindful breaks.",
       fixedSize: 5,
@@ -2002,7 +2002,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Habit check-in",
       description: "Share small goals and make the next week easier.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/HT0IEUFSBY.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/habit-check-in/original.webp",
       groupName: "Habit Check-In",
       groupDescription: "A group for routines, accountability, and support.",
       fixedSize: 4,
@@ -2013,7 +2013,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Sauna recovery",
       description: "Book a calm recovery slot and decompress.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcHg2MzU3MjMtaW1hZ2Uta3d2eG1wcWQuanBn.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/sauna-session/original.webp",
       groupName: "Sauna Session",
       groupDescription: "A group for recovery, calm, and light conversation.",
       fixedSize: 4,
@@ -2024,7 +2024,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Mindful photowalk",
       description: "Notice details, move slowly, and take photos.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/mindful-photowalk/original.webp",
       groupName: "Mindful Photowalk",
       groupDescription: "A group for gentle walks and present attention.",
       fixedSize: 4,
@@ -2035,7 +2035,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Park reset",
       description: "A simple outdoor pause between busy weeks.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/wellness/park-reset/original.webp",
       groupName: "Park Reset",
       groupDescription: "A group for nature, calm, and easy movement.",
       fixedSize: 5,
@@ -2048,7 +2048,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Mini city adventure",
       description: "A short route through a place you keep meaning to visit.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/I54H0TYV9C.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/mini-adventure/original.webp",
       groupName: "Mini Adventure Crew",
       groupDescription: "A group for short adventures and fresh places.",
       fixedSize: 4,
@@ -2059,7 +2059,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Culture day",
       description: "Explore food, history, and one place with a story.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/T11P7UDT61.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/culture-day/original.webp",
       groupName: "Culture Day Group",
       groupDescription: "A group for exploring places with curiosity.",
       fixedSize: 5,
@@ -2070,7 +2070,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Neighbourhood wander",
       description: "Explore the part of town you usually pass by.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/3F994F7720.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/neighbourhood-wander/original.webp",
       groupName: "Local Explorers",
       groupDescription: "A group for local discovery and curious routes.",
       fixedSize: 4,
@@ -2081,7 +2081,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Day route planning",
       description: "Compare nearby routes, train times, stops, and logistics.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/road-trip-chat/original.webp",
       groupName: "Day Route Table",
       groupDescription: "A group for nearby trips and practical planning.",
       fixedSize: 5,
@@ -2092,7 +2092,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Hidden gems hunt",
       description: "Find small places, quiet views, or local favourites.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/hidden-gems/original.webp",
       groupName: "Hidden Gems",
       groupDescription: "A group for exploring overlooked places together.",
       fixedSize: 4,
@@ -2103,7 +2103,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Photo route",
       description: "Build a route around views, details, and good light.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/5QRJ3CKJDI.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/photo-route/original.webp",
       groupName: "Photo Route",
       groupDescription: "A group for visual exploring and city walks.",
       fixedSize: 4,
@@ -2114,7 +2114,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Train day trip",
       description: "Pick a nearby stop and make a simple itinerary.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/C97ID8B0EF.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/train-day/original.webp",
       groupName: "Train Day Trip",
       groupDescription: "A group for nearby escapes and easy travel plans.",
       fixedSize: 4,
@@ -2125,7 +2125,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Map and cafe",
       description: "Sketch nearby routes over coffee and shared notes.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/IGAVYLTGQP.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/map-and-cafe/original.webp",
       groupName: "Map and Cafe",
       groupDescription: "A group for local route ideas and relaxed planning.",
       fixedSize: 4,
@@ -2136,7 +2136,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Weekend idea board",
       description: "Compare nearby cities, routes, budgets, and timing.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9zdGF0aWMvaW1hZ2Uvd2Vic2l0ZS8yMDIyLTA0L2xyL3B4ODY4NTgtaW1hZ2Uta3oyZWEwOXQuanBn.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/passport-planning/original.webp",
       groupName: "Weekend Idea Board",
       groupDescription: "A group for realistic weekend trips and day plans.",
       fixedSize: 4,
@@ -2147,7 +2147,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Local landmarks",
       description: "Visit the places people always forget are nearby.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/Z1ZK1TACP9.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/local-landmarks/original.webp",
       groupName: "Local Landmarks",
       groupDescription: "A group for local travel and curious walks.",
       fixedSize: 5,
@@ -2158,7 +2158,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Food map",
       description: "Build a route around snacks, markets, or cafes.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/GBWOI4M9MR.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/food-map/original.webp",
       groupName: "Food Map",
       groupDescription: "A group for food-led exploring and city routes.",
       fixedSize: 5,
@@ -2169,7 +2169,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Budget day trip",
       description: "Find nearby routes, fares, snacks, and ways to save.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYxODA0NDA5LXdpa2ltZWRpYS1pbWFnZS1rb3dib3Qwdi5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/budget-trip-table/original.webp",
       groupName: "Budget Day-Trip Table",
       groupDescription: "A group for affordable routes and practical tips.",
       fixedSize: 4,
@@ -2180,7 +2180,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Museum route",
       description: "String together a few cultural stops without rushing.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1603629242133-adaaa856147c?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/museum-route/original.webp",
       groupName: "Museum Route",
       groupDescription: "A group for culture, museums, and travel routes.",
       fixedSize: 4,
@@ -2191,7 +2191,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Coastal day plan",
       description: "Sketch a beach, walk, or seaside day plan.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1533104816931-20fa691ff6ca?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/coastal-idea/original.webp",
       groupName: "Coastal Idea",
       groupDescription: "A group for beach plans and future day trips.",
       fixedSize: 5,
@@ -2202,7 +2202,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "City break board",
       description: "Compare nearby cities, routes, and weekend ideas.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvdXB3azYxODAyODE3LXdpa2ltZWRpYS1pbWFnZS1rb3dia2wweC5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/city-break-board/original.webp",
       groupName: "City Break Board",
       groupDescription:
         "A group for short city trips and practical itineraries.",
@@ -2214,7 +2214,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Route photo share",
       description: "Bring favourite local shots and swap route ideas.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/DYPWDEEILG.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/travel-photo-share/original.webp",
       groupName: "Route Photo Share",
       groupDescription: "A group for travel photos and visual discovery.",
       fixedSize: 4,
@@ -2225,7 +2225,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Travel story swap",
       description: "Trade day-trip stories, local tips, and future plans.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/OROYFM2UUO.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/hostel-stories/original.webp",
       groupName: "Travel Story Swap",
       groupDescription: "A group for travel tips and shared experience.",
       fixedSize: 5,
@@ -2236,7 +2236,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Map walk",
       description: "Pick a route from the map and follow curiosity.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDI0LTAyL2xyL3djcnJyejR6NmItaW1hZ2UuanBn.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/travel/map-walk/original.webp",
       groupName: "Map Walk",
       groupDescription: "A group for exploring routes and local discoveries.",
       fixedSize: 4,
@@ -2249,7 +2249,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Wildcard plan",
       description: "Start with a loose idea and shape it with the group.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/SMNKOAX7OW.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/open-plan/original.webp",
       groupName: "Wildcard Plan",
       groupDescription: "A group for flexible ideas and practical curiosity.",
       fixedSize: 5,
@@ -2260,7 +2260,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Small project kickoff",
       description: "Bring a niche idea and find people willing to start.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/E6VJXA2WBC.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/project/original.webp",
       groupName: "Project Circle",
       groupDescription: "A group for unusual plans and collaborative ideas.",
       fixedSize: 4,
@@ -2271,7 +2271,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Volunteer idea",
       description: "Find people for a small, useful local plan.",
       coverImageSource:
-        "https://images.rawpixel.com/image_1300/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvZmw0NzU3NDQyNzA2MS1pbWFnZS1renhqZjE1bC5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/volunteer-idea/original.webp",
       groupName: "Helpful Plans",
       groupDescription: "A group for practical, positive local ideas.",
       fixedSize: 5,
@@ -2282,7 +2282,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Swap session",
       description: "Trade recommendations, skills, items, or niche knowledge.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/U6KBZWMU72.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/swap-session/original.webp",
       groupName: "Swap Circle",
       groupDescription: "A group for useful swaps and shared curiosity.",
       fixedSize: 5,
@@ -2293,7 +2293,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Unusual plan",
       description: "Use this for niche ideas that do not fit a tidy category.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/3PLFDQQZ5M.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/wildcard/original.webp",
       groupName: "Unusual Plan Group",
       groupDescription: "A group for flexible plans and niche ideas.",
       fixedSize: 6,
@@ -2304,7 +2304,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Idea salon",
       description: "Bring questions, half-formed ideas, and curiosity.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvbnMxNzg3NC1pbWFnZS1rd3Z5YTNqMi5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/idea-salon/original.webp",
       groupName: "Idea Salon",
       groupDescription: "A group for loose ideas and thoughtful conversation.",
       fixedSize: 5,
@@ -2315,7 +2315,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Local project",
       description: "Start a small practical idea with nearby people.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTA1L2JzMTEzNy1pbWFnZS1rd3Z5bTlmaS5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/local-project/original.webp",
       groupName: "Local Project",
       groupDescription: "A group for small projects and shared initiative.",
       fixedSize: 5,
@@ -2326,7 +2326,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Show and tell",
       description: "Bring something you made, found, or learned.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvaXMyMjk0MS1pbWFnZS1rd3Z5ZWZmNS5qcGc.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/show-and-tell/original.webp",
       groupName: "Show and Tell",
       groupDescription: "A group for sharing discoveries and small wins.",
       fixedSize: 6,
@@ -2337,7 +2337,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Creative swap",
       description: "Trade ideas, materials, recommendations, or feedback.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcHgxMTc3NzQ4LWltYWdlLWt3eXIwMHN5LmpwZw.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/creative-swap/original.webp",
       groupName: "Creative Swap",
       groupDescription: "A group for useful swaps and creative momentum.",
       fixedSize: 5,
@@ -2348,7 +2348,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Micro-volunteering",
       description: "Find one helpful task small enough to finish together.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTExL2ZsNTE2Mzg4OTM0MTUtaW1hZ2UuanBn.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/micro-volunteering/original.webp",
       groupName: "Micro-Volunteering",
       groupDescription: "A group for practical local help and small impact.",
       fixedSize: 5,
@@ -2359,7 +2359,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Recommendation swap",
       description: "Build a shared list of books, tools, places, or films.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1526243741027-444d633d7365?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/recommendation-night/original.webp",
       groupName: "Recommendation Swap",
       groupDescription: "A group for discoveries and useful shared lists.",
       fixedSize: 5,
@@ -2370,7 +2370,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Curiosity table",
       description: "Bring a question and see where the group takes it.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/W6PNBNYHM6.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/curiosity-table/original.webp",
       groupName: "Curiosity Table",
       groupDescription: "A group for open questions and thoughtful chat.",
       fixedSize: 4,
@@ -2381,7 +2381,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Local shortlist",
       description: "Build a practical shortlist of places worth trying nearby.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1539635278303-d4002c07eae3?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/local-list/original.webp",
       groupName: "Local Shortlist",
       groupDescription: "A group for local discoveries and shared notes.",
       fixedSize: 4,
@@ -2392,7 +2392,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Skill showcase",
       description: "Show a small thing you know and learn one back.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/WHMJA960GX.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/skill-showcase/original.webp",
       groupName: "Skill Showcase",
       groupDescription: "A group for sharing small skills and useful ideas.",
       fixedSize: 5,
@@ -2403,7 +2403,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Project kickoff",
       description: "Turn a loose idea into a first practical step.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/project-kickoff/original.webp",
       groupName: "Project Kickoff",
       groupDescription: "A group for project starts and shared momentum.",
       fixedSize: 4,
@@ -2414,7 +2414,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Neighbourhood field notes",
       description: "Walk, observe, and collect practical local ideas.",
       coverImageSource:
-        "https://images.rawpixel.com/editor_1024/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcHgxNjA1NDA4LWltYWdlLWt3dnhxc2ZmLmpwZw.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/neighbourhood-notes/original.webp",
       groupName: "Neighbourhood Field Notes",
       groupDescription: "A group for local curiosity and practical ideas.",
       fixedSize: 4,
@@ -2425,7 +2425,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Tiny challenge",
       description: "Pick a playful constraint and make something small.",
       coverImageSource:
-        "https://cdn.stocksnap.io/img-thumbs/960w/CQHLULC8M9.jpg",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/tiny-challenge/original.webp",
       groupName: "Tiny Challenge",
       groupDescription: "A group for small creative constraints and action.",
       fixedSize: 5,
@@ -2436,7 +2436,7 @@ export const CATEGORY_TEMPLATES: Record<string, TemplateSeed[]> = {
       title: "Open project table",
       description: "A flexible table for ideas that need people.",
       coverImageSource:
-        "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=82",
+        "https://mkloz-teamforge.s3.us-east-1.amazonaws.com/uploads/seed-media/template-covers/other/open-table/original.webp",
       groupName: "Open Project Table",
       groupDescription: "A group for flexible ideas and shared momentum.",
       fixedSize: 6,

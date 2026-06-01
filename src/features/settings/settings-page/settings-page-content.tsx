@@ -31,7 +31,7 @@ export function SettingsPageContent({
   const shouldRenderDetail = !isMobile || isMobileDetailOpen;
 
   return (
-    <div className="mx-auto grid w-full max-w-6xl gap-7 px-4 py-5 md:px-8 lg:grid-cols-[14rem_minmax(0,56rem)] lg:gap-12 lg:py-10 xl:gap-18">
+    <div className="mx-auto grid w-full max-w-6xl gap-3 px-4 py-5 md:px-8 lg:grid-cols-[18rem_minmax(0,56rem)] lg:gap-6 lg:py-10 xl:gap-8">
       <SettingsSidebar
         activeSection={activeSection}
         isMobileDetailOpen={isMobileDetailOpen}

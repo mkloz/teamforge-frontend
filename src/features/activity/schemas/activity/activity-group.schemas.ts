@@ -12,6 +12,7 @@ import {
   planCategorySchema,
   planStatusSchema,
 } from "@/shared/schemas/enums";
+import { imageMediaSchema } from "@/shared/schemas/media";
 import { planProposalSchema } from "@/shared/schemas/plan";
 
 import { activityMutualGroupSchema } from "./activity-conversation.schemas";
@@ -36,6 +37,7 @@ export const planSchema = z.object({
   description: z.string().nullable(),
   category: planCategorySchema,
   coverImage: z.string().nullable(),
+  coverImageMedia: imageMediaSchema.nullable().optional(),
   status: planStatusSchema,
   dateTime: z.string().nullable(),
   locationMode: locationModeSchema,
@@ -74,6 +76,7 @@ export const planHistoryItemSchema = z.object({
   category: planCategorySchema,
   dateTime: z.string().nullable(),
   coverImage: z.string().nullable(),
+  coverImageMedia: imageMediaSchema.nullable().optional(),
   status: planStatusSchema,
   locationMode: locationModeSchema,
   location: z.string().nullable(),
@@ -90,6 +93,7 @@ export const groupSchema = z.object({
   name: z.string(),
   description: z.string().nullable(),
   avatar: z.string().nullable(),
+  avatarMedia: imageMediaSchema.nullable().optional(),
   status: groupStatusSchema,
   maxMembers: z.number(),
   createdAt: z.string(),

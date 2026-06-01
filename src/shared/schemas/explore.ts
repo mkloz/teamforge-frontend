@@ -9,6 +9,7 @@ import {
   personalityTypeSchema,
   planCategorySchema,
 } from "./enums";
+import { imageMediaSchema } from "./media";
 
 export const exploreInterestSchema = z.object({
   id: z.string(),
@@ -56,6 +57,7 @@ export const exploreMemberSchema = z.object({
   id: z.string(),
   name: z.string(),
   avatar: z.string().nullable(),
+  avatarMedia: imageMediaSchema.nullable().optional(),
   personalityType: personalityTypeSchema.nullable(),
   trustScore: z.number(),
 });
@@ -67,6 +69,7 @@ export const exploreGroupSchema = z.object({
   name: z.string(),
   description: z.string().nullable(),
   avatar: z.string().nullable(),
+  avatarMedia: imageMediaSchema.nullable().optional(),
   status: groupStatusSchema,
   maxMembers: z.number(),
   updatedAt: z.string().datetime(),

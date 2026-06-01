@@ -63,6 +63,7 @@ export function HistoryCard({
           <div className="relative size-12 shrink-0 overflow-hidden rounded-lg shadow-xs">
             <PlanCover
               value={item.coverImage}
+              media={item.coverImageMedia ?? null}
               alt={item.title}
               imageClassName="transition-transform duration-500 group-hover:scale-110"
             />

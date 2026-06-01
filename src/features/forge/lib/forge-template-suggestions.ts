@@ -22,6 +22,7 @@ import {
   PLAN_COVER_PRESETS,
 } from "@/shared/lib/plan-cover";
 import type { User } from "@/shared/schemas";
+import { isManagedUploadUrl } from "@/shared/validators/url.validator";
 
 const MIN_PERSONAL_FIT_SCORE = 3.4;
 const PERSONAL_FIT_TOP_SCORE_RATIO = 0.72;
@@ -116,6 +117,8 @@ const TEMPLATE_TRAIT_VALUES: TemplateTrait[] = [
 ];
 const TEMPLATE_COVER_PRESET_IDS = PLAN_COVER_PRESETS.map((preset) => preset.id);
 const PLAN_COVER_PRESET_ID_SET = new Set<string>(PLAN_COVER_PRESET_IDS);
+const VARIANT_READY_ORIGINAL_PATH = /\/original[.][a-z0-9]+$/i;
+const TEMPLATE_PREVIEW_VARIANT_FILE_NAME = "card-384.webp";
 
 function resolveTemplateCoverPreviewImage(seed: TemplateSeed) {
   const normalizedSource = seed.coverImageSource?.trim();
@@ -124,7 +127,7 @@ function resolveTemplateCoverPreviewImage(seed: TemplateSeed) {
     return null;
   }
 
-  return normalizedSource;
+  return getTemplateCoverPreviewVariant(normalizedSource) ?? normalizedSource;
 }
 
 function resolvePersistedTemplateCoverImage(
@@ -133,7 +136,11 @@ function resolvePersistedTemplateCoverImage(
 ) {
   const normalizedSource = seed.coverImageSource?.trim();
 
-  if (normalizedSource && PLAN_COVER_PRESET_ID_SET.has(normalizedSource)) {
+  if (
+    normalizedSource &&
+    (PLAN_COVER_PRESET_ID_SET.has(normalizedSource) ||
+      isManagedUploadUrl(normalizedSource))
+  ) {
     return normalizedSource;
   }
 
@@ -157,6 +164,25 @@ function getStableIndex(value: string, length: number) {
   }
 
   return hash % length;
+}
+
+function getTemplateCoverPreviewVariant(source: string) {
+  if (!isManagedUploadUrl(source)) {
+    return null;
+  }
+
+  const url = new URL(source);
+
+  if (!VARIANT_READY_ORIGINAL_PATH.test(url.pathname)) {
+    return null;
+  }
+
+  url.pathname = url.pathname.replace(
+    VARIANT_READY_ORIGINAL_PATH,
+    `/${TEMPLATE_PREVIEW_VARIANT_FILE_NAME}`,
+  );
+
+  return url.toString();
 }
 
 function addWeightedTrait(

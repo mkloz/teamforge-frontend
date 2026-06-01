@@ -32,7 +32,7 @@ export const SETTINGS_SECTIONS: SettingsSectionMeta[] = [
   {
     id: "matching",
     label: "Group fit",
-    description: "Personality, interests, and forming rules",
+    description: "Personality, interests, matching",
     headline: "Shape how your groups come together",
     summary:
       "Adjust the signals TeamForge uses when it includes you in compatible activity groups.",

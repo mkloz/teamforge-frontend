@@ -2,7 +2,7 @@ import { redirect } from "@tanstack/react-router";
 
 import { refreshAuthSession } from "@/shared/api/api";
 import { authSession } from "@/shared/api/auth-session";
-import { ensureCurrentUser } from "@/shared/api/current-user-query";
+import { getCachedCurrentUser } from "@/shared/api/current-user-cache";
 import {
   buildAuthRouteNavigation,
   buildPostAuthRedirectNavigation,
@@ -34,6 +34,18 @@ async function restoreAuthSessionIfNeeded() {
   return authSession.hasTokens();
 }
 
+async function resolveCurrentUser() {
+  const cachedCurrentUser = getCachedCurrentUser();
+
+  if (cachedCurrentUser) {
+    return cachedCurrentUser;
+  }
+
+  const { ensureCurrentUser } = await import("@/shared/api/current-user-query");
+
+  return ensureCurrentUser();
+}
+
 function redirectToLogin(returnHref: string | null): never {
   throw redirect(buildAuthRouteNavigation("/auth/login", returnHref));
 }
@@ -55,7 +67,7 @@ export async function redirectAuthenticatedUser({
     return;
   }
 
-  const currentUser = await ensureCurrentUser().catch(() => null);
+  const currentUser = await resolveCurrentUser().catch(() => null);
 
   if (!currentUser) {
     return;
@@ -82,7 +94,7 @@ export async function requireAuthenticatedUser(
   }
 
   try {
-    const currentUser = await ensureCurrentUser();
+    const currentUser = await resolveCurrentUser();
 
     if (!currentUser) {
       return redirectToLogin(returnHref);

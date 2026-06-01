@@ -6,6 +6,7 @@ import {
   planCategorySchema,
   planStatusSchema,
 } from "@/shared/schemas/enums";
+import { imageMediaSchema } from "@/shared/schemas/media";
 
 const homeGroupInterestSchema = z.object({
   id: z.string(),
@@ -39,6 +40,7 @@ export const homeGroupSchema = z
     id: z.string(),
     name: z.string(),
     avatar: z.string().nullable(),
+    avatarMedia: imageMediaSchema.nullable().optional(),
     status: groupStatusSchema,
     maxMembers: z.number(),
     updatedAt: z.string().datetime(),

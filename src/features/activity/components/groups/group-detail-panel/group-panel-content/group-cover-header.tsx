@@ -39,6 +39,7 @@ export function GroupCoverHeader({
         <div className="size-full bg-canvas">
           <PlanCover
             value={group.plan?.coverImage}
+            media={group.plan?.coverImageMedia ?? null}
             alt={`${group.name} cover`}
             imageClassName={cn(
               "transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none",

@@ -11,6 +11,7 @@ import {
   planStatusSchema,
 } from "@/shared/schemas/enums";
 import { exploreInterestSchema } from "@/shared/schemas/explore";
+import { imageMediaSchema } from "@/shared/schemas/media";
 import { planProposalSchema } from "@/shared/schemas/plan";
 
 export const groupPlanViewerRelationshipSchema = z.enum([
@@ -55,6 +56,7 @@ export const groupPlanDetailSchema = z.object({
     name: z.string(),
     description: z.string().nullable(),
     avatar: z.string().nullable(),
+    avatarMedia: imageMediaSchema.nullable().optional(),
     status: groupStatusSchema,
     access: activityAccessSchema,
     visibility: activityVisibilitySchema,
@@ -76,6 +78,7 @@ export const groupPlanDetailSchema = z.object({
       description: z.string().nullable(),
       category: planCategorySchema,
       coverImage: z.string().nullable(),
+      coverImageMedia: imageMediaSchema.nullable().optional(),
       status: planStatusSchema,
       dateTime: z.string().datetime().nullable(),
       locationMode: locationModeSchema,
@@ -94,6 +97,7 @@ export const groupPlanDetailSchema = z.object({
       category: planCategorySchema,
       dateTime: z.string().datetime().nullable(),
       coverImage: z.string().nullable(),
+      coverImageMedia: imageMediaSchema.nullable().optional(),
       status: planStatusSchema,
       location: z.string().nullable(),
     }),
@@ -104,6 +108,7 @@ export const groupPlanDetailSchema = z.object({
       userId: z.string(),
       name: z.string(),
       avatar: z.string().nullable(),
+      avatarMedia: imageMediaSchema.nullable().optional(),
       personalityType: personalityTypeSchema.nullable(),
       trustScore: z.number(),
       compatibilityScore: z.number().nullable(),

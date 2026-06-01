@@ -1,10 +1,13 @@
 import { Image } from "@/shared/components/common/image";
 import type { GroupPlanCardVariant } from "@/shared/components/group-plan-card/group-plan-card-types";
+import { getImageMediaVariant } from "@/shared/lib/image-media";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
 import { cn } from "@/shared/lib/utils";
+import type { ImageMedia } from "@/shared/schemas/media";
 
 interface CardImageProps {
   alt: string;
+  media?: ImageMedia | null;
   priority?: "auto" | "high";
   src?: string;
   variant?: GroupPlanCardVariant;
@@ -12,12 +15,15 @@ interface CardImageProps {
 
 export function CardImage({
   alt,
+  media,
   priority = "auto",
   src,
   variant = "default",
 }: CardImageProps) {
   const isCompact = variant === "compact";
-  const imageSrc = getSizedImageUrl(src, isCompact ? 384 : 384);
+  const imageSrc =
+    getImageMediaVariant(media, "card384", null) ??
+    getSizedImageUrl(src, isCompact ? 384 : 384);
 
   return (
     <div

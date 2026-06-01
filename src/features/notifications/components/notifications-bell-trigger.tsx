@@ -1,5 +1,4 @@
 import { Bell } from "lucide-react";
-import { useNotificationCountEnabled } from "@/features/notifications/hooks/use-notification-count-enabled";
 import { useUnreadNotificationCount } from "@/features/notifications/hooks/use-unread-notification-count";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -16,8 +15,7 @@ interface NotificationsBellTriggerProps {
 export function NotificationsBellTrigger({
   onClick,
 }: NotificationsBellTriggerProps) {
-  const [countEnabled, enableCount] = useNotificationCountEnabled();
-  const { count } = useUnreadNotificationCount({ enabled: countEnabled });
+  const { count } = useUnreadNotificationCount();
 
   return (
     <Tooltip>
@@ -25,13 +23,7 @@ export function NotificationsBellTrigger({
         <Button
           variant="ghost"
           size="icon"
-          onPointerEnter={enableCount}
-          onPointerDown={enableCount}
-          onFocus={enableCount}
-          onClick={() => {
-            enableCount();
-            onClick();
-          }}
+          onClick={onClick}
           aria-label={
             count > 0 ? `Notifications, ${count} unread` : "Notifications"
           }

@@ -1,11 +1,9 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense } from "react";
 import { ActivityEmptyState } from "@/features/activity/components/activity-page/activity-conversation-stage/activity-empty-state";
 import { ActivityConversationStageSkeleton } from "@/features/activity/components/activity-page/activity-page-skeleton";
 import { ActivitySidebar } from "@/features/activity/components/activity-page/activity-sidebar";
 import type { ActivityWorkspace } from "@/features/activity/hooks/use-activity";
 import { cn } from "@/shared/lib/utils";
-
-const ACTIVITY_REALTIME_IDLE_DELAY_MS = 12_000;
 
 const ActivityConversationStage = lazy(() =>
   import(
@@ -44,10 +42,6 @@ export function ActivityPageContent({
   isMobile,
   isOnline,
 }: ActivityPageContentProps) {
-  const shouldLoadRealtime = useShouldLoadActivityRealtime(
-    activity.hasSelection,
-  );
-
   return (
     <div className={getFrameClassName(contained, activity.hasSelection)}>
       <ActivitySidebar activity={activity} isOnline={isOnline} />
@@ -77,50 +71,27 @@ export function ActivityPageContent({
         )}
       </main>
 
-      {shouldLoadRealtime ? (
-        <Suspense fallback={null}>
-          <ActivityRealtimeSync
-            activeChatId={
-              activity.selectedKind === "group"
-                ? (activity.selectedGroup?.chat?.id ?? null)
-                : activity.selectedKind === "dm"
-                  ? (activity.selectedChat?.id ?? null)
-                  : null
-            }
-            activeGroupId={
-              activity.selectedKind === "group"
-                ? (activity.selectedGroup?.id ?? null)
+      <Suspense fallback={null}>
+        <ActivityRealtimeSync
+          activeChatId={
+            activity.selectedKind === "group"
+              ? (activity.selectedGroup?.chat?.id ?? null)
+              : activity.selectedKind === "dm"
+                ? (activity.selectedChat?.id ?? null)
                 : null
-            }
-            activePlanId={
-              activity.selectedKind === "group"
-                ? (activity.selectedGroup?.plan?.id ?? null)
-                : null
-            }
-          />
-        </Suspense>
-      ) : null}
+          }
+          activeGroupId={
+            activity.selectedKind === "group"
+              ? (activity.selectedGroup?.id ?? null)
+              : null
+          }
+          activePlanId={
+            activity.selectedKind === "group"
+              ? (activity.selectedGroup?.plan?.id ?? null)
+              : null
+          }
+        />
+      </Suspense>
     </div>
   );
-}
-
-function useShouldLoadActivityRealtime(hasSelection: boolean) {
-  const [shouldLoadRealtime, setShouldLoadRealtime] = useState(hasSelection);
-
-  useEffect(() => {
-    if (hasSelection) {
-      setShouldLoadRealtime(true);
-      return undefined;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setShouldLoadRealtime(true);
-    }, ACTIVITY_REALTIME_IDLE_DELAY_MS);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
-  }, [hasSelection]);
-
-  return shouldLoadRealtime;
 }

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Image } from "@/shared/components/common/image";
 import { getPlanCoverPreset } from "@/shared/lib/plan-cover";
 import { cn } from "@/shared/lib/utils";
+import type { ImageMedia } from "@/shared/schemas/media";
 
 function isImageSource(value?: string | null) {
   return Boolean(value?.match(/^(https?:\/\/|data:image\/|blob:|\/)/i));
@@ -13,6 +14,7 @@ interface PlanCoverProps {
   className?: string;
   fallbackComponent?: ReactNode;
   imageClassName?: string;
+  media?: ImageMedia | null;
   loading?: "eager" | "lazy";
   loadingClassName?: string;
   loadingComponent?: ReactNode;
@@ -26,6 +28,7 @@ export function PlanCover({
   className,
   fallbackComponent,
   imageClassName,
+  media,
   loading = "lazy",
   loadingClassName,
   loadingComponent,
@@ -33,11 +36,12 @@ export function PlanCover({
   showNoImage,
 }: PlanCoverProps) {
   const preset = getPlanCoverPreset(value);
+  const mediaSrc = media?.variants.cover800 ?? null;
 
   if (preset?.kind === "image") {
     return (
       <Image
-        src={preset.src}
+        src={mediaSrc ?? preset.src}
         alt={alt}
         loading={loading}
         wrapperClassName={className}
@@ -68,7 +72,9 @@ export function PlanCover({
 
   return (
     <Image
-      src={isImageSource(value) ? (value ?? undefined) : undefined}
+      src={
+        mediaSrc ?? (isImageSource(value) ? (value ?? undefined) : undefined)
+      }
       alt={alt}
       loading={loading}
       wrapperClassName={className}

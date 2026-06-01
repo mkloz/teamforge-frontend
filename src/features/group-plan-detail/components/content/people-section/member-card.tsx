@@ -63,6 +63,7 @@ function MemberAvatar({
     <div className="relative shrink-0">
       <Avatar
         src={member.avatar}
+        media={member.avatarMedia ?? null}
         name={member.name}
         imageSize={64}
         className={cn(

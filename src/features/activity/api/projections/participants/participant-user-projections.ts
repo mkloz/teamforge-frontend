@@ -1,5 +1,10 @@
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
-import type { FriendshipUserApi, GroupMemberApi, User } from "@/shared/schemas";
+import type {
+  FriendshipUserApi,
+  GroupMemberApi,
+  ImageMedia,
+  User,
+} from "@/shared/schemas";
 
 import { normalizeTrustScore } from "./participant-score-normalizers";
 
@@ -7,6 +12,7 @@ type ParticipantUserSummary = {
   id: string;
   name: string;
   avatar: string | null;
+  avatarMedia?: ImageMedia | null;
   bio?: string | null;
   age?: number | null;
   gender?: ActivityParticipant["gender"];
@@ -28,6 +34,7 @@ function mapParticipantUserSummary(
     id: user.id,
     name: user.name,
     avatar: user.avatar,
+    avatarMedia: user.avatarMedia ?? null,
     bio: user.bio ?? null,
     age: user.age ?? null,
     gender: user.gender ?? null,

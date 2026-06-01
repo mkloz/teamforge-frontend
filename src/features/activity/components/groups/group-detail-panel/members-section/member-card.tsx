@@ -41,6 +41,7 @@ export function MemberCard({
       <div className="relative shrink-0">
         <Avatar
           src={member.user?.avatar}
+          media={member.user?.avatarMedia ?? null}
           name={member.user?.name}
           className={cn(
             "size-10 ring-1 ring-border/20 transition-all group-hover/member:ring-border/40",

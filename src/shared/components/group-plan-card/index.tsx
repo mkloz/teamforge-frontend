@@ -21,6 +21,7 @@ export function GroupPlanCard({
     fitReason,
     groupName,
     imageAlt,
+    imageMedia,
     imageSrc,
     isFull,
     title,
@@ -40,6 +41,7 @@ export function GroupPlanCard({
         ) : null}
         <CardImage
           alt={imageAlt}
+          media={imageMedia}
           priority={imagePriority}
           src={imageSrc}
           variant={variant}
@@ -54,6 +56,7 @@ export function GroupPlanCard({
           <CardHeader
             access={access}
             groupName={groupName}
+            imageMedia={imageMedia}
             imageSrc={imageSrc}
             variant={variant}
           />

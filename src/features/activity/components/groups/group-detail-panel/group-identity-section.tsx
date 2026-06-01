@@ -20,12 +20,14 @@ import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
+import type { ImageMedia } from "@/shared/schemas/media";
 import { formatPanelToken } from "./lib/constants";
 import { PlanChangeDialog } from "./plan-section/plan-change-dialog";
 
 interface GroupIdentitySectionProps {
   activity?: Group["activity"];
   avatar?: string | null;
+  avatarMedia?: ImageMedia | null;
   coverImage?: string | null;
   createdAt: string;
   currentUserRole: MemberRole;
@@ -43,6 +45,7 @@ interface GroupIdentitySectionProps {
 export function GroupIdentitySection({
   activity,
   avatar,
+  avatarMedia,
   coverImage = null,
   createdAt,
   currentUserRole,
@@ -81,6 +84,7 @@ export function GroupIdentitySection({
         <div className="group pointer-events-auto shrink-0">
           <Avatar
             src={avatarSrc}
+            media={avatarSrc ? avatarMedia : null}
             name={displayName}
             alt={`${displayName} avatar`}
             shape="rounded"
