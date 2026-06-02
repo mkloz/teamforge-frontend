@@ -15,7 +15,7 @@ export function Theory101({ onBack, onNext }: Theory101Props) {
     <PersonalityScreenShell className="max-w-lg">
       <motion.p
         variants={fadeUpItem}
-        className="mb-3 text-center font-bold font-sans text-forge-teal text-xs uppercase tracking-widest"
+        className="mb-3 text-center font-bold font-sans text-forge-teal text-xs"
       >
         How the read works
       </motion.p>

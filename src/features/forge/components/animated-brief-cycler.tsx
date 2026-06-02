@@ -104,7 +104,7 @@ export function AnimatedBriefCycler() {
         >
           {brief.rows.map(({ label, value }, rowIndex) => (
             <div key={label} className="flex items-baseline gap-4 px-4 py-3">
-              <dt className="w-16 shrink-0 font-black text-muted-foreground text-xs uppercase">
+              <dt className="w-16 shrink-0 font-semibold text-muted-foreground text-xs">
                 {label}
               </dt>
               <dd className="min-w-0 font-semibold text-foreground text-sm leading-relaxed">

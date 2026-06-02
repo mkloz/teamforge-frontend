@@ -454,7 +454,7 @@ export function PwaDiagnosticsPanel() {
       <div className="mx-auto max-w-6xl px-6 py-10 sm:py-12">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="mb-2 font-semibold text-forge-teal text-xs uppercase tracking-widest">
+            <p className="mb-2 font-semibold text-forge-teal text-xs">
               Device readiness
             </p>
             <div className="flex items-center justify-between gap-4">

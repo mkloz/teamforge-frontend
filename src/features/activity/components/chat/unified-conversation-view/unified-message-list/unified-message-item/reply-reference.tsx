@@ -25,7 +25,7 @@ export const ReplyReference = memo(
         <div className="min-w-0 flex-1">
           <div className="mb-0.5 flex min-w-0 items-center gap-1.5">
             <Reply className="size-3 shrink-0 text-forge-teal" />
-            <span className="min-w-0 flex-1 truncate font-bold text-forge-teal text-micro uppercase tracking-tight">
+            <span className="min-w-0 flex-1 truncate font-bold text-forge-teal text-micro">
               {replyTo.sender?.name}
             </span>
           </div>

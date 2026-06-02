@@ -95,7 +95,7 @@ export function NotificationDetail({
 
         <dl className="mt-8 grid gap-3">
           <div>
-            <dt className="font-bold text-nano text-slate-muted uppercase leading-tight tracking-widest">
+            <dt className="font-semibold text-slate-muted text-xs leading-tight">
               Received
             </dt>
             <dd className="mt-1 font-semibold text-ink/75 text-sm">

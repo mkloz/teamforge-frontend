@@ -15,6 +15,7 @@ export function runExclusiveActivityMutation<T>(
   const activeMutation = activeActivityMutations.get(key);
 
   if (activeMutation) {
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- A key always represents one mutation result shape while it is in flight.
     return activeMutation as Promise<T>;
   }
 

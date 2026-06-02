@@ -220,9 +220,7 @@ export function ForgeNodeCanvas({ progress }: ForgeNodeCanvasProps) {
           </motion.p>
         </AnimatePresence>
 
-        <p className="font-bold text-micro text-white/40 uppercase tracking-widest">
-          Group forge
-        </p>
+        <p className="font-bold text-micro text-white/40">Group forge</p>
 
         <div className="flex items-center gap-1.5 pt-1" aria-hidden="true">
           {(["teal", "teal", "amber"] as const).map((color, i) => (
@@ -257,9 +255,7 @@ function ReducedMotionForgeLoading({ phase }: { phase: ForgePhase }) {
     >
       <div className="size-12 rounded-full border-2 border-forge-teal/40 border-t-forge-teal" />
       <p className="font-black text-lg text-white">{PHASE_LABELS[phase]}</p>
-      <p className="font-bold text-micro text-white/40 uppercase tracking-widest">
-        Group forge
-      </p>
+      <p className="font-bold text-micro text-white/40">Group forge</p>
     </div>
   );
 }

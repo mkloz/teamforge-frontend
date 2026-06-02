@@ -20,9 +20,7 @@ export function RailInfoRow({
         <Icon className="size-4 text-forge-teal" aria-hidden="true" />
       </div>
       <div className="min-w-0">
-        <p className="type-signature-label font-bold text-muted-foreground uppercase tracking-widest">
-          {label}
-        </p>
+        <p className="font-semibold text-muted-foreground text-xs">{label}</p>
         <p
           className={cn(
             "font-black text-foreground text-sm leading-snug",

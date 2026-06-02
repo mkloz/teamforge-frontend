@@ -6,7 +6,7 @@ import { completionFadeUp } from "./completion-blueprint-motion";
 export function CompletionBlueprintHeader() {
   return (
     <motion.div variants={completionFadeUp} className="mb-12 text-center">
-      <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-3 py-1 font-bold text-foreground/86 text-xs uppercase tracking-widest shadow-sm backdrop-blur-sm">
+      <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-3 py-1 font-bold text-foreground/86 text-xs shadow-sm backdrop-blur-sm">
         <BadgeCheck size={12} aria-hidden="true" />
         All set
       </div>

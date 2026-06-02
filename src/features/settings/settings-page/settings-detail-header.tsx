@@ -29,7 +29,7 @@ export function SettingsDetailHeader({
       </div>
       <div className="flex items-start gap-3">
         <div className="min-w-0">
-          <p className="font-semibold text-slate-muted text-xs uppercase tracking-widest">
+          <p className="font-semibold text-slate-muted text-xs">
             {activeSectionMeta?.label ?? "Settings"}
           </p>
           <h2 className="mt-2 font-bold text-2xl text-ink leading-tight lg:text-3xl">

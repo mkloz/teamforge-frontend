@@ -27,7 +27,7 @@ export function LengthOptionPrecision({
       </p>
 
       <div className="flex w-full items-center gap-2 opacity-80 sm:justify-end">
-        <span className="shrink-0 font-black font-sans text-muted-foreground text-xs uppercase tracking-wide">
+        <span className="shrink-0 font-bold font-sans text-muted-foreground text-xs">
           {getPrecisionLabel(isAdjust, viewModel)}
         </span>
 

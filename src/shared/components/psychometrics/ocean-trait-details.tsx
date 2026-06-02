@@ -13,7 +13,7 @@ export function OceanTraitDetails({
 }: OceanTraitDetailsProps) {
   if (!selectedInfo) {
     return (
-      <p className="type-signature-label text-center font-bold text-slate-muted uppercase tracking-widest">
+      <p className="text-center font-semibold text-slate-muted text-xs">
         Tap any trait to explore
       </p>
     );
@@ -24,7 +24,7 @@ export function OceanTraitDetails({
       <div className="flex items-center justify-between">
         <div>
           <p className="font-black text-ink text-sm">{selectedInfo.label}</p>
-          <span className="type-signature-label font-bold text-slate-muted uppercase tracking-tight">
+          <span className="font-semibold text-slate-muted text-xs">
             {selectedInfo.level} ({selectedInfo.score}%)
           </span>
         </div>
@@ -33,7 +33,7 @@ export function OceanTraitDetails({
           variant="link"
           size="xs"
           onClick={onClear}
-          className="type-signature-label h-auto p-0 uppercase tracking-widest hover:opacity-70"
+          className="h-auto p-0 text-xs hover:opacity-70"
         >
           Close
         </Button>

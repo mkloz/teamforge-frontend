@@ -11,7 +11,7 @@ export function QuestionPageHeader({
 }: QuestionPageHeaderProps) {
   return (
     <div className="mb-2 flex items-center justify-between">
-      <span className="font-bold font-sans text-muted-foreground text-xs uppercase tracking-widest">
+      <span className="font-bold font-sans text-muted-foreground text-xs">
         Page {pageNumber} of {totalPages}
       </span>
       {timeLeftLabel ? (

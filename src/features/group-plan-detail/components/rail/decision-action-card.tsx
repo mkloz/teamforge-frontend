@@ -52,9 +52,7 @@ function DecisionActionSummary({ copy }: { copy: DecisionActionCopy }) {
       <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">
         {copy.summary}
       </p>
-      <p className="mt-3 font-bold text-foreground text-xs uppercase tracking-widest">
-        {copy.seats}
-      </p>
+      <p className="mt-3 font-bold text-foreground text-xs">{copy.seats}</p>
     </>
   );
 }

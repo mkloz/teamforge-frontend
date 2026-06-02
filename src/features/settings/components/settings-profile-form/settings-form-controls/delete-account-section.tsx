@@ -27,7 +27,7 @@ export function DeleteAccountSection({
     <section className="border-destructive/30 border-t pt-7">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0 max-w-2xl flex-1">
-          <p className="font-semibold text-destructive text-xs uppercase tracking-widest">
+          <p className="font-semibold text-destructive text-xs">
             Permanent action
           </p>
           <h3 className="mt-2 font-semibold text-ink text-lg">

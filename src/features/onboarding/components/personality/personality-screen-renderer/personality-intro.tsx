@@ -30,7 +30,7 @@ export function PersonalityIntro({
 }: PersonalityIntroProps) {
   return (
     <PersonalityScreenShell className="max-w-md pt-10 sm:pt-12">
-      <p className="mb-3 text-center font-bold font-sans text-forge-teal text-xs uppercase tracking-widest">
+      <p className="mb-3 text-center font-bold font-sans text-forge-teal text-xs">
         Personality Assessment
       </p>
 

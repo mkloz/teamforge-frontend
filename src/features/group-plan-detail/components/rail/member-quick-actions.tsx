@@ -32,7 +32,7 @@ export function MemberQuickActions({ detail }: MemberQuickActionsProps) {
     >
       <h3
         id="member-quick-actions"
-        className="type-signature-label px-1 font-black text-forge-teal uppercase tracking-widest"
+        className="px-1 font-bold text-forge-teal text-xs"
       >
         Quick actions
       </h3>

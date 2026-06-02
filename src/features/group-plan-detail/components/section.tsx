@@ -44,9 +44,7 @@ export function Section({
         <div className="flex min-w-0 items-start gap-3">
           <div className="min-w-0">
             {eyebrow ? (
-              <p className="font-black text-forge-teal text-xs uppercase tracking-widest">
-                {eyebrow}
-              </p>
+              <p className="font-bold text-forge-teal text-xs">{eyebrow}</p>
             ) : null}
             <h2
               id={headingId}

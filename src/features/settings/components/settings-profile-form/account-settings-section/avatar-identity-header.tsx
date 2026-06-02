@@ -29,9 +29,7 @@ export function AvatarIdentityHeader({
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="font-semibold text-forge-teal text-xs uppercase tracking-widest">
-          Public identity
-        </p>
+        <p className="font-semibold text-forge-teal text-xs">Public identity</p>
         <h2 className="mt-2 font-bold text-3xl text-ink leading-tight">
           {currentUser?.name ?? "Your account"}
         </h2>

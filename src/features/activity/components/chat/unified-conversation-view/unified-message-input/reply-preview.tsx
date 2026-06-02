@@ -25,7 +25,7 @@ export const ReplyPreview = memo(
               <div className="min-w-0 flex-1">
                 <div className="mb-0.5 flex items-center gap-1.5">
                   <Reply className="size-3 text-forge-teal" />
-                  <span className="truncate font-bold text-forge-teal text-xs uppercase tracking-tight">
+                  <span className="truncate font-bold text-forge-teal text-xs">
                     {replyingTo.sender?.name}
                   </span>
                 </div>

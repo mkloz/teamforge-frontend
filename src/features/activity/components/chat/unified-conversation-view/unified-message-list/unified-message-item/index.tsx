@@ -94,9 +94,14 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
     .filter((reaction) => reaction.isActive)
     .map((reaction) => reaction.emoji);
   const senderLabel = isOwn ? "You" : (message.sender?.name ?? "Unknown");
+  const selectionLabel = isSelectionMode
+    ? isSelected
+      ? "Selected. "
+      : "Not selected. "
+    : "";
   const messageAriaLabel = `${senderLabel} message at ${formatChatTime(
     timestamp,
-  )}. Press Shift and F10 for message actions.`;
+  )}. ${selectionLabel}Press Shift and F10 for message actions.`;
   const handleMessageClick = (event: MouseEvent<HTMLElement>) => {
     if (!canToggleSelection) {
       return;
@@ -132,10 +137,10 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
       onSelectMessage={isSelectable ? onStartSelection : undefined}
       onOpenChange={setIsContextMenuOpen}
     >
+      {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions: Message rows keep article semantics while supporting selection and context-menu keyboard workflows. */}
       <article
         tabIndex={0}
         aria-roledescription="message"
-        aria-selected={isSelectionMode ? isSelected : undefined}
         aria-label={messageAriaLabel}
         className={cn(
           "group relative w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",

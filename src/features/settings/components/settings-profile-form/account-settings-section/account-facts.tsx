@@ -23,9 +23,7 @@ function AccountFact({
         <Icon size={16} strokeWidth={2} />
       </div>
       <div className="min-w-0">
-        <p className="font-semibold text-slate-muted text-xs uppercase tracking-widest">
-          {label}
-        </p>
+        <p className="font-semibold text-slate-muted text-xs">{label}</p>
         <p className="wrap-break-word mt-1 font-semibold text-ink text-sm">
           {value}
         </p>

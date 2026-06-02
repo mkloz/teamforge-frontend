@@ -30,9 +30,7 @@ export const LightboxImage = memo(function LightboxImage({
       {state === "error" && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
           <ErrorMediaImageUnavailableVisual className="h-32 w-auto text-white" />
-          <p className="font-medium text-white/40 text-xs uppercase tracking-wider">
-            Image unavailable
-          </p>
+          <p className="font-medium text-white/40 text-xs">Image unavailable</p>
         </div>
       )}
 
@@ -87,7 +85,7 @@ export const LightboxVideo = memo(function LightboxVideo({
       {hasError && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
           <ErrorMediaVideoUnavailableVisual className="h-32 w-auto text-white" />
-          <p className="font-medium text-white/40 text-xs uppercase tracking-wider">
+          <p className="font-medium text-white/40 text-xs">
             {isGif ? "GIF unavailable" : "Video unavailable"}
           </p>
         </div>

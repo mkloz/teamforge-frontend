@@ -47,7 +47,7 @@ export function NotFoundState({
             <SoloActivityScene inline className="h-52 sm:h-60 lg:hidden" />
             <SoloActivityScene className="hidden overflow-visible lg:block" />
             <div className="w-full max-w-lg text-center lg:justify-self-start lg:text-left">
-              <p className="mb-4 font-black text-slate-muted text-sm uppercase tracking-widest">
+              <p className="mb-4 font-black text-slate-muted text-sm tracking-widest">
                 404
               </p>
               <h1

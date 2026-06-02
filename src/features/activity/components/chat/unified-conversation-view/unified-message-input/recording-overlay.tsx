@@ -35,7 +35,7 @@ export const RecordingOverlay = memo(({ timeLabel }: RecordingOverlayProps) => {
           />
         ))}
       </div>
-      <span className="fade-in slide-in-from-right-2 animate-in font-bold text-micro text-slate-muted uppercase tracking-wider">
+      <span className="fade-in slide-in-from-right-2 animate-in font-bold text-micro text-slate-muted">
         Recording...
       </span>
     </div>

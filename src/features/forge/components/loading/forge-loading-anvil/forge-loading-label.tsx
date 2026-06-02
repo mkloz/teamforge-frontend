@@ -21,9 +21,7 @@ export function ForgeLoadingLabel({
           {displayLabel}
         </motion.p>
       </AnimatePresence>
-      <p className="font-bold text-micro text-muted-foreground uppercase">
-        Group forge
-      </p>
+      <p className="font-bold text-micro text-muted-foreground">Group forge</p>
       <div className="flex items-center gap-1.5 pt-1" aria-hidden="true">
         {[0, 1, 2].map((index) => (
           <motion.span

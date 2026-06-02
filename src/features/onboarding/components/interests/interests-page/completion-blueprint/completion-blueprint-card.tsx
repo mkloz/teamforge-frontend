@@ -28,7 +28,7 @@ export function CompletionBlueprintCard({
 
         <div className="flex flex-col gap-1 p-8 pb-4">
           <div className="mb-2 flex items-center justify-between">
-            <span className="font-bold font-sans text-muted-foreground text-xs uppercase tracking-widest">
+            <span className="font-bold font-sans text-muted-foreground text-xs">
               Your profile
             </span>
             <Fingerprint
@@ -48,7 +48,7 @@ export function CompletionBlueprintCard({
         <div className="flex flex-1 flex-col gap-8 p-8 pt-10">
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
-              <p className="font-bold font-sans text-muted-foreground text-nano uppercase tracking-widest">
+              <p className="font-bold font-sans text-muted-foreground text-nano">
                 Interests
               </p>
               <p className="font-bold font-sans text-2xl text-foreground">
@@ -59,7 +59,7 @@ export function CompletionBlueprintCard({
               </p>
             </div>
             <div className="flex flex-col gap-1">
-              <p className="font-bold font-sans text-muted-foreground text-nano uppercase tracking-widest">
+              <p className="font-bold font-sans text-muted-foreground text-nano">
                 Status
               </p>
               <div className="flex items-center gap-1.5 pt-1">

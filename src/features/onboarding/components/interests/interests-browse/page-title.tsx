@@ -20,7 +20,7 @@ export function PageTitle({
           className="mb-6 overflow-hidden pt-4"
         >
           {!hideContextLabel && (
-            <p className="mb-2 font-bold font-sans text-forge-teal text-micro uppercase tracking-widest">
+            <p className="mb-2 font-bold font-sans text-forge-teal text-xs">
               Step 2 of 2 · Interests
             </p>
           )}

@@ -62,7 +62,7 @@ export function SuccessHero({
               <Check size={20} strokeWidth={2.5} />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+              <p className="font-semibold text-muted-foreground text-xs">
                 Group ready
               </p>
               <h3 className="mt-1 font-bold text-foreground text-xl leading-tight">
@@ -116,7 +116,7 @@ export function SuccessHero({
               <p className="font-bold text-foreground text-sm leading-tight">
                 {averageScore !== null ? `${averageScore}%` : "Ready"}
               </p>
-              <p className="font-semibold text-micro text-muted-foreground uppercase tracking-wide">
+              <p className="font-semibold text-micro text-muted-foreground">
                 Avg fit
               </p>
             </div>

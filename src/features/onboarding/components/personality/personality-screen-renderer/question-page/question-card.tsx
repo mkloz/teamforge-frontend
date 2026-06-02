@@ -32,7 +32,7 @@ export function QuestionCard({
       )}
     >
       <div className="mb-2.5 flex h-5 items-center justify-between sm:mb-3 sm:h-6">
-        <span className="inline-flex items-center rounded-full bg-slate-muted/10 px-2 py-0.5 font-bold font-sans text-muted-foreground text-nano uppercase tracking-widest sm:px-2.5 sm:py-1">
+        <span className="inline-flex items-center rounded-full bg-slate-muted/10 px-2 py-0.5 font-bold font-sans text-muted-foreground text-nano sm:px-2.5 sm:py-1">
           Q {index} of {totalQuestions}
         </span>
 
@@ -43,7 +43,7 @@ export function QuestionCard({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
-              className="inline-flex items-center gap-1 rounded-full bg-forge-teal/10 px-2 py-0.5 font-bold font-sans text-forge-teal text-nano uppercase tracking-wider sm:px-2.5 sm:py-1"
+              className="inline-flex items-center gap-1 rounded-full bg-forge-teal/10 px-2 py-0.5 font-bold font-sans text-forge-teal text-nano sm:px-2.5 sm:py-1"
             >
               <Check size={9} strokeWidth={3} className="sm:h-2.5 sm:w-2.5" />
               Done

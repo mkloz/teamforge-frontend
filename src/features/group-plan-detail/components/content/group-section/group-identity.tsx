@@ -34,9 +34,7 @@ export function GroupIdentity({ detail }: { detail: GroupPlanDetail }) {
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="type-signature-label font-black text-forge-teal uppercase tracking-widest">
-          {category.label}
-        </p>
+        <p className="font-bold text-forge-teal text-xs">{category.label}</p>
         {detail.group.description ? (
           <p className="mt-2 text-pretty text-foreground text-sm leading-relaxed md:text-base">
             {detail.group.description}

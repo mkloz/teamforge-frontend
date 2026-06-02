@@ -34,12 +34,12 @@ export function DimensionSpectrum({ score }: DimensionSpectrumProps) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between px-1">
-        <span className="font-black text-micro text-slate-muted uppercase tracking-widest">
+        <span className="font-bold text-slate-muted text-xs">
           {labels.name}
         </span>
         <span
           className={cn(
-            "font-black text-micro uppercase tracking-widest transition-colors",
+            "font-black text-micro transition-colors",
             score.isBorderline ? "text-spark-amber" : "text-forge-teal",
           )}
         >

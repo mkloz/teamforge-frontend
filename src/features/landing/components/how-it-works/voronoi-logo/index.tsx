@@ -90,9 +90,7 @@ export function VoronoiLogo({
           }}
           className="flex size-full items-center justify-center rounded-full bg-forge-teal text-white"
         >
-          <span className="font-bold font-sans text-sm uppercase tracking-widest">
-            You
-          </span>
+          <span className="font-bold font-sans text-sm">You</span>
         </motion.div>
       </motion.div>
 

@@ -405,7 +405,7 @@ export function LegalPage({ kind }: LegalPageProps) {
               <div className="lg:col-span-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <LegalBadge kind={kind} />
-                  <p className="font-black text-slate-muted text-xs uppercase tracking-widest">
+                  <p className="font-semibold text-slate-muted text-xs">
                     Effective {copy.updatedAt}
                   </p>
                 </div>
@@ -429,7 +429,7 @@ export function LegalPage({ kind }: LegalPageProps) {
               </div>
 
               <aside className="rounded-2xl border border-border/70 bg-card/55 p-4 lg:sticky lg:top-6">
-                <p className="font-black text-slate-muted text-xs uppercase tracking-widest">
+                <p className="font-semibold text-slate-muted text-xs">
                   On this page
                 </p>
                 <nav
@@ -477,7 +477,7 @@ function LegalBadge({ kind }: { kind: LegalPageKind }) {
   const Icon = kind === "privacy" ? ShieldCheck : Scale;
 
   return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-forge-teal/20 bg-forge-teal/8 px-3 py-1 font-black text-forge-teal text-xs uppercase tracking-widest">
+    <span className="inline-flex items-center gap-2 rounded-full border border-forge-teal/20 bg-forge-teal/8 px-3 py-1 font-bold text-forge-teal text-xs">
       <Icon className="size-3.5" aria-hidden="true" />
       {kind === "privacy" ? "Privacy" : "Terms"}
     </span>

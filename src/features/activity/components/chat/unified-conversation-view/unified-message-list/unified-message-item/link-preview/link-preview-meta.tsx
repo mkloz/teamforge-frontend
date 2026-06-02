@@ -51,7 +51,7 @@ export function LinkPreviewMeta({
           <span
             className={cn(
               "truncate font-bold text-xs leading-tight",
-              hasImage && "uppercase tracking-wide",
+              hasImage && "tracking-tight",
               isOwn ? "text-ink/80" : "text-slate-muted",
             )}
           >

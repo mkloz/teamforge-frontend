@@ -500,7 +500,7 @@ function ProfileSignal({
 }) {
   return (
     <div className={cn("min-w-0 pr-2", className)}>
-      <p className="font-bold text-nano text-slate-muted uppercase leading-tight tracking-widest">
+      <p className="font-semibold text-slate-muted text-xs leading-tight">
         {label}
       </p>
       <p

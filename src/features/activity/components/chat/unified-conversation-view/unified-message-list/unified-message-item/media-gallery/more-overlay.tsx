@@ -7,7 +7,7 @@ export const MoreOverlay = memo(({ count }: { count: number }) => (
         +{count - 4}
       </span>
     </div>
-    <span className="mt-2 font-bold text-micro text-white/60 uppercase tracking-widest">
+    <span className="mt-2 font-bold text-micro text-white/60">
       Discover More
     </span>
   </div>

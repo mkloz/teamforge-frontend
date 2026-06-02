@@ -65,7 +65,7 @@ export function GroupSummaryCard({
           />
         ) : (
           <div className="flex h-full items-start p-4">
-            <p className="w-fit rounded-full border border-white/10 bg-black/15 px-2.5 py-1 font-bold text-micro text-white/75 uppercase tracking-wide backdrop-blur">
+            <p className="w-fit rounded-full border border-white/10 bg-black/15 px-2.5 py-1 font-bold text-micro text-white/75 backdrop-blur">
               Final review
             </p>
           </div>
@@ -76,9 +76,7 @@ export function GroupSummaryCard({
         />
         <div className="absolute right-4 bottom-3 left-4 flex items-end justify-between gap-3">
           <div className="min-w-0">
-            <p className="font-bold text-micro text-white/70 uppercase tracking-wide">
-              {statusLabel}
-            </p>
+            <p className="font-bold text-micro text-white/70">{statusLabel}</p>
             <p className="truncate font-black text-lg text-white leading-tight">
               {displayPlanTitle}
             </p>
@@ -144,7 +142,7 @@ function SummaryItem({ icon, label, value }: SummaryItemProps) {
         {icon}
       </span>
       <span className="min-w-0">
-        <span className="block font-bold text-micro text-muted-foreground/60 uppercase tracking-wide">
+        <span className="block font-bold text-micro text-muted-foreground/60">
           {label}
         </span>
         <span className="block truncate font-semibold text-foreground text-xs">

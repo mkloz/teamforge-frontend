@@ -20,9 +20,7 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
     >
       <div className="flex min-w-0 flex-col gap-7">
         <div className="flex flex-col gap-4">
-          <p className="font-black text-muted-foreground text-sm uppercase">
-            Forge
-          </p>
+          <p className="font-bold text-muted-foreground text-sm">Forge</p>
           <h1 className="max-w-3xl text-balance text-center font-black text-4xl text-foreground leading-tight md:text-left md:text-display-lg">
             What are you trying to make happen?
           </h1>
@@ -67,7 +65,7 @@ export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
         <dl className="divide-y divide-forge-teal/20">
           {SAMPLE_BRIEF.map(([label, value]) => (
             <div key={label} className="flex items-baseline gap-4 px-4 py-3">
-              <dt className="w-18 shrink-0 font-black text-muted-foreground text-xs uppercase">
+              <dt className="w-18 shrink-0 font-semibold text-muted-foreground text-xs">
                 {label}
               </dt>
               <dd className="min-w-0 font-semibold text-foreground text-sm leading-relaxed">

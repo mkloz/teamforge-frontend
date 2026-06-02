@@ -578,7 +578,7 @@ export function DownloadPage() {
           <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
             {/* Section eyebrow + heading */}
             <div className="mb-3">
-              <p className="mb-3 font-semibold text-forge-teal text-xs uppercase tracking-widest">
+              <p className="mb-3 font-semibold text-forge-teal text-xs">
                 Step-by-step
               </p>
               <h2 className="font-extrabold text-3xl text-ink sm:text-4xl">
@@ -670,7 +670,7 @@ export function DownloadPage() {
           <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
             <div className="grid gap-10 lg:grid-cols-5 lg:gap-12">
               <div className="lg:col-span-2">
-                <p className="font-semibold text-forge-teal text-xs uppercase tracking-widest">
+                <p className="font-semibold text-forge-teal text-xs">
                   Why install it
                 </p>
                 <h2
@@ -974,10 +974,10 @@ function IpadVisual() {
         <div className="flex h-full flex-col overflow-hidden rounded-[1.65rem] bg-forge-deep-panel text-white">
           <TabletBrowserChrome />
 
-          <div className="flex min-h-0 flex-1 flex-col gap-2 px-3 py-3 sm:px-5 sm:pt-4">
-            <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 sm:grid-cols-[16rem_minmax(0,1fr)] sm:gap-4">
+          <div className="flex min-h-0 flex-1 flex-col gap-3 py-3 pr-3 pl-5 sm:gap-4 sm:pt-5 sm:pr-5 sm:pb-4 sm:pl-7">
+            <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 sm:grid-cols-[16rem_minmax(0,1fr)] sm:gap-0 sm:divide-x sm:divide-white/10">
               <TabletInstallIntro />
-              <div className="hidden sm:block">
+              <div className="hidden min-w-0 sm:flex sm:items-center sm:pl-5">
                 <TabletInstallSteps />
               </div>
             </div>
@@ -1000,11 +1000,11 @@ function TabletBrowserChrome() {
         </div>
       </div>
 
-      <div className="mt-2 flex items-center gap-3">
+      <div className="mt-2 flex items-center gap-2">
         <span className="shrink-0 font-semibold text-white/45 text-xs">
           Safari
         </span>
-        <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full border border-white/8 bg-white/6 px-3 py-1.5">
+        <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full border border-white/8 bg-white/6 px-3 py-0.5">
           <span className="type-signature-label font-semibold text-white/30">
             Aa
           </span>
@@ -1012,8 +1012,8 @@ function TabletBrowserChrome() {
             teamforge.app/download
           </span>
         </div>
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-forge-teal/25 bg-forge-teal/10 text-forge-teal">
-          <Share className="size-3.5" strokeWidth={1.5} aria-hidden="true" />
+        <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-forge-teal/25 bg-forge-teal/10 text-forge-teal">
+          <Share className="size-2.5" strokeWidth={1.5} aria-hidden="true" />
         </span>
       </div>
     </header>
@@ -1022,7 +1022,7 @@ function TabletBrowserChrome() {
 
 function TabletInstallIntro() {
   return (
-    <section className="min-w-0 pt-1">
+    <section className="min-w-0 border-white/8 border-b pb-3 sm:border-b-0 sm:pt-1 sm:pr-5 sm:pb-0">
       <div className="flex items-center gap-3">
         <div className="shrink-0 rounded-xl bg-canvas p-1.5">
           <TeamForgeLogo className="size-8" showBackground={false} />
@@ -1036,7 +1036,8 @@ function TabletInstallIntro() {
           </p>
         </div>
       </div>
-      <h2 className="mt-2 text-balance font-extrabold text-sm text-white leading-tight sm:mt-4 sm:text-lg">
+
+      <h2 className="mt-2 text-balance border-white/10 border-t pt-2 font-extrabold text-sm text-white leading-tight sm:mt-4 sm:text-lg">
         Add TeamForge to your Home Screen.
       </h2>
       <p className="type-signature-label mt-1.5 hidden text-pretty text-text-dark-muted leading-snug sm:block">
@@ -1070,15 +1071,15 @@ function TabletInstallSteps() {
   ];
 
   return (
-    <ol className="grid content-center divide-y divide-white/10">
+    <ol className="grid w-full content-center divide-y divide-white/12">
       {steps.map(({ active = false, body, Icon, label, title }) => (
         <li
           key={label}
-          className="grid min-w-0 grid-cols-[1.75rem_minmax(0,1fr)] items-start gap-2 py-1.5 first:pt-0 last:pb-0"
+          className="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5 py-2 first:pt-0 last:pb-0"
         >
           <span
             className={cn(
-              "flex size-7 items-center justify-center rounded-full",
+              "flex size-8 items-center justify-center rounded-full",
               active
                 ? "bg-forge-teal text-white"
                 : "border border-white/10 bg-white/7 text-white/40",
@@ -1103,9 +1104,9 @@ function TabletInstallSteps() {
 
 function TabletInstallBar() {
   return (
-    <div className="flex items-center justify-between gap-2 rounded-xl border border-forge-teal/30 bg-forge-teal/14 px-2.5 py-2 sm:gap-3 sm:px-3">
+    <div className="flex items-center justify-between gap-2 rounded-md border border-forge-teal/30 bg-forge-teal/14 px-2.5 py-2.5 shadow-forge-teal/10 shadow-sm sm:gap-3 sm:px-3">
       <div className="flex min-w-0 items-center gap-3">
-        <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-forge-teal text-white">
+        <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-forge-teal text-white">
           <Plus size={14} strokeWidth={2} aria-hidden="true" />
         </span>
         <div className="min-w-0">
@@ -1117,7 +1118,7 @@ function TabletInstallBar() {
           </p>
         </div>
       </div>
-      <span className="type-signature-label shrink-0 rounded-md bg-forge-teal px-2.5 py-1.5 font-bold text-white sm:px-3">
+      <span className="type-signature-label shrink-0 rounded-full bg-forge-teal px-2.5 py-1.5 font-bold text-white sm:px-3">
         Add
       </span>
     </div>
@@ -1200,23 +1201,23 @@ function DesktopBrowserVisual({ browser }: { browser: DesktopBrowser }) {
                 <div className="size-2.5 rounded-full bg-spark-amber/60" />
                 <div className="size-2.5 rounded-full bg-forge-teal/70" />
               </div>
-              <div className="flex min-w-0 flex-1 items-center gap-2 rounded-xl border border-white/8 bg-white/6 px-3 py-2">
-                <div className="size-2.5 shrink-0 rounded-full border border-white/20" />
+              <div className="flex min-w-0 flex-1 items-center gap-2 rounded-xl border border-white/8 bg-white/6 p-0.5">
+                <div className="ml-0.5 size-2.5 shrink-0 rounded-full border border-white/20" />
                 <span className="flex-1 font-mono text-[9px] text-white/30">
                   teamforge.app/download
                 </span>
+                {showInstallDialog && (
+                  <div className="flex shrink-0 items-center gap-1 rounded-lg border border-forge-teal/40 bg-forge-teal/20 px-1 py-0.5">
+                    <MonitorSmartphone size={10} className="text-forge-teal" />
+                    <span className="font-semibold text-[8px] text-forge-teal">
+                      Install
+                    </span>
+                  </div>
+                )}
               </div>
               <span className="hidden font-medium text-[9px] text-white/20 sm:inline">
                 {browserLabel}
               </span>
-              {showInstallDialog && (
-                <div className="flex shrink-0 items-center gap-1 rounded-lg border border-forge-teal/40 bg-forge-teal/20 px-2 py-1">
-                  <MonitorSmartphone size={10} className="text-forge-teal" />
-                  <span className="font-semibold text-[8px] text-forge-teal">
-                    Install
-                  </span>
-                </div>
-              )}
             </div>
 
             {/* Page content preview */}
@@ -1297,7 +1298,7 @@ function PreviewBrandLockup({
         <p className={cn("font-bold text-white leading-tight", textSize)}>
           Team<span className="text-forge-teal">Forge</span>
         </p>
-        <p className="mt-1 text-text-dark-muted text-xs leading-tight">
+        <p className="mt-1 text-[8px] text-text-dark-muted leading-tight">
           Find your people, intelligently.
         </p>
       </div>

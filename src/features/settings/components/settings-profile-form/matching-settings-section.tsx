@@ -118,9 +118,7 @@ export function MatchingSettingsSection({
       <PreferenceStatusMessage error={error} />
 
       <div className="border-border border-t pt-6">
-        <p className="font-semibold text-slate-muted text-xs uppercase tracking-widest">
-          Interests
-        </p>
+        <p className="font-semibold text-slate-muted text-xs">Interests</p>
         <div className="mt-3 flex flex-wrap gap-2">
           {currentUser?.interests?.length ? (
             currentUser.interests.slice(0, 12).map((interest) => (

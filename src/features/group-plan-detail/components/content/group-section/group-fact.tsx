@@ -20,9 +20,7 @@ export function GroupFact({
         aria-hidden="true"
       />
       <div className="min-w-0">
-        <p className="type-signature-label font-bold text-muted-foreground uppercase tracking-widest">
-          {label}
-        </p>
+        <p className="font-semibold text-muted-foreground text-xs">{label}</p>
         <p className="mt-0.5 font-black text-foreground text-sm leading-snug">
           {value}
         </p>

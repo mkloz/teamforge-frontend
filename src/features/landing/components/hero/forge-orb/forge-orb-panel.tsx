@@ -34,7 +34,7 @@ export function ForgeOrbEyebrow({
   return (
     <p
       className={cn(
-        "font-sans font-semibold text-forge-teal text-nano uppercase tracking-[0.15em] opacity-90",
+        "font-sans font-semibold text-forge-teal text-nano opacity-90",
         className,
       )}
     >

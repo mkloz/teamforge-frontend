@@ -77,7 +77,7 @@ export function StackCard({
         <CardContent className="flex flex-col gap-6 p-0">
           <div className="flex items-center gap-3">
             <div className="h-px w-8 bg-forge-teal/40" aria-hidden="true" />
-            <span className="font-semibold text-forge-teal text-xs uppercase tracking-widest">
+            <span className="font-semibold text-forge-teal text-xs tracking-wide">
               {String(index + 1).padStart(2, "0")} /{" "}
               {String(totalCards).padStart(2, "0")}
             </span>
@@ -106,7 +106,7 @@ export function StackCard({
               {card.description}
             </p>
             {card.footer && (
-              <p className="mt-2 font-semibold text-forge-teal text-xs uppercase tracking-widest">
+              <p className="mt-2 font-semibold text-forge-teal text-xs">
                 {card.footer}
               </p>
             )}

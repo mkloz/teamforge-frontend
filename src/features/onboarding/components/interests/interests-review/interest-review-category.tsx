@@ -27,7 +27,7 @@ export function InterestReviewCategory({
             getCategoryColorClass(category.id),
           )}
         />
-        <span className="font-bold font-sans text-slate-muted/60 text-xs uppercase tracking-widest">
+        <span className="font-bold font-sans text-slate-muted/60 text-xs">
           {category.name}
         </span>
       </div>

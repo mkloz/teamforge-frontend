@@ -105,7 +105,7 @@ export const GalleryItem = memo(
             ) : (
               <ErrorMediaImageUnavailableVisual className="h-12 w-auto text-foreground" />
             )}
-            <span className="font-medium text-slate-muted/70 text-xs uppercase tracking-wide">
+            <span className="font-medium text-slate-muted/70 text-xs">
               Failed to load
             </span>
           </div>

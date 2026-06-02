@@ -106,7 +106,7 @@ export function GifPickerPanel({ canSendGif, onSelect }: GifPickerPanelProps) {
         />
       </div>
 
-      <div className="border-border/50 border-t px-2 py-1.5 text-right font-black text-[0.56rem] text-muted-foreground uppercase">
+      <div className="border-border/50 border-t px-2 py-1.5 text-right font-bold text-[0.56rem] text-muted-foreground">
         Powered by GIPHY
       </div>
     </div>

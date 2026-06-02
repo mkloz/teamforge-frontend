@@ -23,7 +23,7 @@ export function HostMemberRow() {
       </Link>
 
       <div className="flex items-center justify-between gap-3">
-        <span className="font-semibold text-forge-teal text-micro uppercase tracking-wide">
+        <span className="font-semibold text-forge-teal text-micro">
           Group owner
         </span>
         <span className="rounded-full border border-forge-teal/25 bg-forge-teal/10 px-2 py-0.5 font-bold text-forge-teal text-micro">

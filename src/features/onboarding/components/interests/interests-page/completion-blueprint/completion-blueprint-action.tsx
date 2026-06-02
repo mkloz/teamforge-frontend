@@ -29,7 +29,7 @@ export function CompletionBlueprintAction({
         />
       </Button>
 
-      <p className="mt-6 max-w-50 text-center font-bold font-sans text-muted-foreground text-xs uppercase leading-relaxed tracking-widest drop-shadow-sm">
+      <p className="mt-6 max-w-50 text-center font-bold font-sans text-muted-foreground text-xs leading-relaxed drop-shadow-sm">
         Built from your personality and interests.
       </p>
     </motion.div>

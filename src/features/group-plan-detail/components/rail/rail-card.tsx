@@ -27,9 +27,7 @@ export function RailCard({
       )}
     >
       {eyebrow ? (
-        <p className="type-signature-label font-black text-forge-teal uppercase tracking-widest">
-          {eyebrow}
-        </p>
+        <p className="font-bold text-forge-teal text-xs">{eyebrow}</p>
       ) : null}
       {heading ? (
         <h3 className="mt-1 font-black text-foreground text-sm">{heading}</h3>

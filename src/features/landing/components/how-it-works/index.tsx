@@ -157,7 +157,7 @@ export function HowItWorksSection() {
                 asChild
                 variant="ghost"
                 size="sm"
-                className="absolute right-8 bottom-8 z-50 text-xs uppercase tracking-widest"
+                className="absolute right-8 bottom-8 z-50 text-xs"
               >
                 <motion.button
                   initial={{ opacity: 0, y: 10 }}

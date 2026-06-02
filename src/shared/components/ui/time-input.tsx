@@ -262,7 +262,7 @@ function TimeScrollColumn<T extends number | string>({
 
   return (
     <div className="flex min-w-0 flex-col px-1.5">
-      <p className="pb-2 text-center font-black text-slate-muted text-xs uppercase">
+      <p className="pb-2 text-center font-semibold text-slate-muted text-xs">
         {title}
       </p>
       <div className="relative flex min-h-56 flex-1 items-center">
@@ -508,7 +508,7 @@ function TimeInput({
 
                 {useMeridiem ? (
                   <div className="flex min-w-0 flex-col px-1.5">
-                    <p className="pb-2 text-center font-black text-slate-muted text-xs uppercase">
+                    <p className="pb-2 text-center font-semibold text-slate-muted text-xs">
                       Period
                     </p>
                     <div

@@ -44,12 +44,12 @@ export function SelectionShelf({
                 <div className="flex size-5 items-center justify-center rounded-md bg-forge-teal/10 text-forge-teal">
                   <Tags className="size-3" />
                 </div>
-                <p className="font-bold font-sans text-forge-teal text-xs uppercase tracking-widest">
+                <p className="font-bold font-sans text-forge-teal text-xs">
                   Related to your picks ({youMightAlsoLike.length})
                 </p>
               </>
             ) : (
-              <p className="font-bold font-sans text-slate-muted/50 text-xs uppercase tracking-widest">
+              <p className="font-bold font-sans text-slate-muted/50 text-xs">
                 Your picks ({selectedIds.size})
               </p>
             )}

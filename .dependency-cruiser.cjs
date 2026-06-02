@@ -23,6 +23,7 @@ module.exports = {
       from: {},
       to: {
         couldNotResolve: true,
+        pathNot: "^virtual:pwa-register$",
       },
     },
     {

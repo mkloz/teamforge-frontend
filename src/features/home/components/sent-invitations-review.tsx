@@ -43,7 +43,7 @@ export function SentInvitationsReview({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <div className="inline-flex items-center gap-2 rounded-full bg-forge-teal/10 px-3 py-1 font-black text-forge-teal text-xs uppercase tracking-widest">
+          <div className="inline-flex items-center gap-2 rounded-full bg-forge-teal/10 px-3 py-1 font-bold text-forge-teal text-xs">
             <BellRing className="size-3.5" />
             Sent invite update
           </div>
@@ -69,7 +69,7 @@ export function SentInvitationsReview({
         <article className="mt-4 rounded-xl border border-forge-teal/40 bg-forge-teal/5 p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="font-black text-muted-foreground text-xs uppercase tracking-widest">
+              <p className="font-bold text-muted-foreground text-xs">
                 {focusedInvite.group.name}
               </p>
               <h3 className="mt-1 truncate font-black text-base text-foreground">

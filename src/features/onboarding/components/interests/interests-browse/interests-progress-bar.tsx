@@ -57,7 +57,7 @@ export function InterestsProgressBar({
               / {MAX_INTERESTS}
             </span>
           </span>
-          <p className="mt-1 font-bold font-sans text-slate-muted/60 text-xs uppercase leading-none tracking-wider">
+          <p className="mt-1 font-bold font-sans text-slate-muted/60 text-xs leading-none">
             {progressText}
           </p>
         </div>

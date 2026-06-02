@@ -48,7 +48,7 @@ export function AlgorithmStats({ inView }: AlgorithmStatsProps) {
       </div>
 
       <div>
-        <h3 className="mb-4 font-bold font-sans text-sm text-white uppercase tracking-widest">
+        <h3 className="mb-4 font-bold font-sans text-sm text-white">
           What we look for
         </h3>
         <div className="flex flex-col gap-3">

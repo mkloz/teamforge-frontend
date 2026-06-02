@@ -34,7 +34,7 @@ export function SearchResultSubcategories({
 
   return (
     <div className="flex flex-col gap-1">
-      <p className="mb-1 font-bold font-sans text-slate-muted/50 text-xs uppercase tracking-widest">
+      <p className="mb-1 font-bold font-sans text-slate-muted/50 text-xs">
         Categories
       </p>
       {results.subcategories.map(({ subcategory, category }) => (
@@ -93,7 +93,7 @@ function SearchResultSubcategoryItem({
             <span className="truncate font-bold font-sans text-ink text-xs">
               {subcategory.name}
             </span>
-            <span className="truncate font-bold font-sans text-slate-muted/50 text-xs uppercase leading-none tracking-wider">
+            <span className="truncate font-bold font-sans text-slate-muted/50 text-xs leading-none">
               {categoryName}
             </span>
           </div>

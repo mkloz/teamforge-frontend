@@ -20,7 +20,7 @@ export function InvitesSentHero({ facts, summary }: InvitesSentHeroProps) {
           <Check size={22} strokeWidth={2.6} />
         </div>
         <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
-          <p className="font-bold text-forge-teal text-xs uppercase tracking-wide">
+          <p className="font-bold text-forge-teal text-xs">
             {summary.isManual ? "Invitations sent" : "Group is live"}
           </p>
           <p className="max-w-xl text-muted-foreground text-sm leading-snug">

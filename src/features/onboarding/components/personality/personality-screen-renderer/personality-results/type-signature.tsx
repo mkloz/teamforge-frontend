@@ -50,7 +50,7 @@ export function TypeSignature({ result, typeLabel }: TypeSignatureProps) {
             <span className="block font-black text-[3rem] text-ink leading-none tracking-tight sm:text-[3.85rem]">
               {letter}
             </span>
-            <span className="type-signature-label mt-1 block font-black text-muted-foreground uppercase tracking-widest">
+            <span className="mt-1 block font-bold text-muted-foreground text-xs">
               {TYPE_DIMENSION_LABELS[index]}
             </span>
           </motion.div>

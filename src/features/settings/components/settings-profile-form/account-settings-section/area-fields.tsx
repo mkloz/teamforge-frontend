@@ -63,9 +63,7 @@ export function AreaFields({ currentUser, form }: AreaFieldsProps) {
           <MapPin size={16} strokeWidth={2} />
         </div>
         <div className="min-w-0">
-          <p className="font-semibold text-slate-muted text-xs uppercase tracking-widest">
-            Current city
-          </p>
+          <p className="font-semibold text-slate-muted text-xs">Current city</p>
           <p className="mt-1 font-semibold text-ink text-sm">{cityLabel}</p>
         </div>
       </div>

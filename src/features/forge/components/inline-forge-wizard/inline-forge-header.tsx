@@ -78,7 +78,7 @@ export function InlineForgeHeader({
                       onCancelDialogChange(true);
                     }
                   }}
-                  className="h-8 px-3 font-black text-xs uppercase tracking-widest"
+                  className="h-8 px-3 font-bold text-xs"
                 >
                   <X className="size-3.5" aria-hidden="true" />
                   Cancel

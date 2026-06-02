@@ -43,7 +43,7 @@ export function IdentityPreviewCard({
           ) : (
             <div className="flex size-full items-center justify-between gap-3 px-4 py-3">
               <div className="min-w-0">
-                <span className="font-bold text-slate-muted text-xs uppercase tracking-widest">
+                <span className="font-bold text-slate-muted text-xs">
                   Artwork pending
                 </span>
                 <p className="mt-2 line-clamp-2 max-w-56 font-black text-foreground text-lg leading-tight">

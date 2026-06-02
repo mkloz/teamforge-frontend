@@ -35,7 +35,7 @@ export function ExtensionOptionCard({
         <div className="mb-1.5 flex min-w-0 items-center gap-2">
           <span
             className={cn(
-              "max-w-full truncate rounded-full px-2 py-0.5 font-bold font-sans text-micro uppercase tracking-wider",
+              "max-w-full truncate rounded-full px-2 py-0.5 font-bold font-sans text-micro",
               isSelected
                 ? "bg-forge-teal text-white"
                 : "bg-muted text-muted-foreground dark:bg-white/8",

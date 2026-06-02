@@ -23,9 +23,7 @@ export function HomeOfflineLaunchState({
         </div>
 
         <div className="min-w-0">
-          <p className="font-black text-spark-amber text-xs uppercase tracking-widest">
-            Offline launch
-          </p>
+          <p className="font-bold text-spark-amber text-xs">Offline launch</p>
           <h1
             id="home-offline-heading"
             className="mt-2 font-black text-3xl text-ink leading-tight tracking-tight sm:text-4xl"
