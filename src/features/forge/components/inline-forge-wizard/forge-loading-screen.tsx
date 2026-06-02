@@ -1,17 +1,9 @@
-import { ForgeLoadingAnvil } from "@/features/forge/components/loading/forge-loading-anvil";
+import { ForgeNodeCanvas } from "@/features/forge/components/loading/forge-node-canvas";
 
 interface ForgeLoadingScreenProps {
-  strikeCount: number;
+  progress: number;
 }
 
-export function ForgeLoadingScreen({ strikeCount }: ForgeLoadingScreenProps) {
-  return (
-    <div className="relative flex min-h-96 w-full flex-col items-center justify-center gap-8 px-4">
-      <ForgeLoadingAnvil
-        strikeCount={strikeCount}
-        size={240}
-        className="relative"
-      />
-    </div>
-  );
+export function ForgeLoadingScreen({ progress }: ForgeLoadingScreenProps) {
+  return <ForgeNodeCanvas progress={progress} />;
 }

@@ -10,6 +10,7 @@ import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import { DateSeparator } from "./date-separator";
 import { MessageRenderer } from "./message-renderer";
+import { NewMessagesSeparator } from "./new-messages-separator";
 import {
   getParticipantDisplayName,
   getParticipantInitials,
@@ -126,43 +127,50 @@ export function MessageSenderBlock({
               <div
                 key={message.id}
                 ref={getMessageRef(message.id)}
-                className={cn(
-                  "relative flex w-full min-w-0 max-w-full",
-                  isSelectionMode && isSelectable && "pl-9",
-                  isSystemMessage
-                    ? "justify-center"
-                    : message.isOwn
-                      ? "justify-end"
-                      : "justify-start",
-                )}
+                className="flex min-w-0 flex-col"
               >
+                {block.newMessagesSeparatorBeforeId === message.id ? (
+                  <NewMessagesSeparator />
+                ) : null}
                 <div
                   className={cn(
-                    "w-full min-w-0 max-w-full",
-                    message.isOwn && !isSystemMessage && "ml-auto",
-                    !message.isOwn && !isSystemMessage && "mr-auto",
+                    "relative flex w-full min-w-0 max-w-full",
+                    isSelectionMode && isSelectable && "pl-9",
+                    isSystemMessage
+                      ? "justify-center"
+                      : message.isOwn
+                        ? "justify-end"
+                        : "justify-start",
                   )}
                 >
-                  <MessageRenderer
-                    message={message}
-                    showSender={isFirstInGroup}
-                    isHighlighted={isHighlighted}
-                    isSelectable={isSelectable}
-                    isSelected={isSelected}
-                    isSelectionMode={isSelectionMode}
-                    kind={kind}
-                    onActivateReplyTarget={onActivateReplyTarget}
-                    onStartSelection={onStartSelection}
-                    onToggleSelected={onToggleSelected}
-                    searchQuery={searchQuery}
-                  />
+                  <div
+                    className={cn(
+                      "w-full min-w-0 max-w-full",
+                      message.isOwn && !isSystemMessage && "ml-auto",
+                      !message.isOwn && !isSystemMessage && "mr-auto",
+                    )}
+                  >
+                    <MessageRenderer
+                      message={message}
+                      showSender={isFirstInGroup}
+                      isHighlighted={isHighlighted}
+                      isSelectable={isSelectable}
+                      isSelected={isSelected}
+                      isSelectionMode={isSelectionMode}
+                      kind={kind}
+                      onActivateReplyTarget={onActivateReplyTarget}
+                      onStartSelection={onStartSelection}
+                      onToggleSelected={onToggleSelected}
+                      searchQuery={searchQuery}
+                    />
+                  </div>
+                  {isSelectionMode && isSelectable ? (
+                    <MessageSelectionToggle
+                      isSelected={isSelected}
+                      onToggle={() => onToggleSelected?.(message)}
+                    />
+                  ) : null}
                 </div>
-                {isSelectionMode && isSelectable ? (
-                  <MessageSelectionToggle
-                    isSelected={isSelected}
-                    onToggle={() => onToggleSelected?.(message)}
-                  />
-                ) : null}
               </div>
             );
           })}

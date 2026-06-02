@@ -82,6 +82,12 @@
       "sourceType": "github",
       "computedHash": "063a0e6448123cd359ad0044cc46b0e490cc7964d45ef4bb9fd842bd2ffbca67"
     },
+    "gpt-image-2": {
+      "source": "agentspace-so/runcomfy-skills",
+      "sourceType": "github",
+      "skillPath": "gpt-image-2/SKILL.md",
+      "computedHash": "d47ab3bd8e415520a06902cce5e2e2314263f7843b309cffa3e6115cf6adaf8d"
+    },
     "humanizer": {
       "source": "softaworks/agent-toolkit",
       "sourceType": "github",
@@ -117,6 +123,12 @@
       "source": "pbakaus/impeccable",
       "sourceType": "github",
       "computedHash": "c294f2570dcc5b8865d17f0dc5ef339a700c868f1b20fa9994297f64ace2d4de"
+    },
+    "pwa-development": {
+      "source": "alinaqi/claude-bootstrap",
+      "sourceType": "github",
+      "skillPath": "skills/pwa-development/SKILL.md",
+      "computedHash": "356d9a26a8435778bb3bb906f5198814c48872ae87485ae97f4da3c10a0cfcc5"
     },
     "quieter": {
       "source": "pbakaus/impeccable",

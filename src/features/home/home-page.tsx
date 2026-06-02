@@ -9,6 +9,7 @@ import {
 import { AttentionQueue } from "@/features/home/components/attention-queue";
 import { GroupsGrid } from "@/features/home/components/groups-grid";
 import { HomeHero } from "@/features/home/components/home-hero";
+import { HomeOfflineLaunchState } from "@/features/home/components/home-offline-launch-state";
 import {
   HomeInviteSkeleton,
   HomeRecommendedGroupsSkeleton,
@@ -57,6 +58,7 @@ export function HomePage() {
   const {
     isLoading: isCoreHomeDataLoading,
     isError: isCoreHomeDataError,
+    isOfflineUnavailable: isCoreHomeDataOfflineUnavailable,
     refetchAll,
   } = useHomeData({
     include: {
@@ -70,14 +72,30 @@ export function HomePage() {
     sentInvitations,
     isLoading: isSentInvitationsLoading,
     isError: isSentInvitationsError,
+    isOfflineUnavailable: isSentInvitationsOfflineUnavailable,
   } = useHomeData({
     include: {
       sentInvitations: shouldLoadSentInvitations,
     },
   });
-  const { isError: viewerError, isLoading: viewerLoading } =
-    useHomeViewerState();
+  const {
+    isError: viewerError,
+    isLoading: viewerLoading,
+    isOfflineUnavailable: isViewerOfflineUnavailable,
+    refetch: refetchViewer,
+  } = useHomeViewerState();
   const invitationsRef = useRef<HTMLElement | null>(null);
+  const hasOfflineHomeUnavailable =
+    (isCoreHomeDataOfflineUnavailable && !isCoreHomeDataLoading) ||
+    (shouldLoadSentInvitations &&
+      isSentInvitationsOfflineUnavailable &&
+      !isSentInvitationsLoading) ||
+    (isViewerOfflineUnavailable && !viewerLoading);
+
+  function refetchHomePage() {
+    void refetchAll();
+    void refetchViewer();
+  }
 
   useEffect(() => {
     if (focusedPanel !== "invitations") {
@@ -89,6 +107,10 @@ export function HomePage() {
       block: "start",
     });
   }, [focusedPanel]);
+
+  if (hasOfflineHomeUnavailable) {
+    return <HomeOfflineLaunchState onRetry={refetchHomePage} />;
+  }
 
   if (
     (isCoreHomeDataError && !isCoreHomeDataLoading) ||
@@ -105,7 +127,7 @@ export function HomePage() {
         <PageErrorState
           title="Home could not load"
           description="Your plans, groups, and invitations could not be refreshed right now."
-          onRetry={refetchAll}
+          onRetry={refetchHomePage}
         />
       </section>
     );

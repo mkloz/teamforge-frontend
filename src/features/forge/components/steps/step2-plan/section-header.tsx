@@ -1,31 +1,23 @@
 import type { ReactNode } from "react";
 
 interface SectionHeaderProps {
-  icon: ReactNode;
   title: string;
   description?: string;
+  /** @deprecated pass description only, icon box removed */
+  icon?: ReactNode;
 }
 
-export function SectionHeader({
-  icon,
-  title,
-  description,
-}: SectionHeaderProps) {
+export function SectionHeader({ title, description }: SectionHeaderProps) {
   return (
-    <div className="flex items-center gap-2.5">
-      <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10">
-        <span className="text-forge-teal">{icon}</span>
-      </div>
-      <div className="min-w-0">
-        <p className="font-semibold text-foreground text-sm leading-tight">
-          {title}
+    <div className="flex flex-col gap-0.5">
+      <p className="font-semibold text-foreground text-sm leading-tight">
+        {title}
+      </p>
+      {description && (
+        <p className="text-muted-foreground/55 text-xs leading-snug">
+          {description}
         </p>
-        {description && (
-          <p className="mt-0.5 text-muted-foreground/65 text-xs leading-snug">
-            {description}
-          </p>
-        )}
-      </div>
+      )}
     </div>
   );
 }

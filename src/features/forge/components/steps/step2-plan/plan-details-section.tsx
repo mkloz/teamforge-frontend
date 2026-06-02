@@ -1,5 +1,3 @@
-import { AlignLeft } from "lucide-react";
-
 import { Textarea } from "@/shared/components/ui/textarea";
 import { cn } from "@/shared/lib/utils";
 
@@ -19,9 +17,8 @@ export function PlanDetailsSection({
   return (
     <SectionCard>
       <SectionHeader
-        icon={<AlignLeft size={14} />}
         title="Context"
-        description="Add anything people should know before joining."
+        description="Optional — add anything useful before people join."
       />
 
       <div className="flex flex-col gap-2.5">

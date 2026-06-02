@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { HomeQueryFactory } from "@/features/home/api/home-query-factory";
 import { EMPTY_HOME_STATS } from "@/features/home/lib/home-stats";
+import { isApiNetworkError } from "@/shared/api/api-network-error";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 
 const EMPTY_PLANS: never[] = [];
@@ -76,6 +77,26 @@ export function useHomeData(options?: UseHomeDataOptions) {
     ...HomeQueryFactory.recommendations(),
     enabled: include.recommendations,
   });
+  const activeQueries = [
+    { enabled: include.stats, query: statsQuery },
+    { enabled: include.plans, query: plansQuery },
+    { enabled: include.groups, query: groupsQuery },
+    { enabled: include.invitations, query: invitationsQuery },
+    { enabled: include.sentInvitations, query: sentInvitationsQuery },
+    { enabled: include.recommendations, query: recommendationsQuery },
+  ].filter(({ enabled }) => enabled);
+  const hasAllIncludedData = activeQueries.every(
+    ({ query }) => query.data !== undefined,
+  );
+  const isBlockingError = activeQueries.some(
+    ({ query }) => query.isError && query.data === undefined,
+  );
+  const isOfflineUnavailable = activeQueries.some(
+    ({ query }) =>
+      query.isError &&
+      query.data === undefined &&
+      isApiNetworkError(query.error),
+  );
 
   return {
     stats: statsQuery.data ?? EMPTY_HOME_STATS,
@@ -99,13 +120,9 @@ export function useHomeData(options?: UseHomeDataOptions) {
       (include.invitations && invitationsQuery.isLoading) ||
       (include.sentInvitations && sentInvitationsQuery.isLoading) ||
       (include.recommendations && recommendationsQuery.isLoading),
-    isError:
-      (include.stats && statsQuery.isError) ||
-      (include.plans && plansQuery.isError) ||
-      (include.groups && groupsQuery.isError) ||
-      (include.invitations && invitationsQuery.isError) ||
-      (include.sentInvitations && sentInvitationsQuery.isError) ||
-      (include.recommendations && recommendationsQuery.isError),
+    hasAllIncludedData,
+    isError: isBlockingError,
+    isOfflineUnavailable,
     refetchAll: () =>
       queryClient.refetchQueries({
         queryKey: APP_QUERY_KEYS.home.all,

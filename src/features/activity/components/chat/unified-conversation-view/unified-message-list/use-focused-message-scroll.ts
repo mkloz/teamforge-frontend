@@ -60,9 +60,10 @@ export function useFocusedMessageScroll({
   const scrollToMessage = useCallback(
     (id: string, options: ScrollToMessageOptions = {}) => {
       const element = getMessageElement(id);
+      const behavior = options.behavior ?? "smooth";
 
       if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "center" });
+        element.scrollIntoView({ behavior, block: "center" });
 
         if (options.highlight) {
           requestMessageHighlight(id);
@@ -77,7 +78,7 @@ export function useFocusedMessageScroll({
 
       if (targetBlock && containerRef?.current) {
         containerRef.current.scrollTo({
-          behavior: "smooth",
+          behavior,
           top: Math.max(targetBlock.start - 120, 0),
         });
 

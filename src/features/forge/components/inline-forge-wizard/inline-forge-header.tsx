@@ -42,9 +42,16 @@ export function InlineForgeHeader({
             </div>
           )}
           <div className="flex items-baseline overflow-hidden">
-            <h2 className="font-black text-base text-foreground tracking-tight md:text-lg">
-              {currentMetadata.title}
-            </h2>
+            <div>
+              <h2 className="font-black text-base text-foreground tracking-tight md:text-lg">
+                {currentMetadata.title}
+              </h2>
+              {currentMetadata.hint && (
+                <p className="mt-0.5 font-medium text-muted-foreground text-xs">
+                  {currentMetadata.hint}
+                </p>
+              )}
+            </div>
           </div>
         </div>
 

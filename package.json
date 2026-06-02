@@ -11,16 +11,16 @@
     "lint": "npm run lint:oxlint && npm run lint:compiler && npm run lint:biome && npm run lint:architecture && npm run lint:types",
     "lint:changed": "node scripts/lint-changed.mjs --full-oxlint",
     "lint:fast": "node scripts/lint-changed.mjs",
-    "lint:fix": "biome check --write --unsafe --no-errors-on-unmatched . && biome format --write  --no-errors-on-unmatched . && npx knip",
-    "lint:oxlint": "oxlint --config .oxlintrc.json --format stylish --no-error-on-unmatched-pattern .",
+    "lint:fix": "npx biome check --write --unsafe --no-errors-on-unmatched . && npx biome format --write  --no-errors-on-unmatched . && npx knip",
+    "lint:oxlint": "npx oxlint --config .oxlintrc.json --format stylish --no-error-on-unmatched-pattern .",
     "lint:compiler": "npx react-compiler-tracker",
-    "lint:biome": "biome check --no-errors-on-unmatched .",
-    "lint:architecture": "depcruise --config .dependency-cruiser.cjs src vite.config.ts",
+    "lint:biome": "npx biome check --no-errors-on-unmatched .",
+    "lint:architecture": "npx depcruise --config .dependency-cruiser.cjs src vite.config.ts",
     "lint:types": "tsc -b",
     "pwa:qa": "node scripts/pwa-qa.mjs",
     "test:unit": "vitest run",
     "check": "npm run lint && npm run lint:audit",
-    "prepare": "husky"
+    "prepare": "npx husky"
   },
   "dependencies": {
     "@chenglou/pretext": "^0.0.6",

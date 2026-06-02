@@ -22,7 +22,7 @@ export const VISIBILITY_OPTIONS: Array<{
   },
   {
     value: "INVITE_ONLY",
-    label: "Private — invite only",
+    label: "Invite only",
     description: "Hidden from discovery. Members join by invitation only.",
     Icon: Lock,
   },

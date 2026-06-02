@@ -1,4 +1,4 @@
-import { Calendar, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 
 import { DateInput } from "@/shared/components/ui/date-input";
 import { TimeInput } from "@/shared/components/ui/time-input";
@@ -31,11 +31,7 @@ export function DateTimeSection({
 }: DateTimeSectionProps) {
   return (
     <SectionCard>
-      <SectionHeader
-        icon={<Calendar size={14} />}
-        title="Timing"
-        description="Choose when this group should meet."
-      />
+      <SectionHeader title="When" />
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="flex flex-col gap-2.5">

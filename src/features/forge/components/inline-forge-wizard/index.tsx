@@ -38,7 +38,7 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
   }
 
   if (fw.isForging) {
-    return <ForgeLoadingScreen strikeCount={fw.forgeStrikeCount} />;
+    return <ForgeLoadingScreen progress={fw.forgingProgress} />;
   }
 
   return (

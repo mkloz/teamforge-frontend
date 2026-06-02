@@ -15,24 +15,22 @@ export function MethodSection({
 }: MethodSectionProps) {
   return (
     <section className="flex flex-col gap-2.5 border-border/25 border-t pt-4">
-      <p className="px-0.5 font-semibold text-muted-foreground text-xs md:text-sm">
-        Choose your method
-      </p>
+      <p className="px-0.5 font-semibold text-foreground text-sm">Method</p>
       <div className="grid grid-cols-2 gap-2">
         <ModeButton
           active={forgeMode === "AUTO"}
           onClick={() => onForgeModeChange("AUTO")}
           icon={<Cpu size={16} />}
-          title="Algorithmic"
-          description="Algorithm finds the best balance for you."
+          title="Forge for me"
+          description="Forge picks the right people based on your profile."
           activeColor="primary"
         />
         <ModeButton
           active={forgeMode === "MANUAL"}
           onClick={() => onForgeModeChange("MANUAL")}
           icon={<UsersRound size={16} />}
-          title="Manual"
-          description="You pick the members and set a fixed size."
+          title="Pick my own"
+          description="Choose members yourself and set a fixed group size."
           activeColor="accent"
         />
       </div>

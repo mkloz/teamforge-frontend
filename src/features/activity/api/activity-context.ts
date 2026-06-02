@@ -1,4 +1,5 @@
 import {
+  markActivityChatReadCache,
   removePinnedMessage,
   syncPinnedMessage,
   updateActivityChatSummaryCache,
@@ -42,7 +43,7 @@ import type { ActivityQueryOptionsContext } from "./activity-query-options";
 import type { ActivityRealtimeContext } from "./activity-realtime";
 import { ActivitySurfaceCache } from "./activity-surface-cache";
 
-export { updateActivityChatSummaryCache };
+export { markActivityChatReadCache, updateActivityChatSummaryCache };
 
 export function deriveActivityFeedDataForContext(
   activeFilter: FilterChip,

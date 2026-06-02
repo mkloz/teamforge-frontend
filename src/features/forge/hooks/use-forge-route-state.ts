@@ -60,19 +60,24 @@ export function useForgeRouteState() {
     step?: Step;
     mode?: ForgeMode;
     history?: "push" | "replace";
+    idea?: { title: string; detail?: string; laneKey?: string };
   }) {
     void setRouteState(
       {
         open: true,
-        step: options?.step && options.step !== 1 ? options.step : null,
+        step: options?.idea
+          ? 3
+          : options?.step && options.step !== 1
+            ? options.step
+            : null,
         mode:
           options?.mode && options.mode !== "AUTO"
             ? mapModeToSearch(options.mode)
             : null,
-        ideaTitle: null,
-        ideaDetail: null,
+        ideaTitle: options?.idea?.title ?? null,
+        ideaDetail: options?.idea?.detail ?? null,
         ideaEventDescription: null,
-        ideaLane: null,
+        ideaLane: options?.idea?.laneKey ?? null,
         ideaSecondaryLane: null,
       },
       { history: options?.history ?? "push" },

@@ -10,6 +10,22 @@ import { appQueryClient } from "@/shared/api/query-client";
 import type { ChatApi } from "@/shared/schemas";
 
 export const ActivityChatSummaryCache = {
+  markChatRead(chatId: string) {
+    appQueryClient.setQueryData<ChatApi[]>(
+      ACTIVITY_CHATS_QUERY_KEY,
+      (current) =>
+        current?.map((chat) =>
+          chat.id === chatId
+            ? {
+                ...chat,
+                hasUnread: false,
+                unreadCount: 0,
+              }
+            : chat,
+        ) ?? current,
+    );
+  },
+
   updateChatLastMessage(
     chatId: string,
     message: UnifiedMessage,

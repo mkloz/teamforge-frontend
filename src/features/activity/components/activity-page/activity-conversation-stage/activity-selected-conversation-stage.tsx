@@ -155,6 +155,7 @@ export function ActivitySelectedConversationStage({
             messages={activity.selectedGroupMessages}
             typingUsers={activity.typingUsers}
             focusedMessageId={activity.focusedMessageId}
+            firstUnreadMessageId={activity.firstUnreadMessageId}
             hasOlderMessages={activity.hasOlderMessages}
             isLoadingMessages={isMessageInitialLoading}
             isLoadingOlderMessages={activity.isLoadingOlderMessages}
@@ -200,6 +201,7 @@ export function ActivitySelectedConversationStage({
             messages={activity.selectedDirectMessages}
             isTyping={activity.isTyping}
             focusedMessageId={activity.focusedMessageId}
+            firstUnreadMessageId={activity.firstUnreadMessageId}
             hasOlderMessages={activity.hasOlderMessages}
             isLoadingMessages={isMessageInitialLoading}
             isLoadingOlderMessages={activity.isLoadingOlderMessages}

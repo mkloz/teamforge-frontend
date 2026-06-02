@@ -1,4 +1,5 @@
 export interface ScrollToMessageOptions {
+  behavior?: ScrollBehavior;
   highlight?: boolean;
 }
 

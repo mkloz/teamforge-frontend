@@ -22,6 +22,9 @@ export const ActivitySurfaceCache = {
   removePinnedMessage: (
     ...args: Parameters<typeof ActivityPinnedMessageCache.removePinnedMessage>
   ) => ActivityPinnedMessageCache.removePinnedMessage(...args),
+  markChatRead: (
+    ...args: Parameters<typeof ActivityChatSummaryCache.markChatRead>
+  ) => ActivityChatSummaryCache.markChatRead(...args),
   syncPinnedMessage: (
     ...args: Parameters<typeof ActivityPinnedMessageCache.syncPinnedMessage>
   ) => ActivityPinnedMessageCache.syncPinnedMessage(...args),

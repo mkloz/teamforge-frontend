@@ -1,4 +1,4 @@
-import { Globe, MapPin, Monitor } from "lucide-react";
+import { Globe, Monitor } from "lucide-react";
 
 import { AddressAutocomplete } from "@/shared/components/maps/address-autocomplete";
 import { Input } from "@/shared/components/ui/input";
@@ -44,11 +44,7 @@ export function LocationSection({
 
   return (
     <SectionCard>
-      <SectionHeader
-        icon={<MapPin size={14} />}
-        title="Place"
-        description="Add a venue, meeting link, or leave the place for later."
-      />
+      <SectionHeader title="Where" />
 
       <RadioGroup
         value={locationType}
@@ -56,7 +52,7 @@ export function LocationSection({
         className="grid grid-cols-1 gap-2 sm:grid-cols-3"
         aria-label="Location type"
       >
-        {LOCATION_TYPES.map(({ id, label, sub, Icon }) => {
+        {LOCATION_TYPES.map(({ id, label, Icon }) => {
           const active = locationType === id;
           const itemId = `location-type-${id.toLowerCase()}`;
 
@@ -85,14 +81,11 @@ export function LocationSection({
               <div className="min-w-0">
                 <p
                   className={cn(
-                    "truncate font-semibold text-xs leading-tight",
+                    "truncate font-semibold text-sm leading-tight",
                     active ? "text-forge-teal" : "text-foreground",
                   )}
                 >
                   {label}
-                </p>
-                <p className="mt-0.5 truncate text-micro text-muted-foreground/60 leading-tight">
-                  {sub}
                 </p>
               </div>
             </Label>
@@ -149,7 +142,7 @@ export function LocationSection({
         <div className="fade-in flex animate-in items-center gap-2 rounded-lg border border-border/40 bg-muted/40 px-3 py-2 duration-200">
           <Globe size={12} className="shrink-0 text-muted-foreground/50" />
           <p className="text-muted-foreground/70 text-xs leading-snug">
-            Location will be confirmed with members once the group is formed.
+            Your group can lock in the location once everyone's in.
           </p>
         </div>
       )}

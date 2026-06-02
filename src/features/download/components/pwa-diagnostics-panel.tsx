@@ -3,7 +3,6 @@ import {
   Download,
   type LucideIcon,
   RefreshCw,
-  Send,
   Server,
   ShieldCheck,
   Smartphone,
@@ -15,11 +14,7 @@ import { Button } from "@/shared/components/ui/button";
 import { usePwaDisplayMode } from "@/shared/hooks/use-pwa-display-mode";
 import { usePwaInstallPrompt } from "@/shared/hooks/use-pwa-install-prompt";
 import { useServiceWorkerDiagnostics } from "@/shared/hooks/use-service-worker-diagnostics";
-import {
-  getWebPushTestFailureDescription,
-  getWebPushTestStatus,
-  useWebPushSubscription,
-} from "@/shared/hooks/use-web-push-subscription";
+import { useWebPushSubscription } from "@/shared/hooks/use-web-push-subscription";
 import { trackPwaServiceWorkerUpdateCheck } from "@/shared/lib/pwa-telemetry";
 import { cn } from "@/shared/lib/utils";
 
@@ -311,134 +306,6 @@ function getSubscriptionItem(
   };
 }
 
-function getDeliveryTestItem(
-  push: ReturnType<typeof useWebPushSubscription>,
-): DiagnosticItem {
-  const action: DiagnosticAction = {
-    disabled:
-      !push.isAuthenticated ||
-      !push.isOnline ||
-      !push.isWebPushEnabled ||
-      !push.isSubscribed,
-    icon: Send,
-    label: "Send test",
-    loading: push.isSendingTest,
-    onClick: () => {
-      void push.sendTest("download-diagnostics");
-    },
-  };
-
-  if (!push.isAuthenticated) {
-    return {
-      detail: "Sign in before running a real push delivery test.",
-      icon: Send,
-      label: "Test push",
-      tone: "neutral",
-      value: "Sign in to test",
-    };
-  }
-
-  if (!push.isOnline) {
-    return {
-      detail: "Reconnect before checking backend-to-device push delivery.",
-      icon: Send,
-      label: "Test push",
-      tone: "warning",
-      value: "Offline",
-    };
-  }
-
-  if (!push.isWebPushEnabled) {
-    return {
-      detail: "The backend must expose a VAPID key before test pushes can run.",
-      icon: Send,
-      label: "Test push",
-      tone: "warning",
-      value: "Backend disabled",
-    };
-  }
-
-  if (!push.isSubscribed) {
-    return {
-      detail: "Turn on alerts for this device before testing delivery.",
-      icon: Send,
-      label: "Test push",
-      tone: "neutral",
-      value: "Not ready",
-    };
-  }
-
-  if (push.isSendingTest) {
-    return {
-      action,
-      detail: "TeamForge is sending a test push to this browser.",
-      icon: Send,
-      label: "Test push",
-      tone: "neutral",
-      value: "Sending",
-    };
-  }
-
-  if (!push.lastTestResult) {
-    return {
-      action,
-      detail: "Run a test to verify backend delivery to this device.",
-      icon: Send,
-      label: "Test push",
-      tone: "neutral",
-      value: "Not run",
-    };
-  }
-
-  const testStatus = getWebPushTestStatus(push.lastTestResult);
-
-  if (testStatus === "delivered") {
-    return {
-      action,
-      detail:
-        "The latest test was accepted by the push service for this device.",
-      icon: Send,
-      label: "Test push",
-      tone: "ready",
-      value: "Delivered",
-    };
-  }
-
-  if (push.lastTestResult.issue === "no-subscriptions") {
-    return {
-      action,
-      detail: "The backend did not find an active subscription for this user.",
-      icon: Send,
-      label: "Test push",
-      tone: "warning",
-      value: "No device",
-    };
-  }
-
-  if (push.lastTestResult.issue === "push-disabled") {
-    return {
-      action,
-      detail: "Push delivery is disabled in this backend environment.",
-      icon: Send,
-      label: "Test push",
-      tone: "warning",
-      value: "Disabled",
-    };
-  }
-
-  return {
-    action,
-    detail: getWebPushTestFailureDescription(push.lastTestResult),
-    icon: Send,
-    label: "Test push",
-    tone:
-      push.lastTestResult.issue === "subscription-expired"
-        ? "warning"
-        : "blocked",
-    value: "Failed",
-  };
-}
-
 function getInstallPromptItem(
   canPromptInstall: boolean,
   isStandalone: boolean,
@@ -535,7 +402,6 @@ export function PwaDiagnosticsPanel() {
     getPermissionItem(push),
     getBackendPushItem(push),
     getSubscriptionItem(push),
-    getDeliveryTestItem(push),
   ];
 
   async function handleRefreshDiagnostics() {

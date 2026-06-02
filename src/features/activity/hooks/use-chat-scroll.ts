@@ -7,22 +7,37 @@ import {
   useState,
 } from "react";
 
+interface UseChatScrollInput {
+  conversationId?: string | number;
+  initialUnreadMessageId?: string | null;
+  latestMessageId?: string | null;
+  latestMessageIsOwn?: boolean;
+  layoutVersion?: number;
+  messagesEndRef: RefObject<HTMLDivElement | null>;
+  scrollToInitialUnreadMessage?: (
+    id: string,
+    options?: { behavior?: ScrollBehavior },
+  ) => void;
+}
+
 /**
  * useChatScroll - Encapsulates scroll behavior for the chat window,
  * including auto-scroll on new messages and manual "scroll to bottom" actions.
  */
-export function useChatScroll(
-  messagesEndRef: RefObject<HTMLDivElement | null>,
-  _containerRef?: RefObject<HTMLDivElement | null>,
-  latestMessageId: string | null = null,
+export function useChatScroll({
+  conversationId,
+  initialUnreadMessageId = null,
+  latestMessageId = null,
   latestMessageIsOwn = false,
-  conversationId?: string | number,
   layoutVersion = 0,
-) {
+  messagesEndRef,
+  scrollToInitialUnreadMessage,
+}: UseChatScrollInput) {
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   const [isNearBottom, setIsNearBottom] = useState(true);
   const [newMessageCount, setNewMessageCount] = useState(0);
   const isInitialRender = useRef(true);
+  const initialScrollTargetRef = useRef<"bottom" | "unread" | null>(null);
   const isNearBottomRef = useRef(true);
   const latestMessageIdRef = useRef<string | null>(latestMessageId);
   const shouldSettleInitialScrollRef = useRef(true);
@@ -35,8 +50,30 @@ export function useChatScroll(
       messagesEndRef.current?.scrollIntoView({ behavior });
     },
   );
+  const scrollInitialUnreadIntoView = useEffectEvent(
+    (behavior: ScrollBehavior) => {
+      if (!initialUnreadMessageId || !scrollToInitialUnreadMessage) {
+        return false;
+      }
+
+      scrollToInitialUnreadMessage(initialUnreadMessageId, { behavior });
+      return true;
+    },
+  );
+  const getInitialScrollTarget = useEffectEvent(() => {
+    if (initialUnreadMessageId && scrollToInitialUnreadMessage) {
+      return "unread" as const;
+    }
+
+    if (latestMessageId) {
+      return "bottom" as const;
+    }
+
+    return null;
+  });
   const resetScrollStateForConversation = useEffectEvent(() => {
     latestMessageIdRef.current = latestMessageId;
+    initialScrollTargetRef.current = null;
     shouldSettleInitialScrollRef.current = true;
     if (initialScrollSettleTimerRef.current) {
       clearTimeout(initialScrollSettleTimerRef.current);
@@ -46,7 +83,15 @@ export function useChatScroll(
     setIsNearBottom(true);
     setShowScrollToBottom(false);
     setNewMessageCount(0);
-    scrollMessagesEndIntoView("instant");
+    const target = getInitialScrollTarget();
+    initialScrollTargetRef.current = target;
+
+    if (target === "unread") {
+      scrollInitialUnreadIntoView("instant");
+    } else if (target === "bottom") {
+      scrollMessagesEndIntoView("instant");
+    }
+
     isInitialRender.current = false;
   });
 
@@ -58,11 +103,27 @@ export function useChatScroll(
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: layoutVersion keeps initial bottom scroll pinned while virtualized heights settle.
   useLayoutEffect(() => {
-    if (!shouldSettleInitialScrollRef.current || !latestMessageId) {
+    if (!shouldSettleInitialScrollRef.current) {
       return undefined;
     }
 
-    scrollMessagesEndIntoView("instant");
+    const availableTarget = getInitialScrollTarget();
+    const nextTarget =
+      availableTarget === "unread"
+        ? "unread"
+        : (initialScrollTargetRef.current ?? availableTarget);
+
+    if (!nextTarget) {
+      return undefined;
+    }
+
+    initialScrollTargetRef.current = nextTarget;
+
+    if (nextTarget === "unread") {
+      scrollInitialUnreadIntoView("instant");
+    } else {
+      scrollMessagesEndIntoView("instant");
+    }
 
     if (initialScrollSettleTimerRef.current) {
       clearTimeout(initialScrollSettleTimerRef.current);
@@ -79,7 +140,7 @@ export function useChatScroll(
         initialScrollSettleTimerRef.current = null;
       }
     };
-  }, [latestMessageId, layoutVersion]);
+  }, [initialUnreadMessageId, latestMessageId, layoutVersion]);
 
   // Scroll on new bottom messages if we're already near bottom. Loading older
   // pages does not change latestMessageId, so it won't trip this path.

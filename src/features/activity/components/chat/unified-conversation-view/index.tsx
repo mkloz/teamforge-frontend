@@ -30,6 +30,7 @@ interface BaseConversationProps {
   messages: UnifiedMessage[];
   hasOlderMessages?: boolean;
   isTyping?: boolean;
+  firstUnreadMessageId?: string | null;
   isLoadingOlderMessages?: boolean;
   isMessageError?: boolean;
   isOnline?: boolean;
@@ -60,6 +61,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
   const {
     messages,
     isTyping = false,
+    firstUnreadMessageId = null,
     typingUsers = [],
     isActionOpen = false,
     focusedMessageId,
@@ -298,6 +300,7 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
           conversationId={conversationId}
           emptyStateVariant={isNotesChat ? "my-notes" : "default"}
           focusedMessageId={focusedMessageId}
+          firstUnreadMessageId={firstUnreadMessageId}
           hasOlderMessages={hasOlderMessages}
           isInitialLoading={isLoadingMessages}
           isInitialError={isMessageError}

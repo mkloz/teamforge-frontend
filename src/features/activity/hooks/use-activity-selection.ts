@@ -23,6 +23,7 @@ export function useActivitySelection() {
     direct: conversation.direct,
     selectedGroup: conversation.selectedGroup,
     selectedGroupMessages: timeline.selectedGroupMessages,
+    firstUnreadMessageId: timeline.firstUnreadMessageId,
     typingUsers:
       conversation.selectedKind === "group"
         ? conversation.activeTypingUsers

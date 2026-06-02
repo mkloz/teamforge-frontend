@@ -16,7 +16,7 @@ function getSpacingAfter(
   block: Pick<MessageBlockInput, "senderGroup">,
   nextBlock: Pick<
     MessageBlockInput,
-    "senderGroup" | "showDateSeparator"
+    "newMessagesSeparatorBeforeId" | "senderGroup" | "showDateSeparator"
   > | null,
 ): MessageBlockSpacing {
   if (!nextBlock) {
@@ -25,6 +25,10 @@ function getSpacingAfter(
 
   if (nextBlock.showDateSeparator) {
     return "compact";
+  }
+
+  if (nextBlock.newMessagesSeparatorBeforeId) {
+    return "normal";
   }
 
   const isCurrentSystemBlock = isSystemBlock(block);
@@ -45,6 +49,7 @@ function getSpacingAfter(
 
 export function buildMessageBlocks(
   groupedMessages: DateGroup[],
+  firstUnreadMessageId: string | null = null,
 ): MessageBlockInput[] {
   const blocks = groupedMessages.flatMap((dateGroup) =>
     dateGroup.senderGroups.map<Omit<MessageBlockInput, "spacingAfter">>(
@@ -54,6 +59,11 @@ export function buildMessageBlocks(
           senderGroup.items[0]?.isOwn ??
           isCurrentUserSender(senderGroup.senderId),
         key: `sender-group-${dateGroup.date}-${senderGroup.senderId}-${groupIdx}`,
+        newMessagesSeparatorBeforeId: senderGroup.items.some(
+          (message) => message.id === firstUnreadMessageId,
+        )
+          ? firstUnreadMessageId
+          : null,
         senderGroup,
         showDateSeparator: groupIdx === 0,
       }),
@@ -64,6 +74,7 @@ export function buildMessageBlocks(
     date: block.date,
     isOwn: block.isOwn,
     key: block.key,
+    newMessagesSeparatorBeforeId: block.newMessagesSeparatorBeforeId,
     senderGroup: block.senderGroup,
     showDateSeparator: block.showDateSeparator,
     spacingAfter: getSpacingAfter(block, blocks[index + 1] ?? null),

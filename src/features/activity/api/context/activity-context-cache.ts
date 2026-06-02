@@ -14,6 +14,10 @@ export function updateActivityChatSummaryCache(updatedChat: ChatApi) {
   ActivitySurfaceCache.updateChatSummary(updatedChat);
 }
 
+export function markActivityChatReadCache(chatId: string) {
+  ActivitySurfaceCache.markChatRead(chatId);
+}
+
 export function updateChatLastMessage(
   chatId: string,
   message: UnifiedMessage,

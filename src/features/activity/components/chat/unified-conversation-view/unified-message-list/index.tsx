@@ -32,6 +32,7 @@ interface UnifiedMessageListProps {
   emptyStateVariant?: "default" | "my-notes";
   hasOlderMessages?: boolean;
   focusedMessageId?: string | null;
+  firstUnreadMessageId?: string | null;
   isInitialError?: boolean;
   isInitialLoading?: boolean;
   isOffline?: boolean;
@@ -61,6 +62,7 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
   emptyStateVariant = "default",
   hasOlderMessages = false,
   focusedMessageId = null,
+  firstUnreadMessageId = null,
   isInitialError = false,
   isInitialLoading = false,
   isOffline = false,
@@ -86,8 +88,8 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
   const groupedMessages = useMessageGrouping(messages);
   const { getMessageElement, getMessageRef } = useMessageElementRegistry();
   const blocks = useMemo(
-    () => buildMessageBlocks(groupedMessages),
-    [groupedMessages],
+    () => buildMessageBlocks(groupedMessages, firstUnreadMessageId),
+    [firstUnreadMessageId, groupedMessages],
   );
   const {
     getBlockElement,
@@ -100,20 +102,28 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
     blocks,
     containerRef,
   });
+  const { highlightedMessageId, scrollToMessage } = useFocusedMessageScroll({
+    containerRef,
+    focusedMessageId,
+    getMessageElement,
+    messages,
+    virtualizedBlocks,
+  });
   const {
     showScrollToBottom,
     handleScroll,
     isNearBottom,
     newMessageCount,
     scrollToBottom,
-  } = useChatScroll(
-    messagesEndRef,
-    containerRef,
-    latestMessage?.id ?? null,
-    latestMessage?.isOwn ?? false,
+  } = useChatScroll({
     conversationId,
-    totalHeight,
-  );
+    initialUnreadMessageId: focusedMessageId ? null : firstUnreadMessageId,
+    latestMessageId: latestMessage?.id ?? null,
+    latestMessageIsOwn: latestMessage?.isOwn ?? false,
+    layoutVersion: totalHeight,
+    messagesEndRef,
+    scrollToInitialUnreadMessage: scrollToMessage,
+  });
 
   const { rememberPrependAnchor } = useMessageViewportAnchor({
     containerRef,
@@ -122,13 +132,6 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
     isNearBottom,
     totalHeight,
     visibleBlocks,
-  });
-  const { highlightedMessageId, scrollToMessage } = useFocusedMessageScroll({
-    containerRef,
-    focusedMessageId,
-    getMessageElement,
-    messages,
-    virtualizedBlocks,
   });
 
   const loadOlderMessagesForReplyTarget = useCallback(() => {

@@ -69,13 +69,8 @@ export function Step3Group({
       />
 
       <section className="flex flex-col gap-3.5 border-border/25 border-t pt-4">
-        <div className="flex items-baseline justify-between gap-3 px-0.5">
-          <p className="font-semibold text-muted-foreground text-xs md:text-sm">
-            Group details
-          </p>
-          <p className="font-semibold text-micro text-muted-foreground/40 uppercase tracking-wide">
-            {forgeMode === "MANUAL" ? "Invite-led" : "Automatic"}
-          </p>
+        <div className="flex items-baseline gap-3 px-0.5">
+          <p className="font-semibold text-foreground text-sm">Group size</p>
         </div>
 
         {forgeMode === "MANUAL" ? (

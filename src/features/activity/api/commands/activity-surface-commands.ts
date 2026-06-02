@@ -1,9 +1,14 @@
 import { ActivityApi } from "@/features/activity/api/activity.api";
-import { updateActivityChatSummaryCache } from "@/features/activity/api/activity-context";
+import {
+  markActivityChatReadCache,
+  updateActivityChatSummaryCache,
+} from "@/features/activity/api/activity-context";
 import {
   getActivityMutationKey,
   runExclusiveActivityMutation,
 } from "@/features/activity/api/activity-mutation-lock";
+import { ACTIVITY_CHATS_QUERY_KEY } from "@/features/activity/api/activity-query-keys";
+import { appQueryClient } from "@/shared/api/query-client";
 import {
   invalidateFriendshipSurfaces,
   invalidateGroupMembershipSurfaces,
@@ -23,13 +28,22 @@ export const ActivitySurfaceCommands = {
     return runExclusiveActivityMutation(
       getActivityMutationKey("chat", chatId, "read", messageId ?? null),
       async () => {
-        const updatedChat: ChatApi = await ActivityApi.markChatRead(
-          chatId,
-          messageId,
-        );
+        markActivityChatReadCache(chatId);
 
-        updateActivityChatSummaryCache(updatedChat);
-        return updatedChat;
+        try {
+          const updatedChat: ChatApi = await ActivityApi.markChatRead(
+            chatId,
+            messageId,
+          );
+
+          updateActivityChatSummaryCache(updatedChat);
+          return updatedChat;
+        } catch (error) {
+          await appQueryClient.invalidateQueries({
+            queryKey: ACTIVITY_CHATS_QUERY_KEY,
+          });
+          throw error;
+        }
       },
     );
   },

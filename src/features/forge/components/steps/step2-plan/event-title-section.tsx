@@ -1,4 +1,4 @@
-import { AlertCircle, Pencil } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 
 import { Input } from "@/shared/components/ui/input";
 import { cn } from "@/shared/lib/utils";
@@ -24,11 +24,7 @@ export function EventTitleSection({
 }: EventTitleSectionProps) {
   return (
     <SectionCard accent={isNameValid}>
-      <SectionHeader
-        icon={<Pencil size={14} />}
-        title="Plan name"
-        description="Name the specific hangout you want to organise."
-      />
+      <SectionHeader title="Plan name" />
 
       <div className="flex flex-col gap-2.5">
         <FieldLabel

@@ -11,6 +11,7 @@ export interface MessageBlockInput {
   date: string;
   isOwn: boolean;
   key: string;
+  newMessagesSeparatorBeforeId: string | null;
   senderGroup: SenderGroup;
   showDateSeparator: boolean;
   spacingAfter: MessageBlockSpacing;
@@ -34,6 +35,7 @@ export function buildVirtualizedMessageBlocks(
       block.senderGroup,
       getBubbleWidth(containerWidth || 720, block.isOwn),
       block.showDateSeparator,
+      block.newMessagesSeparatorBeforeId !== null,
       block.spacingAfter,
     );
     const measuredHeight = measuredHeights[block.key] ?? null;

@@ -33,9 +33,12 @@ export function AlgorithmTuningSection({
   onNetworkReachWeightChange,
 }: AlgorithmTuningSectionProps) {
   const usesDistancePreference = locationType === "IN_PERSON";
-  const summary = usesDistancePreference
-    ? `Ground ${compatibilityWeight}%, Mix ${diversityWeight}%, Reach ${networkReachWeight}%, Radius ${maxDistanceKm} km`
-    : `Ground ${compatibilityWeight}%, Mix ${diversityWeight}%, Reach ${networkReachWeight}%`;
+  const isCustomised =
+    compatibilityWeight !== 60 ||
+    diversityWeight !== 30 ||
+    networkReachWeight !== 10 ||
+    (usesDistancePreference && maxDistanceKm !== 30);
+  const summary = isCustomised ? "Customised" : "Default settings";
 
   return (
     <div className="overflow-hidden rounded-lg border border-border/35 bg-card/65">
@@ -47,7 +50,7 @@ export function AlgorithmTuningSection({
       >
         <div className="flex flex-col gap-0.5 text-left">
           <p className="font-semibold text-foreground text-xs transition-colors group-hover:text-forge-teal">
-            Group balance
+            Selection preferences
           </p>
           <p className="text-muted-foreground/70 text-xs transition-colors group-hover:text-muted-foreground">
             {summary}

@@ -138,6 +138,7 @@ export function estimateSenderGroupHeight(
   senderGroup: SenderGroup,
   bubbleWidth: number,
   showDateSeparator: boolean,
+  showNewMessagesSeparator: boolean,
   spacingAfter: MessageBlockSpacing,
 ) {
   const isSystemGroup = senderGroup.items.every(
@@ -148,6 +149,7 @@ export function estimateSenderGroupHeight(
       ? 20
       : 0;
   const dateHeight = showDateSeparator ? 28 : 0;
+  const newMessagesSeparatorHeight = showNewMessagesSeparator ? 34 : 0;
   const messageGap = senderGroup.items.length > 1 ? 6 : 0;
   const messagesHeight = senderGroup.items.reduce(
     (sum, message, index) =>
@@ -165,6 +167,7 @@ export function estimateSenderGroupHeight(
 
   return (
     dateHeight +
+    newMessagesSeparatorHeight +
     senderLabelHeight +
     messagesHeight +
     spacingAfterHeight[spacingAfter]

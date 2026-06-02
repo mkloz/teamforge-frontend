@@ -16,11 +16,8 @@ export function PrivacySection({
   return (
     <section className="flex flex-col gap-3 border-border/25 border-t pt-4">
       <div className="px-0.5">
-        <p className="font-semibold text-muted-foreground text-xs md:text-sm">
-          Who can find this group?
-        </p>
-        <p className="mt-0.5 text-muted-foreground/60 text-xs">
-          Controls who can discover and join.
+        <p className="font-semibold text-foreground text-sm leading-tight">
+          Visibility
         </p>
       </div>
 
@@ -67,16 +64,6 @@ export function PrivacySection({
                 <p className="min-w-0 text-pretty text-micro text-muted-foreground leading-snug sm:col-span-3 sm:col-start-1 sm:row-start-2 sm:pt-2">
                   {description}
                 </p>
-              </div>
-              <div
-                className={cn(
-                  "mt-1 flex size-4 shrink-0 items-center justify-center rounded-full border-2 transition-colors duration-200 sm:col-start-3 sm:row-start-1",
-                  active
-                    ? "border-forge-teal bg-forge-teal"
-                    : "border-border/50",
-                )}
-              >
-                {active && <div className="size-1.5 rounded-full bg-white" />}
               </div>
             </Button>
           );

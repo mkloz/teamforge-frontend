@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
@@ -8,6 +8,7 @@ import type {
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
 import type { ActivityKind } from "@/features/activity/lib/activity-route";
+import type { ChatApi } from "@/shared/schemas";
 
 interface UseActivityMessageTimelineInput {
   chatId: string | null;
@@ -75,29 +76,75 @@ export function useActivityMessageTimeline({
     () => (selectedKind === "dm" ? flattenedMessages : []),
     [flattenedMessages, selectedKind],
   );
+  const selectedTimelineMessages = useMemo(() => {
+    if (selectedKind === "group") {
+      return selectedGroupMessages;
+    }
+
+    if (selectedKind === "dm") {
+      return selectedDirectMessages;
+    }
+
+    return [];
+  }, [selectedDirectMessages, selectedGroupMessages, selectedKind]);
+  const chatSummary = useMemo(
+    () => chatsQuery.data?.find((chat) => chat.id === chatId) ?? null,
+    [chatId, chatsQuery.data],
+  );
+  const computedFirstUnreadMessageId = useMemo(
+    () =>
+      getFirstUnreadMessageId({
+        chatSummary,
+        currentUserId,
+        messages: selectedTimelineMessages,
+      }),
+    [chatSummary, currentUserId, selectedTimelineMessages],
+  );
+  const firstUnreadChatIdRef = useRef<string | null>(null);
+  const [firstUnreadMessageId, setFirstUnreadMessageId] = useState<
+    string | null
+  >(null);
 
   const latestReadableMessageId =
     flattenedMessages[flattenedMessages.length - 1]?.id ?? null;
   const lastMarkedReadRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!chatId || !latestReadableMessageId || !chatsQuery.data) {
+    if (firstUnreadChatIdRef.current !== chatId) {
+      firstUnreadChatIdRef.current = chatId;
+      setFirstUnreadMessageId(computedFirstUnreadMessageId);
       return;
     }
 
-    const chatSummary = chatsQuery.data.find((chat) => chat.id === chatId);
+    if (!firstUnreadMessageId && computedFirstUnreadMessageId) {
+      setFirstUnreadMessageId(computedFirstUnreadMessageId);
+    }
+  }, [chatId, computedFirstUnreadMessageId, firstUnreadMessageId]);
 
-    if (!chatSummary || (chatSummary.unreadCount ?? 0) === 0) {
+  useEffect(() => {
+    if (!chatId || !latestReadableMessageId) {
       return;
     }
 
-    if (lastMarkedReadRef.current === latestReadableMessageId) {
+    if (!chatSummary || getChatUnreadCount(chatSummary) === 0) {
       return;
     }
 
-    lastMarkedReadRef.current = latestReadableMessageId;
-    void ActivityCommands.markChatRead(chatId, latestReadableMessageId);
-  }, [chatId, chatsQuery.data, latestReadableMessageId]);
+    const markReadKey = `${chatId}:${latestReadableMessageId}`;
+
+    if (lastMarkedReadRef.current === markReadKey) {
+      return;
+    }
+
+    lastMarkedReadRef.current = markReadKey;
+    void ActivityCommands.markChatRead(chatId, latestReadableMessageId).catch(
+      () => {
+        if (lastMarkedReadRef.current === markReadKey) {
+          lastMarkedReadRef.current = null;
+        }
+      },
+    );
+  }, [chatId, chatSummary, latestReadableMessageId]);
 
   async function loadOlderMessages() {
     if (messagesQuery.hasNextPage && !messagesQuery.isFetchingNextPage) {
@@ -112,6 +159,10 @@ export function useActivityMessageTimeline({
   return {
     selectedGroupMessages,
     selectedDirectMessages,
+    firstUnreadMessageId:
+      firstUnreadChatIdRef.current === chatId
+        ? (firstUnreadMessageId ?? computedFirstUnreadMessageId)
+        : computedFirstUnreadMessageId,
     hasOlderMessages: messagesQuery.hasNextPage,
     isMessageTimelineLoading,
     isMessageTimelineError,
@@ -119,6 +170,63 @@ export function useActivityMessageTimeline({
     loadOlderMessages,
     retryMessageTimeline,
   };
+}
+
+function getFirstUnreadMessageId({
+  chatSummary,
+  currentUserId,
+  messages,
+}: {
+  chatSummary: ChatApi | null;
+  currentUserId: string | null;
+  messages: UnifiedMessage[];
+}) {
+  if (!chatSummary || !currentUserId) {
+    return null;
+  }
+
+  const unreadCount = getChatUnreadCount(chatSummary);
+
+  if (unreadCount === 0) {
+    return null;
+  }
+
+  const lastReadMessageId =
+    chatSummary.participants?.find(
+      (participant) => participant.userId === currentUserId,
+    )?.lastReadMessageId ?? null;
+
+  if (lastReadMessageId) {
+    const lastReadIndex = messages.findIndex(
+      (message) => message.id === lastReadMessageId,
+    );
+
+    if (lastReadIndex >= 0) {
+      const firstUnreadAfterLastRead = messages
+        .slice(lastReadIndex + 1)
+        .find(isUnreadMessageCandidate);
+
+      if (firstUnreadAfterLastRead) {
+        return firstUnreadAfterLastRead.id;
+      }
+    }
+  }
+
+  const unreadCandidateMessages = messages.filter(isUnreadMessageCandidate);
+  const firstUnreadIndex = Math.max(
+    0,
+    unreadCandidateMessages.length - unreadCount,
+  );
+
+  return unreadCandidateMessages[firstUnreadIndex]?.id ?? null;
+}
+
+function getChatUnreadCount(chat: ChatApi) {
+  return Math.max(0, chat.unreadCount ?? (chat.hasUnread ? 1 : 0));
+}
+
+function isUnreadMessageCandidate(message: UnifiedMessage) {
+  return !message.isOwn && !message.deletedAt;
 }
 
 function reconcileProposalMessagesWithChatMessages(

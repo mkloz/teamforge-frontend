@@ -1070,11 +1070,11 @@ function TabletInstallSteps() {
   ];
 
   return (
-    <ol className="grid content-center gap-2">
+    <ol className="grid content-center divide-y divide-white/10">
       {steps.map(({ active = false, body, Icon, label, title }) => (
         <li
           key={label}
-          className="grid min-w-0 grid-cols-[1.75rem_minmax(0,1fr)] items-start gap-2"
+          className="grid min-w-0 grid-cols-[1.75rem_minmax(0,1fr)] items-start gap-2 py-1.5 first:pt-0 last:pb-0"
         >
           <span
             className={cn(
@@ -1086,7 +1086,7 @@ function TabletInstallSteps() {
           >
             <Icon size={13} strokeWidth={2} aria-hidden="true" />
           </span>
-          <div className="min-w-0 border-white/8 border-b pb-1.5 last:border-b-0 last:pb-0">
+          <div className="min-w-0">
             <p className="font-bold text-white text-xs leading-tight">
               <span className="mr-2 text-[9px] text-white/35">{label}</span>
               {title}
