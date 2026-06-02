@@ -35,6 +35,37 @@ const DefaultLoader = () => (
 
 const DEFAULT_LOADING_COMPONENT = <DefaultLoader />;
 const DEFAULT_IMAGE_PLACEHOLDER = <ImagePlaceholder />;
+const loadedImageSources = new Set<string>();
+
+function getImageSourceKey(src?: string | null) {
+  const key = src?.trim();
+  return key || null;
+}
+
+function hasLoadedImageSource(src?: string | null) {
+  const key = getImageSourceKey(src);
+  return Boolean(key && loadedImageSources.has(key));
+}
+
+function rememberLoadedImageSource(src?: string | null) {
+  const key = getImageSourceKey(src);
+
+  if (key) {
+    loadedImageSources.add(key);
+  }
+}
+
+function rememberLoadedImage(image: HTMLImageElement, propSrc?: string) {
+  rememberLoadedImageSource(propSrc);
+  rememberLoadedImageSource(image.currentSrc);
+  rememberLoadedImageSource(image.src);
+}
+
+function isCompleteImage(
+  image: HTMLImageElement | null,
+): image is HTMLImageElement {
+  return Boolean(image?.complete && image.naturalWidth > 0);
+}
 
 export function Image({
   src,
@@ -56,34 +87,40 @@ export function Image({
   onError,
   ...props
 }: ImageProps) {
-  const isSrcProvided = Boolean(src?.trim());
-  const [isLoading, setIsLoading] = useState(showLoadingState && isSrcProvided);
+  const imageSrc = getImageSourceKey(src) ?? undefined;
+  const isSrcProvided = Boolean(imageSrc);
+  const [isLoading, setIsLoading] = useState(
+    showLoadingState && isSrcProvided && !hasLoadedImageSource(imageSrc),
+  );
   const [error, setError] = useState(false);
   const [fallbackFailed, setFallbackFailed] = useState(false);
   const imageRef = useRef<HTMLImageElement | null>(null);
-  const actualSrc = error && fallbackSrc ? fallbackSrc : src;
+  const actualSrc = error && fallbackSrc ? fallbackSrc : imageSrc;
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: src changes must reset image state even when isSrcProvided stays true.
   useEffect(() => {
     setError(false);
     setFallbackFailed(false);
     setIsLoading(
-      showLoadingState && isSrcProvided && !imageRef.current?.complete,
+      showLoadingState &&
+        isSrcProvided &&
+        !hasLoadedImageSource(imageSrc) &&
+        !isCompleteImage(imageRef.current),
     );
-  }, [isSrcProvided, showLoadingState, src]);
+  }, [imageSrc, isSrcProvided, showLoadingState]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: actualSrc changes when fallback handling swaps image URLs.
   useEffect(() => {
     if (!isSrcProvided || !imageRef.current) {
       return;
     }
 
-    if (imageRef.current.complete) {
+    if (isCompleteImage(imageRef.current)) {
+      rememberLoadedImage(imageRef.current, actualSrc);
       setIsLoading(false);
     }
   }, [actualSrc, isSrcProvided]);
 
   const handleLoad = (event: SyntheticEvent<HTMLImageElement>) => {
+    rememberLoadedImage(event.currentTarget, actualSrc);
     setIsLoading(false);
     onLoad?.(event);
   };
@@ -114,6 +151,11 @@ export function Image({
                 ref(node);
               } else if (ref) {
                 ref.current = node;
+              }
+
+              if (isCompleteImage(node)) {
+                rememberLoadedImage(node, actualSrc);
+                setIsLoading((current) => (current ? false : current));
               }
             }}
             src={actualSrc}

@@ -10,6 +10,7 @@ import { getArchetype } from "@/features/profile/lib/archetypes";
 import type { ProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar, AvatarStatus } from "@/shared/components/common/avatar";
 import { AvatarPreviewDialog } from "@/shared/components/common/avatar-preview-dialog";
+import { PersonalityCoverArt } from "@/shared/components/profile/personality-cover-art";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import type { OnlineStatus } from "@/shared/schemas/enums";
@@ -54,24 +55,12 @@ export function ProfilePanelInfo({
   return (
     <div className="relative flex w-full flex-col">
       <div className="pointer-events-none sticky top-0 z-30 h-(--panel-cover-expanded-height) overflow-visible">
-        <div className="transform-[translate3d(0,var(--panel-cover-y,0px),0)] absolute inset-x-0 top-0 h-(--panel-cover-expanded-height) origin-[center_top] overflow-hidden bg-forge-teal transition-transform duration-300 ease-out will-change-transform motion-reduce:transition-none">
-          <div
-            className="absolute inset-0 bg-linear-to-b from-black/5 to-black/20"
-            aria-hidden="true"
-          />
-          <div className="absolute inset-0 bg-[radial-gradient(circle,var(--color-canvas)_1px,transparent_1px)] bg-size-[24px_24px] opacity-15" />
-        </div>
-
-        {participant.personalityType ? (
-          <div
-            className="transform-[translate3d(0,var(--panel-cover-type-y,0px),0)] absolute inset-x-0 top-0 flex h-(--panel-cover-expanded-height) items-center justify-end px-4 transition-transform duration-300 ease-out motion-reduce:transition-none"
-            aria-hidden="true"
-          >
-            <span className="transform-[scale(var(--panel-cover-type-scale,1))] origin-right select-none font-black text-8xl text-white leading-none tracking-tighter opacity-(--panel-cover-type-opacity) mix-blend-overlay transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none">
-              {participant.personalityType}
-            </span>
-          </div>
-        ) : null}
+        <PersonalityCoverArt
+          coverClassName="transform-[translate3d(0,var(--panel-cover-y,0px),0)] h-(--panel-cover-expanded-height) origin-[center_top] transition-transform duration-300 ease-out will-change-transform motion-reduce:transition-none"
+          personalityType={participant.personalityType}
+          watermarkClassName="text-7xl"
+          watermarkContainerClassName="h-(--panel-cover-expanded-height) px-4"
+        />
 
         <PanelCompactProfileHeader
           participant={participant}

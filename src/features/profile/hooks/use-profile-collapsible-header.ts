@@ -63,16 +63,16 @@ export function useProfileCollapsibleHeader<TElement extends HTMLElement>({
       );
       element.style.setProperty("--profile-cover-scale", "1");
       element.style.setProperty(
-        "--profile-cover-type-scale",
-        collapsed ? "0.44" : "1",
+        "--personality-cover-type-scale",
+        collapsed ? "0.48" : "1",
       );
       element.style.setProperty(
-        "--profile-cover-type-y",
+        "--personality-cover-type-y",
         collapsed ? `${-collapseRange / 2}px` : "0px",
       );
       element.style.setProperty(
-        "--profile-cover-type-opacity",
-        collapsed ? "0.05" : "0.1",
+        "--personality-cover-type-opacity",
+        collapsed ? "0.22" : "0.82",
       );
       element.style.setProperty("--profile-cover-phase-offset", "0px");
       element.style.setProperty(

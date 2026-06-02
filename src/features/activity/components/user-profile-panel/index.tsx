@@ -191,8 +191,8 @@ export function UserProfilePanel({
       className={cn(
         "relative flex min-h-0 flex-1 flex-col overflow-y-auto [--panel-cover-expanded-height:136px]",
         isPanelHeaderCollapsed
-          ? "[--panel-cover-type-opacity:0.05] [--panel-cover-type-scale:0.42] [--panel-cover-type-y:-32px] [--panel-cover-y:-64px]"
-          : "[--panel-cover-type-opacity:0.1] [--panel-cover-type-scale:1] [--panel-cover-type-y:0px] [--panel-cover-y:0px]",
+          ? "[--panel-cover-y:-64px] [--personality-cover-type-opacity:0.22] [--personality-cover-type-scale:0.48] [--personality-cover-type-y:-32px]"
+          : "[--panel-cover-y:0px] [--personality-cover-type-opacity:0.82] [--personality-cover-type-scale:1] [--personality-cover-type-y:0px]",
         isCompactHeaderVisible
           ? "[--profile-panel-original-opacity:0] [--profile-panel-original-pointer-events:none]"
           : "[--profile-panel-original-opacity:1] [--profile-panel-original-pointer-events:auto]",

@@ -11,7 +11,7 @@ export function ProfilePageLoading(_props: PageLoadingProps = {}) {
     <main
       aria-busy="true"
       aria-label="Loading profile"
-      className="relative min-h-full overflow-x-clip bg-canvas [--profile-cover-collapsed-height:80px] [--profile-cover-expanded-height:160px] [--profile-sidebar-sticky-top:var(--profile-cover-collapsed-height)] md:pb-0 sm:[--profile-cover-expanded-height:168px] md:[--profile-cover-expanded-height:152px] lg:[--profile-cover-collapsed-height:64px]"
+      className="relative min-h-full overflow-x-clip bg-canvas pb-(--profile-cover-phase-reserve) [--personality-cover-type-opacity:0.82] [--personality-cover-type-scale:1] [--personality-cover-type-y:0px] [--profile-cover-collapsed-height:80px] [--profile-cover-expanded-height:160px] [--profile-cover-height:var(--profile-cover-expanded-height)] [--profile-cover-phase-offset:0px] [--profile-cover-phase-reserve:104px] [--profile-hero-z-index:40] [--profile-sidebar-sticky-top:var(--profile-cover-collapsed-height)] sm:[--profile-cover-expanded-height:168px] sm:[--profile-cover-phase-reserve:112px] md:[--profile-cover-expanded-height:152px] md:[--profile-cover-phase-reserve:96px] lg:[--profile-cover-collapsed-height:64px] lg:[--profile-cover-phase-reserve:112px]"
       role="status"
     >
       <span className="sr-only">Loading profile</span>
@@ -19,7 +19,7 @@ export function ProfilePageLoading(_props: PageLoadingProps = {}) {
       <div className="absolute top-4 right-4 z-50 md:top-6 md:right-8">
         <Skeleton shape="circle" className="size-10 border border-white/15" />
       </div>
-      <div className="relative z-10 mx-auto flex w-full max-w-lg flex-col gap-8 px-4 pt-14 pb-8 sm:max-w-6xl sm:px-6 sm:pt-16 md:px-8 md:pt-20 lg:gap-12 lg:pb-16">
+      <div className="transform-[translate3d(0,var(--profile-cover-phase-offset,0px),0)] relative z-(--profile-hero-z-index) mx-auto flex w-full max-w-lg flex-col gap-8 px-4 pt-24 pb-8 sm:max-w-6xl sm:px-6 md:px-8 md:pt-16 lg:gap-12 lg:pb-16">
         <ProfileHeroSkeleton />
         <ProfilePortraitSkeleton />
         <BestFirstGroupStripSkeleton />
