@@ -25,6 +25,7 @@ export const activityParticipantSchema = z.object({
   onlineStatus: onlineStatusSchema.optional(),
   trustScore: z.number(),
   compatibilityScore: z.number().nullable().optional(),
+  lastReadMessageId: z.string().nullable().optional(),
 });
 
 export type ActivityParticipant = z.infer<typeof activityParticipantSchema>;

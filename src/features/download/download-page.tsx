@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import {
-  BatteryFull,
   Bell,
   BellOff,
   BellRing,
@@ -22,19 +21,26 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { TeamForgeLogo } from "@/assets/logo";
 import { PwaDiagnosticsPanel } from "@/features/download/components/pwa-diagnostics-panel";
 import { Footer } from "@/features/landing/components/footer";
 import { Navbar } from "@/features/landing/components/navbar";
 import { useLandingAuthActions } from "@/features/landing/hooks/use-landing-auth-actions";
 import { useRestoreAuthSessionQuery } from "@/shared/api/current-user-query";
 import { Button } from "@/shared/components/ui/button";
+import {
+  type SegmentedTabOption,
+  SegmentedTabs,
+} from "@/shared/components/ui/segmented-tabs";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { usePwaDisplayMode } from "@/shared/hooks/use-pwa-display-mode";
 import { usePwaInstallPrompt } from "@/shared/hooks/use-pwa-install-prompt";
 import { useWebPushSubscription } from "@/shared/hooks/use-web-push-subscription";
 import type { PageMetadata } from "@/shared/lib/document-metadata";
 import { cn } from "@/shared/lib/utils";
+
+const androidInstallPreviewUrl = "/download/install-preview-android.png";
+const desktopInstallPreviewUrl = "/download/install-preview-desktop.png";
+const iosInstallPreviewUrl = "/download/install-preview-ios.png";
 
 // ─── Metadata ────────────────────────────────────────────────────────────────
 
@@ -729,11 +735,11 @@ export function DownloadPage() {
 
 // ─── Device selector ─────────────────────────────────────────────────────────
 
-const DEVICE_TABS: { id: SelectedDevice; label: string; Icon: LucideIcon }[] = [
-  { id: "ios", label: "iPhone & iPad", Icon: Smartphone },
-  { id: "android", label: "Android", Icon: Smartphone },
-  { id: "desktop", label: "Desktop", Icon: MonitorSmartphone },
-];
+const DEVICE_TABS = [
+  { id: "ios", label: "iPhone & iPad", shortLabel: "iPhone", icon: Smartphone },
+  { id: "android", label: "Android", icon: Smartphone },
+  { id: "desktop", label: "Desktop", icon: MonitorSmartphone },
+] satisfies SegmentedTabOption<SelectedDevice>[];
 
 interface DeviceSelectorProps {
   selected: SelectedDevice;
@@ -742,46 +748,13 @@ interface DeviceSelectorProps {
 
 function DeviceSelector({ selected, onSelect }: DeviceSelectorProps) {
   return (
-    <div
-      role="tablist"
-      aria-label="Select your device"
-      className="flex gap-1 rounded-full border border-white/10 bg-white/4 p-1 backdrop-blur-sm"
-    >
-      {DEVICE_TABS.map(({ id, label, Icon }) => {
-        const isActive = selected === id;
-        return (
-          <button
-            key={id}
-            type="button"
-            role="tab"
-            aria-selected={isActive}
-            onClick={() => {
-              onSelect(id);
-            }}
-            className={cn(
-              "flex min-h-11 items-center gap-1.5 rounded-full px-3 py-2 font-medium text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-1 focus-visible:ring-offset-hero-bg",
-              isActive
-                ? "bg-forge-teal text-white shadow-sm"
-                : "text-text-dark-secondary hover:text-white",
-            )}
-          >
-            <Icon
-              size={14}
-              strokeWidth={isActive ? 2 : 1.5}
-              aria-hidden="true"
-            />
-            <span className="hidden sm:inline">{label}</span>
-            <span className="sm:hidden">
-              {id === "ios"
-                ? "iPhone"
-                : id === "android"
-                  ? "Android"
-                  : "Desktop"}
-            </span>
-          </button>
-        );
-      })}
-    </div>
+    <SegmentedTabs
+      ariaLabel="Select your device"
+      options={DEVICE_TABS}
+      value={selected}
+      onChange={onSelect}
+      className="backdrop-blur-sm"
+    />
   );
 }
 
@@ -932,7 +905,7 @@ interface HeroVisualProps {
   desktopBrowser: DesktopBrowser;
 }
 
-function HeroVisual({ selectedDevice, desktopBrowser }: HeroVisualProps) {
+function HeroVisual({ selectedDevice }: HeroVisualProps) {
   const isDesktop = selectedDevice === "desktop";
   const isIos = selectedDevice === "ios";
 
@@ -952,13 +925,13 @@ function HeroVisual({ selectedDevice, desktopBrowser }: HeroVisualProps) {
       ) : selectedDevice === "android" ? (
         <AndroidPhoneVisual />
       ) : (
-        <DesktopBrowserVisual browser={desktopBrowser} />
+        <DesktopBrowserVisual />
       )}
     </div>
   );
 }
 
-/** iPad visual: Safari install guide inside the device frame */
+/** iPad visual: optimized screenshot preview */
 function IpadVisual() {
   return (
     <div
@@ -966,166 +939,22 @@ function IpadVisual() {
       aria-hidden="true"
     >
       <div className="absolute inset-8 -z-10 scale-95 rounded-4xl bg-forge-teal/50 opacity-25 blur-3xl" />
-      <div className="relative mx-auto aspect-3/2 w-full max-w-140 rounded-4xl border-8 border-black/80 bg-forge-deep-panel shadow-teal-glow-lg ring-1 ring-white/10">
+      <div className="relative mx-auto w-full max-w-140 rounded-4xl border-8 border-black/80 bg-forge-deep-panel shadow-teal-glow-lg ring-1 ring-white/10">
         <div className="absolute top-1/2 left-2 z-10 size-2 -translate-y-1/2 rounded-full bg-white/15" />
         <div className="absolute top-14 -right-1 h-14 w-1 rounded-r-full bg-white/10" />
-        <div className="absolute bottom-2 left-1/2 z-10 h-1 w-20 -translate-x-1/2 rounded-full bg-white/20" />
-
-        <div className="flex h-full flex-col overflow-hidden rounded-[1.65rem] bg-forge-deep-panel text-white">
-          <TabletBrowserChrome />
-
-          <div className="flex min-h-0 flex-1 flex-col gap-3 py-3 pr-3 pl-5 sm:gap-4 sm:pt-5 sm:pr-5 sm:pb-4 sm:pl-7">
-            <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 sm:grid-cols-[16rem_minmax(0,1fr)] sm:gap-0 sm:divide-x sm:divide-white/10">
-              <TabletInstallIntro />
-              <div className="hidden min-w-0 sm:flex sm:items-center sm:pl-5">
-                <TabletInstallSteps />
-              </div>
-            </div>
-            <TabletInstallBar />
-          </div>
-        </div>
+        <div className="absolute bottom-1 left-1/2 z-10 h-1 w-20 -translate-x-1/2 rounded-full bg-white/20" />
+        <PreviewScreenImage
+          src={iosInstallPreviewUrl}
+          width={984}
+          height={647}
+          className="rounded-[1.65rem]"
+        />
       </div>
     </div>
   );
 }
 
-function TabletBrowserChrome() {
-  return (
-    <header className="border-white/8 border-b bg-white/5 px-5 py-2">
-      <div className="flex items-center justify-between">
-        <span className="font-semibold text-[9px] text-white/45">9:41</span>
-        <div className="flex items-center gap-1.5 text-white/40">
-          <Wifi size={11} strokeWidth={1.5} aria-hidden="true" />
-          <BatteryFull size={14} strokeWidth={1.5} aria-hidden="true" />
-        </div>
-      </div>
-
-      <div className="mt-2 flex items-center gap-2">
-        <span className="shrink-0 font-semibold text-white/45 text-xs">
-          Safari
-        </span>
-        <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full border border-white/8 bg-white/6 px-3 py-0.5">
-          <span className="type-signature-label font-semibold text-white/30">
-            Aa
-          </span>
-          <span className="truncate font-mono text-[9px] text-white/35">
-            teamforge.app/download
-          </span>
-        </div>
-        <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-forge-teal/25 bg-forge-teal/10 text-forge-teal">
-          <Share className="size-2.5" strokeWidth={1.5} aria-hidden="true" />
-        </span>
-      </div>
-    </header>
-  );
-}
-
-function TabletInstallIntro() {
-  return (
-    <section className="min-w-0 border-white/8 border-b pb-3 sm:border-b-0 sm:pt-1 sm:pr-5 sm:pb-0">
-      <div className="flex items-center gap-3">
-        <div className="shrink-0 rounded-xl bg-canvas p-1.5">
-          <TeamForgeLogo className="size-8" showBackground={false} />
-        </div>
-        <div className="min-w-0">
-          <p className="truncate font-extrabold text-base text-white leading-none">
-            Team<span className="text-forge-teal">Forge</span>
-          </p>
-          <p className="type-signature-label mt-1 text-text-dark-muted leading-tight">
-            Find your people, intelligently.
-          </p>
-        </div>
-      </div>
-
-      <h2 className="mt-2 text-balance border-white/10 border-t pt-2 font-extrabold text-sm text-white leading-tight sm:mt-4 sm:text-lg">
-        Add TeamForge to your Home Screen.
-      </h2>
-      <p className="type-signature-label mt-1.5 hidden text-pretty text-text-dark-muted leading-snug sm:block">
-        Install from Safari, then open it like a focused app.
-      </p>
-    </section>
-  );
-}
-
-function TabletInstallSteps() {
-  const steps = [
-    {
-      body: "Use the Safari share button.",
-      Icon: Share,
-      label: "01",
-      title: "Open Share",
-    },
-    {
-      active: true,
-      body: "Choose Add to Home Screen.",
-      Icon: Plus,
-      label: "02",
-      title: "Add TeamForge",
-    },
-    {
-      body: "Launch it from your apps.",
-      Icon: CheckCircle2,
-      label: "03",
-      title: "Open anytime",
-    },
-  ];
-
-  return (
-    <ol className="grid w-full content-center divide-y divide-white/12">
-      {steps.map(({ active = false, body, Icon, label, title }) => (
-        <li
-          key={label}
-          className="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] items-start gap-2.5 py-2 first:pt-0 last:pb-0"
-        >
-          <span
-            className={cn(
-              "flex size-8 items-center justify-center rounded-full",
-              active
-                ? "bg-forge-teal text-white"
-                : "border border-white/10 bg-white/7 text-white/40",
-            )}
-          >
-            <Icon size={13} strokeWidth={2} aria-hidden="true" />
-          </span>
-          <div className="min-w-0">
-            <p className="font-bold text-white text-xs leading-tight">
-              <span className="mr-2 text-[9px] text-white/35">{label}</span>
-              {title}
-            </p>
-            <p className="mt-0.5 text-[9px] text-text-dark-muted leading-snug">
-              {body}
-            </p>
-          </div>
-        </li>
-      ))}
-    </ol>
-  );
-}
-
-function TabletInstallBar() {
-  return (
-    <div className="flex items-center justify-between gap-2 rounded-md border border-forge-teal/30 bg-forge-teal/14 px-2.5 py-2.5 shadow-forge-teal/10 shadow-sm sm:gap-3 sm:px-3">
-      <div className="flex min-w-0 items-center gap-3">
-        <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-forge-teal text-white">
-          <Plus size={14} strokeWidth={2} aria-hidden="true" />
-        </span>
-        <div className="min-w-0">
-          <p className="truncate font-bold text-white text-xs leading-tight">
-            Add to Home Screen
-          </p>
-          <p className="mt-0.5 truncate text-[9px] text-text-dark-muted leading-tight">
-            Icon, name, and app view are ready.
-          </p>
-        </div>
-      </div>
-      <span className="type-signature-label shrink-0 rounded-full bg-forge-teal px-2.5 py-1.5 font-bold text-white sm:px-3">
-        Add
-      </span>
-    </div>
-  );
-}
-
-/** Android visual: phone with Chrome install banner at bottom */
+/** Android visual: optimized screenshot preview */
 function AndroidPhoneVisual() {
   return (
     <div
@@ -1134,114 +963,33 @@ function AndroidPhoneVisual() {
     >
       <div className="absolute inset-6 -z-10 scale-95 rounded-[3rem] bg-forge-teal/50 opacity-30 blur-3xl" />
       <div className="relative mx-auto w-full max-w-64 rounded-[3rem] border-8 border-black/80 bg-black/80 shadow-teal-glow-lg ring-1 ring-white/10 sm:max-w-68">
-        <div className="absolute top-24 -right-1 h-16 w-1 rounded-r-full bg-white/10" />
-        <div className="absolute top-3 left-1/2 z-20 size-2.5 -translate-x-1/2 rounded-full border border-white/10 bg-black/80 shadow-inner" />
-        <div className="flex aspect-9/17.5 h-full flex-col overflow-hidden rounded-[2.4rem] bg-forge-deep-panel">
-          <PreviewStatusBar />
-
-          <div className="mx-4 flex items-center gap-2 rounded-full border border-white/8 bg-white/6 px-3 py-2">
-            <Globe size={11} className="shrink-0 text-white/25" />
-            <span className="min-w-0 flex-1 truncate font-mono text-[9px] text-white/35">
-              teamforge.app/download
-            </span>
-            <EllipsisVertical size={12} className="shrink-0 text-white/30" />
-          </div>
-
-          {/* App content */}
-          <div className="flex flex-1 flex-col px-6 pt-8">
-            <PreviewBrandLockup centered size="phone" />
-            <PreviewStatRows
-              className="mt-5 border-white/8 border-t pt-4"
-              compact
-              rows={[
-                { label: "Groups", value: "2 active", tone: "teal" },
-                { label: "Invites", value: "1 pending", tone: "amber" },
-              ]}
-            />
-            <div className="mt-5 grid gap-2">
-              <div className="h-2 w-4/5 rounded-full bg-white/8" />
-              <div className="h-2 w-3/5 rounded-full bg-white/8" />
-            </div>
-          </div>
-
-          <PreviewInstallBanner />
-
-          {/* Android nav bar (gesture handle) */}
-          <div className="mx-auto mb-3 h-1 w-20 rounded-full bg-white/18" />
-        </div>
+        <div className="absolute top-24 -right-1 z-10 h-16 w-1 rounded-r-full bg-white/10" />
+        <div className="absolute top-3 left-1/2 z-20 size-2 -translate-x-1/2 rounded-full bg-white/15" />
+        <PreviewScreenImage
+          src={androidInstallPreviewUrl}
+          width={465}
+          height={900}
+          className="rounded-[2.4rem]"
+        />
+        <div className="absolute bottom-1 left-1/2 z-20 h-1 w-20 -translate-x-1/2 rounded-full bg-white/18" />
       </div>
     </div>
   );
 }
 
-/** Desktop visual: browser window with address bar install icon + install dialog */
-function DesktopBrowserVisual({ browser }: { browser: DesktopBrowser }) {
-  const browserLabel =
-    browser === "edge"
-      ? "Edge"
-      : browser === "firefox"
-        ? "Firefox"
-        : browser === "safari"
-          ? "Safari"
-          : "Chrome";
-
-  const showInstallDialog = browser !== "firefox";
-
+/** Desktop visual: optimized screenshot preview */
+function DesktopBrowserVisual() {
   return (
     <div className="relative w-full select-none" aria-hidden="true">
       <div className="absolute inset-4 -z-10 scale-105 rounded-3xl bg-forge-teal/50 opacity-25 blur-3xl" />
-      {/* Desktop monitor */}
       <div className="relative mx-auto w-full max-w-120 pb-9">
         <div className="rounded-4xl border-8 border-black/80 bg-black/80 p-2 shadow-teal-glow-lg ring-1 ring-white/10">
-          <div className="flex aspect-16/10 flex-col overflow-hidden rounded-2xl border border-white/10 bg-forge-deep-panel">
-            {/* Browser chrome */}
-            <div className="flex items-center gap-3 border-white/8 border-b bg-white/5 px-4 py-2.5">
-              <div className="flex shrink-0 gap-1.5">
-                <div className="size-2.5 rounded-full bg-white/25" />
-                <div className="size-2.5 rounded-full bg-spark-amber/60" />
-                <div className="size-2.5 rounded-full bg-forge-teal/70" />
-              </div>
-              <div className="flex min-w-0 flex-1 items-center gap-2 rounded-xl border border-white/8 bg-white/6 p-0.5">
-                <div className="ml-0.5 size-2.5 shrink-0 rounded-full border border-white/20" />
-                <span className="flex-1 font-mono text-[9px] text-white/30">
-                  teamforge.app/download
-                </span>
-                {showInstallDialog && (
-                  <div className="flex shrink-0 items-center gap-1 rounded-lg border border-forge-teal/40 bg-forge-teal/20 px-1 py-0.5">
-                    <MonitorSmartphone size={10} className="text-forge-teal" />
-                    <span className="font-semibold text-[8px] text-forge-teal">
-                      Install
-                    </span>
-                  </div>
-                )}
-              </div>
-              <span className="hidden font-medium text-[9px] text-white/20 sm:inline">
-                {browserLabel}
-              </span>
-            </div>
-
-            {/* Page content preview */}
-            <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,0.92fr)_minmax(0,1fr)]">
-              <div className="flex min-w-0 flex-col justify-center border-white/8 border-r px-8">
-                <PreviewBrandLockup />
-                <PreviewStatRows
-                  className="mt-6 border-white/8 border-t pt-4"
-                  compact
-                  rows={[
-                    { label: "Groups", value: "2 active", tone: "teal" },
-                    { label: "Plans", value: "Today 7 PM" },
-                  ]}
-                />
-              </div>
-
-              <div className="flex min-w-0 items-center justify-center p-6">
-                {showInstallDialog ? (
-                  <DesktopInstallDialog />
-                ) : (
-                  <FirefoxInstallNotice />
-                )}
-              </div>
-            </div>
+          <div className="overflow-hidden rounded-2xl border border-white/10 bg-forge-deep-panel">
+            <PreviewScreenImage
+              src={desktopInstallPreviewUrl}
+              width={815}
+              height={510}
+            />
           </div>
         </div>
 
@@ -1252,147 +1000,30 @@ function DesktopBrowserVisual({ browser }: { browser: DesktopBrowser }) {
   );
 }
 
-interface PreviewRow {
-  label: string;
-  value: string;
-  tone?: "amber" | "teal";
-}
-
-function PreviewStatusBar() {
-  return (
-    <div className="flex items-center justify-between px-5 pt-3 pb-2">
-      <span className="font-semibold text-[9px] text-white/45">9:41</span>
-      <div className="flex items-center gap-1.5 text-white/40">
-        <Wifi size={11} strokeWidth={1.5} aria-hidden="true" />
-        <BatteryFull size={14} strokeWidth={1.5} aria-hidden="true" />
-      </div>
-    </div>
-  );
-}
-
-function PreviewBrandLockup({
-  centered = false,
-  size = "default",
-}: {
-  centered?: boolean;
-  size?: "default" | "large" | "phone";
-}) {
-  const logoSize =
-    size === "large" ? "size-14" : size === "phone" ? "size-16" : "size-10";
-  const logoPadding =
-    size === "large" ? "p-3" : size === "phone" ? "p-3.5" : "p-2.5";
-  const textSize =
-    size === "large" ? "text-lg" : size === "phone" ? "text-base" : "text-sm";
-
-  return (
-    <div
-      className={cn(
-        "flex min-w-0 items-center gap-4",
-        centered && "flex-col gap-3 text-center",
-      )}
-    >
-      <div className={cn("shrink-0 rounded-lg bg-canvas", logoPadding)}>
-        <TeamForgeLogo className={logoSize} showBackground={false} />
-      </div>
-      <div className="min-w-0">
-        <p className={cn("font-bold text-white leading-tight", textSize)}>
-          Team<span className="text-forge-teal">Forge</span>
-        </p>
-        <p className="mt-1 text-[8px] text-text-dark-muted leading-tight">
-          Find your people, intelligently.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function PreviewStatRows({
-  className,
-  compact = false,
-  rows,
-}: {
+interface PreviewScreenImageProps {
   className?: string;
-  compact?: boolean;
-  rows: PreviewRow[];
-}) {
-  return (
-    <div className={cn("grid gap-3", compact && "gap-2", className)}>
-      {rows.map((row) => (
-        <div
-          key={row.label}
-          className="flex items-center justify-between gap-5"
-        >
-          <span className="type-signature-label text-text-dark-muted">
-            {row.label}
-          </span>
-          <span
-            className={cn(
-              "type-signature-label rounded-full px-2 py-0.5 font-semibold",
-              row.tone === "teal" && "bg-forge-teal/15 text-forge-teal",
-              row.tone === "amber" && "bg-spark-amber/15 text-spark-amber",
-              !row.tone && "text-text-dark-secondary",
-            )}
-          >
-            {row.value}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
+  height: number;
+  src: string;
+  width: number;
 }
 
-function PreviewInstallBanner() {
+function PreviewScreenImage({
+  className,
+  height,
+  src,
+  width,
+}: PreviewScreenImageProps) {
   return (
-    <div className="mx-3 mb-3 rounded-lg border border-white/10 bg-white/7 p-2.5">
-      <div className="grid grid-cols-[1.75rem_minmax(0,1fr)_3rem] items-center gap-2">
-        <div className="flex size-7 shrink-0 items-center justify-center rounded-sm bg-canvas">
-          <TeamForgeLogo className="size-6" showBackground={false} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="type-signature-label whitespace-nowrap font-bold text-white">
-            Install TeamForge
-          </p>
-          <p className="truncate text-[9px] text-white/45">teamforge.app</p>
-        </div>
-        <div className="type-signature-label rounded-full bg-forge-teal p-1 text-center font-bold text-white">
-          Install
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DesktopInstallDialog() {
-  return (
-    <section className="w-full max-w-52 rounded-xl border border-forge-teal/25 bg-forge-teal/10 p-4 text-center">
-      <p className="type-signature-label font-semibold text-white">
-        Install TeamForge?
-      </p>
-      <p className="mx-auto mt-1 max-w-40 text-[9px] text-white/40 leading-relaxed">
-        Opens as a focused app without browser tabs.
-      </p>
-      <div className="mt-4 flex justify-center gap-2">
-        <div className="w-18 rounded-full border border-white/10 px-2 py-1 text-center font-semibold text-[9px] text-white/40">
-          Cancel
-        </div>
-        <div className="w-18 rounded-full bg-forge-teal px-2 py-1 text-center font-semibold text-[9px] text-white">
-          Install
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FirefoxInstallNotice() {
-  return (
-    <section className="w-full rounded-2xl border border-spark-amber/20 bg-spark-amber/8 p-4">
-      <p className="type-signature-label font-semibold text-spark-amber">
-        Firefox uses the browser view
-      </p>
-      <p className="mt-1 text-[9px] text-white/40 leading-relaxed">
-        Open this page in Chrome or Edge to install TeamForge as an app.
-      </p>
-    </section>
+    <img
+      src={src}
+      width={width}
+      height={height}
+      alt=""
+      decoding="async"
+      loading="eager"
+      draggable={false}
+      className={cn("block h-auto w-full object-cover", className)}
+    />
   );
 }
 

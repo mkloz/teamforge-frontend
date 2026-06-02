@@ -122,6 +122,8 @@ export function MessageSenderBlock({
             const isSystemMessage = message.type === "SYSTEM";
             const isSelectable = !isSystemMessage;
             const isSelected = selectedMessageIds?.has(message.id) ?? false;
+            const hasNewMessagesSeparator =
+              block.newMessagesSeparatorBeforeId === message.id;
 
             return (
               <div
@@ -129,8 +131,12 @@ export function MessageSenderBlock({
                 ref={getMessageRef(message.id)}
                 className="flex min-w-0 flex-col"
               >
-                {block.newMessagesSeparatorBeforeId === message.id ? (
-                  <NewMessagesSeparator />
+                {hasNewMessagesSeparator ? (
+                  <div
+                    className={cn(!isSystemBlock && !block.isOwn && "-ml-11")}
+                  >
+                    <NewMessagesSeparator />
+                  </div>
                 ) : null}
                 <div
                   className={cn(

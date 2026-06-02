@@ -80,7 +80,7 @@ export function PlanSection({
     <section
       ref={sectionRef}
       className={cn(
-        "border-border/70 border-t pt-5 transition-all duration-500",
+        "scroll-mt-24 border-border/70 border-t pt-5 transition-all duration-500",
         isFocused &&
           "rounded-xl bg-forge-teal/8 px-3 pb-3 ring-1 ring-forge-teal/20",
       )}

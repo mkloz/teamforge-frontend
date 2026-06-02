@@ -34,6 +34,7 @@ export function buildParticipantsFromChatSummary(
         oceanA: participant.user.oceanA ?? null,
         oceanN: participant.user.oceanN ?? null,
         onlineStatus: participant.user.onlineStatus,
+        lastReadMessageId: participant.lastReadMessageId,
         trustScore:
           participant.user.id === currentUser.id
             ? currentUserParticipant.trustScore

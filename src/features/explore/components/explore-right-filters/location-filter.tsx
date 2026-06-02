@@ -4,8 +4,8 @@ import {
   LOCATION_FILTER_OPTIONS,
 } from "@/features/explore/constants/explore.constants";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
+import { SegmentedTabs } from "@/shared/components/ui/segmented-tabs";
 import { Slider } from "@/shared/components/ui/slider";
-import { SegmentedFilterTabs } from "./segmented-filter-tabs";
 
 export function LocationFilter() {
   const { locationMode, setLocationMode, distance, setDistance } =
@@ -16,7 +16,9 @@ export function LocationFilter() {
       <h4 className="pl-1 font-bold text-foreground text-sm tracking-tight">
         Place
       </h4>
-      <SegmentedFilterTabs
+      <SegmentedTabs
+        ariaLabel="Filter groups by place"
+        fill
         options={LOCATION_FILTER_OPTIONS}
         value={locationMode}
         onChange={setLocationMode}

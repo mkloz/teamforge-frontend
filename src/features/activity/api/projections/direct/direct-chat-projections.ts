@@ -15,19 +15,33 @@ function buildDirectChatParticipants(
   privateChat: FriendshipPrivateChatApi,
   counterpart: FriendshipApi["counterpart"],
   currentUser: ActivityParticipant,
-) {
+  chatSummary?: ChatApi | null,
+): NonNullable<DirectChat["participants"]> {
   const participant = mapFriendshipUserParticipant(counterpart);
+  const readCursorByUserId = buildReadCursorByUserId(chatSummary);
+  const participantLastReadMessageId =
+    readCursorByUserId.get(participant.id) ?? null;
+  const currentUserLastReadMessageId =
+    readCursorByUserId.get(currentUser.id) ?? null;
 
   return [
     {
       userId: participant.id,
       chatId: privateChat.id,
-      user: participant,
+      lastReadMessageId: participantLastReadMessageId,
+      user: {
+        ...participant,
+        lastReadMessageId: participantLastReadMessageId,
+      },
     },
     {
       userId: currentUser.id,
       chatId: privateChat.id,
-      user: currentUser,
+      lastReadMessageId: currentUserLastReadMessageId,
+      user: {
+        ...currentUser,
+        lastReadMessageId: currentUserLastReadMessageId,
+      },
     },
   ];
 }
@@ -45,6 +59,7 @@ export function mapDirectChat(
     friendship.privateChat,
     friendship.counterpart,
     currentUser,
+    chatSummary,
   );
 
   return {
@@ -70,11 +85,17 @@ export function mapNotesChat(
   chatSummary: ChatApi,
   currentUser: ActivityParticipant,
 ): DirectChat {
-  const participants = [
+  const currentUserLastReadMessageId =
+    buildReadCursorByUserId(chatSummary).get(currentUser.id) ?? null;
+  const participants: NonNullable<DirectChat["participants"]> = [
     {
       userId: currentUser.id,
       chatId: chatSummary.id,
-      user: currentUser,
+      lastReadMessageId: currentUserLastReadMessageId,
+      user: {
+        ...currentUser,
+        lastReadMessageId: currentUserLastReadMessageId,
+      },
     },
   ];
 
@@ -93,4 +114,13 @@ export function mapNotesChat(
     isBlocked: false,
     mutualGroups: [],
   };
+}
+
+function buildReadCursorByUserId(chatSummary?: ChatApi | null) {
+  return new Map(
+    chatSummary?.participants?.map((participant) => [
+      participant.userId,
+      participant.lastReadMessageId,
+    ]) ?? [],
+  );
 }

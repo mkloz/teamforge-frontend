@@ -27,7 +27,9 @@ export function useMessageLayout({ message, isOwn }: UseMessageLayoutProps) {
   return {
     reactionGroups,
     galleryRounding,
-    isReadByOthers: message.status === "READ",
+    isReadByOthers:
+      (message.readByCount ?? message.readBy?.length ?? 0) > 0 ||
+      message.status === "READ",
   };
 }
 

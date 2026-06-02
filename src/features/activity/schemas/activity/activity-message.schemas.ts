@@ -38,6 +38,16 @@ export const unifiedReactionSchema = z.object({
 
 export type UnifiedReaction = z.infer<typeof unifiedReactionSchema>;
 
+export const messageReadByParticipantSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  avatar: z.string().nullable(),
+});
+
+export type MessageReadByParticipant = z.infer<
+  typeof messageReadByParticipantSchema
+>;
+
 export type UnifiedMessage = z.infer<typeof unifiedMessageSchema>;
 
 export const unifiedMessageSchema: z.ZodType<{
@@ -76,6 +86,8 @@ export const unifiedMessageSchema: z.ZodType<{
     avatar: string | null;
     vote: z.infer<typeof planProposalVoteSchema>;
   }>;
+  readBy?: MessageReadByParticipant[];
+  readByCount?: number;
 }> = z.lazy(() =>
   z.object({
     id: z.string(),
@@ -117,5 +129,7 @@ export const unifiedMessageSchema: z.ZodType<{
         }),
       )
       .optional(),
+    readBy: z.array(messageReadByParticipantSchema).optional(),
+    readByCount: z.number().optional(),
   }),
 );

@@ -50,6 +50,8 @@ interface UnifiedMessageListProps {
   typingUsers?: { name: string; avatar: string | null }[];
 }
 
+const UNREAD_SEPARATOR_DISMISS_BOTTOM_THRESHOLD_PX = 24;
+
 /**
  * UnifiedMessageList - Shared container for message rendering.
  * Handles grouping logic, date separators, and vertical layout.
@@ -85,11 +87,18 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
   const [pendingReplyTargetId, setPendingReplyTargetId] = useState<
     string | null
   >(null);
+  const [dismissedUnreadMessageId, setDismissedUnreadMessageId] = useState<
+    string | null
+  >(null);
   const groupedMessages = useMessageGrouping(messages);
   const { getMessageElement, getMessageRef } = useMessageElementRegistry();
+  const visibleUnreadMessageId =
+    dismissedUnreadMessageId === firstUnreadMessageId
+      ? null
+      : firstUnreadMessageId;
   const blocks = useMemo(
-    () => buildMessageBlocks(groupedMessages, firstUnreadMessageId),
-    [firstUnreadMessageId, groupedMessages],
+    () => buildMessageBlocks(groupedMessages, visibleUnreadMessageId),
+    [groupedMessages, visibleUnreadMessageId],
   );
   const {
     getBlockElement,
@@ -228,7 +237,14 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
     previousScrollTopRef.current = null;
     olderLoadInFlightRef.current = false;
     setPendingReplyTargetId(null);
+    setDismissedUnreadMessageId(null);
   }, [conversationId]);
+
+  useEffect(() => {
+    setDismissedUnreadMessageId((current) =>
+      current === firstUnreadMessageId ? current : null,
+    );
+  }, [firstUnreadMessageId]);
 
   function handleViewportScroll(event: UIEvent<HTMLDivElement>) {
     const viewport = event.currentTarget;
@@ -240,6 +256,17 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
     previousScrollTopRef.current = nextScrollTop;
     handleScroll(event);
     setScrollTop(nextScrollTop);
+
+    const distanceFromBottom =
+      viewport.scrollHeight - nextScrollTop - viewport.clientHeight;
+
+    if (
+      firstUnreadMessageId &&
+      dismissedUnreadMessageId !== firstUnreadMessageId &&
+      distanceFromBottom <= UNREAD_SEPARATOR_DISMISS_BOTTOM_THRESHOLD_PX
+    ) {
+      setDismissedUnreadMessageId(firstUnreadMessageId);
+    }
 
     if (
       isScrollingUp &&
@@ -255,6 +282,14 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
         olderLoadInFlightRef.current = false;
       });
     }
+  }
+
+  function handleScrollToLatestMessages() {
+    if (firstUnreadMessageId) {
+      setDismissedUnreadMessageId(firstUnreadMessageId);
+    }
+
+    scrollToBottom();
   }
 
   return (
@@ -311,7 +346,7 @@ export const UnifiedMessageList = memo(function UnifiedMessageList({
       {isEmpty ? null : (
         <ScrollActionButtons
           showScrollToBottom={showScrollToBottom}
-          onScrollToBottom={scrollToBottom}
+          onScrollToBottom={handleScrollToLatestMessages}
           newMessageCount={newMessageCount}
           hasProposalShortcut={hasProposalShortcut}
           onScrollToProposal={scrollToClosestProposal}

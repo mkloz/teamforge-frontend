@@ -7,6 +7,7 @@ import { activityParticipantSchema } from "./activity-participant.schemas";
 export const activityChatParticipantSchema = z.object({
   userId: z.string(),
   chatId: z.string(),
+  lastReadMessageId: z.string().nullable().optional(),
   user: activityParticipantSchema.optional(),
 });
 

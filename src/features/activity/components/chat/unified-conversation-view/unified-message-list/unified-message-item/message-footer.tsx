@@ -3,6 +3,7 @@ import { memo } from "react";
 import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import { formatChatTime } from "@/features/activity/lib/chat-utils";
 import { isVisualAttachment } from "@/features/activity/lib/gif-attachments";
+import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
 import { MessageReactions, type ReactionGroup } from "./message-reactions";
 import { MessageStatusIcon } from "./message-status-icon";
@@ -15,6 +16,8 @@ interface MessageFooterProps {
   createdAt: string;
   status: UnifiedMessage["status"];
   isReadByOthers: boolean;
+  readBy?: UnifiedMessage["readBy"];
+  readByCount?: number;
   isEdited?: boolean;
   isPinned?: boolean;
   isSaved?: boolean;
@@ -32,6 +35,8 @@ export const MessageFooter = memo(
     createdAt,
     status,
     isReadByOthers,
+    readBy = [],
+    readByCount = readBy.length,
     isEdited,
     isPinned = false,
     isSaved = false,
@@ -113,11 +118,52 @@ export const MessageFooter = memo(
             isOwn={isOwn}
             isReadByOthers={isReadByOthers}
           />
+          {isOwn && readByCount > 0 ? (
+            <ReadBySummary readers={readBy} readByCount={readByCount} />
+          ) : null}
         </div>
       </div>
     );
   },
 );
+
+function ReadBySummary({
+  readers,
+  readByCount,
+}: {
+  readers: NonNullable<UnifiedMessage["readBy"]>;
+  readByCount: number;
+}) {
+  const visibleReaders = readers.slice(0, 3);
+  const readerNames = readers.map((reader) => reader.name).join(", ");
+  const label =
+    readByCount === 1 && readers[0]
+      ? `Read by ${readers[0].name}`
+      : `Read by ${readByCount}`;
+
+  return (
+    <span
+      className="ml-0.5 inline-flex min-w-0 items-center gap-1 rounded-full bg-forge-teal/8 px-1.5 py-0.5 text-forge-teal"
+      title={readerNames ? `Read by ${readerNames}` : label}
+    >
+      <span className="max-w-18 truncate font-black text-nano">{label}</span>
+      {visibleReaders.length > 0 ? (
+        <span className="flex shrink-0 items-center -space-x-1">
+          {visibleReaders.map((reader) => (
+            <Avatar
+              key={reader.id}
+              src={reader.avatar}
+              name={reader.name}
+              className="size-4 border border-canvas bg-forge-teal/10 text-[0.45rem]"
+              fallbackClassName="text-[0.45rem]"
+              imageSize={32}
+            />
+          ))}
+        </span>
+      ) : null}
+    </span>
+  );
+}
 
 function ReactionPlaceholders({
   emojis,

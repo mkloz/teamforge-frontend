@@ -19,12 +19,40 @@ export function mapMessages(
   currentUserId: string | null,
 ): UnifiedMessage[] {
   const participantsIndex = buildMessageParticipantsIndex(participants);
+  const messageIndexById = new Map(
+    items.map((item, index) => [item.id, index]),
+  );
+  const readCursorEntries = participants.flatMap((participant) => {
+    if (!participant.lastReadMessageId) {
+      return [];
+    }
 
-  const messages = items.map<UnifiedMessage>((item) => {
+    const lastReadIndex = messageIndexById.get(participant.lastReadMessageId);
+
+    if (lastReadIndex === undefined) {
+      return [];
+    }
+
+    return [{ lastReadIndex, participant }];
+  });
+
+  const messages = items.map<UnifiedMessage>((item, index) => {
     const sender =
       participantsIndex.get(item.senderId) ??
       getSenderParticipantBySummaryId(participantsIndex, item.sender?.id) ??
       mapMessageSenderParticipant(item.sender);
+    const readBy = readCursorEntries
+      .filter(
+        (entry) =>
+          entry.lastReadIndex >= index &&
+          entry.participant.id !== currentUserId &&
+          entry.participant.id !== item.senderId,
+      )
+      .map(({ participant }) => ({
+        id: participant.id,
+        name: participant.name,
+        avatar: participant.avatar,
+      }));
 
     return {
       id: item.id,
@@ -61,6 +89,8 @@ export function mapMessages(
       replyTo: item.replyTo
         ? mapReplyPreview(item.replyTo, participantsIndex, currentUserId)
         : undefined,
+      readBy,
+      readByCount: readBy.length,
     };
   });
 

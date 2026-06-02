@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
 import { useActivityStore } from "@/features/activity/store/activity.store";
+import type { ChatApi } from "@/shared/schemas";
 
 function isActivityParticipant(
   participant: ActivityParticipant | undefined,
@@ -17,6 +18,7 @@ export function useSelectedActivityConversation() {
   const groups = useActivityStore((state) => state.groups);
   const direct = useActivityStore((state) => state.direct);
   const typingByChatId = useActivityStore((state) => state.typingByChatId);
+  const chatsQuery = useQuery(ActivityQueryFactory.chats());
 
   const groupQuery = useQuery({
     ...ActivityQueryFactory.groupSelection(selectedId ?? ""),
@@ -28,8 +30,18 @@ export function useSelectedActivityConversation() {
     enabled: selectedKind === "dm" && !!selectedId,
   });
 
-  const selectedParticipants = useMemo(
-    () =>
+  const chatId =
+    selectedKind === "group"
+      ? (groupQuery.data?.chatId ?? null)
+      : selectedKind === "dm"
+        ? (directQuery.data?.chatId ?? null)
+        : null;
+  const selectedChatSummary = useMemo(
+    () => chatsQuery.data?.find((chat) => chat.id === chatId) ?? null,
+    [chatId, chatsQuery.data],
+  );
+  const selectedParticipants = useMemo(() => {
+    const participants =
       selectedKind === "group"
         ? (groupQuery.data?.group?.members
             ?.map((member) => member.user)
@@ -38,20 +50,16 @@ export function useSelectedActivityConversation() {
           ? (directQuery.data?.chat?.participants
               ?.map((participant) => participant.user)
               .filter(isActivityParticipant) ?? [])
-          : [],
-    [
-      directQuery.data?.chat?.participants,
-      groupQuery.data?.group?.members,
-      selectedKind,
-    ],
-  );
+          : [];
 
-  const chatId =
-    selectedKind === "group"
-      ? (groupQuery.data?.chatId ?? null)
-      : selectedKind === "dm"
-        ? (directQuery.data?.chatId ?? null)
-        : null;
+    return applyReadCursorsToParticipants(participants, selectedChatSummary);
+  }, [
+    directQuery.data?.chat?.participants,
+    groupQuery.data?.group?.members,
+    selectedChatSummary,
+    selectedKind,
+  ]);
+
   const isSelectedConversationLoading =
     selectedKind === "group"
       ? Boolean(selectedId) && groupQuery.isLoading && !groupQuery.data
@@ -93,4 +101,28 @@ export function useSelectedActivityConversation() {
     proposalMessages: groupQuery.data?.proposalMessages ?? [],
     activeTypingUsers: chatId ? (typingByChatId[chatId] ?? []) : [],
   };
+}
+
+function applyReadCursorsToParticipants(
+  participants: ActivityParticipant[],
+  chatSummary: ChatApi | null,
+) {
+  if (!chatSummary?.participants?.length) {
+    return participants;
+  }
+
+  const lastReadMessageIdByUserId = new Map(
+    chatSummary.participants.map((participant) => [
+      participant.userId,
+      participant.lastReadMessageId,
+    ]),
+  );
+
+  return participants.map((participant) => ({
+    ...participant,
+    lastReadMessageId:
+      lastReadMessageIdByUserId.get(participant.id) ??
+      participant.lastReadMessageId ??
+      null,
+  }));
 }

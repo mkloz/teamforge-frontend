@@ -267,6 +267,8 @@ function reconcileProposalMessagesWithChatMessages(
       isPinned: backingMessage.isPinned,
       isSaved: backingMessage.isSaved,
       reactions: backingMessage.reactions,
+      readBy: backingMessage.readBy,
+      readByCount: backingMessage.readByCount,
       replyTo: backingMessage.replyTo,
       replyToId: backingMessage.replyToId,
       sender: backingMessage.sender,
