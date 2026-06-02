@@ -13,8 +13,10 @@ import { useEffect, useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { usePwaDisplayMode } from "@/shared/hooks/use-pwa-display-mode";
 import { usePwaInstallPrompt } from "@/shared/hooks/use-pwa-install-prompt";
+import { usePwaRuntimeDiagnostics } from "@/shared/hooks/use-pwa-runtime-diagnostics";
 import { useServiceWorkerDiagnostics } from "@/shared/hooks/use-service-worker-diagnostics";
 import { useWebPushSubscription } from "@/shared/hooks/use-web-push-subscription";
+import type { RuntimeDiagnosticEntry } from "@/shared/lib/pwa-runtime-diagnostics";
 import { trackPwaServiceWorkerUpdateCheck } from "@/shared/lib/pwa-telemetry";
 import { cn } from "@/shared/lib/utils";
 
@@ -373,11 +375,125 @@ function getSecureContextItem(isSecureContext: boolean | null): DiagnosticItem {
   };
 }
 
+function formatRuntimeDiagnosticTime(updatedAt: number | null) {
+  if (!updatedAt) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).format(new Date(updatedAt));
+}
+
+function getRuntimeDiagnosticTone(
+  entry: RuntimeDiagnosticEntry,
+): DiagnosticTone {
+  if (entry.status === "success") {
+    return "ready";
+  }
+
+  if (entry.status === "error") {
+    return "blocked";
+  }
+
+  if (entry.status === "running") {
+    return "warning";
+  }
+
+  return "neutral";
+}
+
+function getRuntimeDiagnosticDetail(
+  entry: RuntimeDiagnosticEntry,
+  labels: {
+    idle: string;
+    running: string;
+    success: string;
+    error: string;
+  },
+) {
+  const timeLabel = formatRuntimeDiagnosticTime(entry.updatedAt);
+  const reason = entry.reason ? ` from ${entry.reason}` : "";
+
+  if (!timeLabel) {
+    return labels.idle;
+  }
+
+  if (entry.status === "running") {
+    return `${labels.running}${reason} at ${timeLabel}.`;
+  }
+
+  if (entry.status === "error") {
+    const errorMessage = entry.errorMessage ? ` ${entry.errorMessage}` : "";
+
+    return `${labels.error}${reason} at ${timeLabel}.${errorMessage}`;
+  }
+
+  return `${labels.success}${reason} at ${timeLabel}.`;
+}
+
+function getRuntimeDiagnosticValue(
+  entry: RuntimeDiagnosticEntry,
+  values: {
+    idle: string;
+    running: string;
+    success: string;
+    error: string;
+  },
+) {
+  return values[entry.status];
+}
+
+function getReconnectRefreshItem(
+  entry: RuntimeDiagnosticEntry,
+): DiagnosticItem {
+  return {
+    detail: getRuntimeDiagnosticDetail(entry, {
+      idle: "Focus, foreground, and online-return events have not triggered a query refresh in this app session yet.",
+      running: "Active query refresh started",
+      success: "Active query refresh completed",
+      error: "Active query refresh failed",
+    }),
+    icon: RefreshCw,
+    label: "Reconnect refresh",
+    tone: getRuntimeDiagnosticTone(entry),
+    value: getRuntimeDiagnosticValue(entry, {
+      idle: "Waiting",
+      running: "Refreshing",
+      success: "Refreshed",
+      error: "Failed",
+    }),
+  };
+}
+
+function getRealtimeResyncItem(entry: RuntimeDiagnosticEntry): DiagnosticItem {
+  return {
+    detail: getRuntimeDiagnosticDetail(entry, {
+      idle: "Realtime has not synced in this app session yet, or this route has not needed live updates.",
+      running: "Realtime sync started",
+      success: "Realtime sync ran",
+      error: "Realtime sync failed",
+    }),
+    icon: Wifi,
+    label: "Realtime resync",
+    tone: getRuntimeDiagnosticTone(entry),
+    value: getRuntimeDiagnosticValue(entry, {
+      idle: "Waiting",
+      running: "Syncing",
+      success: "Synced",
+      error: "Failed",
+    }),
+  };
+}
+
 export function PwaDiagnosticsPanel() {
   const { isStandalone } = usePwaDisplayMode();
   const { canPromptInstall } = usePwaInstallPrompt();
   const serviceWorker = useServiceWorkerDiagnostics();
   const push = useWebPushSubscription();
+  const runtimeDiagnostics = usePwaRuntimeDiagnostics();
   const [isSecureContext, setIsSecureContext] = useState<boolean | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -398,6 +514,8 @@ export function PwaDiagnosticsPanel() {
     getInstallPromptItem(canPromptInstall, isStandalone),
     getSecureContextItem(isSecureContext),
     getServiceWorkerItem(serviceWorker),
+    getReconnectRefreshItem(runtimeDiagnostics.reconnectRefresh),
+    getRealtimeResyncItem(runtimeDiagnostics.realtimeResync),
     getPushSupportItem(push),
     getPermissionItem(push),
     getBackendPushItem(push),

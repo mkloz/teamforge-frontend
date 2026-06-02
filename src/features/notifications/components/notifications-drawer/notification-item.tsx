@@ -22,6 +22,7 @@ interface NotificationItemProps {
   onSelect: (item: Notification) => void;
   onToggleRead: (item: Notification) => void;
   isPending?: boolean;
+  isReadActionDisabled?: boolean;
   isTogglingRead?: boolean;
 }
 
@@ -30,6 +31,7 @@ export function NotificationItem({
   onSelect,
   onToggleRead,
   isPending = false,
+  isReadActionDisabled = false,
   isTogglingRead = false,
 }: NotificationItemProps) {
   const config = getTypeConfig(item.type);
@@ -52,7 +54,7 @@ export function NotificationItem({
   }
 
   function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
-    if (event.pointerType !== "touch" || isBusy) {
+    if (event.pointerType !== "touch" || isBusy || isReadActionDisabled) {
       return;
     }
 
@@ -76,7 +78,8 @@ export function NotificationItem({
       !start ||
       start.pointerId !== event.pointerId ||
       event.pointerType !== "touch" ||
-      isBusy
+      isBusy ||
+      isReadActionDisabled
     ) {
       return;
     }
@@ -115,7 +118,7 @@ export function NotificationItem({
         icon={Icon}
         iconClassName={config.iconClassName}
         item={item}
-        isDisabled={isBusy}
+        isDisabled={isBusy || isReadActionDisabled}
         isTogglingRead={isTogglingRead}
         onToggleRead={() => onToggleRead(item)}
       />

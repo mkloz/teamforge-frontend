@@ -46,6 +46,80 @@ function getStringValue(value) {
     : null;
 }
 
+function getBooleanValue(value) {
+  return value === true || value === "true";
+}
+
+function getNumericBadgeValue(value) {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return Math.max(0, Math.floor(value));
+  }
+
+  if (typeof value === "string" && value.trim().length > 0) {
+    const parsedValue = Number(value);
+
+    if (Number.isFinite(parsedValue)) {
+      return Math.max(0, Math.floor(parsedValue));
+    }
+  }
+
+  return null;
+}
+
+function getPayloadBadgeCount(payload, payloadData) {
+  return (
+    getNumericBadgeValue(payloadData.badgeCount) ??
+    getNumericBadgeValue(payloadData.unreadCount) ??
+    getNumericBadgeValue(payloadData.unread_count) ??
+    getNumericBadgeValue(payload.badgeCount) ??
+    getNumericBadgeValue(payload.unreadCount) ??
+    getNumericBadgeValue(payload.unread_count)
+  );
+}
+
+function shouldClearAppBadge(payload, payloadData) {
+  return (
+    getBooleanValue(payloadData.clearBadge) ||
+    getBooleanValue(payloadData.clear_badge) ||
+    getBooleanValue(payload.clearBadge) ||
+    getBooleanValue(payload.clear_badge)
+  );
+}
+
+async function syncPushAppBadge(payload, payloadData) {
+  if (
+    typeof navigator === "undefined" ||
+    typeof navigator.setAppBadge !== "function" ||
+    typeof navigator.clearAppBadge !== "function"
+  ) {
+    return;
+  }
+
+  try {
+    if (shouldClearAppBadge(payload, payloadData)) {
+      await navigator.clearAppBadge();
+      return;
+    }
+
+    const badgeCount = getPayloadBadgeCount(payload, payloadData);
+
+    if (badgeCount === 0) {
+      await navigator.clearAppBadge();
+      return;
+    }
+
+    if (badgeCount !== null) {
+      await navigator.setAppBadge(badgeCount);
+      return;
+    }
+
+    await navigator.setAppBadge();
+    // oxlint-disable-next-line inhuman/no-swallowed-catch -- Badge updates are optional; push notification delivery should continue if the browser rejects them.
+  } catch (error) {
+    void error;
+  }
+}
+
 function getPayloadRouteCandidate(payload, payloadData) {
   return (
     getStringValue(payloadData.route) ||
@@ -276,17 +350,20 @@ self.addEventListener("push", (event) => {
   );
 
   event.waitUntil(
-    self.registration.showNotification(title, {
-      badge: payload.badge || "/icons/pwa-192x192.png",
-      body: payload.body || "You have a new TeamForge update.",
-      data: {
-        ...payloadData,
-        route: `${targetUrl.pathname}${targetUrl.search}`,
-        url: targetUrl.href,
-      },
-      icon: payload.icon || "/icons/pwa-192x192.png",
-      tag: payload.tag || payload.notificationId || "teamforge-update",
-    }),
+    Promise.all([
+      syncPushAppBadge(payload, payloadData),
+      self.registration.showNotification(title, {
+        badge: payload.badge || "/icons/pwa-192x192.png",
+        body: payload.body || "You have a new TeamForge update.",
+        data: {
+          ...payloadData,
+          route: `${targetUrl.pathname}${targetUrl.search}`,
+          url: targetUrl.href,
+        },
+        icon: payload.icon || "/icons/pwa-192x192.png",
+        tag: payload.tag || payload.notificationId || "teamforge-update",
+      }),
+    ]),
   );
 });
 

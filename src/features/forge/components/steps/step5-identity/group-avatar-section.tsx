@@ -28,8 +28,8 @@ export function GroupAvatarSection({
         </p>
       </div>
 
-      <div className="flex h-18 items-stretch gap-3 sm:h-24">
-        <div className="relative h-full w-18 shrink-0 overflow-hidden rounded-lg border border-border bg-muted sm:w-24 sm:rounded-xl">
+      <div className="flex h-22 items-stretch gap-3 sm:h-24">
+        <div className="relative h-full w-22 shrink-0 overflow-hidden rounded-lg border border-border bg-muted sm:w-24 sm:rounded-xl">
           {avatarImage ? (
             <Avatar
               src={avatarImage}
@@ -57,6 +57,7 @@ export function GroupAvatarSection({
         </div>
         <FileDropzone
           className="min-h-0 min-w-0 flex-1"
+          dropzoneClassName="h-full min-h-0"
           inputRef={avatarInputRef}
           variant="avatar"
           accept="image/*"

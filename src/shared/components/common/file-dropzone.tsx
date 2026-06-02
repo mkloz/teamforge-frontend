@@ -1,11 +1,4 @@
-import {
-  FileText,
-  Image as ImageIcon,
-  Loader2,
-  MousePointerClick,
-  UploadCloud,
-  X,
-} from "lucide-react";
+import { FileText, Image as ImageIcon, Loader2, Upload, X } from "lucide-react";
 import {
   type DragEvent,
   type ReactNode,
@@ -31,6 +24,7 @@ export interface FileDropzoneProps {
   className?: string;
   description?: string;
   disabled?: boolean;
+  dropzoneClassName?: string;
   error?: string | null;
   helper?: string;
   inputRef?: RefObject<HTMLInputElement | null>;
@@ -65,18 +59,18 @@ function formatFileSize(size: number) {
 
 function getVariantClasses(variant: FileDropzoneVariant) {
   if (variant === "cover") {
-    return "min-h-40 rounded-xl";
+    return "min-h-44 rounded-xl";
   }
 
   if (variant === "avatar") {
-    return "min-h-18 rounded-xl sm:min-h-24";
+    return "min-h-20 rounded-lg sm:min-h-24";
   }
 
   if (variant === "inline") {
-    return "min-h-22 rounded-xl";
+    return "min-h-24 rounded-lg";
   }
 
-  return "min-h-28 rounded-xl";
+  return "min-h-28 rounded-lg";
 }
 
 function getFiles(fileList: FileList | null, maxFiles: number) {
@@ -92,7 +86,7 @@ function getDropHint(variant: FileDropzoneVariant, multiple: boolean) {
     return "Landscape image";
   }
 
-  return multiple ? "Files ready" : "Single file";
+  return multiple ? "Multiple files" : "Single file";
 }
 
 export function FileDropzone({
@@ -101,6 +95,7 @@ export function FileDropzone({
   className,
   description,
   disabled = false,
+  dropzoneClassName,
   error = null,
   helper,
   inputRef,
@@ -147,6 +142,8 @@ export function FileDropzone({
     selectFiles(event.dataTransfer.files);
   };
 
+  const isCover = variant === "cover";
+
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <Button
@@ -160,128 +157,154 @@ export function FileDropzone({
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
         className={cn(
-          "group relative flex h-auto w-full cursor-pointer overflow-hidden whitespace-normal border-2 border-dashed bg-card p-0 text-left transition-colors duration-150 focus-visible:ring-forge-teal/35",
+          "group relative flex h-auto w-full cursor-pointer overflow-hidden whitespace-normal border border-border/55 bg-card p-0 text-left transition-all duration-200 focus-visible:ring-forge-teal/35",
           getVariantClasses(variant),
           isDragging
-            ? "border-forge-teal bg-forge-teal/8"
-            : "border-border/60 hover:border-forge-teal/45 hover:bg-forge-teal/4",
-          error && "border-destructive/50 bg-destructive/5",
-          isInactive && "cursor-not-allowed opacity-70",
+            ? "border-forge-teal/60 bg-forge-teal/5 ring-2 ring-forge-teal/15"
+            : "hover:border-forge-teal/40 hover:bg-forge-teal/3 hover:ring-1 hover:ring-forge-teal/10",
+          error && "border-destructive/45 bg-destructive/4",
+          isInactive && "cursor-not-allowed opacity-60",
+          dropzoneClassName,
         )}
         contentClassName="block size-full"
       >
+        {/* Background preview image */}
         {preview ? <div className="absolute inset-0">{preview}</div> : null}
+
+        {/* Drag-over shimmer overlay */}
+        {isDragging && (
+          <div className="pointer-events-none absolute inset-0 z-0 bg-linear-to-br from-forge-teal/8 via-transparent to-forge-teal/4" />
+        )}
 
         <div
           className={cn(
-            "relative z-10 flex w-full gap-3 p-4",
-            variant === "cover" &&
-              "min-h-40 items-end bg-linear-to-t from-black/55 via-black/20 to-transparent text-white",
-            variant === "avatar" && "min-h-18 items-center sm:min-h-24",
-            variant !== "cover" && variant !== "avatar" && "items-center",
+            "relative z-10 flex w-full flex-col gap-2 px-5 py-4",
+            isCover &&
+              "min-h-44 justify-end bg-linear-to-t from-black/60 via-black/24 to-transparent text-white",
           )}
         >
-          <div
-            className={cn(
-              "flex min-w-0 flex-1 items-center gap-3",
-              variant === "cover" && "pb-0.5",
-            )}
-          >
+          <div className="flex min-w-0 items-start gap-4">
+            {/* Icon container */}
             <div
               className={cn(
-                "flex shrink-0 items-center justify-center self-stretch text-forge-teal",
-                variant === "cover" ? "w-7 text-white" : "w-7",
+                "flex shrink-0 items-center justify-center rounded-md transition-all duration-200",
+                isCover
+                  ? "size-9 bg-white/14 text-white group-hover:bg-white/20"
+                  : "size-9 bg-forge-teal/10 text-forge-teal group-hover:bg-forge-teal/15",
+                isDragging && !isCover && "scale-110 bg-forge-teal/18",
               )}
             >
               {isUploading ? (
-                <Loader2 className="size-5 animate-spin" />
+                <Loader2 className="size-4 animate-spin" strokeWidth={2} />
               ) : (
-                <UploadCloud className="size-7" strokeWidth={2} />
+                <Upload
+                  className={cn(
+                    "size-4 transition-transform duration-200",
+                    isDragging && "-translate-y-px",
+                  )}
+                  strokeWidth={2}
+                />
               )}
             </div>
 
-            <div
-              className={cn(
-                "flex min-w-0 flex-1 flex-col",
-                variant === "avatar" ? "items-start text-left" : "",
-              )}
-            >
+            {/* Text area */}
+            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
               <div className="flex min-w-0 items-center gap-2">
                 <p
                   className={cn(
-                    "min-w-0 truncate font-semibold text-sm leading-tight",
-                    variant === "cover" ? "text-white" : "text-ink",
+                    "min-w-0 truncate font-semibold text-sm leading-tight tracking-tight",
+                    isCover ? "text-white" : "text-ink",
                   )}
                 >
-                  {isUploading ? "Uploading..." : title}
+                  {isUploading ? "Uploading…" : title}
                 </p>
-                {isDragging ? (
+
+                {isDragging && (
                   <span
                     className={cn(
-                      "hidden shrink-0 rounded-full px-2 py-0.5 font-semibold text-micro sm:inline-flex",
-                      variant === "cover"
-                        ? "bg-white/18 text-white"
-                        : "bg-forge-teal/12 text-forge-teal",
+                      "type-signature-label shrink-0 rounded-full px-2 py-0.5 font-semibold uppercase tracking-wide",
+                      isCover
+                        ? "bg-white/20 text-white"
+                        : "bg-forge-teal text-white",
                     )}
                   >
-                    Drop now
+                    Drop
                   </span>
-                ) : null}
+                )}
               </div>
 
-              {description ? (
+              {description && (
                 <p
                   className={cn(
-                    "mt-1 line-clamp-1 text-xs leading-snug",
-                    variant === "cover" ? "text-white/82" : "text-slate-muted",
+                    "line-clamp-1 text-xs leading-snug",
+                    isCover ? "text-white/78" : "text-slate-muted",
                   )}
                 >
                   {description}
                 </p>
-              ) : null}
-
-              {showMeta ? (
-                <div className="mt-2.5 hidden min-w-0 flex-wrap items-center gap-2 sm:flex">
-                  <span
-                    className={cn(
-                      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold text-xs leading-none",
-                      variant === "cover"
-                        ? "bg-white/14 text-white/88"
-                        : "bg-muted text-slate-muted",
-                    )}
-                  >
-                    <MousePointerClick size={11} />
-                    {getDropHint(variant, multiple)}
-                  </span>
-                  {helper ? (
-                    <span
-                      className={cn(
-                        "inline-flex min-w-0 max-w-full truncate rounded-full px-2.5 py-1 font-semibold text-xs leading-none",
-                        variant === "cover"
-                          ? "bg-white/10 text-white/72"
-                          : "bg-background/70 text-slate-muted/75",
-                      )}
-                    >
-                      {helper}
-                    </span>
-                  ) : null}
-                </div>
-              ) : null}
+              )}
             </div>
+
+            {!showMeta && actionLabel && (
+              <span
+                className={cn(
+                  "ml-auto hidden shrink-0 items-center rounded-full border px-4 py-1.5 font-semibold text-xs transition-all duration-200 sm:inline-flex",
+                  isCover
+                    ? "border-white/28 bg-white/12 text-white group-hover:bg-white/22"
+                    : "border-forge-teal/25 bg-forge-teal/8 text-forge-teal group-hover:border-forge-teal/40 group-hover:bg-forge-teal/14",
+                  isDragging &&
+                    !isCover &&
+                    "border-forge-teal/50 bg-forge-teal/18",
+                )}
+              >
+                {actionLabel}
+              </span>
+            )}
           </div>
 
-          {actionLabel ? (
-            <span
-              className={cn(
-                "ml-auto hidden shrink-0 items-center rounded-full border px-3 py-1 font-semibold text-xs transition-colors duration-200 sm:inline-flex",
-                variant === "cover"
-                  ? "border-white/28 bg-white/14 text-white group-hover:bg-white/20"
-                  : "border-forge-teal/20 bg-forge-teal/8 text-forge-teal group-hover:bg-forge-teal/12 dark:bg-transparent dark:group-hover:bg-transparent",
+          {showMeta && (
+            <div className="hidden min-w-0 flex-wrap items-center gap-1.5 sm:flex">
+              <span
+                className={cn(
+                  "inline-flex items-center rounded-full border px-2.5 py-0.5 font-medium text-micro leading-none",
+                  isCover
+                    ? "border-white/18 bg-white/10 text-white/80"
+                    : "border-border/70 bg-muted/70 text-slate-muted",
+                )}
+              >
+                {getDropHint(variant, multiple)}
+              </span>
+
+              {helper && (
+                <span
+                  className={cn(
+                    "inline-flex min-w-0 max-w-full truncate rounded-full border px-2.5 py-0.5 font-medium text-micro leading-none",
+                    isCover
+                      ? "border-white/12 bg-white/6 text-white/60"
+                      : "border-border/50 bg-muted/40 text-slate-muted/75",
+                  )}
+                >
+                  {helper}
+                </span>
               )}
-            >
-              {actionLabel}
-            </span>
-          ) : null}
+
+              {actionLabel && (
+                <span
+                  className={cn(
+                    "ml-auto hidden shrink-0 items-center rounded-full border px-4 py-1.5 font-semibold text-xs transition-all duration-200 sm:inline-flex",
+                    isCover
+                      ? "border-white/28 bg-white/12 text-white group-hover:bg-white/22"
+                      : "border-forge-teal/25 bg-forge-teal/8 text-forge-teal group-hover:border-forge-teal/40 group-hover:bg-forge-teal/14",
+                    isDragging &&
+                      !isCover &&
+                      "border-forge-teal/50 bg-forge-teal/18",
+                  )}
+                >
+                  {actionLabel}
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </Button>
 
@@ -301,9 +324,7 @@ export function FileDropzone({
         }}
       />
 
-      {error ? (
-        <p className="font-medium text-destructive text-xs">{error}</p>
-      ) : null}
+      {error && <p className="font-medium text-destructive text-xs">{error}</p>}
     </div>
   );
 }
@@ -332,13 +353,15 @@ function FilePreviewItem({ file, index, onRemove }: FilePreviewItemProps) {
   const Icon = isImage ? ImageIcon : FileText;
 
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-card px-3 py-2.5">
-      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10 text-forge-teal">
-        <Icon size={16} />
+    <div className="flex items-center gap-3 rounded-lg border border-border/55 bg-card px-3 py-2.5">
+      <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-forge-teal/10 text-forge-teal">
+        <Icon size={15} strokeWidth={2} />
       </div>
       <div className="min-w-0 flex-1">
         <p className="truncate font-semibold text-ink text-xs">{file.name}</p>
-        <p className="text-slate-muted text-xs">{formatFileSize(file.size)}</p>
+        <p className="text-micro text-slate-muted">
+          {formatFileSize(file.size)}
+        </p>
       </div>
       {onRemove ? (
         <Tooltip>
@@ -351,7 +374,7 @@ function FilePreviewItem({ file, index, onRemove }: FilePreviewItemProps) {
               onClick={() => onRemove(index)}
               aria-label={`Remove ${file.name}`}
             >
-              <X size={14} />
+              <X size={13} />
             </Button>
           </TooltipTrigger>
           <TooltipContent>Remove file</TooltipContent>

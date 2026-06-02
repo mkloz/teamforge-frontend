@@ -16,6 +16,8 @@ export function useUnreadNotificationCount({
 
   return {
     count: unreadCountQuery.data ?? 0,
+    hasCountData: unreadCountQuery.data !== undefined,
+    isError: unreadCountQuery.isError,
     isLoading: unreadCountQuery.isLoading,
   };
 }

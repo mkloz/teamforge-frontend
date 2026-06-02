@@ -9,8 +9,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, "..");
 const DIST_DIR = path.join(ROOT_DIR, "dist");
+const PUBLIC_DIR = path.join(ROOT_DIR, "public");
 const REPORTS_DIR = path.join(ROOT_DIR, "reports");
 const REPORT_PATH = path.join(REPORTS_DIR, "pwa-qa-report.md");
+const SRC_DIR = path.join(ROOT_DIR, "src");
 
 const REQUIRED_TELEMETRY_EVENTS = [
   "pwa_app_installed",
@@ -146,6 +148,38 @@ function hasWorkboxNavigationFallback(swText, fallbackUrl) {
   );
 
   return fallbackPattern.test(swText);
+}
+
+async function validateSourceMarkers(category, relativePath, markers) {
+  const filePath = path.join(ROOT_DIR, relativePath);
+
+  if (!existsSync(filePath)) {
+    addFail(category, relativePath, `${relativePath} is missing.`);
+    return "";
+  }
+
+  const sourceText = await readText(filePath);
+
+  addPass(category, relativePath, `${relativePath} exists.`);
+
+  for (const marker of markers) {
+    const markerText = typeof marker === "string" ? marker : marker.text;
+    const name = typeof marker === "string" ? marker : marker.name;
+    const severity = typeof marker === "string" ? "error" : marker.severity;
+    const hasMarker = sourceText.includes(markerText);
+
+    addCheck(
+      category,
+      `${relativePath} marker ${name}`,
+      hasMarker,
+      hasMarker
+        ? `${relativePath} contains ${name}.`
+        : `${relativePath} is missing ${name}.`,
+      severity,
+    );
+  }
+
+  return sourceText;
 }
 
 function parseManifestSizes(value) {
@@ -586,6 +620,98 @@ async function validateServiceWorker() {
   );
 }
 
+async function validatePwaSourceRuntime() {
+  await validateSourceMarkers(
+    "PWA Source",
+    path.relative(ROOT_DIR, path.join(PUBLIC_DIR, "sw-push.js")),
+    [
+      "syncPushAppBadge",
+      "getPayloadBadgeCount",
+      "setAppBadge",
+      "clearAppBadge",
+      "unreadCount",
+      "clearBadge",
+    ],
+  );
+
+  await validateSourceMarkers(
+    "PWA Source",
+    path.relative(ROOT_DIR, path.join(SRC_DIR, "app/runtime/pwa-runtime.tsx")),
+    [
+      "useUnreadAppBadge",
+      "useUnreadNotificationCount",
+      "PwaResumeRefreshRuntime",
+      "PWA_RESUME_REFRESH_COOLDOWN_MS",
+      'refetchType: "active"',
+      "recordPwaReconnectRefresh",
+      "visibilitychange",
+      "pageshow",
+      "online",
+      "focus",
+    ].map((marker) => ({
+      name: marker,
+      text: marker,
+    })),
+  );
+
+  await validateSourceMarkers(
+    "PWA Source",
+    path.relative(
+      ROOT_DIR,
+      path.join(SRC_DIR, "app/runtime/app-realtime-sync.tsx"),
+    ),
+    [
+      "recordPwaRealtimeResync",
+      "syncRealtimeWithDiagnostic",
+      "initial sync",
+      "visibilitychange",
+      "online",
+      "focus",
+    ],
+  );
+
+  await validateSourceMarkers(
+    "PWA Source",
+    path.relative(
+      ROOT_DIR,
+      path.join(SRC_DIR, "shared/lib/pwa-runtime-diagnostics.ts"),
+    ),
+    [
+      "recordPwaReconnectRefresh",
+      "recordPwaRealtimeResync",
+      "subscribePwaRuntimeDiagnostics",
+      "getPwaRuntimeDiagnosticsSnapshot",
+    ],
+  );
+
+  await validateSourceMarkers(
+    "PWA Source",
+    path.relative(
+      ROOT_DIR,
+      path.join(SRC_DIR, "shared/hooks/use-pwa-runtime-diagnostics.ts"),
+    ),
+    ["useSyncExternalStore", "subscribePwaRuntimeDiagnostics"],
+  );
+
+  await validateSourceMarkers(
+    "PWA Source",
+    path.relative(
+      ROOT_DIR,
+      path.join(
+        SRC_DIR,
+        "features/download/components/pwa-diagnostics-panel.tsx",
+      ),
+    ),
+    [
+      "usePwaRuntimeDiagnostics",
+      "Reconnect refresh",
+      "Realtime resync",
+      "getReconnectRefreshItem",
+      "getRealtimeResyncItem",
+    ],
+  );
+}
+
 async function validateBuiltRoute() {
   const assetDir = path.join(DIST_DIR, "assets");
 
@@ -830,6 +956,8 @@ async function writeReport() {
 }
 
 async function main() {
+  await validatePwaSourceRuntime();
+
   if (!existsSync(DIST_DIR)) {
     addFail(
       "Build",

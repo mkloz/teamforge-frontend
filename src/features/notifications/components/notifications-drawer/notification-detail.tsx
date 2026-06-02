@@ -22,6 +22,7 @@ interface NotificationDetailProps {
   item: Notification;
   isTogglingRead: boolean;
   isOpening: boolean;
+  isReadActionDisabled?: boolean;
   onBack: () => void;
   onToggleRead: (item: Notification) => void;
   onOpen: (item: Notification) => void;
@@ -31,6 +32,7 @@ export function NotificationDetail({
   item,
   isTogglingRead,
   isOpening,
+  isReadActionDisabled = false,
   onBack,
   onToggleRead,
   onOpen,
@@ -111,7 +113,7 @@ export function NotificationDetail({
             variant="accentGhost"
             size="sm"
             onClick={() => onToggleRead(item)}
-            disabled={isBusy}
+            disabled={isBusy || isReadActionDisabled}
             loading={isTogglingRead}
             className="min-w-0 flex-1"
             contentClassName="gap-1.5"

@@ -45,6 +45,7 @@ export function NotificationsDrawer({
     isRefreshing,
     isMarkingAllRead,
     count,
+    isOnline,
   } = useNotifications({ enabled: open });
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const navigate = useNavigate();
@@ -89,7 +90,7 @@ export function NotificationsDrawer({
     setPendingDetailAction("open");
 
     try {
-      if (!notification.isRead) {
+      if (!notification.isRead && isOnline) {
         await markReadAsync(notification.id);
       }
 
@@ -188,7 +189,7 @@ export function NotificationsDrawer({
                       variant="subtle"
                       size="icon"
                       onClick={() => setMarkAllReadDialogOpen(true)}
-                      disabled={count === 0 || isMarkingAllRead}
+                      disabled={!isOnline || count === 0 || isMarkingAllRead}
                       loading={isMarkingAllRead}
                       aria-label="Mark all notifications as read"
                       className="size-10 p-0"
@@ -200,7 +201,9 @@ export function NotificationsDrawer({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom">
-                    Mark all notifications as read
+                    {isOnline
+                      ? "Mark all notifications as read"
+                      : "Reconnect to update read state"}
                   </TooltipContent>
                 </Tooltip>
                 <Tooltip>
@@ -237,6 +240,7 @@ export function NotificationsDrawer({
                 "New updates will still appear as unread.",
               ]}
               loading={isMarkingAllRead}
+              disabled={!isOnline || count === 0}
               onConfirm={markAllReadAsync}
               onOpenChange={setMarkAllReadDialogOpen}
               open={markAllReadDialogOpen}
@@ -290,6 +294,7 @@ export function NotificationsDrawer({
                 pendingNotificationId === selectedNotification.id &&
                 pendingDetailAction === "open"
               }
+              isReadActionDisabled={!isOnline}
               onBack={() => setSelectedNotificationId(null)}
               onToggleRead={handleToggleSelectedNotificationRead}
               onOpen={handleOpenNotification}
@@ -306,6 +311,7 @@ export function NotificationsDrawer({
                 pendingReadToggleNotificationId={
                   pendingReadToggleNotificationId
                 }
+                isReadActionDisabled={!isOnline}
                 onSelect={handleSelectNotification}
                 onToggleRead={handleToggleNotificationRead}
               />

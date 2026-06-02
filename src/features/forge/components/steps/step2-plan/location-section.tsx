@@ -2,9 +2,7 @@ import { Globe, Monitor } from "lucide-react";
 
 import { AddressAutocomplete } from "@/shared/components/maps/address-autocomplete";
 import { Input } from "@/shared/components/ui/input";
-import { Label } from "@/shared/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
-import { cn } from "@/shared/lib/utils";
+import { SegmentedTabs } from "@/shared/components/ui/segmented-tabs";
 
 import { FieldLabel } from "./field-label";
 import { SectionCard } from "./section-card";
@@ -25,6 +23,12 @@ interface LocationSectionProps {
   planLocationLng: number | null;
 }
 
+const LOCATION_TYPE_TABS = LOCATION_TYPES.map(({ id, label, Icon }) => ({
+  icon: Icon,
+  id,
+  label,
+}));
+
 export function LocationSection({
   locationType,
   onLocationTypeChange,
@@ -36,62 +40,18 @@ export function LocationSection({
 }: LocationSectionProps) {
   const showAddress = locationType === "IN_PERSON";
   const showOnlineLocation = locationType === "ONLINE";
-  const handleLocationTypeChange = (value: string) => {
-    if (isLocationType(value)) {
-      onLocationTypeChange(value);
-    }
-  };
 
   return (
     <SectionCard>
       <SectionHeader title="Where" />
 
-      <RadioGroup
+      <SegmentedTabs
+        ariaLabel="Location type"
+        fill
+        options={LOCATION_TYPE_TABS}
         value={locationType}
-        onValueChange={handleLocationTypeChange}
-        className="grid grid-cols-1 gap-2 sm:grid-cols-3"
-        aria-label="Location type"
-      >
-        {LOCATION_TYPES.map(({ id, label, Icon }) => {
-          const active = locationType === id;
-          const itemId = `location-type-${id.toLowerCase()}`;
-
-          return (
-            <Label
-              key={id}
-              htmlFor={itemId}
-              className={cn(
-                "group flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-left transition duration-150 active:scale-95",
-                active
-                  ? "border-forge-teal/35 bg-forge-teal/10 ring-1 ring-forge-teal/20"
-                  : "border-border/50 bg-background/40 hover:border-forge-teal/25 hover:bg-forge-teal/5",
-              )}
-            >
-              <RadioGroupItem id={itemId} value={id} className="sr-only" />
-              <div
-                className={cn(
-                  "flex size-7 shrink-0 items-center justify-center rounded-lg transition-colors duration-150",
-                  active
-                    ? "bg-forge-teal text-white"
-                    : "bg-muted/60 text-muted-foreground group-hover:bg-forge-teal/10 group-hover:text-forge-teal",
-                )}
-              >
-                <Icon size={14} />
-              </div>
-              <div className="min-w-0">
-                <p
-                  className={cn(
-                    "truncate font-semibold text-sm leading-tight",
-                    active ? "text-forge-teal" : "text-foreground",
-                  )}
-                >
-                  {label}
-                </p>
-              </div>
-            </Label>
-          );
-        })}
-      </RadioGroup>
+        onChange={onLocationTypeChange}
+      />
 
       {showAddress && (
         <div className="fade-in slide-in-from-top-1 flex animate-in flex-col gap-2 duration-200">
@@ -148,8 +108,4 @@ export function LocationSection({
       )}
     </SectionCard>
   );
-}
-
-function isLocationType(value: string): value is LocationType {
-  return LOCATION_TYPES.some((locationType) => locationType.id === value);
 }

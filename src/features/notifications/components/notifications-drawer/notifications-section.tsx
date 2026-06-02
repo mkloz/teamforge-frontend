@@ -8,6 +8,7 @@ interface NotificationsSectionProps {
   items: Notification[];
   pendingNotificationId: string | null;
   pendingReadToggleNotificationId: string | null;
+  isReadActionDisabled?: boolean;
   onSelect: (item: Notification) => void;
   onToggleRead: (item: Notification) => void;
 }
@@ -17,6 +18,7 @@ export function NotificationsSection({
   items,
   pendingNotificationId,
   pendingReadToggleNotificationId,
+  isReadActionDisabled = false,
   onSelect,
   onToggleRead,
 }: NotificationsSectionProps) {
@@ -62,6 +64,7 @@ export function NotificationsSection({
                 onSelect={onSelect}
                 onToggleRead={onToggleRead}
                 isPending={pendingNotificationId === item.id}
+                isReadActionDisabled={isReadActionDisabled}
                 isTogglingRead={pendingReadToggleNotificationId === item.id}
               />
             </motion.li>

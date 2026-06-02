@@ -36,6 +36,7 @@ function buildRawForgeExecutionInput(state: ForgeWizardData) {
 
 export interface ForgeExecutionValidation {
   canSubmit: boolean;
+  input: AutoForgeExecutionInput | null;
   message: string | null;
 }
 
@@ -55,12 +56,14 @@ export function getForgeExecutionValidation(
   if (result.success) {
     return {
       canSubmit: true,
+      input: result.data,
       message: null,
     };
   }
 
   return {
     canSubmit: false,
+    input: null,
     message: result.error.issues[0]?.message ?? "Check the plan details.",
   };
 }

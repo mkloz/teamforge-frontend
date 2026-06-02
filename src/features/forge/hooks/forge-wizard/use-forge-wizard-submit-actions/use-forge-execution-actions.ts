@@ -1,14 +1,16 @@
 import { useCallback } from "react";
+import { ZodError } from "zod";
 
 import {
   ForgeCommands,
   MissingForgeInterestSignalsError,
 } from "@/features/forge/api/forge-commands";
+import type { AutoForgeExecutionInput } from "@/features/forge/lib/forge-execution-schema";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { showAppErrorToast } from "@/shared/lib/error-toast";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
-import { buildForgeExecutionInput } from "../forge-execution-input";
+import { getForgeExecutionValidation } from "../forge-execution-input";
 import {
   applyForgeExecutionFailure,
   applyForgeExecutionResult,
@@ -21,11 +23,14 @@ import type {
 function executeForgeCommand(
   mode: ForgeExecutionMode,
   state: UseForgeWizardSubmitActionsOptions["state"],
+  input: AutoForgeExecutionInput | null,
 ) {
-  const input = buildForgeExecutionInput(state);
-
   if (mode === "AUTO" && state.activityId) {
     return ForgeCommands.executePendingAutoForge(state.activityId);
+  }
+
+  if (!input) {
+    throw new Error("Forge execution input was not validated.");
   }
 
   if (mode === "AUTO") {
@@ -41,6 +46,10 @@ interface UseForgeExecutionActionsOptions
     "dispatch" | "runForgeAnimation" | "state" | "syncStep" | "syncTargets"
   > {
   markSearchKept: (activityId: string) => void;
+}
+
+function getZodIssueMessage(error: ZodError) {
+  return error.issues[0]?.message ?? "Check the plan details.";
 }
 
 export function useForgeExecutionActions({
@@ -65,10 +74,36 @@ export function useForgeExecutionActions({
       }
 
       const mutationName = getForgeMutationName(mode);
+      const canReusePendingActivity =
+        mode === "AUTO" && Boolean(state.activityId);
+      const validation = canReusePendingActivity
+        ? null
+        : getForgeExecutionValidation(state);
+
+      if (validation && !validation.canSubmit) {
+        const message = validation.message ?? "Check the plan details.";
+
+        showAppErrorToast(new Error(message), {
+          fallbackMessage: message,
+          id: "forge-plan-validation",
+          title: "Check plan details",
+        });
+        dispatch({
+          type: "set-step",
+          step: 3,
+          navDirection: "back",
+        });
+        syncStep(3, { history: "push" });
+        return;
+      }
 
       runForgeAnimation(async () => {
         const successStep = mode === "MANUAL" ? 6 : 5;
-        const result = await executeForgeCommand(mode, state).catch((error) => {
+        const result = await executeForgeCommand(
+          mode,
+          state,
+          validation?.input ?? null,
+        ).catch((error) => {
           if (error instanceof MissingForgeInterestSignalsError) {
             showAppErrorToast(error, {
               fallbackMessage:
@@ -76,6 +111,23 @@ export function useForgeExecutionActions({
               id: "forge-missing-interest-signals",
               title: "Interests needed",
             });
+            return null;
+          }
+
+          if (error instanceof ZodError) {
+            const message = getZodIssueMessage(error);
+
+            showAppErrorToast(error, {
+              fallbackMessage: message,
+              id: "forge-plan-validation",
+              title: "Check plan details",
+            });
+            dispatch({
+              type: "set-step",
+              step: 3,
+              navDirection: "back",
+            });
+            syncStep(3, { history: "push" });
             return null;
           }
 

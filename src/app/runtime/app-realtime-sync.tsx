@@ -7,6 +7,7 @@ import {
   scheduleIdleTask,
 } from "@/shared/lib/browser-scheduling";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
+import { recordPwaRealtimeResync } from "@/shared/lib/pwa-runtime-diagnostics";
 
 const realtimeRoutePrefixes = [
   "/activity",
@@ -78,22 +79,47 @@ export function AppRealtimeSync() {
         }
 
         const unsubscribeSession = subscribeRealtimeSessionSync();
+        recordPwaRealtimeResync("initial sync");
         const unsubscribeRealtimeEvents = subscribeAppRealtimeEvents();
+        const syncRealtimeWithDiagnostic = (reason: string) => {
+          recordPwaRealtimeResync(reason);
+          syncRealtimeSession();
+        };
         const handlePageHide = () => {
           disconnectRealtimeSession();
         };
+        const handleFocus = () => {
+          syncRealtimeWithDiagnostic("window focus");
+        };
+        const handleOnline = () => {
+          syncRealtimeWithDiagnostic("network reconnect");
+        };
         const handlePageShow = (event: PageTransitionEvent) => {
           if (event.persisted) {
-            syncRealtimeSession();
+            syncRealtimeWithDiagnostic("page restore");
+          }
+        };
+        const handleVisibilityChange = () => {
+          if (document.visibilityState === "visible") {
+            syncRealtimeWithDiagnostic("app foreground");
           }
         };
 
+        window.addEventListener("focus", handleFocus);
+        window.addEventListener("online", handleOnline);
         window.addEventListener("pagehide", handlePageHide);
         window.addEventListener("pageshow", handlePageShow);
+        document.addEventListener("visibilitychange", handleVisibilityChange);
 
         cleanup = () => {
+          window.removeEventListener("focus", handleFocus);
+          window.removeEventListener("online", handleOnline);
           window.removeEventListener("pagehide", handlePageHide);
           window.removeEventListener("pageshow", handlePageShow);
+          document.removeEventListener(
+            "visibilitychange",
+            handleVisibilityChange,
+          );
           unsubscribeRealtimeEvents();
           unsubscribeSession();
           disconnectRealtimeSession();

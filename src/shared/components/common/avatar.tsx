@@ -101,7 +101,7 @@ export function Avatar({
   return (
     <div
       className={cn(
-        "relative flex shrink-0 items-center justify-center overflow-visible bg-muted",
+        "relative flex aspect-square shrink-0 items-center justify-center overflow-visible bg-muted",
         radiusClass,
         className,
       )}

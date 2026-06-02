@@ -1,5 +1,5 @@
+import type { LucideIcon } from "lucide-react";
 import { Globe, Home, Monitor } from "lucide-react";
-import type { ElementType } from "react";
 
 import type { LocationType } from "./types";
 
@@ -7,7 +7,7 @@ export const LOCATION_TYPES: Array<{
   id: LocationType;
   label: string;
   sub: string;
-  Icon: ElementType;
+  Icon: LucideIcon;
 }> = [
   {
     id: "IN_PERSON",

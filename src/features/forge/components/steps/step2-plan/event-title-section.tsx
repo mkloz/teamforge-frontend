@@ -3,7 +3,6 @@ import { AlertCircle } from "lucide-react";
 import { Input } from "@/shared/components/ui/input";
 import { cn } from "@/shared/lib/utils";
 
-import { FieldLabel } from "./field-label";
 import { SectionCard } from "./section-card";
 import { SectionHeader } from "./section-header";
 
@@ -22,32 +21,32 @@ export function EventTitleSection({
   onPlanNameChange,
   planName,
 }: EventTitleSectionProps) {
+  const nameStatus =
+    planName.length > 0
+      ? isNameValid
+        ? "Looks good"
+        : `${charCount}/3 min`
+      : null;
+
   return (
     <SectionCard accent={isNameValid}>
-      <SectionHeader title="Plan name" />
+      <SectionHeader
+        title="Plan name"
+        aside={
+          nameStatus ? (
+            <span
+              className={cn(
+                "text-micro text-muted-foreground/50",
+                isNameValid && "text-forge-teal",
+              )}
+            >
+              {nameStatus}
+            </span>
+          ) : null
+        }
+      />
 
-      <div className="flex flex-col gap-2.5">
-        <FieldLabel
-          htmlFor="plan-name"
-          required
-          hint={
-            planName.length > 0
-              ? isNameValid
-                ? "Looks good"
-                : `${charCount}/3 min`
-              : undefined
-          }
-        >
-          <span
-            className={cn(
-              "transition-colors",
-              isNameValid ? "text-forge-teal" : "",
-            )}
-          >
-            Title
-          </span>
-        </FieldLabel>
-
+      <div className="flex flex-col gap-2">
         <Input
           id="plan-name"
           type="text"
@@ -58,6 +57,8 @@ export function EventTitleSection({
           maxLength={60}
           aria-invalid={isNameError}
           aria-describedby={isNameError ? "name-error" : undefined}
+          aria-label="Plan name"
+          aria-required="true"
           className="bg-background/60"
         />
 
@@ -69,7 +70,7 @@ export function EventTitleSection({
           >
             <AlertCircle size={13} className="shrink-0 text-destructive/60" />
             <p className="font-medium text-destructive/70 text-xs">
-              Title must be at least 3 characters.
+              Plan name must be at least 3 characters.
             </p>
           </div>
         )}

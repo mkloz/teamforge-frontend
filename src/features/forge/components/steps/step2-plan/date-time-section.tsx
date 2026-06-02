@@ -29,9 +29,24 @@ export function DateTimeSection({
   planDate,
   planTime,
 }: DateTimeSectionProps) {
+  const dateTimePreview = planDate || planTime;
+
   return (
     <SectionCard>
-      <SectionHeader title="When" />
+      <SectionHeader
+        title="When"
+        aside={
+          dateTimePreview ? (
+            <div className="fade-in inline-flex max-w-full animate-in items-center gap-2 rounded-full border border-forge-teal/15 bg-forge-teal/5 px-3 py-1.5 duration-200">
+              <Clock size={12} className="shrink-0 text-forge-teal/70" />
+              <p className="truncate font-medium text-forge-teal text-xs">
+                {planDate ? formatPlanDateSummary(planDate) : "Date TBD"}
+                {planTime && ` at ${planTime}`}
+              </p>
+            </div>
+          ) : null
+        }
+      />
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="flex flex-col gap-2.5">
@@ -53,16 +68,6 @@ export function DateTimeSection({
           />
         </div>
       </div>
-
-      {(planDate || planTime) && (
-        <div className="fade-in inline-flex w-fit max-w-full animate-in items-center gap-2 rounded-full border border-forge-teal/15 bg-forge-teal/5 px-3 py-2 duration-200">
-          <Clock size={12} className="shrink-0 text-forge-teal/70" />
-          <p className="truncate font-medium text-forge-teal text-xs">
-            {planDate ? formatPlanDateSummary(planDate) : "Date TBD"}
-            {planTime && ` at ${planTime}`}
-          </p>
-        </div>
-      )}
     </SectionCard>
   );
 }
