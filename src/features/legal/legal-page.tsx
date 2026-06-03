@@ -27,12 +27,15 @@ import {
   UsersRound,
   WalletCards,
 } from "lucide-react";
+import { useMemo } from "react";
 import { Footer } from "@/features/landing/components/footer";
 import { Navbar } from "@/features/landing/components/navbar";
 import { buttonVariants } from "@/shared/components/ui/button-variants";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { Notice } from "@/shared/components/ui/notice";
 import { StatusPill } from "@/shared/components/ui/status-pill";
+import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
+import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
 import { cn } from "@/shared/lib/utils";
 
 type LegalPageKind = "privacy" | "terms";
@@ -388,6 +391,18 @@ function legalLinkButtonClassName(className?: string) {
 }
 
 export function LegalPage({ kind }: LegalPageProps) {
+  const metadata = useMemo(() => {
+    return createTeamForgePageMetadata({
+      title: kind === "privacy" ? "Privacy Policy" : "Terms of Service",
+      description:
+        kind === "privacy"
+          ? "Learn how TeamForge handles, protects, and manages your personal data."
+          : "Read the rules, requirements, and policies for using the TeamForge platform.",
+    });
+  }, [kind]);
+
+  usePageMetadata(metadata);
+
   const copy = legalPageCopy[kind];
   const alternate = kind === "privacy" ? "terms" : "privacy";
   const alternateCopy = legalPageCopy[alternate];

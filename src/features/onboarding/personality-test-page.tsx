@@ -2,8 +2,17 @@ import { PersonalityScreenRenderer } from "@/features/onboarding/components/pers
 import { usePersonalityTestPageFlow } from "@/features/onboarding/hooks/use-personality-test-page-flow";
 import { QUESTIONS_PER_PAGE } from "@/features/onboarding/lib/personality-test-page-constants";
 import { PersonalityPageContent } from "@/features/onboarding/onboarding-page-content";
+import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
+import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+
+const PERSONALITY_TEST_METADATA = createTeamForgePageMetadata({
+  title: "Personality Test",
+  description: "Take the TeamForge personality test to find compatible groups.",
+});
 
 export function PersonalityTestPage() {
+  usePageMetadata(PERSONALITY_TEST_METADATA);
+
   const {
     backLabel,
     continueLabel,

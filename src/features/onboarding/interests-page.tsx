@@ -3,6 +3,14 @@ import { InterestsProgressDecoration } from "@/features/onboarding/components/in
 import { InterestsScreenRenderer } from "@/features/onboarding/components/interests/interests-page/interests-screen-renderer";
 import { useInterestsPageFlow } from "@/features/onboarding/hooks/use-interests-page-flow";
 import { InterestsPageContent } from "@/features/onboarding/onboarding-page-content";
+import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
+import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+
+const INTERESTS_PAGE_METADATA = createTeamForgePageMetadata({
+  title: "Choose Interests",
+  description:
+    "Select your interests to help TeamForge match you with relevant activities and groups.",
+});
 
 const CompletionBlueprint = lazy(() =>
   import(
@@ -21,6 +29,8 @@ const InterestsPersistentHeader = lazy(() =>
 );
 
 export function InterestsPage() {
+  usePageMetadata(INTERESTS_PAGE_METADATA);
+
   const {
     backLabel,
     enterApp,

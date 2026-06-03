@@ -4,12 +4,21 @@ import { FormLevelError } from "@/features/auth/components/form-level-error";
 import { ResetPasswordForm } from "@/features/auth/components/reset-password";
 import { useResetPasswordForm } from "@/features/auth/hooks/use-reset-password-form";
 import { Notice } from "@/shared/components/ui/notice";
+import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import {
   buildAuthRouteNavigation,
   useAuthReturnState,
 } from "@/shared/lib/auth-route";
+import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+
+const RESET_PASSWORD_METADATA = createTeamForgePageMetadata({
+  title: "New Password",
+  description: "Choose a new password for your TeamForge account.",
+});
 
 export function ResetPasswordPage() {
+  usePageMetadata(RESET_PASSWORD_METADATA);
+
   const { returnTo } = useAuthReturnState();
   const { form, isOnline, loading, onSubmit, rootError, success } =
     useResetPasswordForm();

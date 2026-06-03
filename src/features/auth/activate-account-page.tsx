@@ -2,12 +2,21 @@ import { Link } from "@tanstack/react-router";
 import { ActivateAccountStatus } from "@/features/auth/components/activate-account-status";
 import { AuthSupportShell } from "@/features/auth/components/auth-support-shell";
 import { useActivateAccount } from "@/features/auth/hooks/use-activate-account";
+import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import {
   buildAuthRouteNavigation,
   useAuthReturnState,
 } from "@/shared/lib/auth-route";
+import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+
+const ACTIVATE_ACCOUNT_METADATA = createTeamForgePageMetadata({
+  title: "Activate Account",
+  description: "Verify your email address and activate your TeamForge account.",
+});
 
 export function ActivateAccountPage() {
+  usePageMetadata(ACTIVATE_ACCOUNT_METADATA);
+
   const { returnTo } = useAuthReturnState();
   const { errorMessage, state } = useActivateAccount(returnTo);
 
