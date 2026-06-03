@@ -10,6 +10,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import type { AvatarBadgeTone } from "@/shared/components/common/avatar-with-badge";
+import type { IconTileTone } from "@/shared/components/ui/icon-tile";
 import type { Notification } from "@/shared/schemas";
 
 export function relativeTime(date: string): string {
@@ -45,7 +46,7 @@ export function formatNotificationDate(date: string): string {
 export function getTypeConfig(type: Notification["type"]): {
   avatarBadgeTone: AvatarBadgeTone;
   icon: LucideIcon;
-  iconClassName: string;
+  iconTone: IconTileTone;
 } {
   switch (type) {
     case "GROUP_FORMED":
@@ -53,7 +54,7 @@ export function getTypeConfig(type: Notification["type"]): {
       return {
         avatarBadgeTone: "amber",
         icon: Handshake,
-        iconClassName: "bg-spark-amber/12 text-spark-amber",
+        iconTone: "amber",
       };
     case "PLAN_CREATED":
     case "PLAN_CONFIRMED":
@@ -65,7 +66,7 @@ export function getTypeConfig(type: Notification["type"]): {
       return {
         avatarBadgeTone: "teal",
         icon: CalendarDays,
-        iconClassName: "bg-forge-teal/10 text-forge-teal",
+        iconTone: "teal",
       };
     case "GROUP_JOIN_REQUEST":
     case "GROUP_JOIN_APPROVED":
@@ -74,40 +75,40 @@ export function getTypeConfig(type: Notification["type"]): {
       return {
         avatarBadgeTone: "teal",
         icon: UsersRound,
-        iconClassName: "bg-forge-teal/10 text-forge-teal",
+        iconTone: "teal",
       };
     case "NEW_MESSAGE":
     case "MESSAGE_MENTION":
       return {
         avatarBadgeTone: "teal",
         icon: MessageCircle,
-        iconClassName: "bg-forge-teal/10 text-forge-teal",
+        iconTone: "teal",
       };
     case "RATING_REQUEST":
     case "RATING_RECEIVED":
       return {
         avatarBadgeTone: "amber",
         icon: Star,
-        iconClassName: "bg-spark-amber/12 text-spark-amber",
+        iconTone: "amber",
       };
     case "FRIEND_REQUEST":
     case "FRIEND_ACCEPTED":
       return {
         avatarBadgeTone: "teal",
         icon: UserPlus,
-        iconClassName: "bg-forge-teal/10 text-forge-teal",
+        iconTone: "teal",
       };
     case "ACCOUNT_SECURITY":
       return {
         avatarBadgeTone: "amber",
         icon: ShieldCheck,
-        iconClassName: "bg-spark-amber/12 text-spark-amber",
+        iconTone: "amber",
       };
     default:
       return {
         avatarBadgeTone: "muted",
         icon: Bell,
-        iconClassName: "bg-slate-muted/10 text-slate-muted",
+        iconTone: "muted",
       };
   }
 }

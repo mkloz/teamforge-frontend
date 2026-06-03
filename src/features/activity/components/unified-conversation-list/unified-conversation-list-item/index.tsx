@@ -7,8 +7,8 @@ import {
   PinOff,
 } from "lucide-react";
 import { memo } from "react";
+import { ActivityMenuIcon } from "@/features/activity/components/activity-menu-icon";
 import {
-  ACTIVITY_MENU_ICON_CLASS,
   ACTIVITY_MENU_ITEM_CLASS,
   ACTIVITY_MENU_SEPARATOR_CLASS,
   getActivityMenuContentClass,
@@ -108,9 +108,9 @@ export const UnifiedConversationListItem = memo(
             className={ACTIVITY_MENU_ITEM_CLASS}
             onSelect={onSelect}
           >
-            <span className={ACTIVITY_MENU_ICON_CLASS}>
+            <ActivityMenuIcon>
               <MessageCircle className="size-4" />
-            </span>
+            </ActivityMenuIcon>
             <span className="min-w-0 flex-1 truncate">Open chat</span>
           </ContextMenuItem>
           <ContextMenuSeparator className={ACTIVITY_MENU_SEPARATOR_CLASS} />
@@ -121,19 +121,13 @@ export const UnifiedConversationListItem = memo(
             )}
             onSelect={onTogglePinned}
           >
-            <span
-              className={cn(
-                ACTIVITY_MENU_ICON_CLASS,
-                item.isPinned &&
-                  "border-forge-teal/20 bg-forge-teal/8 text-forge-teal",
-              )}
-            >
+            <ActivityMenuIcon tone={item.isPinned ? "active" : "default"}>
               {item.isPinned ? (
                 <PinOff className="size-4" />
               ) : (
                 <Pin className="size-4" />
               )}
-            </span>
+            </ActivityMenuIcon>
             <span className="min-w-0 flex-1 truncate">
               {item.isPinned ? "Unpin chat" : "Pin chat"}
             </span>
@@ -145,19 +139,13 @@ export const UnifiedConversationListItem = memo(
             )}
             onSelect={onToggleMuted}
           >
-            <span
-              className={cn(
-                ACTIVITY_MENU_ICON_CLASS,
-                isMuted &&
-                  "border-forge-teal/20 bg-forge-teal/8 text-forge-teal",
-              )}
-            >
+            <ActivityMenuIcon tone={isMuted ? "active" : "default"}>
               {isMuted ? (
                 <Bell className="size-4" />
               ) : (
                 <BellOff className="size-4" />
               )}
-            </span>
+            </ActivityMenuIcon>
             <span className="min-w-0 flex-1 truncate">
               {isMuted ? "Unmute chat" : "Mute chat"}
             </span>
@@ -167,9 +155,9 @@ export const UnifiedConversationListItem = memo(
               className={ACTIVITY_MENU_ITEM_CLASS}
               onSelect={onMarkRead}
             >
-              <span className={ACTIVITY_MENU_ICON_CLASS}>
+              <ActivityMenuIcon>
                 <CheckCheck className="size-4" />
-              </span>
+              </ActivityMenuIcon>
               <span className="min-w-0 flex-1 truncate">Mark as read</span>
             </ContextMenuItem>
           ) : null}

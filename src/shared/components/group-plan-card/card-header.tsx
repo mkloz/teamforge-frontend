@@ -2,6 +2,7 @@ import { Handshake } from "lucide-react";
 
 import { Avatar } from "@/shared/components/common/avatar";
 import type { GroupPlanCardVariant } from "@/shared/components/group-plan-card/group-plan-card-types";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 import type { ExploreGroup } from "@/shared/schemas";
 import type { ImageMedia } from "@/shared/schemas/media";
@@ -53,15 +54,17 @@ export function CardHeader({
       </div>
 
       {access === "BY_REQUEST" ? (
-        <span
+        <StatusPill
+          icon={Handshake}
+          size="xs"
+          tone="neutral"
           className={cn(
-            "flex shrink-0 items-center gap-1 rounded-full border border-border/80 bg-background/50 py-0.5 font-bold text-muted-foreground text-xs",
+            "border-border/80 bg-background/50 py-0.5 text-xs",
             isCompact ? "px-1.5" : "px-2",
           )}
         >
-          <Handshake className="size-3" aria-hidden="true" />
           <span className={cn(isCompact && "sr-only")}>Request</span>
-        </span>
+        </StatusPill>
       ) : null}
     </div>
   );

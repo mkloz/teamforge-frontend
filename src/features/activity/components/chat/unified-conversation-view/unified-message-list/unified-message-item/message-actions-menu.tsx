@@ -24,8 +24,8 @@ import {
   useState,
 } from "react";
 import { ActivityQueryFactory } from "@/features/activity/api/activity-query-factory";
+import { ActivityMenuIcon } from "@/features/activity/components/activity-menu-icon";
 import {
-  ACTIVITY_MENU_ICON_CLASS,
   ACTIVITY_MENU_ITEM_CLASS,
   ACTIVITY_MENU_SEPARATOR_CLASS,
   getActivityMenuContentClass,
@@ -688,15 +688,9 @@ function MessageActionRow({ action }: { action: MessageActionItem }) {
 
   return (
     <>
-      <span
-        className={cn(
-          ACTIVITY_MENU_ICON_CLASS,
-          action.tone === "danger" &&
-            "border-destructive/20 bg-destructive/8 text-destructive",
-        )}
-      >
+      <ActivityMenuIcon tone={action.tone === "danger" ? "danger" : "default"}>
         <Icon className="size-4" />
-      </span>
+      </ActivityMenuIcon>
       <span className="min-w-0 flex-1 truncate font-bold text-xs">
         {action.label}
       </span>

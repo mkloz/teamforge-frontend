@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { FactItem } from "@/shared/components/ui/fact-item";
 
 interface PlanFactProps {
   icon: LucideIcon;
@@ -14,21 +15,25 @@ export function PlanFact({
   value,
 }: PlanFactProps) {
   return (
-    <div className="flex min-w-0 items-start gap-4">
-      <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-md bg-forge-teal/10 text-forge-teal">
-        <Icon className="size-4" aria-hidden="true" />
-      </div>
-      <div className="min-w-0 pt-0.5">
-        <p className="font-semibold text-muted-foreground text-xs">{label}</p>
-        <p className="mt-0.5 font-black text-foreground text-sm leading-snug">
+    <FactItem
+      icon={Icon}
+      iconShape="square"
+      iconSize="lg"
+      iconTileClassName="mt-0.5 size-9"
+      label={label}
+      labelClassName="font-semibold text-muted-foreground"
+      value={
+        <>
           {value}
-        </p>
-        {supporting ? (
-          <p className="mt-0.5 font-medium text-muted-foreground text-xs">
-            {supporting}
-          </p>
-        ) : null}
-      </div>
-    </div>
+          {supporting ? (
+            <span className="mt-0.5 block font-medium text-muted-foreground text-xs">
+              {supporting}
+            </span>
+          ) : null}
+        </>
+      }
+      valueClassName="mt-0.5 font-black text-foreground"
+      className="items-start gap-4"
+    />
   );
 }

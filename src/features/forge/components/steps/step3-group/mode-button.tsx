@@ -1,4 +1,5 @@
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
 
 import type { ModeButtonProps } from "./types";
@@ -6,7 +7,7 @@ import type { ModeButtonProps } from "./types";
 export function ModeButton({
   active,
   onClick,
-  icon,
+  icon: Icon,
   title,
   description,
   activeColor,
@@ -27,18 +28,21 @@ export function ModeButton({
       contentClassName="min-w-0 flex-col items-start justify-start gap-2 whitespace-normal"
     >
       <div className="flex min-w-0 items-center gap-2">
-        <div
+        <IconTile
+          icon={Icon}
+          size="md"
+          tone={
+            active ? (activeColor === "primary" ? "teal" : "amber") : "neutral"
+          }
           className={cn(
-            "rounded-lg p-1.5 transition-colors",
+            "size-8",
             active
               ? activeColor === "primary"
                 ? "bg-forge-teal text-white shadow-forge-teal/25 shadow-sm"
                 : "bg-spark-amber/15 text-spark-amber shadow-sm ring-1 ring-spark-amber/20"
-              : "bg-muted text-muted-foreground",
+              : "bg-muted",
           )}
-        >
-          {icon}
-        </div>
+        />
         <span
           className={cn(
             "min-w-0 text-wrap font-black text-xs tracking-tight",

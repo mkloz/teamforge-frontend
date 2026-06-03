@@ -12,6 +12,11 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/shared/components/ui/button";
+import { IconTile, type IconTileTone } from "@/shared/components/ui/icon-tile";
+import {
+  StatusPill,
+  type StatusPillTone,
+} from "@/shared/components/ui/status-pill";
 import { usePwaDisplayMode } from "@/shared/hooks/use-pwa-display-mode";
 import { usePwaInstallPrompt } from "@/shared/hooks/use-pwa-install-prompt";
 import { useServiceWorkerDiagnostics } from "@/shared/hooks/use-service-worker-diagnostics";
@@ -39,11 +44,18 @@ interface DiagnosticItem {
   value: string;
 }
 
-const TONE_CLASSES: Record<DiagnosticTone, string> = {
-  blocked: "border-destructive/25 bg-destructive/10 text-destructive",
-  neutral: "border-slate-muted/30 bg-background text-slate-muted",
-  ready: "border-forge-teal/20 bg-forge-teal/8 text-forge-teal",
-  warning: "border-spark-amber/25 bg-spark-amber/10 text-spark-amber",
+const DIAGNOSTIC_ICON_TONES: Record<DiagnosticTone, IconTileTone> = {
+  blocked: "destructive",
+  neutral: "muted",
+  ready: "teal",
+  warning: "amber",
+};
+
+const DIAGNOSTIC_STATUS_TONES: Record<DiagnosticTone, StatusPillTone> = {
+  blocked: "destructive",
+  neutral: "muted",
+  ready: "teal",
+  warning: "amber",
 };
 
 const DIAGNOSTIC_CHECK_COUNT = 8;
@@ -575,24 +587,23 @@ function DiagnosticRow({
       )}
     >
       <div className="flex items-start gap-3">
-        <span
-          className={cn(
-            "flex size-10 shrink-0 items-center justify-center rounded-full border",
-            TONE_CLASSES[item.tone],
-          )}
-        >
-          <Icon size={17} strokeWidth={1.5} aria-hidden="true" />
-        </span>
+        <IconTile
+          bordered
+          icon={Icon}
+          shape="circle"
+          size="lg"
+          tone={DIAGNOSTIC_ICON_TONES[item.tone]}
+          iconClassName="size-4"
+        />
         <div className="min-w-0">
           <p className="font-semibold text-ink text-sm">{item.label}</p>
-          <p
-            className={cn(
-              "mt-1 inline-flex max-w-full rounded-full border px-2 py-0.5 font-bold text-xs",
-              TONE_CLASSES[item.tone],
-            )}
+          <StatusPill
+            size="xs"
+            tone={DIAGNOSTIC_STATUS_TONES[item.tone]}
+            className="mt-1 max-w-full px-2 py-0.5 text-xs"
           >
             {item.value}
-          </p>
+          </StatusPill>
         </div>
       </div>
       <p className="mt-3 text-pretty text-slate-muted text-sm leading-relaxed">

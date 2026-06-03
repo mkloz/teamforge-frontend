@@ -21,7 +21,9 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { Input } from "@/shared/components/ui/input";
+import { Notice } from "@/shared/components/ui/notice";
 import {
   Select,
   SelectContent,
@@ -165,16 +167,16 @@ export function PlanChangeDialog({
                   className="flex w-full items-center gap-3 px-5 py-3.5 text-left"
                 >
                   {/* Icon badge */}
-                  <span
-                    className={[
-                      "flex size-7 shrink-0 items-center justify-center rounded-lg transition-all duration-200",
-                      isExpanded
-                        ? "bg-forge-teal/15 text-forge-teal"
-                        : "text-slate-muted",
-                    ].join(" ")}
-                  >
-                    <Icon className="size-3.75" strokeWidth={1.75} />
-                  </span>
+                  <IconTile
+                    icon={Icon}
+                    iconClassName="size-3.75"
+                    size="sm"
+                    shape="square"
+                    tone={isExpanded ? "teal" : "none"}
+                    className={
+                      isExpanded ? "bg-forge-teal/15" : "text-slate-muted"
+                    }
+                  />
 
                   {/* Label + preview value */}
                   <span className="min-w-0 flex-1">
@@ -293,13 +295,15 @@ export function PlanChangeDialog({
 
                         {/* Validation error */}
                         {form.error ? (
-                          <p
+                          <Notice
                             aria-live="polite"
-                            className="mt-3 flex items-start gap-2 rounded-xl border border-destructive/20 bg-destructive/8 px-3 py-2 font-medium text-destructive text-sm"
+                            tone="danger"
+                            size="sm"
+                            icon={<AlertCircle className="size-3.5 shrink-0" />}
+                            className="mt-3 bg-destructive/8"
                           >
-                            <AlertCircle className="mt-px size-3.5 shrink-0" />
-                            <span>{form.error}</span>
-                          </p>
+                            {form.error}
+                          </Notice>
                         ) : null}
 
                         {/* Actions */}

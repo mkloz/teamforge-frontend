@@ -30,6 +30,8 @@ import {
 } from "@/features/activity/lib/unify-conversations";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 import { UnifiedChatHeader } from "./unified-conversation-view/unified-chat-header";
 import { ChatBackground } from "./unified-conversation-view/unified-message-list/chat-background";
@@ -257,10 +259,16 @@ function SavedMessageBubble({
           <span className="max-w-32 shrink-0 truncate font-bold text-forge-teal text-micro">
             {isOwn ? "You" : senderName}
           </span>
-          <span className="inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-full border border-forge-teal/15 bg-forge-teal/8 px-2 py-1 font-bold text-forge-teal text-micro leading-none sm:max-w-72">
-            <MessageCircle className="size-3 shrink-0" strokeWidth={2.25} />
+          <StatusPill
+            icon={MessageCircle}
+            iconClassName="size-3"
+            tone="teal"
+            size="xs"
+            surface="outline"
+            className="min-w-0 max-w-full shrink gap-1.5 border-forge-teal/15 bg-forge-teal/8 px-2 py-1 sm:max-w-72"
+          >
             <span className="truncate">From {row.conversationTitle}</span>
-          </span>
+          </StatusPill>
           <span className="font-bold text-micro text-slate-muted/75">
             saved {formatRelativeTime(savedAt)}
           </span>
@@ -402,19 +410,20 @@ function ForwardedIndicator({
   const sourceName = message.forwardedFromSenderName?.trim();
 
   return (
-    <div
+    <StatusPill
+      icon={Forward}
+      iconClassName="size-3"
+      tone={isOwn ? "teal" : "neutral"}
+      surface="soft"
       className={cn(
-        "mx-1.5 mt-1 mb-0.5 flex min-w-0 items-center gap-1.5 rounded-lg px-1.5 py-0.5 font-bold text-micro",
-        isOwn
-          ? "bg-forge-teal/8 text-forge-teal"
-          : "bg-muted/55 text-slate-muted",
+        "mx-1.5 mt-1 mb-0.5 min-w-0 shrink rounded-lg px-1.5",
+        !isOwn && "bg-muted/55 text-slate-muted",
       )}
     >
-      <Forward className="size-3 shrink-0" aria-hidden="true" />
       <span className="min-w-0 truncate">
         Forwarded{sourceName ? ` from ${sourceName}` : ""}
       </span>
-    </div>
+    </StatusPill>
   );
 }
 
@@ -461,9 +470,15 @@ function SavedMessagesState({
         {icon === "saved" ? (
           <NoSavedMessagesVisual className="h-36 w-auto text-foreground" />
         ) : (
-          <span className="flex size-12 items-center justify-center rounded-full border border-forge-teal/15 bg-forge-teal/8 text-forge-teal">
-            <Icon className="size-5" strokeWidth={2.25} />
-          </span>
+          <IconTile
+            icon={Icon}
+            iconClassName="size-5"
+            size="xl"
+            shape="circle"
+            tone="teal"
+            bordered
+            className="border-forge-teal/15 bg-forge-teal/8"
+          />
         )}
         <div>
           <h2 className="font-black text-ink text-lg tracking-tight">

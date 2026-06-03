@@ -1,6 +1,7 @@
 import { Check } from "lucide-react";
 
 import { PlanCover } from "@/shared/components/common/plan-cover";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import dayjs from "@/shared/lib/dayjs";
 import { cn } from "@/shared/lib/utils";
 
@@ -65,9 +66,13 @@ export function RecentActivityCard({
             />
           </>
         )}
-        <div
+        <IconTile
+          icon={Icon}
+          shape="circle"
+          size="sm"
+          tone="none"
           className={cn(
-            "relative z-10 flex size-7 items-center justify-center rounded-full shadow-sm backdrop-blur transition-colors duration-200",
+            "relative z-10 shadow-sm backdrop-blur",
             active
               ? "bg-spark-amber/15 text-spark-amber ring-1 ring-spark-amber/20"
               : recommended
@@ -76,9 +81,8 @@ export function RecentActivityCard({
                   ? "bg-background/90 text-foreground"
                   : "bg-background/70 text-muted-foreground group-hover:text-foreground",
           )}
-        >
-          <Icon size={13} />
-        </div>
+          iconClassName="size-3"
+        />
       </div>
 
       <div className="flex min-w-0 flex-1 items-center gap-2 px-2.5 py-2">
@@ -102,9 +106,14 @@ export function RecentActivityCard({
         </div>
 
         {active && (
-          <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-spark-amber/25 bg-spark-amber/15 text-spark-amber">
-            <Check size={12} strokeWidth={3} />
-          </span>
+          <IconTile
+            bordered
+            icon={Check}
+            shape="circle"
+            size="xs"
+            tone="amber"
+            className="bg-spark-amber/15"
+          />
         )}
       </div>
     </button>

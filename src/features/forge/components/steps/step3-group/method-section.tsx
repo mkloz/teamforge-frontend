@@ -20,7 +20,7 @@ export function MethodSection({
         <ModeButton
           active={forgeMode === "AUTO"}
           onClick={() => onForgeModeChange("AUTO")}
-          icon={<Cpu size={16} />}
+          icon={Cpu}
           title="Forge for me"
           description="Forge picks the right people based on your profile."
           activeColor="primary"
@@ -28,7 +28,7 @@ export function MethodSection({
         <ModeButton
           active={forgeMode === "MANUAL"}
           onClick={() => onForgeModeChange("MANUAL")}
-          icon={<UsersRound size={16} />}
+          icon={UsersRound}
           title="Pick my own"
           description="Choose members yourself and set a fixed group size."
           activeColor="accent"

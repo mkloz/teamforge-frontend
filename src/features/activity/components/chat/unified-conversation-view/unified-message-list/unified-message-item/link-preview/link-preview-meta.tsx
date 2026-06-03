@@ -1,6 +1,7 @@
 import { ExternalLink, Globe } from "lucide-react";
 
 import { Image } from "@/shared/components/common/image";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
 import type { LinkPreview as LinkPreviewData } from "@/shared/schemas";
 
@@ -29,7 +30,13 @@ export function LinkPreviewMeta({
       )}
     >
       {!hasImage ? (
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-forge-teal/20 bg-forge-teal/10 text-forge-teal">
+        <IconTile
+          size="md"
+          shape="circle"
+          tone="teal"
+          bordered
+          className="border-forge-teal/20"
+        >
           {data.favicon ? (
             <Image
               src={data.favicon}
@@ -43,7 +50,7 @@ export function LinkPreviewMeta({
           ) : (
             <Globe className="size-4" />
           )}
-        </span>
+        </IconTile>
       ) : null}
 
       <div className="flex min-w-0 flex-1 flex-col gap-1">

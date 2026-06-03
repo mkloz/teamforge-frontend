@@ -5,6 +5,7 @@ import type { ProfileBasicsValues } from "@/features/onboarding/schemas/profile-
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { Button } from "@/shared/components/ui/button";
 import { Form } from "@/shared/components/ui/form";
+import { Notice } from "@/shared/components/ui/notice";
 
 import { ProfileBasicsFormFields } from "./profile-basics-form-fields";
 
@@ -42,12 +43,18 @@ export function ProfileBasicsCard({
           <ProfileBasicsFormFields form={form} watchedValues={watchedValues} />
 
           {saveError ? (
-            <div className="flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/5 px-3 py-3">
-              <ErrorProfileSaveVisual className="h-6 w-auto shrink-0 text-foreground" />
-              <p className="font-medium text-destructive text-sm">
-                {saveError}
-              </p>
-            </div>
+            <Notice
+              role="alert"
+              tone="danger"
+              size="md"
+              icon={
+                <ErrorProfileSaveVisual className="h-6 w-auto text-foreground" />
+              }
+              className="items-center gap-3"
+              iconClassName="mt-0"
+            >
+              {saveError}
+            </Notice>
           ) : null}
 
           <Button

@@ -1,3 +1,5 @@
+import { OfflineNotice } from "@/shared/components/ui/offline-notice";
+
 interface PreferenceStatusMessageProps {
   error: string | null;
 }
@@ -18,11 +20,8 @@ interface OfflineSettingsNoticeProps {
 
 export function OfflineSettingsNotice({ message }: OfflineSettingsNoticeProps) {
   return (
-    <div
-      role="status"
-      className="rounded-xl border border-spark-amber/25 bg-spark-amber/8 px-3 py-3 font-medium text-sm text-spark-amber"
-    >
+    <OfflineNotice withIcon={false} size="md" className="px-3">
       {message}
-    </div>
+    </OfflineNotice>
   );
 }

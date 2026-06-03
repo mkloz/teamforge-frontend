@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Eye, Globe2, ShieldCheck, UserCircle } from "lucide-react";
 import { fadeUpItem } from "@/features/onboarding/constants/motion";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import {
   PersonalityScreenShell,
   StepNavigation,
@@ -65,9 +66,13 @@ export function KeepInMind({ onBack, onNext }: KeepInMindProps) {
       >
         {GUIDELINES.map(({ icon: Icon, title, text }) => (
           <div key={title} className="flex items-start gap-3.5">
-            <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
-              <Icon size={14} strokeWidth={2.5} />
-            </div>
+            <IconTile
+              icon={Icon}
+              shape="circle"
+              size="sm"
+              tone="teal"
+              className="mt-0.5"
+            />
             <div className="flex flex-col gap-0.5 text-left">
               <span className="font-bold font-sans text-ink text-sm leading-tight">
                 {title}

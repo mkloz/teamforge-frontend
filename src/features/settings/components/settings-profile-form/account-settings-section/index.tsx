@@ -1,5 +1,7 @@
 import { ErrorProfileSaveVisual } from "@/assets/error-state/error-profile-save";
 import { Form } from "@/shared/components/ui/form";
+import { Notice } from "@/shared/components/ui/notice";
+import { OfflineNotice } from "@/shared/components/ui/offline-notice";
 import { AccountFacts } from "./account-facts";
 import { AccountFormFooter } from "./account-form-footer";
 import { AreaFields } from "./area-fields";
@@ -62,19 +64,24 @@ export function AccountSettingsSection({
           </FormGroup>
 
           {saveError && (
-            <div className="flex items-center gap-3 rounded-xl border border-destructive/20 bg-destructive/5 px-3 py-3">
-              <ErrorProfileSaveVisual className="h-6 w-auto shrink-0 text-foreground" />
-              <p className="text-destructive text-sm">{saveError}</p>
-            </div>
+            <Notice
+              role="alert"
+              tone="danger"
+              size="md"
+              icon={
+                <ErrorProfileSaveVisual className="h-6 w-auto text-foreground" />
+              }
+              className="items-center gap-3"
+              iconClassName="mt-0"
+            >
+              {saveError}
+            </Notice>
           )}
 
           {!isOnline ? (
-            <div
-              role="status"
-              className="rounded-xl border border-spark-amber/25 bg-spark-amber/8 px-3 py-3 font-medium text-sm text-spark-amber"
-            >
+            <OfflineNotice withIcon={false} size="md" className="px-3">
               You are offline. Reconnect before saving profile changes.
-            </div>
+            </OfflineNotice>
           ) : null}
 
           <AccountFormFooter isOnline={isOnline} isSaving={isSaving} />

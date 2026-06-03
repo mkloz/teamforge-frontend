@@ -2,6 +2,8 @@ import { Check, UsersRound } from "lucide-react";
 import { ForgeGroupReadyVisual } from "@/assets/empty-state/forge-group-ready";
 import type { ForgeParticipant } from "@/features/forge/lib/forge-contract";
 import { Avatar } from "@/shared/components/common/avatar";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 import {
   getParticipantInitials,
@@ -58,9 +60,13 @@ export function SuccessHero({
       <div className="flex flex-col gap-4 px-4 py-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-forge-teal/25 bg-forge-teal/10 text-forge-teal">
-              <Check size={20} strokeWidth={2.5} />
-            </div>
+            <IconTile
+              icon={Check}
+              tone="teal"
+              size="lg"
+              bordered
+              iconClassName="size-5"
+            />
             <div className="min-w-0 flex-1">
               <p className="font-semibold text-muted-foreground text-xs">
                 Group ready
@@ -145,9 +151,14 @@ export function SuccessHero({
             )}
           </p>
           {topFit && (
-            <span className="font-bold text-spark-amber tabular-nums">
+            <StatusPill
+              tone="amber"
+              size="xs"
+              numeric
+              className="justify-self-start"
+            >
               {topFit.score}%
-            </span>
+            </StatusPill>
           )}
         </div>
       </div>

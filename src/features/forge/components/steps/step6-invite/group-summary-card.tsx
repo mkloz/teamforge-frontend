@@ -1,8 +1,9 @@
-import { Calendar, Check, MapPin, Users } from "lucide-react";
-import type { ReactNode } from "react";
+import { Calendar, Check, type LucideIcon, MapPin, Users } from "lucide-react";
 
 import { Avatar } from "@/shared/components/common/avatar";
 import { PlanCover } from "@/shared/components/common/plan-cover";
+import { FactItem } from "@/shared/components/ui/fact-item";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { getPlanCoverPreset } from "@/shared/lib/plan-cover";
 import { cn } from "@/shared/lib/utils";
 
@@ -65,9 +66,12 @@ export function GroupSummaryCard({
           />
         ) : (
           <div className="flex h-full items-start p-4">
-            <p className="w-fit rounded-full border border-white/10 bg-black/15 px-2.5 py-1 font-bold text-micro text-white/75 backdrop-blur">
+            <StatusPill
+              tone="none"
+              className="w-fit border-white/10 bg-black/15 px-2.5 py-1 text-white/75 backdrop-blur"
+            >
               Final review
-            </p>
+            </StatusPill>
           </div>
         )}
         <div
@@ -81,10 +85,14 @@ export function GroupSummaryCard({
               {displayPlanTitle}
             </p>
           </div>
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/15 bg-black/25 px-2.5 py-1 font-bold text-white/95 text-xs backdrop-blur">
-            <Check size={12} strokeWidth={2.5} />
+          <StatusPill
+            icon={Check}
+            size="sm"
+            tone="none"
+            className="border-white/15 bg-black/25 px-2.5 py-1 text-white/95 backdrop-blur"
+          >
             Ready
-          </span>
+          </StatusPill>
         </div>
       </div>
 
@@ -109,17 +117,17 @@ export function GroupSummaryCard({
 
         <div className="grid grid-cols-1 gap-3 border-border/25 border-t pt-3 sm:grid-cols-3">
           <SummaryItem
-            icon={<Users size={14} />}
+            icon={Users}
             label="People"
             value={`${participantCount} member${participantCount !== 1 ? "s" : ""}`}
           />
           <SummaryItem
-            icon={<Calendar size={14} />}
+            icon={Calendar}
             label="When"
             value={planDate || "Set later"}
           />
           <SummaryItem
-            icon={<MapPin size={14} />}
+            icon={MapPin}
             label="Where"
             value={planLocation || "Set later"}
           />
@@ -130,25 +138,22 @@ export function GroupSummaryCard({
 }
 
 interface SummaryItemProps {
-  icon: ReactNode;
+  icon: LucideIcon;
   label: string;
   value: string;
 }
 
 function SummaryItem({ icon, label, value }: SummaryItemProps) {
   return (
-    <div className="flex min-w-0 items-center gap-2">
-      <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-forge-teal/8 text-forge-teal">
-        {icon}
-      </span>
-      <span className="min-w-0">
-        <span className="block font-bold text-micro text-muted-foreground/60">
-          {label}
-        </span>
-        <span className="block truncate font-semibold text-foreground text-xs">
-          {value}
-        </span>
-      </span>
-    </div>
+    <FactItem
+      icon={icon}
+      iconSize="sm"
+      iconTone="teal"
+      iconTileClassName="bg-forge-teal/8"
+      label={label}
+      labelClassName="font-bold text-micro text-muted-foreground/60"
+      value={value}
+      valueClassName="truncate text-xs"
+    />
   );
 }

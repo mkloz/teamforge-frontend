@@ -12,6 +12,7 @@ import {
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { AvatarWithBadge } from "@/shared/components/common/avatar-with-badge";
 import { Button } from "@/shared/components/ui/button";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 
 import type { AttentionQueueFriendRequest } from "./attention-queue.types";
@@ -76,9 +77,14 @@ export function FriendRequestQueueItem({
                 {request.counterpart.name}
               </p>
               {request.counterpart.personalityType ? (
-                <span className="rounded-full bg-forge-teal/8 px-2 py-0.5 font-black text-forge-teal text-micro leading-none">
+                <StatusPill
+                  tone="teal"
+                  size="xs"
+                  surface="soft"
+                  className="text-micro"
+                >
                   {request.counterpart.personalityType}
-                </span>
+                </StatusPill>
               ) : null}
               <ArrowRight
                 className="size-3.5 shrink-0 text-muted-foreground/70 opacity-0 transition duration-150 group-focus-within:translate-x-0.5 group-focus-within:text-forge-teal group-focus-within:opacity-100 group-hover:translate-x-0.5 group-hover:text-forge-teal group-hover:opacity-100"

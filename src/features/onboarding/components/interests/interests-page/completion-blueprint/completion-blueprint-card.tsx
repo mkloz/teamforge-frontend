@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Fingerprint } from "lucide-react";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 
 import type { PersonalityType } from "@/shared/schemas/enums";
 
@@ -62,12 +63,17 @@ export function CompletionBlueprintCard({
               <p className="font-bold font-sans text-muted-foreground text-nano">
                 Status
               </p>
-              <div className="flex items-center gap-1.5 pt-1">
-                <div className="size-1.5 rounded-full bg-forge-teal shadow-teal-glow" />
-                <p className="font-bold font-sans text-foreground text-xs">
-                  Ready to enter
-                </p>
-              </div>
+              <StatusPill
+                size="sm"
+                tone="teal"
+                className="mt-1 w-fit border-0 bg-transparent px-0 py-0 text-foreground"
+              >
+                <span
+                  className="size-1.5 rounded-full bg-forge-teal shadow-teal-glow"
+                  aria-hidden="true"
+                />
+                Ready to enter
+              </StatusPill>
             </div>
           </div>
         </div>

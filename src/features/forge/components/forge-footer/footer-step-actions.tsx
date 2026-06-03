@@ -1,4 +1,4 @@
-import { Check, ChevronRight, UserPlus, WifiOff } from "lucide-react";
+import { Check, ChevronRight, UserPlus } from "lucide-react";
 
 import {
   AutoForgeButton,
@@ -6,6 +6,7 @@ import {
   PrimaryButton,
   ReforgeButton,
 } from "@/features/forge/components/forge-buttons";
+import { OfflineNotice } from "@/shared/components/ui/offline-notice";
 import { useNetworkStatus } from "@/shared/hooks/use-network-status";
 import {
   getStep1ContinueLabel,
@@ -166,12 +167,14 @@ export function Step7FooterAction({ fw }: ForgeFooterChildProps) {
 
 function ForgeFooterOfflineNotice({ message }: { message: string }) {
   return (
-    <p
-      role="status"
-      className="mt-3 flex items-center justify-center gap-2 text-center font-medium text-spark-amber text-xs"
+    <OfflineNotice
+      size="xs"
+      iconClassName="mt-0"
+      iconSizeClassName="size-3.5"
+      className="mt-3 justify-center border-0 bg-transparent p-0 text-center text-spark-amber"
+      contentClassName="flex-none font-medium"
     >
-      <WifiOff size={14} aria-hidden="true" />
       {message}
-    </p>
+    </OfflineNotice>
   );
 }

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Route } from "lucide-react";
 
 import { homeQuickActions } from "@/features/app-shell/lib/app-navigation";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 
 interface HomeHeroQuickActionsProps {
@@ -14,10 +15,15 @@ export function HomeHeroQuickActions({ signal }: HomeHeroQuickActionsProps) {
       aria-label="Quick actions"
       className="flex flex-wrap items-center gap-1 sm:gap-1.5"
     >
-      <span className="inline-flex min-h-9 min-w-0 max-w-full shrink-0 items-center gap-1.5 rounded-full border border-forge-teal/20 bg-forge-teal/8 px-3 py-1.5 font-bold text-slate-muted text-xs sm:min-h-8 sm:px-2.5">
-        <Route className="size-3.5" aria-hidden="true" />
+      <StatusPill
+        icon={Route}
+        size="md"
+        tone="teal"
+        surface="soft"
+        className="min-h-9 min-w-0 max-w-full text-slate-muted sm:min-h-8 sm:px-2.5"
+      >
         <span className="truncate">{signal}</span>
-      </span>
+      </StatusPill>
       {homeQuickActions.map(({ id, label, icon: Icon, navigation }) => (
         <Link
           key={id}

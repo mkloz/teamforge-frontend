@@ -1,5 +1,6 @@
 import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
 import { memo } from "react";
+import { CountBadge } from "@/shared/components/ui/count-badge";
 import { cn } from "@/shared/lib/utils";
 
 interface FilterChipItemProps {
@@ -38,16 +39,19 @@ export const FilterChipItem = memo(function FilterChipItem({
     >
       <span className="relative z-10">{label}</span>
       {badge != null && badge > 0 ? (
-        <span
+        <CountBadge
+          aria-hidden="true"
+          count={badge}
+          max={99}
+          size="xs"
+          tone="none"
           className={cn(
-            "relative z-10 inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 font-bold text-micro tabular-nums leading-none transition-colors",
+            "relative z-10 h-4 min-w-4 transition-colors",
             isActive
               ? "bg-white/20 text-white"
               : "bg-slate-muted/15 text-slate-muted group-hover/chip:bg-white/20 group-hover/chip:text-white",
           )}
-        >
-          {badge > 99 ? "99+" : badge}
-        </span>
+        />
       ) : null}
     </RadioGroupPrimitive.Item>
   );

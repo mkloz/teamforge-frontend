@@ -1,5 +1,6 @@
 import type { Visibility } from "@/features/forge/lib/forge-contract";
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
 
 import { VISIBILITY_OPTIONS } from "./step3-group.constants";
@@ -42,16 +43,17 @@ export function PrivacySection({
               )}
               contentClassName="min-w-0 items-start justify-start gap-3 whitespace-normal sm:grid sm:w-full sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-x-3 sm:gap-y-0"
             >
-              <div
+              <IconTile
+                icon={Icon}
+                size="md"
+                tone={active ? "teal" : "neutral"}
                 className={cn(
-                  "flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-200 sm:col-start-1 sm:row-start-1",
+                  "sm:col-start-1 sm:row-start-1",
                   active
                     ? "bg-forge-teal text-white shadow-forge-teal/25 shadow-sm"
-                    : "bg-muted text-muted-foreground group-hover:bg-forge-teal/10 group-hover:text-forge-teal",
+                    : "bg-muted group-hover:bg-forge-teal/10 group-hover:text-forge-teal",
                 )}
-              >
-                <Icon size={15} />
-              </div>
+              />
               <div className="min-w-0 flex-1 gap-1 sm:contents">
                 <p
                   className={cn(

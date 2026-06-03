@@ -1,4 +1,5 @@
 import { CheckCircle2 } from "lucide-react";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 
 interface InterestsReviewHeaderProps {
   totalSelected: number;
@@ -17,12 +18,14 @@ export function InterestsReviewHeader({
           Your interests
         </h2>
       </div>
-      <div className="flex items-center gap-1.5 rounded-full bg-forge-teal/10 px-3 py-1.5 text-forge-teal">
-        <CheckCircle2 size={13} strokeWidth={2.5} />
-        <span className="font-sans font-semibold text-xs">
-          {totalSelected} selected
-        </span>
-      </div>
+      <StatusPill
+        icon={CheckCircle2}
+        tone="teal"
+        size="md"
+        className="border-transparent"
+      >
+        {totalSelected} selected
+      </StatusPill>
     </div>
   );
 }

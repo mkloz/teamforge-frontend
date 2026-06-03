@@ -3,6 +3,7 @@ import {
   type AppNavigationItem,
   isAppNavigationItemActive,
 } from "@/features/app-shell/lib/app-navigation";
+import { CountBadge } from "@/shared/components/ui/count-badge";
 import { cn } from "@/shared/lib/utils";
 
 interface TabButtonProps {
@@ -59,16 +60,17 @@ export function TabButton({ item, pathname }: TabButtonProps) {
             )}
           />
           {hasBadge && (
-            <span
-              className={cn(
-                "absolute -top-1.5 -right-2 z-10 flex items-center justify-center rounded-full border border-spark-amber/45 bg-canvas font-black text-micro text-spark-amber tabular-nums leading-none shadow-[inset_0_0_0_999px_color-mix(in_srgb,var(--color-spark-amber)_16%,transparent)]",
-                badge > 9 ? "h-4.5 min-w-5 px-1" : "size-4.5 p-0",
-                "ring-2 ring-canvas",
-              )}
+            <CountBadge
               aria-hidden="true"
-            >
-              {badge > 9 ? "9+" : badge}
-            </span>
+              count={badge}
+              max={9}
+              size="sm"
+              tone="amber"
+              className={cn(
+                "absolute -top-1.5 -right-2 z-10 ring-2 ring-canvas",
+                badge > 9 ? "h-4.5 min-w-5 px-1" : "size-4.5 p-0",
+              )}
+            />
           )}
         </div>
 

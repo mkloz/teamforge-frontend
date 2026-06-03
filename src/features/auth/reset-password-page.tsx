@@ -3,6 +3,7 @@ import { AuthSupportShell } from "@/features/auth/components/auth-support-shell"
 import { FormLevelError } from "@/features/auth/components/form-level-error";
 import { ResetPasswordForm } from "@/features/auth/components/reset-password";
 import { useResetPasswordForm } from "@/features/auth/hooks/use-reset-password-form";
+import { Notice } from "@/shared/components/ui/notice";
 import {
   buildAuthRouteNavigation,
   useAuthReturnState,
@@ -37,9 +38,9 @@ export function ResetPasswordPage() {
       {rootError ? <FormLevelError message={rootError} /> : null}
 
       {success ? (
-        <div className="rounded-xl border border-forge-teal/20 bg-forge-teal/8 px-4 py-3 text-foreground text-sm">
+        <Notice role="status" tone="success" size="md" className="px-4">
           Your password has been updated. You can head back to login now.
-        </div>
+        </Notice>
       ) : (
         <ResetPasswordForm
           form={form}

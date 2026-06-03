@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 
 export function EmptyQueueItem() {
   return (
@@ -11,9 +12,13 @@ export function EmptyQueueItem() {
         className="group flex min-h-24 min-w-0 items-center justify-between gap-3 px-1 py-3 transition-colors duration-150 hover:bg-forge-teal/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-3"
       >
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-forge-teal/8 text-forge-teal">
-            <CheckCircle2 className="size-5" aria-hidden="true" />
-          </div>
+          <IconTile
+            icon={CheckCircle2}
+            shape="circle"
+            size="lg"
+            tone="teal"
+            className="bg-forge-teal/8"
+          />
           <div className="min-w-0 flex-1">
             <p className="font-black text-foreground text-sm transition-colors duration-150 group-hover:text-forge-teal">
               Nothing needs a decision.

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { buildForgeIdeaLaunchNavigation } from "@/features/forge/lib/forge-route";
 import { Button } from "@/shared/components/ui/button";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 
 import type { ActivityIdea } from "../lib/profile-insights";
 
@@ -39,13 +40,16 @@ export function BestFirstGroupStrip({
           {supportingIdeas.length > 0 ? (
             <div className="flex min-w-0 flex-wrap items-center gap-2 md:justify-end">
               {supportingIdeas.map((idea) => (
-                <span
+                <StatusPill
                   key={idea.title}
-                  className="inline-flex min-h-9 max-w-full items-center gap-2 rounded-full border border-border/80 px-3 py-1 font-bold text-ink/80 text-xs leading-snug"
+                  icon={ArrowRight}
+                  tone="none"
+                  size="md"
+                  className="min-h-9 max-w-full border-border/80 text-ink/80 leading-snug"
+                  iconClassName="text-forge-teal"
                 >
-                  <ArrowRight size={13} className="shrink-0 text-forge-teal" />
                   <span className="wrap-break-word min-w-0">{idea.title}</span>
-                </span>
+                </StatusPill>
               ))}
             </div>
           ) : null}

@@ -1,6 +1,8 @@
 import { CalendarClock, Clock3, LogOut, Wifi } from "lucide-react";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import {
   Tooltip,
   TooltipContent,
@@ -42,23 +44,23 @@ export function SessionRow({
       )}
     >
       <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-4">
-        <div
-          className={cn(
-            "flex size-10 items-center justify-center rounded-full bg-muted text-slate-muted",
-            session.isCurrent && "bg-forge-teal/8 text-forge-teal",
-          )}
-        >
-          <DeviceIcon size={16} strokeWidth={2} />
-        </div>
+        <IconTile
+          icon={DeviceIcon}
+          shape="circle"
+          size="lg"
+          tone={session.isCurrent ? "teal" : "neutral"}
+          className={session.isCurrent ? "bg-forge-teal/8" : "bg-muted"}
+          iconClassName="size-4"
+        />
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <p className="font-semibold text-base text-ink leading-6">
               {device.label}
             </p>
             {session.isCurrent && (
-              <span className="rounded-full border border-forge-teal/20 bg-forge-teal/8 px-2 py-0.5 font-semibold text-forge-teal text-micro">
+              <StatusPill size="xs" tone="teal" surface="soft">
                 Current
-              </span>
+              </StatusPill>
             )}
           </div>
           <div className="mt-3 grid gap-2 text-slate-muted text-xs sm:grid-cols-3">

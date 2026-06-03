@@ -5,6 +5,7 @@ import {
   Gamepad2,
   GraduationCap,
   HeartPulse,
+  type LucideIcon,
   Mountain,
   Music,
   Palette,
@@ -13,9 +14,8 @@ import {
   Users,
   UtensilsCrossed,
 } from "lucide-react";
-import type { ElementType } from "react";
 
-export const ICON_MAP: Record<string, ElementType> = {
+export const ICON_MAP: Record<string, LucideIcon> = {
   SPORTS: Dumbbell,
   GAMING: Gamepad2,
   SOCIAL: Users,

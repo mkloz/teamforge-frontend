@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { ErrorAuthLinkVisual } from "@/assets/error-state/error-auth-link";
 import { LoadingBlock } from "@/shared/components/loading/loading-block";
 import { Button } from "@/shared/components/ui/button";
+import { Notice } from "@/shared/components/ui/notice";
 import { buildAuthRouteNavigation } from "@/shared/lib/auth-route";
 
 interface ActivateAccountStatusProps {
@@ -46,8 +47,13 @@ export function ActivateAccountStatus({
   }
 
   return (
-    <div className="flex min-h-64 items-center rounded-xl border border-forge-teal/20 bg-forge-teal/8 px-4 py-3 text-foreground text-sm">
+    <Notice
+      role="status"
+      tone="success"
+      size="md"
+      className="min-h-64 items-center px-4"
+    >
       Your account is ready. Taking you back into TeamForge now.
-    </div>
+    </Notice>
   );
 }

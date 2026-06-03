@@ -8,6 +8,7 @@ import {
   getHomePlanCostLabel,
   getHomePlanLocationLabel,
 } from "@/features/home/lib/home-plan-presenters";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 import { getPlanCalendarParts, planStatusConfig } from "./plan-card-model";
 
@@ -62,10 +63,14 @@ export function PlanCard({ plannedGroup }: PlanCardProps) {
         <div className="min-w-0">
           <p className="flex min-w-0 items-center gap-1.5 font-bold text-foreground text-sm leading-snug transition-colors duration-200 group-hover:text-forge-teal">
             <span className="truncate">{plan.title}</span>
-            <StatusIcon
-              className={cn("size-3.5 shrink-0", status.classes)}
-              aria-hidden="true"
-            />
+            <StatusPill
+              icon={StatusIcon}
+              size="xs"
+              tone={status.tone}
+              className="px-1.5 py-0.5"
+            >
+              <span className="sr-only sm:not-sr-only">{status.label}</span>
+            </StatusPill>
           </p>
           <p className="mt-0.5 flex min-w-0 items-center gap-1 font-medium text-muted-foreground text-xs">
             <LocationIcon className="size-3 shrink-0" aria-hidden="true" />

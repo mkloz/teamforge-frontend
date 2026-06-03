@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
 
 import type { HomeViewer } from "@/features/home/lib/home-contract";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 
 import { getProfileStepMeta } from "./attention-queue-formatters";
 import {
@@ -26,9 +27,13 @@ export function ProfileStepQueueItem({
         className="flex min-w-0 items-center justify-between gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <div className="flex min-w-0 flex-1 items-start gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-forge-teal/8 text-forge-teal">
-            <ShieldCheck className="size-5" aria-hidden="true" />
-          </div>
+          <IconTile
+            icon={ShieldCheck}
+            shape="circle"
+            size="lg"
+            tone="teal"
+            className="bg-forge-teal/8"
+          />
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 items-center gap-2">
               <AttentionQueueTypeLabel icon={ShieldCheck} tone="teal">

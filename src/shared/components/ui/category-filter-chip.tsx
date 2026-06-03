@@ -1,5 +1,6 @@
 import type { ComponentProps } from "react";
 
+import { CountBadge } from "@/shared/components/ui/count-badge";
 import { RadioGroupItem } from "@/shared/components/ui/radio-group";
 import { cn } from "@/shared/lib/utils";
 
@@ -67,9 +68,13 @@ function CategoryFilterChip(props: CategoryFilterChipProps) {
     <>
       <span>{label}</span>
       {badge != null && badge > 0 ? (
-        <span
+        <CountBadge
+          count={badge}
+          max={99}
+          size="xs"
+          tone="none"
           className={cn(
-            "inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 font-bold text-micro tabular-nums leading-none transition-colors",
+            "h-4 min-w-4 font-bold transition-colors",
             selected
               ? selectedVariant === "soft"
                 ? "bg-forge-teal/12 text-forge-teal"
@@ -77,9 +82,7 @@ function CategoryFilterChip(props: CategoryFilterChipProps) {
               : "bg-muted text-slate-muted group-hover/chip:bg-muted/80 group-hover/chip:text-foreground group-data-[state=checked]/chip:bg-white/20 group-data-[state=checked]/chip:text-white",
             badgeClassName,
           )}
-        >
-          {badge > 99 ? "99+" : badge}
-        </span>
+        />
       ) : null}
     </>
   );

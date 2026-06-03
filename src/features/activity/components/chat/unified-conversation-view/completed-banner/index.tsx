@@ -21,6 +21,7 @@ import { usePublicProfileActions } from "@/features/profile/hooks/use-public-pro
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { LoadingBlock } from "@/shared/components/loading/loading-block";
 import { Button } from "@/shared/components/ui/button";
+import { OfflineNotice } from "@/shared/components/ui/offline-notice";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { MemberRatingPicker } from "./member-rating-picker";
 import { StarRatingInput } from "./star-rating-input";
@@ -75,12 +76,15 @@ export const CompletedReviewGate = memo(function CompletedReviewGate({
         ) : (
           <div className="grid gap-3">
             {!rating.isOnline ? (
-              <p
-                role="status"
-                className="rounded-lg border border-border/70 bg-muted/30 px-3 py-2 text-center font-medium text-slate-muted text-xs"
+              <OfflineNotice
+                withIcon={false}
+                tone="neutral"
+                size="xs"
+                className="rounded-lg border-border/70 bg-muted/30 text-center text-slate-muted"
+                contentClassName="font-medium"
               >
                 Reconnect to submit teammate reviews.
-              </p>
+              </OfflineNotice>
             ) : null}
 
             <div className="sm:main-action-grid grid gap-2 sm:items-center">

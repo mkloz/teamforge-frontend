@@ -3,6 +3,7 @@ import { Check, MapPin, Plus, ShieldCheck, Sparkles } from "lucide-react";
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar, AvatarStatus } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 import type { FriendshipApi } from "@/shared/schemas";
 import { formatTrustScore } from "./step3-group.utils";
@@ -73,21 +74,31 @@ export function ManualFriendInviteRow({
 
           <span className="flex min-w-0 flex-wrap items-center gap-1.5">
             {friend.city && (
-              <span className="inline-flex max-w-32 items-center gap-1 truncate rounded-full border border-border/45 bg-muted/35 px-2 py-1 font-medium text-micro text-muted-foreground">
-                <MapPin size={11} className="shrink-0" aria-hidden="true" />
+              <StatusPill
+                icon={MapPin}
+                tone="neutral"
+                className="max-w-32 bg-muted/35 font-medium"
+                iconClassName="shrink-0"
+              >
                 <span className="truncate">{friend.city}</span>
-              </span>
+              </StatusPill>
             )}
             {friend.personalityType && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-forge-teal/15 bg-forge-teal/7 px-2 py-1 font-semibold text-forge-teal text-micro">
-                <Sparkles size={11} aria-hidden="true" />
+              <StatusPill
+                icon={Sparkles}
+                tone="teal"
+                className="border-forge-teal/15 bg-forge-teal/7 font-semibold"
+              >
                 {friend.personalityType}
-              </span>
+              </StatusPill>
             )}
-            <span className="inline-flex items-center gap-1 rounded-full border border-spark-amber/18 bg-spark-amber/8 px-2 py-1 font-semibold text-micro text-spark-amber">
-              <ShieldCheck size={11} aria-hidden="true" />
+            <StatusPill
+              icon={ShieldCheck}
+              tone="amber"
+              className="border-spark-amber/18 bg-spark-amber/8 font-semibold"
+            >
               Trust {trustScore}
-            </span>
+            </StatusPill>
           </span>
         </span>
       </Link>

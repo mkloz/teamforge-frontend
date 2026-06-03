@@ -1,5 +1,6 @@
 import { Upload } from "lucide-react";
 import { memo } from "react";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 
 export const ChatDropzoneOverlay = memo(function ChatDropzoneOverlay() {
   return (
@@ -8,9 +9,14 @@ export const ChatDropzoneOverlay = memo(function ChatDropzoneOverlay() {
       role="presentation"
     >
       <div className="flex w-full max-w-sm flex-col items-center gap-3">
-        <span className="flex size-14 items-center justify-center rounded-full border border-forge-teal/20 bg-forge-teal/10 text-forge-teal shadow-sm">
-          <Upload className="size-6" aria-hidden="true" strokeWidth={2} />
-        </span>
+        <IconTile
+          icon={Upload}
+          size="2xl"
+          shape="circle"
+          tone="teal"
+          bordered
+          className="border-forge-teal/20 shadow-sm"
+        />
         <div className="grid gap-1">
           <p className="font-black text-ink text-lg leading-tight">
             Drop files to attach

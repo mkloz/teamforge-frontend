@@ -3,6 +3,8 @@ import { LayoutTemplate, Tag } from "lucide-react";
 
 import { buildTemplateSuggestions } from "@/features/forge/lib/forge-template-suggestions";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 
 import { StartBlankTemplateButton } from "./start-blank-template-button";
 import { TemplatePaginationControls } from "./template-pagination-controls";
@@ -37,19 +39,21 @@ export function Step2Templates({
     <div className="flex flex-col gap-4 pb-6">
       <div className="flex items-start justify-between gap-3 px-0.5">
         <div className="flex min-w-0 items-start gap-3">
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10 text-forge-teal">
-            <LayoutTemplate size={15} />
-          </div>
+          <IconTile icon={LayoutTemplate} size="md" tone="teal" />
           <div className="min-w-0">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <p className="font-semibold text-foreground text-sm leading-tight">
                 Start from a template
               </p>
               {selectedActivity && (
-                <span className="inline-flex max-w-full items-center gap-1 rounded-full border border-border/45 bg-card px-2 py-0.5 font-bold text-micro text-muted-foreground">
-                  <Tag size={10} />
+                <StatusPill
+                  icon={Tag}
+                  size="xs"
+                  tone="neutral"
+                  className="max-w-full border-border/45 bg-card px-2 py-0.5 text-micro"
+                >
                   <span className="truncate">{selectedActivity}</span>
-                </span>
+                </StatusPill>
               )}
             </div>
             <p className="mt-1 text-muted-foreground/65 text-xs leading-snug">

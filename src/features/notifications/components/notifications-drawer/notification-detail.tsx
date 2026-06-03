@@ -10,7 +10,7 @@ import {
   AvatarWithBadge,
 } from "@/shared/components/common/avatar-with-badge";
 import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
+import { IconTile, type IconTileTone } from "@/shared/components/ui/icon-tile";
 import type { Notification } from "@/shared/schemas";
 import {
   formatNotificationDate,
@@ -63,7 +63,7 @@ export function NotificationDetail({
           <NotificationDetailSource
             avatarBadgeTone={config.avatarBadgeTone}
             icon={Icon}
-            iconClassName={config.iconClassName}
+            iconTone={config.iconTone}
             item={item}
           />
 
@@ -147,14 +147,14 @@ export function NotificationDetail({
 interface NotificationDetailSourceProps {
   avatarBadgeTone: AvatarBadgeTone;
   icon: LucideIcon;
-  iconClassName: string;
+  iconTone: IconTileTone;
   item: Notification;
 }
 
 function NotificationDetailSource({
   avatarBadgeTone,
   icon: Icon,
-  iconClassName,
+  iconTone,
   item,
 }: NotificationDetailSourceProps) {
   if (item.avatarUrl) {
@@ -170,14 +170,12 @@ function NotificationDetailSource({
   }
 
   return (
-    <span
-      className={cn(
-        "flex size-12 shrink-0 items-center justify-center rounded-md",
-        iconClassName,
-      )}
-      aria-hidden="true"
-    >
-      <Icon className="size-5 shrink-0" strokeWidth={2} />
-    </span>
+    <IconTile
+      icon={Icon}
+      tone={iconTone}
+      size="xl"
+      shape="square"
+      iconClassName="size-5"
+    />
   );
 }

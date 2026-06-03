@@ -4,6 +4,7 @@ import { AdminCrownBadge } from "@/shared/components/common/admin-crown-badge";
 import { Avatar, AvatarStatus } from "@/shared/components/common/avatar";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 
 interface MemberCardProps {
@@ -67,14 +68,24 @@ export function MemberCard({
             {memberName}
           </p>
           {isViewer ? (
-            <span className="shrink-0 rounded-full bg-muted px-1.5 py-0.5 font-bold text-micro text-muted-foreground">
+            <StatusPill
+              tone="neutral"
+              size="xs"
+              surface="soft"
+              className="bg-muted px-1.5"
+            >
               You
-            </span>
+            </StatusPill>
           ) : null}
           {member.user?.personalityType ? (
-            <span className="h-4 shrink-0 rounded-full bg-forge-teal px-1.5 font-bold text-micro text-white leading-4">
+            <StatusPill
+              tone="teal"
+              size="xs"
+              surface="solid"
+              className="h-4 px-1.5 py-0 leading-4"
+            >
               {member.user.personalityType}
-            </span>
+            </StatusPill>
           ) : null}
         </div>
         {typeof trustPercent === "number" || typeof fitScore === "number" ? (
@@ -171,17 +182,20 @@ interface MemberMetricProps {
 
 function MemberMetric({ icon: Icon, label, tone, value }: MemberMetricProps) {
   return (
-    <span
+    <StatusPill
+      icon={Icon}
+      iconClassName="size-3.5"
+      tone={tone === "teal" ? "teal" : "neutral"}
+      surface="ghost"
       className={cn(
-        "inline-flex shrink-0 items-center gap-1 font-bold text-xs leading-tight",
-        tone === "teal" ? "text-forge-teal" : "text-muted-foreground",
+        "gap-1 p-0 text-xs leading-tight",
+        tone !== "teal" && "text-muted-foreground",
       )}
       title={`${label} ${value}`}
     >
-      <Icon className="size-3.5" strokeWidth={1.75} aria-hidden="true" />
       <span className="sr-only">{label}</span>
       <span>{value}</span>
-    </span>
+    </StatusPill>
   );
 }
 

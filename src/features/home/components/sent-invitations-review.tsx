@@ -1,7 +1,7 @@
 import { BellRing, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import type { Invite } from "@/shared/schemas";
 import {
   getInviteStatusCopy,
@@ -43,10 +43,15 @@ export function SentInvitationsReview({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <div className="inline-flex items-center gap-2 rounded-full bg-forge-teal/10 px-3 py-1 font-bold text-forge-teal text-xs">
-            <BellRing className="size-3.5" />
+          <StatusPill
+            icon={BellRing}
+            size="sm"
+            tone="teal"
+            surface="soft"
+            className="w-fit px-3 py-1"
+          >
             Sent invite update
-          </div>
+          </StatusPill>
           <h2 className="font-black text-foreground text-lg tracking-tight">
             Invite status
           </h2>
@@ -80,15 +85,15 @@ export function SentInvitationsReview({
                   `This invite was sent to ${focusedInvite.invitee.name} for ${focusedInvite.group.name}.`}
               </p>
             </div>
-            <div
-              className={cn(
-                "inline-flex items-center gap-2 rounded-full border px-3 py-1 font-black text-xs uppercase tracking-widest",
-                focusedInviteStatus?.tone,
-              )}
+            <StatusPill
+              icon={StatusIcon}
+              size="sm"
+              textCase="upper"
+              tone={focusedInviteStatus?.tone}
+              className="px-3 py-1 font-black"
             >
-              {StatusIcon ? <StatusIcon className="size-3.5" /> : null}
               {focusedInviteStatus?.label}
-            </div>
+            </StatusPill>
           </div>
 
           <div className="mt-4 rounded-xl border border-border/70 bg-canvas/70 px-4 py-3 font-medium text-muted-foreground text-sm">

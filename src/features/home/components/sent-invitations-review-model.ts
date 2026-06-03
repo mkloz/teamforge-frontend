@@ -2,43 +2,53 @@ import {
   CheckCircle2,
   CircleDashed,
   Clock3,
+  type LucideIcon,
   MailWarning,
   XCircle,
 } from "lucide-react";
 
+import type { StatusPillTone } from "@/shared/components/ui/status-pill";
 import type { Invite } from "@/shared/schemas";
 
-export function getInviteStatusCopy(status: Invite["status"]) {
+interface InviteStatusCopy {
+  icon: LucideIcon;
+  label: string;
+  tone: StatusPillTone;
+}
+
+export function getInviteStatusCopy(
+  status: Invite["status"],
+): InviteStatusCopy {
   switch (status) {
     case "ACCEPTED":
       return {
         icon: CheckCircle2,
         label: "Accepted",
-        tone: "text-forge-teal bg-forge-teal/10 border-forge-teal/20",
+        tone: "teal",
       };
     case "DECLINED":
       return {
         icon: XCircle,
         label: "Declined",
-        tone: "text-destructive bg-destructive/10 border-destructive/20",
+        tone: "destructive",
       };
     case "EXPIRED":
       return {
         icon: Clock3,
         label: "Expired",
-        tone: "text-muted-foreground bg-muted/50 border-border",
+        tone: "neutral",
       };
     case "CANCELLED":
       return {
         icon: MailWarning,
         label: "Cancelled",
-        tone: "text-muted-foreground bg-muted/50 border-border",
+        tone: "neutral",
       };
     default:
       return {
         icon: CircleDashed,
         label: "Pending",
-        tone: "text-spark-amber bg-spark-amber/10 border-spark-amber/20",
+        tone: "amber",
       };
   }
 }

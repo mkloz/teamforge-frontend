@@ -4,6 +4,7 @@ import { UserMinus, UserPlus } from "lucide-react";
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 
 import {
@@ -85,16 +86,14 @@ export function ParticipantRow({
             </div>
 
             {!removed && (
-              <span
-                className={cn(
-                  "shrink-0 rounded-full border px-2 py-0.5 font-bold text-micro tabular-nums",
-                  highlight
-                    ? "border-spark-amber/30 bg-spark-amber/12 text-spark-amber"
-                    : "border-border/40 bg-muted/35 text-muted-foreground",
-                )}
+              <StatusPill
+                tone={highlight ? "amber" : "neutral"}
+                size="xs"
+                surface="soft"
+                numeric
               >
                 {participantMeta.value}
-              </span>
+              </StatusPill>
             )}
           </div>
         </div>

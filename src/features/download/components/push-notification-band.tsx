@@ -2,8 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { Bell, BellOff, BellRing, ExternalLink } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
+import { IconTile, type IconTileTone } from "@/shared/components/ui/icon-tile";
 import { useWebPushSubscription } from "@/shared/hooks/use-web-push-subscription";
-import { cn } from "@/shared/lib/utils";
 
 type PushState = ReturnType<typeof useWebPushSubscription>;
 
@@ -99,23 +99,26 @@ export function PushNotificationBand() {
     push.isPublicKeyLoading ||
     (!push.isSubscribed && !push.canRequestPermission);
   const isDenied = push.permission === "denied";
+  const iconTone: IconTileTone = push.isSubscribed
+    ? "teal"
+    : isDenied
+      ? "amber"
+      : "muted";
 
   return (
     <div className="border-forge-teal/12 border-y bg-forge-teal/5">
       <div className="mx-auto flex max-w-6xl flex-col gap-5 px-6 py-8 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
         <div className="flex items-start gap-4">
-          <span
-            className={cn(
-              "flex size-11 shrink-0 items-center justify-center rounded-full",
-              push.isSubscribed
-                ? "bg-forge-teal/12 text-forge-teal"
-                : isDenied
-                  ? "bg-spark-amber/10 text-spark-amber"
-                  : "bg-slate-muted/10 text-slate-muted",
-            )}
-          >
-            <Icon size={20} strokeWidth={1.5} aria-hidden="true" />
-          </span>
+          <IconTile
+            icon={Icon}
+            shape="circle"
+            size="lg"
+            tone={iconTone}
+            className={
+              push.isSubscribed ? "size-11 bg-forge-teal/12" : "size-11"
+            }
+            iconClassName="size-5"
+          />
           <div className="min-w-0">
             <p className="font-bold text-ink">{copy.title}</p>
             <p className="mt-0.5 max-w-lg text-pretty text-slate-muted text-sm leading-relaxed">

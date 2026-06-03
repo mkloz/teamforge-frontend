@@ -6,6 +6,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { formatStatusLabel } from "@/features/group-plan-detail/lib/group-plan-detail-formatters";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 import type { PlanStatus } from "@/shared/schemas/enums";
 
@@ -19,17 +20,20 @@ export function PlanStatusPill({ status }: { status: PlanStatus }) {
   const isTerminal = status === "COMPLETED" || status === "CANCELLED";
 
   return (
-    <span
+    <StatusPill
+      icon={Icon}
+      tone="none"
+      size="xs"
+      textCase="upper"
       className={cn(
-        "type-signature-label inline-flex items-center gap-1 rounded-full border border-transparent px-2 py-0.5 font-bold uppercase tracking-widest",
+        "type-signature-label border-transparent px-2 py-0.5 tracking-widest",
         (isConfirmed || isInProgress) && "border-forge-teal/25 text-forge-teal",
         (isDraft || isProposed) && "border-spark-amber/25 text-spark-amber",
         isTerminal && "border-border/60 text-muted-foreground",
       )}
     >
-      <Icon className="size-3" aria-hidden="true" strokeWidth={2} />
       {label}
-    </span>
+    </StatusPill>
   );
 }
 

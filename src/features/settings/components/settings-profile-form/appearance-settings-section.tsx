@@ -1,6 +1,7 @@
 import { Moon, Sun } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { Theme, useTheme } from "@/shared/store/theme.store";
 
 import { SectionHeading } from "./preference-section-parts";
@@ -46,9 +47,13 @@ export function AppearanceSettingsSection() {
                 className="h-auto flex-1 justify-start p-4 text-left"
                 contentClassName="items-start justify-start gap-3"
               >
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-current/10">
-                  <Icon className="size-4" aria-hidden="true" />
-                </span>
+                <IconTile
+                  icon={Icon}
+                  size="lg"
+                  tone="none"
+                  className="size-9 bg-current/10"
+                  iconClassName="size-4"
+                />
                 <span className="min-w-0">
                   <span className="block font-black text-sm">
                     {option.label}

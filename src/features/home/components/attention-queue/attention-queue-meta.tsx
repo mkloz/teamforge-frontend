@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 
 type QueueTone = "amber" | "muted" | "teal";
@@ -15,21 +16,24 @@ interface AttentionQueueMetaProps {
 
 export function AttentionQueueTypeLabel({
   children,
+  className,
   icon: Icon,
   tone = "muted",
 }: AttentionQueueMetaProps) {
   return (
-    <span
+    <StatusPill
+      icon={Icon}
+      size="xs"
+      surface="soft"
+      textCase="upper"
+      tone={tone === "muted" ? "neutral" : tone}
       className={cn(
-        "inline-flex h-5 items-center gap-1 rounded-full px-2 font-black text-micro uppercase leading-none",
-        tone === "teal" && "bg-forge-teal/8 text-forge-teal",
-        tone === "amber" && "bg-spark-amber/10 text-spark-amber",
-        tone === "muted" && "bg-muted/70 text-muted-foreground",
+        "h-5 px-2 font-black text-micro tracking-normal",
+        className,
       )}
     >
-      <Icon className="size-3" aria-hidden="true" />
       {children}
-    </span>
+    </StatusPill>
   );
 }
 

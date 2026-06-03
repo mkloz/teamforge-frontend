@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 
 import type { AttentionQueuePlan } from "./attention-queue.types";
 import {
@@ -49,9 +50,7 @@ export function ProposedPlanQueueItem({
         className="flex min-w-0 items-center justify-between gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <div className="flex min-w-0 flex-1 items-start gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-spark-amber/10 text-spark-amber">
-            <PlanActionIcon className="size-5" aria-hidden="true" />
-          </div>
+          <IconTile icon={PlanActionIcon} size="lg" tone="amber" />
           <div className="min-w-0 flex-1">
             <p className="truncate font-black text-foreground text-sm transition-colors duration-150 group-hover:text-spark-amber">
               {group.plan.title}

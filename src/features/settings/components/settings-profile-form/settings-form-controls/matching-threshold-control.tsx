@@ -1,5 +1,6 @@
 import { Button } from "@/shared/components/ui/button";
 import { Slider } from "@/shared/components/ui/slider";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 
 const MATCHING_THRESHOLD_PRESETS = [
   { value: 0, label: "Open" },
@@ -33,9 +34,14 @@ export function MatchingThresholdControl({
             limits can slow things down.
           </p>
         </div>
-        <div className="rounded-full border border-forge-teal/20 bg-forge-teal/8 px-3 py-1 font-bold text-forge-teal text-sm">
+        <StatusPill
+          size="md"
+          tone="teal"
+          surface="soft"
+          className="px-3 py-1 text-sm"
+        >
           {valueLabel}
-        </div>
+        </StatusPill>
       </div>
 
       <Slider

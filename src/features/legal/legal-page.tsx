@@ -30,6 +30,9 @@ import {
 import { Footer } from "@/features/landing/components/footer";
 import { Navbar } from "@/features/landing/components/navbar";
 import { buttonVariants } from "@/shared/components/ui/button-variants";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { Notice } from "@/shared/components/ui/notice";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 
 type LegalPageKind = "privacy" | "terms";
@@ -417,15 +420,17 @@ export function LegalPage({ kind }: LegalPageProps) {
                   {copy.summary}
                 </p>
 
-                <div className="mt-6 flex max-w-3xl items-start gap-3 rounded-2xl border border-spark-amber/25 bg-spark-amber/8 p-4">
-                  <BadgeCheck
-                    className="mt-0.5 size-4 shrink-0 text-spark-amber"
-                    aria-hidden="true"
-                  />
-                  <p className="font-semibold text-ink/80 text-sm leading-relaxed">
+                <Notice
+                  tone="warning"
+                  size="lg"
+                  icon={<BadgeCheck className="size-4" aria-hidden="true" />}
+                  className="mt-6 max-w-3xl"
+                  contentClassName="text-ink/80"
+                >
+                  <p className="font-semibold text-sm leading-relaxed">
                     {copy.notice}
                   </p>
-                </div>
+                </Notice>
               </div>
 
               <aside className="rounded-2xl border border-border/70 bg-card/55 p-4 lg:sticky lg:top-6">
@@ -477,10 +482,9 @@ function LegalBadge({ kind }: { kind: LegalPageKind }) {
   const Icon = kind === "privacy" ? ShieldCheck : Scale;
 
   return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-forge-teal/20 bg-forge-teal/8 px-3 py-1 font-bold text-forge-teal text-xs">
-      <Icon className="size-3.5" aria-hidden="true" />
+    <StatusPill icon={Icon} tone="teal" size="sm">
       {kind === "privacy" ? "Privacy" : "Terms"}
-    </span>
+    </StatusPill>
   );
 }
 
@@ -493,13 +497,14 @@ function LegalSectionBlock({ section }: { section: LegalSection }) {
       className="legal-section-containment grid scroll-mt-24 gap-5 border-border/70 border-b py-7 lg:grid-cols-[minmax(16rem,20rem)_minmax(0,1fr)] lg:gap-10"
     >
       <div className="flex min-w-0 items-start gap-3">
-        <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-xl border border-forge-teal/20 bg-forge-teal/8 text-forge-teal">
-          <SectionIcon
-            className="size-3.5"
-            strokeWidth={1.5}
-            aria-hidden="true"
-          />
-        </span>
+        <IconTile
+          icon={SectionIcon}
+          size="sm"
+          shape="square"
+          bordered
+          className="mt-0.5 size-6 rounded-xl bg-forge-teal/8"
+          iconClassName="size-3.5"
+        />
         <h2 className="max-w-sm text-balance font-black text-ink text-xl leading-tight">
           {section.heading}
         </h2>

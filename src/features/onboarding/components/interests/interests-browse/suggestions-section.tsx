@@ -1,4 +1,5 @@
 import { Fingerprint, ListChecks } from "lucide-react";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import type { Interest } from "@/shared/schemas";
 import type { PersonalityType } from "@/shared/schemas/enums";
 
@@ -33,12 +34,16 @@ export function SuggestionsSection({
       countClassName="text-slate-muted/70"
       className="mb-5 overflow-hidden rounded-xl border border-slate-muted/10 bg-canvas p-0.5"
       trailing={
-        <div className="flex shrink-0 items-center gap-1 rounded-full border border-spark-amber/20 bg-spark-amber/10 px-1.5 py-1 text-spark-amber shadow-none sm:gap-1.5 sm:px-2.5">
-          <Fingerprint size={10} className="opacity-70" />
-          <span className="font-extrabold font-sans text-xs uppercase leading-none tracking-wider">
-            {personalityType}
-          </span>
-        </div>
+        <StatusPill
+          icon={Fingerprint}
+          size="sm"
+          textCase="upper"
+          tone="amber"
+          className="px-1.5 py-1 font-extrabold shadow-none sm:px-2.5"
+          iconClassName="opacity-70"
+        >
+          {personalityType}
+        </StatusPill>
       }
     >
       <div className="px-2.5 pt-1 pb-3 sm:px-4 sm:pb-4">

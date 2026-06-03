@@ -1,11 +1,12 @@
 import type { QueryKey } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 import { useUnreadNotificationCount } from "@/features/notifications/hooks/use-unread-notification-count";
 import { useAuthSessionState } from "@/shared/api/auth-session-state";
 import { appQueryClient } from "@/shared/api/query-client";
 import { invalidateNotificationSurfaces } from "@/shared/api/query-invalidation";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import { realtimeClient } from "@/shared/api/realtime-client";
 import { useUnreadAppBadge } from "@/shared/hooks/use-unread-app-badge";
 import { useUnreadDocumentTitleBadge } from "@/shared/hooks/use-unread-document-title-badge";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
@@ -42,11 +43,15 @@ const PWA_RESUME_QUERY_KEYS = [
   ["explore-groups"],
 ] as const satisfies readonly QueryKey[];
 
+let pwaRuntimeRefreshInFlight: Promise<void> | null = null;
+let lastPwaRuntimeRefreshAt = 0;
+
 export function PwaAuthenticatedRuntime() {
   return (
     <>
       <AppBadgeRuntime />
       <PwaServiceWorkerMessageRuntime />
+      <PwaRealtimeConnectRefreshRuntime />
       <PwaResumeRefreshRuntime />
     </>
   );
@@ -121,6 +126,11 @@ function isAppVisibleAndOnline() {
   return document.visibilityState !== "hidden" && navigator.onLine;
 }
 
+function resetPwaRuntimeSurfaceRefresh() {
+  pwaRuntimeRefreshInFlight = null;
+  lastPwaRuntimeRefreshAt = 0;
+}
+
 async function refreshPwaResumeQueries() {
   await Promise.all(
     PWA_RESUME_QUERY_KEYS.map((queryKey) =>
@@ -132,71 +142,89 @@ async function refreshPwaResumeQueries() {
   );
 }
 
-function PwaResumeRefreshRuntime() {
+function refreshPwaRuntimeSurfaces(reason: string) {
+  if (!isAppVisibleAndOnline() || pwaRuntimeRefreshInFlight) {
+    return;
+  }
+
+  const now = Date.now();
+
+  if (now - lastPwaRuntimeRefreshAt < PWA_RESUME_REFRESH_COOLDOWN_MS) {
+    return;
+  }
+
+  lastPwaRuntimeRefreshAt = now;
+  recordPwaReconnectRefresh("running", reason);
+
+  const refreshPromise = refreshPwaResumeQueries()
+    .then(() => {
+      recordPwaReconnectRefresh("success", reason);
+      return undefined;
+    })
+    .catch((error: unknown) => {
+      recordPwaReconnectRefresh("error", reason, error);
+      warnInDevelopment(`PWA runtime refresh failed after ${reason}.`, error);
+      return undefined;
+    });
+
+  pwaRuntimeRefreshInFlight = refreshPromise;
+
+  void refreshPromise.finally(() => {
+    if (pwaRuntimeRefreshInFlight === refreshPromise) {
+      pwaRuntimeRefreshInFlight = null;
+    }
+  });
+}
+
+function PwaRealtimeConnectRefreshRuntime() {
   const { isAuthenticated } = useAuthSessionState();
-  const inFlightRefreshRef = useRef<Promise<void> | null>(null);
-  const lastRefreshAtRef = useRef(0);
 
   useEffect(() => {
     if (!isAuthenticated) {
-      inFlightRefreshRef.current = null;
-      lastRefreshAtRef.current = 0;
       return undefined;
     }
 
-    function refreshAfterResume(reason: string) {
-      if (!isAppVisibleAndOnline() || inFlightRefreshRef.current) {
+    let hasEstablishedRealtimeConnection = realtimeClient.isConnected();
+
+    return realtimeClient.onConnect(() => {
+      if (!hasEstablishedRealtimeConnection) {
+        hasEstablishedRealtimeConnection = true;
         return;
       }
 
-      const now = Date.now();
+      refreshPwaRuntimeSurfaces("socket reconnect");
+    });
+  }, [isAuthenticated]);
 
-      if (now - lastRefreshAtRef.current < PWA_RESUME_REFRESH_COOLDOWN_MS) {
-        return;
-      }
+  return null;
+}
 
-      lastRefreshAtRef.current = now;
-      recordPwaReconnectRefresh("running", reason);
+function PwaResumeRefreshRuntime() {
+  const { isAuthenticated } = useAuthSessionState();
 
-      const refreshPromise = (async () => {
-        try {
-          await refreshPwaResumeQueries();
-          recordPwaReconnectRefresh("success", reason);
-        } catch (error) {
-          recordPwaReconnectRefresh("error", reason, error);
-          warnInDevelopment(
-            `PWA resume refresh failed after ${reason}.`,
-            error,
-          );
-        }
-      })();
-
-      inFlightRefreshRef.current = refreshPromise;
-
-      void refreshPromise.finally(() => {
-        if (inFlightRefreshRef.current === refreshPromise) {
-          inFlightRefreshRef.current = null;
-        }
-      });
+  useEffect(() => {
+    if (!isAuthenticated) {
+      resetPwaRuntimeSurfaceRefresh();
+      return undefined;
     }
 
     function handleFocus() {
-      refreshAfterResume("window focus");
+      refreshPwaRuntimeSurfaces("window focus");
     }
 
     function handleOnline() {
-      refreshAfterResume("network reconnect");
+      refreshPwaRuntimeSurfaces("network reconnect");
     }
 
     function handlePageShow(event: PageTransitionEvent) {
       if (event.persisted) {
-        refreshAfterResume("page restore");
+        refreshPwaRuntimeSurfaces("page restore");
       }
     }
 
     function handleVisibilityChange() {
       if (document.visibilityState === "visible") {
-        refreshAfterResume("app foreground");
+        refreshPwaRuntimeSurfaces("app foreground");
       }
     }
 

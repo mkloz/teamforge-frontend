@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Tags, X } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import type { Interest } from "@/shared/schemas";
 import { TagPill } from "./tag-pill";
 
@@ -41,9 +42,13 @@ export function SelectionShelf({
           <div className="mb-4 flex items-center gap-2">
             {isSearching ? (
               <>
-                <div className="flex size-5 items-center justify-center rounded-md bg-forge-teal/10 text-forge-teal">
-                  <Tags className="size-3" />
-                </div>
+                <IconTile
+                  icon={Tags}
+                  tone="teal"
+                  size="xs"
+                  shape="square"
+                  iconClassName="size-3"
+                />
                 <p className="font-bold font-sans text-forge-teal text-xs">
                   Related to your picks ({youMightAlsoLike.length})
                 </p>

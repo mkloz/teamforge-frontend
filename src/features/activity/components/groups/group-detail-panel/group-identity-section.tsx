@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import dayjs from "dayjs";
+import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
   CalendarDays,
@@ -10,7 +11,6 @@ import {
   UserCheck,
   UsersRound,
 } from "lucide-react";
-import type { ReactNode } from "react";
 import type {
   Group,
   GroupStatus,
@@ -19,6 +19,8 @@ import type {
 import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import { Avatar } from "@/shared/components/common/avatar";
 import { Button } from "@/shared/components/ui/button";
+import { FactItem } from "@/shared/components/ui/fact-item";
+import type { IconTileTone } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
 import type { ImageMedia } from "@/shared/schemas/media";
 import { formatPanelToken } from "./lib/constants";
@@ -205,15 +207,15 @@ function GroupFactList({
     0,
     visibleCapacitySegments,
   );
-  const facts: CompactFactProps[] = [
+  const facts: GroupFactProps[] = [
     {
-      icon: <UsersRound className="size-4" />,
+      icon: UsersRound,
       label: "Members",
       value: `${memberCount}/${maxMembers}`,
       tone: "teal" as const,
     },
     {
-      icon: <CalendarDays className="size-4" />,
+      icon: CalendarDays,
       label: "Created",
       value: createdLabel.replace("Created ", ""),
       tone: "amber" as const,
@@ -222,7 +224,7 @@ function GroupFactList({
 
   if (activity?.city) {
     facts.splice(1, 0, {
-      icon: <MapPin className="size-4" />,
+      icon: MapPin,
       label: "Area",
       value: activity.city,
       tone: "muted",
@@ -242,7 +244,13 @@ function GroupFactList({
     <div className="flex flex-col gap-3 border-border/70 border-y py-3">
       <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
         {facts.map((fact) => (
-          <CompactFact key={fact.label} {...fact} />
+          <FactItem
+            key={fact.label}
+            icon={fact.icon}
+            iconTone={fact.tone}
+            label={fact.label}
+            value={fact.value}
+          />
         ))}
       </dl>
 
@@ -282,35 +290,11 @@ function GroupFactList({
 
 const CAPACITY_SEGMENT_KEYS = ["1", "2", "3", "4", "5", "6", "7", "8"];
 
-interface CompactFactProps {
-  icon: ReactNode;
+interface GroupFactProps {
+  icon: LucideIcon;
   label: string;
-  tone: "amber" | "muted" | "teal";
+  tone: Extract<IconTileTone, "amber" | "muted" | "teal">;
   value: string;
-}
-
-function CompactFact({ icon, label, tone, value }: CompactFactProps) {
-  return (
-    <div className="flex min-w-0 items-center gap-2">
-      <span
-        className={cn(
-          "flex size-8 shrink-0 items-center justify-center rounded-lg",
-          tone === "teal" && "bg-forge-teal/10 text-forge-teal",
-          tone === "amber" && "bg-spark-amber/10 text-spark-amber",
-          tone === "muted" && "bg-slate-muted/10 text-slate-muted",
-        )}
-        aria-hidden="true"
-      >
-        {icon}
-      </span>
-      <div className="min-w-0 flex-1">
-        <dt className="text-slate-muted text-xs">{label}</dt>
-        <dd className="wrap-break-word font-semibold text-ink text-sm leading-snug">
-          {value}
-        </dd>
-      </div>
-    </div>
-  );
 }
 
 function getAccessDisplay(activity: NonNullable<Group["activity"]>) {
@@ -318,20 +302,20 @@ function getAccessDisplay(activity: NonNullable<Group["activity"]>) {
 
   if (activity.visibility === "PUBLIC") {
     return {
-      icon: <Globe2 className="size-4" />,
+      icon: Globe2,
       label: activity.access === "OPEN" ? "Open" : `Request · ${visibility}`,
     };
   }
 
   if (activity.visibility === "FRIENDS_ONLY") {
     return {
-      icon: <UserCheck className="size-4" />,
+      icon: UserCheck,
       label: "Friends only",
     };
   }
 
   return {
-    icon: <Lock className="size-4" />,
+    icon: Lock,
     label: visibility,
   };
 }

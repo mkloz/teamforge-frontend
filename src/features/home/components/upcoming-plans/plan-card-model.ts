@@ -1,41 +1,41 @@
-import { Calendar, CheckCircle2, Clock } from "lucide-react";
-import type { ElementType } from "react";
+import { Calendar, CheckCircle2, Clock, type LucideIcon } from "lucide-react";
 import type { PlannedGroup } from "@/features/home/lib/home-contract";
+import type { StatusPillTone } from "@/shared/components/ui/status-pill";
 import type { PlanStatus } from "@/shared/schemas";
 
 export const planStatusConfig: Record<
   PlanStatus,
-  { label: string; classes: string; icon: ElementType }
+  { label: string; icon: LucideIcon; tone: StatusPillTone }
 > = {
   CONFIRMED: {
     label: "Confirmed",
-    classes: "text-forge-teal",
     icon: CheckCircle2,
+    tone: "teal",
   },
   PROPOSED: {
     label: "Proposed",
-    classes: "text-spark-amber",
     icon: Clock,
+    tone: "amber",
   },
   DRAFT: {
     label: "Draft",
-    classes: "text-muted-foreground",
     icon: Calendar,
+    tone: "neutral",
   },
   IN_PROGRESS: {
     label: "In progress",
-    classes: "text-forge-teal",
     icon: Clock,
+    tone: "teal",
   },
   COMPLETED: {
     label: "Completed",
-    classes: "text-muted-foreground",
     icon: CheckCircle2,
+    tone: "neutral",
   },
   CANCELLED: {
     label: "Cancelled",
-    classes: "text-destructive",
     icon: Calendar,
+    tone: "destructive",
   },
 };
 

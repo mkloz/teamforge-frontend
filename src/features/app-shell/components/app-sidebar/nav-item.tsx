@@ -3,6 +3,7 @@ import {
   type AppNavigationItem,
   isAppNavigationItemActive,
 } from "@/features/app-shell/lib/app-navigation";
+import { CountBadge } from "@/shared/components/ui/count-badge";
 import {
   Tooltip,
   TooltipContent,
@@ -61,15 +62,17 @@ export function NavItem({ item, pathname }: NavItemProps) {
             />
 
             {hasBadge && (
-              <span
-                className={cn(
-                  "type-signature-label absolute -top-1.5 -right-1.5 z-10 flex items-center justify-center rounded-full border border-spark-amber/40 bg-canvas font-black text-spark-amber leading-none shadow-[inset_0_0_0_999px_color-mix(in_srgb,var(--color-spark-amber)_16%,transparent)] ring-2 ring-canvas",
-                  badge > 9 ? "h-4 min-w-5 px-1" : "size-4 p-0",
-                )}
+              <CountBadge
                 aria-hidden="true"
-              >
-                {badge > 9 ? "9+" : badge}
-              </span>
+                count={badge}
+                max={9}
+                size="xs"
+                tone="amber"
+                className={cn(
+                  "type-signature-label absolute -top-1.5 -right-1.5 z-10 h-4 min-w-4 ring-2 ring-canvas",
+                  badge > 9 ? "min-w-5 px-1" : "p-0",
+                )}
+              />
             )}
           </div>
           <span className="sr-only">{item.label}</span>

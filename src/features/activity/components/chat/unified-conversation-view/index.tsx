@@ -1,4 +1,4 @@
-import { AlertTriangle, RefreshCw, WifiOff } from "lucide-react";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 import type { RefObject } from "react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PlanChangeDialog } from "@/features/activity/components/groups/group-detail-panel/plan-section/plan-change-dialog";
@@ -12,6 +12,8 @@ import type {
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
 import { Button } from "@/shared/components/ui/button";
+import { Notice } from "@/shared/components/ui/notice";
+import { OfflineNotice } from "@/shared/components/ui/offline-notice";
 import { ChatStatusBar } from "./chat-status-bar";
 import { CompletedReviewGate } from "./completed-banner";
 import { MessageSelectionToolbar } from "./message-selection-toolbar";
@@ -374,48 +376,52 @@ function ConversationMessageErrorBanner({
   onRetry?: () => Promise<void> | void;
 }) {
   return (
-    <div
-      className="flex items-center justify-between gap-3 border-spark-amber/20 border-b bg-spark-amber/10 px-4 py-2 text-spark-amber text-xs"
+    <Notice
       role="status"
-    >
-      <span className="flex min-w-0 items-center gap-2 font-medium">
+      tone="warning"
+      size="xs"
+      icon={
         <AlertTriangle
           aria-hidden="true"
           className="size-4 shrink-0 text-spark-amber"
         />
-        <span className="truncate">
-          Some messages did not load. Retry to refresh this thread.
-        </span>
+      }
+      iconClassName="mt-0"
+      action={
+        onRetry ? (
+          <Button
+            className="h-7 shrink-0 px-2"
+            size="xs"
+            variant="accentGhost"
+            onClick={() => void onRetry()}
+          >
+            <RefreshCw size={13} />
+            Retry
+          </Button>
+        ) : null
+      }
+      className="items-center rounded-none border-spark-amber/20 border-x-0 border-t-0 bg-spark-amber/10 px-4 py-2 text-spark-amber"
+      contentClassName="font-medium"
+    >
+      <span className="block truncate">
+        Some messages did not load. Retry to refresh this thread.
       </span>
-      {onRetry ? (
-        <Button
-          className="h-7 shrink-0 px-2"
-          size="xs"
-          variant="accentGhost"
-          onClick={() => void onRetry()}
-        >
-          <RefreshCw size={13} />
-          Retry
-        </Button>
-      ) : null}
-    </div>
+    </Notice>
   );
 }
 
 function ConversationOfflineBanner() {
   return (
-    <div
-      className="flex items-center gap-2 border-spark-amber/20 border-b bg-spark-amber/10 px-4 py-2 text-spark-amber text-xs"
-      role="status"
+    <OfflineNotice
+      size="xs"
+      iconClassName="mt-0"
+      className="items-center rounded-none border-spark-amber/20 border-x-0 border-t-0 bg-spark-amber/10 px-4 py-2 text-spark-amber"
+      contentClassName="font-medium"
     >
-      <WifiOff
-        aria-hidden="true"
-        className="size-4 shrink-0 text-spark-amber"
-      />
-      <span className="font-medium">
+      <span>
         <span className="font-black text-spark-amber">Offline.</span> Cached
         messages stay visible; new updates resume when you reconnect.
       </span>
-    </div>
+    </OfflineNotice>
   );
 }

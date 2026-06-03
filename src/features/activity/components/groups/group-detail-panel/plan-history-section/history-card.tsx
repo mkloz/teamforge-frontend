@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import type { PlanHistoryItem } from "@/features/activity/lib/activity-contract";
 import { PlanCover } from "@/shared/components/common/plan-cover";
 import { Button } from "@/shared/components/ui/button";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 import {
   categoryColors,
@@ -76,32 +77,24 @@ export function HistoryCard({
                 {item.title}
               </h4>
               {item.rating ? (
-                <div className="flex shrink-0 items-center gap-1 rounded-md bg-spark-amber/10 px-1.5 py-0.5">
-                  <Star className="size-3 fill-spark-amber text-spark-amber" />
-                  <span className="font-bold text-spark-amber text-xs">
-                    {item.rating}
-                  </span>
-                </div>
+                <StatusPill
+                  icon={Star}
+                  iconClassName="size-3 fill-spark-amber"
+                  tone="none"
+                  className="rounded-md border-0 bg-spark-amber/10 px-1.5 text-spark-amber text-xs"
+                >
+                  {item.rating}
+                </StatusPill>
               ) : null}
             </div>
 
             <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-              <span
-                className={cn(
-                  "rounded-full border px-2 py-0.5 font-bold text-micro",
-                  categoryColors[item.category],
-                )}
-              >
+              <StatusPill tone="none" className={categoryColors[item.category]}>
                 {formatPanelToken(item.category)}
-              </span>
-              <span
-                className={cn(
-                  "rounded-full border px-2 py-0.5 font-bold text-micro",
-                  statusColors[item.status],
-                )}
-              >
+              </StatusPill>
+              <StatusPill tone="none" className={statusColors[item.status]}>
                 {statusLabel}
-              </span>
+              </StatusPill>
             </div>
           </div>
         </div>

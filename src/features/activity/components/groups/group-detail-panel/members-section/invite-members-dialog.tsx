@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
 import { Input } from "@/shared/components/ui/input";
+import { Notice } from "@/shared/components/ui/notice";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { cn } from "@/shared/lib/utils";
 
@@ -101,12 +102,18 @@ export function InviteMembersDialog({
 
         <div className="flex flex-col gap-4 px-6 py-5">
           {inviteError ? (
-            <div className="flex items-center gap-3 rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-3">
-              <ErrorInviteSendFailedVisual className="h-8 w-auto shrink-0 text-foreground" />
-              <p className="font-medium text-destructive text-sm leading-relaxed">
-                {inviteError}
-              </p>
-            </div>
+            <Notice
+              role="alert"
+              tone="danger"
+              size="md"
+              icon={
+                <ErrorInviteSendFailedVisual className="h-8 w-auto text-foreground" />
+              }
+              className="items-center gap-3 rounded-lg"
+              iconClassName="mt-0"
+            >
+              {inviteError}
+            </Notice>
           ) : null}
 
           <div>

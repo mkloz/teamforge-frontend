@@ -4,6 +4,7 @@ import type {
   GroupStatus,
   MemberRole,
 } from "@/features/activity/lib/activity-contract";
+import { OfflineNotice } from "@/shared/components/ui/offline-notice";
 
 import { ConfirmGroupActionButton } from "./confirm-group-action-button";
 import { canDisbandGroup, isGroupActionsLocked } from "./group-action-rules";
@@ -72,11 +73,14 @@ export function ActionsSection({
       )}
 
       {!isOnline && !actionsLocked ? (
-        <div className="rounded-xl border border-border/70 bg-muted/20 px-4 py-3">
-          <p className="font-medium text-slate-muted text-sm">
-            Reconnect before changing group membership.
-          </p>
-        </div>
+        <OfflineNotice
+          withIcon={false}
+          tone="neutral"
+          size="md"
+          className="border-border/70 bg-muted/20 px-4 text-slate-muted"
+        >
+          Reconnect before changing group membership.
+        </OfflineNotice>
       ) : null}
 
       {actionsLocked ? (

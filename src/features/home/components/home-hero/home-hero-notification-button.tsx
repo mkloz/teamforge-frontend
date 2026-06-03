@@ -2,6 +2,7 @@ import { Bell } from "lucide-react";
 import { useNotificationsDrawerState } from "@/features/notifications/hooks/use-notifications-drawer-state";
 import { useUnreadNotificationCount } from "@/features/notifications/hooks/use-unread-notification-count";
 import { Button } from "@/shared/components/ui/button";
+import { CountBadge } from "@/shared/components/ui/count-badge";
 
 export function HomeHeroNotificationButton() {
   const { count: unreadNotifications } = useUnreadNotificationCount();
@@ -24,12 +25,14 @@ export function HomeHeroNotificationButton() {
     >
       <Bell className="size-5" aria-hidden="true" />
       {unreadNotifications > 0 ? (
-        <span
-          className="absolute -top-1.5 -right-1.5 z-10 flex h-5 min-w-5 items-center justify-center rounded-full border border-spark-amber/40 bg-canvas px-1 font-black text-spark-amber text-xs shadow-[inset_0_0_0_999px_color-mix(in_srgb,var(--color-spark-amber)_16%,transparent)] ring-2 ring-canvas"
+        <CountBadge
           aria-hidden="true"
-        >
-          {unreadNotifications}
-        </span>
+          count={unreadNotifications}
+          max={99}
+          size="md"
+          tone="amber"
+          className="absolute -top-1.5 -right-1.5 z-10 bg-canvas ring-2 ring-canvas"
+        />
       ) : null}
     </Button>
   );

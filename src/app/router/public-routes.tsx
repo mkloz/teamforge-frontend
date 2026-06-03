@@ -36,6 +36,12 @@ const downloadPageModule = createLazyRouteModule(() =>
   })),
 );
 
+const iconNoticeVariantsPageModule = createLazyRouteModule(() =>
+  import("@/features/design-system/icon-notice-variants-page").then((m) => ({
+    default: m.IconNoticeVariantsPage,
+  })),
+);
+
 const DOWNLOAD_PREVIEW_IMAGES = {
   android: {
     sizes: "(min-width: 640px) 17rem, min(20rem, calc(100vw - 3rem))",
@@ -239,6 +245,12 @@ const downloadRoute = createRoute({
   }),
 });
 
+const iconNoticeVariantsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/design-system/icon-notice-variants",
+  component: createLazyPageRoute(iconNoticeVariantsPageModule.Component),
+});
+
 const privacyRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/privacy",
@@ -364,6 +376,7 @@ const activateAccountRoute = createRoute({
 export const publicRoutes = [
   landingRoute,
   downloadRoute,
+  ...(import.meta.env.DEV ? [iconNoticeVariantsRoute] : []),
   privacyRoute,
   termsRoute,
   authRoute,
@@ -377,6 +390,7 @@ export const publicRoutes = [
 export const publicRouteModules = [
   landingPageModule,
   downloadPageModule,
+  ...(import.meta.env.DEV ? [iconNoticeVariantsPageModule] : []),
   privacyPageModule,
   termsPageModule,
   loginPageModule,

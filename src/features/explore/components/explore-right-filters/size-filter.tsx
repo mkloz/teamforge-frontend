@@ -1,6 +1,7 @@
 import { FILTER_BOUNDARIES } from "@/features/explore/constants/explore.constants";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 import { Slider } from "@/shared/components/ui/slider";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 
 export function SizeFilter() {
   const { sizeRange, setSizeRange } = useExploreRouteState();
@@ -16,9 +17,9 @@ export function SizeFilter() {
     <section className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between">
         <h4 className="font-bold text-foreground text-sm">Room size</h4>
-        <span className="rounded-full bg-muted/35 px-2 py-0.5 font-bold text-muted-foreground text-xs tabular-nums">
+        <StatusPill tone="neutral" size="xs" surface="soft" numeric>
           {sizeRange[0]}–{sizeRange[1]}
-        </span>
+        </StatusPill>
       </div>
 
       <div className="px-1 pt-0.5">

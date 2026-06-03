@@ -12,11 +12,13 @@ import {
   getConversationTitle,
   getMessagePreviewText,
 } from "@/features/activity/lib/unify-conversations";
+import { UnreadBadge } from "@/shared/components/common/unread-badge";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 import { GroupIndicators } from "./group-indicators";
 import { MsgStatusIcon } from "./msg-status-icon";
 import { SubtitleIcon } from "./subtitle-icon";
-import { UnreadBadge } from "./unread-badge";
 
 const UnifiedTypingIndicator = lazy(() =>
   import("@/features/activity/components/chat/unified-typing-indicator").then(
@@ -25,6 +27,8 @@ const UnifiedTypingIndicator = lazy(() =>
     }),
   ),
 );
+
+const titleCounterPillClassName = "min-w-5";
 
 interface ContentSectionProps {
   item: UnifiedConversation;
@@ -135,15 +139,21 @@ export const ContentSection = memo(
             !isCompact &&
             !showSavedCountInIndicatorRow &&
             !showInlineGroupIndicators ? (
-              <span className="type-signature-label inline-flex shrink-0 items-center gap-0.5 rounded-full bg-forge-teal/8 px-1.5 py-0.5 font-bold text-forge-teal leading-none">
-                <Bookmark className="size-2.5 fill-forge-teal/15" />
+              <StatusPill
+                icon={Bookmark}
+                iconClassName="fill-forge-teal/15"
+                tone="teal"
+                size="signature"
+                surface="soft"
+                className={titleCounterPillClassName}
+              >
                 {item.savedMessageCount}
-              </span>
+              </StatusPill>
             ) : null}
             {isNotes ? (
-              <span className="type-signature-label inline-flex shrink-0 items-center rounded-full bg-spark-amber/10 px-1.5 py-0.5 font-bold text-spark-amber leading-none">
+              <StatusPill tone="amber" size="signature" surface="soft">
                 Private
-              </span>
+              </StatusPill>
             ) : null}
             {hasTitleUtilityCluster ? (
               <span className="ml-auto flex shrink-0 items-center gap-1">
@@ -163,13 +173,18 @@ export const ContentSection = memo(
                 {item.isPinned ? titlePinButton : null}
                 {showStaticPinnedIcon ? (
                   <>
-                    <span className="inline-flex size-4 shrink-0 items-center justify-center text-forge-teal">
+                    <IconTile
+                      size="2xs"
+                      shape="circle"
+                      tone="none"
+                      className="text-forge-teal"
+                    >
                       <Pin
                         className="size-3 rotate-45"
                         aria-hidden="true"
                         strokeWidth={2.2}
                       />
-                    </span>
+                    </IconTile>
                     <span className="sr-only">Pinned chat</span>
                   </>
                 ) : null}
@@ -291,13 +306,17 @@ function getPendingProposalCount(item: UnifiedConversation) {
 
 function MutedIndicator() {
   return (
-    <span
-      className="inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-slate-muted/10 text-slate-muted/70"
+    <IconTile
+      aria-hidden={false}
+      size="2xs"
+      shape="circle"
+      tone="muted"
+      className="text-slate-muted/70"
       title="Notifications muted"
     >
       <BellOff aria-hidden="true" className="size-2.5" strokeWidth={2.2} />
       <span className="sr-only">Notifications muted</span>
-    </span>
+    </IconTile>
   );
 }
 

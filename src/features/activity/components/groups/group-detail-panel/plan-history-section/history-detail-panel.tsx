@@ -1,12 +1,8 @@
-import {
-  Banknote,
-  CalendarClock,
-  type LucideIcon,
-  MapPin,
-  ShieldCheck,
-} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { Banknote, CalendarClock, MapPin, ShieldCheck } from "lucide-react";
 import type { PlanHistoryItem } from "@/features/activity/lib/activity-contract";
 import { formatPlanLocation } from "@/features/activity/lib/plan-location";
+import { FactItem } from "@/shared/components/ui/fact-item";
 import { formatPanelToken } from "../lib/constants";
 
 interface HistoryDetailPanelProps {
@@ -42,11 +38,19 @@ export function HistoryDetailPanel({ id, item }: HistoryDetailPanelProps) {
 
   return (
     <div id={id} className="col-span-2 mt-3 border-border/70 border-t pt-3">
-      <div className="grid gap-3">
+      <dl className="grid gap-3">
         {facts.map((fact) => (
-          <HistoryDetailFact key={fact.label} {...fact} />
+          <FactItem
+            key={fact.label}
+            href={fact.href}
+            icon={fact.icon}
+            iconTone="muted"
+            label={fact.label}
+            linkClassName="underline-offset-4"
+            value={fact.value}
+          />
         ))}
-      </div>
+      </dl>
     </div>
   );
 }
@@ -56,41 +60,6 @@ interface HistoryDetailFactProps {
   icon: LucideIcon;
   label: string;
   value: string;
-}
-
-function HistoryDetailFact({
-  href,
-  icon: Icon,
-  label,
-  value,
-}: HistoryDetailFactProps) {
-  return (
-    <div className="flex min-w-0 gap-2.5">
-      <span
-        className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-slate-muted/10 text-slate-muted"
-        aria-hidden="true"
-      >
-        <Icon className="size-4" />
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="text-slate-muted text-xs">{label}</p>
-        <p className="wrap-break-word font-semibold text-ink text-sm leading-snug">
-          {href ? (
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-forge-teal underline-offset-4 hover:underline"
-            >
-              {value}
-            </a>
-          ) : (
-            value
-          )}
-        </p>
-      </div>
-    </div>
-  );
 }
 
 function formatHistoryDateTime(dateTime: string | null) {

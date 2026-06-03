@@ -1,6 +1,8 @@
 import { Users } from "lucide-react";
 import { EmptyInviteCandidatesVisual } from "@/assets/empty-state/empty-invite-candidates";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { Slider } from "@/shared/components/ui/slider";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { ManualFriendInviteRow } from "./manual-friend-invite-row";
 import { ManualFriendsSkeleton } from "./manual-friends-skeleton";
 import type { ManualGroupDetailsProps } from "./types";
@@ -29,9 +31,14 @@ export function ManualGroupDetails({
               {inviteLimit !== 1 ? "s" : ""}.
             </p>
           </div>
-          <span className="rounded-lg border border-spark-amber/20 bg-spark-amber/10 px-2.5 py-1 font-black text-spark-amber text-xs tabular-nums">
+          <StatusPill
+            size="sm"
+            tone="amber"
+            numeric
+            className="rounded-lg font-black"
+          >
             {selectedInviteeCount + 1}/{fixedSize}
-          </span>
+          </StatusPill>
         </div>
 
         <div className="flex flex-col gap-1">
@@ -56,9 +63,12 @@ export function ManualGroupDetails({
       </div>
 
       <div className="flex gap-3 rounded-lg border border-border/35 bg-muted/20 p-3">
-        <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-spark-amber/10">
-          <Users size={16} className="text-spark-amber" />
-        </div>
+        <IconTile
+          icon={Users}
+          size="lg"
+          tone="amber"
+          className="mt-0.5 size-9"
+        />
         <div className="flex flex-col gap-1">
           <h5 className="font-black text-foreground text-sm tracking-tight">
             Pick who to invite

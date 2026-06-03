@@ -13,6 +13,7 @@ import type {
 } from "@/features/home/lib/home-contract";
 import { buildHomeNextMove } from "@/features/home/lib/home-insights";
 import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { scrollWindowToTop } from "@/shared/lib/scroll-to-top";
 import { cn } from "@/shared/lib/utils";
 import type { ExploreGroup, Invite } from "@/shared/schemas";
@@ -146,12 +147,17 @@ export function HomeHeroView({
 
           <div className="relative z-10 flex min-w-0 flex-col gap-4 pl-2 sm:gap-5 sm:pl-4">
             <div className="flex items-start gap-3 sm:gap-4">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-forge-teal/20 bg-forge-teal/10 text-forge-teal shadow-sm sm:size-12 md:size-14">
+              <IconTile
+                bordered
+                size="lg"
+                tone="teal"
+                className="size-10 shadow-sm sm:size-12 md:size-14"
+              >
                 <HomeHeroMoveIcon
                   kind={nextMove.kind}
                   className="size-5 sm:size-5.5 md:size-6"
                 />
-              </div>
+              </IconTile>
 
               <div className="min-w-0 flex-1">
                 <p className="font-black text-forge-teal text-xs">

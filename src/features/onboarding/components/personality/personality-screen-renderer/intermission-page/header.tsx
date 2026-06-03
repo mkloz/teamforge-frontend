@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { fadeUpItem } from "@/features/onboarding/constants/motion";
 import { AnimatedCircularProgressBar } from "@/shared/components/ui/animated-circular-progress-bar";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 
 interface IntermissionHeaderProps {
   totalQuestions: number;
@@ -29,9 +30,14 @@ export function IntermissionHeader({
           className="size-full text-transparent"
         />
         <div className="absolute inset-0 flex items-center justify-center pr-4 sm:pr-7">
-          <div className="z-10 flex size-9 items-center justify-center rounded-lg border border-border bg-card text-forge-teal shadow-forge-teal/5 shadow-lg transition-transform duration-300 group-hover:scale-105 sm:h-11 sm:w-11 dark:shadow-xl">
-            <Icon size={18} strokeWidth={2.5} className="sm:size-5.25" />
-          </div>
+          <IconTile
+            icon={Icon}
+            tone="none"
+            size="lg"
+            bordered
+            className="z-10 size-9 bg-card text-forge-teal shadow-forge-teal/5 shadow-lg transition-transform duration-300 group-hover:scale-105 sm:h-11 sm:w-11 dark:shadow-xl"
+            iconClassName="size-4.5 sm:size-5.25"
+          />
         </div>
       </div>
 

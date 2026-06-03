@@ -3,6 +3,7 @@ import { useId } from "react";
 
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { useAddressAutocomplete } from "@/shared/hooks/use-address-autocomplete";
 import { getBrowserDocumentBody } from "@/shared/lib/browser-environment";
 import type { LocationValue } from "@/shared/lib/maps/location.types";
@@ -100,9 +101,13 @@ export function AddressAutocomplete({
           {label}
           {required ? <span className="ml-1 text-destructive">*</span> : null}
         </Label>
-        <span className="rounded-full border border-slate-muted/30 bg-canvas px-2 py-0.5 font-semibold text-ink text-micro">
+        <StatusPill
+          tone="none"
+          size="xs"
+          className="border-slate-muted/30 bg-canvas font-semibold text-ink"
+        >
           {badge}
-        </span>
+        </StatusPill>
       </div>
 
       <div ref={inputShellRef} className="relative">

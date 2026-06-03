@@ -8,9 +8,6 @@ export const ACTIVITY_MENU_ITEM_CLASS =
 
 export const ACTIVITY_MENU_SEPARATOR_CLASS = "my-1 bg-border/55";
 
-export const ACTIVITY_MENU_ICON_CLASS =
-  "flex size-7 shrink-0 items-center justify-center rounded-sm border border-border/40 bg-background/65 text-muted-foreground";
-
 export function getActivityPopupPanelClass(className?: string) {
   return cn(
     "border border-border/60 bg-canvas/97 text-ink backdrop-blur-xl dark:bg-forge-deep-surface/97",

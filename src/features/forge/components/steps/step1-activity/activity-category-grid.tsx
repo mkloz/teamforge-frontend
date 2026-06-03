@@ -4,6 +4,7 @@ import { Check } from "lucide-react";
 import { ACTIVITIES } from "@/features/forge/constants/forge.constants";
 import { buildCategoryFitHighlights } from "@/features/forge/lib/forge-template-suggestions";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
 import { ICON_MAP } from "./activity-icon-map";
 
@@ -82,18 +83,20 @@ export function ActivityCategoryGrid({
             >
               <div className="flex min-w-0 items-center justify-between gap-2">
                 <div className="flex min-w-0 flex-1 items-center gap-2">
-                  <span
+                  <IconTile
+                    icon={Icon}
+                    size="sm"
+                    tone={
+                      selected ? "amber" : personalised ? "teal" : "neutral"
+                    }
                     className={cn(
-                      "flex size-7 shrink-0 items-center justify-center rounded-lg transition-colors duration-200",
-                      selected
-                        ? "bg-spark-amber/15 text-spark-amber shadow-sm ring-1 ring-spark-amber/20"
-                        : personalised
-                          ? "bg-forge-teal/10 text-forge-teal group-hover:bg-forge-teal/15"
-                          : "bg-muted text-muted-foreground group-hover:bg-forge-teal/10 group-hover:text-forge-teal",
+                      selected && "shadow-sm ring-1 ring-spark-amber/20",
+                      personalised && "group-hover:bg-forge-teal/15",
+                      !selected &&
+                        !personalised &&
+                        "bg-muted group-hover:bg-forge-teal/10 group-hover:text-forge-teal",
                     )}
-                  >
-                    <Icon size={15} />
-                  </span>
+                  />
                   <p
                     className={cn(
                       "min-w-0 text-pretty font-semibold leading-tight",
@@ -110,9 +113,14 @@ export function ActivityCategoryGrid({
                 </div>
 
                 {selected && (
-                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-spark-amber/25 bg-spark-amber/15 text-spark-amber">
-                    <Check size={12} strokeWidth={3} />
-                  </span>
+                  <IconTile
+                    bordered
+                    icon={Check}
+                    shape="circle"
+                    size="xs"
+                    tone="amber"
+                    className="bg-spark-amber/15"
+                  />
                 )}
               </div>
 

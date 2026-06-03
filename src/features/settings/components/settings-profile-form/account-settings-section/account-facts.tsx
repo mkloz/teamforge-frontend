@@ -5,6 +5,7 @@ import {
   Mail,
   ShieldCheck,
 } from "lucide-react";
+import { FactItem } from "@/shared/components/ui/fact-item";
 import type { User } from "@/shared/schemas";
 import { formatMemberSince } from "./account-formatters";
 
@@ -18,17 +19,16 @@ function AccountFact({
   value: string;
 }) {
   return (
-    <div className="flex gap-3 border-border border-b py-4 last:border-b-0">
-      <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-slate-muted">
-        <Icon size={16} strokeWidth={2} />
-      </div>
-      <div className="min-w-0">
-        <p className="font-semibold text-slate-muted text-xs">{label}</p>
-        <p className="wrap-break-word mt-1 font-semibold text-ink text-sm">
-          {value}
-        </p>
-      </div>
-    </div>
+    <FactItem
+      icon={Icon}
+      iconTone="neutral"
+      iconTileClassName="mt-0.5 bg-muted"
+      label={label}
+      labelClassName="font-semibold"
+      value={value}
+      valueClassName="mt-1"
+      className="items-start gap-3 border-border border-b py-4 last:border-b-0"
+    />
   );
 }
 
@@ -44,7 +44,7 @@ export function AccountFacts({
     currentUser?.authProvider === "GOOGLE" ? "Google" : "Email";
 
   return (
-    <div className="border-border border-y lg:border-y-0 lg:border-l lg:pl-6">
+    <dl className="border-border border-y lg:border-y-0 lg:border-l lg:pl-6">
       <AccountFact
         icon={Mail}
         label="Email"
@@ -61,6 +61,6 @@ export function AccountFacts({
         label="Member since"
         value={formatMemberSince(currentUser?.createdAt)}
       />
-    </div>
+    </dl>
   );
 }

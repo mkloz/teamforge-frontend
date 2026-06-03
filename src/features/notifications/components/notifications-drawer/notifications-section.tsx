@@ -1,4 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import type { Notification } from "@/shared/schemas";
 
 import { NotificationItem } from "./notification-item";
@@ -37,9 +38,15 @@ export function NotificationsSection({
       <div className="sticky top-0 z-10 border-border/60 border-b bg-canvas px-5 py-3">
         <div className="flex items-center justify-between gap-3">
           <p className="font-semibold text-slate-muted text-xs">{label}</p>
-          <span className="rounded-full bg-slate-muted/10 px-2 py-0.5 font-semibold text-slate-muted text-xs tabular-nums">
+          <StatusPill
+            tone="muted"
+            size="xs"
+            surface="soft"
+            numeric
+            className="font-semibold text-xs"
+          >
             {items.length}
-          </span>
+          </StatusPill>
         </div>
       </div>
       <ul className="divide-y divide-border/55">

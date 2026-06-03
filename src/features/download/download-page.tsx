@@ -20,6 +20,7 @@ import { Footer } from "@/features/landing/components/footer";
 import { Navbar } from "@/features/landing/components/navbar";
 import { useLandingAuthActions } from "@/features/landing/hooks/use-landing-auth-actions";
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { usePwaDisplayMode } from "@/shared/hooks/use-pwa-display-mode";
 import { usePwaInstallPrompt } from "@/shared/hooks/use-pwa-install-prompt";
@@ -707,13 +708,15 @@ export function DownloadPage() {
 
                 <div className="mt-8 border-forge-teal/20 border-y py-5">
                   <div className="flex items-start gap-4">
-                    <div className="flex size-11 shrink-0 items-center justify-center rounded-full border border-forge-teal/20 bg-forge-teal/8 text-forge-teal">
-                      <Download
-                        size={20}
-                        strokeWidth={1.5}
-                        aria-hidden="true"
-                      />
-                    </div>
+                    <IconTile
+                      bordered
+                      icon={Download}
+                      shape="circle"
+                      size="lg"
+                      tone="teal"
+                      className="size-11 bg-forge-teal/8"
+                      iconClassName="size-5"
+                    />
                     <div>
                       <p className="font-bold text-ink">
                         Browser install, app-like focus
@@ -1144,13 +1147,14 @@ function InstallStep({ index, step }: InstallStepProps) {
       {/* Content */}
       <div className="min-w-0 flex-1">
         <h3 className="flex items-center gap-2 font-bold text-ink text-lg leading-tight">
-          <span className="flex size-6 shrink-0 items-center justify-center rounded-full border border-forge-teal/15 bg-forge-teal/8 text-forge-teal">
-            <StepIcon
-              className="size-3.5"
-              strokeWidth={1.5}
-              aria-hidden="true"
-            />
-          </span>
+          <IconTile
+            bordered
+            icon={StepIcon}
+            shape="circle"
+            size="sm"
+            tone="teal"
+            className="size-6 bg-forge-teal/8"
+          />
           <span>{step.title}</span>
         </h3>
         <p className="mt-2 max-w-xl text-pretty text-slate-muted leading-relaxed">
@@ -1378,9 +1382,15 @@ function CapabilityTile({ capability, index, total }: CapabilityTileProps) {
       )}
     >
       <div className="flex items-start justify-between gap-4">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-full border border-forge-teal/15 bg-forge-teal/8 text-forge-teal">
-          <CapIcon size={22} strokeWidth={1.5} aria-hidden="true" />
-        </div>
+        <IconTile
+          bordered
+          icon={CapIcon}
+          shape="circle"
+          size="xl"
+          tone="teal"
+          className="bg-forge-teal/8"
+          iconClassName="size-5.5"
+        />
         <span
           className="font-extrabold text-3xl text-slate-muted/30 leading-none"
           aria-hidden="true"

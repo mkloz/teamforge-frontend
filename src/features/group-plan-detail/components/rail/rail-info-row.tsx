@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { FactItem } from "@/shared/components/ui/fact-item";
 import { cn } from "@/shared/lib/utils";
 
 interface RailInfoRowProps {
@@ -15,21 +16,19 @@ export function RailInfoRow({
   value,
 }: RailInfoRowProps) {
   return (
-    <div className="flex items-center gap-3.5">
-      <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-forge-teal/10">
-        <Icon className="size-4 text-forge-teal" aria-hidden="true" />
-      </div>
-      <div className="min-w-0">
-        <p className="font-semibold text-muted-foreground text-xs">{label}</p>
-        <p
-          className={cn(
-            "font-black text-foreground text-sm leading-snug",
-            truncateValue && "truncate",
-          )}
-        >
-          {value}
-        </p>
-      </div>
-    </div>
+    <FactItem
+      icon={Icon}
+      iconShape="square"
+      iconSize="lg"
+      iconTileClassName="size-9"
+      label={label}
+      labelClassName="font-semibold text-muted-foreground"
+      value={value}
+      valueClassName={cn(
+        "font-black text-foreground",
+        truncateValue && "truncate",
+      )}
+      className="gap-3.5"
+    />
   );
 }

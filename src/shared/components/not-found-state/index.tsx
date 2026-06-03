@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { TeamForgeLogo } from "@/assets/logo";
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
 
 import { SoloActivityScene } from "./solo-activity-scene";
@@ -36,9 +37,14 @@ export function NotFoundState({
           className="relative z-20 inline-flex w-fit items-center gap-3 rounded-xl text-ink/70 text-sm transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
           aria-label="Go to TeamForge start page"
         >
-          <span className="flex size-9 items-center justify-center rounded-lg border border-border bg-card/80 shadow-sm">
+          <IconTile
+            tone="none"
+            size="lg"
+            bordered
+            className="size-9 bg-card/80 shadow-sm"
+          >
             <TeamForgeLogo className="size-6" showBackground={false} />
-          </span>
+          </IconTile>
           <span className="font-black">TeamForge</span>
         </Link>
 

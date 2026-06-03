@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
 
 interface FeedbackStateProps {
@@ -52,15 +53,15 @@ export function FeedbackState({
             {visual}
           </div>
         ) : icon ? (
-          <div
-            className={cn(
-              "mx-auto mb-5 flex size-12 items-center justify-center rounded-2xl",
-              iconClassName,
-            )}
+          <IconTile
+            tone="none"
+            size="xl"
+            shape="square"
+            className={cn("mx-auto mb-5 rounded-2xl", iconClassName)}
             aria-hidden="true"
           >
             {icon}
-          </div>
+          </IconTile>
         ) : null}
 
         <h1 id={headingId} className="font-bold text-2xl text-ink">

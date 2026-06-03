@@ -9,6 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/shared/components/ui/accordion";
+import { CountBadge } from "@/shared/components/ui/count-badge";
 import { cn } from "@/shared/lib/utils";
 import type { Interest } from "@/shared/schemas";
 import {
@@ -63,9 +64,9 @@ export function CategorySection({
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="mr-2 ml-auto flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-forge-teal px-1.5 font-bold font-sans text-white text-xs leading-none shadow-sm"
+            className="mr-2 ml-auto shrink-0"
           >
-            {selectedInCategory}
+            <CountBadge count={selectedInCategory} size="md" tone="teal" />
           </motion.span>
         )}
       </AccordionTrigger>

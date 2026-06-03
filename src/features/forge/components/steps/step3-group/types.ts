@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
 import type {
   FixedGroupSize,
   ForgeMode,
@@ -42,7 +42,7 @@ export interface Step3GroupProps {
 export interface ModeButtonProps {
   active: boolean;
   onClick: () => void;
-  icon: ReactNode;
+  icon: LucideIcon;
   title: string;
   description: string;
   activeColor: "primary" | "accent";

@@ -53,12 +53,16 @@ const TOASTER_PROPS = {
   visibleToasts: 3,
   toastOptions: {
     classNames: {
+      actionButton:
+        "col-start-2! mt-0.5! flex! h-9! w-full! justify-self-stretch! items-center! justify-center! gap-2! rounded-lg! border-2! border-forge-teal! bg-forge-teal! px-4! font-bold! text-sm! text-white! leading-none! shadow-button-primary! transition-all! duration-150! ease-out! hover:-translate-y-0.5! hover:shadow-button-primary! focus-visible:ring-2! focus-visible:ring-forge-teal! focus-visible:ring-offset-2! focus-visible:ring-offset-card! active:translate-y-0! active:shadow-none! sm:w-fit! sm:justify-self-end!",
       closeButton:
         "border-current bg-card font-bold text-current transition-colors hover:bg-background",
-      content: "gap-1",
+      content: "min-w-0 gap-1 pr-2",
       description: "font-medium text-current text-sm leading-5",
-      title: "font-black text-sm leading-5",
-      toast: "rounded-xl border shadow-lg",
+      icon: "mt-0.5",
+      title: "text-pretty font-black text-sm leading-5",
+      toast:
+        "grid! grid-cols-[auto_minmax(0,1fr)]! items-start! gap-x-3! gap-y-3! rounded-2xl! border! p-4! shadow-2xl! shadow-black/12!",
     },
   },
 } satisfies ToasterProps;

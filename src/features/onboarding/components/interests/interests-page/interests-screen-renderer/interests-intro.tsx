@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowRight, Lock, RefreshCw, Users } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 
 interface InterestsIntroProps {
   backLabel: string;
@@ -53,9 +54,12 @@ export function InterestsIntro({
       <div className="mb-8 flex w-full flex-col gap-4 text-left">
         {BENEFITS.map(({ icon: Icon, text }) => (
           <div key={text} className="flex items-start gap-3.5">
-            <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-forge-teal/5">
-              <Icon size={14} strokeWidth={2.5} className="text-forge-teal" />
-            </div>
+            <IconTile
+              icon={Icon}
+              size="md"
+              tone="teal"
+              className="mt-0.5 bg-forge-teal/5"
+            />
             <p className="font-sans text-slate-muted text-sm leading-relaxed">
               {text}
             </p>

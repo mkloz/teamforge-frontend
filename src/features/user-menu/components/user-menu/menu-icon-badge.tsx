@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 
 interface MenuIconBadgeProps {
   icon: LucideIcon;
@@ -6,8 +7,6 @@ interface MenuIconBadgeProps {
 
 export function MenuIconBadge({ icon: Icon }: MenuIconBadgeProps) {
   return (
-    <span className="flex size-8 shrink-0 items-center justify-center rounded-lg text-forge-teal">
-      <Icon size={15} aria-hidden="true" />
-    </span>
+    <IconTile icon={Icon} size="md" tone="none" className="text-forge-teal" />
   );
 }

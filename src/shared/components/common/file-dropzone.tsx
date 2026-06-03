@@ -9,6 +9,8 @@ import {
 } from "react";
 
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import {
   Tooltip,
   TooltipContent,
@@ -157,7 +159,7 @@ export function FileDropzone({
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
         className={cn(
-          "group relative flex h-auto w-full cursor-pointer overflow-hidden whitespace-normal border border-border/55 bg-card p-0 text-left transition-all duration-200 focus-visible:ring-forge-teal/35",
+          "group relative flex h-auto w-full cursor-pointer overflow-hidden whitespace-normal border border-border/55 border-dashed bg-card p-0 text-left transition-all duration-200 focus-visible:ring-forge-teal/35",
           getVariantClasses(variant),
           isDragging
             ? "border-forge-teal/60 bg-forge-teal/5 ring-2 ring-forge-teal/15"
@@ -185,9 +187,12 @@ export function FileDropzone({
         >
           <div className="flex min-w-0 items-start gap-4">
             {/* Icon container */}
-            <div
+            <IconTile
+              tone="none"
+              size="lg"
+              shape="square"
               className={cn(
-                "flex shrink-0 items-center justify-center rounded-md transition-all duration-200",
+                "transition-all duration-200",
                 isCover
                   ? "size-9 bg-white/14 text-white group-hover:bg-white/20"
                   : "size-9 bg-forge-teal/10 text-forge-teal group-hover:bg-forge-teal/15",
@@ -205,7 +210,7 @@ export function FileDropzone({
                   strokeWidth={2}
                 />
               )}
-            </div>
+            </IconTile>
 
             {/* Text area */}
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -220,16 +225,19 @@ export function FileDropzone({
                 </p>
 
                 {isDragging && (
-                  <span
+                  <StatusPill
+                    tone="none"
+                    size="xs"
+                    textCase="upper"
                     className={cn(
-                      "type-signature-label shrink-0 rounded-full px-2 py-0.5 font-semibold uppercase tracking-wide",
+                      "type-signature-label px-2 py-0.5 font-semibold tracking-wide",
                       isCover
                         ? "bg-white/20 text-white"
                         : "bg-forge-teal text-white",
                     )}
                   >
                     Drop
-                  </span>
+                  </StatusPill>
                 )}
               </div>
 
@@ -246,9 +254,11 @@ export function FileDropzone({
             </div>
 
             {!showMeta && actionLabel && (
-              <span
+              <StatusPill
+                tone="none"
+                size="md"
                 className={cn(
-                  "ml-auto hidden shrink-0 items-center rounded-full border px-4 py-1.5 font-semibold text-xs transition-all duration-200 sm:inline-flex",
+                  "ml-auto hidden px-4 py-1.5 font-semibold transition-all duration-200 sm:inline-flex",
                   isCover
                     ? "border-white/28 bg-white/12 text-white group-hover:bg-white/22"
                     : "border-forge-teal/25 bg-forge-teal/8 text-forge-teal group-hover:border-forge-teal/40 group-hover:bg-forge-teal/14",
@@ -258,40 +268,46 @@ export function FileDropzone({
                 )}
               >
                 {actionLabel}
-              </span>
+              </StatusPill>
             )}
           </div>
 
           {showMeta && (
             <div className="hidden min-w-0 flex-wrap items-center gap-1.5 sm:flex">
-              <span
+              <StatusPill
+                tone="none"
+                size="xs"
                 className={cn(
-                  "inline-flex items-center rounded-full border px-2.5 py-0.5 font-medium text-micro leading-none",
+                  "font-medium",
                   isCover
                     ? "border-white/18 bg-white/10 text-white/80"
                     : "border-border/70 bg-muted/70 text-slate-muted",
                 )}
               >
                 {getDropHint(variant, multiple)}
-              </span>
+              </StatusPill>
 
               {helper && (
-                <span
+                <StatusPill
+                  tone="none"
+                  size="xs"
                   className={cn(
-                    "inline-flex min-w-0 max-w-full truncate rounded-full border px-2.5 py-0.5 font-medium text-micro leading-none",
+                    "min-w-0 max-w-full truncate font-medium",
                     isCover
                       ? "border-white/12 bg-white/6 text-white/60"
                       : "border-border/50 bg-muted/40 text-slate-muted/75",
                   )}
                 >
                   {helper}
-                </span>
+                </StatusPill>
               )}
 
               {actionLabel && (
-                <span
+                <StatusPill
+                  tone="none"
+                  size="md"
                   className={cn(
-                    "ml-auto hidden shrink-0 items-center rounded-full border px-4 py-1.5 font-semibold text-xs transition-all duration-200 sm:inline-flex",
+                    "ml-auto hidden px-4 py-1.5 font-semibold transition-all duration-200 sm:inline-flex",
                     isCover
                       ? "border-white/28 bg-white/12 text-white group-hover:bg-white/22"
                       : "border-forge-teal/25 bg-forge-teal/8 text-forge-teal group-hover:border-forge-teal/40 group-hover:bg-forge-teal/14",
@@ -301,7 +317,7 @@ export function FileDropzone({
                   )}
                 >
                   {actionLabel}
-                </span>
+                </StatusPill>
               )}
             </div>
           )}
@@ -354,9 +370,14 @@ function FilePreviewItem({ file, index, onRemove }: FilePreviewItemProps) {
 
   return (
     <div className="flex items-center gap-3 rounded-lg border border-border/55 bg-card px-3 py-2.5">
-      <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-forge-teal/10 text-forge-teal">
-        <Icon size={15} strokeWidth={2} />
-      </div>
+      <IconTile
+        icon={Icon}
+        tone="teal"
+        size="lg"
+        shape="square"
+        className="size-9"
+        iconClassName="size-3.75"
+      />
       <div className="min-w-0 flex-1">
         <p className="truncate font-semibold text-ink text-xs">{file.name}</p>
         <p className="text-micro text-slate-muted">

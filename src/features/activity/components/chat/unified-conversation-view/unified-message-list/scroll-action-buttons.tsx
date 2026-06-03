@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle, ChevronDown } from "lucide-react";
 import { memo } from "react";
 import { Button } from "@/shared/components/ui/button";
+import { CountBadge } from "@/shared/components/ui/count-badge";
 
 interface ScrollActionButtonsProps {
   showScrollToBottom: boolean;
@@ -67,9 +68,13 @@ export const ScrollActionButtons = memo(
               >
                 <ChevronDown className="size-5 transition-transform group-hover:translate-y-0.5" />
                 {newMessageCount > 0 && (
-                  <div className="type-signature-label absolute -top-1 -right-1 z-10 flex min-w-4 items-center justify-center rounded-full border border-spark-amber/40 bg-canvas px-1 font-black text-spark-amber leading-4 shadow-[inset_0_0_0_999px_color-mix(in_srgb,var(--color-spark-amber)_16%,transparent)] ring-2 ring-canvas">
-                    {newMessageCountLabel}
-                  </div>
+                  <CountBadge
+                    count={newMessageCount}
+                    max={99}
+                    size="xs"
+                    tone="amber"
+                    className="type-signature-label absolute -top-1 -right-1 z-10 h-4 min-w-4 bg-canvas px-1 leading-4 ring-2 ring-canvas"
+                  />
                 )}
               </Button>
             </motion.div>

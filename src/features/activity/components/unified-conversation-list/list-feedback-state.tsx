@@ -1,6 +1,7 @@
-import { RefreshCw, WifiOff } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { ErrorNetworkRetryVisual } from "@/assets/error-state/error-network-retry";
 import { Button } from "@/shared/components/ui/button";
+import { OfflineNotice } from "@/shared/components/ui/offline-notice";
 import { cn } from "@/shared/lib/utils";
 
 interface ConversationListErrorStateProps {
@@ -63,21 +64,18 @@ export function ConversationListOfflineBanner({
   className,
 }: ConversationListOfflineBannerProps) {
   return (
-    <div
+    <OfflineNotice
+      size="xs"
       className={cn(
-        "mx-4 my-2 flex items-start gap-2 rounded-xl border border-spark-amber/30 bg-spark-amber/10 px-3 py-2 text-left",
+        "mx-4 my-2 border-spark-amber/30 bg-spark-amber/10",
         className,
       )}
-      role="status"
+      contentClassName="font-medium text-ink leading-relaxed"
     >
-      <WifiOff
-        aria-hidden="true"
-        className="mt-0.5 size-4 shrink-0 text-spark-amber"
-      />
-      <p className="font-medium text-ink text-xs leading-relaxed">
+      <p>
         <span className="font-black text-spark-amber">Offline.</span> Cached
         chats stay visible; new updates will resume when you reconnect.
       </p>
-    </div>
+    </OfflineNotice>
   );
 }

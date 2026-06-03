@@ -16,6 +16,7 @@ import {
 } from "@/features/settings/components/settings-profile-form/settings-form-controls";
 import { normalizeTrustScore } from "@/features/settings/components/settings-profile-form/settings-formatters";
 import { Button } from "@/shared/components/ui/button";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import type { NotificationPreferences, User } from "@/shared/schemas";
 
 interface MatchingSettingsSectionProps {
@@ -122,12 +123,15 @@ export function MatchingSettingsSection({
         <div className="mt-3 flex flex-wrap gap-2">
           {currentUser?.interests?.length ? (
             currentUser.interests.slice(0, 12).map((interest) => (
-              <span
+              <StatusPill
                 key={interest.id}
-                className="rounded-full border border-forge-teal/20 bg-forge-teal/8 px-3 py-1 font-semibold text-forge-teal text-xs"
+                size="sm"
+                tone="teal"
+                surface="outline"
+                className="bg-forge-teal/8 px-3 py-1 font-semibold"
               >
                 {interest.name}
-              </span>
+              </StatusPill>
             ))
           ) : (
             <div className="flex min-h-24 w-full items-center justify-center text-center">

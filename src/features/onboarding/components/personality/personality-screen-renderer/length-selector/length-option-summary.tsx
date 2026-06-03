@@ -1,4 +1,5 @@
 import type { TestLength } from "@/features/onboarding/data/ipip-questions";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 
 import type { getLengthOptionViewModel } from "./length-selector-options";
 
@@ -22,9 +23,14 @@ export function LengthOptionSummary({
           {viewModel.config.label}
         </span>
         {isAdjust && viewModel.isComplete ? (
-          <span className="shrink-0 rounded-full bg-forge-teal px-1.5 py-px font-bold font-sans text-white text-xs">
+          <StatusPill
+            size="xs"
+            tone="teal"
+            surface="solid"
+            className="px-1.5 py-px font-sans text-xs"
+          >
             Done
-          </span>
+          </StatusPill>
         ) : null}
       </div>
       <span className="font-bold font-sans text-muted-foreground text-xs">

@@ -1,5 +1,6 @@
 import { Bell, MessageSquare, UsersRound } from "lucide-react";
 
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
 
 import type { NextActionItem } from "./types";
@@ -29,7 +30,7 @@ function getNextActions(isManual: boolean): NextActionItem[] {
   return [
     {
       active: true,
-      icon: <UsersRound size={16} />,
+      icon: UsersRound,
       text: isManual
         ? "Accepted invites appear in the group hub."
         : "See who joined and keep the group moving.",
@@ -37,12 +38,12 @@ function getNextActions(isManual: boolean): NextActionItem[] {
       tone: isManual ? "amber" : "teal",
     },
     {
-      icon: <MessageSquare size={16} />,
+      icon: MessageSquare,
       text: "Settle timing, links, and small details.",
       title: "Start chat",
     },
     {
-      icon: <Bell size={16} />,
+      icon: Bell,
       text: isManual
         ? "You will be notified when someone accepts."
         : "Members get their group updates from here.",
@@ -62,18 +63,17 @@ function NextCard({
 
   return (
     <div className="min-w-0 lg:flex lg:gap-3">
-      <div
+      <IconTile
+        icon={icon}
+        tone={active ? (isAmber ? "amber" : "none") : "neutral"}
+        size="md"
+        bordered={active && isAmber}
         className={cn(
-          "mb-2 flex size-8 shrink-0 items-center justify-center rounded-lg lg:mb-0",
-          active
-            ? isAmber
-              ? "border border-spark-amber/25 bg-spark-amber/12 text-spark-amber"
-              : "bg-forge-teal text-primary-foreground"
-            : "bg-muted text-muted-foreground",
+          "mb-2 lg:mb-0",
+          active && isAmber && "bg-spark-amber/12",
+          active && !isAmber && "bg-forge-teal text-primary-foreground",
         )}
-      >
-        {icon}
-      </div>
+      />
       <div className="min-w-0">
         <p
           className={cn(

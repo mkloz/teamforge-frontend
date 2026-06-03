@@ -516,8 +516,16 @@ npm run build
 
 | Variable | Purpose |
 |----------|---------|
-| `VITE_API_URL` | Backend API base URL |
+| `VITE_API_URL` | Backend REST API base URL, including `/api/v1` |
 | `VITE_GOOGLE_CLIENT_ID` | Google OAuth client ID |
+| `VITE_GOOGLE_MAPS_API_KEY` | Google Maps key for location autocomplete |
+| `VITE_GIPHY_API_KEY` | Giphy Web SDK key for chat GIF search |
+
+Local development uses `http://localhost:6969/api/v1`. Production uses the
+public browser path, for example `https://api.mkloz.com/teamforge/api/v1`.
+Realtime still uses the `/realtime` Socket.IO namespace; the client derives the
+transport path from `VITE_API_URL`, so that production API URL maps to
+`/teamforge/socket.io`.
 
 ---
 

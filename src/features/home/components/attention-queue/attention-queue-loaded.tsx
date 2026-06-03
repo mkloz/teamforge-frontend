@@ -5,6 +5,7 @@ import type {
   HomeInvitationView,
   HomePanel,
 } from "@/features/home/lib/home-route";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 
 import { ActionErrorBanner } from "./action-error-banner";
 import { formatQueueCount } from "./attention-queue-formatters";
@@ -144,12 +145,15 @@ function AttentionQueueView({
           queueSummary.length > 0 ? (
             <div className="flex max-w-72 flex-wrap justify-end gap-1.5">
               {queueSummary.map((item) => (
-                <span
+                <StatusPill
                   key={item}
-                  className="rounded-full border border-forge-teal/25 bg-forge-teal/8 px-2 py-1 font-black text-forge-teal text-xs leading-none"
+                  size="sm"
+                  tone="teal"
+                  surface="soft"
+                  className="px-2 font-black"
                 >
                   {item}
-                </span>
+                </StatusPill>
               ))}
             </div>
           ) : null

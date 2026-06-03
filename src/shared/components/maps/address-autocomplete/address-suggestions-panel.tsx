@@ -3,6 +3,7 @@ import type { CSSProperties, RefObject } from "react";
 import { createPortal } from "react-dom";
 
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
 
 import type {
@@ -88,14 +89,17 @@ export function AddressSuggestionsPanel({
                 )}
                 contentClassName="items-start justify-start"
               >
-                <span
+                <IconTile
+                  icon={MapPin}
+                  tone="teal"
+                  size="sm"
+                  shape="square"
                   className={cn(
-                    "mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-md bg-forge-teal/8 text-forge-teal",
+                    "mt-0.5 size-6 bg-forge-teal/8",
                     active && "bg-forge-teal/12",
                   )}
-                >
-                  <MapPin size={13} strokeWidth={1.9} />
-                </span>
+                  iconClassName="size-3.25"
+                />
                 <span className="min-w-0">
                   <span className="block truncate font-semibold text-ink text-sm leading-5">
                     {suggestion.structured_formatting?.main_text ??

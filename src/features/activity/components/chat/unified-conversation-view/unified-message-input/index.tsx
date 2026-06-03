@@ -1,4 +1,4 @@
-import { Paperclip, WifiOff, X } from "lucide-react";
+import { Paperclip, X } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -6,6 +6,7 @@ import { ErrorMessageSendFailedVisual } from "@/assets/error-state/error-message
 import { getActivityPopupPanelClass } from "@/features/activity/components/activity-popup-styles";
 import type { ActivitySendMessageInput } from "@/features/activity/lib/activity-contract";
 import { Button } from "@/shared/components/ui/button";
+import { OfflineNotice } from "@/shared/components/ui/offline-notice";
 import { cn } from "@/shared/lib/utils";
 
 import { ActionTarget } from "./action-target";
@@ -123,16 +124,17 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
               )}
 
               {!composer.isOnline && (
-                <div
-                  role="status"
-                  className="flex items-center gap-2 px-3 py-2.5 text-spark-amber"
+                <OfflineNotice
+                  size="xs"
+                  iconClassName="mt-0"
+                  className="items-center border-0 bg-transparent px-3 py-2.5 text-spark-amber"
+                  contentClassName="font-medium"
                 >
-                  <WifiOff className="size-4 shrink-0" aria-hidden="true" />
-                  <p className="min-w-0 flex-1 font-medium text-xs">
+                  <p>
                     You are offline. Reconnect before sending messages or adding
                     attachments.
                   </p>
-                </div>
+                </OfflineNotice>
               )}
 
               {composer.recordingError && (

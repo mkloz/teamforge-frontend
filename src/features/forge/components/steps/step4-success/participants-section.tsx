@@ -1,6 +1,8 @@
 import { RefreshCw, Users } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 
 import { HostMemberRow } from "./host-member-row";
 import { ParticipantRow } from "./participant-row";
@@ -40,9 +42,7 @@ export function ParticipantsSection({
     <section className="flex flex-col gap-3 border-border/25 border-t pt-4">
       <div className="flex items-center justify-between gap-3 px-0.5">
         <div className="flex min-w-0 items-center gap-2">
-          <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10 text-forge-teal">
-            <Users size={14} />
-          </div>
+          <IconTile icon={Users} tone="teal" size="sm" />
           <div className="min-w-0">
             <p className="font-semibold text-foreground text-sm leading-none">
               Matched people
@@ -52,11 +52,9 @@ export function ParticipantsSection({
             </p>
           </div>
         </div>
-        <span className="inline-flex shrink-0 rounded-full border border-border/45 bg-muted/40 px-2.5 py-1">
-          <span className="font-semibold text-muted-foreground text-xs">
-            {activeCount} people
-          </span>
-        </span>
+        <StatusPill tone="neutral" size="sm" surface="soft">
+          {activeCount} people
+        </StatusPill>
       </div>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">

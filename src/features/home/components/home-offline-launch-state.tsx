@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { MessagesSquare, RefreshCw, WifiOff } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 
 interface HomeOfflineLaunchStateProps {
   onRetry: () => void;
@@ -18,9 +19,15 @@ export function HomeOfflineLaunchState({
         role="status"
         className="mx-auto grid w-full max-w-3xl gap-6 rounded-2xl border border-spark-amber/35 bg-card px-5 py-6 shadow-sm sm:px-7 sm:py-8 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start"
       >
-        <div className="flex size-14 items-center justify-center rounded-2xl border border-spark-amber/35 bg-spark-amber/12 text-spark-amber">
+        <IconTile
+          bordered
+          shape="square"
+          size="2xl"
+          tone="amber"
+          className="rounded-2xl border-spark-amber/35 bg-spark-amber/12"
+        >
           <WifiOff size={26} strokeWidth={1.8} aria-hidden="true" />
-        </div>
+        </IconTile>
 
         <div className="min-w-0">
           <p className="font-bold text-spark-amber text-xs">Offline launch</p>

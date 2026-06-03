@@ -1,6 +1,7 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { memo } from "react";
 import { PROPOSAL_STATUS_LABELS } from "@/features/activity/lib/proposal-language";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
 import type { PlanProposalStatus } from "@/shared/schemas/enums";
 import { FIELD_ICON_COMPONENTS, FIELD_LABELS } from "./proposal-constants";
@@ -39,9 +40,13 @@ export const ProposalHeader = memo(function ProposalHeader({
       onClick={onToggle}
     >
       <div className="flex min-w-0 flex-1 items-center gap-2">
-        <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-spark-amber/14 text-spark-amber">
-          <Icon className="size-3.5" />
-        </div>
+        <IconTile
+          icon={Icon}
+          size="sm"
+          shape="square"
+          tone="amber"
+          className="bg-spark-amber/14"
+        />
         <div className="min-w-0 flex-1">
           <h4 className="mb-0.5 truncate font-bold text-micro text-spark-amber/80 leading-none">
             Plan change

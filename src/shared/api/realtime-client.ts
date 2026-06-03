@@ -5,13 +5,26 @@ import type { RealtimeEventName } from "@/shared/schemas";
 
 type RealtimeConnectHandler = () => void;
 
-function buildRealtimeUrl() {
+const API_PREFIX_PATTERN = /\/api\/v\d+$/u;
+
+function getApiUrl() {
   if (!config.apiUrl) {
     return null;
   }
 
-  const apiUrl = new URL(config.apiUrl);
+  return new URL(config.apiUrl);
+}
+
+function buildRealtimeUrl(apiUrl: URL) {
   return new URL("/realtime", apiUrl.origin).toString();
+}
+
+function buildSocketPath(apiUrl: URL) {
+  const publicBasePath = apiUrl.pathname
+    .replace(/\/+$/u, "")
+    .replace(API_PREFIX_PATTERN, "");
+
+  return `${publicBasePath}/socket.io`.replace(/\/{2,}/gu, "/");
 }
 
 class RealtimeClient {
@@ -60,6 +73,10 @@ class RealtimeClient {
     };
   }
 
+  isConnected() {
+    return Boolean(this.socket?.connected);
+  }
+
   on(event: RealtimeEventName, handler: (...args: unknown[]) => void) {
     const bucket =
       this.handlers.get(event) ?? new Set<(...args: unknown[]) => void>();
@@ -82,19 +99,20 @@ class RealtimeClient {
   }
 
   private connect(token: string) {
-    const url = buildRealtimeUrl();
+    const apiUrl = getApiUrl();
 
-    if (!url) {
+    if (!apiUrl) {
       return;
     }
 
     this.disconnect();
 
-    const socket = io(url, {
+    const socket = io(buildRealtimeUrl(apiUrl), {
       autoConnect: true,
       auth: {
         token,
       },
+      path: buildSocketPath(apiUrl),
       transports: ["websocket"],
     });
 

@@ -2,11 +2,10 @@ import { Bookmark, Clock, Vote } from "lucide-react";
 import { memo, type ReactNode } from "react";
 import { PLAN_STATUS_CONFIG } from "@/features/activity/components/chat/unified-conversation-view/chat-status-bar/chat-status-plan-config";
 import type { Plan } from "@/features/activity/lib/activity-contract";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 
-const counterBadgeClassName =
-  "type-signature-label inline-flex h-4 min-w-5 shrink-0 items-center justify-center gap-0.5 rounded-full px-1.5 font-bold leading-none";
-const iconBadgeClassName =
-  "inline-flex size-4 shrink-0 items-center justify-center rounded-full";
+const counterBadgeClassName = "min-w-5";
 const indicatorIconClassName = "size-2.5";
 
 interface GroupIndicatorsProps {
@@ -43,20 +42,25 @@ export const GroupIndicators = memo(function GroupIndicators({
   const indicators = (
     <>
       {countdown && (
-        <span
-          className={`${counterBadgeClassName} bg-forge-teal/8 text-forge-teal`}
+        <StatusPill
+          icon={Clock}
+          iconClassName={indicatorIconClassName}
+          iconStrokeWidth={2.2}
+          tone="teal"
+          size="signature"
+          surface="soft"
+          className={counterBadgeClassName}
         >
-          <Clock
-            aria-hidden="true"
-            className={indicatorIconClassName}
-            strokeWidth={2.2}
-          />
           {countdown}
-        </span>
+        </StatusPill>
       )}
       {PlanStatusIcon && planStatusConfig && (
-        <span
-          className={`${iconBadgeClassName} ${planStatusConfig.badgeClass}`}
+        <IconTile
+          aria-hidden={false}
+          size="2xs"
+          shape="circle"
+          tone="none"
+          className={planStatusConfig.badgeClass}
           title={`Plan ${planStatusConfig.label.toLowerCase()}`}
         >
           <PlanStatusIcon
@@ -67,40 +71,43 @@ export const GroupIndicators = memo(function GroupIndicators({
           <span className="sr-only">
             Plan {planStatusConfig.label.toLowerCase()}
           </span>
-        </span>
+        </IconTile>
       )}
       {hasSavedMessages && (
-        <span
-          className={`${counterBadgeClassName} bg-forge-teal/8 text-forge-teal`}
+        <StatusPill
+          icon={Bookmark}
+          iconClassName={`${indicatorIconClassName} fill-forge-teal/15`}
+          iconStrokeWidth={2.2}
+          tone="teal"
+          size="signature"
+          surface="soft"
+          className={counterBadgeClassName}
         >
-          <Bookmark
-            className={`${indicatorIconClassName} fill-forge-teal/15`}
-            strokeWidth={2.2}
-          />
           {savedMessageCount}
-        </span>
+        </StatusPill>
       )}
       {hasPendingProposal && (
-        <span
-          className={`${counterBadgeClassName} bg-spark-amber/12 text-spark-amber`}
+        <StatusPill
+          icon={Vote}
+          iconClassName={indicatorIconClassName}
+          iconStrokeWidth={2.2}
+          tone="amber"
+          size="signature"
+          surface="soft"
+          className={counterBadgeClassName}
           title={
             pendingProposalCount === 1
               ? "Plan proposal needs your vote"
               : `${pendingProposalCount} plan proposals need your vote`
           }
         >
-          <Vote
-            aria-hidden="true"
-            className={indicatorIconClassName}
-            strokeWidth={2.2}
-          />
           {pendingProposalCount}
           <span className="sr-only">
             {pendingProposalCount === 1
               ? "Plan proposal needs your vote"
               : `${pendingProposalCount} plan proposals need your vote`}
           </span>
-        </span>
+        </StatusPill>
       )}
     </>
   );

@@ -7,6 +7,7 @@ import {
   type SettingsSection,
 } from "@/features/settings/lib/settings-route";
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
 
 import { SETTINGS_SECTIONS } from "./settings-sections";
@@ -133,16 +134,18 @@ function SettingsSectionNav({
                 : "text-slate-muted hover:text-ink",
             )}
           >
-            <span
+            <IconTile
+              icon={Icon}
+              tone={isActive ? "teal" : "none"}
+              size="md"
+              shape="circle"
               className={cn(
-                "flex size-8 shrink-0 items-center justify-center rounded-full transition-colors",
+                "transition-colors",
                 isActive
-                  ? "bg-forge-teal/8 text-forge-teal"
+                  ? "bg-forge-teal/8"
                   : "text-slate-muted group-hover:text-ink",
               )}
-            >
-              <Icon size={16} strokeWidth={2} />
-            </span>
+            />
             <span className="min-w-0 flex-1">
               <span
                 className={cn(

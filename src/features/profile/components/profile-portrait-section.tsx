@@ -1,5 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { BadgeCheck, Compass, Eye, Radar, TriangleAlert } from "lucide-react";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import type { ProfilePortraitInsight } from "../lib/profile-insights";
 import { ProfileSectionHeading } from "./profile-section-heading";
 
@@ -26,9 +28,9 @@ export function ProfilePortraitSection({
           <div className="flex min-w-0 flex-col gap-4">
             <div className="flex flex-wrap items-center gap-3">
               <ProfileSectionHeading>Profile sketch</ProfileSectionHeading>
-              <span className="rounded-full border border-border/70 px-2.5 py-1 font-black text-micro text-slate-muted">
+              <StatusPill tone="neutral" size="xs" className="bg-transparent">
                 {readLabel}
-              </span>
+              </StatusPill>
             </div>
             <h3 className="max-w-3xl font-black text-2xl text-ink leading-tight tracking-tight md:text-3xl">
               {portrait.title}
@@ -150,9 +152,7 @@ function PortraitDetailRow({
   return (
     <div className="min-w-0 border-border/70 border-t py-4 first:border-t-0 md:border-t-0 md:border-l md:px-4 last:md:pr-0 first:md:border-l-0 first:md:pl-0">
       <div className="flex min-w-0 items-center gap-2">
-        <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
-          <Icon className="size-3.5" aria-hidden="true" />
-        </span>
+        <IconTile icon={Icon} shape="circle" size="sm" />
         <p className="font-bold text-slate-muted text-sm">{detail.label}</p>
       </div>
       <p className="mt-2 text-pretty font-semibold text-ink/85 text-sm leading-snug">

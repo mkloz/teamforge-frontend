@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { motion } from "framer-motion";
 import { ChevronRight, type LucideIcon } from "lucide-react";
+import { CountBadge } from "@/shared/components/ui/count-badge";
 import { cn } from "@/shared/lib/utils";
 
 const subcategoryChipVariants = cva(
@@ -11,21 +12,6 @@ const subcategoryChipVariants = cva(
         collapsed:
           "border-slate-muted/15 bg-card text-slate-muted hover:border-slate-muted/30 hover:bg-canvas dark:border-white/10 hover:dark:border-white/18 hover:dark:bg-white/5",
         expanded: "border-forge-teal/30 bg-forge-teal/10 text-forge-teal",
-      },
-    },
-    defaultVariants: {
-      state: "collapsed",
-    },
-  },
-);
-
-const badgeVariants = cva(
-  "flex h-4.5 min-w-4.5 shrink-0 items-center justify-center rounded-full px-1 font-bold text-xs leading-none",
-  {
-    variants: {
-      state: {
-        collapsed: "bg-slate-muted/15 text-slate-muted",
-        expanded: "bg-forge-teal text-white shadow-sm",
       },
     },
     defaultVariants: {
@@ -62,9 +48,11 @@ export function SubcategoryChip({
       <Icon className="size-3.5" strokeWidth={2.5} />
       <span>{label}</span>
       {selectedCount > 0 && (
-        <span className={cn(badgeVariants({ state: currentState }))}>
-          {selectedCount}
-        </span>
+        <CountBadge
+          count={selectedCount}
+          size="sm"
+          tone={expanded ? "teal" : "muted"}
+        />
       )}
       <motion.span
         animate={{ rotate: expanded ? 90 : 0 }}

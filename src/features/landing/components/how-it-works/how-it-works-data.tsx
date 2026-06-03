@@ -1,6 +1,8 @@
 import { MapPin } from "lucide-react";
 import type { ReactNode } from "react";
 import { Avatar } from "@/shared/components/common/avatar";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 
 export interface Step {
@@ -19,12 +21,14 @@ export const STEPS: Step[] = [
     accent: (
       <div className="flex flex-wrap gap-2">
         {["Introverted", "Analytical", "Open", "Calm"].map((tag) => (
-          <span
+          <StatusPill
             key={tag}
-            className="rounded-full border border-forge-teal bg-forge-teal px-3 py-1 font-bold text-primary-foreground text-xs"
+            tone="teal"
+            size="sm"
+            className="border-forge-teal bg-forge-teal text-primary-foreground"
           >
             {tag}
-          </span>
+          </StatusPill>
         ))}
       </div>
     ),
@@ -36,9 +40,7 @@ export const STEPS: Step[] = [
       "Whether it's a quiet morning in a cafe, a weekend hike, or a session on the court—whatever you're in the mood for, we start with your plan.",
     accent: (
       <div className="flex max-w-xs items-center gap-3 rounded-xl border border-border bg-canvas p-3 shadow-sm">
-        <div className="rounded-lg bg-spark-amber/10 p-2">
-          <MapPin className="size-5 text-spark-amber" />
-        </div>
+        <IconTile icon={MapPin} tone="amber" size="lg" />
         <div>
           <p className="font-bold text-ink text-xs">Hiking Trip</p>
           <p className="text-slate-muted text-xs">Saturday, 10:00 AM</p>

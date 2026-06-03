@@ -8,6 +8,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { EmptyGroupFitVisual } from "@/assets/empty-state/empty-group-fit";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 
 import type { GroupFitInsight, UserGroupSignal } from "../lib/profile-insights";
 import { ProfileSectionHeading } from "./profile-section-heading";
@@ -111,9 +112,7 @@ function FitGuidance({
   return (
     <div className="flex min-w-0 flex-col gap-3 rounded-2xl border border-border/70 bg-canvas p-4">
       <div className="flex items-center gap-2 font-bold text-slate-muted text-sm">
-        <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
-          <Icon size={14} aria-hidden="true" />
-        </span>
+        <IconTile icon={Icon} shape="circle" size="sm" />
         {label}
       </div>
       <p className="font-medium text-ink/75 text-sm leading-relaxed">
@@ -135,9 +134,12 @@ function SignalRead({
   return (
     <div className="min-w-0 border-border/70 border-t pt-3 first:border-t-0 first:pt-0">
       <div className="flex min-w-0 items-center gap-2">
-        <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-forge-teal/12 text-forge-teal">
-          <Icon className="size-3" aria-hidden="true" />
-        </span>
+        <IconTile
+          icon={Icon}
+          shape="circle"
+          size="xs"
+          className="bg-forge-teal/12"
+        />
         <div className="flex min-w-0 flex-1 items-baseline justify-between gap-3">
           <p className="font-bold text-slate-muted text-sm">{label}</p>
           <p className="shrink-0 font-black text-forge-teal text-sm">

@@ -1,4 +1,5 @@
 import { Avatar } from "@/shared/components/common/avatar";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 import { ForgeOrbEyebrow, ForgeOrbPanel } from "./forge-orb-panel";
 
@@ -15,9 +16,9 @@ export function GroupCard() {
     <ForgeOrbPanel className="w-45 animate-forge-card-float-b motion-reduce:animate-none">
       <div className="mb-2.5 flex items-center justify-between">
         <ForgeOrbEyebrow>Your Group</ForgeOrbEyebrow>
-        <span className="rounded-full border border-spark-amber/20 bg-spark-amber/10 px-2 py-0.5 font-bold font-sans text-nano text-spark-amber">
+        <StatusPill tone="amber" size="xs" className="font-sans text-nano">
           94% match
-        </span>
+        </StatusPill>
       </div>
       <div className="mb-3 flex">
         {members.map((m, index) => (

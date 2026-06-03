@@ -1,3 +1,4 @@
+import type { LucideIcon } from "lucide-react";
 import {
   Banknote,
   Calendar,
@@ -10,7 +11,6 @@ import {
   PlusCircle,
   XCircle,
 } from "lucide-react";
-import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import type {
   MemberRole,
@@ -19,6 +19,10 @@ import type {
 import { formatPlanLocation } from "@/features/activity/lib/plan-location";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
+import { FactItem } from "@/shared/components/ui/fact-item";
+import type { IconTileTone } from "@/shared/components/ui/icon-tile";
+import { OfflineNotice } from "@/shared/components/ui/offline-notice";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 import {
   categoryColors,
@@ -145,14 +149,9 @@ export function PlanSection({
 
 function PlanCategoryPill({ category }: { category: Plan["category"] }) {
   return (
-    <span
-      className={cn(
-        "inline-flex shrink-0 items-center rounded-full border px-2 py-0.5 font-bold text-micro",
-        categoryColors[category],
-      )}
-    >
+    <StatusPill tone="none" className={categoryColors[category]}>
       {formatPanelToken(category)}
-    </span>
+    </StatusPill>
   );
 }
 
@@ -161,15 +160,9 @@ function PlanStatusPill({ status }: { status: Plan["status"] }) {
   const label = formatPanelToken(status);
 
   return (
-    <span
-      className={cn(
-        "inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 font-bold text-micro",
-        statusColors[status],
-      )}
-    >
-      <Icon className="size-3" />
+    <StatusPill icon={Icon} tone="none" className={statusColors[status]}>
       {label}
-    </span>
+    </StatusPill>
   );
 }
 
@@ -212,7 +205,7 @@ function PlanFactList({
 }) {
   const facts: PlanFactProps[] = [
     {
-      icon: <Calendar className="size-4" />,
+      icon: Calendar,
       label: "When",
       meta: time,
       tone: "teal" as const,
@@ -221,14 +214,14 @@ function PlanFactList({
     },
     {
       href: locationHref,
-      icon: <MapPin className="size-4" />,
+      icon: MapPin,
       label: "Where",
       tone: "muted" as const,
       value: location,
       wide: true,
     },
     {
-      icon: <Banknote className="size-4" />,
+      icon: Banknote,
       label: "Cost",
       tone: "muted" as const,
       value: cost,
@@ -254,48 +247,16 @@ function PlanFact({
   wide = false,
 }: PlanFactProps) {
   return (
-    <div
-      className={cn("flex min-w-0 items-center gap-2", wide && "col-span-2")}
-    >
-      <span
-        className={cn(
-          "flex size-8 shrink-0 items-center justify-center rounded-lg",
-          tone === "teal" && "bg-forge-teal/10 text-forge-teal",
-          tone === "amber" && "bg-spark-amber/10 text-spark-amber",
-          tone === "muted" && "bg-slate-muted/10 text-slate-muted",
-        )}
-        aria-hidden="true"
-      >
-        {icon}
-      </span>
-      <div className="min-w-0 flex-1">
-        <dt className="text-slate-muted text-xs">{label}</dt>
-        <dd
-          className={cn(
-            "wrap-break-word font-semibold text-ink text-sm leading-snug",
-          )}
-        >
-          {href ? (
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(
-                "text-forge-teal hover:underline",
-                wide && "wrap-break-word",
-              )}
-            >
-              {value}
-            </a>
-          ) : (
-            value
-          )}
-          {meta ? (
-            <span className="ml-1 font-medium text-slate-muted">{meta}</span>
-          ) : null}
-        </dd>
-      </div>
-    </div>
+    <FactItem
+      className={wide ? "col-span-2" : undefined}
+      href={href}
+      icon={icon}
+      iconTone={tone}
+      label={label}
+      linkClassName={wide ? "wrap-break-word" : undefined}
+      meta={meta}
+      value={value}
+    />
   );
 }
 
@@ -335,12 +296,14 @@ function PlanLifecycleActions({
   return (
     <div className="mt-4 flex flex-wrap gap-2">
       {hasOfflineBlock ? (
-        <p
-          role="status"
-          className="basis-full rounded-lg border border-border/70 bg-muted/30 px-3 py-2 text-slate-muted text-xs"
+        <OfflineNotice
+          withIcon={false}
+          tone="neutral"
+          size="xs"
+          className="basis-full rounded-lg border-border/70 bg-muted/30 text-slate-muted"
         >
           Reconnect before changing this plan.
-        </p>
+        </OfflineNotice>
       ) : null}
 
       {isDraftLike ? (
@@ -490,10 +453,10 @@ function PlanLifecycleActions({
 
 interface PlanFactProps {
   href?: string | null;
-  icon: ReactNode;
+  icon: LucideIcon;
   label: string;
   meta?: string;
-  tone: "amber" | "muted" | "teal";
+  tone: Extract<IconTileTone, "amber" | "muted" | "teal">;
   value: string;
   wide?: boolean;
 }

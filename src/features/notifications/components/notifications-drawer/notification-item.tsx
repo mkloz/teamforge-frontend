@@ -5,6 +5,7 @@ import {
   AvatarWithBadge,
 } from "@/shared/components/common/avatar-with-badge";
 import { Button } from "@/shared/components/ui/button";
+import { IconTile, type IconTileTone } from "@/shared/components/ui/icon-tile";
 import {
   Tooltip,
   TooltipContent,
@@ -116,7 +117,7 @@ export function NotificationItem({
       <NotificationSource
         avatarBadgeTone={config.avatarBadgeTone}
         icon={Icon}
-        iconClassName={config.iconClassName}
+        iconTone={config.iconTone}
         item={item}
         isDisabled={isBusy || isReadActionDisabled}
         isReadActionDisabled={isReadActionDisabled}
@@ -179,7 +180,7 @@ export function NotificationItem({
 interface NotificationSourceProps {
   avatarBadgeTone: AvatarBadgeTone;
   icon: LucideIcon;
-  iconClassName: string;
+  iconTone: IconTileTone;
   isDisabled: boolean;
   isReadActionDisabled: boolean;
   isTogglingRead: boolean;
@@ -190,7 +191,7 @@ interface NotificationSourceProps {
 function NotificationSource({
   avatarBadgeTone,
   icon: Icon,
-  iconClassName,
+  iconTone,
   isDisabled,
   isReadActionDisabled,
   isTogglingRead,
@@ -206,7 +207,7 @@ function NotificationSource({
         <NotificationSourceVisual
           avatarBadgeTone={avatarBadgeTone}
           icon={Icon}
-          iconClassName={iconClassName}
+          iconTone={iconTone}
           item={item}
         />
       </span>
@@ -245,14 +246,14 @@ function NotificationSource({
 interface NotificationSourceVisualProps {
   avatarBadgeTone: AvatarBadgeTone;
   icon: LucideIcon;
-  iconClassName: string;
+  iconTone: IconTileTone;
   item: Notification;
 }
 
 function NotificationSourceVisual({
   avatarBadgeTone,
   icon: Icon,
-  iconClassName,
+  iconTone,
   item,
 }: NotificationSourceVisualProps) {
   if (item.avatarUrl) {
@@ -267,14 +268,12 @@ function NotificationSourceVisual({
   }
 
   return (
-    <span
-      className={cn(
-        "flex size-10 shrink-0 items-center justify-center rounded-md",
-        iconClassName,
-      )}
-      aria-hidden="true"
-    >
-      <Icon className="size-4 shrink-0" strokeWidth={2} />
-    </span>
+    <IconTile
+      icon={Icon}
+      tone={iconTone}
+      size="lg"
+      shape="square"
+      iconClassName="size-4"
+    />
   );
 }

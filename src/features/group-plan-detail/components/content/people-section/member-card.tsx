@@ -4,6 +4,8 @@ import type { GroupPlanDetailMember } from "@/features/group-plan-detail/lib/gro
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { AdminCrownBadge } from "@/shared/components/common/admin-crown-badge";
 import { Avatar } from "@/shared/components/common/avatar";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 import { MemberAction } from "./member-action";
 
@@ -97,14 +99,24 @@ function MemberIdentity({
         {member.name}
       </h3>
       {isViewer ? (
-        <span className="shrink-0 rounded-full bg-muted px-1.5 py-0.5 font-bold text-micro text-muted-foreground">
+        <StatusPill
+          tone="neutral"
+          size="xs"
+          surface="soft"
+          className="bg-muted px-1.5"
+        >
           You
-        </span>
+        </StatusPill>
       ) : null}
       {member.personalityType ? (
-        <span className="h-4 shrink-0 rounded-full bg-forge-teal px-1.5 font-bold text-micro text-white leading-4">
+        <StatusPill
+          tone="teal"
+          size="xs"
+          surface="solid"
+          className="h-4 px-1.5 py-0 leading-4"
+        >
           {member.personalityType}
-        </span>
+        </StatusPill>
       ) : null}
     </div>
   );
@@ -151,31 +163,33 @@ interface MemberMetricProps {
 
 function MemberMetric({ icon: Icon, label, tone, value }: MemberMetricProps) {
   return (
-    <span
-      className={cn(
-        "inline-flex h-5 shrink-0 items-center gap-1 rounded-full px-1.5 font-bold text-xs",
-        tone === "teal"
-          ? "bg-forge-teal/10 text-forge-teal"
-          : "bg-muted/50 text-muted-foreground",
-      )}
+    <StatusPill
+      icon={Icon}
+      size="xs"
+      tone={tone === "teal" ? "teal" : "neutral"}
+      surface="soft"
+      className="h-5 px-1.5 text-xs"
       title={`${label} ${value}`}
     >
-      <Icon className="size-3.5" strokeWidth={1.75} aria-hidden="true" />
       <span className="sr-only">{label}</span>
       <span>{value}</span>
-    </span>
+    </StatusPill>
   );
 }
 
 function KnownConnectionIndicator({ label }: { label: string }) {
   return (
-    <span
-      className="inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-spark-amber/12 text-spark-amber"
+    <IconTile
+      icon={Handshake}
+      shape="circle"
+      size="xs"
+      tone="amber"
+      aria-hidden={false}
+      aria-label={label}
+      className="bg-spark-amber/12"
+      iconClassName="size-3.5"
       title={label}
-    >
-      <Handshake className="size-3.5" strokeWidth={1.75} aria-hidden="true" />
-      <span className="sr-only">{label}</span>
-    </span>
+    />
   );
 }
 

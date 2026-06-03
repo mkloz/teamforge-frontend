@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 
 export function HostMemberRow() {
   return (
@@ -26,9 +27,7 @@ export function HostMemberRow() {
         <span className="font-semibold text-forge-teal text-micro">
           Group owner
         </span>
-        <span className="rounded-full border border-forge-teal/25 bg-forge-teal/10 px-2 py-0.5 font-bold text-forge-teal text-micro">
-          Host
-        </span>
+        <StatusPill tone="teal">Host</StatusPill>
       </div>
     </div>
   );

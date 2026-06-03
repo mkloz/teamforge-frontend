@@ -13,7 +13,12 @@ import {
   NOTIFICATION_PREFERENCE_ITEMS,
 } from "@/features/settings/components/settings-profile-form/settings-preference-items";
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { Label } from "@/shared/components/ui/label";
+import {
+  StatusPill,
+  type StatusPillTone,
+} from "@/shared/components/ui/status-pill";
 import { Switch } from "@/shared/components/ui/switch";
 import { useWebPushSubscription } from "@/shared/hooks/use-web-push-subscription";
 import { cn } from "@/shared/lib/utils";
@@ -171,6 +176,12 @@ function WebPushDevicePreference({ isOnline }: { isOnline: boolean }) {
   const push = useWebPushSubscription();
   const status = getWebPushDeviceStatus(push);
   const StatusIcon = push.isSubscribed ? BellRing : BellOff;
+  const statusTone: StatusPillTone =
+    status.tone === "on"
+      ? "teal"
+      : status.tone === "attention"
+        ? "amber"
+        : "muted";
   const isBusy =
     push.isTurningOn || push.isTurningOff || push.isCheckingBrowserSubscription;
   const canToggle =
@@ -210,16 +221,14 @@ function WebPushDevicePreference({ isOnline }: { isOnline: boolean }) {
           )}
         >
           <div className="flex min-w-0 gap-3">
-            <span
-              className={cn(
-                "mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full",
-                push.isSubscribed
-                  ? "bg-forge-teal/10 text-forge-teal"
-                  : "bg-slate-muted/10 text-slate-muted",
-              )}
-            >
-              <StatusIcon size={18} strokeWidth={2} aria-hidden="true" />
-            </span>
+            <IconTile
+              icon={StatusIcon}
+              shape="circle"
+              size="lg"
+              tone={statusTone}
+              className="mt-0.5"
+              iconClassName="size-4.5"
+            />
 
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
@@ -229,18 +238,14 @@ function WebPushDevicePreference({ isOnline }: { isOnline: boolean }) {
                 >
                   Push notifications
                 </Label>
-                <span
-                  className={cn(
-                    "rounded-full px-2 py-0.5 font-semibold text-xs",
-                    status.tone === "on" && "bg-forge-teal/10 text-forge-teal",
-                    status.tone === "attention" &&
-                      "bg-spark-amber/15 text-spark-amber",
-                    status.tone === "muted" &&
-                      "bg-slate-muted/10 text-slate-muted",
-                  )}
+                <StatusPill
+                  size="xs"
+                  tone={statusTone}
+                  surface="soft"
+                  className="font-semibold text-xs"
                 >
                   {status.label}
-                </span>
+                </StatusPill>
               </div>
               <p
                 id={`${switchId}-description`}

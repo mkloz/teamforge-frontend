@@ -1,9 +1,11 @@
 import { registerSW } from "virtual:pwa-register";
+import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw.js";
 import WifiOff from "lucide-react/dist/esm/icons/wifi-off.js";
 import { lazy, Suspense, useEffect, useState } from "react";
 
 import { router } from "@/router";
 import { useAuthSessionState } from "@/shared/api/auth-session-state";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { useNetworkStatus } from "@/shared/hooks/use-network-status";
 import { scheduleDelay } from "@/shared/lib/browser-scheduling";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
@@ -52,6 +54,19 @@ function reloadForPwaUpdate() {
 
   hasReloadedForPwaUpdate = true;
   window.location.reload();
+}
+
+function RefreshToastActionLabel() {
+  return (
+    <>
+      <RefreshCw
+        className="size-3.5 shrink-0"
+        strokeWidth={2}
+        aria-hidden="true"
+      />
+      <span>Refresh</span>
+    </>
+  );
 }
 
 function isPwaLaunchSourceValue(value: string) {
@@ -125,7 +140,7 @@ function registerPwaServiceWorker() {
           duration: PWA_UPDATE_TOAST_DURATION_MS,
           id: PWA_UPDATE_TOAST_ID,
           action: {
-            label: "Refresh",
+            label: <RefreshToastActionLabel />,
             onClick: () => {
               hasRequestedPwaUpdateReload = true;
               recordPwaServiceWorkerUpdate("running", "update requested");
@@ -195,7 +210,7 @@ function registerPwaServiceWorker() {
           duration: PWA_UPDATE_TOAST_DURATION_MS,
           id: PWA_UPDATE_TOAST_ID,
           action: {
-            label: "Refresh",
+            label: <RefreshToastActionLabel />,
             onClick: reloadForPwaUpdate,
           },
         });
@@ -313,9 +328,14 @@ function OfflineConnectionBanner() {
             : "pointer-events-none translate-x-2 -translate-y-1 scale-95 opacity-0",
         )}
       >
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-spark-amber/15 text-spark-amber">
-          <WifiOff size={18} strokeWidth={2} aria-hidden="true" />
-        </span>
+        <IconTile
+          icon={WifiOff}
+          shape="circle"
+          size="lg"
+          tone="amber"
+          className="size-9 bg-spark-amber/15"
+          iconClassName="size-4.5"
+        />
         <span>
           You are offline. TeamForge will reconnect live activity when your
           connection returns.

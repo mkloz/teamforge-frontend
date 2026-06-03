@@ -4,6 +4,7 @@ import type { Group } from "@/features/activity/lib/activity-contract";
 import { FileDropzone } from "@/shared/components/common/file-dropzone";
 import { PlanCover } from "@/shared/components/common/plan-cover";
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import {
   getPlanCoverPreset,
   PLAN_COVER_PRESETS,
@@ -139,9 +140,14 @@ function PlanCoverPresetButton({
         {preset.label}
       </span>
       {selected && (
-        <span className="absolute top-1 right-1 flex size-5 items-center justify-center rounded-full bg-white/95 shadow-sm">
-          <Check size={9} className="text-forge-teal" strokeWidth={3} />
-        </span>
+        <IconTile
+          icon={Check}
+          iconClassName="size-2.5"
+          size="xs"
+          shape="circle"
+          tone="none"
+          className="absolute top-1 right-1 bg-white/95 text-forge-teal shadow-sm"
+        />
       )}
     </Button>
   );

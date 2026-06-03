@@ -82,7 +82,7 @@ teamforge-frontend/
 ├── src/
 │   ├── assets/                  # Static assets (logo SVG component)
 │   ├── config/
-│   │   └── config.ts            # Runtime env vars (VITE_API_URL, VITE_GOOGLE_CLIENT_ID)
+│   │   └── config.ts            # Runtime env vars (API, Google, Giphy)
 │   ├── features/                # All product features, co-located by domain
 │   │   ├── activity/            # Unified conversation feed, direct chats, group detail panels
 │   │   ├── app-shell/           # Persistent layout: sidebar and bottom nav
@@ -139,8 +139,26 @@ Create a `.env.local` file at the project root. **Never commit this file.**
 
 | Variable                | Required | Description                                                          |
 | ----------------------- | -------- | -------------------------------------------------------------------- |
-| `VITE_API_URL`          | Yes      | Base URL for the backend REST API (e.g. `https://api.teamforge.app`) |
+| `VITE_API_URL`          | Yes      | Backend REST API base URL, including the API prefix (`/api/v1`)      |
 | `VITE_GOOGLE_CLIENT_ID` | Yes      | Google OAuth 2.0 client ID for social login                          |
+| `VITE_GOOGLE_MAPS_API_KEY` | Yes   | Google Maps API key for location autocomplete                        |
+| `VITE_GIPHY_API_KEY`    | Yes      | Giphy Web SDK key for GIF search in chat                             |
+
+Local development usually uses:
+
+```env
+VITE_API_URL=http://localhost:6969/api/v1
+```
+
+Production should use the public browser URL with the same API prefix:
+
+```env
+VITE_API_URL=https://api.mkloz.com/teamforge/api/v1
+```
+
+The realtime client derives the Socket.IO transport path from `VITE_API_URL`.
+For the production URL above, it connects to the `/realtime` namespace through
+`/teamforge/socket.io`.
 
 ---
 

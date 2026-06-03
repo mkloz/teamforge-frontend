@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import type { InterestSearchResults } from "@/features/onboarding/utils/interest-logic";
 import { Button } from "@/shared/components/ui/button";
+import { CountBadge } from "@/shared/components/ui/count-badge";
 import { cn } from "@/shared/lib/utils";
 
 import { TagPill } from "../tag-pill";
@@ -102,9 +103,14 @@ function SearchResultSubcategoryItem({
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="mr-2 ml-auto flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-forge-teal px-1.5 font-bold font-sans text-white text-xs leading-none shadow-teal-glow"
+            className="mr-2 ml-auto shrink-0"
           >
-            {selectedCount}
+            <CountBadge
+              count={selectedCount}
+              size="md"
+              tone="teal"
+              className="shadow-teal-glow"
+            />
           </motion.span>
         )}
         <motion.span

@@ -1,6 +1,8 @@
 import { ArrowRight, Check, Users, Wifi } from "lucide-react";
 
 import { PlanCover } from "@/shared/components/common/plan-cover";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 
 import { ICON_MAP } from "../step1-activity/activity-icon-map";
@@ -33,13 +35,23 @@ export function TemplateSuggestionCard({
           imageClassName="transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-foreground/10 transition-colors duration-200 group-hover:bg-foreground/0" />
-        <div className="absolute top-2 left-2 flex size-7 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm backdrop-blur">
-          <Icon size={13} />
-        </div>
+        <IconTile
+          icon={Icon}
+          shape="circle"
+          size="sm"
+          tone="none"
+          className="absolute top-2 left-2 bg-background/90 text-foreground shadow-sm backdrop-blur"
+          iconClassName="size-3"
+        />
         {active && (
-          <div className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-forge-teal text-white shadow-sm">
-            <Check size={12} strokeWidth={3} />
-          </div>
+          <IconTile
+            icon={Check}
+            shape="circle"
+            size="sm"
+            tone="teal"
+            className="absolute top-2 right-2 size-6 bg-forge-teal text-white shadow-sm"
+            iconClassName="size-3"
+          />
         )}
       </div>
 
@@ -69,22 +81,30 @@ export function TemplateSuggestionCard({
               {suggestion.template.fixedSize}
             </span>
             {suggestion.template.locationType === "ONLINE" && (
-              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-forge-teal/10 px-1.5 py-0.5 font-semibold text-forge-teal text-micro">
-                <Wifi size={10} />
+              <StatusPill
+                icon={Wifi}
+                iconClassName="size-2.5"
+                size="xs"
+                tone="teal"
+                surface="soft"
+                className="gap-1 px-1.5"
+              >
                 Online
-              </span>
+              </StatusPill>
             )}
           </div>
-          <span
+          <StatusPill
+            size="xs"
+            tone={suggestion.badge === "Personal fit" ? "teal" : "neutral"}
+            surface="soft"
             className={cn(
-              "shrink-0 rounded-full px-2 py-0.5 font-semibold text-micro",
               suggestion.badge === "Personal fit"
-                ? "bg-forge-teal/10 text-forge-teal"
-                : "bg-muted text-muted-foreground",
+                ? "bg-forge-teal/10"
+                : "bg-muted",
             )}
           >
             {suggestion.badge}
-          </span>
+          </StatusPill>
         </div>
       </div>
     </button>

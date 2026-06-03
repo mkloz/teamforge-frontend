@@ -2,6 +2,7 @@ import { MapPin } from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
 import type { SettingsProfileValues } from "@/features/settings/schemas/settings-profile.schema";
 import { AddressAutocomplete } from "@/shared/components/maps/address-autocomplete";
+import { FactItem } from "@/shared/components/ui/fact-item";
 import {
   FormControl,
   FormField,
@@ -58,15 +59,16 @@ export function AreaFields({ currentUser, form }: AreaFieldsProps) {
           </FormItem>
         )}
       />
-      <div className="flex min-h-10 gap-3 border-border border-t pt-4 lg:mt-7 lg:items-center lg:border-t-0 lg:border-l lg:pt-0 lg:pl-4">
-        <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-forge-teal/8 text-forge-teal">
-          <MapPin size={16} strokeWidth={2} />
-        </div>
-        <div className="min-w-0">
-          <p className="font-semibold text-slate-muted text-xs">Current city</p>
-          <p className="mt-1 font-semibold text-ink text-sm">{cityLabel}</p>
-        </div>
-      </div>
+      <FactItem
+        icon={MapPin}
+        iconTone="teal"
+        iconTileClassName="bg-forge-teal/8"
+        label="Current city"
+        labelClassName="font-semibold"
+        value={cityLabel}
+        valueClassName="mt-1"
+        className="min-h-10 items-start gap-3 border-border border-t pt-4 lg:mt-7 lg:items-center lg:border-t-0 lg:border-l lg:pt-0 lg:pl-4"
+      />
       <FormField
         control={form.control}
         name="locationLat"

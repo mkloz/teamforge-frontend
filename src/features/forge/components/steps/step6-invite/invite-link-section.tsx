@@ -1,6 +1,7 @@
 import { Check, Copy, Link2 } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import {
   showAppErrorMessageToast,
   showAppSuccessToast,
@@ -34,9 +35,7 @@ export function InviteLinkSection({
   return (
     <section className="flex flex-col gap-3 border-border/25 border-t pt-4">
       <div className="flex items-center gap-2 px-0.5">
-        <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-forge-teal/10 text-forge-teal">
-          <Link2 size={14} />
-        </span>
+        <IconTile icon={Link2} tone="teal" size="sm" />
         <div className="min-w-0">
           <p className="font-semibold text-foreground text-sm leading-none">
             Share access

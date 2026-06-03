@@ -1,6 +1,7 @@
 import { Clock } from "lucide-react";
 
 import { DateInput } from "@/shared/components/ui/date-input";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { TimeInput } from "@/shared/components/ui/time-input";
 
 import { FieldLabel } from "./field-label";
@@ -37,13 +38,18 @@ export function DateTimeSection({
         title="When"
         aside={
           dateTimePreview ? (
-            <div className="fade-in inline-flex max-w-full animate-in items-center gap-2 rounded-full border border-forge-teal/15 bg-forge-teal/5 px-3 py-1.5 duration-200">
-              <Clock size={12} className="shrink-0 text-forge-teal/70" />
-              <p className="truncate font-medium text-forge-teal text-xs">
+            <StatusPill
+              icon={Clock}
+              tone="teal"
+              size="md"
+              className="fade-in max-w-full animate-in border-forge-teal/15 bg-forge-teal/5 font-medium duration-200"
+              iconClassName="size-3 text-forge-teal/70"
+            >
+              <span className="truncate">
                 {planDate ? formatPlanDateSummary(planDate) : "Date TBD"}
                 {planTime && ` at ${planTime}`}
-              </p>
-            </div>
+              </span>
+            </StatusPill>
           ) : null
         }
       />

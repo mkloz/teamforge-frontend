@@ -1,6 +1,8 @@
+import type { LucideIcon } from "lucide-react";
 import { Bell, MessageSquare, Send, UsersRound } from "lucide-react";
-import type { ReactNode } from "react";
 
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 
 interface InviteNoteProps {
@@ -26,22 +28,15 @@ export function InviteNote({ forgeMode, inviteeCount }: InviteNoteProps) {
             A short handoff before the group opens.
           </p>
         </div>
-        <span
-          className={cn(
-            "shrink-0 rounded-full border px-2.5 py-1 font-bold text-xs",
-            manual
-              ? "border-spark-amber/25 bg-spark-amber/10 text-spark-amber"
-              : "border-forge-teal/25 bg-forge-teal/10 text-forge-teal",
-          )}
-        >
+        <StatusPill tone={manual ? "amber" : "teal"} size="sm">
           {manual ? inviteText : "Ready now"}
-        </span>
+        </StatusPill>
       </div>
 
       <div className="border-border/25 border-t">
         <NextStepItem
           active
-          icon={manual ? <Send size={15} /> : <UsersRound size={15} />}
+          icon={manual ? Send : UsersRound}
           title={manual ? "Invites go out" : "Group opens"}
           text={
             manual
@@ -51,7 +46,7 @@ export function InviteNote({ forgeMode, inviteeCount }: InviteNoteProps) {
           tone={manual ? "amber" : "teal"}
         />
         <NextStepItem
-          icon={<Bell size={15} />}
+          icon={Bell}
           title={manual ? "Replies arrive" : "Members are notified"}
           text={
             manual
@@ -60,7 +55,7 @@ export function InviteNote({ forgeMode, inviteeCount }: InviteNoteProps) {
           }
         />
         <NextStepItem
-          icon={<MessageSquare size={15} />}
+          icon={MessageSquare}
           title="Chat is ready"
           text="Use the group chat to settle details and keep the plan moving."
           last
@@ -72,7 +67,7 @@ export function InviteNote({ forgeMode, inviteeCount }: InviteNoteProps) {
 
 interface NextStepItemProps {
   active?: boolean;
-  icon: ReactNode;
+  icon: LucideIcon;
   last?: boolean;
   title: string;
   text: string;
@@ -93,18 +88,17 @@ function NextStepItem({
     <div
       className={cn("flex gap-3 py-3", !last && "border-border/25 border-b")}
     >
-      <div
+      <IconTile
+        icon={icon}
+        tone={active ? (amber ? "amber" : "none") : "neutral"}
+        size="md"
+        bordered={active && amber}
         className={cn(
-          "flex size-8 shrink-0 items-center justify-center rounded-lg",
-          active
-            ? amber
-              ? "border border-spark-amber/25 bg-spark-amber/12 text-spark-amber"
-              : "bg-forge-teal text-primary-foreground"
-            : "bg-muted text-muted-foreground",
+          active && amber && "bg-spark-amber/12",
+          active && !amber && "bg-forge-teal text-primary-foreground",
         )}
-      >
-        {icon}
-      </div>
+        iconClassName="size-3.5"
+      />
       <div className="min-w-0">
         <p
           className={cn(

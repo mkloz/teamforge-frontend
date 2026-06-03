@@ -16,6 +16,7 @@ import type {
   ExploreSortOption,
 } from "@/features/explore/schemas/explore-filters.schema";
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
 
 const QUICK_FILTERS = [
@@ -129,9 +130,7 @@ export function ExploreQuickFilters() {
       className="flex flex-col gap-3 px-1 py-1"
     >
       <div className="flex items-center gap-2.5">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-forge-teal/10 text-forge-teal">
-          <SlidersHorizontal size={16} aria-hidden="true" />
-        </span>
+        <IconTile icon={SlidersHorizontal} shape="square" size="md" />
 
         <div className="min-w-0 flex-1">
           <h2

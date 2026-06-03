@@ -1,6 +1,7 @@
 import { AlertCircle } from "lucide-react";
 
 import { Input } from "@/shared/components/ui/input";
+import { Notice } from "@/shared/components/ui/notice";
 import { cn } from "@/shared/lib/utils";
 
 import { SectionCard } from "./section-card";
@@ -63,16 +64,20 @@ export function EventTitleSection({
         />
 
         {isNameError && (
-          <div
+          <Notice
             id="name-error"
             role="alert"
-            className="fade-in slide-in-from-top-1 flex animate-in items-center gap-2 rounded-lg border border-destructive/15 bg-destructive/5 px-3 py-2 duration-150"
+            tone="danger"
+            size="xs"
+            icon={
+              <AlertCircle size={13} className="shrink-0 text-destructive/60" />
+            }
+            iconClassName="mt-0"
+            className="fade-in slide-in-from-top-1 animate-in items-center rounded-lg border-destructive/15 duration-150"
+            contentClassName="font-medium text-destructive/70"
           >
-            <AlertCircle size={13} className="shrink-0 text-destructive/60" />
-            <p className="font-medium text-destructive/70 text-xs">
-              Plan name must be at least 3 characters.
-            </p>
-          </div>
+            Plan name must be at least 3 characters.
+          </Notice>
         )}
       </div>
     </SectionCard>

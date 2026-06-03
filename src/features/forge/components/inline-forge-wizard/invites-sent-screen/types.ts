@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
 
 import type { ForgeWizardChildProps } from "../types";
 
@@ -19,7 +19,7 @@ export interface StatusFactItem {
 
 export interface NextActionItem {
   active?: boolean;
-  icon: ReactNode;
+  icon: LucideIcon;
   text: string;
   title: string;
   tone?: "teal" | "amber";

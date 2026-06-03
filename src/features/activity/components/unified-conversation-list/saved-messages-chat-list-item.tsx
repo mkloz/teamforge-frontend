@@ -1,8 +1,8 @@
 import { ChevronRight, MessageCircle, Trash2 } from "lucide-react";
 import { memo } from "react";
 import { SavedMessagesAvatarVisual } from "@/assets/activity/special-conversation-avatars";
+import { ActivityMenuIcon } from "@/features/activity/components/activity-menu-icon";
 import {
-  ACTIVITY_MENU_ICON_CLASS,
   ACTIVITY_MENU_ITEM_CLASS,
   ACTIVITY_MENU_SEPARATOR_CLASS,
   getActivityMenuContentClass,
@@ -21,6 +21,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/shared/components/ui/context-menu";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
 
 interface SavedMessagesChatListItemProps {
@@ -90,9 +91,9 @@ export const SavedMessagesChatListItem = memo(
                   <h3 className="min-w-0 truncate font-bold text-ink/90 text-sm tracking-tight transition-colors group-hover/item:text-ink">
                     {SAVED_MESSAGES_TITLE}
                   </h3>
-                  <span className="type-signature-label inline-flex shrink-0 items-center rounded-full bg-forge-teal/8 px-1.5 py-0.5 font-bold text-forge-teal leading-none">
+                  <StatusPill tone="teal" size="signature" surface="soft">
                     Private
-                  </span>
+                  </StatusPill>
                 </div>
                 {latestSavedMessage ? (
                   <time className="shrink-0 font-medium text-micro text-slate-muted tabular-nums">
@@ -122,9 +123,9 @@ export const SavedMessagesChatListItem = memo(
             className={ACTIVITY_MENU_ITEM_CLASS}
             onSelect={onSelect}
           >
-            <span className={ACTIVITY_MENU_ICON_CLASS}>
+            <ActivityMenuIcon>
               <MessageCircle className="size-4" />
-            </span>
+            </ActivityMenuIcon>
             <span className="min-w-0 flex-1 truncate">Open saved messages</span>
           </ContextMenuItem>
           {latestSavedMessage && onRemoveLatest ? (
@@ -134,11 +135,9 @@ export const SavedMessagesChatListItem = memo(
                 className={cn(ACTIVITY_MENU_ITEM_CLASS, "text-destructive")}
                 onSelect={() => void onRemoveLatest()}
               >
-                <span
-                  className={cn(ACTIVITY_MENU_ICON_CLASS, "text-destructive")}
-                >
+                <ActivityMenuIcon tone="danger">
                   <Trash2 className="size-4" />
-                </span>
+                </ActivityMenuIcon>
                 <span className="min-w-0 flex-1 truncate">
                   Remove latest bookmark
                 </span>

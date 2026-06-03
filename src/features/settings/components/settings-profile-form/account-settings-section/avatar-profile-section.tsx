@@ -1,3 +1,4 @@
+import { OfflineNotice } from "@/shared/components/ui/offline-notice";
 import type { User } from "@/shared/schemas";
 import { AvatarActions } from "./avatar-actions";
 import { AvatarDropzones } from "./avatar-dropzones";
@@ -84,12 +85,9 @@ export function AvatarProfileSection({
       />
 
       {!isOnline ? (
-        <p
-          role="status"
-          className="rounded-xl border border-spark-amber/25 bg-spark-amber/8 px-3 py-2.5 font-medium text-sm text-spark-amber"
-        >
+        <OfflineNotice withIcon={false} size="md" className="px-3 py-2.5">
           Reconnect before uploading or deleting a profile photo.
-        </p>
+        </OfflineNotice>
       ) : null}
 
       <AvatarActions

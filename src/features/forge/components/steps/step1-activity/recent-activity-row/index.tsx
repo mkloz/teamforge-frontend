@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { forgeRecentActivitiesQueryOptions } from "@/features/forge/api/forge-query-options";
 import { hasMatchingRecentActivity } from "@/features/forge/lib/recent-activity/activity-category";
 import { buildRecentActivityItems } from "@/features/forge/lib/recent-activity/recent-activity-items";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 
 import { RecentActivityCard } from "./recent-activity-card";
 import { RecentActivityEmptyState } from "./recent-activity-empty-state";
@@ -63,9 +64,7 @@ export function RecentActivityRow({
     <section className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between gap-3 px-0.5">
         <div className="flex min-w-0 items-center gap-2">
-          <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
-            <History size={13} />
-          </div>
+          <IconTile icon={History} shape="circle" size="sm" tone="neutral" />
           <div className="min-w-0">
             <p className="font-semibold text-muted-foreground text-xs leading-none">
               Recent activity

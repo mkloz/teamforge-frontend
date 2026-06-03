@@ -1,6 +1,7 @@
 import { Clock3, UserPlus } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { Switch } from "@/shared/components/ui/switch";
 
 interface FailureRecoveryActionsProps {
@@ -20,9 +21,13 @@ export function FailureRecoveryActions({
     <section className="overflow-hidden rounded-lg border border-border/35 bg-card/60">
       {onKeepSearchingChange && (
         <div className="flex items-start gap-3 p-3.5">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-spark-amber/15 text-spark-amber">
-            <Clock3 size={17} />
-          </div>
+          <IconTile
+            icon={Clock3}
+            tone="amber"
+            size="lg"
+            className="size-9 bg-spark-amber/15"
+            iconClassName="size-4"
+          />
           <div className="min-w-0 flex-1">
             <p className="font-black text-foreground text-sm leading-tight">
               Keep searching
@@ -44,9 +49,13 @@ export function FailureRecoveryActions({
 
       {onSwitchToManual && (
         <div className="flex items-start gap-3 border-border/30 border-t p-3.5">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-forge-teal/12 text-forge-teal">
-            <UserPlus size={17} />
-          </div>
+          <IconTile
+            icon={UserPlus}
+            tone="teal"
+            size="lg"
+            className="size-9 bg-forge-teal/12"
+            iconClassName="size-4"
+          />
           <div className="min-w-0 flex-1">
             <p className="font-black text-foreground text-sm leading-tight">
               Invite people manually

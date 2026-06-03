@@ -1,4 +1,5 @@
 import { ArrowRight, FilePlus2 } from "lucide-react";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 
 interface StartBlankTemplateButtonProps {
   onStartBlank: () => void;
@@ -13,9 +14,7 @@ export function StartBlankTemplateButton({
       onClick={onStartBlank}
       className="flex w-full items-center gap-3 rounded-lg border border-border/50 border-dashed bg-background/40 px-3.5 py-3 text-left transition-colors duration-200 hover:border-forge-teal/30 hover:bg-forge-teal/5 active:scale-95"
     >
-      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-        <FilePlus2 size={16} />
-      </div>
+      <IconTile icon={FilePlus2} size="lg" tone="neutral" className="size-9" />
       <div className="min-w-0 flex-1">
         <p className="font-semibold text-foreground text-sm leading-tight">
           Start blank
