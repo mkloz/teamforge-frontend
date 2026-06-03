@@ -13,7 +13,13 @@ const PUBLIC_DIR = path.join(ROOT_DIR, "public");
 const REPORTS_DIR = path.join(ROOT_DIR, "reports");
 const REPORT_PATH = path.join(REPORTS_DIR, "pwa-qa-report.md");
 const SRC_DIR = path.join(ROOT_DIR, "src");
+const ENV_EXAMPLE_PATH = path.join(ROOT_DIR, ".env.example");
+const PACKAGE_JSON_PATH = path.join(ROOT_DIR, "package.json");
+const PWA_PRODUCTION_ENV_SCRIPT = "scripts/pwa-production-env.mjs";
+const PWA_RELEASE_SCRIPT = "npm run pwa:env && npm run build && npm run pwa:qa";
 const VERCEL_CONFIG_PATH = path.join(ROOT_DIR, "vercel.json");
+const LOCAL_API_URL = "http://localhost:6969/api/v1";
+const PRODUCTION_API_URL = "https://api.mkloz.com/teamforge/api/v1";
 
 const REQUIRED_TELEMETRY_EVENTS = [
   "pwa_app_installed",
@@ -142,6 +148,12 @@ const vercelConfigSchema = z
   })
   .passthrough();
 
+const packageJsonSchema = z
+  .object({
+    scripts: z.record(z.string(), z.string()).optional(),
+  })
+  .passthrough();
+
 const checks = [];
 
 function addCheck(category, name, passed, detail, severity = "error") {
@@ -219,6 +231,36 @@ function hasCacheDirectives(value, directives) {
   );
 }
 
+function getEnvValue(envText, key) {
+  const line = envText
+    .split(/\r?\n/u)
+    .find((entry) => entry.trim().startsWith(`${key}=`));
+
+  if (!line) {
+    return null;
+  }
+
+  return line
+    .slice(line.indexOf("=") + 1)
+    .trim()
+    .replace(/^["']|["']$/gu, "");
+}
+
+function getRealtimeUrlForApiUrl(apiUrlValue) {
+  const apiUrl = new URL(apiUrlValue);
+
+  return new URL("/realtime", apiUrl.origin).toString();
+}
+
+function getSocketPathForApiUrl(apiUrlValue) {
+  const apiUrl = new URL(apiUrlValue);
+  const publicBasePath = apiUrl.pathname
+    .replace(/\/+$/u, "")
+    .replace(/\/api\/v\d+$/u, "");
+
+  return `${publicBasePath}/socket.io`.replace(/\/{2,}/gu, "/");
+}
+
 function validateVercelHeader(config, source, key, predicate, passDetail) {
   const rule = getVercelHeaderRule(config, source);
   const value = getVercelHeaderValue(rule, key);
@@ -264,6 +306,130 @@ async function validateSourceMarkers(category, relativePath, markers) {
   }
 
   return sourceText;
+}
+
+async function validateDeployGuards() {
+  if (!existsSync(ENV_EXAMPLE_PATH)) {
+    addFail("Deploy Guards", ".env.example", ".env.example is missing.");
+  } else {
+    const envExample = await readText(ENV_EXAMPLE_PATH);
+    const apiUrl = getEnvValue(envExample, "VITE_API_URL");
+    const googleMapsKey = getEnvValue(envExample, "VITE_GOOGLE_MAPS_API_KEY");
+
+    addCheck(
+      "Deploy Guards",
+      ".env.example API prefix",
+      apiUrl === LOCAL_API_URL,
+      apiUrl === LOCAL_API_URL
+        ? `.env.example points VITE_API_URL at ${LOCAL_API_URL}.`
+        : `.env.example should use ${LOCAL_API_URL}; found ${apiUrl ?? "missing"}.`,
+    );
+    addCheck(
+      "Deploy Guards",
+      ".env.example Maps placeholder",
+      googleMapsKey === "your-google-maps-api-key",
+      googleMapsKey === "your-google-maps-api-key"
+        ? ".env.example uses a placeholder Google Maps key."
+        : ".env.example should not include a real-looking Google Maps key.",
+    );
+  }
+
+  let packageJson;
+
+  try {
+    const packageJsonResult = packageJsonSchema.safeParse(
+      JSON.parse(await readText(PACKAGE_JSON_PATH)),
+    );
+
+    if (!packageJsonResult.success) {
+      addFail(
+        "Deploy Guards",
+        "package.json parses",
+        `package.json shape is invalid: ${z.prettifyError(packageJsonResult.error)}`,
+      );
+    } else {
+      packageJson = packageJsonResult.data;
+    }
+  } catch (error) {
+    addFail(
+      "Deploy Guards",
+      "package.json parses",
+      `Could not parse package.json: ${error.message}`,
+    );
+  }
+
+  const pwaEnvScript = packageJson?.scripts?.["pwa:env"];
+  const pwaReleaseScript = packageJson?.scripts?.["pwa:release"];
+
+  addCheck(
+    "Deploy Guards",
+    "pwa:env script",
+    pwaEnvScript === `node ${PWA_PRODUCTION_ENV_SCRIPT}`,
+    pwaEnvScript === `node ${PWA_PRODUCTION_ENV_SCRIPT}`
+      ? "package.json exposes the production PWA env preflight."
+      : `Expected pwa:env to run node ${PWA_PRODUCTION_ENV_SCRIPT}; found ${pwaEnvScript ?? "missing"}.`,
+  );
+  addCheck(
+    "Deploy Guards",
+    "pwa:release script",
+    pwaReleaseScript === PWA_RELEASE_SCRIPT,
+    pwaReleaseScript === PWA_RELEASE_SCRIPT
+      ? "package.json exposes the production PWA release gate."
+      : `Expected pwa:release to run ${PWA_RELEASE_SCRIPT}; found ${pwaReleaseScript ?? "missing"}.`,
+  );
+
+  await validateSourceMarkers("Deploy Guards", PWA_PRODUCTION_ENV_SCRIPT, [
+    "PRODUCTION_API_URL",
+    "EXPECTED_PRODUCTION_SOCKET_PATH",
+    "VITE_API_URL uses HTTPS",
+    "VITE_API_URL includes API prefix",
+  ]);
+
+  const realtimeClientSource = await validateSourceMarkers(
+    "Deploy Guards",
+    path.relative(
+      ROOT_DIR,
+      path.join(SRC_DIR, "shared/api/realtime-client.ts"),
+    ),
+    [
+      "API_PREFIX_PATTERN",
+      "buildSocketPath(apiUrl)",
+      "path: buildSocketPath(apiUrl)",
+      'new URL("/realtime", apiUrl.origin)',
+    ],
+  );
+
+  addCheck(
+    "Deploy Guards",
+    "Realtime client strips API prefix",
+    realtimeClientSource.includes("\\/api\\/v\\d+"),
+    realtimeClientSource.includes("\\/api\\/v\\d+")
+      ? "Realtime client strips /api/vN before deriving Socket.IO paths."
+      : "Realtime client should strip /api/vN when deriving Socket.IO paths.",
+  );
+
+  const localSocketPath = getSocketPathForApiUrl(LOCAL_API_URL);
+  const productionSocketPath = getSocketPathForApiUrl(PRODUCTION_API_URL);
+  const productionRealtimeUrl = getRealtimeUrlForApiUrl(PRODUCTION_API_URL);
+
+  addCheck(
+    "Deploy Guards",
+    "Local Socket.IO path",
+    localSocketPath === "/socket.io",
+    `Local ${LOCAL_API_URL} derives ${localSocketPath}.`,
+  );
+  addCheck(
+    "Deploy Guards",
+    "Production Socket.IO path",
+    productionSocketPath === "/teamforge/socket.io",
+    `Production ${PRODUCTION_API_URL} derives ${productionSocketPath}.`,
+  );
+  addCheck(
+    "Deploy Guards",
+    "Production realtime namespace URL",
+    productionRealtimeUrl === "https://api.mkloz.com/realtime",
+    `Production realtime namespace resolves to ${productionRealtimeUrl}.`,
+  );
 }
 
 async function validateHostingConfig() {
@@ -1282,6 +1448,7 @@ async function writeReport() {
 }
 
 async function main() {
+  await validateDeployGuards();
   await validateHostingConfig();
   await validatePwaSourceRuntime();
 

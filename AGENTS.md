@@ -55,16 +55,19 @@ src/
 │   └── app.tsx          # Providers + RouterProvider composition
 ├── assets/              # Static assets (logo SVG component)
 ├── config/              # App-wide runtime config (env vars)
-│   └── config.ts        # VITE_API_URL, VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_MAPS_API_KEY
+│   └── config.ts        # VITE_API_URL, VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_MAPS_API_KEY, VITE_GIPHY_API_KEY
 ├── features/            # All product features, co-located by domain
 │   ├── activity/        # Unified conversation feed, direct chats, group detail panels
 │   ├── app-shell/       # Persistent layout: sidebar and bottom nav
 │   ├── auth/            # Login, registration, activation, password recovery
 │   ├── design-system/   # Internal component showcase / visual QA route
+│   ├── download/        # Public PWA install guidance and diagnostics
 │   ├── explore/         # User/group discovery
 │   ├── forge/           # The core "Forge my group" wizard
+│   ├── group-plan-detail/ # Dedicated group and plan briefing route
 │   ├── home/            # Authenticated home/dashboard
 │   ├── landing/         # Public marketing landing page
+│   ├── legal/           # Privacy and terms pages
 │   ├── notifications/   # Notification bell, drawer, and notification data hooks
 │   ├── onboarding/      # Personality test (IPIP/MBTI) + interests selection
 │   ├── profile/         # User profile with MBTI/OCEAN visualizations
@@ -92,17 +95,25 @@ src/
 
 ## Routing Architecture
 
-Routes are defined manually in `src/router.tsx`. There are two main route groups plus an internal design-system route:
+Routes are defined manually in `src/router.tsx`. There are public full-page routes, guarded onboarding routes, authenticated app-shell routes, and a development-only design-system route:
 
 **Public routes** (no app shell, full-page layouts):
 | Path | Component |
 |---|---|
 | `/` | `LandingPage` |
-| `/auth/login` | `AuthPage` (login view) |
-| `/auth/register` | `AuthPage` (register view) |
+| `/download` | `DownloadPage` |
+| `/privacy` | `LegalPage` (`kind="privacy"`) |
+| `/terms` | `LegalPage` (`kind="terms"`) |
+| `/auth` | Redirects to `/auth/login` |
+| `/auth/login` | `LoginPage` |
+| `/auth/register` | `RegisterPage` |
 | `/auth/forgot-password` | `ForgotPasswordPage` |
 | `/auth/reset-password/$token` | `ResetPasswordPage` |
 | `/auth/activate/$token` | `ActivateAccountPage` |
+
+**Onboarding routes** (guarded, no app shell, full-page layouts):
+| Path | Component |
+|---|---|
 | `/onboarding/profile` | `ProfileBasicsPage` |
 | `/onboarding/personality` | `PersonalityTestPage` |
 | `/onboarding/interests` | `InterestsPage` |
@@ -112,17 +123,33 @@ Routes are defined manually in `src/router.tsx`. There are two main route groups
 |---|---|
 | `/home` | `HomePage` |
 | `/explore` | `ExplorePage` |
+| `/groups/$groupId` | `GroupPlanDetailPage` |
 | `/activity` | `ActivityPage` |
 | `/profile` | `ProfilePage` |
+| `/users/$userId` | `UserDetailPage` |
 | `/settings` | `SettingsPage` |
 | `/forge` | `ForgePage` |
 
-**Internal route**:
+**Development-only route**:
 | Path | Component |
 |---|---|
-| `/design-system` | `DesignSystemPage` |
+| `/design-system/icon-notice-variants` | `IconNoticeVariantsPage` |
 
-The design-system route is registered only in development. Authenticated routes are protected through the `app-shell` route `beforeLoad`, onboarding routes use canonical onboarding guards, and app pages are lazy-loaded through `React.lazy` + the shared `LazyPage` wrapper for bundle splitting and loading states.
+The development-only design-system route is registered only in development. Authenticated routes are protected through the `app-shell` route `beforeLoad`, onboarding routes use canonical onboarding guards, and app pages are lazy-loaded through `React.lazy` + shared lazy-route wrappers for bundle splitting, preloading, and loading states.
+
+Group detail pages are under `/groups/$groupId`, but the conversation feed and direct-chat/group-chat workspace remain in `src/features/activity/`.
+
+---
+
+## Runtime, Realtime, and PWA
+
+- App runtime side effects live in `src/app/runtime/`, including auth redirects, route-aware realtime sync, authenticated PWA behavior, and global listeners.
+- Realtime connects to the backend Socket.IO `/realtime` namespace only after an auth session exists.
+- The client derives the Socket.IO transport path from `VITE_API_URL`. Local `http://localhost:6969/api/v1` maps to `/socket.io`; production `https://api.mkloz.com/teamforge/api/v1` maps to `/teamforge/socket.io`.
+- App-wide realtime handles `notification.new` and `group.updated` in `src/app/runtime/app-realtime-events.ts`.
+- Activity and group-plan detail routes handle subscribed chat, read, typing, presence, plan, and group events locally.
+- The app is configured as a PWA through `vite-plugin-pwa`. The `/download` route owns install guidance, PWA diagnostics, and push-notification readiness UI.
+- Generated PWA assets live in `public/icons/` and `public/download/`; use `scripts/generate-icons.js` only when regenerating icon assets intentionally.
 
 ---
 
@@ -184,9 +211,11 @@ import { apiClient } from "@/shared/api/api";
 **Key behaviors:**
 
 - Automatically attaches `Authorization: Bearer <accessToken>` to every request.
+- Sends credentials with API requests so cookie-backed refresh can work in production.
 - On a `401` response, automatically attempts a token refresh via `POST auth/refresh`.
+- Refresh can use a stored refresh token or the backend refresh cookie, depending on backend response mode.
 - If the refresh fails (or we are already on the refresh endpoint), tokens are cleared and the app redirects to `/auth/login`.
-- Base URL is set from `VITE_API_URL` in the environment config.
+- Base URL is set from `VITE_API_URL` in the environment config and must include `/api/v1`.
 - Never call `fetch` directly. Always use `apiClient`.
 
 ---
@@ -218,7 +247,8 @@ React 19 is enabled, including `useOptimistic`, `useEffectEvent`, `Activity`, an
 - Canonical backend-aligned group, plan, message, and chat models live in `src/shared/schemas/`.
 - `src/features/activity/schemas/activity.schemas.ts` contains activity-specific validated projections for groups, direct chats, participants, messages, and attachments.
 - `src/features/activity/lib/activity-contract.ts` re-exports the feature-facing activity contracts used by activity hooks and components.
-- Current group and direct-chat UI both live inside the `activity` feature rather than standalone `groups/` or `direct-chats/` feature folders.
+- Conversation feed, direct-chat, and group-chat workspace UI live inside the `activity` feature rather than standalone `groups/` or `direct-chats/` feature folders.
+- Full group and plan briefing UI lives in `src/features/group-plan-detail/` and is routed at `/groups/$groupId`.
 
 ### Forge (`src/features/forge/lib/forge-contract.ts`, `src/features/forge/schemas/forge.schemas.ts`)
 
@@ -263,11 +293,34 @@ Onboarding flow state lives in `src/features/onboarding/store/`, while submissio
 
 | Variable                   | Required | Description                                                           |
 | -------------------------- | -------- | --------------------------------------------------------------------- |
-| `VITE_API_URL`             | Yes      | Base URL for the backend REST API (e.g., `https://api.teamforge.app`) |
+| `VITE_API_URL`             | Yes      | Backend REST API base URL, including `/api/v1`                        |
 | `VITE_GOOGLE_CLIENT_ID`    | Yes      | Google OAuth client ID for social login                               |
 | `VITE_GOOGLE_MAPS_API_KEY` | Yes      | Google Maps API key for address autocomplete                          |
+| `VITE_GIPHY_API_KEY`       | Yes      | Giphy Web SDK key for GIF search in chat                              |
 
 Set these in `.env.local` for local development. Never commit `.env.local` to version control.
+
+Local development normally uses:
+
+```env
+VITE_API_URL=http://localhost:6969/api/v1
+```
+
+Production currently uses:
+
+```env
+VITE_API_URL=https://api.mkloz.com/teamforge/api/v1
+```
+
+Before a production PWA build, run the browser-env preflight with the same values Vite will bake into the bundle:
+
+```bash
+VITE_API_URL=https://api.mkloz.com/teamforge/api/v1 \
+VITE_GOOGLE_CLIENT_ID=your-production-google-client-id \
+VITE_GOOGLE_MAPS_API_KEY=your-production-maps-key \
+VITE_GIPHY_API_KEY=your-production-giphy-key \
+npm run pwa:release
+```
 
 ---
 
@@ -324,11 +377,10 @@ All visual design follows the specifications in `docs/visual-style-guide.md`. Th
 
 ## Validation Policy
 
-- The frontend currently does not have an automated test suite by product decision.
-- For small changes, run only `npm run lint:changed` before handing work back.
-- Use `npm run lint:fast` while iterating only when the change is large, roughly 200+ lines changed.
+- The frontend has a Vitest unit-test command, but do not add frontend tests unless the user explicitly asks for tests.
+- For small changes, run `npm run lint:changed` before handing work back.
+- Use `npm run lint:fast` for quick changed-file feedback while iterating.
 - Do not run `npm run build`, `npm run lint`, tests, audits, or other full-system verification commands for ordinary changes. Use them only when the codebase has gone through a large refactor or the change clearly needs full system verification.
-- Do not add frontend tests unless the user explicitly asks for tests.
 
 ---
 
@@ -376,3 +428,5 @@ Primary slogan: **"Find your people, intelligently."**
 
 - `docs/brand-overview.md` — brand concept, mission, values, logo usage rules
 - `docs/visual-style-guide.md` — full color system, typography scale, spacing grid, component patterns, animation principles
+- `docs/architecture-guide.md` — frontend architecture, routes, state ownership, realtime, and production PWA notes
+- `docs/open-api.yaml` — frontend copy of the generated backend OpenAPI contract

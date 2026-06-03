@@ -47,11 +47,14 @@ This document provides detailed specifications for each core feature of TeamForg
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
-| `AuthPage` | `features/auth/auth-page.tsx` | Container for login/register views |
-| `LoginForm` | `features/auth/components/` | Email/password login |
-| `RegisterForm` | `features/auth/components/` | Multi-step registration |
-| `OtpInput` | `features/auth/components/` | 6-digit OTP verification |
-| `GoogleButton` | `features/auth/components/` | Google OAuth trigger |
+| `LoginPage` | `features/auth/login-page.tsx` | Email/password and Google login route |
+| `RegisterPage` | `features/auth/register-page.tsx` | Multi-step registration route |
+| `ForgotPasswordPage` | `features/auth/forgot-password-page.tsx` | Password reset request route |
+| `ResetPasswordPage` | `features/auth/reset-password-page.tsx` | Token-backed password reset route |
+| `ActivateAccountPage` | `features/auth/activate-account-page.tsx` | Account activation route |
+| `LoginForm` | `features/auth/components/login-form/` | Email/password login |
+| `RegisterForm` | `features/auth/components/register-form/` | Credentials, OTP, and profile registration steps |
+| `GoogleAuthButton` | `features/auth/components/login-form/google-auth-button.tsx` | Google OAuth trigger |
 
 #### Data Requirements
 

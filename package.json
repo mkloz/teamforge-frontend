@@ -17,7 +17,9 @@
     "lint:biome": "npx biome check --no-errors-on-unmatched .",
     "lint:architecture": "npx depcruise --config .dependency-cruiser.cjs src vite.config.ts",
     "lint:types": "tsc -b",
+    "pwa:env": "node scripts/pwa-production-env.mjs",
     "pwa:qa": "node scripts/pwa-qa.mjs",
+    "pwa:release": "npm run pwa:env && npm run build && npm run pwa:qa",
     "test:unit": "vitest run",
     "check": "npm run lint && npm run lint:audit",
     "prepare": "npx husky"
