@@ -1,5 +1,4 @@
 import { Slot } from "@radix-ui/react-slot";
-import { Loader2 } from "lucide-react";
 import {
   type ComponentPropsWithoutRef,
   isValidElement,
@@ -121,9 +120,10 @@ function ButtonComponent({
           {/* Layer 2: Loading Overlay */}
           {loading && (
             <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[inherit]">
-              <Loader2
+              <span
+                aria-hidden="true"
                 className={cn(
-                  "animate-spin text-current",
+                  "block animate-spin rounded-full border-2 border-current border-t-transparent",
                   getLoaderSizeClass(size),
                 )}
               />

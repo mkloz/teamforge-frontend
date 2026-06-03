@@ -3,6 +3,7 @@ import { z } from "zod";
 import { apiClient } from "@/shared/api/api";
 import {
   CHAT_ATTACHMENT_MAX_SIZE_BYTES,
+  CHAT_ATTACHMENT_MAX_SIZE_LABEL,
   IMAGE_UPLOAD_ACCEPTED_EXTENSIONS,
   IMAGE_UPLOAD_ACCEPTED_TYPES,
   IMAGE_UPLOAD_MAX_SIZE_BYTES,
@@ -80,7 +81,7 @@ export class FileUploadApi {
   static async uploadChatAttachment(file: File): Promise<UploadedFileUrl> {
     assertFileSize(file, {
       maxSizeBytes: CHAT_ATTACHMENT_MAX_SIZE_BYTES,
-      sizeLabel: "40 MB",
+      sizeLabel: CHAT_ATTACHMENT_MAX_SIZE_LABEL,
     });
 
     const response = await apiClient

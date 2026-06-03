@@ -11,6 +11,7 @@ import { ACTIVITY_CHATS_QUERY_KEY } from "@/features/activity/api/activity-query
 import type { DirectChat } from "@/features/activity/lib/activity-contract";
 import { currentUserQueryOptions } from "@/shared/api/current-user-query";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import type { ChatApi } from "@/shared/schemas";
@@ -35,6 +36,7 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
   const muteSubmitPendingRef = useRef(false);
   const currentUserQuery = useQuery(currentUserQueryOptions());
   const clearRouteSelection = useClearActivityRouteSelection();
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   const targetUser = currentUserQuery.data
     ? (chat.participants?.find(
@@ -174,6 +176,15 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
       return;
     }
 
+    if (
+      guardOfflineAction({
+        id: "activity-direct-chat-safety-offline",
+        description: "Reconnect before changing safety settings.",
+      })
+    ) {
+      return;
+    }
+
     blockSubmitPendingRef.current = true;
     mutation.mutate(
       {
@@ -193,6 +204,15 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
       return;
     }
 
+    if (
+      guardOfflineAction({
+        id: "activity-direct-chat-mute-offline",
+        description: "Reconnect before changing chat notifications.",
+      })
+    ) {
+      return;
+    }
+
     muteSubmitPendingRef.current = true;
     muteMutation.mutate(undefined, {
       onSettled: () => {
@@ -202,8 +222,10 @@ export function useDirectChatSafetyActions(chat: DirectChat) {
   }
 
   return {
-    canToggleBlock: Boolean(targetUser),
+    canToggleBlock: Boolean(targetUser) && isOnline,
+    isOnline,
     isBlockActionPending: mutation.isPending,
+    isMuteActionDisabled: !isOnline,
     isMuteActionPending: muteMutation.isPending,
     toggleBlock,
     toggleMute,

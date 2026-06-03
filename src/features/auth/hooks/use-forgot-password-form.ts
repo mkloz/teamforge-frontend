@@ -8,6 +8,7 @@ import {
   type ForgotPasswordValues,
   forgotPasswordSchema,
 } from "@/features/auth/schemas/auth-schemas";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
@@ -15,6 +16,7 @@ import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 export function useForgotPasswordForm() {
   const [loading, setLoading] = useState(false);
   const [rootError, setRootError] = useState<string | null>(null);
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   const form = useForm<ForgotPasswordValues>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -28,8 +30,18 @@ export function useForgotPasswordForm() {
   async function submitResetLink(values: ForgotPasswordValues) {
     const emailDomain = getEmailDomain(values.email);
 
-    setLoading(true);
     setRootError(null);
+    if (
+      guardOfflineAction({
+        id: "auth-forgot-password-offline",
+        description: "Reconnect before sending a reset link.",
+      })
+    ) {
+      setRootError("You are offline. Reconnect before sending a reset link.");
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const result = await AuthCommands.sendResetPasswordLink(values.email);
@@ -67,6 +79,7 @@ export function useForgotPasswordForm() {
 
   return {
     form,
+    isOnline,
     loading,
     onSubmit,
     rootError,

@@ -23,6 +23,26 @@ interface MetadataSnapshot {
   created: boolean;
 }
 
+const DOCUMENT_TITLE_BADGE_PATTERN = /^\((?:\d+|99\+)\)\s+/;
+let documentTitleBadgeCount = 0;
+
+function stripDocumentTitleBadge(title: string) {
+  return title.replace(DOCUMENT_TITLE_BADGE_PATTERN, "");
+}
+
+function formatDocumentTitle(title: string) {
+  const baseTitle = stripDocumentTitleBadge(title);
+
+  if (documentTitleBadgeCount <= 0) {
+    return baseTitle;
+  }
+
+  const badgeLabel =
+    documentTitleBadgeCount > 99 ? "99+" : String(documentTitleBadgeCount);
+
+  return `(${badgeLabel}) ${baseTitle}`;
+}
+
 function findMetaElement(descriptor: MetaDescriptor) {
   const [attributeName, attributeValue] =
     descriptor.name !== undefined
@@ -63,13 +83,13 @@ export function applyDocumentMetadata(metadata: PageMetadata) {
     return () => {};
   }
 
-  const previousTitle = document.title;
+  const previousTitle = stripDocumentTitleBadge(document.title);
   const snapshots = metadata.meta?.map(applyMetaDescriptor) ?? [];
 
-  document.title = metadata.title;
+  document.title = formatDocumentTitle(metadata.title);
 
   return () => {
-    document.title = previousTitle;
+    document.title = formatDocumentTitle(previousTitle);
 
     snapshots.forEach(({ element, previousContent, created }) => {
       if (created) {
@@ -85,4 +105,13 @@ export function applyDocumentMetadata(metadata: PageMetadata) {
       element.setAttribute("content", previousContent);
     });
   };
+}
+
+export function setDocumentTitleBadge(unreadCount: number) {
+  if (!hasBrowserDocument()) {
+    return;
+  }
+
+  documentTitleBadgeCount = Math.max(0, Math.trunc(unreadCount));
+  document.title = formatDocumentTitle(document.title);
 }

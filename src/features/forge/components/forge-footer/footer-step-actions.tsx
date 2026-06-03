@@ -90,13 +90,7 @@ export function Step4FooterAction({ fw }: ForgeFooterChildProps) {
         <AutoForgeButton onClick={fw.handleAutoForge} disabled={!isOnline} />
       )}
       {!isOnline ? (
-        <p
-          role="status"
-          className="mt-3 flex items-center justify-center gap-2 text-center font-medium text-spark-amber text-xs"
-        >
-          <WifiOff size={14} aria-hidden="true" />
-          Reconnect before forming a group.
-        </p>
+        <ForgeFooterOfflineNotice message="Reconnect before forming a group." />
       ) : null}
     </FooterActionMotion>
   );
@@ -123,19 +117,26 @@ export function Step5FailedFooterAction({ fw }: ForgeFooterChildProps) {
 }
 
 export function Step6FooterAction({ fw }: ForgeFooterChildProps) {
+  const isOnline = useNetworkStatus();
+
   return (
     <FooterActionMotion motionKey="s6">
       <PrimaryButton
         label={getStep6ContinueLabel(Boolean(fw.coverImage))}
         icon={<ChevronRight size={16} />}
         onClick={() => void fw.handleSaveIdentityAndContinue()}
-        disabled={fw.isSavingIdentity}
+        disabled={!isOnline || fw.isSavingIdentity}
       />
+      {!isOnline ? (
+        <ForgeFooterOfflineNotice message="Reconnect before saving group identity." />
+      ) : null}
     </FooterActionMotion>
   );
 }
 
 export function Step7FooterAction({ fw }: ForgeFooterChildProps) {
+  const isOnline = useNetworkStatus();
+
   return (
     <FooterActionMotion motionKey="s7" className="w-full">
       {!fw.invitesSent ? (
@@ -147,7 +148,7 @@ export function Step7FooterAction({ fw }: ForgeFooterChildProps) {
           })}
           icon={<UserPlus size={16} />}
           onClick={() => void fw.handleSendInvites()}
-          disabled={fw.isSendingInvites}
+          disabled={!isOnline || fw.isSendingInvites}
         />
       ) : (
         <PrimaryButton
@@ -156,6 +157,21 @@ export function Step7FooterAction({ fw }: ForgeFooterChildProps) {
           onClick={() => void fw.handleEnterGroupHub()}
         />
       )}
+      {!isOnline && !fw.invitesSent ? (
+        <ForgeFooterOfflineNotice message="Reconnect before sending invites." />
+      ) : null}
     </FooterActionMotion>
+  );
+}
+
+function ForgeFooterOfflineNotice({ message }: { message: string }) {
+  return (
+    <p
+      role="status"
+      className="mt-3 flex items-center justify-center gap-2 text-center font-medium text-spark-amber text-xs"
+    >
+      <WifiOff size={14} aria-hidden="true" />
+      {message}
+    </p>
   );
 }

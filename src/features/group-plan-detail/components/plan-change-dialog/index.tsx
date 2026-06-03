@@ -47,6 +47,7 @@ interface PlanChangeDialogProps {
   disabled?: boolean;
   initialOpen?: boolean;
   isCreating: boolean;
+  isOnline?: boolean;
   onCreate: (payload: CreateGroupPlanProposalPayload) => Promise<unknown>;
   onOpenChange?: (open: boolean) => void;
   open?: boolean;
@@ -59,6 +60,7 @@ export function PlanChangeDialog({
   disabled = false,
   initialOpen = false,
   isCreating,
+  isOnline = true,
   onCreate,
   onOpenChange,
   open,
@@ -97,7 +99,12 @@ export function PlanChangeDialog({
   return (
     <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" disabled={disabled || !form.plan}>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={disabled || !form.plan}
+          title={isOnline ? undefined : "Reconnect before suggesting changes."}
+        >
           What would you change?
         </Button>
       </DialogTrigger>
@@ -289,6 +296,11 @@ export function PlanChangeDialog({
                             size="sm"
                             loading={isCreating}
                             disabled={disabled || !form.plan}
+                            title={
+                              isOnline
+                                ? undefined
+                                : "Reconnect before suggesting changes."
+                            }
                             onClick={() => void form.submit()}
                           >
                             <SendHorizontal

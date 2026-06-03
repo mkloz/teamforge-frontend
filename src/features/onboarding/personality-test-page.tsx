@@ -10,6 +10,7 @@ export function PersonalityTestPage() {
     continueToInterests,
     displayProgress,
     goBack,
+    isOnline,
     scrollContainerRef,
     setPendingLength,
     testState,
@@ -38,6 +39,7 @@ export function PersonalityTestPage() {
           onSelectionChange={setPendingLength}
           onContinue={continueToInterests}
           continueLabel={continueLabel}
+          isOnline={isOnline}
           questionsPerPage={QUESTIONS_PER_PAGE}
         />
       </div>

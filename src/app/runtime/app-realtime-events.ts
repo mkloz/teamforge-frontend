@@ -47,6 +47,10 @@ export function syncRealtimeSession() {
   realtimeClient.syncSession(authSession.getAccessToken());
 }
 
+export function reconnectRealtimeSession() {
+  realtimeClient.reconnectSession(authSession.getAccessToken());
+}
+
 export function subscribeRealtimeSessionSync() {
   syncRealtimeSession();
 

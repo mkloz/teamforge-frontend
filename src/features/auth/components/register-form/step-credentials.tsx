@@ -18,6 +18,7 @@ export function StepCredentials({
   onNextIntent,
 }: StepCredentialsProps) {
   const {
+    isOnline: isGoogleOnline,
     loading: googleLoading,
     preloadGoogleAuth,
     rootError: googleError,
@@ -60,10 +61,19 @@ export function StepCredentials({
         onClick={startGoogleAuth}
         onFocus={preloadGoogleAuth}
         onPointerEnter={preloadGoogleAuth}
-        disabled={googleLoading}
+        disabled={!isGoogleOnline || googleLoading}
+        title={
+          isGoogleOnline
+            ? undefined
+            : "Reconnect before continuing with Google."
+        }
       >
         <GoogleIcon />
-        {googleLoading ? "Connecting to Google..." : "Continue with Google"}
+        {googleLoading
+          ? "Connecting to Google..."
+          : isGoogleOnline
+            ? "Continue with Google"
+            : "Reconnect for Google"}
       </Button>
 
       {googleError ? <FormLevelError message={googleError} /> : null}

@@ -4,12 +4,14 @@ import { Button } from "@/shared/components/ui/button";
 
 interface PersonalityResultActionsProps {
   continueLabel: string;
+  isOnline: boolean;
   onContinue: () => void;
   onRetake: () => void;
 }
 
 export function PersonalityResultActions({
   continueLabel,
+  isOnline,
   onContinue,
   onRetake,
 }: PersonalityResultActionsProps) {
@@ -18,10 +20,14 @@ export function PersonalityResultActions({
       <section className="mt-auto flex flex-col gap-3 border-border/70 border-t pt-6 sm:flex-row">
         <Button
           size="md"
+          disabled={!isOnline}
           onClick={onContinue}
+          title={isOnline ? undefined : "Reconnect before saving this result."}
           className="w-full min-w-0 sm:flex-1"
         >
-          <span className="truncate">{continueLabel}</span>
+          <span className="truncate">
+            {isOnline ? continueLabel : "Reconnect to save"}
+          </span>
           <ArrowRight size={18} className="shrink-0" />
         </Button>
         <Button

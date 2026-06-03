@@ -31,6 +31,7 @@ export function useGroupPlanActionState(
       isDecliningInvite: actions.isDecliningInvite,
       isJoining: actions.isJoining,
       isLeaving: actions.isLeaving,
+      isOnline: actions.isOnline,
       joinGroup: () => actions.joinGroup(),
       leaveGroup: () => actions.leaveGroup(),
     },

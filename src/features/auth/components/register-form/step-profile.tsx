@@ -30,12 +30,14 @@ const GENDER_OPTIONS = [
 interface StepProfileProps {
   onNext: () => void;
   onBack: () => void;
+  isOnline: boolean;
   onNextIntent?: () => void;
 }
 
 export function StepProfile({
   onNext,
   onBack,
+  isOnline,
   onNextIntent,
 }: StepProfileProps) {
   const { control } = useFormContext<RegisterValues>();
@@ -145,10 +147,12 @@ export function StepProfile({
         onClick={onNext}
         onFocus={onNextIntent}
         onPointerEnter={onNextIntent}
+        disabled={!isOnline}
+        title={isOnline ? undefined : "Reconnect before creating your account."}
         size="lg"
         className="mt-4 w-full"
       >
-        Looks good
+        {isOnline ? "Looks good" : "Reconnect to continue"}
         <ArrowRightAnimated />
       </Button>
 

@@ -26,6 +26,12 @@ export function EditGroupAvatarSection({
               variant="ghost"
               size="icon-sm"
               className="absolute top-1 right-1 z-20 size-6 rounded-full bg-ink/65 p-0 text-canvas shadow-sm hover:bg-ink/85"
+              disabled={!editor.isOnline}
+              title={
+                editor.isOnline
+                  ? undefined
+                  : "Reconnect before changing group images."
+              }
               onClick={() => editor.setAvatar("")}
               aria-label="Remove avatar"
             >
@@ -41,6 +47,7 @@ export function EditGroupAvatarSection({
           description="Drop a square group image here."
           helper="PNG, JPG, WEBP up to 30 MB"
           actionLabel="Browse"
+          disabled={!editor.isOnline}
           isUploading={editor.isAvatarUploading}
           error={editor.avatarUploadError}
           showMeta={false}

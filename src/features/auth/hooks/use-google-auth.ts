@@ -4,6 +4,7 @@ import { config } from "@/config/config";
 import type { GoogleAuthIntent } from "@/features/auth/api/auth.types";
 import { AuthCommands } from "@/features/auth/api/auth-commands";
 import type { GoogleAuthPhase } from "@/features/auth/lib/google-auth-flow";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
@@ -68,6 +69,7 @@ function getGoogleAuthErrorPhase(error: unknown): GoogleAuthErrorPhase {
 export function useGoogleAuth({ intent, onSuccess }: UseGoogleAuthOptions) {
   const [loading, setLoading] = useState(false);
   const [rootError, setRootError] = useState<string | null>(null);
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   function preloadGoogleAuth() {
     const clientId = config.googleClientId;
@@ -83,6 +85,16 @@ export function useGoogleAuth({ intent, onSuccess }: UseGoogleAuthOptions) {
 
   async function startGoogleAuth() {
     setRootError(null);
+
+    if (
+      guardOfflineAction({
+        id: "auth-google-offline",
+        description: "Reconnect before continuing with Google.",
+      })
+    ) {
+      setRootError("You are offline. Reconnect before continuing with Google.");
+      return;
+    }
 
     const clientId = config.googleClientId;
 
@@ -124,6 +136,7 @@ export function useGoogleAuth({ intent, onSuccess }: UseGoogleAuthOptions) {
   }
 
   return {
+    isOnline,
     loading,
     preloadGoogleAuth,
     rootError,

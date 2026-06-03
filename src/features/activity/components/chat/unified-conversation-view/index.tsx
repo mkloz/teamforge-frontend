@@ -227,7 +227,10 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
       : undefined;
 
   return (
-    <div className="relative isolate flex min-h-0 flex-1 flex-col overflow-hidden bg-canvas/40">
+    <div
+      data-chat-dropzone-root
+      className="relative isolate flex min-h-0 flex-1 flex-col overflow-hidden bg-canvas/40"
+    >
       <ChatBackground />
 
       {activePlan && !isCompleted ? (

@@ -6,6 +6,8 @@ import { ExplorePageLoading } from "@/features/explore/explore-page.loading";
 import { ExplorePageContent } from "@/features/explore/explore-page-content";
 import { useExploreGroups } from "@/features/explore/hooks/use-explore-groups";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
+import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
+import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
 
 const ExploreRightFilters = lazy(() =>
   import("@/features/explore/components/explore-right-filters").then(
@@ -13,7 +15,15 @@ const ExploreRightFilters = lazy(() =>
   ),
 );
 
+const EXPLORE_PAGE_METADATA = createTeamForgePageMetadata({
+  title: "Explore",
+  description:
+    "Explore TeamForge groups, people, and activity options that fit your interests.",
+});
+
 export function ExplorePage() {
+  usePageMetadata(EXPLORE_PAGE_METADATA);
+
   const groupsQuery = useExploreGroups();
   const shouldRenderDesktopFilters = useMediaQuery("(min-width: 1024px)");
   const isInitialLoading = groupsQuery.isLoading && !groupsQuery.data;

@@ -9,12 +9,14 @@ import { ResetPasswordField } from "./reset-password-field";
 
 interface ResetPasswordFormProps {
   form: UseFormReturn<ResetPasswordValues>;
+  isOnline: boolean;
   loading: boolean;
   onSubmit: FormEventHandler<HTMLFormElement>;
 }
 
 export function ResetPasswordForm({
   form,
+  isOnline,
   loading,
   onSubmit,
 }: ResetPasswordFormProps) {
@@ -24,8 +26,15 @@ export function ResetPasswordForm({
         <ResetPasswordField name="password" label="New password" />
         <ResetPasswordField name="confirmPassword" label="Confirm password" />
 
-        <Button type="submit" loading={loading} size="lg" className="w-full">
-          Save new password
+        <Button
+          type="submit"
+          disabled={!isOnline}
+          loading={loading}
+          title={isOnline ? undefined : "Reconnect before resetting password."}
+          size="lg"
+          className="w-full"
+        >
+          {isOnline ? "Save new password" : "Reconnect to continue"}
           <ArrowRightAnimated />
         </Button>
       </form>

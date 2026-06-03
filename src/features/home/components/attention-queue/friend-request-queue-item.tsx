@@ -25,6 +25,7 @@ interface FriendRequestQueueItemProps {
   decliningRequestId: string | null;
   isAccepting: boolean;
   isDeclining: boolean;
+  isOnline: boolean;
   onAccept: (requesterId: string) => Promise<void>;
   onDecline: (requesterId: string) => Promise<void>;
 }
@@ -35,6 +36,7 @@ export function FriendRequestQueueItem({
   isAccepting,
   isDeclining,
   isFocused,
+  isOnline,
   onAccept,
   onDecline,
   request,
@@ -101,9 +103,14 @@ export function FriendRequestQueueItem({
             size="icon-xs"
             className="sm:w-auto sm:px-3"
             loading={acceptingRequestId === request.requesterId}
-            disabled={isAccepting || isDeclining}
+            disabled={!isOnline || isAccepting || isDeclining}
             onClick={() => void onAccept(request.requesterId)}
             aria-label={`Accept ${request.counterpart.name}'s friend request`}
+            title={
+              isOnline
+                ? undefined
+                : "Reconnect before responding to friend requests."
+            }
           >
             <Check className="size-3" />
             <span className="hidden sm:inline">Accept</span>
@@ -113,9 +120,14 @@ export function FriendRequestQueueItem({
             variant="destructive"
             size="icon-xs"
             loading={decliningRequestId === request.requesterId}
-            disabled={isAccepting || isDeclining}
+            disabled={!isOnline || isAccepting || isDeclining}
             onClick={() => void onDecline(request.requesterId)}
             aria-label={`Decline ${request.counterpart.name}'s friend request`}
+            title={
+              isOnline
+                ? undefined
+                : "Reconnect before responding to friend requests."
+            }
           >
             <X className="size-3.5" />
           </Button>

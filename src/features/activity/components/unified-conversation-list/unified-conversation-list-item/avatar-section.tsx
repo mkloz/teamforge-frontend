@@ -40,7 +40,7 @@ export const AvatarSection = memo(
             )}
             aria-hidden="true"
           >
-            <MyNotesAvatarVisual className="size-full" />
+            <MyNotesAvatarVisual className="size-full scale-110 overflow-visible" />
           </span>
         ) : (
           <Avatar

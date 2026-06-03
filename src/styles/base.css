@@ -4,7 +4,18 @@
   }
   body {
     @apply bg-background text-foreground;
+    overflow-y: scroll;
     font-family: var(--font-sans);
+  }
+
+  @supports (scrollbar-gutter: stable) {
+    html {
+      scrollbar-gutter: stable;
+    }
+
+    body {
+      overflow-y: auto;
+    }
   }
 
   ::selection {

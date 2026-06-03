@@ -39,6 +39,7 @@ const PersonalityResults = lazy(() =>
 interface PersonalityScreenRendererProps {
   backLabel: string;
   continueLabel: string;
+  isOnline: boolean;
   onBack: () => void;
   onContinue: () => void;
   onSelectionChange: (length: TestLength) => void;
@@ -49,6 +50,7 @@ interface PersonalityScreenRendererProps {
 export function PersonalityScreenRenderer({
   backLabel,
   continueLabel,
+  isOnline,
   onBack,
   onContinue,
   onSelectionChange,
@@ -128,6 +130,7 @@ export function PersonalityScreenRenderer({
             onContinue={onContinue}
             onRetake={actions.handleRetake}
             continueLabel={continueLabel}
+            isOnline={isOnline}
           />
         );
       default:

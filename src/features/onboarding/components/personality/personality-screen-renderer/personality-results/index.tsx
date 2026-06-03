@@ -17,6 +17,7 @@ interface PersonalityResultsProps {
   onContinue: () => void;
   onRetake: () => void;
   continueLabel?: string;
+  isOnline: boolean;
 }
 
 export function PersonalityResults({
@@ -25,6 +26,7 @@ export function PersonalityResults({
   onContinue,
   onRetake,
   continueLabel = "Continue",
+  isOnline,
 }: PersonalityResultsProps) {
   const viewModel = getPersonalityResultViewModel(result, vector);
 
@@ -60,6 +62,7 @@ export function PersonalityResults({
 
       <PersonalityResultActions
         continueLabel={continueLabel}
+        isOnline={isOnline}
         onContinue={onContinue}
         onRetake={onRetake}
       />

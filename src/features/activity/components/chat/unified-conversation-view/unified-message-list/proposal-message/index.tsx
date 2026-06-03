@@ -134,6 +134,7 @@ export const ProposalMessage = memo(function ProposalMessage({
       onToggleSaved={messageActions.toggleSaved}
       onSelectMessage={isSelectable ? onStartSelection : undefined}
       onOpenChange={setIsContextMenuOpen}
+      isOnline={messageActions.isOnline}
     >
       <article
         tabIndex={0}
@@ -228,6 +229,7 @@ export const ProposalMessage = memo(function ProposalMessage({
                     onWithdraw={async () => {
                       await proposalActions.withdrawProposal(proposal.id);
                     }}
+                    isOnline={proposalActions.isOnline}
                     viewState={viewState}
                   />
                 )}

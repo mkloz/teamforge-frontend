@@ -6,6 +6,7 @@ interface InterestsReviewFooterProps {
   onConfirm: () => void;
   canConfirm: boolean;
   onBack: () => void;
+  isOnline?: boolean;
   isSaving?: boolean;
   confirmLabel?: string;
 }
@@ -15,6 +16,7 @@ export function InterestsReviewFooter({
   onConfirm,
   canConfirm,
   onBack,
+  isOnline = true,
   isSaving = false,
   confirmLabel = "Confirm & Finish",
 }: InterestsReviewFooterProps) {
@@ -34,10 +36,13 @@ export function InterestsReviewFooter({
         variant="primary"
         size="md"
         onClick={onConfirm}
-        disabled={!canConfirm || isSaving}
+        disabled={!isOnline || !canConfirm || isSaving}
+        title={isOnline ? undefined : "Reconnect before saving interests."}
         className="w-full min-w-0 xs:flex-1"
       >
-        <span className="truncate">{isSaving ? "Saving…" : confirmLabel}</span>
+        <span className="truncate">
+          {isSaving ? "Saving…" : isOnline ? confirmLabel : "Reconnect to save"}
+        </span>
         <CheckCircle2 size={18} />
       </Button>
     </div>

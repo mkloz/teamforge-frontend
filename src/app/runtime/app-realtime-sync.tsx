@@ -20,6 +20,8 @@ const realtimeRoutePrefixes = [
   "/users/",
 ] as const;
 
+const REALTIME_RESUME_SYNC_COOLDOWN_MS = 12_000;
+
 function useHasAuthSession() {
   return useSyncExternalStore(
     (listener) => authSession.subscribe(listener),
@@ -42,6 +44,10 @@ function doesPathMatchRoutePrefix(pathname: string, prefix: string) {
 
 function getRealtimeRouteDelayMs(pathname: string) {
   return isRealtimeRoute(pathname) ? 0 : null;
+}
+
+function isAppVisibleAndOnline() {
+  return document.visibilityState !== "hidden" && navigator.onLine;
 }
 
 function useRealtimeRouteDelayMs() {
@@ -69,9 +75,9 @@ export function AppRealtimeSync() {
       try {
         const {
           disconnectRealtimeSession,
+          reconnectRealtimeSession,
           subscribeAppRealtimeEvents,
           subscribeRealtimeSessionSync,
-          syncRealtimeSession,
         } = await import("@/app/runtime/app-realtime-events");
 
         if (cancelled) {
@@ -81,27 +87,44 @@ export function AppRealtimeSync() {
         const unsubscribeSession = subscribeRealtimeSessionSync();
         recordPwaRealtimeResync("initial sync");
         const unsubscribeRealtimeEvents = subscribeAppRealtimeEvents();
-        const syncRealtimeWithDiagnostic = (reason: string) => {
+        let lastResumeSyncAt = 0;
+        const reconnectRealtimeWithDiagnostic = (reason: string) => {
+          if (!isAppVisibleAndOnline()) {
+            return;
+          }
+
+          const now = Date.now();
+
+          if (now - lastResumeSyncAt < REALTIME_RESUME_SYNC_COOLDOWN_MS) {
+            return;
+          }
+
+          lastResumeSyncAt = now;
           recordPwaRealtimeResync(reason);
-          syncRealtimeSession();
+          reconnectRealtimeSession();
         };
         const handlePageHide = () => {
           disconnectRealtimeSession();
         };
         const handleFocus = () => {
-          syncRealtimeWithDiagnostic("window focus");
+          reconnectRealtimeWithDiagnostic("window focus");
         };
         const handleOnline = () => {
-          syncRealtimeWithDiagnostic("network reconnect");
+          reconnectRealtimeWithDiagnostic("network reconnect");
         };
         const handlePageShow = (event: PageTransitionEvent) => {
           if (event.persisted) {
-            syncRealtimeWithDiagnostic("page restore");
+            reconnectRealtimeWithDiagnostic("page restore");
           }
         };
         const handleVisibilityChange = () => {
+          if (document.visibilityState === "hidden") {
+            disconnectRealtimeSession();
+            return;
+          }
+
           if (document.visibilityState === "visible") {
-            syncRealtimeWithDiagnostic("app foreground");
+            reconnectRealtimeWithDiagnostic("app foreground");
           }
         };
 

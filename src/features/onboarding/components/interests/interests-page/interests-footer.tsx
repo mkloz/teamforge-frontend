@@ -43,6 +43,7 @@ export function InterestsFooter({
             canConfirm={state.canContinue}
             onBack={state.goToBrowse}
             backLabel="Back to picks"
+            isOnline={state.isOnline}
             isSaving={state.isSaving}
             confirmLabel={isEditMode ? "Save Interests" : "Confirm & Finish"}
           />

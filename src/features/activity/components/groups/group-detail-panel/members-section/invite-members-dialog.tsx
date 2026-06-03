@@ -57,6 +57,10 @@ export function InviteMembersDialog({
   }, [candidates, query]);
 
   const handleInvite = async (inviteeId: string) => {
+    if (disabled) {
+      return;
+    }
+
     setInviteError(null);
 
     try {
@@ -81,6 +85,7 @@ export function InviteMembersDialog({
           size="xs"
           disabled={disabled}
           contentClassName="gap-1.5"
+          title={disabled ? "Reconnect before inviting members." : undefined}
         >
           <UserPlus className="size-3.5" />
           Invite
@@ -164,10 +169,15 @@ export function InviteMembersDialog({
 
                     <Button
                       size="xs"
-                      disabled={isInviting}
+                      disabled={disabled || isInviting}
                       onClick={() => {
                         void handleInvite(candidate.id);
                       }}
+                      title={
+                        disabled
+                          ? "Reconnect before inviting members."
+                          : undefined
+                      }
                     >
                       <UserPlus className="size-3.5" aria-hidden="true" />
                       {isInviting ? "Inviting..." : "Invite"}

@@ -13,6 +13,7 @@ const PUBLIC_DIR = path.join(ROOT_DIR, "public");
 const REPORTS_DIR = path.join(ROOT_DIR, "reports");
 const REPORT_PATH = path.join(REPORTS_DIR, "pwa-qa-report.md");
 const SRC_DIR = path.join(ROOT_DIR, "src");
+const VERCEL_CONFIG_PATH = path.join(ROOT_DIR, "vercel.json");
 
 const REQUIRED_TELEMETRY_EVENTS = [
   "pwa_app_installed",
@@ -33,6 +34,25 @@ const REQUIRED_SW_MARKERS = [
   "teamforge-public-images",
   "teamforge-fonts",
   "manifest.webmanifest",
+];
+
+const REQUIRED_PRECACHE_ASSETS = [
+  "download/install-preview-android-256w.png",
+  "download/install-preview-android-360w.png",
+  "download/install-preview-android.png",
+  "download/install-preview-desktop-480w.png",
+  "download/install-preview-desktop.png",
+  "download/install-preview-ios-480w.png",
+  "download/install-preview-ios-720w.png",
+  "download/install-preview-ios.png",
+];
+
+const SKIPPED_MANUAL_DEVICE_CHECKS = [
+  "Android Chrome install, standalone launch, and uninstall/reinstall",
+  "iOS Safari Add to Home Screen launch and standalone routing",
+  "Desktop Chrome install prompt acceptance and installed-window behavior",
+  "Real-device push permission prompt and notification delivery",
+  "Installed-app Google OAuth redirect on mobile devices",
 ];
 
 const CONTENT_TYPES = {
@@ -83,6 +103,7 @@ const manifestSchema = z
     icons: z.array(manifestIconSchema).optional(),
     lang: z.string().optional(),
     name: z.string().optional(),
+    orientation: z.string().optional(),
     prefer_related_applications: z.boolean().optional(),
     scope: z.string().optional(),
     screenshots: z.array(manifestScreenshotSchema).optional(),
@@ -90,6 +111,34 @@ const manifestSchema = z
     short_name: z.string().optional(),
     start_url: z.string().optional(),
     theme_color: z.string().optional(),
+  })
+  .passthrough();
+
+const vercelHeaderSchema = z
+  .object({
+    key: z.string(),
+    value: z.string(),
+  })
+  .passthrough();
+
+const vercelHeaderRuleSchema = z
+  .object({
+    headers: z.array(vercelHeaderSchema),
+    source: z.string(),
+  })
+  .passthrough();
+
+const vercelRewriteSchema = z
+  .object({
+    destination: z.string(),
+    source: z.string(),
+  })
+  .passthrough();
+
+const vercelConfigSchema = z
+  .object({
+    headers: z.array(vercelHeaderRuleSchema).optional(),
+    rewrites: z.array(vercelRewriteSchema).optional(),
   })
   .passthrough();
 
@@ -150,6 +199,41 @@ function hasWorkboxNavigationFallback(swText, fallbackUrl) {
   return fallbackPattern.test(swText);
 }
 
+function getVercelHeaderRule(config, source) {
+  return config.headers?.find((rule) => rule.source === source) ?? null;
+}
+
+function getVercelHeaderValue(rule, key) {
+  return (
+    rule?.headers.find(
+      (header) => header.key.toLowerCase() === key.toLowerCase(),
+    )?.value ?? null
+  );
+}
+
+function hasCacheDirectives(value, directives) {
+  const normalizedValue = value.toLowerCase();
+
+  return directives.every((directive) =>
+    normalizedValue.includes(directive.toLowerCase()),
+  );
+}
+
+function validateVercelHeader(config, source, key, predicate, passDetail) {
+  const rule = getVercelHeaderRule(config, source);
+  const value = getVercelHeaderValue(rule, key);
+  const passed = value !== null && predicate(value);
+
+  addCheck(
+    "Hosting",
+    `${source} ${key}`,
+    passed,
+    passed
+      ? passDetail(value)
+      : `${source} should set ${key}; found ${value ?? "no matching header"}.`,
+  );
+}
+
 async function validateSourceMarkers(category, relativePath, markers) {
   const filePath = path.join(ROOT_DIR, relativePath);
 
@@ -180,6 +264,127 @@ async function validateSourceMarkers(category, relativePath, markers) {
   }
 
   return sourceText;
+}
+
+async function validateHostingConfig() {
+  if (!existsSync(VERCEL_CONFIG_PATH)) {
+    addFail("Hosting", "vercel.json", "vercel.json is missing.");
+    return;
+  }
+
+  addPass("Hosting", "vercel.json", "vercel.json exists.");
+
+  let vercelConfig;
+
+  try {
+    const configResult = vercelConfigSchema.safeParse(
+      JSON.parse(await readText(VERCEL_CONFIG_PATH)),
+    );
+
+    if (!configResult.success) {
+      addFail(
+        "Hosting",
+        "vercel.json parses",
+        `vercel.json shape is invalid: ${z.prettifyError(configResult.error)}`,
+      );
+      return;
+    }
+
+    vercelConfig = configResult.data;
+  } catch (error) {
+    addFail(
+      "Hosting",
+      "vercel.json parses",
+      `Could not parse vercel.json: ${error.message}`,
+    );
+    return;
+  }
+
+  addPass("Hosting", "vercel.json parses", "vercel.json is valid JSON.");
+
+  const requiresRevalidation = (value) =>
+    hasCacheDirectives(value, ["max-age=0", "must-revalidate"]);
+  const requiresImmutableCache = (value) =>
+    hasCacheDirectives(value, ["max-age=31536000", "immutable"]);
+
+  validateVercelHeader(
+    vercelConfig,
+    "/manifest.webmanifest",
+    "Content-Type",
+    (value) => value.toLowerCase().includes("application/manifest+json"),
+    (value) => `Manifest Content-Type is ${value}.`,
+  );
+  validateVercelHeader(
+    vercelConfig,
+    "/manifest.webmanifest",
+    "Cache-Control",
+    requiresRevalidation,
+    (value) => `Manifest revalidates on deploy: ${value}.`,
+  );
+  validateVercelHeader(
+    vercelConfig,
+    "/sw.js",
+    "Cache-Control",
+    requiresRevalidation,
+    (value) => `Generated service worker revalidates on deploy: ${value}.`,
+  );
+  validateVercelHeader(
+    vercelConfig,
+    "/sw.js",
+    "Service-Worker-Allowed",
+    (value) => value === "/",
+    (value) => `Service worker scope is allowed from ${value}.`,
+  );
+  validateVercelHeader(
+    vercelConfig,
+    "/sw-push.js",
+    "Cache-Control",
+    requiresRevalidation,
+    (value) => `Push worker import revalidates on deploy: ${value}.`,
+  );
+  validateVercelHeader(
+    vercelConfig,
+    "/workbox-:hash.js",
+    "Cache-Control",
+    requiresImmutableCache,
+    (value) => `Hashed Workbox runtime is cache-immutable: ${value}.`,
+  );
+  validateVercelHeader(
+    vercelConfig,
+    "/assets/:path*",
+    "Cache-Control",
+    requiresImmutableCache,
+    (value) => `Hashed Vite assets are cache-immutable: ${value}.`,
+  );
+  validateVercelHeader(
+    vercelConfig,
+    "/icons/:path*",
+    "Cache-Control",
+    requiresRevalidation,
+    (value) => `PWA icon assets revalidate when deployed: ${value}.`,
+  );
+  validateVercelHeader(
+    vercelConfig,
+    "/download/:path*",
+    "Cache-Control",
+    requiresRevalidation,
+    (value) => `Download visual assets revalidate when deployed: ${value}.`,
+  );
+
+  const spaRewrite = vercelConfig.rewrites?.find(
+    (rewrite) => rewrite.source === "/(.*)",
+  );
+
+  addCheck(
+    "Hosting",
+    "SPA deep-link rewrite",
+    spaRewrite?.destination === "/index.html",
+    spaRewrite?.destination === "/index.html"
+      ? "All non-file routes rewrite to /index.html for PWA deep links."
+      : `Expected /(.*) to rewrite to /index.html; found ${
+          spaRewrite?.destination ?? "no matching rewrite"
+        }.`,
+  );
 }
 
 function parseManifestSizes(value) {
@@ -299,6 +504,20 @@ async function validateManifest() {
       "Manifest",
       "Display mode",
       "display should be standalone, fullscreen, or minimal-ui.",
+    );
+  }
+
+  if (manifest.orientation === undefined) {
+    addPass(
+      "Manifest",
+      "Orientation",
+      "No orientation lock is declared, so desktop and mobile windows can adapt.",
+    );
+  } else {
+    addFail(
+      "Manifest",
+      "Orientation",
+      `orientation should be omitted for TeamForge's mobile and desktop PWA surfaces; found "${manifest.orientation}".`,
     );
   }
 
@@ -560,6 +779,17 @@ async function validateServiceWorker() {
     );
   }
 
+  for (const asset of REQUIRED_PRECACHE_ASSETS) {
+    addCheck(
+      "Service Worker",
+      `Precached ${asset}`,
+      swText.includes(asset),
+      swText.includes(asset)
+        ? `${asset} is present in the generated precache manifest.`
+        : `${asset} is missing from the generated precache manifest.`,
+    );
+  }
+
   const hasIndexHtmlNavigationFallback = hasWorkboxNavigationFallback(
     swText,
     "/index.html",
@@ -638,12 +868,33 @@ async function validatePwaSourceRuntime() {
     "PWA Source",
     path.relative(ROOT_DIR, path.join(SRC_DIR, "app/runtime/pwa-runtime.tsx")),
     [
+      "registerSW",
+      "beforeinstallprompt",
+      "appinstalled",
+      "recordPwaServiceWorkerUpdate",
+      "LazyPwaAuthenticatedRuntime",
+      "PwaLaunchSourceCleanupRuntime",
+      "OfflineConnectionBanner",
+    ].map((marker) => ({
+      name: marker,
+      text: marker,
+    })),
+  );
+
+  await validateSourceMarkers(
+    "PWA Source",
+    path.relative(
+      ROOT_DIR,
+      path.join(SRC_DIR, "app/runtime/pwa-authenticated-runtime.tsx"),
+    ),
+    [
       "useUnreadAppBadge",
       "useUnreadNotificationCount",
       "PwaResumeRefreshRuntime",
       "PWA_RESUME_REFRESH_COOLDOWN_MS",
       'refetchType: "active"',
       "recordPwaReconnectRefresh",
+      "PwaServiceWorkerMessageRuntime",
       "visibilitychange",
       "pageshow",
       "online",
@@ -662,7 +913,7 @@ async function validatePwaSourceRuntime() {
     ),
     [
       "recordPwaRealtimeResync",
-      "syncRealtimeWithDiagnostic",
+      "reconnectRealtimeWithDiagnostic",
       "initial sync",
       "visibilitychange",
       "online",
@@ -693,7 +944,7 @@ async function validatePwaSourceRuntime() {
     ["useSyncExternalStore", "subscribePwaRuntimeDiagnostics"],
   );
 
-  await validateSourceMarkers(
+  const diagnosticsPanelSource = await validateSourceMarkers(
     "PWA Source",
     path.relative(
       ROOT_DIR,
@@ -703,17 +954,41 @@ async function validatePwaSourceRuntime() {
       ),
     ),
     [
-      "usePwaRuntimeDiagnostics",
-      "Reconnect refresh",
-      "Realtime resync",
-      "getReconnectRefreshItem",
-      "getRealtimeResyncItem",
+      "DIAGNOSTIC_CHECK_COUNT = 8",
+      "Display mode",
+      "Install prompt",
+      "Secure context",
+      "Service worker",
+      "Push support",
+      "Permission",
+      "Backend push",
+      "This device",
     ],
   );
+
+  for (const staleMarker of [
+    "usePwaRuntimeDiagnostics",
+    "Reconnect refresh",
+    "Realtime resync",
+    "Push bridge",
+    "App badge",
+  ]) {
+    const isAbsent = !diagnosticsPanelSource.includes(staleMarker);
+
+    addCheck(
+      "PWA Source",
+      `Diagnostics excludes ${staleMarker}`,
+      isAbsent,
+      isAbsent
+        ? `${staleMarker} is not shown as a device-readiness check.`
+        : `${staleMarker} should not be shown in the fixed 8-check readiness grid.`,
+    );
+  }
 }
 
 async function validateBuiltRoute() {
   const assetDir = path.join(DIST_DIR, "assets");
+  const indexHtmlPath = path.join(DIST_DIR, "index.html");
 
   if (!existsSync(assetDir)) {
     addFail("Route", "Assets directory", "dist/assets is missing.");
@@ -724,6 +999,12 @@ async function validateBuiltRoute() {
   const downloadChunks = assetFiles.filter((file) =>
     /^download-page-.*\.js$/.test(file),
   );
+  const diagnosticsChunks = assetFiles.filter((file) =>
+    /^pwa-diagnostics-panel-.*\.js$/.test(file),
+  );
+  const authenticatedRuntimeChunks = assetFiles.filter((file) =>
+    /^pwa-authenticated-runtime-.*\.js$/.test(file),
+  );
 
   addCheck(
     "Route",
@@ -733,11 +1014,24 @@ async function validateBuiltRoute() {
       ? `Found ${downloadChunks.join(", ")}.`
       : "No download-page chunk found.",
   );
+  addCheck(
+    "Route",
+    "Authenticated PWA runtime chunk",
+    authenticatedRuntimeChunks.length > 0,
+    authenticatedRuntimeChunks.length > 0
+      ? `Found ${authenticatedRuntimeChunks.join(", ")}.`
+      : "No authenticated PWA runtime chunk found.",
+  );
 
   if (downloadChunks.length > 0) {
     const combinedDownloadCode = (
       await Promise.all(
         downloadChunks.map((file) => readText(path.join(assetDir, file))),
+      )
+    ).join("\n");
+    const combinedDiagnosticsCode = (
+      await Promise.all(
+        diagnosticsChunks.map((file) => readText(path.join(assetDir, file))),
       )
     ).join("\n");
 
@@ -750,8 +1044,32 @@ async function validateBuiltRoute() {
     addCheck(
       "Route",
       "Diagnostics copy",
-      combinedDownloadCode.includes("PWA diagnostics"),
-      "Built download chunk should include the diagnostics panel.",
+      combinedDiagnosticsCode.includes("PWA diagnostics") ||
+        combinedDownloadCode.includes("PWA diagnostics"),
+      diagnosticsChunks.length > 0
+        ? `Built diagnostics chunk ${diagnosticsChunks.join(", ")} includes the diagnostics panel.`
+        : "Built download chunk should include or lazy-load the diagnostics panel.",
+    );
+  }
+
+  if (existsSync(indexHtmlPath)) {
+    const indexHtml = await readText(indexHtmlPath);
+
+    addCheck(
+      "Route",
+      "Authenticated PWA runtime preload",
+      !indexHtml.includes("pwa-authenticated-runtime"),
+      indexHtml.includes("pwa-authenticated-runtime")
+        ? "index.html preloads the authenticated PWA runtime."
+        : "index.html leaves the authenticated PWA runtime lazy.",
+    );
+    addCheck(
+      "Route",
+      "Validation chunk preload",
+      !indexHtml.includes("validation-"),
+      indexHtml.includes("validation-")
+        ? "index.html preloads validation code on public startup."
+        : "index.html leaves validation code out of public startup preloads.",
     );
   }
 
@@ -927,6 +1245,14 @@ function buildReport() {
     `- Warnings: ${warnings.length}`,
     `- Failed: ${failed.length}`,
     "",
+    "## Automated Scope",
+    "",
+    "This report covers source-level PWA contracts, Vercel hosting rules, plus build artifacts in `dist/`: manifest, service worker, route smoke checks, asset precache, and telemetry markers.",
+    "",
+    "## Skipped Manual Device Checks",
+    "",
+    ...SKIPPED_MANUAL_DEVICE_CHECKS.map((check) => `- [SKIPPED] ${check}`),
+    "",
   ];
 
   for (const category of categories) {
@@ -956,6 +1282,7 @@ async function writeReport() {
 }
 
 async function main() {
+  await validateHostingConfig();
   await validatePwaSourceRuntime();
 
   if (!existsSync(DIST_DIR)) {

@@ -37,24 +37,30 @@ export function ExploreGroupPlanCard({
       ? "REQUESTED"
       : undefined);
   const joinedGroupId = confirmedJoin?.groupId;
+  const isOfflineActionBlocked =
+    !joinMutation.isOnline && !isFull && joinResult === undefined;
   const actionLabel = isFull
     ? "Full"
     : joinResult === "JOINED"
       ? "Joined"
       : joinResult === "REQUESTED"
         ? "Requested"
-        : joinMutation.isPending
-          ? group.access === "BY_REQUEST"
-            ? "Requesting..."
-            : "Joining..."
-          : group.access === "BY_REQUEST"
-            ? "Request to join"
-            : "Join";
+        : isOfflineActionBlocked
+          ? "Reconnect"
+          : joinMutation.isPending
+            ? group.access === "BY_REQUEST"
+              ? "Requesting..."
+              : "Joining..."
+            : group.access === "BY_REQUEST"
+              ? "Request to join"
+              : "Join";
   const ActionIcon = isFull
     ? UsersRound
     : joinResult === "JOINED"
       ? Check
-      : joinResult === "REQUESTED" || joinMutation.isPending
+      : joinResult === "REQUESTED" ||
+          joinMutation.isPending ||
+          isOfflineActionBlocked
         ? CircleDashed
         : group.access === "BY_REQUEST"
           ? Send
@@ -76,8 +82,18 @@ export function ExploreGroupPlanCard({
       <Button
         variant={isFull ? "outline" : "primary"}
         size={isCompact ? "sm" : "default"}
-        disabled={isFull || joinMutation.isPending || joinResult !== undefined}
+        disabled={
+          isFull ||
+          !joinMutation.isOnline ||
+          joinMutation.isPending ||
+          joinResult !== undefined
+        }
         onClick={handleJoin}
+        title={
+          joinMutation.isOnline
+            ? undefined
+            : "Reconnect before joining or requesting to join."
+        }
         className={cn(
           "z-20 shrink-0 shadow-sm",
           isFull && "pointer-events-none opacity-50",

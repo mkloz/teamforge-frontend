@@ -45,6 +45,7 @@ export function LoginForm({
 }: LoginFormProps) {
   const {
     form,
+    isOnline,
     loading,
     rootError,
     showPassword,
@@ -52,6 +53,7 @@ export function LoginForm({
     togglePasswordVisibility,
   } = useLoginForm({ onSuccess, onProgress });
   const {
+    isOnline: isGoogleOnline,
     loading: googleLoading,
     preloadGoogleAuth,
     rootError: googleError,
@@ -142,8 +144,10 @@ export function LoginForm({
 
           <Button
             type="submit"
+            disabled={!isOnline}
             loading={loading}
             size="lg"
+            title={isOnline ? undefined : "Reconnect before signing in."}
             className="mt-2 w-full"
           >
             Let's go
@@ -152,9 +156,15 @@ export function LoginForm({
 
           <SocialLoginDivider />
           <GoogleAuthButton
+            disabled={!isGoogleOnline}
             loading={loading || googleLoading}
             onClick={startGoogleAuth}
             onIntent={preloadGoogleAuth}
+            title={
+              isGoogleOnline
+                ? undefined
+                : "Reconnect before continuing with Google."
+            }
           />
         </form>
       </Form>

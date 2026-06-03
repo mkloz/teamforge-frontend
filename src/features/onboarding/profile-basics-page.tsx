@@ -8,8 +8,15 @@ import type { VoronoiCatalystHandle } from "@/shared/lib/voronoi/voronoi-contrac
 export function ProfileBasicsPage() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const catalystRef = useRef<VoronoiCatalystHandle>(null);
-  const { form, watchedValues, progress, saveError, isSaving, onSubmit } =
-    useProfileBasicsForm();
+  const {
+    form,
+    watchedValues,
+    progress,
+    saveError,
+    isOnline,
+    isSaving,
+    onSubmit,
+  } = useProfileBasicsForm();
 
   useScrollToTop(["profile-basics"], scrollContainerRef);
 
@@ -28,6 +35,7 @@ export function ProfileBasicsPage() {
         form={form}
         watchedValues={watchedValues}
         saveError={saveError}
+        isOnline={isOnline}
         isSaving={isSaving}
         onSubmit={onSubmit}
       />

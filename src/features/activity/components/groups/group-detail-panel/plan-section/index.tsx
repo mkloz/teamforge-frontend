@@ -32,6 +32,7 @@ interface PlanSectionProps {
   plan: Plan;
   currentUserRole?: MemberRole;
   isFocused?: boolean;
+  isOnline?: boolean;
   focusedProposalId?: string | null;
   isReadOnly?: boolean;
   onCancelPlan?: () => Promise<void> | void;
@@ -46,6 +47,7 @@ export function PlanSection({
   currentUserRole = "MEMBER",
   plan,
   isFocused = false,
+  isOnline = true,
   isReadOnly = false,
   onCancelPlan,
   onCompletePlan,
@@ -127,6 +129,7 @@ export function PlanSection({
 
       <PlanLifecycleActions
         currentUserRole={currentUserRole}
+        isOnline={isOnline}
         isReadOnly={isReadOnly}
         onCancelPlan={onCancelPlan}
         onCompletePlan={onCompletePlan}
@@ -299,6 +302,7 @@ function PlanFact({
 function PlanLifecycleActions({
   currentUserRole,
   isReadOnly,
+  isOnline,
   onCancelPlan,
   onCompletePlan,
   onConfirmPlan,
@@ -308,6 +312,7 @@ function PlanLifecycleActions({
   plan,
 }: {
   currentUserRole: MemberRole;
+  isOnline: boolean;
   isReadOnly: boolean;
   onCancelPlan?: () => Promise<void> | void;
   onCompletePlan?: () => Promise<void> | void;
@@ -324,9 +329,20 @@ function PlanLifecycleActions({
   const isDraftLike = plan.status === "DRAFT" || plan.status === "PROPOSED";
   const isActive = plan.status === "CONFIRMED" || plan.status === "IN_PROGRESS";
   const isTerminal = plan.status === "COMPLETED" || plan.status === "CANCELLED";
+  const hasOfflineBlock = !isOnline;
+  const isPlanActionDisabled = hasOfflineBlock || pendingAction !== null;
 
   return (
     <div className="mt-4 flex flex-wrap gap-2">
+      {hasOfflineBlock ? (
+        <p
+          role="status"
+          className="basis-full rounded-lg border border-border/70 bg-muted/30 px-3 py-2 text-slate-muted text-xs"
+        >
+          Reconnect before changing this plan.
+        </p>
+      ) : null}
+
       {isDraftLike ? (
         <ActionDialog
           cancelLabel="Review first"
@@ -338,7 +354,7 @@ function PlanLifecycleActions({
             plan.dateTime ? `Time: ${formatDate(plan.dateTime)}` : "Date TBD",
             `Place: ${formatPlanLocation(plan)}`,
           ]}
-          disabled={!plan.dateTime || pendingAction !== null || !onConfirmPlan}
+          disabled={!plan.dateTime || isPlanActionDisabled || !onConfirmPlan}
           loading={pendingAction === "confirm-plan"}
           onConfirm={onConfirmPlan}
           title="Confirm this plan?"
@@ -350,11 +366,15 @@ function PlanLifecycleActions({
               className="min-w-max grow basis-36"
               contentClassName="gap-1.5"
               disabled={
-                !plan.dateTime || pendingAction !== null || !onConfirmPlan
+                !plan.dateTime || isPlanActionDisabled || !onConfirmPlan
               }
               loading={pendingAction === "confirm-plan"}
               title={
-                !plan.dateTime ? "Set a date before confirming" : undefined
+                !isOnline
+                  ? "Reconnect before changing this plan."
+                  : !plan.dateTime
+                    ? "Set a date before confirming"
+                    : undefined
               }
             >
               <CheckCircle2 className="size-3.5 shrink-0" />
@@ -375,7 +395,7 @@ function PlanLifecycleActions({
             "The plan moves into completed history.",
             "Members can still use the group for follow-up and future plans.",
           ]}
-          disabled={pendingAction !== null || !onCompletePlan}
+          disabled={isPlanActionDisabled || !onCompletePlan}
           loading={pendingAction === "complete-plan"}
           onConfirm={onCompletePlan}
           title="Complete this plan?"
@@ -386,8 +406,11 @@ function PlanLifecycleActions({
               size="sm"
               className="min-w-max grow basis-36"
               contentClassName="gap-1.5"
-              disabled={pendingAction !== null || !onCompletePlan}
+              disabled={isPlanActionDisabled || !onCompletePlan}
               loading={pendingAction === "complete-plan"}
+              title={
+                isOnline ? undefined : "Reconnect before changing this plan."
+              }
             >
               <CheckCircle2 className="size-3.5 shrink-0" />
               Complete
@@ -407,7 +430,7 @@ function PlanLifecycleActions({
             "Members will see the plan as cancelled.",
             "The group chat stays open for deciding what happens next.",
           ]}
-          disabled={pendingAction !== null || !onCancelPlan}
+          disabled={isPlanActionDisabled || !onCancelPlan}
           loading={pendingAction === "cancel-plan"}
           onConfirm={onCancelPlan}
           title="Cancel this plan?"
@@ -419,8 +442,11 @@ function PlanLifecycleActions({
               variant="outline"
               className="min-w-max grow basis-36"
               contentClassName="gap-1.5"
-              disabled={pendingAction !== null || !onCancelPlan}
+              disabled={isPlanActionDisabled || !onCancelPlan}
               loading={pendingAction === "cancel-plan"}
+              title={
+                isOnline ? undefined : "Reconnect before changing this plan."
+              }
             >
               <XCircle className="size-3.5 shrink-0" />
               Cancel
@@ -435,9 +461,10 @@ function PlanLifecycleActions({
           size="sm"
           className="min-w-max grow basis-36"
           contentClassName="gap-1.5"
-          disabled={pendingAction !== null}
+          disabled={isPlanActionDisabled}
           loading={pendingAction === "create-next-plan"}
           onClick={onCreateNextPlan}
+          title={isOnline ? undefined : "Reconnect before changing this plan."}
         >
           <PlusCircle className="size-3.5 shrink-0" />
           Plan another
@@ -450,8 +477,9 @@ function PlanLifecycleActions({
         variant="outline"
         className="min-w-max grow basis-36"
         contentClassName="gap-1.5"
-        disabled={pendingAction !== null || !onEditPlan}
+        disabled={isPlanActionDisabled || !onEditPlan}
         onClick={onEditPlan}
+        title={isOnline ? undefined : "Reconnect before changing this plan."}
       >
         <Pencil className="size-3.5 shrink-0" />
         Edit plan

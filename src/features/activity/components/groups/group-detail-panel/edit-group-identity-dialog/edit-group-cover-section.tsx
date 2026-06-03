@@ -40,6 +40,7 @@ export function EditGroupCoverSection({
           description="Drop a plan image here or browse from your device."
           helper="PNG, JPG, WEBP up to 30 MB"
           actionLabel="Browse"
+          disabled={!editor.isOnline}
           isUploading={editor.isCoverUploading}
           error={editor.coverUploadError}
           onFiles={editor.handleCoverFiles}
@@ -59,6 +60,12 @@ export function EditGroupCoverSection({
             variant="ghost"
             size="icon-sm"
             className="absolute top-2 right-2 z-20 rounded-full bg-ink/45 text-canvas hover:bg-ink/65"
+            disabled={!editor.isOnline}
+            title={
+              editor.isOnline
+                ? undefined
+                : "Reconnect before changing group images."
+            }
             onClick={() => editor.setCoverImage(null)}
             aria-label="Remove cover"
           >
@@ -72,6 +79,7 @@ export function EditGroupCoverSection({
             key={preset.id}
             preset={preset}
             selected={editor.coverImage === preset.id}
+            disabled={!editor.isOnline}
             onToggle={() =>
               editor.setCoverImage(
                 editor.coverImage === preset.id ? null : preset.id,
@@ -91,11 +99,13 @@ export function EditGroupCoverSection({
 
 interface PlanCoverPresetButtonProps {
   preset: PlanCoverPreset;
+  disabled?: boolean;
   onToggle: () => void;
   selected: boolean;
 }
 
 function PlanCoverPresetButton({
+  disabled = false,
   onToggle,
   preset,
   selected,
@@ -104,6 +114,8 @@ function PlanCoverPresetButton({
     <Button
       type="button"
       variant="ghost"
+      disabled={disabled}
+      title={disabled ? "Reconnect before changing group images." : undefined}
       onClick={onToggle}
       aria-pressed={selected}
       className={cn(

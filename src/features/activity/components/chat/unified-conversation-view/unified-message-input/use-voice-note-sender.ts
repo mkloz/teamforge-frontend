@@ -6,7 +6,9 @@ import { getVoiceExtension } from "./message-composer-utils";
 
 interface UseVoiceNoteSenderOptions {
   isDisabled: boolean;
+  isOnline: boolean;
   onSend: (input: ActivitySendMessageInput) => Promise<void> | void;
+  onOfflineSubmit: () => void;
   onSent: () => void;
   setIsSubmitting: Dispatch<SetStateAction<boolean>>;
   stopRecording: ReturnType<typeof useVoiceRecording>["stopRecording"];
@@ -14,7 +16,9 @@ interface UseVoiceNoteSenderOptions {
 
 export function useVoiceNoteSender({
   isDisabled,
+  isOnline,
   onSend,
+  onOfflineSubmit,
   onSent,
   setIsSubmitting,
   stopRecording,
@@ -23,6 +27,11 @@ export function useVoiceNoteSender({
     const result = await stopRecording();
 
     if (!result || result.durationSeconds <= 0 || isDisabled) {
+      return;
+    }
+
+    if (!isOnline) {
+      onOfflineSubmit();
       return;
     }
 

@@ -10,7 +10,7 @@ import {
 
 export function ResetPasswordPage() {
   const { returnTo } = useAuthReturnState();
-  const { form, loading, onSubmit, rootError, success } =
+  const { form, isOnline, loading, onSubmit, rootError, success } =
     useResetPasswordForm();
 
   return (
@@ -41,7 +41,12 @@ export function ResetPasswordPage() {
           Your password has been updated. You can head back to login now.
         </div>
       ) : (
-        <ResetPasswordForm form={form} loading={loading} onSubmit={onSubmit} />
+        <ResetPasswordForm
+          form={form}
+          isOnline={isOnline}
+          loading={loading}
+          onSubmit={onSubmit}
+        />
       )}
     </AuthSupportShell>
   );

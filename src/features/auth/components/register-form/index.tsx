@@ -46,6 +46,7 @@ export function RegisterForm({
 }: RegisterFormProps) {
   const {
     form,
+    isOnline,
     step,
     loading,
     resendLoading,
@@ -89,6 +90,7 @@ export function RegisterForm({
                   onNext={goToStep3}
                   onBack={goBackToStep1}
                   onNextIntent={loadStepOtp}
+                  isOnline={isOnline}
                 />
               )}
               {step === 3 && (
@@ -97,6 +99,7 @@ export function RegisterForm({
                   loading={loading}
                   resendLoading={resendLoading}
                   email={form.getValues("email")}
+                  isOnline={isOnline}
                   otpMessage={otpMessage}
                   onResend={resendOtp}
                 />

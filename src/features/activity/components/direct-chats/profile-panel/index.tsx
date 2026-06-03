@@ -37,6 +37,7 @@ export function ProfilePanel({ chat, isOpen, onClose }: ProfilePanelProps) {
         chat={chat}
         blockActionDisabled={!safetyActions.canToggleBlock}
         isBlockActionPending={safetyActions.isBlockActionPending}
+        isMuteActionDisabled={safetyActions.isMuteActionDisabled}
         isMuteActionPending={safetyActions.isMuteActionPending}
         onToggleMute={safetyActions.toggleMute}
         onToggleBlock={safetyActions.toggleBlock}
@@ -67,6 +68,7 @@ export function ProfilePanelMobile({
           isMobile={true}
           blockActionDisabled={!safetyActions.canToggleBlock}
           isBlockActionPending={safetyActions.isBlockActionPending}
+          isMuteActionDisabled={safetyActions.isMuteActionDisabled}
           isMuteActionPending={safetyActions.isMuteActionPending}
           onToggleMute={safetyActions.toggleMute}
           onToggleBlock={safetyActions.toggleBlock}

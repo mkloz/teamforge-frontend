@@ -42,6 +42,7 @@ import {
   canSaveMessage,
 } from "@/features/activity/lib/message-action-capabilities";
 import { getMessageClipboardContent } from "@/features/activity/lib/message-clipboard";
+import { Avatar } from "@/shared/components/common/avatar";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -140,6 +141,7 @@ interface MessageActionsMenuProps {
   ) => Promise<unknown>;
   onSelectMessage?: (message: UnifiedMessage) => void;
   onOpenChange?: (open: boolean) => void;
+  isOnline?: boolean;
 }
 
 interface MessageContextMenuProps extends MessageActionsMenuProps {
@@ -173,6 +175,7 @@ export const MessageContextMenu = memo(function MessageContextMenu({
   onToggleSaved,
   onSelectMessage,
   onOpenChange,
+  isOnline = true,
 }: MessageContextMenuProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const menu = useMessageActionMenu({
@@ -243,6 +246,7 @@ export const MessageContextMenu = memo(function MessageContextMenu({
         <ForwardMessageDialog
           message={message}
           open={menu.forwardDialogOpen}
+          isOnline={isOnline}
           onForward={onForward}
           onOpenChange={menu.setForwardDialogOpen}
         />
@@ -267,6 +271,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
   onToggleSaved,
   onSelectMessage,
   onOpenChange,
+  isOnline = true,
 }: MessageActionsMenuProps) {
   const [open, setOpen] = useState(false);
   const menu = useMessageActionMenu({
@@ -334,6 +339,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
         <ForwardMessageDialog
           message={message}
           open={menu.forwardDialogOpen}
+          isOnline={isOnline}
           onForward={onForward}
           onOpenChange={menu.setForwardDialogOpen}
         />
@@ -741,11 +747,13 @@ interface ForwardMessageDialogProps {
   onForwardComplete?: () => void;
   onOpenChange: (open: boolean) => void;
   open: boolean;
+  isOnline?: boolean;
 }
 
 export function ForwardMessageDialog({
   message,
   messages,
+  isOnline = true,
   onForward,
   onForwardComplete,
   onOpenChange,
@@ -769,7 +777,7 @@ export function ForwardMessageDialog({
     groupsQuery.isError || chatsQuery.isError || friendshipsQuery.isError;
 
   async function handleForward(target: ForwardTarget) {
-    if (!onForward || messagesToForward.length === 0) {
+    if (!isOnline || !onForward || messagesToForward.length === 0) {
       return;
     }
 
@@ -827,7 +835,13 @@ export function ForwardMessageDialog({
         </DialogHeader>
 
         <div className="min-h-0 overflow-y-auto p-1.5">
-          {isLoading ? (
+          {!isOnline ? (
+            <ForwardDialogState
+              description="Reconnect before forwarding messages."
+              label="You're offline."
+              role="status"
+            />
+          ) : isLoading ? (
             <ForwardDialogState
               description="This usually takes a moment."
               label="Finding conversations..."
@@ -851,22 +865,21 @@ export function ForwardMessageDialog({
                 type="button"
                 aria-busy={pendingTargetId === target.chatId}
                 className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left transition hover:bg-forge-teal/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/25 disabled:cursor-not-allowed disabled:opacity-60"
-                disabled={pendingTargetId !== null}
+                disabled={!isOnline || pendingTargetId !== null}
                 onClick={() => {
                   void handleForward(target);
                 }}
               >
-                {target.avatar ? (
-                  <img
-                    alt=""
-                    className="size-9 rounded-full object-cover"
-                    src={target.avatar}
-                  />
-                ) : (
-                  <span className="flex size-9 items-center justify-center rounded-full bg-forge-teal/12 font-bold text-forge-teal text-xs">
-                    {getForwardTargetInitials(target.title)}
-                  </span>
-                )}
+                <Avatar
+                  src={target.avatar}
+                  media={target.avatarMedia ?? null}
+                  name={target.title}
+                  alt=""
+                  imageSize={48}
+                  className="size-9"
+                  fallbackClassName="bg-forge-teal/12 text-forge-teal"
+                  aria-hidden="true"
+                />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-bold text-sm">
                     {target.title}
@@ -916,6 +929,7 @@ function ForwardDialogState({
 
 interface ForwardTarget {
   avatar: string | null;
+  avatarMedia?: GroupApi["avatarMedia"];
   chatId: string;
   kind: "dm" | "group";
   title: string;
@@ -948,6 +962,7 @@ function buildForwardTargets({
     return [
       {
         avatar: group.avatar,
+        avatarMedia: group.avatarMedia,
         chatId: chat.id,
         kind: "group",
         title: group.name,
@@ -974,15 +989,6 @@ function buildForwardTargets({
   return [...groupTargets, ...directTargets].sort((left, right) =>
     left.title.localeCompare(right.title),
   );
-}
-
-function getForwardTargetInitials(title: string) {
-  return title
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
 }
 
 interface DeleteMessageDialogProps {

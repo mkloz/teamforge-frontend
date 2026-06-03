@@ -1,9 +1,11 @@
 import { useParams } from "@tanstack/react-router";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { usePublicProfile } from "@/features/profile/hooks/use-profile";
 import { ProfilePageLoading } from "@/features/profile/profile-page/profile-page.loading";
 import { ProfilePageContent } from "@/features/profile/profile-page/profile-page-content";
 import { SkeletonButton } from "@/shared/components/loading/skeleton-patterns";
+import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
+import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
 import type { User } from "@/shared/schemas";
 
 const USER_DETAIL_ROUTE = "/app-shell/users/$userId";
@@ -24,6 +26,18 @@ const LazyPublicProfileActions = lazy(() =>
 export function UserDetailPage() {
   const { userId } = useParams({ from: USER_DETAIL_ROUTE });
   const { profile, isLoading, error, refetch } = usePublicProfile(userId);
+  const pageMetadata = useMemo(
+    () =>
+      createTeamForgePageMetadata({
+        title: profile?.name ? `${profile.name}'s profile` : "Profile",
+        description: profile?.name
+          ? `View ${profile.name}'s TeamForge profile, interests, and social fit.`
+          : "View a TeamForge profile, interests, and social fit.",
+      }),
+    [profile?.name],
+  );
+
+  usePageMetadata(pageMetadata);
 
   if (error || !profile) {
     if (isLoading) {

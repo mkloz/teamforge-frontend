@@ -74,6 +74,15 @@ export const CompletedReviewGate = memo(function CompletedReviewGate({
           <ReviewErrorState onRetry={() => void rating.refetch()} />
         ) : (
           <div className="grid gap-3">
+            {!rating.isOnline ? (
+              <p
+                role="status"
+                className="rounded-lg border border-border/70 bg-muted/30 px-3 py-2 text-center font-medium text-slate-muted text-xs"
+              >
+                Reconnect to submit teammate reviews.
+              </p>
+            ) : null}
+
             <div className="sm:main-action-grid grid gap-2 sm:items-center">
               <div className="min-w-0">
                 <MemberRatingPicker
@@ -118,9 +127,14 @@ export const CompletedReviewGate = memo(function CompletedReviewGate({
                 <Button
                   variant="subtle"
                   size="sm"
-                  disabled={rating.isSubmitting}
+                  disabled={!rating.isOnline || rating.isSubmitting}
                   loading={rating.isDeferring}
                   onClick={() => rating.deferActiveReview("NOT_PRESENT")}
+                  title={
+                    rating.isOnline
+                      ? undefined
+                      : "Reconnect before moving review prompts."
+                  }
                 >
                   <CalendarClock className="size-4" />
                   <span>I wasn't there</span>
@@ -128,9 +142,14 @@ export const CompletedReviewGate = memo(function CompletedReviewGate({
                 <Button
                   variant="outline"
                   size="sm"
-                  disabled={rating.isSubmitting}
+                  disabled={!rating.isOnline || rating.isSubmitting}
                   loading={rating.isDeferring}
                   onClick={() => rating.deferActiveReview("NEED_MORE_TIME")}
+                  title={
+                    rating.isOnline
+                      ? undefined
+                      : "Reconnect before moving review prompts."
+                  }
                 >
                   <CalendarClock className="size-4" />
                   <span>Ask next time</span>
@@ -140,9 +159,16 @@ export const CompletedReviewGate = memo(function CompletedReviewGate({
               <Button
                 size="sm"
                 className="ml-auto gap-1.5"
-                disabled={!rating.activeUserId || rating.score === 0}
+                disabled={
+                  !rating.isOnline || !rating.activeUserId || rating.score === 0
+                }
                 loading={rating.isSubmitting}
                 onClick={rating.submitActiveRating}
+                title={
+                  rating.isOnline
+                    ? undefined
+                    : "Reconnect before submitting reviews."
+                }
               >
                 <Star className="size-4" />
                 <span>Submit review</span>
@@ -161,6 +187,7 @@ function ReviewMemberActions({ member }: { member: GroupMember }) {
     connectDisabled,
     connectLabel,
     connectLoading,
+    isOnline,
     messageChatId,
     messageDisabled,
     onConnect,
@@ -177,6 +204,7 @@ function ReviewMemberActions({ member }: { member: GroupMember }) {
         loading={connectLoading}
         onClick={() => onConnect()}
         aria-label={`${connectLabel} with ${memberName}`}
+        title={isOnline ? undefined : "Reconnect before changing connections."}
       >
         <ConnectIcon className="size-3.5" />
         <span>{connectLabel}</span>

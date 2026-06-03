@@ -215,7 +215,13 @@ function getScrollTarget(element: HTMLElement | null) {
     return window;
   }
 
-  return getScrollContainer(element) ?? window;
+  const scrollContainer = getScrollContainer(element);
+
+  if (!scrollContainer || isViewportElement(scrollContainer)) {
+    return window;
+  }
+
+  return scrollContainer;
 }
 
 function getScrollTop(scrollTarget: HTMLElement | Window) {
@@ -225,14 +231,14 @@ function getScrollTop(scrollTarget: HTMLElement | Window) {
 }
 
 function getScrollContainer(element: HTMLElement) {
-  if (isScrollable(element)) {
+  if (!isViewportElement(element) && isScrollable(element)) {
     return element;
   }
 
   let parent = element.parentElement;
 
   while (parent) {
-    if (isScrollable(parent)) {
+    if (!isViewportElement(parent) && isScrollable(parent)) {
       return parent;
     }
 
@@ -247,4 +253,10 @@ function isScrollable(element: HTMLElement) {
   const canScroll = /(auto|scroll|overlay)/.test(overflowY);
 
   return canScroll && element.scrollHeight > element.clientHeight;
+}
+
+function isViewportElement(element: HTMLElement) {
+  const { body, documentElement } = element.ownerDocument;
+
+  return element === body || element === documentElement;
 }

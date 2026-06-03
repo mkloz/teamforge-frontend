@@ -21,6 +21,7 @@ export function ConfirmGroupActionButton({
   icon,
   label,
   onConfirm,
+  title,
   variant = "default",
 }: ConfirmGroupActionButtonProps) {
   if (disabled) {
@@ -30,6 +31,7 @@ export function ConfirmGroupActionButton({
         icon={icon}
         label={label}
         onClick={() => {}}
+        title={title}
         variant={variant}
       />
     );
@@ -48,6 +50,7 @@ export function ConfirmGroupActionButton({
           icon={icon}
           label={label}
           onClick={() => {}}
+          title={title}
           variant={variant}
         />
       }

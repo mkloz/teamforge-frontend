@@ -22,6 +22,7 @@ interface StepOtpProps {
   loading: boolean;
   resendLoading: boolean;
   email: string;
+  isOnline: boolean;
   otpMessage?: string | null;
   onResend: () => void;
 }
@@ -34,6 +35,7 @@ export function StepOtp({
   loading,
   resendLoading,
   email,
+  isOnline,
   otpMessage,
   onResend,
 }: StepOtpProps) {
@@ -95,15 +97,27 @@ export function StepOtp({
         )}
       />
 
-      <Button type="submit" loading={loading} size="lg" className="mt-4 w-full">
-        I'm ready to forge
+      <Button
+        type="submit"
+        disabled={!isOnline}
+        loading={loading}
+        title={isOnline ? undefined : "Reconnect before verifying your email."}
+        size="lg"
+        className="mt-4 w-full"
+      >
+        {isOnline ? "I'm ready to forge" : "Reconnect to continue"}
         <ArrowRightAnimated />
       </Button>
 
       <Button
         type="button"
         variant="outline"
-        disabled={loading || resendLoading}
+        disabled={!isOnline || loading || resendLoading}
+        title={
+          isOnline
+            ? undefined
+            : "Reconnect before resending your verification code."
+        }
         onClick={onResend}
         size="sm"
         className="w-full"

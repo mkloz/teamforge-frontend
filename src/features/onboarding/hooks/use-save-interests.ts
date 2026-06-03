@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { OnboardingCache } from "@/features/onboarding/api/onboarding-cache";
 import { OnboardingCommands } from "@/features/onboarding/api/onboarding-commands";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 
 interface UseSaveInterestsInput {
   canContinue: boolean;
@@ -17,6 +18,7 @@ export function useSaveInterests({
 }: UseSaveInterestsInput) {
   const queryClient = useQueryClient();
   const [saveErrorMessage, setSaveErrorMessage] = useState<string | null>(null);
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const { mutateAsync: saveInterests, isPending: isSaving } = useMutation({
     meta: {
       errorToastMessage:
@@ -38,6 +40,18 @@ export function useSaveInterests({
 
     setSaveErrorMessage(null);
 
+    if (
+      guardOfflineAction({
+        id: "onboarding-interests-save-offline",
+        description: "Reconnect before saving your interests.",
+      })
+    ) {
+      setSaveErrorMessage(
+        "You are offline. Reconnect before saving your interests.",
+      );
+      return;
+    }
+
     try {
       await saveInterests({
         interestIds: selectedIds,
@@ -58,6 +72,7 @@ export function useSaveInterests({
 
   return {
     finalize,
+    isOnline,
     isSaving,
     saveErrorMessage,
   };

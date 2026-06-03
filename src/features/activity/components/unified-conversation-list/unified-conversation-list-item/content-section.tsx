@@ -198,12 +198,14 @@ export const ContentSection = memo(
           )}
         >
           <div className="flex min-w-0 flex-1 items-center gap-1.5">
-            {!isGroup && latestMessage?.isOwn && latestMessage?.status && (
-              <MsgStatusIcon
-                status={latestMessage.status}
-                isCompact={isCompact}
-              />
-            )}
+            <span className="shrink-0">
+              {!isGroup && latestMessage?.isOwn && latestMessage?.status && (
+                <MsgStatusIcon
+                  status={latestMessage.status}
+                  isCompact={isCompact}
+                />
+              )}
+            </span>
             <div className="flex min-w-0 items-center gap-1 overflow-hidden">
               <SubtitleIcon type={previewMessage?.type} isCompact={isCompact} />
 

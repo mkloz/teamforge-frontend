@@ -8,6 +8,7 @@ import {
   type ResetPasswordValues,
   resetPasswordSchema,
 } from "@/features/auth/schemas/auth-schemas";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
@@ -17,6 +18,7 @@ export function useResetPasswordForm() {
   const [loading, setLoading] = useState(false);
   const [rootError, setRootError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   const form = useForm<ResetPasswordValues>({
     resolver: zodResolver(resetPasswordSchema),
@@ -29,9 +31,21 @@ export function useResetPasswordForm() {
   });
 
   async function submitPasswordReset(values: ResetPasswordValues) {
-    setLoading(true);
     setRootError(null);
     setSuccess(false);
+    if (
+      guardOfflineAction({
+        id: "auth-reset-password-offline",
+        description: "Reconnect before resetting your password.",
+      })
+    ) {
+      setRootError(
+        "You are offline. Reconnect before resetting your password.",
+      );
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const result = await AuthCommands.resetPassword(token, values.password);
@@ -63,6 +77,7 @@ export function useResetPasswordForm() {
 
   return {
     form,
+    isOnline,
     loading,
     onSubmit,
     rootError,

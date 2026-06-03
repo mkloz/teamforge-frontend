@@ -9,6 +9,7 @@ import {
 import { rootRoute } from "@/app/router/root-route";
 import { createRouteErrorComponent } from "@/app/router/route-error-component";
 import { redirectAuthenticatedUser } from "@/app/router/route-guards";
+import { RouteLoadingFallback } from "@/shared/components/loading/route-loading-fallback";
 import {
   buildAuthRouteNavigation,
   parseAuthReturnSearch,
@@ -35,13 +36,26 @@ const downloadPageModule = createLazyRouteModule(() =>
   })),
 );
 
-const DownloadRouteLoading = createLazyRouteLoading(
-  () =>
-    import("@/features/download/download-page.loading").then((m) => ({
-      default: m.DownloadPageLoading,
-    })),
-  { mode: "route" },
-);
+const DOWNLOAD_PREVIEW_IMAGES = {
+  android: {
+    sizes: "(min-width: 640px) 17rem, min(20rem, calc(100vw - 3rem))",
+    src: "/download/install-preview-android.png",
+    srcSet:
+      "/download/install-preview-android-256w.png 256w, /download/install-preview-android-360w.png 360w, /download/install-preview-android.png 465w",
+  },
+  desktop: {
+    sizes: "(min-width: 1024px) 30rem, min(30rem, calc(100vw - 3rem))",
+    src: "/download/install-preview-desktop.png",
+    srcSet:
+      "/download/install-preview-desktop-480w.png 480w, /download/install-preview-desktop.png 815w",
+  },
+  ios: {
+    sizes: "(min-width: 1024px) 35rem, min(35rem, calc(100vw - 3rem))",
+    src: "/download/install-preview-ios.png",
+    srcSet:
+      "/download/install-preview-ios-480w.png 480w, /download/install-preview-ios-720w.png 720w, /download/install-preview-ios.png 984w",
+  },
+} as const;
 
 const privacyPageModule = createLazyRouteModule(() =>
   import("@/features/legal/legal-page").then((m) => ({
@@ -147,6 +161,57 @@ function createRouteModuleLoader(module: LazyRouteModule) {
   };
 }
 
+function getDownloadPreviewImageForDevice() {
+  if (typeof navigator === "undefined") {
+    return DOWNLOAD_PREVIEW_IMAGES.desktop;
+  }
+
+  const ua = navigator.userAgent;
+  const uaLower = ua.toLowerCase();
+  const isTouchMac = ua.includes("Macintosh") && navigator.maxTouchPoints > 1;
+
+  if (/iphone|ipad|ipod/.test(uaLower) || isTouchMac) {
+    return DOWNLOAD_PREVIEW_IMAGES.ios;
+  }
+
+  if (uaLower.includes("android")) {
+    return DOWNLOAD_PREVIEW_IMAGES.android;
+  }
+
+  return DOWNLOAD_PREVIEW_IMAGES.desktop;
+}
+
+function preloadDownloadPreviewImage() {
+  if (typeof document === "undefined") {
+    return;
+  }
+
+  const image = getDownloadPreviewImageForDevice();
+  const existingPreload = document.head.querySelector(
+    `link[rel="preload"][as="image"][href="${image.src}"]`,
+  );
+
+  if (existingPreload) {
+    return;
+  }
+
+  const link = document.createElement("link");
+  link.rel = "preload";
+  link.setAttribute("as", "image");
+  link.setAttribute("href", image.src);
+  link.setAttribute("imagesrcset", image.srcSet);
+  link.setAttribute("imagesizes", image.sizes);
+  link.setAttribute("fetchpriority", "high");
+  document.head.appendChild(link);
+}
+
+function createDownloadRouteModuleLoader(module: LazyRouteModule) {
+  return async () => {
+    preloadDownloadPreviewImage();
+    await module.preload();
+  };
+}
+
 const landingRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
@@ -159,13 +224,10 @@ const landingRoute = createRoute({
 const downloadRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/download",
-  loader: createRouteModuleLoader(downloadPageModule),
+  loader: createDownloadRouteModuleLoader(downloadPageModule),
   staleTime: Number.POSITIVE_INFINITY,
-  pendingComponent: DownloadRouteLoading,
-  component: createLazyPageRoute(
-    downloadPageModule.Component,
-    <DownloadRouteLoading />,
-  ),
+  pendingComponent: RouteLoadingFallback,
+  component: createLazyPageRoute(downloadPageModule.Component),
   errorComponent: createRouteErrorComponent({
     scope: routeErrorScopes.download,
     fullPage: true,

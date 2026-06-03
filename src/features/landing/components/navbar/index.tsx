@@ -1,5 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Download, Menu, X } from "lucide-react";
+import Download from "lucide-react/dist/esm/icons/download.js";
+import Menu from "lucide-react/dist/esm/icons/menu.js";
+import X from "lucide-react/dist/esm/icons/x.js";
 import type { MouseEvent } from "react";
 import { useEffect, useState } from "react";
 import { TeamForgeLogo } from "@/assets/logo";

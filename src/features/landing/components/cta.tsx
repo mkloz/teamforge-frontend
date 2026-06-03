@@ -1,15 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight, Download } from "lucide-react";
-import { useLandingAuthActions } from "@/features/landing/hooks/use-landing-auth-actions";
 import { useMouseGlow } from "@/features/landing/hooks/use-mouse-glow";
+import { useResolvedLandingAuthActions } from "@/features/landing/hooks/use-resolved-landing-auth-actions";
 import { Button } from "@/shared/components/ui/button";
 
 export function CtaSection() {
   const { sectionRef, glowRef, glowHandlers } = useMouseGlow();
-  const { isResolvingAuthAction, primaryAction } = useLandingAuthActions(
-    "Create Free Account",
-  );
+  const { isResolvingAuthAction, primaryAction } =
+    useResolvedLandingAuthActions("Create Free Account");
 
   return (
     <section

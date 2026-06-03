@@ -12,6 +12,7 @@ export function useUnreadAppBadge(
 ) {
   useEffect(() => {
     if (!enabled) {
+      void clearAppBadge();
       return;
     }
 

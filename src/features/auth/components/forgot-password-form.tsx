@@ -20,12 +20,14 @@ import {
 
 interface ForgotPasswordFormProps {
   form: UseFormReturn<ForgotPasswordValues>;
+  isOnline: boolean;
   loading: boolean;
   onSubmit: FormEventHandler<HTMLFormElement>;
 }
 
 export function ForgotPasswordForm({
   form,
+  isOnline,
   loading,
   onSubmit,
 }: ForgotPasswordFormProps) {
@@ -51,8 +53,17 @@ export function ForgotPasswordForm({
           )}
         />
 
-        <Button type="submit" loading={loading} size="lg" className="w-full">
-          Send reset link
+        <Button
+          type="submit"
+          disabled={!isOnline}
+          loading={loading}
+          title={
+            isOnline ? undefined : "Reconnect before sending a reset link."
+          }
+          size="lg"
+          className="w-full"
+        >
+          {isOnline ? "Send reset link" : "Reconnect to continue"}
           <ArrowRightAnimated />
         </Button>
       </form>

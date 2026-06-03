@@ -7,7 +7,7 @@ import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 export function useStep5ImageUploads() {
   const coverInputRef = useRef<HTMLInputElement>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
-  const { guardOfflineAction } = useOfflineActionGuard();
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const [coverUploadError, setCoverUploadError] = useState<string | null>(null);
   const [avatarUploadError, setAvatarUploadError] = useState<string | null>(
     null,
@@ -61,6 +61,7 @@ export function useStep5ImageUploads() {
     avatarUploadError,
     coverInputRef,
     coverUploadError,
+    isOnline,
     isAvatarUploading,
     isCoverUploading,
     uploadAvatarImage,

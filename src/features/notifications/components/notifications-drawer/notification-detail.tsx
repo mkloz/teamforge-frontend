@@ -115,6 +115,11 @@ export function NotificationDetail({
             onClick={() => onToggleRead(item)}
             disabled={isBusy || isReadActionDisabled}
             loading={isTogglingRead}
+            title={
+              isReadActionDisabled
+                ? "Reconnect to update read state"
+                : undefined
+            }
             className="min-w-0 flex-1"
             contentClassName="gap-1.5"
           >

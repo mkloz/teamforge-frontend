@@ -45,6 +45,7 @@ export function GroupPanelContent({
     invitingMemberId,
     isDisbanding,
     isEditOpen,
+    isOnline,
     isLeaving,
     isPlanEditOpen,
     leaveGroup,
@@ -117,6 +118,7 @@ export function GroupPanelContent({
               inviteMember={inviteMember}
               invitingMemberId={invitingMemberId}
               isDisbanding={isDisbanding}
+              isOnline={isOnline}
               isLeaving={isLeaving}
               leaveGroup={leaveGroup}
               memberCount={memberCount}

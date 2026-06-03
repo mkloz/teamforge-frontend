@@ -30,6 +30,7 @@ interface InvitationQueueItemProps {
   decliningInviteId: string | null;
   isAccepting: boolean;
   isDeclining: boolean;
+  isOnline: boolean;
   onAccept: (inviteId: string) => Promise<void>;
   onDecline: (inviteId: string) => Promise<void>;
 }
@@ -41,6 +42,7 @@ export function InvitationQueueItem({
   isAccepting,
   isDeclining,
   isFocused,
+  isOnline,
   onAccept,
   onDecline,
 }: InvitationQueueItemProps) {
@@ -114,9 +116,10 @@ export function InvitationQueueItem({
             size="icon-xs"
             className="sm:w-auto sm:px-3"
             loading={acceptingInviteId === invite.id}
-            disabled={isAccepting || isDeclining}
+            disabled={!isOnline || isAccepting || isDeclining}
             onClick={() => void onAccept(invite.id)}
             aria-label={`Join ${invite.group.name}`}
+            title={isOnline ? undefined : "Reconnect before accepting invites."}
           >
             <Check className="size-3" />
             <span className="hidden sm:inline">Join</span>
@@ -126,9 +129,10 @@ export function InvitationQueueItem({
             variant="destructive"
             size="icon-xs"
             loading={decliningInviteId === invite.id}
-            disabled={isAccepting || isDeclining}
+            disabled={!isOnline || isAccepting || isDeclining}
             onClick={() => void onDecline(invite.id)}
             aria-label={`Decline invitation to ${invite.group.name}`}
+            title={isOnline ? undefined : "Reconnect before declining invites."}
           >
             <X className="size-3.5" />
           </Button>

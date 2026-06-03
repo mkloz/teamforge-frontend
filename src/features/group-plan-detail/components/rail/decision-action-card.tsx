@@ -98,7 +98,8 @@ function LeaveGroupConfirmationAction({
     <Button
       variant="outline"
       className="w-full"
-      disabled={action.loading}
+      disabled={action.disabled || action.loading}
+      title={action.title}
       onClick={() => {
         setIsLoaded(true);
         setIsOpen(true);

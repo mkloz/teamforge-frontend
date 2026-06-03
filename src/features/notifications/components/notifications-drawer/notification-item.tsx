@@ -119,6 +119,7 @@ export function NotificationItem({
         iconClassName={config.iconClassName}
         item={item}
         isDisabled={isBusy || isReadActionDisabled}
+        isReadActionDisabled={isReadActionDisabled}
         isTogglingRead={isTogglingRead}
         onToggleRead={() => onToggleRead(item)}
       />
@@ -180,6 +181,7 @@ interface NotificationSourceProps {
   icon: LucideIcon;
   iconClassName: string;
   isDisabled: boolean;
+  isReadActionDisabled: boolean;
   isTogglingRead: boolean;
   item: Notification;
   onToggleRead: () => void;
@@ -190,6 +192,7 @@ function NotificationSource({
   icon: Icon,
   iconClassName,
   isDisabled,
+  isReadActionDisabled,
   isTogglingRead,
   item,
   onToggleRead,
@@ -216,6 +219,11 @@ function NotificationSource({
             disabled={isDisabled}
             loading={isTogglingRead}
             aria-label={`${actionLabel}. ${item.title}`}
+            title={
+              isReadActionDisabled
+                ? "Reconnect to update read state"
+                : actionLabel
+            }
             className="absolute inset-0 hidden size-10 rounded-md bg-canvas/95 p-0 opacity-0 shadow-sm transition-opacity duration-150 lg:inline-flex lg:group-hover:opacity-100 lg:group-focus-within:opacity-100"
           >
             <ReadStateIcon
@@ -224,7 +232,11 @@ function NotificationSource({
             />
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="right">{actionLabel}</TooltipContent>
+        <TooltipContent side="right">
+          {isReadActionDisabled
+            ? "Reconnect to update read state"
+            : actionLabel}
+        </TooltipContent>
       </Tooltip>
     </span>
   );

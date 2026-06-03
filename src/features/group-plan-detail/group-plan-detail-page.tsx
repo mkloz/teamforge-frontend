@@ -1,4 +1,5 @@
 import { useParams, useSearch } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { GroupPlanDetailPageLoading } from "@/features/group-plan-detail/group-plan-detail-page.loading";
 import { GroupPlanDetailPageContent } from "@/features/group-plan-detail/group-plan-detail-page-content";
 import { useGroupPlanDetail } from "@/features/group-plan-detail/hooks/use-group-plan-detail";
@@ -7,6 +8,8 @@ import { useGroupPlanDetailRealtime } from "@/features/group-plan-detail/hooks/u
 import type { GroupPlanDetail } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
 import type { GroupPlanDetailRouteSearch } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import { PageErrorState } from "@/shared/components/page-error-state";
+import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
+import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
 
 const GROUP_PLAN_DETAIL_ROUTE = "/app-shell/groups/$groupId";
 
@@ -14,6 +17,21 @@ export function GroupPlanDetailPage() {
   const { groupId } = useParams({ from: GROUP_PLAN_DETAIL_ROUTE });
   const search = useSearch({ from: GROUP_PLAN_DETAIL_ROUTE });
   const detailQuery = useGroupPlanDetail(groupId);
+  const pageMetadata = useMemo(() => {
+    const detail = detailQuery.data;
+    const title = detail?.plan?.title
+      ? `${detail.plan.title} · ${detail.group.name}`
+      : (detail?.group.name ?? "Group details");
+
+    return createTeamForgePageMetadata({
+      title,
+      description: detail?.plan?.description
+        ? detail.plan.description
+        : "Review the TeamForge group, plan, members, and fit signals.",
+    });
+  }, [detailQuery.data]);
+
+  usePageMetadata(pageMetadata);
 
   return (
     <GroupPlanDetailQueryState detailQuery={detailQuery} search={search} />

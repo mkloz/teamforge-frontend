@@ -10,6 +10,7 @@ import { ProfileBasicsFormFields } from "./profile-basics-form-fields";
 
 interface ProfileBasicsCardProps {
   form: UseFormReturn<ProfileBasicsValues>;
+  isOnline: boolean;
   isSaving: boolean;
   onSubmit: FormEventHandler<HTMLFormElement>;
   saveError: string | null;
@@ -18,6 +19,7 @@ interface ProfileBasicsCardProps {
 
 export function ProfileBasicsCard({
   form,
+  isOnline,
   isSaving,
   onSubmit,
   saveError,
@@ -52,9 +54,11 @@ export function ProfileBasicsCard({
             type="submit"
             size="md"
             className="group mt-4 w-full"
+            disabled={!isOnline || isSaving}
             loading={isSaving}
+            title={isOnline ? undefined : "Reconnect before saving details."}
           >
-            Looks good
+            {isOnline ? "Looks good" : "Reconnect to continue"}
             <ArrowRightAnimated />
           </Button>
         </form>

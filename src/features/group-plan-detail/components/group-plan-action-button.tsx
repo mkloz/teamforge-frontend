@@ -42,6 +42,7 @@ export function GroupPlanActionButton({
       loading={action.loading}
       disabled={action.disabled}
       aria-label={ariaLabel}
+      title={action.title}
       onClick={action.onClick}
     >
       {showIcon ? <Icon className="size-4" aria-hidden="true" /> : null}

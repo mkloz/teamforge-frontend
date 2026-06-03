@@ -176,7 +176,7 @@ function HeaderAvatar({
         className="flex size-10 shrink-0 items-center justify-center rounded-full bg-transparent text-foreground"
         aria-hidden="true"
       >
-        <MyNotesAvatarVisual className="size-full" />
+        <MyNotesAvatarVisual className="size-full scale-110 overflow-visible" />
       </span>
     );
   }

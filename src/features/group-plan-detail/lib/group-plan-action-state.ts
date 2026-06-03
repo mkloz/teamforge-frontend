@@ -32,6 +32,7 @@ export interface GroupPlanActionDescriptor {
   onClick?: () => void;
   loading?: boolean;
   disabled?: boolean;
+  title?: string;
   destructive?: boolean;
 }
 
@@ -53,6 +54,7 @@ export interface GroupPlanActionControls {
   isDecliningInvite: boolean;
   isJoining: boolean;
   isLeaving: boolean;
+  isOnline: boolean;
   joinGroup: () => void;
   leaveGroup: () => void;
 }
@@ -158,6 +160,10 @@ function buildCurrentMemberState({
           icon: X,
           onClick: controls.leaveGroup,
           loading: controls.isLeaving,
+          disabled: !controls.isOnline || controls.isLeaving,
+          title: controls.isOnline
+            ? undefined
+            : "Reconnect before leaving this group.",
           destructive: true,
         }
       : null,
@@ -205,7 +211,11 @@ function buildInvitedState({
         }
       },
       loading: controls.isAcceptingInvite,
-      disabled: !pendingInviteId || controls.isAcceptingInvite,
+      disabled:
+        !controls.isOnline || !pendingInviteId || controls.isAcceptingInvite,
+      title: controls.isOnline
+        ? undefined
+        : "Reconnect before accepting this invite.",
     },
     secondary: {
       kind: "button",
@@ -217,7 +227,11 @@ function buildInvitedState({
         }
       },
       loading: controls.isDecliningInvite,
-      disabled: !pendingInviteId || controls.isDecliningInvite,
+      disabled:
+        !controls.isOnline || !pendingInviteId || controls.isDecliningInvite,
+      title: controls.isOnline
+        ? undefined
+        : "Reconnect before declining this invite.",
     },
     summary,
     joinedGroupId: access.joinedGroupId,
@@ -249,7 +263,10 @@ function buildRequestedState({
       icon: X,
       onClick: controls.cancelRequest,
       loading: controls.isCancellingRequest,
-      disabled: controls.isCancellingRequest,
+      disabled: !controls.isOnline || controls.isCancellingRequest,
+      title: controls.isOnline
+        ? undefined
+        : "Reconnect before changing your join request.",
     },
     summary,
     joinedGroupId: access.joinedGroupId,
@@ -284,6 +301,10 @@ function buildJoinableState({
       icon: requesting ? Send : ArrowRight,
       onClick: controls.joinGroup,
       loading: controls.isJoining,
+      disabled: !controls.isOnline || controls.isJoining,
+      title: controls.isOnline
+        ? undefined
+        : "Reconnect before joining or requesting to join this group.",
     },
     secondary: buildExploreAction(),
     summary,

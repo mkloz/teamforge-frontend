@@ -31,6 +31,7 @@ interface GroupPanelMainSectionsProps {
   inviteMember: (memberId: string) => Promise<void> | void;
   invitingMemberId: string | null;
   isDisbanding: boolean;
+  isOnline: boolean;
   isLeaving: boolean;
   leaveGroup: () => Promise<void> | void;
   memberCount: number;
@@ -59,6 +60,7 @@ export function GroupPanelMainSections({
   inviteMember,
   invitingMemberId,
   isDisbanding,
+  isOnline,
   isLeaving,
   leaveGroup,
   memberCount,
@@ -87,6 +89,7 @@ export function GroupPanelMainSections({
         memberCount={memberCount}
         maxMembers={group.maxMembers}
         groupId={group.id}
+        isOnline={isOnline}
         name={group.name}
         onEditGroup={onEditGroup}
         plan={group.plan}
@@ -99,6 +102,7 @@ export function GroupPanelMainSections({
           isFocused={focusedPlanId === currentPlan.id}
           focusedProposalId={focusedProposalId}
           isReadOnly={isGroupLocked}
+          isOnline={isOnline}
           currentUserRole={currentUserRole}
           pendingAction={pendingPlanAction}
           onCancelPlan={() => cancelPlan(currentPlan.id)}
@@ -116,6 +120,7 @@ export function GroupPanelMainSections({
           currentUserId={currentUserId}
           currentUserRole={currentUserRole}
           isReadOnly={isGroupLocked}
+          isOnline={isOnline}
           inviteCandidates={inviteCandidates}
           invitingMemberId={invitingMemberId}
           onInviteMember={inviteMember}
@@ -129,6 +134,7 @@ export function GroupPanelMainSections({
         focusedPlanId={focusedPlanId}
         history={group.planHistory ?? []}
         isTemplateActionDisabled={pendingPlanAction !== null || isGroupLocked}
+        isOnline={isOnline}
         isTemplateActionPending={pendingPlanAction === "create-next-plan"}
         onUseAsTemplate={createPlanFromHistory}
       />
@@ -138,6 +144,7 @@ export function GroupPanelMainSections({
           currentUserRole={currentUserRole}
           groupStatus={group.status}
           isDisbanding={isDisbanding}
+          isOnline={isOnline}
           isLeaving={isLeaving}
           onDisbandGroup={disbandGroup}
           onLeaveGroup={leaveGroup}

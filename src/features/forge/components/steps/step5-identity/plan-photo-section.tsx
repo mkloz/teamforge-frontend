@@ -54,6 +54,7 @@ export function PlanPhotoSection({
   coverInputRef,
   coverUploadError,
   isCoverUploading,
+  isOnline,
   templateCoverImage,
   onCoverFiles,
   onCoverImageChange,
@@ -67,7 +68,9 @@ export function PlanPhotoSection({
           Plan photo
         </p>
         <p className="mt-0.5 text-muted-foreground/60 text-xs">
-          This image appears on the plan card visible to all members.
+          {isOnline
+            ? "This image appears on the plan card visible to all members."
+            : "Reconnect before changing the plan photo."}
         </p>
       </div>
 
@@ -80,6 +83,7 @@ export function PlanPhotoSection({
           description="Drop a landscape image here or browse from your device."
           helper="PNG, JPG, WEBP up to 30 MB"
           actionLabel="Browse"
+          disabled={!isOnline}
           isUploading={isCoverUploading}
           error={coverUploadError}
           onFiles={onCoverFiles}
@@ -110,9 +114,13 @@ export function PlanPhotoSection({
             type="button"
             variant="ghost"
             size="icon-xs"
+            disabled={!isOnline}
             onClick={() => onCoverImageChange(null)}
             className="absolute top-2 right-2 z-20 size-7 rounded-full bg-black/45 text-white hover:bg-black/65"
             aria-label="Remove cover"
+            title={
+              isOnline ? undefined : "Reconnect before changing group images."
+            }
           >
             <X size={13} />
           </Button>
@@ -130,6 +138,10 @@ export function PlanPhotoSection({
               variant="ghost"
               onClick={() => onCoverImageChange(selected ? null : choice.value)}
               aria-pressed={selected}
+              disabled={!isOnline}
+              title={
+                isOnline ? undefined : "Reconnect before changing group images."
+              }
               className={cn(
                 "group h-10 justify-start gap-2 rounded-lg border bg-card px-2.5 font-bold text-foreground text-xs shadow-none transition-all duration-200 active:scale-95",
                 selected

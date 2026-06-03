@@ -17,7 +17,6 @@ const teamForgeManifest = {
   start_url: "/home?source=pwa",
   scope: "/",
   display: "standalone",
-  orientation: "portrait-primary",
   background_color: "#FAFAF8",
   theme_color: "#0D9488",
   categories: ["social", "lifestyle"],
@@ -85,6 +84,63 @@ const teamForgeManifest = {
   ],
 } satisfies Partial<ManifestOptions>;
 
+const PUBLIC_LUCIDE_ICON_MODULES = new Set([
+  "bell.js",
+  "bookmark.js",
+  "circle-check.js",
+  "clipboard-check.js",
+  "clipboard-copy.js",
+  "download.js",
+  "ellipsis-vertical.js",
+  "globe.js",
+  "menu.js",
+  "monitor-smartphone.js",
+  "plus.js",
+  "refresh-cw.js",
+  "share.js",
+  "smartphone.js",
+  "wifi.js",
+  "wifi-off.js",
+  "x.js",
+]);
+
+const PUBLIC_LUCIDE_HELPER_MODULE_PATTERNS = [
+  "/lucide-react/dist/esm/createLucideIcon.js",
+  "/lucide-react/dist/esm/defaultAttributes.js",
+  "/lucide-react/dist/esm/Icon.js",
+  "/lucide-react/dist/esm/shared/src/utils/",
+];
+
+function normalizeModuleId(id: string) {
+  return id.replace(/\\/g, "/");
+}
+
+function getLucideChunkName(id: string) {
+  const normalizedId = normalizeModuleId(id);
+
+  if (!normalizedId.includes("/lucide-react/")) {
+    return null;
+  }
+
+  if (
+    PUBLIC_LUCIDE_HELPER_MODULE_PATTERNS.some((pattern) =>
+      normalizedId.includes(pattern),
+    )
+  ) {
+    return "public-icons";
+  }
+
+  if (normalizedId.includes("/lucide-react/dist/esm/icons/")) {
+    const fileName = normalizedId.split("/").at(-1);
+
+    if (fileName && PUBLIC_LUCIDE_ICON_MODULES.has(fileName)) {
+      return "public-icons";
+    }
+  }
+
+  return "icons";
+}
+
 function teamForgeManifestDevPlugin(): Plugin {
   return {
     apply: "serve",
@@ -108,13 +164,17 @@ function teamForgeManifestDevPlugin(): Plugin {
 }
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [
-    react({
-      babel: {
-        plugins: ["babel-plugin-react-compiler"],
-      },
-    }),
+    react(
+      command === "build"
+        ? {
+            babel: {
+              plugins: ["babel-plugin-react-compiler"],
+            },
+          }
+        : undefined,
+    ),
     tailwindcss(),
     teamForgeManifestDevPlugin(),
     VitePWA({
@@ -128,11 +188,19 @@ export default defineConfig({
         "icons/pwa-192x192.png",
         "icons/pwa-512x512.png",
         "icons/pwa-maskable-512x512.png",
+        "download/install-preview-android-256w.png",
+        "download/install-preview-android-360w.png",
+        "download/install-preview-android.png",
+        "download/install-preview-desktop-480w.png",
+        "download/install-preview-desktop.png",
+        "download/install-preview-ios-480w.png",
+        "download/install-preview-ios-720w.png",
+        "download/install-preview-ios.png",
       ],
       manifest: teamForgeManifest,
       workbox: {
         cleanupOutdatedCaches: true,
-        globPatterns: ["**/*.{js,css,html,svg,woff2}"],
+        globPatterns: ["**/*.{js,css,html,png,svg,woff2}"],
         globIgnores: ["**/avatars/**", "**/group-covers/**"],
         importScripts: ["sw-push.js"],
         navigateFallback: "/index.html",
@@ -178,6 +246,9 @@ export default defineConfig({
   ],
   server: {
     port: 3000,
+    watch: {
+      ignored: ["**/dev-dist/**", "**/dist/**", "**/reports/**", "**/temp/**"],
+    },
   },
   build: {
     rollupOptions: {
@@ -267,8 +338,10 @@ export default defineConfig({
             return "ui-vendor";
           }
 
-          if (id.includes("/lucide-react/")) {
-            return "icons";
+          const lucideChunkName = getLucideChunkName(id);
+
+          if (lucideChunkName) {
+            return lucideChunkName;
           }
 
           if (id.includes("/ky/")) {
@@ -319,4 +392,4 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-});
+}));

@@ -5,6 +5,7 @@ import type {
   Group,
   GroupMember,
 } from "@/features/activity/lib/activity-contract";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { warnInDevelopment } from "@/shared/lib/development-warning";
 import type { ReviewDeferralReason } from "@/shared/schemas";
 
@@ -34,6 +35,7 @@ export function useCompletedGroupRating(group: Group) {
     isDeferring,
     isSubmitting,
   } = useGroupRatings(group.id);
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [reviewDrafts, setReviewDrafts] = useState<Record<string, ReviewDraft>>(
     {},
@@ -118,6 +120,15 @@ export function useCompletedGroupRating(group: Group) {
       return;
     }
 
+    if (
+      guardOfflineAction({
+        id: "activity-group-rating-submit-offline",
+        description: "Reconnect before submitting teammate reviews.",
+      })
+    ) {
+      return;
+    }
+
     const reviewedUserId = activeUserId;
     const submittedDraft = activeDraft;
     const ratingPayload = {
@@ -149,6 +160,15 @@ export function useCompletedGroupRating(group: Group) {
       return;
     }
 
+    if (
+      guardOfflineAction({
+        id: "activity-group-review-deferral-offline",
+        description: "Reconnect before moving review prompts.",
+      })
+    ) {
+      return;
+    }
+
     startTransition(async () => {
       try {
         await deferReview({
@@ -169,6 +189,7 @@ export function useCompletedGroupRating(group: Group) {
     isError,
     isDeferring,
     isLoading,
+    isOnline,
     isSubmitting,
     pendingCount: pendingMembers.length,
     rateableMembers,

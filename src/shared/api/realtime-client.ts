@@ -3,6 +3,8 @@ import { io, type Socket } from "socket.io-client";
 import { config } from "@/config/config";
 import type { RealtimeEventName } from "@/shared/schemas";
 
+type RealtimeConnectHandler = () => void;
+
 function buildRealtimeUrl() {
   if (!config.apiUrl) {
     return null;
@@ -19,6 +21,7 @@ class RealtimeClient {
     string,
     Set<(...args: unknown[]) => void>
   >();
+  private readonly connectHandlers = new Set<RealtimeConnectHandler>();
 
   syncSession(nextToken: string | null) {
     if (!nextToken) {
@@ -36,6 +39,25 @@ class RealtimeClient {
 
     this.token = nextToken;
     this.connect(nextToken);
+  }
+
+  reconnectSession(nextToken: string | null) {
+    if (!nextToken) {
+      this.token = null;
+      this.disconnect();
+      return;
+    }
+
+    this.token = nextToken;
+    this.connect(nextToken);
+  }
+
+  onConnect(handler: RealtimeConnectHandler) {
+    this.connectHandlers.add(handler);
+
+    return () => {
+      this.connectHandlers.delete(handler);
+    };
   }
 
   on(event: RealtimeEventName, handler: (...args: unknown[]) => void) {
@@ -76,6 +98,10 @@ class RealtimeClient {
       transports: ["websocket"],
     });
 
+    socket.on("connect", () => {
+      this.notifyConnectHandlers();
+    });
+
     for (const [event, handlers] of this.handlers.entries()) {
       for (const handler of handlers) {
         socket.on(event, handler);
@@ -83,6 +109,12 @@ class RealtimeClient {
     }
 
     this.socket = socket;
+  }
+
+  private notifyConnectHandlers() {
+    for (const handler of this.connectHandlers) {
+      handler();
+    }
   }
 
   private disconnect() {

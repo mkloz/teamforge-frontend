@@ -91,6 +91,8 @@ function AttentionQueueView({
     isAcceptingInvite,
     isDeclining,
     isDecliningInvite,
+    isFriendRequestOnline,
+    isInviteActionOnline,
     proposedPlans,
     queueSize,
     shouldShowSkeleton,
@@ -172,6 +174,7 @@ function AttentionQueueView({
                 decliningInviteId={decliningInviteId}
                 isAccepting={isAcceptingInvite}
                 isDeclining={isDecliningInvite}
+                isOnline={isInviteActionOnline}
                 onAccept={acceptVisibleInvite}
                 onDecline={declineVisibleInvite}
               />
@@ -188,6 +191,7 @@ function AttentionQueueView({
                 decliningRequestId={decliningRequestId}
                 isAccepting={isAccepting}
                 isDeclining={isDeclining}
+                isOnline={isFriendRequestOnline}
                 onAccept={acceptVisibleRequest}
                 onDecline={declineVisibleRequest}
               />

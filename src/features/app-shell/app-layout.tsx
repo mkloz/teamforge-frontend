@@ -6,7 +6,6 @@ import { useAppNavbarCounters } from "@/features/app-shell/hooks/use-app-navbar-
 import { useAppShellScrollReset } from "@/features/app-shell/hooks/use-app-shell-scroll-reset";
 import { RouteLoadingFallback } from "@/shared/components/loading/route-loading-fallback";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
-import { useUnreadAppBadge } from "@/shared/hooks/use-unread-app-badge";
 import { cn } from "@/shared/lib/utils";
 import { useUiStore } from "@/shared/store/ui.store";
 
@@ -30,9 +29,6 @@ export function AppLayout({
   const shouldRenderSidebar = useMediaQuery("(min-width: 768px)");
 
   useAppShellScrollReset();
-  useUnreadAppBadge(navbarCounters.notificationUnreadCount, {
-    enabled: navbarCounters.isNotificationUnreadCountReady,
-  });
 
   return (
     <div className="min-h-screen overflow-x-clip bg-canvas font-sans text-foreground">

@@ -1,4 +1,8 @@
 const DEFAULT_NOTIFICATION_ROUTE = "/home?notifications=true";
+const PWA_SERVICE_WORKER_MESSAGE_TYPES = {
+  notificationClick: "teamforge:pwa-notification-click",
+  pushReceived: "teamforge:pwa-push-received",
+};
 
 const APP_EXACT_PATHS = new Set([
   "/",
@@ -341,6 +345,52 @@ async function focusOrOpenTargetWindow(targetUrl) {
   return self.clients.openWindow(targetUrl.href);
 }
 
+function createPwaServiceWorkerMessage(type, targetUrl, options = {}) {
+  return {
+    badgeCount:
+      typeof options.badgeCount === "number" ? options.badgeCount : undefined,
+    notificationTag: getStringValue(options.notificationTag) ?? undefined,
+    route: `${targetUrl.pathname}${targetUrl.search}`,
+    sentAt: Date.now(),
+    type,
+    url: targetUrl.href,
+  };
+}
+
+function postPwaServiceWorkerMessage(client, message) {
+  if (!client || typeof client.postMessage !== "function") {
+    return;
+  }
+
+  try {
+    client.postMessage(message, []);
+    // oxlint-disable-next-line inhuman/no-swallowed-catch -- Bridge messages are best-effort; notification delivery should not depend on them.
+  } catch (error) {
+    void error;
+  }
+}
+
+async function broadcastPwaServiceWorkerMessage(message) {
+  let windowClients = [];
+
+  try {
+    windowClients = await self.clients.matchAll({
+      includeUncontrolled: true,
+      type: "window",
+    });
+    // oxlint-disable-next-line inhuman/no-swallowed-catch -- Bridge messages are best-effort; notification delivery should not depend on them.
+  } catch (error) {
+    void error;
+    return;
+  }
+
+  for (const client of windowClients) {
+    if (isSameOriginClient(client)) {
+      postPwaServiceWorkerMessage(client, message);
+    }
+  }
+}
+
 self.addEventListener("push", (event) => {
   const payload = readPushPayload(event);
   const payloadData = readPayloadData(payload);
@@ -348,10 +398,23 @@ self.addEventListener("push", (event) => {
   const targetUrl = getSameOriginAppUrl(
     getPayloadRouteCandidate(payload, payloadData),
   );
+  const notificationTag =
+    payload.tag || payload.notificationId || "teamforge-update";
+  const badgeCount = getPayloadBadgeCount(payload, payloadData);
 
   event.waitUntil(
     Promise.all([
       syncPushAppBadge(payload, payloadData),
+      broadcastPwaServiceWorkerMessage(
+        createPwaServiceWorkerMessage(
+          PWA_SERVICE_WORKER_MESSAGE_TYPES.pushReceived,
+          targetUrl,
+          {
+            badgeCount,
+            notificationTag,
+          },
+        ),
+      ),
       self.registration.showNotification(title, {
         badge: payload.badge || "/icons/pwa-192x192.png",
         body: payload.body || "You have a new TeamForge update.",
@@ -361,7 +424,7 @@ self.addEventListener("push", (event) => {
           url: targetUrl.href,
         },
         icon: payload.icon || "/icons/pwa-192x192.png",
-        tag: payload.tag || payload.notificationId || "teamforge-update",
+        tag: notificationTag,
       }),
     ]),
   );
@@ -374,5 +437,19 @@ self.addEventListener("notificationclick", (event) => {
     event.notification.data?.route || event.notification.data?.url,
   );
 
-  event.waitUntil(focusOrOpenTargetWindow(targetUrl));
+  event.waitUntil(
+    focusOrOpenTargetWindow(targetUrl).then((client) => {
+      postPwaServiceWorkerMessage(
+        client,
+        createPwaServiceWorkerMessage(
+          PWA_SERVICE_WORKER_MESSAGE_TYPES.notificationClick,
+          targetUrl,
+          {
+            notificationTag: event.notification.tag,
+          },
+        ),
+      );
+      return undefined;
+    }),
+  );
 });

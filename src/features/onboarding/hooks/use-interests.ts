@@ -91,7 +91,7 @@ export function useInterests({
 
   const canContinue = store.selectedIds.length >= MIN_INTERESTS;
   const isAtMax = store.selectedIds.length >= MAX_INTERESTS;
-  const { finalize, isSaving, saveErrorMessage } = useSaveInterests({
+  const { finalize, isOnline, isSaving, saveErrorMessage } = useSaveInterests({
     canContinue,
     onComplete,
     selectedIds: store.selectedIds,
@@ -121,6 +121,7 @@ export function useInterests({
     showBalanceNudge: suggestions.showBalanceNudge,
     isCatalogLoading,
     catalogError,
+    isOnline,
     isSaving,
     saveErrorMessage,
     setSearchQuery,

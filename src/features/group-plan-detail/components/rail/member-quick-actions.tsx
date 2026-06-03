@@ -40,8 +40,9 @@ export function MemberQuickActions({ detail }: MemberQuickActionsProps) {
         {capabilities.canSuggestPlanChange ? (
           <DeferredPlanChangeDialog
             detail={detail}
-            disabled={proposalActions.isSubmitting}
+            disabled={proposalActions.isSubmitting || !proposalActions.isOnline}
             isCreating={proposalActions.isCreating}
+            isOnline={proposalActions.isOnline}
             onCreate={proposalActions.createProposal}
           />
         ) : null}
@@ -87,11 +88,13 @@ function DeferredPlanChangeDialog({
   detail,
   disabled,
   isCreating,
+  isOnline,
   onCreate,
 }: {
   detail: GroupPlanDetail;
   disabled: boolean;
   isCreating: boolean;
+  isOnline: boolean;
   onCreate: CreateProposalAction;
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -102,6 +105,7 @@ function DeferredPlanChangeDialog({
       variant="outline"
       size="sm"
       disabled={isDisabled}
+      title={isOnline ? undefined : "Reconnect before suggesting changes."}
       onClick={() => {
         setIsLoaded(true);
         setIsOpen(true);
@@ -127,6 +131,7 @@ function DeferredPlanChangeDialog({
         detail={detail}
         disabled={disabled}
         isCreating={isCreating}
+        isOnline={isOnline}
         onCreate={onCreate}
         open={isOpen}
         onOpenChange={setIsOpen}

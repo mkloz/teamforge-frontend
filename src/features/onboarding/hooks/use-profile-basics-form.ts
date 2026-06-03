@@ -23,6 +23,7 @@ import {
   profileBasicsSchema,
 } from "@/features/onboarding/schemas/profile-basics.schema";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import { getPostAuthRedirectPath } from "@/shared/lib/post-auth-route";
 
@@ -45,6 +46,7 @@ export function useProfileBasicsForm() {
   const flowState = useOnboardingFlowState();
   const { data: currentUser } = useCurrentUserQuery();
   const [saveError, setSaveError] = useState<string | null>(null);
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   const form = useForm<ProfileBasicsValues>({
     resolver: zodResolver(profileBasicsSchema),
@@ -87,6 +89,16 @@ export function useProfileBasicsForm() {
       return;
     }
 
+    if (
+      guardOfflineAction({
+        id: "onboarding-profile-basics-offline",
+        description: "Reconnect before saving profile details.",
+      })
+    ) {
+      setSaveError("You are offline. Reconnect before saving your details.");
+      return;
+    }
+
     try {
       const updatedUser = await profileBasicsMutation.mutateAsync(payload);
       const nextDestination = getPostAuthRedirectPath(updatedUser);
@@ -111,6 +123,7 @@ export function useProfileBasicsForm() {
     watchedValues,
     progress,
     saveError,
+    isOnline,
     isSaving: profileBasicsMutation.isPending,
     onSubmit,
   };

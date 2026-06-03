@@ -33,6 +33,7 @@ interface GroupIdentitySectionProps {
   currentUserRole: MemberRole;
   description: string | null;
   isReadOnly?: boolean;
+  isOnline?: boolean;
   memberCount: number;
   maxMembers: number;
   groupId: string;
@@ -51,6 +52,7 @@ export function GroupIdentitySection({
   currentUserRole,
   description,
   isReadOnly = false,
+  isOnline = true,
   memberCount,
   maxMembers,
   groupId,
@@ -145,13 +147,37 @@ export function GroupIdentitySection({
               size="xs"
               className="min-w-0 flex-1 basis-32"
               contentClassName="gap-1.5"
+              disabled={!isOnline}
               onClick={onEditGroup}
+              title={
+                isOnline ? undefined : "Reconnect before editing group details."
+              }
             >
               <Pencil className="size-3.5" />
               <span className="truncate">Edit details</span>
             </Button>
           ) : plan ? (
-            <PlanChangeDialog plan={plan} className="min-w-0 flex-1 basis-32" />
+            <PlanChangeDialog
+              plan={plan}
+              className="min-w-0 flex-1 basis-32"
+              trigger={
+                <Button
+                  variant="primary"
+                  size="xs"
+                  className="min-w-0 flex-1 basis-32"
+                  contentClassName="gap-1.5"
+                  disabled={!isOnline}
+                  title={
+                    isOnline
+                      ? undefined
+                      : "Reconnect before suggesting plan changes."
+                  }
+                >
+                  <Pencil className="size-3.5" aria-hidden="true" />
+                  <span className="truncate">Suggest</span>
+                </Button>
+              }
+            />
           ) : null
         ) : null}
       </div>

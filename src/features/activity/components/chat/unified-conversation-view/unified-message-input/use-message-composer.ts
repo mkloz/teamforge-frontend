@@ -12,6 +12,7 @@ import { warnInDevelopment } from "@/shared/lib/development-warning";
 
 import { MAX_TEXTAREA_HEIGHT } from "./message-composer-utils";
 import {
+  type MessageComposerAppendAttachmentOptions,
   useMessageComposerAttachments,
   useMessageComposerDropzone,
 } from "./use-message-composer-attachments";
@@ -27,6 +28,7 @@ const OFFLINE_UPLOAD_DESCRIPTION =
 interface UseMessageComposerOptions {
   chatId: string | null;
   disabled: boolean;
+  dropzoneRoot?: HTMLElement | null;
   errorMessage: string | null;
   onClearError?: () => void;
   onSend: (input: ActivitySendMessageInput) => Promise<void> | void;
@@ -35,6 +37,7 @@ interface UseMessageComposerOptions {
 export function useMessageComposer({
   chatId,
   disabled,
+  dropzoneRoot = null,
   errorMessage,
   onClearError,
   onSend,
@@ -83,7 +86,10 @@ export function useMessageComposer({
     value: draft.value,
   });
 
-  function appendAttachments(files: File[]) {
+  function appendAttachments(
+    files: File[],
+    options?: MessageComposerAppendAttachmentOptions,
+  ) {
     if (files.length === 0) {
       return;
     }
@@ -97,11 +103,16 @@ export function useMessageComposer({
       return;
     }
 
-    attachments.appendAttachments(files);
+    attachments.appendAttachments(files, options);
+  }
+
+  function appendImageAttachments(files: File[]) {
+    appendAttachments(files, { selectionKind: "image" });
   }
 
   const dropzone = useMessageComposerDropzone({
     appendAttachments,
+    dropzoneRoot,
     isDisabled:
       !isOnline ||
       disabled ||
@@ -179,9 +190,15 @@ export function useMessageComposer({
   });
 
   const handleStopRecording = useVoiceNoteSender({
-    isDisabled:
-      !isOnline || disabled || submit.isSubmitting || isSendingVoiceNote,
+    isDisabled: disabled || submit.isSubmitting || isSendingVoiceNote,
+    isOnline,
     onSend,
+    onOfflineSubmit: () => {
+      guardOfflineAction({
+        id: "chat-voice-note-offline",
+        description: OFFLINE_MESSAGE_DESCRIPTION,
+      });
+    },
     onSent: draft.clearReply,
     setIsSubmitting: setIsSendingVoiceNote,
     stopRecording,
@@ -240,6 +257,8 @@ export function useMessageComposer({
 
   return {
     appendAttachments,
+    appendImageAttachments,
+    attachmentNotice: attachments.attachmentNotice,
     areNetworkActionsDisabled,
     cancelEditing: draft.cancelEditing,
     cancelRecording,
@@ -247,6 +266,7 @@ export function useMessageComposer({
     editingMessage: draft.editingMessage,
     formatRecordingTime,
     handleDragLeave: dropzone.handleDragLeave,
+    handleDragEnter: dropzone.handleDragEnter,
     handleDragOver: dropzone.handleDragOver,
     handleDrop: dropzone.handleDrop,
     handleKeyDown: submit.handleKeyDown,

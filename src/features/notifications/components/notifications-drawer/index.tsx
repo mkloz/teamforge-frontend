@@ -212,7 +212,7 @@ export function NotificationsDrawer({
                       variant="accentGhost"
                       size="icon"
                       onClick={handleRefreshNotifications}
-                      disabled={isRefreshing}
+                      disabled={!isOnline || isRefreshing}
                       loading={isRefreshing}
                       aria-label="Refresh notifications"
                       className="size-10 p-0"
@@ -224,7 +224,9 @@ export function NotificationsDrawer({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom">
-                    Refresh notifications
+                    {isOnline
+                      ? "Refresh notifications"
+                      : "Reconnect to refresh"}
                   </TooltipContent>
                 </Tooltip>
               </>

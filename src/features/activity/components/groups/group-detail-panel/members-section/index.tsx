@@ -10,6 +10,7 @@ import { MemberCard } from "./member-card";
 interface MembersSectionProps {
   inviteCandidates?: ActivityParticipant[];
   invitingMemberId?: string | null;
+  isOnline?: boolean;
   isReadOnly?: boolean;
   members: GroupMember[];
   maxMembers: number;
@@ -24,6 +25,7 @@ interface MembersSectionProps {
 export function MembersSection({
   inviteCandidates = [],
   invitingMemberId = null,
+  isOnline = true,
   isReadOnly = false,
   members,
   maxMembers,
@@ -46,15 +48,26 @@ export function MembersSection({
   return (
     <section aria-labelledby="members-heading">
       <div className="mb-3 flex items-center justify-between">
-        <h3 id="members-heading" className="font-bold text-foreground text-sm">
-          Members{" "}
-          <span className="ml-1 font-medium text-muted-foreground/60">
-            {memberCountString}
-          </span>
-        </h3>
+        <div className="min-w-0">
+          <h3
+            id="members-heading"
+            className="font-bold text-foreground text-sm"
+          >
+            Members{" "}
+            <span className="ml-1 font-medium text-muted-foreground/60">
+              {memberCountString}
+            </span>
+          </h3>
+          {!isOnline && currentUserRole !== "MEMBER" ? (
+            <p role="status" className="mt-0.5 text-slate-muted text-xs">
+              Reconnect before changing members.
+            </p>
+          ) : null}
+        </div>
         {canInvite ? (
           <InviteMembersDialog
             candidates={inviteCandidates}
+            disabled={!isOnline}
             invitingMemberId={invitingMemberId}
             onInvite={(memberId) => onInviteMember?.(memberId)}
           />
@@ -67,6 +80,7 @@ export function MembersSection({
             key={member.userId}
             canRemove={
               !isReadOnly &&
+              isOnline &&
               currentUserRole === "ADMIN" &&
               currentUserId !== null &&
               member.userId !== currentUserId

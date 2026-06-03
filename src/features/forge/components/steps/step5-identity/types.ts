@@ -22,6 +22,7 @@ export interface PlanPhotoSectionProps {
   coverInputRef: RefObject<HTMLInputElement | null>;
   coverUploadError: string | null;
   isCoverUploading: boolean;
+  isOnline: boolean;
   templateCoverImage?: string | null;
   onCoverImageChange: (url: string | null) => void;
   onCoverFiles: (files: File[]) => void;
@@ -33,6 +34,7 @@ export interface GroupAvatarSectionProps {
   avatarUploadError: string | null;
   groupName: string;
   isAvatarUploading: boolean;
+  isOnline: boolean;
   onAvatarFiles: (files: File[]) => void;
   onAvatarImageChange: (url: string | null) => void;
   planTitle: string;

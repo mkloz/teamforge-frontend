@@ -8,6 +8,7 @@ import {
   type RegisterValues,
   registerSchema,
 } from "@/features/auth/schemas/auth-schemas";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
@@ -37,6 +38,7 @@ export function useRegisterForm({
   const [resendLoading, setResendLoading] = useState(false);
   const [rootError, setRootError] = useState<string | null>(null);
   const [otpMessage, setOtpMessage] = useState<string | null>(null);
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -72,6 +74,16 @@ export function useRegisterForm({
     setRootError(null);
     const isValid = await form.trigger(["age", "city", "gender"]);
     if (!isValid) {
+      return;
+    }
+
+    if (
+      guardOfflineAction({
+        id: "auth-register-offline",
+        description: "Reconnect before creating your account.",
+      })
+    ) {
+      setRootError("You are offline. Reconnect before creating your account.");
       return;
     }
 
@@ -123,6 +135,16 @@ export function useRegisterForm({
     if (!isValid) return;
 
     setRootError(null);
+    if (
+      guardOfflineAction({
+        id: "auth-verify-email-offline",
+        description: "Reconnect before verifying your email.",
+      })
+    ) {
+      setRootError("You are offline. Reconnect before verifying your email.");
+      return;
+    }
+
     setLoading(true);
     try {
       const result = await AuthCommands.verifyEmailOtp(formValues);
@@ -150,6 +172,18 @@ export function useRegisterForm({
 
     setRootError(null);
     setOtpMessage(null);
+    if (
+      guardOfflineAction({
+        id: "auth-resend-email-otp-offline",
+        description: "Reconnect before resending your verification code.",
+      })
+    ) {
+      setRootError(
+        "You are offline. Reconnect before resending your verification code.",
+      );
+      return;
+    }
+
     setResendLoading(true);
 
     try {
@@ -182,6 +216,7 @@ export function useRegisterForm({
     form,
     step,
     direction,
+    isOnline,
     loading,
     resendLoading,
     rootError,

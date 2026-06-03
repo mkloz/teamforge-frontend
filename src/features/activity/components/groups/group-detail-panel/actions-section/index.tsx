@@ -12,6 +12,7 @@ interface ActionsSectionProps {
   currentUserRole: MemberRole;
   groupStatus: GroupStatus;
   isDisbanding?: boolean;
+  isOnline?: boolean;
   isLeaving?: boolean;
   onDisbandGroup: () => Promise<void> | void;
   onLeaveGroup: () => Promise<void> | void;
@@ -21,6 +22,7 @@ export function ActionsSection({
   currentUserRole,
   groupStatus,
   isDisbanding = false,
+  isOnline = true,
   isLeaving = false,
   onDisbandGroup,
   onLeaveGroup,
@@ -44,10 +46,11 @@ export function ActionsSection({
           confirmActionLabel={isLeaving ? "Leaving..." : "Leave group"}
           confirmDescription="You’ll leave this group and lose access to its chat and planning workspace."
           confirmTitle="Leave this group?"
-          disabled={isLeaving || isDisbanding}
+          disabled={!isOnline || isLeaving || isDisbanding}
           icon={<LogOut className="size-4" />}
           label={isLeaving ? "Leaving..." : "Leave group"}
           onConfirm={onLeaveGroup}
+          title={isOnline ? undefined : "Reconnect before leaving this group."}
           variant="destructive"
         />
       )}
@@ -57,13 +60,24 @@ export function ActionsSection({
           confirmActionLabel={isDisbanding ? "Disbanding..." : "Disband group"}
           confirmDescription="This will close the group for everyone, cancel unfinished plans, and remove access to the shared workspace."
           confirmTitle="Disband this group?"
-          disabled={isDisbanding || isLeaving}
+          disabled={!isOnline || isDisbanding || isLeaving}
           icon={<ShieldAlert className="size-4" />}
           label={isDisbanding ? "Disbanding..." : "Disband group"}
           onConfirm={onDisbandGroup}
+          title={
+            isOnline ? undefined : "Reconnect before disbanding this group."
+          }
           variant="destructive"
         />
       )}
+
+      {!isOnline && !actionsLocked ? (
+        <div className="rounded-xl border border-border/70 bg-muted/20 px-4 py-3">
+          <p className="font-medium text-slate-muted text-sm">
+            Reconnect before changing group membership.
+          </p>
+        </div>
+      ) : null}
 
       {actionsLocked ? (
         <div className="rounded-xl border border-border/70 bg-muted/20 px-4 py-3">

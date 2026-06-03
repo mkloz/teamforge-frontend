@@ -28,10 +28,15 @@ export function EditGroupIdentityFooter({
         type="button"
         variant="primary"
         disabled={saveDisabled}
+        title={editor.isOnline ? undefined : "Reconnect before saving changes."}
         onClick={() => editor.save()}
       >
         <Save className="size-4" aria-hidden="true" />
-        {editor.isSaving ? "Saving..." : saveLabel}
+        {editor.isSaving
+          ? "Saving..."
+          : editor.isOnline
+            ? saveLabel
+            : "Reconnect to save"}
       </Button>
     </>
   );

@@ -8,6 +8,7 @@ import {
   type LoginValues,
   loginSchema,
 } from "@/features/auth/schemas/auth-schemas";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
@@ -28,6 +29,7 @@ export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [rootError, setRootError] = useState<string | null>(null);
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -55,6 +57,16 @@ export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
     const emailDomain = getEmailDomain(values.email);
 
     setRootError(null);
+    if (
+      guardOfflineAction({
+        id: "auth-login-offline",
+        description: "Reconnect before signing in.",
+      })
+    ) {
+      setRootError("You are offline. Reconnect before signing in.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -88,6 +100,7 @@ export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
   return {
     form,
     loading,
+    isOnline,
     rootError,
     showPassword,
     onSubmit,

@@ -2,13 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { ForgeOrb } from "@/features/landing/components/hero/forge-orb";
 import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
-import { useLandingAuthActions } from "@/features/landing/hooks/use-landing-auth-actions";
+import { useResolvedLandingAuthActions } from "@/features/landing/hooks/use-resolved-landing-auth-actions";
 import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
 import { Button } from "@/shared/components/ui/button";
 
 export function HeroSection() {
   const { isResolvingAuthAction, primaryAction } =
-    useLandingAuthActions("Get Started - Free");
+    useResolvedLandingAuthActions("Get Started - Free");
 
   return (
     <section

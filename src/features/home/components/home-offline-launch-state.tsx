@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Compass, RefreshCw, WifiOff } from "lucide-react";
+import { MessagesSquare, RefreshCw, WifiOff } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 
 interface HomeOfflineLaunchStateProps {
@@ -46,9 +46,9 @@ export function HomeOfflineLaunchState({
               Try again
             </Button>
             <Button asChild variant="outline" className="w-full sm:w-auto">
-              <Link to="/forge" search={{ open: true }}>
-                <Compass size={16} aria-hidden="true" />
-                Open Forge
+              <Link to="/activity">
+                <MessagesSquare size={16} aria-hidden="true" />
+                Open activity
               </Link>
             </Button>
           </div>

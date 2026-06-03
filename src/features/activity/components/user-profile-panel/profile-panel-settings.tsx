@@ -8,20 +8,22 @@ interface ProfilePanelSettingsProps {
   isBlocked: boolean;
   blockActionDisabled?: boolean;
   isBlockActionPending?: boolean;
+  isMuteActionDisabled?: boolean;
   isMuteActionPending?: boolean;
   isMobile?: boolean;
   onToggleMute?: () => void;
   onToggleBlock?: () => void;
 }
 
-const actionButtonClassName =
-  "group flex h-auto min-h-12 w-full items-center justify-start rounded-lg border border-border/70 bg-card/55 px-3 py-2.5 shadow-none hover:enabled:border-forge-teal/30 hover:enabled:bg-card/85 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-0";
+const actionButtonClassName = "h-auto w-full justify-start px-3 py-3 text-left";
+const actionLabelClassName = "font-bold text-sm tracking-tight";
 
 export function ProfilePanelSettings({
   isMuted,
   isBlocked,
   blockActionDisabled = false,
   isBlockActionPending = false,
+  isMuteActionDisabled = false,
   isMuteActionPending = false,
   isMobile = false,
   onToggleMute,
@@ -48,23 +50,35 @@ export function ProfilePanelSettings({
       className={cn("border-border/70 border-t px-5 py-5", isMobile && "pb-6")}
     >
       <h4 className="font-bold text-slate-muted text-xs">Account & safety</h4>
-      <div className="mt-3 flex flex-col gap-2">
+      <div className="mt-3 flex flex-col gap-3">
         <Button
-          variant="ghost"
+          variant={isMuted ? "accentGhost" : "subtle"}
           className={actionButtonClassName}
-          contentClassName="justify-start gap-3"
-          disabled={isMuteActionPending || !onToggleMute}
+          disabled={
+            isMuteActionDisabled || isMuteActionPending || !onToggleMute
+          }
+          title={
+            isMuteActionDisabled
+              ? "Reconnect before changing chat notifications."
+              : undefined
+          }
           aria-pressed={isMuted}
           onClick={onToggleMute}
         >
           {isMuteActionPending ? (
-            <Loader2 className="size-4 shrink-0 animate-spin text-slate-muted" />
+            <span className="shrink-0">
+              <Loader2 className="size-4 animate-spin" />
+            </span>
           ) : isMuted ? (
-            <BellOff className="size-4 shrink-0 text-forge-teal" />
+            <span className="shrink-0">
+              <BellOff className="size-4" />
+            </span>
           ) : (
-            <Bell className="size-4 shrink-0 text-forge-teal" />
+            <span className="shrink-0">
+              <Bell className="size-4" />
+            </span>
           )}
-          <span className="font-medium text-ink text-sm">
+          <span className={actionLabelClassName}>
             {isMuteActionPending
               ? "Updating notifications..."
               : isMuted
@@ -87,22 +101,22 @@ export function ProfilePanelSettings({
           tone={isBlocked ? "info" : "danger"}
           trigger={
             <Button
-              variant="ghost"
-              className={cn(
-                actionButtonClassName,
-                "border-destructive/25 text-destructive hover:enabled:border-destructive/35 hover:enabled:bg-destructive/8",
-              )}
-              contentClassName="justify-start gap-3"
+              variant="destructive"
+              className={actionButtonClassName}
               disabled={
                 blockActionDisabled || isBlockActionPending || !onToggleBlock
               }
             >
               {isBlockActionPending ? (
-                <Loader2 className="size-4 shrink-0 animate-spin" />
+                <span className="shrink-0">
+                  <Loader2 className="size-4 animate-spin" />
+                </span>
               ) : (
-                <Ban className="size-4 shrink-0" />
+                <span className="shrink-0">
+                  <Ban className="size-4" />
+                </span>
               )}
-              <span className="font-medium text-sm">
+              <span className={actionLabelClassName}>
                 {isBlockActionPending
                   ? isBlocked
                     ? "Unblocking..."

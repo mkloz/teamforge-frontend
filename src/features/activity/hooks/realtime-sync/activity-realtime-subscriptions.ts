@@ -4,18 +4,30 @@ export function subscribeToRealtimeChat(
   chatId: string,
   onUnsubscribe: (chatId: string) => void,
 ) {
-  realtimeClient.emit("chat.subscribe", { chatId });
+  const emitSubscription = () => {
+    realtimeClient.emit("chat.subscribe", { chatId });
+  };
+  const stopReplayingSubscription = realtimeClient.onConnect(emitSubscription);
+
+  emitSubscription();
 
   return () => {
+    stopReplayingSubscription();
     onUnsubscribe(chatId);
     realtimeClient.emit("chat.unsubscribe", { chatId });
   };
 }
 
 export function subscribeToRealtimePlan(planId: string) {
-  realtimeClient.emit("plan.subscribe", { planId });
+  const emitSubscription = () => {
+    realtimeClient.emit("plan.subscribe", { planId });
+  };
+  const stopReplayingSubscription = realtimeClient.onConnect(emitSubscription);
+
+  emitSubscription();
 
   return () => {
+    stopReplayingSubscription();
     realtimeClient.emit("plan.unsubscribe", { planId });
   };
 }

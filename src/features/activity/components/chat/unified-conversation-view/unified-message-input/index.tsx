@@ -1,5 +1,6 @@
-import { WifiOff, X } from "lucide-react";
-import { memo } from "react";
+import { Paperclip, WifiOff, X } from "lucide-react";
+import { memo, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { ErrorMessageSendFailedVisual } from "@/assets/error-state/error-message-send-failed";
 import { getActivityPopupPanelClass } from "@/features/activity/components/activity-popup-styles";
@@ -9,6 +10,7 @@ import { cn } from "@/shared/lib/utils";
 
 import { ActionTarget } from "./action-target";
 import { AttachmentPreviewPanel } from "./attachment-preview-panel";
+import { ChatDropzoneOverlay } from "./chat-dropzone-overlay";
 import { EditingMessageBanner } from "./editing-message-banner";
 import { InputRow } from "./input-row";
 import { RecordingOverlay } from "./recording-overlay";
@@ -34,9 +36,12 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
   disabled = false,
   placeholder = "Type a message...",
 }: UnifiedMessageInputProps) {
+  const inputRootRef = useRef<HTMLDivElement>(null);
+  const [dropzoneRoot, setDropzoneRoot] = useState<HTMLElement | null>(null);
   const composer = useMessageComposer({
     chatId,
     disabled,
+    dropzoneRoot,
     errorMessage,
     onClearError,
     onSend,
@@ -47,6 +52,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
     composer.isEditing ||
     composer.pendingAttachments.length > 0 ||
     !composer.isOnline ||
+    Boolean(composer.attachmentNotice) ||
     Boolean(composer.recordingError) ||
     Boolean(errorMessage);
   const inputPillClasses = cn(
@@ -57,23 +63,28 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
         ? "border-forge-teal/40 bg-card shadow-sm"
         : "border-border/50 bg-card/60 shadow-sm",
   );
+  const isActionTargetDisabled = composer.isRecording
+    ? false
+    : composer.areNetworkActionsDisabled;
+
+  useEffect(() => {
+    setDropzoneRoot(
+      inputRootRef.current?.closest<HTMLElement>("[data-chat-dropzone-root]") ??
+        null,
+    );
+  }, []);
 
   return (
-    <div className="isolate z-30 min-h-16 shrink-0 overflow-visible border-border/60 border-t bg-canvas/90 px-2.5 pt-2 pb-safe-bottom backdrop-blur-xl sm:px-3">
+    <div
+      ref={inputRootRef}
+      className="isolate z-30 min-h-16 shrink-0 overflow-visible border-border/60 border-t bg-canvas/90 px-2.5 pt-2 pb-safe-bottom backdrop-blur-xl sm:px-3"
+    >
+      {dropzoneRoot && composer.isDraggingFiles
+        ? createPortal(<ChatDropzoneOverlay />, dropzoneRoot)
+        : null}
+
       <div className="mx-auto flex w-full items-center gap-2 sm:gap-2.5">
-        {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions: File drag/drop is pointer-only decoration around the actual message controls. */}
-        {/* biome-ignore lint/a11y/noStaticElementInteractions: The keyboard-accessible controls live inside this drop zone. */}
-        <div
-          className="relative min-w-0 flex-1"
-          onDragOver={composer.handleDragOver}
-          onDragLeave={composer.handleDragLeave}
-          onDrop={composer.handleDrop}
-        >
-          {composer.isDraggingFiles && (
-            <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-full border-2 border-forge-teal border-dashed bg-forge-teal/10 font-semibold text-forge-teal text-sm">
-              Drop files to attach
-            </div>
-          )}
+        <div className="relative min-w-0 flex-1">
           {hasContextPanel && (
             <div
               className={getActivityPopupPanelClass(
@@ -98,6 +109,18 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
                 onAppendAttachments={composer.appendAttachments}
                 onRemoveAttachment={composer.removeAttachment}
               />
+
+              {composer.attachmentNotice && (
+                <div
+                  role="status"
+                  className="flex items-center gap-2 px-3 py-2.5 text-slate-muted"
+                >
+                  <Paperclip className="size-4 shrink-0" aria-hidden="true" />
+                  <p className="min-w-0 flex-1 font-medium text-xs">
+                    {composer.attachmentNotice}
+                  </p>
+                </div>
+              )}
 
               {!composer.isOnline && (
                 <div
@@ -168,7 +191,9 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
                 }
                 disabled={composer.isDisabled}
                 onSelectImages={
-                  composer.isEditing ? () => {} : composer.appendAttachments
+                  composer.isEditing
+                    ? () => {}
+                    : composer.appendImageAttachments
                 }
                 onSelectFiles={
                   composer.isEditing ? () => {} : composer.appendAttachments
@@ -193,16 +218,16 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
             }}
             onCancelRecording={composer.cancelRecording}
             onStartRecording={() => {
-              if (!composer.areNetworkActionsDisabled) {
+              if (!isActionTargetDisabled) {
                 void composer.startRecording();
               }
             }}
             onStopRecording={() => {
-              if (!composer.areNetworkActionsDisabled) {
+              if (composer.isRecording || !isActionTargetDisabled) {
                 void composer.handleStopRecording();
               }
             }}
-            disabled={composer.areNetworkActionsDisabled}
+            disabled={isActionTargetDisabled}
           />
         </div>
       </div>

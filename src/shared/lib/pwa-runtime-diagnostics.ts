@@ -8,8 +8,11 @@ export interface RuntimeDiagnosticEntry {
 }
 
 export interface PwaRuntimeDiagnosticsSnapshot {
+  appBadge: RuntimeDiagnosticEntry;
   reconnectRefresh: RuntimeDiagnosticEntry;
   realtimeResync: RuntimeDiagnosticEntry;
+  serviceWorkerMessage: RuntimeDiagnosticEntry;
+  serviceWorkerUpdate: RuntimeDiagnosticEntry;
 }
 
 type PwaRuntimeDiagnosticsListener = () => void;
@@ -22,8 +25,11 @@ const EMPTY_DIAGNOSTIC_ENTRY = {
 } as const satisfies RuntimeDiagnosticEntry;
 
 let diagnosticsSnapshot: PwaRuntimeDiagnosticsSnapshot = {
+  appBadge: EMPTY_DIAGNOSTIC_ENTRY,
   reconnectRefresh: EMPTY_DIAGNOSTIC_ENTRY,
   realtimeResync: EMPTY_DIAGNOSTIC_ENTRY,
+  serviceWorkerMessage: EMPTY_DIAGNOSTIC_ENTRY,
+  serviceWorkerUpdate: EMPTY_DIAGNOSTIC_ENTRY,
 };
 
 const listeners = new Set<PwaRuntimeDiagnosticsListener>();
@@ -74,6 +80,54 @@ export function recordPwaRealtimeResync(reason: string) {
       errorMessage: null,
       reason,
       status: "success",
+      updatedAt: Date.now(),
+    },
+  }));
+}
+
+export function recordPwaAppBadgeSync(
+  status: Exclude<RuntimeDiagnosticStatus, "idle">,
+  reason: string,
+  error?: unknown,
+) {
+  setDiagnosticsSnapshot((snapshot) => ({
+    ...snapshot,
+    appBadge: {
+      errorMessage: status === "error" ? getErrorMessage(error) : null,
+      reason,
+      status,
+      updatedAt: Date.now(),
+    },
+  }));
+}
+
+export function recordPwaServiceWorkerMessage(
+  status: Exclude<RuntimeDiagnosticStatus, "idle">,
+  reason: string,
+  error?: unknown,
+) {
+  setDiagnosticsSnapshot((snapshot) => ({
+    ...snapshot,
+    serviceWorkerMessage: {
+      errorMessage: status === "error" ? getErrorMessage(error) : null,
+      reason,
+      status,
+      updatedAt: Date.now(),
+    },
+  }));
+}
+
+export function recordPwaServiceWorkerUpdate(
+  status: Exclude<RuntimeDiagnosticStatus, "idle">,
+  reason: string,
+  error?: unknown,
+) {
+  setDiagnosticsSnapshot((snapshot) => ({
+    ...snapshot,
+    serviceWorkerUpdate: {
+      errorMessage: status === "error" ? getErrorMessage(error) : null,
+      reason,
+      status,
       updatedAt: Date.now(),
     },
   }));

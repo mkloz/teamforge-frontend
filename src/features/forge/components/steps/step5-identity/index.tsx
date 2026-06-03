@@ -29,6 +29,7 @@ export function Step5Identity({
     coverUploadError,
     isAvatarUploading,
     isCoverUploading,
+    isOnline,
     uploadAvatarImage,
     uploadCoverImage,
   } = useStep5ImageUploads();
@@ -71,6 +72,7 @@ export function Step5Identity({
         coverInputRef={coverInputRef}
         coverUploadError={coverUploadError}
         isCoverUploading={isCoverUploading}
+        isOnline={isOnline}
         templateCoverImage={templateCoverImage}
         onCoverFiles={handleCoverFiles}
         onCoverImageChange={onCoverImageChange}
@@ -82,6 +84,7 @@ export function Step5Identity({
         avatarUploadError={avatarUploadError}
         groupName={groupName}
         isAvatarUploading={isAvatarUploading}
+        isOnline={isOnline}
         onAvatarFiles={handleAvatarFiles}
         onAvatarImageChange={onAvatarImageChange}
         planTitle={planTitle}

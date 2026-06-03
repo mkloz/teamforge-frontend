@@ -29,24 +29,30 @@ export function RecommendedGroupCard({ group }: RecommendedGroupCardProps) {
     (joinMutation.isPending && group.access === "BY_REQUEST"
       ? "REQUESTED"
       : undefined);
+  const isOfflineActionBlocked =
+    !joinMutation.isOnline && !isFull && joinResult === undefined;
   const actionLabel = isFull
     ? "Full"
     : joinResult === "JOINED"
       ? "Joined"
       : joinResult === "REQUESTED"
         ? "Requested"
-        : joinMutation.isPending
-          ? group.access === "BY_REQUEST"
-            ? "Requesting..."
-            : "Joining..."
-          : group.access === "BY_REQUEST"
-            ? "Request"
-            : "Join";
+        : isOfflineActionBlocked
+          ? "Reconnect"
+          : joinMutation.isPending
+            ? group.access === "BY_REQUEST"
+              ? "Requesting..."
+              : "Joining..."
+            : group.access === "BY_REQUEST"
+              ? "Request"
+              : "Join";
   const ActionIcon = isFull
     ? UsersRound
     : joinResult === "JOINED"
       ? Check
-      : joinResult === "REQUESTED" || joinMutation.isPending
+      : joinResult === "REQUESTED" ||
+          joinMutation.isPending ||
+          isOfflineActionBlocked
         ? CircleDashed
         : group.access === "BY_REQUEST"
           ? Send
@@ -66,8 +72,18 @@ export function RecommendedGroupCard({ group }: RecommendedGroupCardProps) {
       <Button
         variant={isFull ? "outline" : "primary"}
         size="sm"
-        disabled={isFull || joinMutation.isPending || joinResult !== undefined}
+        disabled={
+          isFull ||
+          !joinMutation.isOnline ||
+          joinMutation.isPending ||
+          joinResult !== undefined
+        }
         onClick={() => joinMutation.mutate()}
+        title={
+          joinMutation.isOnline
+            ? undefined
+            : "Reconnect before joining or requesting to join."
+        }
         className={cn("shrink-0", isFull && "opacity-60")}
         contentClassName="whitespace-nowrap"
       >

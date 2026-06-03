@@ -304,6 +304,14 @@ export function PlanChangeDialog({
 
                         {/* Actions */}
                         <div className="mt-4 flex items-center justify-end gap-2">
+                          {!form.isOnline ? (
+                            <p
+                              role="status"
+                              className="mr-auto min-w-0 text-slate-muted text-xs"
+                            >
+                              Reconnect before sending.
+                            </p>
+                          ) : null}
                           <Button
                             type="button"
                             variant="ghost"
@@ -317,8 +325,14 @@ export function PlanChangeDialog({
                             type="button"
                             variant="primary"
                             size="sm"
+                            disabled={!form.isOnline}
                             loading={form.isCreating}
                             onClick={() => void form.handleSubmit()}
+                            title={
+                              form.isOnline
+                                ? undefined
+                                : "Reconnect before suggesting plan changes."
+                            }
                           >
                             <SendHorizontal
                               className="size-3.5"

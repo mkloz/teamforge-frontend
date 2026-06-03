@@ -19,6 +19,7 @@ import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import {
   showAppErrorMessageToast,
+  showAppInfoToast,
   showAppSuccessToast,
 } from "@/shared/lib/app-toast";
 import { copyTextToClipboard } from "@/shared/lib/browser-capabilities";
@@ -40,6 +41,7 @@ export function MessageSelectionToolbar({
   const [isDeleting, setIsDeleting] = useState(false);
   const messageActions = useActivityMessageActions();
   const savedMessageIds = useSavedMessageIds();
+  const isOnline = messageActions.isOnline;
   const selectedCount = selectedMessages.length;
   const saveableMessages = selectedMessages.filter(canSaveMessage);
   const canForward =
@@ -75,6 +77,14 @@ export function MessageSelectionToolbar({
       return;
     }
 
+    if (!isOnline) {
+      showAppInfoToast("You're offline.", {
+        id: "selected-messages-save-offline",
+        description: "Reconnect before updating saved messages.",
+      });
+      return;
+    }
+
     setIsSaving(true);
 
     try {
@@ -106,6 +116,14 @@ export function MessageSelectionToolbar({
 
   async function handleDeleteSelected() {
     if (!canDelete || isDeleting) {
+      return;
+    }
+
+    if (!isOnline) {
+      showAppInfoToast("You're offline.", {
+        id: "selected-messages-delete-offline",
+        description: "Reconnect before deleting messages.",
+      });
       return;
     }
 
@@ -165,19 +183,27 @@ export function MessageSelectionToolbar({
             onClick={() => setForwardDialogOpen(true)}
           />
           <SelectionActionButton
-            disabled={saveableMessages.length === 0 || isSaving}
+            disabled={saveableMessages.length === 0 || isSaving || !isOnline}
             icon={Bookmark}
             label={isSaving ? "Saving" : saveLabel}
             onClick={() => {
               void handleToggleSavedSelected();
             }}
+            title={
+              !isOnline
+                ? "Reconnect before updating saved messages."
+                : undefined
+            }
           />
           <SelectionActionButton
             danger
-            disabled={!canDelete || isDeleting}
+            disabled={!canDelete || isDeleting || !isOnline}
             icon={Trash2}
             label={isDeleting ? "Deleting" : "Delete"}
             onClick={() => setDeleteDialogOpen(true)}
+            title={
+              !isOnline ? "Reconnect before deleting messages." : undefined
+            }
           />
         </div>
       </div>
@@ -190,6 +216,8 @@ export function MessageSelectionToolbar({
             ? "This removes the selected message from the conversation."
             : `This removes ${selectedCount} selected messages from the conversation.`
         }
+        disabled={!isOnline || isDeleting}
+        loading={isDeleting}
         onConfirm={handleDeleteSelected}
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
@@ -201,6 +229,7 @@ export function MessageSelectionToolbar({
         <ForwardMessageDialog
           messages={selectedMessages}
           open={forwardDialogOpen}
+          isOnline={messageActions.isOnline}
           onForwardComplete={onClearSelection}
           onForward={messageActions.forwardMessage}
           onOpenChange={setForwardDialogOpen}
@@ -216,12 +245,14 @@ function SelectionActionButton({
   icon: Icon,
   label,
   onClick,
+  title,
 }: {
   danger?: boolean;
   disabled?: boolean;
   icon: LucideIcon;
   label: string;
   onClick: () => void;
+  title?: string;
 }) {
   return (
     <Button
@@ -233,6 +264,7 @@ function SelectionActionButton({
       contentClassName="gap-1.5"
       disabled={disabled}
       onClick={onClick}
+      title={title}
     >
       <Icon className="size-3.5" aria-hidden="true" />
       <span className="hidden sm:inline">{label}</span>

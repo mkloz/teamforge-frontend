@@ -25,6 +25,7 @@ interface UserProfilePanelProps {
   isBlocked?: boolean;
   blockActionDisabled?: boolean;
   isBlockActionPending?: boolean;
+  isMuteActionDisabled?: boolean;
   isMuteActionPending?: boolean;
   isMobile?: boolean;
   isDirectChat?: boolean;
@@ -49,6 +50,7 @@ export function UserProfilePanel({
   isBlocked: propIsBlocked,
   blockActionDisabled = false,
   isBlockActionPending = false,
+  isMuteActionDisabled = false,
   isMuteActionPending = false,
   isMobile = false,
   isDirectChat = true,
@@ -224,6 +226,7 @@ export function UserProfilePanel({
             isBlocked={isBlocked}
             blockActionDisabled={blockActionDisabled}
             isBlockActionPending={isBlockActionPending}
+            isMuteActionDisabled={isMuteActionDisabled}
             isMuteActionPending={isMuteActionPending}
             isMobile={isMobile}
             onToggleMute={onToggleMute}

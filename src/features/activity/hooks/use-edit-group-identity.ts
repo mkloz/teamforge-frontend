@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { ActivityCommands } from "@/features/activity/api/activity-commands";
 import type { Group } from "@/features/activity/lib/activity-contract";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { getApiErrorMessage } from "@/shared/lib/api-error-message";
 import {
   buildGroupIdentityUpdateInput,
@@ -53,6 +54,7 @@ export function useEditGroupIdentity(
     initialValues.planCostDetails,
   );
   const [error, setError] = useState<string | null>(null);
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const avatarUpload = useImageUploadField(setAvatar);
   const coverUpload = useImageUploadField(setCoverImage);
   const values: GroupIdentityFormValues = {
@@ -105,20 +107,36 @@ export function useEditGroupIdentity(
   const canSaveGroupDetails =
     isNameValid &&
     hasGroupDetailsChanges &&
+    isOnline &&
     !isBusy &&
     !avatarUpload.isUploading;
   const canSavePlanDetails =
-    isPlanValid && hasPlanDetailsChanges && !isBusy && !coverUpload.isUploading;
+    isPlanValid &&
+    hasPlanDetailsChanges &&
+    isOnline &&
+    !isBusy &&
+    !coverUpload.isUploading;
   const canSave =
     hasChanges &&
     isNameValid &&
     isPlanValid &&
+    isOnline &&
     !isBusy &&
     !avatarUpload.isUploading &&
     !coverUpload.isUploading;
 
   function save() {
     setError(null);
+    if (
+      guardOfflineAction({
+        id: "activity-group-identity-save-offline",
+        description: "Reconnect before saving group details.",
+      })
+    ) {
+      setError("You are offline. Reconnect before saving group details.");
+      return;
+    }
+
     void mutation.mutateAsync(values);
   }
 
@@ -140,6 +158,7 @@ export function useEditGroupIdentity(
     isAvatarUploading: avatarUpload.isUploading,
     isCoverUploading: coverUpload.isUploading,
     isNameValid,
+    isOnline,
     isPlanValid,
     isSaving: mutation.isPending,
     name,

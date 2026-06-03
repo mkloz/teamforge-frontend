@@ -12,6 +12,7 @@ interface PlanHistorySectionProps {
   history: PlanHistoryItem[];
   isTemplateActionDisabled?: boolean;
   isTemplateActionPending?: boolean;
+  isOnline?: boolean;
   onUseAsTemplate?: (item: PlanHistoryItem) => Promise<void> | void;
 }
 
@@ -20,6 +21,7 @@ export function PlanHistorySection({
   history,
   isTemplateActionDisabled = false,
   isTemplateActionPending = false,
+  isOnline = true,
   onUseAsTemplate,
 }: PlanHistorySectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -53,6 +55,10 @@ export function PlanHistorySection({
 
   async function handleUseAsTemplate(item: PlanHistoryItem) {
     if (!onUseAsTemplate) {
+      return;
+    }
+
+    if (!isOnline) {
       return;
     }
 
@@ -109,6 +115,11 @@ export function PlanHistorySection({
         <p className="text-slate-muted text-xs leading-relaxed">
           Completed and cancelled plans from this group.
         </p>
+        {!isOnline ? (
+          <p role="status" className="text-slate-muted text-xs">
+            Reconnect before reusing a previous plan.
+          </p>
+        ) : null}
       </div>
 
       <div className="divide-y divide-border/70 border-border/70 border-y">
@@ -118,6 +129,7 @@ export function PlanHistorySection({
             isExpanded={expandedPlanId === item.id}
             item={item}
             isUseAsTemplateDisabled={
+              !isOnline ||
               isTemplateActionDisabled ||
               ((isTemplateActionPending || hasLocalTemplateAction) &&
                 pendingTemplateId !== item.id)

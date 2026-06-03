@@ -1,22 +1,22 @@
 import {
-  Bell,
+  AppWindow,
+  BellRing,
   Download,
+  KeyRound,
   type LucideIcon,
+  RadioTower,
   RefreshCw,
   Server,
-  ShieldCheck,
   Smartphone,
   Wifi,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-
 import { Button } from "@/shared/components/ui/button";
 import { usePwaDisplayMode } from "@/shared/hooks/use-pwa-display-mode";
 import { usePwaInstallPrompt } from "@/shared/hooks/use-pwa-install-prompt";
-import { usePwaRuntimeDiagnostics } from "@/shared/hooks/use-pwa-runtime-diagnostics";
 import { useServiceWorkerDiagnostics } from "@/shared/hooks/use-service-worker-diagnostics";
 import { useWebPushSubscription } from "@/shared/hooks/use-web-push-subscription";
-import type { RuntimeDiagnosticEntry } from "@/shared/lib/pwa-runtime-diagnostics";
+import { recordPwaServiceWorkerUpdate } from "@/shared/lib/pwa-runtime-diagnostics";
 import { trackPwaServiceWorkerUpdateCheck } from "@/shared/lib/pwa-telemetry";
 import { cn } from "@/shared/lib/utils";
 
@@ -45,6 +45,8 @@ const TONE_CLASSES: Record<DiagnosticTone, string> = {
   ready: "border-forge-teal/20 bg-forge-teal/8 text-forge-teal",
   warning: "border-spark-amber/25 bg-spark-amber/10 text-spark-amber",
 };
+
+const DIAGNOSTIC_CHECK_COUNT = 8;
 
 function getServiceWorkerItem(
   serviceWorker: ReturnType<typeof useServiceWorkerDiagnostics>,
@@ -129,7 +131,7 @@ function getPushSupportItem(
   if (push.support.isSupported) {
     return {
       detail: "This browser supports service-worker push subscriptions.",
-      icon: Bell,
+      icon: RadioTower,
       label: "Push support",
       tone: "ready",
       value: "Supported",
@@ -140,7 +142,7 @@ function getPushSupportItem(
 
   return {
     detail: `Push cannot start here because of ${reason}.`,
-    icon: Bell,
+    icon: RadioTower,
     label: "Push support",
     tone: "blocked",
     value: "Unavailable",
@@ -153,7 +155,7 @@ function getPermissionItem(
   if (push.permission === "granted") {
     return {
       detail: "The browser can show TeamForge system notifications.",
-      icon: ShieldCheck,
+      icon: BellRing,
       label: "Permission",
       tone: "ready",
       value: "Granted",
@@ -163,7 +165,7 @@ function getPermissionItem(
   if (push.permission === "denied") {
     return {
       detail: "Notifications are blocked in this browser's site settings.",
-      icon: ShieldCheck,
+      icon: BellRing,
       label: "Permission",
       tone: "blocked",
       value: "Blocked",
@@ -173,7 +175,7 @@ function getPermissionItem(
   if (push.permission === "unsupported") {
     return {
       detail: "This browser does not expose notification permission.",
-      icon: ShieldCheck,
+      icon: BellRing,
       label: "Permission",
       tone: "blocked",
       value: "Unsupported",
@@ -182,7 +184,7 @@ function getPermissionItem(
 
   return {
     detail: "Permission has not been requested on this device yet.",
-    icon: ShieldCheck,
+    icon: BellRing,
     label: "Permission",
     tone: "neutral",
     value: "Not requested",
@@ -250,7 +252,7 @@ function getSubscriptionItem(
   if (!push.isAuthenticated) {
     return {
       detail: "Sign in on this device to check or create a push subscription.",
-      icon: Bell,
+      icon: Smartphone,
       label: "This device",
       tone: "neutral",
       value: "Sign in to check",
@@ -261,7 +263,7 @@ function getSubscriptionItem(
     return {
       detail:
         "Reconnect to verify this browser's subscription against TeamForge.",
-      icon: Bell,
+      icon: Smartphone,
       label: "This device",
       tone: "warning",
       value: "Offline",
@@ -271,7 +273,7 @@ function getSubscriptionItem(
   if (push.isCheckingBrowserSubscription) {
     return {
       detail: "Reading this browser's active push subscription.",
-      icon: Bell,
+      icon: Smartphone,
       label: "This device",
       tone: "neutral",
       value: "Checking",
@@ -281,7 +283,7 @@ function getSubscriptionItem(
   if (push.isSubscribed) {
     return {
       detail: "This browser subscription is active and linked to your account.",
-      icon: Bell,
+      icon: Smartphone,
       label: "This device",
       tone: "ready",
       value: "Linked",
@@ -292,7 +294,7 @@ function getSubscriptionItem(
     return {
       detail:
         "The browser has a subscription, but it is not active on the backend.",
-      icon: Bell,
+      icon: Smartphone,
       label: "This device",
       tone: "warning",
       value: "Browser only",
@@ -301,7 +303,7 @@ function getSubscriptionItem(
 
   return {
     detail: "This browser is not subscribed to TeamForge push notifications.",
-    icon: Bell,
+    icon: Smartphone,
     label: "This device",
     tone: "neutral",
     value: "Not subscribed",
@@ -347,7 +349,7 @@ function getSecureContextItem(isSecureContext: boolean | null): DiagnosticItem {
     return {
       detail:
         "Checking whether this page is running in a secure browser context.",
-      icon: ShieldCheck,
+      icon: KeyRound,
       label: "Secure context",
       tone: "neutral",
       value: "Checking",
@@ -358,7 +360,7 @@ function getSecureContextItem(isSecureContext: boolean | null): DiagnosticItem {
     return {
       detail:
         "HTTPS or localhost is active, so service workers and push can run.",
-      icon: ShieldCheck,
+      icon: KeyRound,
       label: "Secure context",
       tone: "ready",
       value: "Ready",
@@ -368,123 +370,10 @@ function getSecureContextItem(isSecureContext: boolean | null): DiagnosticItem {
   return {
     detail:
       "Use HTTPS in production. Browsers block install and push APIs on insecure origins.",
-    icon: ShieldCheck,
+    icon: KeyRound,
     label: "Secure context",
     tone: "blocked",
     value: "Needs HTTPS",
-  };
-}
-
-function formatRuntimeDiagnosticTime(updatedAt: number | null) {
-  if (!updatedAt) {
-    return null;
-  }
-
-  return new Intl.DateTimeFormat(undefined, {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  }).format(new Date(updatedAt));
-}
-
-function getRuntimeDiagnosticTone(
-  entry: RuntimeDiagnosticEntry,
-): DiagnosticTone {
-  if (entry.status === "success") {
-    return "ready";
-  }
-
-  if (entry.status === "error") {
-    return "blocked";
-  }
-
-  if (entry.status === "running") {
-    return "warning";
-  }
-
-  return "neutral";
-}
-
-function getRuntimeDiagnosticDetail(
-  entry: RuntimeDiagnosticEntry,
-  labels: {
-    idle: string;
-    running: string;
-    success: string;
-    error: string;
-  },
-) {
-  const timeLabel = formatRuntimeDiagnosticTime(entry.updatedAt);
-  const reason = entry.reason ? ` from ${entry.reason}` : "";
-
-  if (!timeLabel) {
-    return labels.idle;
-  }
-
-  if (entry.status === "running") {
-    return `${labels.running}${reason} at ${timeLabel}.`;
-  }
-
-  if (entry.status === "error") {
-    const errorMessage = entry.errorMessage ? ` ${entry.errorMessage}` : "";
-
-    return `${labels.error}${reason} at ${timeLabel}.${errorMessage}`;
-  }
-
-  return `${labels.success}${reason} at ${timeLabel}.`;
-}
-
-function getRuntimeDiagnosticValue(
-  entry: RuntimeDiagnosticEntry,
-  values: {
-    idle: string;
-    running: string;
-    success: string;
-    error: string;
-  },
-) {
-  return values[entry.status];
-}
-
-function getReconnectRefreshItem(
-  entry: RuntimeDiagnosticEntry,
-): DiagnosticItem {
-  return {
-    detail: getRuntimeDiagnosticDetail(entry, {
-      idle: "Focus, foreground, and online-return events have not triggered a query refresh in this app session yet.",
-      running: "Active query refresh started",
-      success: "Active query refresh completed",
-      error: "Active query refresh failed",
-    }),
-    icon: RefreshCw,
-    label: "Reconnect refresh",
-    tone: getRuntimeDiagnosticTone(entry),
-    value: getRuntimeDiagnosticValue(entry, {
-      idle: "Waiting",
-      running: "Refreshing",
-      success: "Refreshed",
-      error: "Failed",
-    }),
-  };
-}
-
-function getRealtimeResyncItem(entry: RuntimeDiagnosticEntry): DiagnosticItem {
-  return {
-    detail: getRuntimeDiagnosticDetail(entry, {
-      idle: "Realtime has not synced in this app session yet, or this route has not needed live updates.",
-      running: "Realtime sync started",
-      success: "Realtime sync ran",
-      error: "Realtime sync failed",
-    }),
-    icon: Wifi,
-    label: "Realtime resync",
-    tone: getRuntimeDiagnosticTone(entry),
-    value: getRuntimeDiagnosticValue(entry, {
-      idle: "Waiting",
-      running: "Syncing",
-      success: "Synced",
-      error: "Failed",
-    }),
   };
 }
 
@@ -493,7 +382,6 @@ export function PwaDiagnosticsPanel() {
   const { canPromptInstall } = usePwaInstallPrompt();
   const serviceWorker = useServiceWorkerDiagnostics();
   const push = useWebPushSubscription();
-  const runtimeDiagnostics = usePwaRuntimeDiagnostics();
   const [isSecureContext, setIsSecureContext] = useState<boolean | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -506,7 +394,7 @@ export function PwaDiagnosticsPanel() {
       detail: isStandalone
         ? "The app is running without browser chrome."
         : "The app is running in a browser tab.",
-      icon: Smartphone,
+      icon: AppWindow,
       label: "Display mode",
       tone: isStandalone ? "ready" : "neutral",
       value: isStandalone ? "Standalone" : "Browser",
@@ -514,8 +402,6 @@ export function PwaDiagnosticsPanel() {
     getInstallPromptItem(canPromptInstall, isStandalone),
     getSecureContextItem(isSecureContext),
     getServiceWorkerItem(serviceWorker),
-    getReconnectRefreshItem(runtimeDiagnostics.reconnectRefresh),
-    getRealtimeResyncItem(runtimeDiagnostics.realtimeResync),
     getPushSupportItem(push),
     getPermissionItem(push),
     getBackendPushItem(push),
@@ -535,6 +421,7 @@ export function PwaDiagnosticsPanel() {
       source: "download-diagnostics",
       status: "started",
     });
+    recordPwaServiceWorkerUpdate("running", "manual update check");
 
     try {
       const serviceWorkerRefresh = push.isOnline
@@ -546,6 +433,7 @@ export function PwaDiagnosticsPanel() {
       ]);
 
       if (serviceWorkerResult.status !== "fulfilled") {
+        recordPwaServiceWorkerUpdate("error", "manual update check");
         trackPwaServiceWorkerUpdateCheck({
           source: "download-diagnostics",
           status: "error",
@@ -553,6 +441,14 @@ export function PwaDiagnosticsPanel() {
         return;
       }
 
+      if (serviceWorkerResult.value.status === "error") {
+        recordPwaServiceWorkerUpdate("error", "manual update check");
+      } else {
+        recordPwaServiceWorkerUpdate(
+          "success",
+          `manual check: ${serviceWorkerResult.value.status}`,
+        );
+      }
       trackPwaServiceWorkerUpdateCheck({
         isControlled: serviceWorkerResult.value.isControlled,
         serviceWorkerStatus: serviceWorkerResult.value.status,
@@ -615,7 +511,10 @@ export function PwaDiagnosticsPanel() {
           </Button>
         </div>
 
-        <ul className="mt-8 grid bg-transparent sm:grid-cols-2 lg:grid-cols-4">
+        <ul
+          className="mt-8 grid bg-transparent sm:grid-cols-2 lg:grid-cols-4"
+          data-diagnostic-count={DIAGNOSTIC_CHECK_COUNT}
+        >
           {diagnostics.map((item, index) => (
             <DiagnosticRow
               index={index}

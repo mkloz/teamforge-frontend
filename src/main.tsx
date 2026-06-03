@@ -4,7 +4,16 @@ import { App } from "@/app/app";
 import { redirectLocalIpToLocalhost } from "@/shared/lib/local-host-canonical-url";
 import "./index.css";
 
-const MINIMUM_BOOT_DURATION_MS = 2_000;
+const BRANDED_BOOT_DURATION_MS = 2_000;
+const FAST_BOOT_DURATION_MS = 0;
+const FAST_BOOT_PUBLIC_PATH_PREFIXES = [
+  "/auth/",
+  "/download",
+  "/onboarding/",
+  "/privacy",
+  "/terms",
+] as const;
+const PWA_LAUNCH_SOURCE = "pwa";
 
 type BootWindow = Window & {
   __TEAMFORGE_BOOT_STARTED_AT?: number;
@@ -22,8 +31,27 @@ function getBootRenderDelay() {
   const bootStartedAt =
     (window as BootWindow).__TEAMFORGE_BOOT_STARTED_AT ?? performance.now();
   const bootElapsedMs = performance.now() - bootStartedAt;
+  const minimumBootDurationMs = getMinimumBootDurationMs();
 
-  return Math.max(0, MINIMUM_BOOT_DURATION_MS - bootElapsedMs);
+  return Math.max(0, minimumBootDurationMs - bootElapsedMs);
+}
+
+function getMinimumBootDurationMs() {
+  const { pathname, search } = window.location;
+  const source = new URLSearchParams(search).get("source");
+
+  if (source?.startsWith(PWA_LAUNCH_SOURCE)) {
+    return FAST_BOOT_DURATION_MS;
+  }
+
+  if (
+    pathname === "/" ||
+    FAST_BOOT_PUBLIC_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix))
+  ) {
+    return FAST_BOOT_DURATION_MS;
+  }
+
+  return BRANDED_BOOT_DURATION_MS;
 }
 
 function renderApp() {

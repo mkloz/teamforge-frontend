@@ -3,12 +3,22 @@ import { ActivityPageContent } from "@/features/activity/components/activity-pag
 import { useActivity } from "@/features/activity/hooks/use-activity";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { useNetworkStatus } from "@/shared/hooks/use-network-status";
+import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
+import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+
+const ACTIVITY_PAGE_METADATA = createTeamForgePageMetadata({
+  title: "Activity",
+  description:
+    "TeamForge activity brings conversations, group plans, direct chats, and decisions into one workspace.",
+});
 
 /**
  * ActivityPage - The main feature orchestrator for Unified Conversations,
  * Groups and Direct Chats.
  */
 export function ActivityPage() {
+  usePageMetadata(ACTIVITY_PAGE_METADATA);
+
   const activity = useActivity();
   const isMobile = useMediaQuery("(max-width: 1024px)");
   const isOnline = useNetworkStatus();

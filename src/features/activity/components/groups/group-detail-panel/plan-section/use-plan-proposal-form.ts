@@ -58,17 +58,15 @@ export function usePlanProposalForm(
     options.onOpenChange?.(nextOpen);
   };
 
-  const { createProposal, error, isCreating, setError } = useCreatePlanProposal(
-    plan,
-    {
+  const { createProposal, error, isCreating, isOnline, setError } =
+    useCreatePlanProposal(plan, {
       onCreated: () => {
         setFormOpen(false);
         setField("TITLE");
         setValue(plan.title);
         setLocationValue(getLocationProposalInput(plan));
       },
-    },
-  );
+    });
 
   const currentValue = useMemo(
     () => getCurrentProposalValue(plan, field),
@@ -130,6 +128,7 @@ export function usePlanProposalForm(
     handleFieldChange,
     handleSubmit,
     isCreating,
+    isOnline,
     isDateField: field === "DATE_TIME",
     isLocationField: field === "LOCATION",
     isOpen,

@@ -1,46 +1,79 @@
 import { Link } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
-import {
-  Bell,
-  BellOff,
-  BellRing,
-  Bookmark,
-  CheckCircle2,
-  ClipboardCheck,
-  ClipboardCopy,
-  Download,
-  EllipsisVertical,
-  ExternalLink,
-  Globe,
-  MonitorSmartphone,
-  Plus,
-  RefreshCw,
-  Share,
-  Smartphone,
-  Wifi,
-} from "lucide-react";
-import { useEffect, useState } from "react";
+import Bell from "lucide-react/dist/esm/icons/bell.js";
+import Bookmark from "lucide-react/dist/esm/icons/bookmark.js";
+import CheckCircle2 from "lucide-react/dist/esm/icons/circle-check.js";
+import ClipboardCheck from "lucide-react/dist/esm/icons/clipboard-check.js";
+import ClipboardCopy from "lucide-react/dist/esm/icons/clipboard-copy.js";
+import Download from "lucide-react/dist/esm/icons/download.js";
+import EllipsisVertical from "lucide-react/dist/esm/icons/ellipsis-vertical.js";
+import Globe from "lucide-react/dist/esm/icons/globe.js";
+import MonitorSmartphone from "lucide-react/dist/esm/icons/monitor-smartphone.js";
+import Plus from "lucide-react/dist/esm/icons/plus.js";
+import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw.js";
+import Share from "lucide-react/dist/esm/icons/share.js";
+import Smartphone from "lucide-react/dist/esm/icons/smartphone.js";
+import Wifi from "lucide-react/dist/esm/icons/wifi.js";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 
-import { PwaDiagnosticsPanel } from "@/features/download/components/pwa-diagnostics-panel";
 import { Footer } from "@/features/landing/components/footer";
 import { Navbar } from "@/features/landing/components/navbar";
 import { useLandingAuthActions } from "@/features/landing/hooks/use-landing-auth-actions";
-import { useRestoreAuthSessionQuery } from "@/shared/api/current-user-query";
 import { Button } from "@/shared/components/ui/button";
-import {
-  type SegmentedTabOption,
-  SegmentedTabs,
-} from "@/shared/components/ui/segmented-tabs";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { usePwaDisplayMode } from "@/shared/hooks/use-pwa-display-mode";
 import { usePwaInstallPrompt } from "@/shared/hooks/use-pwa-install-prompt";
-import { useWebPushSubscription } from "@/shared/hooks/use-web-push-subscription";
 import type { PageMetadata } from "@/shared/lib/document-metadata";
 import { cn } from "@/shared/lib/utils";
 
-const androidInstallPreviewUrl = "/download/install-preview-android.png";
-const desktopInstallPreviewUrl = "/download/install-preview-desktop.png";
-const iosInstallPreviewUrl = "/download/install-preview-ios.png";
+interface DownloadPreviewImage {
+  height: number;
+  sizes: string;
+  src: string;
+  srcSet: string;
+  width: number;
+}
+
+const DOWNLOAD_PREVIEW_IMAGES = {
+  android: {
+    height: 900,
+    sizes: "(min-width: 640px) 17rem, min(20rem, calc(100vw - 3rem))",
+    src: "/download/install-preview-android.png",
+    srcSet:
+      "/download/install-preview-android-256w.png 256w, /download/install-preview-android-360w.png 360w, /download/install-preview-android.png 465w",
+    width: 465,
+  },
+  desktop: {
+    height: 510,
+    sizes: "(min-width: 1024px) 30rem, min(30rem, calc(100vw - 3rem))",
+    src: "/download/install-preview-desktop.png",
+    srcSet:
+      "/download/install-preview-desktop-480w.png 480w, /download/install-preview-desktop.png 815w",
+    width: 815,
+  },
+  ios: {
+    height: 647,
+    sizes: "(min-width: 1024px) 35rem, min(35rem, calc(100vw - 3rem))",
+    src: "/download/install-preview-ios.png",
+    srcSet:
+      "/download/install-preview-ios-480w.png 480w, /download/install-preview-ios-720w.png 720w, /download/install-preview-ios.png 984w",
+    width: 984,
+  },
+} as const satisfies Record<SelectedDevice, DownloadPreviewImage>;
+
+const noop = () => {};
+
+const DeferredPushNotificationBand = lazy(() =>
+  import("@/features/download/components/push-notification-band").then((m) => ({
+    default: m.PushNotificationBand,
+  })),
+);
+
+const DeferredPwaDiagnosticsPanel = lazy(() =>
+  import("@/features/download/components/pwa-diagnostics-panel").then((m) => ({
+    default: m.PwaDiagnosticsPanel,
+  })),
+);
 
 // ─── Metadata ────────────────────────────────────────────────────────────────
 
@@ -345,9 +378,12 @@ function getIosBrowserName(): string {
 }
 
 function useDeviceDetection() {
-  const [detected, setDetected] = useState<DetectedPlatform>("unknown");
-  const [desktopBrowser, setDesktopBrowser] =
-    useState<DesktopBrowser>("chrome");
+  const [detected, setDetected] = useState<DetectedPlatform>(() =>
+    detectPlatform(),
+  );
+  const [desktopBrowser, setDesktopBrowser] = useState<DesktopBrowser>(() =>
+    detectPlatform() === "desktop" ? detectDesktopBrowser() : "chrome",
+  );
 
   useEffect(() => {
     const p = detectPlatform();
@@ -374,88 +410,61 @@ function scrollToSteps() {
     ?.scrollIntoView({ behavior: "smooth" });
 }
 
-function getPushDeniedHelp(): string {
-  if (typeof navigator === "undefined") {
-    return "Open your browser's site settings and allow notifications for TeamForge.";
-  }
-  const ua = navigator.userAgent;
-  if (/safari/i.test(ua) && !/chrome|chromium/i.test(ua)) {
-    return "Go to Safari → Settings for this Website → Notifications → Allow.";
-  }
-  if (/firefox/i.test(ua)) {
-    return "Click the shield icon in your address bar and disable notification blocking.";
-  }
-  if (/edg\//i.test(ua)) {
-    return "Click the lock icon in your address bar → Permissions → Notifications → Allow.";
-  }
-  return "Click the lock icon in your address bar → Notifications → Allow.";
-}
+function useDeferredPwaSections() {
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
 
-// ─── Push copy ───────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (shouldLoad) {
+      return noop;
+    }
 
-type PushState = ReturnType<typeof useWebPushSubscription>;
+    const sentinel = sentinelRef.current;
 
-function getPushCopy(push: PushState) {
-  if (!push.support.isSupported) {
-    return {
-      title: "Alerts unavailable here",
-      body: "This browser can still install TeamForge, but it cannot receive push notifications.",
+    if (!sentinel) {
+      return noop;
+    }
+
+    if (typeof IntersectionObserver === "undefined") {
+      setShouldLoad(true);
+      return noop;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) {
+          return;
+        }
+
+        setShouldLoad(true);
+        observer.disconnect();
+      },
+      { rootMargin: "240px 0px" },
+    );
+
+    observer.observe(sentinel);
+
+    return () => {
+      observer.disconnect();
     };
-  }
-  if (!push.isOnline || push.isPublicKeyNetworkError) {
-    return {
-      title: "Reconnect to manage alerts",
-      body: "Push settings need the network. Existing device alerts stay as they are until you are back online.",
-    };
-  }
-  if (!push.isAuthenticated) {
-    return {
-      title: "Unlock mobile alerts",
-      body: "Sign in on this device to turn on group invites, messages, and plan updates.",
-    };
-  }
-  if (push.isPublicKeyLoading) {
-    return {
-      title: "Checking alert capability",
-      body: "TeamForge is checking whether this environment can send mobile alerts.",
-    };
-  }
-  if (!push.isWebPushEnabled) {
-    return {
-      title: "Alerts not enabled yet",
-      body: "Installation works now. Push delivery can be turned on when this environment is configured.",
-    };
-  }
-  if (push.permission === "denied") {
-    return {
-      title: "Alerts are blocked in this browser",
-      body: "Notifications are blocked. Re-enable them in your site settings to receive group and plan updates.",
-    };
-  }
-  if (push.isSubscribed) {
-    return {
-      title: "Alerts are on",
-      body: "This device will show TeamForge updates even when the app is closed.",
-    };
-  }
-  return {
-    title: "Turn on mobile alerts",
-    body: "Allow this device to show group invites, messages, and plan reminders.",
-  };
+  }, [shouldLoad]);
+
+  return { sentinelRef, shouldLoad };
 }
 
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export function DownloadPage() {
   usePageMetadata(DOWNLOAD_PAGE_METADATA);
-  useRestoreAuthSessionQuery();
 
   const { detected, desktopBrowser } = useDeviceDetection();
   const { isStandalone } = usePwaDisplayMode();
   const { canPromptInstall, promptInstall } = usePwaInstallPrompt("download");
   const [installState, setInstallState] = useState<InstallState>("idle");
-  const [selectedDevice, setSelectedDevice] =
-    useState<SelectedDevice>("desktop");
+  const [selectedDevice, setSelectedDevice] = useState<SelectedDevice>(() =>
+    platformToDevice(detectPlatform()),
+  );
+  const pwaSections = useDeferredPwaSections();
 
   // Sync selected device once detection completes
   useEffect(() => {
@@ -665,11 +674,17 @@ export function DownloadPage() {
           </div>
         </section>
 
-        {/* ── Push Notifications Band ──────────────────────────────── */}
-        <PushNotificationBand />
+        <div ref={pwaSections.sentinelRef} aria-hidden="true" />
 
-        {/* ── PWA Diagnostics ──────────────────────────────────────── */}
-        <PwaDiagnosticsPanel />
+        {pwaSections.shouldLoad && (
+          <Suspense fallback={null}>
+            {/* ── Push Notifications Band ──────────────────────────────── */}
+            <DeferredPushNotificationBand />
+
+            {/* ── PWA Diagnostics ──────────────────────────────────────── */}
+            <DeferredPwaDiagnosticsPanel />
+          </Suspense>
+        )}
 
         {/* ── Capabilities ─────────────────────────────────────────── */}
         <section className="bg-canvas" aria-labelledby="install-benefits-title">
@@ -735,11 +750,18 @@ export function DownloadPage() {
 
 // ─── Device selector ─────────────────────────────────────────────────────────
 
-const DEVICE_TABS = [
+const DEVICE_TABS: readonly DeviceTabOption[] = [
   { id: "ios", label: "iPhone & iPad", shortLabel: "iPhone", icon: Smartphone },
   { id: "android", label: "Android", icon: Smartphone },
   { id: "desktop", label: "Desktop", icon: MonitorSmartphone },
-] satisfies SegmentedTabOption<SelectedDevice>[];
+] as const;
+
+interface DeviceTabOption {
+  icon: LucideIcon;
+  id: SelectedDevice;
+  label: string;
+  shortLabel?: string;
+}
 
 interface DeviceSelectorProps {
   selected: SelectedDevice;
@@ -748,13 +770,56 @@ interface DeviceSelectorProps {
 
 function DeviceSelector({ selected, onSelect }: DeviceSelectorProps) {
   return (
-    <SegmentedTabs
-      ariaLabel="Select your device"
-      options={DEVICE_TABS}
-      value={selected}
-      onChange={onSelect}
-      className="backdrop-blur-sm"
-    />
+    <div
+      role="tablist"
+      aria-label="Select your device"
+      className="inline-flex max-w-full items-center gap-1 rounded-full border border-white/10 bg-forge-deep-surface p-0.5 shadow-sm backdrop-blur-sm"
+    >
+      {DEVICE_TABS.map((option) => {
+        const active = selected === option.id;
+        const Icon = option.icon;
+
+        return (
+          <button
+            key={option.id}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            onClick={() => {
+              onSelect(option.id);
+            }}
+            className={cn(
+              "relative inline-flex h-9 min-w-0 items-center justify-center gap-1.5 overflow-hidden rounded-full px-3 font-bold text-xs leading-none outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-offset-1",
+              active
+                ? "bg-forge-teal text-white shadow-sm"
+                : "text-white/65 hover:text-white",
+            )}
+          >
+            <Icon
+              className={cn(
+                "size-3.5 shrink-0 transition-opacity duration-200",
+                active ? "opacity-100" : "opacity-70",
+              )}
+              strokeWidth={active ? 2 : 1.5}
+              aria-hidden="true"
+            />
+            <span
+              className={cn(
+                "min-w-0 truncate",
+                option.shortLabel && "hidden sm:inline",
+              )}
+            >
+              {option.label}
+            </span>
+            {option.shortLabel && (
+              <span className="min-w-0 truncate sm:hidden">
+                {option.shortLabel}
+              </span>
+            )}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -944,9 +1009,7 @@ function IpadVisual() {
         <div className="absolute top-14 -right-1 h-14 w-1 rounded-r-full bg-white/10" />
         <div className="absolute bottom-1 left-1/2 z-10 h-1 w-20 -translate-x-1/2 rounded-full bg-white/20" />
         <PreviewScreenImage
-          src={iosInstallPreviewUrl}
-          width={984}
-          height={647}
+          image={DOWNLOAD_PREVIEW_IMAGES.ios}
           className="rounded-[1.65rem]"
         />
       </div>
@@ -966,9 +1029,7 @@ function AndroidPhoneVisual() {
         <div className="absolute top-24 -right-1 z-10 h-16 w-1 rounded-r-full bg-white/10" />
         <div className="absolute top-3 left-1/2 z-20 size-2 -translate-x-1/2 rounded-full bg-white/15" />
         <PreviewScreenImage
-          src={androidInstallPreviewUrl}
-          width={465}
-          height={900}
+          image={DOWNLOAD_PREVIEW_IMAGES.android}
           className="rounded-[2.4rem]"
         />
         <div className="absolute bottom-1 left-1/2 z-20 h-1 w-20 -translate-x-1/2 rounded-full bg-white/18" />
@@ -985,11 +1046,7 @@ function DesktopBrowserVisual() {
       <div className="relative mx-auto w-full max-w-120 pb-9">
         <div className="rounded-4xl border-8 border-black/80 bg-black/80 p-2 shadow-teal-glow-lg ring-1 ring-white/10">
           <div className="overflow-hidden rounded-2xl border border-white/10 bg-forge-deep-panel">
-            <PreviewScreenImage
-              src={desktopInstallPreviewUrl}
-              width={815}
-              height={510}
-            />
+            <PreviewScreenImage image={DOWNLOAD_PREVIEW_IMAGES.desktop} />
           </div>
         </div>
 
@@ -1002,24 +1059,20 @@ function DesktopBrowserVisual() {
 
 interface PreviewScreenImageProps {
   className?: string;
-  height: number;
-  src: string;
-  width: number;
+  image: DownloadPreviewImage;
 }
 
-function PreviewScreenImage({
-  className,
-  height,
-  src,
-  width,
-}: PreviewScreenImageProps) {
+function PreviewScreenImage({ className, image }: PreviewScreenImageProps) {
   return (
     <img
-      src={src}
-      width={width}
-      height={height}
+      src={image.src}
+      srcSet={image.srcSet}
+      sizes={image.sizes}
+      width={image.width}
+      height={image.height}
       alt=""
       decoding="async"
+      fetchPriority="high"
       loading="eager"
       draggable={false}
       className={cn("block h-auto w-full object-cover", className)}
@@ -1349,100 +1402,5 @@ function DownloadHeroGrid() {
       className="download-hero-grid pointer-events-none absolute inset-0"
       aria-hidden="true"
     />
-  );
-}
-
-// ─── Push notification band ───────────────────────────────────────────────────
-
-function PushNotificationBand() {
-  const push = useWebPushSubscription();
-  const copy = getPushCopy(push);
-  const Icon = push.isSubscribed ? BellRing : Bell;
-  const isBusy =
-    push.isTurningOn || push.isTurningOff || push.isCheckingBrowserSubscription;
-  const canTurnOn =
-    push.canRequestPermission && !push.isSubscribed && !push.isPublicKeyLoading;
-  const isActionDisabled =
-    !push.isOnline ||
-    isBusy ||
-    push.isPublicKeyLoading ||
-    (!push.isSubscribed && !push.canRequestPermission);
-  const isDenied = push.permission === "denied";
-
-  return (
-    <div className="border-forge-teal/12 border-y bg-forge-teal/5">
-      <div className="mx-auto flex max-w-6xl flex-col gap-5 px-6 py-8 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
-        <div className="flex items-start gap-4">
-          <span
-            className={cn(
-              "flex size-11 shrink-0 items-center justify-center rounded-full",
-              push.isSubscribed
-                ? "bg-forge-teal/12 text-forge-teal"
-                : isDenied
-                  ? "bg-spark-amber/10 text-spark-amber"
-                  : "bg-slate-muted/10 text-slate-muted",
-            )}
-          >
-            <Icon size={20} strokeWidth={1.5} aria-hidden="true" />
-          </span>
-          <div className="min-w-0">
-            <p className="font-bold text-ink">{copy.title}</p>
-            <p className="mt-0.5 max-w-lg text-pretty text-slate-muted text-sm leading-relaxed">
-              {copy.body}
-            </p>
-            {isDenied && (
-              <p className="mt-2 flex items-start gap-1.5 text-slate-muted text-sm">
-                <ExternalLink
-                  size={13}
-                  className="mt-0.5 shrink-0 text-spark-amber"
-                  aria-hidden="true"
-                />
-                <span>{getPushDeniedHelp()}</span>
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="shrink-0">
-          {!push.isAuthenticated ? (
-            <Button
-              variant="outline"
-              size="sm"
-              asChild
-              className="min-h-11 lg:min-h-9"
-            >
-              <Link to="/auth/login">Sign in to enable alerts</Link>
-            </Button>
-          ) : push.isSubscribed ? (
-            <Button
-              variant="outline"
-              size="sm"
-              className="min-h-11 lg:min-h-9"
-              disabled={!push.isOnline || isBusy}
-              loading={push.isTurningOff}
-              onClick={() => {
-                void push.turnOff("download");
-              }}
-            >
-              <BellOff size={15} strokeWidth={2} aria-hidden="true" />
-              Turn off alerts
-            </Button>
-          ) : (
-            <Button
-              size="sm"
-              className="min-h-11 lg:min-h-9"
-              disabled={!canTurnOn || isActionDisabled}
-              loading={push.isTurningOn}
-              onClick={() => {
-                void push.turnOn("download");
-              }}
-            >
-              <BellRing size={15} strokeWidth={2} aria-hidden="true" />
-              {isDenied ? "Blocked in browser" : "Turn on alerts"}
-            </Button>
-          )}
-        </div>
-      </div>
-    </div>
   );
 }

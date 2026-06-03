@@ -8,6 +8,7 @@ import type {
   UnifiedMessage,
 } from "@/features/activity/lib/activity-contract";
 import type { ActivityKind } from "@/features/activity/lib/activity-route";
+import { warnInDevelopment } from "@/shared/lib/development-warning";
 import type { ChatApi } from "@/shared/schemas";
 
 interface UseActivityMessageTimelineInput {
@@ -17,6 +18,8 @@ interface UseActivityMessageTimelineInput {
   selectedKind: ActivityKind | null;
   selectedParticipants: ActivityParticipant[];
 }
+
+const ACTIVITY_TIMELINE_RESUME_REFETCH_COOLDOWN_MS = 12_000;
 
 export function useActivityMessageTimeline({
   chatId,
@@ -108,6 +111,103 @@ export function useActivityMessageTimeline({
   const latestReadableMessageId =
     flattenedMessages[flattenedMessages.length - 1]?.id ?? null;
   const lastMarkedReadRef = useRef<string | null>(null);
+  const isFetchingMessagesRef = useRef(false);
+  const lastResumeRefetchAtRef = useRef(0);
+  const resumeRefetchInFlightRef = useRef<Promise<void> | null>(null);
+  const resumeRefetchRef = useRef(messagesQuery.refetch);
+
+  useEffect(() => {
+    isFetchingMessagesRef.current = messagesQuery.isFetching;
+  }, [messagesQuery.isFetching]);
+
+  useEffect(() => {
+    resumeRefetchRef.current = messagesQuery.refetch;
+  }, [messagesQuery.refetch]);
+
+  useEffect(() => {
+    lastResumeRefetchAtRef.current = 0;
+    resumeRefetchInFlightRef.current = null;
+
+    if (
+      !chatId ||
+      selectedParticipants.length === 0 ||
+      currentUserId === null
+    ) {
+      return undefined;
+    }
+
+    function refetchTimelineAfterResume(reason: string) {
+      if (
+        document.visibilityState === "hidden" ||
+        !navigator.onLine ||
+        isFetchingMessagesRef.current ||
+        resumeRefetchInFlightRef.current
+      ) {
+        return;
+      }
+
+      const now = Date.now();
+
+      if (
+        now - lastResumeRefetchAtRef.current <
+        ACTIVITY_TIMELINE_RESUME_REFETCH_COOLDOWN_MS
+      ) {
+        return;
+      }
+
+      lastResumeRefetchAtRef.current = now;
+
+      const refetchPromise = resumeRefetchRef
+        .current()
+        .then(() => undefined)
+        .catch((error: unknown) => {
+          warnInDevelopment(
+            `Activity timeline resume refresh failed after ${reason}.`,
+            error,
+          );
+        });
+
+      resumeRefetchInFlightRef.current = refetchPromise;
+
+      void refetchPromise.finally(() => {
+        if (resumeRefetchInFlightRef.current === refetchPromise) {
+          resumeRefetchInFlightRef.current = null;
+        }
+      });
+    }
+
+    function handleFocus() {
+      refetchTimelineAfterResume("window focus");
+    }
+
+    function handleOnline() {
+      refetchTimelineAfterResume("network reconnect");
+    }
+
+    function handlePageShow(event: PageTransitionEvent) {
+      if (event.persisted) {
+        refetchTimelineAfterResume("page restore");
+      }
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        refetchTimelineAfterResume("app foreground");
+      }
+    }
+
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("pageshow", handlePageShow);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("pageshow", handlePageShow);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [chatId, currentUserId, selectedParticipants.length]);
 
   useEffect(() => {
     if (firstUnreadChatIdRef.current !== chatId) {

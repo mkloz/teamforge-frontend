@@ -20,6 +20,7 @@ export function PublicProfileActions({ user }: PublicProfileActionsProps) {
     connectDisabled,
     connectLabel,
     connectLoading,
+    isOnline,
     messageChatId,
     messageDisabled,
     onConnect,
@@ -34,6 +35,7 @@ export function PublicProfileActions({ user }: PublicProfileActionsProps) {
         loading={connectLoading}
         onClick={() => onConnect()}
         aria-label={`${connectLabel} with ${user.name}`}
+        title={isOnline ? undefined : "Reconnect before changing connections."}
       >
         <ConnectIcon className="shrink-0" />
         <span>{connectLabel}</span>

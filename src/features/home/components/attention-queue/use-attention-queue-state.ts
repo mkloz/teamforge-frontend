@@ -185,6 +185,8 @@ export function useAttentionQueueState({
     isAcceptingInvite,
     isDeclining,
     isDecliningInvite,
+    isFriendRequestOnline,
+    isInviteActionOnline,
     proposedPlans,
     queueSize,
     shouldShowSkeleton,

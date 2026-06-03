@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 
 import { ForgeCommands } from "@/features/forge/api/forge-commands";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { captureException } from "@/shared/lib/telemetry";
 
 import type { UseForgeWizardSubmitActionsOptions } from "./types";
@@ -15,8 +16,18 @@ export function useSaveForgeIdentityAction({
   state,
 }: UseSaveForgeIdentityActionOptions) {
   const [isSavingIdentity, setIsSavingIdentity] = useState(false);
+  const { guardOfflineAction } = useOfflineActionGuard();
 
   const handleSaveIdentityAndContinue = useCallback(async () => {
+    if (
+      guardOfflineAction({
+        id: "forge-identity-save-offline",
+        description: "Reconnect before saving group identity.",
+      })
+    ) {
+      return;
+    }
+
     setIsSavingIdentity(true);
 
     try {
@@ -45,6 +56,7 @@ export function useSaveForgeIdentityAction({
     state.groupId,
     state.groupName,
     state.planId,
+    guardOfflineAction,
   ]);
 
   return {

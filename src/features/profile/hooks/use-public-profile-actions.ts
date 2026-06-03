@@ -8,6 +8,7 @@ import {
   invalidateGroupPlanDetailSurfaces,
 } from "@/shared/api/query-invalidation";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import type { FriendshipApi, User } from "@/shared/schemas";
 
 type PublicProfileActionUser = Pick<User, "id">;
@@ -57,6 +58,7 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
   const currentUserQuery = useCurrentUserQuery();
   const currentUserId = currentUserQuery.data?.id ?? null;
   const queryClient = useQueryClient();
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const isViewerProfile = currentUserId === user.id;
 
   const friendshipQuery = useQuery({
@@ -101,6 +103,7 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
   const connectLabel = getConnectLabel(displayFriendship, currentUserId);
   const connectDisabled =
     !currentUserId ||
+    !isOnline ||
     currentUserQuery.isLoading ||
     connectMutation.isPending ||
     isViewerProfile ||
@@ -108,13 +111,30 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
     displayFriendship?.status === "ACCEPTED" ||
     (displayFriendship?.status === "PENDING" && !incomingRequest) ||
     displayFriendship?.status === "BLOCKED";
+  const handleConnect = () => {
+    if (
+      guardOfflineAction({
+        id: incomingRequest
+          ? "profile-accept-friend-request-offline"
+          : "profile-send-friend-request-offline",
+        description: incomingRequest
+          ? "Reconnect before accepting connection requests."
+          : "Reconnect before sending connection requests.",
+      })
+    ) {
+      return;
+    }
+
+    connectMutation.mutate();
+  };
 
   return {
     connectDisabled,
     connectLabel,
     connectLoading: connectMutation.isPending,
+    isOnline,
     messageChatId,
     messageDisabled: !messageChatId,
-    onConnect: connectMutation.mutate,
+    onConnect: handleConnect,
   };
 }

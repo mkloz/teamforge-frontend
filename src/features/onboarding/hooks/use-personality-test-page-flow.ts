@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 
 import { useInvalidateCurrentUser } from "@/shared/api/current-user-query";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { useScrollToTop } from "@/shared/hooks/use-scroll-to-top";
 
 import { OnboardingCache } from "../api/onboarding-cache";
@@ -33,6 +34,7 @@ export function usePersonalityTestPageFlow() {
     useOnboardingFlowState();
   const queryClient = useQueryClient();
   const invalidateCurrentUser = useInvalidateCurrentUser();
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const { mutateAsync: persistPersonality } = useMutation({
     meta: {
       errorToastMessage: "We couldn't save your personality result right now.",
@@ -51,6 +53,15 @@ export function usePersonalityTestPageFlow() {
 
   async function continueToInterests() {
     if (testState.result && testState.vector) {
+      if (
+        guardOfflineAction({
+          id: "onboarding-personality-save-offline",
+          description: "Reconnect before saving your personality result.",
+        })
+      ) {
+        return;
+      }
+
       const oceanScores = getOceanScoresFromVector(testState.vector);
 
       await persistPersonality({
@@ -148,6 +159,7 @@ export function usePersonalityTestPageFlow() {
     displayProgress,
     goBack,
     isEditMode,
+    isOnline,
     scrollContainerRef,
     setPendingLength,
     testState,

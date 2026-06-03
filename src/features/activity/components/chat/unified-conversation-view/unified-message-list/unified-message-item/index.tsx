@@ -72,6 +72,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
     startEdit,
     startReply,
     forwardMessage,
+    isOnline,
     toggleSaved,
     toggleReaction,
     unpinMessage,
@@ -136,6 +137,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
       onToggleSaved={toggleSaved}
       onSelectMessage={isSelectable ? onStartSelection : undefined}
       onOpenChange={setIsContextMenuOpen}
+      isOnline={isOnline}
     >
       {/* biome-ignore lint/a11y/noNoninteractiveElementInteractions: Message rows keep article semantics while supporting selection and context-menu keyboard workflows. */}
       <article

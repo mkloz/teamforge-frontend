@@ -6,6 +6,7 @@ export interface GroupActionButtonProps {
   icon: ReactNode;
   label: string;
   onClick: () => void;
+  title?: string;
   variant?: "default" | "destructive" | "muted";
 }
 
@@ -14,6 +15,7 @@ export function GroupActionButton({
   icon,
   label,
   onClick,
+  title,
   variant = "default",
 }: GroupActionButtonProps) {
   const buttonVariant =
@@ -28,6 +30,7 @@ export function GroupActionButton({
       variant={buttonVariant}
       disabled={disabled}
       onClick={onClick}
+      title={title}
       className="h-auto w-full justify-start px-3 py-3 text-left"
     >
       <span className="shrink-0">{icon}</span>

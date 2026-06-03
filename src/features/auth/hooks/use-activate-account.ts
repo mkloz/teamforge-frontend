@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 import { AuthCommands } from "@/features/auth/api/auth-commands";
 import { ensureCurrentUser } from "@/shared/api/current-user-query";
+import { useNetworkStatus } from "@/shared/hooks/use-network-status";
 import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { buildPostAuthRedirectNavigation } from "@/shared/lib/auth-route";
 import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
@@ -13,6 +14,7 @@ type ActivationState = "loading" | "success" | "error";
 export function useActivateAccount(returnTo?: string | null) {
   const { token } = useParams({ from: "/auth/activate/$token" });
   const navigate = useNavigate();
+  const isOnline = useNetworkStatus();
   const [state, setState] = useState<ActivationState>("loading");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -22,6 +24,14 @@ export function useActivateAccount(returnTo?: string | null) {
     const activate = async () => {
       setState("loading");
       setErrorMessage(null);
+
+      if (!isOnline) {
+        setErrorMessage(
+          "You are offline. Reconnect before activating your account.",
+        );
+        setState("error");
+        return;
+      }
 
       try {
         const activationResult = await AuthCommands.activateAccount(token);
@@ -66,10 +76,11 @@ export function useActivateAccount(returnTo?: string | null) {
     return () => {
       active = false;
     };
-  }, [navigate, returnTo, token]);
+  }, [isOnline, navigate, returnTo, token]);
 
   return {
     errorMessage,
+    isOnline,
     state,
   };
 }

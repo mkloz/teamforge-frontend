@@ -20,6 +20,8 @@ import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { useHomeRouteState } from "@/features/home/hooks/use-home-route-state";
 import { useHomeViewerState } from "@/features/home/hooks/use-home-viewer";
 import { PageErrorState } from "@/shared/components/page-error-state";
+import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
+import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
 
 const LazyFriendsInvitation = lazy(() =>
   import("@/features/home/components/friends-invitation").then((module) => ({
@@ -44,7 +46,15 @@ const LazyUpcomingPlans = lazy(() =>
   })),
 );
 
+const HOME_PAGE_METADATA = createTeamForgePageMetadata({
+  title: "Home",
+  description:
+    "Your TeamForge home for groups, invitations, plans, and recommended next moves.",
+});
+
 export function HomePage() {
+  usePageMetadata(HOME_PAGE_METADATA);
+
   const {
     focusedInviteId,
     focusedPanel,

@@ -12,6 +12,7 @@ export function GroupAvatarSection({
   avatarUploadError,
   groupName,
   isAvatarUploading,
+  isOnline,
   onAvatarFiles,
   onAvatarImageChange,
   planTitle,
@@ -23,8 +24,9 @@ export function GroupAvatarSection({
           Group avatar
         </p>
         <p className="mt-0.5 text-muted-foreground/60 text-xs">
-          A square icon that identifies your group across the app. Drag and drop
-          or tap to upload.
+          {isOnline
+            ? "A square icon that identifies your group across the app. Drag and drop or tap to upload."
+            : "Reconnect before uploading a group avatar."}
         </p>
       </div>
 
@@ -47,9 +49,13 @@ export function GroupAvatarSection({
               type="button"
               variant="ghost"
               size="icon-xs"
+              disabled={!isOnline}
               onClick={() => onAvatarImageChange(null)}
               className="absolute top-1.5 right-1.5 z-20 size-6 rounded-full bg-black/45 text-white hover:bg-black/65"
               aria-label="Remove avatar"
+              title={
+                isOnline ? undefined : "Reconnect before changing group images."
+              }
             >
               <X size={12} />
             </Button>
@@ -65,6 +71,7 @@ export function GroupAvatarSection({
           description="Drop a square image here or tap to browse."
           helper="PNG, JPG, WEBP up to 30 MB"
           actionLabel="Browse"
+          disabled={!isOnline}
           isUploading={isAvatarUploading}
           error={avatarUploadError}
           onFiles={onAvatarFiles}

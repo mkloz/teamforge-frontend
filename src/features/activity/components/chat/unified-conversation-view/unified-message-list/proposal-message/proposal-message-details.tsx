@@ -15,6 +15,7 @@ type AvailableProposalMessageViewState = NonNullable<ProposalMessageViewState>;
 interface ProposalMessageDetailsProps {
   isVoting: boolean;
   isWithdrawing: boolean;
+  isOnline: boolean;
   onApprove: () => void;
   onReject: () => void;
   onWithdraw: () => Promise<void> | void;
@@ -24,6 +25,7 @@ interface ProposalMessageDetailsProps {
 export const ProposalMessageDetails = memo(function ProposalMessageDetails({
   isVoting,
   isWithdrawing,
+  isOnline,
   onApprove,
   onReject,
   onWithdraw,
@@ -75,6 +77,7 @@ export const ProposalMessageDetails = memo(function ProposalMessageDetails({
             hasVoted={hasVoted}
             isPending={isPending}
             isProposer={isProposer}
+            isOnline={isOnline}
             isVoting={isVoting}
             isWithdrawing={isWithdrawing}
             onApprove={onApprove}

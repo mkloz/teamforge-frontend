@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export type ServiceWorkerDiagnosticsStatus =
   | "active"
@@ -24,15 +24,6 @@ const INITIAL_SNAPSHOT: ServiceWorkerDiagnosticsSnapshot = {
 };
 
 const SERVICE_WORKER_DIAGNOSTICS_TIMEOUT_MS = 8000;
-
-function setSnapshotAndReturn(
-  setSnapshot: (snapshot: ServiceWorkerDiagnosticsSnapshot) => void,
-  snapshot: ServiceWorkerDiagnosticsSnapshot,
-) {
-  setSnapshot(snapshot);
-
-  return snapshot;
-}
 
 function getIsServiceWorkerSupported() {
   return typeof navigator !== "undefined" && "serviceWorker" in navigator;
@@ -115,52 +106,76 @@ export function useServiceWorkerDiagnostics() {
   const [snapshot, setSnapshot] =
     useState<ServiceWorkerDiagnosticsSnapshot>(INITIAL_SNAPSHOT);
   const [isChecking, setIsChecking] = useState(false);
+  const isMountedRef = useRef(true);
 
-  const refresh = useCallback(async (checkForUpdate = false) => {
-    if (!getIsServiceWorkerSupported()) {
-      return setSnapshotAndReturn(setSnapshot, {
-        isControlled: false,
-        scope: null,
-        scriptUrl: null,
-        status: "unsupported",
-      });
-    }
-
-    setIsChecking(true);
-
-    try {
-      if (checkForUpdate) {
-        const registration = await withDiagnosticsTimeout(
-          navigator.serviceWorker.getRegistration(),
-          undefined,
-        );
-
-        if (registration) {
-          await withDiagnosticsTimeout(registration.update(), undefined);
-        }
+  const commitSnapshot = useCallback(
+    (nextSnapshot: ServiceWorkerDiagnosticsSnapshot) => {
+      if (isMountedRef.current) {
+        setSnapshot(nextSnapshot);
       }
 
-      return setSnapshotAndReturn(
-        setSnapshot,
-        await readServiceWorkerSnapshot(),
-      );
-    } catch {
-      return setSnapshotAndReturn(setSnapshot, {
-        isControlled: Boolean(navigator.serviceWorker.controller),
-        scope: null,
-        scriptUrl: null,
-        status: "error",
-      });
-    } finally {
-      setIsChecking(false);
-    }
+      return nextSnapshot;
+    },
+    [],
+  );
+
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+    };
   }, []);
+
+  const refresh = useCallback(
+    async (checkForUpdate = false) => {
+      if (!getIsServiceWorkerSupported()) {
+        return commitSnapshot({
+          isControlled: false,
+          scope: null,
+          scriptUrl: null,
+          status: "unsupported",
+        });
+      }
+
+      if (isMountedRef.current) {
+        setIsChecking(true);
+      }
+
+      try {
+        if (checkForUpdate) {
+          const registration = await withDiagnosticsTimeout(
+            navigator.serviceWorker.getRegistration(),
+            undefined,
+          );
+
+          if (registration) {
+            await withDiagnosticsTimeout(registration.update(), undefined);
+          }
+        }
+
+        return commitSnapshot(await readServiceWorkerSnapshot());
+      } catch {
+        return commitSnapshot({
+          isControlled: Boolean(navigator.serviceWorker.controller),
+          scope: null,
+          scriptUrl: null,
+          status: "error",
+        });
+      } finally {
+        if (isMountedRef.current) {
+          setIsChecking(false);
+        }
+      }
+    },
+    [commitSnapshot],
+  );
 
   useEffect(() => {
     let isActive = true;
 
     if (!getIsServiceWorkerSupported()) {
-      setSnapshot({
+      commitSnapshot({
         isControlled: false,
         scope: null,
         scriptUrl: null,
@@ -210,7 +225,7 @@ export function useServiceWorkerDiagnostics() {
         handleControllerChange,
       );
     };
-  }, [refresh]);
+  }, [commitSnapshot, refresh]);
 
   return {
     ...snapshot,
