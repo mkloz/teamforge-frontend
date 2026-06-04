@@ -35,6 +35,7 @@ const fullUserResponseInputSchema = z.object({
   onlineStatus: onlineStatusSchema.optional(),
   trustScore: z.number().default(0),
   profileComplete: z.boolean().default(false),
+  showFriendsListOnProfile: z.boolean().default(true),
   interests: z.array(interestSchema).optional(),
 });
 
@@ -63,6 +64,7 @@ const publicUserResponseInputSchema = z.object({
   oceanN: z.number().nullable().optional(),
   onlineStatus: onlineStatusSchema.optional(),
   trustScore: z.number(),
+  showFriendsListOnProfile: z.boolean(),
   interests: z.array(interestSchema).optional(),
 });
 
@@ -93,6 +95,7 @@ export const publicUserResponseSchema = publicUserResponseInputSchema.transform(
       searchStatus: "IDLE",
       onlineStatus: user.onlineStatus,
       trustScore: user.trustScore,
+      showFriendsListOnProfile: user.showFriendsListOnProfile,
       profileComplete: true,
       interests: user.interests ?? [],
     }),

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { UserMinus, UserPlus } from "lucide-react";
+import { ShieldCheck, UserMinus, UserPlus } from "lucide-react";
 
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar } from "@/shared/components/common/avatar";
@@ -30,85 +30,77 @@ export function ParticipantRow({
   return (
     <div
       className={cn(
-        "group flex min-h-26 flex-col justify-between gap-3 rounded-lg border p-3 transition-all duration-200",
+        "group relative flex items-center gap-3 rounded-xl px-2 py-2 transition-colors duration-150",
         removed
-          ? "border-border/30 border-dashed bg-muted/30 opacity-40"
+          ? "opacity-40"
           : highlight
-            ? "border-spark-amber/45 bg-spark-amber/8 ring-1 ring-spark-amber/15 hover:border-spark-amber/60"
-            : "border-border/40 bg-card/70 hover:border-forge-teal/30 hover:bg-forge-teal/5",
+            ? "hover:bg-spark-amber/5"
+            : "hover:bg-muted/50",
       )}
     >
+      {/* Full-surface link */}
       <Link
         {...profileNavigation}
         aria-label={`View ${participantName}'s profile`}
-        className="flex items-start gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="absolute inset-0 z-10 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <div
-          className={cn(
-            "flex size-10 shrink-0 items-center justify-center rounded-lg text-lg transition-colors duration-200",
-            removed
-              ? "bg-muted text-muted-foreground"
-              : highlight
-                ? "bg-spark-amber/12 text-spark-amber shadow-sm ring-1 ring-spark-amber/20"
-                : "border border-border/35 bg-muted/35 group-hover:bg-forge-teal/10",
-          )}
-        >
-          <Avatar
-            src={participant.user?.avatar}
-            name={participantName}
-            fallback={getParticipantInitials(participant)}
-            shape="rounded"
-            className="size-full rounded-lg bg-transparent"
-            fallbackClassName={cn(
-              "bg-transparent font-bold text-xs",
-              highlight ? "text-spark-amber" : "text-foreground/80",
-            )}
-          />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <p
-                className={cn(
-                  "truncate font-semibold text-sm leading-tight transition-colors",
-                  removed
-                    ? "text-muted-foreground line-through"
-                    : highlight
-                      ? "text-spark-amber"
-                      : "text-foreground",
-                )}
-              >
-                {participantName}
-              </p>
-              <p className="mt-1 text-muted-foreground text-xs leading-snug">
-                {removed ? "Removed from session" : "Suggested member"}
-              </p>
-            </div>
-
-            {!removed && (
-              <StatusPill
-                tone={highlight ? "amber" : "neutral"}
-                size="xs"
-                surface="soft"
-                numeric
-              >
-                {participantMeta.value}
-              </StatusPill>
-            )}
-          </div>
-        </div>
+        <span className="sr-only">View {participantName}'s profile</span>
       </Link>
 
-      <div className="flex items-center gap-3">
-        {!removed && scorePercent !== null ? (
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between gap-2 font-semibold text-micro">
-              <span className="text-muted-foreground">
-                {participantMeta.label}
-              </span>
-              {highlight && <span className="text-spark-amber">Best fit</span>}
-            </div>
-            <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-muted/55">
+      {/* Avatar */}
+      <div className="relative shrink-0">
+        <Avatar
+          src={participant.user?.avatar}
+          name={participantName}
+          fallback={getParticipantInitials(participant)}
+          className={cn(
+            "size-10 ring-1",
+            removed
+              ? "ring-border/30 grayscale"
+              : highlight
+                ? "ring-2 ring-spark-amber/35"
+                : "ring-border/40",
+          )}
+          fallbackClassName={cn(
+            "font-bold text-xs",
+            highlight ? "text-spark-amber" : "text-foreground/80",
+          )}
+        />
+      </div>
+
+      {/* Identity + meta */}
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-1.5">
+          <p
+            className={cn(
+              "truncate font-black text-sm leading-tight transition-colors",
+              removed
+                ? "text-muted-foreground line-through"
+                : highlight
+                  ? "text-spark-amber"
+                  : "text-foreground",
+            )}
+          >
+            {participantName}
+          </p>
+          {!removed && highlight && (
+            <StatusPill
+              tone="amber"
+              size="xs"
+              surface="soft"
+              className="h-4 shrink-0 px-1.5 py-0 leading-4"
+            >
+              Best fit
+            </StatusPill>
+          )}
+        </div>
+
+        {/* Score bar or removed label */}
+        {removed ? (
+          <p className="mt-0.5 text-muted-foreground text-xs">Removed</p>
+        ) : scorePercent !== null ? (
+          <div className="mt-1.5 flex items-center gap-2">
+            <div className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-muted/55">
               <div
                 className={cn(
                   "h-full rounded-full transition-all duration-500",
@@ -117,36 +109,47 @@ export function ParticipantRow({
                 style={{ width: `${Math.min(scorePercent, 100)}%` }}
               />
             </div>
+            <StatusPill
+              icon={ShieldCheck}
+              tone={highlight ? "amber" : "neutral"}
+              size="xs"
+              surface="soft"
+              className="h-4 shrink-0 px-1.5 py-0 leading-4"
+              numeric
+            >
+              {participantMeta.value}
+            </StatusPill>
           </div>
-        ) : (
-          <div className="min-w-0 flex-1" />
-        )}
+        ) : null}
 
-        {!removed && scorePercent !== null && (
+        {scorePercent !== null && !removed && (
           <span className="sr-only">
             {participantName} has a {scorePercent}% compatibility score.
           </span>
         )}
+      </div>
 
+      {/* Action button – z-20, revealed on hover on desktop */}
+      <div className="relative z-20 shrink-0 transition-opacity duration-150 md:opacity-0 md:group-hover:opacity-100">
         {removed ? (
           <Button
-            variant="outline"
+            variant="ghost"
             size="icon"
             onClick={() => onRestoreParticipant(participant.userId)}
             aria-label={`Restore ${participantName}`}
-            className="size-8 max-md:opacity-100 md:opacity-0 md:group-hover:opacity-100"
+            className="size-7 rounded-full text-muted-foreground hover:text-forge-teal"
           >
-            <UserPlus size={14} />
+            <UserPlus size={13} />
           </Button>
         ) : (
           <Button
-            variant="destructive"
+            variant="ghost"
             size="icon"
             onClick={() => onRemoveParticipant(participant.userId)}
             aria-label={`Remove ${participantName}`}
-            className="size-8 max-md:opacity-100 md:opacity-0 md:group-hover:opacity-100"
+            className="size-7 rounded-full text-muted-foreground hover:text-destructive"
           >
-            <UserMinus size={14} />
+            <UserMinus size={13} />
           </Button>
         )}
       </div>

@@ -1,31 +1,33 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ExploreCache } from "@/features/explore/api/explore-cache";
-import { ExploreCommands } from "@/features/explore/api/explore-commands";
-import { ExploreQueryFactory } from "@/features/explore/api/explore-query-factory";
+import { ProfileFriendsCache } from "@/features/profile/api/profile-friends-cache";
+import { ProfileFriendsCommands } from "@/features/profile/api/profile-friends-commands";
+import { ProfileFriendsQueryFactory } from "@/features/profile/api/profile-query-options";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
 interface FriendRequestMutationContext {
-  previousRequests: ReturnType<typeof ExploreCache.getFriendRequestsSnapshot>;
+  previousRequests: ReturnType<
+    typeof ProfileFriendsCache.getFriendRequestsSnapshot
+  >;
 }
 
-export function useExploreFriendRequests() {
-  const requestsQuery = useQuery(ExploreQueryFactory.friendRequests());
+export function useProfileFriendRequests() {
+  const requestsQuery = useQuery(ProfileFriendsQueryFactory.friendRequests());
   const { guardOfflineAction, isOnline } = useOfflineActionGuard();
   const acceptMutation = useMutation({
     meta: {
       errorToastMessage: "We couldn't accept that friend request right now.",
       telemetryName: trackedMutationNames.exploreAcceptFriendRequest,
     },
-    mutationKey: ["explore", "friend-request", "accept"],
+    mutationKey: ["profile", "friend-request", "accept"],
     mutationFn: (requesterId: string) =>
-      ExploreCommands.acceptFriendRequest(requesterId),
+      ProfileFriendsCommands.acceptFriendRequest(requesterId),
     onMutate: async (requesterId) => {
-      await ExploreCache.cancelFriendRequests();
+      await ProfileFriendsCache.cancelFriendRequests();
 
-      const previousRequests = ExploreCache.getFriendRequestsSnapshot();
-      ExploreCache.removeFriendRequest(requesterId);
+      const previousRequests = ProfileFriendsCache.getFriendRequestsSnapshot();
+      ProfileFriendsCache.removeFriendRequest(requesterId);
 
       return { previousRequests } satisfies FriendRequestMutationContext;
     },
@@ -39,7 +41,7 @@ export function useExploreFriendRequests() {
       );
     },
     onError: (_error, _requesterId, context) => {
-      ExploreCache.restoreFriendRequests(context?.previousRequests);
+      ProfileFriendsCache.restoreFriendRequests(context?.previousRequests);
       trackMutationOutcome(
         trackedMutationNames.exploreAcceptFriendRequest,
         "error",
@@ -51,14 +53,14 @@ export function useExploreFriendRequests() {
       errorToastMessage: "We couldn't decline that friend request right now.",
       telemetryName: trackedMutationNames.exploreDeclineFriendRequest,
     },
-    mutationKey: ["explore", "friend-request", "decline"],
+    mutationKey: ["profile", "friend-request", "decline"],
     mutationFn: (requesterId: string) =>
-      ExploreCommands.declineFriendRequest(requesterId),
+      ProfileFriendsCommands.declineFriendRequest(requesterId),
     onMutate: async (requesterId) => {
-      await ExploreCache.cancelFriendRequests();
+      await ProfileFriendsCache.cancelFriendRequests();
 
-      const previousRequests = ExploreCache.getFriendRequestsSnapshot();
-      ExploreCache.removeFriendRequest(requesterId);
+      const previousRequests = ProfileFriendsCache.getFriendRequestsSnapshot();
+      ProfileFriendsCache.removeFriendRequest(requesterId);
 
       return { previousRequests } satisfies FriendRequestMutationContext;
     },
@@ -72,7 +74,7 @@ export function useExploreFriendRequests() {
       );
     },
     onError: (_error, _requesterId, context) => {
-      ExploreCache.restoreFriendRequests(context?.previousRequests);
+      ProfileFriendsCache.restoreFriendRequests(context?.previousRequests);
       trackMutationOutcome(
         trackedMutationNames.exploreDeclineFriendRequest,
         "error",

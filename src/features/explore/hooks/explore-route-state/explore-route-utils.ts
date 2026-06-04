@@ -29,11 +29,6 @@ export const CLEAR_EXPLORE_FILTER_ROUTE = {
   to: null,
 } as const;
 
-export const CLEAR_FOCUSED_FRIEND_REQUEST_ROUTE = {
-  panel: null,
-  request: null,
-} as const;
-
 export function normalizeCategories(
   categories: ExploreCategory[] | null | undefined,
 ): ExploreCategory[] {
@@ -57,8 +52,6 @@ export function resolveExploreRouteState(
     access: routeState.access ?? DEFAULT_FILTERS.access,
     categories: normalizeCategories(routeState.category),
     distance: normalizeDistance(routeState.distance),
-    focusedPanel: routeState.panel ?? null,
-    focusedRequestId: routeState.request ?? null,
     location: routeState.location ?? DEFAULT_FILTERS.locationMode,
     searchQuery: routeState.q ?? "",
     sizeRange: normalizeSizeRange(routeState.size),

@@ -73,7 +73,7 @@ export const ScrollActionButtons = memo(
                     max={99}
                     size="xs"
                     tone="amber"
-                    className="type-signature-label absolute -top-1 -right-1 z-10 h-4 min-w-4 bg-canvas px-1 leading-4 ring-2 ring-canvas"
+                    className="type-signature-label absolute -top-1 -right-1 z-10 h-4 min-w-4 px-1 leading-4 ring-2 ring-canvas"
                   />
                 )}
               </Button>

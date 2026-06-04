@@ -56,6 +56,6 @@ export function buildGroupFit(
     ),
     summary: buildPortraitGroupSummary(primaryKey, socialProfile, closeSecond),
     title: style.title,
-    userSignal: buildUserGroupSignal(),
+    userSignal: buildUserGroupSignal(primaryKey),
   };
 }

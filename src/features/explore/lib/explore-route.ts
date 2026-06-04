@@ -1,11 +1,4 @@
-export const explorePanelValues = ["friends"] as const;
-
-export type ExplorePanel = (typeof explorePanelValues)[number];
-
-export interface ExploreRouteSearch {
-  panel?: ExplorePanel;
-  request?: string;
-}
+export type ExploreRouteSearch = Record<string, never>;
 
 export function buildExploreNavigation(search?: ExploreRouteSearch) {
   return {

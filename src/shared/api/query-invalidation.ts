@@ -68,6 +68,6 @@ export function invalidateNotificationSurfaces() {
   ]);
 }
 
-export function invalidateExploreFriendRequestSurfaces() {
-  return invalidateQuery(APP_QUERY_KEYS.explore.friendRequests);
+export function invalidateProfileFriendRequestSurfaces() {
+  return invalidateQuery(APP_QUERY_KEYS.profile.friendRequests);
 }

@@ -201,11 +201,56 @@
         }
       }
 
+      @keyframes tf-boot-swoosh-top {
+        0%, 49% { stroke-dashoffset: 65; opacity: 0; }
+        50% { stroke-dashoffset: 65; opacity: 0.6; }
+        53% { stroke-dashoffset: 0; opacity: 0.6; }
+        75%, 100% { stroke-dashoffset: -65; opacity: 0; }
+      }
+
+      @keyframes tf-boot-swoosh-mid {
+        0%, 49% { stroke-dashoffset: 60; opacity: 0; }
+        50% { stroke-dashoffset: 60; opacity: 0.4; }
+        53% { stroke-dashoffset: 0; opacity: 0.4; }
+        75%, 100% { stroke-dashoffset: -60; opacity: 0; }
+      }
+
+      @keyframes tf-boot-swoosh-bot {
+        0%, 49% { stroke-dashoffset: 50; opacity: 0; }
+        50% { stroke-dashoffset: 50; opacity: 0.25; }
+        53% { stroke-dashoffset: 0; opacity: 0.25; }
+        75%, 100% { stroke-dashoffset: -50; opacity: 0; }
+      }
+
+      .tf-boot__swoosh-top {
+        stroke-dasharray: 65;
+        stroke-dashoffset: 65;
+        opacity: 0;
+        animation: tf-boot-swoosh-top 1.45s infinite;
+      }
+
+      .tf-boot__swoosh-mid {
+        stroke-dasharray: 60;
+        stroke-dashoffset: 60;
+        opacity: 0;
+        animation: tf-boot-swoosh-mid 1.45s infinite;
+      }
+
+      .tf-boot__swoosh-bot {
+        stroke-dasharray: 50;
+        stroke-dashoffset: 50;
+        opacity: 0;
+        animation: tf-boot-swoosh-bot 1.45s infinite;
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .tf-boot__hammer,
         .tf-boot__anvil,
         .tf-boot__spark-core,
-        .tf-boot__spark {
+        .tf-boot__spark,
+        .tf-boot__swoosh-top,
+        .tf-boot__swoosh-mid,
+        .tf-boot__swoosh-bot {
           animation: none;
         }
 
@@ -260,7 +305,7 @@
           />
           <g class="tf-boot__anvil">
             <path
-              d="M63 111h91c5 0 8 5 5 9l-10 13c-2 3-6 5-10 5H82c-4 0-8-2-10-5l-13-16c-2-3 0-6 4-6Z"
+              d="M63 111h101l-14 5 9 10-10 7c-2 3-6 5-10 5H82c-4 0-8-2-10-5l-13-16c-2-3 0-6 4-6Z"
               fill="var(--tf-boot-teal)"
               stroke="currentColor"
               stroke-linejoin="round"
@@ -342,6 +387,32 @@
             fill="var(--tf-boot-amber)"
             style="--spark-x: 12px; --spark-y: 10px; --spark-delay: 0ms"
           />
+          <g class="tf-boot__swoosh-group">
+            <path
+              class="tf-boot__swoosh-top"
+              d="M 152 40 A 55 55 0 0 0 102 67"
+              fill="none"
+              stroke="var(--tf-boot-teal)"
+              stroke-width="3.5"
+              stroke-linecap="round"
+            />
+            <path
+              class="tf-boot__swoosh-mid"
+              d="M 156 50 A 45 45 0 0 0 110 78"
+              fill="none"
+              stroke="var(--tf-boot-teal)"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            />
+            <path
+              class="tf-boot__swoosh-bot"
+              d="M 160 60 A 35 35 0 0 0 118 90"
+              fill="none"
+              stroke="var(--tf-boot-teal)"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </g>
           <g class="tf-boot__hammer">
             <g transform="translate(4 -9.5)">
               <rect

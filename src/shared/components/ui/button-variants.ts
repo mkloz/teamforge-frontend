@@ -8,27 +8,27 @@ import { cva, type VariantProps } from "class-variance-authority";
  * - High-speed transition: 150ms duration.
  */
 export const buttonVariants = cva(
-  "group relative inline-flex min-w-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap font-bold text-sm transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 active:enabled:scale-95 disabled:cursor-not-allowed data-[loading=true]:cursor-wait",
+  "group relative inline-flex min-w-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap font-bold text-sm transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2 active:scale-95 disabled:pointer-events-none disabled:cursor-not-allowed data-[loading=true]:cursor-wait",
   {
     variants: {
       variant: {
         primary:
-          "border-2 border-button-primary-border bg-button-primary-border text-white after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-forge-teal active:enabled:translate-y-0 active:enabled:shadow-none hover:enabled:-translate-y-1 hover:enabled:shadow-button-primary",
+          "border-2 border-button-primary-border bg-button-primary-border text-white after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 hover:-translate-y-1 hover:shadow-button-primary focus-visible:ring-forge-teal active:translate-y-0 active:shadow-none",
         secondary:
-          "border-2 border-spark-amber/35 bg-spark-amber/12 text-spark-amber after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-spark-amber active:enabled:translate-y-0 active:enabled:shadow-none hover:enabled:-translate-y-1 hover:enabled:border-spark-amber/45 hover:enabled:bg-spark-amber/18 hover:enabled:shadow-button-secondary",
+          "border-2 border-spark-amber/35 bg-spark-amber/12 text-spark-amber after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 hover:-translate-y-1 hover:border-spark-amber/45 hover:bg-spark-amber/18 hover:shadow-button-secondary focus-visible:ring-spark-amber active:translate-y-0 active:shadow-none",
         outline:
-          "border-2 border-ink bg-transparent text-ink after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-ink active:enabled:translate-y-0! active:enabled:shadow-none! hover:enabled:-translate-y-1 hover:enabled:shadow-button-outline dark:border-white dark:text-white focus-visible:dark:ring-white hover:enabled:dark:shadow-button-outline-dark",
+          "border-2 border-ink bg-transparent text-ink after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 hover:-translate-y-1 hover:shadow-button-outline focus-visible:ring-ink active:translate-y-0! active:shadow-none! dark:border-white dark:text-white focus-visible:dark:ring-white hover:dark:shadow-button-outline-dark",
         destructive:
-          "border-2 border-destructive/50 bg-transparent text-destructive after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 focus-visible:ring-destructive active:enabled:translate-y-0! active:enabled:shadow-none! hover:enabled:-translate-y-1 hover:enabled:shadow-button-destructive hover:enabled:dark:shadow-button-destructive",
+          "border-2 border-destructive/50 bg-transparent text-destructive after:pointer-events-auto after:absolute after:inset-x-0 after:top-0 after:-bottom-2 hover:-translate-y-1 hover:shadow-button-destructive focus-visible:ring-destructive active:translate-y-0! active:shadow-none! hover:dark:shadow-button-destructive",
         ghost:
-          "border-2 border-transparent bg-transparent text-ink focus-visible:ring-ink active:enabled:translate-y-px active:enabled:bg-ink/10 hover:enabled:bg-ink/5 dark:text-white focus-visible:dark:ring-white hover:enabled:dark:bg-white/10",
+          "border-2 border-transparent bg-transparent text-ink hover:bg-ink/5 focus-visible:ring-ink active:translate-y-px active:bg-ink/10 dark:text-white focus-visible:dark:ring-white hover:dark:bg-white/10",
         accentGhost:
-          "border-2 border-transparent bg-transparent text-slate-muted focus-visible:ring-forge-teal active:enabled:translate-y-px active:enabled:bg-forge-teal/12 hover:enabled:bg-forge-teal/8 hover:enabled:text-forge-teal focus-visible:dark:ring-forge-teal hover:enabled:dark:bg-forge-teal/12 hover:enabled:dark:text-forge-teal",
+          "border-2 border-transparent bg-transparent text-slate-muted hover:bg-forge-teal/8 hover:text-forge-teal focus-visible:ring-forge-teal active:translate-y-px active:bg-forge-teal/12 focus-visible:dark:ring-forge-teal hover:dark:bg-forge-teal/12 hover:dark:text-forge-teal",
         inverseGhost:
-          "border border-white/10 bg-white/8 text-white/80 backdrop-blur-sm focus-visible:ring-white active:enabled:translate-y-px hover:enabled:border-white/25 hover:enabled:bg-white/14 hover:enabled:text-white hover:enabled:shadow-sm",
-        link: "text-forge-teal underline-offset-4 focus-visible:ring-forge-teal hover:enabled:underline",
+          "border border-white/10 bg-white/8 text-white/80 backdrop-blur-sm hover:border-white/25 hover:bg-white/14 hover:text-white hover:shadow-sm focus-visible:ring-white active:translate-y-px",
+        link: "text-forge-teal underline-offset-4 hover:underline focus-visible:ring-forge-teal",
         subtle:
-          "border border-transparent bg-muted/40 text-slate-muted hover:enabled:border-border/50 hover:enabled:bg-muted hover:enabled:text-ink",
+          "border border-transparent bg-muted/40 text-slate-muted hover:border-border/50 hover:bg-muted hover:text-ink",
       },
       size: {
         default: "h-11 rounded-lg px-6",

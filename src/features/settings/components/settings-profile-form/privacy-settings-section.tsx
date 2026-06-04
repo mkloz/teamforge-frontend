@@ -22,10 +22,18 @@ const PRIVACY_TOGGLE_ITEMS = [
     title: "Show city",
     description: "Display your city to other people.",
   },
+  {
+    key: "showFriendsListOnProfile",
+    title: "Show friends",
+    description: "Display your friends list on your public profile.",
+  },
 ] as const satisfies ReadonlyArray<{
   key: keyof Pick<
     NotificationPreferences,
-    "showAgeOnProfile" | "showGenderOnProfile" | "showCityOnProfile"
+    | "showAgeOnProfile"
+    | "showGenderOnProfile"
+    | "showCityOnProfile"
+    | "showFriendsListOnProfile"
   >;
   title: string;
   description: string;
@@ -41,7 +49,10 @@ interface PrivacySettingsSectionProps {
   onChange: (
     values: Pick<
       NotificationPreferences,
-      "showAgeOnProfile" | "showGenderOnProfile" | "showCityOnProfile"
+      | "showAgeOnProfile"
+      | "showGenderOnProfile"
+      | "showCityOnProfile"
+      | "showFriendsListOnProfile"
     >,
   ) => Promise<void>;
 }
@@ -88,6 +99,8 @@ export function PrivacySettingsSection({
                 showGenderOnProfile:
                   notificationPreferences.showGenderOnProfile,
                 showCityOnProfile: notificationPreferences.showCityOnProfile,
+                showFriendsListOnProfile:
+                  notificationPreferences.showFriendsListOnProfile,
                 [item.key]: !notificationPreferences[item.key],
               });
             }}

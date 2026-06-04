@@ -3,9 +3,9 @@ import { ProfileApi } from "@/features/profile/api/profile.api";
 import { profileFriendshipQueryOptions } from "@/features/profile/api/profile-query-options";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import {
-  invalidateExploreFriendRequestSurfaces,
   invalidateFriendshipSurfaces,
   invalidateGroupPlanDetailSurfaces,
+  invalidateProfileFriendRequestSurfaces,
 } from "@/shared/api/query-invalidation";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
@@ -88,7 +88,7 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
 
       await Promise.all([
         invalidateFriendshipSurfaces(),
-        invalidateExploreFriendRequestSurfaces(),
+        invalidateProfileFriendRequestSurfaces(),
         invalidateGroupPlanDetailSurfaces(),
       ]);
     },
@@ -99,7 +99,7 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
       ? incomingRequest
         ? { receiverId: currentUserId, status: "ACCEPTED" }
         : { receiverId: user.id, status: "PENDING" }
-      : friendship;
+      : friendship || null;
   const connectLabel = getConnectLabel(displayFriendship, currentUserId);
   const connectDisabled =
     !currentUserId ||
@@ -128,6 +128,70 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
     connectMutation.mutate();
   };
 
+  const unfriendMutation = useMutation({
+    meta: {
+      errorToastMessage: "We couldn't remove that connection right now.",
+    },
+    mutationKey: ["profile", "unfriend", user.id],
+    mutationFn: () => ProfileApi.removeFriend(user.id),
+    onSuccess: async () => {
+      queryClient.setQueryData(
+        APP_QUERY_KEYS.profile.friendshipWith(user.id),
+        null,
+      );
+
+      await Promise.all([
+        invalidateFriendshipSurfaces(),
+        invalidateGroupPlanDetailSurfaces(),
+      ]);
+    },
+  });
+
+  const handleUnfriend = () => {
+    if (
+      guardOfflineAction({
+        id: "profile-remove-friend-offline",
+        description: "Reconnect before removing connections.",
+      })
+    ) {
+      return;
+    }
+
+    unfriendMutation.mutate();
+  };
+
+  const withdrawMutation = useMutation({
+    meta: {
+      errorToastMessage: "We couldn't cancel that connection request right now.",
+    },
+    mutationKey: ["profile", "withdraw", user.id],
+    mutationFn: () => ProfileApi.withdrawFriendRequest(user.id),
+    onSuccess: async () => {
+      queryClient.setQueryData(
+        APP_QUERY_KEYS.profile.friendshipWith(user.id),
+        null,
+      );
+
+      await Promise.all([
+        invalidateFriendshipSurfaces(),
+        invalidateProfileFriendRequestSurfaces(),
+      ]);
+    },
+  });
+
+  const handleWithdraw = () => {
+    if (
+      guardOfflineAction({
+        id: "profile-withdraw-friend-request-offline",
+        description: "Reconnect before canceling connection requests.",
+      })
+    ) {
+      return;
+    }
+
+    withdrawMutation.mutate();
+  };
+
   return {
     connectDisabled,
     connectLabel,
@@ -136,5 +200,10 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
     messageChatId,
     messageDisabled: !messageChatId,
     onConnect: handleConnect,
+    unfriendLoading: unfriendMutation.isPending,
+    onUnfriend: handleUnfriend,
+    withdrawLoading: withdrawMutation.isPending,
+    onWithdraw: handleWithdraw,
+    isViewerProfile,
   };
 }

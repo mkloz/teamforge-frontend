@@ -1,4 +1,3 @@
-import type { ExplorePanel } from "@/features/explore/lib/explore-route";
 import type {
   ExploreAccessMode,
   ExploreCategory,
@@ -13,9 +12,7 @@ export interface ExploreRouteState {
   distance: number | null;
   from: string | null;
   location: ExploreLocationMode | null;
-  panel: ExplorePanel | null;
   q: string | null;
-  request: string | null;
   size: [number, number] | null;
   sort: ExploreSortOption | null;
   time: ExploreTimeWindow | null;
@@ -26,8 +23,6 @@ export interface ResolvedExploreRouteState {
   access: ExploreAccessMode;
   categories: ExploreCategory[];
   distance: number;
-  focusedPanel: ExplorePanel | null;
-  focusedRequestId: string | null;
   location: ExploreLocationMode;
   searchQuery: string;
   sizeRange: [number, number];

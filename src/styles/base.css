@@ -16,6 +16,16 @@
     body {
       overflow-y: auto;
     }
+
+    /* Override Radix UI's injected variables and styles when scrollbar-gutter handles the spacing natively */
+    :root {
+      --removed-body-scroll-bar-size: 0px !important;
+    }
+
+    body[data-scroll-locked] {
+      padding-right: 0 !important;
+      margin-right: 0 !important;
+    }
   }
 
   ::selection {

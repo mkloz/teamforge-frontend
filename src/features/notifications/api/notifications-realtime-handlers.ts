@@ -1,9 +1,9 @@
 import { NotificationsCache } from "@/features/notifications/api/notifications-cache";
 import { appQueryClient } from "@/shared/api/query-client";
 import {
-  invalidateExploreFriendRequestSurfaces,
   invalidateFriendshipSurfaces,
   invalidateGroupMembershipSurfaces,
+  invalidateProfileFriendRequestSurfaces,
 } from "@/shared/api/query-invalidation";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
 import type { Notification } from "@/shared/schemas";
@@ -39,12 +39,12 @@ export const NotificationsRealtimeHandlers = {
     }
 
     if (notification.type === "FRIEND_REQUEST") {
-      void invalidateExploreFriendRequestSurfaces();
+      void invalidateProfileFriendRequestSurfaces();
     }
 
     if (notification.type === "FRIEND_ACCEPTED") {
       void Promise.all([
-        invalidateExploreFriendRequestSurfaces(),
+        invalidateProfileFriendRequestSurfaces(),
         invalidateFriendshipSurfaces(),
       ]);
     }

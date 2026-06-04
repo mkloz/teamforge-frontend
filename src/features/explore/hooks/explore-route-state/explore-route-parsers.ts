@@ -8,7 +8,6 @@ import {
   CATEGORIES,
   FILTER_BOUNDARIES,
 } from "@/features/explore/constants/explore.constants";
-import { explorePanelValues } from "@/features/explore/lib/explore-route";
 
 const categoryValues = CATEGORIES.map((category) => category.id);
 const locationValues = ["ALL", "IN_PERSON", "ONLINE"] as const;
@@ -67,10 +66,8 @@ export const exploreRouteParsers = {
   category: parseAsArrayOf(parseAsStringLiteral(categoryValues)),
   distance: parseAsDistance,
   location: parseAsStringLiteral(locationValues),
-  panel: parseAsStringLiteral(explorePanelValues),
   q: parseAsString,
   from: parseAsString,
-  request: parseAsString,
   size: parseAsSizeRange,
   sort: parseAsStringLiteral(sortValues),
   time: parseAsStringLiteral(timeValues),

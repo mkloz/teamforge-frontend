@@ -4,6 +4,7 @@ import {
   CircleDashed,
   ExternalLink,
   UserCheck,
+  UserMinus,
   UserRoundPlus,
 } from "lucide-react";
 import type { GroupPlanDetailMember } from "@/features/group-plan-detail/lib/group-plan-detail-contract";
@@ -15,6 +16,12 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/components/ui/dropdown-menu";
 import { cn } from "@/shared/lib/utils";
 
 const memberActionClassName =
@@ -46,10 +53,90 @@ function KnownConnectionAction({ member }: { member: GroupPlanDetailMember }) {
 }
 
 function ConnectMemberAction({ member }: { member: GroupPlanDetailMember }) {
-  const { connectDisabled, connectLabel, connectLoading, onConnect } =
-    usePublicProfileActions({ id: member.userId });
+  const {
+    connectDisabled,
+    connectLabel,
+    connectLoading,
+    onConnect,
+    unfriendLoading,
+    onUnfriend,
+    withdrawLoading,
+    onWithdraw,
+  } = usePublicProfileActions({ id: member.userId });
   const canConnect = !connectDisabled && !connectLoading;
   const connectTooltip = getConnectTooltip(connectLabel, member.name);
+
+  if (connectLabel === "Connected") {
+    return (
+      <DropdownMenu>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                loading={unfriendLoading}
+                className={memberActionClassName}
+                aria-label="Manage connection"
+              >
+                <ConnectIcon label={connectLabel} />
+              </Button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent side="top">{connectTooltip}</TooltipContent>
+        </Tooltip>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem
+            className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+            onClick={(e) => {
+              e.stopPropagation();
+              onUnfriend();
+            }}
+          >
+            <UserMinus className="mr-2 size-4" />
+            <span>Remove Connection</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  }
+
+  if (connectLabel === "Requested") {
+    return (
+      <DropdownMenu>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                loading={withdrawLoading}
+                className={memberActionClassName}
+                aria-label="Manage connection request"
+              >
+                <ConnectIcon label={connectLabel} />
+              </Button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent side="top">{connectTooltip}</TooltipContent>
+        </Tooltip>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem
+            className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+            onClick={(e) => {
+              e.stopPropagation();
+              onWithdraw();
+            }}
+          >
+            <UserMinus className="mr-2 size-4" />
+            <span>Cancel Request</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  }
 
   return (
     <Tooltip>

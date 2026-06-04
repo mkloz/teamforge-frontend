@@ -1,9 +1,8 @@
 import { useState } from "react";
-
-import { useExploreFriendRequests } from "@/features/explore/hooks/use-explore-friend-requests";
 import { useHomeData } from "@/features/home/hooks/use-home-data";
 import { useHomeInvitationActions } from "@/features/home/hooks/use-home-invitation-actions";
 import { useHomeViewer } from "@/features/home/hooks/use-home-viewer";
+import { useProfileFriendRequests } from "@/features/profile/hooks/use-profile-friend-requests";
 
 interface UseAttentionQueueStateInput {
   focusedInviteId: string | null;
@@ -42,7 +41,7 @@ export function useAttentionQueueState({
     isAccepting,
     isDeclining,
     isOnline: isFriendRequestOnline,
-  } = useExploreFriendRequests();
+  } = useProfileFriendRequests();
   const {
     acceptInvitation,
     declineInvitation,

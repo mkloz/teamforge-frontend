@@ -30,7 +30,6 @@ export const APP_QUERY_KEYS = {
     groups: ["explore-groups"] as const,
     groupsWithFilters: (searchQuery: string, filters: unknown) =>
       ["explore-groups", searchQuery, filters] as const,
-    friendRequests: ["explore", "friend-requests"] as const,
   },
   groupPlanDetail: {
     all: ["group-plan-detail"] as const,
@@ -70,5 +69,8 @@ export const APP_QUERY_KEYS = {
     byId: (userId: string) => ["profile", userId] as const,
     friendshipWith: (userId: string) =>
       ["profile", "friendship", userId] as const,
+    friendRequests: ["profile", "friend-requests"] as const,
+    outgoingFriendRequests: ["profile", "outgoing-friend-requests"] as const,
+    friends: ["profile", "friends"] as const,
   },
 } as const;

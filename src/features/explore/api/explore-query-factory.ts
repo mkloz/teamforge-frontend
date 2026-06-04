@@ -5,8 +5,4 @@ export const ExploreQueryFactory = {
   groups(filters: ExploreFilters, searchQuery: string) {
     return ExploreQueryOptions.groups(filters, searchQuery);
   },
-
-  friendRequests() {
-    return ExploreQueryOptions.friendRequests();
-  },
 };

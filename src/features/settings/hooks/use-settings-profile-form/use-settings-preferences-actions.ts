@@ -34,6 +34,7 @@ const settingsPreferenceKeys = [
   "showAgeOnProfile",
   "showGenderOnProfile",
   "showCityOnProfile",
+  "showFriendsListOnProfile",
 ] as const satisfies readonly SettingsPreferenceKey[];
 
 interface PreferencesMutationContext {
@@ -237,7 +238,10 @@ export function useSettingsPreferencesActions({
   async function updatePrivacyPreference(
     values: Pick<
       NotificationPreferences,
-      "showAgeOnProfile" | "showGenderOnProfile" | "showCityOnProfile"
+      | "showAgeOnProfile"
+      | "showGenderOnProfile"
+      | "showCityOnProfile"
+      | "showFriendsListOnProfile"
     >,
   ) {
     const currentPreferences = notificationPreferencesQuery.data;

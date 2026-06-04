@@ -51,7 +51,10 @@ export interface PrivacySettingsState extends NotificationPreferenceState {
   onChange: (
     values: Pick<
       NotificationPreferences,
-      "showAgeOnProfile" | "showGenderOnProfile" | "showCityOnProfile"
+      | "showAgeOnProfile"
+      | "showGenderOnProfile"
+      | "showCityOnProfile"
+      | "showFriendsListOnProfile"
     >,
   ) => Promise<void>;
 }

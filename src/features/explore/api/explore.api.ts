@@ -4,7 +4,6 @@ import {
   exploreGroupSchema,
   exploreJoinResultSchema,
   exploreViewInsightSchema,
-  friendshipApiSchema,
 } from "@/shared/schemas";
 
 const paginatedExploreGroupsSchema = createPaginatedSchema(
@@ -12,7 +11,6 @@ const paginatedExploreGroupsSchema = createPaginatedSchema(
 ).extend({
   insight: exploreViewInsightSchema,
 });
-const paginatedFriendshipsSchema = createPaginatedSchema(friendshipApiSchema);
 
 export class ExploreApi {
   static async getGroups(searchParams: URLSearchParams) {
@@ -30,38 +28,6 @@ export class ExploreApi {
 
     return parseJsonWithRequestId(response, (value) =>
       exploreJoinResultSchema.parse(value),
-    );
-  }
-
-  static async getIncomingFriendRequests() {
-    const response = await apiClient
-      .get("friends/requests/incoming", {
-        searchParams: {
-          limit: 20,
-        },
-      })
-      .json<unknown>();
-
-    return paginatedFriendshipsSchema.parse(response).items;
-  }
-
-  static async acceptFriendRequest(requesterId: string) {
-    const response = await apiClient.post(
-      `friends/requests/${requesterId}/accept`,
-    );
-
-    return parseJsonWithRequestId(response, (value) =>
-      friendshipApiSchema.parse(value),
-    );
-  }
-
-  static async declineFriendRequest(requesterId: string) {
-    const response = await apiClient.post(
-      `friends/requests/${requesterId}/decline`,
-    );
-
-    return parseJsonWithRequestId(response, (value) =>
-      friendshipApiSchema.parse(value),
     );
   }
 }

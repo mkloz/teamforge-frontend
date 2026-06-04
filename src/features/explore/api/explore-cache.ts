@@ -1,45 +1,9 @@
 import type { InfiniteData } from "@tanstack/react-query";
-import { EXPLORE_FRIEND_REQUESTS_QUERY_KEY } from "@/features/explore/api/explore-query-keys";
 import type { ExploreGroupsQueryData } from "@/features/explore/api/explore-query-options";
 import type { ApiResponseWithRequestId } from "@/shared/api/api";
 import { appQueryClient } from "@/shared/api/query-client";
 import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
-import type { ExploreJoinResult, FriendshipApi } from "@/shared/schemas";
-
-function getFriendshipVersion(friendship: FriendshipApi) {
-  return friendship.version ?? new Date(friendship.updatedAt).getTime();
-}
-
-function isSameFriendshipPair(
-  left: Pick<FriendshipApi, "requesterId" | "receiverId">,
-  right: Pick<FriendshipApi, "requesterId" | "receiverId">,
-) {
-  return (
-    (left.requesterId === right.requesterId &&
-      left.receiverId === right.receiverId) ||
-    (left.requesterId === right.receiverId &&
-      left.receiverId === right.requesterId)
-  );
-}
-
-function mergeFriendships(
-  current: FriendshipApi[] | undefined,
-  incoming: FriendshipApi,
-) {
-  const existing = current?.find((item) =>
-    isSameFriendshipPair(item, incoming),
-  );
-  const nextFriendship =
-    existing && getFriendshipVersion(existing) > getFriendshipVersion(incoming)
-      ? existing
-      : incoming;
-  const withoutExisting =
-    current?.filter((item) => !isSameFriendshipPair(item, incoming)) ?? [];
-
-  return [nextFriendship, ...withoutExisting].sort(
-    (left, right) => getFriendshipVersion(right) - getFriendshipVersion(left),
-  );
-}
+import type { ExploreJoinResult } from "@/shared/schemas";
 
 function removeGroupFromExplorePages(
   data: InfiniteData<ExploreGroupsQueryData> | undefined,
@@ -71,46 +35,6 @@ function removeGroupFromExplorePages(
 }
 
 export const ExploreCache = {
-  applyFriendRequestUpdate(friendship: FriendshipApi) {
-    appQueryClient.setQueryData<FriendshipApi[] | undefined>(
-      EXPLORE_FRIEND_REQUESTS_QUERY_KEY,
-      (current) => {
-        const merged = mergeFriendships(current, friendship);
-        return merged.filter((item) => item.status === "PENDING");
-      },
-    );
-
-    appQueryClient.setQueryData<FriendshipApi[] | undefined>(
-      APP_QUERY_KEYS.activity.friendships,
-      (current) => mergeFriendships(current, friendship),
-    );
-  },
-
-  async cancelFriendRequests() {
-    await appQueryClient.cancelQueries({
-      queryKey: EXPLORE_FRIEND_REQUESTS_QUERY_KEY,
-    });
-  },
-
-  getFriendRequestsSnapshot() {
-    return appQueryClient.getQueryData<FriendshipApi[]>(
-      EXPLORE_FRIEND_REQUESTS_QUERY_KEY,
-    );
-  },
-
-  removeFriendRequest(requesterId: string) {
-    appQueryClient.setQueryData<FriendshipApi[] | undefined>(
-      EXPLORE_FRIEND_REQUESTS_QUERY_KEY,
-      (current) =>
-        current?.filter((request) => request.requesterId !== requesterId) ??
-        current,
-    );
-  },
-
-  restoreFriendRequests(requests: FriendshipApi[] | undefined) {
-    appQueryClient.setQueryData(EXPLORE_FRIEND_REQUESTS_QUERY_KEY, requests);
-  },
-
   removeJoinedGroup(
     result: ExploreJoinResult | ApiResponseWithRequestId<ExploreJoinResult>,
   ) {

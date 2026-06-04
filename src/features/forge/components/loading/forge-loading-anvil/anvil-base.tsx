@@ -20,7 +20,7 @@ export function AnvilBase() {
       }}
     >
       <path
-        d="M63 111h91c5 0 8 5 5 9l-10 13c-2 3-6 5-10 5H82c-4 0-8-2-10-5l-13-16c-2-3 0-6 4-6Z"
+        d="M63 111h101l-14 5 9 10-10 7c-2 3-6 5-10 5H82c-4 0-8-2-10-5l-13-16c-2-3 0-6 4-6Z"
         fill="var(--color-forge-teal)"
         stroke="currentColor"
         strokeLinejoin="round"

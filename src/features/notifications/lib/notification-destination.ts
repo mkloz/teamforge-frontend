@@ -11,7 +11,6 @@ import {
 import {
   buildExploreNavigation,
   type ExploreRouteSearch,
-  explorePanelValues,
 } from "@/features/explore/lib/explore-route";
 import {
   buildForgeNavigation,
@@ -229,18 +228,9 @@ function resolveHomeSearch(searchParams: URLSearchParams): HomeRouteSearch {
 }
 
 function resolveExploreSearch(
-  searchParams: URLSearchParams,
+  _searchParams: URLSearchParams,
 ): ExploreRouteSearch {
-  const panel = findLiteral(explorePanelValues, searchParams.get("panel"));
-
-  return {
-    panel,
-    request:
-      searchParams.get("request") ??
-      searchParams.get("requestId") ??
-      (panel === "friends" ? searchParams.get("id") : null) ??
-      undefined,
-  };
+  return {};
 }
 
 function resolveForgeSearch(searchParams: URLSearchParams): ForgeRouteSearch {
@@ -590,7 +580,7 @@ export async function resolveNotificationDestination(
         request: notification.entityId ?? undefined,
       });
     case "FRIEND_ACCEPTED":
-      return buildExploreNavigation({ panel: "friends" });
+      return buildProfileNavigation();
     case "ACCOUNT_SECURITY":
       return buildSettingsNavigation("security");
     default:

@@ -12,6 +12,7 @@ interface ProfileIdentityProps {
   archetype: string;
   actions?: ReactNode;
   showMissingDetailsAction?: boolean;
+  onOpenFriends?: (tab: "friends" | "requests" | "public_friends") => void;
 }
 
 export function ProfileIdentity({
@@ -19,6 +20,7 @@ export function ProfileIdentity({
   archetype,
   actions = <ProfileActions />,
   showMissingDetailsAction = true,
+  onOpenFriends,
 }: ProfileIdentityProps) {
   const hasAge = typeof user.age === "number";
   const hasCity = Boolean(user.city);
@@ -63,7 +65,11 @@ export function ProfileIdentity({
 
       {/* Universal Badges & Actions Row */}
       <div className="mt-2 flex w-full flex-col items-start justify-center gap-5 pb-1 sm:mt-5 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
-        <ProfileBadges user={user} archetype={archetype} />
+        <ProfileBadges
+          user={user}
+          archetype={archetype}
+          onOpenFriends={onOpenFriends}
+        />
         <div className="hidden lg:flex">{actions}</div>
       </div>
     </div>

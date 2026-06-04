@@ -5,7 +5,6 @@ import { exploreRouteParsers } from "@/features/explore/hooks/explore-route-stat
 import type { SetExploreRouteState } from "@/features/explore/hooks/explore-route-state/explore-route-state.types";
 import {
   CLEAR_EXPLORE_FILTER_ROUTE,
-  CLEAR_FOCUSED_FRIEND_REQUEST_ROUTE,
   getAccessRoutePatch,
   getCategoryRoutePatch,
   getDistanceRoutePatch,
@@ -181,12 +180,6 @@ export function useExploreRouteState() {
     );
   }
 
-  function clearFocusedFriendRequest() {
-    void setExploreRouteState(CLEAR_FOCUSED_FRIEND_REQUEST_ROUTE, {
-      history: "replace",
-    });
-  }
-
   return {
     searchQuery,
     selectedCategories,
@@ -211,8 +204,5 @@ export function useExploreRouteState() {
     resetFilters: clearAllFilters,
     isAnythingFiltered: getIsAnythingFiltered(),
     removeCategory: removeSelectedCategory,
-    focusedPanel: route.focusedPanel,
-    focusedRequestId: route.focusedRequestId,
-    clearFocusedFriendRequest,
   };
 }

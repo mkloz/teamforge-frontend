@@ -22,12 +22,12 @@ export function UserMenuSignOutButton() {
       trigger={
         <Button
           type="button"
-          variant="destructive"
+          variant="ghost"
           disabled={isSigningOut}
-          className="h-auto w-full justify-start px-3 py-2.5 text-left"
+          className="flex h-auto w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-muted-foreground transition-colors hover:bg-destructive/8 hover:text-destructive"
         >
-          <IconTile icon={LogOut} tone="destructive" />
-          <span className="font-black">
+          <IconTile icon={LogOut} tone="neutral" size="md" bordered />
+          <span className="font-semibold text-sm">
             {isSigningOut ? "Signing out..." : "Sign out"}
           </span>
         </Button>

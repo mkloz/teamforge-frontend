@@ -10,6 +10,7 @@ import {
 
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { buildSettingsNavigation } from "@/features/settings/lib/settings-route";
+import { useCurrentUserQuery } from "@/shared/api/current-user-query";
 import {
   Sheet,
   SheetClose,
@@ -36,6 +37,8 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
+  const { data: currentUser } = useCurrentUserQuery();
+
   return (
     <Sheet>
       <Tooltip>
@@ -49,8 +52,9 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
 
       <SheetContent
         side="right"
-        className="z-70 flex w-full flex-col border-border border-l bg-canvas p-0 text-foreground shadow-black/15 shadow-xl sm:max-w-md [&>button]:top-5 [&>button]:right-5 [&>button]:rounded-full [&>button]:border [&>button]:border-border/70 [&>button]:bg-card/85 [&>button]:p-2 [&>button]:opacity-100"
+        className="z-70 flex w-full flex-col border-border border-l bg-canvas p-0 text-foreground shadow-black/15 shadow-xl sm:max-w-sm [&>button]:top-5 [&>button]:right-5 [&>button]:rounded-full [&>button]:border [&>button]:border-border/70 [&>button]:bg-card/85 [&>button]:p-2 [&>button]:opacity-100"
       >
+        {/* Header */}
         <SheetHeader className="border-border/70 border-b px-5 py-4 pr-14 text-left">
           <SheetTitle className="font-black text-xl tracking-tight">
             Account
@@ -61,13 +65,22 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
         </SheetHeader>
 
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+          {/* Profile card */}
           <UserMenuProfileSummary />
-          <AppearanceSwitch />
 
-          <section className="flex flex-col gap-0.5 px-5 py-3">
+          {/* Theme toggle */}
+          <div className="px-4 pb-2">
+            <AppearanceSwitch />
+          </div>
+
+          {/* Divider */}
+          <div className="mx-4 border-border/50 border-t" />
+
+          {/* Primary nav */}
+          <nav className="flex flex-col gap-0.5 px-4 py-2">
             <SheetClose asChild>
               <Link
-                {...buildProfileNavigation()}
+                {...buildProfileNavigation(currentUser?.id)}
                 className="flex min-w-0 items-center gap-3 rounded-xl px-3 py-2 text-foreground transition-colors duration-150 hover:bg-muted/55"
               >
                 <MenuLinkItemContent
@@ -84,39 +97,41 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
               description="All preferences"
               navigation={buildSettingsNavigation()}
             />
-          </section>
+          </nav>
 
-          <section className="border-border/70 border-t px-5 py-3">
-            <h3 className="font-black text-foreground text-sm">Settings</h3>
-            <div className="mt-1.5 flex flex-col gap-0.5">
-              <MenuLinkItem
-                icon={SlidersHorizontal}
-                label="Group fit"
-                description="Interests and forming rules"
-                navigation={buildSettingsNavigation("matching")}
-              />
-              <MenuLinkItem
-                icon={Shield}
-                label="Privacy and safety"
-                description="Visibility and blocked people"
-                navigation={buildSettingsNavigation("privacy")}
-              />
-              <MenuLinkItem
-                icon={LockKeyhole}
-                label="Security"
-                description="Sessions and recovery"
-                navigation={buildSettingsNavigation("security")}
-              />
-              <MenuLinkItem
-                icon={Bell}
-                label="Notifications"
-                description="App and email updates"
-                navigation={buildSettingsNavigation("notifications")}
-              />
-            </div>
-          </section>
+          {/* Divider */}
+          <div className="mx-4 border-border/50 border-t" />
 
-          <div className="mt-auto border-border/70 border-t p-4">
+          {/* Settings sub-nav */}
+          <nav className="flex flex-col gap-0.5 px-4 py-2">
+            <MenuLinkItem
+              icon={SlidersHorizontal}
+              label="Group fit"
+              description="Interests and forming rules"
+              navigation={buildSettingsNavigation("matching")}
+            />
+            <MenuLinkItem
+              icon={Shield}
+              label="Privacy and safety"
+              description="Visibility and blocked people"
+              navigation={buildSettingsNavigation("privacy")}
+            />
+            <MenuLinkItem
+              icon={LockKeyhole}
+              label="Security"
+              description="Sessions and recovery"
+              navigation={buildSettingsNavigation("security")}
+            />
+            <MenuLinkItem
+              icon={Bell}
+              label="Notifications"
+              description="App and email updates"
+              navigation={buildSettingsNavigation("notifications")}
+            />
+          </nav>
+
+          {/* Sign out */}
+          <div className="mt-auto border-border/50 border-t px-4 py-3">
             <UserMenuSignOutButton />
           </div>
         </div>

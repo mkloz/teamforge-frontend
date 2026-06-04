@@ -9,8 +9,6 @@ import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadat
 import type { User } from "@/shared/schemas";
 
 const USER_DETAIL_ROUTE = "/app-shell/users/$userId";
-const PUBLIC_PROFILE_ACTION_DELAY_MS = 5_000;
-
 const LazyProfilePageError = lazy(() =>
   import("@/features/profile/profile-page/profile-page-error").then(
     (module) => ({ default: module.ProfilePageError }),
@@ -59,35 +57,16 @@ export function UserDetailPage() {
     <ProfilePageContent
       profile={profile}
       mode="public"
-      renderActions={() => <DeferredPublicProfileActions user={profile} />}
+      renderActions={() => (
+        <Suspense fallback={<PublicProfileActionsFallback userName={profile.name} />}>
+          <LazyPublicProfileActions user={profile} />
+        </Suspense>
+      )}
       showUserMenu={false}
     />
   );
 }
 
-function DeferredPublicProfileActions({ user }: { user: User }) {
-  const [shouldRender, setShouldRender] = useState(false);
-
-  useEffect(() => {
-    const timer = globalThis.setTimeout(() => {
-      setShouldRender(true);
-    }, PUBLIC_PROFILE_ACTION_DELAY_MS);
-
-    return () => {
-      globalThis.clearTimeout(timer);
-    };
-  }, []);
-
-  if (!shouldRender) {
-    return <PublicProfileActionsFallback userName={user.name} />;
-  }
-
-  return (
-    <Suspense fallback={<PublicProfileActionsFallback userName={user.name} />}>
-      <LazyPublicProfileActions user={user} />
-    </Suspense>
-  );
-}
 
 function PublicProfileActionsFallback({ userName }: { userName: string }) {
   return (

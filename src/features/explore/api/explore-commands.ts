@@ -1,10 +1,6 @@
 import { ExploreApi } from "@/features/explore/api/explore.api";
 import { ExploreCache } from "@/features/explore/api/explore-cache";
-import {
-  invalidateFriendshipSurfaces,
-  invalidateGroupMembershipSurfaces,
-  invalidateNotificationSurfaces,
-} from "@/shared/api/query-invalidation";
+import { invalidateGroupMembershipSurfaces } from "@/shared/api/query-invalidation";
 
 export const ExploreCommands = {
   async joinGroup(groupId: string) {
@@ -15,28 +11,5 @@ export const ExploreCommands = {
     await invalidateGroupMembershipSurfaces();
 
     return result;
-  },
-
-  async acceptFriendRequest(requesterId: string) {
-    const friendship = await ExploreApi.acceptFriendRequest(requesterId);
-
-    ExploreCache.applyFriendRequestUpdate(friendship.data);
-
-    await Promise.all([
-      invalidateNotificationSurfaces(),
-      invalidateFriendshipSurfaces(),
-    ]);
-
-    return friendship;
-  },
-
-  async declineFriendRequest(requesterId: string) {
-    const friendship = await ExploreApi.declineFriendRequest(requesterId);
-
-    ExploreCache.applyFriendRequestUpdate(friendship.data);
-
-    await invalidateNotificationSurfaces();
-
-    return friendship;
   },
 };

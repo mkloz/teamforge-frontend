@@ -31,7 +31,7 @@ export function HomeHeroNotificationButton() {
           max={99}
           size="md"
           tone="amber"
-          className="absolute -top-1.5 -right-1.5 z-10 bg-canvas ring-2 ring-canvas"
+          className="absolute -top-1.5 -right-1.5 z-10 ring-2 ring-canvas"
         />
       ) : null}
     </Button>

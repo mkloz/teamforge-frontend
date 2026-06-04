@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import {
   Ban,
   CalendarClock,
-  CheckCircle,
   CircleDashed,
   ExternalLink,
   MessageCircle,
@@ -10,6 +9,7 @@ import {
   Star,
   UserCheck,
   UserRoundPlus,
+  UserStar,
 } from "lucide-react";
 import { memo, type ReactNode, useMemo } from "react";
 import type {
@@ -47,10 +47,10 @@ export const CompletedReviewGate = memo(function CompletedReviewGate({
 
   return (
     <div className="relative z-10 shrink-0 border-border border-t bg-canvas/60 backdrop-blur-sm">
-      <div className="flex items-center justify-between gap-3 border-forge-teal/20 border-b bg-forge-teal/8 px-4 py-2">
+      <div className="flex items-center justify-between gap-3 border-spark-amber/20 border-b bg-spark-amber/8 px-4 py-2">
         <div className="flex min-w-0 items-center gap-2">
-          <CheckCircle className="size-4 shrink-0 text-forge-teal" />
-          <span className="truncate font-semibold text-forge-teal text-xs">
+          <UserStar className="size-4 shrink-0 text-spark-amber" />
+          <span className="truncate font-semibold text-spark-amber text-xs">
             Review checkpoint
           </span>
         </div>

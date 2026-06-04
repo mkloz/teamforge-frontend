@@ -1,9 +1,9 @@
-import { Bookmark, Clock, Vote } from "lucide-react";
+import { Bookmark, Clock, Vote, UserStar } from "lucide-react";
 import { memo, type ReactNode } from "react";
 import { PLAN_STATUS_CONFIG } from "@/features/activity/components/chat/unified-conversation-view/chat-status-bar/chat-status-plan-config";
 import type { Plan } from "@/features/activity/lib/activity-contract";
-import { IconTile } from "@/shared/components/ui/icon-tile";
 import { StatusPill } from "@/shared/components/ui/status-pill";
+import { cn } from "@/shared/lib/utils";
 
 const counterBadgeClassName = "min-w-5";
 const indicatorIconClassName = "size-2.5";
@@ -14,6 +14,7 @@ interface GroupIndicatorsProps {
   pendingProposalCount?: number;
   planStatus?: Plan["status"] | null;
   savedMessageCount?: number;
+  isReviewWaiting?: boolean;
   variant?: "inline" | "row";
 }
 
@@ -23,6 +24,7 @@ export const GroupIndicators = memo(function GroupIndicators({
   pendingProposalCount = 0,
   planStatus,
   savedMessageCount = 0,
+  isReviewWaiting = false,
   variant = "row",
 }: GroupIndicatorsProps) {
   const hasPendingProposal = pendingProposalCount > 0;
@@ -35,6 +37,7 @@ export const GroupIndicators = memo(function GroupIndicators({
     planStatusConfig ||
     hasPendingProposal ||
     hasSavedMessages ||
+    isReviewWaiting ||
     action
   );
   if (!hasAnything) return null;
@@ -55,23 +58,20 @@ export const GroupIndicators = memo(function GroupIndicators({
         </StatusPill>
       )}
       {PlanStatusIcon && planStatusConfig && (
-        <IconTile
-          aria-hidden={false}
-          size="2xs"
-          shape="circle"
+        <StatusPill
+          icon={PlanStatusIcon as typeof Clock}
+          iconClassName={indicatorIconClassName}
+          iconStrokeWidth={2.2}
           tone="none"
-          className={planStatusConfig.badgeClass}
+          size="signature"
+          surface="soft"
+          className={cn(counterBadgeClassName, planStatusConfig.badgeClass)}
           title={`Plan ${planStatusConfig.label.toLowerCase()}`}
         >
-          <PlanStatusIcon
-            aria-hidden="true"
-            className={indicatorIconClassName}
-            strokeWidth={2.2}
-          />
           <span className="sr-only">
             Plan {planStatusConfig.label.toLowerCase()}
           </span>
-        </IconTile>
+        </StatusPill>
       )}
       {hasSavedMessages && (
         <StatusPill
@@ -107,6 +107,20 @@ export const GroupIndicators = memo(function GroupIndicators({
               ? "Plan proposal needs your vote"
               : `${pendingProposalCount} plan proposals need your vote`}
           </span>
+        </StatusPill>
+      )}
+      {isReviewWaiting && (
+        <StatusPill
+          icon={UserStar}
+          iconClassName={indicatorIconClassName}
+          iconStrokeWidth={2.2}
+          tone="amber"
+          size="signature"
+          surface="soft"
+          className={counterBadgeClassName}
+          title="Review checkpoint"
+        >
+          <span className="sr-only">Review checkpoint</span>
         </StatusPill>
       )}
     </>

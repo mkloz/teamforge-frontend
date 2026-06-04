@@ -58,6 +58,7 @@ const userData = {
   onlineStatus: onlineStatusSchema.optional(),
   trustScore: z.number(),
   profileComplete: z.boolean(),
+  showFriendsListOnProfile: z.boolean().default(true),
 };
 
 export type User = z.infer<z.ZodObject<typeof userData>> & {

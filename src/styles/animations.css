@@ -179,6 +179,69 @@
   }
 }
 
+@keyframes forge-loading-swoosh-top {
+  0%,
+  49% {
+    stroke-dashoffset: 65;
+    opacity: 0;
+  }
+  50% {
+    stroke-dashoffset: 65;
+    opacity: 0.6;
+  }
+  53% {
+    stroke-dashoffset: 0;
+    opacity: 0.6;
+  }
+  75%,
+  100% {
+    stroke-dashoffset: -65;
+    opacity: 0;
+  }
+}
+
+@keyframes forge-loading-swoosh-mid {
+  0%,
+  49% {
+    stroke-dashoffset: 60;
+    opacity: 0;
+  }
+  50% {
+    stroke-dashoffset: 60;
+    opacity: 0.4;
+  }
+  53% {
+    stroke-dashoffset: 0;
+    opacity: 0.4;
+  }
+  75%,
+  100% {
+    stroke-dashoffset: -60;
+    opacity: 0;
+  }
+}
+
+@keyframes forge-loading-swoosh-bot {
+  0%,
+  49% {
+    stroke-dashoffset: 50;
+    opacity: 0;
+  }
+  50% {
+    stroke-dashoffset: 50;
+    opacity: 0.25;
+  }
+  53% {
+    stroke-dashoffset: 0;
+    opacity: 0.25;
+  }
+  75%,
+  100% {
+    stroke-dashoffset: -50;
+    opacity: 0;
+  }
+}
+
 .forge-loading-mark__hammer,
 .forge-loading-mark__anvil,
 .forge-loading-mark__spark-core,
@@ -217,6 +280,30 @@
   );
   opacity: 0;
   transform-origin: center;
+}
+
+.forge-loading-mark__swoosh-top {
+  stroke-dasharray: 65;
+  stroke-dashoffset: 65;
+  opacity: 0;
+  animation: forge-loading-swoosh-top 1.45s infinite;
+  animation-delay: var(--forge-loading-animation-offset, 0ms);
+}
+
+.forge-loading-mark__swoosh-mid {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  opacity: 0;
+  animation: forge-loading-swoosh-mid 1.45s infinite;
+  animation-delay: var(--forge-loading-animation-offset, 0ms);
+}
+
+.forge-loading-mark__swoosh-bot {
+  stroke-dasharray: 50;
+  stroke-dashoffset: 50;
+  opacity: 0;
+  animation: forge-loading-swoosh-bot 1.45s infinite;
+  animation-delay: var(--forge-loading-animation-offset, 0ms);
 }
 
 .forge-loading-mark__line {
@@ -459,7 +546,10 @@
   .forge-loading-mark__hammer,
   .forge-loading-mark__anvil,
   .forge-loading-mark__spark-core,
-  .forge-loading-mark__spark {
+  .forge-loading-mark__spark,
+  .forge-loading-mark__swoosh-top,
+  .forge-loading-mark__swoosh-mid,
+  .forge-loading-mark__swoosh-bot {
     animation: none;
   }
 

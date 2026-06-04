@@ -1,11 +1,6 @@
-import {
-  infiniteQueryOptions,
-  keepPreviousData,
-  queryOptions,
-} from "@tanstack/react-query";
+import { infiniteQueryOptions, keepPreviousData } from "@tanstack/react-query";
 import { ExploreApi } from "@/features/explore/api/explore.api";
 import { getServerCategory } from "@/features/explore/api/explore-filters";
-import { EXPLORE_FRIEND_REQUESTS_QUERY_KEY } from "@/features/explore/api/explore-query-keys";
 import {
   getCustomExploreTimeRange,
   getExploreTimeWindowRange,
@@ -100,14 +95,6 @@ export const ExploreQueryOptions = {
           : undefined,
       placeholderData: keepPreviousData,
       staleTime: 60_000,
-    });
-  },
-
-  friendRequests() {
-    return queryOptions({
-      queryKey: EXPLORE_FRIEND_REQUESTS_QUERY_KEY,
-      queryFn: () => ExploreApi.getIncomingFriendRequests(),
-      staleTime: 30_000,
     });
   },
 };

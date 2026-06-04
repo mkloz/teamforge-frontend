@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
+
 import { ProfileHero } from "@/features/profile/components/profile-hero";
 import { ProfileCompactHeader } from "@/features/profile/components/profile-hero/profile-compact-header";
 import { ProfilePortraitSection } from "@/features/profile/components/profile-portrait-section";
@@ -21,6 +22,7 @@ import {
   SkeletonAvatar,
   SkeletonText,
 } from "@/shared/components/loading/skeleton-patterns";
+
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import type { User } from "@/shared/schemas";
 
@@ -41,7 +43,6 @@ const LazyProfileDeferredInsights = lazy(() =>
   ),
 );
 
-const PROFILE_USER_MENU_DELAY_MS = 3000;
 const PROFILE_DEFERRED_INSIGHTS_DELAY_MS = 12_000;
 
 interface ProfilePageContentProps {
@@ -80,7 +81,9 @@ export function ProfilePageContent({
 
       {shouldShowUserMenu ? (
         <div className="absolute top-4 right-4 z-50 md:top-6 md:right-8">
-          <DeferredUserMenu />
+          <Suspense fallback={<ProfileUserMenuFallback />}>
+            <LazyUserMenu trigger="settings" />
+          </Suspense>
         </div>
       ) : null}
 
@@ -114,31 +117,6 @@ export function ProfilePageContent({
   );
 }
 
-function DeferredUserMenu() {
-  const [shouldRender, setShouldRender] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return undefined;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setShouldRender(true);
-    }, PROFILE_USER_MENU_DELAY_MS);
-
-    return () => window.clearTimeout(timeoutId);
-  }, []);
-
-  if (!shouldRender) {
-    return <ProfileUserMenuFallback />;
-  }
-
-  return (
-    <Suspense fallback={<ProfileUserMenuFallback />}>
-      <LazyUserMenu trigger="settings" />
-    </Suspense>
-  );
-}
 
 function ProfileUserMenuFallback() {
   return (
@@ -163,11 +141,15 @@ function useProfileInsights(
 ) {
   const [profileInsights, setProfileInsights] =
     useState<ProfileInsightModel | null>(null);
+  const previousProfileIdRef = useRef(profile.id);
 
   useEffect(() => {
     let isStale = false;
 
-    setProfileInsights(null);
+    if (previousProfileIdRef.current !== profile.id) {
+      setProfileInsights(null);
+      previousProfileIdRef.current = profile.id;
+    }
 
     import("@/features/profile/lib/profile-insights")
       .then(({ buildProfileInsights }) => {

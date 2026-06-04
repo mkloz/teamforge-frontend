@@ -16,6 +16,7 @@ export const notificationPreferencesSchema = z.object({
   showAgeOnProfile: z.boolean(),
   showGenderOnProfile: z.boolean(),
   showCityOnProfile: z.boolean(),
+  showFriendsListOnProfile: z.boolean(),
 });
 
 export type NotificationPreferences = z.infer<

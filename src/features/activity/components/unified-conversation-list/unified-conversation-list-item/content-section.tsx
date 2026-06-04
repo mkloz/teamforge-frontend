@@ -16,6 +16,7 @@ import { UnreadBadge } from "@/shared/components/common/unread-badge";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
+import { useIsReviewWaiting } from "@/features/activity/hooks/use-is-review-waiting";
 import { GroupIndicators } from "./group-indicators";
 import { MsgStatusIcon } from "./msg-status-icon";
 import { SubtitleIcon } from "./subtitle-icon";
@@ -69,17 +70,23 @@ export const ContentSection = memo(
     const hasPlanStatusIndicator = Boolean(!countdown && plan?.status);
     const hasSavedMessages = Boolean(item.savedMessageCount);
     const hasPendingProposal = pendingProposalCount > 0;
+    
+    // Check if review is waiting
+    const isReviewWaiting = useIsReviewWaiting(item.group);
+
     const visibleGroupIndicatorCount =
       Number(hasCountdownIndicator) +
       Number(hasPlanStatusIndicator) +
       Number(hasSavedMessages) +
-      Number(hasPendingProposal);
+      Number(hasPendingProposal) +
+      Number(Boolean(isReviewWaiting));
     const isMuted = getConversationIsMuted(item);
     const showInlineGroupIndicators =
       isGroup && !isCompact && !isMuted && visibleGroupIndicatorCount === 1;
     const isNotes = getConversationIsNotes(item);
     const latestMessage = item.latestMessage;
     const timestampMessage = isSavedView ? previewMessage : latestMessage;
+
     const hasIndicatorRow =
       isGroup &&
       !isCompact &&
@@ -166,6 +173,7 @@ export const ContentSection = memo(
                     savedMessageCount={
                       hasSavedMessages ? item.savedMessageCount : undefined
                     }
+                    isReviewWaiting={isReviewWaiting}
                     variant="inline"
                   />
                 ) : null}
@@ -278,6 +286,7 @@ export const ContentSection = memo(
             savedMessageCount={
               showSavedCountInIndicatorRow ? item.savedMessageCount : undefined
             }
+            isReviewWaiting={isReviewWaiting}
           />
         )}
       </div>

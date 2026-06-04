@@ -1,6 +1,13 @@
 import { ArrowDownWideNarrow } from "lucide-react";
 import { SORTS } from "@/features/explore/constants/explore.constants";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/shared/components/ui/dropdown-menu";
 import { cn } from "@/shared/lib/utils";
 
 export function SortDropdown() {
@@ -16,28 +23,26 @@ export function SortDropdown() {
   }
 
   return (
-    <div className="relative size-9 shrink-0">
-      <select
+    <DropdownMenu>
+      <DropdownMenuTrigger
         aria-label={`Sort groups${activeSort ? `, ${activeSort.label}` : ""}`}
-        value={sortBy}
-        onChange={(event) => handleSortChange(event.target.value)}
-        className="absolute inset-0 z-10 size-full cursor-pointer rounded-full opacity-0"
-      >
-        {SORTS.map(({ id, label }) => (
-          <option key={id} value={id}>
-            {label}
-          </option>
-        ))}
-      </select>
-      <div
-        aria-hidden="true"
         className={cn(
-          "flex size-9 items-center justify-center rounded-full border border-border/60 bg-background text-muted-foreground transition-all",
-          "hover:border-border hover:text-foreground",
+          "flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border/60 bg-background text-muted-foreground transition-all outline-hidden",
+          "hover:border-border hover:text-foreground focus-visible:ring-2 focus-visible:ring-forge-teal",
+          "data-[state=open]:border-border data-[state=open]:text-foreground",
         )}
       >
         <ArrowDownWideNarrow className="size-3.5" />
-      </div>
-    </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuRadioGroup value={sortBy} onValueChange={handleSortChange}>
+          {SORTS.map(({ id, label }) => (
+            <DropdownMenuRadioItem key={id} value={id}>
+              {label}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

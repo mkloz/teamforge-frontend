@@ -1,6 +1,5 @@
 import {
   CalendarClock,
-  Check,
   CheckCircle2,
   Clock,
   FilePenLine,
@@ -36,10 +35,10 @@ export const PLAN_STATUS_CONFIG: Record<Plan["status"], PlanStatusConfig> = {
     colorClass: "text-forge-teal",
   },
   COMPLETED: {
-    icon: Check,
+    icon: CheckCircle2,
     label: "Completed",
     accentClass: "bg-slate-muted/50",
-    badgeClass: "bg-muted text-muted-foreground",
+    badgeClass: "bg-slate-muted/12 text-slate-muted",
     colorClass: "text-slate-muted",
   },
   PROPOSED: {
@@ -60,7 +59,7 @@ export const PLAN_STATUS_CONFIG: Record<Plan["status"], PlanStatusConfig> = {
     icon: X,
     label: "Cancelled",
     accentClass: "bg-destructive/50",
-    badgeClass: "bg-muted text-muted-foreground",
+    badgeClass: "bg-destructive/12 text-destructive",
     colorClass: "text-destructive",
   },
 };
