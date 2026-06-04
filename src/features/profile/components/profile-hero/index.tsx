@@ -32,9 +32,9 @@ export function ProfileHero({
   heroRowRef,
 }: ProfileHeroProps) {
   const hasBio = Boolean(user.bio?.trim());
-  const [friendsTab, setFriendsTab] = useState<"friends" | "requests">(
-    "friends",
-  );
+  const [friendsTab, setFriendsTab] = useState<
+    "friends" | "requests" | "public_friends"
+  >("friends");
   const { data: currentUser } = useCurrentUserQuery();
   const isSelf = currentUser?.id === user.id;
 

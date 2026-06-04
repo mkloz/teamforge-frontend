@@ -27,9 +27,7 @@ export function UserMenuProfileSummary() {
           />
 
           <span className="min-w-0 flex-1">
-            <span className={cn(
-              "flex items-center gap-2",
-            )}>
+            <span className={cn("flex items-center gap-2")}>
               <span className="block truncate font-black text-base text-foreground leading-tight transition-colors group-hover:text-forge-teal">
                 {currentUser?.name ?? "Account syncing"}
               </span>

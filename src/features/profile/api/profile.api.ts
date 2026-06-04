@@ -77,9 +77,7 @@ export class ProfileApi {
   }
 
   static async withdrawFriendRequest(targetUserId: string) {
-    const response = await apiClient.delete(
-      `friends/requests/${targetUserId}`,
-    );
+    const response = await apiClient.delete(`friends/requests/${targetUserId}`);
 
     return parseJsonWithRequestId(response, (value) =>
       friendshipApiSchema.parse(value),

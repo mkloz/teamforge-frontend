@@ -1,5 +1,5 @@
-import { Check, Copy, Link2 } from "lucide-react";
-
+import { Check, Copy, Link2, QrCode } from "lucide-react";
+import { QrShareDialog } from "@/shared/components/qr-share-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import {
@@ -46,10 +46,25 @@ export function InviteLinkSection({
         </div>
       </div>
 
-      <div className="main-action-grid grid min-w-0 items-center gap-2 border-border/25 border-t pt-3">
+      <div className="flex min-w-0 items-center gap-2 border-border/25 border-t pt-3">
         <code className="min-w-0 flex-1 truncate font-semibold text-muted-foreground text-xs">
           {INVITE_LINK}
         </code>
+        <QrShareDialog
+          url={`https://${INVITE_LINK}`}
+          title="Group Invite QR Code"
+          description="Have friends scan this to join the group directly."
+          trigger={
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label="Show QR Code"
+              className="size-8 shrink-0 rounded-lg border-border/40 text-foreground transition-colors hover:border-forge-teal/25 hover:bg-forge-teal/8 hover:text-forge-teal active:scale-95"
+            >
+              <QrCode size={15} strokeWidth={2} />
+            </Button>
+          }
+        />
         <Button
           variant="ghost"
           size="sm"

@@ -1,12 +1,11 @@
-import { useParams } from "@tanstack/react-router";
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { useParams, useSearch } from "@tanstack/react-router";
+import { lazy, Suspense, useMemo } from "react";
 import { usePublicProfile } from "@/features/profile/hooks/use-profile";
 import { ProfilePageLoading } from "@/features/profile/profile-page/profile-page.loading";
 import { ProfilePageContent } from "@/features/profile/profile-page/profile-page-content";
 import { SkeletonButton } from "@/shared/components/loading/skeleton-patterns";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
-import type { User } from "@/shared/schemas";
 
 const USER_DETAIL_ROUTE = "/app-shell/users/$userId";
 const LazyProfilePageError = lazy(() =>
@@ -23,6 +22,7 @@ const LazyPublicProfileActions = lazy(() =>
 
 export function UserDetailPage() {
   const { userId } = useParams({ from: USER_DETAIL_ROUTE });
+  const search = useSearch({ from: USER_DETAIL_ROUTE });
   const { profile, isLoading, error, refetch } = usePublicProfile(userId);
   const pageMetadata = useMemo(
     () =>
@@ -58,15 +58,19 @@ export function UserDetailPage() {
       profile={profile}
       mode="public"
       renderActions={() => (
-        <Suspense fallback={<PublicProfileActionsFallback userName={profile.name} />}>
-          <LazyPublicProfileActions user={profile} />
+        <Suspense
+          fallback={<PublicProfileActionsFallback userName={profile.name} />}
+        >
+          <LazyPublicProfileActions
+            user={profile}
+            spotlightConnect={search.intent === "connect"}
+          />
         </Suspense>
       )}
       showUserMenu={false}
     />
   );
 }
-
 
 function PublicProfileActionsFallback({ userName }: { userName: string }) {
   return (

@@ -1,3 +1,4 @@
+import { QrCode } from "lucide-react";
 import {
   type ComponentProps,
   lazy,
@@ -8,11 +9,11 @@ import {
   useRef,
   useState,
 } from "react";
-
 import { ProfileHero } from "@/features/profile/components/profile-hero";
 import { ProfileCompactHeader } from "@/features/profile/components/profile-hero/profile-compact-header";
 import { ProfilePortraitSection } from "@/features/profile/components/profile-portrait-section";
 import type { ProfileInsightModel } from "@/features/profile/lib/profile-insights";
+import { buildPublicProfilePath } from "@/features/profile/lib/profile-route";
 import {
   getUserArchetype,
   getUserDimensionScores,
@@ -22,8 +23,10 @@ import {
   SkeletonAvatar,
   SkeletonText,
 } from "@/shared/components/loading/skeleton-patterns";
-
+import { QrShareDialog } from "@/shared/components/qr-share-dialog";
+import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { getCurrentBrowserOrigin } from "@/shared/lib/browser-capabilities";
 import type { User } from "@/shared/schemas";
 
 import { useProfileCollapsibleHeader } from "../hooks/use-profile-collapsible-header";
@@ -66,6 +69,12 @@ export function ProfilePageContent({
     ? getCompactSocialRead(profileInsights.portrait.lead)
     : null;
   const shouldShowUserMenu = showUserMenu ?? mode === "self";
+  const profileQrUrl = `${getCurrentBrowserOrigin()}${buildPublicProfilePath(
+    profile.id,
+    {
+      intent: "connect",
+    },
+  )}`;
 
   const { isPinned: isProfileHeaderPinned } = useProfileCollapsibleHeader({
     ref: profilePageRef,
@@ -80,7 +89,22 @@ export function ProfilePageContent({
       <ProfileCompactHeader user={profile} visible={isProfileHeaderPinned} />
 
       {shouldShowUserMenu ? (
-        <div className="absolute top-4 right-4 z-50 md:top-6 md:right-8">
+        <div className="absolute top-4 right-4 z-50 flex items-center gap-3 md:top-6 md:right-8">
+          <QrShareDialog
+            url={profileQrUrl}
+            avatarSrc={profile.avatar}
+            bottomText={`@${profile.name.replace(/\s/g, "").toLowerCase()}`}
+            trigger={
+              <Button
+                variant="inverseGhost"
+                size="icon"
+                className="size-10 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-forge-teal hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-forge-teal data-[state=open]:bg-white data-[state=open]:text-forge-teal"
+                aria-label="Show QR Code"
+              >
+                <QrCode size={18} strokeWidth={2.25} aria-hidden="true" />
+              </Button>
+            }
+          />
           <Suspense fallback={<ProfileUserMenuFallback />}>
             <LazyUserMenu trigger="settings" />
           </Suspense>
@@ -116,7 +140,6 @@ export function ProfilePageContent({
     </main>
   );
 }
-
 
 function ProfileUserMenuFallback() {
   return (

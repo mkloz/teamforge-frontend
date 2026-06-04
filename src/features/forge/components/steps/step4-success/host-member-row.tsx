@@ -21,7 +21,9 @@ export function HostMemberRow() {
       {/* Identity */}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
-          <p className="font-black text-forge-teal text-sm leading-tight">You</p>
+          <p className="font-black text-forge-teal text-sm leading-tight">
+            You
+          </p>
           <StatusPill
             tone="teal"
             size="xs"

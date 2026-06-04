@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useProfileCommonFriends } from "@/features/profile/hooks/use-profile-common-friends";
 import { useProfileFriendRequests } from "@/features/profile/hooks/use-profile-friend-requests";
 import { useProfileFriends } from "@/features/profile/hooks/use-profile-friends";
@@ -14,7 +15,6 @@ import { SheetTrigger } from "@/shared/components/ui/sheet";
 import { cn } from "@/shared/lib/utils";
 import type { User } from "@/shared/schemas";
 import type { PersonalityType } from "@/shared/schemas/enums";
-import type { ReactNode } from "react";
 import { ProfileBadgeDivider } from "./profile-badge-divider";
 
 interface ProfileBadgesProps {
@@ -163,7 +163,10 @@ function TrustBadge({
             value={
               <span className="inline-flex items-center">
                 {trustScore}
-                <span className="hidden sm:inline whitespace-pre"> {trustLabel}</span>
+                <span className="hidden whitespace-pre sm:inline">
+                  {" "}
+                  {trustLabel}
+                </span>
               </span>
             }
           />
@@ -172,7 +175,7 @@ function TrustBadge({
       <PopoverContent
         align="center"
         sideOffset={10}
-        className="w-64 border-white/8 bg-[#131312] p-4"
+        className="w-64 border-white/8 bg-ink p-4"
       >
         <TrustPopoverContent trustScore={trustScore} trustLabel={trustLabel} />
       </PopoverContent>
@@ -196,8 +199,8 @@ function TrustPopoverContent({
   return (
     <div className="space-y-3">
       <div>
-        <p className="text-sm font-semibold text-white">Trust score</p>
-        <p className="mt-0.5 text-xs leading-relaxed text-slate-muted">
+        <p className="font-semibold text-sm text-white">Trust score</p>
+        <p className="mt-0.5 text-slate-muted text-xs leading-relaxed">
           Built from how groups have gone. Each completed activity and honest
           review shapes this number.
         </p>
@@ -220,10 +223,10 @@ function TrustPopoverContent({
         ))}
       </div>
 
-      <div className="border-t border-white/6 pt-2">
+      <div className="border-white/6 border-t pt-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-slate-muted">Current</span>
-          <span className="text-sm font-bold tabular-nums text-forge-teal">
+          <span className="text-slate-muted text-xs">Current</span>
+          <span className="font-bold text-forge-teal text-sm tabular-nums">
             {trustScore}
           </span>
         </div>
@@ -309,19 +312,19 @@ function TypeBadge({
       <PopoverContent
         align="center"
         sideOffset={10}
-        className="w-64 border-white/8 bg-[#131312] p-4"
+        className="w-64 border-white/8 bg-ink p-4"
       >
         <div className="space-y-2.5">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <p className="font-semibold text-white text-sm">
+              <p className="font-semibold text-sm text-white">
                 {typeInfo.title}
               </p>
-              <p className="mt-0.5 text-xs font-medium text-forge-teal">
+              <p className="mt-0.5 font-medium text-forge-teal text-xs">
                 {personalityType} · {category}
               </p>
             </div>
-            <span className="shrink-0 rounded-md bg-forge-teal/10 px-2 py-1 text-sm font-bold leading-none text-forge-teal">
+            <span className="shrink-0 rounded-md bg-forge-teal/10 px-2 py-1 font-bold text-forge-teal text-sm leading-none">
               {personalityType}
             </span>
           </div>
@@ -330,7 +333,7 @@ function TypeBadge({
             {description}
           </p>
 
-          <div className="border-t border-white/6 pt-2">
+          <div className="border-white/6 border-t pt-2">
             <TypeDimensionRow code={personalityType} />
           </div>
         </div>
@@ -355,7 +358,7 @@ function TypeDimensionRow({ code }: { code: PersonalityType }) {
             <span
               key={letter}
               className={cn(
-                "type-signature-label flex h-5 w-5 items-center justify-center rounded font-bold transition-colors",
+                "type-signature-label flex size-5 items-center justify-center rounded font-bold transition-colors",
                 letter === active
                   ? "bg-forge-teal/15 text-forge-teal"
                   : "text-white/20",
@@ -420,20 +423,20 @@ function RoleBadge({
       <PopoverContent
         align="center"
         sideOffset={10}
-        className="w-64 border-white/8 bg-[#131312] p-4"
+        className="w-64 border-white/8 bg-ink p-4"
       >
         <div className="space-y-2">
           <div>
-            <p className="font-semibold text-white text-sm">{archetype}</p>
-            <p className="mt-0.5 text-xs text-slate-muted">
+            <p className="font-semibold text-sm text-white">{archetype}</p>
+            <p className="mt-0.5 text-slate-muted text-xs">
               Group role in TeamForge
             </p>
           </div>
           <p className="text-slate-muted text-xs leading-relaxed">
             {description}
           </p>
-          <div className="border-t border-white/6 pt-2">
-            <p className="leading-relaxed text-white/35 type-signature-label">
+          <div className="border-white/6 border-t pt-2">
+            <p className="type-signature-label text-white/35 leading-relaxed">
               Roles are shaped by personality type and how you tend to show up
               in group settings.
             </p>
@@ -459,7 +462,7 @@ function ProfileSignal({
 }: ProfileSignalProps) {
   return (
     <div className="min-w-0 text-left">
-      <p className="font-semibold text-slate-muted text-[11px] sm:text-xs">
+      <p className="font-semibold text-[11px] text-slate-muted sm:text-xs">
         {label}
       </p>
       <p

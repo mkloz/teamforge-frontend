@@ -1,4 +1,4 @@
-import { Bookmark, Clock, Vote, UserStar } from "lucide-react";
+import { Bookmark, Clock, UserStar, Vote } from "lucide-react";
 import { memo, type ReactNode } from "react";
 import { PLAN_STATUS_CONFIG } from "@/features/activity/components/chat/unified-conversation-view/chat-status-bar/chat-status-plan-config";
 import type { Plan } from "@/features/activity/lib/activity-contract";
@@ -59,7 +59,7 @@ export const GroupIndicators = memo(function GroupIndicators({
       )}
       {PlanStatusIcon && planStatusConfig && (
         <StatusPill
-          icon={PlanStatusIcon as typeof Clock}
+          icon={PlanStatusIcon}
           iconClassName={indicatorIconClassName}
           iconStrokeWidth={2.2}
           tone="none"

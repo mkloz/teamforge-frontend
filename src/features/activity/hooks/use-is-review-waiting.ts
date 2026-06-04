@@ -50,13 +50,10 @@ export function useIsReviewWaiting(group?: Group | null) {
     const pendingMembers =
       pendingUserIds.size > 0
         ? rateableMembers.filter((member) => pendingUserIds.has(member.userId))
-        : rateableMembers.filter(
-            (member) => !ratedUserIds.has(member.userId),
-          );
+        : rateableMembers.filter((member) => !ratedUserIds.has(member.userId));
 
     const hasPendingMembers = pendingMembers.length > 0;
-    const shouldBlockReview =
-      reviewStateQuery.data?.shouldBlockReview ?? false;
+    const shouldBlockReview = reviewStateQuery.data?.shouldBlockReview ?? false;
 
     // A review is waiting if the user still needs to review members or if there's a blocking state
     return hasPendingMembers || shouldBlockReview;

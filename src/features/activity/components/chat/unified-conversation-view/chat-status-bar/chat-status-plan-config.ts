@@ -1,3 +1,4 @@
+import type { LucideIcon } from "lucide-react";
 import {
   CalendarClock,
   CheckCircle2,
@@ -7,12 +8,11 @@ import {
   Pin,
   X,
 } from "lucide-react";
-import type { ElementType } from "react";
 import type { Plan } from "@/features/activity/lib/activity-contract";
 import { formatCountdown } from "@/features/activity/lib/chat-utils";
 
 interface PlanStatusConfig {
-  icon: ElementType;
+  icon: LucideIcon;
   label: string;
   accentClass: string;
   badgeClass: string;

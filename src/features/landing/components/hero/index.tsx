@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown, Download } from "lucide-react";
 import { ForgeOrb } from "@/features/landing/components/hero/forge-orb";
 import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
 import { useResolvedLandingAuthActions } from "@/features/landing/hooks/use-resolved-landing-auth-actions";
@@ -61,15 +61,15 @@ export function HeroSection() {
                 </Button>
               )}
               <Button
+                asChild
                 variant="outline"
                 size="hero"
                 className="w-full sm:w-auto"
-                onClick={() =>
-                  scrollToLandingSection(LANDING_SECTION_IDS.howItWorks)
-                }
               >
-                See How It Works
-                <ChevronDown className="size-5" aria-hidden="true" />
+                <Link to="/download">
+                  Download
+                  <Download className="size-5" aria-hidden="true" />
+                </Link>
               </Button>
             </div>
           </div>

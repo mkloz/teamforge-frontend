@@ -1,7 +1,12 @@
-import { Link2, UserPlus, Users } from "lucide-react";
+import { Link2, QrCode, UserPlus, Users } from "lucide-react";
 import { useState } from "react";
 import { useProfileCommonFriends } from "@/features/profile/hooks/use-profile-common-friends";
+import { buildPublicProfilePath } from "@/features/profile/lib/profile-route";
 import { useCurrentUserQuery } from "@/shared/api/current-user-query";
+import { QrShareDialog } from "@/shared/components/qr-share-dialog";
+import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { getCurrentBrowserOrigin } from "@/shared/lib/browser-capabilities";
 import { cn } from "@/shared/lib/utils";
 import type { User } from "@/shared/schemas";
 import { FriendRequestsList } from "./friend-requests-list";
@@ -28,6 +33,12 @@ export function ProfileFriendsPanel({
 
   const showPublicFriends = !isSelf && user.showFriendsListOnProfile;
   const showMutualFriends = !isSelf && (commonFriends?.length ?? 0) > 0;
+  const profileQrUrl = `${getCurrentBrowserOrigin()}${buildPublicProfilePath(
+    user.id,
+    {
+      intent: "connect",
+    },
+  )}`;
 
   const hasMultipleTabs = !isSelf
     ? showPublicFriends && showMutualFriends
@@ -86,6 +97,8 @@ export function ProfileFriendsPanel({
         </p>
       </div>
 
+      <MyCodeCard user={user} url={profileQrUrl} />
+
       <div className="flex gap-2 border-border border-b pb-1">
         <TabButton
           active={activeTab === "friends"}
@@ -103,6 +116,49 @@ export function ProfileFriendsPanel({
 
       <div className="min-h-64">
         {activeTab === "friends" ? <FriendsList /> : <FriendRequestsList />}
+      </div>
+    </div>
+  );
+}
+
+function MyCodeCard({ url, user }: { url: string; user: User }) {
+  return (
+    <div className="rounded-2xl border border-forge-teal/20 bg-forge-teal/6 p-4">
+      <div className="flex items-start gap-3">
+        <IconTile
+          bordered
+          icon={QrCode}
+          shape="circle"
+          size="md"
+          tone="teal"
+          className="mt-0.5 bg-forge-teal/8"
+        />
+        <div className="min-w-0 flex-1">
+          <p className="font-bold text-foreground text-sm leading-tight">
+            My Code
+          </p>
+          <p className="mt-1 max-w-64 text-muted-foreground text-xs leading-relaxed">
+            Let someone scan this at an activity to open your profile with
+            Connect ready.
+          </p>
+        </div>
+        <QrShareDialog
+          url={url}
+          title="My TeamForge Code"
+          description="Scan to open this profile and connect in person."
+          avatarSrc={user.avatar}
+          bottomText={`@${user.name.replace(/\s/g, "").toLowerCase()}`}
+          trigger={
+            <Button
+              variant="outline"
+              size="sm"
+              className="shrink-0 rounded-lg border-forge-teal/25 bg-background/80 text-forge-teal hover:bg-forge-teal/8"
+            >
+              <QrCode className="size-4" />
+              Show
+            </Button>
+          }
+        />
       </div>
     </div>
   );

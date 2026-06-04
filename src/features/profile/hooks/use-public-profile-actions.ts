@@ -162,7 +162,8 @@ export function usePublicProfileActions(user: PublicProfileActionUser) {
 
   const withdrawMutation = useMutation({
     meta: {
-      errorToastMessage: "We couldn't cancel that connection request right now.",
+      errorToastMessage:
+        "We couldn't cancel that connection request right now.",
     },
     mutationKey: ["profile", "withdraw", user.id],
     mutationFn: () => ProfileApi.withdrawFriendRequest(user.id),

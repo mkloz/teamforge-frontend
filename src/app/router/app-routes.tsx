@@ -15,6 +15,11 @@ import {
   type GroupPlanDetailSource,
   groupPlanDetailSourceValues,
 } from "@/features/group-plan-detail/lib/group-plan-detail-route";
+import {
+  type UserDetailIntent,
+  type UserDetailRouteSearch,
+  userDetailIntentValues,
+} from "@/features/profile/lib/profile-route";
 import { appQueryClient } from "@/shared/api/query-client";
 import { ForgeLoadingMark } from "@/shared/components/loading/forge-loading-mark";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
@@ -157,6 +162,21 @@ function validateGroupPlanDetailSearch(
     proposal: parseOptionalSearchString(search.proposal),
     returnTo: parseOptionalSearchString(search.returnTo),
     source: isGroupPlanDetailSource(search.source) ? search.source : undefined,
+  };
+}
+
+function isUserDetailIntent(value: unknown): value is UserDetailIntent {
+  return (
+    typeof value === "string" &&
+    userDetailIntentValues.some((intent) => intent === value)
+  );
+}
+
+function validateUserDetailSearch(
+  search: Record<string, unknown>,
+): UserDetailRouteSearch {
+  return {
+    intent: isUserDetailIntent(search.intent) ? search.intent : undefined,
   };
 }
 
@@ -498,6 +518,7 @@ const profileRoute = createRoute({
 const userDetailRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/users/$userId",
+  validateSearch: validateUserDetailSearch,
   loader: createUserDetailRouteLoader(userDetailPageModule),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: ProfileRouteLoading,

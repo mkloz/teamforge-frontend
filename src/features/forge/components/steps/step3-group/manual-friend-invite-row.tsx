@@ -28,9 +28,7 @@ export function ManualFriendInviteRow({
     <div
       className={cn(
         "group relative flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition-colors duration-150",
-        selected
-          ? "bg-forge-teal/8"
-          : "hover:bg-muted/50",
+        selected ? "bg-forge-teal/8" : "hover:bg-muted/50",
         disabled && "cursor-not-allowed opacity-50",
       )}
     >
@@ -79,7 +77,11 @@ export function ManualFriendInviteRow({
         <span className="flex min-w-0 flex-wrap items-center gap-1.5">
           {friend.city && (
             <span className="flex items-center gap-0.5 text-slate-muted text-xs">
-              <MapPin className="size-3 shrink-0" strokeWidth={2} aria-hidden="true" />
+              <MapPin
+                className="size-3 shrink-0"
+                strokeWidth={2}
+                aria-hidden="true"
+              />
               {friend.city}
             </span>
           )}

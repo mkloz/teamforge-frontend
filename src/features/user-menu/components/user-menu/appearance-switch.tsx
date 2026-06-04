@@ -11,7 +11,13 @@ export function AppearanceSwitch() {
 
   return (
     <div className="flex items-center gap-3 rounded-xl px-3 py-2">
-      <IconTile icon={CurrentIcon} tone="neutral" size="md" bordered aria-hidden="true" />
+      <IconTile
+        icon={CurrentIcon}
+        tone="neutral"
+        size="md"
+        bordered
+        aria-hidden="true"
+      />
 
       <span className="min-w-0 flex-1 font-semibold text-foreground text-sm">
         Theme

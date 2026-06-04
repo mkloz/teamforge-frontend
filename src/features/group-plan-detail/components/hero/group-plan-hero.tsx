@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, QrCode } from "lucide-react";
 import {
   getHeroCoverImage,
   HeroCover,
@@ -15,6 +15,7 @@ import {
   type GroupPlanDetailRouteSearch,
   getGroupPlanDetailBackLink,
 } from "@/features/group-plan-detail/lib/group-plan-detail-route";
+import { QrShareDialog } from "@/shared/components/qr-share-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { scrollWindowToTop } from "@/shared/lib/scroll-to-top";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
@@ -57,6 +58,24 @@ export function GroupPlanHero({
       </Button>
 
       <HeroCover detail={detail} alt={`${planTitle} cover photo`}>
+        <div className="absolute top-4 right-4 z-20 sm:top-6 sm:right-6">
+          <QrShareDialog
+            url={`${window.location.origin}/groups/${detail.group.id}`}
+            avatarSrc={detail.group.avatar}
+            bottomText={detail.group.name}
+            trigger={
+              <Button
+                variant="inverseGhost"
+                size="icon"
+                className="size-10 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-forge-teal hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-forge-teal data-[state=open]:bg-white data-[state=open]:text-forge-teal"
+                aria-label="Show QR Code"
+              >
+                <QrCode size={18} strokeWidth={2.25} aria-hidden="true" />
+              </Button>
+            }
+          />
+        </div>
+
         <h1 className="mt-4 max-w-3xl text-balance font-black text-3xl text-foreground leading-none tracking-tight md:text-4xl lg:text-5xl">
           {planTitle}
         </h1>
@@ -148,6 +167,24 @@ function GroupPlanCompactHero({
               <p className="mt-0.5 truncate font-semibold text-white/90 text-xs leading-tight [text-shadow:0_1px_8px_rgb(0_0_0/85%)] sm:text-sm">
                 {metadata}
               </p>
+            </div>
+
+            <div className="pointer-events-auto shrink-0">
+              <QrShareDialog
+                url={`${window.location.origin}/groups/${detail.group.id}`}
+                avatarSrc={detail.group.avatar}
+                bottomText={detail.group.name}
+                trigger={
+                  <Button
+                    variant="inverseGhost"
+                    size="icon"
+                    className="size-9 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-forge-teal hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-forge-teal data-[state=open]:bg-white data-[state=open]:text-forge-teal sm:size-10"
+                    aria-label="Show QR Code"
+                  >
+                    <QrCode size={18} strokeWidth={2.25} aria-hidden="true" />
+                  </Button>
+                }
+              />
             </div>
           </div>
         </div>

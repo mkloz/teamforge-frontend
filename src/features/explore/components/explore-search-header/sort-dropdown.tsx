@@ -27,7 +27,7 @@ export function SortDropdown() {
       <DropdownMenuTrigger
         aria-label={`Sort groups${activeSort ? `, ${activeSort.label}` : ""}`}
         className={cn(
-          "flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border/60 bg-background text-muted-foreground transition-all outline-hidden",
+          "flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border/60 bg-background text-muted-foreground outline-hidden transition-all",
           "hover:border-border hover:text-foreground focus-visible:ring-2 focus-visible:ring-forge-teal",
           "data-[state=open]:border-border data-[state=open]:text-foreground",
         )}

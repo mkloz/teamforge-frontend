@@ -8,6 +8,7 @@ import {
   Lock,
   MapPin,
   Pencil,
+  QrCode,
   UserCheck,
   UsersRound,
 } from "lucide-react";
@@ -18,6 +19,7 @@ import type {
 } from "@/features/activity/lib/activity-contract";
 import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
 import { Avatar } from "@/shared/components/common/avatar";
+import { QrShareDialog } from "@/shared/components/qr-share-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { FactItem } from "@/shared/components/ui/fact-item";
 import type { IconTileTone } from "@/shared/components/ui/icon-tile";
@@ -140,6 +142,23 @@ export function GroupIdentitySection({
             <ArrowRight className="size-3.5" />
           </Link>
         </Button>
+
+        <QrShareDialog
+          url={`${window.location.origin}/groups/${groupId}`}
+          avatarSrc={avatarSrc}
+          bottomText={displayName}
+          trigger={
+            <Button
+              variant="outline"
+              size="xs"
+              className="min-w-0 flex-1 basis-32"
+              contentClassName="gap-1.5"
+            >
+              <QrCode className="size-3.5" aria-hidden="true" />
+              <span className="truncate">Share</span>
+            </Button>
+          }
+        />
 
         {!isReadOnly ? (
           canEditGroup ? (

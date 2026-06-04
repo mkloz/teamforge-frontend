@@ -12,16 +12,16 @@ import { usePublicProfileActions } from "@/features/profile/hooks/use-public-pro
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Button } from "@/shared/components/ui/button";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/shared/components/ui/tooltip";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
 
 const memberActionClassName =
@@ -88,7 +88,7 @@ function ConnectMemberAction({ member }: { member: GroupPlanDetailMember }) {
         </Tooltip>
         <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuItem
-            className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+            className="text-destructive focus:bg-destructive/10"
             onClick={(e) => {
               e.stopPropagation();
               onUnfriend();
@@ -124,7 +124,7 @@ function ConnectMemberAction({ member }: { member: GroupPlanDetailMember }) {
         </Tooltip>
         <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuItem
-            className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+            className="text-destructive focus:bg-destructive/10"
             onClick={(e) => {
               e.stopPropagation();
               onWithdraw();

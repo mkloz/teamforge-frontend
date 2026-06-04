@@ -10,6 +10,7 @@ import EllipsisVertical from "lucide-react/dist/esm/icons/ellipsis-vertical.js";
 import Globe from "lucide-react/dist/esm/icons/globe.js";
 import MonitorSmartphone from "lucide-react/dist/esm/icons/monitor-smartphone.js";
 import Plus from "lucide-react/dist/esm/icons/plus.js";
+import QrCode from "lucide-react/dist/esm/icons/qr-code.js";
 import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw.js";
 import Share from "lucide-react/dist/esm/icons/share.js";
 import Smartphone from "lucide-react/dist/esm/icons/smartphone.js";
@@ -19,11 +20,17 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Footer } from "@/features/landing/components/footer";
 import { Navbar } from "@/features/landing/components/navbar";
 import { useLandingAuthActions } from "@/features/landing/hooks/use-landing-auth-actions";
+import { QrShareDialog } from "@/shared/components/qr-share-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { IconTile } from "@/shared/components/ui/icon-tile";
+import {
+  type SegmentedTabOption,
+  SegmentedTabs,
+} from "@/shared/components/ui/segmented-tabs";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { usePwaDisplayMode } from "@/shared/hooks/use-pwa-display-mode";
 import { usePwaInstallPrompt } from "@/shared/hooks/use-pwa-install-prompt";
+import { getCurrentBrowserOrigin } from "@/shared/lib/browser-capabilities";
 import type { PageMetadata } from "@/shared/lib/document-metadata";
 import { cn } from "@/shared/lib/utils";
 
@@ -466,6 +473,7 @@ export function DownloadPage() {
     platformToDevice(detectPlatform()),
   );
   const pwaSections = useDeferredPwaSections();
+  const downloadQrUrl = `${getCurrentBrowserOrigin()}/download`;
 
   // Sync selected device once detection completes
   useEffect(() => {
@@ -528,9 +536,12 @@ export function DownloadPage() {
               </p>
 
               {/* Device selector */}
-              <DeviceSelector
-                selected={selectedDevice}
-                onSelect={setSelectedDevice}
+              <SegmentedTabs
+                ariaLabel="Select your device"
+                className="backdrop-blur-sm"
+                options={DEVICE_TABS}
+                value={selectedDevice}
+                onChange={setSelectedDevice}
               />
 
               {/* Dynamic subtitle per device */}
@@ -580,6 +591,22 @@ export function DownloadPage() {
               />
             </div>
           </div>
+
+          <QrShareDialog
+            url={downloadQrUrl}
+            title="Install TeamForge"
+            description="Scan this on your phone to open the install guide."
+            trigger={
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute right-5 bottom-7 z-20 size-11 rounded-full border-white/20 bg-white/8 text-white shadow-black/20 shadow-lg backdrop-blur-md hover:border-forge-teal/50 hover:bg-forge-teal/15 hover:text-forge-teal focus-visible:ring-white sm:right-8 sm:bottom-10"
+                aria-label="Show install QR code"
+              >
+                <QrCode size={18} strokeWidth={2.25} aria-hidden="true" />
+              </Button>
+            }
+          />
 
           {/* Bottom fade */}
           <div className="pointer-events-none absolute right-0 bottom-0 left-0 h-20 bg-linear-to-b from-transparent to-canvas" />
@@ -753,78 +780,11 @@ export function DownloadPage() {
 
 // ─── Device selector ─────────────────────────────────────────────────────────
 
-const DEVICE_TABS: readonly DeviceTabOption[] = [
+const DEVICE_TABS: readonly SegmentedTabOption<SelectedDevice>[] = [
   { id: "ios", label: "iPhone & iPad", shortLabel: "iPhone", icon: Smartphone },
   { id: "android", label: "Android", icon: Smartphone },
   { id: "desktop", label: "Desktop", icon: MonitorSmartphone },
 ] as const;
-
-interface DeviceTabOption {
-  icon: LucideIcon;
-  id: SelectedDevice;
-  label: string;
-  shortLabel?: string;
-}
-
-interface DeviceSelectorProps {
-  selected: SelectedDevice;
-  onSelect: (d: SelectedDevice) => void;
-}
-
-function DeviceSelector({ selected, onSelect }: DeviceSelectorProps) {
-  return (
-    <div
-      role="tablist"
-      aria-label="Select your device"
-      className="inline-flex max-w-full items-center gap-1 rounded-full border border-white/10 bg-forge-deep-surface p-0.5 shadow-sm backdrop-blur-sm"
-    >
-      {DEVICE_TABS.map((option) => {
-        const active = selected === option.id;
-        const Icon = option.icon;
-
-        return (
-          <button
-            key={option.id}
-            type="button"
-            role="tab"
-            aria-selected={active}
-            onClick={() => {
-              onSelect(option.id);
-            }}
-            className={cn(
-              "relative inline-flex h-9 min-w-0 items-center justify-center gap-1.5 overflow-hidden rounded-full px-3 font-bold text-xs leading-none outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-offset-1",
-              active
-                ? "bg-forge-teal text-white shadow-sm"
-                : "text-white/65 hover:text-white",
-            )}
-          >
-            <Icon
-              className={cn(
-                "size-3.5 shrink-0 transition-opacity duration-200",
-                active ? "opacity-100" : "opacity-70",
-              )}
-              strokeWidth={active ? 2 : 1.5}
-              aria-hidden="true"
-            />
-            <span
-              className={cn(
-                "min-w-0 truncate",
-                option.shortLabel && "hidden sm:inline",
-              )}
-            >
-              {option.label}
-            </span>
-            {option.shortLabel && (
-              <span className="min-w-0 truncate sm:hidden">
-                {option.shortLabel}
-              </span>
-            )}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
 
 // ─── Hero CTA buttons ─────────────────────────────────────────────────────────
 

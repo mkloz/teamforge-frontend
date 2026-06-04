@@ -7,6 +7,7 @@ import {
   UserMinus,
   UserRoundPlus,
 } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { buildActivityDmNavigation } from "@/features/activity/lib/activity-route";
 import { usePublicProfileActions } from "@/features/profile/hooks/use-public-profile-actions";
 import { Button } from "@/shared/components/ui/button";
@@ -16,13 +17,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
+import { cn } from "@/shared/lib/utils";
 import type { User } from "@/shared/schemas";
 
 interface PublicProfileActionsProps {
+  spotlightConnect?: boolean;
   user: User;
 }
 
-export function PublicProfileActions({ user }: PublicProfileActionsProps) {
+export function PublicProfileActions({
+  spotlightConnect = false,
+  user,
+}: PublicProfileActionsProps) {
+  const connectButtonRef = useRef<HTMLButtonElement | null>(null);
   const {
     connectDisabled,
     connectLabel,
@@ -38,6 +45,34 @@ export function PublicProfileActions({ user }: PublicProfileActionsProps) {
     isViewerProfile,
   } = usePublicProfileActions(user);
   const ConnectIcon = getConnectIcon(connectLabel);
+  const shouldSpotlightConnect =
+    spotlightConnect &&
+    !isViewerProfile &&
+    (connectLabel === "Connect" || connectLabel === "Accept");
+
+  useEffect(() => {
+    if (!shouldSpotlightConnect || !connectButtonRef.current) {
+      return undefined;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      const button = connectButtonRef.current;
+
+      if (!button || button.getClientRects().length === 0) {
+        return;
+      }
+
+      button.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+      button.focus({ preventScroll: true });
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+    };
+  }, [shouldSpotlightConnect]);
 
   if (isViewerProfile) {
     return (
@@ -67,7 +102,7 @@ export function PublicProfileActions({ user }: PublicProfileActionsProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem
-              className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+              className="text-destructive focus:bg-destructive/10"
               onClick={() => onUnfriend()}
             >
               <UserMinus className="mr-2 size-4" />
@@ -90,7 +125,7 @@ export function PublicProfileActions({ user }: PublicProfileActionsProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem
-              className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+              className="text-destructive focus:bg-destructive/10"
               onClick={() => onWithdraw()}
             >
               <UserMinus className="mr-2 size-4" />
@@ -100,7 +135,12 @@ export function PublicProfileActions({ user }: PublicProfileActionsProps) {
         </DropdownMenu>
       ) : (
         <Button
-          className="w-full shrink-0 sm:w-auto"
+          ref={connectButtonRef}
+          className={cn(
+            "w-full shrink-0 sm:w-auto",
+            shouldSpotlightConnect &&
+              "shadow-lg shadow-spark-amber/20 ring-2 ring-spark-amber ring-offset-2 ring-offset-canvas",
+          )}
           disabled={connectDisabled}
           loading={connectLoading}
           onClick={() => onConnect()}
@@ -108,6 +148,7 @@ export function PublicProfileActions({ user }: PublicProfileActionsProps) {
           title={
             isOnline ? undefined : "Reconnect before changing connections."
           }
+          data-connect-intent={shouldSpotlightConnect ? "true" : undefined}
         >
           <ConnectIcon className="shrink-0" />
           <span>{connectLabel}</span>

@@ -1,5 +1,6 @@
 import { BellOff, Bookmark, Pin } from "lucide-react";
 import { lazy, memo, Suspense } from "react";
+import { useIsReviewWaiting } from "@/features/activity/hooks/use-is-review-waiting";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
 import {
   formatCountdown,
@@ -16,7 +17,6 @@ import { UnreadBadge } from "@/shared/components/common/unread-badge";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
-import { useIsReviewWaiting } from "@/features/activity/hooks/use-is-review-waiting";
 import { GroupIndicators } from "./group-indicators";
 import { MsgStatusIcon } from "./msg-status-icon";
 import { SubtitleIcon } from "./subtitle-icon";
@@ -70,7 +70,7 @@ export const ContentSection = memo(
     const hasPlanStatusIndicator = Boolean(!countdown && plan?.status);
     const hasSavedMessages = Boolean(item.savedMessageCount);
     const hasPendingProposal = pendingProposalCount > 0;
-    
+
     // Check if review is waiting
     const isReviewWaiting = useIsReviewWaiting(item.group);
 
@@ -79,7 +79,7 @@ export const ContentSection = memo(
       Number(hasPlanStatusIndicator) +
       Number(hasSavedMessages) +
       Number(hasPendingProposal) +
-      Number(Boolean(isReviewWaiting));
+      Number(isReviewWaiting);
     const isMuted = getConversationIsMuted(item);
     const showInlineGroupIndicators =
       isGroup && !isCompact && !isMuted && visibleGroupIndicatorCount === 1;
