@@ -1,4 +1,10 @@
 /* eslint-disable no-console */
+/**
+ * Generates TeamForge PWA icon assets from the canonical SVG favicon.
+ *
+ * The script writes transparent standard icons plus solid-background maskable
+ * and Apple touch icons expected by the manifest and install surfaces.
+ */
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -10,6 +16,11 @@ const ROOT_DIR = path.resolve(__dirname, "..");
 const FAVICON_PATH = path.join(ROOT_DIR, "public", "favicon.svg");
 const ICONS_DIR = path.join(ROOT_DIR, "public", "icons");
 
+/**
+ * Builds all PWA icon renditions under `public/icons`.
+ *
+ * @returns {Promise<void>}
+ */
 async function generateIcons() {
   try {
     console.log("Generating PWA icons from favicon.svg...");

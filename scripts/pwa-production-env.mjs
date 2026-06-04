@@ -2,6 +2,12 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import process from "node:process";
 
+/**
+ * @typedef {Record<string, string | undefined>} EnvMap
+ * @typedef {{ detail: string; name: string; passed: boolean }} EnvCheck
+ * @typedef {{ envFile: string | null }} CliArgs
+ */
+
 const REQUIRED_ENV_KEYS = [
   "VITE_API_URL",
   "VITE_GOOGLE_CLIENT_ID",
@@ -18,10 +24,23 @@ const EXPECTED_PRODUCTION_SOCKET_PATH = "/teamforge/socket.io";
 
 const checks = [];
 
+/**
+ * Adds one production-env preflight check.
+ *
+ * @param {string} name Check label.
+ * @param {boolean} passed Whether the check passed.
+ * @param {string} detail Human-readable detail.
+ */
 function addCheck(name, passed, detail) {
   checks.push({ detail, name, passed });
 }
 
+/**
+ * Parses CLI flags for the env preflight.
+ *
+ * @param {string[]} argv Process arguments after the script path.
+ * @returns {CliArgs} Parsed args.
+ */
 function parseArgs(argv) {
   const args = { envFile: null };
 
@@ -42,10 +61,22 @@ function parseArgs(argv) {
   return args;
 }
 
+/**
+ * Removes wrapping quotes from a dotenv value.
+ *
+ * @param {string} value Raw value.
+ * @returns {string} Unquoted value.
+ */
 function stripEnvQuotes(value) {
   return value.trim().replace(/^["']|["']$/gu, "");
 }
 
+/**
+ * Parses a minimal dotenv file.
+ *
+ * @param {string} text Env file text.
+ * @returns {EnvMap} Parsed key/value pairs.
+ */
 function parseEnvFile(text) {
   const result = {};
 
@@ -74,6 +105,12 @@ function parseEnvFile(text) {
   return result;
 }
 
+/**
+ * Loads the requested env file and overlays it on the current process env.
+ *
+ * @param {string | null} envFile Env file path.
+ * @returns {Promise<EnvMap>} Environment map.
+ */
 async function loadEnvironment(envFile) {
   if (!envFile) {
     return process.env;
@@ -89,6 +126,12 @@ async function loadEnvironment(envFile) {
   };
 }
 
+/**
+ * Checks whether a value is absent or still placeholder-like.
+ *
+ * @param {unknown} value Candidate env value.
+ * @returns {boolean} Whether the value is unusable for production.
+ */
 function isMissingOrPlaceholder(value) {
   return (
     typeof value !== "string" ||
@@ -97,10 +140,22 @@ function isMissingOrPlaceholder(value) {
   );
 }
 
+/**
+ * Derives the realtime namespace URL from the REST API URL.
+ *
+ * @param {URL} apiUrl Parsed API URL.
+ * @returns {string} Realtime namespace URL.
+ */
 function getRealtimeUrlForApiUrl(apiUrl) {
   return new URL("/realtime", apiUrl.origin).toString();
 }
 
+/**
+ * Derives the Socket.IO path from the public REST API prefix.
+ *
+ * @param {URL} apiUrl Parsed API URL.
+ * @returns {string} Socket.IO path.
+ */
 function getSocketPathForApiUrl(apiUrl) {
   const publicBasePath = apiUrl.pathname
     .replace(/\/+$/u, "")
@@ -109,6 +164,11 @@ function getSocketPathForApiUrl(apiUrl) {
   return `${publicBasePath}/socket.io`.replace(/\/{2,}/gu, "/");
 }
 
+/**
+ * Validates required browser-baked env keys.
+ *
+ * @param {EnvMap} env Environment map.
+ */
 function validateRequiredEnv(env) {
   for (const key of REQUIRED_ENV_KEYS) {
     const value = env[key];
@@ -124,6 +184,11 @@ function validateRequiredEnv(env) {
   }
 }
 
+/**
+ * Validates production API URL shape and derived realtime paths.
+ *
+ * @param {EnvMap} env Environment map.
+ */
 function validateApiUrl(env) {
   const value = env.VITE_API_URL;
   let apiUrl;
@@ -175,6 +240,11 @@ function validateApiUrl(env) {
   }
 }
 
+/**
+ * Prints all checks and sets the process exit code on failure.
+ *
+ * @param {string | null} envFile Env file path, if supplied.
+ */
 function printSummary(envFile) {
   const failed = checks.filter((check) => !check.passed);
   const passed = checks.filter((check) => check.passed);
@@ -194,6 +264,11 @@ function printSummary(envFile) {
   }
 }
 
+/**
+ * Runs the production PWA env preflight.
+ *
+ * @returns {Promise<void>}
+ */
 async function main() {
   const { envFile } = parseArgs(process.argv.slice(2));
   const env = await loadEnvironment(envFile);

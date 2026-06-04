@@ -5,6 +5,20 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { z } from "zod";
 
+/**
+ * @typedef {"error" | "warning"} CheckSeverity
+ * @typedef {object} QaCheck
+ * @property {string} category Report category.
+ * @property {string} detail Human-readable result detail.
+ * @property {string} name Check name.
+ * @property {boolean} passed Whether the check passed.
+ * @property {CheckSeverity} severity Failure severity.
+ *
+ * @typedef {object} TextResponse
+ * @property {string} body Response body.
+ * @property {number} statusCode HTTP status code.
+ */
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, "..");
@@ -156,6 +170,15 @@ const packageJsonSchema = z
 
 const checks = [];
 
+/**
+ * Records a PWA QA check.
+ *
+ * @param {string} category Report category.
+ * @param {string} name Check name.
+ * @param {boolean} passed Whether the check passed.
+ * @param {string} detail Human-readable result detail.
+ * @param {CheckSeverity} [severity="error"] Failure severity.
+ */
 function addCheck(category, name, passed, detail, severity = "error") {
   checks.push({
     category,
@@ -166,14 +189,35 @@ function addCheck(category, name, passed, detail, severity = "error") {
   });
 }
 
+/**
+ * Records a passing PWA QA check.
+ *
+ * @param {string} category Report category.
+ * @param {string} name Check name.
+ * @param {string} detail Human-readable detail.
+ */
 function addPass(category, name, detail) {
   addCheck(category, name, true, detail);
 }
 
+/**
+ * Records a failing PWA QA check.
+ *
+ * @param {string} category Report category.
+ * @param {string} name Check name.
+ * @param {string} detail Human-readable detail.
+ */
 function addFail(category, name, detail) {
   addCheck(category, name, false, detail, "error");
 }
 
+/**
+ * Records a warning-level PWA QA check.
+ *
+ * @param {string} category Report category.
+ * @param {string} name Check name.
+ * @param {string} detail Human-readable detail.
+ */
 function addWarn(category, name, detail) {
   addCheck(category, name, false, detail, "warning");
 }
@@ -308,6 +352,11 @@ async function validateSourceMarkers(category, relativePath, markers) {
   return sourceText;
 }
 
+/**
+ * Validates source-level deployment guardrails and package scripts.
+ *
+ * @returns {Promise<void>}
+ */
 async function validateDeployGuards() {
   if (!existsSync(ENV_EXAMPLE_PATH)) {
     addFail("Deploy Guards", ".env.example", ".env.example is missing.");
@@ -432,6 +481,11 @@ async function validateDeployGuards() {
   );
 }
 
+/**
+ * Validates hosting headers and SPA rewrites.
+ *
+ * @returns {Promise<void>}
+ */
 async function validateHostingConfig() {
   if (!existsSync(VERCEL_CONFIG_PATH)) {
     addFail("Hosting", "vercel.json", "vercel.json is missing.");
@@ -605,6 +659,11 @@ async function getFilesRecursive(directory) {
   return files.flat();
 }
 
+/**
+ * Validates generated PWA manifest shape and linked assets.
+ *
+ * @returns {Promise<z.infer<typeof manifestSchema> | null>} Parsed manifest.
+ */
 async function validateManifest() {
   const manifestPath = path.join(DIST_DIR, "manifest.webmanifest");
 
@@ -912,6 +971,11 @@ async function validatePngAsset(category, name, assetPath, expectedSizes) {
   );
 }
 
+/**
+ * Validates generated service worker and push-worker output.
+ *
+ * @returns {Promise<void>}
+ */
 async function validateServiceWorker() {
   const swPath = path.join(DIST_DIR, "sw.js");
   const swPushPath = path.join(DIST_DIR, "sw-push.js");
@@ -1016,6 +1080,11 @@ async function validateServiceWorker() {
   );
 }
 
+/**
+ * Validates source markers for install, diagnostics, badge, and resume flows.
+ *
+ * @returns {Promise<void>}
+ */
 async function validatePwaSourceRuntime() {
   await validateSourceMarkers(
     "PWA Source",
@@ -1152,6 +1221,11 @@ async function validatePwaSourceRuntime() {
   }
 }
 
+/**
+ * Smoke-tests the built `/download`, manifest, and service worker routes.
+ *
+ * @returns {Promise<void>}
+ */
 async function validateBuiltRoute() {
   const assetDir = path.join(DIST_DIR, "assets");
   const indexHtmlPath = path.join(DIST_DIR, "index.html");
@@ -1270,6 +1344,11 @@ async function validateBuiltRoute() {
   });
 }
 
+/**
+ * Confirms required PWA telemetry markers are present in built assets.
+ *
+ * @returns {Promise<void>}
+ */
 async function validateTelemetry() {
   const files = await getFilesRecursive(DIST_DIR);
   const jsFiles = files.filter((file) => file.endsWith(".js"));
@@ -1299,6 +1378,12 @@ async function validateTelemetry() {
   );
 }
 
+/**
+ * Serves `dist/` through a tiny local static server for route smoke checks.
+ *
+ * @param {(baseUrl: string) => Promise<void>} callback Smoke callback.
+ * @returns {Promise<void>}
+ */
 async function withStaticServer(callback) {
   const server = createServer(async (request, response) => {
     try {
@@ -1362,6 +1447,12 @@ async function withStaticServer(callback) {
   }
 }
 
+/**
+ * Requests text from a local HTTP URL.
+ *
+ * @param {string} url URL to request.
+ * @returns {Promise<TextResponse>} Response body and status.
+ */
 function requestText(url) {
   return new Promise((resolve, reject) => {
     const request = new URL(url);
@@ -1385,6 +1476,11 @@ function requestText(url) {
   });
 }
 
+/**
+ * Groups checks by outcome.
+ *
+ * @returns {{ failed: QaCheck[]; passed: QaCheck[]; warnings: QaCheck[] }} Summary buckets.
+ */
 function summarizeChecks() {
   const failed = checks.filter(
     (check) => !check.passed && check.severity === "error",
@@ -1397,6 +1493,11 @@ function summarizeChecks() {
   return { failed, passed, warnings };
 }
 
+/**
+ * Builds the markdown QA report from collected checks.
+ *
+ * @returns {string} Markdown report.
+ */
 function buildReport() {
   const { failed, passed, warnings } = summarizeChecks();
   const categories = [...new Set(checks.map((check) => check.category))];
@@ -1442,11 +1543,21 @@ function buildReport() {
   return lines.join("\n");
 }
 
+/**
+ * Writes the markdown QA report.
+ *
+ * @returns {Promise<void>}
+ */
 async function writeReport() {
   await mkdir(REPORTS_DIR, { recursive: true });
   await writeFile(REPORT_PATH, buildReport(), "utf8");
 }
 
+/**
+ * Runs the full PWA QA script.
+ *
+ * @returns {Promise<void>}
+ */
 async function main() {
   await validateDeployGuards();
   await validateHostingConfig();

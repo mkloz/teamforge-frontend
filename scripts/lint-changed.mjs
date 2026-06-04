@@ -1,5 +1,12 @@
 #!/usr/bin/env node
 // @ts-check
+/**
+ * Runs the repo lint pipeline against changed, staged, or explicit files.
+ *
+ * The script keeps local feedback fast while preserving the same Oxlint,
+ * Biome, React Compiler, dependency-cruiser, and TypeScript gates used by the
+ * full lint command.
+ */
 import { execFileSync, spawn } from "node:child_process";
 import {
   existsSync,

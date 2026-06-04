@@ -13,10 +13,16 @@ type LintResult = {
   stdout: string;
 };
 
+/**
+ * Normalizes a path to slash separators for Git-style matching.
+ */
 function normalizePath(filePath: string) {
   return filePath.replaceAll("\\", "/");
 }
 
+/**
+ * Converts an absolute file path to a repository-relative path.
+ */
 function toRepoRelativePath(root: string, filePath: string) {
   const relativePath = path.relative(root, filePath);
 
@@ -27,10 +33,16 @@ function toRepoRelativePath(root: string, filePath: string) {
   return normalizePath(relativePath);
 }
 
+/**
+ * Converts child-process output into text.
+ */
 function toText(value: Buffer | string | undefined) {
   return value?.toString() ?? "";
 }
 
+/**
+ * Maps an `execFile` error to a numeric process exit code.
+ */
 function getExitCode(error: ExecFileException | null) {
   if (!error) {
     return 0;
@@ -39,6 +51,9 @@ function getExitCode(error: ExecFileException | null) {
   return typeof error.code === "number" ? error.code : 1;
 }
 
+/**
+ * Returns stderr plus startup failure context when needed.
+ */
 function getStderr(error: ExecFileException | null, stderr: Buffer | string) {
   const stderrText = toText(stderr);
 
@@ -49,6 +64,9 @@ function getStderr(error: ExecFileException | null, stderr: Buffer | string) {
   return [stderrText, error.message].filter(Boolean).join("\n");
 }
 
+/**
+ * Runs the changed-file lint script for the current Vite project.
+ */
 function runChangedLint(root: string, files?: string[]) {
   const scriptPath = path.join(root, "scripts", "lint-changed.mjs");
   const args = [scriptPath, "--stages", VITE_LINT_STAGES];
@@ -82,6 +100,9 @@ function runChangedLint(root: string, files?: string[]) {
   });
 }
 
+/**
+ * Prints changed-file lint output through Vite's logger.
+ */
 function logResult(config: ResolvedConfig, result: LintResult) {
   const stdout = result.stdout.trimEnd();
   const stderr = result.stderr.trimEnd();
@@ -99,6 +120,9 @@ function logResult(config: ResolvedConfig, result: LintResult) {
   }
 }
 
+/**
+ * Ensures the changed-file lint script exists before the plugin runs.
+ */
 function assertPluginReady(config: ResolvedConfig) {
   const scriptPath = path.join(config.root, "scripts", "lint-changed.mjs");
 
@@ -113,6 +137,9 @@ export function changedFileLintPlugin(): Plugin {
   let running: Promise<void> = Promise.resolve();
   let timer: ReturnType<typeof setTimeout> | undefined;
 
+  /**
+   * Runs changed-file lint for all changed files or a provided subset.
+   */
   async function run(files?: string[], failOnError = false) {
     if (!config) {
       return;
@@ -126,6 +153,9 @@ export function changedFileLintPlugin(): Plugin {
     }
   }
 
+  /**
+   * Queues a lint run after any in-flight run finishes.
+   */
   function queueRun(files: string[]) {
     running = running
       .catch(() => undefined)
@@ -139,6 +169,9 @@ export function changedFileLintPlugin(): Plugin {
       });
   }
 
+  /**
+   * Debounces hot-update file paths into a lint batch.
+   */
   function queueFile(filePath: string) {
     if (!config) {
       return;
