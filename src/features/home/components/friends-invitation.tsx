@@ -14,9 +14,7 @@ export function FriendsInvitation() {
   const [copied, setCopied] = useState(false);
   const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inviteLink = getCurrentBrowserOrigin();
-  const displayInviteLink = inviteLink.includes("localhost")
-    ? "teamforge.app"
-    : inviteLink.replace(/^https?:\/\//, "");
+  const displayInviteLink = inviteLink.replace(/^https?:\/\//, "");
 
   useEffect(() => {
     return () => {
@@ -58,7 +56,7 @@ export function FriendsInvitation() {
               Share TeamForge
             </p>
             <p className="mt-1 font-medium text-muted-foreground text-xs leading-snug">
-              Send the link now. Invite them when it fits.
+              Send the app link now. Add them to a group when it fits.
             </p>
           </div>
 
@@ -88,7 +86,9 @@ export function FriendsInvitation() {
               size="icon-xs"
               onClick={handleCopy}
               className="absolute top-1/2 right-1 size-9 -translate-y-1/2 rounded-md"
-              aria-label={copied ? "Invite link copied" : "Copy invite link"}
+              aria-label={
+                copied ? "TeamForge link copied" : "Copy TeamForge link"
+              }
             >
               {copied ? (
                 <Check className="size-3.5 text-forge-teal" />
@@ -133,5 +133,7 @@ async function showInviteCopyError() {
 async function showInviteCopySuccess() {
   const { showAppSuccessToast } = await import("@/shared/lib/app-toast");
 
-  showAppSuccessToast("Invite link copied.", { id: "home-invite-link-copy" });
+  showAppSuccessToast("TeamForge link copied.", {
+    id: "home-invite-link-copy",
+  });
 }

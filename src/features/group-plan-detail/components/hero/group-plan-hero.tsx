@@ -38,6 +38,7 @@ export function GroupPlanHero({
   const cost = detail.plan ? formatCost(detail.plan) : null;
   const seats = getSeatsLabel(detail);
   const backLink = getGroupPlanDetailBackLink(detail.group.id, search);
+  const groupLink = `${window.location.origin}/groups/${detail.group.id}`;
 
   const metadata = [
     planTime.full !== "Date TBD" ? planTime.full : "Date TBD",
@@ -60,7 +61,9 @@ export function GroupPlanHero({
       <HeroCover detail={detail} alt={`${planTitle} cover photo`}>
         <div className="absolute top-4 right-4 z-20 sm:top-6 sm:right-6">
           <QrShareDialog
-            url={`${window.location.origin}/groups/${detail.group.id}`}
+            url={groupLink}
+            title="Group link"
+            description="Scan to open this group in TeamForge. Only members can access it."
             avatarSrc={detail.group.avatar}
             bottomText={detail.group.name}
             trigger={
@@ -68,7 +71,7 @@ export function GroupPlanHero({
                 variant="inverseGhost"
                 size="icon"
                 className="size-10 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-forge-teal hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-forge-teal data-[state=open]:bg-white data-[state=open]:text-forge-teal"
-                aria-label="Show QR Code"
+                aria-label="Show group QR code"
               >
                 <QrCode size={18} strokeWidth={2.25} aria-hidden="true" />
               </Button>
@@ -116,6 +119,7 @@ function GroupPlanCompactHero({
 }) {
   const imageSrc = getHeroCoverImage(detail);
   const compactImageSrc = imageSrc ? getSizedImageUrl(imageSrc, 640) : null;
+  const groupLink = `${window.location.origin}/groups/${detail.group.id}`;
 
   return (
     <div
@@ -171,7 +175,9 @@ function GroupPlanCompactHero({
 
             <div className="pointer-events-auto shrink-0">
               <QrShareDialog
-                url={`${window.location.origin}/groups/${detail.group.id}`}
+                url={groupLink}
+                title="Group link"
+                description="Scan to open this group in TeamForge. Only members can access it."
                 avatarSrc={detail.group.avatar}
                 bottomText={detail.group.name}
                 trigger={
@@ -179,7 +185,7 @@ function GroupPlanCompactHero({
                     variant="inverseGhost"
                     size="icon"
                     className="size-9 shrink-0 rounded-full border border-white/25 bg-white/15 text-white shadow-sm focus-visible:ring-white active:enabled:bg-white/85 active:enabled:text-forge-teal hover:enabled:border-white/65 hover:enabled:bg-white hover:enabled:text-forge-teal data-[state=open]:bg-white data-[state=open]:text-forge-teal sm:size-10"
-                    aria-label="Show QR Code"
+                    aria-label="Show group QR code"
                   >
                     <QrCode size={18} strokeWidth={2.25} aria-hidden="true" />
                   </Button>

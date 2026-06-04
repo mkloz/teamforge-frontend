@@ -17,6 +17,7 @@ export function Step6Invite({
   forgeMode,
   coverImage,
   avatarImage,
+  groupId,
   inviteCopied,
   onCopyLink,
 }: Step6InviteProps) {
@@ -34,7 +35,11 @@ export function Step6Invite({
         planLocation={planLocation}
         planTitle={planTitle}
       />
-      <InviteLinkSection inviteCopied={inviteCopied} onCopyLink={onCopyLink} />
+      <InviteLinkSection
+        groupId={groupId}
+        inviteCopied={inviteCopied}
+        onCopyLink={onCopyLink}
+      />
       <InviteNote forgeMode={forgeMode} inviteeCount={inviteeCount} />
     </div>
   );

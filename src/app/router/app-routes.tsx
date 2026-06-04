@@ -10,16 +10,21 @@ import {
 import { rootRoute } from "@/app/router/root-route";
 import { createRouteErrorComponent } from "@/app/router/route-error-component";
 import { requireCanonicalAppRoute } from "@/app/router/route-guards";
+import { validateActivityRouteSearch } from "@/features/activity/lib/activity-route";
+import { validateExploreRouteSearch } from "@/features/explore/lib/explore-route";
+import { validateForgeRouteSearch } from "@/features/forge/lib/forge-route";
 import {
   type GroupPlanDetailRouteSearch,
   type GroupPlanDetailSource,
   groupPlanDetailSourceValues,
 } from "@/features/group-plan-detail/lib/group-plan-detail-route";
+import { validateHomeRouteSearch } from "@/features/home/lib/home-route";
 import {
   type UserDetailIntent,
   type UserDetailRouteSearch,
   userDetailIntentValues,
 } from "@/features/profile/lib/profile-route";
+import { validateSettingsRouteSearch } from "@/features/settings/lib/settings-route";
 import { appQueryClient } from "@/shared/api/query-client";
 import { ForgeLoadingMark } from "@/shared/components/loading/forge-loading-mark";
 import { getSizedImageUrl } from "@/shared/lib/sized-image-url";
@@ -417,6 +422,7 @@ export const appShellRoute = createRoute({
 const homeRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/home",
+  validateSearch: validateHomeRouteSearch,
   loader: createRouteModuleLoader(homePageModule),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: HomeRouteLoading,
@@ -437,6 +443,7 @@ const homeRoute = createRoute({
 const exploreRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/explore",
+  validateSearch: validateExploreRouteSearch,
   loader: createExploreRouteLoader(explorePageModule),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: ExploreRouteLoading,
@@ -478,6 +485,7 @@ const groupPlanDetailRoute = createRoute({
 const activityRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/activity",
+  validateSearch: validateActivityRouteSearch,
   loader: createActivityRouteLoader(activityPageModule),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: ActivityRouteLoading,
@@ -539,6 +547,7 @@ const userDetailRoute = createRoute({
 const settingsRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/settings",
+  validateSearch: validateSettingsRouteSearch,
   loader: createRouteModuleLoader(settingsPageModule),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: SettingsRouteLoading,
@@ -559,6 +568,7 @@ const settingsRoute = createRoute({
 const forgeRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: "/forge",
+  validateSearch: validateForgeRouteSearch,
   loader: createRouteModuleLoader(forgePageModule),
   staleTime: Number.POSITIVE_INFINITY,
   pendingComponent: ForgeRouteLoading,

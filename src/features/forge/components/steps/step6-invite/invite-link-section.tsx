@@ -6,29 +6,41 @@ import {
   showAppErrorMessageToast,
   showAppSuccessToast,
 } from "@/shared/lib/app-toast";
-import { copyTextToClipboard } from "@/shared/lib/browser-capabilities";
+import {
+  copyTextToClipboard,
+  getCurrentBrowserOrigin,
+} from "@/shared/lib/browser-capabilities";
 import { cn } from "@/shared/lib/utils";
 
 interface InviteLinkSectionProps {
+  groupId: string | null;
   inviteCopied: boolean;
   onCopyLink: () => void;
 }
 
-const INVITE_LINK = "teamforge.app/join/grp_xk4j2m";
-
 export function InviteLinkSection({
+  groupId,
   inviteCopied,
   onCopyLink,
 }: InviteLinkSectionProps) {
+  const groupLink = groupId
+    ? `${getCurrentBrowserOrigin()}/groups/${encodeURIComponent(groupId)}`
+    : null;
+
   const handleCopy = async () => {
-    if (!(await copyTextToClipboard(INVITE_LINK))) {
+    if (!groupLink) {
+      showAppErrorMessageToast("The group link is not ready yet.");
+      return;
+    }
+
+    if (!(await copyTextToClipboard(groupLink))) {
       showAppErrorMessageToast("We couldn't copy that link in this browser.");
       return;
     }
 
     onCopyLink();
-    showAppSuccessToast("Invite link copied.", {
-      id: "forge-invite-link-copy",
+    showAppSuccessToast("Group link copied.", {
+      id: "forge-group-link-copy",
     });
   };
 
@@ -38,40 +50,54 @@ export function InviteLinkSection({
         <IconTile icon={Link2} tone="teal" size="sm" />
         <div className="min-w-0">
           <p className="font-semibold text-foreground text-sm leading-none">
-            Share access
+            Group link
           </p>
           <p className="mt-1 text-micro text-muted-foreground/55 leading-none">
-            Keep this handy for late additions.
+            Keep this handy for members who have access.
           </p>
         </div>
       </div>
 
       <div className="flex min-w-0 items-center gap-2 border-border/25 border-t pt-3">
         <code className="min-w-0 flex-1 truncate font-semibold text-muted-foreground text-xs">
-          {INVITE_LINK}
+          {groupLink ?? "Group link pending"}
         </code>
-        <QrShareDialog
-          url={`https://${INVITE_LINK}`}
-          title="Group Invite QR Code"
-          description="Have friends scan this to join the group directly."
-          trigger={
-            <Button
-              variant="outline"
-              size="icon"
-              aria-label="Show QR Code"
-              className="size-8 shrink-0 rounded-lg border-border/40 text-foreground transition-colors hover:border-forge-teal/25 hover:bg-forge-teal/8 hover:text-forge-teal active:scale-95"
-            >
-              <QrCode size={15} strokeWidth={2} />
-            </Button>
-          }
-        />
+        {groupLink ? (
+          <QrShareDialog
+            url={groupLink}
+            title="Group QR Code"
+            description="Scan to open this group in TeamForge."
+            trigger={
+              <Button
+                variant="outline"
+                size="icon"
+                aria-label="Show group QR code"
+                className="size-8 shrink-0 rounded-lg border-border/40 text-foreground transition-colors hover:border-forge-teal/25 hover:bg-forge-teal/8 hover:text-forge-teal active:scale-95"
+              >
+                <QrCode size={15} strokeWidth={2} />
+              </Button>
+            }
+          />
+        ) : (
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            aria-label="Group QR code unavailable"
+            disabled
+            className="size-8 shrink-0 rounded-lg border-border/40 text-muted-foreground"
+          >
+            <QrCode size={15} strokeWidth={2} />
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="sm"
           onClick={() => {
             void handleCopy();
           }}
-          aria-label="Copy invite link"
+          disabled={!groupLink}
+          aria-label="Copy group link"
           className={cn(
             "h-8 shrink-0 rounded-lg px-3 font-semibold text-xs transition-colors active:scale-95",
             inviteCopied

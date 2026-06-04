@@ -20,6 +20,7 @@
     "pwa:env": "node scripts/pwa-production-env.mjs",
     "pwa:qa": "node scripts/pwa-qa.mjs",
     "pwa:release": "npm run pwa:env && npm run build && npm run pwa:qa",
+    "audit:squirrel:auth": "node scripts/run-squirrel-auth-audit.mjs",
     "test:unit": "vitest run",
     "check": "npm run lint && npm run lint:audit",
     "prepare": "npx husky"

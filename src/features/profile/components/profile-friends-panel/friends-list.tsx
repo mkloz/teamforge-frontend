@@ -1,9 +1,9 @@
-import { Link } from "@tanstack/react-router";
-import { Loader2, MessageSquare, UserMinus, Users } from "lucide-react";
+import { Loader2, UserMinus, Users } from "lucide-react";
 import { useProfileFriends } from "@/features/profile/hooks/use-profile-friends";
 import { ActionDialog } from "@/shared/components/ui/action-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { FriendCard } from "./friend-card";
+import { FriendMessageAction } from "./friend-message-action";
 
 export function FriendsList() {
   const {
@@ -51,6 +51,8 @@ export function FriendsList() {
     <div className="flex flex-col gap-1">
       {friends.map((friendship) => {
         const user = friendship.counterpart;
+        const messageChatId =
+          friendship.privateChat?.id ?? friendship.privateChatId;
         const isRemovingThisUser = isRemoving && removingFriendId === user.id;
 
         return (
@@ -97,18 +99,7 @@ export function FriendsList() {
                     </Button>
                   }
                 />
-                <Button
-                  asChild
-                  variant="ghost"
-                  size="icon"
-                  className="size-8 text-muted-foreground hover:text-forge-teal"
-                  aria-label="Message"
-                  title="Message"
-                >
-                  <Link to="/activity" search={{ dm: user.id }}>
-                    <MessageSquare className="size-4" />
-                  </Link>
-                </Button>
+                <FriendMessageAction chatId={messageChatId} />
               </>
             }
           />

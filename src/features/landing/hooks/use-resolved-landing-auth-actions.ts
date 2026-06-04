@@ -11,6 +11,7 @@ import {
 export function useResolvedLandingAuthActions(
   primaryGuestLabel: string,
   secondaryGuestLabel = "Log In",
+  returnTo?: string | null,
 ) {
   const { isAuthenticated } = useAuthSessionState();
   const sessionRestoreQuery = useRestoreAuthSessionQuery();
@@ -29,10 +30,12 @@ export function useResolvedLandingAuthActions(
       isAuthenticated,
       currentUserQuery.data,
       primaryGuestLabel,
+      returnTo,
     ),
     secondaryAction: getLandingSecondaryAction(
       isAuthenticated,
       secondaryGuestLabel,
+      returnTo,
     ),
   };
 }

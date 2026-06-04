@@ -29,6 +29,59 @@ export interface ActivityRouteSearch {
   message?: string;
 }
 
+function parseOptionalSearchString(value: unknown) {
+  return typeof value === "string" ? value : undefined;
+}
+
+function isActivityFilter(value: unknown): value is ActivityFilter {
+  return (
+    typeof value === "string" &&
+    activityFilterValues.some((filter) => filter === value)
+  );
+}
+
+function isActivityDensity(value: unknown): value is ActivityDensity {
+  return (
+    typeof value === "string" &&
+    activityDensityValues.some((density) => density === value)
+  );
+}
+
+function isActivityKind(value: unknown): value is ActivityKind {
+  return (
+    typeof value === "string" &&
+    activityKindValues.some((kind) => kind === value)
+  );
+}
+
+function isActivityPanel(value: unknown): value is ActivityPanel {
+  return (
+    typeof value === "string" &&
+    activityPanelValues.some((panel) => panel === value)
+  );
+}
+
+export function validateActivityRouteSearch(
+  search: Record<string, unknown>,
+): ActivityRouteSearch {
+  const filter = isActivityFilter(search.filter) ? search.filter : undefined;
+  const density = isActivityDensity(search.density)
+    ? search.density
+    : undefined;
+
+  return {
+    q: parseOptionalSearchString(search.q),
+    filter: filter === "all" ? undefined : filter,
+    density: density === "default" ? undefined : density,
+    kind: isActivityKind(search.kind) ? search.kind : undefined,
+    id: parseOptionalSearchString(search.id),
+    panel: isActivityPanel(search.panel) ? search.panel : undefined,
+    plan: parseOptionalSearchString(search.plan),
+    proposal: parseOptionalSearchString(search.proposal),
+    message: parseOptionalSearchString(search.message),
+  };
+}
+
 export const activityRouteParsers = {
   q: parseAsString,
   filter: parseAsStringLiteral(activityFilterValues),

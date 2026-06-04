@@ -22,6 +22,7 @@ export function InviteStepPanel({ fw }: ForgeWizardChildProps) {
       forgeMode={fw.forgeMode}
       coverImage={fw.coverImage}
       avatarImage={fw.avatarImage}
+      groupId={fw.groupId}
       inviteCopied={fw.inviteCopied}
       onCopyLink={fw.handleCopyLink}
     />

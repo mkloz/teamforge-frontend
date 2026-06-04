@@ -1,6 +1,10 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "@/app/app";
+import {
+  bootstrapAuditAuthSession,
+  isAuditAuthEnabled,
+} from "@/app/runtime/audit-auth-bootstrap";
 import { redirectLocalIpToLocalhost } from "@/shared/lib/local-host-canonical-url";
 import "./index.css";
 
@@ -37,6 +41,10 @@ function getBootRenderDelay() {
 }
 
 function getMinimumBootDurationMs() {
+  if (isAuditAuthEnabled()) {
+    return FAST_BOOT_DURATION_MS;
+  }
+
   const { pathname, search } = window.location;
   const source = new URLSearchParams(search).get("source");
 
@@ -54,7 +62,9 @@ function getMinimumBootDurationMs() {
   return BRANDED_BOOT_DURATION_MS;
 }
 
-function renderApp() {
+async function renderApp() {
+  await bootstrapAuditAuthSession();
+
   ReactDOM.createRoot(appRootElement).render(
     <StrictMode>
       <App />
@@ -66,8 +76,10 @@ if (!isRedirectingToLocalhost) {
   const bootRenderDelay = getBootRenderDelay();
 
   if (bootRenderDelay > 0) {
-    window.setTimeout(renderApp, bootRenderDelay);
+    window.setTimeout(() => {
+      void renderApp();
+    }, bootRenderDelay);
   } else {
-    renderApp();
+    void renderApp();
   }
 }

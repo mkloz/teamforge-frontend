@@ -1,10 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import { Home, LogIn, Plus, UserPlus } from "lucide-react";
 
 import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
+import { buildHomeNavigation } from "@/features/home/lib/home-route";
+import { useAuthSessionState } from "@/shared/api/auth-session-state";
 import { NotFoundState } from "@/shared/components/not-found-state";
 import { Button } from "@/shared/components/ui/button";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
+import { buildAuthRouteNavigation } from "@/shared/lib/auth-route";
 import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
 
 const NOT_FOUND_METADATA = createTeamForgePageMetadata({
@@ -14,17 +17,44 @@ const NOT_FOUND_METADATA = createTeamForgePageMetadata({
 
 export function NotFoundRouteState() {
   usePageMetadata(NOT_FOUND_METADATA);
+  const { isAuthenticated } = useAuthSessionState();
 
   return (
     <NotFoundState
       fullPage
       primaryAction={
-        <Button asChild size="lg">
-          <Link {...buildForgeLaunchNavigation()}>
-            <Plus className="size-5" aria-hidden="true" />
-            Forge my group
-          </Link>
-        </Button>
+        isAuthenticated ? (
+          <Button asChild size="lg">
+            <Link {...buildForgeLaunchNavigation()}>
+              <Plus className="size-5" aria-hidden="true" />
+              Forge my group
+            </Link>
+          </Button>
+        ) : (
+          <Button asChild size="lg">
+            <Link {...buildAuthRouteNavigation("/auth/register", null)}>
+              <UserPlus className="size-5" aria-hidden="true" />
+              Create account
+            </Link>
+          </Button>
+        )
+      }
+      secondaryAction={
+        isAuthenticated ? (
+          <Button asChild variant="outline" size="lg">
+            <Link {...buildHomeNavigation()}>
+              <Home className="size-5" aria-hidden="true" />
+              Back home
+            </Link>
+          </Button>
+        ) : (
+          <Button asChild variant="outline" size="lg">
+            <Link {...buildAuthRouteNavigation("/auth/login", null)}>
+              <LogIn className="size-5" aria-hidden="true" />
+              Sign in
+            </Link>
+          </Button>
+        )
       }
     />
   );

@@ -10,6 +10,10 @@ export const settingsSectionValues = [
 
 export type SettingsSection = (typeof settingsSectionValues)[number];
 
+export interface SettingsRouteSearch {
+  section?: SettingsSection;
+}
+
 export function normalizeSettingsSection(
   value: string | null | undefined,
 ): SettingsSection | null {
@@ -18,6 +22,17 @@ export function normalizeSettingsSection(
   }
 
   return settingsSectionValues.find((section) => section === value) ?? null;
+}
+
+export function validateSettingsRouteSearch(
+  search: Record<string, unknown>,
+): SettingsRouteSearch {
+  return {
+    section:
+      typeof search.section === "string"
+        ? (normalizeSettingsSection(search.section) ?? undefined)
+        : undefined,
+  };
 }
 
 export function buildSettingsSearch(section?: SettingsSection | null) {

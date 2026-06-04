@@ -12,11 +12,13 @@ import { SoloActivityScene } from "./solo-activity-scene";
 interface NotFoundStateProps {
   fullPage?: boolean;
   primaryAction?: ReactNode;
+  secondaryAction?: ReactNode;
 }
 
 export function NotFoundState({
   fullPage = false,
   primaryAction,
+  secondaryAction,
 }: NotFoundStateProps) {
   return (
     <main
@@ -69,12 +71,14 @@ export function NotFoundState({
 
               <div className="mt-8 grid gap-3 sm:flex sm:justify-center lg:justify-start">
                 {primaryAction}
-                <Button asChild variant="outline" size="lg">
-                  <Link to="/">
-                    <Home className="size-5" aria-hidden="true" />
-                    Back to landing
-                  </Link>
-                </Button>
+                {secondaryAction ?? (
+                  <Button asChild variant="outline" size="lg">
+                    <Link to="/">
+                      <Home className="size-5" aria-hidden="true" />
+                      Back to landing
+                    </Link>
+                  </Button>
+                )}
               </div>
             </div>
           </div>

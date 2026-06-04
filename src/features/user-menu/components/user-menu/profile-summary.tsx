@@ -16,7 +16,7 @@ export function UserMenuProfileSummary() {
         <Link
           {...buildProfileNavigation()}
           className="group flex min-w-0 items-center gap-3 rounded-2xl p-3 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          aria-label="Open your public profile"
+          aria-label="Open your profile"
         >
           <Avatar
             src={currentUser?.avatar}

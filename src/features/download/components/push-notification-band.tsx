@@ -4,6 +4,9 @@ import { Bell, BellOff, BellRing, ExternalLink } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { IconTile, type IconTileTone } from "@/shared/components/ui/icon-tile";
 import { useWebPushSubscription } from "@/shared/hooks/use-web-push-subscription";
+import { buildAuthRouteNavigation } from "@/shared/lib/auth-route";
+
+const DOWNLOAD_AUTH_RETURN_TO = "/download";
 
 type PushState = ReturnType<typeof useWebPushSubscription>;
 
@@ -145,7 +148,14 @@ export function PushNotificationBand() {
               asChild
               className="min-h-11 lg:min-h-9"
             >
-              <Link to="/auth/login">Sign in to enable alerts</Link>
+              <Link
+                {...buildAuthRouteNavigation(
+                  "/auth/login",
+                  DOWNLOAD_AUTH_RETURN_TO,
+                )}
+              >
+                Sign in to enable alerts
+              </Link>
             </Button>
           ) : push.isSubscribed ? (
             <Button

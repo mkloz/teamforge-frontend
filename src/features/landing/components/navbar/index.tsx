@@ -95,6 +95,7 @@ export function Navbar({
   } = useLandingAuthActions(
     actionSet === "download" ? "Get started" : "Get Started",
     actionSet === "download" ? "Sign in" : "Log In",
+    actionSet === "download" ? "/download" : null,
   );
   const isLandingPage = currentPathname === "/";
   const isSolid = forceSolid || scrolled;

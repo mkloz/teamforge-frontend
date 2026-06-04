@@ -114,23 +114,43 @@ export function resolveInviteIntent(
   pathname: string,
   searchParams: URLSearchParams,
 ): HomeRouteSearch | null {
+  const inviteViewMatch = pathname.match(
+    /^\/(?:invites|invitations)\/(received|sent)(?:\/([^/?#]+))?$/,
+  );
+  const inviteIdMatch = pathname.match(
+    /^\/(?:invites|invitations)\/([^/?#]+)$/,
+  );
+
   if (
     pathname !== "/invites" &&
     pathname !== "/invitations" &&
     pathname !== "/invites/received" &&
-    pathname !== "/invites/sent"
+    pathname !== "/invites/sent" &&
+    !inviteViewMatch &&
+    !inviteIdMatch
   ) {
     return null;
   }
+
+  const viewFromPath = inviteViewMatch?.[1];
+  const inviteIdFromPath =
+    inviteViewMatch?.[2] ??
+    (inviteIdMatch?.[1] !== "received" && inviteIdMatch?.[1] !== "sent"
+      ? inviteIdMatch?.[1]
+      : undefined);
 
   return {
     invite:
       searchParams.get("invite") ??
       searchParams.get("inviteId") ??
       searchParams.get("id") ??
+      (inviteIdFromPath ? decodePathSegment(inviteIdFromPath) : undefined) ??
       undefined,
     panel: "invitations",
-    view: pathname === "/invites/sent" ? "sent" : "received",
+    view:
+      pathname === "/invites/sent" || viewFromPath === "sent"
+        ? "sent"
+        : "received",
   };
 }
 

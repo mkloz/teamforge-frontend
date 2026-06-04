@@ -8,9 +8,10 @@ import type { User } from "@/shared/schemas";
 function buildGuestLandingAction(
   route: "/auth/login" | "/auth/register",
   label: string,
+  returnTo?: string | null,
 ) {
   return {
-    navigation: buildAuthRouteNavigation(route, null),
+    navigation: buildAuthRouteNavigation(route, returnTo),
     label,
   } as const;
 }
@@ -19,9 +20,10 @@ export function getLandingPrimaryAction(
   isAuthenticated: boolean,
   user: User | null | undefined,
   guestLabel: string,
+  returnTo?: string | null,
 ) {
   if (!isAuthenticated) {
-    return buildGuestLandingAction("/auth/register", guestLabel);
+    return buildGuestLandingAction("/auth/register", guestLabel, returnTo);
   }
 
   if (user == null) {
@@ -44,9 +46,10 @@ export function getLandingPrimaryAction(
 export function getLandingSecondaryAction(
   isAuthenticated: boolean,
   guestLabel: string,
+  returnTo?: string | null,
 ) {
   if (!isAuthenticated) {
-    return buildGuestLandingAction("/auth/login", guestLabel);
+    return buildGuestLandingAction("/auth/login", guestLabel, returnTo);
   }
 
   return {

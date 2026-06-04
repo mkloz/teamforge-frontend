@@ -38,6 +38,13 @@ interface UserMenuProps {
 
 export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
   const { data: currentUser } = useCurrentUserQuery();
+  const profileNavigation = currentUser?.id
+    ? buildProfileNavigation(currentUser.id)
+    : buildProfileNavigation();
+  const profileLabel = currentUser?.id ? "View public profile" : "Profile";
+  const profileDescription = currentUser?.id
+    ? "How others see you"
+    : "Your profile";
 
   return (
     <Sheet>
@@ -80,13 +87,18 @@ export function UserMenu({ trigger = "avatar" }: UserMenuProps) {
           <nav className="flex flex-col gap-0.5 px-4 py-2">
             <SheetClose asChild>
               <Link
-                {...buildProfileNavigation(currentUser?.id)}
+                {...profileNavigation}
                 className="flex min-w-0 items-center gap-3 rounded-xl px-3 py-2 text-foreground transition-colors duration-150 hover:bg-muted/55"
+                aria-label={
+                  currentUser?.id
+                    ? "View your public profile"
+                    : "Open your profile"
+                }
               >
                 <MenuLinkItemContent
                   icon={UserRound}
-                  label="Profile"
-                  description="Public view"
+                  label={profileLabel}
+                  description={profileDescription}
                 />
               </Link>
             </SheetClose>

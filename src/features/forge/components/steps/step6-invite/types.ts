@@ -10,6 +10,7 @@ export interface Step6InviteProps {
   forgeMode: "AUTO" | "MANUAL";
   coverImage: string | null;
   avatarImage: string | null;
+  groupId: string | null;
   inviteCopied: boolean;
   onCopyLink: () => void;
 }

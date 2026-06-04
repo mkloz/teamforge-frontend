@@ -30,6 +30,7 @@ import {
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { usePwaDisplayMode } from "@/shared/hooks/use-pwa-display-mode";
 import { usePwaInstallPrompt } from "@/shared/hooks/use-pwa-install-prompt";
+import { buildAuthRouteNavigation } from "@/shared/lib/auth-route";
 import { getCurrentBrowserOrigin } from "@/shared/lib/browser-capabilities";
 import type { PageMetadata } from "@/shared/lib/document-metadata";
 import { cn } from "@/shared/lib/utils";
@@ -70,6 +71,7 @@ const DOWNLOAD_PREVIEW_IMAGES = {
 } as const satisfies Record<SelectedDevice, DownloadPreviewImage>;
 
 const noop = () => {};
+const DOWNLOAD_AUTH_RETURN_TO = "/download";
 
 const DeferredPushNotificationBand = lazy(() =>
   import("@/features/download/components/push-notification-band").then((m) => ({
@@ -814,6 +816,7 @@ function HeroCTAButtons({
   const { isResolvingAuthAction, secondaryAction } = useLandingAuthActions(
     "Get started",
     "Sign in",
+    DOWNLOAD_AUTH_RETURN_TO,
   );
 
   function renderSecondaryActionButton() {
@@ -1303,7 +1306,10 @@ function FirefoxNotice() {
           <p className="mt-4 text-slate-muted text-sm">
             You can still use TeamForge in Firefox as a regular web page.{" "}
             <Link
-              to="/auth/login"
+              {...buildAuthRouteNavigation(
+                "/auth/login",
+                DOWNLOAD_AUTH_RETURN_TO,
+              )}
               className="font-medium text-forge-teal underline-offset-2 hover:underline"
             >
               Sign in here.

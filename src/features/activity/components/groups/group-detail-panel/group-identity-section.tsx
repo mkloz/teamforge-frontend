@@ -80,6 +80,7 @@ export function GroupIdentitySection({
     displayName,
     isReadOnly,
   );
+  const groupLink = `${window.location.origin}/groups/${groupId}`;
 
   return (
     <section className="relative flex flex-col gap-4 pt-5">
@@ -144,7 +145,9 @@ export function GroupIdentitySection({
         </Button>
 
         <QrShareDialog
-          url={`${window.location.origin}/groups/${groupId}`}
+          url={groupLink}
+          title="Group link"
+          description="Scan to open this group in TeamForge. Only members can access it."
           avatarSrc={avatarSrc}
           bottomText={displayName}
           trigger={
@@ -153,9 +156,10 @@ export function GroupIdentitySection({
               size="xs"
               className="min-w-0 flex-1 basis-32"
               contentClassName="gap-1.5"
+              aria-label={`Show ${displayName} group link QR code`}
             >
               <QrCode className="size-3.5" aria-hidden="true" />
-              <span className="truncate">Share</span>
+              <span className="truncate">Group link</span>
             </Button>
           }
         />

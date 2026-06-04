@@ -1,8 +1,7 @@
-import { Link } from "@tanstack/react-router";
-import { Loader2, MessageSquare, Users } from "lucide-react";
+import { Loader2, Users } from "lucide-react";
 import { useProfilePublicFriends } from "@/features/profile/hooks/use-profile-public-friends";
-import { Button } from "@/shared/components/ui/button";
 import { FriendCard } from "./friend-card";
+import { FriendMessageAction } from "./friend-message-action";
 
 interface PublicFriendsListProps {
   userId: string;
@@ -45,6 +44,8 @@ export function PublicFriendsList({ userId }: PublicFriendsListProps) {
     <div className="flex flex-col gap-1">
       {publicFriends.map((friendship) => {
         const user = friendship.counterpart;
+        const messageChatId =
+          friendship.privateChat?.id ?? friendship.privateChatId;
 
         return (
           <FriendCard
@@ -58,20 +59,7 @@ export function PublicFriendsList({ userId }: PublicFriendsListProps) {
               trustScore: user.trustScore,
               onlineStatus: user.onlineStatus,
             }}
-            actions={
-              <Button
-                asChild
-                variant="ghost"
-                size="icon"
-                className="size-8 text-muted-foreground hover:text-forge-teal"
-                aria-label="Message"
-                title="Message"
-              >
-                <Link to="/activity" search={{ dm: user.id }}>
-                  <MessageSquare className="size-4" />
-                </Link>
-              </Button>
-            }
+            actions={<FriendMessageAction chatId={messageChatId} />}
           />
         );
       })}

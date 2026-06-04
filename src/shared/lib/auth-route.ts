@@ -6,6 +6,7 @@ import { getPostAuthRedirectPath } from "./post-auth-route";
 
 const authReturnTargets = [
   "/",
+  "/download",
   "/home",
   "/explore",
   "/activity",

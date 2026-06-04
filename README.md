@@ -73,6 +73,12 @@ npm run dev
 
 The app will be available at `http://localhost:3000`.
 
+Use `localhost`, not `127.0.0.1`, for local browser smoke checks when
+`VITE_API_URL` points to `http://localhost:6969/api/v1`. The frontend
+canonicalizes `127.0.0.1` to `localhost` in that setup so auth cookies and API
+host assumptions stay consistent; the redirect is expected and should not be
+counted as a broken navigation link.
+
 ---
 
 ## Project Structure

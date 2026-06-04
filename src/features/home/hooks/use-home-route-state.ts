@@ -1,4 +1,9 @@
-import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
+import {
+  parseAsBoolean,
+  parseAsString,
+  parseAsStringLiteral,
+  useQueryStates,
+} from "nuqs";
 
 import {
   homeInvitationViewValues,
@@ -10,6 +15,7 @@ export function useHomeRouteState() {
     {
       panel: parseAsStringLiteral(homePanelValues),
       invite: parseAsString,
+      notifications: parseAsBoolean,
       request: parseAsString,
       view: parseAsStringLiteral(homeInvitationViewValues),
     },

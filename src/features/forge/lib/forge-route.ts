@@ -23,9 +23,78 @@ export interface ForgeRouteSearch {
   ideaSecondaryLane?: string;
 }
 
+const forgeRouteStepValues = [1, 2, 3, 4, 5, 6, 7] as const;
+
 export const forgeLaunchSearch = {
   open: true,
 } as const;
+
+function parseOptionalSearchString(value: unknown) {
+  return typeof value === "string" ? value : undefined;
+}
+
+function parseOptionalSearchText(value: unknown, maxLength: number) {
+  const parsed = parseOptionalSearchString(value);
+
+  if (parsed === undefined) {
+    return undefined;
+  }
+
+  const normalized = normalizeSearchText(parsed, maxLength);
+
+  return normalized || undefined;
+}
+
+function parseRouteStep(value: unknown): number | undefined {
+  const step =
+    typeof value === "number"
+      ? value
+      : typeof value === "string"
+        ? Number(value)
+        : undefined;
+
+  return typeof step === "number" &&
+    forgeRouteStepValues.some((stepValue) => stepValue === step)
+    ? step
+    : undefined;
+}
+
+function parseRouteOpen(value: unknown) {
+  return value === true || value === "true" ? true : undefined;
+}
+
+function isForgeSearchMode(value: unknown): value is ForgeSearchMode {
+  return (
+    typeof value === "string" &&
+    forgeSearchModeValues.some((mode) => mode === value)
+  );
+}
+
+export function validateForgeRouteSearch(
+  search: Record<string, unknown>,
+): ForgeRouteSearch {
+  return {
+    open: parseRouteOpen(search.open),
+    step: parseRouteStep(search.step),
+    mode: isForgeSearchMode(search.mode) ? search.mode : undefined,
+    activityId: parseOptionalSearchString(search.activityId),
+    groupId: parseOptionalSearchString(search.groupId),
+    ideaTitle: parseOptionalSearchText(
+      search.ideaTitle,
+      MAX_IDEA_TITLE_SEARCH_LENGTH,
+    ),
+    ideaDetail: parseOptionalSearchText(
+      search.ideaDetail,
+      MAX_IDEA_DETAIL_SEARCH_LENGTH,
+    ),
+    ideaEventDescription: parseOptionalSearchText(
+      search.ideaEventDescription,
+      MAX_IDEA_EVENT_DESCRIPTION_SEARCH_LENGTH,
+    ),
+    ideaLane: parseOptionalSearchString(search.ideaLane),
+    ideaSecondaryLane: parseOptionalSearchString(search.ideaSecondaryLane),
+  };
+}
 
 export function buildForgeNavigation(search?: ForgeRouteSearch) {
   return {
