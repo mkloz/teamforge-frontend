@@ -8,9 +8,9 @@ import {
   ensureTrailingSlash,
   getApiUrl,
   getAuditBaseUrl,
+  getAuditSession,
   getRefreshCookieName,
   loadAuditEnvFiles,
-  loginAuditUser,
   refreshAuditTokens,
   removeAuditTokens,
   sleep,
@@ -21,7 +21,7 @@ import {
   writeOutput,
   writeText,
 } from "./helpers.mjs";
-import { AUDIT_ROUTES } from "./routes.mjs";
+import { resolveAuditRoutes } from "./routes.mjs";
 
 /**
  * @typedef {import("./helpers.mjs").AuditTokens} AuditTokens
@@ -34,6 +34,7 @@ import { AUDIT_ROUTES } from "./routes.mjs";
  * @property {string[]} h1s H1 text values.
  * @property {number} mainCount Number of main landmarks.
  * @property {string[]} consoleErrors Route-scoped console warnings/errors.
+ * @property {string[]} expectedFailedRequests Route-scoped expected failed/error requests.
  * @property {string[]} failedRequests Route-scoped failed/error requests.
  */
 
@@ -449,6 +450,21 @@ function routeResultFallback(route, error) {
 }
 
 /**
+ * Checks whether a failed request is expected for the route.
+ *
+ * @param {import("./routes.mjs").AuditRoute} route Route under audit.
+ * @param {string} text Failed request text.
+ * @returns {boolean} Whether the failed request is expected.
+ */
+function isExpectedFailedRequest(route, text) {
+  return (
+    route.expectedFailedRequestPatterns?.some((pattern) =>
+      text.includes(pattern),
+    ) ?? false
+  );
+}
+
+/**
  * Renders loaded route audit results as markdown.
  *
  * @param {RouteResult[]} results Route results.
@@ -479,6 +495,13 @@ function toMarkdown(results, { baseUrl, refreshCookieName, hasRefreshToken }) {
               .slice(0, 12)
               .map((item) => `- ${item}`)
               .join("\n");
+      const expectedFailedRequests =
+        result.expectedFailedRequests.length === 0
+          ? "None"
+          : result.expectedFailedRequests
+              .slice(0, 8)
+              .map((item) => `- ${item}`)
+              .join("\n");
       const headings =
         result.headings.length === 0
           ? "None"
@@ -504,6 +527,9 @@ ${consoleErrors}
 
 Failed or error HTTP requests:
 ${failedRequests}
+
+Expected failed/error HTTP requests:
+${expectedFailedRequests}
 
 Text sample:
 
@@ -589,7 +615,11 @@ async function main() {
   const apiUrl = getApiUrl();
   const baseUrl = getAuditBaseUrl();
   const refreshCookieName = getRefreshCookieName();
-  let tokens = await loginAuditUser({ apiUrl, refreshCookieName });
+  let tokens = await getAuditSession({ apiUrl, refreshCookieName });
+  const routes = await resolveAuditRoutes({
+    accessToken: tokens.accessToken,
+    apiUrl,
+  });
   const outputDir =
     process.env.LOADED_AUDIT_OUTPUT_DIR ??
     process.env.AUDIT_LOADED_OUTPUT_DIR ??
@@ -676,7 +706,7 @@ async function main() {
 
     const results = [];
 
-    for (const route of AUDIT_ROUTES) {
+    for (const route of routes) {
       currentSlug = route.slug;
       const routeConsoleStart = consoleErrors.length;
       const routeRequestStart = failedRequests.length;
@@ -703,16 +733,22 @@ async function main() {
         ...routeResultFallback(route, error),
       }));
 
+      const routeFailedRequests = failedRequests
+        .slice(routeRequestStart)
+        .filter((entry) => entry.slug === route.slug)
+        .map((entry) => entry.text);
       const result = {
         ...routeResult,
         consoleErrors: consoleErrors
           .slice(routeConsoleStart)
           .filter((entry) => entry.slug === route.slug)
           .map((entry) => entry.text),
-        failedRequests: failedRequests
-          .slice(routeRequestStart)
-          .filter((entry) => entry.slug === route.slug)
-          .map((entry) => entry.text),
+        expectedFailedRequests: routeFailedRequests.filter((text) =>
+          isExpectedFailedRequest(route, text),
+        ),
+        failedRequests: routeFailedRequests.filter(
+          (text) => !isExpectedFailedRequest(route, text),
+        ),
       };
 
       results.push(result);

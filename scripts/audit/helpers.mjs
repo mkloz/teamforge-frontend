@@ -5,6 +5,8 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
+import { request as httpRequest } from "node:http";
+import { request as httpsRequest } from "node:https";
 import path from "node:path";
 import { z } from "zod";
 
@@ -21,6 +23,14 @@ import { z } from "zod";
  * @property {string} [apiUrl] Backend API URL that includes `/api/v1`.
  * @property {string} [refreshCookieName] Cookie name used by the backend refresh flow.
  * @property {boolean} [requireRefreshToken] Whether missing refresh material should fail.
+ *
+ * @typedef {object} ResolveAuditPreviewHttpsOptions
+ * @property {string | undefined} [certPath] Preview TLS certificate path.
+ * @property {string | undefined} [explicitValue] Explicit HTTPS env value.
+ * @property {string | undefined} [keyPath] Preview TLS private key path.
+ *
+ * @typedef {object} AuditProbeResult
+ * @property {number} status HTTP status code.
  */
 
 export const cwd = process.cwd();
@@ -85,6 +95,45 @@ export function envFlag(name, fallback = false) {
   }
 
   return value === "true" || value === "1" || value === "yes";
+}
+
+/**
+ * Resolves whether the audit preview should use HTTPS.
+ *
+ * Explicit true/false env values win. When unset or set to `auto`, the preview
+ * switches to HTTPS as soon as both certificate paths are configured.
+ *
+ * @param {ResolveAuditPreviewHttpsOptions} [options] Resolution options.
+ * @returns {boolean} Whether the preview should serve HTTPS.
+ */
+export function resolveAuditPreviewHttps({
+  certPath = process.env.AUDIT_PREVIEW_CERT_PATH,
+  explicitValue = process.env.AUDIT_PREVIEW_HTTPS,
+  keyPath = process.env.AUDIT_PREVIEW_KEY_PATH,
+} = {}) {
+  const hasCertificatePair = Boolean(certPath && keyPath);
+
+  if (
+    explicitValue === undefined ||
+    explicitValue === "" ||
+    explicitValue === "auto"
+  ) {
+    return hasCertificatePair;
+  }
+
+  const normalizedValue = explicitValue.trim().toLowerCase();
+
+  if (["true", "1", "yes"].includes(normalizedValue)) {
+    return true;
+  }
+
+  if (["false", "0", "no"].includes(normalizedValue)) {
+    return false;
+  }
+
+  throw new Error(
+    `Invalid AUDIT_PREVIEW_HTTPS value "${explicitValue}". Use true, false, or auto.`,
+  );
 }
 
 /**
@@ -181,38 +230,119 @@ export async function loginAuditUser({
 } = {}) {
   const credentials = getAuditCredentialsFromEnv();
   const loginUrl = new URL("auth/login", ensureTrailingSlash(apiUrl));
-  const response = await fetch(loginUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(credentials),
-  });
+  const maxRetries = Number(process.env.AUDIT_LOGIN_RETRIES ?? "2");
 
-  const body = await response.text();
+  for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
+    // eslint-disable-next-line no-await-in-loop -- Login retries must honor backend rate-limit timing.
+    const response = await fetch(loginUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(credentials),
+    });
 
-  if (!response.ok) {
+    // eslint-disable-next-line no-await-in-loop -- The body is needed before a retry or failure.
+    const body = await response.text();
+
+    if (response.ok) {
+      const parsedPayload = loginResponseSchema.safeParse(JSON.parse(body));
+
+      if (!parsedPayload.success) {
+        throw new Error(
+          "Audit user login response did not include accessToken.",
+        );
+      }
+
+      const rotatedCookieRefreshToken = readRefreshTokenFromSetCookie(
+        response.headers,
+        refreshCookieName,
+      );
+
+      return {
+        accessToken: parsedPayload.data.accessToken,
+        refreshToken:
+          parsedPayload.data.refreshToken ??
+          rotatedCookieRefreshToken ??
+          undefined,
+      };
+    }
+
+    if (response.status === 429 && attempt < maxRetries) {
+      const retryDelayMs = getLoginRetryDelayMs(response, attempt);
+
+      writeOutput(
+        `WARN Audit login was rate limited. Retrying in ${Math.ceil(retryDelayMs / 1000)}s.`,
+      );
+      // eslint-disable-next-line no-await-in-loop -- Backoff must wait before retrying.
+      await sleep(retryDelayMs);
+      continue;
+    }
+
     throw new Error(
-      `Audit user login failed (${response.status}) at ${loginUrl.href}. Check AUDIT_USER_EMAIL and AUDIT_USER_PASSWORD.`,
+      `Audit user login failed (${response.status}) at ${loginUrl.href}: ${body}`,
     );
   }
 
-  const parsedPayload = loginResponseSchema.safeParse(JSON.parse(body));
+  throw new Error(`Audit user login failed at ${loginUrl.href}.`);
+}
 
-  if (!parsedPayload.success) {
-    throw new Error("Audit user login response did not include accessToken.");
+/**
+ * Reads audit tokens supplied by the parent pipeline process.
+ *
+ * @returns {AuditTokens | null} Parsed audit session when present.
+ */
+export function readAuditSessionFromEnv() {
+  const value = process.env.AUDIT_SESSION_JSON;
+
+  if (!value) {
+    return null;
   }
 
-  const rotatedCookieRefreshToken = readRefreshTokenFromSetCookie(
-    response.headers,
-    refreshCookieName,
-  );
+  try {
+    const parsedPayload = refreshResponseSchema.safeParse(JSON.parse(value));
 
-  return {
-    accessToken: parsedPayload.data.accessToken,
-    refreshToken:
-      parsedPayload.data.refreshToken ?? rotatedCookieRefreshToken ?? undefined,
-  };
+    if (!parsedPayload.success) {
+      throw new Error("AUDIT_SESSION_JSON did not include accessToken.");
+    }
+
+    return {
+      accessToken: parsedPayload.data.accessToken,
+      refreshToken: parsedPayload.data.refreshToken,
+    };
+  } catch (error) {
+    throw new Error(
+      `Could not parse AUDIT_SESSION_JSON: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error },
+    );
+  }
+}
+
+/**
+ * Reads a parent-provided audit session or logs in when running standalone.
+ *
+ * @param {{ apiUrl?: string; refreshCookieName?: string }} [options] Session options.
+ * @returns {Promise<AuditTokens>} Tokens suitable for audit bootstrap.
+ */
+export async function getAuditSession(options = {}) {
+  return readAuditSessionFromEnv() ?? (await loginAuditUser(options));
+}
+
+/**
+ * Calculates login retry delay from `Retry-After` or exponential backoff.
+ *
+ * @param {Response} response Login response.
+ * @param {number} attempt Zero-based retry attempt.
+ * @returns {number} Delay in milliseconds.
+ */
+function getLoginRetryDelayMs(response, attempt) {
+  const retryAfter = Number(response.headers.get("retry-after"));
+
+  if (Number.isFinite(retryAfter) && retryAfter > 0) {
+    return retryAfter * 1000;
+  }
+
+  return Math.min(30_000, 2000 * 2 ** attempt);
 }
 
 /**
@@ -300,7 +430,18 @@ export function getApiUrl() {
  * @returns {string} Frontend base URL.
  */
 export function getAuditBaseUrl() {
-  return process.env.AUDIT_BASE_URL ?? DEFAULT_AUDIT_BASE_URL;
+  if (process.env.AUDIT_BASE_URL) {
+    return process.env.AUDIT_BASE_URL;
+  }
+
+  const previewPort = process.env.AUDIT_PREVIEW_PORT ?? "4173";
+  const protocol = resolveAuditPreviewHttps() ? "https" : "http";
+
+  if (previewPort === "4173" && protocol === "http") {
+    return DEFAULT_AUDIT_BASE_URL;
+  }
+
+  return `${protocol}://127.0.0.1:${previewPort}`;
 }
 
 /**
@@ -313,15 +454,81 @@ export function getRefreshCookieName() {
 }
 
 /**
+ * Resolves a path relative to the repo root.
+ *
+ * @param {string} value Path value.
+ * @returns {string} Absolute path.
+ */
+function resolveRepoPath(value) {
+  return path.isAbsolute(value) ? value : path.resolve(cwd, value);
+}
+
+/**
+ * Reads the configured local audit preview certificate as a CA bundle.
+ *
+ * @returns {Uint8Array | undefined} Certificate contents when available.
+ */
+function getAuditPreviewCa() {
+  const certPath = process.env.AUDIT_PREVIEW_CERT_PATH;
+
+  if (!certPath) {
+    return undefined;
+  }
+
+  const resolvedCertPath = resolveRepoPath(certPath);
+
+  if (!existsSync(resolvedCertPath)) {
+    return undefined;
+  }
+
+  return readFileSync(resolvedCertPath);
+}
+
+/**
+ * Sends a lightweight HTTP(S) probe with local audit CA support.
+ *
+ * @param {string} url URL to probe.
+ * @returns {Promise<AuditProbeResult>} Probe response.
+ */
+function probeAuditUrl(url) {
+  const target = new URL(url);
+  const isHttps = target.protocol === "https:";
+  const request = isHttps ? httpsRequest : httpRequest;
+
+  return new Promise((resolve, reject) => {
+    const probeRequest = request(
+      target,
+      {
+        ca: isHttps ? getAuditPreviewCa() : undefined,
+        method: "GET",
+        timeout: 5000,
+      },
+      (response) => {
+        response.resume();
+        response.on("end", () => {
+          resolve({ status: response.statusCode ?? 0 });
+        });
+      },
+    );
+
+    probeRequest.on("timeout", () => {
+      probeRequest.destroy(new Error(`Timed out probing ${url}`));
+    });
+    probeRequest.on("error", reject);
+    probeRequest.end();
+  });
+}
+
+/**
  * Fails when the audit target does not respond with a success status.
  *
  * @param {string} baseUrl Frontend base URL.
  * @returns {Promise<void>}
  */
 export async function assertBaseUrlReachable(baseUrl) {
-  const response = await fetch(baseUrl, { cache: "no-store" });
+  const response = await probeAuditUrl(baseUrl);
 
-  if (!response.ok) {
+  if (response.status < 200 || response.status >= 300) {
     throw new Error(`Audit target returned ${response.status}: ${baseUrl}`);
   }
 }
@@ -335,16 +542,19 @@ export async function assertBaseUrlReachable(baseUrl) {
  */
 export async function waitForHttpOk(url, timeoutMs = 30_000) {
   const startedAt = Date.now();
+  let lastError;
 
   while (Date.now() - startedAt < timeoutMs) {
     try {
       // eslint-disable-next-line no-await-in-loop -- Polling must wait between preview readiness checks.
-      const response = await fetch(url, { cache: "no-store" });
+      const response = await probeAuditUrl(url);
 
-      if (response.ok) {
+      if (response.status >= 200 && response.status < 300) {
         return;
       }
     } catch (error) {
+      lastError = error;
+
       if (process.env.AUDIT_DEBUG === "true") {
         writeOutput(
           `WAIT ${url}: ${error instanceof Error ? error.message : String(error)}`,
@@ -354,6 +564,33 @@ export async function waitForHttpOk(url, timeoutMs = 30_000) {
 
     // eslint-disable-next-line no-await-in-loop -- Polling must stay sequential.
     await sleep(500);
+  }
+
+  if (url.startsWith("https://") && lastError instanceof Error) {
+    const cause =
+      typeof lastError.cause === "object" && lastError.cause !== null
+        ? lastError.cause
+        : {};
+    const causeMessage =
+      "message" in cause && typeof cause.message === "string"
+        ? cause.message
+        : "";
+    const causeCode =
+      "code" in cause && typeof cause.code === "string" ? cause.code : "";
+    const errorMessage = [lastError.message, causeMessage, causeCode]
+      .join(" ")
+      .toLowerCase();
+
+    if (
+      errorMessage.includes("certificate") ||
+      errorMessage.includes("cert") ||
+      errorMessage.includes("self-signed") ||
+      errorMessage.includes("unable to verify")
+    ) {
+      throw new Error(
+        `Timed out waiting for HTTPS audit preview at ${url}. The configured certificate is not trusted by the runtime: ${causeMessage || lastError.message}. Trust AUDIT_PREVIEW_CERT_PATH locally, or set AUDIT_PREVIEW_HTTPS=false to run an HTTP-only audit.`,
+      );
+    }
   }
 
   throw new Error(`Timed out waiting for ${url}`);

@@ -275,6 +275,14 @@ function hasCacheDirectives(value, directives) {
   );
 }
 
+function hasCspDirectives(value, directives) {
+  const normalizedValue = value.toLowerCase();
+
+  return directives.every((directive) =>
+    normalizedValue.includes(directive.toLowerCase()),
+  );
+}
+
 function getEnvValue(envText, key) {
   const line = envText
     .split(/\r?\n/u)
@@ -526,6 +534,7 @@ async function validateHostingConfig() {
     hasCacheDirectives(value, ["max-age=0", "must-revalidate"]);
   const requiresImmutableCache = (value) =>
     hasCacheDirectives(value, ["max-age=31536000", "immutable"]);
+  const appShellSource = "/(.*)";
 
   validateVercelHeader(
     vercelConfig,
@@ -589,6 +598,71 @@ async function validateHostingConfig() {
     "Cache-Control",
     requiresRevalidation,
     (value) => `Download visual assets revalidate when deployed: ${value}.`,
+  );
+  validateVercelHeader(
+    vercelConfig,
+    appShellSource,
+    "Cache-Control",
+    requiresRevalidation,
+    (value) => `Application shell revalidates on deploy: ${value}.`,
+  );
+  validateVercelHeader(
+    vercelConfig,
+    appShellSource,
+    "Content-Security-Policy",
+    (value) =>
+      hasCspDirectives(value, [
+        "default-src 'self'",
+        "base-uri 'self'",
+        "object-src 'none'",
+        "frame-ancestors 'none'",
+        "script-src 'self'",
+        "connect-src 'self'",
+      ]),
+    (value) => `Application CSP is present: ${value}.`,
+  );
+  validateVercelHeader(
+    vercelConfig,
+    appShellSource,
+    "Strict-Transport-Security",
+    (value) =>
+      hasCacheDirectives(value, [
+        "max-age=63072000",
+        "includesubdomains",
+        "preload",
+      ]),
+    (value) => `HSTS is configured: ${value}.`,
+  );
+  validateVercelHeader(
+    vercelConfig,
+    appShellSource,
+    "X-Frame-Options",
+    (value) => value.toUpperCase() === "DENY",
+    (value) => `Clickjacking protection is ${value}.`,
+  );
+  validateVercelHeader(
+    vercelConfig,
+    appShellSource,
+    "X-Content-Type-Options",
+    (value) => value.toLowerCase() === "nosniff",
+    (value) => `MIME sniffing protection is ${value}.`,
+  );
+  validateVercelHeader(
+    vercelConfig,
+    appShellSource,
+    "Referrer-Policy",
+    (value) => value.toLowerCase() === "strict-origin-when-cross-origin",
+    (value) => `Referrer policy is ${value}.`,
+  );
+  validateVercelHeader(
+    vercelConfig,
+    appShellSource,
+    "Permissions-Policy",
+    (value) =>
+      value.includes("camera=()") &&
+      value.includes("microphone=()") &&
+      value.includes("geolocation=(self)"),
+    (value) => `Browser capability policy is ${value}.`,
   );
 
   const spaRewrite = vercelConfig.rewrites?.find(

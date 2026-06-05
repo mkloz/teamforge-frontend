@@ -74,7 +74,7 @@ export function AuthSupportShell({
       <div className="relative flex h-full flex-1 flex-col overflow-hidden">
         <BackgroundTexture />
 
-        <div className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth px-4 pb-4">
+        <main className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden scroll-smooth px-4 pb-4">
           <div className="flex min-h-full w-full flex-col items-center justify-center pt-20 pb-10 lg:py-8">
             <div className="w-full max-w-sm px-2 sm:px-0">
               <div className="flex flex-col gap-2 text-center">
@@ -91,7 +91,7 @@ export function AuthSupportShell({
               {footer ? <div className="mt-6">{footer}</div> : null}
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );

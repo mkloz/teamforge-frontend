@@ -21,8 +21,8 @@ export function ExplorePageContent({
           <ExploreStickyRail side="left">{leftRail}</ExploreStickyRail>
         </div>
 
-        <main className="col-span-1 flex min-h-96 min-w-0 flex-col pb-34 lg:col-span-8 lg:pb-32 xl:col-auto">
-          <div className="mb-4 xl:hidden">
+        <div className="col-span-1 flex min-h-96 min-w-0 flex-col pb-34 lg:col-span-8 lg:pb-32 xl:col-auto">
+          <div className="mb-4 xl:sr-only">
             <h1 className="font-black text-2xl text-foreground leading-tight tracking-tight">
               Explore
             </h1>
@@ -32,7 +32,7 @@ export function ExplorePageContent({
           </div>
           {searchHeader}
           {feed}
-        </main>
+        </div>
 
         <div className="relative hidden border-border/70 lg:col-span-4 lg:block lg:border-l lg:pl-6 xl:col-auto xl:pl-7">
           <ExploreStickyRail side="right">{filters}</ExploreStickyRail>

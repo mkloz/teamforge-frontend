@@ -8,7 +8,7 @@ import { ProfileCoverBanner } from "./profile-cover-banner";
 
 export function ProfilePageLoading(_props: PageLoadingProps = {}) {
   return (
-    <main
+    <div
       aria-busy="true"
       aria-label="Loading profile"
       className="relative min-h-full overflow-x-clip bg-canvas pb-(--profile-cover-phase-reserve) [--personality-cover-type-opacity:0.82] [--personality-cover-type-scale:1] [--personality-cover-type-y:0px] [--profile-cover-collapsed-height:80px] [--profile-cover-expanded-height:160px] [--profile-cover-height:var(--profile-cover-expanded-height)] [--profile-cover-phase-offset:0px] [--profile-cover-phase-reserve:104px] [--profile-hero-z-index:40] [--profile-sidebar-sticky-top:var(--profile-cover-collapsed-height)] sm:[--profile-cover-expanded-height:168px] sm:[--profile-cover-phase-reserve:112px] md:[--profile-cover-expanded-height:152px] md:[--profile-cover-phase-reserve:96px] lg:[--profile-cover-collapsed-height:64px] lg:[--profile-cover-phase-reserve:112px]"
@@ -32,7 +32,7 @@ export function ProfilePageLoading(_props: PageLoadingProps = {}) {
           <PsychometricsSkeleton />
         </div>
       </div>
-    </main>
+    </div>
   );
 }
 

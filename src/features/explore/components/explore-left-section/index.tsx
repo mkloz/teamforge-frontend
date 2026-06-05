@@ -5,9 +5,12 @@ export function ExploreLeftSection() {
   return (
     <aside className="flex flex-col gap-5">
       <div className="hidden flex-col gap-1.5 px-1 md:flex">
-        <h1 className="font-black text-2xl text-foreground leading-tight tracking-tight">
+        <div
+          aria-hidden="true"
+          className="font-black text-2xl text-foreground leading-tight tracking-tight"
+        >
           Explore
-        </h1>
+        </div>
         <p className="font-medium text-muted-foreground text-sm leading-relaxed">
           Open groups with timing and room to join.
         </p>

@@ -113,7 +113,7 @@ function GroupPlanMainSections({
   focus: GroupPlanSectionFocusProps;
 }) {
   return (
-    <main className="flex min-w-0 flex-col gap-12">
+    <div className="flex min-w-0 flex-col gap-12">
       <GroupSection detail={detail} />
       <PlanSection
         detail={detail}
@@ -121,7 +121,7 @@ function GroupPlanMainSections({
         sectionRef={focus.planSectionRef}
       />
       <DeferredMainSections detail={detail} />
-    </main>
+    </div>
   );
 }
 

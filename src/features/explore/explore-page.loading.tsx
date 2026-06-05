@@ -26,7 +26,7 @@ export function ExplorePageLoadingFixture() {
           </div>
         </div>
 
-        <main className="col-span-1 flex min-h-96 min-w-0 flex-col pb-34 lg:col-span-8 lg:pb-32 xl:col-auto">
+        <div className="col-span-1 flex min-h-96 min-w-0 flex-col pb-34 lg:col-span-8 lg:pb-32 xl:col-auto">
           <div className="mb-4 xl:hidden" aria-hidden="true">
             <Skeleton className="h-8 w-32" tone="teal" />
             <SkeletonText
@@ -38,7 +38,7 @@ export function ExplorePageLoadingFixture() {
           </div>
           <ExploreSearchSkeleton />
           <ExploreFeedSkeleton />
-        </main>
+        </div>
 
         <div className="relative hidden border-border/70 lg:col-span-4 lg:block lg:border-l lg:pl-6 xl:col-auto xl:pl-7">
           <div className="scrollbar-hide sticky top-8 max-h-none self-start overflow-visible [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [@media(max-height:720px)]:max-h-[calc(100dvh-4rem)] [@media(max-height:720px)]:overflow-y-auto [@media(max-height:720px)]:overscroll-contain [@media(max-height:720px)]:pr-2">

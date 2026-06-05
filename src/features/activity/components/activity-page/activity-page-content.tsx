@@ -44,9 +44,13 @@ export function ActivityPageContent({
 }: ActivityPageContentProps) {
   return (
     <div className={getFrameClassName(contained, activity.hasSelection)}>
+      <h1 id="activity-heading" className="sr-only">
+        Activity
+      </h1>
       <ActivitySidebar activity={activity} isOnline={isOnline} />
 
-      <main
+      <section
+        aria-labelledby="activity-heading"
         className={cn(
           "flex h-full min-h-0 min-w-0 flex-1 duration-300",
           !activity.hasSelection && "hidden md:flex",
@@ -69,7 +73,7 @@ export function ActivityPageContent({
         ) : (
           <ActivityEmptyState />
         )}
-      </main>
+      </section>
 
       <Suspense fallback={null}>
         <ActivityRealtimeSync

@@ -183,6 +183,7 @@ export default defineConfig(({ command }) => ({
       includeAssets: [
         "favicon.svg",
         "robots.txt",
+        "sitemap.xml",
         "fonts/inter-latin-var.woff2",
         "icons/apple-touch-icon.png",
         "icons/pwa-192x192.png",

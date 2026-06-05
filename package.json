@@ -22,6 +22,8 @@
     "pwa:qa": "node scripts/pwa-qa.mjs",
     "pwa:release": "npm run pwa:env && npm run build && npm run pwa:qa",
     "audit:auth": "node scripts/audit/run-authenticated-pipeline.mjs",
+    "audit:cert": "node scripts/audit/setup-local-preview-cert.mjs",
+    "audit:serve": "node scripts/audit/static-preview-server.mjs",
     "test:unit": "vitest run",
     "check": "npm run lint && npm run lint:audit",
     "prepare": "npx husky"

@@ -117,9 +117,9 @@ function ActivitySidebarSkeleton() {
 
 function ActivityConversationSkeleton() {
   return (
-    <main className="hidden h-full min-h-0 min-w-0 flex-1 overflow-hidden md:flex">
+    <div className="hidden h-full min-h-0 min-w-0 flex-1 overflow-hidden md:flex">
       <ActivityConversationStageSkeleton />
-    </main>
+    </div>
   );
 }
 

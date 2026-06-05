@@ -8,10 +8,9 @@ import {
   ensureTrailingSlash,
   getApiUrl,
   getAuditBaseUrl,
+  getAuditSession,
   getRefreshCookieName,
   loadAuditEnvFiles,
-  loginAuditUser,
-  refreshAuditTokens,
   removeAuditTokens,
   todayStamp,
   writeAuditTokens,
@@ -20,7 +19,7 @@ import {
   writeOutput,
   writeText,
 } from "./helpers.mjs";
-import { AUDIT_ROUTES } from "./routes.mjs";
+import { resolveAuditRoutes } from "./routes.mjs";
 
 /**
  * @typedef {object} SquirrelAuditOptions
@@ -29,6 +28,7 @@ import { AUDIT_ROUTES } from "./routes.mjs";
  * @property {string} outputDir Directory for `.llm` reports.
  * @property {string} projectPrefix SquirrelScan project name prefix.
  * @property {string} routePath Route path to audit.
+ * @property {boolean} skipExisting Whether to keep an existing route report.
  * @property {string} slug File-safe route identifier.
  * @property {string} squirrelBin Squirrel binary path or command name.
  */
@@ -44,11 +44,18 @@ function runSquirrelAudit({
   outputDir,
   projectPrefix,
   routePath,
+  skipExisting,
   slug,
   squirrelBin,
 }) {
   const url = new URL(routePath, ensureTrailingSlash(baseUrl)).href;
   const outputPath = path.join(outputDir, `${slug}.llm`);
+
+  if (skipExisting && existsSync(outputPath)) {
+    writeOutput(`SKIP ${slug} ${outputPath}`);
+    return;
+  }
+
   const args = [
     "audit",
     url,
@@ -85,16 +92,19 @@ function runSquirrelAudit({
  *
  * @param {{ baseUrl: string; coverage: string; outputDir: string }} options Index options.
  */
-function writeSquirrelIndex({ baseUrl, coverage, outputDir }) {
-  const rows = AUDIT_ROUTES.map(
-    (route) => `| \`${route.path}\` | [${route.slug}.llm](${route.slug}.llm) |`,
-  ).join("\n");
+function writeSquirrelIndex({ baseUrl, coverage, outputDir, routes }) {
+  const rows = routes
+    .map(
+      (route) =>
+        `| \`${route.path}\` | [${route.slug}.llm](${route.slug}.llm) |`,
+    )
+    .join("\n");
 
   writeJson(path.join(outputDir, "manifest.json"), {
     generatedAt: new Date().toISOString(),
     target: baseUrl,
     coverage,
-    routes: AUDIT_ROUTES,
+    routes,
   });
   writeOutput(`Reports: ${outputDir}`);
   writeOutput(`Index: ${path.join(outputDir, "index.md")}`);
@@ -105,7 +115,7 @@ Date: ${new Date().toISOString()}
 Target: \`${baseUrl}\`
 Coverage: \`${coverage}\`
 
-SquirrelScan crawls each explicit route and writes one LLM report per route. For this SPA, pair these files with the loaded-state route audit when checking protected screens.
+SquirrelScan uses one fresh audit login for the route batch and writes one LLM report per route. For this SPA, pair these files with the loaded-state route audit when checking protected screens.
 
 | Route | Report |
 | --- | --- |
@@ -126,7 +136,6 @@ async function main() {
   const apiUrl = getApiUrl();
   const baseUrl = getAuditBaseUrl();
   const refreshCookieName = getRefreshCookieName();
-  let tokens = await loginAuditUser({ apiUrl, refreshCookieName });
   const coverage = process.env.AUDIT_COVERAGE ?? "full";
   const outputDir =
     process.env.AUDIT_OUTPUT_DIR ??
@@ -135,6 +144,15 @@ async function main() {
     process.env.AUDIT_PROJECT_PREFIX ?? "teamforge-authenticated";
   const squirrelBin = process.env.SQUIRREL_BIN ?? DEFAULT_SQUIRREL_BIN;
   const keepTokenFile = process.env.AUDIT_KEEP_TOKEN_FILE === "true";
+  const skipExisting = process.env.AUDIT_RESUME === "true";
+  const routeDiscoveryTokens = await getAuditSession({
+    apiUrl,
+    refreshCookieName,
+  });
+  const routes = await resolveAuditRoutes({
+    accessToken: routeDiscoveryTokens.accessToken,
+    apiUrl,
+  });
 
   if (!existsSync(squirrelBin) && squirrelBin !== "squirrel") {
     throw new Error(`Squirrel binary not found: ${squirrelBin}`);
@@ -144,13 +162,8 @@ async function main() {
   await assertBaseUrlReachable(baseUrl);
 
   try {
-    for (const route of AUDIT_ROUTES) {
-      // eslint-disable-next-line no-await-in-loop -- Tokens intentionally rotate before each route.
-      tokens = await refreshAuditTokens(tokens, {
-        apiUrl,
-        refreshCookieName,
-      });
-      writeAuditTokens(tokens);
+    for (const route of routes) {
+      writeAuditTokens(routeDiscoveryTokens);
 
       runSquirrelAudit({
         baseUrl,
@@ -158,13 +171,14 @@ async function main() {
         outputDir,
         projectPrefix,
         routePath: route.path,
+        skipExisting,
         slug: route.slug,
         squirrelBin,
       });
     }
 
-    writeSquirrelIndex({ baseUrl, coverage, outputDir });
-    writeOutput(`DONE ${AUDIT_ROUTES.length} authenticated route audits`);
+    writeSquirrelIndex({ baseUrl, coverage, outputDir, routes });
+    writeOutput(`DONE ${routes.length} authenticated route audits`);
   } finally {
     if (!keepTokenFile) {
       removeAuditTokens();
