@@ -146,8 +146,47 @@ function serializeCanonicalSearch(search: object) {
   return serialized.length > 0 ? `?${serialized}` : "";
 }
 
+function normalizeSearchEntries(searchStr: string | null | undefined) {
+  const params = new URLSearchParams(
+    searchStr?.startsWith("?") ? searchStr.slice(1) : (searchStr ?? ""),
+  );
+
+  return Array.from(params.entries()).sort(
+    ([leftKey, leftValue], [rightKey, rightValue]) =>
+      leftKey.localeCompare(rightKey) || leftValue.localeCompare(rightValue),
+  );
+}
+
+function hasEquivalentSearchParams(
+  leftSearchStr: string | null | undefined,
+  rightSearchStr: string | null | undefined,
+) {
+  const leftEntries = normalizeSearchEntries(leftSearchStr);
+  const rightEntries = normalizeSearchEntries(rightSearchStr);
+
+  if (leftEntries.length !== rightEntries.length) {
+    return false;
+  }
+
+  return leftEntries.every(([leftKey, leftValue], index) => {
+    const [rightKey, rightValue] = rightEntries[index] ?? [];
+
+    return leftKey === rightKey && leftValue === rightValue;
+  });
+}
+
 function parseOptionalSearchString(value: unknown) {
   return typeof value === "string" ? value : undefined;
+}
+
+function parseTrueSearchFlag(value: unknown) {
+  return value === true || value === "true" ? true : undefined;
+}
+
+function validateGlobalAppRouteSearch(search: Record<string, unknown>) {
+  return {
+    notifications: parseTrueSearchFlag(search.notifications),
+  };
 }
 
 function isGroupPlanDetailSource(
@@ -238,23 +277,29 @@ function buildGuardReturnHref(location: RouteLocationLike | undefined) {
 }
 
 function buildCanonicalRouteHref(location: RouteLocationLike) {
-  const canonicalSearch = getCanonicalRouteSearch(
-    location.pathname,
-    parseReturnSearch(location.searchStr),
-  );
+  const rawSearch = parseReturnSearch(location.searchStr);
+  const canonicalSearch = getCanonicalRouteSearch(location.pathname, rawSearch);
 
   if (canonicalSearch === null) {
     return null;
   }
 
-  return `${location.pathname}${serializeCanonicalSearch(canonicalSearch)}`;
+  return `${location.pathname}${serializeCanonicalSearch({
+    ...canonicalSearch,
+    ...validateGlobalAppRouteSearch(rawSearch),
+  })}`;
 }
 
 function redirectToCanonicalRouteHref(location: RouteLocationLike) {
   const canonicalHref = buildCanonicalRouteHref(location);
   const currentHref = buildRouteLocationHref(location);
+  const canonicalSearchStr = canonicalHref?.slice(location.pathname.length);
 
-  if (!canonicalHref || canonicalHref === currentHref) {
+  if (
+    !canonicalHref ||
+    canonicalHref === currentHref ||
+    hasEquivalentSearchParams(canonicalSearchStr, location.searchStr)
+  ) {
     return;
   }
 

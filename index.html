@@ -40,6 +40,11 @@
         --tf-boot-foreground: #1c1c1a;
         --tf-boot-canvas: #fafaf8;
       }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
       html,
       body,
       #root {
@@ -49,6 +54,7 @@
         margin: 0;
       }
       body {
+        overflow-y: scroll;
         font-family:
           Inter,
           ui-sans-serif,
@@ -58,14 +64,30 @@
           Segoe UI,
           sans-serif;
       }
+      @supports (scrollbar-gutter: stable) {
+        html {
+          scrollbar-gutter: stable;
+        }
+        body {
+          overflow-y: auto;
+        }
+        :root {
+          --removed-body-scroll-bar-size: 0px;
+        }
+        body[data-scroll-locked] {
+          padding-right: 0;
+          margin-right: 0;
+        }
+      }
       .tf-boot {
         background:
           radial-gradient(circle at 50% 44%, color-mix(in srgb, var(--tf-boot-teal) 10%, transparent), transparent 28%),
           var(--tf-boot-canvas);
-        place-items: center;
+        align-items: center;
+        justify-content: center;
         min-height: 100dvh;
-        padding: 2rem;
-        display: grid;
+        padding-inline: 1.5rem;
+        display: flex;
       }
       .tf-boot__skip {
         z-index: 1;
@@ -87,68 +109,13 @@
         transform: translateY(0);
       }
       .tf-boot__content {
-        text-align: center;
-        justify-items: center;
-        gap: 1.5rem;
-        width: min(100%, 44rem);
-        display: grid;
+        align-items: center;
+        justify-content: center;
+        display: flex;
       }
       .tf-boot__mark {
         width: 7rem;
         overflow: visible;
-      }
-      .tf-boot__copy {
-        justify-items: center;
-        gap: 0.875rem;
-        display: grid;
-      }
-      .tf-boot__eyebrow {
-        color: var(--tf-boot-teal);
-        margin: 0;
-        font-size: 0.875rem;
-        font-weight: 800;
-      }
-      .tf-boot__copy h1 {
-        max-width: 14ch;
-        color: var(--tf-boot-foreground);
-        margin: 0;
-        font-size: 2.5rem;
-        line-height: 0.98;
-      }
-      .tf-boot__copy p {
-        max-width: 42rem;
-        color: color-mix(in srgb, var(--tf-boot-foreground) 78%, transparent);
-        margin: 0;
-        font-size: 1rem;
-        line-height: 1.55;
-      }
-      .tf-boot__links {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 0.75rem;
-        padding-top: 0.5rem;
-        display: flex;
-      }
-      .tf-boot__links a {
-        border: 1px solid color-mix(in srgb, var(--tf-boot-teal) 45%, transparent);
-        color: var(--tf-boot-foreground);
-        border-radius: 999px;
-        padding: 0.625rem 0.875rem;
-        font-size: 0.875rem;
-        font-weight: 700;
-        text-decoration: none;
-      }
-      .tf-boot__links a:focus {
-        outline: 2px solid var(--tf-boot-teal);
-        outline-offset: 2px;
-      }
-      @media (width>=48rem) {
-        .tf-boot__copy h1 {
-          font-size: 4.5rem;
-        }
-        .tf-boot__copy p {
-          font-size: 1.125rem;
-        }
       }
       .tf-boot__hammer,
       .tf-boot__anvil,
@@ -176,14 +143,6 @@
         animation-delay: var(--spark-delay);
         opacity: 0;
         transform-origin: 50%;
-      }
-      .tf-boot__sr {
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        width: 1px;
-        height: 1px;
-        position: absolute;
-        overflow: hidden;
       }
       @keyframes tf-boot-hammer {
         0% {

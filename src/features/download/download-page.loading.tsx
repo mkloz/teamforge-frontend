@@ -31,7 +31,7 @@ export function DownloadPageLoading(_props: PageLoadingProps = {}) {
 
       {/* Hero skeleton */}
       <section className="dark bg-hero-bg pt-16">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-16 px-6 pt-20 pb-24 lg:flex-row lg:gap-12">
+        <div className="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-6xl flex-col items-center gap-10 px-6 py-10 sm:py-12 lg:flex-row lg:gap-12">
           {/* Left */}
           <div className="flex max-w-xl flex-1 flex-col items-center gap-6 lg:items-start">
             <Skeleton shape="pill" className="h-6 w-28" tone="teal" />

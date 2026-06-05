@@ -15,6 +15,7 @@ const SIZE_CLASS = {
 } as const;
 
 const LOADING_ANIMATION_DURATION_MS = 1_450;
+const BOOT_ANIMATION_SYNC_WINDOW_MS = LOADING_ANIMATION_DURATION_MS * 2;
 
 const SPARKS = [
   { id: 1, x: -22, y: -5, size: 4 },
@@ -49,6 +50,11 @@ function getSyncedAnimationOffset() {
   }
 
   const elapsedMs = Math.max(0, performance.now() - bootStartedAt);
+
+  if (elapsedMs > BOOT_ANIMATION_SYNC_WINDOW_MS) {
+    return "0ms";
+  }
+
   const phaseMs = elapsedMs % LOADING_ANIMATION_DURATION_MS;
 
   return `${-phaseMs}ms`;

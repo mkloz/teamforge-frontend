@@ -10,6 +10,7 @@
 
   @supports (scrollbar-gutter: stable) {
     html {
+      overflow-y: scroll;
       scrollbar-gutter: stable;
     }
 
@@ -66,6 +67,17 @@
   :root.disable-transitions *::after {
     /* biome-ignore lint/complexity/noImportantStyles: This root-level theme state intentionally wins over all transitions during theme changes. */
     transition: none !important;
+  }
+}
+
+@supports (scrollbar-gutter: stable) {
+  html body[data-scroll-locked] {
+    /* biome-ignore lint/complexity/noImportantStyles: Dialog scroll-lock libraries inject scrollbar compensation dynamically; stable scrollbar-gutter already reserves this space. */
+    --removed-body-scroll-bar-size: 0px !important;
+    /* biome-ignore lint/complexity/noImportantStyles: Prevents modal/drawer scroll lock from doubling the app's reserved scrollbar gutter. */
+    padding-right: 0 !important;
+    /* biome-ignore lint/complexity/noImportantStyles: Prevents modal/drawer scroll lock from doubling the app's reserved scrollbar gutter. */
+    margin-right: 0 !important;
   }
 }
 

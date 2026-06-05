@@ -1,8 +1,6 @@
 import { Route } from "lucide-react";
-import {
-  FILTER_BOUNDARIES,
-  LOCATION_FILTER_OPTIONS,
-} from "@/features/explore/constants/explore.constants";
+import { FILTER_BOUNDARIES } from "@/features/explore/constants/explore.constants";
+import { LOCATION_FILTER_OPTIONS } from "@/features/explore/constants/explore-filter-options";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 import { SegmentedTabs } from "@/shared/components/ui/segmented-tabs";
 import { Slider } from "@/shared/components/ui/slider";

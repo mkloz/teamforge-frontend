@@ -1,5 +1,5 @@
 import { ArrowDownWideNarrow } from "lucide-react";
-import { SORTS } from "@/features/explore/constants/explore.constants";
+import { SORTS } from "@/features/explore/constants/explore-filter-options";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 import {
   DropdownMenu,

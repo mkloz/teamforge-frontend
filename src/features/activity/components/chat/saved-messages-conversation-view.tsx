@@ -79,7 +79,9 @@ export const SavedMessagesConversationView = memo(
         : SAVED_MESSAGES_SUBTITLE;
 
     return (
-      <div className="flex min-h-0 flex-1 flex-col bg-canvas/40">
+      <div className="relative isolate flex min-h-0 flex-1 flex-col overflow-hidden bg-canvas/40">
+        <ChatBackground />
+
         <UnifiedChatHeader
           kind="dm"
           title={SAVED_MESSAGES_TITLE}
@@ -96,8 +98,7 @@ export const SavedMessagesConversationView = memo(
           onToggleAction={() => {}}
         />
 
-        <div className="relative min-h-0 flex-1 overflow-hidden bg-canvas">
-          <ChatBackground />
+        <div className="relative min-h-0 flex-1 overflow-hidden">
           <div className="relative z-10 h-full overflow-y-auto px-3 pt-4 pb-safe-bottom sm:px-5">
             {isError && savedMessages.length === 0 ? (
               <SavedMessagesState

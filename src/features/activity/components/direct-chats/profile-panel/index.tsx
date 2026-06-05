@@ -29,7 +29,7 @@ export function ProfilePanel({ chat, isOpen, onClose }: ProfilePanelProps) {
     <aside
       className={cn(
         "hidden h-full min-h-0 flex-col overflow-hidden border-border border-l bg-canvas transition duration-300 ease-out lg:flex",
-        isOpen ? "w-80 opacity-100" : "w-0 overflow-hidden opacity-0",
+        isOpen ? "w-96 opacity-100" : "w-0 overflow-hidden opacity-0",
       )}
     >
       <ProfilePanelHeader onClose={onClose} />

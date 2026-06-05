@@ -1,10 +1,6 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "@/app/app";
-import {
-  bootstrapAuditAuthSession,
-  isAuditAuthEnabled,
-} from "@/app/runtime/audit-auth-bootstrap";
 import { redirectLocalIpToLocalhost } from "@/shared/lib/local-host-canonical-url";
 import "./index.css";
 
@@ -30,6 +26,10 @@ if (!rootElement) {
 }
 
 const appRootElement = rootElement;
+
+function isAuditAuthEnabled() {
+  return import.meta.env.VITE_AUDIT_AUTH_ENABLED === "true";
+}
 
 function getBootRenderDelay() {
   const bootStartedAt =
@@ -63,7 +63,13 @@ function getMinimumBootDurationMs() {
 }
 
 async function renderApp() {
-  await bootstrapAuditAuthSession();
+  if (isAuditAuthEnabled()) {
+    const { bootstrapAuditAuthSession } = await import(
+      "@/app/runtime/audit-auth-bootstrap"
+    );
+
+    await bootstrapAuditAuthSession();
+  }
 
   ReactDOM.createRoot(appRootElement).render(
     <StrictMode>

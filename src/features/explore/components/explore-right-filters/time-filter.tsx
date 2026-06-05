@@ -1,4 +1,4 @@
-import { TIME_FILTER_OPTIONS } from "@/features/explore/constants/explore.constants";
+import { TIME_FILTER_OPTIONS } from "@/features/explore/constants/explore-filter-options";
 import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
 import { cn } from "@/shared/lib/utils";
 

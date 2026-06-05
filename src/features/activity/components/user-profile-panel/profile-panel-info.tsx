@@ -70,8 +70,8 @@ export function ProfilePanelInfo({
         />
       </div>
 
-      <div className="absolute inset-x-4 top-3 z-40 flex items-center justify-between">
-        {onBack ? (
+      {onBack ? (
+        <div className="absolute inset-x-4 top-3 z-40 flex items-center">
           <Button
             size="icon-sm"
             variant="inverseGhost"
@@ -80,18 +80,8 @@ export function ProfilePanelInfo({
           >
             <ChevronLeft size={18} />
           </Button>
-        ) : (
-          <div />
-        )}
-
-        {profileNavigation ? (
-          <Button asChild size="icon-sm" variant="inverseGhost">
-            <Link {...profileNavigation} aria-label="View full profile">
-              <ExternalLink size={14} />
-            </Link>
-          </Button>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
 
       <section
         className="relative border-border/70 border-b bg-canvas opacity-(--profile-panel-original-opacity) transition-opacity duration-150 ease-out [pointer-events:var(--profile-panel-original-pointer-events,auto)] motion-reduce:transition-none"

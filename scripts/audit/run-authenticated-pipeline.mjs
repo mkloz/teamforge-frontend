@@ -27,7 +27,11 @@ import {
   writeOutput,
   writeText,
 } from "./helpers.mjs";
-import { AUDIT_ROUTES } from "./routes.mjs";
+import {
+  AUDIT_ROUTES,
+  LIGHTHOUSE_PUBLIC_ROUTE_SLUGS,
+  LIGHTHOUSE_ROUTE_SLUGS,
+} from "./routes.mjs";
 
 /**
  * @typedef {object} CommandOptions
@@ -53,7 +57,9 @@ import { AUDIT_ROUTES } from "./routes.mjs";
  * @property {boolean} buildRan Whether the pipeline built the app.
  * @property {string} outputRoot Combined report root directory.
  * @property {boolean} previewStarted Whether the pipeline started preview.
+ * @property {boolean} runLighthouse Whether the Lighthouse audit ran.
  * @property {boolean} runLoaded Whether the loaded browser audit ran.
+ * @property {boolean} runPlaywright Whether the Playwright route-health audit ran.
  * @property {boolean} runSquirrel Whether SquirrelScan ran.
  */
 
@@ -64,11 +70,23 @@ const loadedAuditScript = path.join(
   "audit",
   "run-loaded-route.mjs",
 );
+const lighthouseAuditScript = path.join(
+  cwd,
+  "scripts",
+  "audit",
+  "run-lighthouse.mjs",
+);
 const squirrelAuditScript = path.join(
   cwd,
   "scripts",
   "audit",
   "run-squirrel.mjs",
+);
+const playwrightAuditScript = path.join(
+  cwd,
+  "scripts",
+  "audit",
+  "run-playwright.mjs",
 );
 const staticPreviewServerScript = path.join(
   cwd,
@@ -369,6 +387,39 @@ function getPipelineRouteInventory(outputRoot) {
 }
 
 /**
+ * Selects route slugs for a parent-orchestrated Lighthouse run.
+ *
+ * @returns {string[]} Lighthouse route slugs.
+ */
+function getLighthouseRouteSlugs() {
+  const rawValue = process.env.AUDIT_LIGHTHOUSE_ROUTE_SLUGS;
+
+  if (!rawValue) {
+    return LIGHTHOUSE_ROUTE_SLUGS;
+  }
+
+  return rawValue
+    .split(",")
+    .map((slug) => slug.trim())
+    .filter(Boolean);
+}
+
+/**
+ * Checks whether the Lighthouse route set requires audit credentials.
+ *
+ * @returns {boolean} Whether Lighthouse needs an authenticated session.
+ */
+function shouldUseLighthouseAuthSession() {
+  if (process.env.AUDIT_LIGHTHOUSE_AUTH_REQUIRED !== undefined) {
+    return envFlag("AUDIT_LIGHTHOUSE_AUTH_REQUIRED", true);
+  }
+
+  const publicRouteSlugs = new Set(LIGHTHOUSE_PUBLIC_ROUTE_SLUGS);
+
+  return getLighthouseRouteSlugs().some((slug) => !publicRouteSlugs.has(slug));
+}
+
+/**
  * Writes the combined pipeline manifest and markdown index.
  *
  * @param {PipelineIndexOptions} options Pipeline report options.
@@ -379,7 +430,9 @@ function writePipelineIndex({
   buildRan,
   outputRoot,
   previewStarted,
+  runLighthouse,
   runLoaded,
+  runPlaywright,
   runSquirrel,
 }) {
   const loadedSummary = summarizeLoadedAudit(outputRoot);
@@ -393,8 +446,18 @@ function writePipelineIndex({
   const squirrelLine = runSquirrel
     ? "SquirrelScan: one LLM report per explicit route."
     : "SquirrelScan: skipped.";
+  const playwrightLine = runPlaywright
+    ? `Playwright: ${process.env.AUDIT_PLAYWRIGHT_ROUTE_SET === "smoke" ? "smoke" : "authenticated"} route set, ${process.env.AUDIT_PLAYWRIGHT_LANES ?? "route-health"} lane(s).`
+    : "Playwright: skipped.";
+  const lighthouseLine = runLighthouse
+    ? `Lighthouse: ${process.env.AUDIT_LIGHTHOUSE_ROUTE_SLUGS ?? "01-landing,02-download,14-home"} route slug(s), ${process.env.AUDIT_LIGHTHOUSE_CATEGORIES ?? "performance,accessibility,best-practices,seo"} category set.`
+    : "Lighthouse: skipped.";
   const outputLinks = [
     runLoaded ? "- [Loaded browser route audit](loaded/index.md)" : null,
+    runPlaywright ? "- [Playwright route health](playwright/index.md)" : null,
+    runLighthouse
+      ? "- [Lighthouse report-only audit](lighthouse/index.md)"
+      : null,
     runSquirrel
       ? "- [Authenticated SquirrelScan reports](squirrel/index.md)"
       : null,
@@ -408,7 +471,9 @@ function writePipelineIndex({
     browserApiUrl,
     buildRan,
     previewStarted,
+    runLighthouse,
     runLoaded,
+    runPlaywright,
     runSquirrel,
     refreshCookieName: getRefreshCookieName(),
     routeCount: routes.length,
@@ -433,6 +498,8 @@ ${outputLinks || "- No audit stages were run."}
 - Browser API URL: \`${browserApiUrl}\`
 - Preview server: ${previewStarted ? "started by pipeline" : "external server expected"}
 - ${loadedLine}
+- ${playwrightLine}
+- ${lighthouseLine}
 - ${squirrelLine}
 
 ## Route Inventory
@@ -444,8 +511,8 @@ ${routeRows}
 ## Notes
 
 - Copy \`.env.audit.example\` to \`.env.audit.local\`, then set \`AUDIT_USER_EMAIL\` and \`AUDIT_USER_PASSWORD\` for the local audit test account.
-- The runner writes \`audit-auth-tokens.json\` only while auditing, refreshes sessions during the loaded browser audit when a refresh cookie/token exists, gives SquirrelScan a fresh batch login, and removes token files at the end.
-- SquirrelScan is still crawler-oriented; use the loaded browser audit to confirm authenticated SPA routes were not blocked by guards.
+- The runner writes \`audit-auth-tokens.json\` only while auditing, refreshes sessions during the loaded browser audit when a refresh cookie/token exists, gives Playwright and SquirrelScan a fresh batch login, and removes token files at the end.
+- SquirrelScan is still crawler-oriented; use the loaded browser and Playwright route-health audits to confirm authenticated SPA routes were not blocked by guards.
 `,
   );
 }
@@ -482,11 +549,17 @@ async function main() {
   const runBuild = envFlag("AUDIT_RUN_BUILD", true);
   const startPreview = envFlag("AUDIT_START_PREVIEW", true);
   const runLoaded = envFlag("AUDIT_RUN_LOADED", true);
+  const runPlaywright = envFlag("AUDIT_RUN_PLAYWRIGHT", false);
+  const runLighthouse = envFlag("AUDIT_RUN_LIGHTHOUSE", false);
   const runSquirrel = envFlag("AUDIT_RUN_SQUIRREL", true);
   const keepPreview = envFlag("AUDIT_KEEP_PREVIEW", false);
+  const useLighthouseAuthSession =
+    runLighthouse && shouldUseLighthouseAuthSession();
+  const needsAuditSession =
+    runLoaded || runPlaywright || useLighthouseAuthSession || runSquirrel;
   let auditSessionJson = "";
 
-  if (runLoaded || runSquirrel) {
+  if (needsAuditSession) {
     getAuditCredentialsFromEnv();
   }
 
@@ -521,7 +594,7 @@ async function main() {
       await waitForHttpOk(baseUrl, 10_000);
     }
 
-    if (runLoaded || runSquirrel) {
+    if (needsAuditSession) {
       auditSessionJson = JSON.stringify(
         await loginAuditUser({
           apiUrl: getApiUrl(),
@@ -539,6 +612,30 @@ async function main() {
           LOADED_AUDIT_OUTPUT_DIR: path.join(outputRoot, "loaded"),
         },
         label: "loaded route audit",
+      });
+    }
+
+    if (runPlaywright) {
+      await runCommand(process.execPath, [playwrightAuditScript], {
+        env: {
+          ...process.env,
+          AUDIT_SESSION_JSON: auditSessionJson,
+          AUDIT_BASE_URL: baseUrl,
+          AUDIT_PLAYWRIGHT_OUTPUT_DIR: path.join(outputRoot, "playwright"),
+        },
+        label: "Playwright route health audit",
+      });
+    }
+
+    if (runLighthouse) {
+      await runCommand(process.execPath, [lighthouseAuditScript], {
+        env: {
+          ...process.env,
+          AUDIT_SESSION_JSON: auditSessionJson,
+          AUDIT_BASE_URL: baseUrl,
+          AUDIT_LIGHTHOUSE_OUTPUT_DIR: path.join(outputRoot, "lighthouse"),
+        },
+        label: "Lighthouse report-only audit",
       });
     }
 
@@ -560,7 +657,9 @@ async function main() {
       buildRan: runBuild,
       outputRoot,
       previewStarted: startPreview,
+      runLighthouse,
       runLoaded,
+      runPlaywright,
       runSquirrel,
     });
     writeOutput(`DONE authenticated audit pipeline: ${outputRoot}`);

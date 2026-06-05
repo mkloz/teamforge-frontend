@@ -391,6 +391,7 @@ export default defineConfig(({ command }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@test": path.resolve(__dirname, "./test"),
     },
   },
 }));

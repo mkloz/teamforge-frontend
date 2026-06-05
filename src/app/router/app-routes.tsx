@@ -11,6 +11,7 @@ import { rootRoute } from "@/app/router/root-route";
 import { createRouteErrorComponent } from "@/app/router/route-error-component";
 import { requireCanonicalAppRoute } from "@/app/router/route-guards";
 import { validateActivityRouteSearch } from "@/features/activity/lib/activity-route";
+import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
 import { validateExploreRouteSearch } from "@/features/explore/lib/explore-route";
 import { validateForgeRouteSearch } from "@/features/forge/lib/forge-route";
 import {
@@ -192,10 +193,9 @@ function createRouteModuleLoader(module: LazyRouteModule) {
 }
 
 async function preloadDefaultExploreGroups() {
-  const [{ ExploreQueryFactory }, { DEFAULT_FILTERS }] = await Promise.all([
-    import("@/features/explore/api/explore-query-factory"),
-    import("@/features/explore/constants/explore.constants"),
-  ]);
+  const { ExploreQueryFactory } = await import(
+    "@/features/explore/api/explore-query-factory"
+  );
 
   const data = await appQueryClient.fetchInfiniteQuery(
     ExploreQueryFactory.groups(DEFAULT_FILTERS, ""),

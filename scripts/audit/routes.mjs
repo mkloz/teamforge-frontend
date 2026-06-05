@@ -51,6 +51,72 @@ export const AUDIT_ROUTES = [
 ];
 
 /**
+ * Fast authenticated loaded-state routes for the Playwright smoke lane.
+ *
+ * @type {string[]}
+ */
+export const PLAYWRIGHT_SMOKE_ROUTE_SLUGS = [
+  "14-home",
+  "15-explore",
+  "17-activity",
+];
+
+/**
+ * Authenticated app routes covered by the expanded Playwright route-health lane.
+ *
+ * Dynamic detail routes are included only when route discovery resolves real
+ * local IDs before Playwright starts.
+ *
+ * @type {string[]}
+ */
+export const PLAYWRIGHT_AUTHENTICATED_ROUTE_SLUGS = [
+  "14-home",
+  "15-explore",
+  "16-group-detail-sample",
+  "17-activity",
+  "18-profile",
+  "19-user-detail-sample",
+  "20-settings",
+  "21-forge",
+];
+
+/**
+ * Representative public and authenticated routes for the Playwright axe lane.
+ *
+ * This lane intentionally samples key surfaces instead of scanning every route
+ * on every run. Route-health remains responsible for the wider authenticated
+ * loaded-state contract set.
+ *
+ * @type {string[]}
+ */
+export const PLAYWRIGHT_ACCESSIBILITY_ROUTE_SLUGS = [
+  "01-landing",
+  "02-download",
+  "14-home",
+  "15-explore",
+  "17-activity",
+  "21-forge",
+];
+
+/**
+ * Tiny representative route set for report-only Lighthouse audits.
+ *
+ * Keep this lane narrow because Lighthouse is slower and more variable than
+ * route-health checks. Broaden it only when there is a clear release question.
+ *
+ * @type {string[]}
+ */
+export const LIGHTHOUSE_PUBLIC_ROUTE_SLUGS = ["01-landing", "02-download"];
+
+/**
+ * @type {string[]}
+ */
+export const LIGHTHOUSE_ROUTE_SLUGS = [
+  ...LIGHTHOUSE_PUBLIC_ROUTE_SLUGS,
+  "14-home",
+];
+
+/**
  * Resolves dynamic sample routes to real local audit data when available.
  *
  * @param {ResolveAuditRoutesOptions} options Route discovery options.

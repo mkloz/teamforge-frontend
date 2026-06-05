@@ -33,7 +33,7 @@ export function ActivateAccountStatus({
   if (state === "error") {
     return (
       <div className="flex min-h-64 flex-col justify-center gap-4">
-        <div className="rounded-xl border border-destructive/20 bg-destructive/8 px-4 py-5 text-center text-foreground text-sm">
+        <div className="px-4 py-5 text-center text-foreground text-sm">
           <ErrorAuthLinkVisual className="mx-auto mb-3 h-28 w-auto text-foreground" />
           <p>{errorMessage}</p>
         </div>

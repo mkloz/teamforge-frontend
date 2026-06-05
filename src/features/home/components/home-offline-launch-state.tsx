@@ -17,7 +17,7 @@ export function HomeOfflineLaunchState({
     >
       <div
         role="status"
-        className="mx-auto grid w-full max-w-3xl gap-6 rounded-2xl border border-spark-amber/35 bg-card px-5 py-6 shadow-sm sm:px-7 sm:py-8 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start"
+        className="mx-auto grid w-full max-w-3xl gap-6 px-2 py-6 sm:px-4 sm:py-8 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start"
       >
         <IconTile
           bordered

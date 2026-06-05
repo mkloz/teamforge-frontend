@@ -524,9 +524,9 @@ export function DownloadPage() {
         >
           <DownloadHeroGrid />
 
-          <div className="relative z-10 mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 pt-20 pb-28 lg:grid-cols-2 lg:gap-16 lg:pt-24 lg:pb-32">
+          <div className="relative z-10 mx-auto grid min-h-[calc(100dvh-4rem)] max-w-6xl grid-cols-1 gap-10 px-6 py-10 sm:py-12 lg:grid-cols-2 lg:gap-16">
             {/* Left column: copy + selector + CTA */}
-            <div className="flex flex-col items-center text-center lg:items-start lg:justify-center lg:text-left">
+            <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
               <h1 className="mb-4 text-balance font-extrabold text-4xl text-white leading-none sm:text-5xl lg:text-6xl">
                 Your groups,{" "}
                 <span className="text-forge-teal">one tap away.</span>

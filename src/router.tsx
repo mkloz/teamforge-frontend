@@ -21,7 +21,7 @@ const routeTree = rootRoute.addChildren([
 export const router = createRouter({
   routeTree,
   defaultPreload: "intent",
-  defaultPendingMs: 0,
+  defaultPendingMs: 250,
   defaultPendingMinMs: 150,
   scrollRestoration: true,
 });
