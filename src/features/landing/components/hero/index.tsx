@@ -8,7 +8,7 @@ import { Button } from "@/shared/components/ui/button";
 
 export function HeroSection() {
   const { isResolvingAuthAction, primaryAction } =
-    useResolvedLandingAuthActions("Get Started - Free");
+    useResolvedLandingAuthActions("Create Free Account");
 
   return (
     <section
@@ -28,10 +28,9 @@ export function HeroSection() {
             </h1>
 
             <p className="mb-8 max-w-md text-pretty font-sans text-base text-text-dark-secondary leading-relaxed md:text-lg">
-              TeamForge is built for purposeful connection, not endless
-              browsing. We intelligently assemble a small group of compatible
-              people sharing your interests, so you can spend less time
-              searching and more time experiencing.
+              Answer a few thoughtful setup questions once. TeamForge uses that
+              context to form one small group around a real plan, so the first
+              room starts warmer than a cold message.
             </p>
 
             <div className="mb-10 flex w-full flex-col items-center gap-4 sm:w-auto sm:flex-row">
@@ -83,7 +82,9 @@ export function HeroSection() {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => scrollToLandingSection(LANDING_SECTION_IDS.howItWorks)}
+        onClick={() =>
+          scrollToLandingSection(LANDING_SECTION_IDS.peopleProblem)
+        }
         className="absolute bottom-7 left-1/2 z-10 -translate-x-1/2 rounded-full text-text-dark-muted hover:text-text-dark-secondary"
         aria-label="Scroll to next section"
       >

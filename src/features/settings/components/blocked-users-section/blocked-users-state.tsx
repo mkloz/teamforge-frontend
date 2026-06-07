@@ -1,4 +1,4 @@
-import { EmptySettingsBlockedUsersVisual } from "@/assets/empty-state/empty-settings-blocked-users";
+import { EmptySettingsBlockedUsersVisual } from "@/features/settings/assets/empty-settings-blocked-users";
 
 interface BlockedUsersErrorStateProps {
   message: string;

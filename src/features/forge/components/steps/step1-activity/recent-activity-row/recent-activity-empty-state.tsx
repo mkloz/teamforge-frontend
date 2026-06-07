@@ -1,4 +1,4 @@
-import { EmptyRecentActivityVisual } from "@/assets/empty-state/empty-recent-activity";
+import { EmptyRecentActivityVisual } from "@/features/forge/assets/empty-recent-activity";
 
 export function RecentActivityEmptyState() {
   return (

@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { GroupAvatarPlaceholderVisual } from "@/assets/empty-state/group-avatar-placeholder";
+import { GroupAvatarPlaceholderVisual } from "@/features/forge/assets/group-avatar-placeholder";
 import { Avatar } from "@/shared/components/common/avatar";
 import { FileDropzone } from "@/shared/components/common/file-dropzone";
 import { Button } from "@/shared/components/ui/button";

@@ -1,7 +1,7 @@
 import { Loader2 } from "lucide-react";
 import { memo, useState } from "react";
-import { ErrorMediaImageUnavailableVisual } from "@/assets/error-state/error-media-image-unavailable";
-import { ErrorMediaVideoUnavailableVisual } from "@/assets/error-state/error-media-video-unavailable";
+import { ErrorMediaImageUnavailableVisual } from "@/features/activity/assets/error-media-image-unavailable";
+import { ErrorMediaVideoUnavailableVisual } from "@/features/activity/assets/error-media-video-unavailable";
 import type { UnifiedAttachment } from "@/features/activity/lib/activity-contract";
 import { isGifAttachment } from "@/features/activity/lib/gif-attachments";
 import { cacheMediaIntrinsicSize } from "@/features/activity/lib/media-intrinsic-size";

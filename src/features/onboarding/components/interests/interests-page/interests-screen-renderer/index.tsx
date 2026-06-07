@@ -1,7 +1,7 @@
 import { RefreshCw } from "lucide-react";
 import { lazy, Suspense } from "react";
 
-import { ErrorOnboardingCatalogVisual } from "@/assets/error-state/error-onboarding-catalog";
+import { ErrorOnboardingCatalogVisual } from "@/features/onboarding/assets/error-onboarding-catalog";
 import type { UseInterestsReturn } from "@/features/onboarding/hooks/use-interests";
 import { Button } from "@/shared/components/ui/button";
 import { InterestsCatalogSkeleton } from "./interests-catalog-skeleton";

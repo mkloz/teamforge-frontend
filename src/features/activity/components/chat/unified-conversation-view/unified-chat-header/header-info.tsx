@@ -4,7 +4,7 @@ import { memo } from "react";
 import {
   MyNotesAvatarVisual,
   SavedMessagesAvatarVisual,
-} from "@/assets/activity/special-conversation-avatars";
+} from "@/features/activity/assets/special-conversation-avatars";
 import { UnifiedTypingIndicator } from "@/features/activity/components/chat/unified-typing-indicator";
 import type { ConversationDetailsNavigation } from "@/features/activity/hooks/use-conversation-data";
 import type { OnlineStatus } from "@/features/activity/lib/activity-contract";

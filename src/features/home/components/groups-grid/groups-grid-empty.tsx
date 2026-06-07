@@ -1,4 +1,4 @@
-import { EmptyHomeGroupsVisual } from "@/assets/empty-state/empty-home-groups";
+import { EmptyHomeGroupsVisual } from "@/features/home/assets/empty-home-groups";
 
 export function GroupsGridEmpty() {
   return (

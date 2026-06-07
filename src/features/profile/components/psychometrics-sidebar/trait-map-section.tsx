@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { EmptyTraitMapVisual } from "@/assets/empty-state/empty-trait-map";
 import { buildPersonalityEditNavigation } from "@/features/onboarding/lib/onboarding-route";
+import { EmptyTraitMapVisual } from "@/features/profile/assets/empty-trait-map";
 import type { OceanScores } from "@/features/profile/lib/profile-contract";
 import { OceanChart } from "@/shared/components/psychometrics/ocean-chart";
 import { Button } from "@/shared/components/ui/button";

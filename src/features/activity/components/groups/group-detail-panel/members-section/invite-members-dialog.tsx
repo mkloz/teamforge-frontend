@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Search, UserPlus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { EmptyInviteCandidatesVisual } from "@/assets/empty-state/empty-invite-candidates";
-import { ErrorInviteSendFailedVisual } from "@/assets/error-state/error-invite-send-failed";
+import { ErrorInviteSendFailedVisual } from "@/features/activity/assets/error-invite-send-failed";
 import type { ActivityParticipant } from "@/features/activity/lib/activity-contract";
 import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
 import { Avatar } from "@/shared/components/common/avatar";

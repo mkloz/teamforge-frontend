@@ -1,5 +1,5 @@
 import { Check, UsersRound } from "lucide-react";
-import { ForgeGroupReadyVisual } from "@/assets/empty-state/forge-group-ready";
+import { ForgeGroupReadyVisual } from "@/features/forge/assets/forge-group-ready";
 import type { ForgeParticipant } from "@/features/forge/lib/forge-contract";
 import { Avatar } from "@/shared/components/common/avatar";
 import { IconTile } from "@/shared/components/ui/icon-tile";

@@ -1,4 +1,4 @@
-import { PlanArtworkPendingVisual } from "@/assets/empty-state/plan-artwork-pending";
+import { PlanArtworkPendingVisual } from "@/features/forge/assets/plan-artwork-pending";
 import { Avatar } from "@/shared/components/common/avatar";
 import { PlanCover } from "@/shared/components/common/plan-cover";
 import { cn } from "@/shared/lib/utils";

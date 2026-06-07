@@ -1,4 +1,4 @@
-import { ErrorLinkPreviewUnavailableVisual } from "@/assets/error-state/error-link-preview-unavailable";
+import { ErrorLinkPreviewUnavailableVisual } from "@/features/activity/assets/error-link-preview-unavailable";
 import { Image } from "@/shared/components/common/image";
 import type { LinkPreview as LinkPreviewData } from "@/shared/schemas";
 

@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { EmptyHomePlansVisual } from "@/assets/empty-state/empty-home-plans";
 import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
+import { EmptyHomePlansVisual } from "@/features/home/assets/empty-home-plans";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { HomeUpcomingPlansSkeleton } from "@/features/home/components/home-skeletons";
 import { useHomeData } from "@/features/home/hooks/use-home-data";

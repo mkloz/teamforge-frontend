@@ -1,4 +1,4 @@
-import { ActivityNoConversationSelectedVisual } from "@/assets/empty-state/activity-no-conversation-selected";
+import { ActivityNoConversationSelectedVisual } from "@/features/activity/assets/activity-no-conversation-selected";
 
 export function ActivityEmptyState() {
   return (

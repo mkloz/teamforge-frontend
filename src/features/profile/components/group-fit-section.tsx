@@ -7,7 +7,7 @@ import {
   ShieldAlert,
   UsersRound,
 } from "lucide-react";
-import { EmptyGroupFitVisual } from "@/assets/empty-state/empty-group-fit";
+import { EmptyGroupFitVisual } from "@/features/profile/assets/empty-group-fit";
 import { IconTile } from "@/shared/components/ui/icon-tile";
 
 import type { GroupFitInsight, UserGroupSignal } from "../lib/profile-insights";

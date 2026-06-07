@@ -6,7 +6,10 @@ import type { MouseEvent } from "react";
 import { useEffect, useState } from "react";
 import { TeamForgeLogo } from "@/assets/logo";
 import { useMobileNavDialog } from "@/features/landing/components/navbar/use-mobile-nav-dialog";
-import { LANDING_NAV_LINKS } from "@/features/landing/constants/landing-sections";
+import {
+  LANDING_NAV_LINKS,
+  LANDING_SECTION_IDS,
+} from "@/features/landing/constants/landing-sections";
 import { useLandingAuthActions } from "@/features/landing/hooks/use-landing-auth-actions";
 import {
   scrollToLandingSection,
@@ -26,14 +29,29 @@ const MOBILE_NAV_LINK_DELAYS = [
   "delay-600",
 ];
 
-const LEGAL_NAV_LINKS = [
-  { to: "/download", label: "Download" },
-  { to: "/privacy", label: "Privacy" },
-  { to: "/terms", label: "Terms" },
-] as const;
-
 const NAV_LINK_CLASS =
   "group relative whitespace-nowrap rounded-sm font-medium font-sans text-sm text-text-dark-secondary transition-colors duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-transparent";
+
+const COMPACT_NAV_LINKS = [
+  { kind: "route", to: "/", label: "Home" },
+  {
+    kind: "landing-section",
+    id: LANDING_SECTION_IDS.peopleProblem,
+    label: "The Problem",
+  },
+  {
+    kind: "landing-section",
+    id: LANDING_SECTION_IDS.planToGroup,
+    label: "How It Works",
+  },
+  {
+    kind: "landing-section",
+    id: LANDING_SECTION_IDS.groupFeelsRight,
+    label: "Why It Fits",
+  },
+  { kind: "route", to: "/privacy", label: "Privacy" },
+  { kind: "route", to: "/terms", label: "Terms" },
+] as const;
 
 type LandingNavLinkId = (typeof LANDING_NAV_LINKS)[number]["id"];
 type NavbarActionSet = "download" | "landing" | "privacy" | "terms";
@@ -57,20 +75,6 @@ function normalizePathname(pathname: string) {
 
 function isLandingNavLinkId(id: string): id is LandingNavLinkId {
   return LANDING_NAV_LINKS.some((link) => link.id === id);
-}
-
-function getLegalActionTarget(actionSet: NavbarActionSet) {
-  if (actionSet === "privacy") {
-    return {
-      label: "Terms",
-      to: "/terms",
-    } as const;
-  }
-
-  return {
-    label: "Privacy",
-    to: "/privacy",
-  } as const;
 }
 
 export function Navbar({
@@ -98,8 +102,8 @@ export function Navbar({
     actionSet === "download" ? "/download" : null,
   );
   const isLandingPage = currentPathname === "/";
+  const showLandingSectionLinks = actionSet === "landing";
   const isSolid = forceSolid || scrolled;
-  const hasLegalActions = actionSet === "privacy" || actionSet === "terms";
   const hasInstallAction = actionSet === "download" && installAction != null;
 
   useEffect(() => {
@@ -220,54 +224,66 @@ export function Navbar({
             className="hidden min-w-0 flex-1 items-center justify-center gap-4 lg:flex xl:gap-6"
             aria-label="Main navigation"
           >
-            {LANDING_NAV_LINKS.map((link) => {
-              const isActive =
-                isLandingPage && activeLandingSection === link.id;
+            {showLandingSectionLinks
+              ? LANDING_NAV_LINKS.map((link) => {
+                  const isActive =
+                    isLandingPage && activeLandingSection === link.id;
 
-              return (
-                <a
-                  key={link.id}
-                  href={isLandingPage ? `#${link.id}` : `/#${link.id}`}
-                  onClick={(e) => handleNavClick(e, link.id)}
-                  className={cn(NAV_LINK_CLASS, isActive && "text-white")}
-                  aria-current={isActive ? "location" : undefined}
-                >
-                  {link.label}
-                  <span
-                    className={cn(
-                      "absolute right-0 -bottom-0.5 left-0 h-px origin-left bg-forge-teal transition-transform duration-200 group-hover:scale-x-100",
-                      isActive ? "scale-x-100" : "scale-x-0",
-                    )}
-                  />
-                </a>
-              );
-            })}
-            {LEGAL_NAV_LINKS.map((link) => {
-              const isActive = currentPathname === link.to;
+                  return (
+                    <a
+                      key={link.id}
+                      href={`#${link.id}`}
+                      onClick={(e) => handleNavClick(e, link.id)}
+                      className={cn(NAV_LINK_CLASS, isActive && "text-white")}
+                      aria-current={isActive ? "location" : undefined}
+                    >
+                      {link.label}
+                      <span
+                        className={cn(
+                          "absolute right-0 -bottom-0.5 left-0 h-px origin-left bg-forge-teal transition-transform duration-200 group-hover:scale-x-100",
+                          isActive ? "scale-x-100" : "scale-x-0",
+                        )}
+                      />
+                    </a>
+                  );
+                })
+              : COMPACT_NAV_LINKS.map((link) => {
+                  if (link.kind === "landing-section") {
+                    return (
+                      <a
+                        key={link.id}
+                        href={`/#${link.id}`}
+                        className={NAV_LINK_CLASS}
+                      >
+                        {link.label}
+                        <span className="absolute right-0 -bottom-0.5 left-0 h-px origin-left scale-x-0 bg-forge-teal transition-transform duration-200 group-hover:scale-x-100" />
+                      </a>
+                    );
+                  }
 
-              return (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className={cn(NAV_LINK_CLASS, isActive && "text-white")}
-                  aria-current={isActive ? "page" : undefined}
-                >
-                  {link.label}
-                  <span
-                    className={cn(
-                      "absolute right-0 -bottom-0.5 left-0 h-px origin-left bg-forge-teal transition-transform duration-200 group-hover:scale-x-100",
-                      isActive ? "scale-x-100" : "scale-x-0",
-                    )}
-                  />
-                </Link>
-              );
-            })}
+                  const isActive = currentPathname === link.to;
+
+                  return (
+                    <Link
+                      key={link.to}
+                      to={link.to}
+                      className={cn(NAV_LINK_CLASS, isActive && "text-white")}
+                      aria-current={isActive ? "page" : undefined}
+                    >
+                      {link.label}
+                      <span
+                        className={cn(
+                          "absolute right-0 -bottom-0.5 left-0 h-px origin-left bg-forge-teal transition-transform duration-200 group-hover:scale-x-100",
+                          isActive ? "scale-x-100" : "scale-x-0",
+                        )}
+                      />
+                    </Link>
+                  );
+                })}
           </nav>
 
           <div className="hidden shrink-0 items-center gap-3 lg:flex">
-            {hasLegalActions ? (
-              <LegalActionButtons actionSet={actionSet} size="sm" />
-            ) : hasInstallAction ? (
+            {hasInstallAction ? (
               <DownloadInstallActionButtons
                 installAction={installAction}
                 isAuthenticated={isAuthenticated}
@@ -321,61 +337,73 @@ export function Navbar({
           className="flex flex-col items-center gap-6"
           aria-label="Mobile navigation links"
         >
-          {LANDING_NAV_LINKS.map((link, i) => {
-            const isActive = isLandingPage && activeLandingSection === link.id;
-            const mobileLinkClass = cn(
-              "rounded-md px-4 py-2 font-sans font-semibold text-2xl text-text-dark-secondary transition-all duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-4",
-              menuOpen
-                ? "translate-y-0 opacity-100"
-                : "translate-y-4 opacity-0",
-              MOBILE_NAV_LINK_DELAYS[i],
-              isActive && "bg-forge-teal/10 text-white",
-            );
-
-            return (
-              <a
-                key={link.id}
-                href={isLandingPage ? `#${link.id}` : `/#${link.id}`}
-                onClick={(e) => handleNavClick(e, link.id)}
-                className={mobileLinkClass}
-                aria-current={isActive ? "location" : undefined}
-              >
-                {link.label}
-              </a>
-            );
-          })}
-          {LEGAL_NAV_LINKS.map((link, i) => {
-            const isActive = currentPathname === link.to;
-
-            return (
-              <Link
-                key={link.to}
-                to={link.to}
-                onClick={closeMenu}
-                className={cn(
+          {showLandingSectionLinks
+            ? LANDING_NAV_LINKS.map((link, i) => {
+                const isActive =
+                  isLandingPage && activeLandingSection === link.id;
+                const mobileLinkClass = cn(
                   "rounded-md px-4 py-2 font-sans font-semibold text-2xl text-text-dark-secondary transition-all duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-4",
                   menuOpen
                     ? "translate-y-0 opacity-100"
                     : "translate-y-4 opacity-0",
-                  MOBILE_NAV_LINK_DELAYS[LANDING_NAV_LINKS.length + i],
+                  MOBILE_NAV_LINK_DELAYS[i],
                   isActive && "bg-forge-teal/10 text-white",
-                )}
-                aria-current={isActive ? "page" : undefined}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
+                );
+
+                return (
+                  <a
+                    key={link.id}
+                    href={`#${link.id}`}
+                    onClick={(e) => handleNavClick(e, link.id)}
+                    className={mobileLinkClass}
+                    aria-current={isActive ? "location" : undefined}
+                  >
+                    {link.label}
+                  </a>
+                );
+              })
+            : COMPACT_NAV_LINKS.map((link, i) => {
+                const mobileLinkClass = cn(
+                  "rounded-md px-4 py-2 font-sans font-semibold text-2xl text-text-dark-secondary transition-all duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-4",
+                  menuOpen
+                    ? "translate-y-0 opacity-100"
+                    : "translate-y-4 opacity-0",
+                  MOBILE_NAV_LINK_DELAYS[i],
+                  link.kind === "route" &&
+                    currentPathname === link.to &&
+                    "bg-forge-teal/10 text-white",
+                );
+
+                if (link.kind === "landing-section") {
+                  return (
+                    <a
+                      key={link.id}
+                      href={`/#${link.id}`}
+                      onClick={closeMenu}
+                      className={mobileLinkClass}
+                    >
+                      {link.label}
+                    </a>
+                  );
+                }
+
+                const isActive = currentPathname === link.to;
+
+                return (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    onClick={closeMenu}
+                    className={mobileLinkClass}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
         </nav>
         <div className="flex w-48 flex-col items-center gap-4">
-          {hasLegalActions ? (
-            <LegalActionButtons
-              actionSet={actionSet}
-              closeMenu={closeMenu}
-              menuOpen={menuOpen}
-              size="lg"
-            />
-          ) : hasInstallAction ? (
+          {hasInstallAction ? (
             <DownloadInstallActionButtons
               closeMenu={closeMenu}
               installAction={installAction}
@@ -605,55 +633,6 @@ function AuthActionButtons({
           </Link>
         </Button>
       )}
-    </>
-  );
-}
-
-interface LegalActionButtonsProps {
-  actionSet: "privacy" | "terms";
-  closeMenu?: () => void;
-  menuOpen?: boolean;
-  size: "lg" | "sm";
-}
-
-function LegalActionButtons({
-  actionSet,
-  closeMenu,
-  menuOpen,
-  size,
-}: LegalActionButtonsProps) {
-  const alternate = getLegalActionTarget(actionSet);
-
-  return (
-    <>
-      <Button
-        variant="outline"
-        asChild
-        size={size}
-        className={actionButtonClassName({
-          isPrimary: false,
-          menuOpen,
-          size,
-        })}
-      >
-        <Link to="/" onClick={closeMenu}>
-          Back home
-        </Link>
-      </Button>
-      <Button
-        variant="primary"
-        asChild
-        size={size}
-        className={actionButtonClassName({
-          isPrimary: true,
-          menuOpen,
-          size,
-        })}
-      >
-        <Link to={alternate.to} onClick={closeMenu}>
-          {alternate.label}
-        </Link>
-      </Button>
     </>
   );
 }

@@ -2,8 +2,8 @@
 
 import { Link } from "@tanstack/react-router";
 import { SlidersHorizontal, UsersRound } from "lucide-react";
-import { EmptyExploreFilteredVisual } from "@/assets/empty-state/empty-explore-filtered";
-import { EmptyExploreOpenVisual } from "@/assets/empty-state/empty-explore-open";
+import { EmptyExploreFilteredVisual } from "@/features/explore/assets/empty-explore-filtered";
+import { EmptyExploreOpenVisual } from "@/features/explore/assets/empty-explore-open";
 import { useExploreFeed } from "@/features/explore/hooks/use-explore-feed";
 import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
 import { PageErrorState } from "@/shared/components/page-error-state";

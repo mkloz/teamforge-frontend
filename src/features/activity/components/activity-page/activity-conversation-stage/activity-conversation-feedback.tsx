@@ -1,5 +1,5 @@
 import { ArrowLeft, RefreshCw } from "lucide-react";
-import { ErrorNetworkRetryVisual } from "@/assets/error-state/error-network-retry";
+import { ErrorNetworkRetryVisual } from "@/features/activity/assets/error-network-retry";
 import { Button } from "@/shared/components/ui/button";
 
 type ActivityConversationFeedbackVariant = "error" | "missing" | "offline";

@@ -1,7 +1,7 @@
 import { RefreshCw } from "lucide-react";
-import { EmptyMessageThreadVisual } from "@/assets/empty-state/empty-message-thread";
-import { MyNotesNoMessagesVisual } from "@/assets/empty-state/my-notes-no-messages";
-import { ErrorNetworkRetryVisual } from "@/assets/error-state/error-network-retry";
+import { EmptyMessageThreadVisual } from "@/features/activity/assets/empty-message-thread";
+import { ErrorNetworkRetryVisual } from "@/features/activity/assets/error-network-retry";
+import { MyNotesNoMessagesVisual } from "@/features/activity/assets/my-notes-no-messages";
 import { Button } from "@/shared/components/ui/button";
 
 interface MessageListErrorStateProps {

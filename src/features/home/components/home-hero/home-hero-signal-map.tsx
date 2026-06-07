@@ -1,4 +1,4 @@
-import { HomeHeroActivityWorkbenchVisual } from "@/assets/home-hero/activity-workbench";
+import { HomeHeroActivityWorkbenchVisual } from "@/features/home/assets/activity-workbench";
 
 export function HomeHeroSignalMap() {
   return (

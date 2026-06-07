@@ -2,7 +2,7 @@ import { Paperclip, X } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { ErrorMessageSendFailedVisual } from "@/assets/error-state/error-message-send-failed";
+import { ErrorMessageSendFailedVisual } from "@/features/activity/assets/error-message-send-failed";
 import { getActivityPopupPanelClass } from "@/features/activity/components/activity-popup-styles";
 import type { ActivitySendMessageInput } from "@/features/activity/lib/activity-contract";
 import { Button } from "@/shared/components/ui/button";

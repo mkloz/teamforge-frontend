@@ -1,0 +1,98 @@
+import { CalendarClock, MessageCircle, MousePointer2 } from "lucide-react";
+import planToGroupVisual from "@/features/landing/assets/plan-to-group-visual-dark.png";
+import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
+
+const SECTION_NOTES = [
+  {
+    icon: MousePointer2,
+    title: "Start with the activity",
+    detail: "Start with the thing you would actually show up for.",
+  },
+  {
+    icon: CalendarClock,
+    title: "Add the rough shape",
+    detail: "Give it enough time and place context to feel real.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Open one room",
+    detail: "One small group forms around the plan, not another list.",
+  },
+] as const;
+
+export function PlanToGroupSection() {
+  return (
+    <section
+      id={LANDING_SECTION_IDS.planToGroup}
+      className="dark relative scroll-mt-16 overflow-hidden bg-hero-bg py-20 text-white md:py-28"
+      aria-labelledby="plan-to-group-heading"
+    >
+      <div
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[4rem_4rem] opacity-30"
+        aria-hidden="true"
+      />
+
+      <div className="relative mx-auto max-w-7xl px-6">
+        <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
+          <header className="max-w-2xl lg:col-span-6">
+            <p className="font-bold text-forge-teal text-xs uppercase">
+              How TeamForge works
+            </p>
+            <h2
+              id="plan-to-group-heading"
+              className="mt-4 text-balance font-black text-4xl leading-tight tracking-tight md:text-5xl"
+            >
+              One plan. One compatible group.
+            </h2>
+          </header>
+
+          <p className="max-w-xl text-pretty font-medium text-base text-text-dark-secondary leading-relaxed md:text-lg lg:col-span-5 lg:col-start-8">
+            Choose the activity, add the rough shape, and let TeamForge handle
+            the grouping work. You get one room for one plan.
+          </p>
+        </div>
+      </div>
+
+      <div className="relative mx-auto mt-10 max-w-7xl px-6">
+        <div className="overflow-hidden border-white/10 border-y">
+          <img
+            src={planToGroupVisual}
+            alt="A matte TeamForge visual showing a simple plan, rough details, and one small group connected by teal route lines"
+            className="h-80 w-full object-cover object-center sm:h-96 md:h-auto"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      </div>
+
+      <div className="relative mx-auto max-w-7xl px-6">
+        <ul className="grid border-white/10 border-b md:grid-cols-3 md:border-t">
+          {SECTION_NOTES.map(({ detail, icon: Icon, title }) => (
+            <li
+              key={title}
+              className="border-white/10 border-t py-6 md:border-t-0 md:border-r md:px-8 last:md:border-r-0 last:md:pr-0 first:md:pl-0"
+            >
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-forge-teal/10 text-forge-teal">
+                    <Icon
+                      className="size-3.5"
+                      aria-hidden="true"
+                      strokeWidth={2}
+                    />
+                  </span>
+                  <h3 className="font-black text-base text-white leading-snug">
+                    {title}
+                  </h3>
+                </div>
+                <p className="mt-2 max-w-sm font-medium text-sm text-text-dark-secondary leading-relaxed">
+                  {detail}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}

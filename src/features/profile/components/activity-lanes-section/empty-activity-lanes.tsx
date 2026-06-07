@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Tags } from "lucide-react";
-import { EmptyProfileActivityLanesVisual } from "@/assets/empty-state/empty-profile-activity-lanes";
 import { buildInterestsEditNavigation } from "@/features/onboarding/lib/onboarding-route";
+import { EmptyProfileActivityLanesVisual } from "@/features/profile/assets/empty-profile-activity-lanes";
 import { Button } from "@/shared/components/ui/button";
 
 export function EmptyActivityLanes() {

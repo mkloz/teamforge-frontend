@@ -13,7 +13,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { NoSavedMessagesVisual } from "@/assets/empty-state/no-saved-messages";
+import { NoSavedMessagesVisual } from "@/features/activity/assets/no-saved-messages";
 import { useMessageLayout } from "@/features/activity/hooks/use-message-layout";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
 import { getActivityConversationKey } from "@/features/activity/lib/activity-conversation-key";

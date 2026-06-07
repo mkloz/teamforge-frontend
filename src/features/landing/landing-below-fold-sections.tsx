@@ -1,15 +1,19 @@
-import { AboutSection } from "@/features/landing/components/about";
-import { AlgorithmSection } from "@/features/landing/components/algorithm";
 import { CtaSection } from "@/features/landing/components/cta";
 import { Footer } from "@/features/landing/components/footer";
-import { HowItWorksSection } from "@/features/landing/components/how-it-works";
+import { GroupFeelsRightSection } from "@/features/landing/components/group-feels-right";
+import { PeopleProblemSection } from "@/features/landing/components/people-problem";
+import { PlanToGroupSection } from "@/features/landing/components/plan-to-group";
+import { TrustControlSection } from "@/features/landing/components/trust-control";
+import { WhyDifferentSection } from "@/features/landing/components/why-different";
 
 export function LandingBelowFoldSections() {
   return (
     <>
-      <HowItWorksSection />
-      <AlgorithmSection />
-      <AboutSection />
+      <PeopleProblemSection />
+      <PlanToGroupSection />
+      <WhyDifferentSection />
+      <GroupFeelsRightSection />
+      <TrustControlSection />
       <CtaSection />
       <Footer />
     </>

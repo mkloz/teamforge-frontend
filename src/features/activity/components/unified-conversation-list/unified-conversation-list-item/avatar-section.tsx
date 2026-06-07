@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { MyNotesAvatarVisual } from "@/assets/activity/special-conversation-avatars";
+import { MyNotesAvatarVisual } from "@/features/activity/assets/special-conversation-avatars";
 import type { UnifiedConversation } from "@/features/activity/lib/activity-contract";
 import {
   getConversationAvatarUrl,

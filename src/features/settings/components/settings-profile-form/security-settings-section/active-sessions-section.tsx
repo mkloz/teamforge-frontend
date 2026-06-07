@@ -1,5 +1,5 @@
 import { Shield } from "lucide-react";
-import { EmptyActiveSessionsVisual } from "@/assets/empty-state/empty-active-sessions";
+import { EmptyActiveSessionsVisual } from "@/features/settings/assets/empty-active-sessions";
 import {
   SessionRow,
   StatPill,

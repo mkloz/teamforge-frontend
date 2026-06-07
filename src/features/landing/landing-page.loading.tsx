@@ -41,7 +41,7 @@ export function LandingPageLoadingFixture() {
         </div>
       </header>
       <div className="fixed top-1/2 left-6 z-100 hidden -translate-y-1/2 flex-col items-center gap-5 lg:flex">
-        {["hero", "how", "algorithm", "about", "cta"].map((item, index) => (
+        {["hero", "people-problem", "cta"].map((item, index) => (
           <Skeleton
             key={item}
             shape="circle"
@@ -96,111 +96,50 @@ export function LandingPageLoadingFixture() {
           />
         </section>
 
-        <section className="landing-story-scroll relative bg-canvas">
-          <div className="sticky top-0 flex h-screen w-full flex-col items-center overflow-hidden md:flex-row">
-            <div className="relative z-10 order-2 flex h-[120vh] w-full items-center justify-center p-6 md:order-1 md:h-full md:w-1/2 md:p-24">
-              <div className="flex w-full max-w-md flex-col gap-5">
-                <Skeleton className="h-3 w-16" tone="teal" />
-                <Skeleton className="h-10 w-full" />
+        <section className="dark relative overflow-hidden bg-hero-bg py-24 md:py-32">
+          <div className="relative mx-auto max-w-7xl px-6">
+            <div className="grid items-center gap-8 lg:grid-cols-12 xl:gap-10">
+              <header className="max-w-xl lg:col-span-5">
+                <Skeleton className="h-3 w-48" tone="teal" />
                 <SkeletonText
-                  lines={4}
-                  widths={["w-full", "w-5/6", "w-full", "w-2/3"]}
+                  className="mt-4 w-full gap-3"
+                  lineClassName="h-10 md:h-12"
+                  lines={3}
+                  widths={["w-full", "w-11/12", "w-4/5"]}
                 />
-              </div>
-            </div>
-            <div className="relative order-1 flex h-screen w-full items-center justify-center md:order-2 md:h-full md:w-1/2">
-              <Skeleton
-                shape="circle"
-                className="size-64 md:size-88"
-                tone="teal"
-              />
-            </div>
-          </div>
-        </section>
-
-        <section className="dark relative overflow-hidden bg-hero-bg py-24 md:py-36">
-          <div className="relative mx-auto max-w-6xl px-6">
-            <div className="mb-16 flex flex-col items-center gap-4 text-center md:mb-20">
-              <Skeleton className="h-10 w-full max-w-lg" tone="teal" />
-              <SkeletonText
-                className="max-w-xl"
-                lines={3}
-                widths={["w-full", "w-11/12", "w-3/4"]}
-              />
-            </div>
-            <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-16">
-              <Skeleton
-                shape="circle"
-                className="size-72 shrink-0"
-                tone="teal"
-              />
-              <div className="grid w-full max-w-md gap-4">
-                {["one", "two", "three"].map((item, index) => (
-                  <div key={item} className="border-border/30 border-t py-4">
-                    <Skeleton
-                      className="h-6 w-20"
-                      tone={index === 0 ? "teal" : "default"}
-                    />
-                    <Skeleton className="mt-3 h-4 w-full" />
-                    <Skeleton className="mt-2 h-4 w-3/4" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="landing-story-scroll relative w-full bg-canvas">
-          <div className="sticky top-0 flex h-screen w-full items-center overflow-hidden">
-            <div className="mx-auto w-full max-w-7xl px-6">
-              <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-2 lg:gap-24">
-                <header className="z-20 flex h-full max-w-xl flex-col items-center justify-center pt-12 text-center md:items-start md:pt-0 md:text-left">
+                <SkeletonText
+                  className="mt-6 w-full"
+                  lines={5}
+                  widths={["w-full", "w-11/12", "w-full", "w-5/6", "w-2/3"]}
+                />
+                <div className="mt-8 border-forge-teal/45 border-l-2 pl-4">
                   <SkeletonText
-                    className="w-full gap-3"
-                    lineClassName="h-10 md:h-14"
-                    lines={3}
-                    widths={["w-full", "w-11/12", "w-3/4"]}
+                    lines={2}
+                    widths={["w-full", "w-4/5"]}
+                    className="max-w-lg"
                   />
-                  <SkeletonText
-                    className="mt-8 w-full max-w-lg"
-                    lineClassName="h-4 md:h-5"
-                    lines={4}
-                    widths={["w-full", "w-5/6", "w-full", "w-2/3"]}
-                  />
-                </header>
-
-                <div className="relative flex h-100 items-center md:h-screen">
-                  <section className="relative h-100 w-full md:h-150">
-                    {[
-                      {
-                        key: "top",
-                        className: "top-0 z-30 scale-100",
-                      },
-                      {
-                        key: "middle",
-                        className: "top-14 z-20 scale-95",
-                      },
-                      {
-                        key: "base",
-                        className: "top-28 z-10 scale-90",
-                      },
-                    ].map((item) => (
-                      <div
-                        key={item.key}
-                        className={`absolute right-0 left-0 rounded-2xl border border-border bg-card p-5 shadow-sm ${item.className}`}
-                      >
-                        <Skeleton className="h-4 w-24" tone="teal" />
-                        <Skeleton className="mt-4 h-8 w-4/5" />
-                        <SkeletonText
-                          className="mt-4"
-                          lines={3}
-                          widths={["w-full", "w-11/12", "w-3/4"]}
-                        />
-                      </div>
-                    ))}
-                  </section>
                 </div>
+              </header>
+
+              <div className="lg:col-span-7 lg:-mr-12 xl:-mr-20">
+                <Skeleton className="mx-auto aspect-4/3 w-full max-w-4xl" />
               </div>
+            </div>
+
+            <div className="mt-14 grid border-white/10 border-y md:grid-cols-3 lg:mt-16">
+              {["one", "two", "three"].map((item) => (
+                <div
+                  key={item}
+                  className="border-white/10 border-b py-6 last:border-b-0 md:border-r md:border-b-0 md:px-8 last:md:border-r-0 last:md:pr-0 first:md:pl-0"
+                >
+                  <Skeleton className="h-5 w-36" tone="teal" />
+                  <SkeletonText
+                    className="mt-3 max-w-sm"
+                    lines={2}
+                    widths={["w-full", "w-4/5"]}
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </section>

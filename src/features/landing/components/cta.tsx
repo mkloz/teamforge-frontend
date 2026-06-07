@@ -35,8 +35,8 @@ export function CtaSection() {
             <span className="text-forge-teal">group</span> to appear.
           </h2>
           <p className="mx-auto mb-12 max-w-xl text-pretty font-sans text-lg text-text-dark-secondary leading-relaxed">
-            Your personality and interests, intelligently assembled into a group
-            built to click. All in one button.
+            The setup takes a little thought. That's the point. TeamForge uses
+            it to form one small group around something you actually want to do.
           </p>
         </motion.div>
         <motion.div
@@ -94,7 +94,8 @@ export function CtaSection() {
           transition={{ duration: 0.7, delay: 0.7 }}
           className="font-sans text-text-dark-muted text-xs"
         >
-          No credit card required &nbsp;&middot;&nbsp; No spam
+          Free to use &nbsp;&middot;&nbsp; No card required &nbsp;&middot;&nbsp;
+          No spam
         </motion.p>
       </div>
     </section>

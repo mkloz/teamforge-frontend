@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { EmptyRecommendationsVisual } from "@/assets/empty-state/empty-recommendations";
 import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
+import { EmptyRecommendationsVisual } from "@/features/home/assets/empty-recommendations";
 import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
 import { HomeRecommendedGroupsSkeleton } from "@/features/home/components/home-skeletons";
 import { useHomeData } from "@/features/home/hooks/use-home-data";

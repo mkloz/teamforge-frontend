@@ -1,4 +1,4 @@
-import { ErrorForgeGroupFailedVisual } from "@/assets/error-state/error-forge-group-failed";
+import { ErrorForgeGroupFailedVisual } from "@/features/forge/assets/error-forge-group-failed";
 
 interface FailureHeroProps {
   description: string;

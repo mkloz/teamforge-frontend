@@ -1,4 +1,4 @@
-import { EmptyInterestSearchVisual } from "@/assets/empty-state/empty-interest-search";
+import { EmptyInterestSearchVisual } from "@/features/onboarding/assets/empty-interest-search";
 
 interface SearchEmptyStateProps {
   query: string;

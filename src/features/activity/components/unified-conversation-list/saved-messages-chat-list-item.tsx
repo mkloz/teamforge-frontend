@@ -1,6 +1,6 @@
 import { ChevronRight, MessageCircle, Trash2 } from "lucide-react";
 import { memo } from "react";
-import { SavedMessagesAvatarVisual } from "@/assets/activity/special-conversation-avatars";
+import { SavedMessagesAvatarVisual } from "@/features/activity/assets/special-conversation-avatars";
 import { ActivityMenuIcon } from "@/features/activity/components/activity-menu-icon";
 import {
   ACTIVITY_MENU_ITEM_CLASS,
