@@ -4,7 +4,7 @@ import {
   MessageCircle,
   ShieldCheck,
 } from "lucide-react";
-import groupFeelsRightVisual from "@/features/landing/assets/group-feels-right-visual-dark.png";
+import groupFeelsRightVisual from "@/features/landing/assets/group-feels-right-visual-ai-cutout.png";
 import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
 
 const FIT_POINTS = [
@@ -34,7 +34,7 @@ export function GroupFeelsRightSection() {
   return (
     <section
       id={LANDING_SECTION_IDS.groupFeelsRight}
-      className="dark relative scroll-mt-16 overflow-hidden bg-hero-bg py-20 text-white md:py-28"
+      className="dark relative scroll-mt-16 overflow-hidden bg-hero-bg pt-24 pb-20 text-white md:pt-32 md:pb-28"
       aria-labelledby="group-feels-right-heading"
     >
       <div
@@ -60,10 +60,10 @@ export function GroupFeelsRightSection() {
           </p>
         </header>
 
-        <div className="relative my-6 overflow-hidden border-white/10 border-t">
+        <div className="relative mt-8 mb-6 overflow-hidden border-white/10 border-t md:mt-10">
           <img
             src={groupFeelsRightVisual}
-            alt="A matte TeamForge visual showing four human fit signals pointing toward one group room"
+            alt="Shared interests, social style, practical fit, and follow-through signals flowing into one TeamForge group room"
             className="mx-auto h-auto max-h-136 w-full object-contain py-4"
             loading="lazy"
             decoding="async"
@@ -75,7 +75,7 @@ export function GroupFeelsRightSection() {
           feels easy enough to try.
         </p>
 
-        <ul className="mt-8 grid border-white/10 border-y md:grid-cols-2 lg:grid-cols-4">
+        <ul className="mt-10 grid border-white/10 border-y md:grid-cols-2 lg:grid-cols-4">
           {FIT_POINTS.map(({ detail, icon: Icon, title }) => (
             <li
               key={title}

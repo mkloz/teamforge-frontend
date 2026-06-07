@@ -5,7 +5,7 @@ import {
   ShieldCheck,
   UserCheck,
 } from "lucide-react";
-import trustControlVisual from "@/features/landing/assets/trust-control-visual-dark.png";
+import trustControlVisual from "@/features/landing/assets/trust-control-visual-ai-cutout.png";
 import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
 
 const CONTROL_POINTS = [
@@ -35,7 +35,7 @@ export function TrustControlSection() {
   return (
     <section
       id={LANDING_SECTION_IDS.trustControl}
-      className="dark relative scroll-mt-16 overflow-hidden bg-hero-bg py-20 text-white md:py-28"
+      className="dark relative scroll-mt-16 overflow-hidden bg-hero-bg pt-20 pb-28 text-white md:pt-28 md:pb-36"
       aria-labelledby="trust-control-heading"
     >
       <div
@@ -79,7 +79,7 @@ export function TrustControlSection() {
           <div className="relative lg:col-span-7 lg:-mr-6 xl:-mr-12">
             <img
               src={trustControlVisual}
-              alt="A matte TeamForge visual showing a group room review, control actions, and reliability cues"
+              alt="TeamForge group review screen with controls to review, decline, leave, and report"
               className="mx-auto w-full max-w-3xl select-none lg:max-w-4xl"
               loading="lazy"
               decoding="async"
@@ -87,7 +87,7 @@ export function TrustControlSection() {
           </div>
         </div>
 
-        <ul className="mt-12 grid border-white/10 border-y md:grid-cols-2 lg:grid-cols-4">
+        <ul className="mt-14 grid border-white/10 border-y md:grid-cols-2 lg:grid-cols-4">
           {CONTROL_POINTS.map(({ detail, icon: Icon, title }) => (
             <li
               key={title}

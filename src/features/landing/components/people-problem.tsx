@@ -1,5 +1,5 @@
 import { ClipboardList, MousePointer2, UsersRound } from "lucide-react";
-import darkVisual from "@/features/landing/assets/people-problem-visual-dark.png";
+import darkVisual from "@/features/landing/assets/people-problem-visual-ai-cutout.png";
 import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
 
 const PEOPLE_PROBLEM_POINTS = [
@@ -25,7 +25,7 @@ export function PeopleProblemSection() {
   return (
     <section
       id={LANDING_SECTION_IDS.peopleProblem}
-      className="dark relative overflow-hidden bg-hero-bg py-24 text-white md:py-32"
+      className="dark relative scroll-mt-16 overflow-hidden bg-hero-bg pt-24 pb-20 text-white md:pt-32 md:pb-28 lg:pt-36"
       aria-labelledby="people-problem-heading"
     >
       <div
@@ -61,7 +61,7 @@ export function PeopleProblemSection() {
           <div className="relative lg:col-span-7 lg:-mr-12 xl:-mr-20">
             <img
               src={darkVisual}
-              alt="TeamForge activity collage showing a plan card, activity photos, connection paths, and an open group slot"
+              alt="Activity cards connected to one TeamForge group room, with an open seat highlighted"
               className="mx-auto w-full max-w-4xl select-none drop-shadow-2xl lg:origin-center lg:scale-115 xl:scale-125"
               loading="lazy"
               decoding="async"

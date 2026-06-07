@@ -1,5 +1,5 @@
 import { CalendarClock, MessageCircle, MousePointer2 } from "lucide-react";
-import planToGroupVisual from "@/features/landing/assets/plan-to-group-visual-dark.png";
+import planToGroupVisual from "@/features/landing/assets/plan-to-group-visual-ai-cutout.png";
 import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
 
 const SECTION_NOTES = [
@@ -24,7 +24,7 @@ export function PlanToGroupSection() {
   return (
     <section
       id={LANDING_SECTION_IDS.planToGroup}
-      className="dark relative scroll-mt-16 overflow-hidden bg-hero-bg py-20 text-white md:py-28"
+      className="dark relative scroll-mt-16 overflow-hidden bg-hero-bg pt-20 pb-24 text-white md:pt-24 md:pb-32"
       aria-labelledby="plan-to-group-heading"
     >
       <div
@@ -53,11 +53,11 @@ export function PlanToGroupSection() {
         </div>
       </div>
 
-      <div className="relative mx-auto mt-10 max-w-7xl px-6">
+      <div className="relative mx-auto mt-12 max-w-7xl px-6 md:mt-14">
         <div className="overflow-hidden border-white/10 border-y">
           <img
             src={planToGroupVisual}
-            alt="A matte TeamForge visual showing a simple plan, rough details, and one small group connected by teal route lines"
+            alt="Three-step TeamForge flow from activity idea to plan details to one small group room"
             className="h-80 w-full object-cover object-center sm:h-96 md:h-auto"
             loading="lazy"
             decoding="async"

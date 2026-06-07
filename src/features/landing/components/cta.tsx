@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Download } from "lucide-react";
 import { useMouseGlow } from "@/features/landing/hooks/use-mouse-glow";
 import { useResolvedLandingAuthActions } from "@/features/landing/hooks/use-resolved-landing-auth-actions";
@@ -7,15 +7,20 @@ import { Button } from "@/shared/components/ui/button";
 
 export function CtaSection() {
   const { sectionRef, glowRef, glowHandlers } = useMouseGlow();
+  const prefersReducedMotion = useReducedMotion();
   const { isResolvingAuthAction, primaryAction } =
     useResolvedLandingAuthActions("Create Free Account");
+  const revealInitial = prefersReducedMotion ? false : { opacity: 0, y: 20 };
+  const revealTransition = prefersReducedMotion
+    ? { duration: 0 }
+    : { duration: 0.7 };
 
   return (
     <section
       id="cta"
       ref={sectionRef}
       {...glowHandlers}
-      className="dark relative overflow-hidden bg-hero-bg py-28 md:py-40"
+      className="dark relative overflow-hidden bg-hero-bg pt-24 pb-28 md:pt-36 md:pb-40"
       aria-label="Get started with TeamForge"
     >
       <div
@@ -25,10 +30,14 @@ export function CtaSection() {
       />
       <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={revealInitial}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.7, delay: 0.1 }}
+          transition={
+            prefersReducedMotion
+              ? revealTransition
+              : { ...revealTransition, delay: 0.1 }
+          }
         >
           <h2 className="mb-6 text-balance font-bold font-sans text-3xl text-white leading-tight sm:text-5xl">
             Stop waiting for the right{" "}
@@ -40,10 +49,14 @@ export function CtaSection() {
           </p>
         </motion.div>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={revealInitial}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.7, delay: 0.2 }}
+          transition={
+            prefersReducedMotion
+              ? revealTransition
+              : { ...revealTransition, delay: 0.2 }
+          }
           className="mb-6 flex flex-col items-center justify-center gap-4 sm:flex-row"
         >
           {isResolvingAuthAction ? (
@@ -88,10 +101,14 @@ export function CtaSection() {
           </Button>
         </motion.div>
         <motion.p
-          initial={{ opacity: 0 }}
+          initial={prefersReducedMotion ? false : { opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.7, delay: 0.7 }}
+          transition={
+            prefersReducedMotion
+              ? revealTransition
+              : { ...revealTransition, delay: 0.7 }
+          }
           className="font-sans text-text-dark-muted text-xs"
         >
           Free to use &nbsp;&middot;&nbsp; No card required &nbsp;&middot;&nbsp;

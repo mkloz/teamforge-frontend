@@ -16,7 +16,6 @@ import Share from "lucide-react/dist/esm/icons/share.js";
 import Smartphone from "lucide-react/dist/esm/icons/smartphone.js";
 import Wifi from "lucide-react/dist/esm/icons/wifi.js";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
-
 import { Footer } from "@/features/landing/components/footer";
 import { Navbar } from "@/features/landing/components/navbar";
 import { useLandingAuthActions } from "@/features/landing/hooks/use-landing-auth-actions";

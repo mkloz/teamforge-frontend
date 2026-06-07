@@ -4,7 +4,7 @@ import {
   SearchX,
   UsersRound,
 } from "lucide-react";
-import whyDifferentVisual from "@/features/landing/assets/why-different-visual-dark.png";
+import whyDifferentVisual from "@/features/landing/assets/why-different-visual-ai-text.png";
 import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
 
 const DIFFERENCE_POINTS = [
@@ -34,7 +34,7 @@ export function WhyDifferentSection() {
   return (
     <section
       id={LANDING_SECTION_IDS.whyDifferent}
-      className="dark relative scroll-mt-16 overflow-hidden bg-hero-bg py-20 text-white md:py-28"
+      className="dark relative scroll-mt-16 overflow-hidden bg-hero-bg pt-20 pb-24 text-white md:pt-28 md:pb-36"
       aria-labelledby="why-different-heading"
     >
       <div
@@ -47,7 +47,7 @@ export function WhyDifferentSection() {
           <div className="overflow-hidden border-white/10 border-y lg:col-span-7">
             <img
               src={whyDifferentVisual}
-              alt="A matte TeamForge visual showing scattered browsing cards pushed aside while one plan and one group stay in focus"
+              alt="One TeamForge group room in focus while browsing cards move into the background"
               className="h-80 w-full object-cover object-center sm:h-96 md:h-auto"
               loading="lazy"
               decoding="async"
@@ -69,13 +69,13 @@ export function WhyDifferentSection() {
               starts with the plan, then brings together one small group around
               it.
             </p>
-            <p className="mt-8 text-pretty font-black text-base text-white leading-relaxed">
+            <p className="mt-8 text-pretty border-forge-teal/45 border-l-2 pl-4 font-semibold text-base text-white leading-relaxed">
               A better starting point beats a better search habit.
             </p>
           </div>
         </div>
 
-        <ul className="mt-12 grid border-white/10 border-y md:grid-cols-2 lg:grid-cols-4">
+        <ul className="mt-14 grid border-white/10 border-y md:grid-cols-2 lg:grid-cols-4">
           {DIFFERENCE_POINTS.map(({ detail, icon: Icon, title }) => (
             <li
               key={title}
