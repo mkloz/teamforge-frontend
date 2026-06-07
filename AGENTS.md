@@ -135,15 +135,19 @@ npm run pwa:release
 
 Follow `docs/visual-style-guide.md`. Key enforced rules:
 
-| Token | Hex | Use |
-| --- | --- | --- |
-| `--color-forge-teal` | `#0D9488` | Primary actions, active states, icons |
-| `--color-spark-amber` | `#F59E0B` | Trust scores, notifications, highlights |
-| `--color-canvas` | `#FAFAF8` | Light section backgrounds |
-| `--color-ink` | `#1C1C1A` | Headings and body text on light |
-| `--color-slate-muted` | `#6B7280` | Secondary text, captions, borders |
+| Token | Light | Dark | Use |
+| --- | --- | --- | --- |
+| `--color-forge-teal` | `#0D9488` | `#0D9488` | Brand teal, active states, icons, progress, selected states |
+| `--primary` | `#0F766E` | `#0D9488` | Solid semantic primary surfaces where text contrast matters |
+| `--color-spark-amber` / `--accent` | `#F59E0B` | `#FBBF24` | Trust scores, notifications, highlights |
+| `--background` | `#F1F4F1` | `#0B0F0E` | Body background and floating navigation bases |
+| `--color-canvas` | `#F7F8F4` | `#111716` | Main page and long-session reading surfaces |
+| `--card` / `--popover` | `#FFFEFA` | `#18201E` | Cards, menus, dialogs, elevated panels |
+| `--input` | `#EEF2ED` | `#202927` | Text fields, selects, radios, tactile controls |
+| `--color-ink` | `#1C1F1D` | `#F2F5F1` | Headings and body text |
+| `--color-slate-muted` | `#68756F` | `#A4B2AC` | Secondary text, captions, placeholders |
 
-- Do not introduce new colors or fonts. Use opacity modifiers for lighter teal when needed.
+- Do not introduce new hue families or fonts. Use semantic tokens and opacity modifiers for lighter teal when needed.
 - Teal and amber must not exceed 15% of any screen surface.
 - Do not introduce gradient blobs, abstract shapes, or decorative SVG fills as backgrounds.
 - Use Inter through `--font-sans`; minimum font size is 12px; body line-height is 1.4-1.6.

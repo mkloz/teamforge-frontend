@@ -13,13 +13,14 @@ export function HeroSection() {
   return (
     <section
       id="hero"
-      className="dark relative flex min-h-screen items-center overflow-hidden bg-hero-bg"
+      data-landing-snap-section=""
+      className="dark relative flex min-h-svh items-start overflow-hidden bg-hero-bg lg:items-center"
       aria-label="Hero"
     >
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pt-28 pb-20 pl-6 md:pl-12">
-        <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-8">
-          <div className="flex max-w-xl flex-1 animate-hero-fade-in flex-col items-center text-center lg:items-start lg:text-left">
-            <h1 className="mb-5 max-w-3xl text-balance font-extrabold font-sans text-4xl text-white leading-none sm:text-5xl lg:text-6xl">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pt-20 pb-16 pl-6 md:pt-28 md:pb-20 md:pl-12">
+        <div className="flex flex-col items-center gap-8 md:gap-10 lg:flex-row">
+          <div className="order-2 flex max-w-xl flex-1 animate-hero-fade-in flex-col items-start text-start lg:order-1 lg:text-left">
+            <h1 className="mb-5 max-w-3xl text-balance text-center font-extrabold font-sans text-4xl text-white leading-none sm:text-start sm:text-5xl lg:text-6xl">
               Find your people,
               <br />
               <span className="relative inline-block pb-2 text-forge-teal">
@@ -73,7 +74,7 @@ export function HeroSection() {
             </div>
           </div>
 
-          <div className="flex flex-1 justify-center xl:justify-end">
+          <div className="order-1 flex w-full flex-1 justify-center lg:order-2 xl:justify-end">
             <ForgeOrb />
           </div>
         </div>
@@ -85,7 +86,7 @@ export function HeroSection() {
         onClick={() =>
           scrollToLandingSection(LANDING_SECTION_IDS.peopleProblem)
         }
-        className="absolute bottom-7 left-1/2 z-10 -translate-x-1/2 rounded-full text-text-dark-muted hover:text-text-dark-secondary"
+        className="absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 rounded-full text-text-dark-muted hover:text-text-dark-secondary lg:inline-flex"
         aria-label="Scroll to next section"
       >
         <div className="animate-fade-down">

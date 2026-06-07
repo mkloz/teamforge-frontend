@@ -8,6 +8,7 @@ import {
 } from "nuqs";
 import { buildActivityGroupHubNavigation } from "@/features/activity/lib/activity-route";
 import { forgeSearchModeValues } from "@/features/forge/lib/forge-route";
+import { useForgeWizardDraftStore } from "@/features/forge/store/use-forge-wizard-draft-store";
 
 import type { ForgeMode } from "../lib/forge-contract";
 import type { ForgeIdeaLaunch } from "../lib/forge-route";
@@ -25,6 +26,19 @@ function mapSearchToMode(
 
 export function useForgeRouteState() {
   const navigate = useNavigate();
+  const hasDraft = useForgeWizardDraftStore((store) => store.draft !== null);
+  const draftStep = useForgeWizardDraftStore(
+    (store) => store.draft?.step ?? null,
+  );
+  const draftMode = useForgeWizardDraftStore(
+    (store) => store.draft?.forgeMode ?? null,
+  );
+  const draftActivityId = useForgeWizardDraftStore(
+    (store) => store.draft?.activityId ?? null,
+  );
+  const draftGroupId = useForgeWizardDraftStore(
+    (store) => store.draft?.groupId ?? null,
+  );
   const [routeState, setRouteState] = useQueryStates(
     {
       open: parseAsBoolean,
@@ -43,11 +57,19 @@ export function useForgeRouteState() {
     },
   );
 
-  const isOpen = routeState.open ?? false;
-  const step = normalizeStep(routeState.step);
-  const forgeMode = mapSearchToMode(routeState.mode);
-  const activityId = routeState.activityId ?? null;
-  const groupId = routeState.groupId ?? null;
+  const shouldResumeDraft = routeState.open == null && hasDraft;
+  const isOpen = routeState.open ?? shouldResumeDraft;
+  const step = shouldResumeDraft
+    ? normalizeStep(draftStep)
+    : normalizeStep(routeState.step);
+  const forgeMode =
+    shouldResumeDraft && draftMode
+      ? draftMode
+      : mapSearchToMode(routeState.mode);
+  const activityId =
+    routeState.activityId ?? (shouldResumeDraft ? draftActivityId : null);
+  const groupId =
+    routeState.groupId ?? (shouldResumeDraft ? draftGroupId : null);
   const idea = buildLaunchIdea({
     detail: routeState.ideaDetail,
     eventDescription: routeState.ideaEventDescription,

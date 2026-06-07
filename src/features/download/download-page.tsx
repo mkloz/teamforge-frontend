@@ -518,14 +518,14 @@ export function DownloadPage() {
       <main>
         {/* ── Hero ──────────────────────────────────────────────────── */}
         <section
-          className="dark relative overflow-hidden bg-hero-bg pt-16"
+          className="dark relative h-svh min-h-0 overflow-hidden border-canvas border-b bg-hero-bg pt-16"
           aria-label="Install TeamForge"
         >
           <DownloadHeroGrid />
 
-          <div className="relative z-10 mx-auto grid min-h-[calc(100dvh-4rem)] max-w-6xl grid-cols-1 gap-10 px-6 py-10 sm:py-12 lg:grid-cols-2 lg:gap-16">
+          <div className="relative z-10 mx-auto grid h-[calc(100svh-4rem)] min-h-0 max-w-6xl grid-cols-1 gap-10 overflow-hidden px-6 py-10 sm:py-12 lg:grid-cols-2 lg:gap-16">
             {/* Left column: copy + selector + CTA */}
-            <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+            <div className="flex min-h-0 flex-col items-center justify-center text-center lg:items-start lg:text-left">
               <h1 className="mb-4 text-balance font-extrabold text-4xl text-white leading-none sm:text-5xl lg:text-6xl">
                 Your groups,{" "}
                 <span className="text-forge-teal">one tap away.</span>
@@ -584,7 +584,7 @@ export function DownloadPage() {
             </div>
 
             {/* Right column: device visual */}
-            <div className="flex items-center justify-center lg:justify-end">
+            <div className="hidden items-center justify-center lg:flex lg:justify-end">
               <HeroVisual
                 selectedDevice={selectedDevice}
                 detected={detected}
@@ -608,9 +608,6 @@ export function DownloadPage() {
               </Button>
             }
           />
-
-          {/* Bottom fade */}
-          <div className="pointer-events-none absolute right-0 bottom-0 left-0 h-20 bg-linear-to-b from-transparent to-canvas" />
         </section>
 
         {/* ── Install Steps ──────────────────────────────────────────── */}
@@ -942,7 +939,7 @@ function HeroVisual({ selectedDevice }: HeroVisualProps) {
   return (
     <div
       className={cn(
-        "relative flex w-full min-w-0 items-center justify-center py-8 sm:py-10 lg:min-h-136 lg:py-0",
+        "relative flex w-full min-w-0 items-center justify-center py-8 sm:py-10 lg:py-0",
         isDesktop
           ? "max-w-120 lg:justify-end"
           : isIos

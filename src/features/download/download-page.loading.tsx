@@ -30,10 +30,10 @@ export function DownloadPageLoading(_props: PageLoadingProps = {}) {
       </header>
 
       {/* Hero skeleton */}
-      <section className="dark bg-hero-bg pt-16">
-        <div className="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-6xl flex-col items-center gap-10 px-6 py-10 sm:py-12 lg:flex-row lg:gap-12">
+      <section className="dark h-svh min-h-0 border-canvas border-b bg-hero-bg pt-16">
+        <div className="mx-auto flex h-[calc(100svh-4rem)] min-h-0 max-w-6xl flex-col items-center gap-10 overflow-hidden px-6 py-10 sm:py-12 lg:flex-row lg:gap-12">
           {/* Left */}
-          <div className="flex max-w-xl flex-1 flex-col items-center gap-6 lg:items-start">
+          <div className="flex max-w-xl flex-1 flex-col items-center justify-center gap-6 lg:items-start">
             <Skeleton shape="pill" className="h-6 w-28" tone="teal" />
             <SkeletonText
               className="w-full max-w-md gap-4"
@@ -54,7 +54,7 @@ export function DownloadPageLoading(_props: PageLoadingProps = {}) {
           </div>
 
           {/* Right: phone silhouette */}
-          <div className="flex flex-1 justify-center lg:justify-end">
+          <div className="hidden flex-1 justify-center lg:flex lg:justify-end">
             <Skeleton shape="square" className="h-104 w-56 rounded-4xl" />
           </div>
         </div>

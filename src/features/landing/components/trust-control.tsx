@@ -35,6 +35,7 @@ export function TrustControlSection() {
   return (
     <section
       id={LANDING_SECTION_IDS.trustControl}
+      data-landing-snap-section=""
       className="dark relative scroll-mt-16 overflow-hidden bg-hero-bg pt-20 pb-28 text-white md:pt-28 md:pb-36"
       aria-labelledby="trust-control-heading"
     >
@@ -80,6 +81,8 @@ export function TrustControlSection() {
             <img
               src={trustControlVisual}
               alt="TeamForge group review screen with controls to review, decline, leave, and report"
+              width={1637}
+              height={961}
               className="mx-auto w-full max-w-3xl select-none lg:max-w-4xl"
               loading="lazy"
               decoding="async"

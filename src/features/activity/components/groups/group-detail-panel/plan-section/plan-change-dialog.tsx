@@ -107,7 +107,7 @@ export function PlanChangeDialog({
         </DialogTrigger>
       ) : null}
 
-      <DialogContent className="max-h-[90svh] overflow-y-auto rounded-3xl bg-canvas p-0 sm:max-w-sm [&>button]:hidden">
+      <DialogContent className="max-h-[90svh] overflow-y-auto rounded-3xl bg-popover p-0 sm:max-w-sm [&>button]:hidden">
         {/* ── Header ───────────────────────────────────────────── */}
         <div className="flex items-start justify-between px-5 pt-6 pb-4">
           <div>
@@ -122,7 +122,7 @@ export function PlanChangeDialog({
             type="button"
             aria-label="Close"
             onClick={form.closeForm}
-            className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full text-slate-muted transition-colors hover:bg-black/8 hover:text-ink"
+            className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full text-slate-muted transition-colors hover:bg-muted hover:text-ink"
           >
             <X className="size-3.5" strokeWidth={2.5} />
           </button>
@@ -289,7 +289,7 @@ export function PlanChangeDialog({
                               form.setValue(event.target.value)
                             }
                             rows={option.value === "DESCRIPTION" ? 4 : 2}
-                            className="resize-none bg-card"
+                            className="resize-none"
                           />
                         )}
 
@@ -388,7 +388,7 @@ function LocationInput({
   return (
     <fieldset className="flex min-w-0 flex-col gap-2 border-0 p-0">
       <Select value={locationValue.locationMode} onValueChange={onModeChange}>
-        <SelectTrigger aria-label="Location type" className="bg-card">
+        <SelectTrigger aria-label="Location type">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -424,7 +424,6 @@ function LocationInput({
           value={locationValue.location}
           onChange={(event) => onLinkChange(event.target.value)}
           placeholder="Meeting link or platform"
-          className="bg-card"
         />
       ) : null}
     </fieldset>

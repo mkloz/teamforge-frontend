@@ -27,7 +27,7 @@ function buildLocalDateTime(date: string, time: string) {
 
 const dateValueSchema = z
   .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, "Use a complete date.")
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Add a date before forming the group.")
   .refine((value) => {
     const [year, month, day] = value.split("-").map(Number);
     const timestamp = new Date(`${value}T00:00:00`);
@@ -38,10 +38,10 @@ const dateValueSchema = z
       timestamp.getMonth() === (month ?? 0) - 1 &&
       timestamp.getDate() === day
     );
-  }, "Use a valid date.");
+  }, "Choose a valid date for the plan.");
 const timeValueSchema = z
   .string()
-  .regex(/^\d{2}:\d{2}$/, "Use a complete time.")
+  .regex(/^\d{2}:\d{2}$/, "Add a time before forming the group.")
   .refine((value) => {
     const [hours, minutes] = value.split(":").map(Number);
 
@@ -53,7 +53,7 @@ const timeValueSchema = z
       minutes >= 0 &&
       minutes <= 59
     );
-  }, "Use a valid time.");
+  }, "Choose a valid time for the plan.");
 
 export const forgeExecutionInputSchema = z
   .object({
@@ -61,19 +61,24 @@ export const forgeExecutionInputSchema = z
     planName: z
       .string()
       .trim()
-      .min(3, "Plan title needs at least 3 characters.")
-      .max(60, "Plan title is too long."),
-    planDescription: optionalTextSchema.max(500, "Description is too long."),
+      .min(3, "Use at least 3 characters for the plan name.")
+      .max(60, "Shorten the plan name before continuing."),
+    planDescription: optionalTextSchema.max(
+      500,
+      "Shorten the plan context before continuing.",
+    ),
     planDate: dateValueSchema,
     planTime: timeValueSchema,
-    planLocation: z.string().max(160, "Location is too long."),
+    planLocation: z
+      .string()
+      .max(160, "Shorten the location before continuing."),
     planLocationLat: optionalCoordinateSchema,
     planLocationLng: optionalCoordinateSchema,
     coverImage: optionalUrlSchema,
     locationType: locationModeSchema,
     planCost: costTypeSchema,
-    planCostAmount: z.string().max(32, "Cost amount is too long."),
-    planCostDetails: z.string().max(160, "Cost details are too long."),
+    planCostAmount: z.string().max(32, "Shorten the cost amount."),
+    planCostDetails: z.string().max(160, "Shorten the cost note."),
     groupSizeMode: z.enum(["RANGE", "FIXED"]),
     fixedSize: z.number().int().min(2).max(8),
     autoMinSize: z.number().int().min(2).max(8),
@@ -83,15 +88,23 @@ export const forgeExecutionInputSchema = z
     networkReachWeight: matchingPreferenceSchema,
     maxDistanceKm: distanceKmSchema,
     visibility: activityVisibilitySchema,
-    groupName: z.string().max(120, "Group name is too long."),
+    groupName: z.string().max(120, "Shorten the group name."),
     groupDescription: optionalTextSchema.max(
       1000,
-      "Group description is too long.",
+      "Shorten the group description.",
     ),
     avatarImage: optionalUrlSchema,
   })
   .superRefine((input, ctx) => {
     const planDateTime = buildLocalDateTime(input.planDate, input.planTime);
+
+    if (!input.selectedActivity?.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Choose an activity before forming the group.",
+        path: ["selectedActivity"],
+      });
+    }
 
     if (
       Number.isNaN(planDateTime.getTime()) ||
@@ -99,7 +112,7 @@ export const forgeExecutionInputSchema = z
     ) {
       ctx.addIssue({
         code: "custom",
-        message: "Choose a future date and time.",
+        message: "Choose a future date and time for the plan.",
         path: ["planDate"],
       });
     }
@@ -112,8 +125,8 @@ export const forgeExecutionInputSchema = z
         code: "custom",
         message:
           input.locationType === "ONLINE"
-            ? "Add a meeting link or platform."
-            : "Add a location for in-person plans.",
+            ? "Add a meeting link or platform for the group."
+            : "Add where the group should meet.",
         path: ["planLocation"],
       });
     }
@@ -121,7 +134,7 @@ export const forgeExecutionInputSchema = z
     if (input.locationType === "TBD" && input.planLocation.trim().length > 0) {
       ctx.addIssue({
         code: "custom",
-        message: "Clear the location when the place is to be decided.",
+        message: "Clear the location, or choose online or in person.",
         path: ["planLocation"],
       });
     }
@@ -132,7 +145,7 @@ export const forgeExecutionInputSchema = z
     ) {
       ctx.addIssue({
         code: "custom",
-        message: "Coordinates are only used for in-person plans.",
+        message: "Use coordinates only for in-person plans.",
         path: ["planLocationLat"],
       });
     }
@@ -143,7 +156,7 @@ export const forgeExecutionInputSchema = z
     ) {
       ctx.addIssue({
         code: "custom",
-        message: "Use valid coordinates or leave coordinates blank.",
+        message: "Use a valid pinned location, or leave coordinates blank.",
         path: ["planLocationLat"],
       });
     }
@@ -154,14 +167,14 @@ export const forgeExecutionInputSchema = z
       if (amount === null) {
         ctx.addIssue({
           code: "custom",
-          message: "Add a valid paid amount.",
+          message: "Add a paid amount, or set the plan back to free.",
           path: ["planCostAmount"],
         });
       }
     } else if (input.planCostAmount.trim().length > 0) {
       ctx.addIssue({
         code: "custom",
-        message: "Remove the amount for free plans.",
+        message: "Remove the amount, or mark this as a paid plan.",
         path: ["planCostAmount"],
       });
     }
@@ -172,7 +185,7 @@ export const forgeExecutionInputSchema = z
     ) {
       ctx.addIssue({
         code: "custom",
-        message: "Minimum group size cannot be larger than maximum size.",
+        message: "Keep the minimum group size below the maximum.",
         path: ["autoMinSize"],
       });
     }

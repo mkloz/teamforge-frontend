@@ -24,6 +24,7 @@ export function PlanToGroupSection() {
   return (
     <section
       id={LANDING_SECTION_IDS.planToGroup}
+      data-landing-snap-section=""
       className="dark relative scroll-mt-16 overflow-hidden bg-hero-bg pt-20 pb-24 text-white md:pt-24 md:pb-32"
       aria-labelledby="plan-to-group-heading"
     >
@@ -58,6 +59,8 @@ export function PlanToGroupSection() {
           <img
             src={planToGroupVisual}
             alt="Three-step TeamForge flow from activity idea to plan details to one small group room"
+            width={1775}
+            height={886}
             className="h-80 w-full object-cover object-center sm:h-96 md:h-auto"
             loading="lazy"
             decoding="async"

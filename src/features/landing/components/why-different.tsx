@@ -34,6 +34,7 @@ export function WhyDifferentSection() {
   return (
     <section
       id={LANDING_SECTION_IDS.whyDifferent}
+      data-landing-snap-section=""
       className="dark relative scroll-mt-16 overflow-hidden bg-hero-bg pt-20 pb-24 text-white md:pt-28 md:pb-36"
       aria-labelledby="why-different-heading"
     >
@@ -44,17 +45,19 @@ export function WhyDifferentSection() {
 
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="grid gap-10 lg:grid-cols-12 lg:items-center">
-          <div className="overflow-hidden border-white/10 border-y lg:col-span-7">
+          <div className="order-2 overflow-hidden border-white/10 border-y lg:order-1 lg:col-span-7">
             <img
               src={whyDifferentVisual}
               alt="One TeamForge group room in focus while browsing cards move into the background"
+              width={1536}
+              height={1024}
               className="h-80 w-full object-cover object-center sm:h-96 md:h-auto"
               loading="lazy"
               decoding="async"
             />
           </div>
 
-          <div className="max-w-xl lg:col-span-5 lg:pl-6">
+          <div className="order-1 max-w-xl lg:order-2 lg:col-span-5 lg:pl-6">
             <p className="font-bold text-forge-teal text-xs uppercase">
               Why TeamForge is different
             </p>

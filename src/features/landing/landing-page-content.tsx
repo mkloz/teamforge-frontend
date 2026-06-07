@@ -7,6 +7,7 @@ import {
   type LandingSectionId,
 } from "@/features/landing/constants/landing-sections";
 import { DeferredLandingBelowFoldSections } from "@/features/landing/deferred-landing-below-fold-sections";
+import { useLandingScrollSnap } from "@/features/landing/hooks/use-landing-scroll-snap";
 import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
 
 function isLandingSectionId(id: string): id is LandingSectionId {
@@ -14,6 +15,8 @@ function isLandingSectionId(id: string): id is LandingSectionId {
 }
 
 export function LandingPageContent() {
+  useLandingScrollSnap();
+
   useEffect(() => {
     if (typeof window === "undefined") {
       return undefined;

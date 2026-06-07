@@ -92,7 +92,7 @@ export function InviteMembersDialog({
           Invite
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md rounded-lg border-border/60 bg-canvas p-0">
+      <DialogContent className="max-w-md rounded-lg border-border/60 bg-popover p-0">
         <DialogHeader className="border-border/50 border-b px-6 py-5">
           <DialogTitle>Invite to group</DialogTitle>
           <DialogDescription>
@@ -131,7 +131,7 @@ export function InviteMembersDialog({
 
           <div className="flex max-h-80 flex-col gap-2 overflow-y-auto pr-1">
             {filteredCandidates.length === 0 ? (
-              <div className="flex min-h-48 flex-col items-center justify-center rounded-lg border border-border/70 border-dashed bg-background/50 px-4 py-6 text-center">
+              <div className="flex min-h-48 flex-col items-center justify-center rounded-lg border border-border/70 border-dashed bg-muted/40 px-4 py-6 text-center">
                 <EmptyInviteCandidatesVisual className="h-24 w-auto text-foreground" />
                 <p className="mt-3 text-slate-muted text-sm">
                   No eligible friends to invite right now.
@@ -144,7 +144,7 @@ export function InviteMembersDialog({
                 return (
                   <div
                     key={candidate.id}
-                    className="flex items-center gap-3 rounded-lg border border-border/60 bg-background/80 px-3 py-3"
+                    className="flex items-center gap-3 rounded-lg border border-border/60 bg-card px-3 py-3"
                   >
                     <Link
                       {...buildProfileNavigation(candidate.id)}

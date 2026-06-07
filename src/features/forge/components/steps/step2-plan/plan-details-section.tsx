@@ -21,7 +21,7 @@ export function PlanDetailsSection({
       />
 
       <div className="flex flex-col gap-2">
-        <div className="rounded-lg border border-border bg-background/60 transition-colors focus-within:border-forge-teal/50 focus-within:ring-2 focus-within:ring-forge-teal/10">
+        <div className="rounded-xl border border-border/60 bg-input transition-colors focus-within:border-forge-teal/60 focus-within:ring-2 focus-within:ring-forge-teal/12">
           <Textarea
             id="plan-description"
             value={planDescription}
@@ -32,7 +32,7 @@ export function PlanDetailsSection({
             aria-label="Plan context"
             className={cn(
               "resize-none rounded-xl border-0 bg-transparent px-3 py-3 font-medium text-foreground text-sm shadow-none",
-              "placeholder:text-muted-foreground/35 focus-visible:ring-0",
+              "placeholder:text-slate-muted/55 focus-visible:border-transparent focus-visible:ring-0",
             )}
           />
         </div>

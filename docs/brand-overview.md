@@ -146,7 +146,7 @@ Maintain a minimum clear zone equal to half the logo's width on all sides.
 
 The wordmark pairs the logo symbol with the product name.
 
-- "**Team**" — displayed in Ink (`#1C1C1A`) or white depending on background
+- "**Team**" — displayed in Ink (`#1C1F1D`) or white depending on background
 - "**Forge**" — displayed in Forge Teal (`#0D9488`)
 - Font: Plus Jakarta Sans, Bold (700)
 - No letter-spacing adjustments

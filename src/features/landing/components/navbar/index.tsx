@@ -138,7 +138,7 @@ export function Navbar({
         id="landing-mobile-navigation"
         ref={menuRef}
         className={cn(
-          "dark fixed inset-0 z-40 flex flex-col items-center justify-center gap-8 bg-hero-bg/98 backdrop-blur-lg transition-opacity duration-150 lg:hidden",
+          "dark fixed inset-0 z-40 overflow-y-auto bg-hero-bg/55 pt-16 backdrop-blur-sm transition-opacity duration-150 lg:hidden",
           menuOpen
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none opacity-0",
@@ -149,34 +149,36 @@ export function Navbar({
         aria-modal="true"
         aria-label="Mobile Navigation Menu"
       >
-        <nav
-          className="flex flex-col items-center gap-6"
-          aria-label="Mobile navigation links"
-        >
-          <MobileNavbarLinks
-            activeLandingSection={activeLandingSection}
-            closeMenu={closeMenu}
-            currentPathname={currentPathname}
-            isLandingPage={isLandingPage}
-            menuOpen={menuOpen}
-            onLandingNavClick={handleNavClick}
-            showLandingSectionLinks={showLandingSectionLinks}
-          />
-        </nav>
+        <div className="border-white/10 border-b bg-hero-bg/98 px-6 py-4 shadow-xl">
+          <nav
+            className="mx-auto grid w-full max-w-sm grid-cols-2 gap-2"
+            aria-label="Mobile navigation links"
+          >
+            <MobileNavbarLinks
+              activeLandingSection={activeLandingSection}
+              closeMenu={closeMenu}
+              currentPathname={currentPathname}
+              isLandingPage={isLandingPage}
+              menuOpen={menuOpen}
+              onLandingNavClick={handleNavClick}
+              showLandingSectionLinks={showLandingSectionLinks}
+            />
+          </nav>
 
-        <div className="flex w-48 flex-col items-center gap-4">
-          <NavbarActions
-            closeMenu={closeMenu}
-            downloadInstallAction={downloadInstallAction}
-            isAuthenticated={isAuthenticated}
-            isResolvingAuthAction={isResolvingAuthAction}
-            isSigningOut={isSigningOut}
-            menuOpen={menuOpen}
-            onSignOut={handleSignOut}
-            primaryAction={primaryAction}
-            secondaryAction={secondaryAction}
-            size="lg"
-          />
+          <div className="mx-auto mt-4 flex w-full max-w-sm flex-col items-stretch gap-3 border-white/10 border-t pt-4">
+            <NavbarActions
+              closeMenu={closeMenu}
+              downloadInstallAction={downloadInstallAction}
+              isAuthenticated={isAuthenticated}
+              isResolvingAuthAction={isResolvingAuthAction}
+              isSigningOut={isSigningOut}
+              menuOpen={menuOpen}
+              onSignOut={handleSignOut}
+              primaryAction={primaryAction}
+              secondaryAction={secondaryAction}
+              size="lg"
+            />
+          </div>
         </div>
       </div>
     </>

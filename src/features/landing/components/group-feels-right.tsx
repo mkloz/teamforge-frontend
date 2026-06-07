@@ -34,6 +34,7 @@ export function GroupFeelsRightSection() {
   return (
     <section
       id={LANDING_SECTION_IDS.groupFeelsRight}
+      data-landing-snap-section=""
       className="dark relative scroll-mt-16 overflow-hidden bg-hero-bg pt-24 pb-20 text-white md:pt-32 md:pb-28"
       aria-labelledby="group-feels-right-heading"
     >
@@ -64,6 +65,8 @@ export function GroupFeelsRightSection() {
           <img
             src={groupFeelsRightVisual}
             alt="Shared interests, social style, practical fit, and follow-through signals flowing into one TeamForge group room"
+            width={2194}
+            height={717}
             className="mx-auto h-auto max-h-136 w-full object-contain py-4"
             loading="lazy"
             decoding="async"

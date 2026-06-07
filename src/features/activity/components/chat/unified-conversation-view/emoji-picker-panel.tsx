@@ -481,7 +481,7 @@ export const ChatEmojiPickerPanel = memo(function ChatEmojiPickerPanel({
                 variant="ghost"
                 size="icon-xs"
                 aria-label="Back to quick reactions"
-                className="size-8 shrink-0 rounded-lg border border-border/55 bg-background/65 text-slate-muted focus-visible:ring-forge-teal/18 hover:enabled:border-forge-teal/35 hover:enabled:bg-forge-teal/8 hover:enabled:text-ink"
+                className="size-8 shrink-0 rounded-lg border border-border/55 bg-input text-slate-muted focus-visible:ring-forge-teal/18 hover:enabled:border-forge-teal/35 hover:enabled:bg-forge-teal/8 hover:enabled:text-ink"
                 onClick={onCollapse}
               >
                 <ChevronLeft className="size-4" />
@@ -506,7 +506,7 @@ export const ChatEmojiPickerPanel = memo(function ChatEmojiPickerPanel({
               </div>
             ) : null}
             {!skinTonesDisabled ? (
-              <EmojiPicker.SkinToneSelector className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-background/65 text-base transition-colors hover:border-forge-teal/35 hover:bg-forge-teal/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18" />
+              <EmojiPicker.SkinToneSelector className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-input text-base transition-colors hover:border-forge-teal/35 hover:bg-forge-teal/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18" />
             ) : null}
           </div>
         ) : null}
@@ -550,7 +550,7 @@ export const ChatEmojiPickerPanel = memo(function ChatEmojiPickerPanel({
 });
 
 const EMOJI_PICKER_ROOT_CLASS =
-  "w-full overflow-hidden bg-canvas/97 font-sans text-ink shadow-none dark:bg-forge-deep-surface/97";
+  "w-full overflow-hidden bg-popover/97 font-sans text-popover-foreground shadow-none";
 
 const EMOJI_PICKER_ROOT_COMPACT_CLASS =
   "w-full overflow-hidden rounded-lg bg-transparent font-sans text-ink shadow-none";
@@ -659,7 +659,7 @@ function CompactReactionEmojiGroup({
 
   return (
     <section>
-      <div className="sticky -top-px z-10 flex h-5 snap-start items-center bg-canvas/97 px-2 font-black text-micro text-slate-muted backdrop-blur-md dark:bg-forge-deep-surface/97">
+      <div className="sticky -top-px z-10 flex h-5 snap-start items-center bg-popover/97 px-2 font-black text-micro text-slate-muted backdrop-blur-md">
         {group.title}
       </div>
       <div>
@@ -779,7 +779,7 @@ function EmojiCategoryHeaderBase({
     <div
       {...props}
       className={cn(
-        "z-10 flex items-center bg-canvas/94 px-2 font-black text-slate-muted text-xs backdrop-blur-md dark:bg-forge-deep-surface/94",
+        "z-10 flex items-center bg-popover/94 px-2 font-black text-slate-muted text-xs backdrop-blur-md",
         compact ? "h-5 text-micro" : "h-6 text-xs",
         className,
       )}

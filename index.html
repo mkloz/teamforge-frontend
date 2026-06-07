@@ -28,17 +28,18 @@
     <style>
       :root {
         color-scheme: dark;
-        --tf-boot-background: #0e0e0d;
-        --tf-boot-foreground: #ededed;
-        --tf-boot-canvas: #141413;
-        --tf-boot-teal: #0d9488;
-        --tf-boot-amber: #f59e0b;
+        --tf-boot-background: #0b0f0e;
+        --tf-boot-foreground: #f2f5f1;
+        --tf-boot-canvas: #111716;
+        --color-forge-teal: #0d9488;
+        --color-spark-amber: #fbbf24;
       }
       :root.light {
         color-scheme: light;
-        --tf-boot-background: #f4f4f2;
-        --tf-boot-foreground: #1c1c1a;
-        --tf-boot-canvas: #fafaf8;
+        --tf-boot-background: #f1f4f1;
+        --tf-boot-foreground: #1c1f1d;
+        --tf-boot-canvas: #f7f8f4;
+        --color-spark-amber: #f59e0b;
       }
       *,
       *::before,
@@ -81,17 +82,17 @@
       }
       .tf-boot {
         background:
-          radial-gradient(circle at 50% 44%, color-mix(in srgb, var(--tf-boot-teal) 10%, transparent), transparent 28%),
+          radial-gradient(circle at 50% 44%, color-mix(in srgb, var(--color-forge-teal) 10%, transparent), transparent 28%),
           var(--tf-boot-canvas);
         align-items: center;
         justify-content: center;
         min-height: 100dvh;
-        padding-inline: 1.5rem;
+        padding: 2.5rem 1.5rem;
         display: flex;
       }
       .tf-boot__skip {
         z-index: 1;
-        border: 1px solid color-mix(in srgb, var(--tf-boot-teal) 60%, transparent);
+        border: 1px solid color-mix(in srgb, var(--color-forge-teal) 60%, transparent);
         background: var(--tf-boot-canvas);
         color: var(--tf-boot-foreground);
         border-radius: 999px;
@@ -104,43 +105,54 @@
         transform: translateY(-150%);
       }
       .tf-boot__skip:focus {
-        outline: 2px solid var(--tf-boot-teal);
+        outline: 2px solid var(--color-forge-teal);
         outline-offset: 2px;
         transform: translateY(0);
       }
-      .tf-boot__content {
+      .forge-loading-mark {
         align-items: center;
+        color: var(--tf-boot-foreground);
+        flex-direction: column;
+        gap: 0.75rem;
         justify-content: center;
+        user-select: none;
         display: flex;
       }
-      .tf-boot__mark {
+      .forge-loading-mark__svg {
         width: 7rem;
         overflow: visible;
       }
-      .tf-boot__hammer,
-      .tf-boot__anvil,
-      .tf-boot__spark-core,
-      .tf-boot__spark {
+      .forge-loading-mark__hammer,
+      .forge-loading-mark__anvil,
+      .forge-loading-mark__spark-core,
+      .forge-loading-mark__spark,
+      .forge-loading-mark__line,
+      .forge-loading-mark__glow {
         transform-box: fill-box;
       }
-      .tf-boot__hammer {
+      .forge-loading-mark__hammer {
         transform-box: view-box;
         transform-origin: 151px 94.5px;
         animation: 1.45s infinite tf-boot-hammer;
+        animation-delay: var(--forge-loading-animation-offset, 0ms);
       }
-      .tf-boot__anvil {
+      .forge-loading-mark__anvil {
         transform-box: view-box;
         transform-origin: 110px 148px;
         animation: 1.45s infinite tf-boot-anvil;
+        animation-delay: var(--forge-loading-animation-offset, 0ms);
       }
-      .tf-boot__spark-core {
+      .forge-loading-mark__spark-core {
         transform-box: view-box;
         transform-origin: 110px 107.75px;
         animation: 1.45s infinite tf-boot-core-spark;
+        animation-delay: var(--forge-loading-animation-offset, 0ms);
       }
-      .tf-boot__spark {
+      .forge-loading-mark__spark {
         animation: 1.45s infinite tf-boot-spark;
-        animation-delay: var(--spark-delay);
+        animation-delay: calc(
+          var(--forge-loading-animation-offset, 0ms) + var(--spark-delay)
+        );
         opacity: 0;
         transform-origin: 50%;
       }
@@ -273,35 +285,44 @@
           opacity: 0;
         }
       }
-      .tf-boot__swoosh-top {
+      .forge-loading-mark__swoosh-top {
         stroke-dasharray: 65;
-        stroke-dashoffset: 65px;
+        stroke-dashoffset: 65;
         opacity: 0;
         animation: 1.45s infinite tf-boot-swoosh-top;
+        animation-delay: var(--forge-loading-animation-offset, 0ms);
       }
-      .tf-boot__swoosh-mid {
+      .forge-loading-mark__swoosh-mid {
         stroke-dasharray: 60;
-        stroke-dashoffset: 60px;
+        stroke-dashoffset: 60;
         opacity: 0;
         animation: 1.45s infinite tf-boot-swoosh-mid;
+        animation-delay: var(--forge-loading-animation-offset, 0ms);
       }
-      .tf-boot__swoosh-bot {
+      .forge-loading-mark__swoosh-bot {
         stroke-dasharray: 50;
-        stroke-dashoffset: 50px;
+        stroke-dashoffset: 50;
         opacity: 0;
         animation: 1.45s infinite tf-boot-swoosh-bot;
+        animation-delay: var(--forge-loading-animation-offset, 0ms);
+      }
+      .forge-loading-mark__line {
+        opacity: 0.32;
+      }
+      .forge-loading-mark__glow {
+        opacity: 0.08;
       }
       @media (prefers-reduced-motion: reduce) {
-        .tf-boot__hammer,
-        .tf-boot__anvil,
-        .tf-boot__spark-core,
-        .tf-boot__spark,
-        .tf-boot__swoosh-top,
-        .tf-boot__swoosh-mid,
-        .tf-boot__swoosh-bot {
+        .forge-loading-mark__hammer,
+        .forge-loading-mark__anvil,
+        .forge-loading-mark__spark-core,
+        .forge-loading-mark__spark,
+        .forge-loading-mark__swoosh-top,
+        .forge-loading-mark__swoosh-mid,
+        .forge-loading-mark__swoosh-bot {
           animation: none;
         }
-        .tf-boot__spark {
+        .forge-loading-mark__spark {
           opacity: 0;
         }
       }
@@ -343,27 +364,34 @@
   <body>
     <div id="root">
       <a class="tf-boot__skip" href="#main-content">Skip to main content</a>
-      <main id="main-content" class="tf-boot" aria-labelledby="tf-boot-heading">
-        <div class="tf-boot__content">
+      <main id="main-content" class="tf-boot" role="status" aria-live="polite" aria-label="Loading page">
+        <div class="forge-loading-mark" style="--forge-loading-animation-offset: 0ms">
           <svg
-            class="tf-boot__mark"
+            class="forge-loading-mark__svg"
             viewBox="32 32 156 142"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
           >
             <path
+              class="forge-loading-mark__line"
               d="M58 160C75.5 151 143.5 151 162 160"
-              stroke="var(--tf-boot-teal)"
+              stroke="var(--color-forge-teal)"
               stroke-linecap="round"
               stroke-width="3"
-              opacity="0.32"
             />
-            <ellipse cx="110" cy="156" rx="48" ry="8" fill="var(--tf-boot-teal)" opacity="0.08" />
-            <g class="tf-boot__anvil">
+            <ellipse
+              class="forge-loading-mark__glow"
+              cx="110"
+              cy="156"
+              rx="48"
+              ry="8"
+              fill="var(--color-forge-teal)"
+            />
+            <g class="forge-loading-mark__anvil">
               <path
                 d="M63 111h101l-14 5 9 10-10 7c-2 3-6 5-10 5H82c-4 0-8-2-10-5l-13-16c-2-3 0-6 4-6Z"
-                fill="var(--tf-boot-teal)"
+                fill="var(--color-forge-teal)"
                 stroke="currentColor"
                 stroke-linejoin="round"
                 stroke-width="3.5"
@@ -385,87 +413,103 @@
               <path d="M72 111h72M88 156h44" stroke="currentColor" stroke-linecap="round" stroke-width="3.5" />
             </g>
             <path
-              class="tf-boot__spark-core"
+              class="forge-loading-mark__spark-core"
               d="M99 107.75h22"
-              stroke="var(--tf-boot-amber)"
+              stroke="var(--color-spark-amber)"
               stroke-linecap="round"
               stroke-width="3"
             />
             <circle
-              class="tf-boot__spark"
+              class="forge-loading-mark__spark"
               cx="110"
               cy="108"
               r="4"
-              fill="var(--tf-boot-amber)"
+              fill="var(--color-spark-amber)"
               style="--spark-x: -22px; --spark-y: -5px; --spark-delay: 0ms"
             />
             <circle
-              class="tf-boot__spark"
+              class="forge-loading-mark__spark"
               cx="110"
               cy="108"
               r="3.5"
-              fill="var(--tf-boot-amber)"
+              fill="var(--color-spark-amber)"
               style="--spark-x: 18px; --spark-y: -8px; --spark-delay: 0ms"
             />
             <circle
-              class="tf-boot__spark"
+              class="forge-loading-mark__spark"
               cx="110"
               cy="108"
               r="4.5"
-              fill="var(--tf-boot-amber)"
+              fill="var(--color-spark-amber)"
               style="--spark-x: -12px; --spark-y: 6px; --spark-delay: 0ms"
             />
             <circle
-              class="tf-boot__spark"
+              class="forge-loading-mark__spark"
               cx="110"
               cy="108"
               r="3"
-              fill="var(--tf-boot-amber)"
+              fill="var(--color-spark-amber)"
               style="--spark-x: 26px; --spark-y: 2px; --spark-delay: 0ms"
             />
             <circle
-              class="tf-boot__spark"
+              class="forge-loading-mark__spark"
               cx="110"
               cy="108"
               r="3"
-              fill="var(--tf-boot-amber)"
+              fill="var(--color-spark-amber)"
               style="--spark-x: -32px; --spark-y: 0px; --spark-delay: 0ms"
             />
             <circle
-              class="tf-boot__spark"
+              class="forge-loading-mark__spark"
               cx="110"
               cy="108"
               r="4"
-              fill="var(--tf-boot-amber)"
+              fill="var(--color-spark-amber)"
               style="--spark-x: 12px; --spark-y: 10px; --spark-delay: 0ms"
             />
-            <g class="tf-boot__swoosh-group">
+            <circle
+              class="forge-loading-mark__spark"
+              cx="110"
+              cy="108"
+              r="3"
+              fill="var(--color-spark-amber)"
+              style="--spark-x: 22px; --spark-y: 12px; --spark-delay: 0ms"
+            />
+            <circle
+              class="forge-loading-mark__spark"
+              cx="110"
+              cy="108"
+              r="4"
+              fill="var(--color-spark-amber)"
+              style="--spark-x: 32px; --spark-y: -6px; --spark-delay: 0ms"
+            />
+            <g class="forge-loading-mark__swoosh-group">
               <path
-                class="tf-boot__swoosh-top"
+                class="forge-loading-mark__swoosh-top"
                 d="M 152 40 A 55 55 0 0 0 102 67"
                 fill="none"
-                stroke="var(--tf-boot-teal)"
+                stroke="var(--color-forge-teal)"
                 stroke-width="3.5"
                 stroke-linecap="round"
               />
               <path
-                class="tf-boot__swoosh-mid"
+                class="forge-loading-mark__swoosh-mid"
                 d="M 156 50 A 45 45 0 0 0 110 78"
                 fill="none"
-                stroke="var(--tf-boot-teal)"
+                stroke="var(--color-forge-teal)"
                 stroke-width="2.5"
                 stroke-linecap="round"
               />
               <path
-                class="tf-boot__swoosh-bot"
+                class="forge-loading-mark__swoosh-bot"
                 d="M 160 60 A 35 35 0 0 0 118 90"
                 fill="none"
-                stroke="var(--tf-boot-teal)"
+                stroke="var(--color-forge-teal)"
                 stroke-width="2"
                 stroke-linecap="round"
               />
             </g>
-            <g class="tf-boot__hammer">
+            <g class="forge-loading-mark__hammer">
               <g transform="translate(4 -9.5)">
                 <rect
                   x="112"
@@ -479,7 +523,7 @@
                 />
                 <path
                   d="M101 78h12c2.761 0 5 2.239 5 5v24c0 2.761-2.239 5-5 5h-12c-2.761 0-5-2.239-5-5V83c0-2.761 2.239-5 5-5Z"
-                  fill="var(--tf-boot-teal)"
+                  fill="var(--color-forge-teal)"
                   stroke="currentColor"
                   stroke-width="3.5"
                 />

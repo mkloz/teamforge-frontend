@@ -62,22 +62,17 @@ export function ManualGroupDetails({
         </div>
       </div>
 
-      <div className="flex gap-3 rounded-lg border border-border/35 bg-muted/20 p-3">
-        <IconTile
-          icon={Users}
-          size="lg"
-          tone="amber"
-          className="mt-0.5 size-9"
-        />
-        <div className="flex flex-col gap-1">
-          <h5 className="font-black text-foreground text-sm tracking-tight">
+      <div className="flex flex-col gap-2 rounded-lg border border-border/35 bg-muted/20 p-3">
+        <div className="flex min-w-0 items-center gap-2">
+          <IconTile icon={Users} size="xs" tone="amber" />
+          <h5 className="min-w-0 font-black text-foreground text-sm leading-5 tracking-tight">
             Pick who to invite
           </h5>
-          <p className="text-muted-foreground text-xs leading-relaxed opacity-80">
-            Manual groups start with you as the organiser. Selected friends
-            receive real invitations after you confirm the group.
-          </p>
         </div>
+        <p className="min-w-0 text-muted-foreground text-xs leading-relaxed opacity-80">
+          Manual groups start with you as the organiser. Selected friends
+          receive real invitations after you confirm the group.
+        </p>
       </div>
 
       <div className="flex flex-col gap-2">

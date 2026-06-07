@@ -812,7 +812,7 @@ export function ForwardMessageDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={getActivityPopupPanelClass(
-          "flex max-h-[min(30rem,calc(100dvh-2rem))] w-[calc(100%-2rem)] max-w-sm flex-col gap-0 overflow-hidden rounded-lg bg-canvas p-0 [&>button]:shadow-none",
+          "flex max-h-[min(30rem,calc(100dvh-2rem))] w-[calc(100%-2rem)] max-w-sm flex-col gap-0 overflow-hidden rounded-lg p-0 [&>button]:shadow-none",
         )}
       >
         <DialogHeader className="border-border/55 border-b px-4 py-3 pr-11 text-left">

@@ -14,12 +14,18 @@ export function TemplateSuggestionCard({
   suggestion,
 }: TemplateSuggestionCardProps) {
   const Icon = ICON_MAP[suggestion.categoryId] ?? ICON_MAP.fallback;
+  const coverImage = suggestion.coverImage ?? suggestion.template.coverImage;
 
   return (
     <button
       type="button"
       aria-pressed={active}
-      onClick={() => onTemplateToggle(suggestion.id, suggestion.template)}
+      onClick={() =>
+        onTemplateToggle(suggestion.id, {
+          ...suggestion.template,
+          coverImage,
+        })
+      }
       className={cn(
         "group flex h-24 min-w-0 overflow-hidden rounded-lg border bg-card text-left transition-colors duration-200 hover:border-forge-teal/35 hover:bg-forge-teal/5 active:scale-95",
         active
@@ -29,7 +35,7 @@ export function TemplateSuggestionCard({
     >
       <div className="relative w-20 shrink-0 overflow-hidden bg-muted sm:w-24">
         <PlanCover
-          value={suggestion.coverImage ?? suggestion.template.coverImage}
+          value={coverImage}
           alt=""
           className="size-full"
           imageClassName="transition-transform duration-500 group-hover:scale-105"

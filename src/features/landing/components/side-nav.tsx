@@ -42,22 +42,21 @@ export function SideNav() {
         })}
       </nav>
 
-      {/* Scroll to top hint */}
-      {activeSection !== "hero" && (
-        <div className="mt-8 animate-side-nav-reveal motion-reduce:animate-none">
+      <div className="mt-8 flex size-9 items-center justify-center">
+        {activeSection !== "hero" ? (
           <Button
             type="button"
             variant="ghost"
             size="icon-xs"
             onClick={scrollToTop}
-            className="p-1.5 text-slate-muted hover:text-forge-teal"
+            className="animate-side-nav-reveal p-1.5 text-slate-muted hover:text-forge-teal motion-reduce:animate-none"
             aria-label="Back to top"
             title="Back to top"
           >
             <ChevronUp className="size-4" aria-hidden="true" />
           </Button>
-        </div>
-      )}
+        ) : null}
+      </div>
     </div>
   );
 }

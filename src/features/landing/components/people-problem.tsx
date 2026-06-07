@@ -25,6 +25,7 @@ export function PeopleProblemSection() {
   return (
     <section
       id={LANDING_SECTION_IDS.peopleProblem}
+      data-landing-snap-section=""
       className="dark relative scroll-mt-16 overflow-hidden bg-hero-bg pt-24 pb-20 text-white md:pt-32 md:pb-28 lg:pt-36"
       aria-labelledby="people-problem-heading"
     >
@@ -62,6 +63,8 @@ export function PeopleProblemSection() {
             <img
               src={darkVisual}
               alt="Activity cards connected to one TeamForge group room, with an open seat highlighted"
+              width={1672}
+              height={941}
               className="mx-auto w-full max-w-4xl select-none drop-shadow-2xl lg:origin-center lg:scale-115 xl:scale-125"
               loading="lazy"
               decoding="async"

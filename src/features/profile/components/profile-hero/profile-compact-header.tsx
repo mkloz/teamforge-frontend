@@ -1,5 +1,6 @@
 import { MapPin } from "lucide-react";
 import { Avatar, AvatarStatus } from "@/shared/components/common/avatar";
+import { PersonalityCoverArt } from "@/shared/components/profile/personality-cover-art";
 import { scrollWindowToTop } from "@/shared/lib/scroll-to-top";
 import { cn } from "@/shared/lib/utils";
 import type { User } from "@/shared/schemas";
@@ -19,13 +20,21 @@ export function ProfileCompactHeader({
   return (
     <div
       className={cn(
-        "pointer-events-none fixed top-0 right-0 left-(--profile-shell-offset,0px) z-40 origin-left text-white transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none",
+        "pointer-events-none fixed top-0 right-0 left-(--profile-shell-offset,0px) z-40 origin-left overflow-hidden border-white/10 border-b bg-forge-teal text-white shadow-[0_16px_50px_rgba(0,0,0,0.24)] transition-transform duration-300 ease-out will-change-transform motion-reduce:transition-none",
         visible
-          ? "translate-y-0 scale-100 opacity-100"
-          : "-translate-y-1 scale-95 opacity-0",
+          ? "profile-compact-banner-shown"
+          : "profile-compact-banner-hidden",
       )}
       aria-hidden={!visible}
     >
+      <PersonalityCoverArt
+        coverClassName="h-full"
+        personalityType={user.personalityType}
+        watermarkClassName="block text-[4.25rem] text-white/42 sm:text-[5.5rem] md:text-[6.25rem] lg:text-[4.5rem]"
+        watermarkContainerClassName="z-10 mx-auto h-full w-full max-w-lg px-4 [--personality-cover-type-opacity:1] [--personality-cover-type-scale:1] [--personality-cover-type-y:0px] sm:max-w-6xl sm:px-6 md:px-8"
+      />
+      <div className="absolute inset-0 bg-linear-to-b from-black/12 via-black/22 to-black/38" />
+
       <div className="relative mx-auto flex h-20 w-full max-w-lg items-center gap-3 px-4 py-2 sm:max-w-6xl sm:px-6 md:px-8 lg:h-16">
         <button
           type="button"

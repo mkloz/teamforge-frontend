@@ -30,9 +30,9 @@ export function GroupDescriptionField({
         placeholder="What's this group about? A shared goal, project, or interest..."
         onChange={(event) => onGroupDescriptionChange(event.target.value)}
         className={cn(
-          "rounded-xl border-border/60 bg-background/60 px-3.5 py-3 font-medium text-sm",
-          "placeholder:text-muted-foreground/35 focus-visible:border-forge-teal/60",
-          "resize-none leading-relaxed transition-colors duration-150 focus:bg-background focus:ring-2 focus:ring-forge-teal/10",
+          "rounded-xl border-border/60 px-3.5 py-3 font-medium text-sm",
+          "placeholder:text-slate-muted/55 focus-visible:border-forge-teal/60",
+          "resize-none leading-relaxed transition-colors duration-150 focus-visible:ring-forge-teal/12",
         )}
       />
       {groupDescription.length > 0 && (

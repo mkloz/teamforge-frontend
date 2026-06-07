@@ -38,7 +38,12 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
   }
 
   if (fw.isForging) {
-    return <ForgeLoadingScreen progress={fw.forgingProgress} />;
+    return (
+      <ForgeLoadingScreen
+        progress={fw.forgingProgress}
+        strikeCount={fw.forgeStrikeCount}
+      />
+    );
   }
 
   return (
@@ -46,7 +51,6 @@ export function InlineForgeWizard({ onCancel }: InlineForgeWizardProps) {
       <InlineForgeHeader
         fw={fw}
         hasProgress={hasProgress}
-        onCancel={onCancel}
         onCancelDialogChange={setShowCancelDialog}
         showCancelDialog={showCancelDialog}
       />

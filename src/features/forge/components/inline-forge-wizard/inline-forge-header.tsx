@@ -9,7 +9,6 @@ import type { ForgeWizardChildProps } from "./types";
 
 interface InlineForgeHeaderProps extends ForgeWizardChildProps {
   hasProgress: boolean;
-  onCancel: () => void;
   onCancelDialogChange: (open: boolean) => void;
   showCancelDialog: boolean;
 }
@@ -17,7 +16,6 @@ interface InlineForgeHeaderProps extends ForgeWizardChildProps {
 export function InlineForgeHeader({
   fw,
   hasProgress,
-  onCancel,
   onCancelDialogChange,
   showCancelDialog,
 }: InlineForgeHeaderProps) {
@@ -66,7 +64,7 @@ export function InlineForgeHeader({
               cancelLabel="Keep editing"
               confirmLabel="Discard and exit"
               description="Your progress will be lost. You can start a new forge at any time."
-              onConfirm={onCancel}
+              onConfirm={fw.close}
               open={showCancelDialog}
               onOpenChange={onCancelDialogChange}
               title="Exit the forge?"
@@ -78,7 +76,7 @@ export function InlineForgeHeader({
                   onClick={(event) => {
                     if (!hasProgress) {
                       event.preventDefault();
-                      onCancel();
+                      fw.close();
                     } else {
                       onCancelDialogChange(true);
                     }

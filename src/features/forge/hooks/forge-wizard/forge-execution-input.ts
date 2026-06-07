@@ -1,3 +1,4 @@
+import type { ZodIssue } from "zod";
 import {
   type AutoForgeExecutionInput,
   forgeExecutionInputSchema,
@@ -64,7 +65,7 @@ export function getForgeExecutionValidation(
   return {
     canSubmit: false,
     input: null,
-    message: result.error.issues[0]?.message ?? "Check the plan details.",
+    message: getForgeValidationMessage(state, result.error.issues),
   };
 }
 
@@ -74,4 +75,68 @@ export function canSubmitForgeExecutionInput(state: ForgeWizardData) {
 
 export function getForgeExecutionValidationMessage(state: ForgeWizardData) {
   return getForgeExecutionValidation(state).message;
+}
+
+export function getForgeExecutionIssueMessage(issue?: ZodIssue) {
+  if (!issue) {
+    return "Finish the plan details before forming the group.";
+  }
+
+  const field = issue.path[0];
+
+  if (field === "selectedActivity") {
+    return "Choose an activity before forming the group.";
+  }
+
+  if (field === "planName") {
+    return issue.message;
+  }
+
+  if (field === "planDate" || field === "planTime") {
+    return issue.message;
+  }
+
+  if (field === "planLocation" || field === "planLocationLat") {
+    return issue.message;
+  }
+
+  if (field === "planCostAmount") {
+    return issue.message;
+  }
+
+  if (field === "autoMinSize") {
+    return "Keep the minimum group size below the maximum.";
+  }
+
+  return issue.message || "Finish the plan details before forming the group.";
+}
+
+function getForgeValidationMessage(state: ForgeWizardData, issues: ZodIssue[]) {
+  const planName = state.planName.trim();
+
+  if (!state.selectedActivity) {
+    return "Choose an activity before forming the group.";
+  }
+
+  if (planName.length === 0) {
+    return "Add a plan name before forming the group.";
+  }
+
+  if (planName.length < 3) {
+    return "Use at least 3 characters for the plan name.";
+  }
+
+  if (!state.planDate && !state.planTime) {
+    return "Add a date and time before forming the group.";
+  }
+
+  if (!state.planDate) {
+    return "Add a date before forming the group.";
+  }
+
+  if (!state.planTime) {
+    return "Add a time before forming the group.";
+  }
+
+  return getForgeExecutionIssueMessage(issues[0]);
 }

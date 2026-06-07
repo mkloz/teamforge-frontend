@@ -21,7 +21,7 @@ const NAV_LINK_CLASS =
   "group relative whitespace-nowrap rounded-sm font-medium font-sans text-sm text-text-dark-secondary transition-colors duration-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-transparent";
 
 const MOBILE_NAV_LINK_CLASS =
-  "rounded-md px-4 py-2 font-sans font-semibold text-2xl text-text-dark-secondary transition-all duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-4";
+  "rounded-xl px-3 py-2.5 text-center font-sans font-semibold text-sm text-text-dark-secondary transition-all duration-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-4";
 
 const COMPACT_NAV_LINKS = [
   { kind: "route", to: "/", label: "Home" },

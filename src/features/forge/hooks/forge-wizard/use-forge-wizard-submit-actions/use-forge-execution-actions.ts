@@ -10,7 +10,10 @@ import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
 import { showAppErrorToast } from "@/shared/lib/error-toast";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
-import { getForgeExecutionValidation } from "../forge-execution-input";
+import {
+  getForgeExecutionIssueMessage,
+  getForgeExecutionValidation,
+} from "../forge-execution-input";
 import {
   applyForgeExecutionFailure,
   applyForgeExecutionResult,
@@ -48,8 +51,10 @@ interface UseForgeExecutionActionsOptions
   markSearchKept: (activityId: string) => void;
 }
 
+const FORGE_PLAN_VALIDATION_TOAST_TITLE = "Finish the plan first";
+
 function getZodIssueMessage(error: ZodError) {
-  return error.issues[0]?.message ?? "Check the plan details.";
+  return getForgeExecutionIssueMessage(error.issues[0]);
 }
 
 export function useForgeExecutionActions({
@@ -81,12 +86,14 @@ export function useForgeExecutionActions({
         : getForgeExecutionValidation(state);
 
       if (validation && !validation.canSubmit) {
-        const message = validation.message ?? "Check the plan details.";
+        const message =
+          validation.message ??
+          "Finish the plan details before forming the group.";
 
         showAppErrorToast(new Error(message), {
           fallbackMessage: message,
           id: "forge-plan-validation",
-          title: "Check plan details",
+          title: FORGE_PLAN_VALIDATION_TOAST_TITLE,
         });
         dispatch({
           type: "set-step",
@@ -120,7 +127,7 @@ export function useForgeExecutionActions({
             showAppErrorToast(error, {
               fallbackMessage: message,
               id: "forge-plan-validation",
-              title: "Check plan details",
+              title: FORGE_PLAN_VALIDATION_TOAST_TITLE,
             });
             dispatch({
               type: "set-step",

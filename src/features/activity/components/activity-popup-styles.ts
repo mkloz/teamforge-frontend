@@ -10,7 +10,7 @@ export const ACTIVITY_MENU_SEPARATOR_CLASS = "my-1 bg-border/55";
 
 export function getActivityPopupPanelClass(className?: string) {
   return cn(
-    "border border-border/60 bg-canvas/97 text-ink backdrop-blur-xl dark:bg-forge-deep-surface/97",
+    "border border-border/60 bg-popover/97 text-popover-foreground backdrop-blur-xl",
     ACTIVITY_POPUP_SHADOW_CLASS,
     className,
   );

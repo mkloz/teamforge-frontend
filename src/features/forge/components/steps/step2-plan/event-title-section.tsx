@@ -60,7 +60,6 @@ export function EventTitleSection({
           aria-describedby={isNameError ? "name-error" : undefined}
           aria-label="Plan name"
           aria-required="true"
-          className="bg-background/60"
         />
 
         {isNameError && (
@@ -76,7 +75,7 @@ export function EventTitleSection({
             className="fade-in slide-in-from-top-1 animate-in items-center rounded-lg border-destructive/15 duration-150"
             contentClassName="font-medium text-destructive/70"
           >
-            Plan name must be at least 3 characters.
+            Use at least 3 characters for the plan name.
           </Notice>
         )}
       </div>

@@ -17,6 +17,7 @@ interface SegmentedTabsProps<TValue extends string> {
   fill?: boolean;
   onChange: (value: TValue) => void;
   options: ReadonlyArray<SegmentedTabOption<TValue>>;
+  size?: "md" | "sm";
   value: TValue;
 }
 
@@ -26,6 +27,7 @@ export function SegmentedTabs<TValue extends string>({
   fill = false,
   onChange,
   options,
+  size = "md",
   value,
 }: SegmentedTabsProps<TValue>) {
   const layoutId = useId();
@@ -36,7 +38,8 @@ export function SegmentedTabs<TValue extends string>({
       role="tablist"
       aria-label={ariaLabel}
       className={cn(
-        "inline-flex max-w-full items-center gap-1 rounded-full border border-white/10 bg-forge-deep-surface p-0.5 shadow-sm",
+        "inline-flex max-w-full items-center rounded-full border border-border bg-input p-0.5 shadow-sm",
+        size === "sm" ? "gap-0.5" : "gap-1",
         fill && "flex w-full",
         className,
       )}
@@ -55,11 +58,14 @@ export function SegmentedTabs<TValue extends string>({
               onChange(option.id);
             }}
             className={cn(
-              "relative isolate inline-flex h-9 min-w-0 items-center justify-center gap-1.5 overflow-hidden rounded-full px-3 font-bold text-xs leading-none outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-offset-1 motion-reduce:transition-none",
+              "relative isolate inline-flex min-w-0 items-center justify-center overflow-hidden rounded-full font-bold leading-none outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-offset-1 focus-visible:ring-offset-background motion-reduce:transition-none",
+              size === "sm"
+                ? "h-7 gap-1 px-2.5 text-micro"
+                : "h-9 gap-1.5 px-3 text-xs",
               fill && "flex-1",
               active
                 ? "text-white"
-                : "text-white/65 hover:bg-white/8 hover:text-white",
+                : "text-slate-muted hover:bg-muted hover:text-ink",
             )}
           >
             {active && (
@@ -73,13 +79,14 @@ export function SegmentedTabs<TValue extends string>({
                   damping: 42,
                   mass: 0.7,
                 }}
-                className="absolute inset-0 -z-10 rounded-full bg-forge-teal shadow-sm"
+                className="absolute inset-0 -z-10 rounded-full bg-forge-teal-readable shadow-sm"
               />
             )}
             {Icon && (
               <Icon
                 className={cn(
-                  "size-3.5 shrink-0 transition-opacity duration-200 motion-reduce:transition-none",
+                  "shrink-0 transition-opacity duration-200 motion-reduce:transition-none",
+                  size === "sm" ? "size-3" : "size-3.5",
                   active ? "opacity-100" : "opacity-70",
                 )}
                 strokeWidth={active ? 2 : 1.5}

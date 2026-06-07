@@ -10,6 +10,14 @@
     /* biome-ignore lint/complexity/noImportantStyles: This utility must hide WebKit scrollbars even inside component-scoped styles. */
     display: none !important;
   }
+
+  .profile-compact-banner-shown {
+    transform: translate3d(0, 0, 0);
+  }
+
+  .profile-compact-banner-hidden {
+    transform: translate3d(0, -100%, 0);
+  }
 }
 
 @utility main-action-grid {
@@ -26,6 +34,28 @@
 
 @utility landing-story-scroll {
   height: 300vh;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.landing-scroll-snap {
+    scroll-padding-top: 4rem;
+    scroll-snap-type: y proximity;
+  }
+
+  html.landing-scroll-snap.landing-programmatic-scroll {
+    scroll-snap-type: none;
+  }
+
+  html.landing-scroll-snap [data-landing-snap-section] {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.landing-scroll-snap {
+    scroll-snap-type: none;
+  }
 }
 
 @utility type-signature-label {

@@ -72,7 +72,7 @@ function EditGroupIdentityDialogContent({
   });
 
   return (
-    <DialogContent className="flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden rounded-2xl border-border/70 bg-canvas px-5 py-0 shadow-none sm:max-w-lg [&>button]:top-4 [&>button]:right-4 [&>button]:shadow-none">
+    <DialogContent className="flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden rounded-2xl border-border/70 bg-popover px-5 py-0 shadow-none sm:max-w-lg [&>button]:top-4 [&>button]:right-4 [&>button]:shadow-none">
       <DialogHeader className="border-border/60 border-b py-5 pr-10">
         <DialogTitle>Edit group details</DialogTitle>
         <DialogDescription>
@@ -115,7 +115,7 @@ function EditPlanDetailsDialogContent({
   });
 
   return (
-    <DialogContent className="flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden rounded-2xl border-border/70 bg-canvas px-5 py-0 shadow-none sm:max-w-2xl [&>button]:top-4 [&>button]:right-4 [&>button]:shadow-none">
+    <DialogContent className="flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden rounded-2xl border-border/70 bg-popover px-5 py-0 shadow-none sm:max-w-2xl [&>button]:top-4 [&>button]:right-4 [&>button]:shadow-none">
       <DialogHeader className="border-border/60 border-b py-5 pr-10">
         <DialogTitle>Edit plan</DialogTitle>
         <DialogDescription>

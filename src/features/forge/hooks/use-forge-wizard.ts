@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useReducer, useRef } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useReducer,
+  useRef,
+} from "react";
 import { useForgeWizardFieldActions } from "@/features/forge/hooks/forge-wizard/field-actions";
 import { useForgeWizardDerivedState } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-derived-state";
 import { useForgeWizardRouteSync } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-route-sync";
@@ -10,13 +16,17 @@ import {
   buildForgeIdeaTemplateId,
 } from "@/features/forge/lib/forge-idea-template";
 import type { ForgeIdeaLaunch } from "@/features/forge/lib/forge-route";
-import type { Step } from "@/features/forge/lib/forge-wizard";
+import type { ForgeWizardData, Step } from "@/features/forge/lib/forge-wizard";
 import {
   createInitialForgeWizardState,
   forgeWizardReducer,
   getNextStep,
   getPreviousStep,
 } from "@/features/forge/lib/forge-wizard";
+import {
+  cloneForgeWizardDraft,
+  useForgeWizardDraftStore,
+} from "@/features/forge/store/use-forge-wizard-draft-store";
 
 interface UseForgeWizardOptions {
   onClose: () => void;
@@ -49,9 +59,15 @@ export function useForgeWizard({
   syncTargets,
   enterGroupHub,
 }: UseForgeWizardOptions) {
+  const initialDraftRef = useRef(useForgeWizardDraftStore.getState().draft);
+  const saveDraft = useForgeWizardDraftStore((store) => store.saveDraft);
+  const clearDraft = useForgeWizardDraftStore((store) => store.clearDraft);
+  const hasPersistedStateRef = useRef(false);
+  const skipNextDraftPersistRef = useRef(false);
   const [state, dispatch] = useReducer(
     forgeWizardReducer,
     {
+      draft: initialDraftRef.current,
       routeIdea,
       routeMode,
       routeStep,
@@ -60,9 +76,6 @@ export function useForgeWizard({
   );
   const { forgeStrikeCount, isForging, forgingProgress, runForgeAnimation } =
     useForgeAnimation();
-  const closeResetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
   const inviteCopiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
@@ -87,30 +100,35 @@ export function useForgeWizard({
 
   useEffect(() => {
     return () => {
-      if (closeResetTimeoutRef.current) {
-        clearTimeout(closeResetTimeoutRef.current);
-      }
-
       if (inviteCopiedTimeoutRef.current) {
         clearTimeout(inviteCopiedTimeoutRef.current);
       }
     };
   }, []);
 
-  const reset = useCallback(() => {
-    dispatch({ type: "reset" });
-  }, []);
-
-  const close = useCallback(() => {
-    onClose();
-    if (closeResetTimeoutRef.current) {
-      clearTimeout(closeResetTimeoutRef.current);
+  useLayoutEffect(() => {
+    if (!hasPersistedStateRef.current) {
+      hasPersistedStateRef.current = true;
+      return;
     }
 
-    closeResetTimeoutRef.current = setTimeout(() => {
-      reset();
-      closeResetTimeoutRef.current = null;
-    }, 300);
+    if (skipNextDraftPersistRef.current) {
+      skipNextDraftPersistRef.current = false;
+      return;
+    }
+
+    saveDraft(state);
+  }, [saveDraft, state]);
+
+  const reset = useCallback(() => {
+    skipNextDraftPersistRef.current = true;
+    clearDraft();
+    dispatch({ type: "reset" });
+  }, [clearDraft]);
+
+  const close = useCallback(() => {
+    reset();
+    onClose();
   }, [onClose, reset]);
 
   const goNext = useCallback(() => {
@@ -217,14 +235,20 @@ export type { Step } from "@/features/forge/lib/forge-wizard";
 export type ForgeWizardState = ReturnType<typeof useForgeWizard>;
 
 function createInitialForgeWizardStateForRoute(input: {
+  draft: ForgeWizardData | null;
   routeIdea: ForgeIdeaLaunch | null;
   routeMode: ForgeMode;
   routeStep: Step;
 }) {
+  const initialState = input.draft
+    ? cloneForgeWizardDraft(input.draft)
+    : createInitialForgeWizardState();
+  const hasLiveForgeState =
+    initialState.forgeResult !== "IDLE" || initialState.participants.length > 0;
   const baseState = {
-    ...createInitialForgeWizardState(),
+    ...initialState,
     forgeMode: input.routeMode,
-    step: input.routeStep > 4 ? 4 : input.routeStep,
+    step: input.routeStep > 4 && !hasLiveForgeState ? 4 : input.routeStep,
   };
 
   if (!input.routeIdea) {

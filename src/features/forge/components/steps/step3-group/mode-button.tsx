@@ -30,12 +30,11 @@ export function ModeButton({
       <div className="flex min-w-0 items-center gap-2">
         <IconTile
           icon={Icon}
-          size="md"
+          size="xs"
           tone={
             active ? (activeColor === "primary" ? "teal" : "amber") : "neutral"
           }
           className={cn(
-            "size-8",
             active
               ? activeColor === "primary"
                 ? "bg-forge-teal text-white shadow-forge-teal/25 shadow-sm"
@@ -45,7 +44,7 @@ export function ModeButton({
         />
         <span
           className={cn(
-            "min-w-0 text-wrap font-black text-xs tracking-tight",
+            "min-w-0 text-wrap font-black text-sm leading-5 tracking-tight",
             active
               ? activeColor === "primary"
                 ? "text-forge-teal"

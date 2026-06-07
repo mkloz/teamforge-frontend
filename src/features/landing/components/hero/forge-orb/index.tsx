@@ -27,11 +27,11 @@ export function ForgeOrb() {
     <div
       ref={containerRef}
       {...tiltHandlers}
-      className="perspective-orb relative flex size-full min-h-90 cursor-default items-center justify-center px-10 md:min-h-125 md:py-20 md:pr-25 md:pl-32 xl:pr-37 xl:pl-47"
+      className="perspective-orb relative flex size-full min-h-72 cursor-default items-center justify-center px-3 pt-4 pb-2 sm:min-h-82 sm:px-8 md:min-h-125 md:py-20 md:pr-25 md:pl-32 xl:pr-37 xl:pl-47"
     >
       <div
         ref={orbContainerRef}
-        className="relative size-80 transition-transform duration-700 ease-out xl:h-95 xl:w-95"
+        className="relative size-64 transition-transform duration-700 ease-out sm:size-80 xl:h-95 xl:w-95"
         style={{
           transformStyle: "preserve-3d",
         }}

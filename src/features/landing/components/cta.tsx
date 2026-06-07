@@ -19,8 +19,9 @@ export function CtaSection() {
     <section
       id="cta"
       ref={sectionRef}
+      data-landing-snap-section=""
       {...glowHandlers}
-      className="dark relative overflow-hidden bg-hero-bg pt-24 pb-28 md:pt-36 md:pb-40"
+      className="dark relative scroll-mt-16 overflow-hidden bg-hero-bg pt-24 pb-28 md:pt-36 md:pb-40"
       aria-label="Get started with TeamForge"
     >
       <div

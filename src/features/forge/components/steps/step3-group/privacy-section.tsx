@@ -45,7 +45,7 @@ export function PrivacySection({
             >
               <IconTile
                 icon={Icon}
-                size="md"
+                size="xs"
                 tone={active ? "teal" : "neutral"}
                 className={cn(
                   "sm:col-start-1 sm:row-start-1",
@@ -57,7 +57,7 @@ export function PrivacySection({
               <div className="min-w-0 flex-1 gap-1 sm:contents">
                 <p
                   className={cn(
-                    "min-w-0 text-pretty font-semibold text-sm leading-tight sm:col-start-2 sm:row-start-1 sm:self-center",
+                    "min-w-0 text-pretty font-semibold text-sm leading-5 sm:col-start-2 sm:row-start-1 sm:self-center",
                     active ? "text-forge-teal" : "text-foreground",
                   )}
                 >

@@ -1,7 +1,12 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import {
+  LANDING_SECTIONS,
+  type LandingSectionId,
+} from "@/features/landing/constants/landing-sections";
+import {
   LANDING_BELOW_FOLD_REQUEST_EVENT,
   type LandingBelowFoldRequestDetail,
+  scrollLandingElementToStart,
 } from "@/features/landing/lib/landing-scroll";
 
 const LazyLandingBelowFoldSections = lazy(() =>
@@ -10,11 +15,48 @@ const LazyLandingBelowFoldSections = lazy(() =>
   })),
 );
 
+const MAX_DEFERRED_SCROLL_FRAMES = 45;
+const ALIGNED_FRAME_COUNT = 6;
+const MAX_ALIGNED_TARGET_TOP = 180;
+
+function isLandingSectionId(id: string): id is LandingSectionId {
+  return LANDING_SECTIONS.some((section) => section.id === id);
+}
+
+function getInitialScrollRequest() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const targetId = window.location.hash.slice(1);
+
+  if (!isLandingSectionId(targetId) || targetId === "hero") {
+    return null;
+  }
+
+  return {
+    options: {
+      behavior: "auto",
+      block: "start",
+    },
+    targetId,
+  } as const satisfies LandingBelowFoldRequestDetail;
+}
+
+function isTargetAligned(target: HTMLElement) {
+  const { top } = target.getBoundingClientRect();
+
+  return top >= 0 && top <= MAX_ALIGNED_TARGET_TOP;
+}
+
 export function DeferredLandingBelowFoldSections() {
+  const initialScrollRequest = getInitialScrollRequest();
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const [shouldRender, setShouldRender] = useState(false);
+  const [shouldRender, setShouldRender] = useState(
+    initialScrollRequest !== null,
+  );
   const [pendingScrollRequest, setPendingScrollRequest] =
-    useState<LandingBelowFoldRequestDetail | null>(null);
+    useState<LandingBelowFoldRequestDetail | null>(initialScrollRequest);
 
   useEffect(() => {
     const handleRequest = (
@@ -79,21 +121,32 @@ export function DeferredLandingBelowFoldSections() {
     const request = pendingScrollRequest;
     let frame = 0;
     let attempts = 0;
+    let alignedFrames = 0;
 
     function retryScroll() {
       const target = document.getElementById(request.targetId);
 
       if (target) {
-        target.scrollIntoView(request.options);
-        setPendingScrollRequest(null);
-        return;
+        scrollLandingElementToStart(target, request.options);
+
+        if (isTargetAligned(target)) {
+          alignedFrames += 1;
+        } else {
+          alignedFrames = 0;
+        }
       }
 
       attempts += 1;
 
-      if (attempts < 120) {
+      if (
+        alignedFrames < ALIGNED_FRAME_COUNT &&
+        attempts < MAX_DEFERRED_SCROLL_FRAMES
+      ) {
         frame = requestAnimationFrame(retryScroll);
+        return;
       }
+
+      setPendingScrollRequest(null);
     }
 
     frame = requestAnimationFrame(retryScroll);
