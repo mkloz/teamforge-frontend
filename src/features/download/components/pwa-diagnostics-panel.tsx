@@ -582,7 +582,7 @@ function DiagnosticRow({
   return (
     <li
       className={cn(
-        "min-w-0 border-border/70 bg-transparent p-4 transition-colors duration-200 hover:bg-canvas/50 sm:p-5 dark:border-slate-muted/25 hover:dark:bg-background/40",
+        "min-w-0 border-border/70 bg-transparent p-4 transition-colors duration-200 hover:bg-canvas/50 sm:p-5 dark:border-slate-muted/25 dark:hover:bg-background/40",
         getDiagnosticCellBorderClasses(index, total),
       )}
     >

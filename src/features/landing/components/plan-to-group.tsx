@@ -73,7 +73,7 @@ export function PlanToGroupSection() {
           {SECTION_NOTES.map(({ detail, icon: Icon, title }) => (
             <li
               key={title}
-              className="border-white/10 border-t py-6 md:border-t-0 md:border-r md:px-8 last:md:border-r-0 last:md:pr-0 first:md:pl-0"
+              className="border-white/10 border-t py-6 md:border-t-0 md:border-r md:px-8 md:last:border-r-0 md:last:pr-0 md:first:pl-0"
             >
               <div>
                 <div className="flex items-center gap-2">

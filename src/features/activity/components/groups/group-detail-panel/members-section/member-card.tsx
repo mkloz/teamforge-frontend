@@ -160,7 +160,7 @@ export function MemberCard({
                 onClick={(event) => {
                   event.stopPropagation();
                 }}
-                className="size-8 max-md:opacity-100 md:opacity-0 md:transition-all md:duration-150 md:group-hover/member:opacity-100 focus-visible:md:opacity-100"
+                className="size-8 max-md:opacity-100 md:opacity-0 md:transition-all md:duration-150 md:group-hover/member:opacity-100 md:focus-visible:opacity-100"
                 aria-label={`Remove ${memberName} from group`}
               >
                 <UserMinus className="size-3.5" />

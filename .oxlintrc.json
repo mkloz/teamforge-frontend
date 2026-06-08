@@ -94,7 +94,7 @@
     "tailwindcss/enforce-consistent-important-position": "error",
     "tailwindcss/enforce-negative-arbitrary-values": "error",
     "tailwindcss/enforce-consistent-variable-syntax": "error",
-    "tailwindcss/consistent-variant-order": "error",
+    "tailwindcss/consistent-variant-order": "off",
     "tailwindcss/no-arbitrary-value": "off",
     "tailwindcss/no-hardcoded-colors": "error",
     "tailwindcss/no-unnecessary-arbitrary-value": "error",

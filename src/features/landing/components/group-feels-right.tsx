@@ -82,7 +82,7 @@ export function GroupFeelsRightSection() {
           {FIT_POINTS.map(({ detail, icon: Icon, title }) => (
             <li
               key={title}
-              className="border-white/10 border-b py-6 last:border-b-0 md:px-6 odd:md:border-r lg:border-r lg:border-b-0 lg:px-7 last:lg:border-r-0 last:lg:pr-0 first:lg:pl-0"
+              className="border-white/10 border-b py-6 last:border-b-0 md:px-6 md:odd:border-r lg:border-r lg:border-b-0 lg:px-7 lg:last:border-r-0 lg:last:pr-0 lg:first:pl-0"
             >
               <div>
                 <div className="flex items-center gap-2">

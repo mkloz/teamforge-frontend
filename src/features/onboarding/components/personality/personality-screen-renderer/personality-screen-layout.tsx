@@ -53,7 +53,7 @@ export function BackLink({ label = "Back", onBack }: BackLinkProps) {
         variant="ghost"
         size="sm"
         onClick={onBack}
-        className="h-8 rounded-md px-2 font-bold text-muted-foreground text-sm underline-offset-4 hover:bg-transparent hover:text-ink hover:underline focus-visible:ring-forge-teal hover:dark:text-white"
+        className="h-8 rounded-md px-2 font-bold text-muted-foreground text-sm underline-offset-4 hover:bg-transparent hover:text-ink hover:underline focus-visible:ring-forge-teal dark:hover:text-white"
       >
         <ArrowLeft size={15} strokeWidth={2.5} aria-hidden="true" />
         <span>{label}</span>

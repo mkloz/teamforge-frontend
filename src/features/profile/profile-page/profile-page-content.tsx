@@ -296,7 +296,7 @@ function ProfilePortraitSectionFallback() {
           {["first", "second", "third"].map((item, index) => (
             <div
               key={item}
-              className="min-w-0 border-border/70 border-t py-4 first:border-t-0 md:border-t-0 md:border-l md:px-4 last:md:pr-0 first:md:border-l-0 first:md:pl-0"
+              className="min-w-0 border-border/70 border-t py-4 first:border-t-0 md:border-t-0 md:border-l md:px-4 md:last:pr-0 md:first:border-l-0 md:first:pl-0"
             >
               <div className="flex min-w-0 items-center gap-2">
                 <Skeleton

@@ -29,7 +29,7 @@ export function QuestionCard({
         "relative w-full rounded-xl border border-border bg-card p-4 shadow-xs transition-all duration-300",
         answered
           ? "border-forge-teal/30 bg-forge-teal/6 shadow-sm"
-          : "hover:shadow-sm active:bg-muted/50 hover:sm:shadow-md active:dark:bg-white/5",
+          : "hover:shadow-sm active:bg-muted/50 sm:hover:shadow-md dark:active:bg-white/5",
       )}
     >
       <div className="mb-2.5 flex h-5 items-center justify-between sm:mb-3 sm:h-6">

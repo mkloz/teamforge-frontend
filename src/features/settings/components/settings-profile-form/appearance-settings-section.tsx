@@ -585,7 +585,7 @@ interface RecipeItemProps {
 
 function RecipeItem({ icon: Icon, eyebrow, label }: RecipeItemProps) {
   return (
-    <div className="flex min-w-0 items-center gap-3 py-3 md:px-5 first:md:pl-0">
+    <div className="flex min-w-0 items-center gap-3 py-3 md:px-5 md:first:pl-0">
       <IconTile
         icon={Icon}
         tone="neutral"

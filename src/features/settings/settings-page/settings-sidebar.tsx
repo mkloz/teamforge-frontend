@@ -126,7 +126,7 @@ function SettingsSectionNav({
             }}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "group relative flex w-full items-center justify-between gap-3 border-border border-b px-1 py-2 text-left transition-colors last:border-b-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:bg-muted/40 lg:items-start lg:border-b-0 lg:px-4 active:lg:bg-transparent",
+              "group relative flex w-full items-center justify-between gap-3 border-border border-b px-1 py-2 text-left transition-colors last:border-b-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:bg-muted/40 lg:items-start lg:border-b-0 lg:px-4 lg:active:bg-transparent",
               "after:absolute after:top-2.5 after:bottom-2.5 after:left-0 after:w-0.5 after:origin-center after:scale-y-0 after:bg-primary after:transition-transform",
               isActive
                 ? "text-ink lg:after:scale-y-100"

@@ -42,10 +42,10 @@ export const LinkPreview = memo(function LinkPreview({
           : "flex rounded-lg",
         hasImage
           ? isOwn
-            ? "border-primary/10 bg-white/25 hover:bg-white/40 dark:bg-black/25 hover:dark:bg-black/40"
+            ? "border-primary/10 bg-white/25 hover:bg-white/40 dark:bg-black/25 dark:hover:bg-black/40"
             : "border-border/50 bg-card hover:border-border"
           : isOwn
-            ? "border-primary/20 bg-canvas/80 hover:border-primary/30 hover:bg-canvas dark:bg-card/60 hover:dark:bg-card/80"
+            ? "border-primary/20 bg-canvas/80 hover:border-primary/30 hover:bg-canvas dark:bg-card/60 dark:hover:bg-card/80"
             : "border-border/55 bg-muted/35 hover:border-primary/25 hover:bg-muted/50",
       )}
     >

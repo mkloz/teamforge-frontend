@@ -35,7 +35,7 @@ export function LengthOptionCard({
           ? "border-forge-teal/30 bg-forge-teal/8"
           : viewModel.isRecommended
             ? "border-forge-teal/10 bg-card hover:border-forge-teal/20 dark:border-forge-teal/20"
-            : "border-border bg-card hover:dark:border-white/15",
+            : "border-border bg-card dark:hover:border-white/15",
       )}
       contentClassName="block h-auto w-full"
     >

@@ -150,7 +150,7 @@ function PortraitDetailRow({
   const Icon = getDetailIcon(detail.label);
 
   return (
-    <div className="min-w-0 border-border/70 border-t py-4 first:border-t-0 md:border-t-0 md:border-l md:px-4 last:md:pr-0 first:md:border-l-0 first:md:pl-0">
+    <div className="min-w-0 border-border/70 border-t py-4 first:border-t-0 md:border-t-0 md:border-l md:px-4 md:last:pr-0 md:first:border-l-0 md:first:pl-0">
       <div className="flex min-w-0 items-center gap-2">
         <IconTile icon={Icon} shape="circle" size="sm" />
         <p className="font-bold text-slate-muted text-sm">{detail.label}</p>
