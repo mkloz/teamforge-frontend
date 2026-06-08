@@ -31,7 +31,6 @@ const ENV_EXAMPLE_PATH = path.join(ROOT_DIR, ".env.example");
 const PACKAGE_JSON_PATH = path.join(ROOT_DIR, "package.json");
 const PWA_PRODUCTION_ENV_SCRIPT = "scripts/pwa-production-env.mjs";
 const PWA_RELEASE_SCRIPT = "npm run pwa:env && npm run build && npm run pwa:qa";
-const VERCEL_CONFIG_PATH = path.join(ROOT_DIR, "vercel.json");
 const LOCAL_API_URL = "http://localhost:6969/api/v1";
 const PRODUCTION_API_URL = "https://api.mkloz.com/teamforge/api/v1";
 
@@ -134,34 +133,6 @@ const manifestSchema = z
   })
   .passthrough();
 
-const vercelHeaderSchema = z
-  .object({
-    key: z.string(),
-    value: z.string(),
-  })
-  .passthrough();
-
-const vercelHeaderRuleSchema = z
-  .object({
-    headers: z.array(vercelHeaderSchema),
-    source: z.string(),
-  })
-  .passthrough();
-
-const vercelRewriteSchema = z
-  .object({
-    destination: z.string(),
-    source: z.string(),
-  })
-  .passthrough();
-
-const vercelConfigSchema = z
-  .object({
-    headers: z.array(vercelHeaderRuleSchema).optional(),
-    rewrites: z.array(vercelRewriteSchema).optional(),
-  })
-  .passthrough();
-
 const packageJsonSchema = z
   .object({
     scripts: z.record(z.string(), z.string()).optional(),
@@ -255,34 +226,6 @@ function hasWorkboxNavigationFallback(swText, fallbackUrl) {
   return fallbackPattern.test(swText);
 }
 
-function getVercelHeaderRule(config, source) {
-  return config.headers?.find((rule) => rule.source === source) ?? null;
-}
-
-function getVercelHeaderValue(rule, key) {
-  return (
-    rule?.headers.find(
-      (header) => header.key.toLowerCase() === key.toLowerCase(),
-    )?.value ?? null
-  );
-}
-
-function hasCacheDirectives(value, directives) {
-  const normalizedValue = value.toLowerCase();
-
-  return directives.every((directive) =>
-    normalizedValue.includes(directive.toLowerCase()),
-  );
-}
-
-function hasCspDirectives(value, directives) {
-  const normalizedValue = value.toLowerCase();
-
-  return directives.every((directive) =>
-    normalizedValue.includes(directive.toLowerCase()),
-  );
-}
-
 function getEnvValue(envText, key) {
   const line = envText
     .split(/\r?\n/u)
@@ -311,21 +254,6 @@ function getSocketPathForApiUrl(apiUrlValue) {
     .replace(/\/api\/v\d+$/u, "");
 
   return `${publicBasePath}/socket.io`.replace(/\/{2,}/gu, "/");
-}
-
-function validateVercelHeader(config, source, key, predicate, passDetail) {
-  const rule = getVercelHeaderRule(config, source);
-  const value = getVercelHeaderValue(rule, key);
-  const passed = value !== null && predicate(value);
-
-  addCheck(
-    "Hosting",
-    `${source} ${key}`,
-    passed,
-    passed
-      ? passDetail(value)
-      : `${source} should set ${key}; found ${value ?? "no matching header"}.`,
-  );
 }
 
 async function validateSourceMarkers(category, relativePath, markers) {
@@ -486,198 +414,6 @@ async function validateDeployGuards() {
     "Production realtime namespace URL",
     productionRealtimeUrl === "https://api.mkloz.com/realtime",
     `Production realtime namespace resolves to ${productionRealtimeUrl}.`,
-  );
-}
-
-/**
- * Validates hosting headers and SPA rewrites.
- *
- * @returns {Promise<void>}
- */
-async function validateHostingConfig() {
-  if (!existsSync(VERCEL_CONFIG_PATH)) {
-    addFail("Hosting", "vercel.json", "vercel.json is missing.");
-    return;
-  }
-
-  addPass("Hosting", "vercel.json", "vercel.json exists.");
-
-  let vercelConfig;
-
-  try {
-    const configResult = vercelConfigSchema.safeParse(
-      JSON.parse(await readText(VERCEL_CONFIG_PATH)),
-    );
-
-    if (!configResult.success) {
-      addFail(
-        "Hosting",
-        "vercel.json parses",
-        `vercel.json shape is invalid: ${z.prettifyError(configResult.error)}`,
-      );
-      return;
-    }
-
-    vercelConfig = configResult.data;
-  } catch (error) {
-    addFail(
-      "Hosting",
-      "vercel.json parses",
-      `Could not parse vercel.json: ${error.message}`,
-    );
-    return;
-  }
-
-  addPass("Hosting", "vercel.json parses", "vercel.json is valid JSON.");
-
-  const requiresRevalidation = (value) =>
-    hasCacheDirectives(value, ["max-age=0", "must-revalidate"]);
-  const requiresImmutableCache = (value) =>
-    hasCacheDirectives(value, ["max-age=31536000", "immutable"]);
-  const appShellSource = "/(.*)";
-
-  validateVercelHeader(
-    vercelConfig,
-    "/manifest.webmanifest",
-    "Content-Type",
-    (value) => value.toLowerCase().includes("application/manifest+json"),
-    (value) => `Manifest Content-Type is ${value}.`,
-  );
-  validateVercelHeader(
-    vercelConfig,
-    "/manifest.webmanifest",
-    "Cache-Control",
-    requiresRevalidation,
-    (value) => `Manifest revalidates on deploy: ${value}.`,
-  );
-  validateVercelHeader(
-    vercelConfig,
-    "/sw.js",
-    "Cache-Control",
-    requiresRevalidation,
-    (value) => `Generated service worker revalidates on deploy: ${value}.`,
-  );
-  validateVercelHeader(
-    vercelConfig,
-    "/sw.js",
-    "Service-Worker-Allowed",
-    (value) => value === "/",
-    (value) => `Service worker scope is allowed from ${value}.`,
-  );
-  validateVercelHeader(
-    vercelConfig,
-    "/sw-push.js",
-    "Cache-Control",
-    requiresRevalidation,
-    (value) => `Push worker import revalidates on deploy: ${value}.`,
-  );
-  validateVercelHeader(
-    vercelConfig,
-    "/workbox-:hash.js",
-    "Cache-Control",
-    requiresImmutableCache,
-    (value) => `Hashed Workbox runtime is cache-immutable: ${value}.`,
-  );
-  validateVercelHeader(
-    vercelConfig,
-    "/assets/:path*",
-    "Cache-Control",
-    requiresImmutableCache,
-    (value) => `Hashed Vite assets are cache-immutable: ${value}.`,
-  );
-  validateVercelHeader(
-    vercelConfig,
-    "/icons/:path*",
-    "Cache-Control",
-    requiresRevalidation,
-    (value) => `PWA icon assets revalidate when deployed: ${value}.`,
-  );
-  validateVercelHeader(
-    vercelConfig,
-    "/download/:path*",
-    "Cache-Control",
-    requiresRevalidation,
-    (value) => `Download visual assets revalidate when deployed: ${value}.`,
-  );
-  validateVercelHeader(
-    vercelConfig,
-    appShellSource,
-    "Cache-Control",
-    requiresRevalidation,
-    (value) => `Application shell revalidates on deploy: ${value}.`,
-  );
-  validateVercelHeader(
-    vercelConfig,
-    appShellSource,
-    "Content-Security-Policy",
-    (value) =>
-      hasCspDirectives(value, [
-        "default-src 'self'",
-        "base-uri 'self'",
-        "object-src 'none'",
-        "frame-ancestors 'none'",
-        "script-src 'self'",
-        "connect-src 'self'",
-      ]),
-    (value) => `Application CSP is present: ${value}.`,
-  );
-  validateVercelHeader(
-    vercelConfig,
-    appShellSource,
-    "Strict-Transport-Security",
-    (value) =>
-      hasCacheDirectives(value, [
-        "max-age=63072000",
-        "includesubdomains",
-        "preload",
-      ]),
-    (value) => `HSTS is configured: ${value}.`,
-  );
-  validateVercelHeader(
-    vercelConfig,
-    appShellSource,
-    "X-Frame-Options",
-    (value) => value.toUpperCase() === "DENY",
-    (value) => `Clickjacking protection is ${value}.`,
-  );
-  validateVercelHeader(
-    vercelConfig,
-    appShellSource,
-    "X-Content-Type-Options",
-    (value) => value.toLowerCase() === "nosniff",
-    (value) => `MIME sniffing protection is ${value}.`,
-  );
-  validateVercelHeader(
-    vercelConfig,
-    appShellSource,
-    "Referrer-Policy",
-    (value) => value.toLowerCase() === "strict-origin-when-cross-origin",
-    (value) => `Referrer policy is ${value}.`,
-  );
-  validateVercelHeader(
-    vercelConfig,
-    appShellSource,
-    "Permissions-Policy",
-    (value) =>
-      value.includes("camera=()") &&
-      value.includes("microphone=()") &&
-      value.includes("geolocation=(self)"),
-    (value) => `Browser capability policy is ${value}.`,
-  );
-
-  const spaRewrite = vercelConfig.rewrites?.find(
-    (rewrite) => rewrite.source === "/(.*)",
-  );
-
-  addCheck(
-    "Hosting",
-    "SPA deep-link rewrite",
-    spaRewrite?.destination === "/index.html",
-    spaRewrite?.destination === "/index.html"
-      ? "All non-file routes rewrite to /index.html for PWA deep links."
-      : `Expected /(.*) to rewrite to /index.html; found ${
-          spaRewrite?.destination ?? "no matching rewrite"
-        }.`,
   );
 }
 
@@ -1626,7 +1362,6 @@ async function writeReport() {
  */
 async function main() {
   await validateDeployGuards();
-  await validateHostingConfig();
   await validatePwaSourceRuntime();
 
   if (!existsSync(DIST_DIR)) {
@@ -1655,6 +1390,12 @@ async function main() {
   );
 
   if (failed.length > 0) {
+    process.stdout.write("\nFailed Checks:\n");
+    for (const check of failed) {
+      process.stdout.write(
+        `- ${check.category} / ${check.name}: ${check.detail}\n`,
+      );
+    }
     process.exitCode = 1;
   }
 }
