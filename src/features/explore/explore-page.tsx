@@ -1,32 +1,49 @@
-import { ExploreFeed } from "./components/explore-feed";
-import { ExploreLeftSection } from "./components/explore-left-section";
-import { ExploreRightFilters } from "./components/explore-right-filters";
-import { ExploreSearchHeader } from "./components/explore-search-header";
+import { lazy, Suspense } from "react";
+import { ExploreFeed } from "@/features/explore/components/explore-feed";
+import { ExploreLeftSection } from "@/features/explore/components/explore-left-section";
+import { ExploreSearchHeader } from "@/features/explore/components/explore-search-header";
+import { ExplorePageLoading } from "@/features/explore/explore-page.loading";
+import { ExplorePageContent } from "@/features/explore/explore-page-content";
+import { useExploreGroups } from "@/features/explore/hooks/use-explore-groups";
+import { useMediaQuery } from "@/shared/hooks/use-media-query";
+import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
+import { createTeamForgePageMetadata } from "@/shared/lib/teamforge-page-metadata";
+
+const ExploreRightFilters = lazy(() =>
+  import("@/features/explore/components/explore-right-filters").then(
+    (module) => ({ default: module.ExploreRightFilters }),
+  ),
+);
+
+const EXPLORE_PAGE_METADATA = createTeamForgePageMetadata({
+  title: "Explore",
+  description:
+    "Explore TeamForge groups, people, and activity options that fit your interests.",
+});
 
 export function ExplorePage() {
+  usePageMetadata(EXPLORE_PAGE_METADATA);
+
+  const groupsQuery = useExploreGroups();
+  const shouldRenderDesktopFilters = useMediaQuery("(min-width: 1024px)");
+  const isInitialLoading = groupsQuery.isLoading && !groupsQuery.data;
+
+  if (isInitialLoading) {
+    return <ExplorePageLoading mode="query" />;
+  }
+
   return (
-    <div className="w-full">
-      <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-12 gap-8 w-full max-w-screen-2xl mx-auto px-4 lg:px-6 pt-2 md:pt-6 ">
-        {/* LEFT SIDEBAR: Branding, Identity & Sorting - Stationary Sticky */}
-        <div className="hidden xl:block xl:col-span-3 border-r border-border/40 pr-4 relative">
-          <div className="sticky top-8 self-start">
-            <ExploreLeftSection />
-          </div>
-        </div>
-
-        {/* CENTER FEED: Search & Results - Always the reference height for sidebars */}
-        <main className="col-span-1 lg:col-span-8 xl:col-span-6 flex flex-col min-w-0 min-h-[120vh] pb-32">
-          <ExploreSearchHeader />
-          <ExploreFeed />
-        </main>
-
-        {/* RIGHT SIDEBAR: Filtering - Stationary Sticky */}
-        <div className="hidden lg:block lg:col-span-4 xl:col-span-3 border-l border-border/40 pl-4 relative">
-          <div className="sticky top-8 self-start">
+    <ExplorePageContent
+      leftRail={<ExploreLeftSection />}
+      searchHeader={<ExploreSearchHeader />}
+      feed={<ExploreFeed />}
+      filters={
+        shouldRenderDesktopFilters ? (
+          <Suspense fallback={null}>
             <ExploreRightFilters />
-          </div>
-        </div>
-      </div>
-    </div>
+          </Suspense>
+        ) : null
+      }
+    />
   );
 }

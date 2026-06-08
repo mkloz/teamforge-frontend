@@ -1,43 +1,58 @@
-import { cn } from "@/shared/lib/utils";
+import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
 import { memo } from "react";
+import { CountBadge } from "@/shared/components/ui/count-badge";
+import { cn } from "@/shared/lib/utils";
 
 interface FilterChipItemProps {
+  ariaLabel?: string;
+  className?: string;
   label: string;
   isActive: boolean;
-  onClick: () => void;
+  value: string;
   badge: number | null;
 }
 
 export const FilterChipItem = memo(function FilterChipItem({
+  ariaLabel,
+  className,
   label,
   isActive,
-  onClick,
+  value,
   badge,
 }: FilterChipItemProps) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <RadioGroupPrimitive.Item
+      value={value}
+      aria-label={ariaLabel ?? label}
       className={cn(
-        "shrink-0 h-6 px-2.5 rounded-full text-[10px] font-bold transition-all duration-150 active:scale-95 flex items-center gap-1.5 cursor-pointer",
-        isActive
-          ? "bg-forge-teal text-white border-2 border-button-primary-border shadow-button-primary -translate-y-0.5"
-          : "bg-canvas border-2 border-border/60 text-slate-muted hover:border-forge-teal/40 hover:text-ink",
+        "group/chip relative h-8 w-auto min-w-fit snap-start rounded-full px-3 md:h-7",
+        "aspect-auto whitespace-nowrap",
+        "inline-flex shrink-0 cursor-pointer select-none items-center justify-center gap-1.5 border font-bold text-xs leading-none outline-none",
+        "transition-all duration-150 ease-out",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-1",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        "border-border/45 bg-card/35 text-slate-muted hover:-translate-y-1 hover:border-button-primary-border hover:bg-forge-teal-readable hover:text-white hover:shadow-button-primary active:translate-y-0 active:shadow-none",
+        isActive &&
+          "z-10 border-button-primary-border bg-forge-teal-readable text-white",
+        className,
       )}
     >
-      <span>{label}</span>
-      {badge != null && badge > 0 && (
-        <span
+      <span className="relative z-10">{label}</span>
+      {badge != null && badge > 0 ? (
+        <CountBadge
+          aria-hidden="true"
+          count={badge}
+          max={99}
+          size="xs"
+          tone="none"
           className={cn(
-            "inline-flex items-center justify-center min-w-3.5 h-3.5 px-0.5 rounded-full text-[8px] font-black leading-none transition-colors",
+            "relative z-10 h-4 min-w-4 transition-colors",
             isActive
               ? "bg-white/20 text-white"
-              : "bg-forge-teal/10 text-forge-teal",
+              : "bg-slate-muted/15 text-slate-muted group-hover/chip:bg-white/20 group-hover/chip:text-white",
           )}
-        >
-          {badge > 99 ? "99+" : badge}
-        </span>
-      )}
-    </button>
+        />
+      ) : null}
+    </RadioGroupPrimitive.Item>
   );
 });

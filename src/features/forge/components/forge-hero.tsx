@@ -1,59 +1,80 @@
-import { motion } from "framer-motion";
-import { Zap } from "lucide-react";
-import { TeamForgeLogo } from "@/assets/logo";
+import { ArrowRight, Plus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 
 interface ForgeHeroProps {
   onForgeClick: () => void;
 }
 
+const SAMPLE_BRIEF = [
+  ["Activity", "Beginner bouldering"],
+  ["When", "Thursday, 6:30 PM"],
+  ["Where", "Depot Climbing or nearby"],
+  ["Group", "4 people, relaxed pace"],
+] as const;
+
 export function ForgeHero({ onForgeClick }: ForgeHeroProps) {
   return (
     <section
       id="forge-hero"
-      className="relative overflow-hidden rounded-4xl border border-accent/20 bg-card p-8 md:p-10 shadow-sm"
+      className="grid gap-7 border-border border-b pb-8 md:grid-cols-[minmax(0,1fr)_minmax(16rem,25rem)] md:items-end md:pb-10 lg:gap-12"
     >
-      <div className="relative flex flex-col items-center text-center gap-8">
-        {/* Logo Badge — The Voronoi Nexus */}
-        <div className="relative group">
-          <motion.div
-            animate={{
-              scale: [1, 1.15, 1],
-              opacity: [0.15, 0.35, 0.15],
-            }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute inset-0 bg-accent/40 blur-3xl rounded-full"
-          />
-          <div className="relative flex items-center justify-center w-28 h-28 rounded-4xl bg-card border border-accent/20 shadow-2xl transition-transform duration-500 group-hover:scale-105 group-hover:rotate-1 active:scale-95">
-            <TeamForgeLogo className="w-16 h-16" showBackground={false} />
-          </div>
-        </div>
-
-        {/* Copy */}
-        <div className="space-y-3">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
-            Ready to forge?
-          </h2>
-          <p className="text-sm md:text-base text-muted-foreground max-w-xs mx-auto leading-relaxed">
-            Press once. Get your people. Our algorithm does the rest.
+      <div className="flex min-w-0 flex-col gap-7">
+        <div className="flex flex-col gap-4">
+          <p className="font-bold text-muted-foreground text-sm">Forge</p>
+          <h1 className="max-w-3xl text-balance text-center font-black text-4xl text-foreground leading-tight md:text-left md:text-display-lg">
+            What are you trying to make happen?
+          </h1>
+          <p className="max-w-2xl text-pretty font-medium text-base text-muted-foreground leading-relaxed">
+            Give Forge a real activity and a few boundaries. It helps form a
+            small group around the plan, then moves everyone into chat to sort
+            out the final details.
           </p>
         </div>
 
-        {/* CTA Button */}
-        <Button
-          onClick={onForgeClick}
-          variant="secondary"
-          size="lg"
-          className="w-full max-w-xs h-14 rounded-2xl group shadow-button-secondary/30"
-          aria-label="Forge My Group"
-        >
-          <Zap
-            size={20}
-            className="fill-current group-hover:scale-110 group-hover:rotate-12 transition-transform"
-          />
-          <span className="tracking-tight">Forge My Group</span>
-        </Button>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Button
+            onClick={onForgeClick}
+            variant="primary"
+            size="hero"
+            className="w-full sm:w-auto"
+            aria-label="Forge my group"
+          >
+            <Plus size={20} />
+            Forge my group
+          </Button>
+          <p className="max-w-sm font-medium text-muted-foreground text-sm leading-relaxed">
+            Works best with a rough activity, time, or place.
+          </p>
+        </div>
       </div>
+
+      <aside
+        aria-label="Example forge brief"
+        className="rounded-xl border border-forge-teal/25 bg-forge-teal/10"
+      >
+        <div className="flex items-center justify-between gap-4 border-forge-teal/20 border-b px-4 py-3">
+          <div>
+            <p className="font-black text-foreground text-sm">Example brief</p>
+            <p className="font-medium text-muted-foreground text-xs">
+              Specific enough to start
+            </p>
+          </div>
+          <ArrowRight size={17} className="text-forge-teal" />
+        </div>
+
+        <dl className="divide-y divide-forge-teal/20">
+          {SAMPLE_BRIEF.map(([label, value]) => (
+            <div key={label} className="flex items-baseline gap-4 px-4 py-3">
+              <dt className="w-18 shrink-0 font-semibold text-muted-foreground text-xs">
+                {label}
+              </dt>
+              <dd className="min-w-0 font-semibold text-foreground text-sm leading-relaxed">
+                {value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </aside>
     </section>
   );
 }

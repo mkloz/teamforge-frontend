@@ -1,15 +1,28 @@
+import { AlertTriangle, RefreshCw } from "lucide-react";
+import type { RefObject } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { PlanChangeDialog } from "@/features/activity/components/groups/group-detail-panel/plan-section/plan-change-dialog";
+import { useActivityMessageActions } from "@/features/activity/hooks/use-activity-message-actions";
 import { useConversationData } from "@/features/activity/hooks/use-conversation-data";
-import { useActivityStore } from "@/features/activity/store/activity.store";
-import type { UnifiedMessage } from "@/features/activity/types/chat.types";
-import type { DirectChat } from "@/features/activity/types/direct-chats.types";
-import type { Group } from "@/features/activity/types/groups.types";
-import { useIsMobile } from "@/shared/hooks/use-breakpoint";
-import { memo, useRef } from "react";
-import { ChatStatusBar } from "../chat-status-bar";
-import { CompletedBanner } from "../completed-banner";
-import { UnifiedChatHeader } from "../unified-chat-header";
-import { UnifiedMessageInput } from "../unified-message-input";
-import { UnifiedMessageList } from "../unified-message-list/index";
+import type {
+  ActivityParticipant,
+  ActivitySendMessageInput,
+  DirectChat,
+  Group,
+  UnifiedMessage,
+} from "@/features/activity/lib/activity-contract";
+import { Button } from "@/shared/components/ui/button";
+import { Notice } from "@/shared/components/ui/notice";
+import { OfflineNotice } from "@/shared/components/ui/offline-notice";
+import { ChatStatusBar } from "./chat-status-bar";
+import { CompletedReviewGate } from "./completed-banner";
+import { MessageSelectionToolbar } from "./message-selection-toolbar";
+import { UnifiedChatHeader } from "./unified-chat-header";
+import { UnifiedMessageInput } from "./unified-message-input";
+import { UnifiedMessageList } from "./unified-message-list";
+import { ChatBackground } from "./unified-message-list/chat-background";
+import type { MessageScrollHandle } from "./unified-message-list/message-scroll.types";
+import { useConversationMessageSearch } from "./use-conversation-message-search";
 
 type UnifiedConversationViewProps =
   | (BaseConversationProps & { kind: "dm"; data: DirectChat })
@@ -17,12 +30,27 @@ type UnifiedConversationViewProps =
 
 interface BaseConversationProps {
   messages: UnifiedMessage[];
+  hasOlderMessages?: boolean;
   isTyping?: boolean;
-  typingUsers?: { fullName: string; avatar: string }[];
+  firstUnreadMessageId?: string | null;
+  isLoadingOlderMessages?: boolean;
+  isMessageError?: boolean;
+  isOnline?: boolean;
+  typingUsers?: { name: string; avatar: string | null }[];
   isActionOpen?: boolean;
+  openHeaderDetailsInPanel?: boolean;
+  focusedMessageId?: string | null;
+  isLoadingMessages?: boolean;
+  messageScrollHandleRef?: RefObject<MessageScrollHandle | null>;
+  sendError?: string | null;
   onBack: () => void;
+  onClearSendError?: () => void;
+  onLoadOlderMessages?: () => Promise<void> | void;
+  onRetryMessages?: () => Promise<void> | void;
+  onShowParticipantProfile?: (participant: ActivityParticipant) => void;
   onToggleAction: () => void;
-  onSendMessage: (content: string) => void;
+  onViewPlan?: () => void;
+  onSendMessage: (input: ActivitySendMessageInput) => Promise<void> | void;
 }
 
 /**
@@ -35,20 +63,47 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
   const {
     messages,
     isTyping = false,
+    firstUnreadMessageId = null,
     typingUsers = [],
     isActionOpen = false,
+    focusedMessageId,
+    isLoadingMessages = false,
+    isMessageError = false,
+    isOnline = true,
+    messageScrollHandleRef,
+    openHeaderDetailsInPanel = false,
+    sendError = null,
+    hasOlderMessages = false,
+    isLoadingOlderMessages = false,
     onBack,
+    onClearSendError,
+    onLoadOlderMessages,
+    onRetryMessages,
+    onShowParticipantProfile,
     onToggleAction,
+    onViewPlan,
     onSendMessage,
   } = props;
   const { kind, data } = props;
+  const conversationId = `${kind}:${data.id}`;
+  const chatId = kind === "group" ? (data.chat?.id ?? null) : data.id;
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isProposalDialogOpen, setIsProposalDialogOpen] = useState(false);
+  const [selectedMessageIds, setSelectedMessageIds] = useState<
+    ReadonlySet<string>
+  >(() => new Set());
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const internalMessageScrollHandleRef = useRef<MessageScrollHandle | null>(
+    null,
+  );
+  const activeMessageScrollHandleRef =
+    messageScrollHandleRef ?? internalMessageScrollHandleRef;
 
-  const storePinnedMessages = useActivityStore((state) => state.pinnedMessages);
-  const unpinMessage = useActivityStore((state) => state.unpinMessage);
-  const isMobile = useIsMobile();
+  const { unpinMessage } = useActivityMessageActions();
+  const isBlockedDirectChat = kind === "dm" && Boolean(data.isBlocked);
+  const isNotesChat = kind === "dm" && data.type === "NOTES";
 
   const conversationData = useConversationData(
     kind === "group"
@@ -58,67 +113,315 @@ export const UnifiedConversationView = memo(function UnifiedConversationView(
 
   const { headerProps, activeTypingUsers, typingText, isCompleted } =
     conversationData;
+  const activePlan = kind === "group" ? (data.plan ?? null) : null;
+  const {
+    activeMatchIndex,
+    goToNextMatch,
+    goToPreviousMatch,
+    isSearching,
+    matchCount,
+    normalizedQuery,
+  } = useConversationMessageSearch({
+    chatId,
+    hasOlderMessages,
+    isLoadingOlderMessages,
+    messages,
+    messageScrollHandleRef: activeMessageScrollHandleRef,
+    onLoadOlderMessages,
+    query: searchQuery,
+  });
+
+  useEffect(() => {
+    if (conversationId) {
+      setSearchQuery("");
+      setSelectedMessageIds(new Set());
+    }
+  }, [conversationId]);
+
+  const clearMessageSelection = useCallback(() => {
+    setSelectedMessageIds(new Set());
+  }, []);
+
+  const startMessageSelection = useCallback((message: UnifiedMessage) => {
+    if (!canSelectChatMessage(message)) {
+      return;
+    }
+
+    setSelectedMessageIds(new Set([message.id]));
+  }, []);
+
+  const toggleMessageSelection = useCallback((message: UnifiedMessage) => {
+    if (!canSelectChatMessage(message)) {
+      return;
+    }
+
+    setSelectedMessageIds((current) => {
+      const next = new Set(current);
+
+      if (next.has(message.id)) {
+        next.delete(message.id);
+      } else {
+        next.add(message.id);
+      }
+
+      return next;
+    });
+  }, []);
+
+  const selectedMessages = useMemo(
+    () =>
+      messages.filter(
+        (message) =>
+          selectedMessageIds.has(message.id) && canSelectChatMessage(message),
+      ),
+    [messages, selectedMessageIds],
+  );
+  const isMessageSelectionMode = selectedMessages.length > 0;
+
+  useEffect(() => {
+    if (selectedMessageIds.size === 0) {
+      return;
+    }
+
+    const availableMessageIds = new Set(messages.map((message) => message.id));
+
+    setSelectedMessageIds((current) => {
+      const next = new Set(
+        [...current].filter((messageId) => availableMessageIds.has(messageId)),
+      );
+
+      return next.size === current.size ? current : next;
+    });
+  }, [messages, selectedMessageIds.size]);
+
+  useEffect(() => {
+    if (!isMessageSelectionMode) {
+      return undefined;
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        clearMessageSelection();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [clearMessageSelection, isMessageSelectionMode]);
+
+  const searchResultLabel = normalizedQuery
+    ? isSearching && matchCount === 0
+      ? "Searching..."
+      : matchCount > 0
+        ? `${Math.min(activeMatchIndex + 1, matchCount)}/${matchCount}`
+        : "No results"
+    : undefined;
 
   const pinnedMessagesFromData =
     kind === "group" ? data.chat?.pinnedMessages : data.pinnedMessages;
 
-  const dataPinnedMessages: UnifiedMessage[] = (
+  const allPinnedMessages: UnifiedMessage[] = (
     pinnedMessagesFromData || []
-  ).map((msg) => ({
-    ...msg,
-    isOwn: false, // Default for pinned messages from others or system
-  }));
-
-  const allPinnedMessages = [
-    ...dataPinnedMessages,
-    ...storePinnedMessages.filter(
-      (storeMsg) =>
-        !dataPinnedMessages.some((dataMsg) => dataMsg.id === storeMsg.id),
-    ),
-  ];
+  ).map((msg: UnifiedMessage) => Object.assign({}, msg, { isOwn: false }));
+  const handleCreateProposal =
+    kind === "group" && activePlan && !isCompleted
+      ? () => setIsProposalDialogOpen(true)
+      : undefined;
 
   return (
-    <div className="flex flex-col h-full bg-canvas/40 animate-in fade-in duration-300">
+    <div
+      data-chat-dropzone-root
+      className="relative isolate flex min-h-0 flex-1 flex-col overflow-hidden bg-canvas/40"
+    >
+      <ChatBackground />
+
+      {activePlan && !isCompleted ? (
+        <PlanChangeDialog
+          open={isProposalDialogOpen}
+          onOpenChange={setIsProposalDialogOpen}
+          plan={activePlan}
+          trigger={null}
+        />
+      ) : null}
+
       <UnifiedChatHeader
         kind={kind}
         title={headerProps.title}
         subtitle={headerProps.subtitle}
-        avatarUrl={headerProps.avatarUrl || ""}
-        secondaryAvatar={headerProps.secondaryAvatar || undefined}
+        avatarUrl={headerProps.avatarUrl}
+        avatarKind={isNotesChat ? "notes" : "default"}
+        detailsNavigation={
+          openHeaderDetailsInPanel ? undefined : headerProps.detailsNavigation
+        }
         onlineStatus={headerProps.onlineStatus}
-        isTyping={isMobile && activeTypingUsers.length > 0}
+        isTyping={activeTypingUsers.length > 0}
         typingText={typingText}
         isActionOpen={isActionOpen}
+        searchQuery={searchQuery}
+        searchResultLabel={searchResultLabel}
+        isSearchNavigationDisabled={matchCount === 0}
+        showAction={!isNotesChat}
         onBack={onBack}
-        onToggleAction={onToggleAction}
+        onSearchQueryChange={setSearchQuery}
+        onSearchNext={goToNextMatch}
+        onSearchPrevious={goToPreviousMatch}
+        onToggleAction={isNotesChat ? () => {} : onToggleAction}
       />
 
       <ChatStatusBar
-        plan={kind === "group" ? data.plan : undefined}
+        plan={kind === "group" ? (data.plan ?? undefined) : undefined}
         pinnedMessages={allPinnedMessages}
-        onViewDetails={onToggleAction}
-        onUnpinPinnedMessage={unpinMessage}
-        scrollContainerRef={messagesContainerRef}
+        onViewDetails={isNotesChat ? () => {} : (onViewPlan ?? onToggleAction)}
+        onUnpinPinnedMessage={(messageId) => {
+          const targetMessage = allPinnedMessages.find(
+            (message) => message.id === messageId,
+          );
+
+          if (!targetMessage) {
+            return;
+          }
+
+          void unpinMessage(targetMessage);
+        }}
+        onActivatePinnedMessage={(messageId) =>
+          activeMessageScrollHandleRef.current?.scrollToMessage(messageId, {
+            highlight: true,
+          })
+        }
       />
 
+      {!isOnline ? <ConversationOfflineBanner /> : null}
+      {isOnline && isMessageError && messages.length > 0 ? (
+        <ConversationMessageErrorBanner onRetry={onRetryMessages} />
+      ) : null}
+
       {/* Message area */}
-      <div className="flex-1 relative overflow-hidden">
+      <div className="relative z-10 flex-1 overflow-hidden">
         <UnifiedMessageList
+          key={conversationId}
           messages={messages}
+          searchQuery={normalizedQuery}
           kind={kind}
+          conversationId={conversationId}
+          emptyStateVariant={isNotesChat ? "my-notes" : "default"}
+          focusedMessageId={focusedMessageId}
+          firstUnreadMessageId={firstUnreadMessageId}
+          hasOlderMessages={hasOlderMessages}
+          isInitialLoading={isLoadingMessages}
+          isInitialError={isMessageError}
+          isOffline={!isOnline}
+          isSelectionMode={isMessageSelectionMode}
+          isLoadingOlderMessages={isLoadingOlderMessages}
           messagesEndRef={messagesEndRef}
           containerRef={messagesContainerRef}
+          messageScrollHandleRef={activeMessageScrollHandleRef}
+          onLoadOlderMessages={onLoadOlderMessages}
+          onRetryInitialError={onRetryMessages}
+          onStartSelection={startMessageSelection}
+          onToggleSelected={toggleMessageSelection}
+          onShowParticipantProfile={onShowParticipantProfile}
+          selectedMessageIds={selectedMessageIds}
           typingUsers={activeTypingUsers}
-          onToggleAction={onToggleAction}
         />
       </div>
 
       {/* Input area */}
-      {isCompleted && kind === "group" && data.plan ? (
-        <CompletedBanner groupName={data.plan.title} />
+      {isMessageSelectionMode ? (
+        <MessageSelectionToolbar
+          selectedMessages={selectedMessages}
+          onClearSelection={clearMessageSelection}
+        />
+      ) : isCompleted && kind === "group" && data.plan ? (
+        <CompletedReviewGate group={data}>
+          <UnifiedMessageInput
+            chatId={chatId}
+            errorMessage={sendError}
+            disabled={isBlockedDirectChat}
+            onSend={onSendMessage}
+            onClearError={onClearSendError}
+            onCreateProposal={handleCreateProposal}
+            placeholder={
+              isBlockedDirectChat
+                ? "Unblock this person to send messages"
+                : undefined
+            }
+          />
+        </CompletedReviewGate>
       ) : (
-        <UnifiedMessageInput onSend={onSendMessage} />
+        <UnifiedMessageInput
+          chatId={chatId}
+          errorMessage={sendError}
+          disabled={isBlockedDirectChat}
+          onSend={onSendMessage}
+          onClearError={onClearSendError}
+          onCreateProposal={handleCreateProposal}
+          placeholder={
+            isBlockedDirectChat
+              ? "Unblock this person to send messages"
+              : undefined
+          }
+        />
       )}
     </div>
   );
 });
+
+function canSelectChatMessage(message: UnifiedMessage) {
+  return message.type !== "SYSTEM";
+}
+
+function ConversationMessageErrorBanner({
+  onRetry,
+}: {
+  onRetry?: () => Promise<void> | void;
+}) {
+  return (
+    <Notice
+      role="status"
+      tone="warning"
+      size="xs"
+      icon={
+        <AlertTriangle
+          aria-hidden="true"
+          className="size-4 shrink-0 text-accent"
+        />
+      }
+      iconClassName="mt-0"
+      action={
+        onRetry ? (
+          <Button
+            className="h-7 shrink-0 px-2"
+            size="xs"
+            variant="accentGhost"
+            onClick={() => void onRetry()}
+          >
+            <RefreshCw size={13} />
+            Retry
+          </Button>
+        ) : null
+      }
+      className="items-center rounded-none border-accent/20 border-x-0 border-t-0 bg-accent/10 px-4 py-2 text-accent"
+      contentClassName="font-medium"
+    >
+      <span className="block truncate">
+        Some messages did not load. Retry to refresh this thread.
+      </span>
+    </Notice>
+  );
+}
+
+function ConversationOfflineBanner() {
+  return (
+    <OfflineNotice
+      size="xs"
+      iconClassName="mt-0"
+      className="items-center rounded-none border-accent/20 border-x-0 border-t-0 bg-accent/10 px-4 py-2 text-accent"
+      contentClassName="font-medium"
+    >
+      <span>
+        <span className="font-black text-accent">Offline.</span> Cached messages
+        stay visible; new updates resume when you reconnect.
+      </span>
+    </OfflineNotice>
+  );
+}

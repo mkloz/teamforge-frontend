@@ -1,0 +1,119 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "eslint",
+    "typescript",
+    "unicorn",
+    "oxc",
+    "import",
+    "react",
+    "react_perf",
+    "jsx_a11y",
+    "vitest",
+    "promise"
+  ],
+  "jsPlugins": [
+    "oxlint-tailwindcss",
+    "./node_modules/oxlint-plugin-query/dist/index.js",
+    "oxlint-plugin-inhuman",
+    "@bensandee/eslint-plugin"
+  ],
+  "settings": {
+    "tailwindcss": {
+      "entryPoint": "src/index.css",
+      "attributes": [
+        "classNames",
+        "containerClassName",
+        "contentClassName",
+        "countClassName",
+        "descriptionClassName",
+        "dotClassName",
+        "fallbackClassName",
+        "iconClassName",
+        "imageClassName",
+        "titleClassName",
+        "wrapperClassName"
+      ],
+      "exclude": {
+        "variablePatterns": ["^styles?$"]
+      }
+    }
+  },
+  "options": {
+    "typeAware": true
+  },
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error",
+    "style": "off",
+    "pedantic": "off",
+    "restriction": "off",
+    "nursery": "off"
+  },
+  "env": {
+    "browser": true,
+    "es2022": true
+  },
+  "ignorePatterns": [
+    "dist/**",
+    "dist-ssr/**",
+    "coverage/**",
+    "node_modules/**",
+    "reports/**",
+    "temp/**",
+    ".agents/**"
+  ],
+  "rules": {
+    "import/no-cycle": "error",
+    "import/no-duplicates": "error",
+    "import/no-unassigned-import": "off",
+    "no-console": "error",
+    "no-explicit-any": "error",
+    "no-shadow": "error",
+    "no-underscore-dangle": "off",
+    "react-perf/jsx-no-new-array-as-prop": "off",
+    "react-perf/jsx-no-jsx-as-prop": "off",
+    "react-perf/jsx-no-new-function-as-prop": "off",
+    "react-perf/jsx-no-new-object-as-prop": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/no-unknown-property": "error",
+    "jsx-a11y/prefer-tag-over-role": "off",
+    "typescript/no-explicit-any": "error",
+    "typescript/no-extraneous-class": "off",
+    "tailwindcss/no-unknown-classes": "off",
+    "tailwindcss/no-duplicate-classes": "error",
+    "tailwindcss/no-conflicting-classes": "error",
+    "tailwindcss/no-deprecated-classes": "error",
+    "tailwindcss/no-unnecessary-whitespace": "error",
+    "tailwindcss/no-dark-without-light": "error",
+    "tailwindcss/no-contradicting-variants": "error",
+    "tailwindcss/enforce-canonical": "error",
+    "tailwindcss/enforce-sort-order": "off",
+    "tailwindcss/enforce-shorthand": "error",
+    "tailwindcss/enforce-consistent-important-position": "error",
+    "tailwindcss/enforce-negative-arbitrary-values": "error",
+    "tailwindcss/enforce-consistent-variable-syntax": "error",
+    "tailwindcss/consistent-variant-order": "error",
+    "tailwindcss/no-arbitrary-value": "off",
+    "tailwindcss/no-hardcoded-colors": "error",
+    "tailwindcss/no-unnecessary-arbitrary-value": "error",
+    "tailwindcss/prefer-theme-tokens": "error",
+    "oxlint-plugin-query/exhaustive-deps": "error",
+    "oxlint-plugin-query/no-rest-destructuring": "error",
+    "oxlint-plugin-query/stable-query-client": "error",
+    "oxlint-plugin-query/no-unstable-deps": "error",
+    "oxlint-plugin-query/infinite-query-property-order": "error",
+    "oxlint-plugin-query/mutation-property-order": "error",
+    "unicorn/consistent-function-scoping": "error",
+    "unicorn/no-array-reverse": "off",
+    "unicorn/no-array-sort": "off",
+    "unicorn/no-useless-fallback-in-spread": "error",
+    "bensandee/no-empty-catch": "error",
+    "bensandee/no-unsafe-exec": "error",
+    "bensandee/no-unsafe-json-parse": "error",
+    "bensandee/no-unsafe-response-json": "error",
+    "bensandee/no-zod-any": "error",
+    "inhuman/no-swallowed-catch": "error"
+  }
+}

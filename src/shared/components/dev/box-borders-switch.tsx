@@ -1,46 +1,59 @@
-import type React from "react";
-import { useEffect } from "react";
-import { FaCube } from "react-icons/fa6";
-import { useToggle } from "usehooks-ts";
+import { Box } from "lucide-react";
+import { useEffect, useId, useState } from "react";
 
-import { config } from "../../../config/config";
-import { Toggle } from "../ui/toggle";
+import { Button } from "@/shared/components/ui/button";
 
-export const BoxBordersSwitch: React.FC = () => {
-  const [show, toggle] = useToggle(false);
+const BOX_BORDERS_STYLE_ID = "teamforge-dev-box-borders";
+
+function removeBoxBordersStyle() {
+  document.getElementById(BOX_BORDERS_STYLE_ID)?.remove();
+}
+
+function applyBoxBordersStyle() {
+  if (document.getElementById(BOX_BORDERS_STYLE_ID)) {
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = BOX_BORDERS_STYLE_ID;
+  style.textContent = `
+ * {
+ outline: 1px solid color-mix(in srgb, var(--color-destructive) 75%, transparent) !important;
+ outline-offset: -1px !important;
+ }
+ `;
+
+  document.head.append(style);
+}
+
+export function BoxBordersSwitch() {
+  const [showBorders, setShowBorders] = useState(false);
+  const labelId = useId();
 
   useEffect(() => {
-    const addRedBorders = () => {
-      const allElements = document.querySelectorAll("*");
-      allElements.forEach((element) => {
-        if (element instanceof HTMLElement) {
-          element.style.outline = "1px solid red";
-        }
-      });
-    };
-    if (show) addRedBorders();
+    if (showBorders) {
+      applyBoxBordersStyle();
+    } else {
+      removeBoxBordersStyle();
+    }
 
-    return () => {
-      const allElements = document.querySelectorAll("*");
-      allElements.forEach((element) => {
-        if (element instanceof HTMLElement) {
-          element.style.outline = "";
-        }
-      });
-    };
-  }, [show]);
-
-  if (config.isProduction) return null;
+    return removeBoxBordersStyle;
+  }, [showBorders]);
 
   return (
-    <Toggle
-      pressed={show}
-      onPressedChange={toggle}
-      className="fixed left-1 bottom-8 z-10000"
-      size={"sm"}
-      variant={"outline"}
+    <Button
+      type="button"
+      variant={showBorders ? "secondary" : "subtle"}
+      size="icon-xs"
+      aria-pressed={showBorders}
+      aria-labelledby={labelId}
+      className="size-6 rounded-md border-ink/20 bg-card/95 p-0 shadow-sm backdrop-blur"
+      onClick={() => setShowBorders((current) => !current)}
     >
-      <FaCube />
-    </Toggle>
+      <Box size={12} />
+      <span id={labelId} className="sr-only">
+        Toggle box borders
+      </span>
+    </Button>
   );
-};
+}

@@ -4,7 +4,80 @@
   }
   body {
     @apply bg-background text-foreground;
+    overflow-y: scroll;
     font-family: var(--font-sans);
+  }
+
+  @supports (scrollbar-gutter: stable) {
+    html {
+      overflow-y: scroll;
+      scrollbar-gutter: stable;
+    }
+
+    body {
+      overflow-y: auto;
+    }
+
+    /* Override Radix UI's injected variables and styles when scrollbar-gutter handles the spacing natively */
+    :root {
+      --removed-body-scroll-bar-size: 0px;
+    }
+
+    body[data-scroll-locked] {
+      padding-right: 0;
+      margin-right: 0;
+    }
+  }
+
+  ::selection {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  :where(
+    a[href],
+    button:not(:disabled),
+    summary,
+    label[for],
+    select:not(:disabled),
+    input[type="button"]:not(:disabled),
+    input[type="checkbox"]:not(:disabled),
+    input[type="radio"]:not(:disabled),
+    input[type="range"]:not(:disabled),
+    input[type="reset"]:not(:disabled),
+    input[type="submit"]:not(:disabled),
+    [role="button"]:not([aria-disabled="true"])
+  ) {
+    cursor: pointer;
+  }
+
+  :where(
+    button:disabled,
+    select:disabled,
+    textarea:disabled,
+    input:disabled,
+    [aria-disabled="true"],
+    [data-disabled]
+  ) {
+    cursor: not-allowed;
+  }
+
+  :root.disable-transitions,
+  :root.disable-transitions *,
+  :root.disable-transitions *::before,
+  :root.disable-transitions *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: This root-level theme state intentionally wins over all transitions during theme changes. */
+    transition: none !important;
+  }
+}
+
+@supports (scrollbar-gutter: stable) {
+  html body[data-scroll-locked] {
+    /* biome-ignore lint/complexity/noImportantStyles: Dialog scroll-lock libraries inject scrollbar compensation dynamically; stable scrollbar-gutter already reserves this space. */
+    --removed-body-scroll-bar-size: 0px !important;
+    /* biome-ignore lint/complexity/noImportantStyles: Prevents modal/drawer scroll lock from doubling the app's reserved scrollbar gutter. */
+    padding-right: 0 !important;
+    /* biome-ignore lint/complexity/noImportantStyles: Prevents modal/drawer scroll lock from doubling the app's reserved scrollbar gutter. */
+    margin-right: 0 !important;
   }
 }
 

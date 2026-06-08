@@ -1,64 +1,80 @@
-import { Button } from "@/shared/components/ui/button";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, ChevronDown } from "lucide-react";
-import { ForgeOrb } from "./forge-orb";
+import { ArrowRight, ChevronDown, Download } from "lucide-react";
+import { ForgeOrb } from "@/features/landing/components/hero/forge-orb";
+import { LANDING_SECTION_IDS } from "@/features/landing/constants/landing-sections";
+import { useResolvedLandingAuthActions } from "@/features/landing/hooks/use-resolved-landing-auth-actions";
+import { scrollToLandingSection } from "@/features/landing/lib/landing-scroll";
+import { Button } from "@/shared/components/ui/button";
 
 export function HeroSection() {
+  const { isResolvingAuthAction, primaryAction } =
+    useResolvedLandingAuthActions("Create Free Account");
+
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center overflow-hidden bg-hero-bg dark"
+      data-landing-snap-section=""
+      className="dark relative flex min-h-svh items-start overflow-hidden bg-hero-bg lg:items-center"
       aria-label="Hero"
     >
-      <div className="relative z-10 w-full max-w-7xl mx-auto pl-6 px-6 md:pl-12 pt-28 pb-20">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
-          <div className="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left max-w-xl animate-hero-fade-in">
-            <h1 className="font-sans font-extrabold text-white leading-[1.08] mb-5 text-balance text-[clamp(2.25rem,5.5vw,4rem)]">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pt-20 pb-16 pl-6 md:pt-28 md:pb-20 md:pl-12">
+        <div className="flex flex-col items-center gap-8 md:gap-10 lg:flex-row">
+          <div className="order-2 flex max-w-xl flex-1 animate-hero-fade-in flex-col items-start text-start lg:order-1 lg:text-left">
+            <h1 className="mb-5 max-w-3xl text-balance text-center font-extrabold font-sans text-4xl text-white leading-none sm:text-start sm:text-5xl lg:text-6xl">
               Find your people,
               <br />
-              <span className="relative inline-block text-forge-teal pb-2 drop-shadow-[0_0_32px_rgba(13,148,136,0.35)]">
+              <span className="relative inline-block pb-2 text-forge-teal">
                 intelligently.
               </span>
             </h1>
 
-            <p className="font-sans text-base md:text-lg text-text-dark-secondary leading-relaxed mb-8 max-w-md text-pretty">
-              TeamForge is built for purposeful connection, not endless
-              browsing. We intelligently assemble a small group of compatible
-              people sharing your interests, so you can spend less time
-              searching and more time experiencing.
+            <p className="mb-8 max-w-md text-pretty font-sans text-base text-text-dark-secondary leading-relaxed md:text-lg">
+              Answer a few thoughtful setup questions once. TeamForge uses that
+              context to form one small group around a real plan, so the first
+              room starts warmer than a cold message.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-4 mb-10 w-full sm:w-auto">
+            <div className="mb-10 flex w-full flex-col items-center gap-4 sm:w-auto sm:flex-row">
+              {isResolvingAuthAction ? (
+                <Button
+                  size="hero"
+                  loading
+                  className="w-full text-white sm:w-auto"
+                  aria-label="Checking TeamForge session"
+                >
+                  {primaryAction.label}
+                </Button>
+              ) : (
+                <Button
+                  asChild
+                  size="hero"
+                  className="w-full text-white hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none sm:w-auto"
+                >
+                  <Link {...primaryAction.navigation}>
+                    {primaryAction.label}
+                    <ArrowRight
+                      size={20}
+                      className="ml-2 transition-transform group-hover:translate-x-0.5"
+                      aria-hidden="true"
+                    />
+                  </Link>
+                </Button>
+              )}
               <Button
                 asChild
-                size="hero"
-                className="w-full sm:w-auto hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none"
-              >
-                <Link to="/auth/register">
-                  Get Started – Free
-                  <ArrowRight
-                    size={20}
-                    className="ml-2 group-hover:translate-x-0.5 transition-transform"
-                    aria-hidden="true"
-                  />
-                </Link>
-              </Button>
-              <Button
                 variant="outline"
                 size="hero"
                 className="w-full sm:w-auto"
-                onClick={() =>
-                  document
-                    .querySelector("#how-it-works")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
               >
-                See How It Works
+                <Link to="/download">
+                  Download
+                  <Download className="size-5" aria-hidden="true" />
+                </Link>
               </Button>
             </div>
           </div>
 
-          <div className="flex-1 flex justify-center xl:justify-end">
+          <div className="order-1 flex w-full flex-1 justify-center lg:order-2 xl:justify-end">
             <ForgeOrb />
           </div>
         </div>
@@ -68,15 +84,17 @@ export function HeroSection() {
         variant="ghost"
         size="icon"
         onClick={() =>
-          document
-            .querySelector("#how-it-works")
-            ?.scrollIntoView({ behavior: "smooth" })
+          scrollToLandingSection(LANDING_SECTION_IDS.peopleProblem)
         }
-        className="absolute bottom-7 left-1/2 -translate-x-1/2 text-text-dark-muted hover:text-text-dark-secondary z-10 rounded-full"
+        className="absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 rounded-full text-text-dark-muted hover:text-text-dark-secondary lg:inline-flex"
         aria-label="Scroll to next section"
       >
-        <div className="animate-[fade-down_2.5s_cubic-bezier(0.16,1,0.3,1)_infinite]">
-          <ChevronDown size={28} className="stroke-[1.25]" />
+        <div className="animate-fade-down">
+          <ChevronDown
+            size={28}
+            className="landing-hero-scroll-icon"
+            aria-hidden="true"
+          />
         </div>
       </Button>
     </section>

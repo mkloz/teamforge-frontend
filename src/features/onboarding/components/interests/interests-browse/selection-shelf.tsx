@@ -1,14 +1,15 @@
-import { Button } from "@/shared/components/ui/button";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, Sparkles } from "lucide-react";
-import { LEAF_TAG_BY_ID } from "../../../data/interests-data";
-import type { LeafTag } from "../../../data/interests-types";
+import { Tags, X } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import type { Interest } from "@/shared/schemas";
 import { TagPill } from "./tag-pill";
 
 interface SelectionShelfProps {
   isSearching: boolean;
+  leafById: Record<string, Interest>;
   selectedIds: Set<string>;
-  youMightAlsoLike: LeafTag[];
+  youMightAlsoLike: Interest[];
   isAtMax: boolean;
   onToggle: (id: string) => void;
   onReject: (id: string) => void;
@@ -16,6 +17,7 @@ interface SelectionShelfProps {
 
 export function SelectionShelf({
   isSearching,
+  leafById,
   selectedIds,
   youMightAlsoLike,
   isAtMax,
@@ -35,30 +37,34 @@ export function SelectionShelf({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 10 }}
           transition={{ duration: 0.2 }}
-          className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-slate-muted/10 bg-canvas/30 -mx-4 px-4 sm:mx-0 sm:px-0"
+          className="-mx-4 mt-8 border-slate-muted/10 border-t bg-canvas/30 px-4 pt-6 sm:mx-0 sm:mt-12 sm:px-0 sm:pt-8"
         >
-          <div className="flex items-center gap-2 mb-4">
+          <div className="mb-4 flex items-center gap-2">
             {isSearching ? (
               <>
-                <div className="w-5 h-5 rounded-md bg-forge-teal/10 flex items-center justify-center text-forge-teal">
-                  <Sparkles className="h-3 w-3" />
-                </div>
-                <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-forge-teal">
-                  Suggested from choices ({youMightAlsoLike.length})
+                <IconTile
+                  icon={Tags}
+                  tone="teal"
+                  size="xs"
+                  shape="square"
+                  iconClassName="size-3"
+                />
+                <p className="font-bold font-sans text-forge-teal text-xs">
+                  Related to your picks ({youMightAlsoLike.length})
                 </p>
               </>
             ) : (
-              <p className="font-sans text-[10px] font-bold uppercase tracking-widest text-slate-muted/50">
-                Your Selections ({selectedIds.size})
+              <p className="font-bold font-sans text-slate-muted/50 text-xs">
+                Your picks ({selectedIds.size})
               </p>
             )}
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1 sm:gap-1.5">
             {isSearching
               ? youMightAlsoLike.map((tag) => (
                   <TagPill
                     key={`search-suggestion-${tag.id}`}
-                    label={tag.label}
+                    label={tag.name}
                     selected={selectedIds.has(tag.id)}
                     disabled={isAtMax}
                     onToggle={() => onToggle(tag.id)}
@@ -68,19 +74,20 @@ export function SelectionShelf({
                   />
                 ))
               : [...selectedIds].map((id) => {
-                  const tag = LEAF_TAG_BY_ID[id];
+                  const tag = leafById[id];
                   if (!tag) return null;
                   return (
                     <Button
                       key={`shelf-${id}`}
                       size="xs"
                       onClick={() => onToggle(id)}
-                      className="rounded-full gap-1.5"
+                      className="h-auto max-w-full rounded-full px-1.5 py-0.75 text-micro sm:px-2 sm:py-1"
                     >
-                      {tag.label}
+                      <span className="min-w-0 max-w-33 truncate leading-none sm:max-w-none">
+                        {tag.name}
+                      </span>
                       <X
-                        size={14}
-                        className="opacity-60 group-hover:opacity-100 transition-opacity"
+                        className="size-3 shrink-0 opacity-60 transition-opacity group-hover:opacity-100 sm:size-3.5"
                         strokeWidth={3}
                       />
                     </Button>

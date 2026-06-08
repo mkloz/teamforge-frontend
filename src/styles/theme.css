@@ -1,11 +1,20 @@
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("/fonts/inter-latin-var.woff2") format("woff2");
+}
+
 @theme {
-  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   --color-forge-teal: #0d9488;
-  --color-forge-teal-light: #14b8a6;
-  --color-spark-amber: #f59e0b;
+  --color-forge-deep-panel: #0a1212;
+  --color-forge-deep-surface: #111111;
+  --color-spark-amber: #ffbf00;
   --color-hero-bg: #090909;
   --color-ink: var(--ink);
   --color-canvas: var(--canvas);
@@ -17,12 +26,25 @@
 
   --animate-pulse-glow: pulse-glow 2.5s ease-in-out infinite;
   --animate-fade-up: fade-up 0.6s ease-out forwards;
+  --animate-auth-form-enter: auth-form-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-auth-step-enter: auth-step-enter 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-hero-fade-in: hero-fade-in 0.8s ease-out forwards;
   --animate-hero-fade-in-right: hero-fade-in-right 1s ease-out forwards;
   --animate-card-reveal: card-reveal 0.6s ease-out forwards;
   --animate-forge-slide-up: forge-slide-up 0.28s cubic-bezier(0.34, 1.1, 0.64, 1) forwards;
   --animate-scroll-hint: scroll-hint 2.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  --animate-fade-down: fade-down 2.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
   --animate-sweep: sweep 0.8s ease-in-out forwards;
+  --animate-skeleton-shimmer: skeleton-shimmer 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  --animate-collapsible-down: collapsible-down 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-collapsible-up: collapsible-up 0.2s cubic-bezier(0.4, 0, 1, 1);
+  --animate-forge-orb-rotate: forge-orb-rotate 20s linear infinite;
+  --animate-forge-orb-breathe: forge-orb-breathe 4s ease-in-out infinite;
+  --animate-download-device-drift: download-device-drift 10s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  --animate-forge-card-float-a: forge-card-float-a 4s ease-in-out infinite alternate;
+  --animate-forge-card-float-b: forge-card-float-b 3.5s ease-in-out infinite alternate;
+  --animate-forge-card-float-c: forge-card-float-c 5s ease-in-out infinite alternate;
+  --animate-side-nav-reveal: side-nav-reveal 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -46,6 +68,7 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -104,19 +127,28 @@
   --spacing-20: 5rem;
   --spacing-38: 9.5rem;
 
-  --shadow-amber-glow: 0 4px 20px rgba(245, 158, 11, 0.35), 0 1px 2px rgba(0, 0, 0, 0.1);
-  --shadow-teal-glow: 0 4px 20px rgba(13, 148, 136, 0.35), 0 1px 2px rgba(0, 0, 0, 0.1);
-  --shadow-teal-glow-lg: 0 8px 32px rgba(13, 148, 136, 0.45);
+  /* Named compact breakpoints used by dense mobile controls */
+  --breakpoint-compact: 23.75rem;
+  --breakpoint-xxs: 24.375rem;
+  --breakpoint-xs: 26.875rem;
+
+  --shadow-amber-glow: 0 4px 20px color-mix(in srgb, var(--accent) 35%, transparent),
+    0 1px 2px color-mix(in srgb, var(--button-shadow-base) 10%, transparent);
+  --shadow-teal-glow: 0 4px 20px color-mix(in srgb, var(--primary) 35%, transparent),
+    0 1px 2px color-mix(in srgb, var(--button-shadow-base) 10%, transparent);
+  --shadow-teal-glow-lg: 0 8px 32px color-mix(in srgb, var(--primary) 45%, transparent);
 
   /* TeamForge Mechanical Shadows (Unblurred) */
-  --shadow-button-primary: 0 4px 0 #0f5e56;
-  --shadow-button-secondary: 0 4px 0 #b45309;
-  --shadow-button-outline: 0 4px 0 #1C1C1A;
-  --shadow-button-outline-dark: 0 4px 0 #FFFFFF;
+  --shadow-button-primary: 0 4px 0 color-mix(in srgb, var(--primary) 72%, var(--button-shadow-base));
+  --shadow-button-secondary: 0 4px 0 color-mix(in srgb, var(--accent) 72%, var(--button-shadow-base));
+  --shadow-button-outline: 0 4px 0 var(--button-shadow-base);
+  --shadow-button-outline-dark: 0 4px 0 var(--button-shadow-inverse);
+  --shadow-button-destructive: 0 4px 0
+    color-mix(in srgb, var(--destructive) 52%, var(--button-shadow-base));
 
   /* Button Border Tokens */
-  --color-button-primary-border: #0f766e;
-  --color-button-secondary-border: #d97706;
+  --color-button-primary-border: var(--primary);
+  --color-button-secondary-border: var(--accent);
 
   @keyframes sweep {
     0% {
@@ -126,81 +158,51 @@
       transform: translateX(200%);
     }
   }
+
+  @keyframes skeleton-shimmer {
+    0% {
+      background-position: 130% 0;
+    }
+    35.4%,
+    46.6% {
+      background-position: 50% 0;
+    }
+    82%,
+    100% {
+      background-position: -30% 0;
+    }
+  }
+
+  @keyframes collapsible-down {
+    from {
+      height: 0;
+      opacity: 0;
+    }
+    to {
+      height: var(--radix-collapsible-content-height);
+      opacity: 1;
+    }
+  }
+
+  @keyframes collapsible-up {
+    from {
+      height: var(--radix-collapsible-content-height);
+      opacity: 1;
+    }
+    to {
+      height: 0;
+      opacity: 0;
+    }
+  }
 }
 
 :root {
   --radius: 0.75rem;
-  --background: #f4f4f2;
-  --foreground: #1c1c1a;
-  --ink: #1c1c1a;
-  --slate-muted: #6b7280;
-  --canvas: #fafaf8;
-  --card: #ffffff;
-  --card-foreground: #1c1c1a;
-  --popover: #ffffff;
-  --popover-foreground: #1c1c1a;
-  --primary: #0d9488;
-  --primary-foreground: #ffffff;
-  --secondary: rgba(13, 148, 136, 0.08);
-  --secondary-foreground: #0d9488;
-  --muted: rgba(28, 28, 26, 0.05);
-  --muted-foreground: #6b7280;
-  --accent: #f59e0b;
-  --accent-foreground: #ffffff;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: rgba(28, 28, 26, 0.08);
-  --input: rgba(28, 28, 26, 0.06);
-  --ring: #0d9488;
-  --chart-1: #0d9488;
-  --chart-2: #14b8a6;
-  --chart-3: #f59e0b;
-  --chart-4: #fbbf24;
-  --chart-5: #6b7280;
-  --sidebar: #fafaf8;
-  --sidebar-foreground: #1c1c1a;
-  --sidebar-primary: #0d9488;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: rgba(13, 148, 136, 0.08);
-  --sidebar-accent-foreground: #0d9488;
-  --sidebar-border: rgba(28, 28, 26, 0.06);
-  --sidebar-ring: #0d9488;
+  --button-shadow-base: color-mix(in srgb, var(--foreground) 88%, var(--background));
+  --button-shadow-inverse: color-mix(in srgb, var(--background) 88%, var(--foreground));
 }
 
 .dark {
-  --background: #0e0e0d;
-  --foreground: #ededed;
-  --ink: #ededed;
-  --slate-muted: #9ca3af;
-  --canvas: #141413;
-  --card: #1c1c1a;
-  --card-foreground: #ededed;
-  --popover: #1c1c1a;
-  --popover-foreground: #ededed;
-  --primary: #14b8a6;
-  --primary-foreground: #0a0a09;
-  --secondary: rgba(20, 184, 166, 0.1);
-  --secondary-foreground: #14b8a6;
-  --muted: rgba(255, 255, 255, 0.05);
-  --muted-foreground: #9ca3af;
-  --accent: #fbbf24;
-  --accent-foreground: #0a0a09;
-  --destructive: #f87171;
-  --destructive-foreground: #0a0a09;
-  --border: rgba(255, 255, 255, 0.07);
-  --input: rgba(255, 255, 255, 0.08);
-  --ring: #14b8a6;
-  --chart-1: #14b8a6;
-  --chart-2: #0d9488;
-  --chart-3: #fbbf24;
-  --chart-4: #f59e0b;
-  --chart-5: #9ca3af;
-  --sidebar: #141413;
-  --sidebar-foreground: #ededed;
-  --sidebar-primary: #14b8a6;
-  --sidebar-primary-foreground: #0a0a09;
-  --sidebar-accent: rgba(20, 184, 166, 0.1);
-  --sidebar-accent-foreground: #14b8a6;
-  --sidebar-border: rgba(255, 255, 255, 0.06);
-  --sidebar-ring: #14b8a6;
+  --button-shadow-base: color-mix(in srgb, var(--background) 88%, var(--foreground));
+  --button-shadow-inverse: color-mix(in srgb, var(--foreground) 88%, var(--background));
 }

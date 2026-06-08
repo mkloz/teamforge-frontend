@@ -115,7 +115,7 @@ TeamForge exhibits **local network effects**:
 | Feature | Priority | Effort | Impact |
 |---------|----------|--------|--------|
 | Backend API integration | Critical | High | Enables everything |
-| Real-time messaging (WebSocket) | Critical | Medium | Core UX |
+| Realtime messaging (Socket.IO) | Critical | Medium | Core UX |
 | Push notifications | High | Medium | Retention |
 | Trust score calculation | High | Medium | Quality signal |
 | Algorithm tuning dashboard | Medium | Medium | Matching quality |

@@ -1,0 +1,128 @@
+import {
+  type CreateGroupPlanProposalPayload,
+  GroupPlanDetailApi,
+  type VoteGroupPlanProposalPayload,
+} from "@/features/group-plan-detail/api/group-plan-detail.api";
+import { appQueryClient } from "@/shared/api/query-client";
+import {
+  invalidateGroupMembershipSurfaces,
+  invalidateInvitationSurfaces,
+  invalidateNotificationSurfaces,
+} from "@/shared/api/query-invalidation";
+import { APP_QUERY_KEYS } from "@/shared/api/query-keys";
+
+async function invalidateGroupPlanDetail(groupId: string) {
+  await appQueryClient.invalidateQueries({
+    queryKey: APP_QUERY_KEYS.groupPlanDetail.byId(groupId),
+  });
+}
+
+async function invalidatePlanningSurfaces(groupId: string) {
+  await Promise.all([
+    invalidateGroupPlanDetail(groupId),
+    appQueryClient.invalidateQueries({
+      queryKey: APP_QUERY_KEYS.activity.groupSelectionById(groupId),
+    }),
+    appQueryClient.invalidateQueries({
+      queryKey: APP_QUERY_KEYS.home.plans,
+    }),
+  ]);
+}
+
+export const GroupPlanDetailCommands = {
+  async joinGroup(groupId: string) {
+    const result = await GroupPlanDetailApi.joinGroup(groupId);
+
+    await Promise.all([
+      invalidateGroupPlanDetail(groupId),
+      invalidateGroupMembershipSurfaces(),
+      invalidateNotificationSurfaces(),
+    ]);
+
+    return result;
+  },
+
+  async cancelJoinRequest(groupId: string) {
+    const result = await GroupPlanDetailApi.cancelJoinRequest(groupId);
+
+    await Promise.all([
+      invalidateGroupPlanDetail(groupId),
+      invalidateGroupMembershipSurfaces(),
+      invalidateNotificationSurfaces(),
+    ]);
+
+    return result;
+  },
+
+  async acceptInvite(groupId: string, inviteId: string) {
+    const result = await GroupPlanDetailApi.acceptInvite(inviteId);
+
+    await Promise.all([
+      invalidateGroupPlanDetail(groupId),
+      invalidateGroupMembershipSurfaces(),
+      invalidateInvitationSurfaces(),
+      invalidateNotificationSurfaces(),
+    ]);
+
+    return result;
+  },
+
+  async declineInvite(groupId: string, inviteId: string) {
+    const result = await GroupPlanDetailApi.declineInvite(inviteId);
+
+    await Promise.all([
+      invalidateGroupPlanDetail(groupId),
+      invalidateInvitationSurfaces(),
+      invalidateNotificationSurfaces(),
+    ]);
+
+    return result;
+  },
+
+  async createPlanProposal(
+    groupId: string,
+    planId: string,
+    payload: CreateGroupPlanProposalPayload,
+  ) {
+    const result = await GroupPlanDetailApi.createPlanProposal(planId, payload);
+
+    await invalidatePlanningSurfaces(groupId);
+
+    return result;
+  },
+
+  async votePlanProposal(
+    groupId: string,
+    proposalId: string,
+    payload: VoteGroupPlanProposalPayload,
+  ) {
+    const result = await GroupPlanDetailApi.votePlanProposal(
+      proposalId,
+      payload,
+    );
+
+    await invalidatePlanningSurfaces(groupId);
+
+    return result;
+  },
+
+  async withdrawPlanProposal(groupId: string, proposalId: string) {
+    const result = await GroupPlanDetailApi.withdrawPlanProposal(proposalId);
+
+    await invalidatePlanningSurfaces(groupId);
+
+    return result;
+  },
+
+  async leaveGroup(groupId: string) {
+    const result = await GroupPlanDetailApi.leaveGroup(groupId);
+
+    await Promise.all([
+      invalidateGroupPlanDetail(groupId),
+      invalidateGroupMembershipSurfaces(),
+      invalidateNotificationSurfaces(),
+    ]);
+
+    return result;
+  },
+};

@@ -1,5 +1,5 @@
+import { ArrowRight, Cpu, Network, RefreshCw, UsersRound } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
-import { Cpu, RefreshCw, Sparkles, Zap } from "lucide-react";
 
 interface PrimaryButtonProps {
   label: string;
@@ -20,7 +20,7 @@ export function PrimaryButton({
       disabled={disabled}
       variant="primary"
       size="lg"
-      className="w-full h-14 rounded-2xl font-bold group shadow-button-primary/20"
+      className="h-14 w-full"
     >
       <span className="relative z-10 flex items-center gap-2.5">
         {label}
@@ -34,52 +34,62 @@ export function PrimaryButton({
   );
 }
 
-export function ManualForgeButton({ onClick }: { onClick: () => void }) {
+export function ManualForgeButton({
+  disabled = false,
+  onClick,
+}: {
+  disabled?: boolean;
+  onClick: () => void;
+}) {
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       <Button
         onClick={onClick}
+        disabled={disabled}
         variant="secondary"
         size="lg"
         aria-label="Forge this group"
-        className="w-full h-14 rounded-2xl font-bold group shadow-button-secondary/30"
+        className="h-14 w-full"
       >
-        <Zap
+        <UsersRound
           size={18}
           aria-hidden="true"
-          className="fill-current group-hover:scale-110 transition-transform"
+          className="transition-transform group-hover:scale-110"
         />
         <span>Forge group</span>
-        <Sparkles size={14} className="opacity-60" />
+        <ArrowRight size={14} className="opacity-70" />
       </Button>
     </div>
   );
 }
 
-export function AutoForgeButton({ onClick }: { onClick: () => void }) {
+export function AutoForgeButton({
+  disabled = false,
+  onClick,
+}: {
+  disabled?: boolean;
+  onClick: () => void;
+}) {
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       <Button
         onClick={onClick}
+        disabled={disabled}
         variant="primary"
         size="lg"
         aria-label="Auto-forge with algorithm"
-        className="w-full h-14 rounded-2xl font-bold group shadow-button-primary/20"
+        className="h-14 w-full"
       >
         <Cpu
           size={18}
           aria-hidden="true"
-          className="shrink-0 group-hover:rotate-12 transition-transform"
+          className="shrink-0 transition-transform group-hover:rotate-12"
         />
         <span className="truncate">
           <span className="sm:hidden">Auto-forge</span>
           <span className="hidden sm:inline">Auto-forge with algorithm</span>
         </span>
-        <Sparkles
-          size={14}
-          aria-hidden="true"
-          className="shrink-0 opacity-80 animate-pulse"
-        />
+        <Network size={14} aria-hidden="true" className="shrink-0 opacity-80" />
       </Button>
     </div>
   );
@@ -91,11 +101,11 @@ export function ReforgeButton({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       variant="secondary"
       size="lg"
-      className="w-full h-14 rounded-2xl font-bold group shadow-button-secondary/30"
+      className="h-14 w-full"
     >
       <RefreshCw
         size={15}
-        className="group-hover:rotate-180 transition-transform duration-500"
+        className="transition-transform duration-500 group-hover:rotate-180"
       />
       Try again
     </Button>

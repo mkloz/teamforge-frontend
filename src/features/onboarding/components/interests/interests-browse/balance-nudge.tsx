@@ -1,6 +1,13 @@
 import { motion } from "framer-motion";
-import { X, Sprout } from "lucide-react";
+import { Sprout, X } from "lucide-react";
 import { useState } from "react";
+
+import { Button } from "@/shared/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
 
 export function BalanceNudge() {
   const [dismissed, setDismissed] = useState(false);
@@ -11,23 +18,30 @@ export function BalanceNudge() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -4 }}
       transition={{ duration: 0.2 }}
-      className="flex items-start gap-2.5 mb-4 px-3.5 py-3 bg-spark-amber/5 border border-spark-amber/20 rounded-xl"
+      className="mb-4 flex items-start gap-2.5 rounded-xl border border-spark-amber/20 bg-spark-amber/5 px-3.5 py-3"
     >
-      <div className="text-spark-amber shrink-0 mt-0.5">
+      <div className="mt-0.5 shrink-0 text-spark-amber">
         <Sprout size={16} strokeWidth={2} />
       </div>
-      <p className="font-sans text-xs text-ink leading-snug flex-1">
-        Great depth in one area! Adding interests from other categories helps us
-        find better team matches for you.
+      <p className="flex-1 font-sans text-ink text-xs leading-snug">
+        You have a strong lane here. A few picks from another area can make the
+        profile feel more like the full you.
       </p>
-      <button
-        type="button"
-        onClick={() => setDismissed(true)}
-        className="text-spark-amber/50 hover:text-spark-amber shrink-0 mt-0.5 transition-colors"
-        aria-label="Dismiss"
-      >
-        <X size={14} strokeWidth={2.5} />
-      </button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-xs"
+            onClick={() => setDismissed(true)}
+            className="mt-0.5 shrink-0 text-spark-amber/50 hover:text-spark-amber"
+            aria-label="Dismiss"
+          >
+            <X size={14} strokeWidth={2.5} />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Dismiss</TooltipContent>
+      </Tooltip>
     </motion.div>
   );
 }

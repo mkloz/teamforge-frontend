@@ -1,11 +1,12 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
+import { formatTypingText } from "@/features/activity/lib/chat-utils";
+import { Avatar } from "@/shared/components/common/avatar";
 import { cn } from "@/shared/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
-import { formatTypingText } from "../../lib/chat-utils";
 
 interface TypingUser {
-  fullName: string;
-  avatar: string;
+  name: string;
+  avatar: string | null;
 }
 
 interface UnifiedTypingIndicatorProps {
@@ -30,7 +31,7 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
   const text = formatTypingText(users, isGroup) || "";
 
   if (variant === "minimal") {
-    return <TypingDots dotSize="w-1 h-1" className={className} />;
+    return <TypingDots dotSize="size-1" className={className} />;
   }
 
   if (variant === "floating") {
@@ -40,28 +41,33 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 8, scale: 0.95 }}
         transition={{ type: "spring", damping: 25, stiffness: 350 }}
-        className="absolute bottom-4 left-4 right-4 z-20 pointer-events-none"
+        className="pointer-events-none absolute right-4 bottom-4 left-4 z-20"
       >
-        <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-full bg-canvas/80 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-border/40">
-          <div className="flex -space-x-2">
+        <div className="inline-flex items-center gap-3 rounded-full border border-border/40 bg-canvas/80 px-4 py-2.5 shadow-lg backdrop-blur-xl">
+          <div className="flex">
             <AnimatePresence mode="popLayout">
-              {users.slice(0, 3).map((user) => (
-                <motion.img
-                  key={user.fullName}
+              {users.slice(0, 3).map((user, index) => (
+                <motion.div
+                  key={user.name}
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0 }}
-                  src={user.avatar}
-                  alt={user.fullName}
-                  className="w-5.5 h-5.5 rounded-full object-cover ring-2 ring-canvas shadow-sm"
-                />
+                  className={index > 0 ? "-ml-2" : undefined}
+                >
+                  <Avatar
+                    src={user.avatar}
+                    name={user.name}
+                    className="size-5.5 shadow-sm ring-2 ring-canvas"
+                    fallbackClassName="text-nano"
+                  />
+                </motion.div>
               ))}
             </AnimatePresence>
           </div>
 
           <TypingDots />
 
-          <span className="text-micro text-slate-muted font-semibold tracking-tight pr-1">
+          <span className="pr-1 font-semibold text-micro text-slate-muted tracking-tight">
             {text.toUpperCase()}
           </span>
         </div>
@@ -74,23 +80,29 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
     <motion.div
       initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
-      className="flex items-end gap-2.5 px-3 mb-4 group/typing"
+      className="group/typing mb-4 flex items-end gap-2.5 px-3"
     >
-      <motion.img
+      <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        src={users[0]?.avatar}
-        alt={users[0]?.fullName}
-        className="w-8 h-8 rounded-full object-cover shrink-0 ring-1 ring-border/20 shadow-sm"
-      />
+        className="shrink-0"
+      >
+        <Avatar
+          src={users[0]?.avatar}
+          name={users[0]?.name}
+          className="size-8 shadow-sm ring-1 ring-border/20"
+        />
+      </motion.div>
       <div
         className={cn(
-          "bg-card border border-border/60 px-4 py-3 rounded-xl rounded-bl-none shadow-xs relative",
-          "after:content-[''] after:absolute after:-left-1.5 after:bottom-0 after:w-1.75 after:h-2 after:bg-card after:[clip-path:polygon(100%_0,0_100%,100%_100%)]",
-          "before:content-[''] before:absolute before:-left-2 before:-bottom-px before:w-2.5 before:h-3 before:bg-border before:[clip-path:polygon(100%_0,0_100%,100%_100%)] before:-z-10",
+          "relative rounded-xl rounded-bl-none border border-border/60 bg-card px-4 py-3 shadow-xs",
         )}
       >
-        <TypingDots dotSize="w-1.5 h-1.5" />
+        <span
+          aria-hidden="true"
+          className="absolute -bottom-px -left-2 size-3 rounded-bl-xl border-border border-b border-l bg-inherit"
+        />
+        <TypingDots dotSize="size-1.5" />
       </div>
     </motion.div>
   );
@@ -98,13 +110,13 @@ export const UnifiedTypingIndicator = memo(function UnifiedTypingIndicator({
 
 function TypingDots({
   className,
-  dotSize = "w-1 h-1",
+  dotSize = "size-1",
 }: {
   className?: string;
   dotSize?: string;
 }) {
   return (
-    <div className={cn("flex gap-1 items-end justify-start", className)}>
+    <div className={cn("flex items-end justify-start gap-1", className)}>
       {[0, 1, 2].map((i) => (
         <motion.span
           key={i}
@@ -118,7 +130,7 @@ function TypingDots({
             delay: i * 0.15,
             ease: "easeInOut",
           }}
-          className={cn("rounded-full bg-forge-teal mb-0.5", dotSize)}
+          className={cn("mb-0.5 rounded-full bg-primary", dotSize)}
         />
       ))}
     </div>

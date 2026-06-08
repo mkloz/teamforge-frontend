@@ -1,5 +1,5 @@
-import { Button } from "@/shared/components/ui/button";
 import { X } from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
 
 interface ProfilePanelHeaderProps {
   onClose: () => void;
@@ -7,15 +7,15 @@ interface ProfilePanelHeaderProps {
 
 export function ProfilePanelHeader({ onClose }: ProfilePanelHeaderProps) {
   return (
-    <header className="flex items-center justify-between px-4 py-3 border-b border-border bg-canvas/80 backdrop-blur-md z-20">
-      <h3 className="text-sm font-semibold tracking-tight text-foreground">
+    <header className="z-20 flex h-16 shrink-0 items-center justify-between border-border border-b bg-canvas/80 px-4 backdrop-blur-md">
+      <h3 className="font-semibold text-foreground text-sm tracking-tight">
         Member Info
       </h3>
       <Button
         variant="ghost"
         size="icon"
         onClick={onClose}
-        className="h-8 w-8 hover:bg-muted"
+        className="size-8 hover:bg-muted"
         aria-label="Close panel"
       >
         <X size={16} />

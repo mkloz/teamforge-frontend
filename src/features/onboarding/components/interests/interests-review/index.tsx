@@ -1,94 +1,60 @@
-export { InterestsReviewFooter } from "./interests-review-footer";
-export { InterestsReviewHeader } from "./interests-review-header";
-import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
-import { X } from "lucide-react";
-import { fadeUpItem } from "../../../constants/motion";
+import { fadeUpItem } from "@/features/onboarding/constants/motion";
+import type { Interest } from "@/shared/schemas";
+import { InterestReviewCategory } from "./interest-review-category";
 import {
-  INTEREST_CATEGORIES,
-  LEAF_TAG_BY_ID,
-} from "../../../data/interests-data";
-import type { Category } from "../../../data/interests-types";
+  getInterestReviewGroups,
+  getInterestShapeSummary,
+} from "./interests-review-model";
 
 interface InterestsReviewProps {
+  categories: Interest[];
+  leafById: Record<string, Interest>;
   selectedIds: Set<string>;
   onRemove: (id: string) => void;
 }
 
 export function InterestsReview({
+  categories,
+  leafById,
   selectedIds,
   onRemove,
 }: InterestsReviewProps) {
-  // Build grouped structure: only categories that have ≥1 selected tag
-  const groups = INTEREST_CATEGORIES.map((cat: Category) => {
-    const tagIds = Array.from(selectedIds).filter((id: string) => {
-      const tag = LEAF_TAG_BY_ID[id];
-      return (
-        tag &&
-        cat.subcategories.some((sub) => sub.tags.some((t) => t.id === id))
-      );
-    });
-    return { category: cat, tagIds };
-  }).filter((g: { tagIds: string[] }) => g.tagIds.length > 0);
+  const groups = getInterestReviewGroups({
+    categories,
+    leafById,
+    selectedIds,
+  });
 
   return (
-    <div className="flex flex-col max-w-xl mx-auto w-full mt-2 sm:mt-4 px-1 sm:px-0">
-      {/* Grouped tags */}
+    <div className="mx-auto mt-2 flex w-full max-w-xl flex-col px-1 sm:mt-4 sm:px-0">
+      {groups.length > 0 && (
+        <motion.div
+          variants={fadeUpItem}
+          className="mb-7 border-forge-teal/40 border-l pl-4"
+        >
+          <p className="font-bold font-sans text-forge-teal text-xs">
+            Interest shape
+          </p>
+          <p className="mt-2 text-pretty font-medium text-ink/82 text-sm leading-relaxed">
+            {getInterestShapeSummary(groups, selectedIds.size)}
+          </p>
+        </motion.div>
+      )}
+
       <motion.div
         variants={fadeUpItem}
-        className="flex flex-col gap-6 sm:gap-5 mb-8"
+        className="mb-8 flex flex-col gap-6 sm:gap-5"
       >
-        {groups.map(
-          ({ category, tagIds }: { category: Category; tagIds: string[] }) => (
-            <div
-              key={category.id}
-              className="animate-in fade-in slide-in-from-bottom-2 duration-500"
-            >
-              <div className="flex items-center gap-2 mb-3 px-1">
-                <div
-                  className={cn(
-                    "w-1.5 h-1.5 rounded-full shadow-sm",
-                    category.color,
-                  )}
-                />
-                <span className="font-sans text-[10px] font-bold uppercase tracking-[0.14em] text-slate-muted/60">
-                  {category.label}
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                {tagIds.map((id) => {
-                  const tag = LEAF_TAG_BY_ID[id];
-                  if (!tag) return null;
-                  return (
-                    <Button
-                      key={id}
-                      size="xs"
-                      asChild
-                      className="rounded-full shadow-xs"
-                    >
-                      <motion.button
-                        layout
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                        onClick={() => onRemove(id)}
-                      >
-                        <span className="leading-none">{tag.label}</span>
-                        <X
-                          size={14}
-                          className="opacity-60 group-hover:opacity-100 transition-opacity"
-                          strokeWidth={3}
-                        />
-                      </motion.button>
-                    </Button>
-                  );
-                })}
-              </div>
-            </div>
-          ),
-        )}
+        {groups.map(({ category, tagIds }) => (
+          <InterestReviewCategory
+            key={category.id}
+            category={category}
+            leafById={leafById}
+            tagIds={tagIds}
+            onRemove={onRemove}
+          />
+        ))}
       </motion.div>
     </div>
   );

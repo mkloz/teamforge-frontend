@@ -3,9 +3,10 @@
  * Provides the same API as the standard shadcn/ui AlertDialog without
  * requiring an additional @radix-ui/react-alert-dialog dependency.
  */
-import { cn } from "@/shared/lib/utils";
+
 import React from "react";
-import { buttonVariants } from "./button-variants";
+import { cn } from "@/shared/lib/utils";
+import { Button, type ButtonV2Props } from "./button";
 import {
   Dialog,
   DialogClose,
@@ -41,7 +42,7 @@ const AlertDialogTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogTitle
     ref={ref}
-    className={cn("text-base font-bold", className)}
+    className={cn("font-bold text-base", className)}
     {...props}
   />
 ));
@@ -61,14 +62,10 @@ AlertDialogDescription.displayName = "AlertDialogDescription";
 
 const AlertDialogAction = React.forwardRef<
   HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ className, ...props }, ref) => (
+  React.ButtonHTMLAttributes<HTMLButtonElement> & Pick<ButtonV2Props, "variant">
+>(({ className, variant = "primary", ...props }, ref) => (
   <DialogClose asChild>
-    <button
-      ref={ref}
-      className={cn(buttonVariants({ variant: "primary" }), className)}
-      {...props}
-    />
+    <Button ref={ref} variant={variant} className={className} {...props} />
   </DialogClose>
 ));
 AlertDialogAction.displayName = "AlertDialogAction";
@@ -78,11 +75,7 @@ const AlertDialogCancel = React.forwardRef<
   React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ className, ...props }, ref) => (
   <DialogClose asChild>
-    <button
-      ref={ref}
-      className={cn(buttonVariants({ variant: "outline" }), className)}
-      {...props}
-    />
+    <Button ref={ref} variant="outline" className={className} {...props} />
   </DialogClose>
 ));
 AlertDialogCancel.displayName = "AlertDialogCancel";

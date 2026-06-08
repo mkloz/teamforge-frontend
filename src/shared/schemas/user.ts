@@ -9,7 +9,7 @@ import {
 
 const interestData = {
   id: z.string(),
-  label: z.string(),
+  name: z.string(),
   slug: z.string(),
   description: z.string().nullable(),
   icon: z.string().nullable(),
@@ -35,7 +35,7 @@ export const interestSchema: z.ZodSchema<Interest> = z.lazy(() =>
 const userData = {
   id: z.string(),
   email: z.string().email(),
-  fullName: z.string(),
+  name: z.string(),
   avatar: z.string().nullable(),
   bio: z.string().nullable(),
   authProvider: authProviderSchema,
@@ -46,6 +46,8 @@ const userData = {
   age: z.number().nullable(),
   gender: genderSchema.nullable(),
   city: z.string().nullable(),
+  locationLat: z.number().nullable().optional(),
+  locationLng: z.number().nullable().optional(),
   personalityType: personalityTypeSchema.nullable(),
   oceanO: z.number().nullable(),
   oceanC: z.number().nullable(),
@@ -56,6 +58,7 @@ const userData = {
   onlineStatus: onlineStatusSchema.optional(),
   trustScore: z.number(),
   profileComplete: z.boolean(),
+  showFriendsListOnProfile: z.boolean().default(true),
 };
 
 export type User = z.infer<z.ZodObject<typeof userData>> & {

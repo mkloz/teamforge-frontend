@@ -1,0 +1,16 @@
+import { config } from "@/config/config";
+import { BoxBordersSwitch } from "@/shared/components/dev/box-borders-switch";
+import { TailwindIndicator } from "@/shared/components/dev/tailwindIndicator";
+
+export function DevTools() {
+  if (!config.isDevelopment) {
+    return null;
+  }
+
+  return (
+    <div className="fixed right-2 bottom-2 z-10000 flex flex-col items-end gap-1">
+      <TailwindIndicator />
+      <BoxBordersSwitch />
+    </div>
+  );
+}

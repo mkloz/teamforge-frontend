@@ -1,11 +1,11 @@
-import type { MBTIType } from "../types/profile.types";
+import type { PersonalityType } from "@/shared/schemas/enums";
 
 interface TypeInfo {
   title: string;
   archetype: string;
 }
 
-export const TYPE_INFO: Record<MBTIType, TypeInfo> = {
+export const TYPE_INFO: Record<PersonalityType, TypeInfo> = {
   // Analysts
   INTJ: { title: "The Architect", archetype: "The Strategist" },
   INTP: { title: "The Logician", archetype: "The Thinker" },
@@ -28,10 +28,10 @@ export const TYPE_INFO: Record<MBTIType, TypeInfo> = {
   ESFP: { title: "The Entertainer", archetype: "The Performer" },
 };
 
-export function getTypeTitle(type: MBTIType): string {
+export function getTypeTitle(type: PersonalityType): string {
   return TYPE_INFO[type].title;
 }
 
-export function getArchetype(type: MBTIType): string {
+export function getArchetype(type: PersonalityType): string {
   return TYPE_INFO[type].archetype;
 }

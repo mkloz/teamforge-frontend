@@ -1,85 +1,85 @@
 import { Link } from "@tanstack/react-router";
-import { CalendarDays } from "lucide-react";
-import { useHomeData } from "../../hooks/use-home-data";
+import { ArrowRight } from "lucide-react";
+import { buildActivityNavigation } from "@/features/activity/lib/activity-route";
+import { EmptyHomePlansVisual } from "@/features/home/assets/empty-home-plans";
+import { HomeSectionHeading } from "@/features/home/components/home-section-heading";
+import { HomeUpcomingPlansSkeleton } from "@/features/home/components/home-skeletons";
+import { useHomeData } from "@/features/home/hooks/use-home-data";
+import type { PlannedGroup } from "@/features/home/lib/home-contract";
+import { getUpcomingPreview } from "@/features/home/lib/home-insights";
+import { Button } from "@/shared/components/ui/button";
+
 import { PlanCard } from "./plan-card";
 
-/**
- * Empty state shown when there are no upcoming plans.
- */
 function EmptyPlans() {
   return (
-    <div className="flex flex-col items-center gap-3 py-10 text-center rounded-2xl border-2 border-dashed border-border bg-card/50">
-      <div
-        className="size-12 rounded-2xl bg-muted flex items-center justify-center"
-        aria-hidden="true"
-      >
-        <CalendarDays className="size-6 text-muted-foreground" />
-      </div>
-      <div className="flex flex-col gap-1">
-        <p className="text-sm font-bold text-foreground">
-          Your calendar is clear
+    <div className="flex min-h-36 items-center justify-center gap-3 border-border/70 border-y border-dashed px-3 py-5">
+      <EmptyHomePlansVisual className="h-10 w-auto shrink-0 text-foreground sm:h-11" />
+      <div className="min-w-0">
+        <p className="font-bold text-foreground text-sm">
+          Your calendar is open.
         </p>
-        <p className="text-xs text-muted-foreground max-w-55">
-          Forge a group or join one to get activities on your calendar.
+        <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">
+          Forge a group or join one to get a real plan moving.
         </p>
       </div>
     </div>
   );
 }
 
-/**
- * UpcomingPlans section showing confirmed and pending activities.
- * Integrated with TanStack Query via useHomeData.
- */
 export function UpcomingPlans() {
-  const { plans, isLoading } = useHomeData();
+  const { plans, isPlansLoading } = useHomeData({
+    include: {
+      plans: true,
+    },
+  });
 
-  if (isLoading && plans.length === 0) {
-    return (
-      <div className="w-full flex flex-col gap-5 animate-pulse">
-        <div className="flex items-center justify-between">
-          <div className="h-6 w-32 bg-muted rounded" />
-          <div className="h-4 w-16 bg-muted rounded" />
-        </div>
-        <div className="flex flex-col gap-3">
-          {[1, 2].map((i) => (
-            <div key={i} className="h-24 w-full bg-muted rounded-2xl" />
-          ))}
-        </div>
-      </div>
-    );
+  return <UpcomingPlansView isPlansLoading={isPlansLoading} plans={plans} />;
+}
+
+interface UpcomingPlansViewProps {
+  isPlansLoading?: boolean;
+  plans: PlannedGroup[];
+}
+
+export function UpcomingPlansView({
+  isPlansLoading = false,
+  plans,
+}: UpcomingPlansViewProps) {
+  const visiblePlans = getUpcomingPreview(plans, 4);
+
+  if (isPlansLoading && plans.length === 0) {
+    return <HomeUpcomingPlansSkeleton />;
   }
 
   return (
     <section
       aria-labelledby="upcoming-plans-heading"
-      className="w-full flex flex-col gap-5"
+      className="flex w-full flex-col gap-4"
     >
-      {/* Section header */}
-      <div className="flex items-center justify-between">
-        <h2
-          id="upcoming-plans-heading"
-          className="text-base font-black tracking-tight text-foreground"
-        >
-          Coming Up
-        </h2>
-        <Link
-          to="/activity"
-          className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
-        >
-          View all
-        </Link>
-      </div>
+      <HomeSectionHeading
+        id="upcoming-plans-heading"
+        eyebrow="Next up"
+        title="Plans on the calendar"
+        description="The next few things with a time attached."
+        action={
+          <Button asChild variant="ghost" size="sm">
+            <Link {...buildActivityNavigation({ filter: "groups" })}>
+              View all
+              <ArrowRight className="size-3.5" aria-hidden="true" />
+            </Link>
+          </Button>
+        }
+      />
 
-      {/* Cards list */}
-      {plans.length === 0 ? (
+      {visiblePlans.length === 0 ? (
         <EmptyPlans />
       ) : (
-        <div role="list" className="flex flex-col gap-3">
-          {plans.map((plan, i) => (
-            <PlanCard key={plan.id} plan={plan} index={i} />
+        <ul className="relative grid list-none border-border/55 border-y p-0 before:absolute before:top-4 before:bottom-4 before:left-4 before:w-px before:bg-border/45">
+          {visiblePlans.map((plan) => (
+            <PlanCard key={plan.plan.id} plannedGroup={plan} />
           ))}
-        </div>
+        </ul>
       )}
     </section>
   );

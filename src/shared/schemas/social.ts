@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { friendshipStatusSchema } from "./enums";
-import type { User } from "./user";
-import { userSchema } from "./user";
 import type { Chat } from "./chat";
 import { chatSchema } from "./chat";
+import { friendshipStatusSchema } from "./enums";
 import type { Group } from "./group";
 import { groupSchema } from "./group";
+import type { User } from "./user";
+import { userSchema } from "./user";
 
 const friendshipData = {
   requesterId: z.string(),

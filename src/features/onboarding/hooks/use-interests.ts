@@ -1,163 +1,143 @@
-import { useDeferredValue, useEffect, useState, useTransition } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { onboardingInterestTreeQueryOptions } from "@/features/onboarding/api/onboarding-query-options";
+import type { InterestsScreen } from "@/features/onboarding/data/interests-data";
 import {
-  INTEREST_CATEGORIES,
   MAX_INTERESTS,
-  MBTI_SUGGESTIONS,
   MIN_INTERESTS,
-} from "../data/interests-data";
-import type { InterestsScreen } from "../data/interests-types";
-import { useInterestsStore } from "../store/interests-store";
+} from "@/features/onboarding/data/interests-data";
+import { buildLeafInterestMap } from "@/features/onboarding/lib/interest-catalog";
 import {
-  getCorrelatedSuggestions,
-  getMbtiSuggestions,
-  getSearchResults,
-  getShouldShowBalanceNudge,
-} from "../utils/interest-logic";
+  getNextInterestPersonalityType,
+  getNextSelectedInterestIds,
+} from "@/features/onboarding/lib/interest-selection-sync";
+import { useInterestsStore } from "@/features/onboarding/store/interests-store";
+import { useCurrentUserQuery } from "@/shared/api/current-user-query";
+import type { PersonalityType } from "@/shared/schemas/enums";
+import { useInterestBrowserExpansion } from "./use-interest-browser-expansion";
+import { useInterestSuggestions } from "./use-interest-suggestions";
+import { useSaveInterests } from "./use-save-interests";
 
 interface UseInterestsOptions {
   onComplete: () => void;
+  personalityTypeHint?: PersonalityType | null;
 }
-
-// ─── Hook ─────────────────────────────────────────────────────────────────────
 
 export type UseInterestsReturn = ReturnType<typeof useInterests>;
 
-export function useInterests({ onComplete }: UseInterestsOptions) {
+export function useInterests({
+  onComplete,
+  personalityTypeHint = null,
+}: UseInterestsOptions) {
   const store = useInterestsStore();
-  const [isPending, startTransition] = useTransition();
+  const { data: currentUser } = useCurrentUserQuery();
 
-  // ── Session state ──────────────────────────────────────────────────────────
+  const {
+    data: categories = [],
+    error: catalogError,
+    isLoading: isCatalogLoading,
+    refetch: retryCatalog,
+  } = useQuery({
+    ...onboardingInterestTreeQueryOptions(),
+    enabled: store.screen !== "intro",
+  });
+
   const [searchQuery, setSearchQuery] = useState("");
   const deferredSearchQuery = useDeferredValue(searchQuery);
 
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(
-    () => new Set(INTEREST_CATEGORIES.map((c) => c.id)),
-  );
-  const [expandedSubcategories, setExpandedSubcategories] = useState<
-    Set<string>
-  >(new Set());
-
-  // ── MBTI detection ─────────────────────────────────────────────────────────
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const mbti = params.get("mbti");
-    if (mbti && mbti in MBTI_SUGGESTIONS && !store.personalityType) {
-      store.setPersonalityType(mbti);
+    const nextPersonalityType = getNextInterestPersonalityType(
+      store.personalityType,
+      personalityTypeHint,
+      currentUser?.personalityType,
+    );
+
+    if (nextPersonalityType) {
+      store.setPersonalityType(nextPersonalityType);
     }
-  }, [store]);
+  }, [currentUser?.personalityType, personalityTypeHint, store]);
 
-  // ── Derived Data ───────────────────────────────────────────────────────────
-
-  const selectedSet = new Set(store.selectedIds);
-  const rejectedSet = new Set(store.rejectedIds);
-
-  const suggestedTags = getMbtiSuggestions(
-    store.personalityType,
-    selectedSet,
-    rejectedSet,
+  const leafById = useMemo(
+    () => buildLeafInterestMap(categories),
+    [categories],
   );
+  const browserExpansion = useInterestBrowserExpansion(categories);
 
-  const searchResults = getSearchResults(deferredSearchQuery);
+  useEffect(() => {
+    if (!categories.length) {
+      return;
+    }
 
-  const suggestedIds = new Set(suggestedTags.map((t) => t.id));
-  const youMightAlsoLike = getCorrelatedSuggestions(
-    store.selectedIds,
-    rejectedSet,
-    suggestedIds,
-  );
+    const nextSelectedIds = getNextSelectedInterestIds({
+      selectedIds: store.selectedIds,
+      userInterests: currentUser?.interests,
+      leafById,
+      maxInterests: MAX_INTERESTS,
+    });
 
-  const showBalanceNudge = getShouldShowBalanceNudge(store.selectedIds);
+    if (nextSelectedIds) {
+      store.replaceSelected(nextSelectedIds, MAX_INTERESTS);
+    }
+  }, [categories, currentUser?.interests, leafById, store]);
+
+  const suggestions = useInterestSuggestions({
+    categories,
+    deferredSearchQuery,
+    leafById,
+    personalityType: store.personalityType,
+    rejectedIds: store.rejectedIds,
+    selectedIds: store.selectedIds,
+  });
 
   const canContinue = store.selectedIds.length >= MIN_INTERESTS;
   const isAtMax = store.selectedIds.length >= MAX_INTERESTS;
-
-  // ── Actions ────────────────────────────────────────────────────────────────
-
-  function toggleCategory(catId: string) {
-    setCollapsedCategories((prev) => {
-      const next = new Set(prev);
-      if (next.has(catId)) {
-        next.delete(catId);
-      } else {
-        next.add(catId);
-      }
-      return next;
-    });
-  }
-
-  function expandCategoryOnly(catId: string) {
-    setCollapsedCategories(() => {
-      const allIds = INTEREST_CATEGORIES.map((c) => c.id);
-      const next = new Set(allIds);
-      next.delete(catId);
-      return next;
-    });
-  }
-
-  function toggleSubcategory(subId: string) {
-    startTransition(() => {
-      setExpandedSubcategories((prev) => {
-        const next = new Set(prev);
-        if (next.has(subId)) {
-          next.delete(subId);
-        } else {
-          // Find the category this subcategory belongs to and collapse others in it
-          const category = INTEREST_CATEGORIES.find((c) =>
-            c.subcategories.some((s) => s.id === subId),
-          );
-          if (category) {
-            for (const sub of category.subcategories) {
-              next.delete(sub.id);
-            }
-          }
-          next.add(subId);
-        }
-        return next;
-      });
-    });
-  }
-
-  function finalize() {
-    onComplete();
-  }
+  const { finalize, isOnline, isSaving, saveErrorMessage } = useSaveInterests({
+    canContinue,
+    onComplete,
+    selectedIds: store.selectedIds,
+  });
 
   const goToReview = () => store.setScreen("review");
   const goToBrowse = () => store.setScreen("browse");
-  const setScreen = (s: InterestsScreen) => store.setScreen(s);
+  const setScreen = (screen: InterestsScreen) => store.setScreen(screen);
   const toggle = (id: string) => store.toggle(id, MAX_INTERESTS);
   const reject = (id: string) => store.toggleReject(id);
 
   return {
-    // Persistent Store State
     screen: store.screen,
     personalityType: store.personalityType,
-
-    // Session State
+    categories,
+    leafById,
     searchQuery,
-    collapsedCategories,
-    expandedSubcategories,
-
-    // Derived Data
-    selectedIds: selectedSet,
+    collapsedCategories: browserExpansion.collapsedCategories,
+    expandedSubcategories: browserExpansion.expandedSubcategories,
+    selectedIds: suggestions.selectedSet,
     selectedCount: store.selectedIds.length,
     canContinue,
     isAtMax,
-    suggestedTags,
-    searchResults,
-    youMightAlsoLike,
-    showBalanceNudge,
-
-    // Actions
+    suggestedTags: suggestions.suggestedTags,
+    searchResults: suggestions.searchResults,
+    youMightAlsoLike: suggestions.youMightAlsoLike,
+    showBalanceNudge: suggestions.showBalanceNudge,
+    isCatalogLoading,
+    catalogError,
+    isOnline,
+    isSaving,
+    saveErrorMessage,
     setSearchQuery,
-    toggleCategory,
-    expandCategoryOnly,
-    toggleSubcategory,
+    toggleCategory: browserExpansion.toggleCategory,
+    expandCategoryOnly: browserExpansion.expandCategoryOnly,
+    jumpToCategory: browserExpansion.jumpToCategory,
+    registerCategoryElement: browserExpansion.registerCategoryElement,
+    toggleSubcategory: browserExpansion.toggleSubcategory,
     goToReview,
     goToBrowse,
     setScreen,
     toggle,
     reject,
     finalize,
-    isPending,
+    retryCatalog,
+    isPending: browserExpansion.isPending,
+    reset: store.reset,
   };
 }

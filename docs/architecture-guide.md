@@ -70,13 +70,15 @@ TeamForge follows a decoupled architecture with a React-based frontend (this rep
 | Framework | React | 19.2 | UI rendering |
 | Language | TypeScript | 5.9 | Type safety |
 | Build | Vite | 7.x | Development and bundling |
-| Routing | TanStack Router | 1.x | File-based, type-safe routing |
+| Routing | TanStack Router | 1.x | Manual route tree in `src/router.tsx` |
+| URL State | nuqs | 2.x | URL-backed UI state |
 | Server State | TanStack Query | 5.x | API data fetching and caching |
 | Client State | Zustand | 5.x | UI state management |
 | Forms | React Hook Form + Zod | 7.x / 4.x | Form handling and validation |
 | Styling | Tailwind CSS | 4.x | Utility-first CSS |
 | Components | shadcn/ui + Radix | - | Accessible UI primitives |
 | HTTP | ky | 1.x | HTTP client with interceptors |
+| Realtime | Socket.IO client | 4.x | Live chat, plan, group, and notification events |
 | Animation | Framer Motion | 12.x | Motion and transitions |
 
 ### Directory Structure
@@ -87,23 +89,30 @@ src/
 ├── config/                  # Environment configuration
 │   └── config.ts           # Runtime env vars
 ├── features/               # Feature modules (domain-driven)
-│   ├── activity/           # Conversation feed
-│   ├── app-shell/          # Layout (sidebar, topbar, bottom nav)
+│   ├── activity/           # Conversation feed, direct chats, group detail panels
+│   ├── app-shell/          # Layout (sidebar and bottom nav)
 │   ├── auth/               # Authentication flows
-│   ├── direct-chats/       # 1:1 messaging
+│   ├── design-system/      # Internal component showcase / visual QA route
+│   ├── download/           # PWA install guidance and diagnostics
 │   ├── explore/            # Group/user discovery
 │   ├── forge/              # Core "Forge my group" wizard
-│   ├── groups/             # Group management
+│   ├── group-plan-detail/  # Dedicated group and plan briefing route
 │   ├── home/               # Dashboard
 │   ├── landing/            # Public marketing page
+│   ├── legal/              # Privacy and terms pages
 │   ├── notifications/      # Notification system
 │   ├── onboarding/         # Personality test + interests
 │   ├── profile/            # User profile
 │   ├── settings/           # Account settings
 │   └── user-menu/          # User dropdown menu
 ├── shared/                 # Cross-cutting concerns
-│   ├── api/                # Configured HTTP client
-│   └── components/         # Reusable UI components
+│   ├── api/                # Configured HTTP client, session, query client
+│   ├── components/         # Reusable UI components
+│   ├── hooks/              # Shared hooks
+│   ├── lib/                # Shared utilities and mappers
+│   ├── providers/          # App-wide providers
+│   ├── schemas/            # Canonical backend-aligned domain schemas
+│   └── store/              # Shared UI stores
 ├── index.css               # Tailwind directives + CSS vars
 ├── main.tsx                # App entry point
 └── router.tsx              # Route definitions
@@ -119,6 +128,7 @@ src/features/<feature-name>/
 ├── components/               # Feature-specific components
 │   └── <sub-feature>/
 │       └── component.tsx
+├── api/                      # Feature-local services, adapters, query factories
 ├── hooks/                    # Custom hooks (data fetching, UI logic)
 ├── store/                    # Zustand stores (local UI state)
 ├── types/                    # TypeScript interfaces
@@ -133,6 +143,17 @@ src/features/<feature-name>/
 - No cross-feature imports of internal modules
 - Shared code goes in `src/shared/`
 - Page components are thin - business logic lives in hooks
+- Backend-facing data seams should live in feature-local `api/` modules
+
+### Current Frontend Notes
+
+- Routes are still declared manually in `src/router.tsx`; the repo is not using TanStack file-based routing.
+- The authenticated app shell is protected through the `app-shell` route `beforeLoad`.
+- Conversation feed UI lives inside `src/features/activity/`; the full group and plan briefing route lives in `src/features/group-plan-detail/`.
+- Canonical backend-aligned domain models live in `src/shared/schemas/`, while features layer UI-specific projections on top.
+- Social safety UI is split between Activity direct-chat panels and Settings Safety. Activity uses `/friends` plus `/friends/blocked`; Settings uses `/friends/blocked` for blocked-user management.
+- Global realtime is initialized in `src/app/runtime/app-realtime-sync.tsx` and handles app-wide `notification.new` and `group.updated` events in `src/app/runtime/app-realtime-events.ts`. Activity and group-plan detail routes handle subscribed chat, read, typing, presence, plan, and group events locally.
+- The app is configured as a PWA through `vite-plugin-pwa`; the `/download` route provides install guidance, diagnostics, and push-notification readiness checks.
 
 ---
 
@@ -171,6 +192,19 @@ const mutation = useMutation({
 });
 ```
 
+### Social Cache Contract
+
+Social mutations update more than one route surface. Keep these query-key groups in sync when changing related behavior:
+
+| Flow | Caches to refresh |
+|------|-------------------|
+| Accept group invite or join open group | Home groups, home plans, home stats, explore groups, Activity groups, Activity chats, group selection |
+| Send group invite | Home sent invitations, home received invitations, notifications, unread count |
+| Group leave, removal, disband, or `group.updated` realtime | Activity groups, Activity chats, group selection, home groups, home plans, home stats |
+| Accept friend request or receive `FRIEND_ACCEPTED` notification | Explore friend requests, Activity friendships, Activity chats, direct selection |
+| Block or unblock user | Settings blocked users, Activity friendships, Activity chats, direct selection |
+| Submit group rating | Activity ratings for that group |
+
 ### Zustand Store Pattern
 
 ```typescript
@@ -201,16 +235,27 @@ export const useForgeStore = create<ForgeStore>((set) => ({
 | Route | Component | Auth Required | Layout |
 |-------|-----------|---------------|--------|
 | `/` | LandingPage | No | Full-page |
-| `/auth/login` | AuthPage | No | Full-page |
-| `/auth/register` | AuthPage | No | Full-page |
+| `/download` | DownloadPage | No | Full-page |
+| `/privacy` | LegalPage | No | Full-page |
+| `/terms` | LegalPage | No | Full-page |
+| `/auth` | Redirect to login | No | Full-page |
+| `/auth/login` | LoginPage | No | Full-page |
+| `/auth/register` | RegisterPage | No | Full-page |
+| `/auth/forgot-password` | ForgotPasswordPage | No | Full-page |
+| `/auth/reset-password/$token` | ResetPasswordPage | No | Full-page |
+| `/auth/activate/$token` | ActivateAccountPage | No | Full-page |
+| `/onboarding/profile` | ProfileBasicsPage | Yes | Full-page |
 | `/onboarding/personality` | PersonalityTestPage | Yes | Full-page |
 | `/onboarding/interests` | InterestsPage | Yes | Full-page |
 | `/home` | HomePage | Yes | App Shell |
 | `/explore` | ExplorePage | Yes | App Shell |
+| `/groups/$groupId` | GroupPlanDetailPage | Yes | App Shell |
 | `/activity` | ActivityPage | Yes | App Shell |
 | `/profile` | ProfilePage | Yes | App Shell |
+| `/users/$userId` | UserDetailPage | Yes | App Shell |
 | `/settings` | SettingsPage | Yes | App Shell |
 | `/forge` | ForgePage | Yes | App Shell |
+| `/design-system/icon-notice-variants` | IconNoticeVariantsPage | No | Dev-only full-page |
 
 ### App Shell Layout
 
@@ -251,28 +296,13 @@ import ky from 'ky';
 
 export const apiClient = ky.create({
   prefixUrl: import.meta.env.VITE_API_URL,
+  credentials: 'include',
+  cache: 'no-store',
+  timeout: 15_000,
   hooks: {
-    beforeRequest: [
-      (request) => {
-        const token = getAccessToken();
-        if (token) {
-          request.headers.set('Authorization', `Bearer ${token}`);
-        }
-      },
-    ],
-    afterResponse: [
-      async (request, options, response) => {
-        if (response.status === 401) {
-          const refreshed = await attemptTokenRefresh();
-          if (refreshed) {
-            return ky(request);
-          }
-          clearTokens();
-          window.location.href = '/';
-        }
-        return response;
-      },
-    ],
+    beforeRequest: [attachAccessOrRefreshToken],
+    afterResponse: [refreshAndRetryUnauthorizedRequest],
+    beforeError: [parseApiError],
   },
 });
 ```
@@ -414,7 +444,7 @@ Where:
 ### Authentication
 
 - JWT access tokens (short-lived, 15 min)
-- HTTP-only refresh tokens (long-lived, 7 days)
+- Refresh can use a stored refresh token or the backend refresh cookie, depending on response mode
 - Automatic token refresh on 401
 - Secure token storage (not localStorage)
 
@@ -467,11 +497,11 @@ npm install
 # Start dev server
 npm run dev
 
-# Lint code
-npm run lint
+# Fast lint pass for staged, unstaged, and untracked changed files
+npm run lint:changed
 
-# Format code
-npm run format
+# Full lint gate
+npm run lint
 
 # Build for production
 npm run build
@@ -480,7 +510,7 @@ npm run build
 ### Git Workflow
 
 - Feature branches from `main`
-- Pre-commit hooks: lint + format
+- Pre-commit hooks: React Compiler tracking, Biome safe fixes, and Oxlint on staged files
 - PR reviews required
 - Conventional commits encouraged
 
@@ -488,8 +518,29 @@ npm run build
 
 | Variable | Purpose |
 |----------|---------|
-| `VITE_API_URL` | Backend API base URL |
+| `VITE_API_URL` | Backend REST API base URL, including `/api/v1` |
 | `VITE_GOOGLE_CLIENT_ID` | Google OAuth client ID |
+| `VITE_GOOGLE_MAPS_API_KEY` | Google Maps key for location autocomplete |
+| `VITE_GIPHY_API_KEY` | Giphy Web SDK key for chat GIF search |
+
+Local development uses `http://localhost:6969/api/v1`. Production uses the
+public browser path, for example `https://api.mkloz.com/teamforge/api/v1`.
+Realtime still uses the `/realtime` Socket.IO namespace; the client derives the
+transport path from `VITE_API_URL`, so that production API URL maps to
+`/teamforge/socket.io`.
+
+### Production PWA Release
+
+```bash
+VITE_API_URL=https://api.mkloz.com/teamforge/api/v1 \
+VITE_GOOGLE_CLIENT_ID=your-production-google-client-id \
+VITE_GOOGLE_MAPS_API_KEY=your-production-maps-key \
+VITE_GIPHY_API_KEY=your-production-giphy-key \
+npm run pwa:release
+```
+
+The release command validates browser-facing environment values, builds the app,
+and runs the PWA QA pass against `dist/`.
 
 ---
 

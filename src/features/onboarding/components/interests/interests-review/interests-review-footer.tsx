@@ -1,30 +1,48 @@
+import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
-import { CheckCircle2 } from "lucide-react";
 
 interface InterestsReviewFooterProps {
+  backLabel?: string;
   onConfirm: () => void;
   canConfirm: boolean;
   onBack: () => void;
+  isOnline?: boolean;
+  isSaving?: boolean;
+  confirmLabel?: string;
 }
 
 export function InterestsReviewFooter({
+  backLabel = "Back",
   onConfirm,
   canConfirm,
   onBack,
+  isOnline = true,
+  isSaving = false,
+  confirmLabel = "Confirm & Finish",
 }: InterestsReviewFooterProps) {
   return (
-    <div className="w-full flex items-center gap-3 pt-4 pb-6 sm:pb-5">
-      <Button variant="outline" size="lg" onClick={onBack}>
-        Back
+    <div className="flex w-full xs:flex-row flex-col-reverse xs:items-center items-stretch gap-3 pt-4 pb-6 sm:pb-5">
+      <Button
+        variant="outline"
+        size="md"
+        onClick={onBack}
+        disabled={isSaving}
+        className="w-full xs:w-auto min-w-0 xs:shrink-0"
+      >
+        <ArrowLeft className="size-4" aria-hidden="true" />
+        <span className="truncate">{backLabel}</span>
       </Button>
       <Button
         variant="primary"
-        size="lg"
+        size="md"
         onClick={onConfirm}
-        disabled={!canConfirm}
-        className="flex-1"
+        disabled={!isOnline || !canConfirm || isSaving}
+        title={isOnline ? undefined : "Reconnect before saving interests."}
+        className="w-full min-w-0 xs:flex-1"
       >
-        Confirm & Finish
+        <span className="truncate">
+          {isSaving ? "Saving…" : isOnline ? confirmLabel : "Reconnect to save"}
+        </span>
         <CheckCircle2 size={18} />
       </Button>
     </div>

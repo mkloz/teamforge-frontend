@@ -59,10 +59,10 @@ function Carousel({
   const [canScrollPrev, setCanScrollPrev] = React.useState(false);
   const [canScrollNext, setCanScrollNext] = React.useState(false);
 
-  const onSelect = React.useCallback((api: CarouselApi) => {
-    if (!api) return;
-    setCanScrollPrev(api.canScrollPrev());
-    setCanScrollNext(api.canScrollNext());
+  const onSelect = React.useCallback((emblaApi: CarouselApi) => {
+    if (!emblaApi) return;
+    setCanScrollPrev(emblaApi.canScrollPrev());
+    setCanScrollNext(emblaApi.canScrollNext());
   }, []);
 
   const scrollPrev = React.useCallback(() => {
@@ -87,46 +87,67 @@ function Carousel({
   );
 
   React.useEffect(() => {
-    if (!api || !setApi) return;
+    if (!api || !setApi) {
+      return undefined;
+    }
+
     setApi(api);
+
+    return undefined;
   }, [api, setApi]);
 
   React.useEffect(() => {
-    if (!api) return;
+    if (!api) {
+      return undefined;
+    }
+
     onSelect(api);
     api.on("reInit", onSelect);
     api.on("select", onSelect);
 
     return () => {
+      api?.off("reInit", onSelect);
       api?.off("select", onSelect);
     };
   }, [api, onSelect]);
 
+  const contextValue = React.useMemo<CarouselContextProps>(
+    () => ({
+      carouselRef,
+      api,
+      opts,
+      orientation:
+        orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
+      scrollPrev,
+      scrollNext,
+      canScrollPrev,
+      canScrollNext,
+    }),
+    [
+      api,
+      canScrollNext,
+      canScrollPrev,
+      carouselRef,
+      opts,
+      orientation,
+      scrollNext,
+      scrollPrev,
+    ],
+  );
+
   return (
-    <CarouselContext.Provider
-      value={{
-        carouselRef,
-        api: api,
-        opts,
-        orientation:
-          orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
-        scrollPrev,
-        scrollNext,
-        canScrollPrev,
-        canScrollNext,
-      }}
-    >
-      <div
+    <CarouselContext value={contextValue}>
+      {/* biome-ignore lint/a11y/useAriaPropsSupportedByRole: The carousel root follows the WAI carousel roledescription pattern. */}
+      <section
         onKeyDownCapture={handleKeyDown}
         className={cn("relative", className)}
-        role="region"
         aria-roledescription="carousel"
         data-slot="carousel"
         {...props}
       >
         {children}
-      </div>
-    </CarouselContext.Provider>
+      </section>
+    </CarouselContext>
   );
 }
 
@@ -155,6 +176,7 @@ function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
   const { orientation } = useCarousel();
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: Carousel slides use role=group per the WAI carousel pattern.
     <div
       role="group"
       aria-roledescription="slide"
@@ -231,9 +253,9 @@ function CarouselNext({
 
 export {
   Carousel,
+  type CarouselApi,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-  type CarouselApi,
 };

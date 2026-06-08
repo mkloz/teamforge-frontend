@@ -1,62 +1,119 @@
-import { Button } from "@/shared/components/ui/button";
+import { ArrowDownUp, Check, ChevronDown } from "lucide-react";
+import { SORTS } from "@/features/explore/constants/explore-filter-options";
+import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
+import type { ExploreSortOption } from "@/features/explore/schemas/explore-filters.schema";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
+import { IconTile } from "@/shared/components/ui/icon-tile";
 import { cn } from "@/shared/lib/utils";
-import { ArrowDownWideNarrow } from "lucide-react";
-import { SORTS } from "../../constants/explore.constants";
-import { useExploreStore } from "../../store/use-explore-store";
+
+const SORT_DESCRIPTIONS: Record<ExploreSortOption, string> = {
+  MATCH: "Closest to your profile.",
+  NEWEST: "Recently created groups first.",
+  SOONEST: "Plans happening earliest.",
+};
 
 export function SortDropdown() {
-  const { sortBy, setSortBy } = useExploreStore();
+  const { sortBy, setSortBy } = useExploreRouteState();
+  const activeSort = SORTS.find((sort) => sort.id === sortBy);
+  const ActiveIcon = activeSort?.icon ?? ArrowDownUp;
+  const activeLabel = activeSort?.label ?? "Best fit";
+
+  function handleSortChange(value: string) {
+    const nextSort = SORTS.find((sort) => sort.id === value);
+
+    if (nextSort) {
+      setSortBy(nextSort.id);
+    }
+  }
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          className="shrink-0 rounded-xl h-10 w-10 border border-border/60 text-muted-foreground hover:text-foreground hover:border-border transition-all"
-        >
-          <ArrowDownWideNarrow className="w-3.5 h-3.5" />
-        </Button>
+      <DropdownMenuTrigger
+        aria-label={`Sort groups, ${activeLabel}`}
+        className={cn(
+          "group inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-full border border-border/70 bg-input px-2 text-muted-foreground shadow-xs outline-hidden transition-all duration-150",
+          "hover:border-primary/35 hover:bg-muted hover:text-ink focus-visible:ring-2 focus-visible:ring-primary/35",
+          "data-[state=open]:border-primary/35 data-[state=open]:bg-card data-[state=open]:text-ink",
+        )}
+      >
+        <IconTile
+          icon={ActiveIcon}
+          size="xs"
+          tone="none"
+          className="size-5 bg-primary/10 text-primary transition-colors group-data-[state=open]:bg-primary group-data-[state=open]:text-primary-foreground"
+          iconClassName="size-3"
+        />
+        <span className="hidden items-center gap-1.5 sm:inline-flex">
+          <span className="font-semibold text-slate-muted text-xs">Sort</span>
+          <span className="h-3 w-px bg-border" aria-hidden="true" />
+          <span className="font-black text-ink text-xs">{activeLabel}</span>
+        </span>
+        <ChevronDown
+          className="hidden size-3.5 text-slate-muted transition-transform duration-150 group-data-[state=open]:rotate-180 sm:block"
+          strokeWidth={2}
+          aria-hidden="true"
+        />
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="w-52 rounded-xl p-1.5 bg-background border-border/40 shadow-xl"
+        sideOffset={8}
+        className="w-72 max-w-[calc(100vw-2rem)] rounded-xl border-border/80 bg-popover p-2 shadow-2xl shadow-ink/10"
       >
-        <DropdownMenuLabel className="text-[9px] uppercase tracking-widest text-muted-foreground font-black px-3 py-1.5">
-          Feed Priority
+        <DropdownMenuLabel className="px-2 pt-1 pb-2 font-bold text-slate-muted text-xs">
+          Sort groups
         </DropdownMenuLabel>
-        <DropdownMenuSeparator className="bg-border/10 mx-1" />
-        {SORTS.map(({ id, label, icon: Icon }) => (
-          <DropdownMenuItem
-            key={id}
-            onClick={() => setSortBy(id)}
-            className={cn(
-              "flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-default transition-colors",
-              sortBy === id
-                ? "bg-primary/10 text-primary font-bold"
-                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-            )}
-          >
-            <Icon
-              className={cn(
-                "size-3.5",
-                sortBy === id ? "text-primary" : "opacity-50",
-              )}
-            />
-            <span className="text-xs">{label}</span>
-            {sortBy === id && (
-              <div className="ml-auto w-1 h-1 rounded-full bg-primary" />
-            )}
-          </DropdownMenuItem>
-        ))}
+        <DropdownMenuRadioGroup value={sortBy} onValueChange={handleSortChange}>
+          {SORTS.map(({ icon: Icon, id, label }) => {
+            const selected = sortBy === id;
+
+            return (
+              <DropdownMenuRadioItem
+                key={id}
+                value={id}
+                className={cn(
+                  "grid min-h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-lg px-2 py-2 text-left focus:bg-primary/8 focus:text-ink data-[state=checked]:bg-primary/8 data-[state=checked]:text-ink [&>span:first-child]:hidden",
+                  selected ? "text-ink" : "text-slate-muted",
+                )}
+              >
+                <IconTile
+                  icon={Icon}
+                  size="md"
+                  tone={selected ? "teal" : "neutral"}
+                  className={cn(
+                    selected
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-input text-slate-muted",
+                  )}
+                  iconClassName="size-3.5"
+                />
+                <span className="min-w-0">
+                  <span className="block font-black text-sm">{label}</span>
+                  <span className="mt-0.5 block text-slate-muted text-xs leading-snug">
+                    {SORT_DESCRIPTIONS[id]}
+                  </span>
+                </span>
+                <span
+                  className={cn(
+                    "flex size-5 items-center justify-center rounded-full border transition-colors",
+                    selected
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-input text-transparent",
+                  )}
+                  aria-hidden="true"
+                >
+                  <Check className="size-3" strokeWidth={3} />
+                </span>
+              </DropdownMenuRadioItem>
+            );
+          })}
+        </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );

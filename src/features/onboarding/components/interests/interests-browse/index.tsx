@@ -1,17 +1,17 @@
-export { InterestsBrowseHeader } from "./interests-browse-header";
-import { Accordion } from "@/shared/components/ui/accordion";
-import { TooltipProvider } from "@/shared/components/ui/tooltip";
-import { cn } from "@/shared/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Activity } from "react";
-import { INTEREST_CATEGORIES } from "../../../data/interests-data";
-import type {
-  LeafTag,
-  SearchResults as SearchResultsType,
-} from "../../../data/interests-types";
+import type { InterestSearchResults } from "@/features/onboarding/utils/interest-logic";
+import { Accordion } from "@/shared/components/ui/accordion";
+import { cn } from "@/shared/lib/utils";
+import type { Interest } from "@/shared/schemas";
 import type { PersonalityType } from "@/shared/schemas/enums";
 import { BalanceNudge } from "./balance-nudge";
 import { CategorySection } from "./category-section";
+import {
+  getIsInterestSearchActive,
+  getOpenCategoryIds,
+  getToggledAccordionCategoryId,
+} from "./interests-browse-state";
 import { PageTitle } from "./page-title";
 import { SearchResults } from "./search-results";
 import { SelectionShelf } from "./selection-shelf";
@@ -19,25 +19,29 @@ import { SuggestionsSection } from "./suggestions-section";
 import { YouMightAlsoLikeSection } from "./you-might-also-like-section";
 
 interface InterestsBrowseProps {
+  categories: Interest[];
+  leafById: Record<string, Interest>;
   selectedIds: Set<string>;
   searchQuery: string;
-  searchResults: SearchResultsType;
+  searchResults: InterestSearchResults;
   personalityType: PersonalityType | null;
-  suggestedTags: LeafTag[];
-  youMightAlsoLike: LeafTag[];
+  suggestedTags: Interest[];
+  youMightAlsoLike: Interest[];
   showBalanceNudge: boolean;
   isAtMax: boolean;
   collapsedCategories: Set<string>;
   expandedSubcategories: Set<string>;
   onToggle: (id: string) => void;
   onToggleCategory: (id: string) => void;
-  onExpandCategoryOnly: (id: string) => void;
   onToggleSubcategory: (id: string) => void;
-  onSetSearch: (q: string) => void;
+  onRegisterCategory: (id: string, element: HTMLElement | null) => void;
   onReject: (id: string) => void;
+  hideContextLabel?: boolean;
 }
 
 export function InterestsBrowse({
+  categories,
+  leafById,
   selectedIds,
   searchQuery,
   searchResults,
@@ -52,53 +56,76 @@ export function InterestsBrowse({
   onReject,
   onToggleCategory,
   onToggleSubcategory,
-}: Omit<InterestsBrowseProps, "onSetSearch" | "onExpandCategoryOnly">) {
-  const isSearching = searchQuery.trim().length >= 2;
-
-  const openCategories = INTEREST_CATEGORIES.map((c) => c.id).filter(
-    (id) => !collapsedCategories.has(id),
-  );
+  onRegisterCategory,
+  hideContextLabel = false,
+}: InterestsBrowseProps) {
+  const isSearching = getIsInterestSearchActive(searchQuery);
+  const openCategories = getOpenCategoryIds(categories, collapsedCategories);
 
   function handleAccordionChange(newValues: string[]) {
-    const toggled = INTEREST_CATEGORIES.map((c) => c.id).find((id) => {
-      const wasOpen = openCategories.includes(id);
-      const isOpenNow = newValues.includes(id);
-      return wasOpen !== isOpenNow;
-    });
-    if (toggled) onToggleCategory(toggled);
+    const toggled = getToggledAccordionCategoryId(
+      categories,
+      openCategories,
+      newValues,
+    );
+
+    if (toggled) {
+      onToggleCategory(toggled);
+    }
   }
 
   return (
-    <TooltipProvider>
-      <div className="flex flex-col w-full max-w-xl mx-auto pb-8">
-        <PageTitle isSearching={isSearching} />
+    <div className="mx-auto flex w-full max-w-xl flex-col pb-8">
+      <PageTitle
+        isSearching={isSearching}
+        hideContextLabel={hideContextLabel}
+      />
 
-        <div className="relative w-full">
-          <Activity mode={isSearching ? "hidden" : "visible"}>
-            <motion.div
-              layout="position"
-              animate={{ opacity: isSearching ? 0 : 1 }}
-              transition={{ duration: 0.2 }}
-              className={cn(
-                "flex flex-col space-y-2",
-                isSearching && "pointer-events-none",
-              )}
+      <div className="relative w-full">
+        <Activity mode={isSearching ? "hidden" : "visible"}>
+          <motion.div
+            layout="position"
+            animate={{ opacity: isSearching ? 0 : 1 }}
+            transition={{ duration: 0.2 }}
+            className={cn(
+              "flex flex-col gap-2",
+              isSearching && "pointer-events-none",
+            )}
+          >
+            {personalityType && suggestedTags.length > 0 && (
+              <SuggestionsSection
+                personalityType={personalityType}
+                suggestedTags={suggestedTags}
+                selectedIds={selectedIds}
+                isAtMax={isAtMax}
+                onToggle={onToggle}
+                onReject={onReject}
+              />
+            )}
+
+            {showBalanceNudge && <BalanceNudge />}
+
+            <Accordion
+              type="multiple"
+              value={openCategories}
+              onValueChange={handleAccordionChange}
             >
-              {/* Contextual Sections */}
-              {personalityType && suggestedTags.length > 0 && (
-                <SuggestionsSection
-                  personalityType={personalityType}
-                  suggestedTags={suggestedTags}
+              {categories.map((category) => (
+                <CategorySection
+                  key={category.id}
+                  category={category}
                   selectedIds={selectedIds}
+                  expandedSubcategories={expandedSubcategories}
                   isAtMax={isAtMax}
-                  onToggle={onToggle}
-                  onReject={onReject}
+                  onRegisterCategory={onRegisterCategory}
+                  onToggleSubcategory={onToggleSubcategory}
+                  onToggleTag={onToggle}
                 />
-              )}
+              ))}
+            </Accordion>
 
-              {showBalanceNudge && <BalanceNudge />}
-
-              {selectedIds.size > 0 && youMightAlsoLike.length > 0 && (
+            {selectedIds.size > 0 && youMightAlsoLike.length > 0 && (
+              <div className="pt-4">
                 <YouMightAlsoLikeSection
                   tags={youMightAlsoLike}
                   selectedIds={selectedIds}
@@ -106,64 +133,42 @@ export function InterestsBrowse({
                   onToggle={onToggle}
                   onReject={onReject}
                 />
-              )}
-
-              {/* Main Categories */}
-              <Accordion
-                type="multiple"
-                value={openCategories}
-                onValueChange={handleAccordionChange}
-              >
-                {INTEREST_CATEGORIES.map((cat) => (
-                  <CategorySection
-                    key={cat.id}
-                    category={cat}
-                    selectedIds={selectedIds}
-                    expandedSubcategories={expandedSubcategories}
-                    isAtMax={isAtMax}
-                    onToggleSubcategory={onToggleSubcategory}
-                    onToggleTag={onToggle}
-                  />
-                ))}
-              </Accordion>
-            </motion.div>
-          </Activity>
-
-          {/* Search Results Layer */}
-          <AnimatePresence>
-            {isSearching && (
-              <>
-                <motion.div
-                  key="search-results"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  className="relative z-20 w-full"
-                >
-                  <SearchResults
-                    query={searchQuery}
-                    results={searchResults}
-                    selectedIds={selectedIds}
-                    isAtMax={isAtMax}
-                    onToggle={onToggle}
-                  />
-                </motion.div>
-              </>
+              </div>
             )}
-          </AnimatePresence>
-        </div>
+          </motion.div>
+        </Activity>
 
-        {/* Dynamic Selection/Suggestions Shelf */}
-        <SelectionShelf
-          isSearching={isSearching}
-          selectedIds={selectedIds}
-          youMightAlsoLike={youMightAlsoLike}
-          isAtMax={isAtMax}
-          onToggle={onToggle}
-          onReject={onReject}
-        />
+        <AnimatePresence>
+          {isSearching && (
+            <motion.div
+              key="search-results"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="relative z-20 w-full"
+            >
+              <SearchResults
+                query={searchQuery}
+                results={searchResults}
+                selectedIds={selectedIds}
+                isAtMax={isAtMax}
+                onToggle={onToggle}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </TooltipProvider>
+
+      <SelectionShelf
+        isSearching={isSearching}
+        leafById={leafById}
+        selectedIds={selectedIds}
+        youMightAlsoLike={youMightAlsoLike}
+        isAtMax={isAtMax}
+        onToggle={onToggle}
+        onReject={onReject}
+      />
+    </div>
   );
 }
 

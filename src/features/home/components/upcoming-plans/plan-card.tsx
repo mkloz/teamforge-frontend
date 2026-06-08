@@ -1,180 +1,100 @@
+import { Link } from "@tanstack/react-router";
+import { Clock, MapPinned, Tag, Wifi } from "lucide-react";
+import { buildGroupPlanDetailNavigation } from "@/features/group-plan-detail/lib/group-plan-detail-route";
+import type { PlannedGroup } from "@/features/home/lib/home-contract";
+import { getPlanTimingLabel } from "@/features/home/lib/home-insights";
+import {
+  getHomePlanCategoryLabel,
+  getHomePlanCostLabel,
+  getHomePlanLocationLabel,
+} from "@/features/home/lib/home-plan-presenters";
+import { StatusPill } from "@/shared/components/ui/status-pill";
 import { cn } from "@/shared/lib/utils";
-import { motion } from "framer-motion";
-import { Calendar, CheckCircle2, Clock, MessageCircle } from "lucide-react";
-import type { PlanStatus, UpcomingPlan } from "../../types/home.types";
-
-/* ── Status config ─────────────────────────────────────────────────── */
-const STATUS_CONFIG: Record<
-  PlanStatus,
-  { label: string; classes: string; icon: React.ElementType }
-> = {
-  CONFIRMED: {
-    label: "Confirmed",
-    classes: "bg-forge-teal/10 text-forge-teal",
-    icon: CheckCircle2,
-  },
-  PROPOSED: {
-    label: "Proposed",
-    classes: "bg-spark-amber/10 text-spark-amber",
-    icon: Clock,
-  },
-  DRAFT: {
-    label: "Draft",
-    classes: "bg-muted text-muted-foreground",
-    icon: Calendar,
-  },
-  IN_PROGRESS: {
-    label: "In Progress",
-    classes: "bg-blue-500/10 text-blue-500",
-    icon: Clock,
-  },
-  COMPLETED: {
-    label: "Completed",
-    classes: "bg-green-500/10 text-green-500",
-    icon: CheckCircle2,
-  },
-  CANCELLED: {
-    label: "Cancelled",
-    classes: "bg-red-500/10 text-red-500",
-    icon: Calendar,
-  },
-};
+import { getPlanCalendarParts, planStatusConfig } from "./plan-card-model";
 
 interface PlanCardProps {
-  plan: UpcomingPlan;
-  index: number;
+  plannedGroup: PlannedGroup;
 }
 
-/**
- * Individual plan card showing activity details, status, and member avatars.
- */
-export function PlanCard({ plan, index }: PlanCardProps) {
-  const status = STATUS_CONFIG[plan.status] || STATUS_CONFIG.DRAFT;
+export function PlanCard({ plannedGroup }: PlanCardProps) {
+  const plan = plannedGroup.plan;
+  const status = planStatusConfig[plan.status] || planStatusConfig.DRAFT;
   const StatusIcon = status.icon;
-
-  // Format ISO date
-  const date = plan.dateTime ? new Date(plan.dateTime) : new Date();
-  const month = date.toLocaleString("en-US", { month: "short" });
-  const dayNum = date.getDate();
-  const dayName = date.toLocaleString("en-US", { weekday: "short" });
-  const timeStr = date.toLocaleString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
+  const { dayName, dayNum, month } = getPlanCalendarParts(plan);
+  const timeStr = getPlanTimingLabel(plan);
+  const isActionable = plan.status === "PROPOSED";
+  const locationLabel = getHomePlanLocationLabel(plan);
+  const LocationIcon = plan.locationMode === "ONLINE" ? Wifi : MapPinned;
+  const navigation = buildGroupPlanDetailNavigation(plannedGroup.id, {
+    source: "home",
+    plan: plan.id,
   });
 
-  const groupName = plan.group?.name || "Unknown Group";
-  const members = plan.group?.members || [];
-  const memberAvatars = members
-    .map((m) => m.user?.avatar)
-    .filter((avatar): avatar is string => Boolean(avatar));
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: 0.4,
-        delay: index * 0.07,
-        ease: [0.23, 1, 0.32, 1],
-      }}
-      role="listitem"
+    <li
       className={cn(
-        "group flex flex-row items-center gap-3 md:gap-4",
-        "rounded-2xl border border-border/50 bg-card p-3 md:p-4",
-        "transition-all duration-150 cursor-pointer",
-        "hover:-translate-y-0.5 hover:border-ink hover:shadow-button-outline",
-        "dark:hover:border-white dark:hover:shadow-button-outline-dark",
+        "group relative border-border/55 border-b last:border-b-0",
+        "transition-colors duration-150 hover:bg-forge-teal/5",
       )}
     >
-      {/* Calendar date block */}
-      <div
-        className="shrink-0 flex flex-col items-center w-13 rounded-xl border border-border/50 overflow-hidden bg-background shadow-xs"
-        aria-hidden="true"
+      <Link
+        {...navigation}
+        className="grid grid-cols-[4.25rem_minmax(0,1fr)] items-center gap-x-3 gap-y-2 py-3.5 pr-2 pl-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:pr-3 md:gap-4"
       >
-        <div className="w-full bg-muted text-muted-foreground text-center py-1 text-[10px] font-black uppercase tracking-widest border-b border-border/50">
-          {month}
-        </div>
-        <div className="w-full flex flex-col items-center py-1.5">
-          <span className="text-xl font-black text-foreground leading-none">
+        <div className="relative flex h-full min-h-16 flex-col justify-center pl-9">
+          <span
+            className={cn(
+              "absolute top-1/2 left-4 z-10 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full ring-4 ring-background",
+              isActionable ? "bg-spark-amber" : "bg-forge-teal",
+            )}
+            aria-hidden="true"
+          />
+          <span className="font-black text-muted-foreground text-xs uppercase leading-none">
+            {month}
+          </span>
+          <span className="mt-1 font-black text-2xl text-foreground leading-none">
             {dayNum}
           </span>
-          <span className="text-[10px] font-bold text-muted-foreground mt-0.5">
+          <span className="mt-1 font-bold text-muted-foreground text-xs leading-none">
             {dayName}
           </span>
         </div>
-      </div>
 
-      {/* Plan info */}
-      <div className="flex flex-col gap-0.5 flex-1 min-w-0 pl-1">
-        <p className="text-sm font-bold text-foreground leading-snug truncate group-hover:text-primary transition-colors duration-200">
-          {plan.title}
-        </p>
-        <p className="text-xs text-muted-foreground font-medium truncate">
-          {groupName}
-        </p>
-        <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-          {/* Time pill */}
-          <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
-            <Clock className="size-3" aria-hidden="true" />
-            {timeStr}
-          </span>
-          {/* Status badge */}
-          <span
-            className={cn(
-              "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide",
-              status.classes,
-            )}
-          >
-            <StatusIcon className="size-3" aria-hidden="true" />
-            {status.label}
-          </span>
-        </div>
-      </div>
-
-      {/* Right: avatar stack + action button */}
-      <div className="shrink-0 flex flex-col items-end gap-2.5">
-        {/* Member avatar stack */}
-        <div
-          className="flex -space-x-2.5"
-          aria-label={`${memberAvatars.length} members`}
-        >
-          {memberAvatars.slice(0, 3).map((seed, i) => (
-            <div
-              key={i}
-              className="size-8 rounded-full border-2 border-card bg-muted overflow-hidden shadow-xs"
+        <div className="min-w-0">
+          <p className="flex min-w-0 items-center gap-1.5 font-bold text-foreground text-sm leading-snug transition-colors duration-200 group-hover:text-forge-teal">
+            <span className="truncate">{plan.title}</span>
+            <StatusPill
+              icon={StatusIcon}
+              size="xs"
+              tone={status.tone}
+              className="px-1.5 py-0.5"
             >
-              <img
-                src={`https://api.dicebear.com/7.x/notionists/svg?seed=${seed}`}
-                alt={`Member ${i + 1}`}
-                className="size-full object-cover"
-                loading="lazy"
-              />
-            </div>
-          ))}
-          {memberAvatars.length > 3 && (
-            <div className="size-8 rounded-full border-2 border-card bg-muted flex items-center justify-center text-xs font-extrabold text-muted-foreground shadow-xs">
-              +{memberAvatars.length - 3}
-            </div>
-          )}
+              <span className="sr-only sm:not-sr-only">{status.label}</span>
+            </StatusPill>
+          </p>
+          <p className="mt-0.5 flex min-w-0 items-center gap-1 font-medium text-muted-foreground text-xs">
+            <LocationIcon className="size-3 shrink-0" aria-hidden="true" />
+            <span className="truncate">{locationLabel}</span>
+            <span
+              className="shrink-0 text-muted-foreground/65"
+              aria-hidden="true"
+            >
+              ·
+            </span>
+            <span className="shrink-0">{getHomePlanCostLabel(plan)}</span>
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span className="flex items-center gap-1 font-semibold text-muted-foreground text-xs">
+              <Clock className="size-3" aria-hidden="true" />
+              {timeStr}
+            </span>
+            <span className="flex items-center gap-1 font-semibold text-muted-foreground text-xs">
+              <Tag className="size-3" aria-hidden="true" />
+              {getHomePlanCategoryLabel(plan)}
+            </span>
+          </div>
         </div>
-
-        {/* Chat button */}
-        <button
-          type="button"
-          aria-label={`Open chat for ${plan.title}`}
-          className={cn(
-            "flex items-center gap-1 px-2.5 py-1 rounded-xl",
-            "text-xs font-bold text-muted-foreground",
-            "border border-border bg-background",
-            "hover:border-forge-teal/50 hover:text-forge-teal hover:bg-secondary",
-            "transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          )}
-        >
-          <MessageCircle className="size-3" aria-hidden="true" />
-          Chat
-        </button>
-      </div>
-    </motion.div>
+      </Link>
+    </li>
   );
 }

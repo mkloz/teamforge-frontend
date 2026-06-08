@@ -6,23 +6,40 @@
 
 ## 1. Color System
 
-The palette uses exactly **5 roles**. No additional colors may be introduced without explicit approval.
+The palette has two layers:
+
+1. **Core identity colors**: Forge Teal, Spark Amber, Ink, and near-white/near-black neutrals.
+2. **Semantic surface tokens**: background, canvas, card, input, border, muted, and sidebar values tuned for light and dark mode.
+
+Do not introduce new hue families without explicit approval. When a new surface value is needed, add it as a semantic token instead of hard-coding component colors.
 
 ### Primary Palette
 
-| Role            | Name        | Hex       | CSS Token             | Usage                                                                                  |
-| --------------- | ----------- | --------- | --------------------- | -------------------------------------------------------------------------------------- |
-| Brand primary   | Forge Teal  | `#0D9488` | `--color-forge-teal`  | Primary buttons, active nav, borders, icons, progress rings, selected states           |
-| Accent          | Spark Amber | `#F59E0B` | `--color-spark-amber` | Notification badges, trust score value, group-formed flash, highlights — use sparingly |
-| Page background | Canvas      | `#FAFAF8` | `--color-canvas`      | Light-section page background, onboarding screens                                      |
-| Primary text    | Ink         | `#1C1C1A` | `--color-ink`         | All headings and body text on light surfaces                                           |
-| Secondary text  | Slate       | `#6B7280` | `--color-slate-muted` | Captions, timestamps, secondary labels, placeholder text, borders                      |
+| Role | Name | Light | Dark | CSS Token | Usage |
+| --- | --- | --- | --- | --- | --- |
+| Brand primary | Forge Teal | `#0D9488` | `#0D9488` | `--color-forge-teal` | Active states, icons, progress, selected states, teal tints |
+| Solid action teal | Deep Teal | `#0F766E` | `#0D9488` | `--primary` | Solid semantic primary surfaces where text contrast matters |
+| Accent | Spark Amber | `#F59E0B` | `#FBBF24` | `--accent`, `--color-spark-amber` | Notification badges, trust score value, group-formed flash, highlights |
+| Primary text | Ink | `#1C1F1D` | `#F2F5F1` | `--color-ink`, `--foreground` | Headings and body text |
+| Secondary text | Slate | `#68756F` | `#A4B2AC` | `--color-slate-muted`, `--muted-foreground` | Captions, timestamps, secondary labels, placeholder text |
+
+### Surface Palette
+
+| Role | Light | Dark | CSS Token | Usage |
+| --- | --- | --- | --- | --- |
+| App background | `#F1F4F1` | `#0B0F0E` | `--background` | Body background and floating nav bases |
+| Canvas | `#F7F8F4` | `#111716` | `--canvas`, `--color-canvas` | Main page and long-session reading surfaces |
+| Card / popover | `#FFFEFA` | `#18201E` | `--card`, `--popover` | Cards, overlays, menus, elevated panels |
+| Input | `#EEF2ED` | `#202927` | `--input` | Text fields, selects, radios, OTP slots, tactile controls |
+| Muted | `#E7EBE6` | `#202725` | `--muted` | Skeletons, inactive pills, hover surfaces |
+| Border | `rgba(29, 38, 35, 0.11)` | `rgba(229, 239, 234, 0.11)` | `--border` | Dividers, card outlines, rail separation |
 
 ### Palette Rules
 
-- Teal and Amber occupy a maximum of 15% of any screen surface. The remaining 85% is neutrals (Canvas, Ink, Slate-muted).
+- Teal and Amber occupy a maximum of 15% of any screen surface. The remaining 85% is semantic neutrals.
 - Amber is **never** used on large surfaces, backgrounds, or text blocks.
-- Never create additional teal hex variants (e.g., `#0f766e`, `#0a6460`). Use opacity modifiers on `#0D9488` instead.
+- Do not invent one-off teal or amber values in components. Use `--color-forge-teal`, `--primary`, `--accent`, or opacity modifiers.
+- Avoid pure `#FFFFFF` or `#000000` for broad surfaces. Use the semantic surface tokens.
 
 ### Color Emotion Reference
 
@@ -30,9 +47,9 @@ The palette uses exactly **5 roles**. No additional colors may be introduced wit
 | ----------- | ------------------------------ | ------------------------------------------------------------------------------------- |
 | Forge Teal  | Trust, growth, intelligence    | Bridges blue (credibility) and green (vitality); unclaimed in the social app category |
 | Spark Amber | Energy, warmth, transformation | Marks the forge moment — when the algorithm fires and a group is born                 |
-| Canvas      | Paper, approachability, calm   | Warmer than pure white; reduces screen fatigue for a Gen Z audience                   |
-| Ink         | Authority, readability         | Warm charcoal reads more naturally than pure black on Canvas                          |
-| Slate       | Neutrality, hierarchy          | Recedes behind Teal and Amber; creates text hierarchy without a new color             |
+| Canvas      | Porcelain, approachability, calm | Cleaner than cream; keeps long app sessions warm without turning beige              |
+| Ink         | Authority, readability         | Green-black charcoal reads more naturally than pure black on Canvas                   |
+| Slate       | Neutrality, hierarchy          | Recedes behind Teal and Amber; creates text hierarchy without a new hue               |
 
 ---
 
@@ -42,13 +59,13 @@ A single font family is used throughout. This is a non-negotiable rule — it en
 
 ### Font Family
 
-**Inter** — designed for screens, open apertures, tall x-height, legible at every size.
+**Plus Jakarta Sans** - a contemporary screen-first sans with generous geometry, strong headings, and a warmer social-product feel than a default system face.
 
 ```
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
 ```
 
-CSS token: `--font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;`
+CSS token: `--font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;`
 
 ### Type Scale
 
@@ -174,10 +191,10 @@ The landing page follows a deliberate dark-light alternation that creates scroll
 | ------------ | ------------------------------ | --------------------- |
 | Navbar       | Transparent → `#090909`        | Seamless              |
 | Hero         | `#090909` + animated nodes     | Immersive — the "wow" |
-| How It Works | Canvas `#FAFAF8`               | Clear, instructional  |
-| Features     | White `#FFFFFF`                | Scannable, energetic  |
+| How It Works | Canvas `#F7F8F4`               | Clear, instructional  |
+| Features     | Card `#FFFEFA`                 | Scannable, energetic  |
 | Algorithm    | `#090909` + interactive viz    | Proof of intelligence |
-| About        | Canvas `#FAFAF8` + White cards | Warm, human           |
+| About        | Canvas `#F7F8F4` + Card surfaces | Warm, human         |
 | CTA          | `#090909` + spotlight          | Dramatic, urgent      |
 | Footer       | `#090909`                      | Minimal, complete     |
 
@@ -290,7 +307,8 @@ SVG stroke-linecap: round
 ## 11. Imagery & Illustration
 
 - **Photography:** Avoid generic stock photos. If photos are used, they must show real groups of 3–5 people doing activities. Warm, natural light. No posed corporate imagery.
-- **Illustrations:** Use sparse, geometric, low-detail illustrations aligned with the node-graph motif. Teal and amber only.
+- **In-app spot illustrations:** Empty states, error states, 404 visuals, Forge success art, and home hero-right visuals follow `docs/ui-visual-assets-reference-for-chat.md`. Use the approved TeamForge dark 2D outline style there, including its exact prompt examples.
+- **Landing/decorative illustrations:** Use sparse, geometric, low-detail illustrations aligned with the node-graph motif. Teal and amber only.
 - **Generated images:** May be used for brand mockups and presentation materials. Must match the Canvas/Teal/Amber palette.
 - **Backgrounds:** Only the node-canvas animation is used as a background element. No gradient blobs, no abstract shapes, no decorative geometric fills.
 

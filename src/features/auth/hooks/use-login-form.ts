@@ -1,23 +1,40 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { loginSchema, type LoginValues } from "../schemas/auth-schemas";
+import { AuthCommands } from "@/features/auth/api/auth-commands";
+import { calculateLoginProgress } from "@/features/auth/lib/auth-form-progress";
+import { getEmailDomain } from "@/features/auth/lib/auth-telemetry";
+import {
+  type LoginValues,
+  loginSchema,
+} from "@/features/auth/schemas/auth-schemas";
+import { useOfflineActionGuard } from "@/shared/hooks/use-offline-action-guard";
+import { captureException, trackMutationOutcome } from "@/shared/lib/telemetry";
+import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 
 interface UseLoginFormOptions {
-  onSuccess?: () => void;
+  onSuccess?: () => void | Promise<void>;
   onProgress?: (progress: number) => void;
 }
 
-const FIELD_MIN_LENGTH = 3;
+async function runOptionalSuccessCallback(
+  callback?: () => void | Promise<void>,
+) {
+  if (callback) {
+    await callback();
+  }
+}
 
 export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [rootError, setRootError] = useState<string | null>(null);
+  const { guardOfflineAction, isOnline } = useOfflineActionGuard();
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
-    mode: "onBlur",
+    mode: "onChange",
+    reValidateMode: "onChange",
     defaultValues: {
       email: "",
       password: "",
@@ -28,38 +45,62 @@ export function useLoginForm({ onSuccess, onProgress }: UseLoginFormOptions) {
   const passwordValue = useWatch({ control: form.control, name: "password" });
 
   useEffect(() => {
-    if (!onProgress) return;
-    let p = 0;
-    if (emailValue && emailValue.length > FIELD_MIN_LENGTH) p += 0.5;
-    if (passwordValue && passwordValue.length > FIELD_MIN_LENGTH) p += 0.5;
-    onProgress(p);
+    onProgress?.(
+      calculateLoginProgress({
+        email: emailValue,
+        password: passwordValue,
+      }),
+    );
   }, [emailValue, passwordValue, onProgress]);
 
-  const onSubmit = useCallback(
-    async (values: LoginValues) => {
-      setRootError(null);
-      setLoading(true);
-      try {
-        // TODO: Integrate with apiClient from @/shared/api/api
-        await new Promise((r) => setTimeout(r, 1800));
-        console.log("Login submitted", values);
-        onSuccess?.();
-      } catch {
-        setRootError("Invalid email or password. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [onSuccess],
-  );
+  async function onSubmit(values: LoginValues) {
+    const emailDomain = getEmailDomain(values.email);
 
-  const togglePasswordVisibility = useCallback(() => {
+    setRootError(null);
+    if (
+      guardOfflineAction({
+        id: "auth-login-offline",
+        description: "Reconnect before signing in.",
+      })
+    ) {
+      setRootError("You are offline. Reconnect before signing in.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const result = await AuthCommands.loginWithEmail(values);
+      trackMutationOutcome(trackedMutationNames.authLoginEmail, "success", {
+        requestId: result.requestId,
+      });
+      await runOptionalSuccessCallback(onSuccess);
+      setLoading(false);
+    } catch (error) {
+      captureException(trackedMutationNames.authLoginEmail, error, {
+        emailDomain,
+      });
+      trackMutationOutcome(trackedMutationNames.authLoginEmail, "error", {
+        emailDomain,
+      });
+      setRootError(
+        AuthCommands.getAuthErrorMessage(
+          error,
+          "Invalid email or password. Please try again.",
+        ),
+      );
+      setLoading(false);
+    }
+  }
+
+  function togglePasswordVisibility() {
     setShowPassword((v) => !v);
-  }, []);
+  }
 
   return {
     form,
     loading,
+    isOnline,
     rootError,
     showPassword,
     onSubmit,

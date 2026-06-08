@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 interface UseSearchHeaderFadeOptions {
   headerHeight: number;
@@ -12,26 +12,34 @@ export function useSearchHeaderFade({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [opacity, setOpacity] = useState(1);
 
-  const handleScroll = useCallback(() => {
+  function handleScroll() {
     if (!scrollRef.current) return;
     const scrollTop = scrollRef.current.scrollTop;
     const fadeRange = headerHeight * fadeThreshold;
     const newOpacity = Math.max(0, 1 - scrollTop / fadeRange);
 
-    // Low-pass filter or threshold to prevent unnecessary state updates
-    if (
-      Math.abs(opacity - newOpacity) > 0.01 ||
-      newOpacity === 0 ||
-      newOpacity === 1
-    ) {
-      setOpacity(newOpacity);
-    }
-  }, [headerHeight, fadeThreshold, opacity]);
+    setOpacity((currentOpacity) => {
+      if (
+        Math.abs(currentOpacity - newOpacity) > 0.01 ||
+        newOpacity === 0 ||
+        newOpacity === 1
+      ) {
+        return newOpacity;
+      }
+
+      return currentOpacity;
+    });
+  }
+
+  function resetFade() {
+    setOpacity(1);
+  }
 
   return {
     scrollRef,
     opacity,
     handleScroll,
     isPointerEnabled: opacity > 0.05,
+    resetFade,
   };
 }

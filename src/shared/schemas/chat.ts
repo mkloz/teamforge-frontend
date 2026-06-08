@@ -1,9 +1,9 @@
 import { z } from "zod";
 import {
-  chatTypeSchema,
-  messageTypeSchema,
-  messageStatusSchema,
   attachmentTypeSchema,
+  chatTypeSchema,
+  messageStatusSchema,
+  messageTypeSchema,
 } from "./enums";
 import type { User } from "./user";
 import { userSchema } from "./user";
@@ -74,7 +74,11 @@ const messageData = {
   chatId: z.string(),
   senderId: z.string(),
   replyToId: z.string().nullable(),
-  pinnedInChatId: z.string().nullable(),
+  forwardedFromMessageId: z.string().nullable().optional(),
+  forwardedFromChatId: z.string().nullable().optional(),
+  forwardedFromSenderId: z.string().nullable().optional(),
+  forwardedFromSenderName: z.string().nullable().optional(),
+  pinnedInChatId: z.string().nullable().optional(),
 };
 
 export type Message = z.infer<z.ZodObject<typeof messageData>> & {
@@ -98,6 +102,7 @@ const chatData = {
   type: chatTypeSchema,
   createdAt: z.string().datetime(),
   groupId: z.string().nullable(),
+  notesOwnerId: z.string().nullable().optional(),
 };
 
 export type Chat = z.infer<z.ZodObject<typeof chatData>> & {
@@ -114,5 +119,7 @@ export const chatSchema: z.ZodSchema<Chat> = z.lazy(() =>
     participants: z.array(chatParticipantSchema).optional(),
     messages: z.array(messageSchema).optional(),
     pinnedMessages: z.array(messageSchema).optional(),
+    isMuted: z.boolean().optional(),
+    isBlocked: z.boolean().optional(),
   }),
 );

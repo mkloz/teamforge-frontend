@@ -1,0 +1,92 @@
+import { Link } from "@tanstack/react-router";
+import {
+  type AppNavigationItem,
+  isAppNavigationItemActive,
+} from "@/features/app-shell/lib/app-navigation";
+import { CountBadge } from "@/shared/components/ui/count-badge";
+import { cn } from "@/shared/lib/utils";
+
+interface TabButtonProps {
+  item: AppNavigationItem;
+  pathname: string;
+}
+
+export function TabButton({ item, pathname }: TabButtonProps) {
+  const ItemIcon = item.icon;
+  const isForge = item.id === "forge";
+  const active = isAppNavigationItemActive(item, pathname);
+  const badge = item.badge ?? 0;
+  const hasBadge = badge > 0;
+  const ariaLabel = hasBadge ? `${item.label}, ${badge} unread` : item.label;
+
+  const activeColorText = isForge
+    ? "text-accent stroke-[2.5]"
+    : "text-primary stroke-[2.5]";
+  const activeColorBg = isForge
+    ? "border-accent/25 bg-accent/15 dark:bg-accent/20"
+    : "border-primary/25 bg-primary/15 dark:bg-primary/20";
+  const inactiveColorText = "text-muted-foreground stroke-[1.5]";
+
+  return (
+    <Link
+      {...item.navigation}
+      aria-current={active ? "page" : undefined}
+      aria-label={ariaLabel}
+      className={cn(
+        "relative flex h-full min-w-0 items-center justify-center rounded-full",
+        "transition-colors duration-200 hover:bg-muted/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+      )}
+    >
+      <div
+        className={cn(
+          "relative z-10 flex size-full min-w-0 flex-col items-center justify-center gap-0.5",
+          "transition-transform duration-150 active:scale-90",
+        )}
+      >
+        <div
+          className={cn(
+            "relative flex items-center justify-center transition-[background-color,border-color,box-shadow,width,height] duration-300 ease-out",
+            active
+              ? `size-10 rounded-full border ${activeColorBg}`
+              : "size-8 rounded-full bg-transparent shadow-none",
+          )}
+        >
+          <ItemIcon
+            size={active ? 21 : 17}
+            aria-hidden="true"
+            className={cn(
+              "shrink-0 transition-colors duration-300",
+              active ? activeColorText : inactiveColorText,
+            )}
+          />
+          {hasBadge && (
+            <CountBadge
+              aria-hidden="true"
+              count={badge}
+              max={9}
+              size="sm"
+              tone="amber"
+              className={cn(
+                "absolute -top-1.5 -right-2 z-10 ring-2 ring-canvas",
+                badge > 9 ? "h-4.5 min-w-5 px-1" : "size-4.5 p-0",
+              )}
+            />
+          )}
+        </div>
+
+        <span
+          aria-hidden={active}
+          className={cn(
+            "max-w-full overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-muted-foreground text-xs leading-none tracking-tight",
+            "transition-[max-height,opacity,transform] duration-200 ease-out",
+            active
+              ? "max-h-0 -translate-y-0.5 opacity-0"
+              : "max-h-4 translate-y-0 opacity-100",
+          )}
+        >
+          {item.label}
+        </span>
+      </div>
+    </Link>
+  );
+}

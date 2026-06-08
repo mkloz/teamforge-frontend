@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+import type { ForgeMode } from "@/features/forge/lib/forge-contract";
 import { cn } from "@/shared/lib/utils";
 import type { Step } from "../hooks/use-forge-wizard";
 
@@ -5,79 +7,101 @@ interface ForgeProgressBarProps {
   step: Step;
   isPreForge: boolean;
   forgeResult: string;
+  forgeMode: ForgeMode;
   className?: string;
 }
 
 export function ForgeProgressBar({
+  forgeMode,
   step,
   isPreForge,
   className,
 }: ForgeProgressBarProps) {
   const preSteps = [
     { s: 1, label: "Activity" },
-    { s: 2, label: "Plan" },
-    { s: 3, label: "Group" },
+    { s: 2, label: "Template" },
+    { s: 3, label: "Plan" },
+    { s: 4, label: "Group" },
   ];
   const postSteps = [
-    { s: 4, label: "Result" },
-    { s: 5, label: "Identity" },
-    { s: 6, label: "Invite" },
+    { s: 5, label: "Result" },
+    { s: 6, label: "Identity" },
+    { s: 7, label: "Invite" },
+  ];
+  const manualPostSteps = [
+    { s: 6, label: "Identity" },
+    { s: 7, label: "Invite" },
   ];
 
-  const steps = isPreForge ? preSteps : postSteps;
-  const activeColor = isPreForge ? "bg-accent" : "bg-primary";
-  const activeTextColor = isPreForge ? "text-accent" : "text-primary";
+  const steps = isPreForge
+    ? preSteps
+    : forgeMode === "MANUAL"
+      ? manualPostSteps
+      : postSteps;
+
+  const accentColor = isPreForge
+    ? "var(--color-forge-teal)"
+    : "var(--color-forge-teal)";
 
   return (
-    <div className={cn("w-full", className)}>
-      <div className="flex items-end gap-1.5">
-        {steps.map(({ s, label }) => {
-          const isActive = s === step;
-          const isComplete = s < step;
+    <div
+      className={cn("flex w-full items-center gap-1.5", className)}
+      role="progressbar"
+      aria-label="Forge progress"
+    >
+      {steps.map(({ s, label }) => {
+        const isActive = s === step;
+        const isComplete = s < step;
 
-          return (
-            <div key={s} className={cn("flex flex-col gap-1.5 flex-1")}>
-              {/* Track bar */}
-              <div className="relative h-0.75 rounded-full overflow-hidden bg-muted">
-                <div
-                  className={cn(
-                    "absolute inset-0 rounded-full transition-colors duration-500 ease-out",
-                    s <= step ? activeColor : "bg-transparent",
-                  )}
-                />
-              </div>
+        return (
+          <div
+            key={s}
+            className={cn(
+              "relative flex h-6 flex-1 items-center justify-center overflow-hidden rounded-full transition-all duration-300",
+              isComplete
+                ? "bg-forge-teal/20"
+                : isActive
+                  ? "bg-forge-teal/12 ring-1 ring-forge-teal/40"
+                  : "bg-muted/60",
+            )}
+          >
+            {/* Fill bar for completed */}
+            {isComplete && (
+              <motion.span
+                className="absolute inset-0 rounded-full bg-forge-teal/20"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
+                style={{ transformOrigin: "left" }}
+              />
+            )}
 
-              {/* Step label + number */}
-              <div className="flex items-center gap-1">
-                <span
-                  className={cn(
-                    "text-micro font-bold tabular-nums transition-colors duration-500",
-                    isActive
-                      ? activeTextColor
-                      : isComplete
-                        ? "text-muted-foreground/60"
-                        : "text-muted-foreground/40",
-                  )}
-                >
-                  {s}.
-                </span>
-                <p
-                  className={cn(
-                    "text-micro font-semibold transition-colors duration-500",
-                    isActive
-                      ? activeTextColor
-                      : isComplete
-                        ? "text-muted-foreground/60"
-                        : "text-muted-foreground/40",
-                  )}
-                >
-                  {label}
-                </p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            {/* Active indicator dot */}
+            {isActive && (
+              <motion.span
+                layoutId="forge-active-pip"
+                className="absolute left-2 size-1.5 rounded-full bg-forge-teal"
+                transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+                style={{ background: accentColor }}
+              />
+            )}
+
+            {/* Label — shown only on active step; on mobile show step count */}
+            <span
+              className={cn(
+                "relative select-none truncate px-2 font-semibold leading-none transition-colors duration-200",
+                isActive
+                  ? "pl-5 text-forge-teal text-micro"
+                  : isComplete
+                    ? "text-forge-teal/60 text-micro"
+                    : "text-micro text-muted-foreground/40",
+              )}
+            >
+              {isActive ? label : isComplete ? "✓" : ""}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }

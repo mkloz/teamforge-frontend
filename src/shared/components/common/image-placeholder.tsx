@@ -1,52 +1,46 @@
 import { Image } from "lucide-react";
-import type React from "react";
-import type { FC } from "react";
+import type { HTMLAttributes } from "react";
 
 import { cn } from "@/shared/lib/utils";
 
-interface ImagePlaceholderProps extends React.HTMLAttributes<HTMLDivElement> {
+interface ImagePlaceholderProps extends HTMLAttributes<HTMLDivElement> {
   patternDensity?: "low" | "medium" | "high";
 }
 
-export const ImagePlaceholder: FC<ImagePlaceholderProps> = ({
+const densityClassName = {
+  high: "bg-[radial-gradient(circle,color-mix(in_srgb,var(--color-ink)_3%,transparent)_1px,transparent_2px)] bg-[position:0_0] bg-[length:12px_12px]",
+  low: "bg-[radial-gradient(circle,color-mix(in_srgb,var(--color-ink)_3%,transparent)_1px,transparent_2px)] bg-[position:0_0] bg-[length:30px_30px]",
+  medium:
+    "bg-[radial-gradient(circle,color-mix(in_srgb,var(--color-ink)_3%,transparent)_1px,transparent_2px)] bg-[position:0_0] bg-[length:20px_20px]",
+};
+
+export function ImagePlaceholder({
   className,
   patternDensity = "medium",
   ...props
-}) => {
-  const densityMap = {
-    low: 30,
-    medium: 20,
-    high: 12,
-  };
-
-  const density = densityMap[patternDensity];
-
+}: ImagePlaceholderProps) {
   return (
     <div
       className={cn(
-        "relative w-full h-full overflow-hidden rounded-md bg-muted flex items-center justify-center",
+        "relative flex size-full items-center justify-center overflow-hidden rounded-md bg-muted",
+        densityClassName[patternDensity],
         className,
       )}
-      style={{
-        backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.03) 1px, transparent ${2}px)`,
-        backgroundSize: `${density}px ${density}px`,
-        backgroundPosition: "0 0",
-      }}
       {...props}
     >
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-0 m-3 w-[15%] h-[15%] border-t-thick border-l-thick" />
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute top-0 left-0 m-3 size-1/6 border-t-thick border-l-thick" />
 
-        <div className="absolute top-0 right-0 m-3 w-[15%] h-[15%] border-t-thick border-r-thick" />
+        <div className="absolute top-0 right-0 m-3 size-1/6 border-t-thick border-r-thick" />
 
-        <div className="absolute bottom-0 left-0 m-3 w-[15%] h-[15%] border-b-thick border-l-thick" />
+        <div className="absolute bottom-0 left-0 m-3 size-1/6 border-b-thick border-l-thick" />
 
-        <div className="absolute bottom-0 right-0 m-3 w-[15%] h-[15%] border-b-thick border-r-thick" />
+        <div className="absolute right-0 bottom-0 m-3 size-1/6 border-r-thick border-b-thick" />
       </div>
 
-      <div className="relative flex items-center justify-center size-1/4 min-w-8 min-h-8 max-w-16 max-h-16 bg-background/50 rounded-full backdrop-blur-subtle">
+      <div className="relative flex size-1/4 max-h-16 min-h-8 min-w-8 max-w-16 items-center justify-center rounded-full bg-background/50 backdrop-blur-subtle">
         <Image className="text-border" />
       </div>
     </div>
   );
-};
+}

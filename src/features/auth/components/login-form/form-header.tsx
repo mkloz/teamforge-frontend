@@ -1,11 +1,11 @@
 export function FormHeader() {
   return (
-    <div className="flex flex-col items-center mb-6 sm:mb-8">
-      <h1 className="font-sans text-2xl sm:text-4xl font-extrabold text-ink leading-tight text-balance text-center tracking-tight">
+    <div className="mb-6 flex flex-col items-center sm:mb-8">
+      <h1 className="text-balance text-center font-extrabold font-sans text-2xl text-ink leading-tight tracking-tight sm:text-4xl">
         Welcome back! Ready for your next forge
         <span className="text-forge-teal">?</span>
       </h1>
-      <p className="font-sans text-xs sm:text-base text-slate-muted mt-1 sm:mt-2 text-center">
+      <p className="mt-1 text-center font-sans text-slate-muted text-xs sm:mt-2 sm:text-base">
         Jump back in and find your people.
       </p>
     </div>

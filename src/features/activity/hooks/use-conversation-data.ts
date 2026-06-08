@@ -1,12 +1,27 @@
-import { useMemo } from "react";
-import type { Group } from "../types/groups.types";
-import type { DirectChat } from "../types/direct-chats.types";
-import { getStatusText, formatTypingText } from "../lib/chat-utils";
-import { CURRENT_USER_ID } from "../data/mock-direct-chats";
+import type {
+  DirectChat,
+  Group,
+} from "@/features/activity/lib/activity-contract";
+import { getOtherChatParticipant } from "@/features/activity/lib/activity-projections";
+import {
+  formatTypingText,
+  getStatusText,
+} from "@/features/activity/lib/chat-utils";
+import { getGroupAvatarUrl } from "@/features/activity/lib/group-identity";
+import {
+  MY_NOTES_AVATAR_URL,
+  MY_NOTES_SUBTITLE,
+  MY_NOTES_TITLE,
+} from "@/features/activity/lib/my-notes-identity";
+import { buildProfileNavigation } from "@/features/profile/lib/profile-route";
+
+export type ConversationDetailsNavigation = ReturnType<
+  typeof buildProfileNavigation
+>;
 
 interface BaseProps {
   isTyping?: boolean;
-  typingUsers?: { fullName: string; avatar: string }[];
+  typingUsers?: { name: string; avatar: string | null }[];
 }
 
 export type UseConversationDataProps =
@@ -26,48 +41,22 @@ export function useConversationData({
   const group = isGroup ? data : null;
   const chat = !isGroup ? data : null;
 
-  const participant = useMemo(() => {
-    if (isGroup || !chat) return null;
-    const pData = chat.participants?.find((p) => p.userId !== CURRENT_USER_ID);
-    return pData?.user;
-  }, [isGroup, chat]);
+  const participant = isGroup || !chat ? null : getOtherChatParticipant(chat);
 
-  const headerProps = useMemo(() => {
-    if (isGroup && group) {
-      return {
-        title: group.name,
-        subtitle: `${group.members?.length || 0} members`,
-        avatarUrl: group.avatar,
-        secondaryAvatar: group.plan?.coverImage,
-      };
-    } else if (chat && participant) {
-      return {
-        title: participant.fullName,
-        subtitle: getStatusText(
-          participant.onlineStatus || "OFFLINE",
-          undefined, // lastSeen not in schema yet
-        ),
-        avatarUrl: participant.avatar,
-        onlineStatus: participant.onlineStatus,
-      };
-    }
-    return { title: "", avatarUrl: "" };
-  }, [isGroup, group, chat, participant]);
+  const headerProps = getConversationHeaderProps({
+    chat,
+    group,
+    isGroup,
+    participant,
+  });
 
-  const activeTypingUsers = useMemo(() => {
-    if (isGroup) return typingUsers;
-    if (isTyping && participant) {
-      return [
-        { fullName: participant.fullName, avatar: participant.avatar || "" },
-      ];
-    }
-    return [];
-  }, [isGroup, typingUsers, isTyping, participant]);
-
-  const typingText = useMemo(
-    () => formatTypingText(activeTypingUsers, isGroup),
-    [activeTypingUsers, isGroup],
-  );
+  const activeTypingUsers = getActiveTypingUsers({
+    isGroup,
+    isTyping,
+    participant,
+    typingUsers,
+  });
+  const typingText = formatTypingText(activeTypingUsers, isGroup);
 
   return {
     isGroup,
@@ -76,6 +65,86 @@ export function useConversationData({
     headerProps,
     activeTypingUsers,
     typingText,
-    isCompleted: isGroup && group?.status === "COMPLETED",
+    isCompleted: isGroup && group?.plan?.status === "COMPLETED",
   };
+}
+
+interface ConversationHeaderPropsInput {
+  chat: DirectChat | null;
+  group: Group | null;
+  isGroup: boolean;
+  participant: ReturnType<typeof getOtherChatParticipant> | null;
+}
+
+function getConversationHeaderProps({
+  chat,
+  group,
+  isGroup,
+  participant,
+}: ConversationHeaderPropsInput) {
+  if (isGroup && group) {
+    return {
+      title: group.name,
+      subtitle: getGroupPresenceText(group),
+      avatarUrl: getGroupAvatarUrl(group),
+    };
+  }
+
+  if (chat?.type === "NOTES") {
+    return {
+      title: MY_NOTES_TITLE,
+      subtitle: MY_NOTES_SUBTITLE,
+      avatarUrl: MY_NOTES_AVATAR_URL,
+    };
+  }
+
+  if (chat && participant) {
+    return {
+      title: participant.name,
+      subtitle: getStatusText(
+        participant.onlineStatus || "OFFLINE",
+        undefined, // lastSeen not in schema yet
+      ),
+      avatarUrl: participant.avatar,
+      onlineStatus: participant.onlineStatus,
+      detailsNavigation: buildProfileNavigation(participant.id),
+    };
+  }
+
+  return { title: "", avatarUrl: "" };
+}
+
+function getGroupPresenceText(group: Group) {
+  const members = group.members ?? [];
+  const memberCount = members.length;
+  const onlineCount = members.filter(
+    (member) => member.user?.onlineStatus === "ONLINE",
+  ).length;
+  const memberLabel = `${memberCount} ${memberCount === 1 ? "member" : "members"}`;
+
+  if (onlineCount === 0) {
+    return memberLabel;
+  }
+
+  return `${onlineCount} online · ${memberLabel}`;
+}
+
+interface ActiveTypingUsersInput {
+  isGroup: boolean;
+  isTyping?: boolean;
+  participant: ReturnType<typeof getOtherChatParticipant> | null;
+  typingUsers: { name: string; avatar: string | null }[];
+}
+
+function getActiveTypingUsers({
+  isGroup,
+  isTyping,
+  participant,
+  typingUsers,
+}: ActiveTypingUsersInput) {
+  if (isGroup) return typingUsers;
+  if (isTyping && participant) {
+    return [{ name: participant.name, avatar: participant.avatar ?? null }];
+  }
+  return [];
 }

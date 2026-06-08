@@ -1,9 +1,10 @@
 import { useMemo } from "react";
-import type { UnifiedMessage } from "../types/chat.types";
+
+import type { UnifiedMessage } from "@/features/activity/lib/activity-contract";
 import {
   shouldShowDateSeparator,
   shouldShowSenderAnchor,
-} from "../lib/chat-utils";
+} from "@/features/activity/lib/chat-utils";
 
 export interface SenderGroup {
   senderId: string;

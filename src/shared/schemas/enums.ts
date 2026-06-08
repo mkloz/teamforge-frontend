@@ -73,13 +73,35 @@ export const planStatusSchema = z.enum([
 ]);
 export type PlanStatus = z.infer<typeof planStatusSchema>;
 
+export const planProposalFieldSchema = z.enum([
+  "TITLE",
+  "DESCRIPTION",
+  "DATE_TIME",
+  "LOCATION",
+  "COST",
+  "CATEGORY",
+]);
+export type PlanProposalField = z.infer<typeof planProposalFieldSchema>;
+
+export const planProposalStatusSchema = z.enum([
+  "PENDING",
+  "APPROVED",
+  "REJECTED",
+  "WITHDRAWN",
+  "CANCELLED",
+]);
+export type PlanProposalStatus = z.infer<typeof planProposalStatusSchema>;
+
+export const planProposalVoteSchema = z.enum(["APPROVE", "REJECT"]);
+export type PlanProposalVote = z.infer<typeof planProposalVoteSchema>;
+
 export const locationModeSchema = z.enum(["IN_PERSON", "ONLINE", "TBD"]);
 export type LocationMode = z.infer<typeof locationModeSchema>;
 
 export const costTypeSchema = z.enum(["FREE", "PAID"]);
 export type CostType = z.infer<typeof costTypeSchema>;
 
-export const chatTypeSchema = z.enum(["GROUP", "PRIVATE"]);
+export const chatTypeSchema = z.enum(["GROUP", "PRIVATE", "NOTES"]);
 export type ChatType = z.infer<typeof chatTypeSchema>;
 
 export const messageTypeSchema = z.enum([
@@ -101,7 +123,13 @@ export const messageStatusSchema = z.enum([
 ]);
 export type MessageStatus = z.infer<typeof messageStatusSchema>;
 
-export const attachmentTypeSchema = z.enum(["IMAGE", "VIDEO", "AUDIO", "FILE"]);
+export const attachmentTypeSchema = z.enum([
+  "IMAGE",
+  "VIDEO",
+  "AUDIO",
+  "FILE",
+  "GIF",
+]);
 export type AttachmentType = z.infer<typeof attachmentTypeSchema>;
 
 export const friendshipStatusSchema = z.enum([

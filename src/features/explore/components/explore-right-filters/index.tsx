@@ -1,49 +1,65 @@
-import { Filter } from "lucide-react";
-import { CategoryFilter } from "../category-filter";
+import { ChevronDown, Filter } from "lucide-react";
+import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
+import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
+import { CategoryFilter } from "./category-filter";
+import { DateRangeFilter } from "./date-range-filter";
 import { LocationFilter } from "./location-filter";
 import { SizeFilter } from "./size-filter";
-import { AccessFilter } from "./access-filter";
+import { TimeFilter } from "./time-filter";
 
 interface ExploreRightFiltersProps {
   hideHeader?: boolean;
 }
 
 export function ExploreRightFilters({ hideHeader }: ExploreRightFiltersProps) {
+  const { sizeRange, startsAfter, startsBefore } = useExploreRouteState();
+  const hasMoreOptionFilters =
+    Boolean(startsAfter || startsBefore) ||
+    sizeRange[0] !== DEFAULT_FILTERS.sizeRange[0] ||
+    sizeRange[1] !== DEFAULT_FILTERS.sizeRange[1];
+
   return (
     <aside className="flex flex-col gap-4">
       {!hideHeader && (
         <div>
-          <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2 mb-1">
-            <Filter className="size-4" />
-            Refine Search
+          <h3 className="mb-1 flex items-center gap-2 font-bold text-foreground text-sm">
+            <Filter className="size-4" aria-hidden="true" />
+            Refine
           </h3>
-          <p className="text-xs text-muted-foreground/80 leading-relaxed font-medium pr-4">
-            Dial in exactly what you're looking for. The algorithm will adapt
-            instantly.
+          <p className="pr-4 font-medium text-muted-foreground text-xs leading-relaxed">
+            Narrow the list once you know what kind of opening you want.
           </p>
         </div>
       )}
 
-      <div className="flex flex-col gap-4 w-full">
-        {/* Categories */}
-        <section className="space-y-2">
-          <h4 className="text-sm font-bold text-foreground tracking-tight pl-1">
-            Categories
+      <div className="flex w-full flex-col gap-4">
+        <section className="flex flex-col gap-1.5">
+          <h4 className="pl-1 font-bold text-foreground text-sm tracking-tight">
+            Activity
           </h4>
           <CategoryFilter />
         </section>
 
-        <div className="h-px w-full bg-border/20" />
-
         <LocationFilter />
+        <TimeFilter />
 
-        <div className="h-px w-full bg-border/20" />
+        <details
+          className="group flex flex-col gap-3"
+          open={hasMoreOptionFilters}
+        >
+          <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg border border-border/60 bg-card/35 px-3 py-2 font-bold text-muted-foreground text-xs transition-colors hover:border-border hover:bg-muted/25 hover:text-foreground [&::-webkit-details-marker]:hidden">
+            <span>More options</span>
+            <ChevronDown
+              className="size-3.5 text-muted-foreground transition-transform group-open:rotate-180"
+              aria-hidden="true"
+            />
+          </summary>
 
-        <SizeFilter />
-
-        <div className="h-px w-full bg-border/20" />
-
-        <AccessFilter />
+          <div className="flex flex-col gap-4 pt-0.5">
+            <DateRangeFilter />
+            <SizeFilter />
+          </div>
+        </details>
       </div>
     </aside>
   );

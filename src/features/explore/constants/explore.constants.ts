@@ -1,12 +1,9 @@
-import { Activity, Clock, Target } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import type { SortOption } from "../types/explore.types";
-
-export const SORTS: { id: SortOption; label: string; icon: LucideIcon }[] = [
-  { id: "MATCH", label: "Top Match", icon: Target },
-  { id: "SOONEST", label: "Soonest", icon: Clock },
-  { id: "NEWEST", label: "Newest", icon: Activity },
-];
+import type { ExploreFilters } from "@/features/explore/schemas/explore-filters.schema";
+import {
+  EXPLORE_DEFAULT_DISTANCE_KM,
+  EXPLORE_MAX_DISTANCE_KM,
+  EXPLORE_MIN_DISTANCE_KM,
+} from "@/shared/api/api-constraints";
 
 export const CATEGORIES = [
   { id: "ALL", label: "All" },
@@ -25,11 +22,13 @@ export const CATEGORIES = [
 ] as const;
 
 export const FILTER_BOUNDARIES = {
-  distance: { min: 2, max: 50, default: 15 },
-  size: { min: 2, max: 20, defaultMin: 3, defaultMax: 8 },
+  distance: {
+    min: EXPLORE_MIN_DISTANCE_KM,
+    max: EXPLORE_MAX_DISTANCE_KM,
+    default: EXPLORE_DEFAULT_DISTANCE_KM,
+  },
+  size: { min: 2, max: 8, defaultMin: 3, defaultMax: 8 },
 } as const;
-
-import type { ExploreFilters } from "../types/explore.types";
 
 export const DEFAULT_FILTERS: ExploreFilters = {
   selectedCategories: ["ALL"],
@@ -41,4 +40,7 @@ export const DEFAULT_FILTERS: ExploreFilters = {
   locationMode: "ALL",
   access: "ALL",
   sortBy: "MATCH",
+  timeWindow: "ALL",
+  startsAfter: null,
+  startsBefore: null,
 };

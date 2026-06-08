@@ -1,6 +1,15 @@
-import { cn } from "@/shared/lib/utils";
 import { useReducedMotion, useScroll, useSpring } from "framer-motion";
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useEffectEvent, useRef } from "react";
+import { useEventListener } from "usehooks-ts";
+import { getBrowserDevicePixelRatio } from "@/shared/lib/browser-environment";
+import { observeElementVisibility } from "@/shared/lib/browser-observers";
+import type { ScheduledAnimationFrameHandle } from "@/shared/lib/browser-scheduling";
+import {
+  cancelScheduledAnimationFrame,
+  getCurrentTimeMs,
+  scheduleAnimationFrame,
+} from "@/shared/lib/browser-scheduling";
+import { cn } from "@/shared/lib/utils";
 
 interface ParticlesProps {
   className?: string;
@@ -25,36 +34,76 @@ interface Circle {
   magnetism: number;
 }
 
-function hexToRgb(hex: string): number[] {
+function hexToRgb(hex: string): number[] | null {
   hex = hex.replace("#", "");
+  if (hex.length !== 6) {
+    return null;
+  }
+
   const hexInt = parseInt(hex, 16);
+  if (Number.isNaN(hexInt)) {
+    return null;
+  }
+
   const red = (hexInt >> 16) & 255;
   const green = (hexInt >> 8) & 255;
   const blue = hexInt & 255;
   return [red, green, blue];
 }
 
-export const Particles: React.FC<ParticlesProps> = ({
+function colorToRgbChannels(color: string | undefined): string | null {
+  const normalizedColor = color?.trim();
+  if (!normalizedColor) {
+    return null;
+  }
+
+  if (normalizedColor.startsWith("#")) {
+    return hexToRgb(normalizedColor)?.join(",") ?? null;
+  }
+
+  const rgbMatch = normalizedColor.match(/^rgba?\(([^)]+)\)$/);
+  if (!rgbMatch) {
+    return null;
+  }
+
+  const channels = rgbMatch[1]
+    .split(",")
+    .slice(0, 3)
+    .map((channel) => Number.parseFloat(channel.trim()));
+
+  if (channels.some((channel) => Number.isNaN(channel))) {
+    return null;
+  }
+
+  return channels.map((channel) => Math.round(channel)).join(",");
+}
+
+function resolveParticleRgb(color: string | undefined, source: Element | null) {
+  const tokenColor = source
+    ? getComputedStyle(source).getPropertyValue("--primary")
+    : undefined;
+
+  return colorToRgbChannels(color) ?? colorToRgbChannels(tokenColor) ?? "0,0,0";
+}
+
+export function Particles({
   className = "",
   quantity = 80,
-  color = "#0D9488",
+  color,
   vx = 0,
   vy = 0,
   lineOpacity = 0.28,
   lineDistance = 220,
-}) => {
+}: ParticlesProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
   const context = useRef<CanvasRenderingContext2D | null>(null);
   const circles = useRef<Circle[]>([]);
   const canvasSize = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
-  const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1;
-  const animationFrameId = useRef<number | null>(null);
+  const animationFrameId = useRef<ScheduledAnimationFrameHandle | null>(null);
   const isVisible = useRef<boolean>(true);
   const lastTime = useRef<number>(0);
-
-  // Caching RGBA base string to avoid GC pressure
-  const rgbBase = useMemo(() => hexToRgb(color).join(","), [color]);
+  const rgbBase = useRef<string>("0,0,0");
 
   // Framer Motion scroll tracking
   const { scrollYProgress } = useScroll();
@@ -98,6 +147,8 @@ export const Particles: React.FC<ParticlesProps> = ({
       circles.current.length = 0;
       const w = canvasContainerRef.current.clientWidth;
       const h = canvasContainerRef.current.clientHeight;
+      const dpr = getBrowserDevicePixelRatio();
+
       if (w === 0 || h === 0) return;
 
       canvasSize.current.w = w;
@@ -106,15 +157,15 @@ export const Particles: React.FC<ParticlesProps> = ({
       canvasRef.current.height = h * dpr;
       canvasRef.current.style.width = `${w}px`;
       canvasRef.current.style.height = `${h}px`;
-      context.current.scale(dpr, dpr);
+      context.current.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       for (let i = 0; i < quantity; i++) {
         circles.current.push(circleParams());
       }
     }
-  }, [quantity, dpr, circleParams]);
+  }, [circleParams, quantity]);
 
-  const drawLines = useCallback(() => {
+  const drawLines = useEffectEvent(() => {
     if (!context.current || circles.current.length === 0) return;
     const ctx = context.current;
     const points = circles.current;
@@ -145,7 +196,7 @@ export const Particles: React.FC<ParticlesProps> = ({
 
           ctx.beginPath();
           ctx.lineWidth = 1.0;
-          ctx.strokeStyle = `rgba(${rgbBase}, ${alphaValue.toFixed(2)})`;
+          ctx.strokeStyle = `rgba(${rgbBase.current}, ${alphaValue.toFixed(2)})`;
           ctx.moveTo(xi, yi);
           ctx.lineTo(xj, yj);
           ctx.stroke();
@@ -153,9 +204,9 @@ export const Particles: React.FC<ParticlesProps> = ({
         }
       }
     }
-  }, [lineDistance, lineOpacity, rgbBase]);
+  });
 
-  const updateParticles = useCallback(() => {
+  const updateParticles = useEffectEvent(() => {
     if (!context.current || !isVisible.current) return;
     const ctx = context.current;
     ctx.clearRect(0, 0, canvasSize.current.w, canvasSize.current.h);
@@ -185,34 +236,32 @@ export const Particles: React.FC<ParticlesProps> = ({
 
       ctx.beginPath();
       ctx.arc(totalX, totalY, particle.size, 0, 2 * Math.PI);
-      ctx.fillStyle = `rgba(${rgbBase},${particle.alpha.toFixed(2)})`;
+      ctx.fillStyle = `rgba(${rgbBase.current},${particle.alpha.toFixed(2)})`;
       ctx.fill();
     });
 
     drawLines();
-  }, [vx, vy, rgbBase, drawLines]);
+  });
 
-  const animate = useCallback(
-    (time: number) => {
-      const run = (currentTime: number) => {
-        if (!isVisible.current) {
-          animationFrameId.current = window.requestAnimationFrame(run);
-          return;
-        }
+  const animate = useEffectEvent((time: number) => {
+    const run = (currentTime: number) => {
+      if (!isVisible.current) {
+        animationFrameId.current = scheduleAnimationFrame(run);
+        return;
+      }
 
-        if (currentTime - lastTime.current < 20) {
-          animationFrameId.current = window.requestAnimationFrame(run);
-          return;
-        }
+      if (currentTime - lastTime.current < 20) {
+        animationFrameId.current = scheduleAnimationFrame(run);
+        return;
+      }
 
-        lastTime.current = currentTime;
-        updateParticles();
-        animationFrameId.current = window.requestAnimationFrame(run);
-      };
-      run(time);
-    },
-    [updateParticles],
-  );
+      lastTime.current = currentTime;
+      updateParticles();
+      animationFrameId.current = scheduleAnimationFrame(run);
+    };
+
+    run(time);
+  });
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -222,43 +271,42 @@ export const Particles: React.FC<ParticlesProps> = ({
       });
     }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isVisible.current = entry.isIntersecting;
+    rgbBase.current = resolveParticleRgb(color, canvasContainerRef.current);
+
+    const disconnectVisibilityObserver = observeElementVisibility(
+      canvasContainerRef.current,
+      (nextIsVisible) => {
+        isVisible.current = nextIsVisible;
       },
       { threshold: 0.05 },
     );
 
-    if (canvasContainerRef.current) {
-      observer.observe(canvasContainerRef.current);
-    }
-
     resizeCanvas();
     if (!shouldReduceMotion) {
-      animate(performance.now());
+      animate(getCurrentTimeMs());
     } else {
       updateParticles();
     }
 
-    window.addEventListener("resize", resizeCanvas);
     return () => {
-      window.removeEventListener("resize", resizeCanvas);
-      observer.disconnect();
+      disconnectVisibilityObserver();
       if (animationFrameId.current) {
-        window.cancelAnimationFrame(animationFrameId.current);
+        cancelScheduledAnimationFrame(animationFrameId.current);
       }
     };
-  }, [resizeCanvas, animate, shouldReduceMotion, updateParticles]);
+  }, [color, resizeCanvas, shouldReduceMotion]);
+
+  useEventListener("resize", resizeCanvas);
 
   return (
     <div
       className={cn(
-        "absolute inset-0 h-full w-full pointer-events-none z-0",
+        "pointer-events-none absolute inset-0 z-0 size-full",
         className,
       )}
       ref={canvasContainerRef}
     >
-      <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
+      <canvas ref={canvasRef} className="absolute inset-0 size-full" />
     </div>
   );
-};
+}

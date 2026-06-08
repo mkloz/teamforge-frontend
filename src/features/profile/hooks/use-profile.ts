@@ -1,41 +1,31 @@
-import { useState, useEffect } from "react";
-import type { UserProfile } from "../types/profile.types";
-import { MOCK_PROFILE } from "../data/mock-profile";
+import { useQuery } from "@tanstack/react-query";
+import { publicProfileQueryOptions } from "@/features/profile/api/profile-query-options";
+import { useCurrentUserQuery } from "@/shared/api/current-user-query";
+import type { User } from "@/shared/schemas";
 
-/**
- * Custom hook to manage user profile data.
- * Currently returns mock data, but is structured to easily integrate
- * with future API or global state management (e.g., TanStack Query).
- */
-export function useProfile(userId?: string) {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+export function useProfile() {
+  const currentUserQuery = useCurrentUserQuery();
 
-  useEffect(() => {
-    // Simulate API fetch delay
-    const fetchProfile = async () => {
-      try {
-        setIsLoading(true);
-        // Simulate a tiny delay for realism
-        await new Promise((resolve) => setTimeout(resolve, 300));
+  return {
+    profile: currentUserQuery.data ?? null,
+    isLoading: currentUserQuery.isLoading,
+    error: currentUserQuery.error,
+    refetch: currentUserQuery.refetch,
+  };
+}
 
-        // In the future, this would be:
-        // const response = await fetch(`/api/profile/${userId}`);
-        // setProfile(await response.json());
+export function usePublicProfile(userId: string) {
+  const publicProfileQuery = useQuery({
+    ...publicProfileQueryOptions(userId),
+    enabled: Boolean(userId),
+  });
 
-        setProfile(MOCK_PROFILE);
-        setIsLoading(false);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err : new Error("Failed to fetch profile"),
-        );
-        setIsLoading(false);
-      }
-    };
+  const profile: User | null = publicProfileQuery.data ?? null;
 
-    fetchProfile();
-  }, [userId]);
-
-  return { profile, isLoading, error };
+  return {
+    profile,
+    isLoading: publicProfileQuery.isLoading,
+    error: publicProfileQuery.error,
+    refetch: publicProfileQuery.refetch,
+  };
 }

@@ -47,11 +47,14 @@ This document provides detailed specifications for each core feature of TeamForg
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
-| `AuthPage` | `features/auth/auth-page.tsx` | Container for login/register views |
-| `LoginForm` | `features/auth/components/` | Email/password login |
-| `RegisterForm` | `features/auth/components/` | Multi-step registration |
-| `OtpInput` | `features/auth/components/` | 6-digit OTP verification |
-| `GoogleButton` | `features/auth/components/` | Google OAuth trigger |
+| `LoginPage` | `features/auth/login-page.tsx` | Email/password and Google login route |
+| `RegisterPage` | `features/auth/register-page.tsx` | Multi-step registration route |
+| `ForgotPasswordPage` | `features/auth/forgot-password-page.tsx` | Password reset request route |
+| `ResetPasswordPage` | `features/auth/reset-password-page.tsx` | Token-backed password reset route |
+| `ActivateAccountPage` | `features/auth/activate-account-page.tsx` | Account activation route |
+| `LoginForm` | `features/auth/components/login-form/` | Email/password login |
+| `RegisterForm` | `features/auth/components/register-form/` | Credentials, OTP, and profile registration steps |
+| `GoogleAuthButton` | `features/auth/components/login-form/google-auth-button.tsx` | Google OAuth trigger |
 
 #### Data Requirements
 
@@ -406,12 +409,12 @@ FORMING → PENDING → ACTIVE → PLANNING → COMPLETED
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
-| `GroupDetailView` | `features/groups/components/` | Group info panel |
-| `MemberList` | `features/groups/components/` | Member roster |
-| `PlanCard` | `features/groups/components/` | Plan summary |
-| `PlanProposalForm` | `features/groups/components/` | Create proposal |
-| `ProposalVoteCard` | `features/groups/components/` | Vote interface |
-| `RatingDialog` | `features/groups/components/` | Post-activity rating |
+| `GroupDetailView` | `features/activity/components/groups/group-detail-panel/` | Group info panel |
+| `MemberList` | `features/activity/components/groups/group-detail-panel/` | Member roster |
+| `PlanCard` | `features/activity/components/groups/group-detail-panel/` | Plan summary |
+| `PlanProposalForm` | `features/activity/components/chat/proposal-message/` | Create proposal / proposal messaging UI |
+| `ProposalVoteCard` | `features/activity/components/chat/proposal-message/` | Vote interface |
+| `RatingDialog` | `features/activity/components/groups/group-detail-panel/` | Post-activity rating surface |
 
 ---
 
@@ -494,6 +497,7 @@ FORMING → PENDING → ACTIVE → PLANNING → COMPLETED
 - As a user, I can update my profile information
 - As a user, I can change my password
 - As a user, I can manage notification preferences
+- As a user, I can review and unblock people I have blocked
 - As a user, I can delete my account
 - As a user, I can log out
 
@@ -501,11 +505,11 @@ FORMING → PENDING → ACTIVE → PLANNING → COMPLETED
 
 | Section | Options |
 |---------|---------|
-| **Profile** | Name, bio, avatar, location |
-| **Account** | Email, password, linked accounts |
-| **Notifications** | Push, email, in-app preferences |
-| **Privacy** | Profile visibility, search status |
-| **Data** | Export data, delete account |
+| **Account** | Name, bio, avatar, location, profile summary |
+| **Matching** | Personality and interests shortcuts |
+| **Security** | Password recovery and active sessions |
+| **Safety** | Blocked users and unblock actions |
+| **Notifications** | In-app and email preferences |
 
 #### Components
 

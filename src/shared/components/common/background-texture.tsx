@@ -8,17 +8,7 @@ export function BackgroundTexture() {
       className="pointer-events-none absolute inset-0 overflow-hidden bg-canvas"
       aria-hidden="true"
     >
-      {/* Ultra-subtle 32px Dotted Grid - Slate color for lower contrast */}
-      <div
-        className="absolute inset-0 opacity-[0.012]"
-        style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, #cbd5e1 1px, transparent 0)`,
-          backgroundSize: "32px 32px",
-          WebkitMaskImage:
-            "radial-gradient(circle, transparent 30%, black 80%)",
-          maskImage: "radial-gradient(circle, transparent 30%, black 80%)",
-        }}
-      />
+      <div className="mask-[radial-gradient(circle,transparent_30%,black_80%)] absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,color-mix(in_srgb,var(--color-slate-muted)_32%,transparent)_1px,transparent_0)] bg-size-[32px_32px] opacity-5 [-webkit-mask-image:radial-gradient(circle,transparent_30%,black_80%)]" />
     </div>
   );
 }

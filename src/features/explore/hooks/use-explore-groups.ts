@@ -1,60 +1,44 @@
-import { useQuery } from "@tanstack/react-query";
-import { useExploreStore } from "../store/use-explore-store";
-import { MOCK_GROUPS } from "../data/mock-explore";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+
+import { ExploreQueryFactory } from "@/features/explore/api/explore-query-factory";
+import { DEFAULT_FILTERS } from "@/features/explore/constants/explore.constants";
+import { useExploreRouteState } from "@/features/explore/hooks/use-explore-route-state";
+import { useDebouncedValue } from "@/shared/hooks/use-debounced-value";
 
 export function useExploreGroups() {
-  const store = useExploreStore();
-
-  // In a real app, this would be an API call:
-  // const { data, isLoading } = useQuery({
-  //   queryKey: ['groups', store.selectedCategories, store.sortBy, ...],
-  //   queryFn: () => apiClient.get('groups', { searchParams: { ... } }).json<GroupPreview[]>()
-  // });
-
-  return useQuery({
-    queryKey: [
-      "explore-groups",
-      store.selectedCategories,
-      store.sizeRange,
-      store.distance,
-      store.locationMode,
-      store.access,
-      store.sortBy,
+  const state = useExploreRouteState();
+  const filters = useMemo(
+    () => ({
+      selectedCategories: state.selectedCategories,
+      sizeRange: state.sizeRange,
+      locationMode: state.locationMode,
+      distance:
+        state.locationMode === "ONLINE"
+          ? DEFAULT_FILTERS.distance
+          : state.distance,
+      access: state.access,
+      sortBy: state.sortBy,
+      timeWindow: state.timeWindow,
+      startsAfter: state.startsAfter,
+      startsBefore: state.startsBefore,
+    }),
+    [
+      state.access,
+      state.distance,
+      state.locationMode,
+      state.selectedCategories,
+      state.sizeRange,
+      state.sortBy,
+      state.timeWindow,
+      state.startsAfter,
+      state.startsBefore,
     ],
-    queryFn: async () => {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 800));
+  );
+  const debouncedFilters = useDebouncedValue(filters, 250);
+  const debouncedSearchQuery = useDebouncedValue(state.searchQuery, 300);
 
-      // Mock filtering logic
-      return MOCK_GROUPS.filter((group) => {
-        const plan = group.plan;
-        const activity = group.activity;
-
-        // Category filter
-        const groupCategory = plan?.category || "OTHER";
-        const categoryMatch =
-          store.selectedCategories.includes("ALL") ||
-          store.selectedCategories.includes(groupCategory);
-
-        // Location mode filter
-        const locationMatch =
-          store.locationMode === "ALL" ||
-          plan?.locationMode === store.locationMode;
-
-        // Access filter
-        const groupAccess = activity?.access || "OPEN";
-        const accessMatch =
-          store.access === "ALL" || groupAccess === store.access;
-
-        // Size filter
-        const currentSize = group.members?.length || 0;
-        const capacity = group.maxMembers || 0;
-        const sizeMatch =
-          currentSize >= store.sizeRange[0] && capacity <= store.sizeRange[1];
-
-        return categoryMatch && locationMatch && accessMatch && sizeMatch;
-      });
-    },
-    staleTime: 5 * 60 * 1000,
-  });
+  return useInfiniteQuery(
+    ExploreQueryFactory.groups(debouncedFilters, debouncedSearchQuery),
+  );
 }

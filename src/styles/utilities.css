@@ -1,51 +1,178 @@
 @layer utilities {
-  /* Thin scrollbar for all scrollable containers */
-  .scrollbar-thin {
-    scrollbar-width: thin;
-    scrollbar-color: var(--muted-foreground) transparent;
-  }
-
   /* Hide scrollbar but keep functionality */
   .scrollbar-hide {
+    /* biome-ignore lint/complexity/noImportantStyles: This utility must override browser scrollbar defaults wherever it is applied. */
     -ms-overflow-style: none !important;
+    /* biome-ignore lint/complexity/noImportantStyles: This utility must override browser scrollbar defaults wherever it is applied. */
     scrollbar-width: none !important;
   }
   .scrollbar-hide::-webkit-scrollbar {
+    /* biome-ignore lint/complexity/noImportantStyles: This utility must hide WebKit scrollbars even inside component-scoped styles. */
     display: none !important;
   }
 
-  .disable-transitions * {
-    transition: none !important;
+  .profile-compact-banner-shown {
+    transform: translate3d(0, 0, 0);
   }
 
-  /* Flagship Button Utilities */
-  .btn-hull {
-    @apply relative border border-white/10 shadow-[0_4px_14px_0_rgba(13,148,136,0.39)] ring-1 ring-forge-teal dark:shadow-none;
+  .profile-compact-banner-hidden {
+    transform: translate3d(0, -100%, 0);
   }
 
-  /* Inner light spill for that premium 'glass' inset look */
-  .btn-light-spill::before {
-    content: "";
-    @apply pointer-events-none absolute inset-px rounded-[inherit] border-t border-white/30 border-x;
+  .public-forge-theme {
+    --background: #0b0f0e;
+    --foreground: #f2f5f1;
+    --ink: #f2f5f1;
+    --slate-muted: #a4b2ac;
+    --canvas: #111716;
+    --card: #18201e;
+    --card-foreground: #f2f5f1;
+    --popover: #18201e;
+    --popover-foreground: #f2f5f1;
+    --primary: #0f766e;
+    --primary-foreground: #ffffff;
+    --secondary: color-mix(in srgb, var(--primary) 10%, transparent);
+    --secondary-foreground: #0d9488;
+    --muted: #202725;
+    --muted-foreground: #a4b2ac;
+    --accent: #ffbf00;
+    --accent-foreground: #071413;
+    --border: color-mix(in srgb, var(--foreground) 11%, transparent);
+    --input: #202927;
+    --ring: #0d9488;
+    --color-hero-bg: #090909;
+    --color-forge-teal: #0d9488;
+    --color-spark-amber: #ffbf00;
+    --color-forge-deep-panel: #0a1212;
+    --color-forge-deep-surface: #111111;
+    --color-button-primary-border: var(--primary);
+    --color-button-secondary-border: var(--accent);
+    --button-shadow-base: color-mix(in srgb, #090909 88%, #f2f5f1);
+    --button-shadow-inverse: color-mix(in srgb, #f2f5f1 88%, #090909);
+    --shadow-button-primary: 0 4px 0
+      color-mix(in srgb, var(--primary) 62%, var(--button-shadow-base));
+    --shadow-button-secondary: 0 4px 0
+      color-mix(in srgb, var(--accent) 70%, var(--button-shadow-base));
+    --shadow-button-outline: 0 4px 0 var(--button-shadow-inverse);
+    --shadow-button-outline-dark: 0 4px 0 var(--button-shadow-inverse);
+  }
+}
+
+@utility main-action-grid {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+@utility responsive-action-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+}
+
+@utility responsive-card-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+}
+
+@utility landing-story-scroll {
+  height: 300vh;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.landing-scroll-snap {
+    scroll-padding-top: 4rem;
+    scroll-snap-type: y proximity;
   }
 
-  .btn-sweep-container {
-    @apply relative overflow-hidden;
+  html.landing-scroll-snap.landing-programmatic-scroll {
+    scroll-snap-type: none;
   }
 
-  .btn-sweep-container::after {
-    content: "";
-    @apply pointer-events-none absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/20 to-transparent transition-transform duration-500;
+  html.landing-scroll-snap [data-landing-snap-section] {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
   }
+}
 
-  .btn-sweep-container:hover::after {
-    @apply translate-x-full;
+@media (prefers-reduced-motion: reduce) {
+  html.landing-scroll-snap {
+    scroll-snap-type: none;
   }
+}
 
-  /* 3D Press effect for Spark Variant */
-  .btn-3d {
-    @apply shadow-[0_8px_0_#D97706,0_15px_25px_rgba(245,158,11,0.35)] transition-all duration-150 active:translate-y-1.5 active:shadow-[0_2px_0_#D97706,0_5px_10px_rgba(245,158,11,0.2)];
-  }
+@utility type-signature-label {
+  font-size: 0.625rem;
+}
+
+@utility legal-section-containment {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 14rem;
+}
+
+@utility activity-list-row-containment {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 4.75rem;
+}
+
+@utility profile-deferred-containment {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 38rem;
+}
+
+@utility bg-forge-teal-readable {
+  background-color: color-mix(
+    in srgb,
+    var(--color-forge-teal) 85%,
+    var(--color-forge-deep-surface)
+  );
+}
+
+@utility loading-canvas-glow {
+  background:
+    radial-gradient(
+      circle at 50% 44%,
+      color-mix(in srgb, var(--color-forge-teal) 10%, transparent),
+      transparent 28%
+    ),
+    var(--color-canvas);
+}
+
+@utility download-hero-grid {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-forge-teal) 12%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-forge-teal) 12%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 1.75rem 1.75rem;
+  mask-image: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.9),
+    rgb(0 0 0 / 0.55) 54%,
+    transparent
+  );
+  opacity: 0.42;
+}
+
+@utility pb-safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);
+}
+
+@utility top-safe-banner {
+  top: max(env(safe-area-inset-top), 0.75rem);
+}
+
+@utility pb-app-bottom-nav {
+  padding-bottom: calc(
+    4.25rem +
+    max(env(safe-area-inset-bottom), 0.75rem) +
+    0.75rem
+  );
+}
+
+@utility bottom-app-bottom-nav {
+  bottom: calc(4.25rem + max(env(safe-area-inset-bottom), 0.75rem) + 0.5rem);
 }
 
 /* Custom scrollbar for webkit browsers - theme responsive */
@@ -70,11 +197,11 @@
 
 /* Dark mode adjustments for scrollbar */
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--color-canvas) 10%, transparent);
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--color-canvas) 20%, transparent);
 }
 
 /* Firefox scrollbar styling */
@@ -84,5 +211,6 @@
 }
 
 .dark * {
-  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  scrollbar-color: color-mix(in srgb, var(--color-canvas) 10%, transparent)
+    transparent;
 }

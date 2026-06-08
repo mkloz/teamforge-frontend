@@ -1,14 +1,12 @@
-import React from "react";
-
 interface TeamForgeVoronoiProps {
   className?: string;
   showBackground?: boolean;
 }
 
-export const TeamForgeLogo: React.FC<TeamForgeVoronoiProps> = ({
-  className = "w-12 h-12",
+export function TeamForgeLogo({
+  className = "size-12",
   showBackground = true,
-}) => {
+}: TeamForgeVoronoiProps) {
   return (
     <svg
       viewBox="0 0 120 120"
@@ -29,10 +27,10 @@ export const TeamForgeLogo: React.FC<TeamForgeVoronoiProps> = ({
 
       <g clipPath="url(#group-boundary)">
         {/* The k-NN Quadrants
-            Color: Forge Teal with varying opacities to represent
-            the diverse 4D MBTI vectors of the 4 group members.
-            Stroke: Canvas (#FAFAF8) creates the physical boundaries.
-        */}
+ Color: Forge Teal with varying opacities to represent
+ the diverse 4D MBTI vectors of the 4 group members.
+ Stroke: Canvas (#FAFAF8) creates the physical boundaries.
+ */}
         <g stroke="#FAFAF8" strokeWidth="5" strokeLinejoin="round">
           <polygon
             points="52,68 40,-10 130,-10 130,50"
@@ -60,10 +58,7 @@ export const TeamForgeLogo: React.FC<TeamForgeVoronoiProps> = ({
         </g>
       </g>
 
-      {/* The Greedy Matching Apex
-          Color: Spark Amber. Represents the MGS (Marginal Group Score)
-          convergence point where the SocialBonus finalizes the group.
-      */}
+      {/* The amber apex marks the point where the group comes together. */}
       <circle
         cx="52"
         cy="68"
@@ -74,4 +69,4 @@ export const TeamForgeLogo: React.FC<TeamForgeVoronoiProps> = ({
       />
     </svg>
   );
-};
+}

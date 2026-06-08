@@ -1,0 +1,4 @@
+{
+  "recordsFile": ".react-compiler.rec.json",
+  "sourceGlob": "src/**/*.{js,jsx,ts,tsx}"
+}

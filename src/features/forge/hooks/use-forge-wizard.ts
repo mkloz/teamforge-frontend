@@ -1,259 +1,229 @@
-import { useState, useCallback } from "react";
-import type {
-  ForgeMode,
-  FixedGroupSize,
-  Visibility,
-  ForgeResult,
-} from "../types/forge.types";
-import { MOCK_PARTICIPANTS } from "../constants/forge.constants";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useReducer,
+  useRef,
+} from "react";
+import { useForgeWizardFieldActions } from "@/features/forge/hooks/forge-wizard/field-actions";
+import { useForgeWizardDerivedState } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-derived-state";
+import { useForgeWizardRouteSync } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-route-sync";
+import { useForgeWizardSubmitActions } from "@/features/forge/hooks/forge-wizard/use-forge-wizard-submit-actions";
+import { useForgeAnimation } from "@/features/forge/hooks/use-forge-animation";
+import type { ForgeMode } from "@/features/forge/lib/forge-contract";
+import {
+  buildForgeIdeaTemplate,
+  buildForgeIdeaTemplateId,
+} from "@/features/forge/lib/forge-idea-template";
+import type { ForgeIdeaLaunch } from "@/features/forge/lib/forge-route";
+import type { ForgeWizardData, Step } from "@/features/forge/lib/forge-wizard";
+import {
+  createInitialForgeWizardState,
+  forgeWizardReducer,
+  getNextStep,
+  getPreviousStep,
+} from "@/features/forge/lib/forge-wizard";
+import {
+  cloneForgeWizardDraft,
+  useForgeWizardDraftStore,
+} from "@/features/forge/store/use-forge-wizard-draft-store";
 
-export type Step = 1 | 2 | 3 | 4 | 5 | 6;
+interface UseForgeWizardOptions {
+  onClose: () => void;
+  routeStep: Step;
+  routeMode: ForgeMode;
+  routeActivityId: string | null;
+  routeGroupId: string | null;
+  routeIdea: ForgeIdeaLaunch | null;
+  syncStep: (step: Step, options?: { history?: "push" | "replace" }) => void;
+  syncMode: (
+    mode: ForgeMode,
+    options?: { history?: "push" | "replace" },
+  ) => void;
+  syncTargets: (targets: {
+    activityId?: string | null;
+    groupId?: string | null;
+  }) => void;
+  enterGroupHub: (groupId: string) => Promise<void>;
+}
 
-export function useForgeWizard(onClose: () => void) {
-  const [step, setStep] = useState<Step>(1);
-  const [navDirection, setNavDirection] = useState<"forward" | "back">(
-    "forward",
+export function useForgeWizard({
+  onClose,
+  routeStep,
+  routeMode,
+  routeActivityId,
+  routeGroupId,
+  routeIdea,
+  syncStep,
+  syncMode,
+  syncTargets,
+  enterGroupHub,
+}: UseForgeWizardOptions) {
+  const initialDraftRef = useRef(useForgeWizardDraftStore.getState().draft);
+  const saveDraft = useForgeWizardDraftStore((store) => store.saveDraft);
+  const clearDraft = useForgeWizardDraftStore((store) => store.clearDraft);
+  const hasPersistedStateRef = useRef(false);
+  const skipNextDraftPersistRef = useRef(false);
+  const [state, dispatch] = useReducer(
+    forgeWizardReducer,
+    {
+      draft: initialDraftRef.current,
+      routeIdea,
+      routeMode,
+      routeStep,
+    },
+    createInitialForgeWizardStateForRoute,
+  );
+  const { forgeStrikeCount, isForging, forgingProgress, runForgeAnimation } =
+    useForgeAnimation();
+  const inviteCopiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
   );
 
-  // Step 1: Activity
-  const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
+  const { stepRef } = useForgeWizardRouteSync({
+    dispatch,
+    routeActivityId,
+    routeGroupId,
+    routeIdea,
+    routeMode,
+    routeStep,
+    state,
+    syncStep,
+    syncTargets,
+  });
 
-  // Step 2: Plan
-  const [planName, setPlanName] = useState("");
-  const [planDate, setPlanDate] = useState("");
-  const [planTime, setPlanTime] = useState("");
-  const [planLocation, setPlanLocation] = useState("");
-  const [locationType, setLocationType] = useState<
-    "IN_PERSON" | "ONLINE" | "TBD"
-  >("TBD");
+  const { setField, ...fieldActions } = useForgeWizardFieldActions({
+    dispatch,
+    state,
+    syncMode,
+  });
 
-  // Step 3: Group
-  const [forgeMode, setForgeMode] = useState<ForgeMode>("AUTO");
-  const [fixedSize, setFixedSize] = useState<FixedGroupSize>(6);
-  const [autoMinSize, setAutoMinSize] = useState(4);
-  const [autoMaxSize, setAutoMaxSize] = useState(8);
-  const [compatibilityWeight, setCompatibilityWeight] = useState(70);
-  const [diversityWeight, setDiversityWeight] = useState(50);
-  const [visibility, setVisibility] = useState<Visibility>("FRIENDS_ONLY");
-
-  // Step 4: Post-forge Result
-  const [forgeResult, setForgeResult] = useState<ForgeResult>("IDLE");
-  const [participants, setParticipants] = useState(
-    MOCK_PARTICIPANTS.slice(0, 5),
-  );
-  const [removedIds, setRemovedIds] = useState<Set<string>>(new Set());
-
-  // Forge loading transition
-  const [isForging, setIsForging] = useState(false);
-  const [forgingProgress, setForgingProgress] = useState(0);
-
-  // Group identity (shared across step 3 & step 5)
-  const [groupName, setGroupName] = useState("");
-  const [groupDescription, setGroupDescription] = useState("");
-
-  // Step 5: Identity
-  const [coverImage, setCoverImage] = useState<string | null>(null);
-  const [avatarImage, setAvatarImage] = useState<string | null>(null);
-
-  // Step 6: Invite
-  const [inviteCopied, setInviteCopied] = useState(false);
-  const [invitesSent, setInvitesSent] = useState(false);
-
-  // Derived state
-  const activeParticipants = participants.filter(
-    (p) => !removedIds.has(p.userId),
-  );
-  const canAdvanceStep1 = !!selectedActivity;
-  const canAdvanceStep2 = planName.trim().length >= 3;
-  const isPreForge = step <= 3;
-  const canGoBack = (step > 1 && step <= 3) || step === 5 || step === 6;
-
-  // Actions
-  const reset = useCallback(() => {
-    setStep(1);
-    setNavDirection("forward");
-    setSelectedActivity(null);
-    setPlanName("");
-    setPlanDate("");
-    setPlanTime("");
-    setPlanLocation("");
-    setLocationType("TBD");
-    setGroupName("");
-    setGroupDescription("");
-    setForgeMode("AUTO");
-    setFixedSize(6);
-    setAutoMinSize(4);
-    setAutoMaxSize(8);
-    setCompatibilityWeight(70);
-    setDiversityWeight(50);
-    setVisibility("FRIENDS_ONLY");
-    setForgeResult("IDLE");
-    setParticipants(MOCK_PARTICIPANTS.slice(0, 5));
-    setRemovedIds(new Set());
-    setCoverImage(null);
-    setAvatarImage(null);
-    setInviteCopied(false);
-    setInvitesSent(false);
+  useEffect(() => {
+    return () => {
+      if (inviteCopiedTimeoutRef.current) {
+        clearTimeout(inviteCopiedTimeoutRef.current);
+      }
+    };
   }, []);
 
+  useLayoutEffect(() => {
+    if (!hasPersistedStateRef.current) {
+      hasPersistedStateRef.current = true;
+      return;
+    }
+
+    if (skipNextDraftPersistRef.current) {
+      skipNextDraftPersistRef.current = false;
+      return;
+    }
+
+    saveDraft(state);
+  }, [saveDraft, state]);
+
+  const reset = useCallback(() => {
+    skipNextDraftPersistRef.current = true;
+    clearDraft();
+    dispatch({ type: "reset" });
+  }, [clearDraft]);
+
   const close = useCallback(() => {
+    reset();
     onClose();
-    setTimeout(reset, 300);
   }, [onClose, reset]);
 
   const goNext = useCallback(() => {
-    setNavDirection("forward");
-    setStep((s) => {
-      if (s === 1) return 2;
-      if (s === 2) return 3;
-      if (s === 3) return 4;
-      if (s === 4) return 5;
-      if (s === 5) return 6;
-      return s;
+    const nextStep = getNextStep(stepRef.current);
+
+    dispatch({
+      type: "set-step",
+      step: nextStep,
+      navDirection: "forward",
     });
-  }, []);
+    syncStep(nextStep, { history: "push" });
+  }, [stepRef, syncStep]);
 
   const goBack = useCallback(() => {
-    setNavDirection("back");
-    if (step === 2) setStep(1);
-    else if (step === 3) setStep(2);
-    else if (step === 5) setStep(4);
-    else if (step === 6) setStep(5);
-  }, [step]);
+    const previousStep =
+      state.forgeMode === "MANUAL" &&
+      stepRef.current === 6 &&
+      state.forgeResult === "SUCCESS"
+        ? 4
+        : getPreviousStep(stepRef.current);
 
-  // Shared forge animation runner — runs for a minimum visible duration (6s)
-  // then resolves. Since we don't know when the real algorithm finishes,
-  // the animation is infinite; we just enforce a minimum so users always
-  // see the full forge sequence before the result screen appears.
-  const runForgeAnimation = useCallback((onComplete: () => void) => {
-    setIsForging(true);
-    setForgingProgress(0);
-    const start = performance.now();
-    const minDuration = 6000;
-    const tick = (now: number) => {
-      const elapsed = now - start;
-      const p = Math.min((elapsed / minDuration) * 100, 100);
-      setForgingProgress(p);
-      if (p < 100) {
-        requestAnimationFrame(tick);
-      } else {
-        setIsForging(false);
-        onComplete();
-      }
-    };
-    requestAnimationFrame(tick);
-  }, []);
-
-  const handleManualForge = useCallback(() => {
-    setNavDirection("forward");
-    runForgeAnimation(() => {
-      setParticipants(MOCK_PARTICIPANTS.slice(0, fixedSize - 1));
-      setRemovedIds(new Set());
-      setForgeResult("SUCCESS");
-      setStep(4);
+    dispatch({
+      type: "set-step",
+      step: previousStep,
+      navDirection: "back",
     });
-  }, [fixedSize, runForgeAnimation]);
+    syncStep(previousStep, { history: "push" });
+  }, [state.forgeMode, state.forgeResult, stepRef, syncStep]);
 
-  const handleAutoForge = useCallback(() => {
-    setNavDirection("forward");
-    runForgeAnimation(() => {
-      if (diversityWeight > 80) {
-        setForgeResult("FAILED");
-      } else {
-        const size = Math.floor((autoMinSize + autoMaxSize) / 2);
-        setParticipants(MOCK_PARTICIPANTS.slice(0, size - 1));
-        setRemovedIds(new Set());
-        setForgeResult("SUCCESS");
-      }
-      setStep(4);
-    });
-  }, [diversityWeight, autoMinSize, autoMaxSize, runForgeAnimation]);
+  const goToStep = useCallback(
+    (step: Step) => {
+      dispatch({
+        type: "set-step",
+        step,
+        navDirection: step > stepRef.current ? "forward" : "back",
+      });
+      syncStep(step, { history: "push" });
+    },
+    [stepRef, syncStep],
+  );
 
   const handleRemoveParticipant = useCallback((id: string) => {
-    setRemovedIds((prev) => new Set([...prev, id]));
+    dispatch({ type: "remove-participant", userId: id });
   }, []);
 
   const handleRestoreParticipant = useCallback((id: string) => {
-    setRemovedIds((prev) => {
-      const next = new Set(prev);
-      next.delete(id);
-      return next;
-    });
+    dispatch({ type: "restore-participant", userId: id });
   }, []);
 
   const handleReforge = useCallback(() => {
-    setNavDirection("back");
-    setForgeResult("IDLE");
-    setStep(3);
-  }, []);
+    dispatch({ type: "reforge" });
+    syncTargets({
+      activityId: null,
+      groupId: null,
+    });
+    syncStep(4, { history: "push" });
+  }, [syncStep, syncTargets]);
 
   const handleCopyLink = useCallback(() => {
-    setInviteCopied(true);
-    setTimeout(() => setInviteCopied(false), 2000);
-  }, []);
+    setField("inviteCopied", true);
+    if (inviteCopiedTimeoutRef.current) {
+      clearTimeout(inviteCopiedTimeoutRef.current);
+    }
+
+    inviteCopiedTimeoutRef.current = setTimeout(() => {
+      setField("inviteCopied", false);
+      inviteCopiedTimeoutRef.current = null;
+    }, 2000);
+  }, [setField]);
+
+  const submitActions = useForgeWizardSubmitActions({
+    close,
+    dispatch,
+    enterGroupHub,
+    goNext,
+    runForgeAnimation,
+    setField,
+    state,
+    syncStep,
+    syncTargets,
+  });
+  const derivedState = useForgeWizardDerivedState(state);
 
   return {
-    // State
-    step,
-    navDirection,
-    selectedActivity,
-    planName,
-    groupName,
-    groupDescription,
-    planDate,
-    planTime,
-    planLocation,
-    locationType,
-    forgeMode,
-    fixedSize,
-    autoMinSize,
-    autoMaxSize,
-    compatibilityWeight,
-    diversityWeight,
-    visibility,
-    forgeResult,
-    participants,
-    removedIds,
+    ...state,
+    ...derivedState,
+    ...fieldActions,
+    ...submitActions,
+    forgeStrikeCount,
     isForging,
     forgingProgress,
-    coverImage,
-    avatarImage,
-    inviteCopied,
-    invitesSent,
-    activeParticipants,
-
-    // Validation
-    canAdvanceStep1,
-    canAdvanceStep2,
-    isPreForge,
-    canGoBack,
-
-    // Setters
-    setSelectedActivity,
-    setPlanName,
-    setGroupName,
-    setGroupDescription,
-    setPlanDate,
-    setPlanTime,
-    setPlanLocation,
-    setLocationType,
-    setForgeMode,
-    setFixedSize,
-    setAutoMinSize,
-    setAutoMaxSize,
-    setCompatibilityWeight,
-    setDiversityWeight,
-    setVisibility,
-    setCoverImage,
-    setAvatarImage,
-    setInvitesSent,
-
-    // Actions
     goNext,
     goBack,
+    goToStep,
     close,
-    handleManualForge,
-    handleAutoForge,
     handleRemoveParticipant,
     handleRestoreParticipant,
     handleReforge,
@@ -261,4 +231,33 @@ export function useForgeWizard(onClose: () => void) {
   };
 }
 
+export type { Step } from "@/features/forge/lib/forge-wizard";
 export type ForgeWizardState = ReturnType<typeof useForgeWizard>;
+
+function createInitialForgeWizardStateForRoute(input: {
+  draft: ForgeWizardData | null;
+  routeIdea: ForgeIdeaLaunch | null;
+  routeMode: ForgeMode;
+  routeStep: Step;
+}) {
+  const initialState = input.draft
+    ? cloneForgeWizardDraft(input.draft)
+    : createInitialForgeWizardState();
+  const hasLiveForgeState =
+    initialState.forgeResult !== "IDLE" || initialState.participants.length > 0;
+  const baseState = {
+    ...initialState,
+    forgeMode: input.routeMode,
+    step: input.routeStep > 4 && !hasLiveForgeState ? 4 : input.routeStep,
+  };
+
+  if (!input.routeIdea) {
+    return baseState;
+  }
+
+  return forgeWizardReducer(baseState, {
+    type: "apply-activity-template",
+    template: buildForgeIdeaTemplate(input.routeIdea),
+    templateId: buildForgeIdeaTemplateId(input.routeIdea),
+  });
+}

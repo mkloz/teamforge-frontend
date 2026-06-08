@@ -1,4 +1,8 @@
+import { Link } from "@tanstack/react-router";
 import { Eye, EyeOff } from "lucide-react";
+import { FormLevelError } from "@/features/auth/components/form-level-error";
+import { useGoogleAuth } from "@/features/auth/hooks/use-google-auth";
+import { useLoginForm } from "@/features/auth/hooks/use-login-form";
 import { ArrowRightAnimated } from "@/shared/components/common/arrow-right-animated";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -10,14 +14,19 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
-import { useLoginForm } from "../../hooks/use-login-form";
+import { buildAuthRouteNavigation } from "@/shared/lib/auth-route";
+import {
+  authFormItemClassName,
+  authFormLabelClassName,
+  authFormMessageClassName,
+} from "../auth-form-styles";
 import { FormHeader } from "./form-header";
-import { FormLevelError } from "./form-level-error";
-import { SocialLoginDivider } from "./social-login-divider";
 import { GoogleAuthButton } from "./google-auth-button";
+import { SocialLoginDivider } from "./social-login-divider";
 import { SwitchViewPrompt } from "./switch-view-prompt";
 
 interface LoginFormProps {
+  authReturnTo?: string | null;
   onSwitchToRegister: () => void;
   onSuccess?: () => void;
   onProgress?: (progress: number) => void;
@@ -29,24 +38,34 @@ interface LoginFormProps {
  * Optimized with hook-based logic and premium micro-interactions.
  */
 export function LoginForm({
+  authReturnTo,
   onSwitchToRegister,
   onSuccess,
   onProgress,
 }: LoginFormProps) {
   const {
     form,
+    isOnline,
     loading,
     rootError,
     showPassword,
     onSubmit,
     togglePasswordVisibility,
   } = useLoginForm({ onSuccess, onProgress });
+  const {
+    isOnline: isGoogleOnline,
+    loading: googleLoading,
+    preloadGoogleAuth,
+    rootError: googleError,
+    startGoogleAuth,
+  } = useGoogleAuth({ intent: "login", onSuccess });
+  const currentRootError = rootError ?? googleError;
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex w-full flex-col">
       <FormHeader />
 
-      {rootError && <FormLevelError message={rootError} />}
+      {currentRootError ? <FormLevelError message={currentRootError} /> : null}
 
       <Form {...form}>
         <form
@@ -57,20 +76,17 @@ export function LoginForm({
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem className="space-y-0 text-left">
-                <FormLabel className="font-sans text-sm font-semibold text-ink">
-                  Email
-                </FormLabel>
+              <FormItem className={authFormItemClassName}>
+                <FormLabel className={authFormLabelClassName}>Email</FormLabel>
                 <FormControl>
                   <Input
-                    className="h-11 px-3.5 rounded-xl border border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 transition-all duration-200"
                     placeholder="you@example.com"
                     type="email"
                     autoComplete="email"
                     {...field}
                   />
                 </FormControl>
-                <FormMessage className="text-xs font-medium text-destructive mt-1" />
+                <FormMessage className={authFormMessageClassName} />
               </FormItem>
             )}
           />
@@ -79,59 +95,77 @@ export function LoginForm({
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem className="space-y-0 text-left">
+              <FormItem className={authFormItemClassName}>
                 <div className="flex items-center justify-between">
-                  <FormLabel className="font-sans text-sm font-semibold text-ink">
+                  <FormLabel className={authFormLabelClassName}>
                     Password
                   </FormLabel>
-                  <a
-                    href="/auth/forgot-password"
-                    className="font-sans text-xs font-medium text-forge-teal hover:underline transition-colors focus:ring-2 focus:ring-forge-teal/20 outline-hidden"
+                  <Link
+                    {...buildAuthRouteNavigation(
+                      "/auth/forgot-password",
+                      authReturnTo,
+                    )}
+                    className="font-medium font-sans text-forge-teal text-xs outline-hidden transition-colors hover:underline focus:ring-2 focus:ring-forge-teal/20"
                   >
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
                 <FormControl>
-                  <div className="relative">
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      className="h-11 pl-3.5 pr-10 rounded-xl border border-border bg-white font-sans text-sm text-ink placeholder:text-slate-muted/70 hover:border-forge-teal/40 focus-visible:border-forge-teal focus-visible:ring-2 focus-visible:ring-forge-teal/15 transition-all duration-200"
-                      placeholder="••••••••"
-                      autoComplete="current-password"
-                      aria-invalid={!!form.formState.errors.password}
-                      {...field}
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      type="button"
-                      aria-label={
-                        showPassword ? "Hide password" : "Show password"
-                      }
-                      onClick={togglePasswordVisibility}
-                      className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-9 text-slate-muted hover:text-forge-teal"
-                    >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </Button>
-                  </div>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                    aria-invalid={!!form.formState.errors.password}
+                    rightIcon={
+                      <Button
+                        variant="accentGhost"
+                        size="icon-sm"
+                        type="button"
+                        aria-label={
+                          showPassword ? "Hide password" : "Show password"
+                        }
+                        onClick={togglePasswordVisibility}
+                        className="size-8 rounded-md"
+                      >
+                        {showPassword ? (
+                          <EyeOff size={16} />
+                        ) : (
+                          <Eye size={16} />
+                        )}
+                      </Button>
+                    }
+                    {...field}
+                  />
                 </FormControl>
-                <FormMessage className="text-xs font-medium text-destructive mt-1" />
+                <FormMessage className={authFormMessageClassName} />
               </FormItem>
             )}
           />
 
           <Button
             type="submit"
+            disabled={!isOnline}
             loading={loading}
             size="lg"
-            className="w-full mt-2"
+            title={isOnline ? undefined : "Reconnect before signing in."}
+            className="mt-2 w-full"
           >
             Let's go
             <ArrowRightAnimated />
           </Button>
 
           <SocialLoginDivider />
-          <GoogleAuthButton loading={loading} />
+          <GoogleAuthButton
+            disabled={!isGoogleOnline}
+            loading={loading || googleLoading}
+            onClick={startGoogleAuth}
+            onIntent={preloadGoogleAuth}
+            title={
+              isGoogleOnline
+                ? undefined
+                : "Reconnect before continuing with Google."
+            }
+          />
         </form>
       </Form>
 

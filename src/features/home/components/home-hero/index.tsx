@@ -1,191 +1,240 @@
-import { Button } from "@/shared/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { type ReactNode, useRef } from "react";
+
+import { HomeQueryFactory } from "@/features/home/api/home-query-factory";
+import { HomeHeroSkeleton } from "@/features/home/components/home-skeletons";
+import { useHomeCollapsibleHero } from "@/features/home/hooks/use-home-collapsible-hero";
+import { useHomeData } from "@/features/home/hooks/use-home-data";
+import { useHomeViewerState } from "@/features/home/hooks/use-home-viewer";
+import type {
+  HomeViewer,
+  PlannedGroup,
+  UserStats,
+} from "@/features/home/lib/home-contract";
+import { buildHomeNextMove } from "@/features/home/lib/home-insights";
+import type { HomeGroup } from "@/features/home/schemas/home-group.schema";
+import { IconTile } from "@/shared/components/ui/icon-tile";
+import { scrollWindowToTop } from "@/shared/lib/scroll-to-top";
 import { cn } from "@/shared/lib/utils";
-import { Link } from "@tanstack/react-router";
-import { motion, useReducedMotion, type Variants } from "framer-motion";
-import { Bell, Compass, MessageCircle, Plus, User } from "lucide-react";
-import { MOCK_CURRENT_USER } from "../../data/mock-home";
-import { ForgeOrbScene } from "./forge-orb-scene";
-import { useUiStore } from "@/shared/store/ui.store";
+import type { ExploreGroup, Invite } from "@/shared/schemas";
+import {
+  HomeHeroMoveIcon,
+  PrimaryAction,
+  SecondaryAction,
+} from "./home-hero-actions";
+import { getCompactHeroCopy, getGreeting } from "./home-hero-copy";
+import { HomeHeroNotificationButton } from "./home-hero-notification-button";
+import { HomeHeroQuickActions } from "./home-hero-quick-actions";
+import { HomeHeroSignalMap } from "./home-hero-signal-map";
 
-/* ─── Greeting helper ──────────────────────────────────────────────── */
-function getGreeting(firstName: string): { greeting: string; sub: string } {
-  const hour = new Date().getHours();
-  if (hour < 12)
-    return {
-      greeting: `Good morning, ${firstName}`,
-      sub: "Here's what's happening in your world today.",
-    };
-  if (hour < 17)
-    return {
-      greeting: `Good afternoon, ${firstName}`,
-      sub: "Ready to connect with your groups?",
-    };
-  return {
-    greeting: `Good evening, ${firstName}`,
-    sub: "See what your groups are up to tonight.",
-  };
-}
+const EMPTY_RECOMMENDATIONS: ExploreGroup[] = [];
 
-const QUICK_ACTIONS = [
-  { label: "Browse Groups", icon: Compass, to: "/explore" },
-  { label: "Start a Chat", icon: MessageCircle, to: "/activity" },
-  { label: "View Profile", icon: User, to: "/profile" },
-] as const;
-
-/* ─── Animation variants ───────────────────────────────────────────── */
-const containerVariants: Variants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 18 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.45, ease: [0.23, 1, 0.32, 1] },
-  },
-};
-
-/**
- * HomeHero section with personalized greeting, CTA, and animated Forge Orb.
- */
 export function HomeHero() {
-  const { greeting, sub } = getGreeting(MOCK_CURRENT_USER.firstName);
-  const reduced = useReducedMotion() ?? false;
-  const setNotificationsOpen = useUiStore(
-    (state) => state.setNotificationsOpen,
-  );
+  const { viewer, isLoading: viewerLoading } = useHomeViewerState();
+  const homeData = useHomeData({
+    include: {
+      groups: true,
+      invitations: true,
+      plans: true,
+      stats: true,
+    },
+  });
+  const { stats, invitations, plans, groups } = homeData;
+  const isCoreHeroDataLoading =
+    homeData.isStatsLoading ||
+    homeData.isInvitationsLoading ||
+    homeData.isPlansLoading ||
+    homeData.isGroupsLoading;
+  const hasPriorityMove =
+    Boolean(viewer.nextStep) ||
+    invitations.length > 0 ||
+    plans.length > 0 ||
+    groups.length > 0;
+  const shouldLoadRecommendations =
+    !viewerLoading && !isCoreHeroDataLoading && !hasPriorityMove;
+  const recommendationsQuery = useQuery({
+    ...HomeQueryFactory.recommendations(),
+    enabled: shouldLoadRecommendations,
+  });
+  const recommendations = recommendationsQuery.data ?? EMPTY_RECOMMENDATIONS;
+  const isHeroDataLoading =
+    isCoreHeroDataLoading ||
+    (shouldLoadRecommendations && recommendationsQuery.isLoading);
+
+  if (viewerLoading || isHeroDataLoading) {
+    return <HomeHeroSkeleton />;
+  }
 
   return (
-    <section aria-labelledby="home-hero-heading" className="w-full">
-      <motion.div
-        className="flex flex-col gap-8 md:gap-10 max-w-5xl"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {/* ── Top section: Full-width greeting ─────────────────────── */}
-        <motion.div
-          variants={itemVariants}
-          className="flex items-start justify-between gap-3 w-full"
-        >
-          <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+    <HomeHeroView
+      groups={groups}
+      invitations={invitations}
+      plans={plans}
+      recommendations={recommendations}
+      stats={stats}
+      viewer={viewer}
+    />
+  );
+}
+
+interface HomeHeroViewProps {
+  compactNotificationButton?: ReactNode;
+  groups: HomeGroup[];
+  invitations: Invite[];
+  notificationButton?: ReactNode;
+  plans: PlannedGroup[];
+  recommendations: ExploreGroup[];
+  stats: UserStats;
+  viewer: HomeViewer;
+}
+
+export function HomeHeroView({
+  compactNotificationButton = <HomeHeroNotificationButton />,
+  groups,
+  invitations,
+  notificationButton = <HomeHeroNotificationButton />,
+  plans,
+  recommendations,
+  stats,
+  viewer,
+}: HomeHeroViewProps) {
+  const { greeting, sub } = getGreeting(viewer.firstName);
+  const heroRef = useRef<HTMLElement | null>(null);
+  const { isCompactVisible } = useHomeCollapsibleHero({ ref: heroRef });
+  const nextMove = buildHomeNextMove({
+    viewer,
+    stats,
+    invitations,
+    plans,
+    groups,
+    recommendations,
+  });
+  const compactCopy = getCompactHeroCopy(nextMove);
+
+  return (
+    <section
+      ref={heroRef}
+      aria-labelledby="home-hero-heading"
+      className="w-full [--home-compact-opacity:0] [--home-compact-y:-10px] [--home-hero-original-delay:0ms] [--home-hero-original-opacity:1] [--home-hero-original-y:0px]"
+    >
+      <HomeHeroCompactHeader
+        isVisible={isCompactVisible}
+        notificationButton={compactNotificationButton}
+        sub={compactCopy.sub}
+        title={compactCopy.title}
+      />
+
+      <div className="flex w-full flex-col gap-5">
+        <div className="transform-[translate3d(0,var(--home-hero-original-y,0px),0)] flex items-start justify-between gap-3 opacity-(--home-hero-original-opacity,1) transition-[opacity,transform] duration-300 ease-out [transition-delay:var(--home-hero-original-delay,0ms)] motion-reduce:transition-none">
+          <div className="min-w-0 flex-1">
             <h1
               id="home-hero-heading"
-              className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter text-foreground leading-tight"
+              className="font-extrabold text-foreground text-xl leading-tight tracking-tight sm:text-2xl md:text-3xl lg:text-4xl"
             >
               {greeting}
             </h1>
-            <p className="text-sm md:text-base text-slate-muted font-medium leading-relaxed">
+            <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed md:text-base">
               {sub}
             </p>
           </div>
 
-          {/* Notification bell */}
-          <button
-            type="button"
-            onClick={() => setNotificationsOpen(true)}
-            aria-label="View notifications (3 unread)"
-            className={cn(
-              "relative shrink-0 flex items-center justify-center size-10 rounded-2xl",
-              "border border-border bg-card",
-              "text-slate-muted hover:text-foreground hover:border-forge-teal/30 hover:bg-secondary",
-              "transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              "mt-0.5",
-            )}
-          >
-            <Bell className="size-[18px]" aria-hidden="true" />
-            <motion.span
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{
-                type: "spring",
-                stiffness: 350,
-                damping: 20,
-                delay: 0.4,
-              }}
-              className="absolute -top-1.5 -right-1.5 flex items-center justify-center size-5 rounded-full bg-accent border-2 border-background text-[10px] font-bold text-accent-foreground shadow-sm"
-              aria-hidden="true"
-            >
-              3
-            </motion.span>
-          </button>
-        </motion.div>
+          {notificationButton}
+        </div>
 
-        {/* ── Bottom section: CTA + Orb split ──────────────────────── */}
-        <div className="flex flex-col md:flex-row md:items-center gap-8 md:gap-12">
-          {/* Left: CTA + Actions */}
-          <div className="flex flex-col gap-6 flex-1 min-w-0">
-            <motion.div
-              variants={itemVariants}
-              className="relative overflow-hidden rounded-2xl bg-card border border-border/60 p-5 md:p-6 lg:p-8 group/cta max-w-md shadow-sm"
-            >
-              <div className="relative z-10 flex flex-col gap-5">
-                <div className="flex flex-col gap-1.5">
-                  <h2 className="text-xl md:text-2xl font-black tracking-tighter leading-tight text-foreground text-balance">
-                    Ready to meet your{" "}
-                    <span className="text-forge-teal">perfect group?</span>
-                  </h2>
-                  <p className="text-xs text-slate-muted font-medium leading-relaxed">
-                    Take the lead. We'll introduce you to compatible people who
-                    share your interests and energy.
-                  </p>
-                </div>
+        <div className="relative grid gap-4 overflow-hidden rounded-xl px-4 py-4 sm:gap-6 sm:px-5 sm:py-5 lg:px-6 2xl:min-h-80 2xl:grid-cols-[minmax(0,1fr)_minmax(17rem,20rem)] 2xl:items-center 2xl:gap-10">
+          <div className="absolute inset-y-0 left-0 w-full [background:linear-gradient(112deg,color-mix(in_srgb,var(--color-forge-teal)_13%,transparent),color-mix(in_srgb,var(--color-forge-teal)_4%,transparent)_48%,transparent_76%)]" />
+          <div className="absolute inset-y-5 left-2 w-px rounded-full bg-forge-teal/55 sm:inset-y-6 sm:left-3" />
 
-                <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
-                  <Link to="/forge" className="w-full">
-                    <Button
-                      variant="primary"
-                      className="w-full h-11 group/btn"
-                      aria-label="Forge a new group with the TeamForge algorithm"
-                    >
-                      <Plus
-                        className="size-4 transition-transform duration-200 group-hover/btn:rotate-90"
-                        aria-hidden="true"
-                      />
-                      Forge My Group
-                    </Button>
-                  </Link>
-                </motion.div>
+          <div className="relative z-10 flex min-w-0 flex-col gap-4 pl-2 sm:gap-5 sm:pl-4">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <IconTile
+                bordered
+                size="lg"
+                tone="teal"
+                className="size-10 shadow-sm sm:size-12 md:size-14"
+              >
+                <HomeHeroMoveIcon
+                  kind={nextMove.kind}
+                  className="size-5 sm:size-5.5 md:size-6"
+                />
+              </IconTile>
+
+              <div className="min-w-0 flex-1">
+                <p className="font-bold text-forge-teal text-xs">
+                  {nextMove.eyebrow}
+                </p>
+                <h2 className="mt-1 max-w-3xl font-extrabold text-foreground text-lg leading-tight tracking-tight sm:text-2xl lg:text-3xl">
+                  {nextMove.title}
+                </h2>
               </div>
-            </motion.div>
+            </div>
 
-            {/* Quick action pills */}
-            <motion.nav
-              variants={itemVariants}
-              aria-label="Quick actions"
-              className="flex flex-wrap gap-2"
-            >
-              {QUICK_ACTIONS.map(({ label, icon: Icon, to }) => (
-                <Link
-                  key={label}
-                  to={to}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full",
-                    "text-xs font-semibold text-slate-muted",
-                    "border border-border bg-card",
-                    "hover:border-forge-teal/40 hover:text-forge-teal hover:bg-secondary",
-                    "transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring shadow-2xs",
-                  )}
-                >
-                  <Icon className="size-3.5" aria-hidden="true" />
-                  {label}
-                </Link>
-              ))}
-            </motion.nav>
+            <p className="max-w-xl font-medium text-muted-foreground text-xs leading-relaxed lg:text-base">
+              {nextMove.body}
+            </p>
+
+            <div className="flex flex-row flex-wrap gap-2 sm:gap-3">
+              <PrimaryAction move={nextMove} />
+              <SecondaryAction move={nextMove} />
+            </div>
+
+            <HomeHeroQuickActions signal={nextMove.signal} />
           </div>
 
-          {/* Right: Orb Scene */}
-          <motion.div
-            variants={itemVariants}
-            className="hidden md:flex items-center justify-center shrink-0"
-            aria-hidden="true"
-          >
-            <ForgeOrbScene reduced={reduced} />
-          </motion.div>
+          <HomeHeroSignalMap />
         </div>
-      </motion.div>
+      </div>
     </section>
+  );
+}
+
+function HomeHeroCompactHeader({
+  isVisible,
+  notificationButton,
+  sub,
+  title,
+}: {
+  isVisible: boolean;
+  notificationButton: ReactNode;
+  sub: string;
+  title: string;
+}) {
+  return (
+    <div
+      aria-hidden={!isVisible}
+      inert={!isVisible}
+      className={cn(
+        "pointer-events-none fixed top-0 right-0 left-0 z-40 md:left-14",
+        "transform-[translate3d(0,var(--home-compact-y,-10px),0)] opacity-(--home-compact-opacity) transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none",
+      )}
+    >
+      <div className="mx-auto w-full max-w-screen-2xl px-4 sm:px-5 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)] lg:gap-12 lg:px-8 xl:gap-14">
+        <div
+          className={cn(
+            "relative flex h-16 min-w-0 items-center justify-between gap-3 overflow-hidden rounded-b-xl border-border/65 border-b bg-canvas/95 px-4 shadow-sm backdrop-blur sm:h-18 sm:px-5",
+            isVisible ? "pointer-events-auto" : "pointer-events-none",
+          )}
+        >
+          <button
+            type="button"
+            aria-label="Scroll home to top"
+            tabIndex={isVisible ? 0 : -1}
+            onClick={scrollWindowToTop}
+            className="absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-inset"
+          />
+
+          <div className="pointer-events-none relative z-10 min-w-0">
+            <p className="truncate font-bold text-base text-foreground leading-tight tracking-tight sm:text-lg">
+              {title}
+            </p>
+            <p className="mt-0.5 truncate font-medium text-muted-foreground text-xs leading-tight sm:text-sm">
+              {sub}
+            </p>
+          </div>
+
+          <div className="relative z-10 shrink-0">{notificationButton}</div>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -1,43 +1,116 @@
-import { MessageSquare, Zap } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { motion, useReducedMotion } from "framer-motion";
+import { UsersRound } from "lucide-react";
 import { memo } from "react";
+import { EmptyConversationsVisual } from "@/features/activity/assets/empty-conversations";
+import { EmptyConversationsFilteredVisual } from "@/features/activity/assets/empty-conversations-filtered";
+import { buildExploreNavigation } from "@/features/explore/lib/explore-route";
+import { buildForgeLaunchNavigation } from "@/features/forge/lib/forge-route";
+import { Button } from "@/shared/components/ui/button";
+
+type ConversationEmptyArtwork = "default" | "filtered";
 
 interface EmptyStateProps {
   label: string;
+  description?: string | null;
+  artwork?: ConversationEmptyArtwork;
   /** When true shows the Forge CTA — used for the "No conversations yet" base empty state */
   showForgeCta?: boolean;
+  showExploreCta?: boolean;
 }
 
 export const EmptyState = memo(function EmptyState({
   label,
+  description: descriptionProp,
+  artwork = "default",
   showForgeCta = false,
+  showExploreCta = false,
 }: EmptyStateProps) {
+  const shouldReduceMotion = useReducedMotion();
+  const description =
+    descriptionProp ??
+    getEmptyStateDescription({
+      showExploreCta,
+      showForgeCta,
+    });
+
   return (
-    <div className="flex flex-col items-center justify-center gap-5 py-20 px-6 text-center animate-in fade-in slide-in-from-bottom-2">
-      <div className="w-14 h-14 rounded-2xl bg-forge-teal/8 flex items-center justify-center shadow-sm border border-forge-teal/15">
-        <MessageSquare
-          size={22}
-          className="text-forge-teal"
-          strokeWidth={1.5}
-        />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <p className="text-sm font-semibold text-ink/80">{label}</p>
-        {showForgeCta && (
-          <p className="text-xs text-slate-muted leading-relaxed max-w-45 mx-auto">
-            Let's forge your first one.
+    <div className="flex min-h-[calc(100dvh-8rem)] flex-col items-center justify-center px-6 py-12 text-center">
+      {artwork === "filtered" ? (
+        <EmptyConversationsFilteredVisual className="mx-auto h-36 w-auto text-foreground" />
+      ) : (
+        <EmptyConversationsVisual className="mx-auto h-36 w-auto text-foreground" />
+      )}
+
+      <div className="mt-5 max-w-52">
+        <p className="font-black text-base text-foreground leading-tight">
+          {label}
+        </p>
+        {description ? (
+          <p className="mt-2 font-medium text-muted-foreground text-sm leading-relaxed">
+            {description}
           </p>
-        )}
+        ) : null}
       </div>
-      {showForgeCta && (
-        <Link
-          to="/forge"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-forge-teal text-white text-xs font-bold tracking-tight shadow-sm hover:bg-forge-teal/90 active:scale-95 transition-all duration-200"
+
+      {(showForgeCta || showExploreCta) && (
+        <motion.div
+          initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 3 }}
+          animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+          transition={{
+            duration: shouldReduceMotion ? 0.08 : 0.12,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className="mt-6 flex w-full max-w-44 flex-col items-stretch gap-2.5"
         >
-          <Zap size={13} className="fill-current" />
-          Forge a group
-        </Link>
+          {showExploreCta && (
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="w-full rounded-lg"
+            >
+              <Link {...buildExploreNavigation()}>Browse groups</Link>
+            </Button>
+          )}
+
+          {showForgeCta && (
+            <Button
+              asChild
+              variant="primary"
+              size="sm"
+              className="w-full rounded-lg"
+            >
+              <Link {...buildForgeLaunchNavigation()}>
+                <UsersRound size={14} aria-hidden="true" />
+                Forge a group
+              </Link>
+            </Button>
+          )}
+        </motion.div>
       )}
     </div>
   );
 });
+
+function getEmptyStateDescription({
+  showExploreCta,
+  showForgeCta,
+}: {
+  showExploreCta: boolean;
+  showForgeCta: boolean;
+}) {
+  if (showExploreCta && showForgeCta) {
+    return "Browse open groups or forge one around your own plan.";
+  }
+
+  if (showForgeCta) {
+    return "Forge a group to start your first conversation.";
+  }
+
+  if (showExploreCta) {
+    return "Browse open groups to find a conversation worth joining.";
+  }
+
+  return null;
+}

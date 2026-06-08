@@ -1,0 +1,4 @@
+:root,
+:root[data-theme-style="classic"] {
+  --radius: 0.75rem;
+}

@@ -1,28 +1,65 @@
-import { memo, useMemo } from "react";
-import { AnimatePresence } from "framer-motion";
-import { useSearchHeaderFade } from "../../hooks/use-search-header-fade";
+import { Fragment, lazy, memo, Suspense, useEffect, useState } from "react";
+import { useSearchHeaderFade } from "@/features/activity/hooks/use-search-header-fade";
 import type {
   FilterChip,
   UnifiedConversation,
-} from "../../types/unified-conversation.types";
-import { UnifiedConversationListItem } from "../unified-conversation-list-item";
-import { EmptyState } from "./empty-state";
+} from "@/features/activity/lib/activity-contract";
+import type { ActivityKind } from "@/features/activity/lib/activity-route";
+import type { SavedMessageSnapshot } from "@/features/activity/lib/saved-message";
+import { SAVED_MESSAGES_CONVERSATION_ID } from "@/features/activity/lib/saved-messages-identity";
+import {
+  getConversationIsNotes,
+  getMessagePreviewText,
+} from "@/features/activity/lib/unify-conversations";
+import { useResetScrollOnChange } from "@/shared/hooks/use-reset-scroll-on-change";
 import { FilterHeader } from "./filter-header";
+import {
+  ConversationListErrorState,
+  ConversationListOfflineBanner,
+} from "./list-feedback-state";
+import { SavedMessagesChatListItem } from "./saved-messages-chat-list-item";
 import { SearchHeader } from "./search-header";
+import { UnifiedConversationListItem } from "./unified-conversation-list-item";
+
+const EmptyState = lazy(() =>
+  import("./empty-state").then((module) => ({
+    default: module.EmptyState,
+  })),
+);
 
 interface UnifiedConversationListProps {
   items: UnifiedConversation[];
+  savedMessages: SavedMessageSnapshot[];
   selectedId: string | null;
+  selectedKind: ActivityKind | null;
   searchQuery: string;
   activeFilter: FilterChip;
   sidebarDensity: "default" | "compact";
-  groupCount: number;
-  dmCount: number;
-  unreadCount: number;
+  pinnedCount: number;
+  allUnreadMessageCount: number;
+  groupUnreadMessageCount: number;
+  dmUnreadMessageCount: number;
+  pinnedUnreadMessageCount: number;
+  savedCount: number;
+  isFeedError: boolean;
+  isFeedRetrying: boolean;
+  isOnline: boolean;
   onSearchChange: (q: string) => void;
   onFilterChange: (f: FilterChip) => void;
   onDensityChange: (d: "default" | "compact") => void;
-  onSelectItem: (id: string, kind: "group" | "dm") => void;
+  onTogglePinnedItem: (
+    kind: "group" | "dm",
+    id: string,
+  ) => Promise<void> | void;
+  onToggleMutedItem: (kind: "group" | "dm", id: string) => Promise<void> | void;
+  onMarkReadItem: (kind: "group" | "dm", id: string) => Promise<void> | void;
+  onRemoveSavedMessage: (messageId: string) => Promise<void> | void;
+  onRetryFeed: () => Promise<void> | void;
+  onSelectItem: (
+    id: string,
+    kind: ActivityKind,
+    options?: { messageId?: string | null },
+  ) => void;
 }
 
 const FILTERS: { key: FilterChip; label: string }[] = [
@@ -30,83 +67,342 @@ const FILTERS: { key: FilterChip; label: string }[] = [
   { key: "groups", label: "Groups" },
   { key: "direct", label: "DMs" },
   { key: "unread", label: "Unread" },
+  { key: "pinned", label: "Pinned" },
 ];
 
 const SEARCH_H = 56;
+const INITIAL_CONVERSATION_RENDER_LIMIT = 24;
+const FULL_LIST_REVEAL_DELAY_MS = 900;
 
 export const UnifiedConversationList = memo(function UnifiedConversationList({
   items,
+  savedMessages,
   selectedId,
+  selectedKind,
   searchQuery,
   activeFilter,
   sidebarDensity,
-  groupCount,
-  dmCount,
-  unreadCount,
+  pinnedCount,
+  allUnreadMessageCount,
+  groupUnreadMessageCount,
+  dmUnreadMessageCount,
+  pinnedUnreadMessageCount,
+  savedCount,
+  isFeedError,
+  isFeedRetrying,
+  isOnline,
   onSearchChange,
-  onFilterChange,
   onDensityChange,
+  onFilterChange,
+  onTogglePinnedItem,
+  onToggleMutedItem,
+  onMarkReadItem,
+  onRemoveSavedMessage,
+  onRetryFeed,
   onSelectItem,
 }: UnifiedConversationListProps) {
-  const { scrollRef, opacity, handleScroll, isPointerEnabled } =
+  const { scrollRef, opacity, handleScroll, isPointerEnabled, resetFade } =
     useSearchHeaderFade({
       headerHeight: SEARCH_H,
     });
+  const scrollResetKey = `${activeFilter}:${searchQuery}`;
 
-  const emptyLabel = useMemo(() => {
-    if (activeFilter === "groups") return "No groups found";
-    if (activeFilter === "direct") return "No direct messages found";
-    if (activeFilter === "unread") return "No unread conversations";
-    if (searchQuery) return "No conversations match your search";
-    return "No conversations yet";
-  }, [activeFilter, searchQuery]);
+  useResetScrollOnChange({
+    resetKey: scrollResetKey,
+    ref: scrollRef,
+    onReset: resetFade,
+  });
+
+  const isSavedFilter = activeFilter === "saved";
+  const latestSavedMessage = savedMessages[0];
+  const shouldShowSavedChat = shouldShowSavedMessagesChat({
+    activeFilter,
+    savedMessages,
+    searchQuery,
+  });
+  const visibleItemCount =
+    (isSavedFilter ? 0 : items.length) + (shouldShowSavedChat ? 1 : 0);
+  const emptyLabel =
+    activeFilter === "groups"
+      ? "No groups found"
+      : activeFilter === "direct"
+        ? "No direct messages found"
+        : activeFilter === "unread"
+          ? "No unread conversations"
+          : activeFilter === "pinned"
+            ? "No pinned chats yet"
+            : activeFilter === "saved"
+              ? searchQuery
+                ? "No saved messages match your search"
+                : "No saved messages yet"
+              : searchQuery
+                ? "No conversations match your search"
+                : "No conversations yet";
+  const emptyDescription = getEmptyDescription(activeFilter, searchQuery);
+  const emptyArtwork =
+    searchQuery || activeFilter !== "all" ? "filtered" : "default";
+  const shouldShowErrorState = isFeedError && visibleItemCount === 0;
+  const shouldShowOfflineBanner = !isOnline && !shouldShowErrorState;
+  const savedChatIndex = getSavedChatIndex(items);
+  const notesIndex = items.findIndex(getConversationIsNotes);
+  const shouldShowPinnedNotesSeparator = getShouldShowPinnedNotesSeparator(
+    items,
+    notesIndex,
+  );
+  const searchPlaceholder =
+    activeFilter === "saved"
+      ? "Search saved messages..."
+      : activeFilter === "pinned"
+        ? "Search pinned chats..."
+        : "Search conversations...";
+  const shouldStageConversationItems =
+    !isSavedFilter &&
+    activeFilter === "all" &&
+    searchQuery.trim().length === 0 &&
+    items.length > INITIAL_CONVERSATION_RENDER_LIMIT;
+  const [isFullListVisible, setIsFullListVisible] = useState(
+    !shouldStageConversationItems,
+  );
+  const renderedItems =
+    shouldStageConversationItems && !isFullListVisible
+      ? items.slice(0, INITIAL_CONVERSATION_RENDER_LIMIT)
+      : items;
+
+  useEffect(() => {
+    let timeoutId: number | undefined;
+
+    if (!shouldStageConversationItems) {
+      setIsFullListVisible(true);
+    } else {
+      setIsFullListVisible(false);
+
+      timeoutId = window.setTimeout(() => {
+        setIsFullListVisible(true);
+      }, FULL_LIST_REVEAL_DELAY_MS);
+    }
+
+    return () => {
+      if (timeoutId !== undefined) {
+        window.clearTimeout(timeoutId);
+      }
+    };
+  }, [shouldStageConversationItems]);
+
+  function openSavedMessagesChat() {
+    if (searchQuery) {
+      onSearchChange("");
+    }
+
+    onSelectItem(SAVED_MESSAGES_CONVERSATION_ID, "saved");
+  }
+
+  const savedMessagesChatItem = shouldShowSavedChat ? (
+    <SavedMessagesChatListItem
+      count={savedCount}
+      density={sidebarDensity}
+      isSelected={
+        selectedKind === "saved" &&
+        selectedId === SAVED_MESSAGES_CONVERSATION_ID
+      }
+      latestSavedMessage={latestSavedMessage}
+      onRemoveLatest={
+        latestSavedMessage
+          ? () => onRemoveSavedMessage(latestSavedMessage.message.id)
+          : undefined
+      }
+      onSelect={openSavedMessagesChat}
+    />
+  ) : null;
+  const shouldPlacePinnedNotesSeparatorAfterSavedChat =
+    shouldShowPinnedNotesSeparator &&
+    Boolean(savedMessagesChatItem) &&
+    savedChatIndex === notesIndex + 1;
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex h-full flex-col overflow-hidden">
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        role="listbox"
-        aria-label="Conversations"
         className="flex-1 overflow-y-auto"
       >
         <SearchHeader
           opacity={opacity}
           isEnabled={isPointerEnabled}
+          placeholder={searchPlaceholder}
           value={searchQuery}
           onChange={onSearchChange}
         />
 
+        {shouldShowOfflineBanner ? <ConversationListOfflineBanner /> : null}
+
         <FilterHeader
           filters={FILTERS}
           activeFilter={activeFilter}
-          counts={{ groupCount, dmCount, unreadCount }}
+          counts={{
+            pinnedCount,
+            allUnreadMessageCount,
+            groupUnreadMessageCount,
+            dmUnreadMessageCount,
+            pinnedUnreadMessageCount,
+          }}
           onFilterChange={onFilterChange}
           density={sidebarDensity}
           onDensityChange={onDensityChange}
         />
 
         <div className="flex flex-col pb-8 sm:pb-0">
-          {items.length === 0 ? (
-            <EmptyState
-              label={emptyLabel}
-              showForgeCta={!searchQuery && activeFilter === "all"}
+          {shouldShowErrorState ? (
+            <ConversationListErrorState
+              description={
+                isSavedFilter
+                  ? "Retry to bring your saved messages back."
+                  : undefined
+              }
+              isOffline={!isOnline}
+              isRetrying={isFeedRetrying}
+              title={isSavedFilter ? "Saved messages did not load" : undefined}
+              onRetry={onRetryFeed}
             />
+          ) : visibleItemCount === 0 ? (
+            <Suspense fallback={null}>
+              <EmptyState
+                label={emptyLabel}
+                description={emptyDescription}
+                artwork={emptyArtwork}
+                showForgeCta={!searchQuery && activeFilter === "all"}
+                showExploreCta={
+                  !searchQuery &&
+                  (activeFilter === "all" ||
+                    activeFilter === "groups" ||
+                    activeFilter === "unread")
+                }
+              />
+            </Suspense>
+          ) : isSavedFilter ? (
+            savedMessagesChatItem
           ) : (
-            <AnimatePresence mode="popLayout" initial={false}>
-              {items.map((item) => (
-                <UnifiedConversationListItem
-                  key={`${item.kind}-${item.id}`}
-                  item={item}
-                  isSelected={item.id === selectedId}
-                  density={sidebarDensity}
-                  onSelect={() => onSelectItem(item.id, item.kind)}
-                />
+            <>
+              {savedChatIndex === 0 ? savedMessagesChatItem : null}
+              {renderedItems.map((item, index) => (
+                <Fragment key={`${item.kind}-${item.id}`}>
+                  <UnifiedConversationListItem
+                    item={item}
+                    isSelected={
+                      item.id === selectedId && item.kind === selectedKind
+                    }
+                    density={sidebarDensity}
+                    onTogglePinned={() => {
+                      void onTogglePinnedItem(item.kind, item.id);
+                    }}
+                    onToggleMuted={() => {
+                      void onToggleMutedItem(item.kind, item.id);
+                    }}
+                    onMarkRead={() => {
+                      void onMarkReadItem(item.kind, item.id);
+                    }}
+                    onSelect={() => onSelectItem(item.id, item.kind)}
+                  />
+                  {savedChatIndex === index + 1 ? savedMessagesChatItem : null}
+                  {shouldShowPinnedNotesSeparator &&
+                  (shouldPlacePinnedNotesSeparatorAfterSavedChat
+                    ? savedChatIndex === index + 1
+                    : index === notesIndex) ? (
+                    <PinnedNotesSeparator density={sidebarDensity} />
+                  ) : null}
+                </Fragment>
               ))}
-            </AnimatePresence>
+            </>
           )}
         </div>
       </div>
     </div>
   );
 });
+
+function getSavedChatIndex(items: UnifiedConversation[]) {
+  const notesIndex = items.findIndex(getConversationIsNotes);
+
+  return notesIndex >= 0 ? notesIndex + 1 : 0;
+}
+
+function getShouldShowPinnedNotesSeparator(
+  items: UnifiedConversation[],
+  notesIndex: number,
+) {
+  if (notesIndex < 0 || !items[notesIndex]?.isPinned) {
+    return false;
+  }
+
+  return items.slice(notesIndex + 1).some((item) => item.isPinned);
+}
+
+function PinnedNotesSeparator({ density }: { density: "default" | "compact" }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={density === "compact" ? "px-3 py-1" : "px-4 py-1.5"}
+    >
+      <div className="h-px bg-border/70" />
+    </div>
+  );
+}
+
+function shouldShowSavedMessagesChat({
+  activeFilter,
+  savedMessages,
+  searchQuery,
+}: {
+  activeFilter: FilterChip;
+  savedMessages: SavedMessageSnapshot[];
+  searchQuery: string;
+}) {
+  if (
+    activeFilter === "groups" ||
+    activeFilter === "direct" ||
+    activeFilter === "unread" ||
+    activeFilter === "pinned"
+  ) {
+    return false;
+  }
+
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+
+  if (!normalizedQuery) {
+    return activeFilter === "all" || activeFilter === "saved";
+  }
+
+  const searchable = [
+    "saved messages",
+    "private bookmarks",
+    ...savedMessages.flatMap((snapshot) => [
+      snapshot.message.sender?.name ?? "",
+      getMessagePreviewText(snapshot.message),
+    ]),
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  return searchable.includes(normalizedQuery);
+}
+
+function getEmptyDescription(activeFilter: FilterChip, searchQuery: string) {
+  if (activeFilter === "saved") {
+    return searchQuery
+      ? "Try a sender, chat name, or a phrase from the message."
+      : "Use Save message from a message menu. Saved messages stay private and take you back to the original chat when it is still available.";
+  }
+
+  if (activeFilter === "pinned") {
+    return "Pin chats you return to often. My notes stays available as your private scratchpad.";
+  }
+
+  if (activeFilter === "unread") {
+    return "Everything is caught up right now.";
+  }
+
+  if (searchQuery) {
+    return "Try a group name, person, or message preview.";
+  }
+
+  return null;
+}

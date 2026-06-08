@@ -1,76 +1,79 @@
-import { TooltipProvider } from "@/shared/components/ui/tooltip";
-import { useUiStore } from "@/shared/store/ui.store";
-import { useTheme } from "@/shared/store/theme.store";
 import { Outlet } from "@tanstack/react-router";
-import { Suspense } from "react";
-import { NotificationsBellTrigger } from "../notifications/components/notifications-bell-trigger";
-import { NotificationsDrawer } from "../notifications/components/notifications-drawer";
-import { AppBottomNav } from "./components/app-bottom-nav";
-import { AppSidebar } from "./components/app-sidebar";
+import { Activity, lazy, type ReactNode, Suspense } from "react";
+import { AppBottomNav } from "@/features/app-shell/components/app-bottom-nav";
+import { AppRouteTransition } from "@/features/app-shell/components/app-route-transition";
+import { useAppNavbarCounters } from "@/features/app-shell/hooks/use-app-navbar-counters";
+import { useAppShellScrollReset } from "@/features/app-shell/hooks/use-app-shell-scroll-reset";
+import { RouteLoadingFallback } from "@/shared/components/loading/route-loading-fallback";
+import { useMediaQuery } from "@/shared/hooks/use-media-query";
+import { cn } from "@/shared/lib/utils";
+import { useUiStore } from "@/shared/store/ui.store";
 
-function PageSkeleton() {
-  return (
-    <div className="flex flex-col gap-4 animate-pulse" aria-hidden="true">
-      <div className="h-8 w-48 rounded-xl bg-muted" />
-      <div className="h-4 w-full rounded-lg bg-muted" />
-      <div className="h-4 w-3/4 rounded-lg bg-muted" />
-      <div className="h-40 w-full rounded-2xl bg-muted mt-2" />
-    </div>
-  );
+const AppSidebar = lazy(() =>
+  import("@/features/app-shell/components/app-sidebar").then((module) => ({
+    default: module.AppSidebar,
+  })),
+);
+
+interface AppLayoutProps {
+  notificationTrigger?: ReactNode;
+  notificationDrawer?: ReactNode;
 }
 
-export function AppLayout() {
-  // Ensure theme class is applied on every render of the authenticated shell
-  useTheme();
+export function AppLayout({
+  notificationTrigger,
+  notificationDrawer,
+}: AppLayoutProps) {
+  const bottomNavHidden = useUiStore((state) => state.bottomNavHidden);
+  const navbarCounters = useAppNavbarCounters();
+  const shouldRenderSidebar = useMediaQuery("(min-width: 768px)");
 
-  const { notificationsOpen, bottomNavHidden, setNotificationsOpen } =
-    useUiStore();
+  useAppShellScrollReset();
 
   return (
-    <TooltipProvider>
-      <div className="min-h-screen bg-canvas text-foreground font-sans">
-        {/* Skip to content link for keyboard / screen-reader users */}
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:rounded-xl focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:font-medium"
-        >
-          Skip to main content
-        </a>
+    <div className="min-h-screen overflow-x-clip bg-canvas font-sans text-foreground">
+      <a
+        href="#main-content"
+        className="fixed top-4 left-4 z-100 -translate-y-24 rounded-xl bg-primary px-4 py-2 font-medium text-primary-foreground opacity-0 transition focus:translate-y-0 focus:opacity-100"
+      >
+        Skip to main content
+      </a>
 
-        {/* Persistent top bar removed for desktop per user request */}
+      {shouldRenderSidebar ? (
+        <Suspense fallback={null}>
+          <AppSidebar
+            activityUnreadCount={navbarCounters.activityUnreadCount}
+            notificationTrigger={notificationTrigger}
+          />
+        </Suspense>
+      ) : null}
 
-        {/* Desktop sidebar */}
-        <AppSidebar
-          notificationsTrigger={
-            <NotificationsBellTrigger
-              onClick={() => setNotificationsOpen(true)}
-            />
-          }
-        />
-
-        {/* Main content area */}
-        <main
-          id="main-content"
-          className="md:pl-14 pb-20 md:pb-4 min-h-screen"
-          tabIndex={-1}
-        >
-          {/* Content wrapper — pages define their own max-width as needed */}
-          <div>
-            <Suspense fallback={<PageSkeleton />}>
+      <main
+        id="main-content"
+        className={cn(
+          "min-h-screen md:pb-4 md:pl-14",
+          bottomNavHidden ? "pb-0" : "pb-app-bottom-nav",
+        )}
+        tabIndex={-1}
+      >
+        <div>
+          <AppRouteTransition>
+            <Suspense fallback={<RouteLoadingFallback />}>
               <Outlet />
             </Suspense>
-          </div>
-        </main>
+          </AppRouteTransition>
+        </div>
+      </main>
 
-        {/* Mobile bottom navigation */}
-        {!bottomNavHidden && <AppBottomNav />}
-
-        {/* Overlays */}
-        <NotificationsDrawer
-          open={notificationsOpen}
-          onClose={() => setNotificationsOpen(false)}
+      {/* Mobile bottom navigation */}
+      <Activity mode={bottomNavHidden ? "hidden" : "visible"}>
+        <AppBottomNav
+          activityUnreadCount={navbarCounters.activityUnreadCount}
+          notificationUnreadCount={navbarCounters.notificationUnreadCount}
         />
-      </div>
-    </TooltipProvider>
+      </Activity>
+
+      {notificationDrawer}
+    </div>
   );
 }

@@ -1,82 +1,242 @@
-import ky, { type HTTPError } from "ky";
+import ky, { type Options } from "ky";
 
 import { config } from "@/config/config";
+import { parseApiError } from "@/shared/api/api-errors";
+import { isApiNetworkError } from "@/shared/api/api-network-error";
+import {
+  type ApiAuthMode,
+  readApiRequestContext,
+} from "@/shared/api/api-request-context";
+import { type AuthTokens, authSession } from "@/shared/api/auth-session";
+import { CURRENT_USER_QUERY_KEY } from "@/shared/api/current-user-cache";
+import { appQueryClient } from "@/shared/api/query-client";
+import { fullUserResponseSchema } from "@/shared/schemas/user-response";
 
-// TODO: Replace with actual imports once modules are implemented
-export interface Tokens {
-  accessToken: string;
-  refreshToken: string;
+export {
+  type ApiResponseWithRequestId,
+  getResponseRequestId,
+  parseJsonWithRequestId,
+  REQUEST_ID_HEADER,
+} from "@/shared/api/api-errors";
+export type {
+  ApiAuthMode,
+  ApiRequestContext,
+} from "@/shared/api/api-request-context";
+
+const AUTH_REFRESH_PATH = "auth/refresh";
+const AUTH_LOGOUT_PATH = "auth/logout";
+
+let refreshPromise: Promise<AuthTokens | null> | null = null;
+
+interface RefreshTokensOptions {
+  allowCookieRefresh?: boolean;
 }
-export const tokensStore = {
-  getState: (): {
-    tokens: Tokens | null;
-    deleteTokens: () => void;
-    setTokens: (t: Tokens) => void;
-  } => ({
-    tokens: { accessToken: "", refreshToken: "" },
-    deleteTokens: () => {},
-    setTokens: (t: Tokens) => {
-      void t;
+
+function isAuthRefreshRequest(request: Request) {
+  return request.url.includes(AUTH_REFRESH_PATH);
+}
+
+function isAuthLogoutRequest(request: Request) {
+  return request.url.includes(AUTH_LOGOUT_PATH);
+}
+
+function applyAuthorizationHeader(request: Request, authMode: ApiAuthMode) {
+  if (authMode === "none") {
+    return;
+  }
+
+  const token =
+    authMode === "refresh"
+      ? authSession.getRefreshToken()
+      : authSession.getAccessToken();
+
+  if (!token) {
+    return;
+  }
+
+  request.headers.set("Authorization", `Bearer ${token}`);
+}
+
+function buildRetryOptions(
+  request: Request,
+  options: Options,
+  tokens: AuthTokens,
+): Options {
+  const headers = new Headers(request.headers);
+
+  headers.set("Authorization", `Bearer ${tokens.accessToken}`);
+
+  return {
+    ...options,
+    headers,
+    context: {
+      ...options.context,
+      auth: "access",
+      retryOnUnauthorized: false,
     },
-  }),
+  };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function parseAuthRefreshPayload(payload: unknown) {
+  if (!isRecord(payload) || typeof payload.accessToken !== "string") {
+    throw new Error("Refresh response did not include an access token.");
+  }
+
+  return {
+    accessToken: payload.accessToken,
+    refreshToken:
+      typeof payload.refreshToken === "string"
+        ? payload.refreshToken
+        : undefined,
+    currentUser: payload.currentUser
+      ? fullUserResponseSchema.parse(payload.currentUser)
+      : undefined,
+  };
+}
+
+async function refreshTokens(options: RefreshTokensOptions = {}) {
+  const refreshToken = authSession.getRefreshToken();
+
+  if (!refreshToken && !options.allowCookieRefresh) {
+    return null;
+  }
+
+  if (!refreshPromise) {
+    refreshPromise = rawApiClient
+      .post(AUTH_REFRESH_PATH, {
+        context: {
+          auth: refreshToken ? "refresh" : "none",
+          retryOnUnauthorized: false,
+        },
+      })
+      .json<unknown>()
+      .then((payload) => {
+        const refreshResponse = parseAuthRefreshPayload(payload);
+        const nextTokens: AuthTokens = {
+          accessToken: refreshResponse.accessToken,
+          refreshToken: refreshResponse.refreshToken,
+        };
+
+        authSession.setTokens(nextTokens);
+
+        if (refreshResponse.currentUser) {
+          appQueryClient.setQueryData(
+            CURRENT_USER_QUERY_KEY,
+            refreshResponse.currentUser,
+          );
+        }
+
+        return nextTokens;
+      })
+      .catch((error: unknown) => {
+        if (isApiNetworkError(error)) {
+          throw error;
+        }
+
+        authSession.clear();
+        return null;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+
+  return refreshPromise;
+}
+
+const sharedHooks = {
+  beforeRequest: [
+    async (request: Request, options: Options) => {
+      const { auth } = readApiRequestContext(options);
+
+      if (isAuthRefreshRequest(request)) {
+        applyAuthorizationHeader(request, "refresh");
+        return;
+      }
+
+      if (isAuthLogoutRequest(request) && auth === "access") {
+        applyAuthorizationHeader(request, "refresh");
+        return;
+      }
+
+      applyAuthorizationHeader(request, auth);
+    },
+  ],
+  beforeError: [parseApiError],
 };
-export const useSelectedProjectId = {
-  getState: () => ({ clearId: () => {} }),
+
+const rawApiClient = ky.create({
+  prefixUrl: config.apiUrl,
+  cache: "no-store",
+  credentials: "include",
+  timeout: 15_000,
+  hooks: sharedHooks,
+});
+
+export const authApi = {
+  clearSession() {
+    authSession.clear();
+  },
+  getTokens() {
+    return authSession.getTokens();
+  },
+  setTokens(tokens: AuthTokens) {
+    authSession.setTokens(tokens);
+  },
 };
+
+export function refreshAuthSession() {
+  return refreshTokens({ allowCookieRefresh: true });
+}
 
 export const apiClient = ky.create({
   prefixUrl: config.apiUrl,
+  cache: "no-store",
+  credentials: "include",
+  timeout: 15_000,
   hooks: {
-    beforeRequest: [
-      async (request) => {
+    ...sharedHooks,
+    afterResponse: [
+      async (request, options, response) => {
+        if (response.status !== 401) {
+          return response;
+        }
+
+        const { auth, retryOnUnauthorized } = readApiRequestContext(options);
+
         if (
-          request.url.includes("auth/refresh") ||
-          request.url.includes("auth/logout")
-        )
-          return request;
-
-        const accessToken = tokensStore.getState().tokens?.accessToken;
-
-        if (accessToken) {
-          request.headers.set("Authorization", `Bearer ${accessToken}`);
+          !retryOnUnauthorized ||
+          auth === "refresh" ||
+          isAuthRefreshRequest(request)
+        ) {
+          authSession.handleUnauthorized();
+          return response;
         }
-        return request;
-      },
-    ],
-    beforeError: [
-      async (error) => {
-        return error.response.json<HTTPError>();
-      },
-    ],
-    beforeRetry: [
-      async ({ request, error }) => {
-        if (request.url.includes("refresh")) {
-          tokensStore.getState().deleteTokens();
-          useSelectedProjectId.getState().clearId();
-          window.location.href = "/";
-          return;
+
+        let nextTokens: AuthTokens | null = null;
+
+        try {
+          nextTokens = await refreshTokens({ allowCookieRefresh: true });
+        } catch (error) {
+          if (isApiNetworkError(error)) {
+            throw error;
+          }
         }
-        if ("status" in error && error.status !== 401) return;
-        const refreshToken = tokensStore.getState().tokens?.refreshToken;
 
-        if (!refreshToken) return;
+        if (!nextTokens) {
+          authSession.handleUnauthorized();
+          return response;
+        }
 
-        const res = await apiClient
-          .post("auth/refresh", {
-            headers: {
-              Authorization: `Bearer ${refreshToken}`,
-            },
-          })
-          .json<Tokens>();
-
-        tokensStore.getState().setTokens(res);
-        request.headers.set("Authorization", `Bearer ${res.accessToken}`);
+        return apiClient(
+          request,
+          buildRetryOptions(request, options, nextTokens),
+        );
       },
     ],
-  },
-  retry: {
-    methods: ["get", "post", "put", "patch", "delete"],
-    statusCodes: [401],
-    limit: 2,
   },
 });

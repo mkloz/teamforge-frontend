@@ -1,9 +1,13 @@
-import type { User } from "@/shared/schemas";
+import { getArchetype } from "@/features/profile/lib/archetypes";
 import type {
   DimensionScore,
   OceanScores,
-  UserProfile,
-} from "../types/profile.types";
+} from "@/features/profile/lib/profile-contract";
+import {
+  getUserOceanScores as getSharedUserOceanScores,
+  normalizeTrustScore as normalizeSharedTrustScore,
+} from "@/shared/lib/user-psychometrics";
+import type { User } from "@/shared/schemas";
 
 /**
  * Determines the MBTI letter from a score (0-100)
@@ -64,29 +68,31 @@ export function createDimensionScores(
   ];
 }
 
-/**
- * Transforms a raw User object from the schema into a rich UserProfile
- * projection with derived psychometric scores and UI-ready fields.
- */
-export function inflateUserProfile(user: User): UserProfile {
-  const oceanScores: OceanScores = {
-    openness: user.oceanO ?? 50,
-    conscientiousness: user.oceanC ?? 50,
-    extraversion: user.oceanE ?? 50,
-    agreeableness: user.oceanA ?? 50,
-    neuroticism: user.oceanN ?? 50,
-  };
+export function normalizeTrustScore(score: number): number {
+  return normalizeSharedTrustScore(score);
+}
 
-  return {
-    ...user,
-    oceanScores,
-    dimensionScores: createDimensionScores(
-      user.oceanE ?? 50,
-      user.oceanO ?? 50,
-      user.oceanA ?? 50,
-      user.oceanC ?? 50,
-    ),
-    archetype: user.personalityType ? "The Explorer" : "The Adaptive Ally", // Simplified for now
-    interests: user.interests ?? [],
-  };
+export function getUserOceanScores(user: User): OceanScores | null {
+  return getSharedUserOceanScores(user);
+}
+
+export function getUserDimensionScores(user: User): DimensionScore[] | null {
+  const oceanScores = getSharedUserOceanScores(user);
+
+  if (!oceanScores) {
+    return null;
+  }
+
+  return createDimensionScores(
+    100 - oceanScores.extraversion,
+    oceanScores.openness,
+    oceanScores.agreeableness,
+    100 - oceanScores.conscientiousness,
+  );
+}
+
+export function getUserArchetype(user: User): string {
+  return user.personalityType
+    ? getArchetype(user.personalityType)
+    : "Still Taking Shape";
 }

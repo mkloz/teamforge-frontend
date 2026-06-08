@@ -9,10 +9,9 @@ lerna-debug.log*
 
 node_modules
 dist
+dev-dist
 dist-ssr
 *.local
-
-.eslintcache
 
 # Editor directories and files
 !.vscode/extensions.json
@@ -27,5 +26,10 @@ dist-ssr
 .env
 /vite
 todo.txt
+public/audit-auth-tokens.json
 
 .ai
+
+# Agent-generated artifacts
+reports/
+temp/

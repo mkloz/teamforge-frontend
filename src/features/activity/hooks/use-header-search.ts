@@ -1,11 +1,14 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
+
+interface UseHeaderSearchOptions {
+  onClose?: () => void;
+}
 
 /**
  * useHeaderSearch - Manages search state, focus, and cleanup for the chat header.
  */
-export function useHeaderSearch() {
+export function useHeaderSearch({ onClose }: UseHeaderSearchOptions = {}) {
   const [isSearching, setIsSearching] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -16,19 +19,20 @@ export function useHeaderSearch() {
       }, 50);
       return () => clearTimeout(timer);
     }
+
+    return undefined;
   }, [isSearching]);
 
-  const toggleSearch = useCallback((state: boolean) => {
+  function toggleSearch(state: boolean) {
     setIsSearching(state);
+
     if (!state) {
-      setSearchQuery("");
+      onClose?.();
     }
-  }, []);
+  }
 
   return {
     isSearching,
-    searchQuery,
-    setSearchQuery,
     searchInputRef,
     toggleSearch,
   };

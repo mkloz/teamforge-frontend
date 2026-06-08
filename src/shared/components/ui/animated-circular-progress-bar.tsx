@@ -1,11 +1,11 @@
-import { cn } from "@/shared/lib/utils";
 import { motion, useSpring, useTransform } from "framer-motion";
-import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
+import { cn } from "@/shared/lib/utils";
 
 export interface AnimatedCircularProgressBarProps {
-  max: number;
-  value: number;
-  min: number;
+  max?: number;
+  value?: number;
+  min?: number;
   gaugePrimaryColor: string;
   gaugeSecondaryColor: string;
   className?: string;
@@ -19,16 +19,10 @@ export function AnimatedCircularProgressBar({
   gaugeSecondaryColor,
   className,
 }: AnimatedCircularProgressBarProps) {
-  const [currentValue, setCurrentValue] = useState(value);
-
-  useEffect(() => {
-    setCurrentValue(value);
-  }, [value]);
-
   const circumference = 2 * Math.PI * 45;
   const percentPx = circumference / 100;
 
-  const springValue = useSpring(currentValue, {
+  const springValue = useSpring(value, {
     stiffness: 40,
     damping: 10,
   });
@@ -37,21 +31,20 @@ export function AnimatedCircularProgressBar({
     return `${Math.round(latest)}`;
   });
 
-  const containerStyle: React.CSSProperties & Record<string, string | number> =
-    {
-      "--circle-size": "100px",
-      "--circumference": `${circumference}px`,
-      "--percent-to-px": `${percentPx}px`,
-    };
+  const containerStyle: CSSProperties & Record<string, string | number> = {
+    "--circle-size": "100px",
+    "--circumference": `${circumference}px`,
+    "--percent-to-px": `${percentPx}px`,
+  };
 
-  const circleStyle: React.CSSProperties & Record<string, string | number> = {
+  const circleStyle: CSSProperties & Record<string, string | number> = {
     stroke: gaugeSecondaryColor,
     "--stroke-percent": 90,
   };
 
   return (
     <div
-      className={cn("relative size-40 text-2xl font-semibold", className)}
+      className={cn("relative size-40 font-semibold text-2xl", className)}
       style={containerStyle}
     >
       <svg
@@ -59,6 +52,7 @@ export function AnimatedCircularProgressBar({
         className="size-full"
         strokeWidth="2"
         viewBox="0 0 100 100"
+        aria-hidden="true"
       >
         <circle
           cx="50"
@@ -68,13 +62,14 @@ export function AnimatedCircularProgressBar({
           strokeDashoffset="0"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className=" opacity-100"
+          className="opacity-100"
           style={circleStyle}
         />
         <motion.circle
           cx="50"
           cy="50"
           r="45"
+          transform="rotate(-90 50 50)"
           strokeWidth="10"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -83,16 +78,15 @@ export function AnimatedCircularProgressBar({
           initial={{ strokeDashoffset: circumference }}
           animate={{
             strokeDashoffset:
-              circumference -
-              ((currentValue - min) / (max - min)) * circumference,
+              circumference - ((value - min) / (max - min)) * circumference,
           }}
           transition={{ duration: 1, ease: "easeOut" }}
           className="opacity-100"
         />
       </svg>
       <motion.span
-        data-current-value={currentValue}
-        className="duration-[unset] absolute inset-0 m-auto mx-auto flex items-center justify-center text-center transition-none"
+        data-current-value={value}
+        className="absolute inset-0 m-auto mx-auto flex items-center justify-center text-center transition-none duration-0"
       >
         {labelText}
       </motion.span>

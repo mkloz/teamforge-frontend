@@ -1,19 +1,30 @@
+import { motion } from "framer-motion";
+import {
+  getCategoryColorClass,
+  getSubcategories,
+  getSubcategoryIcon,
+} from "@/features/onboarding/lib/interest-catalog";
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/shared/components/ui/accordion";
+import { CountBadge } from "@/shared/components/ui/count-badge";
 import { cn } from "@/shared/lib/utils";
-import { motion } from "framer-motion";
-import type { Category } from "../../../data/interests-types";
+import type { Interest } from "@/shared/schemas";
+import {
+  getCategorySelectedCount,
+  getSubcategorySelectedCount,
+} from "./category-section-model";
 import { SubcategoryChip } from "./subcategory-chip";
-import { TagPill } from "./tag-pill";
+import { SubcategoryTagGroup } from "./subcategory-tag-group";
 
 interface CategorySectionProps {
-  category: Category;
+  category: Interest;
   selectedIds: Set<string>;
   expandedSubcategories: Set<string>;
   isAtMax: boolean;
+  onRegisterCategory: (id: string, element: HTMLElement | null) => void;
   onToggleSubcategory: (id: string) => void;
   onToggleTag: (id: string) => void;
 }
@@ -23,94 +34,76 @@ export function CategorySection({
   selectedIds,
   expandedSubcategories,
   isAtMax,
+  onRegisterCategory,
   onToggleSubcategory,
   onToggleTag,
 }: CategorySectionProps) {
-  const allTagsInCat = category.subcategories.flatMap((s) => s.tags);
-  const selectedInCat = allTagsInCat.filter((t) =>
-    selectedIds.has(t.id),
-  ).length;
+  const subcategories = getSubcategories(category);
+  const selectedInCategory = getCategorySelectedCount(category, selectedIds);
 
   return (
     <AccordionItem
       value={category.id}
       id={`category-${category.id}`}
+      ref={(element) => onRegisterCategory(category.id, element)}
       className="scroll-m-28 border-none"
     >
-      <AccordionTrigger className="hover:no-underline py-4 group  rounded-lg px-2 -mx-2 transition-all focus-visible:underline focus-visible:text-forge-teal">
+      <AccordionTrigger className="group -mx-2 rounded-lg px-2 py-4 transition-all hover:no-underline focus-visible:text-forge-teal focus-visible:underline">
         <div className="flex items-center gap-3">
           <div
             className={cn(
-              "w-2 h-2 rounded-full shrink-0 transition-transform duration-300 group-hover:scale-125",
-              category.color,
+              "size-2 shrink-0 rounded-full transition-transform duration-300 group-hover:scale-125",
+              getCategoryColorClass(category.id),
             )}
           />
-          <span className="font-sans text-sm font-bold group-hover:text-forge-teal transition-colors">
-            {category.label}
+          <span className="font-bold font-sans text-sm transition-colors group-hover:text-forge-teal">
+            {category.name}
           </span>
         </div>
-        {selectedInCat > 0 && (
+        {selectedInCategory > 0 && (
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="ml-auto mr-2 shrink-0 flex items-center justify-center min-w-5 h-5 px-1.5 font-sans text-xs font-bold bg-forge-teal text-white rounded-full leading-none shadow-[0_2px_4px_rgba(13,148,136,0.2)]"
+            className="mr-2 ml-auto shrink-0"
           >
-            {selectedInCat}
+            <CountBadge count={selectedInCategory} size="md" tone="teal" />
           </motion.span>
         )}
       </AccordionTrigger>
 
       <AccordionContent>
-        <div className="pb-6 flex flex-col gap-4">
-          {/* Subcategory chips */}
-          <div className="flex flex-wrap gap-2 p-1.5">
-            {category.subcategories.map((sub) => {
-              const expanded = expandedSubcategories.has(sub.id);
-              const selectedInSub = sub.tags.filter((t) =>
-                selectedIds.has(t.id),
-              ).length;
+        <div className="flex flex-col gap-4 pb-6">
+          <div className="flex flex-wrap gap-1.5 px-0 py-1.5 sm:gap-2 sm:p-1.5">
+            {subcategories.map((subcategory) => {
+              const expanded = expandedSubcategories.has(subcategory.id);
+              const selectedInSubcategory = getSubcategorySelectedCount(
+                subcategory,
+                selectedIds,
+              );
+
               return (
                 <SubcategoryChip
-                  key={sub.id}
-                  icon={sub.icon}
-                  label={sub.label}
-                  selectedCount={selectedInSub}
+                  key={subcategory.id}
+                  icon={getSubcategoryIcon(subcategory.id)}
+                  label={subcategory.name}
+                  selectedCount={selectedInSubcategory}
                   expanded={expanded}
-                  onToggle={() => onToggleSubcategory(sub.id)}
+                  onToggle={() => onToggleSubcategory(subcategory.id)}
                 />
               );
             })}
           </div>
 
-          {/* Tag clouds */}
-          {category.subcategories.map(
-            (sub) =>
-              expandedSubcategories.has(sub.id) && (
-                <div
-                  key={`tags-${sub.id}`}
-                  className="py-2 flex flex-col gap-3"
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-slate-muted/60">
-                      <sub.icon className="w-3.5 h-3.5" strokeWidth={2.5} />
-                    </span>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-muted/40">
-                      {sub.label}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-2 p-1.5">
-                    {sub.tags.map((tag) => (
-                      <TagPill
-                        key={tag.id}
-                        label={tag.label}
-                        selected={selectedIds.has(tag.id)}
-                        disabled={isAtMax}
-                        onToggle={() => onToggleTag(tag.id)}
-                        aliases={tag.aliases}
-                      />
-                    ))}
-                  </div>
-                </div>
+          {subcategories.map(
+            (subcategory) =>
+              expandedSubcategories.has(subcategory.id) && (
+                <SubcategoryTagGroup
+                  key={`tags-${subcategory.id}`}
+                  subcategory={subcategory}
+                  selectedIds={selectedIds}
+                  isAtMax={isAtMax}
+                  onToggleTag={onToggleTag}
+                />
               ),
           )}
         </div>

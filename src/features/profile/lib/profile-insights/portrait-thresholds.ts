@@ -1,0 +1,3 @@
+export const PORTRAIT_HYBRID_MARGIN = 0.12;
+export const PORTRAIT_STRONG_MARGIN = 0.18;
+export const PORTRAIT_MEDIUM_MARGIN = 0.08;

@@ -1,4 +1,6 @@
-import { useEffect, type RefObject } from "react";
+import { type RefObject, useEffect } from "react";
+
+import { scrollToPageTop } from "@/shared/lib/browser-scroll";
 
 /**
  * A hook that scrolls a container (or the window) to the top.
@@ -12,11 +14,12 @@ export function useScrollToTop(
   ref?: RefObject<HTMLDivElement | null>,
   behavior: ScrollBehavior = "smooth",
 ) {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: deps is the explicit trigger list for this custom hook.
   useEffect(() => {
-    if (ref && ref.current) {
+    if (ref?.current) {
       ref.current.scrollTo({ top: 0, behavior });
     } else {
-      window.scrollTo({ top: 0, behavior });
+      scrollToPageTop(behavior);
     }
   }, [...deps]); // eslint-disable-line react-hooks/exhaustive-deps
 }

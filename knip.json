@@ -1,0 +1,18 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "include": [
+    "files",
+    "dependencies",
+    "devDependencies",
+    "optionalPeerDependencies",
+    "unlisted",
+    "unresolved",
+    "duplicates",
+    "binaries"
+  ],
+  "ignoreFiles": [
+    "src/shared/types/google-maps.d.ts",
+    "src/shared/types/react-css-properties.d.ts"
+  ],
+  "project": ["src/**/*.{ts,tsx}", "*.{js,mjs,ts}", "src/**/*.css"]
+}

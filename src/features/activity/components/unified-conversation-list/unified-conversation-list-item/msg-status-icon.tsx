@@ -1,0 +1,36 @@
+import { Check, CheckCheck } from "lucide-react";
+import { memo } from "react";
+import type { MessageStatus } from "@/features/activity/lib/activity-contract";
+import { cn } from "@/shared/lib/utils";
+
+export const MsgStatusIcon = memo(
+  ({
+    status,
+    isCompact = false,
+  }: {
+    status: MessageStatus;
+    isCompact?: boolean;
+  }) => {
+    const size = isCompact ? 10 : 12;
+
+    switch (status) {
+      case "SENDING":
+        return (
+          <span
+            className={cn(
+              "animate-spin rounded-full border border-slate-muted/40 border-t-transparent",
+              isCompact ? "size-2.5" : "size-3",
+            )}
+          />
+        );
+      case "SENT":
+        return <Check size={size} className="text-slate-muted" />;
+      case "DELIVERED":
+        return <CheckCheck size={size} className="text-slate-muted" />;
+      case "READ":
+        return <CheckCheck size={size} className="text-forge-teal" />;
+      default:
+        return null;
+    }
+  },
+);

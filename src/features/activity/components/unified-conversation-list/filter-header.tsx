@@ -1,17 +1,25 @@
-import { Button } from "@/shared/components/ui/button";
-import { cn } from "@/shared/lib/utils";
 import { LayoutList, Rows } from "lucide-react";
 import { memo } from "react";
-import type { FilterChip } from "../../types/unified-conversation.types";
+import type { FilterChip } from "@/features/activity/lib/activity-contract";
+import { Button } from "@/shared/components/ui/button";
+import { RadioGroup } from "@/shared/components/ui/radio-group";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/shared/components/ui/tooltip";
+import { cn } from "@/shared/lib/utils";
 import { FilterChipItem } from "./filter-chip-item";
 
 interface FilterHeaderProps {
   filters: { key: FilterChip; label: string }[];
   activeFilter: FilterChip;
   counts: {
-    groupCount: number;
-    dmCount: number;
-    unreadCount: number;
+    pinnedCount: number;
+    allUnreadMessageCount: number;
+    groupUnreadMessageCount: number;
+    dmUnreadMessageCount: number;
+    pinnedUnreadMessageCount: number;
   };
   density?: "default" | "compact";
   onFilterChange: (f: FilterChip) => void;
@@ -27,71 +35,69 @@ export const FilterHeader = memo(function FilterHeader({
   onDensityChange,
 }: FilterHeaderProps) {
   const visibleFilters = filters.filter(
-    (f) => f.key !== "unread" || counts.unreadCount > 0,
+    (f) =>
+      f.key !== "pinned" || counts.pinnedCount > 0 || activeFilter === "pinned",
   );
+  const densityLabel = density === "default" ? "Compact view" : "Default view";
+  const handleFilterChange = (value: string) => {
+    const selectedFilter = filters.find((filter) => filter.key === value);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    const currentIndex = visibleFilters.findIndex(
-      (f) => f.key === activeFilter,
-    );
-    if (currentIndex === -1) return;
-
-    let nextIndex = currentIndex;
-    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-      nextIndex = (currentIndex + 1) % visibleFilters.length;
-      e.preventDefault();
-    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-      nextIndex =
-        (currentIndex - 1 + visibleFilters.length) % visibleFilters.length;
-      e.preventDefault();
-    }
-
-    if (nextIndex !== currentIndex) {
-      onFilterChange(visibleFilters[nextIndex].key);
+    if (selectedFilter) {
+      onFilterChange(selectedFilter.key);
     }
   };
 
   return (
     <nav
       className={cn(
-        "sticky top-0 z-20 px-4 py-1 border-b border-border/60",
-        "bg-canvas/80 backdrop-blur-md flex items-center justify-between",
+        "sticky top-0 z-20 border-border/60 border-b px-3 pt-3 pb-2",
+        "flex items-center gap-2 bg-canvas/85 backdrop-blur-md",
       )}
     >
-      <div
-        role="radiogroup"
+      <RadioGroup
+        value={activeFilter}
+        onValueChange={handleFilterChange}
         aria-label="Filter conversations"
-        className="flex gap-1.5 overflow-x-auto scrollbar-hide px-0.5 py-1.5 outline-none flex-1"
-        onKeyDown={handleKeyDown}
-        tabIndex={0}
+        className="scrollbar-hide flex min-w-0 flex-1 snap-x scroll-px-3 gap-1.5 overflow-x-auto pt-1.5 pr-1 pb-2 outline-none"
       >
-        {visibleFilters.map(({ key, label }) => (
-          <FilterChipItem
-            key={key}
-            label={label}
-            isActive={activeFilter === key}
-            onClick={() => onFilterChange(key)}
-            badge={getBadgeCount(key, counts)}
-          />
-        ))}
-      </div>
+        {visibleFilters.map(({ key, label }) => {
+          const badge = getBadgeCount(key, counts);
 
-      <div className="flex items-center ml-2 border-l border-border/40 pl-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="w-8 h-8 rounded-lg text-slate-muted hover:text-forge-teal hover:bg-forge-teal/5 transition-colors"
-          onClick={() =>
-            onDensityChange?.(density === "default" ? "compact" : "default")
-          }
-          title={density === "default" ? "Compact view" : "Default view"}
-        >
-          {density === "default" ? (
-            <LayoutList size={14} />
-          ) : (
-            <Rows size={14} />
-          )}
-        </Button>
+          return (
+            <FilterChipItem
+              key={key}
+              label={label}
+              isActive={activeFilter === key}
+              value={key}
+              badge={badge}
+              ariaLabel={getFilterAriaLabel(label, badge)}
+              className={getMobileFilterOrderClass(key)}
+            />
+          );
+        })}
+      </RadioGroup>
+
+      <div className="flex shrink-0 items-center border-border/40 border-l pl-2">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="accentGhost"
+              size="icon"
+              className="size-8 rounded-full border border-border/55 bg-card/55 text-slate-muted hover:enabled:border-forge-teal/30 hover:enabled:bg-forge-teal/8 hover:enabled:text-forge-teal"
+              onClick={() =>
+                onDensityChange?.(density === "default" ? "compact" : "default")
+              }
+              aria-label={densityLabel}
+            >
+              {density === "default" ? (
+                <LayoutList className="size-3.5" />
+              ) : (
+                <Rows className="size-3.5" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">{densityLabel}</TooltipContent>
+        </Tooltip>
       </div>
     </nav>
   );
@@ -99,10 +105,36 @@ export const FilterHeader = memo(function FilterHeader({
 
 function getBadgeCount(
   key: FilterChip,
-  counts: { groupCount: number; dmCount: number; unreadCount: number },
+  counts: {
+    pinnedCount: number;
+    allUnreadMessageCount: number;
+    groupUnreadMessageCount: number;
+    dmUnreadMessageCount: number;
+    pinnedUnreadMessageCount: number;
+  },
 ): number | null {
-  if (key === "groups") return counts.groupCount;
-  if (key === "direct") return counts.dmCount;
-  if (key === "unread") return counts.unreadCount;
+  if (key === "all") return counts.allUnreadMessageCount;
+  if (key === "groups") return counts.groupUnreadMessageCount;
+  if (key === "direct") return counts.dmUnreadMessageCount;
+  if (key === "unread") return counts.allUnreadMessageCount;
+  if (key === "pinned") return counts.pinnedUnreadMessageCount;
   return null;
+}
+
+function getFilterAriaLabel(label: string, count: number | null) {
+  if (!count) {
+    return label;
+  }
+
+  return `${label}, ${count} unread`;
+}
+
+function getMobileFilterOrderClass(key: FilterChip) {
+  if (key === "all") return "order-1 md:order-none";
+  if (key === "groups") return "order-2 md:order-none";
+  if (key === "direct") return "order-3 md:order-none";
+  if (key === "unread") return "order-4 md:order-none";
+  if (key === "pinned") return "order-5 md:order-none";
+  if (key === "saved") return "order-6 md:order-none";
+  return "order-6 md:order-none";
 }
