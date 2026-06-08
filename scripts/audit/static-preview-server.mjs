@@ -829,7 +829,7 @@ function appendVaryHeader(response, token) {
     typeof currentVary === "string"
       ? currentVary.split(",").map((value) => value.trim())
       : Array.isArray(currentVary)
-        ? currentVary.flatMap((value) => String(value).split(","))
+        ? currentVary.flatMap((value) => value.split(","))
         : [];
 
   if (
