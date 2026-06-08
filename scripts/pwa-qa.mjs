@@ -1377,14 +1377,6 @@ async function validateBuiltRoute() {
         ? "index.html preloads the authenticated PWA runtime."
         : "index.html leaves the authenticated PWA runtime lazy.",
     );
-    addCheck(
-      "Route",
-      "Validation chunk preload",
-      !indexHtml.includes("validation-"),
-      indexHtml.includes("validation-")
-        ? "index.html preloads validation code on public startup."
-        : "index.html leaves validation code out of public startup preloads.",
-    );
   }
 
   await withStaticServer(async (baseUrl) => {

@@ -1,27 +1,36 @@
-import { z } from "zod";
 import { authApi } from "@/shared/api/api";
 import type { AuthTokens } from "@/shared/api/auth-session";
 
 const AUDIT_AUTH_TOKENS_PATH = "/audit-auth-tokens.json";
-const auditTokensSchema = z
-  .object({
-    accessToken: z.string(),
-    refreshToken: z.string().optional(),
-  })
-  .passthrough();
 
 type AuditAuthWindow = Window & {
   __TEAMFORGE_AUDIT_AUTH_BOOTSTRAPPED?: boolean;
 };
 
 function parseAuditTokens(payload: unknown): AuthTokens | null {
-  const parsedPayload = auditTokensSchema.safeParse(payload);
-
-  if (!parsedPayload.success) {
+  if (!payload || typeof payload !== "object") {
     return null;
   }
 
-  return parsedPayload.data;
+  let accessToken: string | null = null;
+  let refreshToken: string | undefined;
+
+  if ("accessToken" in payload && typeof payload.accessToken === "string") {
+    accessToken = payload.accessToken;
+  }
+
+  if ("refreshToken" in payload && typeof payload.refreshToken === "string") {
+    refreshToken = payload.refreshToken;
+  }
+
+  if (!accessToken) {
+    return null;
+  }
+
+  return {
+    accessToken,
+    refreshToken,
+  };
 }
 
 export function isAuditAuthEnabled() {
