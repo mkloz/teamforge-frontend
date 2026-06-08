@@ -201,6 +201,7 @@ export default defineConfig(({ command }) => ({
       manifest: teamForgeManifest,
       workbox: {
         cleanupOutdatedCaches: true,
+        maximumFileSizeToCacheInBytes: 4194304,
         globPatterns: ["**/*.{js,css,html,png,svg,woff2}"],
         globIgnores: ["**/avatars/**", "**/group-covers/**"],
         importScripts: ["sw-push.js"],
