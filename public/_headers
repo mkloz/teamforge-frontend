@@ -1,0 +1,33 @@
+/*
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' 'sha256-Kz8UUC2j01g+EoplSxH6vyCDPpV2Ix8kySI75UjgdEM=' https://accounts.google.com https://maps.googleapis.com https://maps.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://mkloz-teamforge.s3.us-east-1.amazonaws.com https://images.unsplash.com https://*.giphy.com https://giphy.com https://maps.googleapis.com https://maps.gstatic.com https://*.googleusercontent.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:6969 http://127.0.0.1:6969 ws://localhost:6969 ws://127.0.0.1:6969 https://api.mkloz.com wss://api.mkloz.com https://accounts.google.com https://maps.googleapis.com https://places.googleapis.com https://api.giphy.com https://*.giphy.com https://vitals.vercel-insights.com https://*.vercel-insights.com; media-src 'self' blob: https://*.giphy.com https://giphy.com; manifest-src 'self'; worker-src 'self'; frame-src 'self' https://accounts.google.com; form-action 'self';
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), payment=(), usb=(), geolocation=(self)
+  Cross-Origin-Opener-Policy: same-origin-allow-popups
+  Cross-Origin-Resource-Policy: same-origin
+  Cache-Control: public, max-age=0, must-revalidate
+
+/manifest.webmanifest
+  Content-Type: application/manifest+json; charset=utf-8
+  Cache-Control: public, max-age=0, must-revalidate
+
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+  Service-Worker-Allowed: /
+
+/sw-push.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/workbox-*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/icons/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/download/*
+  Cache-Control: public, max-age=0, must-revalidate
