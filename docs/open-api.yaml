@@ -1821,6 +1821,80 @@ paths:
       summary: List accepted friends for the current user
       tags: &a18
         - Friendships
+  /api/v1/friends/public/{id}:
+    get:
+      operationId: FriendshipsController_getPublicFriends
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Target user ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            maximum: 500
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFriendships'
+        '429':
+          description: Too many requests
+      security: *a17
+      summary: List public friends of a target user
+      tags: *a18
+  /api/v1/friends/common/{id}:
+    get:
+      operationId: FriendshipsController_getCommonFriends
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Target user ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            maximum: 500
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            maximum: 100
+            default: 10
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFriendships'
+        '429':
+          description: Too many requests
+      security: *a17
+      summary: List common friends with the target user
+      tags: *a18
   /api/v1/friends/requests/incoming:
     get:
       operationId: FriendshipsController_getIncomingRequests
@@ -1978,6 +2052,29 @@ paths:
           description: Too many requests
       security: *a17
       summary: Decline an incoming friend request
+      tags: *a18
+  /api/v1/friends/requests/{id}:
+    delete:
+      operationId: FriendshipsController_withdrawRequest
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Target user ID
+          schema:
+            example: ckaqbclqnwqwfewgwsef
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FriendshipEntity'
+        '429':
+          description: Too many requests
+      security: *a17
+      summary: Withdraw an outgoing friend request
       tags: *a18
   /api/v1/friends/{id}:
     delete:
@@ -3564,6 +3661,9 @@ components:
         trustScore:
           type: number
           example: 0.5
+        showFriendsListOnProfile:
+          type: boolean
+          example: true
         interests:
           type: array
           items:
@@ -3573,6 +3673,7 @@ components:
         - name
         - createdAt
         - trustScore
+        - showFriendsListOnProfile
     UpdateUserDto:
       type: object
       properties:
@@ -7320,6 +7421,36 @@ components:
           example: 80
           minimum: 0
           maximum: 100
+        themeAppearance:
+          type: string
+          enum: &a41
+            - system
+            - light
+            - dark
+          example: system
+        themeStyle:
+          type: string
+          enum: &a42
+            - classic
+            - glass
+            - ink
+            - poster
+          example: classic
+        themeColor:
+          type: string
+          enum: &a43
+            - graphite
+            - forge
+            - harbor
+            - ember
+            - spruce
+            - paper
+            - ultraviolet
+            - cobalt
+            - coral
+            - acid
+            - mono
+          example: graphite
         showAgeOnProfile:
           type: boolean
           example: true
@@ -7327,6 +7458,9 @@ components:
           type: boolean
           example: true
         showCityOnProfile:
+          type: boolean
+          example: true
+        showFriendsListOnProfile:
           type: boolean
           example: true
       required:
@@ -7342,9 +7476,13 @@ components:
         - emailAccount
         - autoMatchingEnabled
         - minCompatibilityScore
+        - themeAppearance
+        - themeStyle
+        - themeColor
         - showAgeOnProfile
         - showGenderOnProfile
         - showCityOnProfile
+        - showFriendsListOnProfile
     UpdateUserSettingsDto:
       type: object
       properties:
@@ -7386,6 +7524,18 @@ components:
           example: 80
           minimum: 0
           maximum: 100
+        themeAppearance:
+          type: string
+          enum: *a41
+          example: system
+        themeStyle:
+          type: string
+          enum: *a42
+          example: classic
+        themeColor:
+          type: string
+          enum: *a43
+          example: graphite
         showAgeOnProfile:
           type: boolean
           example: true
@@ -7393,6 +7543,9 @@ components:
           type: boolean
           example: true
         showCityOnProfile:
+          type: boolean
+          example: true
+        showFriendsListOnProfile:
           type: boolean
           example: true
       required:
@@ -7408,8 +7561,12 @@ components:
         - emailAccount
         - autoMatchingEnabled
         - minCompatibilityScore
+        - themeAppearance
+        - themeStyle
+        - themeColor
         - showAgeOnProfile
         - showGenderOnProfile
         - showCityOnProfile
+        - showFriendsListOnProfile
 security:
   - bearer: []

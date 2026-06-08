@@ -129,7 +129,7 @@ export function HomeHeroView({
           <div className="min-w-0 flex-1">
             <h1
               id="home-hero-heading"
-              className="font-black text-foreground text-xl leading-tight tracking-tight sm:text-2xl md:text-3xl lg:text-4xl"
+              className="font-extrabold text-foreground text-xl leading-tight tracking-tight sm:text-2xl md:text-3xl lg:text-4xl"
             >
               {greeting}
             </h1>
@@ -160,10 +160,10 @@ export function HomeHeroView({
               </IconTile>
 
               <div className="min-w-0 flex-1">
-                <p className="font-black text-forge-teal text-xs">
+                <p className="font-bold text-forge-teal text-xs">
                   {nextMove.eyebrow}
                 </p>
-                <h2 className="mt-1 max-w-3xl font-black text-foreground text-lg leading-tight tracking-tight sm:text-2xl lg:text-3xl">
+                <h2 className="mt-1 max-w-3xl font-extrabold text-foreground text-lg leading-tight tracking-tight sm:text-2xl lg:text-3xl">
                   {nextMove.title}
                 </h2>
               </div>
@@ -224,7 +224,7 @@ function HomeHeroCompactHeader({
           />
 
           <div className="pointer-events-none relative z-10 min-w-0">
-            <p className="truncate font-black text-base text-foreground leading-tight tracking-tight sm:text-lg">
+            <p className="truncate font-bold text-base text-foreground leading-tight tracking-tight sm:text-lg">
               {title}
             </p>
             <p className="mt-0.5 truncate font-medium text-muted-foreground text-xs leading-tight sm:text-sm">

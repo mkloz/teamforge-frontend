@@ -70,7 +70,7 @@ export function FactItem({
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className={cn("text-forge-teal hover:underline", linkClassName)}
+              className={cn("text-primary hover:underline", linkClassName)}
             >
               {value}
             </a>

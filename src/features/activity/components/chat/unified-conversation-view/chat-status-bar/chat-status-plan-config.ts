@@ -23,16 +23,16 @@ export const PLAN_STATUS_CONFIG: Record<Plan["status"], PlanStatusConfig> = {
   DRAFT: {
     icon: FilePenLine,
     label: "Draft",
-    accentClass: "bg-spark-amber",
-    badgeClass: "bg-spark-amber/12 text-spark-amber",
-    colorClass: "text-spark-amber",
+    accentClass: "bg-accent",
+    badgeClass: "bg-accent/12 text-accent",
+    colorClass: "text-accent",
   },
   CONFIRMED: {
     icon: CheckCircle2,
     label: "Confirmed",
-    accentClass: "bg-forge-teal",
-    badgeClass: "bg-forge-teal/8 text-forge-teal",
-    colorClass: "text-forge-teal",
+    accentClass: "bg-primary",
+    badgeClass: "bg-primary/8 text-primary",
+    colorClass: "text-primary",
   },
   COMPLETED: {
     icon: CheckCircle2,
@@ -44,16 +44,16 @@ export const PLAN_STATUS_CONFIG: Record<Plan["status"], PlanStatusConfig> = {
   PROPOSED: {
     icon: MessageSquareDiff,
     label: "Proposed",
-    accentClass: "bg-spark-amber",
-    badgeClass: "bg-spark-amber/12 text-spark-amber",
-    colorClass: "text-spark-amber",
+    accentClass: "bg-accent",
+    badgeClass: "bg-accent/12 text-accent",
+    colorClass: "text-accent",
   },
   IN_PROGRESS: {
     icon: CalendarClock,
     label: "In Progress",
-    accentClass: "bg-forge-teal",
-    badgeClass: "bg-forge-teal/8 text-forge-teal",
-    colorClass: "text-forge-teal",
+    accentClass: "bg-primary",
+    badgeClass: "bg-primary/8 text-primary",
+    colorClass: "text-primary",
   },
   CANCELLED: {
     icon: X,
@@ -82,8 +82,8 @@ export function getPlanStatusConfig(plan: Plan): PlanStatusConfig {
 }
 
 export const PINNED_MESSAGE_CONFIG = {
-  accentClass: "bg-forge-teal",
-  colorClass: "text-forge-teal",
+  accentClass: "bg-primary",
+  colorClass: "text-primary",
   icon: Pin,
   label: "Pinned",
 } as const;

@@ -16,7 +16,7 @@ export function DownloadPageLoading(_props: PageLoadingProps = {}) {
       <span className="sr-only">Loading download page</span>
 
       {/* Nav skeleton */}
-      <header className="dark fixed top-0 right-0 left-0 z-50 border-white/5 border-b bg-hero-bg/95">
+      <header className="dark public-forge-theme fixed top-0 right-0 left-0 z-50 border-white/5 border-b bg-hero-bg/95">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-2">
             <Skeleton shape="square" className="size-8" tone="teal" />
@@ -30,7 +30,7 @@ export function DownloadPageLoading(_props: PageLoadingProps = {}) {
       </header>
 
       {/* Hero skeleton */}
-      <section className="dark h-svh min-h-0 border-canvas border-b bg-hero-bg pt-16">
+      <section className="dark public-forge-theme h-svh min-h-0 border-canvas border-b bg-hero-bg pt-16">
         <div className="mx-auto flex h-[calc(100svh-4rem)] min-h-0 max-w-6xl flex-col items-center gap-10 overflow-hidden px-6 py-10 sm:py-12 lg:flex-row lg:gap-12">
           {/* Left */}
           <div className="flex max-w-xl flex-1 flex-col items-center justify-center gap-6 lg:items-start">

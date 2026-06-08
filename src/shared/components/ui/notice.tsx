@@ -15,10 +15,10 @@ const noticeVariants = cva(
     variants: {
       tone: {
         danger: "border-destructive/20 bg-destructive/5 text-destructive",
-        info: "border-forge-teal/20 bg-forge-teal/8 text-foreground",
+        info: "border-primary/20 bg-primary/8 text-foreground",
         neutral: "border-border/70 bg-muted/20 text-foreground",
-        success: "border-forge-teal/20 bg-forge-teal/8 text-foreground",
-        warning: "border-spark-amber/25 bg-spark-amber/8 text-ink",
+        success: "border-primary/20 bg-primary/8 text-foreground",
+        warning: "border-accent/25 bg-accent/8 text-ink",
       },
       size: {
         xs: "gap-2 rounded-lg px-3 py-2 text-xs",
@@ -38,10 +38,10 @@ const noticeIconVariants = cva("mr-2 inline-flex shrink-0 align-text-bottom", {
   variants: {
     tone: {
       danger: "text-destructive",
-      info: "text-forge-teal",
+      info: "text-primary",
       neutral: "text-slate-muted",
-      success: "text-forge-teal",
-      warning: "text-spark-amber",
+      success: "text-primary",
+      warning: "text-accent",
     },
   },
   defaultVariants: {

@@ -1,4 +1,13 @@
 import { z } from "zod";
+import {
+  themeAppearanceValues,
+  themeColorValues,
+  themeStyleValues,
+} from "@/shared/constants/theme-preferences";
+
+export const themeAppearanceSchema = z.enum(themeAppearanceValues);
+export const themeStyleSchema = z.enum(themeStyleValues);
+export const themeColorSchema = z.enum(themeColorValues);
 
 export const notificationPreferencesSchema = z.object({
   notifyFriendRequests: z.boolean(),
@@ -13,6 +22,9 @@ export const notificationPreferencesSchema = z.object({
   emailAccount: z.boolean(),
   autoMatchingEnabled: z.boolean(),
   minCompatibilityScore: z.number().int().min(0).max(100),
+  themeAppearance: themeAppearanceSchema,
+  themeStyle: themeStyleSchema,
+  themeColor: themeColorSchema,
   showAgeOnProfile: z.boolean(),
   showGenderOnProfile: z.boolean(),
   showCityOnProfile: z.boolean(),

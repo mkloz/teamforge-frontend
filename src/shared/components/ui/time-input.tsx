@@ -292,7 +292,8 @@ function TimeScrollColumn<T extends number | string>({
                   tabIndex={selected ? 0 : -1}
                   className={cn(
                     "h-8 w-full max-w-16 rounded-full text-xs tabular-nums",
-                    selected && "border-forge-teal bg-forge-teal text-white",
+                    selected &&
+                      "border-primary bg-primary text-primary-foreground",
                   )}
                   onKeyDown={(event) => onKeyDown(option, event)}
                   onClick={() => onSelect(option)}
@@ -536,7 +537,7 @@ function TimeInput({
                             className={cn(
                               "mx-auto h-8 w-full max-w-14 rounded-full text-xs",
                               selected &&
-                                "border-forge-teal bg-forge-teal text-white",
+                                "border-primary bg-primary text-primary-foreground",
                             )}
                             onKeyDown={(event) =>
                               handleColumnKeyDown(

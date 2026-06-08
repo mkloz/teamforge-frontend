@@ -9,12 +9,12 @@ const iconTileVariants = cva(
   {
     variants: {
       tone: {
-        amber: "bg-spark-amber/10 text-spark-amber",
+        amber: "bg-accent/10 text-accent",
         destructive: "bg-destructive/10 text-destructive",
         muted: "bg-slate-muted/10 text-slate-muted",
         neutral: "bg-muted text-muted-foreground",
         none: "",
-        teal: "bg-forge-teal/10 text-forge-teal",
+        teal: "bg-primary/10 text-primary",
       },
       size: {
         "2xs": "size-4",
@@ -38,7 +38,7 @@ const iconTileVariants = cva(
       {
         bordered: true,
         tone: "amber",
-        className: "border-spark-amber/25",
+        className: "border-accent/25",
       },
       {
         bordered: true,
@@ -63,7 +63,7 @@ const iconTileVariants = cva(
       {
         bordered: true,
         tone: "teal",
-        className: "border-forge-teal/20",
+        className: "border-primary/20",
       },
       {
         shape: "square",

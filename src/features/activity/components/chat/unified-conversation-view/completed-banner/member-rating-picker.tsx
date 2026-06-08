@@ -33,10 +33,10 @@ export function MemberRatingPicker({
             onClick={() => onSelect(member)}
             className={cn(
               "h-auto shrink-0 rounded-full border px-3 py-1.5 text-xs transition-colors",
-              "focus-visible:ring-forge-teal/40",
+              "focus-visible:ring-primary/40",
               isSelected
-                ? "border-forge-teal/40 bg-forge-teal/10 text-forge-teal"
-                : "border-border bg-card text-ink hover:border-forge-teal/30",
+                ? "border-primary/40 bg-primary/10 text-primary"
+                : "border-border bg-card text-ink hover:border-primary/30",
               isRated && "opacity-50",
             )}
           >

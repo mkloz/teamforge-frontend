@@ -48,7 +48,7 @@ export function DecisionActionCard({
 function DecisionActionSummary({ copy }: { copy: DecisionActionCopy }) {
   return (
     <>
-      <p className="font-black text-foreground text-sm">{copy.headline}</p>
+      <p className="font-bold text-foreground text-sm">{copy.headline}</p>
       <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">
         {copy.summary}
       </p>

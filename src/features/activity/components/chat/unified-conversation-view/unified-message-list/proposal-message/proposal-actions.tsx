@@ -68,7 +68,7 @@ export const ProposalActions = memo(function ProposalActions({
       <Button
         variant="secondary"
         size="sm"
-        className="h-8 flex-1 border-spark-amber/20 text-xs"
+        className="h-8 flex-1 border-accent/20 text-xs"
         disabled={isActionDisabled}
         onClick={onApprove}
         title={!isOnline ? "Reconnect before voting." : undefined}

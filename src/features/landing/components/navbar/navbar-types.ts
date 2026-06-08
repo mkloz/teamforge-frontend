@@ -13,6 +13,7 @@ export interface NavbarProps {
   actionSet?: NavbarActionSet;
   forceSolid?: boolean;
   installAction?: NavbarInstallAction;
+  staticPublicTheme?: boolean;
 }
 
 export type NavbarButtonSize = "lg" | "sm";

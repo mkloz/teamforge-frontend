@@ -199,10 +199,10 @@ function MessageSelectionToggle({
       aria-label={isSelected ? "Unselect message" : "Select message"}
       aria-pressed={isSelected}
       className={cn(
-        "absolute top-1/2 left-0 z-20 flex size-6 -translate-y-1/2 items-center justify-center rounded-full border text-forge-teal transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/25",
+        "absolute top-1/2 left-0 z-20 flex size-6 -translate-y-1/2 items-center justify-center rounded-full border text-primary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25",
         isSelected
-          ? "border-forge-teal bg-forge-teal text-white shadow-sm"
-          : "border-border/70 bg-canvas/90 text-slate-muted backdrop-blur-md hover:border-forge-teal/45 hover:text-forge-teal",
+          ? "border-primary bg-primary text-primary-foreground shadow-sm"
+          : "border-border/70 bg-canvas/90 text-slate-muted backdrop-blur-md hover:border-primary/45 hover:text-primary",
       )}
       onClick={(event) => {
         event.stopPropagation();

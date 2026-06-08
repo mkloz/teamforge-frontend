@@ -121,7 +121,7 @@ export const ExpressionPicker = memo(function ExpressionPicker({
             <Button
               variant="ghost"
               size="icon-sm"
-              className="size-8 cursor-pointer rounded-full text-slate-muted outline-none transition-colors hover:text-spark-amber"
+              className="size-8 cursor-pointer rounded-full text-slate-muted outline-none transition-colors hover:text-accent"
               aria-label="Add emoji or GIF"
               disabled={disabled}
             >
@@ -231,7 +231,7 @@ function ExpressionTab({
       className={cn(
         "inline-flex h-9 items-center justify-center gap-2 rounded-full font-black text-xs transition-colors",
         active
-          ? "bg-forge-teal/10 text-ink ring-1 ring-forge-teal/20"
+          ? "bg-primary/10 text-ink ring-1 ring-primary/20"
           : "text-muted-foreground hover:bg-background/45 hover:text-ink",
       )}
       onKeyDown={onKeyDown}

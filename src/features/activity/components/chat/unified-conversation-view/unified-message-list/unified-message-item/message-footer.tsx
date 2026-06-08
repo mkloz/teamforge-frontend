@@ -87,13 +87,13 @@ export const MessageFooter = memo(
           {isPinned && (
             <Pin
               aria-label="Pinned message"
-              className="size-3 rotate-45 text-forge-teal"
+              className="size-3 rotate-45 text-primary"
             />
           )}
           {isSaved && (
             <Bookmark
               aria-label="Saved message"
-              className="size-3 fill-forge-teal/20 text-forge-teal"
+              className="size-3 fill-primary/20 text-primary"
             />
           )}
           {isFailedOwnMessage && (
@@ -143,7 +143,7 @@ function ReadBySummary({
 
   return (
     <span
-      className="ml-0.5 inline-flex min-w-0 items-center gap-1 rounded-full bg-forge-teal/8 px-1.5 py-0.5 text-forge-teal"
+      className="ml-0.5 inline-flex min-w-0 items-center gap-1 rounded-full bg-primary/8 px-1.5 py-0.5 text-primary"
       title={readerNames ? `Read by ${readerNames}` : label}
     >
       <span className="max-w-18 truncate font-black text-nano">{label}</span>
@@ -154,7 +154,7 @@ function ReadBySummary({
               key={reader.id}
               src={reader.avatar}
               name={reader.name}
-              className="size-4 border border-canvas bg-forge-teal/10 text-[0.45rem]"
+              className="size-4 border border-canvas bg-primary/10 text-[0.45rem]"
               fallbackClassName="text-[0.45rem]"
               imageSize={32}
             />
@@ -183,7 +183,7 @@ function ReactionPlaceholders({
           key={emoji}
           type="button"
           aria-label={`React with ${emoji}`}
-          className="flex size-5 items-center justify-center rounded-full border border-border/55 bg-card/55 text-xs leading-none opacity-70 transition hover:border-spark-amber/35 hover:bg-spark-amber/12 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-spark-amber/25 active:scale-95"
+          className="flex size-5 items-center justify-center rounded-full border border-border/55 bg-card/55 text-xs leading-none opacity-70 transition hover:border-accent/35 hover:bg-accent/12 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25 active:scale-95"
           onClick={() => onToggleReaction?.(emoji)}
         >
           <span aria-hidden="true">{emoji}</span>

@@ -19,7 +19,7 @@ export const ProposalComparison = memo(function ProposalComparison({
         <span className="wrap-break-word block min-w-0 font-semibold text-micro text-muted-foreground/75 leading-snug line-through decoration-muted-foreground/50">
           {current}
         </span>
-        <span className="flex size-5 shrink-0 items-center justify-center text-spark-amber">
+        <span className="flex size-5 shrink-0 items-center justify-center text-accent">
           <ArrowRight
             className="size-3.5"
             aria-hidden="true"

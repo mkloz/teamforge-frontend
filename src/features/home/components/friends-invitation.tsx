@@ -52,9 +52,7 @@ export function FriendsInvitation() {
       <div className="rounded-xl border border-forge-teal/25 bg-forge-teal/10 px-3 py-3">
         <div className="flex min-w-0 items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="font-black text-foreground text-sm">
-              Share TeamForge
-            </p>
+            <p className="font-bold text-foreground text-sm">Share TeamForge</p>
             <p className="mt-1 font-medium text-muted-foreground text-xs leading-snug">
               Send the app link now. Add them to a group when it fits.
             </p>

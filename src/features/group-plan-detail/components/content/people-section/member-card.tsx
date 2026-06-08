@@ -95,7 +95,7 @@ function MemberIdentity({
 }) {
   return (
     <div className="flex items-center gap-1.5">
-      <h3 className="truncate font-black text-foreground text-sm leading-tight">
+      <h3 className="truncate font-bold text-foreground text-sm leading-tight">
         {member.name}
       </h3>
       {isViewer ? (

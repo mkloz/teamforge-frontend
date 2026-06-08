@@ -59,6 +59,10 @@ export function SettingsFormBridge({ activeSection }: SettingsFormBridgeProps) {
         avatarError: profileFormState.avatarError,
         profileSummary: profileFormState.profileSummary,
       }}
+      appearance={{
+        ...notificationPreferenceState,
+        onChange: profileFormState.updateAppearancePreference,
+      }}
       matching={{
         ...notificationPreferenceState,
         currentUser: profileFormState.currentUser,

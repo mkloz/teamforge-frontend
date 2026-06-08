@@ -95,7 +95,7 @@ export function ProfilePanelInfo({
           />
 
           <div className="min-w-0 flex-1 pt-2 text-left">
-            <h3 className="truncate font-bold text-2xl text-white leading-tight tracking-tight">
+            <h3 className="truncate font-bold text-2xl text-foreground leading-tight tracking-tight">
               {participant.name}
             </h3>
             <ProfileMetaRow participant={participant} />

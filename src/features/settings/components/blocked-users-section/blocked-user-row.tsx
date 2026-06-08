@@ -36,7 +36,7 @@ export function BlockedUserRow({
         />
 
         <div className="min-w-0">
-          <p className="truncate font-semibold text-ink text-sm transition-colors group-hover:text-forge-teal">
+          <p className="truncate font-semibold text-ink text-sm transition-colors group-hover:text-primary">
             {user.name}
           </p>
           <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-slate-muted text-xs">

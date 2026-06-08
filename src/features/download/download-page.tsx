@@ -22,10 +22,6 @@ import { useLandingAuthActions } from "@/features/landing/hooks/use-landing-auth
 import { QrShareDialog } from "@/shared/components/qr-share-dialog";
 import { Button } from "@/shared/components/ui/button";
 import { IconTile } from "@/shared/components/ui/icon-tile";
-import {
-  type SegmentedTabOption,
-  SegmentedTabs,
-} from "@/shared/components/ui/segmented-tabs";
 import { usePageMetadata } from "@/shared/hooks/use-page-metadata";
 import { usePwaDisplayMode } from "@/shared/hooks/use-pwa-display-mode";
 import { usePwaInstallPrompt } from "@/shared/hooks/use-pwa-install-prompt";
@@ -505,6 +501,7 @@ export function DownloadPage() {
       <Navbar
         actionSet="download"
         forceSolid
+        staticPublicTheme
         installAction={
           canUseNativePrompt
             ? {
@@ -518,7 +515,7 @@ export function DownloadPage() {
       <main>
         {/* ── Hero ──────────────────────────────────────────────────── */}
         <section
-          className="dark relative h-svh min-h-0 overflow-hidden border-canvas border-b bg-hero-bg pt-16"
+          className="dark public-forge-theme relative h-svh min-h-0 overflow-hidden border-canvas border-b bg-hero-bg pt-16"
           aria-label="Install TeamForge"
         >
           <DownloadHeroGrid />
@@ -537,9 +534,8 @@ export function DownloadPage() {
               </p>
 
               {/* Device selector */}
-              <SegmentedTabs
+              <DownloadDeviceTabs
                 ariaLabel="Select your device"
-                className="backdrop-blur-sm"
                 options={DEVICE_TABS}
                 value={selectedDevice}
                 onChange={setSelectedDevice}
@@ -601,7 +597,7 @@ export function DownloadPage() {
               <Button
                 variant="outline"
                 size="icon"
-                className="absolute right-5 bottom-7 z-20 size-11 rounded-full border-white/20 bg-white/8 text-white shadow-black/20 shadow-lg backdrop-blur-md hover:border-forge-teal/50 hover:bg-forge-teal/15 hover:text-forge-teal focus-visible:ring-white sm:right-8 sm:bottom-10"
+                className="absolute right-5 bottom-7 z-20 size-11 rounded-full border-white/25 bg-white/8 text-white backdrop-blur-md hover:translate-y-0! hover:border-forge-teal hover:bg-forge-teal/20 hover:shadow-none! focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-hero-bg active:translate-y-0! active:shadow-none! sm:right-8 sm:bottom-10"
                 aria-label="Show install QR code"
               >
                 <QrCode size={18} strokeWidth={2.25} aria-hidden="true" />
@@ -640,7 +636,7 @@ export function DownloadPage() {
               {selectedDevice !== "ios" && (
                 <button
                   type="button"
-                  className="inline-flex min-h-11 items-center rounded-md font-medium text-forge-teal underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2"
+                  className="inline-flex min-h-11 items-center rounded-md font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                   onClick={() => {
                     setSelectedDevice("ios");
                   }}
@@ -652,7 +648,7 @@ export function DownloadPage() {
               {selectedDevice !== "android" && (
                 <button
                   type="button"
-                  className="inline-flex min-h-11 items-center rounded-md font-medium text-forge-teal underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2"
+                  className="inline-flex min-h-11 items-center rounded-md font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                   onClick={() => {
                     setSelectedDevice("android");
                   }}
@@ -664,7 +660,7 @@ export function DownloadPage() {
               {selectedDevice !== "desktop" && (
                 <button
                   type="button"
-                  className="inline-flex min-h-11 items-center rounded-md font-medium text-forge-teal underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2"
+                  className="inline-flex min-h-11 items-center rounded-md font-medium text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                   onClick={() => {
                     setSelectedDevice("desktop");
                   }}
@@ -778,11 +774,85 @@ export function DownloadPage() {
 
 // ─── Device selector ─────────────────────────────────────────────────────────
 
-const DEVICE_TABS: readonly SegmentedTabOption<SelectedDevice>[] = [
+interface DownloadDeviceTabOption {
+  icon: LucideIcon;
+  id: SelectedDevice;
+  label: string;
+  shortLabel?: string;
+}
+
+interface DownloadDeviceTabsProps {
+  ariaLabel: string;
+  onChange: (value: SelectedDevice) => void;
+  options: readonly DownloadDeviceTabOption[];
+  value: SelectedDevice;
+}
+
+const DEVICE_TABS: readonly DownloadDeviceTabOption[] = [
   { id: "ios", label: "iPhone & iPad", shortLabel: "iPhone", icon: Smartphone },
   { id: "android", label: "Android", icon: Smartphone },
   { id: "desktop", label: "Desktop", icon: MonitorSmartphone },
 ] as const;
+
+function DownloadDeviceTabs({
+  ariaLabel,
+  onChange,
+  options,
+  value,
+}: DownloadDeviceTabsProps) {
+  return (
+    <div
+      role="tablist"
+      aria-label={ariaLabel}
+      className="inline-flex max-w-full items-center gap-1 rounded-full border border-white/15 bg-white/8 p-0.5 shadow-sm backdrop-blur-sm"
+    >
+      {options.map((option) => {
+        const active = value === option.id;
+        const Icon = option.icon;
+
+        return (
+          <button
+            key={option.id}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            onClick={() => {
+              onChange(option.id);
+            }}
+            className={cn(
+              "relative inline-flex h-9 min-w-0 items-center justify-center gap-1.5 rounded-full px-3 font-bold text-xs leading-none outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-forge-teal/70 focus-visible:ring-offset-1 focus-visible:ring-offset-hero-bg",
+              active
+                ? "bg-forge-teal text-white shadow-[0_2px_0_#063b37]"
+                : "text-white/62 hover:bg-white/8 hover:text-white",
+            )}
+          >
+            <Icon
+              className={cn(
+                "size-3.5 shrink-0 transition-opacity duration-200",
+                active ? "opacity-100" : "opacity-70",
+              )}
+              strokeWidth={active ? 2 : 1.5}
+              aria-hidden="true"
+            />
+            <span
+              className={cn(
+                "min-w-0 truncate",
+                option.shortLabel && "hidden sm:inline",
+              )}
+            >
+              {option.label}
+            </span>
+            {option.shortLabel && (
+              <span className="min-w-0 truncate sm:hidden">
+                {option.shortLabel}
+              </span>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 // ─── Hero CTA buttons ─────────────────────────────────────────────────────────
 
@@ -806,8 +876,9 @@ function HeroCTAButtons({
   onInstallClick,
 }: HeroCTAButtonsProps) {
   const btnBase =
-    "w-full hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none sm:w-auto";
-  const outlineBase = "w-full sm:w-auto";
+    "w-full border-forge-teal bg-forge-teal text-white hover:-translate-y-1 hover:shadow-[0_4px_0_#042f2e] focus-visible:ring-forge-teal active:translate-y-0 active:shadow-none sm:w-auto";
+  const outlineBase =
+    "w-full border-white bg-transparent text-white hover:shadow-[0_4px_0_rgba(242,245,241,0.88)] focus-visible:ring-white sm:w-auto";
   const row = "flex w-full flex-col gap-3 sm:w-auto sm:flex-row";
   const { isResolvingAuthAction, secondaryAction } = useLandingAuthActions(
     "Get started",
@@ -1056,7 +1127,7 @@ function NativeInstallCallout({
   onInstallClick,
 }: NativeInstallCalloutProps) {
   return (
-    <div className="mb-8 rounded-2xl border border-forge-teal/20 bg-forge-teal/6 px-5 py-4 sm:flex sm:items-center sm:justify-between sm:gap-6">
+    <div className="mb-8 rounded-2xl border border-primary/20 bg-primary/6 px-5 py-4 sm:flex sm:items-center sm:justify-between sm:gap-6">
       <div className="min-w-0">
         <p className="font-bold text-ink">Direct install is available here</p>
         <p className="mt-1 max-w-xl text-pretty text-slate-muted text-sm leading-relaxed">
@@ -1064,13 +1135,13 @@ function NativeInstallCallout({
           only if the prompt does not appear.
         </p>
         {feedback && (
-          <p className="mt-2 font-medium text-forge-teal text-sm">{feedback}</p>
+          <p className="mt-2 font-medium text-primary text-sm">{feedback}</p>
         )}
       </div>
       <Button
         size="lg"
         loading={installState === "prompting"}
-        className="mt-4 w-full sm:mt-0 sm:w-auto"
+        className="mt-4 w-full text-white sm:mt-0 sm:w-auto"
         onClick={onInstallClick}
       >
         <Download size={16} strokeWidth={2} aria-hidden="true" />

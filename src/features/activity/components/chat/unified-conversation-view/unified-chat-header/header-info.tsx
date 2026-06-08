@@ -98,7 +98,7 @@ export const HeaderInfo = memo(
                 transition={{ duration: 0.2 }}
                 className="mt-0.5 flex min-w-0 items-center gap-1.5"
               >
-                <p className="min-w-0 truncate font-bold text-forge-teal text-xs leading-tight">
+                <p className="min-w-0 truncate font-bold text-primary text-xs leading-tight">
                   {typingText}
                 </p>
                 <UnifiedTypingIndicator
@@ -200,13 +200,11 @@ function HeaderAvatar({
       className={cn(
         "relative transition-all duration-300",
         isGroup
-          ? "size-10 rounded-md bg-forge-teal/10 ring-1 ring-border/50"
+          ? "size-10 rounded-md bg-primary/10 ring-1 ring-border/50"
           : "size-10",
       )}
       imageClassName="transition-transform duration-700 ease-out"
-      fallbackClassName={
-        isGroup ? "bg-forge-teal/10 text-forge-teal" : undefined
-      }
+      fallbackClassName={isGroup ? "bg-primary/10 text-primary" : undefined}
       loading="eager"
     >
       <div className="absolute inset-0 bg-ink/0" />

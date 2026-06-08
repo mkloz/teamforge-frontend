@@ -47,14 +47,14 @@ export const CompletedReviewGate = memo(function CompletedReviewGate({
 
   return (
     <div className="relative z-10 shrink-0 border-border border-t bg-canvas/60 backdrop-blur-sm">
-      <div className="flex items-center justify-between gap-3 border-spark-amber/20 border-b bg-spark-amber/8 px-4 py-2">
+      <div className="flex items-center justify-between gap-3 border-accent/20 border-b bg-accent/8 px-4 py-2">
         <div className="flex min-w-0 items-center gap-2">
-          <UserStar className="size-4 shrink-0 text-spark-amber" />
-          <span className="truncate font-semibold text-spark-amber text-xs">
+          <UserStar className="size-4 shrink-0 text-accent" />
+          <span className="truncate font-semibold text-accent text-xs">
             Review checkpoint
           </span>
         </div>
-        <span className="inline-flex min-h-6 shrink-0 items-center rounded-full border border-spark-amber/30 bg-spark-amber/12 px-2.5 py-0.5 font-black text-spark-amber text-xs tabular-nums leading-none shadow-sm">
+        <span className="inline-flex min-h-6 shrink-0 items-center rounded-full border border-accent/30 bg-accent/12 px-2.5 py-0.5 font-black text-accent text-xs tabular-nums leading-none shadow-sm">
           {rating.pendingCount || "No"} left
         </span>
       </div>
@@ -122,7 +122,7 @@ export const CompletedReviewGate = memo(function CompletedReviewGate({
                 rows={2}
                 placeholder="Optional note"
                 onChange={(event) => rating.setComment(event.target.value)}
-                className="min-h-18 resize-none rounded-lg border-border/70 bg-card/65 text-ink text-xs placeholder:text-slate-muted/70 focus-visible:border-forge-teal/40"
+                className="min-h-18 resize-none rounded-lg border-border/70 bg-card/65 text-ink text-xs placeholder:text-slate-muted/70 focus-visible:border-primary/40"
               />
             </div>
 
@@ -284,16 +284,16 @@ function CompletedRatingsSkeleton() {
     <div className="flex flex-col gap-3 py-1">
       <span className="sr-only">Loading reviews</span>
       <div className="flex gap-2 overflow-hidden pb-1">
-        <LoadingBlock className="h-8 w-24 shrink-0 rounded-lg bg-forge-teal/12" />
+        <LoadingBlock className="h-8 w-24 shrink-0 rounded-lg bg-primary/12" />
         <LoadingBlock className="h-8 w-28 shrink-0 rounded-lg" />
         <LoadingBlock className="h-8 w-24 shrink-0 rounded-lg" />
       </div>
 
       <div className="flex flex-col gap-3 rounded-lg border border-border/70 bg-card/65 p-3">
         <div className="mb-3 flex items-center justify-center gap-1.5">
-          <LoadingBlock className="size-6 rounded-full bg-spark-amber/18" />
-          <LoadingBlock className="size-6 rounded-full bg-spark-amber/18" />
-          <LoadingBlock className="size-6 rounded-full bg-spark-amber/18" />
+          <LoadingBlock className="size-6 rounded-full bg-accent/18" />
+          <LoadingBlock className="size-6 rounded-full bg-accent/18" />
+          <LoadingBlock className="size-6 rounded-full bg-accent/18" />
           <LoadingBlock className="size-6 rounded-full" />
           <LoadingBlock className="size-6 rounded-full" />
         </div>

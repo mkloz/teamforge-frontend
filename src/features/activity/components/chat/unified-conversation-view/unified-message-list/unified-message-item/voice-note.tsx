@@ -67,7 +67,7 @@ export const VoiceNote = memo(function VoiceNote({
             "disabled:cursor-not-allowed disabled:opacity-60",
             isOwn
               ? "border border-primary/10 bg-primary/10 text-primary hover:bg-primary/20 dark:border-white/10 dark:bg-white/10 dark:text-white hover:dark:bg-white/20"
-              : "border border-forge-teal/10 bg-forge-teal/5 text-forge-teal hover:bg-forge-teal/10",
+              : "border border-primary/10 bg-primary/5 text-primary hover:bg-primary/10",
           )}
         >
           {isPlaying ? (
@@ -115,7 +115,7 @@ export const VoiceNote = memo(function VoiceNote({
                   isActive
                     ? isOwn
                       ? "bg-primary dark:bg-white"
-                      : "bg-forge-teal"
+                      : "bg-primary"
                     : isOwn
                       ? "bg-primary/30 dark:bg-white/30"
                       : "bg-slate-muted/35",
@@ -130,7 +130,7 @@ export const VoiceNote = memo(function VoiceNote({
               "pointer-events-none absolute top-0 bottom-0 z-10 w-0.5",
               isOwn
                 ? "bg-primary/60 shadow-lg dark:bg-white/60"
-                : "bg-forge-teal/60 shadow-lg",
+                : "bg-primary/60 shadow-lg",
             )}
             style={{ left: `${progress * 100}%` }}
             initial={false}
@@ -149,7 +149,7 @@ export const VoiceNote = memo(function VoiceNote({
             "disabled:cursor-not-allowed disabled:opacity-60",
             isOwn
               ? "border-primary/10 bg-primary/5 text-primary/70 hover:bg-primary/10 dark:border-white/10 dark:bg-white/5 dark:text-white/70 hover:dark:bg-white/10"
-              : "border-forge-teal/10 bg-forge-teal/5 text-forge-teal/70 hover:bg-forge-teal/10",
+              : "border-primary/10 bg-primary/5 text-primary/70 hover:bg-primary/10",
           )}
         >
           {playbackSpeed}x

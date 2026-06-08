@@ -73,7 +73,7 @@ export function FriendRequestQueueItem({
           />
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 items-center gap-2">
-              <p className="truncate font-black text-foreground text-sm transition-colors duration-150 group-hover:text-forge-teal">
+              <p className="truncate font-bold text-foreground text-sm transition-colors duration-150 group-hover:text-forge-teal">
                 {request.counterpart.name}
               </p>
               {request.counterpart.personalityType ? (

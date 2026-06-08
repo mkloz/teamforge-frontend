@@ -22,14 +22,14 @@ export function AvatarIdentityHeader({
             className="size-28 border border-border bg-card text-2xl shadow-sm"
             loading="eager"
           />
-          <span className="absolute -right-1 -bottom-1 flex size-9 items-center justify-center rounded-full border-4 border-canvas bg-forge-teal text-white">
+          <span className="absolute -right-1 -bottom-1 flex size-9 items-center justify-center rounded-full border-4 border-canvas bg-primary text-primary-foreground">
             <CheckCircle2 size={17} strokeWidth={2} />
           </span>
         </div>
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="font-semibold text-forge-teal text-xs">Public identity</p>
+        <p className="font-semibold text-primary text-xs">Public identity</p>
         <h2 className="mt-2 font-bold text-3xl text-ink leading-tight">
           {currentUser?.name ?? "Your account"}
         </h2>

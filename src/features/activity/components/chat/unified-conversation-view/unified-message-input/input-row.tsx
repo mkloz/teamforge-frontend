@@ -75,7 +75,7 @@ export const InputRow = memo(
           disabled={disabled}
           className={cn(
             "min-h-0 w-full resize-none rounded-none border-0 bg-transparent p-0 shadow-none outline-none",
-            "font-medium text-base text-ink leading-snug caret-forge-teal placeholder:text-slate-muted/60",
+            "font-medium text-base text-ink leading-snug caret-primary placeholder:text-slate-muted/60",
             "scrollbar-hide max-h-30 focus-visible:outline-none focus-visible:ring-0",
             "transition-colors disabled:cursor-not-allowed disabled:opacity-50",
           )}

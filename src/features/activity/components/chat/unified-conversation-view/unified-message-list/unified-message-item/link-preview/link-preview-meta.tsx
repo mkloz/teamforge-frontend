@@ -35,7 +35,7 @@ export function LinkPreviewMeta({
           shape="circle"
           tone="teal"
           bordered
-          className="border-forge-teal/20"
+          className="border-primary/20"
         >
           {data.favicon ? (
             <Image
@@ -69,7 +69,7 @@ export function LinkPreviewMeta({
             <ExternalLink
               size={12}
               strokeWidth={1.75}
-              className="shrink-0 text-slate-muted transition-colors duration-150 group-hover:text-forge-teal"
+              className="shrink-0 text-slate-muted transition-colors duration-150 group-hover:text-primary"
               aria-hidden
             />
           ) : null}

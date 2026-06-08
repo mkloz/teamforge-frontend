@@ -45,7 +45,7 @@ export function HeroCover({ detail, alt, children }: HeroCoverProps) {
 
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-canvas via-canvas/60 to-60% to-transparent"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-3/5 bg-linear-to-t from-canvas via-canvas/82 to-70% to-transparent"
         />
 
         <div className="transform-[translate3d(0,var(--group-detail-cover-original-y,0px),0)] relative flex h-full flex-col justify-end p-5 opacity-(--group-detail-cover-original-opacity,1) transition-[opacity,transform] duration-300 ease-out [transition-delay:var(--group-detail-cover-original-delay,0ms)] motion-reduce:transition-none sm:p-7 md:p-9">

@@ -23,25 +23,22 @@ type ReactQueryDevtoolsProps = {
 };
 
 const TOASTER_STYLE = {
-  "--border-radius": "0.75rem",
+  "--border-radius": "0.5rem",
   "--error-bg": "color-mix(in srgb, var(--destructive) 8%, var(--card))",
   "--error-border": "var(--destructive)",
   "--error-text": "color-mix(in srgb, var(--destructive) 78%, var(--ink))",
-  "--info-bg": "color-mix(in srgb, var(--color-forge-teal) 6%, var(--card))",
-  "--info-border": "var(--color-forge-teal)",
-  "--info-text": "color-mix(in srgb, var(--color-forge-teal) 78%, var(--ink))",
+  "--info-bg": "color-mix(in srgb, var(--primary) 6%, var(--card))",
+  "--info-border": "var(--primary)",
+  "--info-text": "color-mix(in srgb, var(--primary) 78%, var(--ink))",
   "--normal-bg": "var(--card)",
   "--normal-border": "var(--border)",
   "--normal-text": "var(--foreground)",
-  "--success-bg": "color-mix(in srgb, var(--color-forge-teal) 8%, var(--card))",
-  "--success-border": "var(--color-forge-teal)",
-  "--success-text":
-    "color-mix(in srgb, var(--color-forge-teal) 78%, var(--ink))",
-  "--warning-bg":
-    "color-mix(in srgb, var(--color-spark-amber) 10%, var(--card))",
-  "--warning-border": "var(--color-spark-amber)",
-  "--warning-text":
-    "color-mix(in srgb, var(--color-spark-amber) 70%, var(--ink))",
+  "--success-bg": "color-mix(in srgb, var(--primary) 8%, var(--card))",
+  "--success-border": "var(--primary)",
+  "--success-text": "color-mix(in srgb, var(--primary) 78%, var(--ink))",
+  "--warning-bg": "color-mix(in srgb, var(--accent) 10%, var(--card))",
+  "--warning-border": "var(--accent)",
+  "--warning-text": "color-mix(in srgb, var(--accent) 70%, var(--ink))",
   fontFamily: "var(--font-sans)",
 } satisfies ToasterCssProperties;
 
@@ -54,7 +51,7 @@ const TOASTER_PROPS = {
   toastOptions: {
     classNames: {
       actionButton:
-        "col-start-2! mt-0.5! flex! h-9! w-full! justify-self-stretch! items-center! justify-center! gap-2! rounded-lg! border-2! border-forge-teal! bg-forge-teal! px-4! font-bold! text-sm! text-white! leading-none! shadow-button-primary! transition-all! duration-150! ease-out! hover:-translate-y-0.5! hover:shadow-button-primary! focus-visible:ring-2! focus-visible:ring-forge-teal! focus-visible:ring-offset-2! focus-visible:ring-offset-card! active:translate-y-0! active:shadow-none! sm:w-fit! sm:justify-self-end!",
+        "col-start-2! mt-0.5! flex! h-9! w-full! justify-self-stretch! items-center! justify-center! gap-2! rounded-md! border-2! border-primary! bg-primary! px-4! font-bold! text-primary-foreground! text-sm! leading-none! shadow-button-primary! transition-all! duration-150! ease-out! hover:-translate-y-0.5! hover:shadow-button-primary! focus-visible:ring-2! focus-visible:ring-primary! focus-visible:ring-offset-2! focus-visible:ring-offset-card! active:translate-y-0! active:shadow-none! sm:w-fit! sm:justify-self-end!",
       closeButton:
         "border-current bg-card font-bold text-current transition-colors hover:bg-background",
       content: "min-w-0 gap-1 pr-2",
@@ -62,7 +59,7 @@ const TOASTER_PROPS = {
       icon: "mt-0.5",
       title: "text-pretty font-black text-sm leading-5",
       toast:
-        "grid! grid-cols-[auto_minmax(0,1fr)]! items-start! gap-x-3! gap-y-3! rounded-2xl! border! p-4! shadow-2xl! shadow-black/12!",
+        "grid! grid-cols-[auto_minmax(0,1fr)]! items-start! gap-x-3! gap-y-3! rounded-lg! border! p-4! shadow-2xl! shadow-black/12!",
     },
   },
 } satisfies ToasterProps;

@@ -69,7 +69,7 @@ export const GalleryItem = memo(
         } attachment ${index + 1}`}
         className={cn(
           "group/gallery-item relative block w-full appearance-none overflow-hidden bg-muted/60 text-left",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/40 focus-visible:ring-offset-2",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2",
           "disabled:cursor-not-allowed",
           visibleState !== "error" && "cursor-zoom-in",
           count === 1 &&
@@ -168,7 +168,7 @@ export const GalleryItem = memo(
           />
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-muted/70 text-slate-muted">
-            <span className="flex size-11 items-center justify-center rounded-full border border-forge-teal/20 bg-forge-teal/10 text-forge-teal">
+            <span className="flex size-11 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-primary">
               <Play className="ml-0.5 size-5 fill-current" />
             </span>
             <span className="font-semibold text-xs">Video</span>

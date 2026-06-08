@@ -42,9 +42,9 @@ function ThumbnailItem({
       className={cn(
         "relative size-12 shrink-0 overflow-hidden rounded-lg p-0",
         "transition-all duration-200",
-        "focus-visible:ring-forge-teal/50",
+        "focus-visible:ring-primary/50",
         isSelected
-          ? "z-10 scale-110 opacity-100 ring-2 ring-forge-teal"
+          ? "z-10 scale-110 opacity-100 ring-2 ring-primary"
           : "opacity-40 grayscale-50 hover:opacity-100 hover:grayscale-0",
       )}
     >

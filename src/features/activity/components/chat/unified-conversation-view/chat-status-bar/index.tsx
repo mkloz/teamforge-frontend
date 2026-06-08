@@ -86,7 +86,7 @@ export const ChatStatusBar = memo(function ChatStatusBar({
           "transition-colors duration-150",
           "hover:enabled:bg-transparent hover:enabled:dark:bg-transparent",
           "active:enabled:translate-y-0 active:enabled:scale-100 active:enabled:bg-transparent",
-          "focus-visible:ring-forge-teal/40 focus-visible:ring-inset",
+          "focus-visible:ring-primary/40 focus-visible:ring-inset",
         )}
       >
         <Icon
@@ -158,7 +158,7 @@ export const ChatStatusBar = memo(function ChatStatusBar({
                     "text-slate-muted/60",
                     "hover:bg-muted/80 hover:text-ink",
                     "transition-colors duration-150",
-                    "focus-visible:ring-forge-teal/40",
+                    "focus-visible:ring-primary/40",
                   )}
                 >
                   <X className="size-3.5" strokeWidth={2} />

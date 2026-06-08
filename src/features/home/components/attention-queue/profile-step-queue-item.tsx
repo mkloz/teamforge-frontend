@@ -39,7 +39,7 @@ export function ProfileStepQueueItem({
               <AttentionQueueTypeLabel icon={ShieldCheck} tone="teal">
                 Setup
               </AttentionQueueTypeLabel>
-              <p className="truncate font-black text-foreground text-sm transition-colors duration-150 group-hover:text-forge-teal">
+              <p className="truncate font-bold text-foreground text-sm transition-colors duration-150 group-hover:text-forge-teal">
                 {nextStep.title}
               </p>
             </div>

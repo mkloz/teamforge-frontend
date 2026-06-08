@@ -141,7 +141,7 @@ export const ProposalMessage = memo(function ProposalMessage({
         aria-roledescription="message"
         aria-label={messageAriaLabel}
         className={cn(
-          "group relative w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
+          "group relative w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
           canToggleSelection && "cursor-pointer",
           shouldShowOuterFocus ? "overflow-visible" : "overflow-hidden",
         )}
@@ -151,7 +151,7 @@ export const ProposalMessage = memo(function ProposalMessage({
         <motion.div
           style={{ opacity, scale, x: message.isOwn ? -20 : 20 }}
           className={cn(
-            "absolute top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-forge-teal/20 text-forge-teal",
+            "absolute top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-primary/20 text-primary",
             message.isOwn ? "right-10" : "left-10",
           )}
         >
@@ -179,7 +179,7 @@ export const ProposalMessage = memo(function ProposalMessage({
             )}
           >
             {!message.isOwn && showSender && (
-              <p className="mb-0.5 ml-1.5 font-bold text-forge-teal text-micro opacity-90">
+              <p className="mb-0.5 ml-1.5 font-bold text-micro text-primary opacity-90">
                 {message.sender?.name || proposal.proposer.name}
               </p>
             )}
@@ -194,13 +194,13 @@ export const ProposalMessage = memo(function ProposalMessage({
                 className={cn(
                   "relative flex w-full min-w-0 max-w-full flex-col rounded-xl border px-1 py-1 shadow-sm backdrop-blur-md transition duration-300",
                   message.isOwn
-                    ? "rounded-br-none border-forge-teal/15 bg-forge-teal/8 text-ink"
+                    ? "rounded-br-none border-primary/15 bg-primary/8 text-ink"
                     : "rounded-bl-none border-border/60 bg-card/75 text-ink",
                   isHighlighted
                     ? "message-search-focus"
                     : isInteractionFocused && "message-action-focus",
                   isSelected &&
-                    "border-forge-teal/65 bg-forge-teal/12 ring-1 ring-forge-teal/35",
+                    "border-primary/65 bg-primary/12 ring-1 ring-primary/35",
                 )}
               >
                 <ReplyReference

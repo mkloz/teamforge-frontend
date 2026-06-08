@@ -1,0 +1,93 @@
+:root[data-theme-color="cobalt"] {
+  --background: #eef3fb;
+  --foreground: #172033;
+  --ink: #172033;
+  --slate-muted: #5f6e85;
+  --canvas: #f7faff;
+  --card: #fcfdff;
+  --card-foreground: #172033;
+  --popover: #fcfdff;
+  --popover-foreground: #172033;
+  --primary: #2563eb;
+  --primary-foreground: #fcfdff;
+  --secondary: color-mix(in srgb, var(--primary) 9%, transparent);
+  --secondary-foreground: #1d4ed8;
+  --muted: #e5edf8;
+  --muted-foreground: #5f6e85;
+  --accent: #ea580c;
+  --accent-foreground: #172033;
+  --destructive: #dc2626;
+  --destructive-foreground: #fcfdff;
+  --border: color-mix(in srgb, var(--foreground) 11%, transparent);
+  --input: #e4ecf7;
+  --ring: #2563eb;
+  --chart-1: #2563eb;
+  --chart-2: #06b6d4;
+  --chart-3: #ea580c;
+  --chart-4: #7c3aed;
+  --chart-5: #5f6e85;
+  --sidebar: #f7faff;
+  --sidebar-foreground: #172033;
+  --sidebar-primary: #2563eb;
+  --sidebar-primary-foreground: #fcfdff;
+  --sidebar-accent: color-mix(in srgb, var(--primary) 9%, transparent);
+  --sidebar-accent-foreground: #1d4ed8;
+  --sidebar-border: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --sidebar-ring: #2563eb;
+  --color-forge-teal: var(--primary);
+  --color-spark-amber: var(--accent);
+  --color-button-primary-border: var(--primary);
+  --color-button-secondary-border: var(--accent);
+  --shadow-button-primary: 0 4px 0
+    color-mix(in srgb, var(--primary) 68%, var(--button-shadow-base));
+  --shadow-button-secondary: 0 4px 0
+    color-mix(in srgb, var(--accent) 72%, var(--button-shadow-base));
+  --shadow-button-outline: 0 4px 0 var(--foreground);
+}
+
+.dark[data-theme-color="cobalt"] {
+  --background: #07111f;
+  --foreground: #eef6ff;
+  --ink: #eef6ff;
+  --slate-muted: #a7b7cd;
+  --canvas: #0d1a2c;
+  --card: #16243a;
+  --card-foreground: #eef6ff;
+  --popover: #16243a;
+  --popover-foreground: #eef6ff;
+  --primary: #60a5fa;
+  --primary-foreground: #06101c;
+  --secondary: color-mix(in srgb, var(--primary) 13%, transparent);
+  --secondary-foreground: #93c5fd;
+  --muted: #1e304a;
+  --muted-foreground: #a7b7cd;
+  --accent: #fb923c;
+  --accent-foreground: #06101c;
+  --destructive: #f87171;
+  --destructive-foreground: #06101c;
+  --border: color-mix(in srgb, var(--foreground) 12%, transparent);
+  --input: #1e304a;
+  --ring: #60a5fa;
+  --chart-1: #60a5fa;
+  --chart-2: #22d3ee;
+  --chart-3: #fb923c;
+  --chart-4: #a78bfa;
+  --chart-5: #a7b7cd;
+  --sidebar: #0d1a2c;
+  --sidebar-foreground: #eef6ff;
+  --sidebar-primary: #60a5fa;
+  --sidebar-primary-foreground: #06101c;
+  --sidebar-accent: color-mix(in srgb, var(--primary) 13%, transparent);
+  --sidebar-accent-foreground: #93c5fd;
+  --sidebar-border: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --sidebar-ring: #60a5fa;
+  --color-forge-teal: var(--primary);
+  --color-spark-amber: var(--accent);
+  --color-button-primary-border: var(--primary);
+  --color-button-secondary-border: var(--accent);
+  --shadow-button-primary: 0 4px 0
+    color-mix(in srgb, var(--primary) 58%, var(--button-shadow-base));
+  --shadow-button-secondary: 0 4px 0
+    color-mix(in srgb, var(--accent) 64%, var(--button-shadow-base));
+  --shadow-button-outline: 0 4px 0 var(--foreground);
+}

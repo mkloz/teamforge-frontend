@@ -48,7 +48,7 @@ export const MessageStatusIcon = memo(function MessageStatusIcon({
         <CheckCheck
           size={10}
           className={cn(
-            isReadByOthers ? "text-forge-teal" : "text-slate-muted/40",
+            isReadByOthers ? "text-primary" : "text-slate-muted/40",
           )}
           strokeWidth={2.5}
         />

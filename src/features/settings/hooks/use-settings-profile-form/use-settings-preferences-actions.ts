@@ -9,6 +9,7 @@ import { showAppSuccessToast } from "@/shared/lib/app-toast";
 import { trackMutationOutcome } from "@/shared/lib/telemetry";
 import { trackedMutationNames } from "@/shared/lib/telemetry-contract";
 import type { NotificationPreferences } from "@/shared/schemas";
+import { useThemeStore } from "@/shared/store/theme.store";
 
 import type { BooleanSettingsPreferenceKey } from "./types";
 
@@ -31,6 +32,9 @@ const settingsPreferenceKeys = [
   "emailAccount",
   "autoMatchingEnabled",
   "minCompatibilityScore",
+  "themeAppearance",
+  "themeStyle",
+  "themeColor",
   "showAgeOnProfile",
   "showGenderOnProfile",
   "showCityOnProfile",
@@ -95,8 +99,7 @@ export function useSettingsPreferencesActions({
 
   const preferencesMutation = useMutation({
     meta: {
-      errorToastMessage:
-        "We couldn't update your notification preferences right now.",
+      errorToastMessage: "We couldn't update your settings right now.",
       telemetryName: trackedMutationNames.settingsNotificationPreferences,
     },
     mutationFn: (
@@ -115,6 +118,7 @@ export function useSettingsPreferencesActions({
       );
 
       SettingsCache.setNotificationPreferences(nextPreferences);
+      useThemeStore.getState().setThemePreferences(nextPreferences);
 
       return {
         changedKeys,
@@ -124,6 +128,7 @@ export function useSettingsPreferencesActions({
     },
     onSuccess: (result) => {
       SettingsCache.setNotificationPreferences(result.data);
+      useThemeStore.getState().setThemePreferences(result.data);
       setPreferencesError(null);
       showAppSuccessToast("Settings updated.", {
         id: "settings-preferences-updated",
@@ -143,10 +148,15 @@ export function useSettingsPreferencesActions({
           context,
         ),
       );
+      if (context?.previousPreferences) {
+        useThemeStore
+          .getState()
+          .setThemePreferences(context.previousPreferences);
+      }
       setPreferencesError(
         getApiErrorMessage(
           error,
-          "We couldn't update your notification preferences right now.",
+          "We couldn't update your settings right now.",
         ),
       );
     },
@@ -256,6 +266,24 @@ export function useSettingsPreferencesActions({
     });
   }
 
+  async function updateAppearancePreference(
+    values: Pick<
+      NotificationPreferences,
+      "themeAppearance" | "themeStyle" | "themeColor"
+    >,
+  ) {
+    const currentPreferences = notificationPreferencesQuery.data;
+
+    if (!currentPreferences) {
+      return;
+    }
+
+    await saveNotificationPreferences({
+      ...currentPreferences,
+      ...values,
+    });
+  }
+
   return {
     notificationPreferences: notificationPreferencesQuery.data ?? null,
     isLoadingNotificationPreferences: notificationPreferencesQuery.isLoading,
@@ -267,6 +295,7 @@ export function useSettingsPreferencesActions({
     updateNotificationPreference,
     updateMatchingPreference,
     updatePrivacyPreference,
+    updateAppearancePreference,
     isSavingNotificationPreferences: preferencesMutation.isPending,
     savingNotificationPreferenceKeys: savingPreferenceKeys,
     isOnline,

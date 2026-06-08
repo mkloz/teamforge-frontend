@@ -130,7 +130,7 @@ function TypingDots({
             delay: i * 0.15,
             ease: "easeInOut",
           }}
-          className={cn("mb-0.5 rounded-full bg-forge-teal", dotSize)}
+          className={cn("mb-0.5 rounded-full bg-primary", dotSize)}
         />
       ))}
     </div>

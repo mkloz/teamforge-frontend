@@ -10,7 +10,7 @@ import type {
 
 export type BooleanSettingsPreferenceKey = Exclude<
   keyof NotificationPreferences,
-  "minCompatibilityScore"
+  "minCompatibilityScore" | "themeAppearance" | "themeStyle" | "themeColor"
 >;
 
 export interface AccountSettingsState {
@@ -59,6 +59,15 @@ export interface PrivacySettingsState extends NotificationPreferenceState {
   ) => Promise<void>;
 }
 
+export interface AppearanceSettingsState extends NotificationPreferenceState {
+  onChange: (
+    values: Pick<
+      NotificationPreferences,
+      "themeAppearance" | "themeStyle" | "themeColor"
+    >,
+  ) => Promise<void>;
+}
+
 export interface NotificationSettingsState extends NotificationPreferenceState {
   onChange: (
     key: BooleanSettingsPreferenceKey,
@@ -96,6 +105,7 @@ export interface SafetySettingsState {
 export interface SettingsProfileFormProps {
   activeSection: SettingsSection;
   account: AccountSettingsState;
+  appearance: AppearanceSettingsState;
   matching: MatchingSettingsState;
   privacy: PrivacySettingsState;
   security: SecuritySettingsState;

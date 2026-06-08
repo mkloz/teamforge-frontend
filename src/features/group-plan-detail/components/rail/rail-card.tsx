@@ -30,7 +30,7 @@ export function RailCard({
         <p className="font-bold text-forge-teal text-xs">{eyebrow}</p>
       ) : null}
       {heading ? (
-        <h3 className="mt-1 font-black text-foreground text-sm">{heading}</h3>
+        <h3 className="mt-1 font-bold text-foreground text-sm">{heading}</h3>
       ) : null}
       <div className={cn(eyebrow || heading ? "mt-3" : "")}>{children}</div>
     </div>

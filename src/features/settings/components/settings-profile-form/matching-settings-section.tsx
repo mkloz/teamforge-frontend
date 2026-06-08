@@ -128,7 +128,7 @@ export function MatchingSettingsSection({
                 size="sm"
                 tone="teal"
                 surface="outline"
-                className="bg-forge-teal/8 px-3 py-1 font-semibold"
+                className="bg-primary/8 px-3 py-1 font-semibold"
               >
                 {interest.name}
               </StatusPill>

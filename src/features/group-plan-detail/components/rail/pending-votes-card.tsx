@@ -21,7 +21,7 @@ export function PendingVotesCard({ detail }: PendingVotesCardProps) {
           className="size-4 shrink-0 text-spark-amber"
           aria-hidden="true"
         />
-        <p className="min-w-0 font-black text-foreground text-sm leading-snug">
+        <p className="min-w-0 font-bold text-foreground text-sm leading-snug">
           {getPendingVoteHeadline(pending)}
         </p>
       </div>

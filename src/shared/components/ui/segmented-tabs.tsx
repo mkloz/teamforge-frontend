@@ -14,6 +14,7 @@ export interface SegmentedTabOption<TValue extends string> {
 interface SegmentedTabsProps<TValue extends string> {
   ariaLabel: string;
   className?: string;
+  disabled?: boolean;
   fill?: boolean;
   onChange: (value: TValue) => void;
   options: ReadonlyArray<SegmentedTabOption<TValue>>;
@@ -24,6 +25,7 @@ interface SegmentedTabsProps<TValue extends string> {
 export function SegmentedTabs<TValue extends string>({
   ariaLabel,
   className,
+  disabled = false,
   fill = false,
   onChange,
   options,
@@ -54,17 +56,19 @@ export function SegmentedTabs<TValue extends string>({
             type="button"
             role="tab"
             aria-selected={active}
+            disabled={disabled}
             onClick={() => {
               onChange(option.id);
             }}
             className={cn(
-              "relative isolate inline-flex min-w-0 items-center justify-center overflow-hidden rounded-full font-bold leading-none outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-forge-teal/45 focus-visible:ring-offset-1 focus-visible:ring-offset-background motion-reduce:transition-none",
+              "relative isolate inline-flex min-w-0 items-center justify-center overflow-hidden rounded-full font-bold leading-none outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-primary/45 focus-visible:ring-offset-1 focus-visible:ring-offset-background motion-reduce:transition-none",
               size === "sm"
                 ? "h-7 gap-1 px-2.5 text-micro"
                 : "h-9 gap-1.5 px-3 text-xs",
               fill && "flex-1",
+              disabled && "cursor-not-allowed opacity-60",
               active
-                ? "text-white"
+                ? "text-primary-foreground"
                 : "text-slate-muted hover:bg-muted hover:text-ink",
             )}
           >
@@ -79,7 +83,7 @@ export function SegmentedTabs<TValue extends string>({
                   damping: 42,
                   mass: 0.7,
                 }}
-                className="absolute inset-0 -z-10 rounded-full bg-forge-teal-readable shadow-sm"
+                className="absolute inset-0 -z-10 rounded-full bg-primary shadow-sm"
               />
             )}
             {Icon && (

@@ -5,6 +5,7 @@ import {
   BookOpenCheck,
   CircleHelp,
   CircleSlash,
+  ClipboardCheck,
   ClipboardList,
   Copyright,
   Eye,
@@ -21,7 +22,6 @@ import {
   Settings2,
   ShieldAlert,
   ShieldCheck,
-  Sparkles,
   Trash2,
   UserCheck,
   UsersRound,
@@ -357,7 +357,7 @@ const legalSectionIcons: Record<string, LucideIcon> = {
   scope: BookOpenCheck,
   "data-collected": ClipboardList,
   "inferred-data": Fingerprint,
-  use: Sparkles,
+  use: ClipboardCheck,
   visibility: Eye,
   providers: ServerCog,
   retention: Trash2,
@@ -411,7 +411,7 @@ export function LegalPage({ kind }: LegalPageProps) {
     <div className="bg-canvas font-sans text-ink antialiased">
       <a
         href="#main-content"
-        className="fixed top-4 left-4 z-100 -translate-y-24 rounded-lg bg-forge-teal px-4 py-2 text-white opacity-0 transition focus:translate-y-0 focus:opacity-100 focus:outline-none"
+        className="fixed top-4 left-4 z-100 -translate-y-24 rounded-lg bg-primary px-4 py-2 text-primary-foreground opacity-0 transition focus:translate-y-0 focus:opacity-100 focus:outline-none"
       >
         Skip to main content
       </a>
@@ -517,7 +517,7 @@ function LegalSectionBlock({ section }: { section: LegalSection }) {
           size="sm"
           shape="square"
           bordered
-          className="mt-0.5 size-6 rounded-xl bg-forge-teal/8"
+          className="mt-0.5 size-6 rounded-xl bg-primary/8"
           iconClassName="size-3.5"
         />
         <h2 className="max-w-sm text-balance font-black text-ink text-xl leading-tight">
@@ -533,7 +533,7 @@ function LegalSectionBlock({ section }: { section: LegalSection }) {
           {section.bullets.map((bullet) => (
             <li key={bullet} className="flex items-start gap-2.5">
               <LockKeyhole
-                className="mt-1 size-3.5 shrink-0 text-forge-teal"
+                className="mt-1 size-3.5 shrink-0 text-primary"
                 aria-hidden="true"
               />
               <span className="font-medium text-ink/82 text-sm leading-relaxed">

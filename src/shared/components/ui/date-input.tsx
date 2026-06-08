@@ -323,11 +323,11 @@ function DateInput({
                         className={cn(
                           "size-8 rounded-lg font-bold text-xs",
                           selected &&
-                            "border-forge-teal bg-forge-teal text-white",
+                            "border-primary bg-primary text-primary-foreground",
                           outsideMonth && "text-slate-muted/35",
                           today &&
                             !selected &&
-                            "border-forge-teal/30 text-forge-teal",
+                            "border-primary/30 text-primary",
                         )}
                         onClick={() => selectDate(date)}
                       >
@@ -360,7 +360,7 @@ function DateInput({
                         className={cn(
                           "h-10 rounded-lg text-xs",
                           selected &&
-                            "border-forge-teal bg-forge-teal text-white",
+                            "border-primary bg-primary text-primary-foreground",
                         )}
                         onClick={() => selectMonth(monthIndex)}
                       >
@@ -388,7 +388,7 @@ function DateInput({
                         className={cn(
                           "h-10 rounded-lg text-xs tabular-nums",
                           selected &&
-                            "border-forge-teal bg-forge-teal text-white",
+                            "border-primary bg-primary text-primary-foreground",
                         )}
                         onClick={() => selectYear(year)}
                       >

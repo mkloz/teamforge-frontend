@@ -32,7 +32,7 @@ export function PlanFact({
           ) : null}
         </>
       }
-      valueClassName="mt-0.5 font-black text-foreground"
+      valueClassName="mt-0.5 font-bold text-foreground"
       className="items-start gap-4"
     />
   );

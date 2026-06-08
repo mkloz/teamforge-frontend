@@ -18,9 +18,8 @@ const skeletonVariants = cva(
         default:
           "bg-slate-muted/12 ring-1 ring-ink/5 dark:bg-slate-muted/18 dark:ring-slate-muted/10",
         muted: "bg-muted/90 ring-1 ring-ink/5 dark:ring-slate-muted/10",
-        teal: "bg-forge-teal/12 ring-1 ring-forge-teal/10 dark:bg-forge-teal/16",
-        amber:
-          "bg-spark-amber/16 ring-1 ring-spark-amber/10 dark:bg-spark-amber/20",
+        teal: "bg-primary/12 ring-1 ring-primary/10 dark:bg-primary/16",
+        amber: "bg-accent/16 ring-1 ring-accent/10 dark:bg-accent/20",
       },
     },
     defaultVariants: {

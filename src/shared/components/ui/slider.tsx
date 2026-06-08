@@ -59,14 +59,14 @@ function Slider({
       >
         <SliderPrimitive.Range
           data-slot="slider-range"
-          className="absolute h-full bg-forge-teal"
+          className="absolute h-full bg-primary"
         />
       </SliderPrimitive.Track>
       {thumbKeys.map((thumbKey) => (
         <SliderPrimitive.Thumb
           key={`slider-thumb-${thumbKey}`}
           data-slot="slider-thumb"
-          className="block size-5 shrink-0 cursor-grab rounded-full border border-forge-teal bg-background shadow-sm ring-ring/50 transition-all hover:ring-4 focus-visible:outline-none focus-visible:ring-4 active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-50"
+          className="block size-5 shrink-0 cursor-grab rounded-full border border-primary bg-background shadow-sm ring-ring/50 transition-all hover:ring-4 focus-visible:outline-none focus-visible:ring-4 active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-50"
         />
       ))}
     </SliderPrimitive.Root>

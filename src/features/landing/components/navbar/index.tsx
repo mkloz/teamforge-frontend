@@ -27,6 +27,7 @@ export function Navbar({
   actionSet = "landing",
   forceSolid = false,
   installAction,
+  staticPublicTheme = false,
 }: NavbarProps) {
   const scrolled = useWindowScrollThreshold(60);
   const pathname = useRouterState({
@@ -86,6 +87,7 @@ export function Navbar({
       <header
         className={cn(
           "dark fixed top-0 right-0 left-0 z-50 transition-all duration-150",
+          staticPublicTheme && "public-forge-theme",
           isSolid
             ? "border-white/5 border-b bg-hero-bg/95 backdrop-blur-md"
             : "bg-transparent",
@@ -104,6 +106,7 @@ export function Navbar({
               isLandingPage={isLandingPage}
               onLandingNavClick={handleNavClick}
               showLandingSectionLinks={showLandingSectionLinks}
+              staticPublicTheme={staticPublicTheme}
             />
           </nav>
 
@@ -117,6 +120,7 @@ export function Navbar({
               primaryAction={primaryAction}
               secondaryAction={secondaryAction}
               size="sm"
+              staticPublicTheme={staticPublicTheme}
             />
           </div>
 
@@ -139,6 +143,7 @@ export function Navbar({
         ref={menuRef}
         className={cn(
           "dark fixed inset-0 z-40 overflow-y-auto bg-hero-bg/55 pt-16 backdrop-blur-sm transition-opacity duration-150 lg:hidden",
+          staticPublicTheme && "public-forge-theme",
           menuOpen
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none opacity-0",
@@ -162,6 +167,7 @@ export function Navbar({
               menuOpen={menuOpen}
               onLandingNavClick={handleNavClick}
               showLandingSectionLinks={showLandingSectionLinks}
+              staticPublicTheme={staticPublicTheme}
             />
           </nav>
 
@@ -177,6 +183,7 @@ export function Navbar({
               primaryAction={primaryAction}
               secondaryAction={secondaryAction}
               size="lg"
+              staticPublicTheme={staticPublicTheme}
             />
           </div>
         </div>

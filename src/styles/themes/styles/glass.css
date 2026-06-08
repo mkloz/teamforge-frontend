@@ -1,0 +1,20 @@
+:root[data-theme-style="glass"] {
+  --radius: 1rem;
+  --card: color-mix(in srgb, var(--canvas) 82%, transparent);
+  --popover: color-mix(in srgb, var(--canvas) 88%, var(--card) 12%);
+  --input: color-mix(in srgb, var(--canvas) 72%, var(--foreground) 8%);
+  --muted: color-mix(in srgb, var(--canvas) 82%, var(--foreground) 7%);
+  --border: color-mix(in srgb, var(--foreground) 17%, transparent);
+  --secondary: color-mix(in srgb, var(--primary) 14%, transparent);
+  --sidebar: color-mix(in srgb, var(--canvas) 86%, transparent);
+  --sidebar-accent: color-mix(in srgb, var(--primary) 14%, transparent);
+  --sidebar-border: color-mix(in srgb, var(--foreground) 15%, transparent);
+  --shadow-button-primary:
+    0 10px 26px color-mix(in srgb, var(--primary) 24%, transparent),
+    0 3px 0 color-mix(in srgb, var(--primary) 58%, var(--button-shadow-base));
+  --shadow-button-secondary:
+    0 10px 24px color-mix(in srgb, var(--accent) 22%, transparent),
+    0 3px 0 color-mix(in srgb, var(--accent) 58%, var(--button-shadow-base));
+  --shadow-button-outline: 0 3px 0
+    color-mix(in srgb, var(--foreground) 72%, transparent);
+}

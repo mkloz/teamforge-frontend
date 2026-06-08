@@ -108,7 +108,7 @@ export function PrivacySettingsSection({
         ))}
       </div>
 
-      <div className="border-forge-teal/35 border-l pl-4">
+      <div className="border-primary/35 border-l pl-4">
         <p className="text-slate-muted text-sm leading-relaxed">
           Exact location is never shown on public profiles. People only see your
           city when you allow it.

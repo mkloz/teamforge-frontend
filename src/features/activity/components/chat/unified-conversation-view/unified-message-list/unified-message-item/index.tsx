@@ -145,7 +145,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
         aria-roledescription="message"
         aria-label={messageAriaLabel}
         className={cn(
-          "group relative w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
+          "group relative w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
           canToggleSelection && "cursor-pointer",
           shouldShowOuterFocus ? "overflow-visible" : "overflow-hidden",
         )}
@@ -165,7 +165,7 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
             )}
           >
             {!isOwn && kind === "group" && showSender && (
-              <p className="mb-0.5 ml-1.5 font-bold text-forge-teal text-micro opacity-90">
+              <p className="mb-0.5 ml-1.5 font-bold text-micro text-primary opacity-90">
                 {message.sender?.name || "Unknown"}
               </p>
             )}
@@ -180,13 +180,13 @@ export const UnifiedMessageItem = memo(function UnifiedMessageItem({
                 className={cn(
                   "relative flex w-fit min-w-0 max-w-full flex-col rounded-xl px-1 py-1 shadow-xs transition duration-300",
                   isOwn
-                    ? "rounded-br-none border border-forge-teal/15 bg-forge-teal/8 text-ink shadow-sm backdrop-blur-md"
+                    ? "rounded-br-none border border-primary/15 bg-primary/8 text-ink shadow-sm backdrop-blur-md"
                     : "rounded-bl-none border border-border/60 bg-card/75 text-ink shadow-sm backdrop-blur-md",
                   isHighlighted
                     ? "message-search-focus"
                     : isInteractionFocused && "message-action-focus",
                   isSelected &&
-                    "border-forge-teal/65 bg-forge-teal/12 ring-1 ring-forge-teal/35",
+                    "border-primary/65 bg-primary/12 ring-1 ring-primary/35",
                   !content && "min-w-30",
                   usesInlineFooter && "min-w-40",
                 )}
@@ -267,9 +267,7 @@ function ForwardedIndicator({
     <div
       className={cn(
         "mx-1.5 mt-1 mb-0.5 flex min-w-0 items-center gap-1.5 rounded-lg px-1.5 py-0.5 font-bold text-micro",
-        isOwn
-          ? "bg-forge-teal/8 text-forge-teal"
-          : "bg-muted/55 text-slate-muted",
+        isOwn ? "bg-primary/8 text-primary" : "bg-muted/55 text-slate-muted",
       )}
     >
       <Forward className="size-3 shrink-0" aria-hidden="true" />

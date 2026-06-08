@@ -25,7 +25,7 @@ export function RailInfoRow({
       labelClassName="font-semibold text-muted-foreground"
       value={value}
       valueClassName={cn(
-        "font-black text-foreground",
+        "font-bold text-foreground",
         truncateValue && "truncate",
       )}
       className="gap-3.5"

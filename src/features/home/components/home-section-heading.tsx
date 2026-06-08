@@ -25,7 +25,7 @@ export function HomeSectionHeading({
         ) : null}
         <h2
           id={id}
-          className="mt-1 font-black text-foreground text-lg leading-tight tracking-tight sm:text-xl md:text-2xl"
+          className="mt-1 font-bold text-foreground text-lg leading-tight tracking-tight sm:text-xl md:text-2xl"
         >
           {title}
         </h2>

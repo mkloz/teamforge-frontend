@@ -70,7 +70,7 @@ export function RecommendedGroupsView({
         <div className="flex min-h-36 items-center justify-center gap-3 border-border/70 border-y border-dashed px-3 py-5 sm:px-4">
           <EmptyRecommendationsVisual className="h-11 w-auto shrink-0 text-foreground sm:h-12" />
           <div className="min-w-0">
-            <p className="font-black text-foreground text-sm">
+            <p className="font-bold text-foreground text-sm">
               No strong openings yet.
             </p>
             <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">

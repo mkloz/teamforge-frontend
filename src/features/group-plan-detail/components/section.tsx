@@ -48,7 +48,7 @@ export function Section({
             ) : null}
             <h2
               id={headingId}
-              className="mt-2 font-black text-2xl text-foreground tracking-tight md:text-3xl"
+              className="mt-2 font-bold text-2xl text-foreground tracking-tight md:text-3xl"
             >
               {heading}
             </h2>

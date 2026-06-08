@@ -36,15 +36,15 @@ export const SystemMessage = memo(function SystemMessage({
       iconStroke: 2.5,
     },
     info: {
-      container: "border-forge-teal/20 bg-forge-teal/5 text-forge-teal",
+      container: "border-primary/20 bg-primary/5 text-primary",
       iconStroke: 2.5,
     },
     success: {
-      container: "border-forge-teal/25 bg-forge-teal/8 text-forge-teal",
+      container: "border-primary/25 bg-primary/8 text-primary",
       iconStroke: 3,
     },
     warning: {
-      container: "border-spark-amber/30 bg-spark-amber/12 text-spark-amber",
+      container: "border-accent/30 bg-accent/12 text-accent",
       iconStroke: 2.5,
     },
   } as const;

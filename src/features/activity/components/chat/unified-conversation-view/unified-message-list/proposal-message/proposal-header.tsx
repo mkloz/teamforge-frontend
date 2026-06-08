@@ -14,8 +14,8 @@ interface ProposalHeaderProps {
 }
 
 const STATUS_STYLES: Record<PlanProposalStatus, string> = {
-  PENDING: "text-spark-amber",
-  APPROVED: "text-forge-teal",
+  PENDING: "text-accent",
+  APPROVED: "text-primary",
   REJECTED: "text-slate-muted",
   WITHDRAWN: "text-slate-muted",
   CANCELLED: "text-slate-muted",
@@ -36,7 +36,7 @@ export const ProposalHeader = memo(function ProposalHeader({
       aria-label={`${isExpanded ? "Collapse" : "Expand"} ${
         FIELD_LABELS[field]
       } proposal`}
-      className="group/header flex w-full items-center justify-between gap-2 px-2 py-1.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18"
+      className="group/header flex w-full items-center justify-between gap-2 px-2 py-1.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/18"
       onClick={onToggle}
     >
       <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -45,10 +45,10 @@ export const ProposalHeader = memo(function ProposalHeader({
           size="sm"
           shape="square"
           tone="amber"
-          className="bg-spark-amber/14"
+          className="bg-accent/14"
         />
         <div className="min-w-0 flex-1">
-          <h4 className="mb-0.5 truncate font-bold text-micro text-spark-amber/80 leading-none">
+          <h4 className="mb-0.5 truncate font-bold text-accent/80 text-micro leading-none">
             Plan change
           </h4>
           <p className="truncate font-bold text-foreground text-xs leading-none">

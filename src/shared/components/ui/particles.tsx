@@ -34,19 +34,62 @@ interface Circle {
   magnetism: number;
 }
 
-function hexToRgb(hex: string): number[] {
+function hexToRgb(hex: string): number[] | null {
   hex = hex.replace("#", "");
+  if (hex.length !== 6) {
+    return null;
+  }
+
   const hexInt = parseInt(hex, 16);
+  if (Number.isNaN(hexInt)) {
+    return null;
+  }
+
   const red = (hexInt >> 16) & 255;
   const green = (hexInt >> 8) & 255;
   const blue = hexInt & 255;
   return [red, green, blue];
 }
 
+function colorToRgbChannels(color: string | undefined): string | null {
+  const normalizedColor = color?.trim();
+  if (!normalizedColor) {
+    return null;
+  }
+
+  if (normalizedColor.startsWith("#")) {
+    return hexToRgb(normalizedColor)?.join(",") ?? null;
+  }
+
+  const rgbMatch = normalizedColor.match(/^rgba?\(([^)]+)\)$/);
+  if (!rgbMatch) {
+    return null;
+  }
+
+  const channels = rgbMatch[1]
+    .split(",")
+    .slice(0, 3)
+    .map((channel) => Number.parseFloat(channel.trim()));
+
+  if (channels.some((channel) => Number.isNaN(channel))) {
+    return null;
+  }
+
+  return channels.map((channel) => Math.round(channel)).join(",");
+}
+
+function resolveParticleRgb(color: string | undefined, source: Element | null) {
+  const tokenColor = source
+    ? getComputedStyle(source).getPropertyValue("--primary")
+    : undefined;
+
+  return colorToRgbChannels(color) ?? colorToRgbChannels(tokenColor) ?? "0,0,0";
+}
+
 export function Particles({
   className = "",
   quantity = 80,
-  color = "#0D9488",
+  color,
   vx = 0,
   vy = 0,
   lineOpacity = 0.28,
@@ -60,8 +103,7 @@ export function Particles({
   const animationFrameId = useRef<ScheduledAnimationFrameHandle | null>(null);
   const isVisible = useRef<boolean>(true);
   const lastTime = useRef<number>(0);
-
-  const rgbBase = hexToRgb(color).join(",");
+  const rgbBase = useRef<string>("0,0,0");
 
   // Framer Motion scroll tracking
   const { scrollYProgress } = useScroll();
@@ -154,7 +196,7 @@ export function Particles({
 
           ctx.beginPath();
           ctx.lineWidth = 1.0;
-          ctx.strokeStyle = `rgba(${rgbBase}, ${alphaValue.toFixed(2)})`;
+          ctx.strokeStyle = `rgba(${rgbBase.current}, ${alphaValue.toFixed(2)})`;
           ctx.moveTo(xi, yi);
           ctx.lineTo(xj, yj);
           ctx.stroke();
@@ -194,7 +236,7 @@ export function Particles({
 
       ctx.beginPath();
       ctx.arc(totalX, totalY, particle.size, 0, 2 * Math.PI);
-      ctx.fillStyle = `rgba(${rgbBase},${particle.alpha.toFixed(2)})`;
+      ctx.fillStyle = `rgba(${rgbBase.current},${particle.alpha.toFixed(2)})`;
       ctx.fill();
     });
 
@@ -229,6 +271,8 @@ export function Particles({
       });
     }
 
+    rgbBase.current = resolveParticleRgb(color, canvasContainerRef.current);
+
     const disconnectVisibilityObserver = observeElementVisibility(
       canvasContainerRef.current,
       (nextIsVisible) => {
@@ -250,7 +294,7 @@ export function Particles({
         cancelScheduledAnimationFrame(animationFrameId.current);
       }
     };
-  }, [resizeCanvas, shouldReduceMotion]);
+  }, [color, resizeCanvas, shouldReduceMotion]);
 
   useEventListener("resize", resizeCanvas);
 

@@ -16,7 +16,7 @@ function EmptyPlans() {
     <div className="flex min-h-36 items-center justify-center gap-3 border-border/70 border-y border-dashed px-3 py-5">
       <EmptyHomePlansVisual className="h-10 w-auto shrink-0 text-foreground sm:h-11" />
       <div className="min-w-0">
-        <p className="font-black text-foreground text-sm">
+        <p className="font-bold text-foreground text-sm">
           Your calendar is open.
         </p>
         <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">

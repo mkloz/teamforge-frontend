@@ -62,7 +62,7 @@ export function AreaFields({ currentUser, form }: AreaFieldsProps) {
       <FactItem
         icon={MapPin}
         iconTone="teal"
-        iconTileClassName="bg-forge-teal/8"
+        iconTileClassName="bg-primary/8"
         label="Current city"
         labelClassName="font-semibold"
         value={cityLabel}

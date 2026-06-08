@@ -4,6 +4,7 @@
 
 /* Core design tokens & Tailwind theme */
 @import "./styles/theme.css";
+@import "./styles/themes/index.css";
 
 /* Global, reusable CSS animations */
 @import "./styles/animations.css";

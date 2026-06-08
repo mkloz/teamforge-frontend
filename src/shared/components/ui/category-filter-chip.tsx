@@ -38,15 +38,15 @@ function getChipClassName(
 ) {
   const selectedClassName =
     selectedVariant === "soft"
-      ? "border-forge-teal/75 bg-forge-teal/8 text-forge-teal hover:border-forge-teal hover:bg-forge-teal/10"
-      : "border-forge-teal bg-forge-teal text-white hover:bg-forge-teal/90";
+      ? "border-primary/75 bg-primary/8 text-primary hover:border-primary hover:bg-primary/10"
+      : "border-primary bg-primary text-primary-foreground hover:bg-primary/90";
   const checkedClassName =
     selectedVariant === "soft"
-      ? "data-[state=checked]:border-forge-teal/75 data-[state=checked]:bg-forge-teal/8 data-[state=checked]:text-forge-teal hover:data-[state=checked]:bg-forge-teal/10"
-      : "data-[state=checked]:border-forge-teal data-[state=checked]:bg-forge-teal data-[state=checked]:text-white hover:data-[state=checked]:bg-forge-teal/90";
+      ? "data-[state=checked]:border-primary/75 data-[state=checked]:bg-primary/8 data-[state=checked]:text-primary hover:data-[state=checked]:bg-primary/10"
+      : "data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground hover:data-[state=checked]:bg-primary/90";
 
   return cn(
-    "inline-flex h-8 w-auto shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border px-3 font-bold text-xs leading-none transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50",
+    "inline-flex h-8 w-auto shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border px-3 font-bold text-xs leading-none transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50",
     selected
       ? selectedClassName
       : "border-border bg-card text-slate-muted hover:border-border/90 hover:bg-muted/35 hover:text-foreground",
@@ -77,9 +77,9 @@ function CategoryFilterChip(props: CategoryFilterChipProps) {
             "h-4 min-w-4 font-bold transition-colors",
             selected
               ? selectedVariant === "soft"
-                ? "bg-forge-teal/12 text-forge-teal"
-                : "bg-white/20 text-white"
-              : "bg-muted text-slate-muted group-hover/chip:bg-muted/80 group-hover/chip:text-foreground group-data-[state=checked]/chip:bg-white/20 group-data-[state=checked]/chip:text-white",
+                ? "bg-primary/12 text-primary"
+                : "bg-primary-foreground/20 text-primary-foreground"
+              : "bg-muted text-slate-muted group-hover/chip:bg-muted/80 group-hover/chip:text-foreground group-data-[state=checked]/chip:bg-primary-foreground/20 group-data-[state=checked]/chip:text-primary-foreground",
             badgeClassName,
           )}
         />

@@ -481,7 +481,7 @@ export const ChatEmojiPickerPanel = memo(function ChatEmojiPickerPanel({
                 variant="ghost"
                 size="icon-xs"
                 aria-label="Back to quick reactions"
-                className="size-8 shrink-0 rounded-lg border border-border/55 bg-input text-slate-muted focus-visible:ring-forge-teal/18 hover:enabled:border-forge-teal/35 hover:enabled:bg-forge-teal/8 hover:enabled:text-ink"
+                className="size-8 shrink-0 rounded-lg border border-border/55 bg-input text-slate-muted focus-visible:ring-primary/18 hover:enabled:border-primary/35 hover:enabled:bg-primary/8 hover:enabled:text-ink"
                 onClick={onCollapse}
               >
                 <ChevronLeft className="size-4" />
@@ -506,7 +506,7 @@ export const ChatEmojiPickerPanel = memo(function ChatEmojiPickerPanel({
               </div>
             ) : null}
             {!skinTonesDisabled ? (
-              <EmojiPicker.SkinToneSelector className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-input text-base transition-colors hover:border-forge-teal/35 hover:bg-forge-teal/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18" />
+              <EmojiPicker.SkinToneSelector className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-input text-base transition-colors hover:border-primary/35 hover:bg-primary/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/18" />
             ) : null}
           </div>
         ) : null}
@@ -534,7 +534,7 @@ export const ChatEmojiPickerPanel = memo(function ChatEmojiPickerPanel({
           <EmojiPicker.ActiveEmoji>
             {({ emoji }) => (
               <div className="flex min-h-11 items-center gap-2 border-border/55 border-t px-2.5 py-2">
-                <span className="flex size-8 items-center justify-center rounded-lg bg-forge-teal/8 font-sans text-xl">
+                <span className="flex size-8 items-center justify-center rounded-lg bg-primary/8 font-sans text-xl">
                   {emoji?.emoji}
                 </span>
                 <span className="min-w-0 truncate font-bold text-slate-muted text-xs">
@@ -678,10 +678,10 @@ function CompactReactionEmojiGroup({
                   aria-label={`Use ${emoji.label}`}
                   aria-pressed={isSelected}
                   className={cn(
-                    "flex size-7 min-w-0 items-center justify-center self-center justify-self-center rounded-md text-base leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18",
+                    "flex size-7 min-w-0 items-center justify-center self-center justify-self-center rounded-md text-base leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/18",
                     isSelected
-                      ? "bg-spark-amber/18 shadow-sm ring-1 ring-spark-amber/45 hover:bg-spark-amber/22"
-                      : "hover:bg-forge-teal/10",
+                      ? "bg-accent/18 shadow-sm ring-1 ring-accent/45 hover:bg-accent/22"
+                      : "hover:bg-primary/10",
                   )}
                   title={emoji.label}
                   onClick={() => onSelect(emoji.emoji)}
@@ -833,12 +833,12 @@ function EmojiButtonBase({
       type="button"
       aria-pressed={isSelected}
       className={cn(
-        "flex min-w-0 flex-1 items-center justify-center rounded-md text-lg leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/18",
+        "flex min-w-0 flex-1 items-center justify-center rounded-md text-lg leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/18",
         compact ? "h-7 text-base" : "h-8",
         isSelected
-          ? "bg-spark-amber/18 shadow-sm ring-1 ring-spark-amber/45 hover:bg-spark-amber/22"
-          : "hover:bg-forge-teal/10",
-        emoji.isActive && !isSelected && "bg-forge-teal/10",
+          ? "bg-accent/18 shadow-sm ring-1 ring-accent/45 hover:bg-accent/22"
+          : "hover:bg-primary/10",
+        emoji.isActive && !isSelected && "bg-primary/10",
         className,
       )}
     >

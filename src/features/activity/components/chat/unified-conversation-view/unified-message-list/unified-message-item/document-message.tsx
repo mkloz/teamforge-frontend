@@ -17,9 +17,7 @@ interface DocumentMessageProps {
 }
 
 const getFileIcon = (isOwn?: boolean) => (
-  <FileText
-    className={cn("size-5", isOwn ? "text-white" : "text-forge-teal")}
-  />
+  <FileText className={cn("size-5", isOwn ? "text-white" : "text-primary")} />
 );
 
 /**
@@ -97,7 +95,7 @@ export const DocumentMessage = memo(function DocumentMessage({
               "size-8 rounded-lg transition",
               isOwn
                 ? "bg-white/10 text-white hover:bg-white/20"
-                : "bg-forge-teal/5 text-forge-teal hover:bg-forge-teal/10",
+                : "bg-primary/5 text-primary hover:bg-primary/10",
             )}
             aria-label={`Download ${attachment.name || "file"}`}
           >

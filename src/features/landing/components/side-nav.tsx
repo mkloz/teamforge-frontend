@@ -24,7 +24,7 @@ export function SideNav() {
               variant="ghost"
               size="icon-xs"
               onClick={() => scrollToSection(section.id)}
-              className="group relative size-6 rounded-full focus-visible:ring-forge-teal"
+              className="group relative size-6 rounded-full focus-visible:ring-primary"
               aria-label={`Go to ${section.label}`}
               aria-current={isActive ? "location" : undefined}
               title={section.label}
@@ -33,8 +33,8 @@ export function SideNav() {
                 className={cn(
                   "rounded-full transition-all duration-300",
                   isActive
-                    ? "size-2.5 bg-forge-teal shadow-teal-glow"
-                    : "size-1 bg-slate-muted group-hover:bg-forge-teal/50",
+                    ? "size-2.5 bg-primary shadow-teal-glow"
+                    : "size-1 bg-slate-muted group-hover:bg-primary/50",
                 )}
               />
             </Button>
@@ -49,7 +49,7 @@ export function SideNav() {
             variant="ghost"
             size="icon-xs"
             onClick={scrollToTop}
-            className="animate-side-nav-reveal p-1.5 text-slate-muted hover:text-forge-teal motion-reduce:animate-none"
+            className="animate-side-nav-reveal p-1.5 text-slate-muted hover:text-primary motion-reduce:animate-none"
             aria-label="Back to top"
             title="Back to top"
           >

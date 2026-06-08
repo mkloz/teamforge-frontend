@@ -136,7 +136,7 @@ function AttachmentMenuRow({
       <span
         className={cn(
           "flex size-7 shrink-0 items-center justify-center rounded-lg",
-          "border border-border/40 bg-input text-forge-teal",
+          "border border-border/40 bg-input text-primary",
         )}
       >
         <Icon className="size-4" />

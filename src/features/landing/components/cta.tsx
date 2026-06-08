@@ -64,7 +64,7 @@ export function CtaSection() {
             <Button
               size="hero"
               loading
-              className="w-full sm:w-auto"
+              className="w-full text-white sm:w-auto"
               aria-label="Checking TeamForge session"
             >
               {primaryAction.label}
@@ -73,7 +73,7 @@ export function CtaSection() {
             <Button
               asChild
               size="hero"
-              className="w-full hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none sm:w-auto"
+              className="w-full text-white hover:-translate-y-1 hover:shadow-button-primary active:translate-y-0 active:shadow-none sm:w-auto"
             >
               <Link
                 {...primaryAction.navigation}

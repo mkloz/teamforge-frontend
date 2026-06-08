@@ -8,8 +8,8 @@ const LazyChatWallpaperArt = lazy(async () => {
 
 const wallpaperCanvasClassName = [
   "pointer-events-none absolute inset-0 z-0 select-none overflow-hidden bg-canvas [contain:paint]",
-  "bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-forge-teal)_3%,transparent)_0%,transparent_34%,transparent_68%,color-mix(in_srgb,var(--color-spark-amber)_3%,transparent)_100%)]",
-  "dark:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-forge-teal)_4%,transparent)_0%,transparent_36%,transparent_70%,color-mix(in_srgb,var(--color-spark-amber)_4%,transparent)_100%)]",
+  "bg-[linear-gradient(135deg,color-mix(in_srgb,var(--primary)_3%,transparent)_0%,transparent_34%,transparent_68%,color-mix(in_srgb,var(--accent)_3%,transparent)_100%)]",
+  "dark:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--primary)_4%,transparent)_0%,transparent_36%,transparent_70%,color-mix(in_srgb,var(--accent)_4%,transparent)_100%)]",
 ].join(" ");
 
 const wallpaperArtClassName = [

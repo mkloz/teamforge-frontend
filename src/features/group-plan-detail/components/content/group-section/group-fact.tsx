@@ -21,7 +21,7 @@ export function GroupFact({
       />
       <div className="min-w-0">
         <p className="font-semibold text-muted-foreground text-xs">{label}</p>
-        <p className="mt-0.5 font-black text-foreground text-sm leading-snug">
+        <p className="mt-0.5 font-bold text-foreground text-sm leading-snug">
           {value}
         </p>
         {supporting ? (

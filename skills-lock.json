@@ -72,6 +72,12 @@
       "skillPath": "skills/docx/SKILL.md",
       "computedHash": "6962db07127ee540a56e4677f65576d0727668a1d67f7da8bc978f10791c2bfe"
     },
+    "fallow": {
+      "source": "fallow-rs/fallow-skills",
+      "sourceType": "github",
+      "skillPath": "fallow/skills/fallow/SKILL.md",
+      "computedHash": "e08db6e5ec639ea7fde90a8649279bbced1c11fbbf12c028816a561a5093214a"
+    },
     "find-skills": {
       "source": "vercel-labs/skills",
       "sourceType": "github",

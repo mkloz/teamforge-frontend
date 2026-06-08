@@ -35,15 +35,15 @@ export function StarRatingInput({
             aria-checked={score === star}
             aria-label={`Rate ${star} stars`}
             onClick={() => onChange(star)}
-            className="rounded-full p-1 transition-transform hover:scale-110 focus-visible:ring-spark-amber/40"
+            className="rounded-full p-1 transition-transform hover:scale-110 focus-visible:ring-accent/40"
           >
             <Star
               size={22}
               className={cn(
                 "transition-colors",
                 isActive
-                  ? "fill-spark-amber text-spark-amber"
-                  : "text-slate-muted/35 hover:text-spark-amber",
+                  ? "fill-accent text-accent"
+                  : "text-slate-muted/35 hover:text-accent",
               )}
             />
           </Button>

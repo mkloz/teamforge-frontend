@@ -257,7 +257,7 @@ function SavedMessageBubble({
 
       <div className="flex min-w-0 flex-1 flex-col items-start">
         <div className="mb-1 flex min-w-0 max-w-full flex-wrap items-center gap-x-2 gap-y-1 px-1">
-          <span className="max-w-32 shrink-0 truncate font-bold text-forge-teal text-micro">
+          <span className="max-w-32 shrink-0 truncate font-bold text-micro text-primary">
             {isOwn ? "You" : senderName}
           </span>
           <StatusPill
@@ -266,7 +266,7 @@ function SavedMessageBubble({
             tone="teal"
             size="xs"
             surface="outline"
-            className="min-w-0 max-w-full shrink gap-1.5 border-forge-teal/15 bg-forge-teal/8 px-2 py-1 sm:max-w-72"
+            className="min-w-0 max-w-full shrink gap-1.5 border-primary/15 bg-primary/8 px-2 py-1 sm:max-w-72"
           >
             <span className="truncate">From {row.conversationTitle}</span>
           </StatusPill>
@@ -283,9 +283,9 @@ function SavedMessageBubble({
           className={cn(
             "relative flex min-w-0 cursor-pointer flex-col rounded-xl rounded-tl-none px-1 py-1 text-left shadow-xs transition duration-300",
             bubbleSizeClass,
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
             isOwn
-              ? "border border-forge-teal/15 bg-forge-teal/8 text-ink shadow-sm backdrop-blur-md"
+              ? "border border-primary/15 bg-primary/8 text-ink shadow-sm backdrop-blur-md"
               : "border border-border/60 bg-card/75 text-ink shadow-sm backdrop-blur-md",
             !displayContent && "min-w-30",
             usesInlineFooter && "min-w-40",
@@ -478,7 +478,7 @@ function SavedMessagesState({
             shape="circle"
             tone="teal"
             bordered
-            className="border-forge-teal/15 bg-forge-teal/8"
+            className="border-primary/15 bg-primary/8"
           />
         )}
         <div>

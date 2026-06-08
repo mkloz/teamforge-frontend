@@ -43,6 +43,7 @@ const NotificationSettingsSection = lazy(() =>
 export function SettingsProfileForm({
   activeSection,
   account,
+  appearance,
   matching,
   privacy,
   security,
@@ -70,7 +71,21 @@ export function SettingsProfileForm({
 
       {activeSection === "appearance" && (
         <Suspense fallback={<SettingsPanelSkeleton />}>
-          <AppearanceSettingsSection />
+          <AppearanceSettingsSection
+            notificationPreferences={appearance.notificationPreferences}
+            isLoadingNotificationPreferences={
+              appearance.isLoadingNotificationPreferences
+            }
+            isSavingNotificationPreferences={
+              appearance.isSavingNotificationPreferences
+            }
+            savingNotificationPreferenceKeys={
+              appearance.savingNotificationPreferenceKeys
+            }
+            error={appearance.error}
+            isOnline={appearance.isOnline}
+            onChange={appearance.onChange}
+          />
         </Suspense>
       )}
 

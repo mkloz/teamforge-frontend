@@ -40,7 +40,7 @@ export function SessionRow({
     <div
       className={cn(
         "md:main-action-grid grid gap-4 border-border border-b py-5 last:border-b-0 md:items-center",
-        session.isCurrent && "border-forge-teal/25",
+        session.isCurrent && "border-primary/25",
       )}
     >
       <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] gap-4">
@@ -49,7 +49,7 @@ export function SessionRow({
           shape="circle"
           size="lg"
           tone={session.isCurrent ? "teal" : "neutral"}
-          className={session.isCurrent ? "bg-forge-teal/8" : "bg-muted"}
+          className={session.isCurrent ? "bg-primary/8" : "bg-muted"}
           iconClassName="size-4"
         />
         <div className="min-w-0">
@@ -88,7 +88,7 @@ export function SessionRow({
               <TooltipTrigger asChild>
                 <button
                   type="button"
-                  className="mt-3 block max-w-3xl cursor-help truncate border-0 bg-transparent p-0 text-left text-slate-muted/75 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35"
+                  className="mt-3 block max-w-3xl cursor-help truncate border-0 bg-transparent p-0 text-left text-slate-muted/75 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
                 >
                   {session.userAgent}
                 </button>

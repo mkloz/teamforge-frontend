@@ -15,10 +15,9 @@ const badgeVariants = cva(
         destructive:
           "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
-        teal: "border-transparent bg-forge-teal/10 text-forge-teal hover:bg-forge-teal/20",
-        amber:
-          "border-transparent bg-spark-amber/10 text-spark-amber hover:bg-spark-amber/20",
-        mbti: "rounded-full border-transparent bg-forge-teal px-2 py-0.5 font-bold text-micro text-white uppercase",
+        teal: "border-transparent bg-primary/10 text-primary hover:bg-primary/20",
+        amber: "border-transparent bg-accent/10 text-accent hover:bg-accent/20",
+        mbti: "rounded-full border-transparent bg-primary px-2 py-0.5 font-bold text-micro text-primary-foreground uppercase",
       },
     },
     defaultVariants: {

@@ -98,12 +98,12 @@ function getReactionButtonTone({
 }) {
   if (isOwn) {
     return isActive
-      ? "border-spark-amber/35 bg-spark-amber/18 text-spark-amber shadow-sm hover:enabled:bg-spark-amber/22"
+      ? "border-accent/35 bg-accent/18 text-accent shadow-sm hover:enabled:bg-accent/22"
       : "border-white/10 bg-hero-bg/45 text-white shadow-sm hover:enabled:bg-hero-bg/55";
   }
 
   return isActive
-    ? "border-forge-teal/20 bg-forge-teal/10 text-forge-teal shadow-sm"
+    ? "border-primary/20 bg-primary/10 text-primary shadow-sm"
     : "border-transparent";
 }
 

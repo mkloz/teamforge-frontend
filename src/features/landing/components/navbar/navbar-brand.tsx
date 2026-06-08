@@ -21,7 +21,7 @@ export function NavbarBrand({ isLandingPage }: NavbarBrandProps) {
     <Link
       to="/"
       onClick={handleBrandClick}
-      className="group -ml-2 flex min-h-11 select-none items-center gap-2 rounded-lg border-0 bg-transparent px-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal focus-visible:ring-offset-2 focus-visible:ring-offset-hero-bg"
+      className="group -ml-2 flex min-h-11 select-none items-center gap-2 rounded-lg border-0 bg-transparent px-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-hero-bg"
     >
       <TeamForgeLogo className="size-8" showBackground={false} />
       <span className="font-sans font-semibold text-lg tracking-tight">

@@ -131,14 +131,14 @@ export function GroupRow({
         </div>
 
         <div className="flex min-w-0 flex-col gap-0">
-          <span className="truncate font-black text-foreground text-sm leading-tight transition-colors duration-150 group-hover:text-primary">
+          <span className="truncate font-bold text-foreground text-sm leading-tight transition-colors duration-150 group-hover:text-primary">
             {group.name}
           </span>
           <span
             className={cn(
               "truncate text-xs leading-4",
               hasUnreadMessages
-                ? "font-bold text-foreground/85"
+                ? "font-semibold text-foreground/85"
                 : "font-semibold text-slate-muted",
             )}
           >

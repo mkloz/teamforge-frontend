@@ -17,15 +17,15 @@ export const ReplyReference = memo(
       "mb-1.5 flex w-0 min-w-full max-w-full items-stretch gap-2 overflow-hidden rounded-lg px-2 py-1.5 text-left transition",
       isOwn ? "bg-canvas/45 dark:bg-white/7" : "bg-muted/45 dark:bg-white/6",
       onActivate &&
-        "cursor-pointer hover:bg-forge-teal/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/35",
+        "cursor-pointer hover:bg-primary/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35",
     );
     const content = (
       <>
-        <div className="w-1 shrink-0 rounded-full bg-forge-teal opacity-80" />
+        <div className="w-1 shrink-0 rounded-full bg-primary opacity-80" />
         <div className="min-w-0 flex-1">
           <div className="mb-0.5 flex min-w-0 items-center gap-1.5">
-            <Reply className="size-3 shrink-0 text-forge-teal" />
-            <span className="min-w-0 flex-1 truncate font-bold text-forge-teal text-micro">
+            <Reply className="size-3 shrink-0 text-primary" />
+            <span className="min-w-0 flex-1 truncate font-bold text-micro text-primary">
               {replyTo.sender?.name}
             </span>
           </div>

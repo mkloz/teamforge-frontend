@@ -18,6 +18,7 @@ interface NavbarActionsProps {
   primaryAction: LandingAuthActions["primaryAction"];
   secondaryAction: LandingAuthActions["secondaryAction"];
   size: NavbarButtonSize;
+  staticPublicTheme?: boolean;
 }
 
 interface AuthActionButtonsProps extends NavbarActionsProps {
@@ -32,16 +33,19 @@ interface DownloadInstallActionButtonsProps {
   menuOpen?: boolean;
   secondaryAction: LandingAuthActions["secondaryAction"];
   size: NavbarButtonSize;
+  staticPublicTheme?: boolean;
 }
 
 function actionButtonClassName({
   isPrimary,
   menuOpen,
   size,
+  staticPublicTheme = false,
 }: {
   isPrimary: boolean;
   menuOpen?: boolean;
   size: NavbarButtonSize;
+  staticPublicTheme?: boolean;
 }) {
   const delayClass = isPrimary ? "delay-400" : "delay-300";
 
@@ -50,9 +54,14 @@ function actionButtonClassName({
     size === "lg" && delayClass,
     size === "lg" && isPrimary && "py-6",
     "hover:-translate-y-1 active:translate-y-0 active:shadow-none",
+    isPrimary && "text-white",
     isPrimary
       ? "hover:shadow-button-primary"
       : "hover:shadow-button-outline-dark",
+    staticPublicTheme &&
+      (isPrimary
+        ? "border-forge-teal bg-forge-teal text-white hover:shadow-[0_4px_0_#042f2e] focus-visible:ring-forge-teal"
+        : "border-white bg-transparent text-white hover:shadow-[0_4px_0_rgba(242,245,241,0.88)] focus-visible:ring-white"),
     size === "lg" &&
       (menuOpen ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"),
   );
@@ -69,6 +78,7 @@ export function NavbarActions({
   primaryAction,
   secondaryAction,
   size,
+  staticPublicTheme = false,
 }: NavbarActionsProps) {
   if (downloadInstallAction) {
     return (
@@ -80,6 +90,7 @@ export function NavbarActions({
         menuOpen={menuOpen}
         secondaryAction={secondaryAction}
         size={size}
+        staticPublicTheme={staticPublicTheme}
       />
     );
   }
@@ -95,6 +106,7 @@ export function NavbarActions({
       primaryAction={primaryAction}
       secondaryAction={secondaryAction}
       size={size}
+      staticPublicTheme={staticPublicTheme}
     />
   );
 }
@@ -107,6 +119,7 @@ function DownloadInstallActionButtons({
   menuOpen,
   secondaryAction,
   size,
+  staticPublicTheme = false,
 }: DownloadInstallActionButtonsProps) {
   async function handleInstallClick() {
     closeMenu?.();
@@ -124,6 +137,7 @@ function DownloadInstallActionButtons({
             isPrimary: false,
             menuOpen,
             size,
+            staticPublicTheme,
           })}
           aria-label="Checking TeamForge session"
         >
@@ -138,6 +152,7 @@ function DownloadInstallActionButtons({
             isPrimary: false,
             menuOpen,
             size,
+            staticPublicTheme,
           })}
         >
           <Link {...secondaryAction.navigation} onClick={closeMenu}>
@@ -153,6 +168,7 @@ function DownloadInstallActionButtons({
           isPrimary: true,
           menuOpen,
           size,
+          staticPublicTheme,
         })}
         onClick={() => {
           void handleInstallClick();
@@ -175,6 +191,7 @@ function AuthActionButtons({
   primaryAction,
   secondaryAction,
   size,
+  staticPublicTheme = false,
 }: AuthActionButtonsProps) {
   return (
     <>
@@ -187,6 +204,7 @@ function AuthActionButtons({
             isPrimary: false,
             menuOpen,
             size,
+            staticPublicTheme,
           })}
           aria-label="Checking TeamForge session"
         >
@@ -202,6 +220,7 @@ function AuthActionButtons({
             isPrimary: false,
             menuOpen,
             size,
+            staticPublicTheme,
           })}
         >
           {isSigningOut ? "Signing out" : "Sign out"}
@@ -215,6 +234,7 @@ function AuthActionButtons({
             isPrimary: false,
             menuOpen,
             size,
+            staticPublicTheme,
           })}
         >
           <Link {...secondaryAction.navigation} onClick={closeMenu}>
@@ -231,6 +251,7 @@ function AuthActionButtons({
             isPrimary: true,
             menuOpen,
             size,
+            staticPublicTheme,
           })}
           aria-label="Checking TeamForge session"
         >
@@ -245,6 +266,7 @@ function AuthActionButtons({
             isPrimary: true,
             menuOpen,
             size,
+            staticPublicTheme,
           })}
         >
           <Link {...primaryAction.navigation} onClick={closeMenu}>

@@ -10,11 +10,11 @@ const countBadgeVariants = cva(
     variants: {
       tone: {
         amber:
-          "border border-[color-mix(in_srgb,var(--color-spark-amber)_35%,var(--color-canvas))] bg-[color-mix(in_srgb,var(--color-spark-amber)_10%,var(--color-canvas))] text-[color-mix(in_srgb,var(--color-spark-amber)_70%,var(--color-ink))]",
+          "border border-[color-mix(in_srgb,var(--accent)_35%,var(--color-canvas))] bg-[color-mix(in_srgb,var(--accent)_10%,var(--color-canvas))] text-[color-mix(in_srgb,var(--accent)_70%,var(--color-ink))]",
         muted:
           "bg-[color-mix(in_srgb,var(--color-slate-muted)_15%,var(--color-canvas))] text-[color-mix(in_srgb,var(--color-slate-muted)_85%,var(--color-ink))]",
         none: "",
-        teal: "bg-forge-teal text-white shadow-forge-teal/20 shadow-sm",
+        teal: "bg-primary text-primary-foreground shadow-primary/20 shadow-sm",
       },
       size: {
         xs: "h-3.5 min-w-3.5 px-1",

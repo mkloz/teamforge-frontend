@@ -36,54 +36,53 @@ export function SettingsSidebar({
   const [signOutDialogOpen, setSignOutDialogOpen] = useState(false);
 
   return (
-    <aside
-      className={cn(
-        "lg:sticky lg:top-10 lg:block lg:self-start",
-        isMobileDetailOpen && "hidden",
-      )}
-    >
-      <div className="mb-5 border-border border-b pb-5 lg:border-b-0 lg:pb-0">
-        <h1 className="font-bold text-2xl text-ink leading-tight lg:text-3xl">
-          Settings
-        </h1>
-        <p className="mt-2 text-slate-muted text-sm leading-relaxed">
-          The parts of TeamForge that should bend around you.
-        </p>
-      </div>
+    <aside className={cn("lg:block", isMobileDetailOpen && "hidden")}>
+      <div className="lg:fixed lg:top-10 lg:max-h-[calc(100svh-5rem)] lg:w-72 lg:overflow-y-auto lg:pr-1">
+        <div className="mb-5 border-border border-b pb-5 lg:border-b-0 lg:pb-0">
+          <h1 className="font-bold text-2xl text-ink leading-tight lg:text-3xl">
+            Settings
+          </h1>
+          <p className="mt-2 text-slate-muted text-sm leading-relaxed">
+            The parts of TeamForge that should bend around you.
+          </p>
+        </div>
 
-      <SettingsSectionNav
-        activeSection={activeSection}
-        onSectionSelect={onSectionSelect}
-      />
+        <SettingsSectionNav
+          activeSection={activeSection}
+          onSectionSelect={onSectionSelect}
+        />
 
-      <div className="mt-5 border-border border-y py-1 lg:border-x-0 lg:border-t lg:border-b-0 lg:py-4">
-        <Button
-          type="button"
-          variant="destructive"
-          className="h-auto w-full justify-start px-1 py-3 lg:px-4"
-          disabled={isSigningOut}
-          onClick={() => setSignOutDialogOpen(true)}
-        >
-          <LogOut size={16} />
-          {isSigningOut ? "Signing out..." : "Sign out"}
-        </Button>
+        <div className="mt-5 border-border border-y py-1 lg:border-x-0 lg:border-t lg:border-b-0 lg:py-4">
+          <Button
+            type="button"
+            variant="destructive"
+            className="h-auto w-full justify-start px-1 py-3 lg:px-4"
+            disabled={isSigningOut}
+            onClick={() => setSignOutDialogOpen(true)}
+          >
+            <LogOut size={16} />
+            {isSigningOut ? "Signing out..." : "Sign out"}
+          </Button>
 
-        {signOutDialogOpen ? (
-          <Suspense fallback={null}>
-            <ActionDialog
-              cancelLabel="Stay signed in"
-              confirmLabel={isSigningOut ? "Signing out..." : "Sign out"}
-              description="This ends the current session and returns you to the login screen."
-              details={["You can come back with the same email and password."]}
-              loading={isSigningOut}
-              onConfirm={onSignOut}
-              onOpenChange={setSignOutDialogOpen}
-              open={signOutDialogOpen}
-              title="Sign out of TeamForge?"
-              tone="warning"
-            />
-          </Suspense>
-        ) : null}
+          {signOutDialogOpen ? (
+            <Suspense fallback={null}>
+              <ActionDialog
+                cancelLabel="Stay signed in"
+                confirmLabel={isSigningOut ? "Signing out..." : "Sign out"}
+                description="This ends the current session and returns you to the login screen."
+                details={[
+                  "You can come back with the same email and password.",
+                ]}
+                loading={isSigningOut}
+                onConfirm={onSignOut}
+                onOpenChange={setSignOutDialogOpen}
+                open={signOutDialogOpen}
+                title="Sign out of TeamForge?"
+                tone="warning"
+              />
+            </Suspense>
+          ) : null}
+        </div>
       </div>
     </aside>
   );
@@ -127,8 +126,8 @@ function SettingsSectionNav({
             }}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "group relative flex w-full items-center justify-between gap-3 border-border border-b px-1 py-2 text-left transition-colors last:border-b-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/30 active:bg-muted/40 lg:items-start lg:border-b-0 lg:px-4 active:lg:bg-transparent",
-              "after:absolute after:top-2.5 after:bottom-2.5 after:left-0 after:w-0.5 after:origin-center after:scale-y-0 after:bg-forge-teal after:transition-transform",
+              "group relative flex w-full items-center justify-between gap-3 border-border border-b px-1 py-2 text-left transition-colors last:border-b-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:bg-muted/40 lg:items-start lg:border-b-0 lg:px-4 active:lg:bg-transparent",
+              "after:absolute after:top-2.5 after:bottom-2.5 after:left-0 after:w-0.5 after:origin-center after:scale-y-0 after:bg-primary after:transition-transform",
               isActive
                 ? "text-ink lg:after:scale-y-100"
                 : "text-slate-muted hover:text-ink",
@@ -142,7 +141,7 @@ function SettingsSectionNav({
               className={cn(
                 "transition-colors",
                 isActive
-                  ? "bg-forge-teal/8"
+                  ? "bg-primary/8"
                   : "text-slate-muted group-hover:text-ink",
               )}
             />

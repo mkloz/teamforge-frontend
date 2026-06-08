@@ -109,7 +109,7 @@ export function PushNotificationBand() {
       : "muted";
 
   return (
-    <div className="border-forge-teal/12 border-y bg-forge-teal/5">
+    <div className="border-primary/12 border-y bg-primary/5">
       <div className="mx-auto flex max-w-6xl flex-col gap-5 px-6 py-8 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
         <div className="flex items-start gap-4">
           <IconTile
@@ -117,9 +117,7 @@ export function PushNotificationBand() {
             shape="circle"
             size="lg"
             tone={iconTone}
-            className={
-              push.isSubscribed ? "size-11 bg-forge-teal/12" : "size-11"
-            }
+            className={push.isSubscribed ? "size-11 bg-primary/12" : "size-11"}
             iconClassName="size-5"
           />
           <div className="min-w-0">
@@ -174,7 +172,7 @@ export function PushNotificationBand() {
           ) : (
             <Button
               size="sm"
-              className="min-h-11 lg:min-h-9"
+              className="min-h-11 text-white lg:min-h-9"
               disabled={!canTurnOn || isActionDisabled}
               loading={push.isTurningOn}
               onClick={() => {

@@ -18,6 +18,44 @@
   .profile-compact-banner-hidden {
     transform: translate3d(0, -100%, 0);
   }
+
+  .public-forge-theme {
+    --background: #0b0f0e;
+    --foreground: #f2f5f1;
+    --ink: #f2f5f1;
+    --slate-muted: #a4b2ac;
+    --canvas: #111716;
+    --card: #18201e;
+    --card-foreground: #f2f5f1;
+    --popover: #18201e;
+    --popover-foreground: #f2f5f1;
+    --primary: #0f766e;
+    --primary-foreground: #ffffff;
+    --secondary: color-mix(in srgb, var(--primary) 10%, transparent);
+    --secondary-foreground: #0d9488;
+    --muted: #202725;
+    --muted-foreground: #a4b2ac;
+    --accent: #ffbf00;
+    --accent-foreground: #071413;
+    --border: color-mix(in srgb, var(--foreground) 11%, transparent);
+    --input: #202927;
+    --ring: #0d9488;
+    --color-hero-bg: #090909;
+    --color-forge-teal: #0d9488;
+    --color-spark-amber: #ffbf00;
+    --color-forge-deep-panel: #0a1212;
+    --color-forge-deep-surface: #111111;
+    --color-button-primary-border: var(--primary);
+    --color-button-secondary-border: var(--accent);
+    --button-shadow-base: color-mix(in srgb, #090909 88%, #f2f5f1);
+    --button-shadow-inverse: color-mix(in srgb, #f2f5f1 88%, #090909);
+    --shadow-button-primary: 0 4px 0
+      color-mix(in srgb, var(--primary) 62%, var(--button-shadow-base));
+    --shadow-button-secondary: 0 4px 0
+      color-mix(in srgb, var(--accent) 70%, var(--button-shadow-base));
+    --shadow-button-outline: 0 4px 0 var(--button-shadow-inverse);
+    --shadow-button-outline-dark: 0 4px 0 var(--button-shadow-inverse);
+  }
 }
 
 @utility main-action-grid {

@@ -44,16 +44,16 @@ export const ProposalVoters = memo(function ProposalVoters({
                     tabIndex={0}
                     aria-label={`${voter.name} ${voteLabel}`}
                     className={cn(
-                      "size-5 ring-2 transition-transform hover:z-10 hover:scale-110 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-forge-teal",
+                      "size-5 ring-2 transition-transform hover:z-10 hover:scale-110 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-primary",
                       index > 0 && "-ml-1.5",
                       voter.vote === "APPROVE"
-                        ? "ring-forge-teal"
+                        ? "ring-primary"
                         : "ring-slate-muted/60",
                     )}
                     fallbackClassName={cn(
                       "text-xs",
                       voter.vote === "APPROVE"
-                        ? "text-forge-teal"
+                        ? "text-primary"
                         : "text-slate-muted",
                     )}
                   />
@@ -73,7 +73,7 @@ export const ProposalVoters = memo(function ProposalVoters({
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
-          className="h-full bg-spark-amber"
+          className="h-full bg-accent"
         />
       </div>
     </>

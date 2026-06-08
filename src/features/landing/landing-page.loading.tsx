@@ -18,7 +18,7 @@ export function LandingPageLoadingFixture() {
       role="status"
     >
       <span className="sr-only">Loading TeamForge</span>
-      <span className="fixed top-4 left-4 z-100 -translate-y-24 rounded-lg bg-forge-teal px-4 py-2 text-white opacity-0">
+      <span className="fixed top-4 left-4 z-100 -translate-y-24 rounded-lg bg-primary px-4 py-2 text-white opacity-0">
         Skip to main content
       </span>
       <header className="dark fixed top-0 right-0 left-0 z-50 bg-hero-bg/95">

@@ -79,12 +79,12 @@ export function GroupPlanHero({
           />
         </div>
 
-        <h1 className="mt-4 max-w-3xl text-balance font-black text-3xl text-foreground leading-none tracking-tight md:text-4xl lg:text-5xl">
+        <h1 className="mt-4 max-w-3xl text-balance font-extrabold text-3xl text-foreground leading-none tracking-tight md:text-4xl lg:text-5xl">
           {planTitle}
         </h1>
 
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-          <p className="font-bold text-foreground/85 text-sm md:text-base">
+          <p className="font-semibold text-foreground/85 text-sm md:text-base">
             {metadata}
           </p>
         </div>
@@ -165,7 +165,7 @@ function GroupPlanCompactHero({
 
           <div className="pointer-events-none relative z-20 flex size-full items-center gap-3 px-4 sm:px-5 lg:px-6">
             <div className="min-w-0 flex-1">
-              <p className="truncate font-black text-base leading-tight tracking-tight [text-shadow:0_2px_12px_rgb(0_0_0/80%)] sm:text-lg">
+              <p className="truncate font-bold text-base leading-tight tracking-tight [text-shadow:0_2px_12px_rgb(0_0_0/80%)] sm:text-lg">
                 {title}
               </p>
               <p className="mt-0.5 truncate font-semibold text-white/90 text-xs leading-tight [text-shadow:0_1px_8px_rgb(0_0_0/85%)] sm:text-sm">

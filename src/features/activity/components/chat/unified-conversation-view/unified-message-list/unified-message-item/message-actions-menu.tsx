@@ -114,7 +114,7 @@ const MENU_DANGER_CLASS =
 const MENU_SEPARATOR_CLASS = ACTIVITY_MENU_SEPARATOR_CLASS;
 
 const EMOJI_ITEM_CLASS =
-  "flex size-8 min-h-8 justify-center rounded-full p-0 text-base leading-none focus:bg-spark-amber/12 data-[highlighted]:bg-spark-amber/12 data-[state=open]:bg-spark-amber/12";
+  "flex size-8 min-h-8 justify-center rounded-full p-0 text-base leading-none focus:bg-accent/12 data-[highlighted]:bg-accent/12 data-[state=open]:bg-accent/12";
 
 interface MessageActionsMenuProps {
   message: UnifiedMessage;
@@ -307,7 +307,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
           <Button
             variant="ghost"
             size="icon-sm"
-            className="size-8 rounded-md border border-border/55 bg-canvas/92 text-slate-muted shadow-sm backdrop-blur-md transition-all hover:border-forge-teal/25 hover:bg-canvas hover:text-ink"
+            className="size-8 rounded-md border border-border/55 bg-canvas/92 text-slate-muted shadow-sm backdrop-blur-md transition-all hover:border-primary/25 hover:bg-canvas hover:text-ink"
             aria-label="Message actions"
             onContextMenu={(event) => event.stopPropagation()}
           >
@@ -605,7 +605,7 @@ function MessageReactionPicker({
           })}
           <Item
             aria-label="More reactions"
-            className="flex size-8 min-h-8 justify-center rounded-full border border-spark-amber/35 bg-spark-amber/12 p-0 text-base text-spark-amber leading-none shadow-[0_0_0_2px_color-mix(in_srgb,var(--color-spark-amber)_14%,transparent)] transition hover:bg-spark-amber/18 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-spark-amber/35"
+            className="flex size-8 min-h-8 justify-center rounded-full border border-accent/35 bg-accent/12 p-0 text-accent text-base leading-none shadow-[0_0_0_2px_color-mix(in_srgb,var(--accent)_14%,transparent)] transition hover:bg-accent/18 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35"
             onMouseDown={(event) => {
               event.preventDefault();
               event.stopPropagation();
@@ -648,7 +648,7 @@ function CompactEmojiPickerSkeleton() {
 function getEmojiItemClass(isSelected: boolean) {
   return cn(
     EMOJI_ITEM_CLASS,
-    isSelected && "bg-spark-amber/18 shadow-sm ring-1 ring-spark-amber/45",
+    isSelected && "bg-accent/18 shadow-sm ring-1 ring-accent/45",
   );
 }
 
@@ -858,7 +858,7 @@ export function ForwardMessageDialog({
                 key={target.chatId}
                 type="button"
                 aria-busy={pendingTargetId === target.chatId}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left transition hover:bg-forge-teal/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forge-teal/25 disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left transition hover:bg-primary/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={!isOnline || pendingTargetId !== null}
                 onClick={() => {
                   void handleForward(target);
@@ -871,7 +871,7 @@ export function ForwardMessageDialog({
                   alt=""
                   imageSize={48}
                   className="size-9"
-                  fallbackClassName="bg-forge-teal/12 text-forge-teal"
+                  fallbackClassName="bg-primary/12 text-primary"
                   aria-hidden="true"
                 />
                 <span className="min-w-0 flex-1">

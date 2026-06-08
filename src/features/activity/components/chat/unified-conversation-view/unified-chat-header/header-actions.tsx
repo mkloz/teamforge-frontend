@@ -83,7 +83,7 @@ export const HeaderActions = memo(
                     strokeWidth={2.5}
                     className={cn(
                       "size-4 transition-colors duration-200",
-                      isActionOpen && "text-forge-teal",
+                      isActionOpen && "text-primary",
                     )}
                   />
                 </Button>

@@ -20,7 +20,7 @@ export function EmptyQueueItem() {
             className="bg-forge-teal/8"
           />
           <div className="min-w-0 flex-1">
-            <p className="font-black text-foreground text-sm transition-colors duration-150 group-hover:text-forge-teal">
+            <p className="font-bold text-foreground text-sm transition-colors duration-150 group-hover:text-forge-teal">
               Nothing needs a decision.
             </p>
             <p className="mt-1 font-medium text-muted-foreground text-xs leading-relaxed">

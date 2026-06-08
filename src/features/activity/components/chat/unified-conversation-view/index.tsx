@@ -383,7 +383,7 @@ function ConversationMessageErrorBanner({
       icon={
         <AlertTriangle
           aria-hidden="true"
-          className="size-4 shrink-0 text-spark-amber"
+          className="size-4 shrink-0 text-accent"
         />
       }
       iconClassName="mt-0"
@@ -400,7 +400,7 @@ function ConversationMessageErrorBanner({
           </Button>
         ) : null
       }
-      className="items-center rounded-none border-spark-amber/20 border-x-0 border-t-0 bg-spark-amber/10 px-4 py-2 text-spark-amber"
+      className="items-center rounded-none border-accent/20 border-x-0 border-t-0 bg-accent/10 px-4 py-2 text-accent"
       contentClassName="font-medium"
     >
       <span className="block truncate">
@@ -415,12 +415,12 @@ function ConversationOfflineBanner() {
     <OfflineNotice
       size="xs"
       iconClassName="mt-0"
-      className="items-center rounded-none border-spark-amber/20 border-x-0 border-t-0 bg-spark-amber/10 px-4 py-2 text-spark-amber"
+      className="items-center rounded-none border-accent/20 border-x-0 border-t-0 bg-accent/10 px-4 py-2 text-accent"
       contentClassName="font-medium"
     >
       <span>
-        <span className="font-black text-spark-amber">Offline.</span> Cached
-        messages stay visible; new updates resume when you reconnect.
+        <span className="font-black text-accent">Offline.</span> Cached messages
+        stay visible; new updates resume when you reconnect.
       </span>
     </OfflineNotice>
   );

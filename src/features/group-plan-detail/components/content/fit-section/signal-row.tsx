@@ -36,7 +36,7 @@ export function SignalRow({ signal }: { signal: GroupPlanFitSignal }) {
       />
       <div className="min-w-0">
         <div className="flex items-center gap-2">
-          <h3 className="font-black text-foreground text-sm leading-tight">
+          <h3 className="font-bold text-foreground text-sm leading-tight">
             {signal.label}
           </h3>
           <StrengthDots strength={signal.strength} />

@@ -61,7 +61,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
     composer.isRecording
       ? "border-destructive/20 bg-destructive/5"
       : composer.isFocused
-        ? "border-forge-teal/40 bg-card shadow-sm"
+        ? "border-primary/40 bg-card shadow-sm"
         : "border-border/50 bg-card/60 shadow-sm",
   );
   const isActionTargetDisabled = composer.isRecording
@@ -127,7 +127,7 @@ export const UnifiedMessageInput = memo(function UnifiedMessageInput({
                 <OfflineNotice
                   size="xs"
                   iconClassName="mt-0"
-                  className="items-center border-0 bg-transparent px-3 py-2.5 text-spark-amber"
+                  className="items-center border-0 bg-transparent px-3 py-2.5 text-accent"
                   contentClassName="font-medium"
                 >
                   <p>

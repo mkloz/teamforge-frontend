@@ -14,6 +14,7 @@ export function useSettingsProfileForm({
 }: UseSettingsProfileFormOptions) {
   const profile = useSettingsProfileBase();
   const shouldLoadPreferences =
+    activeSection === "appearance" ||
     activeSection === "matching" ||
     activeSection === "privacy" ||
     activeSection === "notifications";
@@ -60,6 +61,7 @@ export function useSettingsProfileForm({
     updateNotificationPreference: preferences.updateNotificationPreference,
     updateMatchingPreference: preferences.updateMatchingPreference,
     updatePrivacyPreference: preferences.updatePrivacyPreference,
+    updateAppearancePreference: preferences.updateAppearancePreference,
     isSavingNotificationPreferences:
       preferences.isSavingNotificationPreferences,
     savingNotificationPreferenceKeys:

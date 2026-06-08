@@ -9,12 +9,12 @@ const statusPillVariants = cva(
   {
     variants: {
       tone: {
-        amber: "border-spark-amber/25 bg-spark-amber/10 text-spark-amber",
+        amber: "border-accent/25 bg-accent/10 text-accent",
         destructive: "border-destructive/25 bg-destructive/10 text-destructive",
-        muted: "border-slate-muted/15 bg-slate-muted/10 text-slate-muted",
+        muted: "border-muted-foreground/15 bg-muted text-muted-foreground",
         none: "",
         neutral: "border-border/55 bg-muted text-muted-foreground",
-        teal: "border-forge-teal/20 bg-forge-teal/10 text-forge-teal",
+        teal: "border-primary/20 bg-primary/10 text-primary",
       },
       size: {
         "2xs": "gap-0.5 px-1.5 py-0.5 text-micro",
@@ -43,7 +43,7 @@ const statusPillVariants = cva(
       {
         surface: "soft",
         tone: "amber",
-        className: "bg-spark-amber/10 text-spark-amber",
+        className: "bg-accent/10 text-accent",
       },
       {
         surface: "soft",
@@ -53,7 +53,7 @@ const statusPillVariants = cva(
       {
         surface: "soft",
         tone: "muted",
-        className: "bg-slate-muted/10 text-slate-muted",
+        className: "bg-muted text-muted-foreground",
       },
       {
         surface: "soft",
@@ -63,22 +63,22 @@ const statusPillVariants = cva(
       {
         surface: "soft",
         tone: "teal",
-        className: "bg-forge-teal/8 text-forge-teal",
+        className: "bg-primary/8 text-primary",
       },
       {
         surface: "solid",
         tone: "amber",
-        className: "bg-spark-amber text-white",
+        className: "bg-accent text-accent-foreground",
       },
       {
         surface: "solid",
         tone: "destructive",
-        className: "bg-destructive text-white",
+        className: "bg-destructive text-destructive-foreground",
       },
       {
         surface: "solid",
         tone: "muted",
-        className: "bg-slate-muted text-white",
+        className: "bg-muted text-muted-foreground",
       },
       {
         surface: "solid",
@@ -88,7 +88,7 @@ const statusPillVariants = cva(
       {
         surface: "solid",
         tone: "teal",
-        className: "bg-forge-teal text-white",
+        className: "bg-primary text-primary-foreground",
       },
     ],
     defaultVariants: {

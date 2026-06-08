@@ -216,7 +216,7 @@ function WebPushDevicePreference({ isOnline }: { isOnline: boolean }) {
         <div
           className={cn(
             "flex w-full flex-col gap-4 border-border border-b py-4 text-left transition-colors sm:flex-row sm:items-center sm:justify-between",
-            push.isSubscribed && "border-forge-teal/20",
+            push.isSubscribed && "border-primary/20",
             isDisabled && "opacity-80",
           )}
         >
