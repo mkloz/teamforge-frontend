@@ -168,7 +168,7 @@ VITE_API_URL=http://localhost:6969/api/v1
 Production should use the public browser URL with the same API prefix:
 
 ```env
-VITE_API_URL=https://api.mkloz.com/teamforge/api/v1
+VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1
 ```
 
 The realtime client derives the Socket.IO transport path from `VITE_API_URL`.
@@ -179,7 +179,7 @@ Before a production PWA build, run the browser-env preflight with the same
 values that Vite will bake into the bundle:
 
 ```bash
-VITE_API_URL=https://api.mkloz.com/teamforge/api/v1 \
+VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1 \
 VITE_GOOGLE_CLIENT_ID=your-production-google-client-id \
 VITE_GOOGLE_MAPS_API_KEY=your-production-maps-key \
 VITE_GIPHY_API_KEY=your-production-giphy-key \
@@ -245,7 +245,7 @@ The color system is intentionally small: forge teal, spark amber, canvas, ink, a
 The production PWA release path is:
 
 ```bash
-VITE_API_URL=https://api.mkloz.com/teamforge/api/v1 \
+VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1 \
 VITE_GOOGLE_CLIENT_ID=your-production-google-client-id \
 VITE_GOOGLE_MAPS_API_KEY=your-production-maps-key \
 VITE_GIPHY_API_KEY=your-production-giphy-key \
@@ -253,6 +253,41 @@ npm run pwa:release
 ```
 
 `npm run pwa:release` runs the browser-env preflight, production build, and PWA QA gate. It rejects local API URLs, missing `/api/v1`, placeholder browser keys, and missing production PWA assets before deployment.
+
+### Cloudflare Pages CI/CD
+
+Frontend deploys are handled by `.github/workflows/cloudflare-pages.yml`.
+GitHub Actions runs the production browser-env preflight, the full quality gate,
+unit tests, the Vite build, and PWA QA before uploading `dist/` to Cloudflare
+Pages with Wrangler Direct Upload.
+
+Required GitHub environment secrets:
+
+```text
+CLOUDFLARE_ACCOUNT_ID
+CLOUDFLARE_API_TOKEN
+VITE_GIPHY_API_KEY
+VITE_GOOGLE_CLIENT_ID
+VITE_GOOGLE_MAPS_API_KEY
+```
+
+Required GitHub environment variable:
+
+```text
+CLOUDFLARE_PAGES_PROJECT_NAME=teamforge-web
+```
+
+Optional GitHub environment variables:
+
+```text
+CLOUDFLARE_PAGES_DEPLOY_ON_PUSH=false
+CLOUDFLARE_PAGES_PRODUCTION_BRANCH=main
+VITE_API_URL=https://arm-api.mkloz.com/teamforge/api/v1
+```
+
+Manual dispatch defaults to a preview Pages deployment. Select `production` only
+when the backend smoke checks have passed on `arm-api.mkloz.com` and the
+browser-baked integration keys are production-ready.
 
 ---
 

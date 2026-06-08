@@ -1,0 +1,100 @@
+name: Frontend Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      deploy_target:
+        description: Cloudflare Pages environment to deploy
+        required: true
+        type: choice
+        default: preview
+        options:
+          - preview
+          - production
+      pages_branch:
+        description: Optional Pages branch alias; production uses the configured production branch
+        required: false
+        type: string
+        default: ""
+
+concurrency:
+  group: frontend-pages-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "24"
+
+jobs:
+  deploy:
+    name: Build and deploy
+    if: github.event_name == 'workflow_dispatch' || vars.CLOUDFLARE_PAGES_DEPLOY_ON_PUSH == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production
+
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_PAGES_PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME || 'teamforge-web' }}
+      PAGES_BRANCH_INPUT: ${{ inputs.pages_branch }}
+      PAGES_DEPLOY_TARGET: ${{ inputs.deploy_target || 'production' }}
+      PAGES_PRODUCTION_BRANCH: ${{ vars.CLOUDFLARE_PAGES_PRODUCTION_BRANCH || 'main' }}
+      VITE_API_URL: ${{ vars.VITE_API_URL || 'https://arm-api.mkloz.com/teamforge/api/v1' }}
+      VITE_GIPHY_API_KEY: ${{ vars.VITE_GIPHY_API_KEY || secrets.VITE_GIPHY_API_KEY }}
+      VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID || secrets.VITE_GOOGLE_CLIENT_ID }}
+      VITE_GOOGLE_MAPS_API_KEY: ${{ vars.VITE_GOOGLE_MAPS_API_KEY || secrets.VITE_GOOGLE_MAPS_API_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate production browser env
+        run: npm run pwa:env
+
+      - name: Run quality gate
+        run: npm run check
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Build PWA
+        run: npm run build
+
+      - name: Run PWA QA
+        run: npm run pwa:qa
+
+      - name: Deploy to Cloudflare Pages
+        run: |
+          set -euo pipefail
+
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_PAGES_PROJECT_NAME"
+
+          pages_branch="${PAGES_BRANCH_INPUT:-}"
+
+          if [[ "$PAGES_DEPLOY_TARGET" == "production" ]]; then
+            pages_branch="$PAGES_PRODUCTION_BRANCH"
+          elif [[ -z "$pages_branch" ]]; then
+            pages_branch="$GITHUB_REF_NAME"
+          fi
+
+          echo "Deploying dist to Cloudflare Pages project '$CLOUDFLARE_PAGES_PROJECT_NAME' on branch '$pages_branch'"
+          npx wrangler@latest pages deploy dist \
+            --project-name "$CLOUDFLARE_PAGES_PROJECT_NAME" \
+            --branch "$pages_branch"
