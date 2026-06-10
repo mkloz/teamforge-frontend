@@ -191,6 +191,16 @@ function DeferredToaster() {
   ) : null;
 }
 
+function isVercelHosted(): boolean {
+  // Vercel Analytics requires Vercel infrastructure — it posts to /_vercel/insights/event.
+  // On self-hosted deployments (Nginx, VPS, etc.) that endpoint does not exist and
+  // every tracked event returns 405. Only load the component when the app is actually
+  // running on Vercel's own hosting.
+  if (typeof window === "undefined") return false;
+  const { hostname } = window.location;
+  return hostname.endsWith(".vercel.app") || hostname === "vercel.app";
+}
+
 function DeferredAnalytics() {
   const [AnalyticsComponent, setAnalyticsComponent] =
     useState<ComponentType | null>(null);
@@ -201,6 +211,10 @@ function DeferredAnalytics() {
     }
 
     if (window.location.hostname === "127.0.0.1") {
+      return undefined;
+    }
+
+    if (!isVercelHosted()) {
       return undefined;
     }
 

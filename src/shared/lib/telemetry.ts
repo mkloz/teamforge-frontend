@@ -96,7 +96,15 @@ export function serializeError(error: unknown): SerializedError {
   };
 }
 
+function canUseVercelAnalytics(): boolean {
+  if (typeof window === "undefined") return false;
+  const { hostname } = window.location;
+  return hostname.endsWith(".vercel.app") || hostname === "vercel.app";
+}
+
 export function trackEvent(name: string, context: TelemetryContext = {}) {
+  if (!canUseVercelAnalytics()) return;
+
   const payload = sanitizeContext(context);
 
   try {
