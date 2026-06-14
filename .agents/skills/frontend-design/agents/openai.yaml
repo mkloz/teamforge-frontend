@@ -1,0 +1,6 @@
+interface:
+  display_name: "Frontend Design"
+  short_description: "Explicit visual direction and restyling"
+  default_prompt: "Use $frontend-design to explore a new visual direction for this TeamForge surface."
+policy:
+  allow_implicit_invocation: false

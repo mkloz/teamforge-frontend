@@ -1,0 +1,4 @@
+interface:
+  display_name: "TeamForge Copy"
+  short_description: "TeamForge voice and naming guardrails"
+  default_prompt: "Use $teamforge-copy-guardrails to write TeamForge copy that follows product voice and naming constraints."

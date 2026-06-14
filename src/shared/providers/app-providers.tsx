@@ -72,7 +72,6 @@ export function AppProviders({ children }: { children: ReactNode }) {
       {children}
       {import.meta.env.DEV ? <DeferredReactQueryDevtools /> : null}
       <DeferredToaster />
-      <DeferredAnalytics />
     </QueryClientProvider>
   );
 }
@@ -189,58 +188,4 @@ function DeferredToaster() {
   return ToasterComponent ? (
     <ToasterComponent {...TOASTER_PROPS} theme={theme} />
   ) : null;
-}
-
-function isVercelHosted(): boolean {
-  // Vercel Analytics requires Vercel infrastructure — it posts to /_vercel/insights/event.
-  // On self-hosted deployments (Nginx, VPS, etc.) that endpoint does not exist and
-  // every tracked event returns 405. Only load the component when the app is actually
-  // running on Vercel's own hosting.
-  if (typeof window === "undefined") return false;
-  const { hostname } = window.location;
-  return hostname.endsWith(".vercel.app") || hostname === "vercel.app";
-}
-
-function DeferredAnalytics() {
-  const [AnalyticsComponent, setAnalyticsComponent] =
-    useState<ComponentType | null>(null);
-
-  useEffect(() => {
-    if (window.location.hostname === "localhost") {
-      return undefined;
-    }
-
-    if (window.location.hostname === "127.0.0.1") {
-      return undefined;
-    }
-
-    if (!isVercelHosted()) {
-      return undefined;
-    }
-
-    let cancelled = false;
-
-    async function loadAnalytics() {
-      try {
-        const { Analytics } = await import("@vercel/analytics/react");
-
-        if (!cancelled) {
-          setAnalyticsComponent(() => Analytics);
-        }
-      } catch (error) {
-        warnInDevelopment("Analytics failed to initialize.", error);
-      }
-    }
-
-    const task = scheduleIdleTask(() => {
-      void loadAnalytics();
-    });
-
-    return () => {
-      cancelled = true;
-      cancelIdleTask(task);
-    };
-  }, []);
-
-  return AnalyticsComponent ? <AnalyticsComponent /> : null;
 }

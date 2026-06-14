@@ -1,9 +1,9 @@
 ---
 name: impeccable
-description: Create distinctive, production-grade frontend interfaces with high design quality. Generates creative, polished code that avoids generic AI aesthetics. Use when the user asks to build web components, pages, artifacts, posters, or applications, or when any design skill requires project context. Call with 'craft' for shape-then-build, 'teach' for design context setup, or 'extract' to pull reusable components and tokens into the design system.
-version: 2.1.1
-user-invocable: true
-argument-hint: "[craft|teach|extract]"
+description: Create distinctive, production-grade frontend interfaces with high design quality. Use only for explicit design exploration, `craft|teach|extract` workflows, or when the user wants a new visual direction beyond the repo's established design system. Not the default path for routine TeamForge product UI implementation inside existing tokens, fonts, and copy constraints.
+metadata:
+  version: "2.1.1"
+  argument-hint: "[craft|teach|extract]"
 license: Apache 2.0. Based on Anthropic's frontend-design skill. See NOTICE.md for attribution.
 ---
 

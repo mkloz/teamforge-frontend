@@ -1,19 +1,26 @@
 ---
 name: ui-ux-pro-max
-description: "UI/UX design intelligence for web and mobile. Includes 50+ styles, 161 color palettes, 57 font pairings, 161 product types, 99 UX guidelines, and 25 chart types across 10 stacks (React, Next.js, Vue, Svelte, SwiftUI, React Native, Flutter, Tailwind, shadcn/ui, and HTML/CSS). Actions: plan, build, create, design, implement, review, fix, improve, optimize, enhance, refactor, and check UI/UX code. Projects: website, landing page, dashboard, admin panel, e-commerce, SaaS, portfolio, blog, and mobile app. Elements: button, modal, navbar, sidebar, card, table, form, and chart. Styles: glassmorphism, claymorphism, minimalism, brutalism, neumorphism, bento grid, dark mode, responsive, skeuomorphism, and flat design. Topics: color systems, accessibility, animation, layout, typography, font pairing, spacing, interaction states, shadow, and gradient. Integrations: shadcn/ui MCP for component search and examples."
+description: "Broad UI/UX reference bundle for web and mobile. Use only when the user explicitly asks for style exploration, design ideation, visual critique, or cross-stack UX comparison beyond the repo's established design system. For TeamForge, treat this as a reference library rather than default implementation guidance; AGENTS.md, frontend-product-ui-engineer, and teamforge-* skills override it on conflict."
 ---
 
 # UI/UX Pro Max - Design Intelligence
 
 Comprehensive design guide for web and mobile applications. Contains 50+ styles, 161 color palettes, 57 font pairings, 161 product types with reasoning rules, 99 UX guidelines, and 25 chart types across 10 technology stacks. Searchable database with priority-based recommendations.
 
+## TeamForge Override
+
+- TeamForge is a React + Vite + Tailwind + shadcn/ui web app, not a React Native app.
+- Use this skill as a reference library for explicit design exploration or critique, not as the default implementation path.
+- When this skill conflicts with `AGENTS.md`, TeamForge tokens, or any `teamforge-*` skill, follow the repo-local guidance instead.
+- Ignore React Native-only instructions unless the user explicitly asks for mobile-app inspiration.
+
 ## When to Apply
 
 This Skill should be used when the task involves **UI structure, visual design decisions, interaction patterns, or user experience quality control**.
 
-### Must Use
+### Best Fit
 
-This Skill must be invoked in the following situations:
+This skill is most useful when the user explicitly asks for:
 
 - Designing new pages (Landing Page, Dashboard, Admin, SaaS, Mobile App)
 - Creating or refactoring UI components (buttons, modals, forms, tables, charts, etc.)
@@ -43,7 +50,7 @@ This Skill is not needed in the following situations:
 - Infrastructure or DevOps work
 - Non-visual scripts or automation tasks
 
-**Decision criteria**: If the task will change how a feature **looks, feels, moves, or is interacted with**, this Skill should be used.
+**Decision criteria**: Use this skill as a specialist reference when the task needs broad design exploration beyond the repo's normal implementation path.
 
 ## Rule Categories by Priority
 
@@ -356,9 +363,11 @@ Extract key information from user request:
 - **Product type**: Entertainment (social, video, music, gaming), Tool (scanner, editor, converter), Productivity (task manager, notes, calendar), or hybrid
 - **Target audience**: C-end consumer users; consider age group, usage context (commute, leisure, work)
 - **Style keywords**: playful, vibrant, minimal, dark mode, content-first, immersive, etc.
-- **Stack**: React Native (this project's only tech stack)
+- **Stack**: Use the actual project stack. For TeamForge, default to React + Vite + Tailwind + shadcn/ui + TanStack Router.
 
-### Step 2: Generate Design System (REQUIRED)
+### Step 2: Generate Design System (Only if exploration is needed)
+
+For TeamForge, start from `AGENTS.md` and `docs/visual-style-guide.md` before using this exploratory step.
 
 **Always start with `--design-system`** to get comprehensive recommendations with reasoning:
 
@@ -436,9 +445,9 @@ python3 skills/ui-ux-pro-max/scripts/search.py "<keyword>" --domain <domain> [-n
 | App interface a11y | `web` | `--domain web "accessibilityLabel touch safe-areas"` |
 | AI prompt / CSS keywords | `prompt` | `--domain prompt "minimalism"` |
 
-### Step 4: Stack Guidelines (React Native)
+### Step 4: Stack Guidelines
 
-Get React Native implementation-specific best practices:
+If you are working in TeamForge or another web repo, prefer the actual repo stack and skip the React Native-specific guidance below unless the user explicitly wants mobile-app patterns.
 
 ```bash
 python3 skills/ui-ux-pro-max/scripts/search.py "<keyword>" --stack react-native
@@ -480,7 +489,7 @@ python3 skills/ui-ux-pro-max/scripts/search.py "<keyword>" --stack react-native
 - Product type: Tool (AI search engine)
 - Target audience: C-end users looking for fast, intelligent search
 - Style keywords: modern, minimal, content-first, dark mode
-- Stack: React Native
+- Stack: Use the actual project stack; TeamForge defaults to React web, not React Native.
 
 ### Step 2: Generate Design System (REQUIRED)
 

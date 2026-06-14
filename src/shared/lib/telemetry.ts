@@ -1,6 +1,3 @@
-import { track } from "@vercel/analytics";
-import { warnInDevelopment } from "@/shared/lib/development-warning";
-
 type TelemetryValue = string | number | boolean | null | undefined;
 
 type TelemetryContext = Record<string, TelemetryValue | object>;
@@ -96,22 +93,9 @@ export function serializeError(error: unknown): SerializedError {
   };
 }
 
-function canUseVercelAnalytics(): boolean {
-  if (typeof window === "undefined") return false;
-  const { hostname } = window.location;
-  return hostname.endsWith(".vercel.app") || hostname === "vercel.app";
-}
-
 export function trackEvent(name: string, context: TelemetryContext = {}) {
-  if (!canUseVercelAnalytics()) return;
-
-  const payload = sanitizeContext(context);
-
-  try {
-    track(name, payload);
-  } catch (error) {
-    warnInDevelopment("Analytics tracking failed.", error);
-  }
+  void name;
+  void context;
 }
 
 export function captureException(

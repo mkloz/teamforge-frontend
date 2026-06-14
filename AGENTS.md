@@ -17,7 +17,7 @@ Core mechanic: press **"Forge my group"** and receive one algorithmically select
 - **App:** React 19.2, TypeScript 5.9, Vite 7.3, TanStack Router v1.162, nuqs v2
 - **State/data:** TanStack Query v5.90, Zustand v5, React Hook Form v7.71, Zod v4.3
 - **UI:** Tailwind CSS v4.2, shadcn/ui, Radix UI, Lucide React, Framer Motion v12.34, Recharts v3/D3
-- **Network/runtime:** ky v1.14, Socket.IO client v4, Vercel Analytics
+- **Network/runtime:** ky v1.14, Socket.IO client v4
 - **Quality:** Oxlint, Biome, Husky, lint-staged
 
 ---
@@ -170,6 +170,16 @@ Preferred MCP stack: **21st.dev**, **Chrome DevTools MCP**, **Context7**, **Fire
 
 UI workflow: read local code and design docs, use sequential-thinking for complex planning, use 21st.dev/Firecrawl for inspiration, Context7 for API details, implement with TeamForge conventions, then verify rendered behavior in Chrome DevTools when it matters.
 
+## Skill Bundle Governance
+
+- Treat `.agents/skills/` as a mixed local plus bundled skill library.
+- `AGENTS.md` and any `teamforge-*` skill override generic bundled skills on conflict.
+- Specialist bundled skills are opt-in, not default. Use them when the user explicitly asks for that specialty or when the task is primarily about that specialty.
+- For routine TeamForge work, prefer this order: `repo-grounded-implementation-engineer`, `frontend-product-ui-engineer`, the relevant `teamforge-*` wrapper, then stack-specific helpers such as `tanstack-query-best-practices`, `zod`, `zustand`, `shadcn-ui`, `react-19`, `playwright-best-practices`, or `pwa-development`.
+- For backend/API contract work, prefer this order: `system-design-api-data-architect`, the relevant `teamforge-backend-*` wrapper, then stack-specific helpers. This repo contains the frontend and a copy of the backend contract; do not claim backend implementation changes unless the backend files are actually present.
+- Broad design bundle skills such as `frontend-design`, `impeccable`, and `ui-ux-pro-max` are reference tools for explicit design exploration or critique. They are not the default path for everyday TeamForge product UI implementation.
+- Never let bundled skill guidance override TeamForge rules on fonts, color tokens, copy constraints, routing, `apiClient`, TanStack Query ownership, PWA behavior, or realtime session handling.
+
 ---
 
 ## Code Conventions
@@ -221,4 +231,5 @@ Primary slogan: **"Find your people, intelligently."**
 - `docs/brand-overview.md` - brand concept, mission, values, logo usage
 - `docs/visual-style-guide.md` - full color, type, spacing, component, and animation rules
 - `docs/architecture-guide.md` - frontend architecture, routes, state, realtime, PWA notes
+- `docs/api-data-models.md` - backend domain model and API contract guide
 - `docs/open-api.yaml` - frontend copy of the backend OpenAPI contract

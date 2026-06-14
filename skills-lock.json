@@ -31,11 +31,6 @@
       "sourceType": "github",
       "computedHash": "2c060290f90340e8bb6009502ec936b8ebb3ff889332a43e24bf210528ebba9f"
     },
-    "bolder": {
-      "source": "pbakaus/impeccable",
-      "sourceType": "github",
-      "computedHash": "1787478962577c9d5bde26e89e47c1654aa9c8f3c47c316a026731db0000a92e"
-    },
     "clarify": {
       "source": "pbakaus/impeccable",
       "sourceType": "github",
@@ -66,11 +61,11 @@
       "sourceType": "github",
       "computedHash": "669a671f855be8773e4c2936e54d4243fbd1d273f87633158544efe3dbc4d825"
     },
-    "docx": {
-      "source": "anthropics/skills",
+    "doublecheck": {
+      "source": "github/awesome-copilot",
       "sourceType": "github",
-      "skillPath": "skills/docx/SKILL.md",
-      "computedHash": "6962db07127ee540a56e4677f65576d0727668a1d67f7da8bc978f10791c2bfe"
+      "skillPath": "skills/doublecheck/SKILL.md",
+      "computedHash": "b4767dd00fcdc47e7c7b91efaa56198639719056e1c3e2a7299300c0fb2a4241"
     },
     "fallow": {
       "source": "fallow-rs/fallow-skills",

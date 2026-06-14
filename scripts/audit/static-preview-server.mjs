@@ -968,10 +968,24 @@ Sitemap: ${sitemapUrl.href}
  * Returns synthetic audit assets that should be origin-aware locally.
  *
  * @param {string} pathname Request pathname.
+ * @param {string} root Static root directory.
  * @param {string} origin Request origin.
  * @returns {SyntheticAuditAsset | null} Synthetic response, if any.
  */
-function getSyntheticAuditAsset(pathname, origin) {
+function getSyntheticAuditAsset(pathname, root, origin) {
+  if (pathname === "/audit-auth-tokens.json") {
+    const tokenFilePath = path.join(root, "audit-auth-tokens.json");
+
+    if (existsSync(tokenFilePath)) {
+      return null;
+    }
+
+    return {
+      body: "{}\n",
+      contentType: "application/json; charset=utf-8",
+    };
+  }
+
   if (pathname === "/robots.txt") {
     return {
       body: buildAuditRobots(origin),
@@ -1092,7 +1106,11 @@ function startServer(options) {
   const server = createPreviewServer(options, (request, response) => {
     const pathname = getRequestPathname(request.url);
     const origin = getRequestOrigin(request, options);
-    const syntheticAsset = getSyntheticAuditAsset(pathname, origin);
+    const syntheticAsset = getSyntheticAuditAsset(
+      pathname,
+      options.root,
+      origin,
+    );
     const routeHtmlAsset = getRouteHtmlAsset(options.root, pathname, origin);
     const headers = getHeadersForPathname(headerRules, pathname);
 

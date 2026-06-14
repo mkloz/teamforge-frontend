@@ -1,6 +1,6 @@
 ---
 name: frontend-design
-description: Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, artifacts, posters, or applications (examples include websites, landing pages, dashboards, React components, HTML/CSS layouts, or when styling/beautifying any web UI). Generates creative, polished code and UI design that avoids generic AI aesthetics.
+description: Create distinctive, production-grade frontend interfaces with high design quality. Use only when the user explicitly asks for a new visual direction, substantial restyling, landing or marketing surfaces, or bold design exploration beyond an established design system. Not the default path for routine TeamForge product UI work inside existing tokens, fonts, and copy rules.
 license: Complete terms in LICENSE.txt
 ---
 

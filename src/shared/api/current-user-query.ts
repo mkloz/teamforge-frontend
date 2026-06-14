@@ -20,6 +20,13 @@ export const AUTH_SESSION_RESTORE_QUERY_KEY = [
   "session-restore",
 ] as const;
 
+function shouldSkipAuditSessionRestore() {
+  return (
+    import.meta.env.VITE_AUDIT_AUTH_ENABLED === "true" &&
+    !authSession.hasTokens()
+  );
+}
+
 export function currentUserQueryOptions() {
   return queryOptions({
     queryKey: CURRENT_USER_QUERY_KEY,
@@ -46,7 +53,11 @@ export function useRestoreAuthSessionQuery(
   return useQuery({
     queryKey: AUTH_SESSION_RESTORE_QUERY_KEY,
     queryFn: async () => (await refreshAuthSession()) !== null,
-    enabled: shouldRestore && !isAuthenticated && isOnline,
+    enabled:
+      shouldRestore &&
+      !isAuthenticated &&
+      isOnline &&
+      !shouldSkipAuditSessionRestore(),
     retry: false,
     staleTime: 30_000,
   });

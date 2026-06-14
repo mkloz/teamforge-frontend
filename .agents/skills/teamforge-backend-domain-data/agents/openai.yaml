@@ -1,0 +1,4 @@
+interface:
+  display_name: "TeamForge Domain Data"
+  short_description: "Forge, groups, plans, and data invariants"
+  default_prompt: "Use $teamforge-backend-domain-data to design or review TeamForge backend data invariants and migrations."
