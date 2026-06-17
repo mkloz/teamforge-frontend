@@ -359,10 +359,6 @@ export default defineConfig(({ command }) => ({
             return "realtime-vendor";
           }
 
-          if (id.includes("/@react-oauth/google/")) {
-            return "auth-integrations";
-          }
-
           if (id.includes("/@vercel/analytics/")) {
             return "analytics";
           }

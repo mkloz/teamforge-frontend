@@ -102,7 +102,7 @@ Use these files as style references. Their color ratios are not perfect, but the
 Folder:
 
 ```text
-C:\Users\micha\Documents\petproject\teamforge-frontend\temp\visual-assets-review\my-picks
+temp/visual-assets-review/my-picks
 ```
 
 How to use these references:

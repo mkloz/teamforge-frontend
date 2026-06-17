@@ -1,0 +1,4 @@
+interface:
+  display_name: "TeamForge Agent Pipeline"
+  short_description: "Route agents, models, MCPs for TeamForge"
+  default_prompt: "Use $teamforge-agent-driven-pipeline to choose the right OpenCode/OMO agent pipeline before coding."
